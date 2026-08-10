@@ -37,85 +37,124 @@
         let parentFeatures = liveParents.features;
         proposalData.cadastreParcelIds = liveParents.cadastreIds.slice();
 
-        // Ruling 2026-08-07: a land readjustment stands on the CADASTRE, never on another
-        // proposal's fabric, and its inputs are WHOLE cadastral parcels only. The interactive
-        // apply path asks to unapply the coverers before this transaction (applyProposal
-        // pre-ask); by the time this gate runs, refusal is the only honest move.
+        // A readjustment may stand on any ground NOT already taken — including the remainders a
+        // road left behind. That is the whole point of drawing roads to form a block and then
+        // redividing it: a block bounded by roads is made of remainders by construction, so
+        // requiring whole cadastral parcels meant a readjustment could never touch anything the
+        // roads had created (ruling 2026-08-10, replacing the whole-parcel rule of 2026-08-07).
+        //
+        // What it may still not do is take ground another formation has already taken — a corridor.
+        // That is the same rule roads live under: you may take what is free, never what is spoken
+        // for. A record is defined by its cadastral anchors plus the geometry of its take, exactly
+        // as a road is; the pieces it stands on are derived and carry no authority of their own.
         {
-            const derivedParents = parentIds.map(String).filter(id => id.includes('#'));
-            if (derivedParents.length) {
+            const takenParents = parentIds.map(String).filter(id => {
+                const layerFeature = parentFeatures.find(f => String(_getParcelIdFromFeature(f)) === id);
+                const props = (layerFeature && layerFeature.properties) || {};
+                const takers = Array.isArray(props.formedByProposalIds) ? props.formedByProposalIds : [];
+                return props.isCorridor === true || props.isTrack === true || takers.length > 0;
+            });
+            if (takenParents.length) {
                 const coverers = new Map();
-                derivedParents.forEach(id => {
+                takenParents.forEach(id => {
                     const layerFeature = parentFeatures.find(f => String(_getParcelIdFromFeature(f)) === id);
-                    const ownerId = layerFeature && layerFeature.properties && layerFeature.properties.proposalId
-                        ? String(layerFeature.properties.proposalId) : '';
-                    if (!ownerId) return;
-                    const record = (typeof _getProposalRecord === 'function') ? _getProposalRecord(ownerId) : null;
-                    coverers.set(ownerId, (record && (record.title || record.name)) || ownerId);
+                    const props = (layerFeature && layerFeature.properties) || {};
+                    const takers = Array.isArray(props.formedByProposalIds) && props.formedByProposalIds.length
+                        ? props.formedByProposalIds.map(String)
+                        : (props.proposalId ? [String(props.proposalId)] : []);
+                    takers.forEach(ownerId => {
+                        if (!ownerId) return;
+                        const record = (typeof _getProposalRecord === 'function') ? _getProposalRecord(ownerId) : null;
+                        coverers.set(ownerId, (record && (record.title || record.name)) || ownerId);
+                    });
                 });
                 const names = Array.from(coverers.values());
                 const message = names.length
-                    ? `A land readjustment must stand on cadastral parcels, but this ground is held by ${names.map(n => `"${n}"`).join(', ')}. Unapply ${names.length === 1 ? 'that proposal' : 'those proposals'} first.`
-                    : 'A land readjustment must stand on cadastral parcels, but part of this ground is held by another proposal. Unapply it first.';
+                    ? `A land readjustment cannot take ground another proposal already holds: ${names.map(n => `"${n}"`).join(', ')}. Move the outline off it, or unapply ${names.length === 1 ? 'that proposal' : 'those proposals'} first.`
+                    : 'A land readjustment cannot take ground another proposal already holds. Move the outline off it, or unapply that proposal first.';
                 if (typeof updateStatus === 'function') updateStatus(message);
-                console.warn(`[_applyReparcellizationProposal] ${idLabel}: derived ground —`, derivedParents);
+                console.warn(`[_applyReparcellizationProposal] ${idLabel}: ground already taken —`, takenParents);
                 try {
                     this._setLastApplyFailure(idLabel, {
-                        code: 'readjustment-derived-ground',
+                        code: 'readjustment-taken-ground',
                         message,
                         coveringProposalIds: Array.from(coverers.keys())
                     });
                 } catch (_) { }
                 return false;
             }
-            // Amended records are exempt from the whole-parcel check: a taker clipped their
-            // slices, so under-covering the parents is the one-partition model working, and the
-            // §14.2 remainders minted below are exactly the ground the taker consumes on replay.
-            const planOrderApi = (typeof window !== 'undefined') ? window.__planOrder : null;
-            const wholeTurf = (typeof turf !== 'undefined') ? turf : null;
-            const claim = (proposalData.amendedByTaking !== true
-                && planOrderApi && typeof planOrderApi.footprintOf === 'function')
-                ? planOrderApi.footprintOf(proposalData) : null;
-            if (claim && wholeTurf && typeof wholeTurf.intersect === 'function' && typeof wholeTurf.area === 'function') {
-                const claimFeature = claim.type === 'Feature' ? claim : { type: 'Feature', properties: {}, geometry: claim };
-                const partials = [];
-                parentFeatures.forEach(feature => {
-                    try {
-                        const parcelFeature = { type: 'Feature', properties: {}, geometry: feature.geometry };
-                        const area = wholeTurf.area(parcelFeature) || 0;
-                        if (!(area > 0)) return;
-                        const hit = wholeTurf.intersect(parcelFeature, claimFeature);
-                        const covered = hit ? (wholeTurf.area(hit) || 0) : 0;
-                        const uncovered = Math.max(0, area - covered);
-                        // Strict (ruling 2026-08-07): the plan must tessellate every input
-                        // parcel. Calibration: turf/4326 vs the cadastre's native 3765 measure
-                        // the same parcel-aligned claim ~1% apart (Cibona's conforming 2042
-                        // read 99% on HR-339270-824), so noise absorbs up to 3% AND 5 m²;
-                        // every real offender seen so far sits at ≤95% with tens of m² missing.
-                        if (covered < area * 0.97 && uncovered > 5) {
-                            partials.push({
-                                id: String(_getParcelIdFromFeature(feature)),
-                                coveredShare: area > 0 ? covered / area : 0
-                            });
-                        }
-                    } catch (_) { /* an unmeasurable parent cannot pass a whole-parcel gate either way */ }
-                });
-                if (partials.length) {
-                    const partialText = partials
-                        .map(partial => `${partial.id} (${Math.round(partial.coveredShare * 100)}%)`)
-                        .join(', ');
-                    const message = `A land readjustment takes whole cadastral parcels, but its outline covers only part of: ${partialText}. Align the outline to parcel boundaries.`;
+            // The whole-parcel tessellation gate that used to sit here is gone. It required the
+            // plan to cover every input parcel to 97%, which made a readjustment impossible on any
+            // ground a road had touched — and forming blocks with roads and then redividing them is
+            // the reason to draw roads first. A readjustment now takes what its outline covers; the
+            // part of a parent it does NOT cover is minted back to the owner as a remainder (§14.2
+            // below), exactly as it is for a road.
+        }
+
+        // Two plots may not cover the same ground. The take IS the union of the plots, so a gap or
+        // an excess against it cannot happen — but an overlap can, and it is the one failure that
+        // corrupts the result silently: the pool measures the union correctly while the plots hand
+        // the same square metre to two people.
+        //
+        // The draft editor already refuses this, and that is not enough. A plan can arrive from a
+        // shared link, an import or any other route that never passed through the editor, and this
+        // is the last point before ground changes hands.
+        {
+            const contributionsApi = (typeof window !== 'undefined') ? window.__readjustmentContributions : null;
+            if (contributionsApi && typeof contributionsApi.overlappingPlots === 'function') {
+                const overlaps = contributionsApi.overlappingPlots(plan.polygons);
+                if (overlaps.length) {
+                    const worst = overlaps.slice().sort((x, y) => y.areaM2 - x.areaM2)[0];
+                    const pairs = overlaps.map(o => `${o.a + 1}&${o.b + 1}`).join(', ');
+                    const message = `A land readjustment cannot give the same ground to two plots: ${overlaps.length} overlapping pair(s) (${pairs}), the largest ${Math.round(worst.areaM2)} m². Redraw the plots so they meet without covering each other.`;
                     if (typeof updateStatus === 'function') updateStatus(message);
+                    console.warn(`[_applyReparcellizationProposal] ${idLabel}: overlapping plots —`, overlaps);
                     try {
                         this._setLastApplyFailure(idLabel, {
-                            code: 'readjustment-partial-parcels',
+                            code: 'readjustment-overlapping-plots',
                             message,
-                            partials
+                            overlaps
                         });
                     } catch (_) { }
                     return false;
                 }
             }
+        }
+
+        // Who put what into the pool. Now that a readjustment can take PART of a parcel, the number
+        // that decides what someone is owed is their contributed AREA — the parcel's overlap with
+        // the take, times their recorded share of it — aggregated across every parcel they appear
+        // in. Counting parcels instead would pay a half-owner of two parcels the same as the sole
+        // owner of one. Stamped on the record so the plan can be read back without recomputing it.
+        try {
+            const contributionsApi = (typeof window !== 'undefined') ? window.__readjustmentContributions : null;
+            const planOrderForTake = (typeof window !== 'undefined') ? window.__planOrder : null;
+            if (contributionsApi && typeof contributionsApi.contributionsByOwner === 'function') {
+                const take = (planOrderForTake && typeof planOrderForTake.footprintOf === 'function')
+                    ? planOrderForTake.footprintOf(proposalData) : null;
+                const pool = contributionsApi.contributionsByOwner(parentFeatures, take);
+                proposalData.reparcellization = proposalData.reparcellization || {};
+                proposalData.reparcellization.contributions = pool.contributions.map(entry => ({
+                    ownerKey: entry.ownerKey,
+                    name: entry.name,
+                    areaM2: Math.round(entry.areaM2 * 100) / 100,
+                    share: entry.share,
+                    parcels: entry.parcels
+                }));
+                proposalData.reparcellization.contributedAreaM2 = Math.round(pool.totalM2 * 100) / 100;
+                // Ground whose ownership could not be read is pooled (dropping it would make the
+                // totals lie) but never assigned to anyone — it travels so the UI can show it.
+                proposalData.reparcellization.unattributedContributions = pool.unreadable.map(entry => ({
+                    parcelId: entry.parcelId,
+                    areaM2: Math.round(entry.areaM2 * 100) / 100,
+                    reason: entry.reason
+                }));
+                if (pool.unreadable.length) {
+                    console.warn(`[_applyReparcellizationProposal] ${idLabel}: ${pool.unreadable.length} contribution(s) could not be attributed to an owner`, pool.unreadable);
+                }
+            }
+        } catch (contributionError) {
+            console.warn(`[_applyReparcellizationProposal] ${idLabel}: could not compute owner contributions`, contributionError);
         }
 
         const primaryFeature = parentFeatures.find(f => _getParcelIdFromFeature(f));
@@ -442,7 +481,8 @@
         proposalData.reparcellization = plan;
 
         persistAppliedProposal(proposalData, proposalId);
-        refreshProposalUIAfterApply(`Applied reparcellization proposal ${proposalData.title || idLabel}`);
+        // The status line is written once, for every type, by _runProposalApplyWithSummary.
+        refreshProposalUIAfterApply();
 
         // §15b: this plan's authored polygons are the ground it took — amend every other
         // applied plan that still claims any of it (one partition, latest wins).
@@ -586,7 +626,7 @@
         proposalData.parentParcelIds = flatParentIds;
         proposalData.childParcelIds = [String(childParcelId)];
         persistAppliedProposal(proposalData, proposalId);
-        refreshProposalUIAfterApply(`Applied decide later proposal ${proposalData.title || idLabel}`);
+        refreshProposalUIAfterApply();
 
         console.debug(`[_applyDecideLaterProposal] ✓ Completed application in ${(performance.now() - startTime).toFixed(2)}ms`);
         return true;

@@ -1226,10 +1226,48 @@
     // SimCity-style creation: turn a finished draft directly into an applied object on the map —
     // no dialog, no review step. Overlapping applied proposals are auto-parked by the apply gate.
     // Falls back to opening the editor when the draft cannot validate or persist.
+    // Where the seconds between "Done" and a finished object go. Clicking Done runs a validation, a
+    // record build and a fabric derivation, and until this existed the whole thing happened with no
+    // sign at all that anything was under way — the same complaint the drawing tool had.
+    const createNow = () => ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now());
+
+    function createPhaseReporter(label) {
+        const started = createNow();
+        const phases = [];
+        let last = started;
+        return {
+            mark(name) {
+                const at = createNow();
+                phases.push(`${name} ${Math.round(at - last)}`);
+                last = at;
+            },
+            report() {
+                try {
+                    console.info(`[instantCreate] ${label} — ${Math.round(createNow() - started)} ms: ${phases.join(' · ')}`);
+                } catch (_) { }
+            }
+        };
+    }
+
     async function instantCreateProposalFromDraft(draftId) {
         const store = global.proposalDraftStore;
         let draft = store?.getDraft(draftId);
         if (!draft) return null;
+
+        // Clicking Done is not instant, and it used to look like nothing had happened. The spinner
+        // is the same ref-counted one the drawing tool uses, so a corridor create that raises it
+        // twice still shows one indicator.
+        const profile = createPhaseReporter(draft.proposalType || draft.adapterKey || draft.goal || 'proposal');
+        try { global.beginApplyIndicator?.(); } catch (_) { }
+        try {
+            return await instantCreateProposalFromDraftInner(draftId, store, draft, profile);
+        } finally {
+            try { global.endApplyIndicator?.(); } catch (_) { }
+            profile.report();
+        }
+    }
+
+    async function instantCreateProposalFromDraftInner(draftId, store, draft, profile) {
 
         const currentName = String(draft.fields?.name || '').trim();
         const typeLabel = draft.proposalType || proposalLabel(draft.adapterKey || draft.goal);
@@ -1260,10 +1298,18 @@
             if (typeof global.showEphemeralMessage === 'function') global.showEphemeralMessage(message, 7000, 'error');
             if (typeof global.updateStatus === 'function') global.updateStatus(message);
             Promise.resolve(global.openProposalDraftDesign?.(draftId)).then(opened => {
-                if (!opened) {
-                    console.error('[ProposalEditor] Could not reopen the failed drawing; discarding draft', draftId);
-                    try { global.proposalDraftStore?.deleteDraft?.(draftId); } catch (_) { }
-                }
+                if (opened) return;
+                // The design tool refusing to open is not a reason to destroy the work it was
+                // holding. It used to delete the draft here, so a gate that declined the selection
+                // — a readjustment on ground another proposal holds, say — cost the user the
+                // drawing as well as the answer. The draft is kept and the failure is said out
+                // loud; a stranded draft can be reopened or discarded deliberately, which is the
+                // user's call and not this path's.
+                console.error('[ProposalEditor] Could not reopen the failed drawing; the draft is kept', draftId);
+                const stranded = tDraft('proposalDrafts.keptUnopened',
+                    'The design tool could not reopen this. Your work is kept as a draft — fix what it complained about and open it again.');
+                try { if (typeof global.showEphemeralMessage === 'function') global.showEphemeralMessage(stranded, 9000, 'error'); } catch (_) { }
+                try { if (typeof global.updateStatus === 'function') global.updateStatus(stranded); } catch (_) { }
             });
             return null;
         };
@@ -1289,6 +1335,7 @@
             }
             return keepAsDraft();
         }
+        profile.mark('build');
         store.consumeAfterPublish(draftId, proposalId);
         // Drop any comparison overlay the drawing/sync path may have painted for this draft.
         clearProposalDraftComparison();
@@ -1297,17 +1344,25 @@
         // mutated, absorbed, deleted or restored later.
         try {
             const stored = global.proposalStorage?.getProposal?.(proposalId) || proposal;
-            if (typeof global.setProposalApplied === 'function') global.setProposalApplied(stored, true);
-            else stored.applied = true;
+            const supersededIds = [stored.sourceProposalId, stored.replacementOfProposalId]
+                .filter(Boolean).map(String);
             global.ProposalManager?._commitReplacementSupersession?.(proposalId, stored);
             global.proposalStorage?.save?.();
-            // A corridor re-derives only the cadastral parcels it crosses: a parcel it does not
-            // reach has the same inputs it had a moment ago, so it has the same pieces and there is
-            // nothing to redo. Everything else stands ON the ground rather than dividing it, and
-            // still goes through the ordinary whole-plan derivation.
-            const derived = await global.ProposalManager?.deriveCorridorIncrementally?.(stored);
-            if (!derived) await global.ProposalManager?.rebuildAppliedFabric?.();
+            profile.mark('record');
+
+            // NOTHING re-applies the whole plan. Only the ground whose take set actually changed is
+            // re-derived — the parcels under a corridor, the parcels a readjustment takes, and on an
+            // edit the parcels the superseded record has just released. Anything that merely stands
+            // on the fabric changes no parcel at all, so only it is applied.
+            const derived = await global.ProposalManager?.deriveForNewProposal?.(stored, { supersededIds });
+            profile.mark('derive');
+            if (!derived) {
+                // The derivation refused. The record stays unapplied rather than being forced onto
+                // the map; the caller sees a parked object and the reason on _lastApplyFailure.
+                console.warn('[ProposalEditor] the new object could not be derived; it stays parked', proposalId);
+            }
             try { global.ProposalManager?._refreshUIAfterProposalChange?.(global.proposalStorage?.getProposal?.(proposalId)); } catch (_) { }
+            profile.mark('ui');
         } catch (error) {
             console.warn('[ProposalEditor] Replay after instant create failed; object stays parked', error);
         }
@@ -1317,11 +1372,20 @@
         }
 
         // A parked object renders nothing — without a word it just looks like the road vanished.
+        //
+        // And "a conflict blocked it" is not a word: the apply that refused recorded exactly WHY,
+        // and this used to throw that away, leaving the one person who could act on it guessing.
+        // Say the reason when there is one.
         try {
             const persisted = global.proposalStorage?.getProposal?.(proposalId);
             const landed = persisted && typeof global.isProposalApplied === 'function' && global.isProposalApplied(persisted);
             if (persisted && !landed && typeof global.showStyledAlert === 'function') {
-                global.showStyledAlert(tDraft('proposalDrafts.builtButParked', 'The object was created but could not be placed on the map (a conflict blocked it). It is parked in your proposals list — select it there to see and apply it.'));
+                const reason = global.ProposalManager?.getLastApplyFailure?.(proposalId) || '';
+                global.showStyledAlert(reason
+                    ? tDraft('proposalDrafts.builtButParkedBecause',
+                        'The object was created but could not be placed on the map: {{reason}} It is parked in your proposals list — select it there to see and apply it.',
+                        { reason })
+                    : tDraft('proposalDrafts.builtButParked', 'The object was created but could not be placed on the map (a conflict blocked it). It is parked in your proposals list — select it there to see and apply it.'));
             }
         } catch (_) { }
         try { if (typeof global.updateShowProposalsButton === 'function') global.updateShowProposalsButton(); } catch (_) { }

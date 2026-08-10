@@ -1369,12 +1369,38 @@ function corridorJunctionsWithArms(planarEntries) {
     return [...nodes.values()];
 }
 
+// Which nodes get a junction treatment.
+//
+// Three or more arms is a junction by any reading. TWO arms is the case that was missing: a node
+// where two DIFFERENT corridors meet end to end. Within one corridor a two-arm node is just a bend
+// in a polyline, and the strip offsetting already mitres it — but two corridors are offset
+// independently, so at the bend their ribbons overlap on the inside (a dark wedge across the kerb)
+// and leave a notch on the outside. Nothing joined them because nothing was looking for a two-arm
+// node. The topology already calls it a junction (corridor-network-nodes.js gives the two records a
+// shared node); only the drawing did not.
+//
+// A join that is nearly straight is left alone: the ribbons already line up, and patching it would
+// only break the lane markings running through it for no gain.
+const JUNCTION_STRAIGHT_DOT = -0.996;   // ~5 degrees of turn
+
+function junctionNeedsTreatment(junction) {
+    const arms = (junction && junction.arms) || [];
+    if (arms.length >= 3) return true;
+    if (arms.length !== 2) return false;
+    if (!junction.corridorIds || junction.corridorIds.size < 2) return false;
+    const dot = arms[0].dir[0] * arms[1].dir[0] + arms[0].dir[1] * arms[1].dir[1];
+    return dot > JUNCTION_STRAIGHT_DOT;
+}
+
 // One junction's visual treatment with every arm sized by ITS OWN cross-section: a collector
 // keeps its full asphalt reach and long zebras while a narrow side street gets a modest patch.
 // Good-enough crossroads without real corner geometry — the arm patches hide the strip overlap.
-function junctionTreatmentPerArm(junction, fallbackProfile) {
+function junctionTreatmentPerArm(junction, fallbackProfile, options) {
     const arms = (junction && junction.arms) || [];
     if (!arms.length) return null;
+    // A bend between two roads is a continuation, not a crossing: zebra bars across it would be a
+    // pedestrian crossing over nothing.
+    const withCrossings = !(options && options.crossings === false);
     const surfacePolygons = [];
     const crosswalkPolygons = [];
     arms.forEach(arm => {
@@ -1393,7 +1419,7 @@ function junctionTreatmentPerArm(junction, fallbackProfile) {
         const end = [junction.point[0] + direction[0] * armLength, junction.point[1] + direction[1] * armLength];
         const surface = corridorStripRingPlanar([junction.point, end], roadwayLeft, roadwayRight);
         if (surface) surfacePolygons.push(planarRingToLatLng(surface));
-        if (!hasSidewalk) return;
+        if (!hasSidewalk || !withCrossings) return;
 
         const normal = [-direction[1], direction[0]];
         const stripeWidth = 0.8;
@@ -1427,8 +1453,9 @@ function buildCorridorJunctionTreatmentsForEntries(entries) {
         }));
     if (!planarEntries.length) return [];
     return corridorJunctionsWithArms(planarEntries)
-        .filter(junction => junction.arms.length >= 3)
-        .map(junction => junctionTreatmentPerArm(junction, planarEntries[0].profile))
+        .filter(junctionNeedsTreatment)
+        .map(junction => junctionTreatmentPerArm(junction, planarEntries[0].profile,
+            { crossings: junction.arms.length >= 3 }))
         .filter(Boolean);
 }
 
@@ -1520,8 +1547,9 @@ function buildCrossCorridorJunctionTreatments(corridors) {
         corridorId: corridor.corridorId
     })));
     return corridorJunctionsWithArms(planarEntries)
-        .filter(junction => junction.arms.length >= 3 && junction.corridorIds.size >= 2)
-        .map(junction => junctionTreatmentPerArm(junction, planarCorridors[0].profile))
+        .filter(junction => junctionNeedsTreatment(junction) && junction.corridorIds.size >= 2)
+        .map(junction => junctionTreatmentPerArm(junction, planarCorridors[0].profile,
+            { crossings: junction.arms.length >= 3 }))
         .filter(Boolean);
 }
 

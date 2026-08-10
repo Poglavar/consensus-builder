@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import express from 'express';
 import request from 'supertest';
-import { createApp, startServer } from '../index.js';
+import { createApp, startServer, WRITE_RATE_LIMIT } from '../index.js';
 import { createMockPool } from './helpers/mock-pool.js';
 
 describe('createApp', () => {
@@ -475,7 +475,7 @@ describe('createApp', () => {
             res.status(200).json({ ok: true });
         });
 
-        for (let attempt = 0; attempt < 50; attempt += 1) {
+        for (let attempt = 0; attempt < WRITE_RATE_LIMIT; attempt += 1) {
             const allowed = await request(app)
                 .patch('/_test/rate-limited')
                 .set('Origin', 'https://editor.example')

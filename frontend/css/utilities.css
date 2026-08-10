@@ -312,7 +312,68 @@ body.debug-mode .debug-only-control {
     animation: highlight-status 1.5s ease-out;
 }
 
+/* A spinner that persists while work does. A status LINE is superseded within a second on a busy
+   reload, so by the time you look there is nothing left saying the app is still working. */
+.status-activity-spinner {
+    display: none;
+    flex: 0 0 auto;
+    width: 12px;
+    height: 12px;
+    margin-right: 8px;
+    border: 2px solid rgba(51, 65, 85, 0.25);
+    border-top-color: #334155;
+    border-radius: 50%;
+    animation: status-activity-spin 0.7s linear infinite;
+}
+
+.status-activity-spinner.is-active {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+@keyframes status-activity-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Reduced motion: keep the mark, drop the rotation — it is a state indicator, not decoration. */
+@media (prefers-reduced-motion: reduce) {
+    .status-activity-spinner {
+        animation: none;
+        border-top-color: transparent;
+        background: #334155;
+    }
+}
+
+/* Copy all: anchored to the expanded log's top-right corner, so it sits over the panel rather than
+   in the collapsed bar, where it would be a button for something that is not on screen. */
+.status-log-copy-all {
+    position: absolute;
+    bottom: 100%;
+    right: 8px;
+    margin-bottom: 6px;
+    z-index: 1101;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #334155;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.status-log-copy-all:hover {
+    background: #e2e8f0;
+    border-color: #94a3b8;
+}
+
+.status-bar:not(.expanded) .status-log-copy-all {
+    display: none;
+}
+
+/* The log exists to be read and copied out of. */
 .status-log-expanded {
+    user-select: text;
     position: absolute;
     bottom: 100%;
     left: 0;

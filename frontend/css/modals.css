@@ -913,7 +913,7 @@
    Done keep a row to themselves, where a decision is not competing with a tool. */
 /* Assigning is not editing: the drawing tools stand down so the mode is unmistakable, the same
    way the old-plots view does it. */
-.reparcel-assign-mode .reparcel-legend-actions > *:not(.reparcel-assign-btn),
+.reparcel-assign-mode .reparcel-legend-actions > *:not(.reparcel-assign-btn):not(.reparcel-allpublic-btn),
 .reparcel-assign-mode .reparcel-draw-toolbar,
 .reparcel-assign-mode .reparcel-alg-options {
     opacity: 0.4;
@@ -1373,8 +1373,9 @@
     border-color: #9ca3af;
 }
 
-/* The assign toggle sits apart from the drawing tools: it is a different job, so the spacer
-   carries it and its shortcut to the right end of the row. */
+/* The assign toggle sits with the other tools — it is one of them — and "All public" unfolds to
+   its right only while assigning, so the shortcut appears where the mode that needs it was turned
+   on. The spacer keeps the row left-packed. */
 .reparcel-tools-spacer {
     flex: 1 1 auto;
 }

@@ -368,13 +368,89 @@ function buildRoadUnionPolygonFromSegments(segments, width) {
 }
 
 // Footprint when widths differ per segment: widths[i] pairs with segments[i].
-function buildRoadUnionPolygonWithWidths(segments, widths, fallbackWidth) {
+function buildRoadUnionPolygonWithWidths(segments, widths, fallbackWidth, segmentIds = null) {
     let combined = null;
+    const arms = [];
     (segments || []).forEach((segment, index) => {
         if (!Array.isArray(segment) || segment.length < 2) return;
         const width = (Array.isArray(widths) && Number(widths[index]) > 0) ? Number(widths[index]) : fallbackWidth;
         const poly = calculateRoadPolygon(segment, width);
         if (poly) combined = combineRoadPolygons(combined, poly);
+        const id = (Array.isArray(segmentIds) && segmentIds[index] !== undefined && segmentIds[index] !== null)
+            ? String(segmentIds[index])
+            : null;
+        arms.push({ points: segment, width, stretchId: baseStretchId(id) });
+    });
+    return addSharedNodeJointWedges(combined, arms);
+}
+
+// Which ORIGINAL stretch an arm is a piece of. splitCorridorSelfJunctions derives a split piece's id
+// as `${sourceId}~2`, `~3`… so everything before the first `~` names the stretch the pieces came
+// from — the thing that used to be one polyline.
+function baseStretchId(segmentId) {
+    if (segmentId === null || segmentId === undefined) return null;
+    const text = String(segmentId);
+    const cut = text.indexOf('~');
+    return cut === -1 ? text : text.slice(0, cut);
+}
+
+// The outer gap at a bend is filled by a joint wedge, and calculateRoadPolygonRectangular only adds
+// one at a vertex INTERIOR to a polyline. The moment topology splits a road at a junction, a bend
+// that was interior becomes the shared END of two arms — and the wedge silently disappears, taking a
+// sliver of the footprint with it. That is not cosmetic: the corridor's take is its footprint, so a
+// lost sliver re-cuts the parcels underneath, and anything standing on ground that stops being whole
+// is swept off the map. (It bit a row-house proposal several junctions away from an edited node.)
+//
+// A joint belongs to the NODE, not to whichever polyline happens to contain it, so it is rebuilt
+// here from the arms that meet — but ONLY between two pieces of the same original stretch. That
+// pair is precisely what used to be one polyline bending through an interior vertex, so restoring
+// its wedge restores the exact pre-split footprint and nothing else.
+//
+// Wedging every pair of arms at a node instead is wrong, and visibly so: at a T it fills the outer
+// corners between the branch and each half of the through road, which together pave a patch on the
+// FAR side of the through road — a phantom fourth arm, showing up as an extra strip of footway
+// sticking out of the junction. A junction's corners are the junction treatment's business; the
+// footprint only owes the road its own continuity.
+function addSharedNodeJointWedges(combined, arms) {
+    if (!combined || !Array.isArray(arms) || arms.length < 2) return combined;
+    if (typeof createJointWedgePolygon !== 'function') return combined;
+
+    const EPS = 1e-7;
+    const nodeKey = point => `${Math.round(point.lat / EPS)},${Math.round(point.lng / EPS)}`;
+    // Each arm END, with the point one step along the arm — the direction the road leaves the node.
+    const endsByNode = new Map();
+    const noteEnd = (node, neighbour, arm) => {
+        if (!node || !neighbour) return;
+        const key = nodeKey(node);
+        if (!endsByNode.has(key)) endsByNode.set(key, { node, ends: [] });
+        endsByNode.get(key).ends.push({ neighbour, width: arm.width, stretchId: arm.stretchId });
+    };
+    arms.forEach(arm => {
+        const points = arm.points;
+        noteEnd(points[0], points[1], arm);
+        noteEnd(points[points.length - 1], points[points.length - 2], arm);
+    });
+
+    endsByNode.forEach(({ node, ends }) => {
+        if (ends.length < 2) return;
+        for (let a = 0; a < ends.length - 1; a += 1) {
+            for (let b = a + 1; b < ends.length; b += 1) {
+                // Two pieces of the same stretch, or nothing. An unidentified piece cannot be shown
+                // to continue anything, so it gets no wedge either.
+                if (!ends[a].stretchId || ends[a].stretchId !== ends[b].stretchId) continue;
+                try {
+                    // prev → joint → next, exactly as the interior-vertex call reads it. The wider
+                    // arm sets the wedge, so it always reaches the outer corner that needs covering.
+                    const wedge = createJointWedgePolygon(
+                        ends[a].neighbour, node, ends[b].neighbour,
+                        Math.max(Number(ends[a].width) || 0, Number(ends[b].width) || 0)
+                    );
+                    if (!wedge) continue;
+                    const merged = combineRoadPolygons(combined, wedge);
+                    if (merged) combined = merged;
+                } catch (_) { /* a wedge is a repair, never a reason to lose the footprint */ }
+            }
+        }
     });
     return combined;
 }
@@ -389,7 +465,10 @@ function buildRoadUnionPolygonForDefinition(definition) {
     return buildRoadUnionPolygonWithWidths(
         entries.map(entry => entry.points),
         entries.map(entry => entry.width),
-        Number(definition?.width) || 10
+        Number(definition?.width) || 10,
+        // Segment ids travel too: they are how the union builder tells two pieces of one stretch
+        // (whose bend still owes a joint wedge) from two different roads meeting at a junction.
+        entries.map(entry => entry.segmentId)
     );
 }
 
@@ -428,6 +507,7 @@ function buildCorridorAcquisitionPolygon(definition) {
     const entries = corridorSegmentEntries(definition);
     const pointLists = [];
     const widths = [];
+    const stretchIds = [];
     entries.forEach(entry => {
         // Splitting happens here rather than on the definition on purpose: the union builder takes
         // plain point lists, so a segment can be cut into several without disturbing segmentIds or
@@ -435,10 +515,11 @@ function buildCorridorAcquisitionPolygon(definition) {
         levels.acquiringSpans(entry.points).forEach(span => {
             pointLists.push(span);
             widths.push(entry.width);
+            stretchIds.push(entry.segmentId);
         });
     });
     if (!pointLists.length) return null;
-    return buildRoadUnionPolygonWithWidths(pointLists, widths, Number(definition?.width) || 10);
+    return buildRoadUnionPolygonWithWidths(pointLists, widths, Number(definition?.width) || 10, stretchIds);
 }
 
 // Same footprint as GeoJSON — parent collection and drafts store this shape.
@@ -489,13 +570,14 @@ function collectParcelsIntersectingFootprint(footprintGeometry) {
     return ids;
 }
 
-// A non-blocking "Applying…" spinner shown while any applied-corridor edit re-applies. Ref-counted so
-// overlapping edits keep it up until the last one settles. It never blocks input (pointer-events:none in
+// A non-blocking "working…" spinner, shown while anything slow enough to look like a hang is under
+// way — a corridor edit re-applying, a road being built, a proposal being created. Ref-counted so
+// overlapping claims keep it up until the last one settles. It never blocks input (pointer-events:none in
 // CSS) — road-node-edit suspends its handles until the transaction settles. The CSS animation-delay means a fast
 // edit removes it before it ever becomes visible, so only genuinely slow applies flash the spinner.
 let corridorApplyIndicatorCount = 0;
 let corridorApplyIndicatorEl = null;
-function beginCorridorApplyIndicator(labelText) {
+function beginApplyIndicator(labelText) {
     corridorApplyIndicatorCount += 1;
     if (corridorApplyIndicatorEl || typeof document === 'undefined') return;
     const host = (typeof map !== 'undefined' && map && typeof map.getContainer === 'function') ? map.getContainer() : document.body;
@@ -516,7 +598,7 @@ function beginCorridorApplyIndicator(labelText) {
     // busy, which survives exitRoadDrawingMode() clearing the map container's inline cursor.
     try { document.body?.classList.add('corridor-busy'); } catch (_) { }
 }
-function endCorridorApplyIndicator() {
+function endApplyIndicator() {
     corridorApplyIndicatorCount = Math.max(0, corridorApplyIndicatorCount - 1);
     if (corridorApplyIndicatorCount > 0) return;
     if (corridorApplyIndicatorEl && corridorApplyIndicatorEl.parentNode) {
@@ -525,6 +607,11 @@ function endCorridorApplyIndicator() {
     corridorApplyIndicatorEl = null;
     try { document.body?.classList.remove('corridor-busy'); } catch (_) { }
 }
+if (typeof window !== 'undefined') {
+    window.beginApplyIndicator = beginApplyIndicator;
+    window.endApplyIndicator = endApplyIndicator;
+}
+
 // True while any corridor re-apply is in flight — the exit/deselect paths wait on this.
 function isCorridorApplyInFlight() {
     return corridorApplyIndicatorCount > 0;
@@ -577,6 +664,29 @@ function stripRoadDerivedFields(record) {
         }
     }
     return record;
+}
+
+// What ties a local record to a copy someone else holds. The server and the chain are where a
+// proposal is genuinely immutable, so once an edit changes this record's shape it has stopped being
+// the thing published under those ids and must stop saying it is. Returns what it removed, so a
+// failed edit can put the record back exactly as it was.
+const PUBLISHED_IDENTITY_KEYS = ['serverProposalId', 'chainProposalId', 'tokenId', 'onchain', 'nft', 'isMinted', 'hash'];
+
+function detachPublishedIdentity(record) {
+    const removed = {};
+    if (!record) return removed;
+    PUBLISHED_IDENTITY_KEYS.forEach(key => {
+        if (Object.prototype.hasOwnProperty.call(record, key)) {
+            removed[key] = record[key];
+            delete record[key];
+        }
+    });
+    return removed;
+}
+
+function restorePublishedIdentity(record, removed) {
+    if (!record || !removed) return;
+    Object.keys(removed).forEach(key => { record[key] = removed[key]; });
 }
 
 function makeFreshRoadSnapshot(sourceProposal, definition, options = {}) {
@@ -683,7 +793,7 @@ function rebuildRoadDefinitionFootprint(definition) {
 // Wrapper: every corridor geometry edit (node drag, bulldoze, delete, profile change) funnels through
 // the same immutable-snapshot transaction.
 async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition, options = {}) {
-    beginCorridorApplyIndicator();
+    beginApplyIndicator();
     try {
         // The record flip and its replay are ONE queued fabric mutation. Previously the editor
         // parked/inserted records before joining the queue, so a concurrent reload/apply could fold
@@ -703,7 +813,7 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition, o
             }
         });
     } finally {
-        endCorridorApplyIndicator();
+        endApplyIndicator();
     }
 }
 
@@ -761,7 +871,9 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
             sourceProposal.applied = false;
         }
         proposalStorage.save?.();
-        await ProposalManager.rebuildAppliedFabric({ _fabricQueue: options._fabricQueue === true });
+        // The edit erased the road. Its take is gone, so the parcels it crossed are derived again
+        // without it — the rest of the plan has the same inputs it had a moment ago.
+        ProposalManager._releaseUnappliedRecord?.(sourceProposal);
         try { window.ProposalSelection?.clear?.(); } catch (_) { }
         try { if (typeof hideProposalDetailsPanel === 'function') hideProposalDetailsPanel(); } catch (_) { }
         ProposalManager._refreshUIAfterProposalChange?.(null);
@@ -844,47 +956,74 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
         : [workingDefinition];
     if (!componentDefinitions.length) return false;
 
-    const replacementIds = [];
+    // The edited road is edited IN PLACE. It used to be cloned into a brand-new record with its
+    // identity deleted — proposalId, hash, serverProposalId, chainProposalId, tokenId, onchain —
+    // so that "the published source stays immutable". Nothing local is immutable: the server and
+    // the chain hold their own copies and those are the immutable ones, so there was never a local
+    // record needing protection. What the fork actually bought was a new proposal id on every node
+    // drag, a supersession chain per drag, and an editor that reasoned about provenance at all.
+    //
+    // The published POINTERS do go, on the first edit that changes the geometry: once this record's
+    // shape differs from what was uploaded or minted under that id, it is no longer that thing, and
+    // keeping the pointer would have it claim an identity it no longer has.
+    const publishedIdentity = detachPublishedIdentity(sourceProposal);
+    const extraStretchIds = [];
     const previousApplied = sourceWasApplied;
     const wasSelected = typeof window.ProposalSelection?.is === 'function'
         && window.ProposalSelection.is(sourceKey);
     try {
-        componentDefinitions.forEach((definition, index) => {
-            const replacement = makeFreshRoadSnapshot(sourceProposal, definition, {
+        writeRoadDefinition(sourceProposal, componentDefinitions[0]);
+        try { proposalStorage._indexProposal?.(sourceProposal); } catch (_) { }
+
+        // A disconnected remainder is a different road, not a different version of this one, so it
+        // is the one thing here that really does become a new record.
+        componentDefinitions.slice(1).forEach((definition, index) => {
+            const stretch = makeFreshRoadSnapshot(sourceProposal, definition, {
                 sourceProposalId: sourceKey
             });
-            // The largest stretch keeps the road's name; the split-off stubs get numbered.
-            if (componentDefinitions.length > 1 && index > 0) {
-                const baseTitle = replacement.title || replacement.name || 'Road';
-                replacement.title = `${baseTitle} (${index + 1})`;
-                if (replacement.name) replacement.name = replacement.title;
-            }
-            const id = proposalStorage.addProposal(replacement);
-            if (!id) throw new Error('Could not persist the road replacement snapshot.');
-            replacementIds.push(String(id));
-            const stored = proposalStorage.getProposal(id) || replacement;
+            const baseTitle = stretch.title || stretch.name || 'Road';
+            stretch.title = `${baseTitle} (${index + 2})`;
+            if (stretch.name) stretch.name = stretch.title;
+            const id = proposalStorage.addProposal(stretch);
+            if (!id) throw new Error('Could not persist the split-off road stretch.');
+            extraStretchIds.push(String(id));
+            const stored = proposalStorage.getProposal(id) || stretch;
             if (typeof setProposalApplied === 'function') {
                 setProposalApplied(stored, sourceWasApplied, { stamp: sourceWasApplied });
             } else {
                 stored.applied = sourceWasApplied;
             }
         });
-        if (typeof setProposalApplied === 'function') {
-            setProposalApplied(sourceProposal, false, { stamp: false });
-        } else {
-            sourceProposal.applied = false;
-        }
         proposalStorage.save?.();
 
-        const replay = await ProposalManager.rebuildAppliedFabric({ _fabricQueue: options._fabricQueue === true });
-        const failedIds = new Set((replay?.failed || [])
-            .map(entry => String(entry?.proposalId || '')));
-        if (replacementIds.some(id => failedIds.has(id))) {
-            throw new Error('The replacement could not be derived from the cadastre.');
+        // The ground the OLD position held is released, then the road derives the parcels under its
+        // new footprint. Nowhere else in the plan does anything change, so nothing else is
+        // recomputed. The record must read as unapplied while its payload comes off, or the
+        // re-derivation still counts the take it is giving up.
+        let freedByEdit = null;
+        if (sourceWasApplied) {
+            if (typeof setProposalApplied === 'function') {
+                setProposalApplied(sourceProposal, false, { stamp: false });
+            } else {
+                sourceProposal.applied = false;
+            }
+            freedByEdit = ProposalManager._undoProposalPayload?.(sourceProposal) || null;
+            const alsoDerive = (freedByEdit && freedByEdit.geometry) ? [freedByEdit] : [];
+            for (const id of [sourceKey, ...extraStretchIds]) {
+                const stored = proposalStorage.getProposal(id);
+                const derived = stored
+                    ? await ProposalManager.deriveForNewProposal(stored, {
+                        _fabricQueue: options._fabricQueue === true,
+                        supersededFootprints: alsoDerive
+                    })
+                    : null;
+                if (!derived) throw new Error('The edited road could not be derived from the cadastre.');
+            }
         }
 
-        const primaryId = replacementIds[0];
-        const storedReplacement = proposalStorage.getProposal(primaryId) || null;
+        const primaryId = sourceKey;
+        const storedReplacement = proposalStorage.getProposal(primaryId) || sourceProposal;
+        const componentCount = componentDefinitions.length;
         if (componentDefinitions.length > 1 && typeof updateStatus === 'function') {
             updateStatus(translateRoadText(
                 'panel.road.splitIntoStretches',
@@ -900,20 +1039,39 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
         }
         return String(primaryId);
     } catch (error) {
-        console.warn('[updateLocalCorridorGeometry] Replacement snapshot failed', error);
-        // A failed immutable snapshot never becomes a parked zombie record. Remove every minted
-        // replacement before restoring the source and deriving again from the cadastre.
-        replacementIds.forEach(id => { try { proposalStorage.removeProposal(id); } catch (_) { } });
+        console.warn('[updateLocalCorridorGeometry] road edit failed', error);
+        // A failed edit leaves nothing behind: the split-off stretches come off the map and out of
+        // storage, and the road goes back to the shape, identity and applied state it had.
+        extraStretchIds.forEach(id => {
+            try {
+                const stored = proposalStorage.getProposal(id);
+                if (stored) {
+                    if (typeof setProposalApplied === 'function') setProposalApplied(stored, false, { stamp: false });
+                    ProposalManager._releaseUnappliedRecord?.(stored);
+                }
+            } catch (_) { }
+            try { proposalStorage.removeProposal(id); } catch (_) { }
+        });
+        writeRoadDefinition(sourceProposal, originalDefinition);
+        restorePublishedIdentity(sourceProposal, publishedIdentity);
+        try { proposalStorage._indexProposal?.(sourceProposal); } catch (_) { }
         if (typeof setProposalApplied === 'function') {
             setProposalApplied(sourceProposal, previousApplied, { stamp: previousApplied });
         } else {
             sourceProposal.applied = previousApplied;
         }
         proposalStorage.save?.();
-        await ProposalManager.rebuildAppliedFabric?.({
-            silent: true,
-            _fabricQueue: options._fabricQueue === true
-        });
+        if (previousApplied) {
+            try {
+                await ProposalManager.deriveForNewProposal?.(sourceProposal, {
+                    _fabricQueue: options._fabricQueue === true
+                });
+            } catch (restoreError) {
+                console.error('[updateLocalCorridorGeometry] could not restore the source road', restoreError);
+            }
+        } else {
+            ProposalManager._releaseUnappliedRecord?.(sourceProposal);
+        }
         ProposalManager._refreshUIAfterProposalChange?.(sourceProposal);
         if (typeof updateStatus === 'function') {
             updateStatus(translateRoadText(
@@ -955,9 +1113,8 @@ function appliedCorridorSnapSegments() {
             if (!definition) return;
             if (!isApplied(proposal, proposal.roadProposal)) return;
             const proposalId = (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId;
-            const minted = typeof isProposalMinted === 'function' && isProposalMinted(proposal);
             (corridorCenterlineOf(definition) || []).forEach(segment => {
-                if (Array.isArray(segment) && segment.length >= 2) entries.push({ segment, proposalId, minted });
+                if (Array.isArray(segment) && segment.length >= 2) entries.push({ segment, proposalId });
             });
         });
     } catch (_) { }
@@ -982,12 +1139,33 @@ function findRoadSnapTarget(latlng) {
     if (!raw) return null;
 
     // Resolve the pixel result back to a latlng and the original return shape. Vertex snaps reuse
-    // the exact original vertex latlng; edge snaps unproject the projected pixel point.
+    // the exact original vertex latlng.
+    //
+    // Edge snaps must land ON the edge, not near it. Unprojecting the projected pixel point (what
+    // this used to do) is only pixel-accurate — a decimetre or two of real ground at a working zoom
+    // — so the new road ENDED BESIDE the one it snapped to rather than on it. Nothing crosses, so
+    // no shared node is inserted and the T is a T only on screen. Pixels still choose where along
+    // the edge the point goes; the point itself is interpolated on the geographic edge.
     const pixelToLatLng = (px) => map.layerPointToLatLng(L.point(px.x, px.y));
+    const exactPointOnEdge = (from, to, px) => {
+        const a = map.latLngToLayerPoint(from);
+        const b = map.latLngToLayerPoint(to);
+        const abX = b.x - a.x;
+        const abY = b.y - a.y;
+        const lengthSq = abX * abX + abY * abY;
+        if (lengthSq < 1e-9) return L.latLng(from.lat, from.lng);
+        let t = ((px.x - a.x) * abX + (px.y - a.y) * abY) / lengthSq;
+        t = Math.max(0, Math.min(1, t));
+        return L.latLng(from.lat + t * (to.lat - from.lat), from.lng + t * (to.lng - from.lng));
+    };
 
     if (raw.source === 'local') {
         if (raw.kind === 'edge') {
-            return { distance: raw.distance, latlng: pixelToLatLng(raw.pixel), segmentIndex: raw.segmentIndex, insertAfter: raw.insertAfter, type: 'edge' };
+            const segment = roadSegments[raw.segmentIndex] || [];
+            const from = segment[raw.insertAfter];
+            const to = segment[raw.insertAfter + 1];
+            const latlng = (from && to) ? exactPointOnEdge(from, to, raw.pixel) : pixelToLatLng(raw.pixel);
+            return { distance: raw.distance, latlng, segmentIndex: raw.segmentIndex, insertAfter: raw.insertAfter, type: 'edge' };
         }
         const vertex = roadSegments[raw.segmentIndex][raw.vertexIndex];
         return { distance: raw.distance, latlng: L.latLng(vertex.lat, vertex.lng), segmentIndex: raw.segmentIndex, vertexIndex: raw.vertexIndex, type: raw.kind, atStart: raw.atStart };
@@ -995,10 +1173,13 @@ function findRoadSnapTarget(latlng) {
 
     const entry = externalEntries[raw.externalIndex];
     if (raw.kind === 'external-edge') {
-        return { distance: raw.distance, latlng: pixelToLatLng(raw.pixel), type: 'external-edge', proposalId: entry.proposalId, minted: entry.minted };
+        const from = entry.segment[raw.insertAfter];
+        const to = entry.segment[raw.insertAfter + 1];
+        const latlng = (from && to) ? exactPointOnEdge(from, to, raw.pixel) : pixelToLatLng(raw.pixel);
+        return { distance: raw.distance, latlng, type: 'external-edge', proposalId: entry.proposalId };
     }
     const vertex = entry.segment[raw.vertexIndex];
-    return { distance: raw.distance, latlng: L.latLng(vertex.lat, vertex.lng), type: raw.kind, proposalId: entry.proposalId, minted: entry.minted };
+    return { distance: raw.distance, latlng: L.latLng(vertex.lat, vertex.lng), type: raw.kind, proposalId: entry.proposalId };
 }
 
 function clearRoadSnapMarker() {
@@ -1282,7 +1463,8 @@ function rebuildRoadGeometryFromSegments() {
     const updatedPolygon = buildRoadUnionPolygonWithWidths(
         centerlinePoints,
         centerlinePoints.map((_, index) => roadDrawingWidthForSegmentIndex(index)),
-        roadWidth
+        roadWidth,
+        roadSegmentIds
     );
     cachedCommittedPolygon = updatedPolygon;
     if (updatedPolygon) {
@@ -4434,7 +4616,8 @@ function updateRoadPreview() {
     const roadPolygonPoints = buildRoadUnionPolygonWithWidths(
         segments,
         segments.map((_, index) => roadDrawingWidthForSegmentIndex(index)),
-        roadWidth
+        roadWidth,
+        roadSegmentIds
     );
     if (roadPolygonPoints) {
         roadPreviewPolygon = L.polygon(roadPolygonPoints, {
@@ -4479,7 +4662,7 @@ function finishRoadDrawing() {
     // one existed, which reads as the tool trying to build a road that was never drawn.
     if (!hasDrawableCorridor()) return Promise.resolve(false);
     return roadFinalizationGate.run(async () => {
-        beginCorridorApplyIndicator(corridorFinalizationLabel());
+        beginApplyIndicator(corridorFinalizationLabel());
         corridorFinishProfile = { started: nowMs(), phases: [] };
         try {
             // One yield so the indicator is painted BEFORE the synchronous geometry work, which
@@ -4487,7 +4670,7 @@ function finishRoadDrawing() {
             await new Promise(resolve => setTimeout(resolve, 0));
             return await finishRoadDrawingOnce();
         } finally {
-            endCorridorApplyIndicator();
+            endApplyIndicator();
             reportCorridorFinishProfile();
         }
     });
@@ -4602,7 +4785,8 @@ async function finishRoadDrawingOnce() {
             const width = override && typeof corridorProfileWidth === 'function' ? corridorProfileWidth(override) : 0;
             return width > 0 ? width : roadWidth;
         }),
-        roadWidth
+        roadWidth,
+        segmentIds
     );
     if (!finalRoadPolygon) {
         showRoadAlert('invalid_road_shape_please_try_drawing_the_road_again', 'Invalid road shape. Please try drawing the road again.');
@@ -4773,8 +4957,16 @@ async function finishRoadDrawingOnce() {
         const dismissGhost = detachDrawnCorridorAsGhost();
         exitRoadDrawingMode();
         try {
-            // Every saved drawing is a new immutable proposal snapshot. Connectivity is geometric;
-            // touching an older road never rewrites or absorbs that older record.
+            // One drawing session, one proposal. Snapping onto an existing corridor donates an exact
+            // shared node, so the network really is connected — but the older record is left alone.
+            //
+            // NOT because absorbing it would mutate something already accepted or minted: every edit
+            // in this app saves as a NEW derived record, so that could never happen. The reasons are
+            // that each stretch carries its own offer and consent and is accepted or refused on its
+            // own, and that since the fabric became a function of the takes over a parcel
+            // (proposals/parcel-arrangement.js) shared identity buys connectivity nothing — a
+            // junction is already just two takers on the same ground. Merging stretches into one
+            // record remains an open option, not something ruled out.
             const createdId = await window.instantCreateProposalFromDraft?.(designDraftId);
             markCorridorFinishPhase('create+replay');
             if (createdId && typeof updateStatus === 'function') {

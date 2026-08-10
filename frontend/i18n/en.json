@@ -6,7 +6,7 @@
         "siteCoverage": "Site coverage (kig)",
         "gbp": "Above-ground GBP",
         "kin": "kin",
-        "floorHeightHint": "Calculated from the drawn footprints and height \u00f7 {{height}} m per storey."
+        "floorHeightHint": "Calculated from the drawn footprints and height ÷ {{height}} m per storey."
     },
     "multitab": {
         "warning": "This app is already open in another tab. To avoid losing saved proposals, changes made here won't be saved — close the other tabs and reload this one to edit.",
@@ -180,10 +180,18 @@
         "mapTooltip": "Draft — click to continue",
         "noGeometryYet": "This draft has no geometry yet — start drawing to give it one.",
         "keptAsDraft": "Could not create the object — the drawing has been reopened so you can fix it.",
+        "keptUnopened": "The design tool could not reopen this. Your work is kept as a draft — fix what it complained about and open it again.",
+        "uploadRateLimited": "Too many uploads for now. Wait a few minutes and upload the rest.",
+        "uploadRateLimitedIn": {
+            "one": "Too many uploads for now. Try the rest in about {minutes} minute.",
+            "few": "Too many uploads for now. Try the rest in about {minutes} minutes.",
+            "other": "Too many uploads for now. Try the rest in about {minutes} minutes."
+        },
         "reverted": "Restored the previous version.",
         "revertFailed": "Could not restore the previous version.",
         "geometryUpdated": "Geometry updated.",
-        "builtButParked": "The object was created but could not be placed on the map (a conflict blocked it). It is parked in your proposals list — select it there to see and apply it."
+        "builtButParked": "The object was created but could not be placed on the map (a conflict blocked it). It is parked in your proposals list — select it there to see and apply it.",
+        "builtButParkedBecause": "The object was created but could not be placed on the map: {{reason}} It is parked in your proposals list — select it there to see and apply it."
     },
     "languages": {
         "en": "English",
@@ -604,7 +612,9 @@
     "hud": {
         "totalSpentLabel": "Total Spent:",
         "statusReady": "App initialized, loading parcels...",
-        "toggle3dTooltip": "Switch to 3D"
+        "toggle3dTooltip": "Switch to 3D",
+        "copyStatusLog": "Copy all",
+        "statusLinesCopied": "{{count}} lines copied"
     },
     "panel": {
         "parcel": {
@@ -998,6 +1008,7 @@
             "closeDrawnKeep": "Keep drawing",
             "buildingTrack": "Building the track…",
             "junctionHint": "Junction — drag to move all legs · ⌥-click to disconnect",
+            "looseEndHint": "Loose end — drag onto a road or node to join it · ⌥-click to remove",
             "finishButtonShortTrack": "Finish track (F)",
             "lengthLabelTrack": "Track length:",
             "areaLabelTrack": "Track area:",
@@ -2103,7 +2114,12 @@
                 "excludedSliver": "Only a splinter of the block falls on this plot — too small to be a building.",
                 "rangeExact": "{{buildings}} buildings · delivers {{permitted}} m² of floor area",
                 "rangeBetween": "{{buildings}} buildings · guarantees {{guaranteed}} – {{permitted}} m² of floor area",
-                "rangeMax": "{{buildings}} buildings · permits 0 – {{permitted}} m² of floor area"
+                "rangeMax": "{{buildings}} buildings · permits 0 – {{permitted}} m² of floor area",
+                "rangeExactExcluded": "{{buildings}} buildings · delivers {{permitted}} m² of floor area · {{excluded}} parcel(s) left out",
+                "rangeBetweenExcluded": "{{buildings}} buildings · guarantees {{guaranteed}} – {{permitted}} m² of floor area · {{excluded}} parcel(s) left out",
+                "rangeMaxExcluded": "{{buildings}} buildings · permits 0 – {{permitted}} m² of floor area · {{excluded}} parcel(s) left out",
+                "excludedNoMassing": "The building does not reach this plot — the setback, or the shape of the block, leaves it outside. Nothing is built here.",
+                "rangeNoneExcluded": "No buildings — {{excluded}} parcel(s) left out"
             },
             "handles": {
                 "gap": "Drag to move gap",
@@ -2375,7 +2391,7 @@
                 "other": "{{count}} owners"
             },
             "cancel": "Cancel",
-            "derivedGroundBlocked": "A land readjustment must stand on cadastral parcels. Unapply the proposal holding this ground first.",
+            "takenGroundBlocked": "A land readjustment cannot take ground another proposal already holds. Deselect it, or unapply that proposal first.",
             "discardTitle": "Discard these changes?",
             "discardMessage": "The edits you made here have not been saved to the proposal. Closing now discards them.",
             "discardConfirm": "Discard changes",
@@ -2897,7 +2913,8 @@
             "representationBuildOutTooltip": "Build-out — one example of what could actually be built under the rule",
             "representationBoth": "Both",
             "representationBothTooltip": "Both — the example build-out standing inside the permitted volume",
-            "reroll": "Randomize every example build-out. Changes nothing in the proposals."
+            "reroll": "Randomize every example build-out. Changes nothing in the proposals.",
+            "ineligibleParcels": "Non-buildable plots"
         },
         "overlay": {
             "rendering": "Rendering…",

@@ -523,3 +523,25 @@ describe('refusals', () => {
         expect(() => arrangement.arrangementOf(null, PARCEL_ID, [EAST_WEST])).toThrow(/no geometry/);
     });
 });
+
+// A scoped re-derivation removes the difference between what the arrangement says a parcel is made
+// of and what is on the map. Other things mint derived ids under the same parcel — a readjustment's
+// plots, a carved building host — and deleting those would take a standing plan off the map the
+// moment a road was drawn across the same ground. So the arrangement has to be able to recognise
+// its own work.
+describe('recognising the arrangement\'s own pieces', () => {
+    it('recognises an id it minted itself, road or remainder', () => {
+        const { pieces } = arrangement.arrangementOf(PARCEL, PARCEL_ID, [EAST_WEST]);
+        expect(pieces.length).toBeGreaterThan(1);
+        pieces.forEach(piece => expect(arrangement.isPieceId(piece.id)).toBe(true));
+    });
+
+    it('does not claim a plot, a legacy child or a cadastral parcel', () => {
+        expect(arrangement.isPieceId('HR-1-100')).toBe(false);            // the cadastre itself
+        expect(arrangement.isPieceId('HR-1-100#5-2')).toBe(false);        // a readjustment plot
+        expect(arrangement.isPieceId('HR-1-100#c-proposal-7')).toBe(false); // a carved host
+        expect(arrangement.isPieceId('HR-339270-824_proposal_9')).toBe(false);
+        expect(arrangement.isPieceId(null)).toBe(false);
+        expect(arrangement.isPieceId('')).toBe(false);
+    });
+});

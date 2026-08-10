@@ -177,13 +177,16 @@ describe('Overture 3D provider — near()', () => {
     it('scopes to the config REGION, not the city id, so cities can share one ingest', async () => {
         const pool = createMockPool();
         // Šibenik has no ingest of its own: it reads the Zadar–Šibenik–Knin rows already pulled for
-        // the railway reconstructions. Passing the city id here would query an empty row set and the
-        // city would silently render with no buildings at all.
+        // the railway reconstructions — or, on a machine that pulled the whole country, the Croatian
+        // ones. Naming a single label is what let it query an empty row set and render a city with
+        // no buildings at all, so it walks the ladder instead.
         const provider = createOvertureProvider(pool, 'sibenik');
 
         await provider.near({ type: 'Point', coordinates: [15.8896, 43.7350] }, 300);
 
-        expect(pool.getCalls()[0].params[1]).toBe('sjeverna-dalmacija');
+        // The mock answers nothing, so every rung is tried, narrowest first.
+        expect(pool.getCalls().map(call => call.params[1]))
+            .toEqual(['sibenik', 'sjeverna-dalmacija', 'croatia', null]);
         expect(OVERTURE_CITIES.sibenik.region).toBe('sjeverna-dalmacija');
     });
 
@@ -244,13 +247,14 @@ describe('Overture trees provider — near()', () => {
         expect(params[2]).toBe(300);
     });
 
-    it('scopes to the config REGION, not the city id', async () => {
+    it('walks the same city → region → country → planet ladder as the buildings', async () => {
         const pool = createMockPool();
         const provider = createOvertureTreesProvider(pool, 'sibenik');
 
         await provider.near({ type: 'Point', coordinates: [15.8896, 43.7350] }, 300);
 
-        expect(pool.getCalls()[0].params[1]).toBe('sjeverna-dalmacija');
+        expect(pool.getCalls().map(call => call.params[1]))
+            .toEqual(['sibenik', 'sjeverna-dalmacija', 'croatia', null]);
     });
 
     it('returns trees as [lng, lat] pairs', async () => {
@@ -319,5 +323,76 @@ describe('Overture trees provider — near()', () => {
         const treesSql = treesPool.getCalls()[0].sql;
         expect(treesSql).toContain('ST_Envelope(ST_Buffer(q.g::geography, $3)::geometry)');
         expect(treesSql.indexOf('t.geom && box.b')).toBeLessThan(treesSql.indexOf('ST_DWithin(t.geom::geography'));
+    });
+});
+
+// Šibenik, Split and Belgrade have their stock in the shared Overture table, but the provider
+// exposed only near() — the 3D meshes. Everything that reads 2D FOOTPRINTS was therefore dead in
+// those cities: the urban rule's "based on existing buildings" mode, and, more consequentially, the
+// frontend's footprint POOL — what a road reads to decide which buildings it cuts, tunnels under or
+// demolishes. The pool was filled from the GDI bbox layer, which is the ZAGREB survey, so in Šibenik
+// it was always empty and a road could never find a building to demolish.
+describe('Overture provider — footprints()', () => {
+    const square = {
+        type: 'Polygon',
+        coordinates: [[[15.89, 43.73], [15.8901, 43.73], [15.8901, 43.7301], [15.89, 43.7301], [15.89, 43.73]]]
+    };
+    const bbox = {
+        type: 'Polygon',
+        coordinates: [[[15.88, 43.72], [15.90, 43.72], [15.90, 43.74], [15.88, 43.74], [15.88, 43.72]]]
+    };
+
+    it('exists at all — a city with Overture stock can serve its footprints', () => {
+        expect(typeof createOvertureProvider(createMockPool(), 'sibenik').footprints).toBe('function');
+    });
+
+    it('asks by region, and only for buildings mostly inside the query area', async () => {
+        const pool = createMockPool();
+        await createOvertureProvider(pool, 'sibenik').footprints(bbox);
+
+        const { sql } = pool.getCalls()[0];
+        // Narrowest rung first; the mock answers nothing, so it widens all the way to the planet.
+        expect(pool.getCalls().map(call => call.params[1]))
+            .toEqual(['sibenik', 'sjeverna-dalmacija', 'croatia', null]);
+        // The && keeps it on the GIST index; the ratio is what "mostly inside" means, and being a
+        // ratio it never leaves the server as an absolute area, so the projection cancels.
+        expect(sql).toContain('b.geom && q.g');
+        expect(sql).toContain('ST_Area(ST_Intersection(b.geom, q.g)) >= 0.5 * ST_Area(b.geom)');
+    });
+
+    it('reports a MEASURED height only, and floors separately', async () => {
+        const pool = createMockPool();
+        pool.setResult({
+            rows: [
+                { id: 'a', height_m: 24, num_floors: null, geometry: square },
+                { id: 'b', height_m: null, num_floors: 5, geometry: square },
+                { id: 'c', height_m: null, num_floors: null, geometry: square }
+            ]
+        });
+        const { footprints, count, source } = await createOvertureProvider(pool, 'sibenik').footprints(bbox);
+
+        expect(source).toBe('overture-footprints');
+        expect(count).toBe(3);
+        // Not effectiveHeight: a guessed height must never be reported as a measurement. A consumer
+        // that wants one can derive it from the floors, which are right here.
+        expect(footprints.map(f => f.height_m)).toEqual([24, null, null]);
+        expect(footprints.map(f => f.floors)).toEqual([null, 5, null]);
+        expect(footprints[0].id).toBe('a');
+        expect(footprints[0].geometry).toEqual(square);
+    });
+
+    it('says when the cap bound before the area did', async () => {
+        const pool = createMockPool();
+        pool.setResult({ rows: [{ id: 'x', height_m: null, num_floors: null, geometry: square }] });
+        const small = await createOvertureProvider(pool, 'sibenik').footprints(bbox);
+        expect(small.truncated).toBe(false);
+
+        const capped = createMockPool();
+        capped.setResult({
+            rows: Array.from({ length: 4000 }, (_, i) => ({ id: `b${i}`, height_m: null, num_floors: null, geometry: square }))
+        });
+        // A caller that believed a capped answer covered its area would stop fetching ground it
+        // never loaded, and the buildings in the hole would never be detected.
+        expect((await createOvertureProvider(capped, 'sibenik').footprints(bbox)).truncated).toBe(true);
     });
 });

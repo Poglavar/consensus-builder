@@ -408,67 +408,43 @@ function getVisibleNonCorridorParcels() {
 }
 
 function buildNeighborMapFromEdges(parcels) {
-    // Quantization to 1 cm to make keys stable in HTRS96
-    const quantizeFactor = 100; // 1 cm
-    const minEdgeLenMeters = 0.1; // ignore edges shorter than 10 cm
-    const edgeMap = new Map(); // key -> { ids: Set<string>, len: number }
     const idToLayer = new Map();
 
-    function keyForEdge(p, q) {
-        const x1 = Math.round(p[0] * quantizeFactor), y1 = Math.round(p[1] * quantizeFactor);
-        const x2 = Math.round(q[0] * quantizeFactor), y2 = Math.round(q[1] * quantizeFactor);
-        const a = x1 === x2 ? (y1 <= y2) : (x1 < x2);
-        return a ? `${x1},${y1}|${x2},${y2}` : `${x2},${y2}|${x1},${y1}`;
-    }
-
-    function addEdgesForParcel(layer) {
-        const feature = layer.feature;
+    // Adjacency is a GEOMETRIC question — do these two outlines run along each other — answered by
+    // the pure, unit-tested parcels/parcel-adjacency.js. It used to be answered by hashing vertex
+    // PAIRS into edge keys, which quietly said "not neighbours" whenever the two sides split the
+    // same boundary differently. Our own corridor cuts do exactly that: a remainder comes back from
+    // turf.difference with fresh vertices along a boundary its uncut neighbour still stores whole.
+    // The flood fill then could not cross, and "select whole block" returned a ring with the middle
+    // of the block left out.
+    const adjacency = (typeof window !== 'undefined' && window.__parcelAdjacency)
+        ? window.__parcelAdjacency
+        : null;
+    const forAdjacency = [];
+    parcels.forEach(layer => {
+        const feature = layer && layer.feature;
         const id = parcelIdFromLayer(feature);
         if (!id) return;
         idToLayer.set(id, layer);
-        // Get exterior ring in HTRS96
-        const ring = getHtrsCoordinates(feature);
-        if (!Array.isArray(ring) || ring.length < 2) return;
-        // Some datasets repeat the first vertex as last; iterate pairs including wrap
-        const n = ring.length - 1; // if closed, last equals first; this still covers all edges once
-        for (let i = 0; i < n; i++) {
-            const p = ring[i];
-            const q = ring[i + 1];
-            if (!Array.isArray(p) || !Array.isArray(q)) continue;
-            const dx = q[0] - p[0];
-            const dy = q[1] - p[1];
-            const len = Math.hypot(dx, dy);
-            if (!(len > minEdgeLenMeters)) continue;
-            const k = keyForEdge(p, q);
-            let rec = edgeMap.get(k);
-            if (!rec) {
-                rec = { ids: new Set(), len };
-                edgeMap.set(k, rec);
-            }
-            rec.ids.add(id);
-        }
-    }
+        const rings = htrsRingsOf(feature);
+        if (rings.length) forAdjacency.push({ id, rings });
+    });
 
-    parcels.forEach(addEdgesForParcel);
-
-    // Build neighbor map: edges shared by exactly two parcels (sufficient edge length) form adjacency
     const neighborMap = new Map(); // id -> Array<layer>
     function ensureList(id) {
         if (!neighborMap.has(id)) neighborMap.set(id, []);
         return neighborMap.get(id);
     }
-    edgeMap.forEach((rec) => {
-        if (rec.ids.size === 2) {
-            const ids = Array.from(rec.ids);
-            const a = ids[0];
-            const b = ids[1];
-            const la = idToLayer.get(a);
-            const lb = idToLayer.get(b);
-            if (la && lb) {
-                ensureList(a).push(lb);
-                ensureList(b).push(la);
-            }
-        }
+    if (!adjacency) {
+        console.error('[parcel-blocks] parcel-adjacency.js is not loaded; blocks cannot be detected');
+        return { neighborMap, idToLayer };
+    }
+    adjacency.neighborPairs(forAdjacency).forEach(pair => {
+        const la = idToLayer.get(pair.a);
+        const lb = idToLayer.get(pair.b);
+        if (!la || !lb) return;
+        ensureList(pair.a).push(lb);
+        ensureList(pair.b).push(la);
     });
 
     // Handle containment: connect parcels fully inside another (assuming both are non-road).
@@ -2515,6 +2491,33 @@ function getHtrsCoordinates(feature) {
     // Convert WGS84 [lng, lat] to HTRS96 [easting, northing]
     return ringCoords.map(coord => wgs84ToHTRS96(coord[1], coord[0]));
 }
+
+// EVERY ring of a parcel in HTRS96 metres — each polygon of a MultiPolygon, and each hole.
+//
+// getHtrsCoordinates above returns only the exterior ring of the first polygon, which is all the
+// old edge-key adjacency ever looked at. A parcel loses the neighbours it has along a dropped ring,
+// and a parcel wrapped around another loses them along the hole that IS their shared boundary.
+function htrsRingsOf(feature) {
+    const geometry = feature && feature.geometry;
+    if (!geometry || !Array.isArray(geometry.coordinates)) return [];
+    const polygons = geometry.type === 'Polygon'
+        ? [geometry.coordinates]
+        : (geometry.type === 'MultiPolygon' ? geometry.coordinates : []);
+    const rings = [];
+    polygons.forEach(polygon => {
+        (Array.isArray(polygon) ? polygon : []).forEach(ring => {
+            if (!Array.isArray(ring) || ring.length < 2) return;
+            const converted = [];
+            ring.forEach(coord => {
+                if (!Array.isArray(coord) || coord.length < 2) return;
+                converted.push(wgs84ToHTRS96(coord[1], coord[0]));
+            });
+            if (converted.length >= 2) rings.push(converted);
+        });
+    });
+    return rings;
+}
+window.htrsRingsOf = htrsRingsOf;
 
 // Add this at the top with other layer variables
 let blockPolygonsLayer = null;

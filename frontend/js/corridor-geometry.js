@@ -130,56 +130,94 @@
             const key = corridorTunnelEdgeKey(p, q);
             return !!key && protectedEdgeKeys.has(key);
         };
-        let changed = true;
-        let guard = 0;
-        while (changed && guard++ < 200) {
-            changed = false;
-            outer:
-            for (let i = 0; i < segments.length; i += 1) {
-                for (let j = i; j < segments.length; j += 1) {
-                    const A = segments[i];
-                    const B = segments[j];
-                    for (let ai = 0; ai < A.length - 1; ai += 1) {
-                        // Within one polyline, adjacent edges already share their ordinary vertex.
-                        // Start two edges later and also skip the first/last pair of a closed loop:
-                        // those are neighbours across the array seam, not a self-intersection.
-                        const firstBi = i === j ? ai + 2 : 0;
-                        for (let bi = firstBi; bi < B.length - 1; bi += 1) {
-                            if (i === j && ai === 0 && bi === B.length - 2 && near(B[0], B[B.length - 1])) {
-                                continue;
-                            }
-                            const x = planarSegmentIntersection(A[ai], A[ai + 1], B[bi], B[bi + 1]);
-                            if (!x) continue;
-                            const insertA = !near(x, A[ai]) && !near(x, A[ai + 1])
-                                && !isProtectedEdge(A[ai], A[ai + 1]);
-                            const insertB = !near(x, B[bi]) && !near(x, B[bi + 1])
-                                && !isProtectedEdge(B[bi], B[bi + 1]);
-                            if (!insertA && !insertB) continue;
+        // The level a stretch runs at (corridor-elevation.md): 0 unless its points say otherwise.
+        // A RAMP — a stretch whose two ends sit at different levels — has no single level, and a
+        // vertex dropped into the middle of one would have to invent the level it sits at, so a ramp
+        // is never noded at all. Two flat stretches meet only when they are on the same level;
+        // otherwise one runs over or under the other, which is a grade separation, not a junction.
+        const levelOf = point => (point && typeof point.level === 'number' && Number.isFinite(point.level)) ? point.level : 0;
+        const flatLevelOf = (p, q) => {
+            const a = levelOf(p);
+            const b = levelOf(q);
+            return a === b ? a : null;
+        };
+        // Where a crossing point sits along an edge, 0 at its start and 1 at its end — the order the
+        // insertions have to go in when one edge is crossed more than once.
+        const paramOn = (a, b, p) => {
+            const dx = b.lng - a.lng;
+            const dy = b.lat - a.lat;
+            const lengthSq = dx * dx + dy * dy;
+            if (lengthSq < 1e-24) return 0;
+            return ((p.lng - a.lng) * dx + (p.lat - a.lat) * dy) / lengthSq;
+        };
 
-                            // Inserting the crossing vertex does NOT change what the segment IS —
-                            // the id must survive, because per-segment cross-section overrides are
-                            // keyed by it. Nulling it here would orphan a seeded segment's profile
-                            // at the junction step.
-                            if (A === B) {
-                                // Both insertions target one array. Apply the later splice first so
-                                // the earlier edge index cannot move underneath us.
-                                const insertions = [];
-                                if (insertA) insertions.push(ai + 1);
-                                if (insertB) insertions.push(bi + 1);
-                                insertions.sort((a, b) => b - a).forEach(index => {
-                                    A.splice(index, 0, { lat: x.lat, lng: x.lng });
-                                });
-                            } else {
-                                if (insertA) A.splice(ai + 1, 0, { lat: x.lat, lng: x.lng });
-                                if (insertB) B.splice(bi + 1, 0, { lat: x.lat, lng: x.lng });
-                            }
-                            changed = true;
-                            break outer;
+        // Collect every crossing in ONE sweep, then splice. This used to restart the whole scan after
+        // each single insertion, capped at 200 restarts — which is O(edges² × crossings) and, worse,
+        // silently STOPS at the 200th junction. A town's road network has more than that, and the
+        // ones past the cap would have been left unnoded with no error anywhere. Splicing changes
+        // only how the same locus is written down, never where it runs, so no insertion can create a
+        // crossing another insertion would have to find: one sweep sees them all.
+        const pending = segments.map(() => new Map());
+        const note = (segIndex, edgeIndex, point, t, level) => {
+            const edges = pending[segIndex];
+            if (!edges.has(edgeIndex)) edges.set(edgeIndex, []);
+            edges.get(edgeIndex).push({ point, t, level });
+        };
+
+        for (let i = 0; i < segments.length; i += 1) {
+            for (let j = i; j < segments.length; j += 1) {
+                const A = segments[i];
+                const B = segments[j];
+                if (!Array.isArray(A) || !Array.isArray(B)) continue;
+                for (let ai = 0; ai < A.length - 1; ai += 1) {
+                    // Within one polyline, adjacent edges already share their ordinary vertex.
+                    // Start two edges later and also skip the first/last pair of a closed loop:
+                    // those are neighbours across the array seam, not a self-intersection.
+                    const firstBi = i === j ? ai + 2 : 0;
+                    for (let bi = firstBi; bi < B.length - 1; bi += 1) {
+                        if (i === j && ai === 0 && bi === B.length - 2 && near(B[0], B[B.length - 1])) {
+                            continue;
                         }
+                        const x = planarSegmentIntersection(A[ai], A[ai + 1], B[bi], B[bi + 1]);
+                        if (!x) continue;
+                        // A grade separation is the sanctioned way for two stretches to cross
+                        // WITHOUT meeting. Neither side gets a node then — noding only the
+                        // unprotected side (what this used to do) left a stray vertex under the
+                        // bridge, which the junction renderer reads as a T-joint.
+                        if (isProtectedEdge(A[ai], A[ai + 1]) || isProtectedEdge(B[bi], B[bi + 1])) continue;
+                        const level = flatLevelOf(A[ai], A[ai + 1]);
+                        if (level === null || level !== flatLevelOf(B[bi], B[bi + 1])) continue;
+                        // Inserting the crossing vertex does NOT change what the segment IS — the id
+                        // must survive, because per-segment cross-section overrides are keyed by it.
+                        // Nulling it here would orphan a seeded segment's profile at the junction step.
+                        if (!near(x, A[ai]) && !near(x, A[ai + 1])) note(i, ai, x, paramOn(A[ai], A[ai + 1], x), level);
+                        if (!near(x, B[bi]) && !near(x, B[bi + 1])) note(j, bi, x, paramOn(B[bi], B[bi + 1], x), level);
                     }
                 }
             }
         }
+
+        pending.forEach((edges, segIndex) => {
+            const segment = segments[segIndex];
+            if (!edges.size || !Array.isArray(segment)) return;
+            // Later edges first, so an earlier edge's index cannot move underneath the next splice.
+            [...edges.keys()].sort((a, b) => b - a).forEach(edgeIndex => {
+                const kept = [];
+                edges.get(edgeIndex)
+                    .slice()
+                    .sort((p, q) => p.t - q.t)
+                    .forEach(candidate => {
+                        // Two roads meeting the same edge at the same spot are ONE node, not two.
+                        if (kept.some(existing => near(existing, candidate.point))) return;
+                        // A node on a stretch that runs below or above the surface belongs to that
+                        // level, exactly like the vertices it sits between.
+                        kept.push(candidate.level
+                            ? { lat: candidate.point.lat, lng: candidate.point.lng, level: candidate.level }
+                            : { lat: candidate.point.lat, lng: candidate.point.lng });
+                    });
+                if (kept.length) segment.splice(edgeIndex + 1, 0, ...kept);
+            });
+        });
     }
 
     const CORRIDOR_NODE_EPS = 1e-7;
@@ -214,7 +252,13 @@
     //
     // `segmentProfiles` is mutated deliberately. A split stretch gets a stable derived id and a clone
     // of the source override, so graph normalization cannot repaint part of a mixed-width network.
-    function splitCorridorSelfJunctions(segments, segmentIds, segmentProfiles = null) {
+    //
+    // `externalNodeKeys` carries the node keys of corridors OUTSIDE this set — a road belonging to
+    // another proposal. Its node counts here exactly as a node of a second polyline in this set
+    // does, so a through-road splits at a T made by someone else's road just as it does at one made
+    // by its own branch. Without it, a network-wide noding pass would leave every cross-record
+    // junction sitting mid-segment, un-grabbable and width-edited as one arm.
+    function splitCorridorSelfJunctions(segments, segmentIds, segmentProfiles = null, externalNodeKeys = null) {
         if (!Array.isArray(segments)) return { segments: [], segmentIds: [] };
         const ids = Array.isArray(segmentIds) ? segmentIds : [];
         const usedIds = new Set(ids.filter(id => id !== null && id !== undefined).map(String));
@@ -254,7 +298,9 @@
         // X). Count the distinct polylines each key touches once, up front, so the per-polyline walk
         // below can split a through-road where another road meets its mid-span — not only at a
         // polyline's own self-crossings. (Repeats within one polyline are still caught per-segment.)
-        const crossPolylineKeys = new Set();
+        const crossPolylineKeys = new Set(
+            (externalNodeKeys && typeof externalNodeKeys.forEach === 'function') ? externalNodeKeys : []
+        );
         {
             const keyToSegments = new Map();
             segments.forEach((rawSegment, segmentIndex) => {
@@ -307,8 +353,19 @@
             // Every occurrence of one graph node must be byte-for-byte identical. This also heals
             // old near-equal vertices (within the same 1e-7 tolerance every consumer already uses).
             const normalized = base.map(point => {
-                const representative = representatives.get(corridorNodeKey(point));
-                return representative ? { lat: representative.lat, lng: representative.lng } : { lat: point.lat, lng: point.lng };
+                const representative = representatives.get(corridorNodeKey(point)) || point;
+                const healed = { lat: representative.lat, lng: representative.lng };
+                // The vertical profile rides on the point (corridor-elevation.md), and the
+                // representative is only a canonical POSITION. Rebuilding a bare {lat,lng} here
+                // returned an underground stretch to the surface — and a surfaced tunnel starts
+                // taking land again. Where a level was recorded, it survives the split.
+                const level = (typeof point.level === 'number' && Number.isFinite(point.level))
+                    ? point.level
+                    : ((typeof representative.level === 'number' && Number.isFinite(representative.level))
+                        ? representative.level
+                        : null);
+                if (level !== null) healed.level = level;
+                return healed;
             });
             const pieces = [];
 
@@ -351,6 +408,78 @@
     function normalizeCorridorGraph(segments, segmentIds, protectedEdgeKeys = null, segmentProfiles = null) {
         insertCorridorCrossingNodes(segments, segmentIds, protectedEdgeKeys);
         return splitCorridorSelfJunctions(segments, segmentIds, segmentProfiles);
+    }
+
+    // The same topology boundary, applied to a NETWORK of corridors that belong to different records.
+    //
+    // normalizeCorridorGraph only ever saw one corridor's own strokes, so two roads drawn as two
+    // proposals could cross with no node in either, or — after snapping — with a node in the new
+    // road only, sitting on the old road's edge. The junction was then real only to the renderer
+    // (buildCrossCorridorJunctionTreatments paints the zebras from a render-only augmentation), and
+    // the node editor, which reads one record, could move one road's leg out of the crossing and
+    // leave the other behind. Here a crossing between two records is exactly the crossing it would
+    // be inside one: both sides get the vertex, and both sides split at it.
+    //
+    // `entries` are `{ segments, segmentIds, segmentProfiles, protectedEdgeKeys }`, mutated in place.
+    // A caller that wants a corridor to contribute its geometry without being rewritten can pass
+    // CLONED arrays for it and discard its result — but note that a one-sided junction is not a
+    // junction: the other road ends up with a vertex on a line that has no vertex back.
+    //
+    // Returns one `{ changed }` per entry, in order. Convergent: a second run changes nothing.
+    function normalizeCorridorNetwork(entries) {
+        const list = (Array.isArray(entries) ? entries : []).filter(
+            entry => entry && Array.isArray(entry.segments) && entry.segments.length
+        );
+        const signatureOf = entry => {
+            try {
+                return JSON.stringify({
+                    segments: entry.segments,
+                    segmentIds: entry.segmentIds || null,
+                    segmentProfiles: entry.segmentProfiles || null
+                });
+            } catch (_) { return null; }
+        };
+        const before = list.map(signatureOf);
+        if (!list.length) return [];
+
+        // One flat view over every corridor's polylines. The arrays ARE the owners' arrays, so the
+        // crossing-node splices land in the right record without any mapping back.
+        const flat = [];
+        list.forEach(entry => entry.segments.forEach(segment => {
+            if (Array.isArray(segment) && segment.length >= 2) flat.push(segment);
+        }));
+        const protectedEdgeKeys = new Set();
+        list.forEach(entry => {
+            const keys = entry.protectedEdgeKeys;
+            if (keys && typeof keys.forEach === 'function') keys.forEach(key => { if (key) protectedEdgeKeys.add(key); });
+        });
+        insertCorridorCrossingNodes(flat, flat.map(() => null), protectedEdgeKeys);
+
+        // Every node key each corridor now carries. Read for ALL of them before splitting any:
+        // splitting never moves or drops a vertex, so the keys are the same either way, and taking
+        // them up front keeps the pass independent of the order the corridors are visited in.
+        const keysOf = segments => {
+            const keys = new Set();
+            (segments || []).forEach(segment => (Array.isArray(segment) ? segment : []).forEach(point => {
+                const key = corridorNodeKey(point);
+                if (key) keys.add(key);
+            }));
+            return keys;
+        };
+        const perCorridorKeys = list.map(entry => keysOf(entry.segments));
+
+        list.forEach((entry, index) => {
+            const external = new Set();
+            perCorridorKeys.forEach((keys, other) => {
+                if (other !== index) keys.forEach(key => external.add(key));
+            });
+            splitCorridorSelfJunctions(entry.segments, entry.segmentIds, entry.segmentProfiles || null, external);
+        });
+
+        return list.map((entry, index) => ({
+            entry,
+            changed: before[index] === null || signatureOf(entry) !== before[index]
+        }));
     }
 
     // Normalize a stored definition without touching its footprint. Splitting a centerline at its
@@ -979,6 +1108,7 @@
         insertCorridorCrossingNodes,
         splitCorridorSelfJunctions,
         normalizeCorridorGraph,
+        normalizeCorridorNetwork,
         normalizeCorridorDefinitionTopology,
         removeCorridorEdge,
         removeCorridorNodes,
@@ -996,6 +1126,7 @@
         window.insertCorridorCrossingNodes = insertCorridorCrossingNodes;
         window.splitCorridorSelfJunctions = splitCorridorSelfJunctions;
         window.normalizeCorridorGraph = normalizeCorridorGraph;
+        window.normalizeCorridorNetwork = normalizeCorridorNetwork;
         window.normalizeCorridorDefinitionTopology = normalizeCorridorDefinitionTopology;
         window.segmentsIntersect = segmentsIntersect;
         window.polylineHasSelfIntersection = polylineHasSelfIntersection;

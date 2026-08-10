@@ -46,7 +46,10 @@ function bootWithOverride(cityConfig) {
 
 describe('data source backend override', () => {
     it('routes GDI building footprints through the backend named in the URL', () => {
-        const { window, stored } = bootWithOverride({ buildings: { source: 'backend' } });
+        // A city that actually has GDI footprints — the Zagreb survey. The fixture used to name a
+        // source of 'backend', which is not a building source at all; GDI requests are now refused
+        // outside the cities that have GDI, so the placeholder stopped producing a request.
+        const { window, stored } = bootWithOverride({ buildings: { source: 'gdi' } });
 
         expect(window.buildBuildingRequestParams('1,2,3,4', 'gdi').url)
             .toBe('http://localhost:4179/buildings?bbox=1%2C2%2C3%2C4&source=gdi');

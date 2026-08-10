@@ -541,6 +541,21 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
     cursor: pointer;
 }
 
+/* A toggle that shares its row with nothing takes the panel's whole width, so its label reads on one
+   line instead of being squeezed into a column the width of the checkbox plus a word. */
+#three-container .three-mode-wide-row {
+    width: 100%;
+}
+
+#three-container .three-mode-wide-toggle {
+    width: 100%;
+}
+
+#three-container .three-mode-wide-toggle .three-mode-emphasis-label {
+    flex: 1 1 auto;
+    white-space: nowrap;
+}
+
 #three-container .three-mode-trees-toggle input[type="checkbox"] {
     accent-color: #3a6b35;
     cursor: pointer;

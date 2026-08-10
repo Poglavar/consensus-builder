@@ -158,12 +158,12 @@ describe('the spinner covers the whole run', () => {
     })();
 
     it('starts before any of the work', () => {
-        expect(wrapper.indexOf('beginCorridorApplyIndicator'))
+        expect(wrapper.indexOf('beginApplyIndicator'))
             .toBeLessThan(wrapper.indexOf('finishRoadDrawingOnce'));
     });
 
     it('ends however the run ends — every early return in there is a return, not a throw', () => {
-        expect(wrapper).toMatch(/finally \{[\s\S]*endCorridorApplyIndicator\(\);[\s\S]*\}/);
+        expect(wrapper).toMatch(/finally \{[\s\S]*endApplyIndicator\(\);[\s\S]*\}/);
     });
 
     it('yields once so the indicator paints before the synchronous geometry work', () => {
@@ -212,7 +212,7 @@ describe('the indicator itself', () => {
         env.document.body.appendChild = child => { host.children.push(child); child.parentNode = host; };
         // eslint-disable-next-line no-new-func
         indicator = new Function('document', 'map', 'translateRoadText',
-            `${source}; return { begin: beginCorridorApplyIndicator, end: endCorridorApplyIndicator };`
+            `${source}; return { begin: beginApplyIndicator, end: endApplyIndicator };`
         )(env.document, { getContainer: () => host }, (key, fallback) => fallback);
         host.appendChild = child => { host.children.push(child); child.parentNode = host; };
     });
@@ -286,7 +286,7 @@ describe('finishing an empty drawing does nothing at all', () => {
         const start = roadSource.indexOf('function finishRoadDrawing()');
         const wrapper = roadSource.slice(start, roadSource.indexOf('\n}', start) + 2);
         expect(wrapper.indexOf('hasDrawableCorridor()'))
-            .toBeLessThan(wrapper.indexOf('beginCorridorApplyIndicator'));
+            .toBeLessThan(wrapper.indexOf('beginApplyIndicator'));
         expect(wrapper).toMatch(/if \(!hasDrawableCorridor\(\)\) return/);
     });
 

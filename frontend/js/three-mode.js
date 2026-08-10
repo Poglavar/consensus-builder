@@ -125,6 +125,9 @@
     let proposalDraftGroup = null; // source-vs-draft comparison overlay; never mutates proposal state
     let latestProposalDraftPreviewDetail = null;
     let treesEnabled = true; // user toggle (default ON); real value loaded from storage on 3D init
+    // Plots an applied urban rule left out, drawn as see-through volumes. Default OFF: it answers
+    // "why is there nothing on this plot", it is not part of the plan being looked at.
+    let showIneligibleParcels = false;
 
     // Checkbox listeners to sync 3D buildings with sidebar
     let onShowExistingBuildingsChange = null;
@@ -995,6 +998,29 @@
         decorTogglesEl = document.createElement('div');
         decorTogglesEl.className = 'three-mode-decor-toggles';
         buildingModeControlsEl.appendChild(decorTogglesEl);
+
+        // Plots an applied urban rule left out — see-through volumes showing what each would carry.
+        // Not a city scenery layer, so it is not fetched from /decor/layers: every city can have one.
+        // Its own row with nothing beside it, so the label uses the panel's full width instead of
+        // wrapping into a two-line stub.
+        const ineligibleRow = document.createElement('div');
+        ineligibleRow.className = 'three-mode-trees-row three-mode-wide-row';
+        const ineligibleLabel = document.createElement('label');
+        ineligibleLabel.className = 'three-mode-trees-toggle three-mode-wide-toggle';
+        const ineligibleBox = document.createElement('input');
+        ineligibleBox.type = 'checkbox';
+        ineligibleBox.checked = showIneligibleParcels;
+        ineligibleBox.addEventListener('change', () => {
+            showIneligibleParcels = ineligibleBox.checked;
+            try { rebuild3DBuildingsOnly(); } catch (_) { }
+        });
+        const ineligibleText = document.createElement('span');
+        ineligibleText.className = 'three-mode-emphasis-label';
+        ineligibleText.textContent = threeI18n('threeMode.controls.ineligibleParcels', 'Non-buildable plots');
+        ineligibleLabel.appendChild(ineligibleBox);
+        ineligibleLabel.appendChild(ineligibleText);
+        ineligibleRow.appendChild(ineligibleLabel);
+        buildingModeControlsEl.appendChild(ineligibleRow);
 
         // Show-all reset, only visible while a parcel is isolated.
         isolationResetEl = document.createElement('div');
@@ -4494,6 +4520,30 @@
         }
     }
 
+    // Plots an applied urban rule LEFT OUT, drawn as the volume each would carry.
+    //
+    // A block excludes a plot when it is under the minimum plot size, when only a splinter of the
+    // block falls on it, or when the massing never reaches it. Those plots are still part of the
+    // block — merge one with a neighbour or buy it and this is the building it takes — so they are
+    // shown as see-through volumes rather than as an unexplained gap in the street. Off by default:
+    // this answers "why is there nothing here", it is not part of the plan.
+    function buildIneligibleParcels3D(targetGroup) {
+        // Same collector the 2D layer draws from (building-blocks.js), so the two views can never
+        // disagree about which plots the rule left out.
+        const parts = (typeof window !== 'undefined' && typeof window.appliedIneligibleBlockParts === 'function')
+            ? window.appliedIneligibleBlockParts()
+            : [];
+        parts.forEach(feature => {
+            if (!feature || !feature.geometry) return;
+            // Only the would-be BUILDING is raised. The plot outline is a 2D marking; extruding it
+            // would put a block-high slab over ground where nothing is built.
+            if (feature.properties && feature.properties.kind === 'plot') return;
+            const declared = Number(feature.properties && feature.properties.height);
+            const height = declared > 0 ? declared : estimateBuildingHeightMeters(feature);
+            try { createBuildingSlices(feature, height, buildingMaterials.massing, targetGroup); } catch (_) { }
+        });
+    }
+
     // Cache of parsed glTF scenes keyed by URL; cloned per placement (geometry/materials shared).
     const gltfModelCache = new Map();
     let buildingsRenderGeneration = 0;
@@ -5142,6 +5192,7 @@
             });
         }
         if (showProposed) buildProposedBuildings3D(buildingGroup, proposedMaterial);
+        if (showIneligibleParcels) buildIneligibleParcels3D(buildingGroup);
 
         // Always make sure the nearby-buildings fetch is in flight (it may render on arrival).
         ensureNearbyProposalBuildings();

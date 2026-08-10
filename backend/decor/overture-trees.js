@@ -20,6 +20,7 @@
 // deterministic per-tree height (neither source carries one).
 
 import { OVERTURE_CITIES } from '../buildings/overture-cities.js';
+import { scopeLadder, queryDownScopeLadder, createScopeMemo } from '../data-scope.js';
 
 // Trees are dense (a few thousand within 300 m in a leafy centre). Instanced rendering handles that
 // fine, but cap the payload so a pathological radius can't return tens of thousands. Distance-ordered
@@ -37,6 +38,10 @@ const PLANTED_MIN_DISTANCE_TO_MAPPED_M = 5;
 export function createOvertureTreesProvider(pool, cityKey) {
     const cfg = OVERTURE_CITIES[cityKey];
     if (!cfg) throw new Error(`createOvertureTreesProvider: unknown Overture city '${cityKey}'`);
+    // city → region → country → planet, exactly as the buildings read (data-scope.js). Decor is
+    // ingested by area too, so the same city can find its trees under a broader label than its own.
+    const ladder = scopeLadder({ city: cfg.city || cityKey, region: cfg.region, country: cfg.country });
+    const scopeMemo = createScopeMemo();
     const spacingM = Number.isFinite(cfg.greeneryTreeSpacingM) && cfg.greeneryTreeSpacingM > 0
         ? cfg.greeneryTreeSpacingM
         : DEFAULT_GREENERY_TREE_SPACING_M;
@@ -68,7 +73,7 @@ export function createOvertureTreesProvider(pool, cityKey) {
             ), mapped AS (
                 SELECT t.geom
                 FROM osm_decor t, q, box
-                WHERE t.city = $2
+                WHERE ($2::text IS NULL OR t.city = $2)
                   AND t.kind = 'trees'
                   AND t.geom && box.b
                   AND ST_DWithin(t.geom::geography, q.g::geography, $3)
@@ -77,7 +82,7 @@ export function createOvertureTreesProvider(pool, cityKey) {
                        ST_Transform(ST_Intersection(d.geom, box.b), 3857) AS gm,
                        GREATEST(cos(radians(ST_Y(ST_Centroid(d.geom)))), 0.05) AS coslat
                 FROM osm_decor d, box
-                WHERE d.city = $2
+                WHERE ($2::text IS NULL OR d.city = $2)
                   AND d.kind = 'greenery'
                   AND d.geom && box.b
             ), stepped AS (
@@ -121,13 +126,19 @@ export function createOvertureTreesProvider(pool, cityKey) {
             ORDER BY a.geom <-> q.g
             LIMIT ${MAX_TREES}
         `;
-        // cfg.region, not cityKey — one regional decor load can serve several cities.
-        const { rows } = await pool.query(sql, [
-            JSON.stringify(geometry), cfg.region, bufferMeters,
-            spacingM, GREENERY_ACCEPTANCE, PLANTED_MIN_DISTANCE_TO_MAPPED_M
-        ]);
+        // Not cfg.region alone — one regional decor load can serve several cities, and a city may
+        // have no decor ingest of its own at all.
+        const { rows, scope } = await queryDownScopeLadder(
+            ladder,
+            async (label) => (await pool.query(sql, [
+                JSON.stringify(geometry), label, bufferMeters,
+                spacingM, GREENERY_ACCEPTANCE, PLANTED_MIN_DISTANCE_TO_MAPPED_M
+            ])).rows,
+            scopeMemo,
+            `trees:${cityKey}`
+        );
         const trees = rows.map(r => [Number(r.lng), Number(r.lat)]);
-        return { trees, count: trees.length, source: 'overture-trees' };
+        return { trees, count: trees.length, scope, source: 'overture-trees' };
     }
 
     return { near };

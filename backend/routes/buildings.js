@@ -327,7 +327,19 @@ export function setupBuildingsRoute(app, pool) {
             }
 
             const result = await provider.footprints(geometry);
-            res.json({ supported: true, footprints: result.footprints, count: result.count, source: result.source });
+            // `truncated` says the cap bound before the area did, so a caller filling a footprint
+            // pool must not record the queried area as covered. Absent means "not capped".
+            res.json({
+                supported: true,
+                footprints: result.footprints,
+                count: result.count,
+                truncated: result.truncated === true,
+                // Which ingest answered — city, region, country, or none at all (data-scope.js).
+                // Worth reporting: "874 buildings, scope croatia" is the difference between a city
+                // with its own survey and one reading the countrywide pull.
+                scope: result.scope === undefined ? null : result.scope,
+                source: result.source
+            });
         } catch (err) {
             console.error('Error in POST /buildings/footprints:', err);
             res.status(500).json({ error: 'Internal server error' });

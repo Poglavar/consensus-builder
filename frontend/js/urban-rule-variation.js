@@ -412,21 +412,29 @@
             const parcelId = (entry.parcelId === undefined || entry.parcelId === null)
                 ? `parcel-${index}` : String(entry.parcelId);
 
+            // What the block WOULD put here if the plot were eligible. An excluded parcel is still
+            // part of the block — merge it with a neighbour, or buy it, and this is the building it
+            // would carry — so the shape is reported alongside the exclusion rather than discarded.
+            // Without it, a left-out plot reads as a hole in the block instead of a plot that cannot
+            // take a building as it stands.
+            let piece = null;
+            try { piece = turf.intersect(massingFeature, parcelFeature); } catch (_) { piece = null; }
+            const wouldBe = (piece && piece.geometry) ? piece.geometry : null;
+
             if (normalized.minPlotAreaM2 > 0 && areaOf(parcelFeature, turf) < normalized.minPlotAreaM2) {
-                excluded.push({ parcelId, feature: parcelFeature, status: 'below-min-plot' });
+                excluded.push({ parcelId, feature: parcelFeature, status: 'below-min-plot', wouldBe });
                 return;
             }
 
-            let piece = null;
-            try { piece = turf.intersect(massingFeature, parcelFeature); } catch (_) { piece = null; }
-            if (!piece || !piece.geometry) {
+            if (!wouldBe) {
                 // The massing simply does not reach this parcel (a fully interior plot behind the
-                // ring). Not a rule conflict — reported apart from the exclusions.
-                excluded.push({ parcelId, feature: parcelFeature, status: 'no-massing-here' });
+                // ring, or one the setback pushes past). Nothing would be built here even if the
+                // plot were eligible, so there is no shape to show — only the plot itself.
+                excluded.push({ parcelId, feature: parcelFeature, status: 'no-massing-here', wouldBe: null });
                 return;
             }
             if (areaOf(piece, turf) < normalized.minPieceAreaM2) {
-                excluded.push({ parcelId, feature: parcelFeature, status: 'sliver' });
+                excluded.push({ parcelId, feature: parcelFeature, status: 'sliver', wouldBe });
                 return;
             }
 

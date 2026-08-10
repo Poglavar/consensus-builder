@@ -85,7 +85,7 @@ function toggleAccordion(checkbox, options = {}) {
         const showBuildings = document.getElementById('showBuildings').checked;
         if (showBuildings) {
             if (typeof fetchBuildings === 'function') {
-                fetchBuildings();
+                fetchBuildings(null, { announce: true });
             }
         } else if (typeof buildingLayer !== 'undefined' && buildingLayer) {
             map.removeLayer(buildingLayer);
@@ -627,7 +627,7 @@ function toggleLayer(layerType) {
     if (layerType === 'buildings') {
         if (showBuildings) {
             if (typeof fetchBuildings === 'function') {
-                fetchBuildings();
+                fetchBuildings(null, { announce: true });
             }
         } else if (typeof buildingLayer !== 'undefined' && buildingLayer) {
             map.removeLayer(buildingLayer);

@@ -123,6 +123,20 @@
         return `${parcelId}#${kind === 'road' ? 'r' : 'p'}${hashText(text)}`;
     }
 
+    // Is this id one of OURS?
+    //
+    // A scoped re-derivation compares what the arrangement says a parcel is made of against what is
+    // on the map, and removes the difference. Other things also mint derived ids under a cadastral
+    // parcel — a readjustment's plots, a building's carved host — and those are not the
+    // arrangement's to remove: it would delete a standing plan's plots the moment a road was drawn
+    // anywhere across the same parcel. The piece format is this module's, so the test belongs here.
+    function isPieceId(id) {
+        const text = (id === undefined || id === null) ? '' : String(id);
+        const cut = text.indexOf('#');
+        if (cut === -1) return false;
+        return /^[rp][0-9a-z]+$/.test(text.slice(cut + 1));
+    }
+
     /**
      * The pieces one cadastral parcel is divided into by the corridors that cross it.
      *
@@ -365,6 +379,7 @@
         featureForPiece,
         takesOverlapping,
         pieceId,
+        isPieceId,
         canonicalPolygon
     };
 

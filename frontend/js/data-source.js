@@ -305,7 +305,19 @@
     // source that can only ever return the OTHER survey is exactly the bug this all came from.
     function buildBuildingRequestParams(bbox, source = 'gdi') {
         const cityConfig = CityConfigManager ? CityConfigManager.getCurrentCityConfig() : null;
-        if (cityConfig && cityConfig.buildings && cityConfig.buildings.source === 'none') {
+        const configured = (cityConfig && cityConfig.buildings) ? cityConfig.buildings.source : null;
+        if (configured === 'none') {
+            return null;
+        }
+        // GDI is the ZAGREB survey. Asking for it in a city whose footprints come from somewhere
+        // else returns nothing, every time — and a reload replaying a hundred corridors asks once
+        // per corridor, so Šibenik (Overture) filled its status log with "Loaded 0 buildings" for
+        // a dataset it does not have. Zagreb declares no `buildings` block at all, so an unset
+        // source means the GDI default and still asks.
+        //
+        // DGU is deliberately NOT gated: it is the national building registry, valid in every
+        // Croatian city, and it has its own opt-in toggle.
+        if (source !== 'dgu' && configured && configured !== 'gdi') {
             return null;
         }
         // Honour the localhost worktree's `?backend=` override just like every other backend

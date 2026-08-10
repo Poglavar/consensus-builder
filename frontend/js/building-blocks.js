@@ -14,6 +14,10 @@ window.selectedBlockName = null;
 let selectedBlockName = window.selectedBlockName;
 // Add blockify modal variables
 let blockifyMap = null;
+// Whether the map has been framed on its block yet. The framing retries until it lands (see
+// fitBlockifyMapToBlock), and stops the moment it does so it can never fight the user's own panning.
+let blockifyMapFitted = false;
+let blockifyMapResizeObserver = null;
 let blockifyParcelLayer = null;
 let blockifyBuildingLayer = null;
 let blockifyPieceLayers = [];      // one per constituent parcel
@@ -1067,6 +1071,14 @@ function updateBlockify3DScene(buildingFeatureOrFeatures) {
         return shadeMaterials.get(color);
     };
 
+    // A plot the rule leaves out still shows what it would carry — as a grey, see-through volume,
+    // unmistakably not one of the buildings. Merge it with a neighbour or buy it and this is what
+    // stands there; as it is, nothing does.
+    const ineligibleMat = new THREE.MeshPhongMaterial({
+        color: 0x9aa0a6, emissive: 0x1a1a1a, transparent: true, opacity: 0.28,
+        depthTest: true, depthWrite: false, side: THREE.DoubleSide
+    });
+
     const meshes = [];
     features.forEach(feature => {
         const props = feature.properties || {};
@@ -1077,7 +1089,9 @@ function updateBlockify3DScene(buildingFeatureOrFeatures) {
         const propH = Number(props.height);
         const ownHeight = (props.basedOnExisting || props.parcelId) && Number.isFinite(propH) && propH > 0;
         const heightMeters = ownHeight ? Math.min(propH, 400) : fallbackHeightMeters;
-        const [wallMat, roofMatForPiece] = materialsFor(props.color);
+        const [wallMat, roofMatForPiece] = props.ineligible
+            ? [ineligibleMat, ineligibleMat]
+            : materialsFor(props.color);
         meshes.push(...buildExtrudedMeshes(feature.geometry, heightMeters, wallMat, roofMatForPiece, anchor));
     });
     if (!meshes.length) {
@@ -1363,6 +1377,94 @@ if (typeof PersistentStorage !== 'undefined' && typeof PersistentStorage.ensureR
 }
 
 // Add this function to update the proposed buildings layer
+// The parts of an APPLIED urban rule that pass over plots it left out, as plain features.
+//
+// A block excludes a plot when it is under the minimum plot size, when only a splinter of the block
+// falls on it, or when the massing never reaches it (that last one has no shape — nothing would be
+// built there). What remains is what the plot WOULD carry, and it is what lets a gap in an applied
+// block say "this plot is part of the block and cannot take a building as it stands" instead of
+// saying nothing. One collector, read by both the 2D layer and the 3D view, so the two can never
+// disagree about which plots those are.
+function appliedIneligibleBlockParts() {
+    const store = (typeof window !== 'undefined') ? window.proposalStorage : null;
+    if (!store || typeof store.getAllProposals !== 'function') return [];
+    const standing = record => (typeof window.isProposalApplied === 'function')
+        ? window.isProposalApplied(record)
+        : !!(record && record.applied === true);
+    // A rule-driven typology gives every parcel of its block a piece, so a parcel with none was
+    // left out — derivable from the record itself, which is what lets a block applied BEFORE any of
+    // this was recorded still show its left-out plots. A freeform building over one of two selected
+    // parcels is not the same thing and must not be marked, hence the typology gate.
+    const RULE_TYPOLOGIES = new Set(['block', 'row', 'parcelBased', 'parcelbased']);
+    const parcelGeometry = (parcelId) => {
+        const byId = (typeof window !== 'undefined' && window.parcelLayerById instanceof Map)
+            ? window.parcelLayerById : null;
+        const layer = byId ? byId.get(String(parcelId)) : null;
+        if (!layer || typeof layer.toGeoJSON !== 'function') return null;
+        try {
+            const gj = layer.toGeoJSON(false);
+            const feature = (gj && gj.type === 'FeatureCollection') ? gj.features[0] : gj;
+            return (feature && feature.geometry) ? feature.geometry : null;
+        } catch (_) { return null; }
+    };
+
+    const parts = [];
+    store.getAllProposals().forEach(record => {
+        if (!record || !standing(record)) return;
+        const bp = record.buildingProposal;
+        if (!bp) return;
+        const proposalId = record.proposalId || null;
+
+        // The plot itself, marked — this is what says "not empty, just not buildable as it stands".
+        const built = new Set((Array.isArray(bp.buildings) ? bp.buildings : [])
+            .map(feature => feature && feature.properties && feature.properties.parcelId)
+            .filter(Boolean)
+            .map(String));
+        const declared = new Map((Array.isArray(bp.ineligibleParcels) ? bp.ineligibleParcels : [])
+            .filter(entry => entry && entry.parcelId)
+            .map(entry => [String(entry.parcelId), entry]));
+        const leftOut = RULE_TYPOLOGIES.has(String(bp.typologyType || ''))
+            ? (Array.isArray(bp.parentParcelIds) ? bp.parentParcelIds : []).map(String).filter(id => !built.has(id))
+            : Array.from(declared.keys());
+
+        leftOut.forEach(parcelId => {
+            const geometry = parcelGeometry(parcelId);
+            if (!geometry) return;
+            const entry = declared.get(parcelId);
+            parts.push({
+                type: 'Feature',
+                properties: {
+                    ineligible: true,
+                    kind: 'plot',
+                    parcelId,
+                    exclusionStatus: entry ? (entry.status || null) : null,
+                    proposalId
+                },
+                geometry
+            });
+        });
+
+        // ...and the building it would carry, where the editor recorded one.
+        declared.forEach((entry, parcelId) => {
+            if (!entry.wouldBe) return;
+            parts.push({
+                type: 'Feature',
+                properties: {
+                    ineligible: true,
+                    kind: 'massing',
+                    parcelId,
+                    exclusionStatus: entry.status || null,
+                    height: entry.height || null,
+                    proposalId
+                },
+                geometry: entry.wouldBe
+            });
+        });
+    });
+    return parts;
+}
+if (typeof window !== 'undefined') window.appliedIneligibleBlockParts = appliedIneligibleBlockParts;
+
 function updateProposedBuildingsLayer() {
     if (proposedBuildingLayer) {
         map.removeLayer(proposedBuildingLayer);
@@ -1377,8 +1479,28 @@ function updateProposedBuildingsLayer() {
         // The paved/green surround of a freeform proposal follows its buildings on and off the map.
         try { window.updateBuildingGroundLayer?.(); } catch (error) { console.error('[buildings] ground surface refresh failed', error); }
     }
-    if (list.length > 0) {
+    // Drawn even when the rule permitted no buildings at all: a block that left every plot out is
+    // still a block, and an empty map would be the least explicable outcome of the three.
+    const ineligibleParts = appliedIneligibleBlockParts();
+    if (list.length > 0 || ineligibleParts.length > 0) {
         proposedBuildingLayer = L.featureGroup().addTo(map);
+
+        ineligibleParts.forEach(part => {
+            try {
+                // The PLOT is hatched so it never reads as empty ground, and the building it would
+                // carry is drawn over it dashed — the 2D half of the statement the 3D view makes
+                // with a see-through volume: this is what belongs here, and nothing is built.
+                const isPlot = part.properties && part.properties.kind === 'plot';
+                L.geoJSON(part, {
+                    style: isPlot
+                        ? { fillColor: '#b0453a', fillOpacity: 0.14, color: '#b0453a', weight: 1.5, dashArray: '2, 5' }
+                        : { fillColor: '#8a8f98', fillOpacity: 0.25, color: '#4b5563', weight: 2, dashArray: '6, 4' },
+                    interactive: false
+                }).addTo(proposedBuildingLayer);
+            } catch (error) {
+                console.warn('[buildings] could not draw a non-buildable plot', part?.properties?.parcelId, error);
+            }
+        });
 
         list.forEach((building, index) => {
             try {
@@ -1701,7 +1823,9 @@ function showBlockifyModal() {
                     }
                     refreshBlockPieceHeights();
                     syncBlockMinHeightSlider();
-                    updateBlockify3DScene(blockBuildOut.length ? blockBuildOut : generatedBuildingFeature);
+                    updateBlockify3DScene(blockBuildOut.length
+                        ? blockBuildOut.concat(blockIneligibleGhosts())
+                        : generatedBuildingFeature);
                     // The draft carries its own copy of the feature and it is what gets published
                     // (serializeProposal reads editorPayload.context.buildings). Nothing regenerates
                     // the footprint here, so without this autosave a height-only edit was dropped.
@@ -1891,7 +2015,9 @@ function showBlockifyModal() {
     }
 
     // Display the block on the map
+    blockifyMapFitted = false;
     displayBlockOnMap(block);
+    watchBlockifyMapUntilFitted();
 
     // Reset parameter values
     currentSetback = DEFAULT_SETBACK;
@@ -2066,6 +2192,11 @@ function closeBlockifyModal(options = {}) {
     document.removeEventListener('keydown', handleBlockifyKeydown);
     blockifyPendingVertexActionIndex = null;
     clearGapWingHandles();
+    if (blockifyMapResizeObserver) {
+        try { blockifyMapResizeObserver.disconnect(); } catch (_) { }
+        blockifyMapResizeObserver = null;
+    }
+    blockifyMapFitted = false;
     // Remove the map instance properly
     if (blockifyMap) {
         if (blockifyParcelLayer) {
@@ -2157,11 +2288,21 @@ function displayBlockOnMap(block) {
         blockifyParcelLayer = null;
     }
 
-    // Create a feature collection for all parcels in the block
-    const features = block.parcels.map(parcel => parcel.feature);
+    // Create a feature collection for all parcels in the block.
+    //
+    // One parcel with impossible coordinates used to take the whole editor to a map of the world:
+    // its bounds stretch from wherever the bad vertex lands to the real block, and Leaflet dutifully
+    // frames both. Drawing and framing the rest is strictly better — the editor stays usable and the
+    // offender is named instead of being a mystery.
+    const fitApi = (typeof window !== 'undefined') ? window.__blockifyMapFit : null;
+    const rawFeatures = block.parcels.map(parcel => parcel && parcel.feature).filter(Boolean);
+    const split = fitApi ? fitApi.usableBlockFeatures(rawFeatures) : { usable: rawFeatures, rejected: [] };
+    if (split.rejected.length) {
+        console.error('[Blockify] leaving parcels out of the map — their geometry is not usable', split.rejected);
+    }
     const featureCollection = {
         type: 'FeatureCollection',
-        features: features
+        features: split.usable
     };
 
     // Add the parcels to the map
@@ -2174,13 +2315,102 @@ function displayBlockOnMap(block) {
         }
     }).addTo(blockifyMap);
 
-    // Fit the map to the bounds of the block
-    blockifyMap.fitBounds(blockifyParcelLayer.getBounds(), {
-        padding: [50, 50]
-    });
+    // Frame the map on the block — but only once the panel has a size to frame it in.
+    fitBlockifyMapToBlock();
 
     // Initialize 3D preview after map bounds fit
     try { initBlockify3DSimple(); } catch (e) { console.warn('3D init failed', e); }
+}
+
+// Frame the editor's 2D map on its block.
+//
+// The editor opening on a map of the whole world — the block an orange speck near the equator — is
+// a fit to bounds that span the globe, which happens when one parcel of the block carries a
+// coordinate that is not a WGS84 degree (see blockify-map-fit.js for the measurements). Such bounds
+// are refused and reported here rather than zoomed to; retrying them would only hide the cause.
+//
+// The other refusal is a panel that has not been laid out. That one is worth waiting for: the fit
+// ran once, at open, and the map was never told its size changed, so a map created against a
+// collapsed panel kept that size for the rest of the session — which also puts every click and every
+// dragged vertex at the wrong latlng.
+function fitBlockifyMapToBlock() {
+    const fit = (typeof window !== 'undefined') ? window.__blockifyMapFit : null;
+    if (!blockifyMap || !blockifyParcelLayer || !fit) return false;
+
+    let bounds = null;
+    try { bounds = blockifyParcelLayer.getBounds(); } catch (_) { bounds = null; }
+    if (!bounds || !bounds.isValid || !bounds.isValid()) {
+        console.error('[Blockify] the block has no usable bounds — the map cannot be framed on it');
+        return false;
+    }
+
+    // Ask the CONTAINER, not the map. Leaflet measures once and caches, and `invalidateSize` refuses
+    // to re-measure while the map has no view yet — so a map created against a zero-height panel
+    // reports zero for ever, and every later fit is decided by a size that stopped being true. That
+    // deadlock is why the world view never recovered on its own.
+    const container = (typeof blockifyMap.getContainer === 'function') ? blockifyMap.getContainer() : null;
+    const verdict = fit.fitReadiness({
+        width: container ? container.clientWidth : 0,
+        height: container ? container.clientHeight : 0,
+        bounds: { west: bounds.getWest(), south: bounds.getSouth(), east: bounds.getEast(), north: bounds.getNorth() }
+    });
+
+    if (verdict.ok) {
+        // A provisional view first when there is none: it is what lets invalidateSize re-measure,
+        // so fitBounds computes the zoom from the panel's real size.
+        let hasView = true;
+        try { blockifyMap.getCenter(); } catch (_) { hasView = false; }
+        if (!hasView) blockifyMap.setView(bounds.getCenter(), 16, { animate: false });
+        try { blockifyMap.invalidateSize({ animate: false }); } catch (_) { }
+        blockifyMap.fitBounds(bounds, { padding: [50, 50] });
+        blockifyMapFitted = true;
+        return true;
+    }
+    if (verdict.reason === 'span-too-large') {
+        console.error('[Blockify] refusing to frame the map: this "block" spans '
+            + `${verdict.spanDeg.toFixed(3)}° — its parcels are not in WGS84 degrees`,
+            { parcelIds: (getActiveBlockifyBlock() || {}).parcelIds || null });
+        return false;
+    }
+    console.warn('[Blockify] map panel is not laid out yet '
+        + `(${container ? container.clientWidth : 0}×${container ? container.clientHeight : 0} px)`
+        + ' — framing the block once it is');
+    return false;
+}
+
+// Keep asking until a fit lands: a frame-by-frame retry for the layout that is a moment late, and a
+// ResizeObserver for the panel that resizes later (or never, until the window does). Both stop at
+// the first successful fit, so they can never fight the user's own panning and zooming.
+function watchBlockifyMapUntilFitted() {
+    if (!blockifyMap) return;
+    // Reopening without a close would otherwise leave the previous observer watching a dead map.
+    if (blockifyMapResizeObserver) {
+        try { blockifyMapResizeObserver.disconnect(); } catch (_) { }
+        blockifyMapResizeObserver = null;
+    }
+    let frames = 0;
+    const tryFit = () => {
+        if (blockifyMapFitted || !blockifyMap) return;
+        if (fitBlockifyMapToBlock()) return;
+        frames += 1;
+        if (frames > 60) return; // ~1 s of layout is as long as this is worth waiting
+        requestAnimationFrame(tryFit);
+    };
+    requestAnimationFrame(tryFit);
+
+    const container = document.getElementById('blockify-map');
+    if (!container || typeof ResizeObserver !== 'function') return;
+    blockifyMapResizeObserver = new ResizeObserver(() => {
+        if (!blockifyMap) return;
+        if (blockifyMapFitted) {
+            // Framed already: the map only needs to be told its size changed, or every click and
+            // every dragged vertex lands at the wrong latlng.
+            try { blockifyMap.invalidateSize({ animate: false }); } catch (_) { }
+            return;
+        }
+        fitBlockifyMapToBlock();
+    });
+    blockifyMapResizeObserver.observe(container);
 }
 
 // Function to generate building in the modal only
@@ -2886,16 +3116,23 @@ function generateBuildingInModal() {
             }
         }
 
-        // Update the info text
-        setBlockifyInfo(
-            'blockify.modal.messages.generatedSummary',
-            'Building generated (width: {{width}}m, height: {{height}}m, setback: {{setback}}m)',
-            {
-                width: currentWidth.toFixed(1),
-                height: (Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT).toFixed(1),
-                setback: SETBACK.toFixed(1)
-            }
-        );
+        // Update the info text — but never over the block-rule summary.
+        //
+        // displayBuildingInModal has just run reportBlockRuleRange, which says what this block
+        // delivers and how many parcels it leaves out. Echoing the slider values on top of that
+        // threw the left-out count away every time, which is a large part of why a block could apply
+        // to four of its seven parcels with nothing on screen saying so.
+        if (!blockMassingPieces.length) {
+            setBlockifyInfo(
+                'blockify.modal.messages.generatedSummary',
+                'Building generated (width: {{width}}m, height: {{height}}m, setback: {{setback}}m)',
+                {
+                    width: currentWidth.toFixed(1),
+                    height: (Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT).toFixed(1),
+                    setback: SETBACK.toFixed(1)
+                }
+            );
+        }
 
         // Enable the Done button
         const doneButton = document.getElementById('btn-blockify-done');
@@ -3085,17 +3322,35 @@ function displayBuildingInModal(buildingFeature) {
             }
         });
 
+        // EVERY parcel the rule leaves out is drawn, 'no-massing-here' included. Hiding that one is
+        // what made an applied block look like it had skipped parcels at random: a plot the ring
+        // never reaches gets no building, and the editor showed nothing to say so.
+        //
+        // The block's own outline continues across it, dashed. A left-out plot is not a hole in the
+        // block and not an error — it is a plot that cannot carry a building AS IT STANDS, and the
+        // dashed shape is what it would carry once it is merged with a neighbour or bought. Drawing
+        // only the hatched plot said "something went wrong here"; drawing the shape says "here is
+        // what this is worth, and why you cannot have it yet".
         blockExcludedParcels.forEach(entry => {
-            if (!entry || !entry.feature || entry.status === 'no-massing-here') return;
+            if (!entry || !entry.feature) return;
             const layer = L.geoJSON(entry.feature, {
                 style: { fillColor: '#b0453a', fillOpacity: 0.16, color: '#b0453a', weight: 1.5, dashArray: '2, 5' }
             }).addTo(blockifyMap);
             layer.bindTooltip(blockExclusionReason(entry.status), { direction: 'center' });
             blockifyExcludedLayers.push(layer);
+
+            if (!entry.wouldBe) return;
+            const ghost = L.geoJSON({ type: 'Feature', properties: {}, geometry: entry.wouldBe }, {
+                style: { fillColor: '#8a8f98', fillOpacity: 0.28, color: '#4b5563', weight: 2, dashArray: '6, 4' }
+            }).addTo(blockifyMap);
+            ghost.bindTooltip(blockExclusionReason(entry.status), { direction: 'center' });
+            blockifyExcludedLayers.push(ghost);
         });
 
         try {
-            updateBlockify3DScene(blockBuildOut.length ? blockBuildOut : buildingFeature);
+            updateBlockify3DScene(blockBuildOut.length
+                ? blockBuildOut.concat(blockIneligibleGhosts())
+                : buildingFeature);
         } catch (e) { console.warn('3D update failed', e); }
         reportBlockRuleRange();
         refreshBlockifyDensityStats(blockMassingPieces.length ? blockMassingPieces : [buildingFeature]);
@@ -3105,22 +3360,39 @@ function displayBuildingInModal(buildingFeature) {
 // The rule type made legible in the one number people vote on: what it permits, and what — if
 // anything — it guarantees. "At most" guarantees nothing; "exactly" delivers what it permits.
 function reportBlockRuleRange() {
-    if (!blockMassingPieces.length) return;
+    if (!blockMassingPieces.length) {
+        // Every plot left out: the rule permits nothing here. Saying nothing leaves the previous
+        // summary on screen, which then claims buildings that no longer exist.
+        if (blockExcludedParcels.length) {
+            setBlockifyInfo('blockify.modal.messages.rangeNoneExcluded',
+                'No buildings — {{excluded}} parcel(s) left out', { excluded: blockExcludedParcels.length });
+        }
+        return;
+    }
     const range = window.UrbanRuleVariation.summariseBlockRule(blockMassingPieces, currentBlockRule(), { turf });
     const permitted = Math.round(range.permittedFloorAreaM2).toLocaleString('en-US');
     const guaranteed = Math.round(range.guaranteedFloorAreaM2).toLocaleString('en-US');
-    const excluded = blockExcludedParcels.filter(entry => entry.status !== 'no-massing-here').length;
+    // Every parcel the rule leaves out counts, 'no-massing-here' included. That one used to be
+    // filtered out here AND skipped on the map, so a block authored on seven parcels could apply to
+    // four with nothing anywhere saying which three got nothing, or why.
+    const excluded = blockExcludedParcels.length;
     const params = { buildings: blockMassingPieces.length, permitted, guaranteed, excluded };
 
     if (range.kind === 'exact') {
-        setBlockifyInfo('blockify.modal.messages.rangeExact',
-            '{{buildings}} buildings · delivers {{permitted}} m² of floor area', params);
+        setBlockifyInfo(excluded ? 'blockify.modal.messages.rangeExactExcluded' : 'blockify.modal.messages.rangeExact',
+            excluded
+                ? '{{buildings}} buildings · delivers {{permitted}} m² of floor area · {{excluded}} parcel(s) left out'
+                : '{{buildings}} buildings · delivers {{permitted}} m² of floor area', params);
     } else if (range.kind === 'range') {
-        setBlockifyInfo('blockify.modal.messages.rangeBetween',
-            '{{buildings}} buildings · guarantees {{guaranteed}} – {{permitted}} m² of floor area', params);
+        setBlockifyInfo(excluded ? 'blockify.modal.messages.rangeBetweenExcluded' : 'blockify.modal.messages.rangeBetween',
+            excluded
+                ? '{{buildings}} buildings · guarantees {{guaranteed}} – {{permitted}} m² of floor area · {{excluded}} parcel(s) left out'
+                : '{{buildings}} buildings · guarantees {{guaranteed}} – {{permitted}} m² of floor area', params);
     } else {
-        setBlockifyInfo('blockify.modal.messages.rangeMax',
-            '{{buildings}} buildings · permits 0 – {{permitted}} m² of floor area', params);
+        setBlockifyInfo(excluded ? 'blockify.modal.messages.rangeMaxExcluded' : 'blockify.modal.messages.rangeMax',
+            excluded
+                ? '{{buildings}} buildings · permits 0 – {{permitted}} m² of floor area · {{excluded}} parcel(s) left out'
+                : '{{buildings}} buildings · permits 0 – {{permitted}} m² of floor area', params);
     }
 }
 }
@@ -3157,10 +3429,32 @@ function syncBlockMinHeightSlider() {
     if (label) label.textContent = blockMinHeightM.toFixed(1);
 }
 
+// The block's massing over the plots the rule leaves out, as features the 3D preview draws grey and
+// see-through. They are never saved and never counted as buildings — they are the answer to "what
+// would be here if this plot could take it", which is the difference between a plot that is not
+// buildable AS IT STANDS and a hole in the block.
+function blockIneligibleGhosts() {
+    const rule = currentBlockRule();
+    const height = (rule && Number.isFinite(rule.maxHeightM) && rule.maxHeightM > 0)
+        ? rule.maxHeightM
+        : (Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT);
+    return blockExcludedParcels
+        .filter(entry => entry && entry.wouldBe)
+        .map(entry => ({
+            type: 'Feature',
+            properties: { parcelId: entry.parcelId, height, ineligible: true, exclusionStatus: entry.status },
+            geometry: entry.wouldBe
+        }));
+}
+
 function blockExclusionReason(status) {
     if (status === 'below-min-plot') {
         return translateBuildingText('blockify.modal.messages.excludedBelowMinPlot',
             'Smaller than the minimum plot size — it has to be merged with a neighbour before anything can be built here.');
+    }
+    if (status === 'no-massing-here') {
+        return translateBuildingText('blockify.modal.messages.excludedNoMassing',
+            'The building does not reach this plot — the setback, or the shape of the block, leaves it outside. Nothing is built here.');
     }
     return translateBuildingText('blockify.modal.messages.excludedSliver',
         'Only a splinter of the block falls on this plot — too small to be a building.');
@@ -3959,11 +4253,23 @@ async function saveBlockifyDesignForProposal() {
             seed: blockVariationSeed
         };
 
+    // The plots this rule leaves out, and the building each would carry. Saved with the proposal so
+    // the 3D view can show them as see-through volumes long after the editor is closed: a left-out
+    // plot is part of the block that cannot take a building AS IT STANDS, and without this the
+    // applied result is a gap with no explanation anywhere.
+    const ineligibleParcels = blockExcludedParcels.map(entry => ({
+        parcelId: entry.parcelId,
+        status: entry.status,
+        height: (currentBlockRule() || {}).maxHeightM || Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT,
+        wouldBe: entry.wouldBe ? JSON.parse(JSON.stringify(entry.wouldBe)) : null
+    }));
+
     const context = {
         parcelIds: normalizedParcelIds.slice(),
         parentDetails: parentDetails.slice(),
         blockName: getBlockifyDisplayName(),
         parameters,
+        ineligibleParcels,
         buildingFeature: clonedFeature
     };
     if (clonedBuildings) context.buildings = clonedBuildings;

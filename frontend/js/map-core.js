@@ -336,10 +336,75 @@ async function ensureBuildingFootprintsForBounds(rawBounds) {
 }
 window.ensureBuildingFootprintsForBounds = ensureBuildingFootprintsForBounds;
 
+// The city whose existing stock is served by its own provider rather than by the GDI bbox layer.
+// Null for Zagreb (GDI) and for cities that have declared they have no buildings at all.
+function footprintProviderCity() {
+    try {
+        const manager = (typeof CityConfigManager !== 'undefined') ? CityConfigManager : null;
+        if (!manager || typeof manager.getCurrentCityId !== 'function') return null;
+        const config = manager.getCurrentCityConfig ? manager.getCurrentCityConfig() : null;
+        const source = (config && config.buildings) ? config.buildings.source : null;
+        if (!source || source === 'none' || source === 'gdi') return null;
+        return manager.getCurrentCityId() || null;
+    } catch (_) { return null; }
+}
+
+// The GDI bbox layer: EPSG:3765 out of the backend, so it is declared and converted.
+async function loadGdiFootprints(req) {
+    const response = await fetch(req.url);
+    if (!response.ok) throw new Error('Failed to fetch building data');
+    const data = await response.json();
+    const converted = typeof convertGeoJSON === 'function' ? convertGeoJSON(data, { sourceSrid: 3765 }) : data;
+    return { features: (converted && converted.features) || [], truncated: data && data.truncated === true };
+}
+
+// The per-city provider: the same POST /buildings/footprints the urban-rule editor reads, already
+// in WGS84. Its ids land on `properties.id`, which is exactly what corridor-tunnel's building
+// identity accepts for the non-Zagreb sources — so a road cuts, tunnels under and demolishes these
+// the same way it does GDI objects.
+async function loadProviderFootprints(bounds, city) {
+    const base = (typeof getBackendBase === 'function') ? getBackendBase() : '';
+    const west = bounds.getWest(), south = bounds.getSouth(), east = bounds.getEast(), north = bounds.getNorth();
+    const geometry = {
+        type: 'Polygon',
+        coordinates: [[[west, south], [east, south], [east, north], [west, north], [west, south]]]
+    };
+    const response = await fetch(`${base}/buildings/footprints`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ geometry, city })
+    });
+    if (!response.ok) throw new Error('Failed to fetch building footprints');
+    const payload = await response.json();
+    // A city with no footprint capability is not an error and not worth a status line about zero.
+    if (!payload || payload.supported === false) return null;
+    const features = (payload.footprints || [])
+        .filter(entry => entry && entry.geometry)
+        .map(entry => ({
+            type: 'Feature',
+            properties: {
+                id: entry.id,
+                height_m: (typeof entry.height_m === 'number' && Number.isFinite(entry.height_m)) ? entry.height_m : null,
+                floors: (typeof entry.floors === 'number' && Number.isFinite(entry.floors)) ? entry.floors : null,
+                source: payload.source || null
+            },
+            geometry: entry.geometry
+        }));
+    return { features, truncated: payload.truncated === true };
+}
+
 // Fetch buildings from data source. With `boundsOverride` (L.LatLngBounds) the fetch targets that
 // area regardless of zoom — used by corridor tools to cover drawn geometry; without it, the
 // current viewport is fetched (zoom-gated so a city-wide view never requests everything).
-async function fetchBuildings(boundsOverride = null) {
+//
+// `announce` is what the user ASKED FOR, and only that talks. Ticking the reference layer on is a
+// request to see buildings and says so; a demolition scan preloading the ground under a proposal is
+// not, and on a reload of a big plan it fired once per proposal — which is why the status log filled
+// with "Fetching buildings..." on a Ctrl+R with the layer switched off. The pool is still filled
+// either way: what a road demolishes must never depend on a display toggle, and the LAYER already
+// respects it (rebuildBuildingLayerFromPool only adds it to the map when the box is checked).
+async function fetchBuildings(boundsOverride = null, options = {}) {
+    const announce = options && options.announce === true;
     // Zoom-gated at the BOTTOM only: below 17 the viewport is a whole city and the request is
     // enormous. There is no ceiling — zooming in asks for LESS, and a ceiling of 19 meant that road
     // editing (which now zooms to 22) silently stopped loading buildings, so ticking the box did
@@ -352,26 +417,39 @@ async function fetchBuildings(boundsOverride = null) {
             }
         } catch (_) { /* noop */ }
     }
-    if (typeof updateStatus === 'function') {
-        updateStatus('Fetching buildings...');
+    // Decide whether there is anything to ask for BEFORE announcing it. This used to say "Fetching
+    // buildings..." first and then discover the city has no GDI dataset — so a reload replaying a
+    // hundred corridors wrote two lines per corridor about a fetch that never happened.
+    let bounds = null;
+    let bbox = null;
+    try {
+        bounds = boundsOverride || map.getBounds();
+        bbox = getBboxFromBounds(bounds);
+    } catch (_) { return; }
+    const builder = (typeof buildBuildingRequestParams === 'function') ? buildBuildingRequestParams : null;
+    const req = builder ? builder(bbox, 'gdi') : null;
+    // GDI is the Zagreb survey. Everywhere else the existing stock comes from the city's own
+    // provider (Overture for Šibenik/Split/Belgrade, Socrata for NYC), served by the same
+    // POST /buildings/footprints the urban-rule editor reads. There is no WFS fallback — the WFS
+    // serves the CADASTRE, which is a different survey and must never enter this pool.
+    const providerCity = req ? null : footprintProviderCity();
+    if (!req && !providerCity) return;
+
+    // "Buildings" here are the SURVEYED ones — the existing-building reference layer for the current
+    // viewport, nothing to do with proposals. Said plainly, because these two lines sit in the same
+    // status log as the proposal applies and "Loaded 0 buildings" next to "Applied building ..."
+    // reads like a proposal produced nothing.
+    if (announce && typeof updateStatus === 'function') {
+        updateStatus('Fetching existing buildings...');
     }
 
     try {
-        const bounds = boundsOverride || map.getBounds();
-        const bbox = getBboxFromBounds(bounds);
-
-        const builder = (typeof buildBuildingRequestParams === 'function') ? buildBuildingRequestParams : null;
-        const req = builder ? builder(bbox, 'gdi') : null;
-        // No builder / no building source for this city: nothing to fetch. There is no WFS
-        // fallback — the WFS serves the CADASTRE, and the pool must hold GDI objects only.
-        if (!req) return;
-
-        const response = await fetch(req.url);
-        if (!response.ok) throw new Error('Failed to fetch building data');
-        const data = await response.json();
-
-        // Convert to WGS84 — the backend returns EPSG:3765, so declare it.
-        const convertedData = typeof convertGeoJSON === 'function' ? convertGeoJSON(data, { sourceSrid: 3765 }) : data;
+        const loaded = req
+            ? await loadGdiFootprints(req)
+            : await loadProviderFootprints(bounds, providerCity);
+        if (!loaded) return;
+        const data = { truncated: loaded.truncated };
+        const convertedData = { type: 'FeatureCollection', features: loaded.features };
 
         // MERGE with what's already loaded instead of replacing it: the fetch covers only the
         // requested bbox (cap-limited), so replacing left a single-viewport patch and panning
@@ -426,10 +504,15 @@ async function fetchBuildings(boundsOverride = null) {
         try { window.buildingLayer = buildingLayer; } catch (_) { }
         try { window.dispatchEvent(new CustomEvent('buildingsLayerUpdated')); } catch (_) { }
 
-        if (typeof updateStatus === 'function') {
-            updateStatus(`Loaded ${(data.features || []).length} buildings`);
+        if (announce && typeof updateStatus === 'function') {
+            const surveyed = loaded.features.length;
+            updateStatus(surveyed
+                ? `Loaded ${surveyed} existing buildings`
+                : 'No existing buildings surveyed here');
         }
     } catch (error) {
+        // A failure is always worth saying, asked for or not: a silent one leaves a road cutting
+        // against a pool that never loaded.
         console.error('Error fetching building data:', error);
         if (typeof updateStatus === 'function') {
             updateStatus('Error fetching building data. Please try again.');

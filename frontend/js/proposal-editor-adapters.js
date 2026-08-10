@@ -955,6 +955,10 @@
                     parameters: clone(context.parameters || {}),
                     buildingFeature: clone(features[0] || null),
                     buildings: clone(features),
+                    // Plots the rule left out, with the building each would carry. Not buildings and
+                    // never applied — the 3D view draws them see-through so a gap in an applied block
+                    // says "this plot cannot take one as it stands" instead of nothing at all.
+                    ineligibleParcels: clone(context.ineligibleParcels || []),
                     blockName: context.blockName || null
                 };
                 return output;
