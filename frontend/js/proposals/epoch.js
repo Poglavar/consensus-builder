@@ -37,6 +37,14 @@
         return [...skup].sort((a, b) => a - b);
     }
 
+    /** Godine ponuđene u izborniku: zadane + trenutačna, rastuće i bez ponavljanja.
+        Trenutačna se dodaje i kad nije među zadanima, inače bi izbornik tiho
+        pokazivao krivu godinu za prijedlog upisan kroz "Druga godina…". */
+    function epochYearChoices(current) {
+        const g = parseEpochYear(current);
+        return [...new Set([...DEFAULT_CHOICES, ...(g !== null ? [g] : [])])].sort((a, b) => a - b);
+    }
+
     /** Kumulativna pripadnost: bez epohe = uvijek unutra (postojeće stanje). */
     function belongsCumulative(proposal, year) {
         const g = epochOf(proposal);
@@ -67,7 +75,7 @@
         return { toApply: primijeni, toUnapply: makni };
     }
 
-    const pure = { MIN_YEAR, MAX_YEAR, DEFAULT_CHOICES, parseEpochYear, epochOf, distinctEpochs, belongsCumulative, filterEntriesCumulative, epochDiff };
+    const pure = { MIN_YEAR, MAX_YEAR, DEFAULT_CHOICES, parseEpochYear, epochOf, epochYearChoices, distinctEpochs, belongsCumulative, filterEntriesCumulative, epochDiff };
     if (typeof module === 'object' && module.exports) module.exports = pure;
     if (typeof window === 'undefined') return;   // node test: samo čisti dio
 
@@ -102,29 +110,30 @@
 
     function getSelectedYear() { return selectedYear; }
 
-    function setSelectedYear(year) {
-        selectedYear = parseEpochYear(year);
-        try { document.dispatchEvent(new CustomEvent('proposal-epoch-timeline', { detail: { year: selectedYear } })); } catch (_) { }
+    /** Lista se sama precrtava — kartice su HTML stringovi, pa je ponovni render
+        jedini način da izbornik na kartici pokaže stvarno spremljenu godinu. */
+    function renderList() {
         try { if (typeof renderProposalListModal === 'function') renderProposalListModal(); } catch (_) { }
     }
 
-    /** Značka na kartici prijedloga; prazno kad prijedlog nema epohu. */
-    function epochBadgeHtml(proposal) {
-        const g = epochOf(proposal);
-        if (g === null) return '';
-        const naslov = t('modal.roadWidth.proposalList.epoch.badgeTooltip', 'Plan epoch (timeline year)');
-        return `<span class="proposal-epoch-badge" title="${esc(naslov)}">${g}.</span>`;
+    function setSelectedYear(year) {
+        selectedYear = parseEpochYear(year);
+        try { document.dispatchEvent(new CustomEvent('proposal-epoch-timeline', { detail: { year: selectedYear } })); } catch (_) { }
+        renderList();
+    }
+
+    /** Opcije izbornika godina: "Bez epohe", ponuđene godine, "Druga godina…". */
+    function yearOptionList(trenutna, { customOption = true } = {}) {
+        return [
+            { v: '', txt: t('modal.roadWidth.proposalList.epoch.none', 'No epoch') },
+            ...epochYearChoices(trenutna).map(g => ({ v: String(g), txt: `${g}.` })),
+            ...(customOption ? [{ v: 'custom', txt: t('modal.roadWidth.proposalList.epoch.custom', 'Other year…') }] : [])
+        ];
     }
 
     /** Popuni <select> godinama; `trenutna` se doda i kad nije među ponuđenima. */
     function fillYearOptions(select, trenutna, { customOption = true } = {}) {
-        const godine = [...new Set([...DEFAULT_CHOICES, ...(trenutna !== null ? [trenutna] : [])])]
-            .sort((a, b) => a - b);
-        const opcije = [
-            { v: '', txt: t('modal.roadWidth.proposalList.epoch.none', 'No epoch') },
-            ...godine.map(g => ({ v: String(g), txt: `${g}.` })),
-            ...(customOption ? [{ v: 'custom', txt: t('modal.roadWidth.proposalList.epoch.custom', 'Other year…') }] : [])
-        ];
+        const opcije = yearOptionList(trenutna, { customOption });
         select.innerHTML = '';
         for (const o of opcije) {
             const el = document.createElement('option');
@@ -186,22 +195,11 @@
             }
         } catch (_) { }
         rememberEpoch(g);
-        try { if (typeof renderProposalListModal === 'function') renderProposalListModal(); } catch (_) { }
+        renderList();
         return g;
     }
 
-    /* ------------------------------ skupna dodjela ------------------------------ */
-
-    // proposalId-evi označeni kvačicom u listi. Živi samo dok je lista otvorena.
-    const oznaceni = new Set();
-
-    function toggleSelected(proposalId, on) {
-        if (!proposalId) return;
-        if (on) oznaceni.add(proposalId); else oznaceni.delete(proposalId);
-        refreshBulkBar();
-    }
-    function clearSelected() { oznaceni.clear(); refreshBulkBar(); }
-    function selectedCount() { return oznaceni.size; }
+    /* --------------------------- izbornik na kartici --------------------------- */
 
     /** Nađi prijedlog po ključu i lokalno i u serverskom kešu. */
     function findProposal(proposalId) {
@@ -221,144 +219,58 @@
         return null;
     }
 
-    /** Postavi epohu svima označenima. Jedan po jedan (PATCH je jeftin), ali
-        greške se skupljaju i prijavljuju zajedno — tiho preskočen prijedlog je
-        gori od poruke. */
-    async function applyEpochToSelected(year) {
-        const g = parseEpochYear(year);
-        const kljucevi = [...oznaceni];
-        const greske = [];
-        let uspjelo = 0;
-        for (const kljuc of kljucevi) {
-            const p = findProposal(kljuc);
-            if (!p) { greske.push(`${kljuc}: nije nađen`); continue; }
-            try { await setEpoch(p, g); uspjelo++; } catch (err) { greske.push(`${kljuc}: ${err.message}`); }
-        }
-        if (greske.length) {
-            console.error('[epoch] skupna dodjela — neuspjeli:', greske);
-            alert(t('modal.roadWidth.proposalList.epoch.bulkPartial',
-                '{ok} of {total} updated; {failed} failed (see console).',
-                { ok: uspjelo, total: kljucevi.length, failed: greske.length }));
-        }
-        clearSelected();
-        try { if (typeof renderProposalListModal === 'function') renderProposalListModal(); } catch (_) { }
-        return { uspjelo, neuspjelo: greske.length };
+    /** Izbornik epohe na kartici u listi: pokazuje godinu I postavlja je, pa
+        kartica ne treba zasebnu značku, a prijedlog ne treba otvoriti da mu se
+        epoha promijeni. Kartice se grade kao HTML string, pa je i ovo markup;
+        promjenu hvata delegirani listener niže. */
+    function cardEpochSelectHtml(proposal, proposalId) {
+        const trenutna = epochOf(proposal);
+        const naslov = t('modal.roadWidth.proposalList.epoch.rowLabel', 'Plan epoch');
+        const odabrana = trenutna === null ? '' : String(trenutna);
+        const opcije = yearOptionList(trenutna).map(o =>
+            `<option value="${esc(o.v)}"${o.v === odabrana ? ' selected' : ''}>${esc(o.txt)}</option>`).join('');
+        return `<select class="proposal-epoch-card-select${trenutna === null ? ' is-empty' : ''}"`
+            + ` data-proposal-id="${esc(proposalId)}" title="${esc(naslov)}" aria-label="${esc(naslov)}">`
+            + `${opcije}</select>`;
     }
 
-    /** Kvačica na kartici (samo markup; klik hvata delegirani listener). */
-    function selectCheckboxHtml(proposalId) {
-        const oznacen = oznaceni.has(proposalId) ? ' checked' : '';
-        const naslov = t('modal.roadWidth.proposalList.epoch.selectForBulk', 'Select for bulk epoch assignment');
-        return `<input type="checkbox" class="proposal-bulk-check" data-proposal-id="${esc(proposalId)}"`
-            + `${oznacen} title="${esc(naslov)}" aria-label="${esc(naslov)}">`;
-    }
-
-    /** Traka skupne dodjele — pojavi se tek kad je nešto označeno. */
-    function refreshBulkBar() {
-        const modal = document.querySelector('.proposal-list-modal');
-        if (!modal) return;
-        const staro = modal.querySelector('.proposal-epoch-bulk');
-        if (!oznaceni.size) { if (staro) staro.remove(); return; }
-
-        const traka = staro || document.createElement('div');
-        traka.className = 'proposal-epoch-bulk';
-        traka.innerHTML = '';
-
-        const broj = document.createElement('span');
-        broj.className = 'proposal-epoch-bulk-count';
-        broj.textContent = t('modal.roadWidth.proposalList.epoch.selectedCount', '{n} selected', { n: oznaceni.size });
-        traka.appendChild(broj);
-
-        // Bez zasebnog natpisa: panel je ~420 px, a natpis + select + dva gumba
-        // se prelome. Gumb "Dodijeli" desno od izbornika ionako kaže što radi,
-        // pa natpis živi kao aria-label umjesto kao još 56 px teksta.
-        const select = document.createElement('select');
-        select.className = 'proposal-epoch-bulk-select';
-        const natpis = t('modal.roadWidth.proposalList.epoch.assignTo', 'Assign to:');
-        select.setAttribute('aria-label', natpis);
-        select.title = natpis;
-        fillYearOptions(select, lastUsedEpoch());
-        traka.appendChild(select);
-
-        const primijeni = document.createElement('button');
-        primijeni.type = 'button';
-        primijeni.className = 'proposal-epoch-bulk-apply';
-        primijeni.textContent = t('modal.roadWidth.proposalList.epoch.assign', 'Assign');
-        primijeni.addEventListener('click', async () => {
-            let g;
-            if (select.value === 'custom') {
-                g = askCustomYear();
-                if (g === undefined) return;
-            } else {
-                g = select.value === '' ? null : parseEpochYear(select.value);
-            }
-            primijeni.disabled = true;
-            try { await applyEpochToSelected(g); } finally { primijeni.disabled = false; }
-        });
-        traka.appendChild(primijeni);
-
-        const odustani = document.createElement('button');
-        odustani.type = 'button';
-        odustani.className = 'proposal-epoch-bulk-clear';
-        odustani.textContent = t('modal.roadWidth.proposalList.epoch.clearSelection', 'Clear');
-        odustani.addEventListener('click', clearSelected);
-        traka.appendChild(odustani);
-
-        if (!staro) {
-            const body = modal.querySelector('.proposal-list-modal-body');
-            if (body) body.parentNode.insertBefore(traka, body);
+    /** Odabir s kartice: prazno briše epohu, "Druga godina…" pita, sve ostalo je
+        godina. Svaki izlaz koji NIJE uspješan spremljeni odabir precrta listu, da
+        izbornik nikad ne ostane pokazivati godinu koja nigdje nije zapisana. */
+    async function handleCardEpochChange(select) {
+        const proposal = findProposal(select.dataset.proposalId);
+        if (!proposal) {
+            console.error('[epoch] prijedlog nije nađen:', select.dataset.proposalId);
+            renderList();
+            return;
+        }
+        let cilj;
+        if (select.value === 'custom') {
+            cilj = askCustomYear();
+            if (cilj === undefined) { renderList(); return; }   // odustao — vrati stari prikaz
+        } else {
+            cilj = select.value === '' ? null : parseEpochYear(select.value);
+        }
+        select.disabled = true;
+        try {
+            await setEpoch(proposal, cilj);   // sam precrta listu s novom godinom
+        } catch (err) {
+            console.error('[epoch] spremanje s kartice nije uspjelo:', err);
+            alert(t('modal.roadWidth.proposalList.epoch.saveError', 'Failed to save the epoch.'));
+            renderList();                     // vrati izbornik na stvarno spremljenu godinu
         }
     }
 
-    // Delegirani listener: kartice se preciju na svakom renderu, pa se veže
-    // jednom na dokument umjesto na svaku kvačicu.
+    // Delegirani listeneri: kartice se precrtavaju na svakom renderu, pa se veže
+    // jednom na dokument umjesto na svaki izbornik.
     document.addEventListener('change', (e) => {
-        const box = e.target.closest && e.target.closest('.proposal-bulk-check');
-        if (!box) return;
-        toggleSelected(box.dataset.proposalId, box.checked);
+        const select = e.target.closest && e.target.closest('.proposal-epoch-card-select');
+        if (select) handleCardEpochChange(select);
     });
     document.addEventListener('click', (e) => {
-        // kvačica ne smije otvoriti prijedlog
-        if (e.target.closest && e.target.closest('.proposal-bulk-check')) e.stopPropagation();
+        // izbornik epohe ne smije otvoriti prijedlog
+        if (e.target.closest && e.target.closest('.proposal-epoch-card-select')) e.stopPropagation();
     }, true);
-
-    /** Redak u panelu detalja: natpis + izbornik godine. */
-    function injectEpochRow(detailsContent, proposal) {
-        if (!detailsContent || !proposal) return;
-        if (detailsContent.querySelector('.proposal-epoch-row')) return;
-
-        const row = document.createElement('div');
-        row.className = 'proposal-epoch-row';
-        const label = document.createElement('label');
-        label.textContent = t('modal.roadWidth.proposalList.epoch.rowLabel', 'Plan epoch');
-        const select = document.createElement('select');
-        select.className = 'proposal-epoch-select';
-
-        const trenutna = epochOf(proposal);
-        fillYearOptions(select, trenutna);
-
-        select.addEventListener('change', async () => {
-            let cilj;
-            if (select.value === 'custom') {
-                cilj = askCustomYear();
-                if (cilj === undefined) { fillYearOptions(select, epochOf(proposal)); return; }
-            } else {
-                cilj = select.value === '' ? null : parseEpochYear(select.value);
-            }
-            try {
-                await setEpoch(proposal, cilj);
-                fillYearOptions(select, cilj);
-            } catch (err) {
-                console.error('[epoch] spremanje nije uspjelo:', err);
-                alert(t('modal.roadWidth.proposalList.epoch.saveError', 'Failed to save the epoch.'));
-                fillYearOptions(select, epochOf(proposal));
-            }
-        });
-
-        row.appendChild(label);
-        row.appendChild(select);
-        detailsContent.appendChild(row);
-    }
 
     /** Traka vremenske crte na vrhu liste prijedloga. Crta se samo kad bar
         jedan prijedlog ima epohu — do tada ne zauzima ni piksel. */
@@ -420,9 +332,9 @@
     global.__proposalEpoch = {
         ...pure,
         getSelectedYear, setSelectedYear,
-        epochBadgeHtml, setEpoch, injectEpochRow, injectTimeline,
-        lastUsedEpoch, rememberEpoch, fillYearOptions,
+        setEpoch, injectTimeline,
+        lastUsedEpoch, rememberEpoch, fillYearOptions, yearOptionList,
         initCreateDialogSelect, readCreateDialogEpoch,
-        selectCheckboxHtml, refreshBulkBar, clearSelected, selectedCount, applyEpochToSelected
+        cardEpochSelectHtml, findProposal
     };
 }(typeof globalThis !== 'undefined' ? globalThis : this));

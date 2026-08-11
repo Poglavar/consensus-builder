@@ -1,12 +1,30 @@
 // Epoch buckets: čista logika vremenske crte (frontend/js/proposals/epoch.js,
 // UMD — u nodeu izvozi samo čisti dio) i mapiranje epoch_year kroz serializer.
+//
+// Epoha se postavlja izbornikom na kartici u listi prijedloga. DOM dio modula se
+// u nodeu ne izvršava (nema window), pa se te funkcije dižu iz izvora i pokreću s
+// podmetnutim suradnicima — inače bi ostao samo grep, koji ne može pasti.
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { serializeProposalRow } from '../proposals/serializer.js';
 
 const require = createRequire(import.meta.url);
 const epoch = require('../../frontend/js/proposals/epoch.js');
+
+const read = rel => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8');
+const epochSrc = read('../../frontend/js/proposals/epoch.js');
+
+/** Izvor između dvije oznake; kraj se traži OD početka, ne od nule. */
+function sliceBetween(src, from, to) {
+    const start = src.indexOf(from);
+    expect(start, `nema "${from}"`).toBeGreaterThan(-1);
+    const end = src.indexOf(to, start);
+    expect(end, `nema "${to}" iza toga`).toBeGreaterThan(start);
+    return src.slice(start, end);
+}
 
 describe('parseEpochYear', () => {
     it('prihvaća cijele godine u rasponu, i kao string', () => {
@@ -79,6 +97,178 @@ describe('epochDiff — što još primijeniti, što maknuti za odabranu godinu',
         const d = epoch.epochDiff(prijedlozi, null, isApplied);
         expect(d.toApply).toEqual([]);
         expect(d.toUnapply).toEqual([]);
+    });
+});
+
+describe('epochYearChoices — ponuđene godine u izborniku', () => {
+    it('zadane godine kad prijedlog nema epohu', () => {
+        expect(epoch.epochYearChoices(null)).toEqual([...epoch.DEFAULT_CHOICES]);
+        expect(epoch.epochYearChoices('kifla')).toEqual([...epoch.DEFAULT_CHOICES]);
+    });
+
+    it('godinu izvan ponude ubacuje na njeno mjesto, bez ponavljanja', () => {
+        // Bez ovoga bi izbornik na kartici tiho pokazivao KRIVU godinu za prijedlog
+        // upisan kroz "Druga godina…" — vrijednost koje nema među opcijama otpada.
+        expect(epoch.epochYearChoices(2040)).toEqual([2035, 2040, 2045, 2055, 2066]);
+        expect(epoch.epochYearChoices(2045)).toEqual([...epoch.DEFAULT_CHOICES]);
+        expect(epoch.epochYearChoices(2966)).toEqual([...epoch.DEFAULT_CHOICES, 2966]);
+    });
+});
+
+// Kartica nosi izbornik: pokazuje godinu i postavlja je. Prije je nosila kvačicu za
+// skupnu dodjelu (+ traku iznad liste) i značku, a godina se mijenjala u detaljima.
+describe('izbornik epohe na kartici', () => {
+    const escHtml = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const cardHtml = new Function('epochOf', 'epochYearChoices', 't', 'esc',
+        sliceBetween(epochSrc, 'function yearOptionList(', '/** Popuni <select>')
+        + sliceBetween(epochSrc, 'function cardEpochSelectHtml(', '/** Odabir s kartice')
+        + ' return cardEpochSelectHtml;'
+    )(epoch.epochOf, epoch.epochYearChoices, (key, fallback) => fallback, escHtml);
+
+    it('pokazuje godinu prijedloga kao odabranu, i zna koja je kartica', () => {
+        const html = cardHtml({ epochYear: 2045 }, 'c-abc');
+        expect(html).toContain('data-proposal-id="c-abc"');
+        expect(html).toContain('<option value="2045" selected>2045.</option>');
+        expect(html.match(/ selected>/g)).toHaveLength(1);
+        expect(html).not.toContain('is-empty');
+    });
+
+    it('bez epohe drži "Bez epohe" i blijedi chip', () => {
+        const html = cardHtml({}, 'c-abc');
+        expect(html).toContain('class="proposal-epoch-card-select is-empty"');
+        expect(html).toContain('<option value="" selected>No epoch</option>');
+        expect(html.match(/ selected>/g)).toHaveLength(1);
+    });
+
+    it('godinu izvan ponude pokazuje kao odabranu, umjesto da tiho padne na drugu', () => {
+        const html = cardHtml({ epochYear: 2077 }, 'c-abc');
+        expect(html).toContain('<option value="2077" selected>2077.</option>');
+        expect(html.indexOf('value="2066"')).toBeLessThan(html.indexOf('value="2077"'));
+    });
+
+    it('"Druga godina…" ostaje dohvatljiva s kartice', () => {
+        expect(cardHtml({ epochYear: 2035 }, 'c-abc')).toContain('<option value="custom">Other year…</option>');
+    });
+
+    it('bježi ključ prijedloga — inače je navodnik u njemu izlaz iz atributa', () => {
+        const html = cardHtml({}, 'c-a"><script>x</script>');
+        expect(html).not.toContain('<script>');
+        expect(html).toContain('data-proposal-id="c-a&quot;&gt;&lt;script&gt;');
+    });
+});
+
+describe('promjena epohe s kartice', () => {
+    const body = sliceBetween(epochSrc, 'async function handleCardEpochChange(select) {', '// Delegirani listeneri');
+
+    function harness({ proposal = { proposalId: 'c-1', epochYear: 2035 }, save } = {}) {
+        const spies = {
+            setEpoch: vi.fn(save || (async () => { })),
+            renderList: vi.fn(),
+            askCustomYear: vi.fn(() => 2077),
+            alert: vi.fn(),
+            console: { error: vi.fn() }
+        };
+        const run = new Function('findProposal', 'askCustomYear', 'parseEpochYear', 'setEpoch',
+            'renderList', 't', 'alert', 'console', `${body} return handleCardEpochChange;`)(
+            () => proposal, spies.askCustomYear, epoch.parseEpochYear, spies.setEpoch,
+            spies.renderList, (key, fallback) => fallback, spies.alert, spies.console);
+        return { run, spies, proposal };
+    }
+    const select = value => ({ value, dataset: { proposalId: 'c-1' }, disabled: false });
+
+    it('odabrana godina se sprema na taj prijedlog', async () => {
+        const { run, spies, proposal } = harness();
+        await run(select('2055'));
+        expect(spies.setEpoch).toHaveBeenCalledWith(proposal, 2055);
+        expect(spies.alert).not.toHaveBeenCalled();
+    });
+
+    it('prazan odabir briše epohu (null, ne 0)', async () => {
+        const { run, spies } = harness();
+        await run(select(''));
+        expect(spies.setEpoch.mock.calls[0][1]).toBe(null);
+    });
+
+    it('"Druga godina…" pita, pa sprema upisanu godinu', async () => {
+        const { run, spies } = harness();
+        await run(select('custom'));
+        expect(spies.askCustomYear).toHaveBeenCalled();
+        expect(spies.setEpoch.mock.calls[0][1]).toBe(2077);
+    });
+
+    it('odustajanje od "Druga godina…" ne sprema ništa i vraća prikaz', async () => {
+        const { run, spies } = harness();
+        spies.askCustomYear.mockReturnValue(undefined);
+        await run(select('custom'));
+        expect(spies.setEpoch).not.toHaveBeenCalled();
+        expect(spies.renderList).toHaveBeenCalled();
+    });
+
+    it('neuspjelo spremanje se kaže i prikaz se vrati — izbornik ne smije pokazivati godinu koja nije zapisana', async () => {
+        const { run, spies } = harness({ save: async () => { throw new Error('HTTP 500'); } });
+        await run(select('2055'));
+        expect(spies.alert).toHaveBeenCalledWith('Failed to save the epoch.');
+        expect(spies.renderList).toHaveBeenCalled();
+        expect(spies.console.error).toHaveBeenCalled();
+    });
+
+    it('nepoznata kartica ne sprema ništa', async () => {
+        const { run, spies } = harness({ proposal: null });
+        await run(select('2055'));
+        expect(spies.setEpoch).not.toHaveBeenCalled();
+        expect(spies.renderList).toHaveBeenCalled();
+    });
+});
+
+// Kvačica, traka skupne dodjele, značka i redak u detaljima su zamijenjeni, ne
+// zadržani uz izbornik — dva mjesta za istu godinu su dvije prilike da se raziđu.
+describe('stara putanja je maknuta', () => {
+    const listUi = read('../../frontend/js/proposals/list-ui.js');
+    const css = read('../../frontend/css/modals.css');
+
+    it.each(['selectCheckboxHtml', 'refreshBulkBar', 'applyEpochToSelected', 'proposal-bulk-check',
+             'epochBadgeHtml', 'injectEpochRow'])('epoch.js više ne zna za %s', name => {
+        expect(epochSrc).not.toContain(name);
+    });
+
+    it('kartica crta izbornik, a klik na njega ne otvara prijedlog', () => {
+        expect(listUi).toContain('window.__proposalEpoch.cardEpochSelectHtml(proposal, proposalId)');
+        expect(listUi).toContain("closest('.proposal-epoch-card-select')) return;");
+        expect(listUi).not.toContain('proposal-bulk-check');
+    });
+
+    it('panel detalja više ne nudi epohu', () => {
+        expect(read('../../frontend/js/proposals/details-panel.js')).not.toContain('__proposalEpoch');
+    });
+
+    it('lista i dalje crta vremensku crtu, bez trake skupne dodjele', () => {
+        const share = read('../../frontend/js/proposals/dialog-share.js');
+        expect(share).toContain('injectTimeline(modal)');
+        expect(share).not.toContain('refreshBulkBar');
+    });
+
+    it.each(['.proposal-epoch-badge', '.proposal-epoch-row', '.proposal-bulk-check', '.proposal-epoch-bulk'])(
+        'CSS više ne stilizira %s', selector => {
+            expect(css).not.toContain(selector);
+        });
+
+    it('CSS stilizira chip-izbornik, i praznu i punu epohu', () => {
+        expect(css).toContain('.proposal-epoch-card-select {');
+        expect(css).toContain('.proposal-epoch-card-select.is-empty {');
+    });
+
+    it.each(['en', 'hr', 'sr', 'es'])('%s ima ključeve koji se koriste i nijedan skupni', locale => {
+        const e = JSON.parse(read(`../../frontend/i18n/${locale}.json`))
+            .modal.roadWidth.proposalList.epoch;
+        for (const key of ['rowLabel', 'none', 'custom', 'customPrompt', 'saveError',
+                           'timelineLabel', 'all', 'cumulative', 'toApply', 'toUnapply']) {
+            expect(e[key], `${locale} nema ${key}`).toBeTruthy();
+        }
+        for (const key of ['badgeTooltip', 'selectForBulk', 'selectedCount', 'assignTo',
+                           'assign', 'clearSelection', 'bulkPartial']) {
+            expect(e[key], `${locale} još ima ${key}`).toBeUndefined();
+        }
     });
 });
 

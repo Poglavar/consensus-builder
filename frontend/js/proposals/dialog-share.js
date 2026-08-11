@@ -554,13 +554,10 @@ function renderProposalListModal() {
         bodyEl.scrollTop = scrollPositions.body;
     }
 
-    // Vremenska crta plana (epoch buckets) — crta se samo kad neka epoha postoji;
-    // traka skupne dodjele samo kad je nešto označeno kvačicom.
+    // Vremenska crta plana (epoch buckets) — crta se samo kad neka epoha postoji.
+    // Epoha pojedinog prijedloga se postavlja izbornikom na njegovoj kartici.
     try {
-        if (window.__proposalEpoch) {
-            window.__proposalEpoch.injectTimeline(modal);
-            window.__proposalEpoch.refreshBulkBar();
-        }
+        if (window.__proposalEpoch) window.__proposalEpoch.injectTimeline(modal);
     } catch (_) { }
 
     if (proposalListState.selectedId) {
@@ -905,6 +902,15 @@ function showSharePlanPanel() {
         statusLine.style.color = '#b3261e';
         statusLine.style.fontSize = '12px';
         container.appendChild(statusLine);
+
+        // The panel opens before its rows know anything: each proposal is then asked, one at a time,
+        // whether the server already has it. On a big plan that is a long quiet tail, so it counts
+        // itself out loud instead of leaving rows to flicker.
+        const progressRow = document.createElement('div');
+        progressRow.className = 'share-plan-progress';
+        progressRow.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span></span>';
+        const progressText = progressRow.querySelector('span');
+        container.appendChild(progressRow);
 
         const listWrap = document.createElement('div');
         listWrap.className = 'share-plan-list';
@@ -1292,8 +1298,6 @@ function showSharePlanPanel() {
             rowControls.set(key, { row, checkbox, chip, uploadBtn, uploadedLabel, meta });
         };
 
-        proposalsByHash.forEach(attachRow);
-
         const refreshUploadState = async (key, proposal) => {
             const serverId = getServerProposalId(proposal);
             if (!serverId) {
@@ -1344,11 +1348,60 @@ function showSharePlanPanel() {
             updateShareUrl();
         };
 
+        const showProgress = (phraseKey, fallback, done, total) => {
+            if (!progressText) return;
+            progressText.textContent = tShare(phraseKey, fallback, { done, total });
+        };
+        const clearProgress = () => {
+            // Gone rather than hidden: finished work has nothing left to say, and a panel that
+            // keeps a dead spinner reads as still working.
+            if (progressRow && progressRow.parentNode) progressRow.parentNode.removeChild(progressRow);
+        };
+
         const initializeUploadChecks = async () => {
+            const total = proposalsByHash.size;
+            let done = 0;
+            showProgress('checkingProposals', 'Checking {done}/{total} proposals on the server...', done, total);
             for (const [key, proposal] of proposalsByHash.entries()) {
+                if (!panelStillOpen()) return;
                 await refreshUploadState(key, proposal);
+                done += 1;
+                showProgress('checkingProposals', 'Checking {done}/{total} proposals on the server...', done, total);
             }
             updateShareUrl();
+        };
+
+        // The panel goes up EMPTY and fills itself in. Building it in one go meant a row and a map
+        // overlay (turf intersections + a Leaflet layer) per applied proposal before a single pixel
+        // appeared — seconds of frozen page on a real plan, with no way to show a spinner because
+        // nothing could paint. Each pass now yields the moment it has held the thread long enough,
+        // so the list grows in front of you and the map is never locked for more than a frame.
+        const FRAME_BUDGET_MS = 12;
+        const nextFrame = () => new Promise(resolve => {
+            if (typeof requestAnimationFrame === 'function') requestAnimationFrame(() => resolve());
+            else resolve();
+        });
+        // Closing the panel (or opening another) must stop the fill; otherwise a cancelled build
+        // keeps drawing overlays onto a map that has moved on.
+        const panelToken = {};
+        const panelStillOpen = () => !!_sharePlanPanelState && _sharePlanPanelState.token === panelToken;
+
+        const inChunks = async (items, step, phraseKey, fallback) => {
+            const total = items.length;
+            const now = () => (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+            let sliceStarted = now();
+            for (let i = 0; i < total; i++) {
+                if (!panelStillOpen()) return false;
+                step(items[i], i);
+                showProgress(phraseKey, fallback, i + 1, total);
+                // The clock every step, not every Nth: one proposal's overlay can cost more than
+                // the whole budget, and a budget consulted every 32nd item bounds nothing.
+                if (now() - sliceStarted >= FRAME_BUDGET_MS) {
+                    await nextFrame();
+                    sliceStarted = now();
+                }
+            }
+            return panelStillOpen();
         };
 
         document.body.appendChild(panelRoot);
@@ -1356,13 +1409,28 @@ function showSharePlanPanel() {
             if (event.key === 'Escape') closeSharePlanPanel();
         };
         document.addEventListener('keydown', onKeyDown);
-        _sharePlanPanelState = { root: panelRoot, overlayGroup, onKeyDown };
+        _sharePlanPanelState = { root: panelRoot, overlayGroup, onKeyDown, token: panelToken };
 
-        // Paint every (initially checked) proposal, then frame the whole plan beside the panel.
-        proposalsByHash.forEach((_, key) => syncPlanOverlay(key));
-        try { if (typeof fitMapToAppliedProposals === 'function') fitMapToAppliedProposals(); } catch (_) { }
+        (async () => {
+            try {
+                const entries = [...proposalsByHash.entries()];
+                // Rows first, and all of them before the checks start: a check that lands before
+                // its row exists updates nothing (updateRowState bails on a missing control).
+                if (!await inChunks(entries, ([key, proposal]) => attachRow(proposal, key),
+                    'listingProposals', 'Listing {done}/{total} proposals...')) return;
 
-        initializeUploadChecks();
+                // Then paint every (initially checked) proposal and frame the plan beside the panel.
+                if (!await inChunks(entries.map(([key]) => key), key => syncPlanOverlay(key),
+                    'drawingProposals', 'Drawing {done}/{total} proposals on the map...')) return;
+                try { if (typeof fitMapToAppliedProposals === 'function') fitMapToAppliedProposals(); } catch (_) { }
+
+                await initializeUploadChecks();
+            } catch (error) {
+                console.error('share plan: filling the panel failed', error);
+            } finally {
+                if (panelStillOpen()) clearProgress();
+            }
+        })();
     } catch (error) {
         console.error('showSharePlanPanel failed', error);
         // Undo any partially-entered lockdown so a failure never leaves the map inert.

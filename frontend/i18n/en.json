@@ -330,10 +330,10 @@
         "proposals": {
             "title": "Proposals",
             "listButton": "Proposals List ({{count}})",
-            "unsavedCount": "{{count}} unsaved (not yet uploaded)",
             "mintedButton": "Minted Proposals",
             "shareButton": "Share entire plan (all proposals)",
             "shareButtonEmpty": "No applied plans. Apply some first",
+            "shareButtonPreparing": "Preparing plan...",
             "clearButton": "Clear Proposals From Local Storage",
             "planStats": {
                 "buttonLabel": "Plan Stats",
@@ -1587,7 +1587,6 @@
                 "syncBlockchainLabel": "Sync",
                 "downloadConfirm": "Proposal is not in local storage yet. Download?",
                 "epoch": {
-                    "badgeTooltip": "Plan epoch (timeline year)",
                     "rowLabel": "Plan epoch",
                     "none": "No epoch",
                     "custom": "Other year…",
@@ -1597,13 +1596,7 @@
                     "all": "All",
                     "cumulative": "Cumulative to {year}.",
                     "toApply": "to apply: {n}",
-                    "toUnapply": "to remove: {n}",
-                    "selectForBulk": "Select for bulk epoch assignment",
-                    "selectedCount": "{n} selected",
-                    "assignTo": "Assign to:",
-                    "assign": "Assign",
-                    "clearSelection": "Clear",
-                    "bulkPartial": "{ok} of {total} updated; {failed} failed (see console)."
+                    "toUnapply": "to remove: {n}"
                 }
             },
             "proposalChoice": {
@@ -1811,7 +1804,11 @@
                     "copyResult": "Copy",
                     "copiedResult": "Result copied."
                 },
-                "rebased": "{{count}} of them take different ground here than when published: {{titles}} (details in the console)."
+                "rebased": "{{count}} of them take different ground here than when published: {{titles}} (details in the console).",
+                "checkingProposals": "Checking {{done}}/{{total}} proposals on the server...",
+                "listingProposals": "Listing {{done}}/{{total}} proposals...",
+                "drawingProposals": "Drawing {{done}}/{{total}} proposals on the map...",
+                "preparingPlan": "Preparing plan..."
             },
             "sharedInspector": {
                 "author": "Author:",

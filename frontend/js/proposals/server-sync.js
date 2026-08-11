@@ -79,6 +79,49 @@ function resetServerProposalCache(cityCode) {
     // would inherit the previous one's answer and never fetch.
     serverProposalCache.lastFetchedAt = 0;
     serverProposalCache.lastQuery = null;
+    serverProposalCache.countRefreshedAt = 0;
+    serverProposalCache.countLoading = false;
+}
+
+// How long the sidebar's server count may be reused before the section coming into view re-asks.
+const SERVER_COUNT_MAX_AGE_MS = 15000;
+
+/** Refresh only the NUMBER behind the sidebar button. One COUNT(*) — /proposals/summary would drag
+    250 summaries along for a single integer. Never touches lastFetchedAt or the cached rows, so
+    opening the list still fetches the summaries it needs. A failure keeps the previous number: a
+    stale count is better than a button that empties itself because the network blinked. */
+async function refreshServerProposalCount(cityCode) {
+    const city = normalizeCityCodeForApi(cityCode || resolveCurrentCityCode());
+    if (serverProposalCache.lastCity && serverProposalCache.lastCity !== city) {
+        resetServerProposalCache(city);
+    }
+    // A summary fetch in flight is about to set the same number.
+    if (serverProposalCache.countLoading || serverProposalCache.loading) return serverProposalCache.count;
+
+    const counts = (typeof window !== 'undefined') ? window.__proposalCounts : null;
+    const stale = !counts || counts.serverCountIsStale(
+        serverProposalCache.countRefreshedAt, Date.now(), SERVER_COUNT_MAX_AGE_MS);
+    if (!stale) return serverProposalCache.count;
+
+    serverProposalCache.countLoading = true;
+    try {
+        const url = `${resolveBackendBaseUrl()}/proposals/count`
+            + (city ? `?city=${encodeURIComponent(city)}` : '');
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const payload = await resp.json();
+        if (Number.isFinite(payload?.count)) {
+            serverProposalCache.count = Number(payload.count);
+            serverProposalCache.lastCity = city;
+            serverProposalCache.countRefreshedAt = Date.now();
+        }
+    } catch (error) {
+        console.warn('[proposals] osvježavanje serverskog broja nije uspjelo:', error?.message || error);
+    } finally {
+        serverProposalCache.countLoading = false;
+        if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton();
+    }
+    return serverProposalCache.count;
 }
 
 // The sort keys the SERVER can order by (DB-derivable). The rest (acceptance/parcels/area) are
@@ -317,13 +360,15 @@ function syncProposalWithServerId(proposal, serverProposalId) {
 async function ensurePublishGroundLoaded(proposal) {
     try {
         const planOrderApi = (typeof window !== 'undefined') ? window.__planOrder : null;
-        if (!planOrderApi || typeof planOrderApi.footprintOf !== 'function') return;
-        if (typeof fetchParcelsUnderGeometry !== 'function') return;
+        if (!planOrderApi || typeof planOrderApi.footprintOf !== 'function') return { ok: true };
+        if (typeof fetchParcelsUnderGeometry !== 'function') return { ok: true };
         const footprint = planOrderApi.footprintOf(proposal);
-        if (!footprint || !footprint.geometry) return;
+        if (!footprint || !footprint.geometry) return { ok: true };
         await fetchParcelsUnderGeometry(footprint);
+        return { ok: true };
     } catch (error) {
         console.warn('[uploadProposalToServer] could not load the ground under this proposal', error);
+        return { ok: false, error };
     }
 }
 
@@ -374,7 +419,7 @@ async function uploadProposalToServer(proposal) {
     //
     // Ground that is genuinely absent — an existing street with no cadastral parcel under it — is
     // still absent after the fetch, and the gate still refuses it. That refusal is correct.
-    await ensurePublishGroundLoaded(proposal);
+    const ground = await ensurePublishGroundLoaded(proposal);
 
     let uploadProposal;
     try {
@@ -382,6 +427,27 @@ async function uploadProposalToServer(proposal) {
     } catch (gateError) {
         // The §15a publish gate refused — a non-flat record is the author's error to see, not
         // something to heal into shape.
+        //
+        // But "the cadastre covers only N% of this footprint" has two very different causes, and
+        // the number alone cannot tell them apart: ground that is genuinely absent, or ground the
+        // browser failed to FETCH. A swallowed fetch failure reads as the first and sends the
+        // author looking for a hole in their road that is not there.
+        if (gateError && gateError.code === 'cadastre-coverage-insufficient') {
+            if (ground && !ground.ok) {
+                const detail = (ground.error && ground.error.message) ? ` (${ground.error.message})` : '';
+                return {
+                    ok: false,
+                    message: `${gateError.message} The cadastre under this proposal could not be loaded${detail}`
+                        + ', so this is a loading failure rather than missing ground. Try again.'
+                };
+            }
+            // A percentage cannot be argued with. Name the command that paints the missing ground.
+            const id = proposal && (proposal.proposalId || proposal.id);
+            return {
+                ok: false,
+                message: `${gateError.message} Run whereIsThePublishGap('${id}') in the console to see the holes on the map.`
+            };
+        }
         return { ok: false, message: gateError.message || 'This proposal cannot be published.' };
     }
     if (!uploadProposal) {

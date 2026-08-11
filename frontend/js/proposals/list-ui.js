@@ -831,7 +831,6 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         return `
             <div class="${classAttr} proposal-list-item--compact" data-proposal-id="${proposalId}" style="border-left: 4px ${isUnsaved ? 'dashed' : 'solid'} ${color};">
                 <div class="proposal-card-head">
-                    ${window.__proposalEpoch ? window.__proposalEpoch.selectCheckboxHtml(proposalId) : ''}
                     <span class="proposal-card-icon" title="${escapeHtml(goalIconTitle)}" aria-hidden="true">${escapeHtml(goalIcon)}</span>
                     <span class="proposal-list-title" title="${safeTitle}">${safeTitle}</span>
                     ${serialProposalId ? `<span class="proposal-meta-number">#${escapeHtml(serialProposalId)}</span>` : ''}
@@ -840,7 +839,7 @@ function buildProposalListItemsHtml(dataset, options = {}) {
                 </div>
                 <div class="proposal-card-sub">${metaBits}</div>
                 <div class="proposal-card-badges">
-                    ${window.__proposalEpoch ? window.__proposalEpoch.epochBadgeHtml(proposal) : ''}
+                    ${window.__proposalEpoch ? window.__proposalEpoch.cardEpochSelectHtml(proposal, proposalId) : ''}
                     <span class="proposal-application-status ${appliedClass}">${escapeHtml(appliedLabel)}</span>
                     <span class="proposal-mint-state proposal-mint-state--compact" style="color:${mintStyles.color};background:${mintStyles.background};border:1px solid ${mintStyles.border};">${escapeHtml(mintLabel)}</span>
                     ${isLocal ? `<span class="proposal-mint-state proposal-mint-state--compact proposal-local-state" style="color:#334155;background:#f1f5f9;border:1px solid #cbd5e1;">${escapeHtml(mintLabels.local)}</span>` : ''}
@@ -891,8 +890,8 @@ async function handleProposalListItemClick(event) {
     const item = event.currentTarget;
     if (!item) return;
 
-    // Kvačica za skupnu dodjelu epohe označava, ne otvara prijedlog.
-    if (event.target && event.target.closest && event.target.closest('.proposal-bulk-check')) return;
+    // Izbornik epohe na kartici mijenja godinu, ne otvara prijedlog.
+    if (event.target && event.target.closest && event.target.closest('.proposal-epoch-card-select')) return;
 
     const proposalIdAttr = item.getAttribute('data-proposal-id');
     if (!proposalIdAttr) return;
@@ -1127,20 +1126,26 @@ function updateProposalList() {
     }
 }
 
+// ONE number on the button: the union of the three list tabs (Local / Server / Blockchain). They
+// overlap — Blockchain is the minted subset of Local, and an uploaded local proposal is also a
+// server row — so the union is the server total plus the local records never uploaded. The second,
+// circled number here used to count unsaved work, which read as a contradiction of the first.
+function proposalUnionCountNow() {
+    const local = proposalStorage.getAllProposals().map(proposal => ({
+        // "On server" by the same test the list card uses for its badge — a DOWNLOADED proposal
+        // carries the serial as proposalId/id, and counting it as local-only would double it.
+        onServer: !!(typeof getSerialProposalId === 'function' && getSerialProposalId(proposal))
+    }));
+    const counts = (typeof window !== 'undefined') ? window.__proposalCounts : null;
+    return counts
+        ? counts.unionProposalCount(local, serverProposalCache.count)
+        : local.length;
+}
+
 function updateShowProposalsButton() {
     const button = document.getElementById('showProposalsButton');
     if (button) {
-        const allLocal = proposalStorage.getAllProposals();
-        const localCount = allLocal.length;
-        const serverCount = serverProposalCache.count;
-        let totalProposals;
-        if (serverCount !== null && serverCount !== undefined) {
-            // server count + local-only proposals (never uploaded)
-            const localOnlyCount = allLocal.filter(p => !p.serverProposalId).length;
-            totalProposals = serverCount + localOnlyCount;
-        } else {
-            totalProposals = localCount;
-        }
+        const totalProposals = proposalUnionCountNow();
         const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
         button.setAttribute('data-i18n-key', 'sidebar.proposals.listButton');
         button.setAttribute('data-i18n-params', JSON.stringify({ count: totalProposals }));
@@ -1149,30 +1154,18 @@ function updateShowProposalsButton() {
         } else {
             button.textContent = `Proposals List (${totalProposals})`;
         }
-        // Flag unsaved (local-only, neither minted nor uploaded) work right on the sidebar button, so
-        // it's visible without opening the list. Same predicate as the list's amber "Unsaved" badge.
-        // Re-appended each call because setting textContent above clears the previous badge.
-        const unsavedCount = allLocal.filter(p =>
-            !(typeof isProposalMinted === 'function' && isProposalMinted(p))
-            && !(typeof getSerialProposalId === 'function' && getSerialProposalId(p))
-        ).length;
-        if (unsavedCount > 0) {
-            const dot = document.createElement('span');
-            dot.className = 'proposal-unsaved-count';
-            dot.textContent = String(unsavedCount);
-            const unsavedTitle = (i18nApi && typeof i18nApi.t === 'function')
-                ? i18nApi.t('sidebar.proposals.unsavedCount', { count: unsavedCount })
-                : `${unsavedCount} unsaved (not yet uploaded)`;
-            dot.title = unsavedTitle;
-            button.appendChild(dot);
-        }
     }
 
     const sharePlanButton = document.getElementById('shareAppliedProposalsButton');
-    if (sharePlanButton) {
+    // While the plan is being prepared the button owns its own disabled state — re-enabling it here
+    // would invite a second click straight into a half-built panel.
+    if (sharePlanButton && !sharePlanButton.dataset.sharePlanBusy) {
         const appliedCount = proposalStorage.getAllProposals().filter(isProposalCurrentlyApplied).length;
         sharePlanButton.disabled = appliedCount === 0;
     }
+
+    // no-op safety: the observer below is idempotent, and the button may only now exist
+    watchProposalsSectionVisibility();
 
     // Also sync the proposals presence indicator
     if (typeof syncProposalsIndicator === 'function') {
@@ -1182,6 +1175,31 @@ function updateShowProposalsButton() {
     if (typeof refreshBlockInfoProposalTab === 'function') {
         try { refreshBlockInfoProposalTab(); } catch (_) { }
     }
+}
+
+// Half the count is local (always current) and half is the server's, which goes stale the moment
+// anyone else uploads. So it is refreshed when the Proposals section BECOMES VISIBLE. A collapsed
+// accordion is display:none, so one IntersectionObserver covers every case the number could be
+// looked at: the first expand, every re-expand, the sidebar being re-opened, and the section being
+// scrolled back into view. Observing is idempotent — the button is never re-created, but this is
+// called from updateShowProposalsButton, which runs on every proposal change.
+function watchProposalsSectionVisibility() {
+    const button = document.getElementById('showProposalsButton');
+    if (!button || button.__proposalCountObserved) return false;
+    if (typeof IntersectionObserver !== 'function') return false;
+    button.__proposalCountObserved = true;
+
+    const observer = new IntersectionObserver(entries => {
+        if (!entries.some(entry => entry.isIntersecting)) return;
+        updateShowProposalsButton();                 // the local half, immediately
+        try {
+            // The server half, at most once per SERVER_COUNT_MAX_AGE_MS; it updates the button again
+            // when it lands. Never awaited — a slow backend must not hold up the sidebar.
+            if (typeof refreshServerProposalCount === 'function') refreshServerProposalCount();
+        } catch (_) { }
+    }, { threshold: 0 });
+    observer.observe(button);
+    return true;
 }
 
 function handleMultiSelectChange(checked, source) {
