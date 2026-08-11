@@ -568,7 +568,7 @@ function renderProposalListModal() {
     }
 }
 
-function showAllProposalsModal() {
+async function showAllProposalsModal() {
     resetParcelSelectionForProposalListInteraction();
     try { clearProposalInfoHoverOverlay(); } catch (_) { }
 
@@ -594,9 +594,19 @@ function showAllProposalsModal() {
             const sidebar = document.getElementById('sidebar');
             if (sidebar && !sidebar.classList.contains('collapsed') && typeof toggleSidebar === 'function') toggleSidebar();
         } catch (_) { }
+
+        // Show the panel EMPTY and busy first, then hand the browser a frame to draw it in. Building
+        // the list from several hundred proposals is not instant, and until it finishes the click has
+        // no visible effect at all — the panel simply appears late, which reads as a dropped click.
+        modal.setAttribute('aria-busy', 'true');
+        modal.innerHTML = '<div class="proposal-list-loading"><i class="fas fa-spinner fa-spin"></i></div>';
+        if (typeof window !== 'undefined' && typeof window.yieldToBrowser === 'function') {
+            await window.yieldToBrowser();
+        }
     }
 
     renderProposalListModal();
+    modal.removeAttribute('aria-busy');
 
     // Frame all applied proposals to start browsing from an overview. Called AFTER the render (so the
     // panel exists and its footprint can be padded out) and directly rather than via
@@ -1175,7 +1185,8 @@ function showSharePlanPanel() {
             if (checked) selected.add(key);
             else selected.delete(key);
             toggleCheckbox(key, checked);
-            // The map mirrors the checkbox: in the plan = painted, out of the plan = unpainted.
+            // Toggling a row paints or unpaints THAT row. The map is not painted when the panel
+            // opens (see the fill below) — checked means "in the plan", not "drawn right now".
             syncPlanOverlay(key);
             setStatus('');
             updateShareUrl();
@@ -1298,7 +1309,7 @@ function showSharePlanPanel() {
             rowControls.set(key, { row, checkbox, chip, uploadBtn, uploadedLabel, meta });
         };
 
-        const refreshUploadState = async (key, proposal) => {
+        const refreshUploadState = async (key, proposal, known = null) => {
             const serverId = getServerProposalId(proposal);
             if (!serverId) {
                 uploadState.set(key, { uploaded: false, uploading: false, serverId: null });
@@ -1307,7 +1318,12 @@ function showSharePlanPanel() {
             }
             uploadState.set(key, { uploaded: false, uploading: true, serverId });
             updateRowState(key);
-            const exists = await headProposalExists(serverId, proposal.city, proposal);
+            // `known` is the whole server list when it could be fetched completely; consult it
+            // rather than making a request per proposal. Null means we could not get an
+            // authoritative list, so ask about this one — slow, never wrong.
+            const exists = (known instanceof Set)
+                ? known.has(String(serverId))
+                : await headProposalExists(serverId, proposal.city, proposal);
 
             // After headProposalExists, the proposal may have been synced with serverProposalId
             // Get the serial ID (numeric) if available
@@ -1358,13 +1374,51 @@ function showSharePlanPanel() {
             if (progressRow && progressRow.parentNode) progressRow.parentNode.removeChild(progressRow);
         };
 
+        // Which proposals the server already has — asked ONCE, not once per proposal.
+        //
+        // This used to be a sequential request per row: 300 proposals, 300 round trips, and in a
+        // plan where none had been uploaded, 300 consecutive 404s in the console. The list endpoint
+        // answers the same question in one call.
+        //
+        // Absence is only proof when the list is COMPLETE, so the count is checked against what came
+        // back. Short list, or any failure, and this returns null — the caller then falls back to
+        // asking per proposal, which is slow but never wrong. A truncated list treated as complete
+        // would report uploaded proposals as missing and offer to upload them again.
+        const serverProposalIndex = async () => {
+            try {
+                const base = (typeof resolveBackendBaseUrl === 'function') ? resolveBackendBaseUrl() : '';
+                const city = (typeof CityConfigManager !== 'undefined' && CityConfigManager.getCurrentCityId)
+                    ? CityConfigManager.getCurrentCityId() : '';
+                const query = city ? `city=${encodeURIComponent(city)}` : '';
+                const countResponse = await fetch(`${base}/proposals/count?${query}`);
+                if (!countResponse.ok) return null;
+                const expected = Number((await countResponse.json()).count);
+                if (!Number.isFinite(expected)) return null;
+
+                const listResponse = await fetch(`${base}/proposals/summary?${query}&limit=${expected + 50}`);
+                if (!listResponse.ok) return null;
+                const payload = await listResponse.json();
+                const rows = Array.isArray(payload && payload.proposals) ? payload.proposals : null;
+                if (!rows || rows.length < expected) return null;
+
+                const known = new Set();
+                rows.forEach(row => {
+                    if (row && row.proposalId) known.add(String(row.proposalId));
+                    if (row && row.id !== undefined && row.id !== null) known.add(String(row.id));
+                });
+                return known;
+            } catch (_) { return null; }
+        };
+
         const initializeUploadChecks = async () => {
             const total = proposalsByHash.size;
             let done = 0;
             showProgress('checkingProposals', 'Checking {done}/{total} proposals on the server...', done, total);
+            const known = await serverProposalIndex();
+            if (!panelStillOpen()) return;
             for (const [key, proposal] of proposalsByHash.entries()) {
                 if (!panelStillOpen()) return;
-                await refreshUploadState(key, proposal);
+                await refreshUploadState(key, proposal, known);
                 done += 1;
                 showProgress('checkingProposals', 'Checking {done}/{total} proposals on the server...', done, total);
             }
@@ -1419,9 +1473,10 @@ function showSharePlanPanel() {
                 if (!await inChunks(entries, ([key, proposal]) => attachRow(proposal, key),
                     'listingProposals', 'Listing {done}/{total} proposals...')) return;
 
-                // Then paint every (initially checked) proposal and frame the plan beside the panel.
-                if (!await inChunks(entries.map(([key]) => key), key => syncPlanOverlay(key),
-                    'drawingProposals', 'Drawing {done}/{total} proposals on the map...')) return;
+                // The map is NOT painted on open. Opening a list is not a request to draw three
+                // hundred overlays: it cost seconds of turf and Leaflet work before the panel was
+                // usable, and it left the map unreadable under the whole plan at once. Overlays are
+                // what HOVER and CLICK are for, and toggling a row still syncs its own overlay.
                 try { if (typeof fitMapToAppliedProposals === 'function') fitMapToAppliedProposals(); } catch (_) { }
 
                 await initializeUploadChecks();

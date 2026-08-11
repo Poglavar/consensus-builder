@@ -50,13 +50,34 @@
     // leaves the parcel WHOLE: a 5,048 m² parcel sat uncut under two roads that plainly crossed it,
     // with nothing on screen to say it had been skipped.
     //
-    // So a failed clip is retried on coordinates snapped to a grid, which collapses those
-    // near-duplicates into genuinely equal points. 9 then 8 decimal places is 0.1 mm then 1.1 mm —
-    // orders of magnitude below cadastral survey precision, and below KEY_PRECISION, so a piece
-    // still hashes to the same id. The happy path never snaps, so every parcel that already worked
-    // is bit-for-bit unchanged; only the ones that would otherwise be dropped are touched. If every
-    // attempt fails the error is rethrown, because a clip that cannot be done must stay loud.
-    const CLIP_RETRY_DECIMALS = [9, 8];
+    // So EVERY clip runs on coordinates snapped to a grid, which collapses those near-duplicates
+    // into genuinely equal points before the sweep line can order them inconsistently.
+    //
+    // This used to be a retry: the first attempt ran unsnapped and only a throw brought the grid
+    // out. That was the conservative choice — "the happy path never snaps, so every parcel that
+    // already worked is bit-for-bit unchanged" — and it was wrong about how rare the failures are.
+    // Panning across Šibenik produced several per second, each one a thrown exception, a discarded
+    // clip and a full re-run. Worse, it left the fabric on TWO grids: source parcels arrive from the
+    // cadastre at ~9 dp, derived pieces carry the full 15-dp output of the previous clip, and
+    // feeding those back in is precisely how a shared boundary comes to differ in its last bit.
+    // One grid for everything removes the failure at its source rather than recovering from it.
+    //
+    // 9 decimal places is 0.1 mm at this latitude — orders of magnitude below cadastral survey
+    // precision, so nothing anyone surveyed moves.
+    //
+    // It DOES shift some piece ids once. A vertex within 0.05 mm of a KEY_PRECISION rounding
+    // boundary (7 dp ≈ 1 cm) lands on the other side of it, which measures at ~0.5% of vertices, so
+    // a piece with twenty vertices has roughly a one-in-ten chance of hashing differently than it
+    // did before this change. That is survivable because a piece id is a content address, not a
+    // foreign key: an applied proposal finds its ground through the live-fabric GEOMETRY resolver
+    // (_resolveLiveFormationParents), never by looking a piece id up. Ids stay stable across
+    // rebuilds, which is what they are for; they are not stable across a change in how the fabric
+    // is computed, and nothing is entitled to assume they are.
+    const CLIP_SNAP_DECIMALS = 9;
+
+    // Whatever still fails gets a coarser grid: 1.1 mm, then 1.1 cm. If every attempt fails the
+    // error is rethrown, because a clip that cannot be done must stay loud.
+    const CLIP_RETRY_DECIMALS = [8, 7];
 
     function snapCoordinates(value, factor) {
         if (Array.isArray(value)) {
@@ -80,22 +101,34 @@
         };
     }
 
-    // Run a two-operand turf clip, retrying on snapped coordinates if the clipper gives up.
+    // Every clip that has run, and every one that needed a coarser grid than the standard one.
+    // A count, not a log line per event: the point is whether the failure class still exists.
+    const clipTrouble = { clips: 0, rescued: 0, failed: 0, lastMessage: null };
+
+    // Run a two-operand turf clip on the shared grid, coarsening it if the clipper still gives up.
     function clip(operation, a, b) {
         const t = T();
+        clipTrouble.clips += 1;
         try {
-            return t[operation](a, b);
+            return t[operation](snapFeature(a, CLIP_SNAP_DECIMALS), snapFeature(b, CLIP_SNAP_DECIMALS));
         } catch (error) {
             for (const decimals of CLIP_RETRY_DECIMALS) {
                 try {
                     const result = t[operation](snapFeature(a, decimals), snapFeature(b, decimals));
+                    clipTrouble.rescued += 1;
+                    clipTrouble.lastMessage = `${operation} @${decimals}dp: ${error && error.message}`;
                     console.warn(`[parcel-arrangement] ${operation} needed ${decimals}-dp snapping to clip:`, error && error.message);
                     return result;
                 } catch (_) { /* try a coarser grid */ }
             }
+            clipTrouble.failed += 1;
+            clipTrouble.lastMessage = `${operation} FAILED: ${error && error.message}`;
             throw error;
         }
     }
+
+    /** How the clipper has been coping. Read it from the console after a pan. */
+    function clipHealth() { return { ...clipTrouble }; }
 
     function featureOf(geometry) {
         if (!geometry) return null;
@@ -166,13 +199,17 @@
     }
 
     // FNV-1a, 32-bit. Not a security hash — a short, stable, dependency-free content address.
-    function hashText(text) {
+    function hash32(text) {
         let hash = 0x811c9dc5;
-        for (let i = 0; i < text.length; i += 1) {
-            hash ^= text.charCodeAt(i);
+        for (let i = 0; i < String(text).length; i += 1) {
+            hash ^= String(text).charCodeAt(i);
             hash = Math.imul(hash, 0x01000193) >>> 0;
         }
-        return hash.toString(36);
+        return hash >>> 0;
+    }
+
+    function hashText(text) {
+        return hash32(text).toString(36);
     }
 
     function pieceId(parcelId, kind, geometry) {
@@ -306,15 +343,42 @@
     }
 
     /** Which of `takes` reach this parcel at all — the recompute set for one corridor's ground. */
+    // A corridor's bbox, computed once and remembered against the geometry object it came from.
+    //
+    // This is asked once per (parcel, take) pair. A whole-plan derivation over 13,000 loaded parcels
+    // and 130 corridors is 1.7 million pairs, and boxesDisjoint recomputed BOTH boxes every time —
+    // so a corridor polyline's box was rebuilt 13,000 times from all of its vertices, to answer a
+    // question whose answer never changes. Cached, the pair costs four number comparisons.
+    const takeBoxCache = (typeof WeakMap === 'function') ? new WeakMap() : null;
+
+    function boxOf(t, geometryOrFeature) {
+        if (!takeBoxCache || !geometryOrFeature || typeof geometryOrFeature !== 'object') {
+            try { return t.bbox(featureOf(geometryOrFeature)); } catch (_) { return null; }
+        }
+        const cached = takeBoxCache.get(geometryOrFeature);
+        if (cached) return cached;
+        let box = null;
+        try { box = t.bbox(featureOf(geometryOrFeature)); } catch (_) { box = null; }
+        if (box) takeBoxCache.set(geometryOrFeature, box);
+        return box;
+    }
+
     function takesOverlapping(parcel, takes) {
         const t = T();
         if (!t) return [];
         const parcelFeature = featureOf(parcel);
         if (!parcelFeature) return [];
+        // The parcel's box once per call rather than once per take.
+        let parcelBox = null;
+        try { parcelBox = t.bbox(parcelFeature); } catch (_) { parcelBox = null; }
         return (Array.isArray(takes) ? takes : []).filter(take => {
             if (!take || !take.geometry) return false;
+            const takeBox = boxOf(t, take.geometry);
+            if (parcelBox && takeBox
+                && (parcelBox[0] > takeBox[2] || takeBox[0] > parcelBox[2]
+                    || parcelBox[1] > takeBox[3] || takeBox[1] > parcelBox[3])) return false;
             const feature = featureOf(take.geometry);
-            if (boxesDisjoint(t, parcelFeature, feature)) return false;
+            if (!parcelBox && boxesDisjoint(t, parcelFeature, feature)) return false;
             try {
                 const hit = clip('intersect', parcelFeature, feature);
                 return !!hit && t.area(hit) > MIN_PIECE_M2;
@@ -438,7 +502,14 @@
         takesOverlapping,
         pieceId,
         isPieceId,
-        canonicalPolygon
+        canonicalPolygon,
+        // Exported so nothing else re-implements the content address. A block's name is built on
+        // this too, from its own outline rather than from any parcel in it.
+        hash32,
+        // The clipper's own surface, exported so its grid and its failure handling can be tested
+        // directly rather than inferred from whatever the arrangement happened to produce.
+        clip,
+        clipHealth
     };
 
     // Namespaced only — a bare global here could shadow one of the top-level functions in the

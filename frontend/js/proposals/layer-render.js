@@ -997,6 +997,13 @@ async function removeProposalFromMap(proposalId, options = {}) {
         button.style.opacity = '0.6';
         button.style.cursor = 'wait';
         button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${options.removingLabel || 'Removing…'}`;
+        // …and let the browser DRAW it. The spinner has been set here all along and was never seen:
+        // unapply awaits a chain whose promises are usually already settled, so everything below runs
+        // in microtasks, which complete before any frame is painted. Without a macrotask boundary the
+        // button goes from "Stash" to "Stash" with a frozen second in between.
+        if (typeof window !== 'undefined' && typeof window.yieldToBrowser === 'function') {
+            await window.yieldToBrowser();
+        }
     }
 
     try {

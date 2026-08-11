@@ -1,6 +1,17 @@
 (function (global) {
     'use strict';
 
+    // One renderer for every parcel ever ingested, created on first use. Two canvases would be two
+    // surfaces to composite; a per-batch renderer would be dozens.
+    let _parcelCanvas = null;
+    function parcelCanvasRenderer() {
+        if (_parcelCanvas) return _parcelCanvas;
+        if (typeof L === 'undefined' || typeof L.canvas !== 'function') return undefined;
+        _parcelCanvas = L.canvas({ padding: 0.5 });
+        return _parcelCanvas;
+    }
+    if (typeof window !== 'undefined') window.parcelCanvasRenderer = parcelCanvasRenderer;
+
     function buildHumanParcelId(props) {
         // Build HR-<maticni_broj_ko>-<broj_cestice> when available
         const cad = props.maticni_broj_ko ?? props.MATICNI_BROJ_KO;
@@ -222,8 +233,27 @@
         };
 
         try {
-            var featureCollection = { type: 'FeatureCollection', features: renderableFeatures };
+            // In BATCHES, with a frame handed back between them.
+            //
+            // Panning into ground you have not visited lands a fetch of a few thousand parcels, and
+            // building every layer in one go is one long synchronous block — which is exactly when
+            // the drag stutters, and why it stops once an area has been visited and the answer is
+            // cached. Same layers, same order; only the browser's chance to draw is new.
+            var INGEST_BATCH = 250;
+            for (var batchStart = 0; batchStart < renderableFeatures.length; batchStart += INGEST_BATCH) {
+            var featureCollection = { type: 'FeatureCollection', features: renderableFeatures.slice(batchStart, batchStart + INGEST_BATCH) };
             var geoJsonLayer = L.geoJSON(featureCollection, {
+                // ONE canvas for every parcel, instead of one SVG <path> each.
+                //
+                // Measured on a real Šibenik session: 42,144 paths in the overlay, and a drag
+                // transforms and re-rasterises the whole SVG every frame — which is the choppy pan.
+                // Parcels are the bulk of that, and they are the layer that can move cheapest: plain
+                // geometry with a style function and click handlers, no CSS classes, no pattern
+                // fills, nothing that reads layer._path except diagnostics.
+                //
+                // Same shared-renderer pattern the government plan overlay already uses. The padding
+                // draws half a viewport beyond the edge so a short pan needs no redraw at all.
+                renderer: parcelCanvasRenderer(),
                 style: styleFeature,
                 onEachFeature: attachParcelEvents
             });
@@ -249,6 +279,11 @@
 
                 addedLayers.push(layer);
             });
+            if (batchStart + INGEST_BATCH < renderableFeatures.length
+                && typeof global.yieldToBrowser === 'function') {
+                await global.yieldToBrowser();
+            }
+            }
         } catch (error) {
             console.error('[ingestParcelFeatures] Error during bulk add:', error);
         }

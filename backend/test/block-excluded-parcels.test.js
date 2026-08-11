@@ -151,8 +151,8 @@ describe('carried into the applied plan', () => {
     });
 
     const collect = buildingBlocks.slice(
-        buildingBlocks.indexOf('function appliedIneligibleBlockParts()'),
-        buildingBlocks.indexOf('function updateProposedBuildingsLayer()')
+        buildingBlocks.indexOf('function appliedIneligibleBlockParts('),
+        buildingBlocks.indexOf("// One proposal's buildings, in their own sub-layer.")
     );
 
     it('collects them from applied records, in one place both views read', () => {
@@ -178,14 +178,23 @@ describe('carried into the applied plan', () => {
 
     it('draws them on the 2D map — hatched plot, dashed massing — even when the rule built nothing', () => {
         const layer = buildingBlocks.slice(
-            buildingBlocks.indexOf('function updateProposedBuildingsLayer()'),
+            buildingBlocks.indexOf("// One proposal's buildings, in their own sub-layer."),
             buildingBlocks.indexOf('function showBlockifyModal()')
         );
-        expect(layer).toContain('const ineligibleParts = appliedIneligibleBlockParts();');
-        expect(layer).toContain('if (list.length > 0 || ineligibleParts.length > 0) {');
+        // Drawn with the proposal that owns them, so an apply costs its own parts and no one else's.
+        expect(layer).toContain('appliedIneligibleBlockParts(id).forEach(part => {');
         expect(layer).toContain("part.properties.kind === 'plot'");
         expect(layer).toContain("dashArray: '2, 5'");   // the plot
         expect(layer).toContain("dashArray: '6, 4'");   // the building it would carry
+        // A rule that built nothing still shows its plots: the parts are drawn before, and
+        // independently of, whether this proposal contributed any buildings.
+        expect(layer.indexOf('appliedIneligibleBlockParts(id)'))
+            .toBeLessThan(layer.indexOf('const list = ensureProposedBuildingsState();'));
+    });
+
+    it('restricts the walk to one record when only one proposal is being drawn', () => {
+        // Without this, drawing one proposal still costs every applied proposal on the map.
+        expect(collect).toContain("if (wanted !== null && String(record.proposalId ?? '') !== wanted) return;");
     });
 
     it('raises only the massing in 3D, never the plot outline', () => {

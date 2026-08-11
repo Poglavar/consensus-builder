@@ -210,8 +210,16 @@ if (typeof window !== 'undefined') {
             arrivalDerivationHandle = null;
             const batch = Array.from(arrivingParcelIds);
             arrivingParcelIds = new Set();
-            try { ProposalManager.deriveArrivingParcels?.(batch); }
-            catch (error) { console.error('[proposals] could not derive newly loaded parcels', error); }
+            // deriveArrivingParcels is async now (it cuts the ground in chunks so a pan stays
+            // responsive), so a throw arrives as a rejection rather than here — catch both, or a
+            // failure to cut newly-arrived ground becomes an unhandled rejection and nothing says
+            // which parcels were left uncut.
+            try {
+                const derived = ProposalManager.deriveArrivingParcels?.(batch);
+                if (derived && typeof derived.catch === 'function') {
+                    derived.catch(error => console.error('[proposals] could not derive newly loaded parcels', error));
+                }
+            } catch (error) { console.error('[proposals] could not derive newly loaded parcels', error); }
         }, 0);
     };
 

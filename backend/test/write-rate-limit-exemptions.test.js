@@ -61,6 +61,18 @@ describe('read-only POSTs are not rationed as writes', () => {
         expect(codes).not.toContain(429);
         expect(served(codes)).toBe(WRITE_LIMIT + 5);
     }, 30000);
+
+    it('serves /buildings/footprints past it, because a demolition scan asks once per proposal', async () => {
+        // Applying a building proposal scans for the buildings it would demolish, and that scan
+        // fetches footprints. A batch of a hundred block rules therefore spends a hundred of the
+        // budget — and once refused, the scan finds nothing to demolish and the proposal is stored
+        // as demolishing nothing. The failure is silent, which is what makes it worth a test.
+        const geometry = { type: 'Polygon', coordinates: [[[15.9, 43.73], [15.91, 43.73], [15.91, 43.74], [15.9, 43.73]]] };
+        const codes = await hammer(app(), '/buildings/footprints', { geometry, city: 'sibenik' }, WRITE_LIMIT + 10);
+        expect(codes).not.toContain(403);
+        expect(codes).not.toContain(429);
+        expect(served(codes)).toBe(WRITE_LIMIT + 10);
+    }, 30000);
 });
 
 describe('genuine writes are still rationed', () => {

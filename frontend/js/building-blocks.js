@@ -487,7 +487,12 @@ function getProposedBuildingIndexById(proposalId, buildingIndex = null) {
     return -1;
 }
 
-function upsertProposedBuildingFeature(feature, { updateLayer = true, save = true } = {}) {
+// No `save`: the proposed-building list is DERIVED from the applied proposals and rebuilt by
+// the replay, so there has never been anything here to persist. The option used to be passed
+// through to saveExecutedBuildingsToStorage(), a function that does not exist in this codebase
+// and never has — both call sites were typeof-guarded, so a `save: true` read as persistence
+// happening and was a no-op.
+function upsertProposedBuildingFeature(feature, { updateLayer = true } = {}) {
     if (!feature || typeof feature !== 'object' || !feature.properties || !feature.properties.proposalId) {
         return false;
     }
@@ -616,7 +621,7 @@ function upsertProposedBuildingFeature(feature, { updateLayer = true, save = tru
     return true;
 }
 
-function removeProposedBuildingFeature(proposalId, { updateLayer = true, save = true } = {}) {
+function removeProposedBuildingFeature(proposalId, { updateLayer = true } = {}) {
     if (!proposalId) return false;
     const normalizedId = String(proposalId);
     const list = ensureProposedBuildingsState();
@@ -649,7 +654,7 @@ function getProposedBuildingFeature(proposalId) {
     return null;
 }
 
-function markProposedBuildingState(proposalId, state, { updateLayer = true, save = true } = {}) {
+function markProposedBuildingState(proposalId, state, { updateLayer = true } = {}) {
     if (!proposalId) return false;
     const list = ensureProposedBuildingsState();
     const normalizedId = String(proposalId);
@@ -1256,7 +1261,7 @@ function hydrateProposedBuildingsFromProposals() {
                 geometry: clone.geometry,
                 properties: props
             };
-            if (upsertProposedBuildingFeature(hydrated, { updateLayer: false, save: false })) {
+            if (upsertProposedBuildingFeature(hydrated, { updateLayer: false })) {
                 added += 1;
             }
         });
@@ -1358,7 +1363,7 @@ function loadExecutedBuildingsFromStorage() {
 }
 
 function removeExecutedBuildingByProposalId(proposalId) {
-    const removed = removeProposedBuildingFeature(proposalId, { updateLayer: true, save: true });
+    const removed = removeProposedBuildingFeature(proposalId, { updateLayer: true });
     if (removed) {
         console.log(`Removed stored building for proposal ${proposalId}`);
     }
@@ -1385,7 +1390,9 @@ if (typeof PersistentStorage !== 'undefined' && typeof PersistentStorage.ensureR
 // block say "this plot is part of the block and cannot take a building as it stands" instead of
 // saying nothing. One collector, read by both the 2D layer and the 3D view, so the two can never
 // disagree about which plots those are.
-function appliedIneligibleBlockParts() {
+// `onlyProposalId` restricts the walk to one record, so drawing a single proposal does not pay for
+// every applied proposal on the map.
+function appliedIneligibleBlockParts(onlyProposalId) {
     const store = (typeof window !== 'undefined') ? window.proposalStorage : null;
     if (!store || typeof store.getAllProposals !== 'function') return [];
     const standing = record => (typeof window.isProposalApplied === 'function')
@@ -1409,8 +1416,10 @@ function appliedIneligibleBlockParts() {
     };
 
     const parts = [];
+    const wanted = (onlyProposalId === undefined || onlyProposalId === null) ? null : String(onlyProposalId);
     store.getAllProposals().forEach(record => {
         if (!record || !standing(record)) return;
+        if (wanted !== null && String(record.proposalId ?? '') !== wanted) return;
         const bp = record.buildingProposal;
         if (!bp) return;
         const proposalId = record.proposalId || null;
@@ -1464,73 +1473,173 @@ function appliedIneligibleBlockParts() {
     return parts;
 }
 if (typeof window !== 'undefined') window.appliedIneligibleBlockParts = appliedIneligibleBlockParts;
+// NOT `window.withProposedBuildingsRefreshHeld = run => withProposedBuildingsRefreshHeld(run)`.
+// This is a classic script, so the top-level `function withProposedBuildingsRefreshHeld` IS
+// window.withProposedBuildingsRefreshHeld already. Assigning a wrapper that calls the bare name
+// makes the name resolve to the wrapper — the function becomes a call to itself, and the first
+// replay dies with "Maximum call stack size exceeded" before it applies anything. Nothing to
+// publish here: the declaration published it.
 
+// Rebuilding the proposed-buildings layer means throwing the whole layer away and drawing every
+// building of every applied proposal again. That happens once per apply, which over a replay is
+// quadratic: applying the 180th proposal redraws the 179 before it, and the burst is synchronous
+// Leaflet/SVG work, so the map cannot paint or answer the mouse until it finishes.
+//
+// Held for the length of a batch and run ONCE at the end. Same shape as the corridor-strip hold in
+// corridor-render.js, including the missed flag — a refresh skipped while held must still happen,
+// or the map quietly ends up showing fewer buildings than are applied.
+let proposedBuildingsRefreshHeld = 0;
+let proposedBuildingsRefreshMissed = false;
+
+async function withProposedBuildingsRefreshHeld(run) {
+    proposedBuildingsRefreshHeld += 1;
+    try {
+        return await run();
+    } finally {
+        proposedBuildingsRefreshHeld -= 1;
+        if (!proposedBuildingsRefreshHeld && proposedBuildingsRefreshMissed) {
+            proposedBuildingsRefreshMissed = false;
+            updateProposedBuildingsLayer();
+        }
+    }
+}
+
+// One proposal's buildings, in their own sub-layer.
+//
+// This is the answer to "why does a proposal not just draw itself?" — it now does. The layer used
+// to be a single flat group rebuilt from the whole applied set, so applying one proposal redrew
+// every building already on the map: quadratic in the plan's own size, and all of it synchronous
+// Leaflet work. A sub-layer per proposal means an apply costs its own buildings and nothing else,
+// and unapplying one drops exactly its group.
+const proposedBuildingSublayers = new Map();
+
+const PROPOSED_BUILDING_STYLE = {
+    // Deep blue, matching the 3D proposed-building material (0x1e3a8a body / 0x1d4ed8 roof) — it
+    // used to be the EXACT #ff3300 of selectedParcelStyle, so every placed building read as a
+    // permanently selected parcel.
+    fillColor: '#1d4ed8',
+    fillOpacity: 0.45,
+    color: '#1e3a8a',
+    weight: 2
+};
+// The PLOT is hatched so it never reads as empty ground, and the building it would carry is drawn
+// over it dashed — the 2D half of the statement the 3D view makes with a see-through volume: this
+// is what belongs here, and nothing is built.
+const INELIGIBLE_PLOT_STYLE = { fillColor: '#b0453a', fillOpacity: 0.14, color: '#b0453a', weight: 1.5, dashArray: '2, 5' };
+const INELIGIBLE_MASS_STYLE = { fillColor: '#8a8f98', fillOpacity: 0.25, color: '#4b5563', weight: 2, dashArray: '6, 4' };
+
+function ensureProposedBuildingLayer() {
+    if (!proposedBuildingLayer) {
+        proposedBuildingLayer = L.featureGroup().addTo(map);
+    }
+    return proposedBuildingLayer;
+}
+
+// 3D and the photoreal carve read the WHOLE set rather than a diff, so they still want one
+// announcement per change — which is what the hold coalesces during a batch.
+function announceProposedBuildings() {
+    if (typeof window === 'undefined') return;
+    try { window.dispatchEvent(new CustomEvent('proposedBuildingsUpdated')); } catch (_) { }
+    // The paved/green surround of a freeform proposal follows its buildings on and off the map.
+    try { window.updateBuildingGroundLayer?.(); } catch (error) { console.error('[buildings] ground surface refresh failed', error); }
+}
+
+function proposedBuildingKey(value) {
+    return value === undefined || value === null ? '' : String(value);
+}
+
+function drawProposedBuildingsForProposal(proposalId, { announce = true } = {}) {
+    if (typeof map === 'undefined' || !map) return false;
+    const id = proposedBuildingKey(proposalId);
+    ensureProposedBuildingLayer();
+
+    const previous = proposedBuildingSublayers.get(id);
+    if (previous) {
+        try { proposedBuildingLayer.removeLayer(previous); } catch (_) { }
+        proposedBuildingSublayers.delete(id);
+    }
+
+    const group = L.featureGroup();
+    // Drawn even when the rule permitted no buildings at all: a block that left every plot out is
+    // still a block, and an empty map would be the least explicable outcome of the three.
+    appliedIneligibleBlockParts(id).forEach(part => {
+        try {
+            const isPlot = part.properties && part.properties.kind === 'plot';
+            L.geoJSON(part, {
+                style: isPlot ? INELIGIBLE_PLOT_STYLE : INELIGIBLE_MASS_STYLE,
+                interactive: false
+            }).addTo(group);
+        } catch (error) {
+            console.warn('[buildings] could not draw a non-buildable plot', part?.properties?.parcelId, error);
+        }
+    });
+
+    const list = ensureProposedBuildingsState();
+    for (let index = list.length - 1; index >= 0; index -= 1) {
+        const building = list[index];
+        if (!building || !building.properties) continue;
+        if (proposedBuildingKey(building.properties.proposalId) !== id) continue;
+        try {
+            // Buildings are an overlay on top of parcels; keep parcels clickable.
+            L.geoJSON(building, { style: PROPOSED_BUILDING_STYLE, interactive: false }).addTo(group);
+        } catch (error) {
+            console.error(`Error rendering proposed building at index ${index}:`, error, building);
+            // Drop the faulty building so it cannot fail again on every later refresh. Walking
+            // backwards is what makes removing during the walk safe.
+            list.splice(index, 1);
+            showErrorPopup(translateBuildingText(
+                'blockify.modal.messages.renderingFailed',
+                'Building block creation failed -- Error rendering the generated building shape. The parcel might be too complex.'
+            ));
+        }
+    }
+
+    group.addTo(proposedBuildingLayer);
+    proposedBuildingSublayers.set(id, group);
+
+    if (!announce) return true;
+    if (proposedBuildingsRefreshHeld) proposedBuildingsRefreshMissed = true;
+    else announceProposedBuildings();
+    return true;
+}
+
+// Every proposal redrawn. Still needed — a removal, a state change or a boot has no single proposal
+// to redraw — but it is now expressed as "draw each one", so the incremental path and the full one
+// cannot drift apart.
 function updateProposedBuildingsLayer() {
+    if (proposedBuildingsRefreshHeld) {
+        proposedBuildingsRefreshMissed = true;
+        return;
+    }
     if (proposedBuildingLayer) {
         map.removeLayer(proposedBuildingLayer);
         proposedBuildingLayer = null;
     }
+    proposedBuildingSublayers.clear();
 
     const list = ensureProposedBuildingsState();
     // Announce every refresh, including one that empties the layer: unapplying the last proposed
     // building has to reach 3D and the photoreal carve too, or their meshes go stale.
-    if (typeof window !== 'undefined') {
-        try { window.dispatchEvent(new CustomEvent('proposedBuildingsUpdated')); } catch (_) { }
-        // The paved/green surround of a freeform proposal follows its buildings on and off the map.
-        try { window.updateBuildingGroundLayer?.(); } catch (error) { console.error('[buildings] ground surface refresh failed', error); }
-    }
-    // Drawn even when the rule permitted no buildings at all: a block that left every plot out is
-    // still a block, and an empty map would be the least explicable outcome of the three.
-    const ineligibleParts = appliedIneligibleBlockParts();
-    if (list.length > 0 || ineligibleParts.length > 0) {
-        proposedBuildingLayer = L.featureGroup().addTo(map);
+    announceProposedBuildings();
 
-        ineligibleParts.forEach(part => {
-            try {
-                // The PLOT is hatched so it never reads as empty ground, and the building it would
-                // carry is drawn over it dashed — the 2D half of the statement the 3D view makes
-                // with a see-through volume: this is what belongs here, and nothing is built.
-                const isPlot = part.properties && part.properties.kind === 'plot';
-                L.geoJSON(part, {
-                    style: isPlot
-                        ? { fillColor: '#b0453a', fillOpacity: 0.14, color: '#b0453a', weight: 1.5, dashArray: '2, 5' }
-                        : { fillColor: '#8a8f98', fillOpacity: 0.25, color: '#4b5563', weight: 2, dashArray: '6, 4' },
-                    interactive: false
-                }).addTo(proposedBuildingLayer);
-            } catch (error) {
-                console.warn('[buildings] could not draw a non-buildable plot', part?.properties?.parcelId, error);
-            }
-        });
+    const ids = [];
+    const seen = new Set();
+    const remember = value => {
+        const key = proposedBuildingKey(value);
+        if (seen.has(key)) return;
+        seen.add(key);
+        ids.push(key);
+    };
+    appliedIneligibleBlockParts().forEach(part => remember(part && part.properties && part.properties.proposalId));
+    list.forEach(building => remember(building && building.properties && building.properties.proposalId));
+    if (!ids.length) return;
 
-        list.forEach((building, index) => {
-            try {
-                L.geoJSON(building, {
-                    // Deep blue, matching the 3D proposed-building material (0x1e3a8a body /
-                    // 0x1d4ed8 roof) — it used to be the EXACT #ff3300 of selectedParcelStyle,
-                    // so every placed building read as a permanently selected parcel.
-                    style: {
-                        fillColor: '#1d4ed8',
-                        fillOpacity: 0.45,
-                        color: '#1e3a8a',
-                        weight: 2
-                    },
-                    // Buildings are an overlay on top of parcels; keep parcels clickable.
-                    interactive: false
-                }).addTo(proposedBuildingLayer);
-            } catch (error) {
-                console.error(`Error rendering proposed building at index ${index}:`, error, building);
-                // Remove the faulty building from the array to prevent further errors
-                list.splice(index, 1);
-                // Show the popup to the user
-                showErrorPopup(translateBuildingText(
-                    'blockify.modal.messages.renderingFailed',
-                    'Building block creation failed -- Error rendering the generated building shape. The parcel might be too complex.'
-                ));
-                // Optionally, stop processing further buildings if one fails
-                // return; // Uncomment this line if you want to stop after the first error
-            }
-        });
-    }
+    ensureProposedBuildingLayer();
+    ids.forEach(id => drawProposedBuildingsForProposal(id, { announce: false }));
+}
+
+if (typeof window !== 'undefined') {
+    window.drawProposedBuildingsForProposal = drawProposedBuildingsForProposal;
 }
 
 // THE block outline: a setback ring around the block, simplified, clipped back inside it, then

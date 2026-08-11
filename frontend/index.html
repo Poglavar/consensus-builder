@@ -876,6 +876,8 @@
                         <div class="btn-group">
                             <button id="measureButton" class="btn btn-action" onclick="toggleMeasureTool()"
                                 data-i18n-key="sidebar.measurement.measureButton">Measure</button>
+                            <button id="pinpointButton" class="btn btn-action" onclick="togglePinpointTool()"
+                                data-i18n-key="sidebar.measurement.pinpointButton">Pinpoint</button>
                             <button id="clearMeasurementsButton" class="btn btn-secondary"
                                 onclick="clearAllMeasurements()" style="display: none;"
                                 data-i18n-key="sidebar.measurement.clearButton">Clear Measurements</button>
@@ -1501,6 +1503,7 @@
             'js/corridor-geometry.js',
             'js/corridor-network-nodes.js',
             'js/parcel-cut-debug.js',
+            'js/map-load-debug.js',
             'js/proposals/block-enumeration.js',
             'js/block-batch.js',
             'js/publish-gap-debug.js',
@@ -1590,6 +1593,7 @@
             'js/road-finalization-state.js',
             'js/road-drawing-loader.js',
             'js/measurement-tool.js',
+            'js/pinpoint-tool.js',
             'js/centerline-animation.js'
         ]);
     </script>
@@ -1861,6 +1865,24 @@
                     <button type="button" id="parcel-coverage-refresh-btn" class="btn btn-secondary">Refresh</button>
                     <button type="button" id="parcel-coverage-close-btn" class="btn btn-outline">Close</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status log, popped out: the whole log rather than the strip's last fifty lines -->
+    <div id="status-log-modal" class="status-log-modal" style="display: none;">
+        <div class="status-log-modal-content" role="dialog" aria-modal="true"
+            aria-labelledby="status-log-modal-title">
+            <div class="status-log-modal-header">
+                <h2 id="status-log-modal-title" data-i18n-key="hud.statusLogTitle" data-i18n-attr="text">Status log</h2>
+                <span id="status-log-modal-count" class="status-log-modal-count"></span>
+            </div>
+            <div id="status-log-modal-list" class="status-log-modal-list" aria-live="polite"></div>
+            <div class="status-log-modal-footer">
+                <button type="button" id="status-log-modal-copy" class="btn btn-secondary"
+                    data-i18n-key="hud.copyStatusLog" data-i18n-attr="text">Copy all</button>
+                <button type="button" id="status-log-modal-close" class="btn btn-outline"
+                    data-i18n-key="hud.statusLogClose" data-i18n-attr="text">Close</button>
             </div>
         </div>
     </div>

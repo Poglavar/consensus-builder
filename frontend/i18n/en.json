@@ -554,7 +554,10 @@
         "measurement": {
             "title": "Measurement",
             "measureButton": "Measure",
-            "clearButton": "Clear Measurements"
+            "clearButton": "Clear Measurements",
+            "pinpointButton": "Pinpoint",
+            "pinpointHint": "Move over the map to read coordinates; click to copy and look up the ground",
+            "pinpointCopied": "Pinpoint"
         },
         "info": {
             "title": "Information",
@@ -614,7 +617,12 @@
         "statusReady": "App initialized, loading parcels...",
         "toggle3dTooltip": "Switch to 3D",
         "copyStatusLog": "Copy all",
-        "statusLinesCopied": "{{count}} lines copied"
+        "statusLinesCopied": "{{count}} lines copied",
+        "statusLogTitle": "Status log",
+        "openStatusLog": "Open log",
+        "statusLogCount": "{{count}} lines",
+        "statusLogClose": "Close",
+        "statusLogEmpty": "No status messages yet"
     },
     "panel": {
         "parcel": {

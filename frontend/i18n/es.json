@@ -576,7 +576,10 @@
         "measurement": {
             "title": "Medición",
             "measureButton": "Medir",
-            "clearButton": "Borrar mediciones"
+            "clearButton": "Borrar mediciones",
+            "pinpointButton": "Punto",
+            "pinpointHint": "Mueve por el mapa para ver coordenadas; haz clic para copiar y consultar el terreno",
+            "pinpointCopied": "Punto"
         },
         "info": {
             "title": "Información",
@@ -636,7 +639,12 @@
         "statusReady": "Aplicación inicializada, cargando parcelas...",
         "toggle3dTooltip": "Cambiar a vista 3D",
         "copyStatusLog": "Copiar todo",
-        "statusLinesCopied": "{{count}} líneas copiadas"
+        "statusLinesCopied": "{{count}} líneas copiadas",
+        "statusLogTitle": "Registro de estado",
+        "openStatusLog": "Abrir registro",
+        "statusLogCount": "{{count}} líneas",
+        "statusLogClose": "Cerrar",
+        "statusLogEmpty": "Aún no hay mensajes de estado"
     },
     "panel": {
         "parcel": {

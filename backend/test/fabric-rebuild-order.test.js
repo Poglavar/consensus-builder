@@ -71,6 +71,7 @@ describe('ProposalManager._rebuildPass — ordered standing prefix', () => {
             // there are no takes and the fabric step is a no-op — the fold is what is under test.
             _appliedCorridorTakes: ProposalManager._appliedCorridorTakes,
             _deriveCorridorFabric: ProposalManager._deriveCorridorFabric,
+        _deriveCorridorFabricBody: ProposalManager._deriveCorridorFabricBody,
             _rebuildPass: ProposalManager._rebuildPass
         };
 
@@ -119,6 +120,7 @@ describe('ProposalManager._rebuildPass — ordered standing prefix', () => {
             // there are no takes and the fabric step is a no-op — the fold is what is under test.
             _appliedCorridorTakes: ProposalManager._appliedCorridorTakes,
             _deriveCorridorFabric: ProposalManager._deriveCorridorFabric,
+        _deriveCorridorFabricBody: ProposalManager._deriveCorridorFabricBody,
             _rebuildPass: ProposalManager._rebuildPass
         };
 

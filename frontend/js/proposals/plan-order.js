@@ -132,9 +132,26 @@
         const minArea = Number.isFinite(opts.minAreaM2) ? opts.minAreaM2 : MIN_INTERSECTION_M2;
         if (!footprint || !Array.isArray(baseParcels)) return [];
 
+        // Bounding box first. A proposal touches a handful of parcels and is asked against every
+        // parcel on the map, so nearly every pair is disjoint — and a disjoint pair costs a full
+        // polygon intersection to establish. Four number comparisons decide it instead, and can
+        // hide nothing: polygons whose boxes do not overlap cannot overlap.
+        const t = (typeof turf !== 'undefined' && turf) ? turf : null;
+        let box = null;
+        if (t && typeof t.bbox === 'function') {
+            try { box = t.bbox(footprint); } catch (_) { box = null; }
+        }
+        const outsideBox = feature => {
+            if (!box) return false;
+            let other = null;
+            try { other = t.bbox(feature); } catch (_) { return false; }
+            return !!other && (box[0] > other[2] || other[0] > box[2] || box[1] > other[3] || other[1] > box[3]);
+        };
+
         const hits = [];
         baseParcels.forEach(entry => {
             if (!entry || !entry.feature || !entry.id) return;
+            if (outsideBox(entry.feature)) return;
             const area = intersectionArea(footprint, entry.feature);
             if (area >= minArea) hits.push({ id: String(entry.id), area: Math.round(area) });
         });

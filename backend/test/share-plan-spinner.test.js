@@ -216,18 +216,18 @@ describe('punjenje panela u odsječcima', () => {
     it('redoslijed je bitan: svi redci, pa slojevi, pa provjere', () => {
         const fill = sliceBetween(dialog, '(async () => {', "    } catch (error) {\n        console.error('showSharePlanPanel failed'");
         const rows = fill.indexOf("'listingProposals'");
-        const overlays = fill.indexOf("'drawingProposals'");
         const uploads = fill.indexOf('await initializeUploadChecks();');
         expect(rows).toBeGreaterThan(-1);
-        expect(overlays).toBeGreaterThan(rows);
-        expect(uploads).toBeGreaterThan(overlays);
+        expect(uploads).toBeGreaterThan(rows);
+        // Faze slojeva više nema: otvaranje popisa ne crta ništa po karti.
+        expect(fill).not.toContain("'drawingProposals'");
         // Svaka faza staje ako se panel zatvorio.
-        expect(fill.match(/if \(!await inChunks\(/g) || []).toHaveLength(2);
+        expect(fill.match(/if \(!await inChunks\(/g) || []).toHaveLength(1);
     });
 
     it.each(['en', 'hr', 'sr', 'es'])('%s imenuje obje nove faze', locale => {
         const share = JSON.parse(read(`../../frontend/i18n/${locale}.json`)).modal.roadWidth.share;
-        for (const key of ['listingProposals', 'drawingProposals', 'preparingPlan']) {
+        for (const key of ['listingProposals', 'preparingPlan']) {
             expect(share[key], `${locale} nema ${key}`).toBeTruthy();
         }
     });

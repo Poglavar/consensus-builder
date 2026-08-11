@@ -75,7 +75,32 @@
         return { toApply: primijeni, toUnapply: makni };
     }
 
-    const pure = { MIN_YEAR, MAX_YEAR, DEFAULT_CHOICES, parseEpochYear, epochOf, epochYearChoices, distinctEpochs, belongsCumulative, filterEntriesCumulative, epochDiff };
+    /** Deterministički PRNG (mulberry32), da se ista raspodjela može ponoviti sa
+        `seed`. Bez seeda je stvarno slučajna. */
+    function makeRandom(seed) {
+        if (seed === undefined || seed === null) return Math.random;
+        let a = (Number(seed) >>> 0) || 1;
+        return function random() {
+            a |= 0; a = (a + 0x6D2B79F5) | 0;
+            let t = Math.imul(a ^ (a >>> 15), 1 | a);
+            t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+    }
+
+    /** Fisher–Yates, pa round-robin po godinama: razlika među košaricama je
+        najviše jedan prijedlog, a raspored je slučajan. Sortiranje po slučajnom
+        ključu ne bi jamčilo ni jedno ni drugo. */
+    function planEpochSpread(proposals, years, random) {
+        const order = (proposals || []).slice();
+        for (let i = order.length - 1; i > 0; i -= 1) {
+            const j = Math.floor(random() * (i + 1));
+            const swap = order[i]; order[i] = order[j]; order[j] = swap;
+        }
+        return order.map((proposal, index) => ({ proposal, year: years[index % years.length] }));
+    }
+
+    const pure = { MIN_YEAR, MAX_YEAR, DEFAULT_CHOICES, parseEpochYear, epochOf, epochYearChoices, distinctEpochs, belongsCumulative, filterEntriesCumulative, epochDiff, makeRandom, planEpochSpread };
     if (typeof module === 'object' && module.exports) module.exports = pure;
     if (typeof window === 'undefined') return;   // node test: samo čisti dio
 
@@ -175,7 +200,9 @@
     }
 
     /** PATCH na server (ako je prijedlog uploadan) + lokalna pohrana. */
-    async function setEpoch(proposal, year) {
+    // `render: false` lets a batch write many epochs and redraw the list once at the end; the card
+    // menu leaves it alone and keeps redrawing after its single change.
+    async function setEpoch(proposal, year, options = {}) {
         const g = parseEpochYear(year);
         const serverId = proposal.serverProposalId
             ?? (typeof proposal.id === 'number' ? proposal.id : null)
@@ -195,8 +222,85 @@
             }
         } catch (_) { }
         rememberEpoch(g);
-        renderList();
+        if (options.render !== false) renderList();
         return g;
+    }
+
+    /* ------------------------- raspodjela po epohama --------------------------- */
+
+    /**
+     * Svakom prijedlogu dodijeli jednu od četiri epohe, nasumično i ravnomjerno.
+     *
+     * Piše kroz setEpoch — isti put kojim piše izbornik na kartici — pa raspodjela
+     * ne može odlutati od onoga što radi klik: i server PATCH i lokalna pohrana i
+     * pamćenje zadnje epohe idu istim redom.
+     *
+     * Lista se precrtava JEDNOM na kraju, ne 621 puta; a između zapisa se prepušta
+     * red pregledniku, jer bi inače cijela raspodjela bila jedan zamrznuti frame.
+     *
+     * @param {object} [options]
+     * @param {number[]} [options.years] košarice (zadano: četiri ponuđene godine)
+     * @param {number} [options.seed] ponovljiva raspodjela
+     * @param {boolean} [options.dryRun] samo prebroji, ne piši ništa
+     * @param {boolean} [options.onlyUnset] preskoči prijedloge koji već imaju epohu
+     */
+    async function distributeEpochs(options = {}) {
+        if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') {
+            console.error('[epoch] proposalStorage nije dostupan');
+            return null;
+        }
+        const years = Array.isArray(options.years) && options.years.length
+            ? options.years.map(parseEpochYear).filter(y => y !== null)
+            : DEFAULT_CHOICES.slice();
+        if (!years.length) {
+            console.error('[epoch] nema valjanih godina za raspodjelu');
+            return null;
+        }
+
+        const all = proposalStorage.getAllProposals() || [];
+        const targets = options.onlyUnset ? all.filter(p => epochOf(p) === null) : all.slice();
+        const plan = planEpochSpread(targets, years, makeRandom(options.seed));
+
+        const counts = {};
+        years.forEach(year => { counts[year] = 0; });
+        plan.forEach(entry => { counts[entry.year] += 1; });
+
+        if (options.dryRun) {
+            console.log(`[epoch] dry run: ${plan.length} prijedlog(a) u ${years.length} košarice`, counts);
+            return { attempted: plan.length, counts, written: 0, failed: [], dryRun: true };
+        }
+
+        const failed = [];
+        let written = 0;
+        for (const entry of plan) {
+            try {
+                await setEpoch(entry.proposal, entry.year, { render: false });
+                written += 1;
+            } catch (error) {
+                failed.push({
+                    proposal: entry.proposal.proposalId || entry.proposal.id || '?',
+                    year: entry.year,
+                    reason: String(error && error.message || error)
+                });
+            }
+            if (written % 25 === 0 && typeof updateStatus === 'function') {
+                updateStatus(`Epochs: ${written}/${plan.length} assigned…`);
+            }
+            if (typeof window !== 'undefined' && typeof window.yieldToBrowser === 'function') {
+                await window.yieldToBrowser();
+            }
+        }
+
+        renderList();
+        const summary = { attempted: plan.length, written, counts, failed };
+        console.log(`[epoch] ${written}/${plan.length} prijedloga dobilo epohu`, summary);
+        if (failed.length) console.table(failed.slice(0, 25));
+        if (typeof updateStatus === 'function') {
+            updateStatus(`${written} proposal(s) given an epoch: `
+                + years.map(y => `${y}×${counts[y]}`).join(', ')
+                + (failed.length ? ` · ${failed.length} failed` : ''));
+        }
+        return summary;
     }
 
     /* --------------------------- izbornik na kartici --------------------------- */
@@ -335,6 +439,9 @@
         setEpoch, injectTimeline,
         lastUsedEpoch, rememberEpoch, fillYearOptions, yearOptionList,
         initCreateDialogSelect, readCreateDialogEpoch,
-        cardEpochSelectHtml, findProposal
+        cardEpochSelectHtml, findProposal,
+        distributeEpochs
     };
+    // Console-reachable: assigning several hundred epochs by hand is not a use of anyone's time.
+    global.distributeEpochs = distributeEpochs;
 }(typeof globalThis !== 'undefined' ? globalThis : this));

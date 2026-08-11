@@ -114,6 +114,19 @@
             }
         } catch (error) {
             console.error('[_applyBuildingProposal] demolition scan failed', idLabel, error);
+            // Say so where it can be seen. A scan that fails records NO demolitions, which is
+            // indistinguishable from a block that genuinely stands on empty ground — a wrong answer
+            // wearing the shape of a right one, and the proposal is then stored that way.
+            buildingProposal.demolitionScanFailed = true;
+            try {
+                const say = (typeof window !== 'undefined' && typeof window.showEphemeralMessage === 'function')
+                    ? window.showEphemeralMessage
+                    : null;
+                const message = `Could not check which buildings "${proposalData.title || idLabel}" would demolish — `
+                    + 'it is recorded as demolishing none. Re-apply it once the backend answers again.';
+                if (say) say(message, 12000);
+                else if (typeof window !== 'undefined' && typeof window.updateStatus === 'function') window.updateStatus(message);
+            } catch (_) { }
         }
         console.debug(`[_applyBuildingProposal] Step 4: Prepared ${preparedFeatures.length} building feature(s) (${(performance.now() - step4Time).toFixed(2)}ms)`);
 
@@ -138,7 +151,7 @@
 
         preparedFeatures.forEach(feature => {
             if (typeof upsertProposedBuildingFeature === 'function') {
-                upsertProposedBuildingFeature(feature, { updateLayer: false, save: false });
+                upsertProposedBuildingFeature(feature, { updateLayer: false });
             } else {
                 if (typeof proposedBuildings === 'undefined') {
                     if (typeof window !== 'undefined') window.proposedBuildings = [];
@@ -155,8 +168,13 @@
             }
         });
 
-        if (typeof updateProposedBuildingsLayer === 'function') updateProposedBuildingsLayer();
-        if (typeof saveExecutedBuildingsToStorage === 'function') saveExecutedBuildingsToStorage();
+        // THIS proposal's buildings, not every proposal's. The full rebuild is for removals and
+        // boot; an apply has one proposal to draw and should cost one proposal.
+        if (typeof drawProposedBuildingsForProposal === 'function') {
+            drawProposedBuildingsForProposal(proposalId);
+        } else if (typeof updateProposedBuildingsLayer === 'function') {
+            updateProposedBuildingsLayer();
+        }
 
         const showBuildingsCheckbox = document.getElementById('showProposedBuildings');
         if (showBuildingsCheckbox && !showBuildingsCheckbox.checked) {

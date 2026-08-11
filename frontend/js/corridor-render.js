@@ -43,6 +43,28 @@ function ensureCorridorHitPane() {
 // White lane-marking lines drawn on top of the surface — dashed everywhere, with the centerline
 // slightly heavier and longer-dashed so the flow divide still reads. Same weights/patterns for a
 // drawn road, an applied one and an OSM street, so they read alike.
+// One canvas per corridor pane, instead of one SVG <path> per lane marking, kerb, crosswalk stripe
+// and hit area.
+//
+// Measured on a real session: 9,702 paths in corridorStripsPane and 2,151 in corridorHitPane — 94%
+// of everything left in the SVG once parcels moved to canvas, and the reason a drag still stuttered.
+// Nothing here needs a DOM element: the classNames on these shapes are labels, not selectors (only
+// .corridor-decoration is styled, and decorations are divIcon markers, which canvas does not touch),
+// and dashArray works on canvas exactly as it does in SVG.
+//
+// Per pane rather than one shared: a canvas renderer lives IN a pane, and the panes exist to keep
+// strips, rails and hit areas in a fixed z-order.
+const _corridorCanvasByPane = new Map();
+function corridorCanvasFor(pane) {
+    const key = pane || 'overlayPane';
+    if (!_corridorCanvasByPane.has(key)) {
+        _corridorCanvasByPane.set(key, (typeof L !== 'undefined' && typeof L.canvas === 'function')
+            ? L.canvas({ pane: key, padding: 0.5 })
+            : undefined);
+    }
+    return _corridorCanvasByPane.get(key);
+}
+
 function renderCorridorLaneMarkings(markings, group, pane) {
     if (!Array.isArray(markings)) return;
     markings.forEach(marking => {
@@ -55,6 +77,7 @@ function renderCorridorLaneMarkings(markings, group, pane) {
                 dashArray: isCenterline ? '10, 8' : '6, 9',
                 interactive: false,
                 pane: pane || undefined,
+                renderer: corridorCanvasFor(pane),
                 className: `corridor-lane-marking corridor-lane-marking--${marking.kind}`
             }).addTo(group);
         });
@@ -68,6 +91,7 @@ function renderCorridorJunctions(junctions, group, pane) {
             L.polygon(polygon, {
                 color: '#2b2b2b', weight: 0, fillColor: '#2b2b2b', fillOpacity: 1,
                 interactive: false, pane: pane || undefined,
+                renderer: corridorCanvasFor(pane),
                 className: 'corridor-junction-surface'
             }).addTo(group);
         });
@@ -75,6 +99,7 @@ function renderCorridorJunctions(junctions, group, pane) {
             L.polygon(polygon, {
                 color: '#ffffff', weight: 0, fillColor: '#ffffff', fillOpacity: 0.92,
                 interactive: false, pane: pane || undefined,
+                renderer: corridorCanvasFor(pane),
                 className: 'corridor-crosswalk-stripe'
             }).addTo(group);
         });
@@ -111,11 +136,13 @@ function renderCorridorBuildingTunnels(tunnels, group, pane) {
         L.polyline(points, {
             color: '#6d28d9', weight: 9, opacity: 0.85, dashArray: '8 7',
             interactive: false, pane: pane || undefined,
+            renderer: corridorCanvasFor(pane),
             className: 'corridor-building-tunnel'
         }).addTo(group);
         points.forEach(point => L.circleMarker(point, {
             radius: 5, color: '#8b5cf6', weight: 2, fillColor: '#15121f', fillOpacity: 1,
             interactive: false, pane: pane || undefined,
+            renderer: corridorCanvasFor(pane),
             className: 'corridor-building-tunnel-portal'
         }).addTo(group));
     });
@@ -149,6 +176,7 @@ function renderCorridorGradeSeparations(records, group, pane) {
                 dashArray: isOverpass ? null : '8 7',
                 interactive: false,
                 pane: pane || undefined,
+                renderer: corridorCanvasFor(pane),
                 className: `corridor-grade-separation corridor-grade-separation--${record.mode}`
             }).addTo(group);
         }
@@ -160,6 +188,7 @@ function renderCorridorGradeSeparations(records, group, pane) {
             fillOpacity: 1,
             interactive: false,
             pane: pane || undefined,
+            renderer: corridorCanvasFor(pane),
             className: `corridor-grade-separation-portal corridor-grade-separation-portal--${record.mode}`
         }).addTo(group));
     });
@@ -338,6 +367,7 @@ function renderCorridorParkingBays(bays, group, pane) {
         const isEdge = bay.kind === 'edge';
         L.polyline(bay.line, {
             pane: pane || undefined,
+            renderer: corridorCanvasFor(pane),
             renderer,
             color: '#f4f4f4',
             weight: isEdge ? 1.5 : 1,
@@ -355,6 +385,7 @@ function renderCorridorDirectionArrows(arrows, group, pane) {
     arrows.forEach(ring => {
         L.polygon(ring, {
             pane: pane || undefined,
+            renderer: corridorCanvasFor(pane),
             color: '#f4f4f4',
             weight: 0,
             fillColor: '#f4f4f4',
@@ -393,6 +424,14 @@ function renderCorridorStrips(strips, options = {}) {
         // The stone pattern itself is CSS (an SVG pattern fill); at map zooms it is texture, not
         // information, so the colour above has to carry the difference on its own.
         const pavingClass = paving === 'paved' ? ' corridor-strip--paved' : '';
+        // Ordinary surfaces go on the pane's canvas; the two that are painted with an SVG PATTERN
+        // stay in the SVG, because a canvas has no <defs> to point at. That distinction is not
+        // cosmetic for rail: .corridor-strip--rail's ballast pattern REPLACES the lane's surface
+        // colour (see corridor-render.css), so drawing it on canvas would not merely drop a texture,
+        // it would show a colour chosen on the assumption that something covers it. Paved footways
+        // keep their stone for the same reason, at far smaller cost — between them these are a small
+        // minority of strips, and the asphalt that makes up the rest is what moves.
+        const usesSvgPattern = paving === 'paved' || strip.type === 'rail';
         strip.polygons.forEach(polygon => {
             L.polygon(polygon, {
                 color: surface,
@@ -401,6 +440,7 @@ function renderCorridorStrips(strips, options = {}) {
                 fillOpacity,
                 interactive: false,
                 pane: options.pane || undefined,
+                renderer: usesSvgPattern ? undefined : corridorCanvasFor(options.pane),
                 className: `corridor-strip corridor-strip--${strip.type}${pavingClass}${ownerClass}`
             }).addTo(group);
         });
@@ -617,6 +657,10 @@ function renderAppliedCorridorHitTargets(strips, proposal, group, definition, se
         interactive: true,
         bubblingMouseEvents: false,
         pane: CORRIDOR_HIT_PANE,
+        // Hit targets are invisible (fillOpacity 0.001) and exist only to be clicked, so there is
+        // nothing a DOM element buys them — and at 2,151 paths they were the largest thing left in
+        // the SVG once the strips moved. Canvas hit-testing answers the same clicks.
+        renderer: corridorCanvasFor(CORRIDOR_HIT_PANE),
         className: 'corridor-applied-hit-target'
     };
     // The full corridor footprint, outlined on hover so an applied road reacts to the cursor.
@@ -658,6 +702,7 @@ function renderAppliedCorridorHitTargets(strips, proposal, group, definition, se
             const fp = L.geoJSON({ type: 'Feature', properties: {}, geometry }, {
                 style: hitOptions,
                 pane: CORRIDOR_HIT_PANE,
+                renderer: corridorCanvasFor(CORRIDOR_HIT_PANE),
                 interactive: true,
                 bubblingMouseEvents: false
             }).on('click', event => { rememberSegment(null); forwardAppliedCorridorClick(proposal, event); });

@@ -1,8 +1,19 @@
 let statusHighlightTimeout = null;
 let copyFeedbackTimeout = null;
-// Array to store status log entries (max 100)
 let statusLog = [];
 let isStatusExpanded = false;
+
+// How much of the session the log remembers.
+//
+// It was 100, which a batch outruns in seconds: applying a hundred block rules writes several
+// hundred lines, so by the time the run finished the beginning of it — including anything that went
+// wrong early — had already been dropped. The entries are two short strings each, so a few thousand
+// costs a few hundred kilobytes and buys the whole run.
+const STATUS_LOG_MAX_ENTRIES = 2000;
+
+// The strip under the status bar is a PREVIEW, and this is how much of one. It is rebuilt on every
+// message, so it stays small on purpose; the pop-out dialog is where the whole log lives.
+const STATUS_LOG_PREVIEW_ENTRIES = 50;
 
 function updateStatus(message) {
     const statusSpan = document.getElementById('status');
@@ -11,9 +22,8 @@ function updateStatus(message) {
         const timestamp = new Date().toLocaleTimeString();
         statusLog.push({ message, timestamp });
 
-        // Keep only the last 100 entries
-        if (statusLog.length > 100) {
-            statusLog.shift();
+        if (statusLog.length > STATUS_LOG_MAX_ENTRIES) {
+            statusLog.splice(0, statusLog.length - STATUS_LOG_MAX_ENTRIES);
         }
 
         // Update the display with the latest message
@@ -21,6 +31,7 @@ function updateStatus(message) {
 
         // Update expanded view if it's currently shown
         updateExpandedStatusView();
+        appendToStatusLogDialog();
     }
 
     // Also update floating status (visible when sidebar is closed)
@@ -30,64 +41,78 @@ function updateStatus(message) {
     }
 }
 
-// What "Copy all" copies, and what the expanded view shows — one definition, so the button can
-// never hand over something other than what is on screen.
-const STATUS_LOG_VISIBLE_ENTRIES = 50;
-
-function visibleStatusLogEntries() {
-    return statusLog.slice(-STATUS_LOG_VISIBLE_ENTRIES);
+function statusLogEntries() {
+    return statusLog.slice();
 }
 
-// Every visible line as plain text, timestamp first — the form you paste into a bug report.
-function visibleStatusLogText() {
-    return visibleStatusLogEntries().map(entry => `${entry.timestamp}\t${entry.message}`).join('\n');
+function previewStatusLogEntries() {
+    return statusLog.slice(-STATUS_LOG_PREVIEW_ENTRIES);
 }
 
+// Every line as plain text, timestamp first — the form you paste into a bug report.
+function statusLogText() {
+    return statusLog.map(entry => `${entry.timestamp}\t${entry.message}`).join('\n');
+}
+
+// "Copy all" means ALL of it, not the fifty on screen. The strip is a preview and a preview is not
+// what you want in a bug report; the feedback names the count, so a copy of 312 lines from a strip
+// showing 50 cannot be mistaken for a copy of 50.
 async function copyStatusLog() {
-    const entries = visibleStatusLogEntries();
-    if (!entries.length) return false;
-    const copied = await copyTextWithFeedback(visibleStatusLogText());
+    if (!statusLog.length) return false;
+    const copied = await copyTextWithFeedback(statusLogText());
     if (!copied) return false;
-    const template = window.i18n?.t ? window.i18n.t('hud.statusLinesCopied', { count: entries.length }) : '';
+    const template = window.i18n?.t ? window.i18n.t('hud.statusLinesCopied', { count: statusLog.length }) : '';
     const message = (template && template !== 'hud.statusLinesCopied')
         ? template
-        : `${entries.length} line${entries.length === 1 ? '' : 's'} copied`;
+        : `${statusLog.length} line${statusLog.length === 1 ? '' : 's'} copied`;
     showCopyFeedback(message);
     return true;
+}
+
+// One row. textContent, never innerHTML: a status line carries proposal titles, parcel ids and
+// error text — none of it ours to trust, all of it going into the page.
+function statusLogRow(entry, isCurrent) {
+    const row = document.createElement('div');
+    row.className = 'status-log-entry' + (isCurrent ? ' current-status' : '');
+    const time = document.createElement('span');
+    time.className = 'status-log-time';
+    time.textContent = entry.timestamp;
+    const message = document.createElement('span');
+    message.className = 'status-log-message';
+    message.textContent = entry.message;
+    row.appendChild(time);
+    row.appendChild(message);
+    return row;
+}
+
+function fillStatusLogList(container, entries, emptyText) {
+    container.innerHTML = '';
+    if (!entries.length) {
+        const empty = document.createElement('div');
+        empty.className = 'status-log-entry';
+        empty.textContent = emptyText;
+        container.appendChild(empty);
+        return;
+    }
+    const fragment = document.createDocumentFragment();
+    entries.forEach((entry, index) => fragment.appendChild(statusLogRow(entry, index === entries.length - 1)));
+    container.appendChild(fragment);
+}
+
+function statusLogEmptyText() {
+    const label = window.i18n?.t ? window.i18n.t('hud.statusLogEmpty') : '';
+    return (label && label !== 'hud.statusLogEmpty') ? label : 'No status messages yet';
 }
 
 function updateExpandedStatusView() {
     const expandedView = document.getElementById('status-log-expanded');
     if (!expandedView || !isStatusExpanded) return;
 
-    // Show more entries (up to 50) in chronological order (oldest to newest)
-    const entriesToShow = visibleStatusLogEntries();
-    expandedView.innerHTML = '';
-
-    if (entriesToShow.length === 0) {
-        expandedView.innerHTML = '<div class="status-log-entry">No status messages yet</div>';
-        return;
-    }
-
     // Store current scroll position to maintain it
     const currentScrollTop = expandedView.scrollTop;
     const currentScrollHeight = expandedView.scrollHeight;
 
-    entriesToShow.forEach((entry, index) => {
-        const entryDiv = document.createElement('div');
-        entryDiv.className = 'status-log-entry';
-
-        // Highlight the most recent entry (last one)
-        if (index === entriesToShow.length - 1) {
-            entryDiv.classList.add('current-status');
-        }
-
-        entryDiv.innerHTML = `
-            <span class="status-log-time">${entry.timestamp}</span>
-            <span class="status-log-message">${entry.message}</span>
-        `;
-        expandedView.appendChild(entryDiv);
-    });
+    fillStatusLogList(expandedView, previewStatusLogEntries(), statusLogEmptyText());
 
     // Auto-scroll to bottom when new content is added, unless user was scrolling up
     const isScrolledToBottom = currentScrollTop >= currentScrollHeight - expandedView.clientHeight - 10;
@@ -95,6 +120,129 @@ function updateExpandedStatusView() {
         expandedView.scrollTop = expandedView.scrollHeight;
     }
 }
+
+// The whole log, in a window you can scroll, select and copy from.
+//
+// The strip under the status bar shows the last fifty and is rebuilt on every message, so it cannot
+// grow without making a busy run janky. This is the other end: opened on demand, filled once, and
+// then APPENDED to as messages arrive — so a run emitting hundreds of lines costs one row each
+// rather than a full rebuild each.
+let statusLogDialogRendered = 0;
+
+function statusLogDialogElements() {
+    const overlay = document.getElementById('status-log-modal');
+    if (!overlay) return null;
+    return {
+        overlay,
+        list: overlay.querySelector('#status-log-modal-list'),
+        count: overlay.querySelector('#status-log-modal-count')
+    };
+}
+
+function statusLogDialogIsOpen() {
+    const parts = statusLogDialogElements();
+    return !!(parts && parts.overlay.style.display !== 'none');
+}
+
+function updateStatusLogDialogCount(parts) {
+    if (!parts || !parts.count) return;
+    const template = window.i18n?.t ? window.i18n.t('hud.statusLogCount', { count: statusLog.length }) : '';
+    parts.count.textContent = (template && template !== 'hud.statusLogCount')
+        ? template
+        : `${statusLog.length} line${statusLog.length === 1 ? '' : 's'}`;
+}
+
+// A single new row rather than a rebuild. Falls back to a full render if the log has been trimmed
+// under us, so the view cannot silently drift from the log it claims to show.
+function appendToStatusLogDialog() {
+    if (!statusLogDialogIsOpen()) return;
+    const parts = statusLogDialogElements();
+    if (!parts || !parts.list) return;
+    if (statusLogDialogRendered > statusLog.length) {
+        renderStatusLogDialog();
+        return;
+    }
+    const atBottom = parts.list.scrollTop >= parts.list.scrollHeight - parts.list.clientHeight - 10;
+    const previous = parts.list.querySelector('.current-status');
+    if (previous) previous.classList.remove('current-status');
+    for (let i = statusLogDialogRendered; i < statusLog.length; i += 1) {
+        parts.list.appendChild(statusLogRow(statusLog[i], i === statusLog.length - 1));
+    }
+    statusLogDialogRendered = statusLog.length;
+    updateStatusLogDialogCount(parts);
+    if (atBottom) parts.list.scrollTop = parts.list.scrollHeight;
+}
+
+function renderStatusLogDialog() {
+    const parts = statusLogDialogElements();
+    if (!parts || !parts.list) return;
+    fillStatusLogList(parts.list, statusLogEntries(), statusLogEmptyText());
+    statusLogDialogRendered = statusLog.length;
+    updateStatusLogDialogCount(parts);
+    parts.list.scrollTop = parts.list.scrollHeight;
+}
+
+function openStatusLogDialog() {
+    const parts = statusLogDialogElements();
+    if (!parts) return;
+    parts.overlay.style.display = 'flex';
+    renderStatusLogDialog();
+}
+
+function closeStatusLogDialog() {
+    const parts = statusLogDialogElements();
+    if (!parts) return;
+    parts.overlay.style.display = 'none';
+    statusLogDialogRendered = 0;
+}
+
+function initStatusLogDialog() {
+    const parts = statusLogDialogElements();
+    if (!parts) return;
+    const closeButton = parts.overlay.querySelector('#status-log-modal-close');
+    const copyButton = parts.overlay.querySelector('#status-log-modal-copy');
+    if (closeButton) closeButton.addEventListener('click', closeStatusLogDialog);
+    if (copyButton) copyButton.addEventListener('click', copyStatusLog);
+    parts.overlay.addEventListener('click', event => {
+        if (event.target === parts.overlay) closeStatusLogDialog();
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && statusLogDialogIsOpen()) {
+            event.stopPropagation();
+            closeStatusLogDialog();
+        }
+    });
+}
+
+if (typeof window !== 'undefined') {
+    window.openStatusLogDialog = openStatusLogDialog;
+    window.closeStatusLogDialog = closeStatusLogDialog;
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initStatusLogDialog);
+    } else {
+        initStatusLogDialog();
+    }
+}
+
+// Give the browser a turn.
+//
+// `await` on a promise that is already settled schedules a MICROTASK, and microtasks run before the
+// browser gets to paint or handle input — so a loop of a hundred `await`ed applies whose data is
+// already cached never yields at all, and the map is frozen for the whole run even though every
+// function in the chain is async. Only a macrotask (or scheduler.yield) actually hands control back.
+function yieldToBrowser() {
+    return new Promise(resolve => {
+        try {
+            if (typeof scheduler !== 'undefined' && typeof scheduler.yield === 'function') {
+                scheduler.yield().then(resolve, () => resolve());
+                return;
+            }
+        } catch (_) { }
+        setTimeout(resolve, 0);
+    });
+}
+
+if (typeof window !== 'undefined') window.yieldToBrowser = yieldToBrowser;
 
 // A spinner in the status bar, for work that outlives its own message.
 //
@@ -134,23 +282,39 @@ function endStatusActivity() {
     if (spinner) spinner.classList.remove('is-active');
 }
 
-// The Copy all button, created on first expand and reused. Built here rather than in index.html so
-// the collapsed bar carries nothing it cannot use.
-function ensureStatusCopyAllButton(statusBar) {
-    if (!statusBar || statusBar.querySelector('[data-status-copy-all]')) return;
+// The Copy all and Open log buttons, created on first expand and reused. Built here rather than in
+// index.html so the collapsed bar carries nothing it cannot use.
+// One row for both, so a longer translation of either cannot push them on top of each other.
+function statusBarActions(statusBar) {
+    let actions = statusBar.querySelector('.status-log-actions');
+    if (!actions) {
+        actions = document.createElement('div');
+        actions.className = 'status-log-actions';
+        statusBar.appendChild(actions);
+    }
+    return actions;
+}
+
+function ensureStatusBarButton(statusBar, marker, key, fallback, onClick) {
+    if (!statusBar || statusBar.querySelector(`[${marker}]`)) return;
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'status-log-copy-all';
-    button.setAttribute('data-status-copy-all', '');
-    const label = window.i18n?.t ? window.i18n.t('hud.copyStatusLog') : '';
-    button.textContent = (label && label !== 'hud.copyStatusLog') ? label : 'Copy all';
-    button.setAttribute('data-i18n-key', 'hud.copyStatusLog');
+    button.setAttribute(marker, '');
+    const label = window.i18n?.t ? window.i18n.t(key) : '';
+    button.textContent = (label && label !== key) ? label : fallback;
+    button.setAttribute('data-i18n-key', key);
     button.setAttribute('data-i18n-attr', 'text');
     button.addEventListener('click', (event) => {
         event.stopPropagation();
-        copyStatusLog();
+        onClick();
     });
-    statusBar.appendChild(button);
+    statusBarActions(statusBar).appendChild(button);
+}
+
+function ensureStatusCopyAllButton(statusBar) {
+    ensureStatusBarButton(statusBar, 'data-status-copy-all', 'hud.copyStatusLog', 'Copy all', copyStatusLog);
+    ensureStatusBarButton(statusBar, 'data-status-open-log', 'hud.openStatusLog', 'Open log', openStatusLogDialog);
 }
 
 function toggleStatusExpanded() {
@@ -410,6 +574,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const start = pressedAt;
             pressedAt = null;
             if (e.target.closest('#status-log-expanded')) return;
+            // The action buttons stop propagation themselves, but a click that lands on the row
+            // AROUND them is still a click on the bar — and collapsing the log out from under the
+            // button you were reaching for is the same annoyance as collapsing it mid-selection.
+            if (e.target.closest('.status-log-actions')) return;
             if (e.target.closest('[data-status-copy-all]')) return;
             if (start && Math.hypot(e.clientX - start.x, e.clientY - start.y) > 4) return;
             try {

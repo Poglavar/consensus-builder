@@ -51,25 +51,25 @@ describe('selecting text does not close the log', () => {
 });
 
 describe('copy all', () => {
-    it('copies exactly what is on screen, timestamp first', () => {
-        expect(ui).toContain('const STATUS_LOG_VISIBLE_ENTRIES = 50;');
-        expect(ui).toContain('function visibleStatusLogEntries()');
-        expect(ui).toContain('`${entry.timestamp}\\t${entry.message}`');
-        // The view and the button read the same helper, so the button cannot hand over something
-        // other than what is displayed.
-        expect(ui).toContain('const entriesToShow = visibleStatusLogEntries();');
+    it('copies the WHOLE log, timestamp first — not the strip', () => {
+        // The strip is a preview; a preview is not what belongs in a bug report. So the two are
+        // deliberately different, and the confirmation names the count so the difference is visible
+        // rather than silent.
+        expect(ui).toContain('function statusLogText()');
+        expect(ui).toContain('return statusLog.map(entry => `${entry.timestamp}\\t${entry.message}`).join');
+        expect(ui).toContain('const copied = await copyTextWithFeedback(statusLogText());');
     });
 
     it('reports how many lines went to the clipboard', () => {
         expect(ui).toContain('function copyStatusLog()');
-        expect(ui).toContain("line${entries.length === 1 ? '' : 's'} copied");
-        expect(ui).toContain("window.i18n.t('hud.statusLinesCopied', { count: entries.length })");
+        expect(ui).toContain("line${statusLog.length === 1 ? '' : 's'} copied");
+        expect(ui).toContain("window.i18n.t('hud.statusLinesCopied', { count: statusLog.length })");
     });
 
     it('appears only while the log is expanded', () => {
         expect(ui).toContain('function ensureStatusCopyAllButton(statusBar)');
         expect(ui).toContain('ensureStatusCopyAllButton(statusBar);');
-        expect(css).toContain('.status-bar:not(.expanded) .status-log-copy-all {');
+        expect(css).toContain('.status-bar:not(.expanded) .status-log-actions {');
     });
 
     it.each(locales)('%s can name the button and the confirmation', locale => {
@@ -77,6 +77,57 @@ describe('copy all', () => {
         expect(hud.copyStatusLog, `${locale} missing copyStatusLog`).toBeTruthy();
         expect(hud.statusLinesCopied, `${locale} missing statusLinesCopied`).toBeTruthy();
         expect(hud.statusLinesCopied).toContain('{{count}}');
+    });
+});
+
+// The strip under the bar holds fifty lines and the log itself held a hundred, which a batch
+// outruns in seconds: applying a hundred block rules writes several hundred lines, so by the time
+// the run ended its beginning — including whatever went wrong early — had already been dropped.
+describe('the whole log, and somewhere to read it', () => {
+    const html = read('../../frontend/index.html');
+
+    it('remembers far more than the strip shows', () => {
+        expect(ui).toContain('const STATUS_LOG_MAX_ENTRIES = 2000;');
+        expect(ui).toContain('const STATUS_LOG_PREVIEW_ENTRIES = 50;');
+        // Trimmed by how far over it is, not one at a time.
+        expect(ui).toContain('statusLog.splice(0, statusLog.length - STATUS_LOG_MAX_ENTRIES);');
+    });
+
+    it('pops out into a dialog that can be scrolled and copied from', () => {
+        expect(html).toContain('id="status-log-modal"');
+        expect(html).toContain('id="status-log-modal-list"');
+        expect(html).toContain('role="dialog"');
+        expect(ui).toContain('function openStatusLogDialog()');
+        expect(ui).toContain('window.openStatusLogDialog = openStatusLogDialog;');
+        expect(css).toContain('.status-log-modal-list {');
+        expect(css.slice(css.indexOf('.status-log-modal-list {'))).toContain('user-select: text;');
+    });
+
+    it('closes on Escape and on a click outside it', () => {
+        expect(ui).toContain("if (event.key === 'Escape' && statusLogDialogIsOpen())");
+        expect(ui).toContain('if (event.target === parts.overlay) closeStatusLogDialog();');
+    });
+
+    it('appends new lines rather than rebuilding, so a busy run stays cheap', () => {
+        // The dialog holds thousands of rows; rebuilding it per message would make the run that
+        // fills it the run that cannot be watched.
+        expect(ui).toContain('function appendToStatusLogDialog()');
+        expect(ui).toContain('for (let i = statusLogDialogRendered; i < statusLog.length; i += 1)');
+        // Unless the log was trimmed under it, in which case the view would drift from the log.
+        expect(ui).toContain('if (statusLogDialogRendered > statusLog.length) {');
+    });
+
+    it('puts the message in as TEXT — a status line is not ours to trust', () => {
+        // Status lines carry proposal titles, parcel ids and error text.
+        expect(ui).toContain('message.textContent = entry.message;');
+        expect(ui).not.toContain('class="status-log-message">${entry.message}');
+    });
+
+    it.each(locales)('%s can name the dialog', locale => {
+        const hud = dictOf(locale).hud;
+        ['statusLogTitle', 'openStatusLog', 'statusLogCount', 'statusLogClose', 'statusLogEmpty']
+            .forEach(key => expect(hud[key], `${locale} missing ${key}`).toBeTruthy());
+        expect(hud.statusLogCount).toContain('{{count}}');
     });
 });
 
@@ -116,9 +167,12 @@ describe('the spinner', () => {
     });
 
     it('turns for the whole plan-wide derivation, and stops even if it throws', () => {
+        // Sliced to rebuildAppliedFabric ALONE — its next sibling, not a method several hundred
+        // lines later. A wider window catches other functions' `finally` blocks, and then this test
+        // reports on whichever one happens to come last.
         const rebuild = manager.slice(
             manager.indexOf('    async rebuildAppliedFabric(options = {}) {'),
-            manager.indexOf('    async _rebuildPass')
+            manager.indexOf('    async _loadReplayGround(appliedList) {')
         );
         expect(rebuild).toContain('window.beginStatusActivity()');
         // In `finally` — a derivation that throws must not leave the bar spinning for ever.

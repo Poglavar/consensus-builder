@@ -80,6 +80,19 @@ describe('a block knows it is empty even when its cadastral parent is built on',
         expect(batch.isPopulated(box(15.9, 43.7, 15.901, 43.701), 'HR-102', occupied)).toBe(true);
     });
 
+    it('says WHOSE building stands there, so a false positive can be spotted', () => {
+        globalThis.proposalStorage = {
+            getAllProposals: () => [{ ...appliedBlockOnPieceA(), title: 'Block 101 north' }]
+        };
+
+        const occupied = batch.occupancy();
+
+        // A NEIGHBOUR's name against a parcel is the block being wrongly counted as built; without
+        // the name, "already built on" is a claim that cannot be checked.
+        expect(batch.occupiersOf(PIECE_A, 'HR-101#a', occupied)).toEqual(['Block 101 north']);
+        expect(batch.occupiersOf(PIECE_B, 'HR-101#b', occupied)).toEqual([]);
+    });
+
     it('ignores a proposal that is not applied', () => {
         globalThis.proposalStorage = {
             getAllProposals: () => [{ ...appliedBlockOnPieceA(), applied: false }]
@@ -110,6 +123,6 @@ describe('a block knows it is empty even when its cadastral parent is built on',
         const occupied = batch.occupancy();
 
         expect(occupied.marks).toHaveLength(1);
-        expect(turf.booleanPointInPolygon(occupied.marks[0], courtyard)).toBe(true);
+        expect(turf.booleanPointInPolygon(occupied.marks[0].at, courtyard)).toBe(true);
     });
 });

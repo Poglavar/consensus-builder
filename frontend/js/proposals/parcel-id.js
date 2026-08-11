@@ -183,8 +183,55 @@ function clearPersistedParcelRecord(parcelId) {
     try { PersistentStorage.removeItem(`parcel_${parcelId}`); } catch (_) { }
 }
 
+// A parcel's area, remembered.
+//
+// This is asked once per parent parcel per proposal, by the metrics the proposals list computes for
+// EVERY row before anything is clicked. With 621 proposals that is a couple of thousand lookups, and
+// the fallback below is a full walk of every parcel on the map — so a miss cost a 13,000-layer scan,
+// and misses are the common case, because applying rewrites a proposal's parents to CADASTRAL ids
+// while the map holds the pieces those parcels were cut into.
+//
+// Caching by id is sound rather than merely convenient: a piece id is a content hash of its ring, so
+// the same id always means the same shape, and a cadastral parcel's surveyed area does not change
+// inside a session. Only successful answers are cached; a miss is remembered against the parcel
+// count that produced it, so it is retried once more ground has loaded.
+const _parcelAreaById = new Map();
+const _parcelAreaMissAt = new Map();
+let _parcelAreaScanAt = -1;
+
+function _liveParcelCount() {
+    try {
+        if (typeof parcelLayerById !== 'undefined' && parcelLayerById instanceof Map) return parcelLayerById.size;
+    } catch (_) { }
+    return -1;
+}
+
+// One walk fills the cache for EVERY parcel on the map, so the first miss pays for the scan and no
+// later one does. Scanning once per id was the same walk repeated a thousand times over.
+function _primeParcelAreaCache(count) {
+    if (_parcelAreaScanAt === count) return;
+    _parcelAreaScanAt = count;
+    try {
+        if (typeof parcelLayer === 'undefined' || !parcelLayer || typeof parcelLayer.eachLayer !== 'function') return;
+        parcelLayer.eachLayer(layer => {
+            const candidate = getParcelIdFromFeature(layer?.feature);
+            if (candidate === undefined || candidate === null) return;
+            const maybeArea = layer.feature?.properties?.calculatedArea;
+            if (!Number.isFinite(maybeArea)) return;
+            const key = candidate.toString();
+            if (!_parcelAreaById.has(key)) _parcelAreaById.set(key, Number(maybeArea) || 0);
+        });
+    } catch (err) {
+        console.warn('[getParcelAreaById] parcelLayer.eachLayer error:', err);
+    }
+}
+
 function getParcelAreaById(parcelId) {
     if (parcelId === undefined || parcelId === null) return 0;
+    const key = parcelId.toString();
+    const remembered = _parcelAreaById.get(key);
+    if (remembered !== undefined) return remembered;
+
     let area = 0;
     let source = 'none';
 
@@ -202,23 +249,14 @@ function getParcelAreaById(parcelId) {
         console.warn('[getParcelAreaById] resolveParcelLayerById error:', err);
     }
 
+    const count = _liveParcelCount();
     if (!area) {
-        try {
-            if (typeof parcelLayer !== 'undefined' && parcelLayer && typeof parcelLayer.eachLayer === 'function') {
-                parcelLayer.eachLayer(l => {
-                    if (area) return;
-                    const candidate = getParcelIdFromFeature(l?.feature);
-                    if (candidate !== undefined && candidate !== null && candidate.toString() === parcelId.toString()) {
-                        const maybeArea = l.feature?.properties?.calculatedArea;
-                        if (Number.isFinite(maybeArea)) {
-                            area = Number(maybeArea) || 0;
-                            source = 'parcelLayer.eachLayer';
-                        }
-                    }
-                });
-            }
-        } catch (err) {
-            console.warn('[getParcelAreaById] parcelLayer.eachLayer error:', err);
+        if (_parcelAreaMissAt.get(key) === count) return 0;
+        _primeParcelAreaCache(count);
+        const scanned = _parcelAreaById.get(key);
+        if (scanned !== undefined) {
+            area = scanned;
+            source = 'parcelLayer.eachLayer';
         }
     }
 
@@ -235,6 +273,8 @@ function getParcelAreaById(parcelId) {
         }
     }
 
+    if (area) _parcelAreaById.set(key, area);
+    else _parcelAreaMissAt.set(key, count);
     return area;
 }
 

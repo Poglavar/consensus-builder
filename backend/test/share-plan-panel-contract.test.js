@@ -48,14 +48,19 @@ describe('share plan panel contract', () => {
         expect(panelFn).toContain('try { closeSharePlanPanel(); } catch (_) { }');
     });
 
-    it('paints checked proposals and unpaints unchecked ones', () => {
+    it('paints a proposal when its row is toggled, and only then', () => {
         expect(panelFn).toContain('const syncPlanOverlay = (key)');
         expect(panelFn).toContain('if (!selected.has(key)) return;');
         const checkboxChange = sourceSection(panelFn, 'const onCheckboxChange =', 'const attachRow =');
         expect(checkboxChange).toContain('syncPlanOverlay(key)');
-        // Every proposal starts checked and painted — now in frame-sized slices rather than one
-        // synchronous sweep, so the panel is on screen while the map fills in behind it.
-        expect(panelFn).toContain("key => syncPlanOverlay(key),\n                    'drawingProposals'");
+    });
+
+    it('draws NOTHING when the panel opens', () => {
+        // Opening a list is not a request to draw three hundred overlays. It cost seconds of turf
+        // and Leaflet work before the panel was usable, and left the map unreadable under the whole
+        // plan at once. Hover and click are what put a proposal on the map.
+        expect(panelFn).not.toContain("'drawingProposals'");
+        expect(panelFn).not.toContain('key => syncPlanOverlay(key),');
     });
 
     it('rows highlight on hover/click and never open details', () => {

@@ -88,6 +88,7 @@ function buildWorld() {
         }),
         _appliedCorridorTakes: ProposalManager._appliedCorridorTakes,
         _deriveCorridorFabric: ProposalManager._deriveCorridorFabric,
+        _deriveCorridorFabricBody: ProposalManager._deriveCorridorFabricBody,
         _parcelsClaimedByDerivedGround: ProposalManager._parcelsClaimedByDerivedGround,
         _deriveGroundUnder: ProposalManager._deriveGroundUnder,
         _clearDerivedRecordState: ProposalManager._clearDerivedRecordState,
@@ -108,12 +109,12 @@ const road = (proposalId, polygon) => ({
 const pieceIds = byId => Array.from(byId.keys()).filter(id => id.indexOf('#') !== -1);
 
 describe('a road cut, then taken back', () => {
-    it('cuts only the parcel it crosses, and gives it back whole when the road is unapplied', () => {
+    it('cuts only the parcel it crosses, and gives it back whole when the road is unapplied', async () => {
         const { byId, visible, records, manager } = buildWorld();
         const record = road('road-1', RIBBON);
         records.set('road-1', record);
 
-        manager._deriveGroundUnder([turf.feature(RIBBON.geometry)]);
+        await manager._deriveGroundUnder([turf.feature(RIBBON.geometry)]);
 
         // The parcel is now a corridor strip and two remainders, and the parcel itself is hidden.
         expect(pieceIds(byId).length).toBe(3);
@@ -122,14 +123,14 @@ describe('a road cut, then taken back', () => {
 
         // Unapply: flip the record, take its payload off, derive the ground it held without it.
         setProposalApplied(record, false, { stamp: false });
-        const freed = manager._releaseUnappliedRecord(record);
+        const freed = await manager._releaseUnappliedRecord(record);
 
         expect(freed).toBeTruthy();
         expect(pieceIds(byId)).toEqual([]);
         expect(visible.has('HR-A')).toBe(true);
     });
 
-    it('leaves a second road standing when the first is unapplied', () => {
+    it('leaves a second road standing when the first is unapplied', async () => {
         const { byId, visible, records, manager } = buildWorld();
         // A second cadastral parcel, well clear of the first, with its own road.
         const far = turf.polygon([[[1, 1], [1.001, 1], [1.001, 1.001], [1, 1.001], [1, 1]]], {
@@ -143,11 +144,11 @@ describe('a road cut, then taken back', () => {
         const second = road('road-2', farRibbon);
         records.set('road-1', first);
         records.set('road-2', second);
-        manager._deriveGroundUnder([turf.feature(RIBBON.geometry), turf.feature(farRibbon.geometry)]);
+        await manager._deriveGroundUnder([turf.feature(RIBBON.geometry), turf.feature(farRibbon.geometry)]);
         expect(pieceIds(byId).length).toBe(6);
 
         setProposalApplied(first, false, { stamp: false });
-        manager._releaseUnappliedRecord(first);
+        await manager._releaseUnappliedRecord(first);
 
         const left = pieceIds(byId);
         expect(left.length).toBe(3);
@@ -158,7 +159,7 @@ describe('a road cut, then taken back', () => {
 });
 
 describe('what a record put on the map', () => {
-    it('takes back its buildings and leaves everyone else\'s alone', () => {
+    it('takes back its buildings and leaves everyone else\'s alone', async () => {
         const { win, manager } = buildWorld();
         win.proposedBuildings = [
             { properties: { proposalId: 'mine', id: 'b1' } },
@@ -174,7 +175,7 @@ describe('what a record put on the map', () => {
         expect(win.parks[0].properties.proposalId).toBe('other');
     });
 
-    it('takes back its derived parcels — and only those', () => {
+    it('takes back its derived parcels — and only those', async () => {
         const { byId, manager } = buildWorld();
         byId.set('HR-A#mine', layerFor({ type: 'Feature', properties: { parcelId: 'HR-A#mine', ancestorProposal: 'mine' } }));
         byId.set('HR-A#yours', layerFor({ type: 'Feature', properties: { parcelId: 'HR-A#yours', ancestorProposal: 'yours' } }));
@@ -186,7 +187,7 @@ describe('what a record put on the map', () => {
         expect(Array.from(byId.keys()).sort()).toEqual(['HR-A', 'HR-A#rest', 'HR-A#yours']);
     });
 
-    it('never removes a cadastral parcel, whatever a record claims', () => {
+    it('never removes a cadastral parcel, whatever a record claims', async () => {
         const { byId, manager } = buildWorld();
         byId.get('HR-A').feature.properties.proposalId = 'mine';
 
@@ -197,7 +198,7 @@ describe('what a record put on the map', () => {
 });
 
 describe('ground that is spoken for stays hidden', () => {
-    it('keeps a parcel hidden while a readjustment\'s plots stand on it', () => {
+    it('keeps a parcel hidden while a readjustment\'s plots stand on it', async () => {
         const { byId, visible, records, manager } = buildWorld();
         // No road over it, so the arrangement leaves it untouched — but a plan's plots are there.
         byId.set('HR-A#plot-1', layerFor({
@@ -207,14 +208,14 @@ describe('ground that is spoken for stays hidden', () => {
         visible.delete('HR-A');
         records.set('lr-1', { proposalId: 'lr-1', goal: 'reparcellization', applied: true });
 
-        manager._deriveCorridorFabric({ parcelIds: ['HR-A'] });
+        await manager._deriveCorridorFabric({ parcelIds: ['HR-A'] });
 
         // The old rule was "no pieces → show", which would have put the cadastral parcel back on
         // the map underneath the plots standing on it.
         expect(visible.has('HR-A')).toBe(false);
     });
 
-    it('shows it again once nothing derived claims it', () => {
+    it('shows it again once nothing derived claims it', async () => {
         const { byId, visible, manager } = buildWorld();
         byId.set('HR-A#plot-1', layerFor({
             type: 'Feature',
@@ -223,7 +224,7 @@ describe('ground that is spoken for stays hidden', () => {
         visible.delete('HR-A');
 
         manager._undoProposalPayload({ proposalId: 'lr-1' });
-        manager._deriveCorridorFabric({ parcelIds: ['HR-A'] });
+        await manager._deriveCorridorFabric({ parcelIds: ['HR-A'] });
 
         expect(visible.has('HR-A')).toBe(true);
     });

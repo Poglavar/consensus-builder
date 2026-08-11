@@ -30,6 +30,103 @@
         return rings;
     }
 
+    function blockBatchI18n(key, fallback) {
+        try {
+            if (global.i18n && typeof global.i18n.t === 'function') {
+                const translated = global.i18n.t(key, {});
+                if (translated && translated !== key) return translated;
+            }
+        } catch (_) { }
+        return fallback;
+    }
+
+    // A block's NAME comes from the BLOCK — its size and its shape — and from nothing else.
+    //
+    // Naming it after a parcel was wrong twice over: a block is usually several parcels, so picking
+    // the first is arbitrary; and the id of a parcel our own road has cut carries a piece hash,
+    // which is what put `#p1gynggs` on the end of a name. A block already has an identity of its
+    // own — the ground it encloses — so the name is read off that:
+    //
+    //     Block 4237-K7QM        4237 m², and a code standing for this outline and no other.
+    //
+    // Derived, not random or stamped: re-deriving the same block gives the same name, so a re-run
+    // cannot quietly mint a second name for ground that already has one. Change the block — move a
+    // road, take a parcel out — and it is a different block with a different name, which is right.
+
+    // No 0/O/1/I/L: a name gets read aloud and typed back.
+    const CODE_ALPHABET = '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
+
+    // Every vertex of every member, in centimetres, sorted. Centimetres because below that is float
+    // drift and a name must not move because a ring was re-emitted; sorted because the flood fill's
+    // walk order, a ring's rotation and its winding are all accidents of how the block was found,
+    // and none of them changes which ground it is.
+    function blockFingerprint(block, byId) {
+        const points = [];
+        block.parcelIds.forEach(id => {
+            const entry = byId.get(id);
+            (entry && Array.isArray(entry.rings) ? entry.rings : []).forEach(ring => {
+                if (!Array.isArray(ring) || !ring.length) return;
+                // Drop the repeated closing vertex: WHICH vertex a closed ring repeats is decided by
+                // where it starts, so counting it would make the fingerprint depend on that after
+                // all — the exact accident this is supposed to be blind to.
+                const first = ring[0];
+                const last = ring[ring.length - 1];
+                const closed = Array.isArray(first) && Array.isArray(last)
+                    && first[0] === last[0] && first[1] === last[1];
+                (closed ? ring.slice(0, -1) : ring).forEach(point => {
+                    if (!Array.isArray(point) || !Number.isFinite(point[0]) || !Number.isFinite(point[1])) return;
+                    points.push(`${point[0].toFixed(2)},${point[1].toFixed(2)}`);
+                });
+            });
+        });
+        return points.sort().join(' ');
+    }
+
+    function blockCode(text) {
+        const arrangement = global.__parcelArrangement;
+        const hash = (arrangement && typeof arrangement.hash32 === 'function')
+            ? arrangement.hash32(text)
+            : 0;
+        let value = hash >>> 0;
+        let code = '';
+        for (let i = 0; i < 4; i += 1) {
+            code = CODE_ALPHABET[value % CODE_ALPHABET.length] + code;
+            value = Math.floor(value / CODE_ALPHABET.length);
+        }
+        return code;
+    }
+
+    function blockBaseName(block, byId) {
+        const word = blockBatchI18n('panel.parcel.build.block', 'Block');
+        const area = Math.max(0, Math.round(Number(block.areaM2) || 0));
+        return `${word} ${area}-${blockCode(blockFingerprint(block, byId || new Map()))}`;
+    }
+
+    // Two blocks cannot want the same name: the code stands for an outline, and two blocks with the
+    // same outline are one block. The suffix is a backstop for the one case left — a name an earlier
+    // run already put on a record — and it should stay unused.
+    function nameBlocks(blocks, byId, taken) {
+        blocks.forEach(block => {
+            const base = blockBaseName(block, byId);
+            let name = base;
+            for (let n = 2; taken.has(name); n += 1) name = `${base} (${n})`;
+            block.name = name;
+            taken.add(name);
+        });
+        return blocks;
+    }
+
+    function existingProposalNames() {
+        const names = new Set();
+        const all = global.proposalStorage?.getAllProposals?.() || [];
+        all.forEach(proposal => {
+            [proposal && proposal.title, proposal && proposal.name].forEach(value => {
+                if (value !== undefined && value !== null && String(value).trim()) names.add(String(value).trim());
+            });
+        });
+        return names;
+    }
+
     // What already stands on the ground — and why this cannot be answered from parcel ids alone.
     //
     // Applying a building proposal REWRITES its parentParcelIds to the CADASTRAL BASE ids
@@ -74,7 +171,10 @@
                     // centre of gravity is outside it.
                     const coords = turf.pointOnFeature(feature)?.geometry?.coordinates;
                     if (Array.isArray(coords) && Number.isFinite(coords[0]) && Number.isFinite(coords[1])) {
-                        marks.push(coords);
+                        // The mark carries WHOSE it is: "already built on" is only a useful answer
+                        // when it can be checked, and the way it goes wrong is a neighbour's
+                        // building landing a metre inside this block.
+                        marks.push({ at: coords, by: proposal.title || proposal.name || proposal.proposalId || proposal.id || '?' });
                     }
                 } catch (_) { /* a footprint we cannot read proves nothing about any parcel */ }
             });
@@ -82,19 +182,26 @@
         return { ids, marks };
     }
 
-    function isPopulated(feature, id, occupied) {
-        if (occupied.ids.has(String(id))) return true;
+    // Who stands on this parcel — the empty list is "nobody", which is what makes it buildable.
+    function occupiersOf(feature, id, occupied) {
+        const names = [];
+        if (occupied.ids.has(String(id))) names.push(`recorded against ${id}`);
         const turf = global.turf;
-        if (!turf || !occupied.marks.length || !feature) return false;
+        if (!turf || !occupied.marks.length || !feature) return names;
         let box = null;
         try { box = turf.bbox(feature); } catch (_) { box = null; }
-        for (const coords of occupied.marks) {
-            if (box && (coords[0] < box[0] || coords[0] > box[2] || coords[1] < box[1] || coords[1] > box[3])) continue;
+        occupied.marks.forEach(mark => {
+            const at = mark.at;
+            if (box && (at[0] < box[0] || at[0] > box[2] || at[1] < box[1] || at[1] > box[3])) return;
             try {
-                if (turf.booleanPointInPolygon(coords, feature)) return true;
+                if (turf.booleanPointInPolygon(at, feature) && names.indexOf(mark.by) === -1) names.push(mark.by);
             } catch (_) { /* ignore */ }
-        }
-        return false;
+        });
+        return names;
+    }
+
+    function isPopulated(feature, id, occupied) {
+        return occupiersOf(feature, id, occupied).length > 0;
     }
 
     function collectParcels() {
@@ -145,6 +252,7 @@
         }
         const limits = { ...enumeration.DEFAULTS, ...(options || {}) };
         const result = enumeration.enumerateBlocks(parcels, options);
+        nameBlocks(result.blocks, new Map(parcels.map(entry => [entry.id, entry])), existingProposalNames());
         const enclosed = result.blocks.filter(block => block.enclosed);
         const todo = enclosed.filter(block => !block.populated);
         const done = enclosed.filter(block => block.populated);
@@ -180,6 +288,7 @@
             + `${notRinged.length} not ringed by roads)`, report
         );
         const asRow = block => ({
+            name: block.name,
             parcels: block.parcelCount,
             areaM2: block.areaM2,
             outlineM: block.outlineM,
@@ -270,6 +379,7 @@
         const created = [];
         const failed = [];
 
+        const createEach = async () => {
         for (const block of targets) {
             // multiParcelSelection is a top-level `const` too, so it is reached by bare name.
             const selection = (typeof multiParcelSelection !== 'undefined') ? multiParcelSelection : null;
@@ -278,7 +388,7 @@
             const layers = found.filter(entry => entry.layer).map(entry => entry.layer);
             if (layers.length !== block.parcelIds.length) {
                 failed.push({
-                    block: block.parcelIds[0],
+                    block: block.name,
                     reason: 'some parcels are no longer on the map',
                     detail: found.filter(entry => !entry.layer).map(entry => entry.id).join(', ')
                 });
@@ -288,13 +398,13 @@
             // may have claimed ground this one counted on.
             const occupied = occupancy();
             const taken = found
-                .filter(entry => isPopulated(entry.layer.feature, entry.id, occupied))
-                .map(entry => entry.id);
+                .map(entry => ({ id: entry.id, by: occupiersOf(entry.layer.feature, entry.id, occupied) }))
+                .filter(entry => entry.by.length);
             if (taken.length) {
                 failed.push({
-                    block: block.parcelIds[0],
+                    block: block.name,
                     reason: 'already built on by the time its turn came',
-                    detail: taken.join(', ')
+                    detail: taken.map(entry => `${entry.id} ← ${entry.by.join(', ')}`).join(' · ')
                 });
                 continue;
             }
@@ -303,7 +413,7 @@
             try { design = designFor(layers, params); }
             catch (error) {
                 failed.push({
-                    block: block.parcelIds[0],
+                    block: block.name,
                     reason: 'generating the design threw',
                     detail: String(error && error.message || error)
                 });
@@ -311,17 +421,24 @@
             }
             if (!design) {
                 failed.push({
-                    block: block.parcelIds[0],
+                    block: block.name,
                     reason: 'no design could be generated for this outline',
                     detail: `${block.parcelCount} parcel(s), ${block.areaM2} m²`
                 });
                 continue;
             }
 
-            const parentDetails = block.parcelIds.map(id => ({ id, number: id }));
+            // The parcel's NUMBER, not its id: this list is shown as "parent parcels", and a piece
+            // hash in that column is the same leak as one in the title.
+            const parentDetails = found.map(entry => ({
+                id: entry.id,
+                number: entry.layer.feature?.properties?.parentParcelNumber
+                    ?? entry.layer.feature?.properties?.BROJ_CESTICE
+                    ?? String(entry.id).split('#')[0]
+            }));
             const proposal = {
-                title: `Block ${block.parcelIds[0]}`,
-                name: `Block ${block.parcelIds[0]}`,
+                title: block.name,
+                name: block.name,
                 description: `Urban rule generated for the block of ${block.parcelCount} parcel(s).`,
                 primaryType: 'Urban Rule',
                 goal: 'buildings',
@@ -339,7 +456,7 @@
                     parentParcelIds: block.parcelIds.slice(),
                     parentParcelNumbers: parentDetails,
                     createdFrom: 'blockify',
-                    blockName: `Block ${block.parcelIds[0]}`,
+                    blockName: block.name,
                     parameters: {
                         mode: 'parametric',
                         typology: 'block',
@@ -362,14 +479,14 @@
             try { proposalId = global.proposalStorage.addProposal(proposal); }
             catch (error) {
                 failed.push({
-                    block: block.parcelIds[0],
+                    block: block.name,
                     reason: 'could not store the record',
                     detail: String(error && error.message || error)
                 });
                 continue;
             }
             if (!proposalId) {
-                failed.push({ block: block.parcelIds[0], reason: 'storage refused the record (duplicate?)', detail: '' });
+                failed.push({ block: block.name, reason: 'storage refused the record (duplicate?)', detail: '' });
                 continue;
             }
 
@@ -378,7 +495,7 @@
             catch (error) {
                 applied = false;
                 failed.push({
-                    block: block.parcelIds[0],
+                    block: block.name,
                     reason: 'apply threw',
                     detail: String(error && error.message || error)
                 });
@@ -387,6 +504,19 @@
             if (typeof global.updateStatus === 'function') {
                 global.updateStatus(`Block urban rules: ${created.length}/${targets.length} created…`);
             }
+            // Hand the browser a turn between blocks. Every await in this loop is on data that is
+            // usually already there, and an already-settled promise only schedules a microtask —
+            // which runs BEFORE the browser paints. Without this the whole run is one frame and the
+            // map is frozen from the first block to the last.
+            if (typeof global.yieldToBrowser === 'function') await global.yieldToBrowser();
+        }
+        };
+        // One redraw of the proposed buildings at the end, not one per block: rebuilding that layer
+        // redraws every building already on it.
+        if (typeof global.withProposedBuildingsRefreshHeld === 'function') {
+            await global.withProposedBuildingsRefreshHeld(createEach);
+        } else {
+            await createEach();
         }
 
         // A skip count on its own is not a finding — it is a question. Group by reason and print the
@@ -443,6 +573,7 @@
         }
 
         const result = enumeration.enumerateBlocks(parcels);
+        nameBlocks(result.blocks, new Map(parcels.map(entry => [entry.id, entry])), existingProposalNames());
         const block = result.blocks.find(entry => entry.parcelIds.indexOf(target.id) !== -1);
         if (!block) {
             console.warn(`[blockBatch] ${target.id} ended up in no block at all`);
@@ -453,6 +584,7 @@
         const pairs = adjacencyApi.neighborPairs(parcels.map(entry => ({ id: entry.id, rings: entry.rings })));
         const inBlock = new Set(block.parcelIds);
         const roadSet = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel : null;
+        const occupied = occupancy();
 
         const rows = block.parcelIds.map(id => {
             const entry = byId.get(id) || { rings: [], areaM2: 0, properties: {} };
@@ -474,6 +606,9 @@
                 alongRoadM: Math.round(alongRoadM),
                 sharedWithBlockM: Math.round(sharedWithBlockM),
                 facingNothingM: Math.round(Math.max(0, perimeterM - alongRoadM - sharedWithBlockM)),
+                // Blank unless something already stands here. A NEIGHBOUR's name in this column is
+                // the block being wrongly counted as built — the batch skips those.
+                builtOnBy: occupiersOf(entry.layer && entry.layer.feature, id, occupied).join(', '),
                 // Should always be false: a member the road set knows about means this parcel is
                 // road ground the block absorbed, which is the bug that merges blocks across a street.
                 roadSetSaysRoad: !!(roadSet && (roadSet(id) || roadSet(id.split('#')[0])))
@@ -481,25 +616,111 @@
             };
         }).sort((a, b) => b.facingNothingM - a.facingNothingM);
 
+        // The neighbours of the parcel you ASKED about, which is where an answer this size has to
+        // start. A component only escapes through ground that is not a road, and one such neighbour
+        // is enough — so these few rows name the gap, where a table of the whole component cannot.
+        const neighbours = pairs
+            .filter(pair => pair.a === target.id || pair.b === target.id)
+            .map(pair => {
+                const otherId = pair.a === target.id ? pair.b : pair.a;
+                const other = byId.get(otherId) || {};
+                return {
+                    neighbour: otherId,
+                    sharedM: Math.round(pair.sharedM),
+                    isRoad: !!other.isCorridor,
+                    // Where the fill went. A long boundary with a non-road neighbour is a way out.
+                    leadsOutOfTheBlock: !other.isCorridor
+                };
+            })
+            .sort((a, b) => b.sharedM - a.sharedM);
+
+        // How far each member is from the parcel you asked about, counted in parcels crossed.
+        //
+        // When a component has run away, the question worth answering is not "what is in it" but
+        // "where does its ring break, NEAREST to me" — because that is the gap to close, and every
+        // parcel beyond it is only in the component by consequence. A member whose boundary is
+        // neither road nor shared with a block-mate IS a break in the ring; the nearest such member
+        // is the nearest hole.
+        const memberLinks = new Map();
+        pairs.forEach(pair => {
+            if (!inBlock.has(pair.a) || !inBlock.has(pair.b)) return;
+            if (!memberLinks.has(pair.a)) memberLinks.set(pair.a, []);
+            if (!memberLinks.has(pair.b)) memberLinks.set(pair.b, []);
+            memberLinks.get(pair.a).push(pair.b);
+            memberLinks.get(pair.b).push(pair.a);
+        });
+        const hops = new Map([[target.id, 0]]);
+        const walk = [target.id];
+        while (walk.length) {
+            const id = walk.shift();
+            const distance = hops.get(id);
+            (memberLinks.get(id) || []).forEach(next => {
+                if (hops.has(next)) return;
+                hops.set(next, distance + 1);
+                walk.push(next);
+            });
+        }
+        // Under this a gap is a corner where three roads meet, or the metre a road's own remainder
+        // leaves behind — not a way out.
+        const OPEN_SIDE_M = 15;
+        const nearestHoles = rows
+            .filter(row => row.facingNothingM >= OPEN_SIDE_M && hops.has(row.parcel))
+            .map(row => ({
+                parcelsAway: hops.get(row.parcel),
+                parcel: row.parcel,
+                openM: row.facingNothingM,
+                alongRoadM: row.alongRoadM,
+                areaM2: row.areaM2
+            }))
+            .sort((a, b) => a.parcelsAway - b.parcelsAway || b.openM - a.openM)
+            .slice(0, 20);
+
         const unaccountedM = Math.max(0, block.outlineM - block.corridorTouchM);
         const absorbedRoads = rows.filter(row => row.roadSetSaysRoad);
+        // A city block is a handful of parcels. Anything near this is not a block that failed a
+        // test — it is the flood fill having walked out of one and kept going, and every number
+        // computed from it describes the ground it escaped into rather than the ground you meant.
+        const RUNAWAY_MEMBERS = 200;
+        const runaway = block.parcelCount >= RUNAWAY_MEMBERS;
+
         console.log(
-            `[blockBatch] ${target.id} is in a block of ${block.parcelCount} parcel(s), ${block.areaM2} m² · `
+            `[blockBatch] ${target.id} is in "${block.name}" — ${block.parcelCount} parcel(s), ${block.areaM2} m² · `
             + `outline ${block.outlineM} m = ${block.corridorTouchM} m along roads + ${unaccountedM} m facing nothing · `
             + `enclosure ${block.enclosure} → ${block.enclosed ? 'enclosed' : 'NOT enclosed'}`
-            + (block.populated ? ' · already built on' : ''),
+            + (block.populated ? ' · ALREADY BUILT ON, so the batch skips it — see builtOnBy below' : ''),
             block);
+        if (runaway) {
+            console.warn(
+                `[blockBatch] ${block.parcelCount} parcels is not a block — the flood fill escaped and joined `
+                + 'everything it could reach. A block is only bounded by ground marked as road, so one unmarked '
+                + 'side is enough to let it out. Read the NEAREST HOLES table: the first row is the closest place '
+                + `the ring around ${target.id} is not closed, and closing it is what makes this a block again.`);
+        }
         if (absorbedRoads.length) {
             console.warn(`[blockBatch] ${absorbedRoads.length} member(s) are road ground the block absorbed — `
                 + 'that is what merges the blocks on both sides of a street', absorbedRoads.map(row => row.parcel));
         }
-        console.table(rows);
+        console.log(`[blockBatch] what ${target.id} touches:`);
+        console.table(neighbours);
+        if (nearestHoles.length) {
+            console.log(`[blockBatch] NEAREST HOLES in the ring around ${target.id} — closest first. `
+                + 'parcelsAway is how many parcels you cross to get there; openM is boundary that is '
+                + 'neither road nor shared with a block-mate, which is what lets the fill out:');
+            console.table(nearestHoles);
+        }
+        // Bounded: 13,000 rows is not a table anyone reads, and printing it implies it is worth reading.
+        if (rows.length > 25) {
+            console.log(`[blockBatch] members, worst 25 of ${rows.length} by boundary facing nothing:`);
+            console.table(rows.slice(0, 25));
+        } else {
+            console.table(rows);
+        }
         if (typeof global.updateStatus === 'function') {
-            global.updateStatus(`Block of ${block.parcelCount} parcel(s): ${block.corridorTouchM} m of its `
+            global.updateStatus(`${block.name}: ${block.corridorTouchM} m of its `
                 + `${block.outlineM} m outline runs along a road (${Math.round(block.enclosure * 100)}%), `
                 + `${unaccountedM} m faces nothing.`);
         }
-        return { block, members: rows, unaccountedM, absorbedRoads };
+        return { block, members: rows, neighbours, nearestHoles, unaccountedM, absorbedRoads, runaway };
     }
 
     global.BlockBatch = { planBlockUrbanRules, createBlockUrbanRules, collectParcels, designFor, whyIsBlockUnfilled };
@@ -510,7 +731,8 @@
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = {
             planBlockUrbanRules, createBlockUrbanRules, collectParcels, designFor,
-            whyIsBlockUnfilled, occupancy, isPopulated
+            whyIsBlockUnfilled, occupancy, isPopulated, occupiersOf,
+            blockBaseName, blockFingerprint, blockCode, nameBlocks
         };
     }
 })(typeof window !== 'undefined' ? window : globalThis);

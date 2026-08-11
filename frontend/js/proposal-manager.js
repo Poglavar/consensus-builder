@@ -412,6 +412,9 @@ const REPLAY_GROUND_BATCH_SIZE = 20;
 
 const _now = () => ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now());
 
+// Derivations of the corridor fabric run one at a time — see _deriveCorridorFabric.
+let _corridorFabricQueue = Promise.resolve();
+
 const ProposalManager = {
     _lastApplyFailureByProposalId: new Map(),
     // Where the last rebuild's time went. A rebuild is the expensive half of finishing a road, and
@@ -709,16 +712,26 @@ const ProposalManager = {
             // record can disappear per extra pass.
             const maxPasses = Math.max(2, appliedNow().length + 1);
             let passesRun = 0;
-            for (let pass = 0; pass < maxPasses; pass += 1) {
-                this._severedThisRebuild = [];
-                this._replayInvalidated = false;
-                passesRun += 1;
-                summary = await this._rebuildPass(appliedNow(), opts);
-                if (!this._severedThisRebuild.length && !this._replayInvalidated) break;
-                console.info('[rebuildAppliedFabric] applied set changed during replay — deriving again', {
-                    severed: this._severedThisRebuild.slice()
-                });
-            }
+            const runPasses = async () => {
+                for (let pass = 0; pass < maxPasses; pass += 1) {
+                    this._severedThisRebuild = [];
+                    this._replayInvalidated = false;
+                    passesRun += 1;
+                    summary = await this._rebuildPass(appliedNow(), opts);
+                    if (!this._severedThisRebuild.length && !this._replayInvalidated) break;
+                    console.info('[rebuildAppliedFabric] applied set changed during replay — deriving again', {
+                        severed: this._severedThisRebuild.slice()
+                    });
+                }
+            };
+            // One redraw of the proposed buildings for the whole replay instead of one per member.
+            // Rebuilding that layer redraws every building already on it, so leaving it unheld makes
+            // the replay quadratic in its own output.
+            const holdBuildings = (typeof window !== 'undefined')
+                ? window.withProposedBuildingsRefreshHeld
+                : null;
+            if (typeof holdBuildings === 'function') await holdBuildings(runPasses);
+            else await runPasses();
 
             const stripsStarted = _now();
             try { if (typeof refreshAppliedCorridorStrips === 'function') refreshAppliedCorridorStrips(); } catch (_) { }
@@ -1002,7 +1015,7 @@ const ProposalManager = {
     // parcel and the takes over it, so a late arrival has the same answer as any other parcel: it
     // just had not been asked yet. Only arrivals a corridor actually reaches are derived, so a pan
     // across empty country costs one overlap test each and nothing more.
-    deriveArrivingParcels(parcelIds) {
+    async deriveArrivingParcels(parcelIds) {
         const browserRoot = (typeof window !== 'undefined') ? window : globalThis;
         const A = browserRoot.__parcelArrangement;
         const ancestry = browserRoot.__cadastreAncestry;
@@ -1024,15 +1037,44 @@ const ProposalManager = {
             .map(entry => String(entry.id));
         if (!scoped.length) return null;
 
-        const fabric = this._deriveCorridorFabric({ parcelIds: scoped, takes });
+        const fabric = await this._deriveCorridorFabric({ parcelIds: scoped, takes });
         if (fabric && fabric.added) {
             try { if (typeof refreshAppliedCorridorStrips === 'function') scheduleCorridorStripRefresh(); } catch (_) { }
         }
         return fabric;
     },
 
-    _deriveCorridorFabric(options = {}) {
+    // Cooperative, and one at a time.
+    //
+    // The ground under a pan is cut in chunks with a frame handed back between them, so the map
+    // answers the mouse while the fabric catches up. A parcel's pieces are a function of that parcel
+    // and the takes over it — nothing crosses parcels — so chunking computes exactly what one call
+    // computed, in the same order.
+    //
+    // The moment it yields, another derivation can start: a moveend, a release, a replay. They all
+    // mutate parcelLayerById and the map, so two interleaved runs would each see half of the other's
+    // work. Hence the queue — which lives in the MODULE, not on `this`, because callers build
+    // partial ProposalManager objects (the tests do) and serialisation must not depend on them
+    // knowing to copy a field.
+    async _deriveCorridorFabric(options = {}) {
+        const ahead = _corridorFabricQueue;
+        let done;
+        _corridorFabricQueue = new Promise(resolve => { done = resolve; });
+        // A failure ahead must not stop everything behind it.
+        try { await ahead; } catch (_) { }
+        try {
+            return await this._deriveCorridorFabricBody(options);
+        } finally {
+            done();
+        }
+    },
+
+    async _deriveCorridorFabricBody(options = {}) {
         const browserRoot = (typeof window !== 'undefined') ? window : globalThis;
+        const breathe = async () => {
+            if (typeof browserRoot.yieldToBrowser === 'function') await browserRoot.yieldToBrowser();
+        };
+        const CHUNK = 40;
         const A = browserRoot.__parcelArrangement;
         const ancestry = browserRoot.__cadastreAncestry;
         if (!A || !ancestry || typeof ancestry.loadedCadastreParcels !== 'function') {
@@ -1045,14 +1087,26 @@ const ProposalManager = {
         const scope = options.parcelIds
             ? new Set(Array.from(options.parcelIds).map(String))
             : null;
-        const parcels = ancestry.loadedCadastreParcels().filter(entry => {
-            if (scope) return scope.has(String(entry.id));
-            // Unscoped: only parcels a corridor actually reaches have anything to derive.
-            return A.takesOverlapping(entry.feature, takes).length > 0;
-        });
+        const candidates = ancestry.loadedCadastreParcels();
+        const parcels = [];
+        for (let i = 0; i < candidates.length; i += CHUNK) {
+            for (const entry of candidates.slice(i, i + CHUNK)) {
+                if (scope) { if (scope.has(String(entry.id))) parcels.push(entry); continue; }
+                // Unscoped: only parcels a corridor actually reaches have anything to derive.
+                if (A.takesOverlapping(entry.feature, takes).length > 0) parcels.push(entry);
+            }
+            if (i + CHUNK < candidates.length) await breathe();
+        }
         if (!parcels.length) return { added: 0, removed: 0, unchanged: 0, parcels: 0, failed: [] };
 
-        const { pieces, failed } = A.fabricOver(parcels, takes);
+        const pieces = [];
+        const failed = [];
+        for (let i = 0; i < parcels.length; i += CHUNK) {
+            const part = A.fabricOver(parcels.slice(i, i + CHUNK), takes);
+            if (part && Array.isArray(part.pieces)) pieces.push(...part.pieces);
+            if (part && Array.isArray(part.failed)) failed.push(...part.failed);
+            if (i + CHUNK < parcels.length) await breathe();
+        }
         // A parcel whose arrangement could not be computed keeps whatever it already has. Treating
         // it as "no pieces" would delete its ground from the map on the strength of a failure.
         const undecided = new Set((failed || []).map(entry => String(entry.parcelId)));
@@ -1233,10 +1287,14 @@ const ProposalManager = {
     // standing over it, so removing one take is a recomputation of the parcels it crossed and of
     // nothing else — no reset, no replay of the rest of the plan. The record must already read as
     // unapplied (or be gone from storage), or the derivation will still count its take.
-    _releaseUnappliedRecord(record) {
+    // Async because the ground it gives back is now cut cooperatively — and the caller must be able
+    // to rely on it being back when this resolves. Deferring it instead would mean a record could
+    // read as released while its ground was still missing from the map, which is the kind of gap
+    // that only shows up as a parcel that vanished.
+    async _releaseUnappliedRecord(record) {
         if (!record) return null;
         const freed = this._undoProposalPayload(record);
-        if (freed && freed.geometry) this._deriveGroundUnder([freed]);
+        if (freed && freed.geometry) await this._deriveGroundUnder([freed]);
         try { if (typeof refreshAppliedCorridorStrips === 'function') refreshAppliedCorridorStrips(); } catch (_) { }
         try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
         try { if (typeof proposalStorage !== 'undefined' && proposalStorage.save) proposalStorage.save(); } catch (_) { }
@@ -1268,7 +1326,7 @@ const ProposalManager = {
     async _restoreAfterFailedApply(proposalId, proposal, switchedAlternatives, restorePreApplyState) {
         const halfDone = this._undoProposalPayload(_getProposalRecord(proposalId) || proposal);
         restorePreApplyState();
-        if (halfDone && halfDone.geometry) this._deriveGroundUnder([halfDone]);
+        if (halfDone && halfDone.geometry) await this._deriveGroundUnder([halfDone]);
         await this._rematerializeParkedAlternatives(switchedAlternatives);
     },
 
@@ -1376,13 +1434,13 @@ const ProposalManager = {
         // Whatever this proposal is, ground a parked record released has a different take set than
         // it had and must be re-derived. (Re-deriving ground a non-taker released is a no-op: the
         // arrangement is unchanged, so every piece hashes to the id it already has.)
-        if (supersededFootprints.length) this._deriveGroundUnder(supersededFootprints);
+        if (supersededFootprints.length) await this._deriveGroundUnder(supersededFootprints);
         return { applied: true, goalKey };
     },
 
     // Re-derive the cadastral parcels under a set of footprints. Used when a take is PARKED — the
     // ground it held is free, and the parcels under it have a different taker set than they did.
-    _deriveGroundUnder(footprints) {
+    async _deriveGroundUnder(footprints) {
         const browserRoot = (typeof window !== 'undefined') ? window : globalThis;
         const A = browserRoot.__parcelArrangement;
         const ancestry = browserRoot.__cadastreAncestry;
@@ -1395,7 +1453,7 @@ const ProposalManager = {
             .filter(entry => A.takesOverlapping(entry.feature, ribbons).length > 0)
             .map(entry => String(entry.id));
         if (!parcelIds.length) return null;
-        return this._deriveCorridorFabric({ parcelIds });
+        return await this._deriveCorridorFabric({ parcelIds });
     },
 
     async deriveCorridorIncrementally(proposal, options = {}) {
@@ -1455,8 +1513,8 @@ const ProposalManager = {
         }
         const parcelIds = Array.from(scope);
 
-        const fabric = this._deriveCorridorFabric({ parcelIds });
-        const sweep = this._sweepGroundNoLongerWhole(parcelIds);
+        const fabric = await this._deriveCorridorFabric({ parcelIds });
+        const sweep = await this._sweepGroundNoLongerWhole(parcelIds);
 
         // The corridor that just landed may cross corridors that were already standing. A junction is
         // a property of the NETWORK, not of one record, so the topology boundary runs across every
@@ -1491,7 +1549,7 @@ const ProposalManager = {
     // adjusted. A building usually survives — its footprint is typically well inside the parcel, and
     // if it still sits within one piece nothing about it changed. A park, square or lake takes whole
     // parcels by definition, so the moment its ground is divided it cannot stand at all.
-    _sweepGroundNoLongerWhole(parcelIds) {
+    async _sweepGroundNoLongerWhole(parcelIds) {
         const browserRoot = (typeof window !== 'undefined') ? window : globalThis;
         const planOrderApi = browserRoot.__planOrder;
         const t = browserRoot.turf;
@@ -1514,15 +1572,19 @@ const ProposalManager = {
             ? proposalStorage.getAllProposals().filter(record => appliedOf(record))
             : [];
 
-        records.forEach(record => {
+        // for..of rather than forEach: releasing a record is asynchronous now (it gives ground back,
+        // and giving ground back is cut cooperatively), and an async callback inside forEach would
+        // let every release start at once — several derivations racing on the same fabric, in a
+        // method whose whole job is to leave the fabric consistent. Sequential, in record order.
+        for (const record of records) {
             const goalKey = (applyRoute && typeof applyRoute.normalizeGoalKey === 'function')
                 ? applyRoute.normalizeGoalKey(record.goal)
                 : String(record.goal || '');
-            if (goalKey === 'road-track') return;
+            if (goalKey === 'road-track') continue;
 
             let footprint = null;
             try { footprint = planOrderApi.footprintOf(record); } catch (_) { footprint = null; }
-            if (!footprint || !footprint.geometry) return;
+            if (!footprint || !footprint.geometry) continue;
 
             // Ask per BUILDING, not of the union. A block is one building per parcel, so the union
             // of them cannot fit inside a single piece of a single parcel once the block spans more
@@ -1538,10 +1600,10 @@ const ProposalManager = {
                 },
                 area: shape => { try { return t.area(shape) || 0; } catch (_) { return 0; } }
             });
-            if (!verdict.standsHere) return;
+            if (!verdict.standsHere) continue;
             // A park, square or lake takes whole parcels by definition: divided ground is fatal to
             // it whatever the geometry says. A building design survives an untouched cut.
-            if (isBuildingDesign && !verdict.severed) return;
+            if (isBuildingDesign && !verdict.severed) continue;
 
             try { setProposalApplied(record, false, { stamp: false }); } catch (_) { record.applied = false; }
             // Flipping the flag is not removal. A record's buildings, parks, squares and lakes live
@@ -1550,10 +1612,10 @@ const ProposalManager = {
             // block swept away by a road edit stayed drawn on the map, looking applied, while the
             // record read as unapplied everywhere else. This is the same release the ordinary
             // unapply path runs, so a swept record leaves exactly as thoroughly as a removed one.
-            try { this._releaseUnappliedRecord(record); }
+            try { await this._releaseUnappliedRecord(record); }
             catch (error) { console.error('[sweepGround] could not take the swept record off the map', record.proposalId, error); }
             unapplied.push({ proposalId: String(record.proposalId), title: record.title || String(record.proposalId), goal: goalKey });
-        });
+        }
 
         if (unapplied.length) {
             try {
@@ -1611,7 +1673,7 @@ const ProposalManager = {
         // instead, and says what it covers — one pair of lines for the whole set, because that is
         // honestly what it is.
         if (takes.length) _announceApply(`Applying ${_corridorCountPhrase(takes)}...`);
-        const fabric = this._deriveCorridorFabric({ appliedList, takes });
+        const fabric = await this._deriveCorridorFabric({ appliedList, takes });
         if (takes.length) _announceApply(`Applied ${_corridorCountPhrase(takes)}`);
         const corridorIds = new Set(takes.map(take => take.id));
 
@@ -1641,6 +1703,12 @@ const ProposalManager = {
             } catch (error) {
                 console.error('[rebuildAppliedFabric] apply threw for', key, error);
                 ok = false;
+            }
+            // Between members, not inside one: a replay of 180 proposals is a minute of work, and
+            // without a macrotask boundary the whole minute is one frame. Costs ~4 ms a member and
+            // buys back a map you can pan while it runs.
+            if (typeof window !== 'undefined' && typeof window.yieldToBrowser === 'function') {
+                await window.yieldToBrowser();
             }
             const memberMs = _now() - memberStarted;
             if (!slowest || memberMs > slowest.ms) slowest = { key: String(key), ms: memberMs };
@@ -2423,7 +2491,7 @@ const ProposalManager = {
                     // The record is unapplied by now, so its payload comes off and the ground it
                     // held is derived again with one fewer take. Nothing else in the plan had an
                     // input change, so nothing else is recomputed.
-                    this._releaseUnappliedRecord(_getProposalRecord(proposalId));
+                    await this._releaseUnappliedRecord(_getProposalRecord(proposalId));
                     this._refreshUIAfterProposalChange(_getProposalRecord(proposalId));
                 }
                 return result;
@@ -2551,7 +2619,7 @@ const ProposalManager = {
         // the map and the ground it held is derived again without it. There is no descendant family.
         proposalStorage.removeProposal(proposalId);
         if (wasApplied && !this._rebuildInProgress) {
-            try { this._releaseUnappliedRecord(proposalData); }
+            try { await this._releaseUnappliedRecord(proposalData); }
             catch (error) {
                 console.error('[deleteProposal] could not release the deleted record\'s ground', error);
                 return false;
@@ -2822,6 +2890,11 @@ const ProposalManager = {
                     : window.indexParcelLayer;
 
                 const geoJsonLayer = L.geoJSON(featureCollection, {
+                    // Derived pieces go on the same shared canvas as the cadastre they were cut
+                    // from — see parcels/ingest.js. After a plan of 130 roads these ARE most of the
+                    // fabric, so leaving them in the SVG would leave the pan choppy.
+                    renderer: (typeof window !== 'undefined' && window.parcelCanvasRenderer)
+                        ? window.parcelCanvasRenderer() : undefined,
                     style: styleFn,
                     onEachFeature
                 });
@@ -2869,6 +2942,8 @@ const ProposalManager = {
                     : window.onEachFeature;
 
                 const newLayer = L.geoJSON(feature, {
+                    renderer: (typeof window !== 'undefined' && window.parcelCanvasRenderer)
+                        ? window.parcelCanvasRenderer() : undefined,
                     style: () => ({ ...trackPolygonStyle }),
                     onEachFeature
                 });
@@ -2894,11 +2969,18 @@ const ProposalManager = {
                     if (layer.setStyle) {
                         layer.setStyle({ ...trackPolygonStyle });
                     }
-                    console.debug('[_addFeaturesToMap] track layer created', {
-                        parcelId,
-                        hasTrackStyle: Boolean(layer._trackStyle),
-                        isTrackProp: layer?.feature?.properties?.isTrack
-                    });
+                    // Behind a flag because this is PER FEATURE: a pan that lands 45 track pieces
+                    // makes 45 console calls, each serialising an object for DevTools, and the panel
+                    // renders every one. With the console open — which is when anyone is looking at
+                    // performance — that is a real cost paid on every pan, for a line nobody reads
+                    // unless they are debugging tracks. window.DEBUG_TRACK_LAYERS = true to see them.
+                    if (typeof window !== 'undefined' && window.DEBUG_TRACK_LAYERS === true) {
+                        console.debug('[_addFeaturesToMap] track layer created', {
+                            parcelId,
+                            hasTrackStyle: Boolean(layer._trackStyle),
+                            isTrackProp: layer?.feature?.properties?.isTrack
+                        });
+                    }
                     // Hover: standard parcel style (weight 5, grey solid); mouseout: return to track style unless selected
                     if (layer.on) {
                         layer.on('mouseover', () => {
@@ -2950,6 +3032,8 @@ const ProposalManager = {
                     : window.onEachFeature;
 
                 const newLayer = L.geoJSON(feature, {
+                    renderer: (typeof window !== 'undefined' && window.parcelCanvasRenderer)
+                        ? window.parcelCanvasRenderer() : undefined,
                     style: style,
                     onEachFeature
                 });
@@ -3025,7 +3109,12 @@ const ProposalManager = {
                     // when parcelLayer is on the map. Adding directly causes double rendering.
                     // The check map.hasLayer(layer) doesn't work correctly for layers in FeatureGroups.
 
-                    // Apply SVG pattern to proposed roads
+                    // The hatch for proposed roads is an SVG pattern fill, and parcels now render
+                    // on a canvas, where there is no element to fill and no <defs> to point at. The
+                    // `layer._path` guard means this simply does nothing rather than throwing — but
+                    // it does nothing, so a proposed road parcel is no longer hatched. It is still
+                    // distinguished by its own fill from styleFn, and the corridor's own surface is
+                    // drawn separately by corridor-render.js.
                     if (!useNormalStyle && feature.properties.isRoad && layer._path) {
                         layer._path.style.fill = 'url(#proposal-road-pattern)';
                     }

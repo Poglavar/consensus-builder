@@ -579,7 +579,10 @@
         "measurement": {
             "title": "Mjerenje",
             "measureButton": "Izmjeri",
-            "clearButton": "Obriši mjerenja"
+            "clearButton": "Obriši mjerenja",
+            "pinpointButton": "Točka",
+            "pinpointHint": "Pomiči po karti za koordinate; klik kopira i provjerava tlo",
+            "pinpointCopied": "Točka"
         },
         "info": {
             "title": "Informacije",
@@ -639,7 +642,12 @@
         "statusReady": "Aplikacija inicijalizirana, učitavanje parcela...",
         "toggle3dTooltip": "Prebaci na 3D",
         "copyStatusLog": "Kopiraj sve",
-        "statusLinesCopied": "Kopirano redaka: {{count}}"
+        "statusLinesCopied": "Kopirano redaka: {{count}}",
+        "statusLogTitle": "Zapisnik stanja",
+        "openStatusLog": "Otvori zapisnik",
+        "statusLogCount": "{{count}} redaka",
+        "statusLogClose": "Zatvori",
+        "statusLogEmpty": "Još nema poruka o stanju"
     },
     "panel": {
         "parcel": {

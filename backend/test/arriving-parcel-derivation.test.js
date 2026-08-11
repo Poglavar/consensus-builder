@@ -83,6 +83,7 @@ function buildWorld(loadedParcels) {
         _rebuildInProgress: false,
         _appliedCorridorTakes: ProposalManager._appliedCorridorTakes,
         _deriveCorridorFabric: ProposalManager._deriveCorridorFabric,
+        _deriveCorridorFabricBody: ProposalManager._deriveCorridorFabricBody,
         _parcelsClaimedByDerivedGround: ProposalManager._parcelsClaimedByDerivedGround,
         deriveArrivingParcels: ProposalManager.deriveArrivingParcels
     };
@@ -92,35 +93,35 @@ function buildWorld(loadedParcels) {
 const pieceIds = byId => Array.from(byId.keys()).filter(id => id.indexOf('#') !== -1);
 
 describe('a parcel that arrives after the road did', () => {
-    it('cuts it against the standing road instead of leaving it whole', () => {
+    it('cuts it against the standing road instead of leaving it whole', async () => {
         const { byId, manager } = buildWorld([PARCEL]);
         // It came in from a tile fetch, so nothing has derived it yet.
         expect(pieceIds(byId)).toEqual([]);
 
-        const fabric = manager.deriveArrivingParcels(['HR-A']);
+        const fabric = await manager.deriveArrivingParcels(['HR-A']);
 
         expect(fabric).toBeTruthy();
         // The strip the road takes, plus the two remainders either side of it.
         expect(pieceIds(byId).length).toBe(3);
     });
 
-    it('leaves an arrival no road reaches alone', () => {
+    it('leaves an arrival no road reaches alone', async () => {
         const { byId, manager } = buildWorld([FAR_PARCEL]);
 
-        expect(manager.deriveArrivingParcels(['HR-B'])).toBeNull();
+        expect(await manager.deriveArrivingParcels(['HR-B'])).toBeNull();
         expect(pieceIds(byId)).toEqual([]);
     });
 
-    it('ignores piece ids — only cadastral parcels are derived', () => {
+    it('ignores piece ids — only cadastral parcels are derived', async () => {
         const { manager } = buildWorld([PARCEL]);
-        expect(manager.deriveArrivingParcels(['HR-A#1', 'HR-A#2'])).toBeNull();
+        expect(await manager.deriveArrivingParcels(['HR-A#1', 'HR-A#2'])).toBeNull();
     });
 
-    it('stays out of the way of a whole-plan rebuild', () => {
+    it('stays out of the way of a whole-plan rebuild', async () => {
         const { byId, manager } = buildWorld([PARCEL]);
         manager._rebuildInProgress = true;
 
-        expect(manager.deriveArrivingParcels(['HR-A'])).toBeNull();
+        expect(await manager.deriveArrivingParcels(['HR-A'])).toBeNull();
         expect(pieceIds(byId)).toEqual([]);
     });
 });

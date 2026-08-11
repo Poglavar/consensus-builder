@@ -290,8 +290,15 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
     // that the ground fetches 429'd, the fabric was not loaded, and the coverage gate refused
     // members with "could not re-apply and were set aside" — intermittently, on a rolling window
     // that healed itself after fifteen minutes, which is exactly how it was reported.
+    //
+    // /buildings/footprints is the same shape and was missed the first time round. Every building
+    // proposal scans for the buildings it would demolish, and that scan fetches footprints — so a
+    // batch that applies a hundred block rules spends a hundred of the budget, 429s partway through,
+    // and the scan then finds NOTHING to demolish. Not an error the user sees: a block recorded as
+    // demolishing nothing, which is a wrong answer wearing the shape of a right one.
     const RATE_LIMIT_EXEMPT_POST_PATHS = new Set([
         '/buildings/near',
+        '/buildings/footprints',
         '/parcels/under'
     ]);
     app.use((req, res, next) => {

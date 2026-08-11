@@ -27,11 +27,30 @@
         ? global.__planOrder
         : (typeof require === 'function' ? require('./plan-order.js') : null);
 
+    // Skip a layer without serialising it.
+    //
+    // These collectors call toGeoJSON on EVERY parcel on the map, and the callers then intersect a
+    // proposal's footprint against all of them. Both costs scale with how much ground is loaded
+    // rather than with the proposal — 13,000 parcels loaded meant 13,000 serialisations and 13,000
+    // polygon intersections to resolve the parents of one building, once per proposal. Leaflet
+    // already knows each layer's bounds and hands them over without building any GeoJSON, so a
+    // caller that knows where it is looking pays only for the parcels that could possibly answer.
+    //
+    // `box` is a turf bbox, [west, south, east, north]. Omitted, nothing is skipped.
+    function layerOutsideBox(layer, box) {
+        if (!box || !layer || typeof layer.getBounds !== 'function') return false;
+        let bounds = null;
+        try { bounds = layer.getBounds(); } catch (_) { return false; }
+        if (!bounds || typeof bounds.isValid !== 'function' || !bounds.isValid()) return false;
+        return bounds.getWest() > box[2] || bounds.getEast() < box[0]
+            || bounds.getSouth() > box[3] || bounds.getNorth() < box[1];
+    }
+
     // Every ORIGINAL parcel currently known to the map, derived ones excluded. A cadastral parcel
     // that a road or reparcellization has consumed is hidden rather than removed (hideParcelLayerById
     // keeps it in parcelLayerById precisely so descendants can still resolve it), so the originals are
     // still here to intersect against even once the fabric above them has been re-cut.
-    function loadedCadastreParcels() {
+    function loadedCadastreParcels(box) {
         const out = [];
         try {
             const byId = (typeof global.getParcelLayerIdMap === 'function') ? global.getParcelLayerIdMap() : null;
@@ -40,6 +59,7 @@
                 const key = id === undefined || id === null ? '' : String(id);
                 if (!key || (typeof global.isSyntheticParcelId === 'function' && global.isSyntheticParcelId(key))) return;
                 if (!layer || typeof layer.toGeoJSON !== 'function') return;
+                if (layerOutsideBox(layer, box)) return;
                 try {
                     const gj = layer.toGeoJSON(false);
                     const feature = gj && gj.type === 'FeatureCollection' ? gj.features[0] : gj;
@@ -56,7 +76,7 @@
 
     // Every parcel currently LIVE in the sole visible parcel layer. Hidden registry entries are
     // ancestry/cache only and never participate in a cut.
-    function loadedLiveParcels() {
+    function loadedLiveParcels(box) {
         const out = [];
         try {
             const byId = (typeof global.getParcelLayerIdMap === 'function') ? global.getParcelLayerIdMap() : null;
@@ -72,6 +92,7 @@
                     try { if (!parcelLayerGroup.hasLayer(layer)) return; } catch (_) { return; }
                 }
                 if (!layer || typeof layer.toGeoJSON !== 'function') return;
+                if (layerOutsideBox(layer, box)) return;
                 try {
                     const gj = layer.toGeoJSON(false);
                     const feature = gj && gj.type === 'FeatureCollection' ? gj.features[0] : gj;
@@ -104,7 +125,10 @@
             if (!footprint) return { ids: [], coverage: 0 };
             const footprintM2 = t.area(footprint);
             if (!(footprintM2 > 0)) return { ids: [], coverage: 0 };
-            const hits = api.computeBaseAncestry(footprint, loadedLiveParcels());
+            // Only the parcels the footprint could possibly touch are serialised, let alone clipped.
+            let box = null;
+            try { box = t.bbox(footprint); } catch (_) { box = null; }
+            const hits = api.computeBaseAncestry(footprint, loadedLiveParcels(box));
             const coveredM2 = hits.reduce((sum, hit) => sum + (hit.area || 0), 0);
 
             // Live parcels tessellate (consumed parents are excluded), so the hits partition the
@@ -136,7 +160,9 @@
             error.code = 'proposal-footprint-missing';
             throw error;
         }
-        const candidates = loadedCadastreParcels();
+        let footprintBox = null;
+        try { footprintBox = t.bbox(footprint); } catch (_) { footprintBox = null; }
+        const candidates = loadedCadastreParcels(footprintBox);
         const hits = api.computeBaseAncestry(footprint, candidates);
         const hitIds = new Set(hits.map(hit => String(hit.id)));
         const coveredM2 = candidates.reduce((total, entry) => {

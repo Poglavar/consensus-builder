@@ -105,4 +105,135 @@
         console.log(`[whyIsParcelUncut] ${out.parcelId}: ${out.verdict}`, out);
         return out;
     };
+
+    // "Why can I not click here?" — everything the map knows about one point on the ground.
+    //
+    // Ground with nothing to click is ground with no parcel UNDER THE POINTER, and there are several
+    // ways to arrive at that, all of which look identical: the cadastre was never fetched for that
+    // cell; a parcel is there but hidden because something derived claims it, and the derived pieces
+    // never arrived; or a structure razed the fabric and put its own non-interactive surface down.
+    // So this reports what covers the point, what is hidden under it, and which applied records
+    // claim it, rather than making you infer from an empty patch.
+    //
+    // No arguments: the centre of the map, so you can pan the dead spot into the middle and ask.
+    // Async because the last question — does the CADASTRE have anything here — is the backend's.
+    async function whatIsHere(lat, lng) {
+        const turf = global.turf;
+        const out = { covering: [], hidden: [], claimedBy: [] };
+        if (!turf || typeof global.map === 'undefined' || !global.map) {
+            out.verdict = 'The map or turf is not loaded in this page.';
+            console.warn('[whatIsHere]', out.verdict);
+            return out;
+        }
+        let point = null;
+        if (Number.isFinite(Number(lat)) && Number.isFinite(Number(lng))) {
+            point = [Number(lng), Number(lat)];
+        } else {
+            const centre = global.map.getCenter();
+            point = [centre.lng, centre.lat];
+        }
+        out.at = { lat: point[1], lng: point[0] };
+
+        const byId = (global.parcelLayerById instanceof Map) ? global.parcelLayerById : new Map();
+        const onMap = (global.parcelLayer && typeof global.parcelLayer.hasLayer === 'function')
+            ? global.parcelLayer
+            : null;
+        byId.forEach((layer, id) => {
+            if (!layer || typeof layer.toGeoJSON !== 'function') return;
+            // Bounds first: this walks every parcel in the session.
+            try {
+                const bounds = layer.getBounds && layer.getBounds();
+                if (bounds && bounds.isValid && bounds.isValid()
+                    && !bounds.contains([point[1], point[0]])) return;
+            } catch (_) { /* fall through to the exact test */ }
+            let feature = null;
+            try {
+                const gj = layer.toGeoJSON(false);
+                feature = (gj && gj.type === 'FeatureCollection') ? gj.features[0] : gj;
+            } catch (_) { return; }
+            if (!feature || !feature.geometry) return;
+            let inside = false;
+            try { inside = turf.booleanPointInPolygon(point, feature); } catch (_) { inside = false; }
+            if (!inside) return;
+            const visible = onMap ? onMap.hasLayer(layer) : true;
+            (visible ? out.covering : out.hidden).push(String(id));
+        });
+
+        // Applied records whose own footprint contains the point — a park or square razes the fabric
+        // beneath it and lays down a surface that is deliberately not clickable, which is a complete
+        // explanation for an area with nothing under the pointer.
+        const planOrder = global.__planOrder;
+        (global.proposalStorage?.getAllProposals?.() || []).forEach(record => {
+            if (!record || record.applied !== true) return;
+            let footprint = null;
+            try { footprint = planOrder && planOrder.footprintOf(record); } catch (_) { footprint = null; }
+            if (!footprint) return;
+            let inside = false;
+            try { inside = turf.booleanPointInPolygon(point, footprint); } catch (_) { inside = false; }
+            if (!inside) return;
+            out.claimedBy.push({
+                proposalId: record.proposalId || record.id || null,
+                title: record.title || record.name || null,
+                kind: record.structureProposal ? (record.structureProposal.kind || 'structure')
+                    : (record.roadProposal ? 'corridor' : (record.buildingProposal ? 'building' : 'other'))
+            });
+        });
+
+        const structure = out.claimedBy.find(entry => entry.kind !== 'corridor' && entry.kind !== 'building');
+        if (out.covering.length) {
+            out.verdict = `${out.covering.length} parcel(s) cover this point and are on the map — it should be clickable.`;
+        } else if (structure) {
+            out.verdict = `Nothing to click: "${structure.title || structure.proposalId}" (${structure.kind}) razed the fabric here `
+                + 'and its surface is drawn non-interactive. That is by design for a park/square/lake.';
+        } else if (out.hidden.length) {
+            out.verdict = `${out.hidden.length} parcel(s) are here but HIDDEN — something derived claims them and its pieces `
+                + 'never arrived. That is a hole in the fabric: '
+                + `ProposalManager.deriveArrivingParcels(${JSON.stringify(out.hidden.map(id => String(id).split('#')[0]))})`;
+        } else {
+            // Nothing on the map is not the same as nothing in the cadastre, and the difference
+            // decides what to do about it: a parcel the backend HAS is a loading gap you can fill,
+            // and a parcel it does not have is ground the survey never covered — public road and
+            // water routinely are not parcels — in which case an empty block there is correct and
+            // there is nothing to fix.
+            out.verdict = 'Nothing on the map here. Asking the backend whether the cadastre has anything…';
+            const box = 0.00004; // ~4 m, so a click near an edge still lands inside a parcel
+            const probe = {
+                type: 'Polygon',
+                coordinates: [[
+                    [point[0] - box, point[1] - box], [point[0] + box, point[1] - box],
+                    [point[0] + box, point[1] + box], [point[0] - box, point[1] + box],
+                    [point[0] - box, point[1] - box]
+                ]]
+            };
+            const base = (typeof global.getBackendBase === 'function') ? global.getBackendBase() : '';
+            try {
+                const response = await fetch(`${base}/parcels/under`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ geometry: probe })
+                });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                // /parcels/under answers with a FeatureCollection; the id is on each feature's
+                // properties (verified against the running backend, not assumed).
+                const payload = await response.json();
+                const found = (payload && Array.isArray(payload.features)) ? payload.features : [];
+                out.backendParcels = found
+                    .map(feature => feature && feature.properties && feature.properties.parcelId)
+                    .filter(Boolean);
+                out.verdict = out.backendParcels.length
+                    ? `The cadastre HAS ${out.backendParcels.length} parcel(s) here (${out.backendParcels.join(', ')}) `
+                        + 'but none reached the map — a loading gap. Pan away and back over this spot to fetch the cell.'
+                    : 'The cadastre itself has NO parcel here — this ground was never surveyed as one, which is normal '
+                        + 'for public road and water. Nothing to click is correct, and a block cannot form across it.';
+            } catch (error) {
+                out.backendError = String(error && error.message || error);
+                out.verdict = 'Nothing on the map here, and the backend could not be asked whether the cadastre has '
+                    + `anything (${out.backendError}). Unresolved — do not read this as either answer.`;
+            }
+        }
+        console.log(`[whatIsHere] ${out.verdict}`, out);
+        return out;
+    }
+
+    global.whatIsHere = whatIsHere;
 })(typeof window !== 'undefined' ? window : globalThis);

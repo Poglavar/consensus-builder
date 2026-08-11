@@ -344,14 +344,25 @@ body.debug-mode .debug-only-control {
     }
 }
 
-/* Copy all: anchored to the expanded log's top-right corner, so it sits over the panel rather than
-   in the collapsed bar, where it would be a button for something that is not on screen. */
-.status-log-copy-all {
+/* Copy all and Open log: anchored to the expanded log's top-right corner, so they sit over the panel
+   rather than in the collapsed bar, where they would be buttons for something that is not on screen.
+   A row rather than two absolutely-positioned buttons, so a longer translation of one cannot land on
+   top of the other. */
+.status-log-actions {
     position: absolute;
     bottom: 100%;
     right: 8px;
     margin-bottom: 6px;
     z-index: 1101;
+    display: flex;
+    gap: 6px;
+}
+
+.status-bar:not(.expanded) .status-log-actions {
+    display: none;
+}
+
+.status-log-copy-all {
     padding: 3px 10px;
     font-size: 11px;
     font-weight: 600;
@@ -367,8 +378,61 @@ body.debug-mode .debug-only-control {
     border-color: #94a3b8;
 }
 
-.status-bar:not(.expanded) .status-log-copy-all {
-    display: none;
+/* The whole log, popped out: scrollable, selectable, and tall enough to read a run in. */
+.status-log-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.status-log-modal-content {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    width: min(900px, 100%);
+    max-height: min(80vh, 900px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.status-log-modal-header {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.status-log-modal-header h2 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.status-log-modal-count {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.status-log-modal-list {
+    user-select: text;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+.status-log-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 10px 16px;
+    border-top: 1px solid #e2e8f0;
 }
 
 /* The log exists to be read and copied out of. */
@@ -2812,4 +2876,22 @@ input:checked+.slider:before {
     display: inline-flex;
     max-width: 100%;
     vertical-align: middle;
+}
+
+/* Pinpoint's live coordinate readout. Its own chip rather than the status bar: the status bar
+   appends to the log, and a mousemove handler would fill it with thousands of lines. */
+.pinpoint-readout {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 56px;
+    z-index: 1200;
+    padding: 5px 12px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 13px;
+    color: #f8fafc;
+    background: rgba(15, 23, 42, 0.85);
+    border-radius: 6px;
+    pointer-events: none;
+    white-space: nowrap;
 }

@@ -1322,9 +1322,7 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
 
             if (proposal.buildingGeometry && (proposal.buildingGeometry.type === 'Polygon' || proposal.buildingGeometry.type === 'MultiPolygon' || proposal.buildingGeometry.type === 'Feature')) {
                 if (typeof markProposedBuildingState === 'function') {
-                    markProposedBuildingState(proposal.proposalId, 'executed', { updateLayer: true, save: true });
-                } else if (typeof saveExecutedBuildingsToStorage === 'function') {
-                    saveExecutedBuildingsToStorage();
+                    markProposedBuildingState(proposal.proposalId, 'executed', { updateLayer: true });
                 }
             }
 

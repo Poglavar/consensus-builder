@@ -140,8 +140,10 @@ describe('the sweep uses it', () => {
     it('judges parts, not the union', () => {
         expect(fn).toContain('sweepApi.designParts(record, isBuildingDesign, footprint)');
         expect(fn).toContain('sweepApi.inspectDesignAgainstPieces(parts, pieces');
-        expect(fn).toContain('if (!verdict.standsHere) return;');
-        expect(fn).toContain('if (isBuildingDesign && !verdict.severed) return;');
+        // `continue`, not `return`: the record loop is a for..of now, because releasing a
+        // record is asynchronous and an async forEach callback would race the releases.
+        expect(fn).toContain('if (!verdict.standsHere) continue;');
+        expect(fn).toContain('if (isBuildingDesign && !verdict.severed) continue;');
     });
 
     it('a missing module leaves the sweep silent rather than sweeping blind', () => {

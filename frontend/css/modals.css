@@ -5423,3 +5423,16 @@
     margin: 0 0 8px;
     border-radius: 3px;
 }
+
+/* The proposals panel while it is being built. Shown for the frame between the click and the list
+   existing — with several hundred proposals that gap is long enough that its absence read as a
+   dropped click. */
+.proposal-list-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 200px;
+    font-size: 28px;
+    color: #94a3b8;
+}
