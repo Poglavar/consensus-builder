@@ -11,7 +11,14 @@
     async _applyBuildingProposal(proposalId, proposalData, options = {}) {
         const startTime = performance.now();
         const idLabel = _normalizeProposalId(proposalId) || 'unknown-proposal';
-        console.debug(`[_applyBuildingProposal] Starting application for ${idLabel}...`);
+        // Step-by-step tracing, off by default. Six lines per proposal is a fine way to watch ONE
+        // apply and a terrible way to read a replay of three hundred — the useful line is the
+        // single summary _runProposalApplyWithSummary already prints. `window.DEBUG_APPLY = true`
+        // in the console brings the steps back for the next apply.
+        const traceApply = (typeof window !== 'undefined' && window.DEBUG_APPLY)
+            ? (message) => console.debug(`[_applyBuildingProposal] ${message}`)
+            : () => { };
+        traceApply(`Starting application for ${idLabel}...`);
 
         if (!proposalData) {
             console.warn(`[_applyBuildingProposal] Invalid proposal data`);
@@ -25,7 +32,7 @@
         if (!liveParents.ok) return false;
         const uniqueParentIds = liveParents.ids;
         const flatParentIds = liveParents.cadastreIds.slice();
-        console.debug(`[_applyBuildingProposal] Step 1: Resolved ${uniqueParentIds.length} live parcel(s) from geometry (${(performance.now() - step1Time).toFixed(2)}ms)`);
+        traceApply(`Step 1: Resolved ${uniqueParentIds.length} live parcel(s) from geometry (${(performance.now() - step1Time).toFixed(2)}ms)`);
 
         const ancestorKey = flatParentIds.slice().sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).join('|');
 
@@ -128,7 +135,7 @@
                 else if (typeof window !== 'undefined' && typeof window.updateStatus === 'function') window.updateStatus(message);
             } catch (_) { }
         }
-        console.debug(`[_applyBuildingProposal] Step 4: Prepared ${preparedFeatures.length} building feature(s) (${(performance.now() - step4Time).toFixed(2)}ms)`);
+        traceApply(`Step 4: Prepared ${preparedFeatures.length} building feature(s) (${(performance.now() - step4Time).toFixed(2)}ms)`);
 
         // §15a building formation: a FREEFORM building (goal 'single', one footprint) forms its
         // own parcel — footprint parcel by default, whole host parcels when
@@ -197,13 +204,13 @@
 
         persistAppliedProposal(proposalData, proposalId);
 
-        console.debug(`[_applyBuildingProposal] Formed from ${workingParentIds.length} live parcel(s)`);
+        traceApply(`Formed from ${workingParentIds.length} live parcel(s)`);
 
         // The status line is written once, for every type, by _runProposalApplyWithSummary.
         refreshProposalUIAfterApply();
 
         const totalTime = performance.now() - startTime;
-        console.debug(`[_applyBuildingProposal] ✓ Building proposal application completed in ${totalTime.toFixed(2)}ms`);
+        traceApply(`✓ Building proposal application completed in ${totalTime.toFixed(2)}ms`);
         return true;
     },
 
@@ -337,7 +344,7 @@
                 .map(feature => _getParcelIdFromFeature(feature))
                 .filter(id => id !== undefined && id !== null)
                 .map(String);
-            this._addFeaturesToMap(bodyFeatures, true, proposalData);
+            await this._addFeaturesToMap(bodyFeatures, true, proposalData);
             bodyFeatures.forEach(feature => {
                 const childId = _getParcelIdFromFeature(feature);
                 try { this._persistParcelFeature(feature); } catch (_) { }
@@ -518,7 +525,7 @@
         }
         const children = [buildingParcel, ...ownRemainders, ...foreignRemainders];
         this._assignSyntheticChildIdentities(proposalId, children);
-        this._addFeaturesToMap(children, true, proposalData);
+        await this._addFeaturesToMap(children, true, proposalData);
         const childIds = [];
         const buildingParcelIds = [];
         children.forEach(child => {

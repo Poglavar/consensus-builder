@@ -15,12 +15,16 @@ const STATUS_LOG_MAX_ENTRIES = 2000;
 // message, so it stays small on purpose; the pop-out dialog is where the whole log lives.
 const STATUS_LOG_PREVIEW_ENTRIES = 50;
 
-function updateStatus(message) {
+function updateStatus(message, options = {}) {
     const statusSpan = document.getElementById('status');
     if (statusSpan) {
         // Add the message to the log
         const timestamp = new Date().toLocaleTimeString();
-        statusLog.push({ message, timestamp });
+        // A line about a proposal remembers WHICH one, so the log can offer to go there. Kept as a
+        // field rather than recovered from the sentence: titles are not unique, are translated, and
+        // are written by users.
+        const proposalId = options && options.proposalId ? String(options.proposalId) : null;
+        statusLog.push({ message, timestamp, proposalId });
 
         if (statusLog.length > STATUS_LOG_MAX_ENTRIES) {
             statusLog.splice(0, statusLog.length - STATUS_LOG_MAX_ENTRIES);
@@ -77,12 +81,40 @@ function statusLogRow(entry, isCurrent) {
     const time = document.createElement('span');
     time.className = 'status-log-time';
     time.textContent = entry.timestamp;
-    const message = document.createElement('span');
+    // A line that knows its proposal becomes a way to GET to it. Rendered as a real <button>, not a
+    // styled span: it is an action, so it must be reachable by keyboard and announce itself as one.
+    // Still textContent, never innerHTML — a status line carries titles, parcel ids and error text.
+    const message = document.createElement(entry.proposalId ? 'button' : 'span');
     message.className = 'status-log-message';
     message.textContent = entry.message;
+    if (entry.proposalId) {
+        message.type = 'button';
+        message.classList.add('is-linked');
+        message.title = window.i18n?.t ? window.i18n.t('hud.showThisProposal') : 'Show this proposal';
+        message.addEventListener('click', (event) => {
+            event.stopPropagation();   // the bar's own click toggles the log; this is not that click
+            goToProposalFromStatusLog(entry.proposalId);
+        });
+    }
     row.appendChild(time);
     row.appendChild(message);
     return row;
+}
+
+// The log is inside the app, so this needs no URL: selectAndHighlightProposal is the same entry
+// point the proposals list, the map and the details panel all use. (There is no id-based deep link
+// to reuse — a share URL carries the whole proposal payload inline, not a reference to one.)
+function goToProposalFromStatusLog(proposalId) {
+    if (!proposalId) return;
+    if (typeof window.selectAndHighlightProposal !== 'function') return;
+    try {
+        closeStatusLogDialog();
+    } catch (_) { }
+    try {
+        window.selectAndHighlightProposal(String(proposalId), null, true, true);
+    } catch (error) {
+        console.warn('status log: could not show proposal', proposalId, error);
+    }
 }
 
 function fillStatusLogList(container, entries, emptyText) {

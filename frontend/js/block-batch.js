@@ -75,6 +75,11 @@
                     && first[0] === last[0] && first[1] === last[1];
                 (closed ? ring.slice(0, -1) : ring).forEach(point => {
                     if (!Array.isArray(point) || !Number.isFinite(point[0]) || !Number.isFinite(point[1])) return;
+                    // Two decimals of a METRE — these rings came through metricRingsOf, which
+                    // projects. A centimetre, which is below survey precision and above the noise a
+                    // re-derivation introduces. (Do not copy this figure to anything holding
+                    // lat/lng: two decimals of a DEGREE is 1.1 km. maintenance.js made exactly that
+                    // mistake and named three unrelated blocks …-FAXU.)
                     points.push(`${point[0].toFixed(2)},${point[1].toFixed(2)}`);
                 });
             });
@@ -125,6 +130,144 @@
             });
         });
         return names;
+    }
+
+    // ── Renaming what the previous naming left behind ───────────────────────────────────────────
+    //
+    // Before the name was read off the block, a batch named each one after the FIRST parcel it
+    // happened to contain — and a parcel our own road has cut carries a piece token, so the name
+    // came out as `Block HR-330264-628#prqroga`. Those records still exist and still show that name
+    // in the plan list. Renaming them is the same derivation the batch now does, applied late.
+    //
+    // A name is the only thing that moves. The rename refuses rather than guesses: a block whose
+    // parcels are not all on the map would fingerprint a SUBSET of its own outline, which is a
+    // different block and therefore the wrong name.
+
+    // No derived or default name contains '#'; a parcel id is the only thing that puts one there.
+    const LEGACY_NAME_RE = /(^|\s)[A-Za-z0-9][A-Za-z0-9/._-]*#[A-Za-z0-9-]+(\s|$)/;
+
+    function isLegacyBlockName(name) {
+        if (name === undefined || name === null) return false;
+        return LEGACY_NAME_RE.test(String(name));
+    }
+
+    /** The parcels a proposal's block is made of, wherever the record keeps them. */
+    function blockParcelIdsOf(proposal) {
+        const ids = new Set();
+        [
+            proposal && proposal.parentParcelIds,
+            proposal && proposal.parcelIds,
+            proposal && proposal.buildingProposal && proposal.buildingProposal.parentParcelIds,
+            proposal && proposal.structureProposal && proposal.structureProposal.parentParcelIds,
+            proposal && proposal.ancestorParcelIds
+        ].forEach(list => (Array.isArray(list) ? list : []).forEach(id => {
+            if (id !== null && id !== undefined && String(id)) ids.add(String(id));
+        }));
+        return [...ids];
+    }
+
+    /**
+     * What a rename run WOULD do. Creates nothing and changes nothing.
+     * @returns {{targets: Array, renamable: number, blocked: Array}}
+     */
+    function planBlockRenames() {
+        const byId = new Map(collectParcels().map(entry => [entry.id, entry]));
+        const all = global.proposalStorage?.getAllProposals?.() || [];
+        const taken = existingProposalNames();
+
+        const targets = all
+            .filter(proposal => isLegacyBlockName(proposal && (proposal.title || proposal.name)))
+            .map(proposal => {
+                const from = String(proposal.title || proposal.name || '');
+                const parcelIds = blockParcelIdsOf(proposal);
+                const missing = parcelIds.filter(id => !byId.has(id));
+                let to = null;
+                let reason = null;
+                if (!parcelIds.length) {
+                    reason = 'the record names no parcels';
+                } else if (missing.length) {
+                    reason = `${missing.length} of ${parcelIds.length} parcels are not loaded on the map`;
+                } else {
+                    const areaM2 = parcelIds.reduce((sum, id) => sum + (Number(byId.get(id).areaM2) || 0), 0);
+                    const base = blockBaseName({ parcelIds, areaM2 }, byId);
+                    to = base;
+                    // The proposal's own name is not a collision with itself.
+                    for (let n = 2; taken.has(to) && to !== from; n += 1) to = `${base} (${n})`;
+                }
+                return {
+                    proposalId: proposal.proposalId || proposal.id,
+                    serverId: proposal.serverProposalId ?? null,
+                    from,
+                    to,
+                    reason,
+                    parcelIds,
+                    missing
+                };
+            });
+
+        const blocked = targets.filter(entry => !entry.to);
+        const summary = {
+            targets,
+            renamable: targets.length - blocked.length,
+            blocked
+        };
+        console.log(`[rename] ${targets.length} proposals still carry a parcel-id name; ${summary.renamable} can be renamed now.`);
+        targets.forEach(entry => console.log(
+            entry.to ? `  ${entry.from}  →  ${entry.to}` : `  ${entry.from}  —  SKIP: ${entry.reason}`
+        ));
+        return summary;
+    }
+
+    // A name is a label, so it is PATCHed on its own. Re-uploading the proposal would rewrite
+    // geometry and stamps that have already been consented to, to change a string.
+    async function renameProposalRecord(entry) {
+        const serverId = entry.serverId ?? (/^\d+$/.test(String(entry.proposalId || '')) ? entry.proposalId : null);
+        if (serverId !== null && serverId !== undefined && typeof global.resolveBackendBaseUrl === 'function') {
+            const response = await fetch(
+                `${global.resolveBackendBaseUrl()}/proposals/${encodeURIComponent(serverId)}/name`,
+                {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: entry.to })
+                }
+            );
+            if (!response.ok) throw new Error(`PATCH name: HTTP ${response.status}`);
+        }
+        const stored = global.proposalStorage?.setProposalName?.(entry.proposalId, entry.to);
+        if (!stored) throw new Error('local storage refused the rename');
+    }
+
+    /**
+     * Rename every leftover it can, and say what it left alone. Run planBlockRenames() first.
+     * @returns {Promise<{renamed: Array, failed: Array, skipped: Array}>}
+     */
+    async function renameLegacyBlockNames() {
+        const plan = planBlockRenames();
+        const renamed = [];
+        const failed = [];
+
+        for (const entry of plan.targets) {
+            if (!entry.to) continue;
+            try {
+                await renameProposalRecord(entry);
+                renamed.push(entry);
+            } catch (error) {
+                failed.push({ ...entry, detail: String((error && error.message) || error) });
+            }
+            if (typeof global.yieldToBrowser === 'function') await global.yieldToBrowser();
+        }
+
+        try { if (typeof global.updateProposalList === 'function') global.updateProposalList(); } catch (_) { }
+
+        // A partial run must not read as a clean one: the counts are printed together, and a
+        // failure is loud even though the loop kept going.
+        console.log(`[rename] renamed ${renamed.length}, failed ${failed.length}, skipped ${plan.blocked.length}`);
+        failed.forEach(entry => console.error(`[rename] FAILED ${entry.from}: ${entry.detail}`));
+        plan.blocked.forEach(entry => console.warn(`[rename] skipped ${entry.from}: ${entry.reason}`));
+        if (typeof global.updateStatus === 'function') {
+            global.updateStatus(`Renamed ${renamed.length} block(s); ${failed.length} failed, ${plan.blocked.length} skipped.`);
+        }
+        return { renamed, failed, skipped: plan.blocked };
     }
 
     // What already stands on the ground — and why this cannot be answered from parcel ids alone.
@@ -723,16 +866,22 @@
         return { block, members: rows, neighbours, nearestHoles, unaccountedM, absorbedRoads, runaway };
     }
 
-    global.BlockBatch = { planBlockUrbanRules, createBlockUrbanRules, collectParcels, designFor, whyIsBlockUnfilled };
+    global.BlockBatch = {
+        planBlockUrbanRules, createBlockUrbanRules, collectParcels, designFor, whyIsBlockUnfilled,
+        planBlockRenames, renameLegacyBlockNames
+    };
     global.planBlockUrbanRules = planBlockUrbanRules;
     global.createBlockUrbanRules = createBlockUrbanRules;
     global.whyIsBlockUnfilled = whyIsBlockUnfilled;
+    global.planBlockRenames = planBlockRenames;
+    global.renameLegacyBlockNames = renameLegacyBlockNames;
 
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = {
             planBlockUrbanRules, createBlockUrbanRules, collectParcels, designFor,
             whyIsBlockUnfilled, occupancy, isPopulated, occupiersOf,
-            blockBaseName, blockFingerprint, blockCode, nameBlocks
+            blockBaseName, blockFingerprint, blockCode, nameBlocks,
+            isLegacyBlockName, blockParcelIdsOf, planBlockRenames, renameLegacyBlockNames
         };
     }
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -278,6 +278,25 @@ const proposalEpochPatchValidator = createJsonBodyValidator({
     }
 });
 
+// PATCH /proposals/:id/name — rename a proposal in place. Nothing else on the record moves: a name
+// is a label, and re-uploading a whole proposal to change one would rewrite geometry and stamps that
+// have already been consented to.
+const proposalNamePatchValidator = createJsonBodyValidator({
+    schema: {
+        name: {
+            required: true,
+            missingMessage: 'name is required.',
+            validate: validators.string({
+                maxLength: MAX_TITLE_LENGTH,
+                label: 'name',
+                disallowControlChars: true,
+                minLength: 1,
+                minLengthMessage: 'name is required.'
+            })
+        }
+    }
+});
+
 const proposalScreenshotPatchValidator = createJsonBodyValidator({
     schema: {
         screenshotUrl: {
@@ -1011,6 +1030,104 @@ export function setupProposalsRoute(app, pool) {
 
     // Postavlja/briše epoch bucket prijedloga (vremenska crta plana). Isti
     // adresni oblik kao screenshot patch: server id ILI proposal_id.
+    app.patch('/proposals/:id/name', proposalNamePatchValidator, async (req, res) => {
+        try {
+            const idParam = req.params.id;
+            if (!idParam) {
+                return res.status(400).json({ error: 'Invalid proposal id. Must be provided.' });
+            }
+            const name = req.validatedBody.name.trim();
+            if (!name) {
+                return res.status(400).json({ error: 'name is required.' });
+            }
+
+            // name and title are kept in step because the UI reads `title || name` — leaving one
+            // behind would rename the proposal in some lists and not in others.
+            const sql = `
+                UPDATE proposal
+                SET name = $1,
+                    title = $1,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE proposal_id = $2 OR id::text = $2
+                RETURNING id, proposal_id, name, title
+            `;
+            const result = await pool.query(sql, [name, idParam]);
+            if (result.rows.length === 0) {
+                return res.status(404).json({ error: 'Proposal not found' });
+            }
+            const row = result.rows[0];
+            res.json({
+                id: row.id,
+                proposalId: row.proposal_id,
+                name: row.name,
+                title: row.title
+            });
+        } catch (err) {
+            console.error('Error in PATCH /proposals/:id/name:', err);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    // PATCH /proposals/epochs — many epochs in ONE request.
+    //
+    // Assigning epochs across a plan is a write per proposal, and a plan is hundreds of proposals.
+    // Sent one at a time that is hundreds of round trips, and it walks straight into the write rate
+    // limiter: a distribution over 300 proposals died on 429 after the first hundred, leaving the
+    // plan half-assigned with no indication of where it stopped.
+    //
+    // One statement, so the whole distribution lands or none of it does — a half-applied epoch plan
+    // is worse than an unassigned one, because it looks assigned.
+    app.patch('/proposals/epochs', async (req, res) => {
+        try {
+            const entries = Array.isArray(req.body && req.body.epochs) ? req.body.epochs : null;
+            if (!entries || !entries.length) {
+                return res.status(400).json({ error: 'epochs must be a non-empty array of { id, epochYear }.' });
+            }
+            if (entries.length > 2000) {
+                return res.status(400).json({ error: 'epochs is capped at 2000 entries per request.' });
+            }
+
+            const ids = [];
+            const years = [];
+            for (const entry of entries) {
+                const id = entry && entry.id !== undefined && entry.id !== null ? String(entry.id).trim() : '';
+                if (!id) return res.status(400).json({ error: 'Every entry needs an id.' });
+                const raw = entry.epochYear;
+                // null clears the bucket; anything else must be a year in range. Validated per entry
+                // rather than trusted, because one bad value would otherwise ride in with 299 good ones.
+                if (raw !== null && raw !== undefined) {
+                    const year = Number(raw);
+                    if (!Number.isInteger(year) || year < 2026 || year > 2966) {
+                        return res.status(400).json({ error: `epochYear for ${id} must be an integer 2026-2966, or null.` });
+                    }
+                    years.push(year);
+                } else {
+                    years.push(null);
+                }
+                ids.push(id);
+            }
+
+            const sql = `
+                UPDATE proposal p
+                SET epoch_year = v.epoch_year,
+                    updated_at = CURRENT_TIMESTAMP
+                FROM (SELECT unnest($1::text[]) AS id, unnest($2::int[]) AS epoch_year) AS v
+                WHERE p.proposal_id = v.id OR p.id::text = v.id
+                RETURNING p.id, p.proposal_id, p.epoch_year
+            `;
+            const result = await pool.query(sql, [ids, years]);
+            const updated = result.rows.map(row => ({ id: row.id, proposalId: row.proposal_id, epochYear: row.epoch_year }));
+            const matched = new Set(updated.flatMap(row => [String(row.id), String(row.proposalId)]));
+            // Which ids matched nothing, named rather than counted: a silent shortfall is how an
+            // epoch plan comes to be missing exactly the proposals nobody thought to check.
+            const missing = ids.filter(id => !matched.has(id));
+            res.json({ requested: ids.length, updated: updated.length, missing, proposals: updated });
+        } catch (err) {
+            console.error('Error in PATCH /proposals/epochs:', err);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
     app.patch('/proposals/:id/epoch', proposalEpochPatchValidator, async (req, res) => {
         try {
             const idParam = req.params.id;

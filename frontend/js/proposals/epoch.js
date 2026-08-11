@@ -207,7 +207,9 @@
         const serverId = proposal.serverProposalId
             ?? (typeof proposal.id === 'number' ? proposal.id : null)
             ?? (/^\d+$/.test(String(proposal.id || '')) ? proposal.id : null);
-        if (serverId !== null && typeof resolveBackendBaseUrl === 'function') {
+        // skipServer: the caller already sent this epoch, in a batch. Without it a bulk run writes
+        // every epoch twice — once in the batch and once here — which is what the batch was for.
+        if (serverId !== null && !options.skipServer && typeof resolveBackendBaseUrl === 'function') {
             const resp = await fetch(`${resolveBackendBaseUrl()}/proposals/${encodeURIComponent(serverId)}/epoch`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
@@ -244,6 +246,41 @@
      * @param {boolean} [options.dryRun] samo prebroji, ne piši ništa
      * @param {boolean} [options.onlyUnset] preskoči prijedloge koji već imaju epohu
      */
+    /**
+     * Send every server-backed epoch in one PATCH /proposals/epochs.
+     * Returns null on success, or a message describing what went wrong. Ids that matched no row on
+     * the server are pushed onto `failed` by name — a shortfall nobody names is a shortfall nobody
+     * finds.
+     */
+    async function writeEpochsToServer(plan, failed) {
+        if (typeof resolveBackendBaseUrl !== 'function' || typeof fetch !== 'function') return null;
+        const epochs = [];
+        plan.forEach(entry => {
+            const proposal = entry.proposal;
+            const serverId = proposal.serverProposalId
+                ?? (typeof proposal.id === 'number' ? proposal.id : null)
+                ?? (/^\d+$/.test(String(proposal.id || '')) ? proposal.id : null);
+            if (serverId !== null && serverId !== undefined) epochs.push({ id: String(serverId), epochYear: entry.year });
+        });
+        if (!epochs.length) return null;
+
+        try {
+            const response = await fetch(`${resolveBackendBaseUrl()}/proposals/epochs`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ epochs })
+            });
+            if (!response.ok) return `HTTP ${response.status}`;
+            const payload = await response.json();
+            (payload.missing || []).forEach(id => failed.push({
+                proposal: id, year: null, reason: 'no such proposal on the server'
+            }));
+            return null;
+        } catch (error) {
+            return String((error && error.message) || error);
+        }
+    }
+
     async function distributeEpochs(options = {}) {
         if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') {
             console.error('[epoch] proposalStorage nije dostupan');
@@ -270,11 +307,18 @@
             return { attempted: plan.length, counts, written: 0, failed: [], dryRun: true };
         }
 
+        // The server side goes in ONE request. A write per proposal is a write per proposal to the
+        // rate limiter too: a distribution over 300 proposals died on 429 after the first hundred,
+        // and left the plan half-assigned — which looks assigned.
         const failed = [];
         let written = 0;
+        const serverFailure = await writeEpochsToServer(plan, failed);
+
+        // The local records are written whatever the server said, so the map and the list agree with
+        // what you asked for. A server that refused is reported, not hidden.
         for (const entry of plan) {
             try {
-                await setEpoch(entry.proposal, entry.year, { render: false });
+                await setEpoch(entry.proposal, entry.year, { render: false, skipServer: true });
                 written += 1;
             } catch (error) {
                 failed.push({
@@ -283,13 +327,14 @@
                     reason: String(error && error.message || error)
                 });
             }
-            if (written % 25 === 0 && typeof updateStatus === 'function') {
+            if (written % 50 === 0 && typeof updateStatus === 'function') {
                 updateStatus(`Epochs: ${written}/${plan.length} assigned…`);
             }
             if (typeof window !== 'undefined' && typeof window.yieldToBrowser === 'function') {
                 await window.yieldToBrowser();
             }
         }
+        if (serverFailure) console.warn('[epoch] server side did not take the plan:', serverFailure);
 
         renderList();
         const summary = { attempted: plan.length, written, counts, failed };

@@ -10,7 +10,8 @@
         "test": "vitest run",
         "test:watch": "vitest",
         "test:coverage": "vitest run --coverage",
-        "smoke:prod:parcels": "node scripts/smoke-production-bbox.mjs"
+        "smoke:prod:parcels": "node scripts/smoke-production-bbox.mjs",
+        "plan-yield": "PGHOST=${PGHOST:-localhost} node scripts/plan-yield.js"
     },
     "dependencies": {
         "@turf/turf": "^6.5.0",

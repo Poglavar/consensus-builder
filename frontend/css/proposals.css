@@ -2029,6 +2029,58 @@ textarea.proposal-description-input {
     opacity: 0.25;
 }
 
+/* Picked from the MAP: a click on a proposal out there scrolls its row into view here, and this is
+   what says which one arrived. It has to survive :hover (the pointer is on the map, not the row)
+   and read at a glance in a list of several hundred, so it is a filled bar with a hard left edge
+   rather than a tint. Only ever on one row — the JS clears the previous holder. */
+.share-plan-row.is-picked {
+    background: #dbeafe;
+    box-shadow: inset 3px 0 0 0 #2563eb;
+}
+
+/* Uploaded, and the map agrees: solid there, solid here. Not-yet-uploaded rows are the DEFAULT
+   state rather than a modifier, because a plan starts out entirely local — styling the exception is
+   what keeps a fresh panel from being a wall of warning colour. */
+.share-plan-row.is-uploaded .share-plan-color-chip {
+    border-color: rgba(15, 23, 42, 0.55);
+    border-width: 2px;
+}
+
+.share-plan-row:not(.is-uploaded) .share-plan-color-chip {
+    border-style: dashed;
+}
+
+/* Key for the two map treatments. Without it the difference on the map is a difference nobody can
+   read: a dashed outline means nothing until something says what it means. */
+.share-plan-legend {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 4px 2px 8px;
+    font-size: 11px;
+    color: #475569;
+}
+
+.share-plan-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.share-plan-legend i {
+    width: 16px;
+    height: 10px;
+    border-radius: 2px;
+    background: rgba(67, 99, 216, 0.35);
+    border: 2px solid #4363d8;
+}
+
+.share-plan-legend .is-pending {
+    background: rgba(67, 99, 216, 0.14);
+    border-style: dashed;
+}
+
 .share-plan-share-area {
     display: flex;
     flex-direction: column;

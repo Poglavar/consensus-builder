@@ -368,7 +368,7 @@
 
         this._assignSyntheticChildIdentities(proposalId, childFeatures);
 
-        this._addFeaturesToMap(childFeatures, true, proposalData);
+        await this._addFeaturesToMap(childFeatures, true, proposalData);
 
         const childParcelIds = [];
         const touchedAgentIds = new Set();
@@ -611,7 +611,7 @@
         }
 
         this._persistParcelFeature(childFeature);
-        this._addFeaturesToMap([childFeature], true, proposalData);
+        await this._addFeaturesToMap([childFeature], true, proposalData);
         this._addProposalAsAncestor(childParcelId, proposalId);
         this._addChildParcels(proposalId, [childParcelId], proposalData);
 

@@ -299,6 +299,25 @@ body.debug-mode .debug-only-control {
     position: relative;
 }
 
+/* Exactly two rows, always. The bar is flex-shrink:0 in a flex column, so every time a message
+   wrapped to a second line it pushed the whole sidebar above it up, and the next short message
+   dropped it back — the panel twitched on nearly every status update, which on a busy reload is
+   several times a second. Reserving the taller of the two heights costs one line of empty space
+   and buys a sidebar that holds still.
+
+   Clamped as well as reserved: without the clamp a three-line message would simply move the flip
+   up a row rather than remove it. The full text is never lost — the log strip and the pop-out
+   dialog both keep it. */
+.status-bar > #status {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    line-height: 1.35;
+    min-height: 2.7em;
+}
+
 .status-bar:hover {
     background-color: #e9ecef;
 }
@@ -492,6 +511,30 @@ body.debug-mode .debug-only-control {
     color: #495057;
     flex-grow: 1;
     word-break: break-word;
+}
+
+/* A line that knows its proposal is a <button>, so it needs the browser's button chrome stripped
+   back to the surrounding text before it can look like part of the log. It keeps a focus ring — it
+   is reachable by keyboard and must show where the keyboard is. */
+button.status-log-message {
+    appearance: none;
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    text-align: left;
+}
+
+.status-log-message.is-linked {
+    color: #1d4ed8;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 2px;
+}
+
+.status-log-message.is-linked:hover {
+    text-decoration-style: solid;
 }
 
 @keyframes highlight-status {

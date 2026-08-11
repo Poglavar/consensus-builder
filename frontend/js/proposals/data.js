@@ -829,6 +829,21 @@ const proposalStorage = {
         return true;
     },
 
+    // Label-only mutation. name and title move together because the lists read `title || name`;
+    // setting one and not the other renames the proposal in some views and not in others.
+    setProposalName(proposalId, name) {
+        const proposal = this.getProposal(proposalId);
+        if (!proposal) return false;
+        const text = (name === undefined || name === null) ? '' : String(name).trim();
+        if (!text) return false;
+        proposal.name = text;
+        proposal.title = text;
+        proposal.updatedAt = new Date().toISOString();
+        this._indexProposal(proposal);
+        this.save();
+        return true;
+    },
+
     setProposalApplied(proposalId, applied) {
         const proposal = this.getProposal(proposalId);
         if (!proposal) return false;

@@ -70,8 +70,9 @@ describe('two lines per proposal, whatever its type', () => {
     );
 
     it('announces the start and the end', () => {
-        expect(summary).toContain('_announceApply(`Applying ${kind} ${label}...`)');
-        expect(summary).toContain('_announceApply(`Applied ${kind} ${label}`)');
+        // Every announcement carries the proposal id, so the status log can offer to go there.
+        expect(summary).toContain('_announceApply(`Applying ${kind} ${label}...`, proposalId)');
+        expect(summary).toContain('_announceApply(`Applied ${kind} ${label}`, proposalId)');
     });
 
     it('says so when an apply refuses, rather than going quiet', () => {

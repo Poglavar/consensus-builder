@@ -212,4 +212,82 @@
     }
 
     global.mapLoad = mapLoad;
+
+    // Why a click on the map did nothing.
+    //
+    // onParcelClick has NINE gates before it reaches the panel, and every one of them returns
+    // silently — which is right for the app and useless for anyone debugging it. A stuck mode flag
+    // and a click handler that was never attached look identical from the outside: nothing happens.
+    //
+    // This says which gate is closed, or says the gates are all open and the handler simply is not
+    // on the layers, which is a completely different bug.
+    function whyNoClick() {
+        const say = (label, value) => ({ label, value });
+        const call = (fn) => { try { return typeof fn === 'function' ? fn() : null; } catch (_) { return 'threw'; } };
+
+        // In the order onParcelClick tests them. The FIRST truthy one is the one that stops a click.
+        const gates = [
+            say('measureMode', !!global.measureMode),
+            say('parcel drawing active', call(global.isParcelDrawingModeActive) === true),
+            say('map edit lock held', call(() => global.__mapEditLock && global.__mapEditLock.isHeld()) === true),
+            say('structure geometry editor', call(global.isStructureGeometryEditorActive) === true),
+            say('area monitor paint', call(() => global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) === true),
+            say('sharePlanMode', !!global.sharePlanMode),
+            say('proposalListBrowseMode', !!global.proposalListBrowseMode)
+        ];
+        const closed = gates.filter(gate => gate.value === true);
+
+        // Is the handler even ON the parcels? A layer built while onParcelClick was undefined never
+        // got one and never will — the attach is a load-time decision, not a click-time one.
+        let layers = 0;
+        let withClick = 0;
+        let interactive = 0;
+        try {
+            if (global.parcelLayer && typeof global.parcelLayer.eachLayer === 'function') {
+                global.parcelLayer.eachLayer(layer => {
+                    layers += 1;
+                    if (layer && layer._events && Array.isArray(layer._events.click) && layer._events.click.length) withClick += 1;
+                    if (layer && layer.options && layer.options.interactive) interactive += 1;
+                });
+            }
+        } catch (_) { }
+
+        const wiring = {
+            'window.onParcelClick': typeof global.onParcelClick,
+            'Parcels.selection.onEachFeature': typeof (global.Parcels && global.Parcels.selection && global.Parcels.selection.onEachFeature),
+            // Captured at MODULE LOAD in parcel-selection.js: empty here means every panel call is
+            // a silent no-op, however well the click itself works.
+            'Parcels.uiParcelPanel': (global.Parcels && global.Parcels.uiParcelPanel)
+                ? Object.keys(global.Parcels.uiParcelPanel).length + ' method(s)'
+                : 'MISSING',
+            'parcelLayer on map': !!(global.map && global.parcelLayer && global.map.hasLayer(global.parcelLayer)),
+            'parcel layers': layers,
+            'with a click handler': withClick,
+            'interactive': interactive
+        };
+
+        if (closed.length) {
+            console.warn('[whyNoClick] A click is being swallowed by: '
+                + closed.map(gate => gate.label).join(', ')
+                + '. That is the first gate that returns; anything after it never runs.');
+        } else if (!layers) {
+            console.warn('[whyNoClick] No gate is closed, but parcelLayer holds NO layers — there is '
+                + 'nothing on the map to click.');
+        } else if (!withClick) {
+            console.warn(`[whyNoClick] No gate is closed and ${layers} parcels are on the map, but NOT ONE `
+                + 'carries a click handler. They were built while window.onParcelClick was undefined; '
+                + 'the attach happens once, when the layer is made.');
+        } else if (wiring['Parcels.uiParcelPanel'] === 'MISSING') {
+            console.warn('[whyNoClick] Clicks arrive, but the parcel panel module was not registered when '
+                + 'parcel-selection.js loaded, so every panel call is a no-op.');
+        } else {
+            console.log(`[whyNoClick] Nothing is blocking: ${withClick} of ${layers} parcels carry a click `
+                + 'handler and the panel module is present. The click is getting through.');
+        }
+        console.table(gates.map(gate => ({ gate: gate.label, closed: gate.value })));
+        console.table(Object.entries(wiring).map(([what, value]) => ({ what, value: String(value) })));
+        return { closed: closed.map(gate => gate.label), wiring };
+    }
+
+    global.whyNoClick = whyNoClick;
 })(typeof window !== 'undefined' ? window : globalThis);

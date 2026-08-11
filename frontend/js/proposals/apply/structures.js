@@ -11,7 +11,11 @@
     async _applyStructureProposal(proposalId, proposalData, options = {}) {
         const startTime = performance.now();
         const idLabel = _normalizeProposalId(proposalId) || 'unknown-proposal';
-        console.debug(`[_applyStructureProposal] Starting application for ${idLabel}...`);
+        // Same gate as the building path: `window.DEBUG_APPLY = true` to trace one apply.
+        const traceApply = (typeof window !== 'undefined' && window.DEBUG_APPLY)
+            ? (message) => console.debug(`[_applyStructureProposal] ${message}`)
+            : () => { };
+        traceApply(`Starting application for ${idLabel}...`);
         try {
             const step1Time = performance.now();
             const sp = proposalData.structureProposal || {};
@@ -51,7 +55,7 @@
             } catch (error) {
                 console.error('[_applyStructureProposal] demolition scan failed', idLabel, error);
             }
-            console.debug(`[_applyStructureProposal] Step 1: Initialized structure proposal (${(performance.now() - step1Time).toFixed(2)}ms) - kind: ${kind}`);
+            traceApply(`Step 1: Initialized structure proposal (${(performance.now() - step1Time).toFixed(2)}ms) - kind: ${kind}`);
 
             const collection = kind === 'park'
                 ? window.parks
@@ -88,7 +92,7 @@
             if (!liveParents.ok) return false;
             let parentIds = liveParents.ids;
             const flatParentIds = liveParents.cadastreIds.slice();
-            console.debug(`[_applyStructureProposal] Step 2: Resolved ${parentIds.length} live parcel(s) from geometry (${(performance.now() - step2Time).toFixed(2)}ms)`);
+            traceApply(`Step 2: Resolved ${parentIds.length} live parcel(s) from geometry (${(performance.now() - step2Time).toFixed(2)}ms)`);
 
             // §15a structure formation (decision 2026-08-05): a park/square/lake TAKES its
             // ground — adopt the one parcel matching the footprint, or merge whole parcels into
@@ -196,13 +200,13 @@
                 window.squares.push(feature);
                 try { PersistentStorage.setItem('cb_squares', JSON.stringify(window.squares)); } catch (_) { }
             }
-            console.debug(`[_applyStructureProposal] Step 4: Prepared ${kind} layer data and storage (${(performance.now() - step4Time).toFixed(2)}ms)`);
+            traceApply(`Step 4: Prepared ${kind} layer data and storage (${(performance.now() - step4Time).toFixed(2)}ms)`);
 
             const step5Time = performance.now();
             // Link the exact live pieces consumed in this derivation for local selection only.
             const uniqueParentIds = Array.from(new Set((parentIds || []).filter(Boolean)));
 
-            console.debug(`[_applyStructureProposal] Step 5: Formed from ${uniqueParentIds.length} live parcel(s) (${(performance.now() - step5Time).toFixed(2)}ms)`);
+            traceApply(`Step 5: Formed from ${uniqueParentIds.length} live parcel(s) (${(performance.now() - step5Time).toFixed(2)}ms)`);
 
             // The structure is now on the map. persistAppliedProposal moves only the root-local
             // application axis; the lifecycle (Active/Executed) is left as-is. Persist the model
@@ -219,7 +223,7 @@
             refreshProposalUIAfterApply();
 
             const totalTime = performance.now() - startTime;
-            console.debug(`[_applyStructureProposal] ✓ Structure proposal application completed in ${totalTime.toFixed(2)}ms`);
+            traceApply(`✓ Structure proposal application completed in ${totalTime.toFixed(2)}ms`);
             return true;
         } catch (e) {
             console.warn('Failed to apply structure proposal', e);
@@ -425,7 +429,7 @@
                 .map(feature => _getParcelIdFromFeature(feature))
                 .filter(id => id !== undefined && id !== null)
                 .map(String);
-            this._addFeaturesToMap(bodyFeatures, true, proposalData);
+            await this._addFeaturesToMap(bodyFeatures, true, proposalData);
             bodyFeatures.forEach(feature => {
                 const bodyId = _getParcelIdFromFeature(feature);
                 try { this._persistParcelFeature(feature); } catch (_) { }
@@ -486,7 +490,7 @@
                 }
                 const minted = [...foreignPieces.map(fp => fp.feature), ...structureRemainders];
                 if (minted.length) {
-                    this._addFeaturesToMap(minted, true, proposalData);
+                    await this._addFeaturesToMap(minted, true, proposalData);
                     minted.forEach(feature => { try { this._persistParcelFeature(feature); } catch (_) { } });
                 }
                 foreignPieces.forEach(({ feature, proposalId: ownerProposalId }) => {

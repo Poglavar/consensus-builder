@@ -654,7 +654,12 @@ function sharePlanColorForIndex(index) {
 function closeSharePlanPanel() {
     const state = _sharePlanPanelState;
     _sharePlanPanelState = null;
-    if (typeof window !== 'undefined') window.sharePlanMode = false;
+    if (typeof window !== 'undefined') {
+        window.sharePlanMode = false;
+        // Released with the panel: a picker left behind would answer clicks by scrolling rows in a
+        // list that is no longer on screen, and would hold the whole closed panel in memory.
+        window.__sharePlanPickProposal = null;
+    }
     try { document.body.classList.remove('share-plan-mode'); } catch (_) { }
     if (state) {
         try { document.removeEventListener('keydown', state.onKeyDown); } catch (_) { }
@@ -750,6 +755,25 @@ function showSharePlanPanel() {
         panelHeader.append(panelTitle, panelCloseBtn);
         panelContent.appendChild(panelHeader);
 
+        // What the two map treatments mean. A dashed outline is not self-explanatory, and a
+        // difference nobody can read is not a difference.
+        const legend = document.createElement('div');
+        legend.className = 'share-plan-legend';
+        const legendEntry = (labelKey, fallback, pending) => {
+            const entry = document.createElement('span');
+            const swatch = document.createElement('i');
+            if (pending) swatch.className = 'is-pending';
+            const label = document.createElement('span');
+            label.textContent = tShare(labelKey, fallback);
+            entry.append(swatch, label);
+            return entry;
+        };
+        legend.append(
+            legendEntry('plan.legendUploaded', 'Uploaded', false),
+            legendEntry('plan.legendNotUploaded', 'Not uploaded yet', true)
+        );
+        panelContent.appendChild(legend);
+
         const container = document.createElement('div');
         container.className = 'share-plan-panel-body';
         panelContent.appendChild(container);
@@ -836,8 +860,19 @@ function showSharePlanPanel() {
             if (!features.length) return;
             try {
                 const color = colorByKey.get(key) || '#4363d8';
+                // Already on the server, or still only here? Shown as SOLID versus DASHED rather
+                // than as two colours: every proposal already owns a colour to tell it from its
+                // neighbours, so a second colour axis would collide with the first. A dashed,
+                // fainter shape reads as provisional, which is exactly what "not uploaded yet" is.
+                const uploaded = !!(uploadState.get(key) || {}).uploaded;
                 const layer = L.geoJSON({ type: 'FeatureCollection', features }, {
-                    style: { color, weight: 2, fillColor: color, fillOpacity: 0.35 },
+                    style: {
+                        color,
+                        weight: uploaded ? 2 : 3,
+                        dashArray: uploaded ? null : '7 6',
+                        fillColor: color,
+                        fillOpacity: uploaded ? 0.35 : 0.14
+                    },
                     interactive: false
                 });
                 overlayGroup.addLayer(layer);
@@ -845,6 +880,38 @@ function showSharePlanPanel() {
             } catch (error) {
                 console.warn('share plan: could not paint proposal', key, error);
             }
+        };
+
+        // The panel's own key for a proposal, formed exactly as proposalsByHash was built. A proposal
+        // arriving from a map click is the same object the panel already holds, but it must be
+        // looked up the same way or it will not be found.
+        const keyOfProposal = (proposal) => {
+            if (!proposal) return null;
+            const key = proposal.proposalId || (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null);
+            return key ? String(key) : null;
+        };
+
+        // Bring a row into view and say, unmistakably, which one it is: scrolled to, marked, and
+        // outlined on the map. The mark is removed from whatever held it last so two rows are never
+        // both claiming to be the picked one.
+        let pickedRowKey = null;
+        const revealRow = (key, parcelId) => {
+            const controls = rowControls.get(key);
+            if (!controls || !controls.row) return;
+            if (pickedRowKey && pickedRowKey !== key) {
+                const previous = rowControls.get(pickedRowKey);
+                if (previous && previous.row) previous.row.classList.remove('is-picked');
+            }
+            pickedRowKey = key;
+            controls.row.classList.add('is-picked');
+            try { controls.row.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (_) {
+                try { controls.row.scrollIntoView(); } catch (_) { }
+            }
+            highlightRowProposal(key);
+            const title = (proposalsByHash.get(key) || {}).title || key;
+            setStatus(parcelId
+                ? tShare('plan.pickedOnMap', 'Selected {{title}} — {{parcel}}', { title, parcel: String(parcelId) })
+                : tShare('plan.picked', 'Selected {{title}}', { title }));
         };
 
         const highlightRowProposal = (key) => {
@@ -1171,6 +1238,10 @@ function showSharePlanPanel() {
             }
             controls.checkbox.checked = selected.has(key);
             if (controls.row) controls.row.classList.toggle('is-excluded', !selected.has(key));
+            controls.row.classList.toggle('is-uploaded', !!state.uploaded);
+            // The map says the same thing the row says. An overlay painted before the server
+            // answered would otherwise keep claiming "not uploaded" after the answer arrived.
+            if (overlayByKey.has(key)) syncPlanOverlay(key);
         };
 
         const toggleCheckbox = (key, checked) => {
@@ -1464,6 +1535,25 @@ function showSharePlanPanel() {
         };
         document.addEventListener('keydown', onKeyDown);
         _sharePlanPanelState = { root: panelRoot, overlayGroup, onKeyDown, token: panelToken };
+
+        // Clicking a proposal ON THE MAP finds it in the list. The map and the panel are two views
+        // of one plan, so pointing at something in either should say where it is in the other —
+        // otherwise finding one row among several hundred means scrolling and reading titles.
+        //
+        // The resolution from a clicked parcel to its applied proposal already exists in
+        // onParcelClick (parcels/ui/parcel-selection.js), which is why this is a callback it can
+        // reach rather than a second map handler racing it for the same click.
+        window.__sharePlanPickProposal = (proposal, parcelId) => {
+            if (!panelStillOpen() || !proposal) return;
+            const key = keyOfProposal(proposal);
+            if (!key || !rowControls.has(key)) {
+                // Applied, but not in this plan: say so rather than silently doing nothing, which
+                // is indistinguishable from a click that missed.
+                setStatus(tShare('plan.pickedNotInPlan', 'That proposal is not in this plan.'));
+                return;
+            }
+            revealRow(key, parcelId);
+        };
 
         (async () => {
             try {

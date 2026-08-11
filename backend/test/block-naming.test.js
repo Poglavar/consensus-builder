@@ -117,3 +117,124 @@ describe('a name an earlier run already used', () => {
         expect(blocks[0].name).toBe(batch.blockBaseName(THE_BLOCK, byId));
     });
 });
+
+// ── Renaming what the earlier naming left behind ────────────────────────────────────────────────
+//
+// `Block HR-330264-628#prqroga` is not a hypothetical: a batch run on 2026-08-11 minted eleven of
+// them before the naming was derived from the block, and those records still carry it. The rename
+// has to reach exactly those, produce the SAME name a fresh batch would, and refuse — visibly —
+// when it cannot see the whole block.
+
+// A parcel as it arrives from the map: real lon/lat, plus the projection collectParcels goes
+// through. The projection is a stand-in; the names only have to be self-consistent.
+const lonLatRect = (lon0, lat0, lon1, lat1) => ({
+    type: 'Feature',
+    properties: {},
+    geometry: { type: 'Polygon', coordinates: [[[lon0, lat0], [lon1, lat0], [lon1, lat1], [lon0, lat1], [lon0, lat0]]] }
+});
+
+function stubMap(parcels) {
+    globalThis.wgs84ToHTRS96 = (lat, lng) => [lng * 100000, lat * 100000];
+    globalThis.getParcelIdFromFeature = feature => feature.properties.parcelId;
+    globalThis.isCorridorParcel = () => false;
+    globalThis.parcelLayer = {
+        eachLayer(fn) {
+            parcels.forEach(([id, feature]) => {
+                const clone = JSON.parse(JSON.stringify(feature));
+                clone.properties.parcelId = id;
+                fn({ feature: clone });
+            });
+        }
+    };
+}
+
+function clearMap() {
+    delete globalThis.wgs84ToHTRS96;
+    delete globalThis.getParcelIdFromFeature;
+    delete globalThis.isCorridorParcel;
+    delete globalThis.parcelLayer;
+}
+
+describe('a name left over from the parcel-id era', () => {
+    afterEach(() => clearMap());
+
+    it('is recognised by the piece token no derived name can contain', () => {
+        expect(batch.isLegacyBlockName('Block HR-330264-628#prqroga')).toBe(true);
+        expect(batch.isLegacyBlockName('Block HR-330264-484/1#p1rswat9')).toBe(true);
+        expect(batch.isLegacyBlockName('Parcel HR-330264-599#puk4aft')).toBe(true);
+    });
+
+    it('does not fire on the names in use', () => {
+        expect(batch.isLegacyBlockName('Block 5000-K7QM')).toBe(false);   // derived
+        expect(batch.isLegacyBlockName('Block 1108-1514')).toBe(false);   // dialog default
+        expect(batch.isLegacyBlockName('Road 1108-0050')).toBe(false);
+        expect(batch.isLegacyBlockName('5 Parcels')).toBe(false);
+        expect(batch.isLegacyBlockName('')).toBe(false);
+        expect(batch.isLegacyBlockName(null)).toBe(false);
+        expect(batch.isLegacyBlockName(undefined)).toBe(false);
+    });
+
+    it('finds the block a proposal sits on wherever the record keeps it', () => {
+        expect(batch.blockParcelIdsOf({ parentParcelIds: ['A', 'B'] }).sort()).toEqual(['A', 'B']);
+        expect(batch.blockParcelIdsOf({ buildingProposal: { parentParcelIds: ['C'] } })).toEqual(['C']);
+        // Declared twice is still one parcel.
+        expect(batch.blockParcelIdsOf({ parentParcelIds: ['A'], parcelIds: ['A'] })).toEqual(['A']);
+        expect(batch.blockParcelIdsOf({})).toEqual([]);
+        expect(batch.blockParcelIdsOf(null)).toEqual([]);
+    });
+
+    it('plans the same name a fresh batch would mint for that block', () => {
+        stubMap([
+            ['HR-330264-628#prqroga', lonLatRect(15.8850, 43.7350, 15.8860, 43.7360)],
+            ['HR-330264-628#p1wwh16v', lonLatRect(15.8860, 43.7350, 15.8870, 43.7360)]
+        ]);
+        globalThis.proposalStorage = {
+            getAllProposals: () => [{
+                proposalId: 'c2-1ffqanv1ljpso7',
+                title: 'Block HR-330264-628#prqroga',
+                parentParcelIds: ['HR-330264-628#prqroga', 'HR-330264-628#p1wwh16v']
+            }]
+        };
+
+        const plan = batch.planBlockRenames();
+        const loaded = new Map(batch.collectParcels().map(entry => [entry.id, entry]));
+        const areaM2 = [...loaded.values()].reduce((sum, entry) => sum + entry.areaM2, 0);
+        const expected = batch.blockBaseName({ parcelIds: [...loaded.keys()], areaM2 }, loaded);
+
+        expect(plan.renamable).toBe(1);
+        expect(plan.targets[0].to).toBe(expected);
+        expect(plan.targets[0].to).not.toMatch(/#/);
+        expect(plan.blocked).toEqual([]);
+    });
+
+    it('refuses, with a reason, when the block is not all on the map', () => {
+        // Renaming from a subset would fingerprint a DIFFERENT outline, and mint a name for a
+        // block that does not exist.
+        stubMap([['HR-330264-628#prqroga', lonLatRect(15.8850, 43.7350, 15.8860, 43.7360)]]);
+        globalThis.proposalStorage = {
+            getAllProposals: () => [{
+                proposalId: 'c2-1ffqanv1ljpso7',
+                title: 'Block HR-330264-628#prqroga',
+                parentParcelIds: ['HR-330264-628#prqroga', 'HR-330264-628#not-loaded']
+            }]
+        };
+
+        const plan = batch.planBlockRenames();
+        expect(plan.renamable).toBe(0);
+        expect(plan.blocked).toHaveLength(1);
+        expect(plan.blocked[0].to).toBeNull();
+        expect(plan.blocked[0].reason).toMatch(/not loaded/);
+    });
+
+    it('leaves proposals whose names are already current alone', () => {
+        stubMap([['HR-330264-628#prqroga', lonLatRect(15.8850, 43.7350, 15.8860, 43.7360)]]);
+        globalThis.proposalStorage = {
+            getAllProposals: () => [
+                { proposalId: 'a', title: 'Block 1108-1514', parentParcelIds: ['HR-330264-628#prqroga'] },
+                { proposalId: 'b', title: 'Block 5000-K7QM', parentParcelIds: ['HR-330264-628#prqroga'] }
+            ]
+        };
+
+        expect(batch.planBlockRenames().targets).toEqual([]);
+    });
+});

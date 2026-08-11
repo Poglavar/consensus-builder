@@ -1586,3 +1586,70 @@ describe('normalizeCityCode', () => {
         expect(normalizeCityCode(undefined)).toBeNull();
     });
 });
+
+// PATCH /proposals/:id/name — a rename is a label change and nothing else. It exists because the
+// only other way to change a name was to re-upload the whole proposal, which would rewrite geometry
+// and ownership stamps that have already been consented to.
+describe('PATCH /proposals/:id/name', () => {
+    it('writes the new name to both name and title', async () => {
+        pool.setResult({
+            rows: [{ id: 966, proposal_id: 'c2-1ffqanv1ljpso7', name: 'Block 4237-K7QM', title: 'Block 4237-K7QM' }],
+            rowCount: 1
+        });
+
+        const res = await request(app)
+            .patch('/proposals/966/name')
+            .send({ name: 'Block 4237-K7QM' });
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({
+            id: 966,
+            proposalId: 'c2-1ffqanv1ljpso7',
+            name: 'Block 4237-K7QM',
+            title: 'Block 4237-K7QM'
+        });
+
+        // The lists read `title || name`; updating one and not the other would rename the proposal
+        // in some views and leave the old name in others.
+        const call = pool.getCalls().at(-1);
+        expect(call.sql).toMatch(/SET\s+name = \$1,\s*\n\s*title = \$1/);
+        expect(call.params).toEqual(['Block 4237-K7QM', '966']);
+    });
+
+    it('accepts the string proposal id as well as the serial one', async () => {
+        pool.setResult({
+            rows: [{ id: 966, proposal_id: 'c2-1ffqanv1ljpso7', name: 'Block 4237-K7QM', title: 'Block 4237-K7QM' }],
+            rowCount: 1
+        });
+
+        const res = await request(app)
+            .patch('/proposals/c2-1ffqanv1ljpso7/name')
+            .send({ name: 'Block 4237-K7QM' });
+
+        expect(res.status).toBe(200);
+        expect(pool.getCalls().at(-1).params[1]).toBe('c2-1ffqanv1ljpso7');
+    });
+
+    it('refuses an empty or whitespace-only name', async () => {
+        const empty = await request(app).patch('/proposals/966/name').send({ name: '' });
+        expect(empty.status).toBe(400);
+
+        const blank = await request(app).patch('/proposals/966/name').send({ name: '   ' });
+        expect(blank.status).toBe(400);
+
+        const missing = await request(app).patch('/proposals/966/name').send({});
+        expect(missing.status).toBe(400);
+
+        // Nothing reached the database.
+        expect(pool.getCalls()).toHaveLength(0);
+    });
+
+    it('404s for a proposal that is not there', async () => {
+        pool.setResult({ rows: [], rowCount: 0 });
+
+        const res = await request(app).patch('/proposals/999999/name').send({ name: 'Block 1-AAAA' });
+
+        expect(res.status).toBe(404);
+        expect(res.body.error).toBe('Proposal not found');
+    });
+});

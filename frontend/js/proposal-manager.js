@@ -100,9 +100,12 @@ function _multiPolygonOfFootprints(footprints) {
     return polygons.length ? { type: 'MultiPolygon', coordinates: polygons } : null;
 }
 
-function _announceApply(message) {
+// `proposalId` rides along as DATA rather than being parsed back out of the sentence later. A
+// status line reads "Applied block Block 1108-0116", and recovering the proposal from that would
+// mean matching titles — which are not unique, are translated, and are chosen by users.
+function _announceApply(message, proposalId) {
     if (typeof updateStatus !== 'function') return;
-    try { updateStatus(message); } catch (_) { }
+    try { updateStatus(message, proposalId ? { proposalId } : undefined); } catch (_) { }
 }
 
 // "112 roads", "3 tracks", "112 roads and 3 tracks" — a track is a road-track record with a flag,
@@ -125,20 +128,23 @@ function _corridorCountPhrase(takes) {
 async function _runProposalApplyWithSummary(proposalId, proposalData, runApply) {
     const label = _getProposalApplyLabel(proposalId, proposalData);
     const kind = _proposalApplyKind(proposalData);
-    _announceApply(`Applying ${kind} ${label}...`);
+    // The ONE line per proposal. The per-type step traces are behind window.DEBUG_APPLY, because
+    // six lines each is how you watch a single apply and how you lose a replay of three hundred.
+    const startedAt = _now();
+    _announceApply(`Applying ${kind} ${label}...`, proposalId);
     try {
         const result = await runApply();
         if (result === false) {
             console.warn(`Applying proposal ${label} ... failed`);
-            _announceApply(`Could not apply ${kind} ${label}`);
+            _announceApply(`Could not apply ${kind} ${label}`, proposalId);
             return false;
         }
-        console.log(`Applying proposal ${label} ... done`);
-        _announceApply(`Applied ${kind} ${label}`);
+        console.log(`Applied ${kind} ${label} — ${Math.round(_now() - startedAt)} ms`);
+        _announceApply(`Applied ${kind} ${label}`, proposalId);
         return result;
     } catch (error) {
         console.warn(`Applying proposal ${label} ... failed`);
-        _announceApply(`Could not apply ${kind} ${label}`);
+        _announceApply(`Could not apply ${kind} ${label}`, proposalId);
         throw error;
     }
 }
@@ -1149,7 +1155,7 @@ const ProposalManager = {
                 roadName: take ? take.name : null
             });
         }).filter(Boolean);
-        if (features.length) this._addFeaturesToMap(features, true, null);
+        if (features.length) await this._addFeaturesToMap(features, true, null);
 
         // A parcel shows exactly when nothing derived stands on it.
         //
@@ -2703,7 +2709,11 @@ const ProposalManager = {
         }
     },
 
-    _addFeaturesToMap(features, useNormalStyle = false, proposalData = null) {
+    // Async because it is chunked. A replay hands this 3,672 derived pieces in ONE call, and the
+    // whole insert — building every Leaflet layer, then adding and indexing each — used to run as
+    // a single task. That is the one remaining block big enough to freeze a pan on its own, and no
+    // amount of yielding BETWEEN proposals helps when one call inside a proposal is the problem.
+    async _addFeaturesToMap(features, useNormalStyle = false, proposalData = null) {
         if (!window.parcelLayer) {
             window.parcelLayer = L.featureGroup();
             // Only add to map if zoom is appropriate
@@ -2889,37 +2899,27 @@ const ProposalManager = {
                     ? window.Parcels.storage.indexParcelLayer
                     : window.indexParcelLayer;
 
-                const geoJsonLayer = L.geoJSON(featureCollection, {
-                    // Derived pieces go on the same shared canvas as the cadastre they were cut
-                    // from — see parcels/ingest.js. After a plan of 130 roads these ARE most of the
-                    // fabric, so leaving them in the SVG would leave the pan choppy.
-                    renderer: (typeof window !== 'undefined' && window.parcelCanvasRenderer)
-                        ? window.parcelCanvasRenderer() : undefined,
-                    style: styleFn,
-                    onEachFeature
-                });
-                geoJsonLayer.eachLayer(layer => {
-                    const pid = _getParcelIdFromFeature(layer?.feature);
-                    const idStr = pid !== undefined && pid !== null ? pid.toString() : null;
-                    if (idStr && mapById && typeof window.removeParcelLayerById === 'function') {
-                        const existing = mapById.get(idStr);
-                        if (existing && existing !== layer && window.parcelLayer && window.parcelLayer.hasLayer(existing)) {
-                            try { window.removeParcelLayerById(idStr); } catch (_) { }
+                // In slices, with a frame handed back between them. The L.geoJSON container is
+                // transient — every layer is moved into window.parcelLayer individually and the
+                // container itself is discarded — so building it in pieces produces exactly the
+                // layers one call produced, in the same order.
+                const BULK_SLICE = 100;
+                const sliceStartedAt = () => ((typeof performance !== 'undefined' && performance.now)
+                    ? performance.now() : Date.now());
+                let heldSince = sliceStartedAt();
+                for (let cursor = 0; cursor < bulkCandidates.length; cursor += BULK_SLICE) {
+                    const slice = { type: 'FeatureCollection', features: bulkCandidates.slice(cursor, cursor + BULK_SLICE) };
+                    this._addBulkSlice(slice, { styleFn, onEachFeature, mapById, indexParcelLayer });
+                    // On the clock, not on the slice count: a slice of a hundred simple pieces is
+                    // nothing, a hundred complex ones is a frame, and only the clock knows which
+                    // this was.
+                    if (sliceStartedAt() - heldSince >= 12) {
+                        if (typeof window !== 'undefined' && typeof window.yieldToBrowser === 'function') {
+                            await window.yieldToBrowser();
                         }
+                        heldSince = sliceStartedAt();
                     }
-                    window.parcelLayer.addLayer(layer);
-
-                    // Register in id->layer map for O(1) lookup (do this AFTER any removals to keep mapping consistent)
-                    if (idStr && typeof window.setParcelLayerById === 'function') {
-                        try { window.setParcelLayerById(idStr, layer); } catch (_) { }
-                    }
-
-                    // Index for spatial lookups (only for layers we actually add)
-                    if (typeof indexParcelLayer === 'function') {
-                        indexParcelLayer(layer);
-                    }
-
-                });
+                }
             } catch (err) {
                 console.warn('[_addFeaturesToMap] Bulk add failed, falling back to per-feature path', err);
             }
@@ -2927,7 +2927,10 @@ const ProposalManager = {
 
         // Handle remaining features (tracks, or all if no bulk add)
         const featuresToProcess = canBulkAdd ? trackFeatures : features;
-
+        // Tracks (and everything, when the bulk path did not run) keep the per-feature path: a
+        // handful of features per proposal, each needing its own styling. Left INLINE — it reads
+        // half a dozen consts from this scope (trackPolygonStyle, the proposal styles, the SVG
+        // pattern defs), and extracting it put those out of reach.
         featuresToProcess.forEach(feature => {
             // Check if this is a track - rely on the isTrack flag provided by upstream flow
             const isTrack = feature.properties.isTrack === true;
@@ -3130,6 +3133,46 @@ const ProposalManager = {
             refreshParcelNumberLabelsIfVisible();
         }
     },
+
+    // One slice of the bulk insert: unchanged from what the single call did per layer.
+    _addBulkSlice(featureCollection, { styleFn, onEachFeature, mapById, indexParcelLayer }) {
+        {
+            {
+                const geoJsonLayer = L.geoJSON(featureCollection, {
+                    // Derived pieces go on the same shared canvas as the cadastre they were cut
+                    // from — see parcels/ingest.js. After a plan of 130 roads these ARE most of the
+                    // fabric, so leaving them in the SVG would leave the pan choppy.
+                    renderer: (typeof window !== 'undefined' && window.parcelCanvasRenderer)
+                        ? window.parcelCanvasRenderer() : undefined,
+                    style: styleFn,
+                    onEachFeature
+                });
+                geoJsonLayer.eachLayer(layer => {
+                    const pid = _getParcelIdFromFeature(layer?.feature);
+                    const idStr = pid !== undefined && pid !== null ? pid.toString() : null;
+                    if (idStr && mapById && typeof window.removeParcelLayerById === 'function') {
+                        const existing = mapById.get(idStr);
+                        if (existing && existing !== layer && window.parcelLayer && window.parcelLayer.hasLayer(existing)) {
+                            try { window.removeParcelLayerById(idStr); } catch (_) { }
+                        }
+                    }
+                    window.parcelLayer.addLayer(layer);
+
+                    // Register in id->layer map for O(1) lookup (do this AFTER any removals to keep mapping consistent)
+                    if (idStr && typeof window.setParcelLayerById === 'function') {
+                        try { window.setParcelLayerById(idStr, layer); } catch (_) { }
+                    }
+
+                    // Index for spatial lookups (only for layers we actually add)
+                    if (typeof indexParcelLayer === 'function') {
+                        indexParcelLayer(layer);
+                    }
+
+                });
+            }
+        }
+    },
+
 
     // Helper methods for dependency tracking
     // Record only the immediate creator proposal for a parcel.

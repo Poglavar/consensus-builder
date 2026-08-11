@@ -145,9 +145,30 @@
         const hits = [];
         const seen = new Set();
 
+        // Bounding box first. This is asked against EVERY loaded building — the whole pool, which
+        // grows as more of the city loads — while a proposal's footprint touches a handful of them.
+        // Nearly every pair is disjoint, and establishing that with a full polygon intersection is
+        // the most expensive way to learn it. Four number comparisons decide it instead, and can
+        // hide nothing: polygons whose boxes do not overlap cannot overlap.
+        //
+        // Measured on a 300-proposal replay, this scan cost 23 ms early and 241 ms late for the
+        // same-sized proposal — the difference being how much of the city had loaded by then.
+        let region = null;
+        if (typeof api.bbox === 'function') {
+            try { region = api.bbox(corridorFeature); } catch (_) { region = null; }
+        }
+        const outsideRegion = (feature) => {
+            if (!region) return false;
+            let box = null;
+            try { box = api.bbox(feature); } catch (_) { return false; }
+            if (!box) return false;
+            return region[0] > box[2] || box[0] > region[2] || region[1] > box[3] || box[1] > region[3];
+        };
+
         buildings.forEach((candidate, index) => {
             const feature = normalizeBuildingFeature(candidate);
             if (!feature || !feature.geometry) return;
+            if (outsideRegion(feature)) return;
             let intersection = null;
             try { intersection = api.intersect(corridorFeature, feature); } catch (_) { return; }
             if (!intersection) return;

@@ -151,6 +151,58 @@ describe('the silence before the first proposal', () => {
     });
 });
 
+// The bar sits in a flex column with flex-shrink:0, so a message that wrapped to a second line
+// pushed the whole sidebar up and the next short one dropped it back. On a busy reload that is
+// several times a second.
+describe('the bar holds still', () => {
+    it('reserves two rows and clamps to two rows', () => {
+        const rule = css.slice(css.indexOf('.status-bar > #status {'));
+        expect(rule.slice(0, 300)).toContain('min-height: 2.7em;');
+        // Reserving alone is not enough: a three-line message would just move the flip up a row.
+        expect(rule.slice(0, 300)).toContain('-webkit-line-clamp: 2;');
+        expect(rule.slice(0, 300)).toContain('overflow: hidden;');
+    });
+});
+
+// A log line about a proposal used to be a dead end: it named the thing but could not take you to
+// it, and finding it meant scrolling a list of several hundred.
+describe('a line about a proposal goes to that proposal', () => {
+    it('remembers WHICH proposal as a field, not as text to be re-parsed', () => {
+        // Titles are not unique, are translated, and are written by users — matching them back out
+        // of "Applied block Block 1108-0116" is not a thing that can be made to work.
+        expect(ui).toContain('const proposalId = options && options.proposalId ? String(options.proposalId) : null;');
+        expect(ui).toContain('statusLog.push({ message, timestamp, proposalId });');
+        expect(manager).toContain('_announceApply(`Applied ${kind} ${label}`, proposalId)');
+    });
+
+    it('renders as a real button, so it is reachable by keyboard', () => {
+        expect(ui).toContain("document.createElement(entry.proposalId ? 'button' : 'span')");
+        expect(ui).toContain("message.classList.add('is-linked')");
+        expect(css).toContain('button.status-log-message {');
+    });
+
+    it('still puts the message in as TEXT even now that it is a control', () => {
+        expect(ui).toContain('message.textContent = entry.message;');
+        expect(ui).not.toContain('message.innerHTML = entry.message');
+    });
+
+    it('does not toggle the log on its way through', () => {
+        // The bar's own click handler collapses the panel; a link click is not that click.
+        const row = ui.slice(ui.indexOf('function statusLogRow('), ui.indexOf('function goToProposalFromStatusLog'));
+        expect(row).toContain('event.stopPropagation();');
+    });
+
+    it('uses the same selector every other surface uses, not a URL', () => {
+        // There is no id-based deep link to reuse: a share URL carries the whole proposal payload.
+        expect(ui).toContain('window.selectAndHighlightProposal(String(proposalId), null, true, true);');
+        expect(ui).toContain("if (typeof window.selectAndHighlightProposal !== 'function') return;");
+    });
+
+    it.each(locales)('%s can name the action', locale => {
+        expect(dictOf(locale).hud.showThisProposal, `${locale} missing showThisProposal`).toBeTruthy();
+    });
+});
+
 // A status LINE is superseded within a second on a busy reload, so by the time you look at the bar
 // there is nothing left saying the app is still working. The spinner is the part that persists.
 describe('the spinner', () => {
@@ -199,7 +251,12 @@ describe('the replay asks for its ground once', () => {
     function loadHelper() {
         const start = manager.indexOf('function _multiPolygonOfFootprints(footprints) {');
         expect(start, '_multiPolygonOfFootprints not found').toBeGreaterThan(-1);
-        const end = manager.indexOf('function _announceApply(message) {', start);
+        const end = manager.indexOf('function _announceApply(', start);
+        // Matched on the NAME, not the full signature. Pinning `(message)` meant that adding a
+        // second parameter turned this indexOf into -1, the slice ran to the end of the file, and
+        // the eval below failed on an unrelated symbol several hundred lines later — a change in
+        // one function breaking a test about another, with a message naming neither.
+        expect(end, '_announceApply not found — the slice would run to EOF').toBeGreaterThan(start);
         // eslint-disable-next-line no-new-func
         return new Function(`${manager.slice(start, end)} return _multiPolygonOfFootprints;`)();
     }

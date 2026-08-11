@@ -38,9 +38,34 @@
             ))
             : null;
 
-        // Share-plan panel open: the map is pan/zoom only. Every fabric click is inert — proposals
-        // included (highlighting happens from the panel's rows, never from the map).
+        // Which applied proposal is standing on the clicked parcel, if any. Shared by the two modes
+        // that answer a map click with a proposal rather than with parcel details.
+        const proposalOnThisParcel = () => {
+            if (appliedRoadProposal) return appliedRoadProposal;
+            try {
+                const parcelProposals = global.proposalStorage?.getProposalsForParcel?.(parcelId) || [];
+                const found = parcelProposals.find(p => !p.roadProposal
+                    && typeof global.isProposalApplied === 'function' && global.isProposalApplied(p));
+                if (found) return found;
+                if (typeof global.structureProposalsCoveringFeature === 'function') {
+                    const covering = global.structureProposalsCoveringFeature(feature);
+                    if (covering.length && typeof global.getProposalByIdOrHash === 'function') {
+                        return global.getProposalByIdOrHash(covering[0]) || null;
+                    }
+                }
+            } catch (_) { }
+            return null;
+        };
+
+        // Share-plan panel open: the map is pan/zoom only, and a click on ordinary fabric stays
+        // inert. A click on an applied PROPOSAL is answered by the panel, which finds that
+        // proposal's row — the map and the list are two views of one plan, so pointing at a thing
+        // in either should say where it is in the other.
         if (global.sharePlanMode) {
+            if (typeof global.__sharePlanPickProposal === 'function') {
+                const picked = proposalOnThisParcel();
+                if (picked) global.__sharePlanPickProposal(picked, parcelId);
+            }
             if (e) L.DomEvent.stopPropagation(e);
             return;
         }
@@ -50,20 +75,7 @@
         // opens its details and closes the list — see selectAndHighlightProposal); a click on any
         // other parcel is a no-op. Pan/zoom stay live because only the click action is suppressed.
         if (global.proposalListBrowseMode) {
-            let browseProposal = appliedRoadProposal;
-            if (!browseProposal) {
-                try {
-                    const parcelProposals = global.proposalStorage?.getProposalsForParcel?.(parcelId) || [];
-                    browseProposal = parcelProposals.find(p => !p.roadProposal
-                        && typeof global.isProposalApplied === 'function' && global.isProposalApplied(p)) || null;
-                    if (!browseProposal && typeof global.structureProposalsCoveringFeature === 'function') {
-                        const covering = global.structureProposalsCoveringFeature(feature);
-                        if (covering.length && typeof global.getProposalByIdOrHash === 'function') {
-                            browseProposal = global.getProposalByIdOrHash(covering[0]) || null;
-                        }
-                    }
-                } catch (_) { }
-            }
+            const browseProposal = proposalOnThisParcel();
             if (browseProposal && typeof global.selectAndHighlightProposal === 'function') {
                 const proposalKey = (typeof global.getProposalKey === 'function' && global.getProposalKey(browseProposal))
                     || browseProposal.proposalId

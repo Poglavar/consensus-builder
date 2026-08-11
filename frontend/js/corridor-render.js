@@ -657,10 +657,19 @@ function renderAppliedCorridorHitTargets(strips, proposal, group, definition, se
         interactive: true,
         bubblingMouseEvents: false,
         pane: CORRIDOR_HIT_PANE,
-        // Hit targets are invisible (fillOpacity 0.001) and exist only to be clicked, so there is
-        // nothing a DOM element buys them — and at 2,151 paths they were the largest thing left in
-        // the SVG once the strips moved. Canvas hit-testing answers the same clicks.
-        renderer: corridorCanvasFor(CORRIDOR_HIT_PANE),
+        // SVG, deliberately — do NOT move these to canvas, however many paths they cost.
+        //
+        // These were canvas for exactly one afternoon, on the reasoning that an invisible layer
+        // gains nothing from a DOM element. It gains the only thing that matters here: SHAPE. An
+        // SVG path receives pointer events where the path IS, and a click anywhere else falls
+        // through to the parcels below. A <canvas> is one element covering the whole viewport, and
+        // this pane is pointer-events:auto at z-index 656 — far above the parcels at 400. So the
+        // canvas received every click on the map, Leaflet hit-tested only the layers in that one
+        // renderer, and every miss was swallowed instead of reaching the parcel underneath.
+        //
+        // The symptom was precise and awful: clicking worked all through a reload and stopped the
+        // instant it finished, because a Leaflet renderer only creates its <canvas> when its first
+        // layer is added — which is the corridor-strips phase at the very end of the rebuild.
         className: 'corridor-applied-hit-target'
     };
     // The full corridor footprint, outlined on hover so an applied road reacts to the cursor.
@@ -702,7 +711,8 @@ function renderAppliedCorridorHitTargets(strips, proposal, group, definition, se
             const fp = L.geoJSON({ type: 'Feature', properties: {}, geometry }, {
                 style: hitOptions,
                 pane: CORRIDOR_HIT_PANE,
-                renderer: corridorCanvasFor(CORRIDOR_HIT_PANE),
+                // SVG for the same reason as the options above: a canvas here eats every click
+                // that misses a hit target, and most clicks on a map miss.
                 interactive: true,
                 bubblingMouseEvents: false
             }).on('click', event => { rememberSegment(null); forwardAppliedCorridorClick(proposal, event); });

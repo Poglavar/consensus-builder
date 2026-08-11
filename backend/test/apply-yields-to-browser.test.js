@@ -75,3 +75,51 @@ describe('the proposed-buildings layer is drawn once per run, not once per propo
         expect(batch).toContain('await global.withProposedBuildingsRefreshHeld(createEach);');
     });
 });
+
+// Yielding BETWEEN proposals does nothing for a block inside one. A replay hands
+// _addFeaturesToMap 3,672 derived pieces in a SINGLE call — every Leaflet layer built, added and
+// indexed as one task — which is long enough to freeze a pan on its own.
+describe('the bulk insert is chunked, not one task', () => {
+    const manager = readFileSync(fileURLToPath(new URL('../../frontend/js/proposal-manager.js', import.meta.url)), 'utf8');
+    const insert = manager.slice(
+        manager.indexOf('    async _addFeaturesToMap(features'),
+        manager.indexOf('    _addBulkSlice(featureCollection')
+    );
+
+    it('is async, so it can hand a frame back mid-insert', () => {
+        expect(manager).toContain('async _addFeaturesToMap(features, useNormalStyle = false, proposalData = null) {');
+        expect(insert.length, 'slice markers did not match').toBeGreaterThan(100);
+    });
+
+    it('slices the candidates and breathes between slices', () => {
+        expect(insert).toContain('const BULK_SLICE = 100;');
+        expect(insert).toContain('bulkCandidates.slice(cursor, cursor + BULK_SLICE)');
+        expect(insert).toContain('await window.yieldToBrowser();');
+    });
+
+    it('breathes on the CLOCK, not on a slice count', () => {
+        // A slice of a hundred simple pieces is nothing; a hundred complex ones is a frame. Only
+        // the clock knows which this was.
+        expect(insert).toContain('if (sliceStartedAt() - heldSince >= 12) {');
+    });
+
+    it('every caller awaits it — an un-awaited insert would race the apply that follows', () => {
+        const callers = [
+            '../../frontend/js/proposal-manager.js',
+            '../../frontend/js/proposals/apply/structures.js',
+            '../../frontend/js/proposals/apply/parcels.js',
+            '../../frontend/js/proposals/apply/buildings.js'
+        ];
+        callers.forEach(rel => {
+            const src = readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8');
+            const calls = src.match(/(?<!await )this\._addFeaturesToMap\(/g) || [];
+            expect(calls, `${rel} has an un-awaited _addFeaturesToMap`).toHaveLength(0);
+        });
+    });
+
+    it('still reports the whole insert, not half of it', () => {
+        // The count is taken in the method that read `beforeCount`; the per-feature half cannot
+        // see it, and a count covering half the insert is worse than none.
+        expect(insert).toContain('added ${afterCount - beforeCount}');
+    });
+});
