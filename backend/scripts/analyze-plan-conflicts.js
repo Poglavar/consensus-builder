@@ -13,7 +13,9 @@
 //   overlaps  — which OTHER members it materially overlaps (the input to the occupation gate:
 //               a proposal standing on another proposal's ground is refused, not silently stacked)
 //
-// Read-only. Repairs live in repair-upu-borovje.js, so there is one writer, not two.
+// Read-only. Borovje repairs live in
+// rekonstrukcije/upu-borovje/repair-imported-proposals.mjs, so there is one writer,
+// not two.
 //
 //   node scripts/analyze-plan-conflicts.js --ids 633-651,699
 

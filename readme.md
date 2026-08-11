@@ -7,6 +7,8 @@ The design goal is to use crypto tools and learnings to create a tool that allow
 
 The application is a very light web application with optional and minimal use of its own backend server.
 
+Reconstructed real plans and built projects live in [`rekonstrukcije/`](rekonstrukcije/). That directory preserves their source geometry and provenance while expressing the reconstructed urban form through the same proposal model used by the app.
+
 Terminology notes:
 
 - A key concept is a Proposal

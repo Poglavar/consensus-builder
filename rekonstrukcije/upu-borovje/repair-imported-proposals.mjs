@@ -48,12 +48,18 @@
 // Idempotent: re-running finds the anchors already correct and the corridor already clipped, and
 // writes nothing. Dry-run by default.
 //
-//   node scripts/repair-upu-borovje.js
-//   node scripts/repair-upu-borovje.js --apply
+//   node rekonstrukcije/upu-borovje/repair-imported-proposals.mjs
+//   node rekonstrukcije/upu-borovje/repair-imported-proposals.mjs --apply
 
-import pkg from 'pg';
-import 'dotenv/config';
+import path from 'node:path';
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
 
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(scriptDir, '..', '..');
+const require = createRequire(path.join(repoRoot, 'backend', 'package.json'));
+const pkg = require('pg');
+require('dotenv').config({ path: path.join(repoRoot, 'backend', '.env') });
 const { Pool } = pkg;
 
 const READJUSTMENT_ID = 633;          // the plan's ground: 38 plots, a perfect partition
