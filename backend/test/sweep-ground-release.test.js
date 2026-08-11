@@ -14,6 +14,7 @@ const { setProposalApplied } = require('../../frontend/js/proposals/status.js');
 const arrangement = require('../../frontend/js/proposals/parcel-arrangement.js');
 const planOrder = require('../../frontend/js/proposals/plan-order.js');
 const applyRoute = require('../../frontend/js/proposals/apply/route.js');
+const groundSweep = require('../../frontend/js/proposals/ground-sweep.js');
 const turf = require('@turf/turf');
 
 const saved = new Map();
@@ -43,14 +44,14 @@ const SAFE_BLOCK = turf.polygon([[[0.0001, 0.0002], [0.0003, 0.0002], [0.0003, 0
 
 const layerFor = feature => ({ feature, toGeoJSON: () => JSON.parse(JSON.stringify(feature)) });
 
-function blockRecord(proposalId, footprint) {
+function blockRecord(proposalId, ...footprints) {
     return {
         proposalId,
         title: `Block ${proposalId}`,
         goal: 'buildings',
         applied: true,
         buildingProposal: { parentParcelIds: [PARCEL_ID] },
-        geometry: { buildings: [turf.feature(footprint.geometry)] }
+        geometry: { buildings: footprints.map(footprint => turf.feature(footprint.geometry)) }
     };
 }
 
@@ -65,6 +66,9 @@ function buildWorld(records) {
         __parcelArrangement: arrangement,
         __planOrder: planOrder,
         __cadastreAncestry: { loadedCadastreParcels: () => [] },
+        // The sweep judges a design part by part (a block is one building per parcel, and the union
+        // of them can never fit inside one piece) — the page loads this module for it.
+        __groundSweep: groundSweep,
         turf,
         removeParcelLayerById: id => byId.delete(String(id)),
         parks: [],
@@ -72,11 +76,11 @@ function buildWorld(records) {
         lakes: [],
         transitStations: [],
         // What the map is actually drawing.
-        proposedBuildings: records.map(record => ({
+        proposedBuildings: records.flatMap(record => record.geometry.buildings.map(building => ({
             type: 'Feature',
-            geometry: record.geometry.buildings[0].geometry,
+            geometry: building.geometry,
             properties: { proposalId: String(record.proposalId) }
-        }))
+        })))
     };
 
     installGlobal('window', win);
@@ -124,6 +128,34 @@ describe('sweeping a record whose ground stopped being whole', () => {
         expect(sweep.unapplied).toEqual([]);
         expect(safe.applied).toBe(true);
         expect(win.proposedBuildings.some(f => f.properties.proposalId === 'block-safe')).toBe(true);
+    });
+
+    // A block is one building per parcel. Judging the UNION of them asked whether the whole block
+    // fits inside a single piece of a single parcel — which it cannot once it spans two, so moving a
+    // road's nodes removed four blocks, then twelve, with the cut nowhere near a building.
+    it('keeps a block whose buildings each sit inside a piece, though the block spans both', () => {
+        const inWest = turf.polygon([[[0.0001, 0.0002], [0.0003, 0.0002], [0.0003, 0.0008], [0.0001, 0.0008], [0.0001, 0.0002]]]);
+        const inEast = turf.polygon([[[0.0007, 0.0002], [0.0009, 0.0002], [0.0009, 0.0008], [0.0007, 0.0008], [0.0007, 0.0002]]]);
+        const spanning = blockRecord('block-two-parcels', inWest, inEast);
+        const { win, manager } = buildWorld([spanning]);
+
+        const sweep = manager._sweepGroundNoLongerWhole([PARCEL_ID]);
+
+        expect(sweep.unapplied).toEqual([]);
+        expect(spanning.applied).toBe(true);
+        expect(win.proposedBuildings).toHaveLength(2);
+    });
+
+    it('still sweeps a spanning block when the cut goes through one of its buildings', () => {
+        const inWest = turf.polygon([[[0.0001, 0.0002], [0.0003, 0.0002], [0.0003, 0.0008], [0.0001, 0.0008], [0.0001, 0.0002]]]);
+        const severed = blockRecord('block-one-cut', inWest, BLOCK);
+        const { win, manager } = buildWorld([severed]);
+
+        const sweep = manager._sweepGroundNoLongerWhole([PARCEL_ID]);
+
+        expect(sweep.unapplied.map(entry => entry.proposalId)).toEqual(['block-one-cut']);
+        expect(severed.applied).toBe(false);
+        expect(win.proposedBuildings).toHaveLength(0);
     });
 
     it('sweeps only the divided block when both stand on the same parcel', () => {

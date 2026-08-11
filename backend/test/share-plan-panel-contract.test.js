@@ -53,8 +53,9 @@ describe('share plan panel contract', () => {
         expect(panelFn).toContain('if (!selected.has(key)) return;');
         const checkboxChange = sourceSection(panelFn, 'const onCheckboxChange =', 'const attachRow =');
         expect(checkboxChange).toContain('syncPlanOverlay(key)');
-        // Every proposal starts checked and painted.
-        expect(panelFn).toContain('proposalsByHash.forEach((_, key) => syncPlanOverlay(key));');
+        // Every proposal starts checked and painted — now in frame-sized slices rather than one
+        // synchronous sweep, so the panel is on screen while the map fills in behind it.
+        expect(panelFn).toContain("key => syncPlanOverlay(key),\n                    'drawingProposals'");
     });
 
     it('rows highlight on hover/click and never open details', () => {

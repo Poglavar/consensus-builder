@@ -615,10 +615,27 @@ function showUploadProposalModal(proposal) {
     sharePlanButton.style.marginBottom = '0.75rem';
     sharePlanButton.textContent = tShare('sharePlanButton', 'Share the whole plan instead (all applied proposals)…');
     sharePlanButton.addEventListener('click', () => {
-        try {
-            document.querySelectorAll('.share-modal-overlay .share-modal-close').forEach(btn => btn.click());
-        } catch (_) { }
-        if (typeof shareAppliedProposals === 'function') shareAppliedProposals();
+        // Say it on the control that was pressed: closing the modal first leaves nothing to spin,
+        // and the sidebar's own Share button is behind a sidebar this flow folds away.
+        sharePlanButton.disabled = true;
+        sharePlanButton.textContent = '';
+        const spinner = document.createElement('i');
+        spinner.className = 'fas fa-spinner fa-spin';
+        spinner.style.marginRight = '6px';
+        sharePlanButton.appendChild(spinner);
+        sharePlanButton.appendChild(document.createTextNode(tShare('preparingPlan', 'Preparing plan...')));
+        const go = () => {
+            try {
+                document.querySelectorAll('.share-modal-overlay .share-modal-close').forEach(btn => btn.click());
+            } catch (_) { }
+            if (typeof shareAppliedProposals === 'function') shareAppliedProposals();
+        };
+        // One frame to apply the spinner, one to be sure it painted, before the modal goes.
+        if (typeof requestAnimationFrame === 'function') {
+            requestAnimationFrame(() => requestAnimationFrame(go));
+        } else {
+            go();
+        }
     });
     fragment.appendChild(sharePlanButton);
 

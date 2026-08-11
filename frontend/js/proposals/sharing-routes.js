@@ -108,8 +108,49 @@ function focusMapOnSharedProposal(proposal, payload) {
     return false;
 }
 
+/** Spinner on the sidebar's "Share entire plan" button. The label/subtext give way to it so the
+    button keeps its size, and the busy flag survives updateShowProposalsButton re-enabling it. */
+function setSharePlanButtonBusy(busy) {
+    const button = document.getElementById('shareAppliedProposalsButton');
+    if (!button) return;
+    const label = button.querySelector('.share-plan-label');
+    const subtext = button.querySelector('.share-plan-subtext');
+    const spinner = button.querySelector('.share-plan-spinner');
+    if (busy) {
+        button.dataset.sharePlanBusy = '1';
+        button.disabled = true;
+        if (label) label.style.display = 'none';
+        if (subtext) subtext.style.display = 'none';
+        if (spinner) spinner.style.display = 'inline-flex';
+    } else {
+        delete button.dataset.sharePlanBusy;
+        button.disabled = false;
+        if (label) label.style.display = '';
+        if (subtext) subtext.style.display = '';
+        if (spinner) spinner.style.display = 'none';
+    }
+}
+
 function shareAppliedProposals() {
-    showSharePlanPanel();
+    if (typeof setSharePlanButtonBusy === 'function') setSharePlanButtonBusy(true);
+    // Opening the panel is a long SYNCHRONOUS block: a row per applied proposal, plus one map
+    // overlay each (turf intersections + a Leaflet layer), plus fitting the map. Starting it in
+    // this same task would freeze the page before the spinner ever painted, so yield two frames —
+    // one to apply the style, one to be sure it reached the screen.
+    const open = () => {
+        try {
+            showSharePlanPanel();
+        } finally {
+            // The panel folds the sidebar away, so this is mostly for the next time it is opened —
+            // and for the failure path, where the button must not stay stuck spinning.
+            if (typeof setSharePlanButtonBusy === 'function') setSharePlanButtonBusy(false);
+        }
+    };
+    if (typeof requestAnimationFrame === 'function') {
+        requestAnimationFrame(() => requestAnimationFrame(open));
+    } else {
+        open();
+    }
 }
 
 function shareSingleProposal(proposalIdOrProposal) {

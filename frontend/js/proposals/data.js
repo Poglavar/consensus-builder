@@ -818,6 +818,17 @@ const proposalStorage = {
         return true;
     },
 
+    // Epoch bucket ("Kumulativno do godine" timeline) — shared plan metadata, ne lokalna vidljivost.
+    setProposalEpochYear(proposalId, epochYear) {
+        const proposal = this.getProposal(proposalId);
+        if (!proposal) return false;
+        proposal.epochYear = (typeof epochYear === 'number' && Number.isInteger(epochYear)) ? epochYear : null;
+        proposal.updatedAt = new Date().toISOString();
+        this._indexProposal(proposal);
+        this.save();
+        return true;
+    },
+
     setProposalApplied(proposalId, applied) {
         const proposal = this.getProposal(proposalId);
         if (!proposal) return false;
@@ -2125,7 +2136,12 @@ const serverProposalCache = {
     lastCity: null,
     lastFetchedAt: 0,
     // Signature of the search/sort the cached rows answer; a change re-queries the server.
-    lastQuery: null
+    lastQuery: null,
+    // The sidebar count is refreshed on its own, from the cheap /proposals/count. Kept apart from
+    // lastFetchedAt on purpose: that one means "have we asked for the SUMMARIES yet", and stamping
+    // it here would convince the list it already had rows it has never fetched.
+    countRefreshedAt: 0,
+    countLoading: false
 };
 
 const PROPOSAL_SORT_OPTIONS = [

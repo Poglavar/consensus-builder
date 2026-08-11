@@ -502,10 +502,10 @@
         "proposals": {
             "title": "Propuestas",
             "listButton": "Lista de propuestas ({{count}})",
-            "unsavedCount": "{{count}} sin guardar (aún no subidas)",
             "mintedButton": "Propuestas acuñadas",
             "shareButton": "Compartir plan completo (todas las propuestas)",
             "shareButtonEmpty": "No hay planes aplicados. Aplica alguno primero",
+            "shareButtonPreparing": "Preparando el plan...",
             "clearButton": "Borrar propuestas del almacenamiento local",
             "planStats": {
                 "buttonLabel": "Estadísticas del plan",
@@ -1605,7 +1605,19 @@
                     "acceptedNotFunded": "Aceptada (Sin fondos)"
                 },
                 "syncBlockchainLabel": "Sincronizar",
-                "downloadConfirm": "La propuesta no está en el almacenamiento local. ¿Descargar?"
+                "downloadConfirm": "La propuesta no está en el almacenamiento local. ¿Descargar?",
+                "epoch": {
+                    "rowLabel": "Época del plan",
+                    "none": "Sin época",
+                    "custom": "Otro año…",
+                    "customPrompt": "Año de la línea de tiempo (2026–2966):",
+                    "saveError": "No se pudo guardar la época.",
+                    "timelineLabel": "Línea de tiempo",
+                    "all": "Todas",
+                    "cumulative": "Acumulado hasta {year}.",
+                    "toApply": "por aplicar: {n}",
+                    "toUnapply": "por quitar: {n}"
+                }
             },
             "proposalChoice": {
                 "title": "Elegir propuesta",
@@ -1812,7 +1824,11 @@
                     "copyResult": "Copiar",
                     "copiedResult": "Resultado copiado."
                 },
-                "rebased": "{{count}} de ellas ocupan aquí un terreno distinto al de su publicación: {{titles}} (detalles en la consola)."
+                "rebased": "{{count}} de ellas ocupan aquí un terreno distinto al de su publicación: {{titles}} (detalles en la consola).",
+                "checkingProposals": "Verificando {{done}}/{{total}} propuestas en el servidor...",
+                "listingProposals": "Listando {{done}}/{{total}} propuestas...",
+                "drawingProposals": "Dibujando {{done}}/{{total}} propuestas en el mapa...",
+                "preparingPlan": "Preparando el plan..."
             },
             "sharedInspector": {
                 "author": "Autor:",

@@ -536,26 +536,6 @@
     background-color: rgba(245, 158, 11, 0.10);
 }
 
-/* Amber count pill appended to the sidebar "Proposals List" button: how many local-only proposals
-   still carry unsaved work. Mirrors the list's "Unsaved" badge colour. */
-.proposal-unsaved-count {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 18px;
-    height: 18px;
-    margin-left: 6px;
-    padding: 0 5px;
-    border-radius: 9px;
-    background: #fff7d6;
-    color: #7a6000;
-    border: 1px solid #ffe08a;
-    font-size: 11px;
-    font-weight: 700;
-    line-height: 1;
-    vertical-align: middle;
-}
-
 .proposal-list-item:hover {
     background-color: #f8f9fa;
     border-color: #007bff;
@@ -1981,6 +1961,21 @@ textarea.proposal-description-input {
     min-height: 0; /* lets the row list shrink and scroll instead of overflowing the panel */
 }
 
+/* Counted progress while the panel asks the server, one proposal at a time, which of them it
+   already has. Removed once the tally is done — a spinner that never stops reads as a hang. */
+.share-plan-progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border: 1px solid #d8ddf0;
+    border-radius: 8px;
+    background: #f4f6ff;
+    color: #4a5578;
+    font-size: 12px;
+    flex: 0 0 auto;
+}
+
 .share-plan-list {
     flex: 1;
     min-height: 0;
@@ -2003,6 +1998,17 @@ textarea.proposal-description-input {
 
 .share-plan-row:hover {
     background: #eef2fb;
+}
+
+/* The row's Upload button is un-hidden by setting display:inline-flex from JS, which turns the
+   <button> into a flex CONTAINER — and a flex container does not do the centring a button does for
+   itself. Its label lands at flex-start and stretches: top-left of a box that .btn gives a 40px
+   min-height. Say the centring here, so it holds whatever display value the state juggling picks.
+   (The modal's copy of this control already does it via .share-modal .share-plan-action.) */
+.share-plan-row .btn {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 /* Swatch matching the colour the proposal is painted with on the map. */

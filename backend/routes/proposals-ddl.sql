@@ -62,6 +62,12 @@ CREATE TABLE IF NOT EXISTS proposal (
     onchain_data JSONB, -- Blockchain-related data (NFT info, contract addresses, etc.)
     screenshot_url VARCHAR(2000), -- Static map screenshot URL used as the proposal thumbnail
     
+    -- Epoch bucket: which year of the plan's timeline this proposal belongs to
+    -- (e.g. 2035/2045/2055). Presentation metadata for the "Kumulativno do
+    -- godine" timeline — deliberately NOT an ordering or dependency mechanism
+    -- (apply order stays created_at via plan-order.js). NULL = unbucketed.
+    epoch_year INTEGER CHECK (epoch_year IS NULL OR (epoch_year BETWEEN 2026 AND 2966)),
+
     -- Full proposal data as JSONB (for complete reconstruction)
     -- This stores the entire proposal object as it exists in the frontend
     proposal_data JSONB NOT NULL,
@@ -93,6 +99,8 @@ COMMENT ON COLUMN proposal.screenshot_url IS 'Static map screenshot URL used as 
 
 -- Migration for existing installs (table name is `proposal` on the live server):
 -- ALTER TABLE proposal ADD COLUMN IF NOT EXISTS screenshot_url VARCHAR(2000);
+-- ALTER TABLE proposal ADD COLUMN IF NOT EXISTS epoch_year INTEGER
+--     CHECK (epoch_year IS NULL OR (epoch_year BETWEEN 2026 AND 2966));
 --
 -- Lifecycle cleanup — run backend/scripts/remove-server-applied.js in dry-run mode first, then with
 -- --apply. Add --drop-applied only after every deployed API version has stopped reading the column.

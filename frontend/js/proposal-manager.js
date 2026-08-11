@@ -1495,9 +1495,10 @@ const ProposalManager = {
         const browserRoot = (typeof window !== 'undefined') ? window : globalThis;
         const planOrderApi = browserRoot.__planOrder;
         const t = browserRoot.turf;
+        const sweepApi = browserRoot.__groundSweep;
         const touched = new Set((parcelIds || []).map(String));
         const unapplied = [];
-        if (!planOrderApi || !t || !touched.size) return { unapplied };
+        if (!planOrderApi || !t || !sweepApi || !touched.size) return { unapplied };
 
         // The pieces those parcels are now made of.
         const byId = (browserRoot.parcelLayerById instanceof Map) ? browserRoot.parcelLayerById : new Map();
@@ -1523,27 +1524,24 @@ const ProposalManager = {
             try { footprint = planOrderApi.footprintOf(record); } catch (_) { footprint = null; }
             if (!footprint || !footprint.geometry) return;
 
-            // Does it stand on any of the ground that was just divided?
-            let standsHere = false;
-            for (const piece of pieces) {
-                try {
-                    const hit = t.intersect(footprint, piece);
-                    if (hit && t.area(hit) > 0.25) { standsHere = true; break; }
-                } catch (_) { }
-            }
-            if (!standsHere) return;
-
-            // A building whose footprint still fits inside ONE piece is undisturbed.
-            if (goalKey === 'building' || (applyRoute && applyRoute.isBuildingGoal && applyRoute.isBuildingGoal(goalKey))) {
-                const footprintM2 = t.area(footprint);
-                const whole = pieces.some(piece => {
-                    try {
-                        const hit = t.intersect(footprint, piece);
-                        return !!hit && (t.area(hit) / footprintM2) > 0.999;
-                    } catch (_) { return false; }
-                });
-                if (whole) return;
-            }
+            // Ask per BUILDING, not of the union. A block is one building per parcel, so the union
+            // of them cannot fit inside a single piece of a single parcel once the block spans more
+            // than one — which condemned whole blocks whenever a road divided any parcel they built
+            // on, with the cut nowhere near a building. A design falls only when the cut runs
+            // through one of its own parts.
+            const isBuildingDesign = goalKey === 'building'
+                || !!(applyRoute && applyRoute.isBuildingGoal && applyRoute.isBuildingGoal(goalKey));
+            const parts = sweepApi.designParts(record, isBuildingDesign, footprint);
+            const verdict = sweepApi.inspectDesignAgainstPieces(parts, pieces, {
+                intersectionArea: (a, b) => {
+                    try { const hit = t.intersect(a, b); return hit ? (t.area(hit) || 0) : 0; } catch (_) { return 0; }
+                },
+                area: shape => { try { return t.area(shape) || 0; } catch (_) { return 0; } }
+            });
+            if (!verdict.standsHere) return;
+            // A park, square or lake takes whole parcels by definition: divided ground is fatal to
+            // it whatever the geometry says. A building design survives an untouched cut.
+            if (isBuildingDesign && !verdict.severed) return;
 
             try { setProposalApplied(record, false, { stamp: false }); } catch (_) { record.applied = false; }
             // Flipping the flag is not removal. A record's buildings, parks, squares and lakes live
@@ -1559,7 +1557,13 @@ const ProposalManager = {
 
         if (unapplied.length) {
             try {
-                const names = unapplied.map(entry => entry.title).join('; ');
+                // Blocks are named after a parcel, so several distinct records share a title and the
+                // list read as "Block X; Block X; Block X". Count the repeats instead of printing them.
+                const byTitle = new Map();
+                unapplied.forEach(entry => byTitle.set(entry.title, (byTitle.get(entry.title) || 0) + 1));
+                const names = [...byTitle.entries()]
+                    .map(([title, count]) => (count > 1 ? `${title} ×${count}` : title))
+                    .join('; ');
                 if (typeof showEphemeralMessage === 'function') {
                     showEphemeralMessage(`${unapplied.length} proposal(s) removed — the road divided ground they needed whole: ${names}`, 10000, 'warning');
                 }

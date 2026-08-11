@@ -305,10 +305,10 @@
         "proposals": {
             "title": "Predlozi",
             "listButton": "Lista predloga ({{count}})",
-            "unsavedCount": "{{count}} nesačuvano (još nije otpremljeno)",
             "mintedButton": "Kovani predlozi",
             "shareButton": "Podeli ceo plan (svi predlozi)",
             "shareButtonEmpty": "Nema primenjenih planova. Prvo primeni neki",
+            "shareButtonPreparing": "Priprema plana...",
             "clearButton": "Obriši predloge iz lokalne memorije",
             "planStats": {
                 "buttonLabel": "Statistika plana",
@@ -1559,6 +1559,18 @@
                     "minted": "Iskovan",
                     "inMemory": "U memoriji",
                     "acceptedNotFunded": "Prihvaćen (Bez sredstava)"
+                },
+                "epoch": {
+                    "rowLabel": "Epoha plana",
+                    "none": "Bez epohe",
+                    "custom": "Druga godina…",
+                    "customPrompt": "Godina vremenske linije (2026–2966):",
+                    "saveError": "Čuvanje epohe nije uspelo.",
+                    "timelineLabel": "Vremenska linija",
+                    "all": "Sve",
+                    "cumulative": "Kumulativno do {year}.",
+                    "toApply": "za primenu: {n}",
+                    "toUnapply": "za uklanjanje: {n}"
                 }
             },
             "proposalChoice": {
@@ -1767,7 +1779,11 @@
                 },
                 "processingImageForUpload": "Obrada slike za otpremanje...",
                 "walletConnectedStatus": "Novčanik povezan. Možete nastaviti sa kovanjem predloga",
-                "rebased": "{{count}} od njih ovde zauzima drugačije zemljište nego pri objavi: {{titles}} (detalji u konzoli)."
+                "rebased": "{{count}} od njih ovde zauzima drugačije zemljište nego pri objavi: {{titles}} (detalji u konzoli).",
+                "checkingProposals": "Provera {{done}}/{{total}} predloga na serveru...",
+                "listingProposals": "Popis predloga: {{done}}/{{total}}...",
+                "drawingProposals": "Crtanje {{done}}/{{total}} predloga na mapi...",
+                "preparingPlan": "Priprema plana..."
             },
             "sharedInspector": {
                 "author": "Autor:",

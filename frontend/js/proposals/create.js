@@ -657,6 +657,10 @@ async function createProposal() {
             depositPercent: depositPercent, // Percentage of offer deposited (10-200%)
             isConditional: isConditional,
             disbursementMode: isConditional ? 'conditional' : 'partial', // conditional = all must accept; partial = per-acceptance payouts
+            // Which decade of the plan this builds — set in the dialog, sticky between creates.
+            epochYear: (typeof window !== 'undefined' && window.__proposalEpoch)
+                ? window.__proposalEpoch.readCreateDialogEpoch()
+                : null,
             isVote: isVoteCreate, // non-binding vote proposal (no ownership/parcel change, no funds)
             voteExpiryDays: isVoteCreate ? voteExpiryDays : undefined, // voting period in days (≤365)
             // The city this proposal's parcels belong to. Stamped at creation, not at upload, so a

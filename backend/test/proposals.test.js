@@ -354,7 +354,7 @@ describe('POST /proposals', () => {
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[7]).toBe('Active');
-        expect(insertParams).toHaveLength(36);
+        expect(insertParams).toHaveLength(37); // main's 36 + epoch_year
         expect(pool.getCalls()[0].sql).not.toMatch(/\bapplied\b/);
         expect(JSON.parse(insertParams[25])).toEqual({ width: 6 });
         expect(JSON.parse(insertParams[33])).not.toHaveProperty('applied');

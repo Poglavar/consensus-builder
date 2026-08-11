@@ -380,6 +380,11 @@
                                     proposals)</span>
                                 <span class="share-plan-subtext" data-i18n-key="sidebar.proposals.shareButtonEmpty">No
                                     applied plans. Apply some first</span>
+                                <span class="share-plan-spinner" aria-live="polite"
+                                    style="display: none; gap: 6px; align-items: center;">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <span data-i18n-key="sidebar.proposals.shareButtonPreparing">Preparing plan...</span>
+                                </span>
                             </button>
                             <button class="btn btn-danger" onclick="clearLocalProposalData()"
                                 data-i18n-key="sidebar.proposals.clearButton">Clear Proposals From
@@ -1360,6 +1365,9 @@
     <script>
         window.writeVersionedLocalScripts([
             'js/proposals/status.js',
+            'js/proposals/epoch.js',
+            'js/proposals/counts.js',
+            'js/proposals/ground-sweep.js',
             'js/proposals/chain-status.js',
             'js/proposal-parcel-identity.js',
             'js/wallet-connection.js',
@@ -1495,6 +1503,7 @@
             'js/parcel-cut-debug.js',
             'js/proposals/block-enumeration.js',
             'js/block-batch.js',
+            'js/publish-gap-debug.js',
             'js/proposals/apply/route.js',
             'js/proposals/apply/finalize.js',
             'js/proposals/apply/transaction.js',
