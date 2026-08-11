@@ -1533,6 +1533,62 @@ function updateProposedBuildingsLayer() {
     }
 }
 
+// THE block outline: a setback ring around the block, simplified, clipped back inside it, then
+// inset to leave a courtyard. Both the urban-rule modal and the batch that puts a rule on every
+// empty block call this, so a generated block and a hand-made one are the same object rather than
+// two implementations that happen to agree today.
+//
+// Pure geometry in, geometry out: no sliders, no map, no modal state. The one thing a caller can
+// hook is `onNarrowEdge`, which the modal uses to draw its debug line for the edge that stopped the
+// inset — reporting, not deciding.
+//
+// Returns { outer, inner, widthAchieved, minSideLength } with `inner` null when the courtyard
+// collapsed; the caller decides what a solid block means (the modal falls back to one).
+function blockRingOutline(superparcel, clipTo, params = {}, hooks = {}) {
+    const setback = Number(params.setback) || 0;
+    const requestedWidth = Number(params.width) || 0;
+    const simplifyM = Number(params.simplifyM) || 0;
+    if (!superparcel || !superparcel.geometry) return null;
+
+    let outer = robustNegativeBuffer(superparcel, setback);
+    outer = toSingleLargestPolygon(outer) || outer;
+    if (!outer || !outer.geometry) return null;
+
+    // Reduce the OUTLINE's vertex count, then clip it inside the parcel:
+    //  - the negative buffer rounds every corner into up to GEOM_BUFFER_STEPS segments, and curved
+    //    parcel edges are densely digitised, so the raw outline can carry hundreds of vertices —
+    //    unusable for manual editing. turf.simplify (Douglas–Peucker) collapses those to a handful;
+    //    higher "Simplify (m)" = fewer vertices. (Applied here, AFTER the buffer, is why it now
+    //    actually reduces the visible outline — simplifying the parcel earlier was undone by the
+    //    buffer re-rounding the corners.)
+    //  - a simplification chord can bow slightly past the boundary, so clip to the parcel after.
+    outer = simplifyAndClipOutline(outer, simplifyM, clipTo || superparcel);
+    if (!outer || !outer.geometry) return null;
+
+    // Incrementally inset the inner ring; keep the last valid geometry even if a step fails.
+    let inner = null;
+    let widthAchieved = requestedWidth;
+    let minSideLength = Infinity;
+    let attempts = 0;
+    const MAX_ATTEMPTS = 10;
+    while (widthAchieved > 0 && attempts < MAX_ATTEMPTS) {
+        const inc = incrementalInsetPolygon(outer, widthAchieved, 0);
+        if (inc && inc.feature) {
+            inner = inc.feature;
+            if (inc.reason === 'ok' && Math.abs(inc.achievedInset - widthAchieved) < 1e-3) break;
+            if (isFinite(inc.minEdgeValue)) minSideLength = inc.minEdgeValue;
+            if (typeof hooks.onNarrowEdge === 'function') {
+                try { hooks.onNarrowEdge(inc); } catch (_) { }
+            }
+        }
+        if (inc && inc.reason === 'ok') break;
+        widthAchieved *= 0.9;
+        attempts += 1;
+    }
+
+    return { outer, inner, widthAchieved, minSideLength };
+}
+
 // Function to show the blockify modal
 function showBlockifyModal() {
     const block = getActiveBlockifyBlock();
@@ -2696,62 +2752,33 @@ function generateBuildingInModal() {
             }
         }
 
-        // Create the outer building polygon (setback from superparcel) with robust negative buffer
-        let outerBuilding = robustNegativeBuffer(superparcel, SETBACK);
-        outerBuilding = toSingleLargestPolygon(outerBuilding) || outerBuilding;
-        if (!outerBuilding || !outerBuilding.geometry) {
-            throw new Error('Failed to create outer building polygon');
-        }
-
-        // Reduce the OUTLINE's vertex count, then clip it inside the parcel:
-        //  - the negative buffer rounds every corner into up to GEOM_BUFFER_STEPS segments, and curved
-        //    parcel edges are densely digitised, so the raw outline can carry hundreds of vertices —
-        //    unusable for manual editing. turf.simplify (Douglas–Peucker) collapses those to a handful;
-        //    higher "Simplify (m)" = fewer vertices. (Applied here, AFTER the buffer, is why it now
-        //    actually reduces the visible outline — simplifying the parcel earlier was undone by the
-        //    buffer re-rounding the corners.)
-        //  - a simplification chord can bow slightly past the boundary, so clip to the parcel after.
-        outerBuilding = simplifyAndClipOutline(outerBuilding, currentSimplifyM, originalSuperparcel);
-        if (!outerBuilding || !outerBuilding.geometry) {
-            throw new Error('Failed to create outer building polygon');
-        }
-
-        // Incrementally inset inner ring; keep last valid geometry even if a step fails the 2 m rule
-        let innerBuilding = null;
-        let currentWidth = currentBuildingWidth;
-        let minSideLength = Infinity; // no longer enforces a threshold; kept only for diagnostic display
-        let attempts = 0;
-        const MAX_ATTEMPTS = 10;
-        while (currentWidth > 0 && attempts < MAX_ATTEMPTS) {
-            const inc = incrementalInsetPolygon(outerBuilding, currentWidth, 0);
-            if (inc && inc.feature) {
-                innerBuilding = inc.feature; // keep last valid
-                if (inc.reason === 'ok' && Math.abs(inc.achievedInset - currentWidth) < 1e-3) {
-                    // achieved full width cleanly
-                    break;
-                }
-                // record min edge for debug
-                if (isFinite(inc.minEdgeValue)) {
-                    minSideLength = inc.minEdgeValue;
-                }
+        // The outline itself — setback ring, simplified, clipped, inset to a courtyard — is
+        // blockRingOutline(), so the batch that puts an urban rule on every empty block runs the
+        // same generator this modal does instead of a second implementation of it.
+        const ring = blockRingOutline(superparcel, originalSuperparcel, {
+            setback: SETBACK,
+            width: currentBuildingWidth,
+            simplifyM: currentSimplifyM
+        }, {
+            onNarrowEdge: (inc) => {
                 const debugMode = document.getElementById('debugModeCheckbox');
-                if (debugMode && debugMode.checked && inc.minEdgePair) {
-                    try {
-                        const a = [inc.minEdgePair[0][1], inc.minEdgePair[0][0]];
-                        const b = [inc.minEdgePair[1][1], inc.minEdgePair[1][0]];
-                        blockifyDebugLayer = L.featureGroup().addTo(blockifyMap);
-                        L.polyline([a, b], { color: '#ff0000', weight: 5, opacity: 0.8 }).addTo(blockifyDebugLayer)
-                            .bindTooltip(`Narrow edge: ${(inc.minEdgeValue || 0).toFixed(2)} m`, { permanent: false });
-                    } catch (_) { }
-                }
+                if (!debugMode || !debugMode.checked || !inc.minEdgePair) return;
+                try {
+                    const a = [inc.minEdgePair[0][1], inc.minEdgePair[0][0]];
+                    const b = [inc.minEdgePair[1][1], inc.minEdgePair[1][0]];
+                    blockifyDebugLayer = L.featureGroup().addTo(blockifyMap);
+                    L.polyline([a, b], { color: '#ff0000', weight: 5, opacity: 0.8 }).addTo(blockifyDebugLayer)
+                        .bindTooltip(`Narrow edge: ${(inc.minEdgeValue || 0).toFixed(2)} m`, { permanent: false });
+                } catch (_) { }
             }
-            if (inc && inc.reason === 'ok') {
-                break;
-            }
-            // didn't achieve full width → reduce and retry
-            currentWidth *= 0.9;
-            attempts++;
+        });
+        if (!ring) {
+            throw new Error('Failed to create outer building polygon');
         }
+        const outerBuilding = ring.outer;
+        const innerBuilding = ring.inner;
+        const currentWidth = ring.widthAchieved;
+        const minSideLength = ring.minSideLength;
 
         if (!innerBuilding) {
             // Fallback: produce a solid building (no courtyard) rather than failing

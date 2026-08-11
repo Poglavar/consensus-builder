@@ -68,26 +68,19 @@ function isCorridorParcel(parcelOrId, layer = null) {
         || (layer && layer.properties)
         || {};
 
-    if (props.isCorridor === true || props.isTrack === true) {
-        return true;
-    }
-
-    // Road parcels BOUND blocks — they are never inside one. The legacy detectors marked roads
-    // with isCorridor too, but the curated road source sets only isRoad, so ask the road-parcel
-    // set directly or the flood-fill crosses every street.
-    if (parcelId && typeof window.isRoadParcel === 'function' && window.isRoadParcel(parcelId)) {
-        return true;
-    }
-
-    if (parcelId && typeof readPersistedParcelRecord === 'function') {
-        const record = readPersistedParcelRecord(parcelId);
-        const persistedProps = record?.properties || {};
-        if (persistedProps.isCorridor === true || persistedProps.isTrack === true) {
-            return true;
-        }
-    }
-
-    return false;
+    // Road parcels BOUND blocks — they are never inside one. The rule itself lives in
+    // parcels/corridor-identity.js, which is where the reasoning about piece ids and ancestry is
+    // written down and tested; this end only gathers what it needs to answer.
+    return window.__corridorIdentity.isCorridorGround({
+        parcelId,
+        properties: props,
+        persistedProperties: () => ((parcelId && typeof readPersistedParcelRecord === 'function')
+            ? (readPersistedParcelRecord(parcelId)?.properties || {})
+            : {}),
+        isRoadInSet: (typeof window !== 'undefined' && typeof window.isRoadParcel === 'function')
+            ? window.isRoadParcel
+            : null
+    });
 }
 
 // Add block storage management
@@ -555,33 +548,27 @@ async function countBlocks() {
             await new Promise(resolve => setTimeout(resolve, 0));
 
             const blocksToRemove = new Set();
-            const processed = new Set();
             let blockCount = 0;
             const totalNonCorridor = currentParcels.length;
 
-            for (const parcel of currentParcels) {
-                const startId = parcelIdFromLayer(parcel);
-                if (!startId) continue;
-                if (processed.has(startId)) continue;
+            // ONE flood fill, shared with the batch enumeration (proposals/block-enumeration.js).
+            // Growing a block outwards from a parcel is a single idea and it was written out here
+            // more than once; the traversal now has one owner, exactly as adjacency does.
+            const layersById = new Map();
+            currentParcels.forEach(layer => {
+                const id = parcelIdFromLayer(layer);
+                if (id) layersById.set(String(id), layer);
+            });
+            const components = window.__blockEnumeration.floodComponents(
+                Array.from(layersById.keys()),
+                id => (findNeighbors(layersById.get(id), neighborMap) || [])
+                    .map(neighbour => parcelIdFromLayer(neighbour))
+                    .filter(Boolean)
+            );
 
-                const queue = [parcel];
-                const blockParcels = [];
-                processed.add(startId);
-                while (queue.length > 0) {
-                    const cur = queue.shift();
-                    blockParcels.push(cur);
-                    const neighbors = findNeighbors(cur, neighborMap);
-                    for (const n of neighbors) {
-                        const nid = parcelIdFromLayer(n);
-                        if (!nid) continue;
-                        if (!processed.has(nid)) {
-                            processed.add(nid);
-                            queue.push(n);
-                        }
-                    }
-                }
-
-                if (blockParcels.length > 0) {
+            for (const component of components) {
+                const blockParcels = component.map(id => layersById.get(id)).filter(Boolean);
+                {
                     const blockName = getBlockName(blockParcels);
                     const isComplete = isBlockComplete(blockParcels);
 
