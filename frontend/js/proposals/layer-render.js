@@ -528,19 +528,27 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
     // Applied proposals should always be visible at all zoom levels, even when parcels are not shown
     // This allows users to see applied proposals regardless of zoom level
 
-    // Parcels should be highlighted with blue fill like other proposals (parks, squares, etc.)
-    // Solid border (not dashed) - only road geometry should be dashed
+    // Does the proposal currently STAND on the map? Only a road used to answer this question:
+    // everything else kept its solid, filled, applied-looking highlight after being unapplied, so
+    // "Remove from map" appeared to do nothing — the shape came back the instant the unapply
+    // re-selected the record, and only went away on reload, when nothing is selected any more.
+    // Off the map now reads the same for every type: dashed and unfilled, the language a parked
+    // road already spoke.
+    const standsOnMap = isApplied(proposal);
+
+    // Parcels are highlighted with blue fill like other proposals (parks, squares, etc.) while the
+    // proposal stands; dashed and unfilled once it does not.
     const parcelStyle = {
         color: '#2563EB',
         fillColor: '#2563EB',
         weight: 3,
         opacity: 0.9,
-        dashArray: null,
-        fillOpacity: 0.2,
+        dashArray: standsOnMap ? null : '10 5',
+        fillOpacity: standsOnMap ? 0.2 : 0,
         className: 'proposal-parcel-outline'
     };
 
-    if (isRoadProposal && isApplied(proposal, proposal?.roadProposal)) {
+    if (isRoadProposal && standsOnMap) {
         // A selected applied corridor gets ONE crisp selection outline around its footprint — the
         // same visual language as a selected parcel. The cross-section strips already show the
         // corridor itself (rails included, when it has rail lanes), and shading every parent parcel
@@ -557,15 +565,16 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
             addFeatureToGroup(feature, groups.border, roadSelectedStyle, blink ? 'proposal-blink-twice' : null);
         });
     } else {
-        // For (parked) road proposals, style road geometry with dashed lines and no fill
-        // For other proposals, use the standard primary style
-        const primaryStyle = isRoadProposal ? {
+        // Anything not standing on the map — a parked road, an unapplied building/park/square/lake,
+        // a reparcellization taken off — is drawn as a proposal: dashed lines and no fill. Only a
+        // proposal that IS on the map gets the solid, filled primary outline.
+        const primaryStyle = (isRoadProposal || !standsOnMap) ? {
             color: '#2563EB',
             weight: 4,
             opacity: 1,
             dashArray: '10 5',
             fillOpacity: 0,
-            className: 'proposal-road-outline'
+            className: isRoadProposal ? 'proposal-road-outline' : 'proposal-primary-outline'
         } : {
             color: '#2563EB',
             weight: 4,

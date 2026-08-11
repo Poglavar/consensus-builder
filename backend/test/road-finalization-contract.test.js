@@ -64,16 +64,28 @@ describe('road drawing finalization contract', () => {
         expect(drawingSource).toContain("updateStatus('Wait for the current segment to finish validating.');");
     });
 
-    it('turns a geometry edit into a fresh snapshot and one canonical replay', () => {
+    it('edits the road IN PLACE and derives only the ground it touched', () => {
         const edit = sourceSection(
             drawingSource,
             'async function runLocalCorridorGeometryUpdate',
             '// ---------------------------------------------------------------------------\n// Snapping'
         );
-        expect(edit).toContain('makeFreshRoadSnapshot(sourceProposal, definition');
-        expect(edit).toContain('proposalStorage.addProposal(replacement)');
+        // Nothing local is immutable. An edit used to clone the road into a NEW record with its
+        // identity deleted so "the published source stays immutable" — which bought a new proposal
+        // id per node drag and an editor that reasoned about provenance. The record keeps its id
+        // and is written through; only its pointers to the copies held elsewhere are dropped.
+        expect(edit).toContain('writeRoadDefinition(sourceProposal, componentDefinitions[0])');
+        expect(edit).toContain('detachPublishedIdentity(sourceProposal)');
+        expect(edit).not.toContain('makeFreshRoadSnapshot(sourceProposal, componentDefinitions[0]');
         expect(edit).toContain('setProposalApplied(sourceProposal, false');
-        expect(edit).toContain('ProposalManager.rebuildAppliedFabric({ _fabricQueue: options._fabricQueue === true })');
+        // An edit is a park plus a create: the old position releases its ground, each replacement
+        // derives the parcels under its own footprint. It must NEVER reach for the whole plan —
+        // that is what made editing a road cost the same as reloading the map.
+        expect(edit).toContain('ProposalManager._undoProposalPayload?.(sourceProposal)');
+        expect(edit).toContain('ProposalManager.deriveForNewProposal(stored, {');
+        // The edited road re-derives under its own id, not under a replacement's.
+        expect(edit).toContain('for (const id of [sourceKey, ...extraStretchIds])');
+        expect(edit).not.toContain('rebuildAppliedFabric');
         // Ruling 2026-08-07: an authored disconnect SPLITS into one proposal per connected
         // component — via the tested pure engine, with per-stretch metadata carried, still
         // inside the same single transaction and single replay.
@@ -88,7 +100,7 @@ describe('road drawing finalization contract', () => {
         expect(edit).not.toContain('resolveBuildingObstacles(');
     });
 
-    it('serializes the record flip with replay and deletes a failed replacement record', () => {
+    it('serializes the record flip with replay and undoes a failed edit completely', () => {
         const wrapper = sourceSection(
             drawingSource,
             'async function updateLocalCorridorGeometry',
@@ -103,8 +115,13 @@ describe('road drawing finalization contract', () => {
         expect(wrapper).toContain('ProposalManager._enqueueFabricChange');
         expect(wrapper).toContain('proposalStorage.beginBatch()');
         expect(wrapper).toContain('proposalStorage.endBatch()');
-        // A failed replay deletes EVERY minted replacement (a split mints several).
-        expect(edit).toContain('replacementIds.forEach(id => { try { proposalStorage.removeProposal(id); }');
+        // A failed edit leaves nothing behind: every split-off stretch comes off the map and out of
+        // storage, and the road itself goes back to the shape AND the identity it had.
+        expect(edit).toContain('extraStretchIds.forEach(id => {');
+        expect(edit).toContain('proposalStorage.removeProposal(id);');
+        expect(edit).toContain('ProposalManager._releaseUnappliedRecord?.(stored)');
+        expect(edit).toContain('writeRoadDefinition(sourceProposal, originalDefinition)');
+        expect(edit).toContain('restorePublishedIdentity(sourceProposal, publishedIdentity)');
         expect(edit).toContain('_fabricQueue: options._fabricQueue === true');
     });
 

@@ -177,8 +177,12 @@ describe('ProposalManager.reapplyAppliedProposals — reload barrier', () => {
 // _collectAppliedAlternativesForExplicitApply is borrowed rather than stubbed: with no
 // collectAppliedProposalAlternatives global installed it returns [], which is exactly these tests'
 // premise (no alternative is standing), and borrowing keeps that premise honest if the guard changes.
+// Applying from the proposal list used to run the WHOLE-PLAN rebuild just to materialise one
+// record — 13 s on a 112-road plan. It now derives only the ground whose take set changed, exactly
+// like a create or an edit. None of these harnesses carries `rebuildAppliedFabric`, so a fallback
+// to the whole plan is a TypeError rather than a slow pass.
 describe('ProposalManager.applyProposal — canonical external mutation', () => {
-    it('only flips the record, then delegates all map work to a queued rebuild', async () => {
+    it('only flips the record, then delegates all map work to a queued scoped derivation', async () => {
         const proposal = { proposalId: 'new-road', goal: 'road-track', applied: false };
         const proposals = new Map([[proposal.proposalId, proposal]]);
         const store = {
@@ -195,10 +199,12 @@ describe('ProposalManager.applyProposal — canonical external mutation', () => 
 
         const manager = {
             _enqueueFabricChange: ProposalManager._enqueueFabricChange,
-            rebuildAppliedFabric: vi.fn(async options => {
+            deriveForNewProposal: vi.fn(async (record, options) => {
+                expect(record).toBe(proposal);
+                // Already inside the queue slot: enqueueing again would wait on itself.
                 expect(options._fabricQueue).toBe(true);
                 expect(proposal.applied).toBe(true);
-                return { ok: true, applied: 1, failed: [] };
+                return { applied: true, goalKey: 'road-track' };
             }),
             _refreshUIAfterProposalChange: vi.fn(),
             _collectAppliedAlternativesForExplicitApply: ProposalManager._collectAppliedAlternativesForExplicitApply,
@@ -206,11 +212,11 @@ describe('ProposalManager.applyProposal — canonical external mutation', () => 
         };
 
         await expect(manager.applyProposal(proposal.proposalId)).resolves.toBe(true);
-        expect(manager.rebuildAppliedFabric).toHaveBeenCalledOnce();
+        expect(manager.deriveForNewProposal).toHaveBeenCalledOnce();
         expect(manager._refreshUIAfterProposalChange).toHaveBeenCalledWith(proposal);
     });
 
-    it('serializes two external applies through their complete rebuilds', async () => {
+    it('serializes two external applies through their complete derivations', async () => {
         const first = { proposalId: 'first', applied: false };
         const second = { proposalId: 'second', applied: false };
         const proposals = new Map([[first.proposalId, first], [second.proposalId, second]]);
@@ -231,10 +237,10 @@ describe('ProposalManager.applyProposal — canonical external mutation', () => 
         const snapshots = [];
         const manager = {
             _enqueueFabricChange: ProposalManager._enqueueFabricChange,
-            rebuildAppliedFabric: vi.fn(async () => {
+            deriveForNewProposal: vi.fn(async () => {
                 snapshots.push([first.applied, second.applied]);
                 if (snapshots.length === 1) await firstGate;
-                return { ok: true, applied: snapshots.length, failed: [] };
+                return { applied: true };
             }),
             _refreshUIAfterProposalChange() {},
             _collectAppliedAlternativesForExplicitApply: ProposalManager._collectAppliedAlternativesForExplicitApply,
@@ -252,7 +258,7 @@ describe('ProposalManager.applyProposal — canonical external mutation', () => 
         expect(snapshots).toEqual([[true, false], [true, true]]);
     });
 
-    it('parks only the newly requested record when its replay fails, then re-derives the prior set', async () => {
+    it('parks only the newly requested record when its derivation fails, then restores the prior set', async () => {
         const proposal = { proposalId: 'invalid-new-road', applied: false };
         const proposals = new Map([[proposal.proposalId, proposal]]);
         const store = {
@@ -269,9 +275,13 @@ describe('ProposalManager.applyProposal — canonical external mutation', () => 
 
         const manager = {
             _enqueueFabricChange: ProposalManager._enqueueFabricChange,
-            rebuildAppliedFabric: vi.fn()
-                .mockResolvedValueOnce({ ok: false, applied: 0, failed: [{ proposalId: proposal.proposalId }] })
-                .mockResolvedValueOnce({ ok: true, applied: 0, failed: [] }),
+            // Whatever a half-finished apply put on the map comes off, and the ground it stood on
+            // is derived again — no plan-wide reset.
+            deriveForNewProposal: vi.fn(async () => null),
+            _undoProposalPayload: vi.fn(() => null),
+            _deriveGroundUnder: vi.fn(),
+            _rematerializeParkedAlternatives: ProposalManager._rematerializeParkedAlternatives,
+            _restoreAfterFailedApply: ProposalManager._restoreAfterFailedApply,
             _refreshUIAfterProposalChange: vi.fn(),
             _collectAppliedAlternativesForExplicitApply: ProposalManager._collectAppliedAlternativesForExplicitApply,
             applyProposal: ProposalManager.applyProposal
@@ -279,7 +289,8 @@ describe('ProposalManager.applyProposal — canonical external mutation', () => 
 
         await expect(manager.applyProposal(proposal.proposalId)).resolves.toBe(false);
         expect(proposal.applied).toBe(false);
-        expect(manager.rebuildAppliedFabric).toHaveBeenCalledTimes(2);
+        expect(manager.deriveForNewProposal).toHaveBeenCalledOnce();
+        expect(manager._undoProposalPayload).toHaveBeenCalledWith(proposal);
     });
 });
 

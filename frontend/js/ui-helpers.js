@@ -30,12 +30,38 @@ function updateStatus(message) {
     }
 }
 
+// What "Copy all" copies, and what the expanded view shows — one definition, so the button can
+// never hand over something other than what is on screen.
+const STATUS_LOG_VISIBLE_ENTRIES = 50;
+
+function visibleStatusLogEntries() {
+    return statusLog.slice(-STATUS_LOG_VISIBLE_ENTRIES);
+}
+
+// Every visible line as plain text, timestamp first — the form you paste into a bug report.
+function visibleStatusLogText() {
+    return visibleStatusLogEntries().map(entry => `${entry.timestamp}\t${entry.message}`).join('\n');
+}
+
+async function copyStatusLog() {
+    const entries = visibleStatusLogEntries();
+    if (!entries.length) return false;
+    const copied = await copyTextWithFeedback(visibleStatusLogText());
+    if (!copied) return false;
+    const template = window.i18n?.t ? window.i18n.t('hud.statusLinesCopied', { count: entries.length }) : '';
+    const message = (template && template !== 'hud.statusLinesCopied')
+        ? template
+        : `${entries.length} line${entries.length === 1 ? '' : 's'} copied`;
+    showCopyFeedback(message);
+    return true;
+}
+
 function updateExpandedStatusView() {
     const expandedView = document.getElementById('status-log-expanded');
     if (!expandedView || !isStatusExpanded) return;
 
     // Show more entries (up to 50) in chronological order (oldest to newest)
-    const entriesToShow = statusLog.slice(-50); // Show last 50 entries
+    const entriesToShow = visibleStatusLogEntries();
     expandedView.innerHTML = '';
 
     if (entriesToShow.length === 0) {
@@ -70,6 +96,63 @@ function updateExpandedStatusView() {
     }
 }
 
+// A spinner in the status bar, for work that outlives its own message.
+//
+// A status line is superseded within a second on a busy reload, so by the time you look at the bar
+// the six seconds of ground-loading has already been replaced by something else and there is nothing
+// left to say the app is still working. The spinner is the part that persists: it turns while
+// anything holds it and stops when the last holder lets go.
+//
+// Ref-counted, because several things overlap during a replay and each must be able to say "I am
+// busy" without knowing whether anything else is.
+let statusActivityHolders = 0;
+
+function statusActivitySpinner() {
+    const statusBar = document.querySelector('.status-bar');
+    if (!statusBar) return null;
+    let spinner = statusBar.querySelector('.status-activity-spinner');
+    if (!spinner) {
+        spinner = document.createElement('span');
+        spinner.className = 'status-activity-spinner';
+        spinner.setAttribute('aria-hidden', 'true');
+        statusBar.insertBefore(spinner, statusBar.firstChild);
+    }
+    return spinner;
+}
+
+function beginStatusActivity() {
+    statusActivityHolders += 1;
+    const spinner = statusActivitySpinner();
+    if (spinner) spinner.classList.add('is-active');
+    return () => endStatusActivity();
+}
+
+function endStatusActivity() {
+    statusActivityHolders = Math.max(0, statusActivityHolders - 1);
+    if (statusActivityHolders > 0) return;
+    const spinner = statusActivitySpinner();
+    if (spinner) spinner.classList.remove('is-active');
+}
+
+// The Copy all button, created on first expand and reused. Built here rather than in index.html so
+// the collapsed bar carries nothing it cannot use.
+function ensureStatusCopyAllButton(statusBar) {
+    if (!statusBar || statusBar.querySelector('[data-status-copy-all]')) return;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'status-log-copy-all';
+    button.setAttribute('data-status-copy-all', '');
+    const label = window.i18n?.t ? window.i18n.t('hud.copyStatusLog') : '';
+    button.textContent = (label && label !== 'hud.copyStatusLog') ? label : 'Copy all';
+    button.setAttribute('data-i18n-key', 'hud.copyStatusLog');
+    button.setAttribute('data-i18n-attr', 'text');
+    button.addEventListener('click', (event) => {
+        event.stopPropagation();
+        copyStatusLog();
+    });
+    statusBar.appendChild(button);
+}
+
 function toggleStatusExpanded() {
     const statusBar = document.querySelector('.status-bar');
     const expandedView = document.getElementById('status-log-expanded');
@@ -81,6 +164,7 @@ function toggleStatusExpanded() {
     if (isStatusExpanded) {
         statusBar.classList.add('expanded');
         expandedView.style.display = 'block';
+        ensureStatusCopyAllButton(statusBar);
         updateExpandedStatusView();
 
         // Scroll to bottom after a brief delay to ensure content is rendered
@@ -125,6 +209,13 @@ function applyStatusBarHighlight() {
 }
 
 function showEphemeralMessage(message, duration = 5000) {
+    // An ephemeral message fades out and is gone. That is fine for a confirmation, and wrong for
+    // anything the user may need to read twice — "4 proposals removed: …" names records that are no
+    // longer on the map, and if you looked away you cannot get the list back. So every ephemeral
+    // message also goes through the status bar, which keeps the last 100 entries and can be
+    // expanded. The toast stays the thing that catches the eye; the log is what survives.
+    try { if (typeof updateStatus === 'function') updateStatus(message); } catch (_) { }
+
     let container = document.getElementById('ephemeral-message-container');
 
     // Create container if it doesn't exist
@@ -302,19 +393,43 @@ document.addEventListener('DOMContentLoaded', () => {
         floatingStatusText.textContent = statusSpan.textContent;
     }
 
-    // Add click handler to status span for expanding
+    // Expanding is a CLICK on the summary line. Three things it must not be:
+    //
+    //   * the mouseup that ends a text selection — the log is there to be read and copied out, and
+    //     collapsing the moment you release the drag made selecting anything impossible;
+    //   * a click inside the expanded log itself — that is where the text is;
+    //   * a click on the Copy all button.
+    //
+    // A drag is told from a click by how far the pointer moved, so a selection that happens to end
+    // where it started (a double-click on one word) is caught by the selection check instead.
     if (statusBar) {
+        let pressedAt = null;
+        statusBar.addEventListener('mousedown', (e) => { pressedAt = { x: e.clientX, y: e.clientY }; });
         statusBar.addEventListener('click', (e) => {
             e.stopPropagation();
+            const start = pressedAt;
+            pressedAt = null;
+            if (e.target.closest('#status-log-expanded')) return;
+            if (e.target.closest('[data-status-copy-all]')) return;
+            if (start && Math.hypot(e.clientX - start.x, e.clientY - start.y) > 4) return;
+            try {
+                const selection = window.getSelection();
+                if (selection && !selection.isCollapsed && String(selection).trim()) return;
+            } catch (_) { }
             toggleStatusExpanded();
         });
     }
 
-    // Add click handler to document for collapsing when clicking outside
+    // Clicking outside collapses — unless the click is releasing a selection that STARTED in the
+    // log and was dragged out of it, which is the ordinary way to select the last line.
     document.addEventListener('click', (e) => {
-        if (isStatusExpanded && !statusBar.contains(e.target)) {
-            collapseStatus();
-        }
+        if (!isStatusExpanded || statusBar.contains(e.target)) return;
+        try {
+            const selection = window.getSelection();
+            if (selection && !selection.isCollapsed && String(selection).trim()
+                && statusBar.contains(selection.anchorNode)) return;
+        } catch (_) { }
+        collapseStatus();
     });
 
     const observer = new MutationObserver((mutationsList, observer) => {
@@ -336,6 +451,8 @@ document.addEventListener('DOMContentLoaded', () => {
 try {
     if (typeof window !== 'undefined') {
         window.updateStatus = updateStatus;
+        window.beginStatusActivity = beginStatusActivity;
+        window.endStatusActivity = endStatusActivity;
         window.toggleStatusExpanded = toggleStatusExpanded;
         window.collapseStatus = collapseStatus;
         window.showEphemeralMessage = showEphemeralMessage;

@@ -173,6 +173,17 @@ function attachSqlLogging(pool, runQueryWithLogging) {
     return pool;
 }
 
+// Write requests allowed per 15 minutes per IP.
+//
+// Uploading a plan is one POST per proposal — deliberately, so the author sees each one go rather
+// than firing off a bundle they have not looked at. That makes this a limit on PLAN SIZE, not on
+// abuse: a hundred roads is an ordinary afternoon's drawing, and being cut off halfway through
+// uploading them is the tool getting in the way rather than protecting anything.
+//
+// Exported so the tests measure the real number instead of each keeping a copy of it — they had
+// 50 hardcoded in two places, and both went red the moment this moved.
+export const WRITE_RATE_LIMIT = 100;
+
 export function createApp({ env = process.env, pool: providedPool } = {}) {
     const app = express();
     const requestContext = new AsyncLocalStorage();
@@ -266,7 +277,7 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
     // Rate limit POST/PUT/PATCH routes — protects against abuse on write endpoints
     const writeRateLimiter = rateLimit({
         windowMs: 15 * 60 * 1000, // 15 minutes
-        max: 50,                   // 50 write requests per 15 min per IP
+        max: WRITE_RATE_LIMIT,     // per IP
         standardHeaders: true,
         legacyHeaders: false,
         message: { error: 'Too many requests, please try again later.' }

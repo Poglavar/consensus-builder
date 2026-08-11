@@ -197,8 +197,26 @@ if (typeof window !== 'undefined') {
     window.submitProposalBoost = submitProposalBoost;
     window.closeProposalBoostDialog = closeProposalBoostDialog;
 
-    // Tile arrivals update presentation only. The canonical rebuild owns fabric materialization.
-    window.addEventListener('parcelDataLoaded', () => {
+    // Tile arrivals used to update presentation ONLY, which left a parcel that streamed in after a
+    // road was applied sitting whole underneath it. An arrival is now derived against the standing
+    // takes like any other parcel. Arrivals come in bursts of dozens of tiles, so the ids are
+    // collected and derived once rather than once per tile.
+    let arrivingParcelIds = new Set();
+    let arrivalDerivationHandle = null;
+    const deriveArrivingParcelsSoon = (ids) => {
+        (ids || []).forEach(id => { if (id) arrivingParcelIds.add(String(id)); });
+        if (!arrivingParcelIds.size || arrivalDerivationHandle) return;
+        arrivalDerivationHandle = setTimeout(() => {
+            arrivalDerivationHandle = null;
+            const batch = Array.from(arrivingParcelIds);
+            arrivingParcelIds = new Set();
+            try { ProposalManager.deriveArrivingParcels?.(batch); }
+            catch (error) { console.error('[proposals] could not derive newly loaded parcels', error); }
+        }, 0);
+    };
+
+    window.addEventListener('parcelDataLoaded', (event) => {
+        deriveArrivingParcelsSoon(event?.detail?.parcelIds);
         scheduleHighlightRefresh('parcels-loaded');
         if (typeof updateProposalLayer === 'function') updateProposalLayer();
 

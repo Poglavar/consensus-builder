@@ -7,6 +7,7 @@
 
 import { extrudeFootprint } from './extrude.js';
 import { OVERTURE_CITIES, effectiveHeight } from './overture-cities.js';
+import { scopeLadder, queryDownScopeLadder, createScopeMemo } from '../data-scope.js';
 
 // Sized above the densest 500m-radius query so the radius, not the cap, is the real limiter (it
 // only binds on pathological inputs). Mirrors the Zagreb/NYC providers.
@@ -15,6 +16,11 @@ const MAX_BUILDINGS = 4000;
 export function createOvertureProvider(pool, cityKey) {
     const cfg = OVERTURE_CITIES[cityKey];
     if (!cfg) throw new Error(`createOvertureProvider: unknown Overture city '${cityKey}'`);
+    // city → region → country → planet. Which ingest actually holds this ground is a property of
+    // how cadastre-data happened to pull it, not of the city, so it is discovered rather than
+    // declared: the first rung that answers wins, and the winner is remembered.
+    const ladder = scopeLadder({ city: cfg.city || cityKey, region: cfg.region, country: cfg.country });
+    const scopeMemo = createScopeMemo();
 
     async function near(geometry, bufferMeters) {
         // ST_DWithin on the geography type gives a true metres-radius circle that works at any
@@ -43,16 +49,21 @@ export function createOvertureProvider(pool, cityKey) {
                 b.num_floors,
                 ST_AsGeoJSON(b.geom, 7)::json AS geometry
             FROM overture_building_footprint b, q, box
-            WHERE b.city = $2
+            WHERE ($2::text IS NULL OR b.city = $2)
               AND b.geom && box.b
               AND ST_DWithin(b.geom::geography, q.g::geography, $3)
             ORDER BY b.geom <-> q.g
             LIMIT ${MAX_BUILDINGS}
         `;
 
-        // cfg.region, not cityKey: several cities can read one regional ingest (sibenik →
-        // sjeverna-dalmacija), so the row set is named by the config, never by the city id.
-        const { rows } = await pool.query(sql, [JSON.stringify(geometry), cfg.region, bufferMeters]);
+        // Not cfg.region alone: several cities read one regional ingest (sibenik →
+        // sjeverna-dalmacija) and some read only the countrywide one, so the scope is discovered.
+        const { rows, scope } = await queryDownScopeLadder(
+            ladder,
+            async (label) => (await pool.query(sql, [JSON.stringify(geometry), label, bufferMeters])).rows,
+            scopeMemo,
+            `near:${cityKey}`
+        );
 
         const buildings = [];
         for (const row of rows) {
@@ -61,8 +72,68 @@ export function createOvertureProvider(pool, cityKey) {
             if (rec) buildings.push(rec);
         }
 
-        return { buildings, count: buildings.length, source: 'overture-3d' };
+        return { buildings, count: buildings.length, scope, source: 'overture-3d' };
     }
 
-    return { near };
+    // 2D footprints (+ known heights) of the existing buildings mostly inside a polygon — the same
+    // capability Zagreb serves off its cadastre, for every city whose stock is Overture.
+    //
+    // Two things depend on it, and both were dead in these cities: the urban rule's "based on
+    // existing buildings" mode, and the frontend's footprint POOL — what a road reads to decide
+    // which buildings it cuts, tunnels under or demolishes. The pool used to be filled from the GDI
+    // bbox layer, which is the ZAGREB survey, so in Šibenik it was always empty and a road could
+    // never find a building to demolish.
+    //
+    // "Mostly inside" = at least half the footprint's area, so a neighbour merely touching the
+    // boundary is not swept into a "raise everything here" proposal. Planar areas in 4326 are only
+    // compared with each other (a ratio), never returned, so the projection cancels.
+    async function footprints(geometry) {
+        const sql = `
+            WITH q AS (
+                SELECT ST_SetSRID(ST_GeomFromGeoJSON($1), 4326) AS g
+            )
+            SELECT b.id AS id,
+                   b.height AS height_m,
+                   b.num_floors,
+                   ST_AsGeoJSON(b.geom, 7)::json AS geometry
+            FROM overture_building_footprint b, q
+            WHERE ($2::text IS NULL OR b.city = $2)
+              AND b.geom && q.g
+              AND ST_Intersects(b.geom, q.g)
+              AND ST_Area(ST_Intersection(b.geom, q.g)) >= 0.5 * ST_Area(b.geom)
+            ORDER BY b.id
+            LIMIT ${MAX_BUILDINGS}
+        `;
+
+        // Down the same ladder as near(), for the same reason.
+        const { rows, scope } = await queryDownScopeLadder(
+            ladder,
+            async (label) => (await pool.query(sql, [JSON.stringify(geometry), label])).rows,
+            scopeMemo,
+            `footprints:${cityKey}`
+        );
+        const list = rows.map(row => {
+            const measured = Number(row.height_m);
+            const floors = Number(row.num_floors);
+            return {
+                id: String(row.id),
+                geometry: row.geometry,
+                // MEASURED height only, null when Overture has none — the same contract Zagreb's
+                // provider keeps. A consumer that wants a guess can derive one from the floors.
+                height_m: Number.isFinite(measured) && measured > 0 ? measured : null,
+                floors: Number.isFinite(floors) && floors > 0 ? floors : null
+            };
+        });
+        // A capped result does not cover its query area, and a caller that believes otherwise stops
+        // fetching ground it never loaded — the same trap the bbox layer guards with `truncated`.
+        return {
+            footprints: list,
+            count: list.length,
+            truncated: list.length >= MAX_BUILDINGS,
+            scope,
+            source: 'overture-footprints'
+        };
+    }
+
+    return { near, footprints };
 }

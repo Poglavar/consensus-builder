@@ -1,12 +1,12 @@
 {
     "densityStats": {
         "title": "Pokazatelji geometrije",
-        "parcelArea": "Povr\u0161ina parcele",
-        "footprint": "Tlocrtna povr\u0161ina zgrada",
-        "siteCoverage": "Izgra\u0111enost (kig)",
+        "parcelArea": "Površina parcele",
+        "footprint": "Tlocrtna površina zgrada",
+        "siteCoverage": "Izgrađenost (kig)",
         "gbp": "GBP (nadzemno)",
         "kin": "kin",
-        "floorHeightHint": "Prora\u010dun iz nacrtanih tlocrta i visine \u00f7 {{height}} m po eta\u017ei."
+        "floorHeightHint": "Proračun iz nacrtanih tlocrta i visine ÷ {{height}} m po etaži."
     },
     "multitab": {
         "warning": "Aplikacija je već otvorena u drugoj kartici. Da se sačuvani predlozi ne izgube, promene u ovoj kartici neće biti sačuvane — zatvorite ostale kartice i ponovo učitajte ovu za uređivanje.",
@@ -180,10 +180,18 @@
         "mapTooltip": "Nacrt — kliknite za nastavak",
         "noGeometryYet": "Ovaj nacrt još nema geometriju — počnite da crtate da je dobije.",
         "keptAsDraft": "Objekat nije bilo moguće stvoriti — crtanje je ponovo otvoreno da ispravite problem.",
+        "keptUnopened": "Alat za oblikovanje ovo nije mogao ponovo da otvori. Vaš rad je sačuvan kao nacrt — ispravite ono na šta se požalio i otvorite ga ponovo.",
+        "uploadRateLimited": "Zasad je previše otpremanja. Sačekajte nekoliko minuta pa otpremite ostatak.",
+        "uploadRateLimitedIn": {
+            "one": "Zasad je previše otpremanja. Pokušajte sa ostatkom za otprilike {minutes} minut.",
+            "few": "Zasad je previše otpremanja. Pokušajte sa ostatkom za otprilike {minutes} minuta.",
+            "other": "Zasad je previše otpremanja. Pokušajte sa ostatkom za otprilike {minutes} minuta."
+        },
         "reverted": "Vraćena je prethodna verzija.",
         "revertFailed": "Prethodnu verziju nije bilo moguće vratiti.",
         "geometryUpdated": "Geometrija ažurirana.",
-        "builtButParked": "Objekat je napravljen, ali ga nije bilo moguće postaviti na mapu (blokirao ga je sukob). Parkiran je u vašoj listi predloga — izaberite ga tamo da ga vidite i primenite."
+        "builtButParked": "Objekat je napravljen, ali ga nije bilo moguće postaviti na mapu (blokirao ga je sukob). Parkiran je u vašoj listi predloga — izaberite ga tamo da ga vidite i primenite.",
+        "builtButParkedBecause": "Objekat je napravljen, ali ga nije bilo moguće postaviti na mapu: {{reason}} Parkiran je u vašoj listi predloga — izaberite ga tamo da ga vidite i primenite."
     },
     "languages": {
         "en": "Engleski",
@@ -629,7 +637,9 @@
     "hud": {
         "totalSpentLabel": "Ukupno potrošeno:",
         "statusReady": "Aplikacija inicijalizovana, učitavanje parcela...",
-        "toggle3dTooltip": "Prebaci na 3D"
+        "toggle3dTooltip": "Prebaci na 3D",
+        "copyStatusLog": "Kopiraj sve",
+        "statusLinesCopied": "Kopirano redova: {{count}}"
     },
     "panel": {
         "parcel": {
@@ -1023,6 +1033,7 @@
             "closeDrawnKeep": "Nastavi da crtaš",
             "buildingTrack": "Gradim prugu…",
             "junctionHint": "Raskrsnica — prevucite za pomeranje svih krakova · ⌥-klik razdvaja",
+            "looseEndHint": "Slobodan kraj — prevucite na put ili čvor da ih spojite · ⌥-klik uklanja",
             "finishButtonShortTrack": "Završi prugu (F)",
             "lengthLabelTrack": "Dužina pruge:",
             "areaLabelTrack": "Površina pruge:",
@@ -2152,7 +2163,12 @@
                 "excludedSliver": "Na ovu parcelu pada samo krhotina bloka — premala da bude zgrada.",
                 "rangeExact": "{{buildings}} zgrada · donosi {{permitted}} m² BRGP-a",
                 "rangeBetween": "{{buildings}} zgrada · garantuje {{guaranteed}} – {{permitted}} m² BRGP-a",
-                "rangeMax": "{{buildings}} zgrada · dozvoljava 0 – {{permitted}} m² BRGP-a"
+                "rangeMax": "{{buildings}} zgrada · dozvoljava 0 – {{permitted}} m² BRGP-a",
+                "rangeExactExcluded": "{{buildings}} zgrada · daje {{permitted}} m² BRGP-a · {{excluded}} parcela izostavljeno",
+                "rangeBetweenExcluded": "{{buildings}} zgrada · garantuje {{guaranteed}} – {{permitted}} m² BRGP-a · {{excluded}} parcela izostavljeno",
+                "rangeMaxExcluded": "{{buildings}} zgrada · dozvoljava 0 – {{permitted}} m² BRGP-a · {{excluded}} parcela izostavljeno",
+                "excludedNoMassing": "Zgrada ne dopire do ove parcele — rastojanje od granice ili oblik bloka je ostavljaju izvan. Ovde se ne gradi ništa.",
+                "rangeNoneExcluded": "Nema zgrada — {{excluded}} parcela izostavljeno"
             },
             "handles": {
                 "gap": "Prevucite da pomerite otvor",
@@ -2424,7 +2440,7 @@
                 "other": "{{count}} vlasnika"
             },
             "cancel": "Odustani",
-            "derivedGroundBlocked": "Reparcelacija mora stajati na katastarskim parcelama. Najpre poništite predlog koji drži ovo zemljište.",
+            "takenGroundBlocked": "Reparcelacija ne može da uzme zemljište koje već drži drugi predlog. Odznačite ga ili najpre poništite taj predlog.",
             "discardTitle": "Odbaciti ove promene?",
             "discardMessage": "Izmene koje ste ovde napravili nisu sačuvane u predlog. Ako sada zatvorite, odbacuju se.",
             "discardConfirm": "Odbaci promene",
@@ -2946,7 +2962,8 @@
             "representationBuildOutTooltip": "Izgradnja — jedan primer onoga što bi se po pravilu stvarno moglo izgraditi",
             "representationBoth": "Oboje",
             "representationBothTooltip": "Oboje — primer izgradnje unutar dozvoljenog gabarita",
-            "reroll": "Nasumično promeni svaki primer izgradnje. Ne menja ništa u predlozima."
+            "reroll": "Nasumično promeni svaki primer izgradnje. Ne menja ništa u predlozima.",
+            "ineligibleParcels": "Neizgradive parcele"
         },
         "overlay": {
             "rendering": "Iscrtavanje…",

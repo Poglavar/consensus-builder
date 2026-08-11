@@ -14,9 +14,9 @@
 
 import { describe, it, expect } from 'vitest';
 import request from 'supertest';
-import { createApp } from '../index.js';
+import { createApp, WRITE_RATE_LIMIT } from '../index.js';
 
-const WRITE_LIMIT = 50;
+const WRITE_LIMIT = WRITE_RATE_LIMIT;   // read, never restated
 
 // A pool that answers everything with nothing: this test is about the middleware in front of the
 // routes, not about what they return.

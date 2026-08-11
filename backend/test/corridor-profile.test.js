@@ -1407,3 +1407,70 @@ describe('footway paving', () => {
         expect(corridorStripSurface(spans[0])).toBe(CORRIDOR_PAVED_SURFACE);
     });
 });
+
+// The bend where two roads meet end to end.
+//
+// Junction treatment used to require three or more arms, so a node joining exactly TWO corridors got
+// none. Within one corridor that is right — a two-arm node is a bend in a polyline and the strip
+// offsetting mitres it. Across two corridors it is not: they are offset independently, so at the
+// bend their ribbons overlap on the inside (a dark wedge across the kerb) and leave a notch on the
+// outside. The topology already called it a junction; only the drawing did not.
+describe('two roads meeting end to end', () => {
+    const { buildCrossCorridorJunctionTreatments, buildCorridorJunctionTreatments, CORRIDOR_PROFILE_PRESETS } =
+        require('../../frontend/js/corridor-profile.js');
+    const profile = { strips: CORRIDOR_PROFILE_PRESETS[40] };
+
+    function withPlanarProjection(run) {
+        global.wgs84ToHTRS96 = (lat, lng) => [lng, lat];
+        global.htrs96ToWGS84 = (x, y) => [y, x];
+        try { return run(); } finally {
+            delete global.wgs84ToHTRS96;
+            delete global.htrs96ToWGS84;
+        }
+    }
+
+    it('treats the bend where two different roads join', () => {
+        withPlanarProjection(() => {
+            const west = { corridorId: 'a', centerline: [[{ lat: 0, lng: -60 }, { lat: 0, lng: 0 }]], profile };
+            const north = { corridorId: 'b', centerline: [[{ lat: 0, lng: 0 }, { lat: 60, lng: 30 }]], profile };
+            const junctions = buildCrossCorridorJunctionTreatments([west, north]);
+            expect(junctions).toHaveLength(1);
+            expect(junctions[0].degree).toBe(2);
+            // One asphalt patch per arm — together they cover the overlap and fill the notch.
+            expect(junctions[0].surfacePolygons).toHaveLength(2);
+        });
+    });
+
+    it('draws no zebra there — a bend is a continuation, not a crossing', () => {
+        withPlanarProjection(() => {
+            const west = { corridorId: 'a', centerline: [[{ lat: 0, lng: -60 }, { lat: 0, lng: 0 }]], profile };
+            const north = { corridorId: 'b', centerline: [[{ lat: 0, lng: 0 }, { lat: 60, lng: 30 }]], profile };
+            expect(buildCrossCorridorJunctionTreatments([west, north])[0].crosswalkPolygons).toEqual([]);
+            // A real three-arm junction still gets them.
+            const main = { corridorId: 'a', centerline: [[{ lat: 0, lng: -50 }, { lat: 0, lng: 50 }]], profile };
+            const branch = { corridorId: 'b', centerline: [[{ lat: 0, lng: 0 }, { lat: 50, lng: 0 }]], profile };
+            expect(buildCrossCorridorJunctionTreatments([main, branch])[0].crosswalkPolygons.length).toBeGreaterThan(3);
+        });
+    });
+
+    it('leaves a nearly straight join alone', () => {
+        withPlanarProjection(() => {
+            // Two roads continuing through the node: the ribbons already line up, and patching it
+            // would only interrupt the lane markings running through.
+            const west = { corridorId: 'a', centerline: [[{ lat: 0, lng: -60 }, { lat: 0, lng: 0 }]], profile };
+            const east = { corridorId: 'b', centerline: [[{ lat: 0, lng: 0 }, { lat: 1, lng: 60 }]], profile };
+            expect(buildCrossCorridorJunctionTreatments([west, east])).toEqual([]);
+        });
+    });
+
+    it('still leaves a bend WITHIN one road to the strip offsetting', () => {
+        withPlanarProjection(() => {
+            // One record, one polyline, one corner: mitred by offsetPolylinePlanar. A patch here
+            // would paint over a joint that is already correct.
+            const bend = [{ lat: 0, lng: -60 }, { lat: 0, lng: 0 }, { lat: 60, lng: 30 }];
+            expect(buildCorridorJunctionTreatments([bend], profile)).toEqual([]);
+            const road = { corridorId: 'a', centerline: [[...bend]], profile };
+            expect(buildCrossCorridorJunctionTreatments([road, road])).toEqual([]);
+        });
+    });
+});

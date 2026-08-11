@@ -215,7 +215,8 @@
             try { refreshStructureLayer(); } catch (error) {
                 console.error(`[_applyStructureProposal] Failed to refresh ${kind} presentation`, error);
             }
-            refreshProposalUIAfterApply(`Applied ${kind} proposal ${proposalData.title || idLabel}`);
+            // The status line is written once, for every type, by _runProposalApplyWithSummary.
+            refreshProposalUIAfterApply();
 
             const totalTime = performance.now() - startTime;
             console.debug(`[_applyStructureProposal] ✓ Structure proposal application completed in ${totalTime.toFixed(2)}ms`);

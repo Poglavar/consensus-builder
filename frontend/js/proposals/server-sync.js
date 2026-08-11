@@ -310,7 +310,72 @@ function syncProposalWithServerId(proposal, serverProposalId) {
     return storedProposal;
 }
 
+// Put the cadastral ground under a proposal's footprint on the map, so the publish gate measures
+// against what EXISTS rather than against what happens to be in view. Best-effort: a failed fetch
+// leaves the gate to refuse on its own terms, which is the honest outcome — never a reason to
+// publish something whose ground could not be established.
+async function ensurePublishGroundLoaded(proposal) {
+    try {
+        const planOrderApi = (typeof window !== 'undefined') ? window.__planOrder : null;
+        if (!planOrderApi || typeof planOrderApi.footprintOf !== 'function') return;
+        if (typeof fetchParcelsUnderGeometry !== 'function') return;
+        const footprint = planOrderApi.footprintOf(proposal);
+        if (!footprint || !footprint.geometry) return;
+        await fetchParcelsUnderGeometry(footprint);
+    } catch (error) {
+        console.warn('[uploadProposalToServer] could not load the ground under this proposal', error);
+    }
+}
+
+// How long until the write allowance comes back. The limiter is a FIXED window, not a rolling
+// drain — the whole allowance returns at once — so "try again in N minutes" is a real instruction
+// rather than an estimate. `RateLimit-Reset` is seconds-remaining (standardHeaders); `Retry-After`
+// is the older spelling of the same thing. Neither being present is possible behind a proxy that
+// strips them, hence the honest null.
+function rateLimitRetrySeconds(response) {
+    const read = name => {
+        const raw = response && response.headers && response.headers.get ? response.headers.get(name) : null;
+        // Number(null) is 0, so converting first turns a MISSING header into "wait zero seconds" —
+        // which also swallowed the Retry-After fallback, since Reset always "answered" first.
+        if (typeof raw !== 'string' || raw.trim() === '') return null;
+        const value = Number(raw);
+        return (Number.isFinite(value) && value >= 0) ? value : null;
+    };
+    const reset = read('RateLimit-Reset');
+    if (reset !== null) return reset;
+    return read('Retry-After');
+}
+
+// i18n.t is translate(key, params) — there is no fallback argument, and a missing key comes back as
+// the key itself. So the lookup is done and then checked: a returned key means no translation, and
+// the English sentence built here is used instead.
+function uploadRateLimitMessage(retryAfterSeconds) {
+    const known = retryAfterSeconds !== null && retryAfterSeconds !== undefined;
+    const minutes = known ? Math.max(1, Math.ceil(retryAfterSeconds / 60)) : null;
+    const key = known ? 'proposalDrafts.uploadRateLimitedIn' : 'proposalDrafts.uploadRateLimited';
+    const fallback = known
+        ? `Too many uploads for now. Try the rest in about ${minutes} minute${minutes === 1 ? '' : 's'}.`
+        : 'Too many uploads for now. Wait a few minutes and upload the rest.';
+    try {
+        if (typeof window !== 'undefined' && window.i18n && typeof window.i18n.t === 'function') {
+            const translated = window.i18n.t(key, known ? { minutes, count: minutes } : {});
+            if (translated && translated !== key) return translated;
+        }
+    } catch (_) { /* fall through to English */ }
+    return fallback;
+}
+
 async function uploadProposalToServer(proposal) {
+    // Publish measures the footprint against the cadastre the browser has LOADED, and refuses below
+    // 95%. That is the right question and the wrong source: pan away from a road and its parcels
+    // are no longer on the map, so a perfectly publishable proposal was refused for having been
+    // scrolled past. Apply stopped depending on that when it started asking /parcels/under for the
+    // ground under a footprint; publish asks the same question here, before the gate runs.
+    //
+    // Ground that is genuinely absent — an existing street with no cadastral parcel under it — is
+    // still absent after the fetch, and the gate still refuses it. That refusal is correct.
+    await ensurePublishGroundLoaded(proposal);
+
     let uploadProposal;
     try {
         uploadProposal = buildUploadReadyProposal(proposal);
@@ -341,6 +406,17 @@ async function uploadProposalToServer(proposal) {
                     syncProposalWithServerId(proposal, serverProposalId);
                 }
                 return { ok: true, id: errorBody.id, proposalId: serverProposalId || errorBody.id };
+            }
+
+            // A refused-for-now is not a refused-for-good, and the server says exactly when. Without
+            // this the author gets the same red "failed" line as a broken proposal would produce,
+            // once per remaining proposal, and nothing tells them waiting is the answer.
+            if (response.status === 429) {
+                return {
+                    ok: false,
+                    retryAfterSeconds: rateLimitRetrySeconds(response),
+                    message: uploadRateLimitMessage(rateLimitRetrySeconds(response))
+                };
             }
 
             const errorMessage = errorBody && errorBody.error
@@ -719,6 +795,8 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         buildCityQueryParam,
         normalizeServerProposalSummary,
-        prepareProposalForImport
+        prepareProposalForImport,
+        rateLimitRetrySeconds,
+        uploadRateLimitMessage
     };
 }

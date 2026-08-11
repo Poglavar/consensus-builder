@@ -1,12 +1,12 @@
 {
     "densityStats": {
-        "title": "Estad\u00edsticas geom\u00e9tricas",
+        "title": "Estadísticas geométricas",
         "parcelArea": "Superficie de la parcela",
         "footprint": "Huella de los edificios",
-        "siteCoverage": "Ocupaci\u00f3n (kig)",
+        "siteCoverage": "Ocupación (kig)",
         "gbp": "GBP sobre rasante",
         "kin": "kin",
-        "floorHeightHint": "Calculado a partir de las huellas dibujadas y la altura \u00f7 {{height}} m por planta."
+        "floorHeightHint": "Calculado a partir de las huellas dibujadas y la altura ÷ {{height}} m por planta."
     },
     "multitab": {
         "warning": "La aplicación ya está abierta en otra pestaña. Para no perder las propuestas guardadas, los cambios en esta pestaña no se guardarán — cierra las demás pestañas y recarga esta para editar.",
@@ -180,10 +180,18 @@
         "mapTooltip": "Borrador — haz clic para continuar",
         "noGeometryYet": "Este borrador aún no tiene geometría — empieza a dibujar para dársela.",
         "keptAsDraft": "No se pudo crear el objeto — el dibujo se ha reabierto para que corrijas el problema.",
+        "keptUnopened": "La herramienta de diseño no pudo volver a abrir esto. Tu trabajo se conserva como borrador: corrige lo que indicó y ábrelo de nuevo.",
+        "uploadRateLimited": "Demasiadas subidas por ahora. Espera unos minutos y sube el resto.",
+        "uploadRateLimitedIn": {
+            "one": "Demasiadas subidas por ahora. Inténtalo con el resto en aproximadamente {minutes} minuto.",
+            "few": "Demasiadas subidas por ahora. Inténtalo con el resto en aproximadamente {minutes} minutos.",
+            "other": "Demasiadas subidas por ahora. Inténtalo con el resto en aproximadamente {minutes} minutos."
+        },
         "reverted": "Se restauró la versión anterior.",
         "revertFailed": "No se pudo restaurar la versión anterior.",
         "geometryUpdated": "Geometría actualizada.",
-        "builtButParked": "El objeto se creó pero no se pudo colocar en el mapa (un conflicto lo bloqueó). Está aparcado en tu lista de propuestas — selecciónalo allí para verlo y aplicarlo."
+        "builtButParked": "El objeto se creó pero no se pudo colocar en el mapa (un conflicto lo bloqueó). Está aparcado en tu lista de propuestas — selecciónalo allí para verlo y aplicarlo.",
+        "builtButParkedBecause": "El objeto se creó pero no se pudo colocar en el mapa: {{reason}} Está aparcado en tu lista de propuestas — selecciónalo allí para verlo y aplicarlo."
     },
     "languages": {
         "en": "Inglés",
@@ -626,7 +634,9 @@
     "hud": {
         "totalSpentLabel": "Total gastado:",
         "statusReady": "Aplicación inicializada, cargando parcelas...",
-        "toggle3dTooltip": "Cambiar a vista 3D"
+        "toggle3dTooltip": "Cambiar a vista 3D",
+        "copyStatusLog": "Copiar todo",
+        "statusLinesCopied": "{{count}} líneas copiadas"
     },
     "panel": {
         "parcel": {
@@ -1045,6 +1055,7 @@
             "closeDrawnKeep": "Seguir dibujando",
             "buildingTrack": "Construyendo la línea…",
             "junctionHint": "Cruce — arrastra para mover todos los ramales · ⌥-clic desconecta",
+            "looseEndHint": "Extremo suelto — arrástralo sobre una vía o un nodo para unirlos · ⌥-clic elimina",
             "finishButtonShortTrack": "Terminar vía (F)",
             "lengthLabelTrack": "Longitud de la vía:",
             "areaLabelTrack": "Área de la vía:",
@@ -2171,7 +2182,12 @@
                 "excludedSliver": "Solo cae una astilla de la manzana en esta parcela — demasiado pequeña para ser un edificio.",
                 "rangeExact": "{{buildings}} edificios · aporta {{permitted}} m² de superficie construida",
                 "rangeBetween": "{{buildings}} edificios · garantiza {{guaranteed}} – {{permitted}} m² de superficie construida",
-                "rangeMax": "{{buildings}} edificios · permite 0 – {{permitted}} m² de superficie construida"
+                "rangeMax": "{{buildings}} edificios · permite 0 – {{permitted}} m² de superficie construida",
+                "rangeExactExcluded": "{{buildings}} edificios · aporta {{permitted}} m² de superficie construida · {{excluded}} parcela(s) excluida(s)",
+                "rangeBetweenExcluded": "{{buildings}} edificios · garantiza {{guaranteed}} – {{permitted}} m² de superficie construida · {{excluded}} parcela(s) excluida(s)",
+                "rangeMaxExcluded": "{{buildings}} edificios · permite 0 – {{permitted}} m² de superficie construida · {{excluded}} parcela(s) excluida(s)",
+                "excludedNoMassing": "El edificio no llega a esta parcela — el retranqueo, o la forma de la manzana, la deja fuera. Aquí no se construye nada.",
+                "rangeNoneExcluded": "Sin edificios — {{excluded}} parcela(s) excluida(s)"
             },
             "handles": {
                 "gap": "Arrastra para mover el hueco",
@@ -2443,7 +2459,7 @@
                 "other": "{{count}} propietarios"
             },
             "cancel": "Cancelar",
-            "derivedGroundBlocked": "Una reparcelación debe apoyarse en parcelas catastrales. Primero desaplica la propuesta que ocupa este terreno.",
+            "takenGroundBlocked": "Una reparcelación no puede tomar terreno que ya ocupa otra propuesta. Deselecciónalo o desaplica esa propuesta primero.",
             "discardTitle": "¿Descartar estos cambios?",
             "discardMessage": "Los cambios que hiciste aquí no se han guardado en la propuesta. Si cierras ahora, se descartan.",
             "discardConfirm": "Descartar cambios",
@@ -2965,7 +2981,8 @@
             "representationBuildOutTooltip": "Edificación — un ejemplo de lo que realmente podría construirse bajo la norma",
             "representationBoth": "Ambos",
             "representationBothTooltip": "Ambos — el ejemplo de edificación dentro del volumen permitido",
-            "reroll": "Aleatoriza cada ejemplo de edificación. No cambia nada en las propuestas."
+            "reroll": "Aleatoriza cada ejemplo de edificación. No cambia nada en las propuestas.",
+            "ineligibleParcels": "Parcelas no edificables"
         },
         "overlay": {
             "rendering": "Renderizando…",

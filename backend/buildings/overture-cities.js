@@ -21,12 +21,18 @@
 //   greeneryTreeSpacingM — scatter spacing (real metres) for trees planted through `osm_decor`
 //                          greenery polygons; default 12. See decor/overture-trees.js.
 
+// Each entry names the ingests this city may read, narrowest first — the `city` column of
+// overture_building_footprint / osm_decor. They are tried in order (data-scope.js): a city-specific
+// ingest if one exists, then the region, then the country, then the bare geometry with no label at
+// all. Naming only ONE of them is how Šibenik read an empty table while 2.9M Croatian footprints sat
+// in it under 'croatia', and reported the ground as having no buildings.
 export const OVERTURE_CITIES = {
     belgrade: {
         // Row set in overture_building_footprint (its `city` column). Usually the same string as the
         // CityConfigManager id, but not always: cadastre-data ingests by AREA, so several cities can
         // share one regional ingest (see sibenik).
         region: 'belgrade',
+        country: 'serbia',
         // Height-extrusion fallbacks for buildings Overture has no measured `height` for. Belgrade
         // heights come only from OSM tags, so most buildings fall back to floors×storey or default.
         floorHeightM: 3.2,   // assumed storey height when only num_floors is known
@@ -35,7 +41,9 @@ export const OVERTURE_CITIES = {
     split: {
         // cadastre-data's `split` ingest: the whole Trogir → Kaštela bay → Split/Solin conurbation,
         // incl. Čiovo (bbox 16.20,43.45,16.55,43.60).
+        city: 'split',
         region: 'split',
+        country: 'croatia',
         // Dalmatian stock is mostly 2–3 storey stone/masonry with ~3 m storeys.
         floorHeightM: 3.0,
         defaultHeightM: 8
@@ -45,7 +53,9 @@ export const OVERTURE_CITIES = {
         // (bbox 15.15,43.65,16.30,44.20) for the M606/M607/L211 railway reconstructions, and the
         // Šibenik–Vodice coast sits inside it. Reusing that row set is the point — a `sibenik`
         // ingest would re-download buildings this table already holds.
+        city: 'sibenik',
         region: 'sjeverna-dalmacija',
+        country: 'croatia',
         // Same Dalmatian stone/masonry stock as Split.
         floorHeightM: 3.0,
         defaultHeightM: 8

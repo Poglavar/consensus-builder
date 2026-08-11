@@ -440,9 +440,9 @@
                                     &#x1F4C2;
                                     <input type="file" accept=".geojson,.json,application/geo+json,application/json" data-reparcel-upload hidden>
                                 </label>
-                                <span class="reparcel-tools-spacer"></span>
-                                <button type="button" class="btn reparcel-allpublic-btn" data-reparcel-all-public hidden data-i18n-key="reparcellization.modal.allPublic" data-i18n-attr="text" title="${allPublicLabel}">${allPublicLabel}</button>
                                 <button type="button" class="btn-icon reparcel-assign-btn" data-reparcel-assign aria-pressed="false" data-i18n-key="reparcellization.modal.assignOwners" data-i18n-attr="title" title="${assignOwnersLabel}">&#x1F464;</button>
+                                <button type="button" class="btn reparcel-allpublic-btn" data-reparcel-all-public hidden data-i18n-key="reparcellization.modal.allPublic" data-i18n-attr="text" title="${allPublicLabel}">${allPublicLabel}</button>
+                                <span class="reparcel-tools-spacer"></span>
                             </div>
                             <div class="reparcel-draw-toolbar" data-reparcel-draw-toolbar hidden>
                                 <button type="button" class="btn-draw-tool" data-reparcel-undo>${t('reparcellization.modal.drawUndo', 'Undo point')} (U)</button>
@@ -3550,6 +3550,39 @@
         return (Number(area) || 0) * avg;
     }
 
+    // Who an owner IS, for the purpose of pooling land.
+    //
+    // An ownership SLOT is scoped to its parcel — `parcel:<id>:owner:<name>` — because the ownership
+    // panel and the acceptance flow ask "who has to sign for THIS parcel". A readjustment asks a
+    // different question: the same person entering with three parcels is one contributor, owed one
+    // share of the pool and drawn in one colour. Keying the legend on the slot made GRAD ŠIBENIK
+    // three separate owners with three separate colours, and the sweep handed each of them a plot.
+    //
+    // So identity here is the person, resolved exactly the way the contribution accounting resolves
+    // it (readjustment-contributions.ownerKeyOf): the normalised name. Deliberately NOT the slot's
+    // `agentId` — that field carries the owner's postal address (routes/parcels.js: `address ||
+    // place`), which the cadastre records inconsistently and which is not an identity at all.
+    // Editor and apply then agree on who is who.
+    //
+    // A PLACEHOLDER slot is the opposite case — it means this parcel's ownership could not be read,
+    // not that one unknown person owns every unreadable parcel. Those stay parcel-scoped, and take
+    // their parcel's name so the legend never shows two identical rows.
+    function ownerIdentityForSlot(slot, parcelId, fallbackName) {
+        const unassigned = t('reparcellization.modal.unassigned', 'Unassigned');
+        if (!slot || slot.placeholder === true) {
+            return {
+                ownerKey: `parcel:${parcelId}:owner`,
+                displayName: String(fallbackName || unassigned)
+            };
+        }
+        const displayName = resolveOwnerDisplayName(slot.displayName, fallbackName, [unassigned]);
+        const contributions = (typeof window !== 'undefined') ? window.__readjustmentContributions : null;
+        const key = (contributions && typeof contributions.ownerKeyOf === 'function')
+            ? contributions.ownerKeyOf({ name: displayName })
+            : String(displayName).trim().replace(/\s+/g, ' ').toLowerCase();
+        return { ownerKey: key || `parcel:${parcelId}:owner`, displayName };
+    }
+
     async function buildOwnerShares(selection) {
         const result = new Map();
         const parcelLayers = selection.layers || [];
@@ -3589,23 +3622,19 @@
 
             const normalizedSlots = normalizeOwnerSlots(slots);
             normalizedSlots.forEach(({ slot, fraction }) => {
-                const ownerKey = slot.key || `${parcelId}:${slot.displayName}`;
                 const parcelLabel = feature.properties.BROJ_CESTICE || parcelId;
+                // “Unassigned” describes a PLOT with no owner. If an ownership source uses that
+                // same placeholder for a contributor, give the contributor a stable parcel-based
+                // name so a complete plan cannot still show an unassigned state.
                 const fallbackOwnerName = t(
                     'reparcellization.modal.syntheticOwner',
                     'Owner of {{parcel}}',
                     { parcel: parcelLabel }
                 );
+                const { ownerKey, displayName } = ownerIdentityForSlot(slot, parcelId, fallbackOwnerName);
                 const existing = result.get(ownerKey) || {
                     ownerKey,
-                    // “Unassigned” describes a PLOT with no owner. If an ownership source uses
-                    // that same placeholder for a contributor, give the contributor a stable
-                    // parcel-based name so a complete plan cannot still show an unassigned state.
-                    displayName: resolveOwnerDisplayName(
-                        slot.displayName,
-                        fallbackOwnerName,
-                        [t('reparcellization.modal.unassigned', 'Unassigned')]
-                    ),
+                    displayName,
                     parcelIds: new Set(),
                     totalArea: 0,
                     totalValue: 0
@@ -3919,24 +3948,34 @@
             if (planPool) selection = { ids: planIds.slice(), layers: resolved.layers };
         }
 
-        // Ruling 2026-08-07: a land readjustment stands on the CADASTRE — its inputs are whole
-        // cadastral parcels, never another proposal's derived fabric. Blocked at authoring:
-        // plots designed against derived geometry mint a plan that can never apply (the
-        // holder's fabric is gone the moment it unapplies). Reopening a saved plan stays
-        // possible so a non-conforming one can still be edited; the apply gate is authoritative.
+        // A readjustment may be designed on any ground that is not already taken — the remainders a
+        // road left included, which is the whole point of forming blocks with roads and then
+        // redividing them (ruling 2026-08-10, replacing the whole-parcel rule of 2026-08-07).
+        //
+        // Being DERIVED is not the test; being SPOKEN FOR is. A corridor piece belongs to the road
+        // that took it, and plots designed over one mint a plan that can never apply. This mirrors
+        // the apply gate exactly — authoring must refuse what apply would refuse, and nothing more,
+        // or the tool blocks work the model allows.
         if (!planPool) {
-            const inputIds = (selection && Array.isArray(selection.ids)) ? selection.ids.map(String) : [];
-            const derivedInputs = inputIds.filter(id => id.includes('#'));
-            if (derivedInputs.length) {
-                const message = t('reparcellization.modal.derivedGroundBlocked',
-                    'A land readjustment must stand on cadastral parcels. Unapply the proposal holding this ground first.');
+            const takenInputs = ((selection && Array.isArray(selection.layers)) ? selection.layers : [])
+                .map(layer => {
+                    const props = (layer && layer.feature && layer.feature.properties) || {};
+                    const takers = Array.isArray(props.formedByProposalIds) ? props.formedByProposalIds : [];
+                    if (!(props.isCorridor === true || props.isTrack === true || takers.length > 0)) return null;
+                    const id = props.parcelId || props.PARCEL_ID || props.id;
+                    return id === undefined || id === null ? '' : String(id);
+                })
+                .filter(id => id !== null);
+            if (takenInputs.length) {
+                const message = t('reparcellization.modal.takenGroundBlocked',
+                    'A land readjustment cannot take ground another proposal already holds. Deselect it, or unapply that proposal first.');
                 if (typeof updateStatus === 'function') updateStatus(message);
                 try {
                     if (typeof window.showEphemeralMessage === 'function') {
                         window.showEphemeralMessage(message, 8000, 'warning');
                     }
                 } catch (_) { }
-                console.warn('[reparcellization] derived parcels in the selection —', derivedInputs);
+                console.warn('[reparcellization] ground already taken in the selection —', takenInputs);
                 return false;
             }
         }

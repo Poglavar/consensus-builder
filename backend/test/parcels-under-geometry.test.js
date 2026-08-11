@@ -141,11 +141,19 @@ describe('refusals', () => {
     });
 
     it('refuses a geometry that covers absurdly much ground instead of serving it slowly', async () => {
-        const many = Array.from({ length: 5001 }, (_, i) => parcelRow(i, 1));
-        response = await request(appWith(rowsPayload(many, 1e9, 1e9)))
-            .post('/parcels/under').send({ geometry: CORRIDOR });
+        // The refusal comes off the COUNT query, before any parcel geometry is built: doing the
+        // full work first cost 17.2 s to answer 413 on a real box, and a caller that splits and
+        // retries paid that price per attempt.
+        let builtRows = 0;
+        const app = appWith((sql) => {
+            if (/count\(\*\) AS parcels/.test(sql)) return { rows: [{ parcels: 5001 }] };
+            builtRows += 1;
+            return rowsPayload([parcelRow(0, 1)], 1e9, 1);
+        });
+        response = await request(app).post('/parcels/under').send({ geometry: CORRIDOR });
         expect(response.status).toBe(413);
         expect(response.body.count).toBe(5001);
+        expect(builtRows, 'the full query ran anyway').toBe(0);
     });
 
     it('reads a malformed geometry as the caller’s fault, not the server’s', async () => {

@@ -43,7 +43,7 @@ describe('land-readjustment UI state', () => {
         expect(source).toContain('data-reparcel-finish>${t(\'reparcellization.modal.drawFinish\', \'Finish plot\')} (F)</button>');
         expect(source).toContain('data-reparcel-cancel-draw>${t(\'reparcellization.modal.drawCancel\', \'Cancel\')} (C)</button>');
         expect(source).toContain('const action = resolveDrawShortcut({');
-        expect(source).toContain('displayName: resolveOwnerDisplayName(');
+        expect(source).toContain('resolveOwnerDisplayName(slot.displayName,');
     });
 });
 

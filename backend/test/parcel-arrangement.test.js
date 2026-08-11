@@ -14,7 +14,7 @@
 // Real turf, real geometry. A rectangle at 46°N crossed by two perpendicular bands is the worked
 // example from the design discussion: 2 pieces become 4 remainders plus the road area.
 
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterEach } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
@@ -521,5 +521,83 @@ describe('refusals', () => {
 
     it('will not arrange nothing', () => {
         expect(() => arrangement.arrangementOf(null, PARCEL_ID, [EAST_WEST])).toThrow(/no geometry/);
+    });
+});
+
+// A scoped re-derivation removes the difference between what the arrangement says a parcel is made
+// of and what is on the map. Other things mint derived ids under the same parcel — a readjustment's
+// plots, a carved building host — and deleting those would take a standing plan off the map the
+// moment a road was drawn across the same ground. So the arrangement has to be able to recognise
+// its own work.
+describe('recognising the arrangement\'s own pieces', () => {
+    it('recognises an id it minted itself, road or remainder', () => {
+        const { pieces } = arrangement.arrangementOf(PARCEL, PARCEL_ID, [EAST_WEST]);
+        expect(pieces.length).toBeGreaterThan(1);
+        pieces.forEach(piece => expect(arrangement.isPieceId(piece.id)).toBe(true));
+    });
+
+    it('does not claim a plot, a legacy child or a cadastral parcel', () => {
+        expect(arrangement.isPieceId('HR-1-100')).toBe(false);            // the cadastre itself
+        expect(arrangement.isPieceId('HR-1-100#5-2')).toBe(false);        // a readjustment plot
+        expect(arrangement.isPieceId('HR-1-100#c-proposal-7')).toBe(false); // a carved host
+        expect(arrangement.isPieceId('HR-339270-824_proposal_9')).toBe(false);
+        expect(arrangement.isPieceId(null)).toBe(false);
+        expect(arrangement.isPieceId('')).toBe(false);
+    });
+});
+
+// turf 6 clips with `polygon-clipping`, whose sweep line can simply give up on real cadastre —
+// "Infinite loop when passing sweep line over endpoints". It is a robustness limit, not bad data:
+// two vertices that are the same corner to a surveyor but differ in the last bit of a double order
+// inconsistently. A parcel that hits it was recorded as "could not arrange" and left WHOLE, so a
+// 5,048 m² parcel sat uncut under two roads that crossed it (HR-330264-519), with nothing on screen
+// to say it had been skipped. A failed clip is retried on snapped coordinates.
+describe('a clip the sweep line cannot do', () => {
+    const SWEEP_ERROR = 'Infinite loop when passing sweep line over endpoints (too many sweep line segments). Please file a bug report.';
+    // A vertex carrying far more precision than any survey — the shape a near-duplicate takes.
+    const FINE = 16.0000000000001;
+    const NASTY_PARCEL = turf.polygon([[[FINE, 46.0000], [16.0010, 46.0000], [16.0010, 46.0010], [FINE, 46.0010], [FINE, 46.0000]]]);
+
+    // Stands in for the clipper: throws on coordinates finer than the retry grid, works otherwise.
+    function turfFailingBelow(operations, { always = false } = {}) {
+        const tooFine = feature => /\.\d{10,}/.test(JSON.stringify(feature?.geometry?.coordinates || []));
+        return new Proxy(turf, {
+            get(target, prop) {
+                if (!operations.includes(prop)) return target[prop];
+                return (a, b) => {
+                    if (always || tooFine(a) || tooFine(b)) throw new Error(SWEEP_ERROR);
+                    return target[prop](a, b);
+                };
+            }
+        });
+    }
+
+    afterEach(() => { globalThis.turf = turf; });
+
+    it('retries on snapped coordinates instead of dropping the parcel', () => {
+        globalThis.turf = turfFailingBelow(['intersect', 'union', 'difference']);
+
+        const { pieces } = arrangement.arrangementOf(NASTY_PARCEL, PARCEL_ID, [EAST_WEST]);
+
+        // The road strip and the two remainders either side of it — the same answer the parcel
+        // would have got had the clipper managed it first time.
+        expect(kinds(pieces)).toEqual({ road: 1, remainder: 2 });
+    });
+
+    it('snapping is invisible: the pieces are the ones the clean parcel produces', () => {
+        const clean = arrangement.arrangementOf(PARCEL, PARCEL_ID, [EAST_WEST]);
+        globalThis.turf = turfFailingBelow(['intersect', 'union', 'difference']);
+        const retried = arrangement.arrangementOf(NASTY_PARCEL, PARCEL_ID, [EAST_WEST]);
+
+        // The nasty parcel differs from the clean one by 1e-13 degrees — a ten-thousandth of a
+        // millimetre — so the pieces must carry the same ids, or every consumer keyed to a piece
+        // would see it as a different piece.
+        expect(retried.pieces.map(piece => piece.id)).toEqual(clean.pieces.map(piece => piece.id));
+    });
+
+    it('still fails loudly when no grid helps — a clip that cannot be done is not a silent whole parcel', () => {
+        globalThis.turf = turfFailingBelow(['difference'], { always: true });
+
+        expect(() => arrangement.arrangementOf(PARCEL, PARCEL_ID, [EAST_WEST])).toThrow(/sweep line/);
     });
 });

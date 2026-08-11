@@ -715,16 +715,39 @@ export function setupParcelsRoute(app, pool) {
             `;
 
             const started = Date.now();
+
+            // COUNT FIRST. The refusal below used to come after the query above had already built
+            // every parcel's GeoJSON, its ownership and the coverage aggregate — so an over-cap ask
+            // cost the full price and then threw all of it away: measured at 17.2 s for a
+            // 59,311-parcel box before answering 413. The count is the same index scan without any
+            // of that (~2 ms on the same box), so a request that cannot be served is refused
+            // immediately, and the caller can split and retry while it still means something.
+            const countSql = `
+                WITH input AS (
+                    SELECT ST_MakeValid(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON($1::text), $2::int), 3765)) AS g
+                ),
+                parts AS (
+                    SELECT ST_Subdivide(g, ${FOOTPRINT_SUBDIVIDE_VERTICES}) AS part FROM input
+                )
+                SELECT count(*) AS parcels FROM (
+                    SELECT DISTINCT p.cestica_id
+                    FROM parcel p, parts
+                    WHERE p.current = true
+                      AND p.geom && parts.part
+                      AND ST_Intersects(p.geom, parts.part)
+                ) hit
+            `;
+            const counted = Number((await pool.query(countSql, [JSON.stringify(geometry), srid])).rows[0]?.parcels || 0);
+            if (counted > MAX_PARCELS_UNDER) {
+                return res.status(413).json({
+                    error: `The geometry covers ${counted} parcels, over the ${MAX_PARCELS_UNDER} limit.`,
+                    count: counted
+                });
+            }
+
             const result = await pool.query(sql, [JSON.stringify(geometry), srid]);
             const row = result.rows[0] || {};
             const rows = Array.isArray(row.rows) ? row.rows : [];
-
-            if (rows.length > MAX_PARCELS_UNDER) {
-                return res.status(413).json({
-                    error: `The geometry covers ${rows.length} parcels, over the ${MAX_PARCELS_UNDER} limit.`,
-                    count: rows.length
-                });
-            }
 
             // Coverage is computed in SQL as a ratio of two projected areas, where the projection's
             // scale distortion cancels. The footprint's own size leaves as an absolute number, so it

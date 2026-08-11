@@ -11,6 +11,8 @@ describe('ProposalManager mutation boundary', () => {
     let originalUnapplyBody;
     let originalRefresh;
     let originalRebuild;
+    let originalDerive;
+    let originalUndoPayload;
     let originalCollectAlternatives;
     let previousSetProposalApplied;
     let store;
@@ -21,6 +23,8 @@ describe('ProposalManager mutation boundary', () => {
         originalUnapplyBody = ProposalManager._unapplyProposalTransactionBody;
         originalRefresh = ProposalManager._refreshUIAfterProposalChange;
         originalRebuild = ProposalManager.rebuildAppliedFabric;
+        originalDerive = ProposalManager.deriveForNewProposal;
+        originalUndoPayload = ProposalManager._undoProposalPayload;
         originalCollectAlternatives = ProposalManager._collectAppliedAlternativesForExplicitApply;
         previousSetProposalApplied = globalThis.setProposalApplied;
 
@@ -49,6 +53,8 @@ describe('ProposalManager mutation boundary', () => {
         ProposalManager._unapplyProposalTransactionBody = originalUnapplyBody;
         ProposalManager._refreshUIAfterProposalChange = originalRefresh;
         ProposalManager.rebuildAppliedFabric = originalRebuild;
+        ProposalManager.deriveForNewProposal = originalDerive;
+        ProposalManager._undoProposalPayload = originalUndoPayload;
         ProposalManager._collectAppliedAlternativesForExplicitApply = originalCollectAlternatives;
         if (previousSetProposalApplied === undefined) delete globalThis.setProposalApplied;
         else globalThis.setProposalApplied = previousSetProposalApplied;
@@ -101,7 +107,9 @@ describe('ProposalManager mutation boundary', () => {
 
     it('makes the explicitly applied alternative the only standing member', async () => {
         ProposalManager._collectAppliedAlternativesForExplicitApply = () => [store.getProposal('conflict')];
-        ProposalManager.rebuildAppliedFabric = async () => ({ ok: true, failed: [] });
+        // The parked alternative's payload comes off the map with its record flip.
+        ProposalManager._undoProposalPayload = () => null;
+        ProposalManager.deriveForNewProposal = async () => ({ applied: true });
 
         await expect(ProposalManager.applyProposal('target')).resolves.toBe(true);
 
@@ -109,18 +117,20 @@ describe('ProposalManager mutation boundary', () => {
         expect(store.getProposal('conflict').applied).toBe(false);
     });
 
-    it('restores the previous alternative when replay removes the chosen proposal', async () => {
-        let rebuilds = 0;
+    it('restores the previous alternative when the derivation removes the chosen proposal', async () => {
+        let derivations = 0;
         ProposalManager._collectAppliedAlternativesForExplicitApply = () => [store.getProposal('conflict')];
-        ProposalManager.rebuildAppliedFabric = async () => {
-            rebuilds += 1;
-            if (rebuilds === 1) setProposalApplied(store.getProposal('target'), false, { stamp: false });
-            return { ok: true, failed: [] };
+        ProposalManager._undoProposalPayload = () => null;
+        ProposalManager.deriveForNewProposal = async () => {
+            derivations += 1;
+            if (derivations === 1) setProposalApplied(store.getProposal('target'), false, { stamp: false });
+            return { applied: true };
         };
 
         await expect(ProposalManager.applyProposal('target')).resolves.toBe(false);
 
-        expect(rebuilds).toBe(2);
+        // One derivation for the target, one to put the parked alternative back on the map.
+        expect(derivations).toBe(2);
         expect(store.getProposal('target')).toEqual({ proposalId: 'target', applied: false, value: 'before' });
         expect(store.getProposal('conflict')).toEqual({ proposalId: 'conflict', applied: true, value: 'before' });
     });

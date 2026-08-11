@@ -181,7 +181,8 @@
 
         console.debug(`[_applyBuildingProposal] Formed from ${workingParentIds.length} live parcel(s)`);
 
-        refreshProposalUIAfterApply(`Applied building proposal ${proposalData.title || idLabel}`);
+        // The status line is written once, for every type, by _runProposalApplyWithSummary.
+        refreshProposalUIAfterApply();
 
         const totalTime = performance.now() - startTime;
         console.debug(`[_applyBuildingProposal] ✓ Building proposal application completed in ${totalTime.toFixed(2)}ms`);

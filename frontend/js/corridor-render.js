@@ -724,7 +724,32 @@ function renderCorridorEdgeFill(definition, group, ownerClass) {
     });
 }
 
+// A full redraw rebuilds the cross-section of EVERY applied corridor, re-cuts the parks/squares/
+// lakes and the building-ground surround against all of them, and rebuilds the 2D building layer —
+// ~640 ms on a town-sized plan. One operation that touches several records (moving a junction moves
+// every road that meets it) would otherwise pay that once per record. Hold the redraws for the
+// length of the operation and do exactly one at the end.
+let corridorRefreshHeld = 0;
+let corridorRefreshMissed = false;
+
+async function withCorridorStripRefreshHeld(run) {
+    corridorRefreshHeld += 1;
+    try {
+        return await run();
+    } finally {
+        corridorRefreshHeld -= 1;
+        if (!corridorRefreshHeld && corridorRefreshMissed) {
+            corridorRefreshMissed = false;
+            scheduleCorridorStripRefresh();
+        }
+    }
+}
+
 function refreshAppliedCorridorStrips() {
+    if (corridorRefreshHeld) {
+        corridorRefreshMissed = true;
+        return;
+    }
     clearAppliedCorridorStrips();
     if (typeof map === 'undefined' || !map) return;
     if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') return;
@@ -893,6 +918,7 @@ if (typeof window !== 'undefined') {
     window.corridorProposalDefinition = corridorProposalDefinition;
     window.refreshAppliedCorridorStrips = refreshAppliedCorridorStrips;
     window.scheduleCorridorStripRefresh = scheduleCorridorStripRefresh;
+    window.withCorridorStripRefreshHeld = withCorridorStripRefreshHeld;
     window.clearAppliedCorridorStrips = clearAppliedCorridorStrips;
     window.CORRIDOR_STRIPS_PANE = CORRIDOR_STRIPS_PANE;
     window.corridorOwnerClass = corridorOwnerClass;

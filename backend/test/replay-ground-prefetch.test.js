@@ -1,13 +1,15 @@
-// A replay loads its ground all at once, then folds in order.
+// A replay loads its ground in ONE request, then folds in order.
 //
-// The fold has to stay ordered — each member cuts what the one before it left — but the fetches
-// that put the ground on the map are independent reads, and they used to sit INSIDE the fold, one
-// await per member. So finishing a single road cost one HTTP round-trip for every proposal already
-// applied, in series, before any geometry ran: a plan of twenty roads paid twenty trips, and every
-// road drawn made the next one slower.
+// The fold has to stay ordered — each member cuts what the one before it left — but the fetches that
+// put the ground on the map are independent reads. They used to sit INSIDE the fold, one await per
+// member, so finishing a single road cost a round trip for every proposal already applied. Pulling
+// them out and running them concurrently fixed the series; it did not fix the COUNT, and on a
+// 165-member plan 165 concurrent-ish trips were still ~7 s of silence — mostly re-fetching each
+// other's parcels, since adjacent proposals share ground and the memo is per PROPOSAL.
 //
-// Concurrency is the whole point of the change, so it is asserted directly — a lane count of one
-// would pass every behavioural test while restoring exactly the cost that was removed.
+// Now every pending member's footprint goes into one MultiPolygon and the server answers once, with
+// the parcels under all of them, DISTINCT. The per-member path stays as the fallback, so a footprint
+// the batch cannot carry still gets its ground — and that path is still concurrent.
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
@@ -84,49 +86,78 @@ function harness() {
     return { _loadReplayGround: ProposalManager._loadReplayGround, _replayGroundFetched: new Set() };
 }
 
-describe('the ground for a whole replay is fetched concurrently', () => {
-    it('opens several lanes at once rather than one member at a time', async () => {
-        const members = Array.from({ length: 8 }, (_, i) => member(i));
-        const { state, fetcher } = gatedFetch();
-        installGlobal('fetchParcelsUnderGeometry', fetcher);
-        const manager = harness();
-
-        const pass = manager._loadReplayGround(members);
-        // The lanes open synchronously, before anything can resolve.
-        expect(state.peak).toBeGreaterThan(1);
-        await drain(pass, state, members.length);
-        expect(state.calls).toBe(8);
-    });
-
-    it('caps the fan-out so a big plan is not a burst against a rate-limited API', async () => {
-        const members = Array.from({ length: 40 }, (_, i) => member(i));
-        const { state, fetcher } = gatedFetch();
-        installGlobal('fetchParcelsUnderGeometry', fetcher);
-        const manager = harness();
-
-        const pass = manager._loadReplayGround(members);
-        expect(state.peak).toBeLessThanOrEqual(8);
-        await drain(pass, state, members.length);
-        expect(state.calls).toBe(40);
-    });
-
-    it('never opens more lanes than there are members', async () => {
-        const { state, fetcher } = gatedFetch();
-        installGlobal('fetchParcelsUnderGeometry', fetcher);
-        const manager = harness();
-
-        const pass = manager._loadReplayGround([member(0), member(1)]);
-        expect(state.peak).toBe(2);
-        await drain(pass, state, 2);
-    });
-
-    it('asks for each member by its own footprint', async () => {
+describe('the ground for a whole replay is fetched in one request', () => {
+    it('asks in bounded batches, not once per member and not all at once', async () => {
         const seen = [];
-        installGlobal('fetchParcelsUnderGeometry', async footprint => { seen.push(turf.area(footprint)); return { ids: [] }; });
+        installGlobal('fetchParcelsUnderGeometry', async geometry => { seen.push(geometry); return { ids: [] }; });
+        const manager = harness();
+
+        await manager._loadReplayGround(Array.from({ length: 40 }, (_, i) => member(i)));
+
+        // 40 members, 20 per request: two requests, not forty — and not one giant ask, which is how
+        // a real plan blew the endpoint's parcel cap and paid 17 s for a 413.
+        expect(seen).toHaveLength(2);
+        seen.forEach(geometry => {
+            expect(geometry.type).toBe('MultiPolygon');
+            expect(geometry.coordinates.length).toBeLessThanOrEqual(20);
+        });
+        // Every member's footprint is in one of them — the answer must cover all their ground.
+        expect(seen.reduce((sum, geometry) => sum + geometry.coordinates.length, 0)).toBe(40);
+    });
+
+    it('never sends more footprints in one request than the measured-safe batch', () => {
+        expect(managerSource).toContain('const REPLAY_GROUND_BATCH_SIZE = 20;');
+        expect(managerSource).toContain('index += REPLAY_GROUND_BATCH_SIZE');
+    });
+
+    it('carries each member\'s own footprint, not a box around them all', async () => {
+        const seen = [];
+        installGlobal('fetchParcelsUnderGeometry', async geometry => { seen.push(geometry); return { ids: [] }; });
         const manager = harness();
         await manager._loadReplayGround([member(0), member(1), member(2)]);
-        expect(seen).toHaveLength(3);
-        seen.forEach(area => expect(area).toBeGreaterThan(0));
+
+        // The asked-for area is the SUM of the three footprints, to the square metre. A bounding box
+        // around them — the approximation this endpoint exists to avoid — could only ever be larger.
+        const asked = turf.area({ type: 'Feature', properties: {}, geometry: seen[0] });
+        const parts = [0, 1, 2].reduce((sum, i) => sum + turf.area({
+            type: 'Feature', properties: {}, geometry: member(i).roadProposal.definition.polygon
+        }), 0);
+        expect(asked).toBeCloseTo(parts, 0);
+        const box = turf.area(turf.bboxPolygon(turf.bbox({ type: 'Feature', properties: {}, geometry: seen[0] })));
+        expect(asked).toBeLessThan(box);
+    });
+
+    it('halves and retries when the server refuses the batch, rather than losing the replay', async () => {
+        // Over the parcel cap (413), or a dropped connection. Splitting keeps the win for the half
+        // that fits instead of falling all the way back to one request per member.
+        const sizes = [];
+        installGlobal('fetchParcelsUnderGeometry', async geometry => {
+            sizes.push(geometry.coordinates.length);
+            if (geometry.coordinates.length > 2) throw new Error('413');
+            return { ids: [] };
+        });
+        vi.spyOn(console, 'warn').mockImplementation(() => { });
+        const manager = harness();
+
+        await manager._loadReplayGround(Array.from({ length: 4 }, (_, i) => member(i)));
+
+        expect(sizes[0]).toBe(4);          // the whole plan first
+        expect(sizes.slice(1)).toEqual([2, 2]);
+    });
+
+    it('still fetches concurrently on the fallback path', async () => {
+        // Members with no readable footprint cannot be batched; they must not go back to a series.
+        const { state, fetcher } = gatedFetch();
+        installGlobal('fetchParcelsUnderGeometry', fetcher);
+        installGlobal('fetchParcelsForIds', fetcher);
+        const manager = harness();
+        const idOnly = index => ({ proposalId: `plain-${index}`, cadastreParcelIds: [`HR-1-${index}`] });
+
+        const pass = manager._loadReplayGround(Array.from({ length: 8 }, (_, i) => idOnly(i)));
+        await new Promise(resolve => setImmediate(resolve));
+        expect(state.peak).toBeGreaterThan(1);
+        expect(state.peak).toBeLessThanOrEqual(8);
+        await drain(pass, state, 8);
     });
 
     it('reports what it cost, so a slow rebuild can say which half was slow', async () => {
@@ -153,10 +184,10 @@ describe('ground already on the map is not fetched again', () => {
         const members = [member(0), member(1), member(2)];
 
         await manager._loadReplayGround(members);
-        expect(calls).toBe(3);
+        expect(calls).toBe(1);              // one request for all three
         await manager._loadReplayGround(members);
         await manager._loadReplayGround(members);
-        expect(calls).toBe(3);
+        expect(calls).toBe(1);
     });
 
     it('still fetches a formation joining an already-loaded plan', async () => {
@@ -166,7 +197,8 @@ describe('ground already on the map is not fetched again', () => {
 
         await manager._loadReplayGround([member(0), member(1)]);
         await manager._loadReplayGround([member(0), member(1), member(2)]);
-        expect(calls).toBe(3);
+        // One request for the first pair, one for the newcomer alone.
+        expect(calls).toBe(2);
     });
 
     it('retries one whose fetch failed rather than leaving it short of ground', async () => {
