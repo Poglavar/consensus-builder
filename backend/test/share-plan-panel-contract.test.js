@@ -58,9 +58,29 @@ describe('share plan panel contract', () => {
     it('draws NOTHING when the panel opens', () => {
         // Opening a list is not a request to draw three hundred overlays. It cost seconds of turf
         // and Leaflet work before the panel was usable, and left the map unreadable under the whole
-        // plan at once. Hover and click are what put a proposal on the map.
-        expect(panelFn).not.toContain("'drawingProposals'");
-        expect(panelFn).not.toContain('key => syncPlanOverlay(key),');
+        // plan at once.
+        //
+        // Scoped to the FILL, not the whole function: drawing all of them is now available behind a
+        // toggle, and a file-wide grep for 'drawingProposals' would fail on that even though the
+        // fill still draws nothing. Asserting the absence of a string is a proxy; the property is
+        // that opening the panel starts no drawing.
+        const fill = panelFn.slice(panelFn.indexOf('(async () => {'), panelFn.indexOf('await initializeUploadChecks();'));
+        expect(fill).not.toContain("'drawingProposals'");
+        expect(fill).not.toContain('syncPlanOverlay');
+        // One pass in the fill — the rows. A second would be a drawing pass.
+        expect(fill.match(/if \(!await inChunks\(/g) || []).toHaveLength(1);
+    });
+
+    it('offers the whole-plan paint as a toggle, off until it is asked for', () => {
+        // Hovering rows one at a time answers "is THIS one uploaded"; it cannot answer "which of my
+        // three hundred are". The toggle can, in the treatments the legend defines.
+        expect(panelFn).toContain("tShare('plan.showAllOnMap'");
+        expect(panelFn).toContain("showAll.type = 'checkbox';");
+        expect(panelFn).not.toContain('showAll.checked = true');
+        // And it draws in slices, like the row build — 300 overlays in one task is the freeze the
+        // panel was rebuilt to avoid.
+        const handler = panelFn.slice(panelFn.indexOf("showAll.addEventListener('change'"));
+        expect(handler.slice(0, 1400)).toContain('await inChunks(keys, key => syncPlanOverlay(key)');
     });
 
     it('rows highlight on hover/click and never open details', () => {

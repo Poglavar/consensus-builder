@@ -772,6 +772,38 @@ function showSharePlanPanel() {
             legendEntry('plan.legendUploaded', 'Uploaded', false),
             legendEntry('plan.legendNotUploaded', 'Not uploaded yet', true)
         );
+
+        // Opt-in whole-plan paint. Hovering rows one at a time answers "is THIS one uploaded"; it
+        // does not answer "which of my three hundred are". This does, in the two treatments the
+        // swatches above define — and it stays OFF by default, because opening a list is still not
+        // a request to draw three hundred overlays.
+        const showAllWrap = document.createElement('label');
+        showAllWrap.className = 'share-plan-legend-toggle';
+        const showAll = document.createElement('input');
+        showAll.type = 'checkbox';
+        const showAllText = document.createElement('span');
+        showAllText.textContent = tShare('plan.showAllOnMap', 'Show all on the map');
+        showAllWrap.append(showAll, showAllText);
+        showAll.addEventListener('change', async () => {
+            const keys = [...proposalsByHash.keys()];
+            if (!showAll.checked) {
+                keys.forEach(key => {
+                    const layer = overlayByKey.get(key);
+                    if (!layer) return;
+                    try { overlayGroup.removeLayer(layer); } catch (_) { }
+                    overlayByKey.delete(key);
+                });
+                setStatus('');
+                return;
+            }
+            // In frame-sized slices, like the row build: three hundred overlays in one task is the
+            // freeze this panel was rebuilt to avoid.
+            showAll.disabled = true;
+            await inChunks(keys, key => syncPlanOverlay(key), 'drawingProposals', 'Drawing {done}/{total} proposals on the map...');
+            showAll.disabled = false;
+            setStatus('');
+        });
+        legend.appendChild(showAllWrap);
         panelContent.appendChild(legend);
 
         const container = document.createElement('div');
@@ -871,7 +903,10 @@ function showSharePlanPanel() {
                         weight: uploaded ? 2 : 3,
                         dashArray: uploaded ? null : '7 6',
                         fillColor: color,
-                        fillOpacity: uploaded ? 0.35 : 0.14
+                        // 0.40 against 0.10, not 0.35 against 0.14: over aerial imagery a quarter
+                        // of a step in opacity is not a difference anyone can see, and the dash is
+                        // the only other cue on a shape too small to show one.
+                        fillOpacity: uploaded ? 0.40 : 0.10
                     },
                     interactive: false
                 });
@@ -918,6 +953,7 @@ function showSharePlanPanel() {
             const proposal = proposalsByHash.get(key);
             if (!proposal) return;
             if (typeof highlightFeatureGroupsForHover !== 'function') return;
+            const uploaded = !!(uploadState.get(key) || {}).uploaded;
             // Same live-children resolver as the paint, so hover outlines exactly what is painted.
             const bodyFeatures = proposalBodyFeaturesFor(proposal);
             const parcelFeatures = groundFeaturesFor(proposalFeaturesFor(proposal), bodyFeatures);
@@ -931,12 +967,18 @@ function showSharePlanPanel() {
                 },
                 {
                     // Last, so the body sits above the parcels rather than under them.
+                    //
+                    // Solid and filled when the server already has it, dashed and hollow when it is
+                    // still only here — the same language the legend and the plan overlay use. This
+                    // is the surface that actually gets looked at: the overlay repaints on a
+                    // CHECKBOX toggle, and every row starts checked, so unless you untick and retick
+                    // a row the overlay never runs and the upload state was invisible.
                     features: bodyFeatures,
                     color: SHARE_PLAN_HOVER_BODY_COLOR,
-                    weight: 4,
-                    dashArray: null,
+                    weight: uploaded ? 4 : 5,
+                    dashArray: uploaded ? null : '8 6',
                     fillColor: SHARE_PLAN_HOVER_BODY_COLOR,
-                    fillOpacity: 0.25,
+                    fillOpacity: uploaded ? 0.35 : 0.05,
                     showLabels: false
                 }
             ]);

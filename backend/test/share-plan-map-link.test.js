@@ -85,15 +85,44 @@ describe('the map shows what is already on the server', () => {
     it('distinguishes them by SHADING, not by a second colour', () => {
         // Every proposal already owns a colour to tell it from its neighbours; a second colour axis
         // would collide with the first. So fill opacity and dash carry the upload state instead.
-        expect(paint).toContain('fillOpacity: uploaded ? 0.35 : 0.14');
+        // The COLOUR must be the proposal's own on both sides; how far apart the opacities are is
+        // asserted separately, so tuning the contrast does not have to touch this test.
         expect(paint).toContain('const color = colorByKey.get(key)');
         expect(paint).toContain('fillColor: color');
+        expect(paint).toMatch(/fillOpacity: uploaded \? [\d.]+ : [\d.]+/);
     });
 
     it('repaints when the server answer arrives, so the map cannot lag the row', () => {
         const update = dialog.slice(dialog.indexOf('const updateRowState = (key) => {'), dialog.indexOf('const toggleCheckbox ='));
         expect(update).toContain("controls.row.classList.toggle('is-uploaded', !!state.uploaded);");
         expect(update).toContain('if (overlayByKey.has(key)) syncPlanOverlay(key);');
+    });
+
+    it('the legend swatch is big enough for a dash to BE a dash', () => {
+        // Shipped at 16x10 with a 2px dashed border, which draws about one dash per edge: the two
+        // swatches looked like the same solid box, so the legend explained nothing. The test that
+        // passed throughout only asked whether the rules existed.
+        const swatch = css.slice(css.indexOf('.share-plan-legend i {'), css.indexOf('.share-plan-legend .is-pending {'));
+        const width = Number((swatch.match(/width:\s*(\d+)px/) || [])[1]);
+        const border = Number((swatch.match(/border:\s*([\d.]+)px/) || [])[1]);
+        expect(width, 'swatch too narrow to show a dash pattern').toBeGreaterThanOrEqual(24);
+        expect(border, 'a thick border on a short edge draws one dash and reads as solid').toBeLessThanOrEqual(2);
+    });
+
+    it('the two swatches differ in BOTH fill and edge, not one of them', () => {
+        // To the closing brace, not a fixed character count — a comment inside the rule pushed the
+        // declarations past a 300-char window and the test failed on its own slice.
+        const start = css.indexOf('.share-plan-legend .is-pending {');
+        const pending = css.slice(start, css.indexOf('}', start));
+        expect(pending).toContain('border-style: dashed;');
+        expect(pending).toMatch(/background:\s*rgba\([^)]*0\.1/);
+    });
+
+    it('the map opacities are far enough apart to see over imagery', () => {
+        const paint = dialog.slice(dialog.indexOf('const syncPlanOverlay = (key) => {'), dialog.indexOf('const keyOfProposal ='));
+        const pair = paint.match(/fillOpacity: uploaded \? ([\d.]+) : ([\d.]+)/);
+        expect(pair, 'fillOpacity pair not found').toBeTruthy();
+        expect(Number(pair[1]) - Number(pair[2])).toBeGreaterThanOrEqual(0.25);
     });
 
     it('carries a legend, because a dashed outline explains nothing on its own', () => {

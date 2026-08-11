@@ -191,7 +191,12 @@
         "revertFailed": "No se pudo restaurar la versión anterior.",
         "geometryUpdated": "Geometría actualizada.",
         "builtButParked": "El objeto se creó pero no se pudo colocar en el mapa (un conflicto lo bloqueó). Está aparcado en tu lista de propuestas — selecciónalo allí para verlo y aplicarlo.",
-        "builtButParkedBecause": "El objeto se creó pero no se pudo colocar en el mapa: {{reason}} Está aparcado en tu lista de propuestas — selecciónalo allí para verlo y aplicarlo."
+        "builtButParkedBecause": "El objeto se creó pero no se pudo colocar en el mapa: {{reason}} Está aparcado en tu lista de propuestas — selecciónalo allí para verlo y aplicarlo.",
+        "uploadRateLimitedAt": {
+            "one": "Demasiadas subidas por ahora. Puedes subir el resto a las {{at}}, en aproximadamente {{minutes}} minuto.",
+            "few": "Demasiadas subidas por ahora. Puedes subir el resto a las {{at}}, en aproximadamente {{minutes}} minutos.",
+            "other": "Demasiadas subidas por ahora. Puedes subir el resto a las {{at}}, en aproximadamente {{minutes}} minutos."
+        }
     },
     "languages": {
         "en": "Inglés",
@@ -1855,7 +1860,8 @@
                     "pickedOnMap": "Seleccionado: {{title}} — {{parcel}}",
                     "pickedNotInPlan": "Esa propuesta no está en este plan.",
                     "legendUploaded": "Subida",
-                    "legendNotUploaded": "Aún sin subir"
+                    "legendNotUploaded": "Aún sin subir",
+                    "showAllOnMap": "Mostrar todo en el mapa"
                 },
                 "rebased": "{{count}} de ellas ocupan aquí un terreno distinto al de su publicación: {{titles}} (detalles en la consola).",
                 "checkingProposals": "Verificando {{done}}/{{total}} propuestas en el servidor...",

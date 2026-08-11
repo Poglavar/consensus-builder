@@ -79,3 +79,50 @@ describe('named plans CRUD', () => {
         expect(bad.status).toBe(403);
     });
 });
+
+// Naming a plan refused at 51 proposals — "Too many proposals (max 50)" — which is a fifth of an
+// ordinary plan here, so the feature was unusable on anything real.
+//
+// The count was a proxy. What a name actually carries is one link: `<base>/proposals/<id,id,id…>`,
+// handed to a browser through the ENS `url` text record. So the limit belongs on the LENGTH of that
+// link, which is also the only form that stays correct as ids grow — three hundred four-digit ids
+// fit comfortably and three hundred seven-digit ones do not.
+describe('how big a named plan may be', () => {
+    let app;
+    beforeEach(() => {
+        app = createRouteApp((application, pool) => setupEnsPlansRoute(application, pool), makePlanPool());
+    });
+
+    const ids = (count, start = 900) => Array.from({ length: count }, (_, i) => String(start + i));
+
+    it('takes a plan of three hundred — the size people actually build', async () => {
+        const res = await request(app).post('/plans').send({ slug: 'sibenik-2066-1', proposalIds: ids(300) });
+        expect(res.status, res.body && res.body.error).toBe(201);
+        expect(res.body.proposalIds).toHaveLength(300);
+    });
+
+    it('refuses the same count when the ids are long enough to overflow the link', async () => {
+        const res = await request(app).post('/plans').send({ slug: 'seven-digit', proposalIds: ids(300, 1234567) });
+        expect(res.status).toBe(400);
+        expect(res.body.error).toMatch(/characters/);
+    });
+
+    it('says how many are too many, instead of only that there are', async () => {
+        // "Too long" leaves you guessing at how many to drop.
+        const res = await request(app).post('/plans').send({ slug: 'way-too-big', proposalIds: ids(900, 1234567) });
+        expect(res.body.error).toMatch(/too many/);
+        expect(res.body.error).toMatch(/roughly \d+ fit/);
+    });
+
+    it('measures the DEDUPLICATED list, which is what the link carries', async () => {
+        const duplicated = ids(300).concat(ids(300));
+        const res = await request(app).post('/plans').send({ slug: 'with-dupes', proposalIds: duplicated });
+        expect(res.status, res.body && res.body.error).toBe(201);
+        expect(res.body.proposalIds).toHaveLength(300);
+    });
+
+    it('still refuses an empty plan', async () => {
+        const res = await request(app).post('/plans').send({ slug: 'empty-plan', proposalIds: [] });
+        expect(res.status).toBe(400);
+    });
+});

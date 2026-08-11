@@ -5,7 +5,16 @@
 import { createHash, randomBytes } from 'node:crypto';
 
 const ENS_NAMESPACE = 'proposals.urbangametheory.eth';
-const MAX_PROPOSALS = 50;
+// A named plan resolves to `<publicBaseUrl>/proposals/<id,id,id…>` (see ens.js), and that string is
+// what the ENS `url` text record hands a browser. So the real limit is the LENGTH of that link, not
+// a count — the count was 50, which is a fifth of an ordinary plan here and refused naming outright.
+//
+// 1800 leaves room under the ~2000 characters that proxies and older browsers can be relied on for,
+// with 150 of it reserved for the base URL this file cannot see. A count cap alone goes quietly
+// wrong as ids grow: 300 four-digit ids fit comfortably, 300 seven-digit ones do not.
+const MAX_PROPOSALS = 1000;
+const MAX_RESOLVED_URL = 1800;
+const BASE_URL_ALLOWANCE = 150;
 const SLUG_RE = /^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$/; // 3–63 chars, no edge hyphen
 const NUMERIC_LABEL_RE = /^[0-9]+(-[0-9]+)*$/;          // reserved for proposal ids
 const PROPOSAL_ID_RE = /^[0-9]+$/;
@@ -24,7 +33,22 @@ function validateProposalIds(value) {
     if (value.length > MAX_PROPOSALS) return { error: `Too many proposals (max ${MAX_PROPOSALS}).` };
     const ids = value.map((v) => (v === undefined || v === null ? '' : v.toString().trim()));
     if (!ids.every((id) => PROPOSAL_ID_RE.test(id))) return { error: 'Each proposal id must be a numeric (minted) id.' };
-    return { ids: [...new Set(ids)] };
+
+    const unique = [...new Set(ids)];
+    // Measured on the deduplicated list, because that is what the link will actually carry.
+    const linkLength = BASE_URL_ALLOWANCE + '/proposals/'.length + unique.join(',').length;
+    if (linkLength > MAX_RESOLVED_URL) {
+        // Say how far over, and roughly what fits — "too long" alone leaves you guessing at how
+        // many to drop.
+        const perId = Math.max(2, Math.round(unique.join(',').length / unique.length));
+        const fits = Math.floor((MAX_RESOLVED_URL - BASE_URL_ALLOWANCE - '/proposals/'.length) / perId);
+        return {
+            error: `That plan's link would be ${linkLength} characters, over the ${MAX_RESOLVED_URL} a `
+                + `name can carry. ${unique.length} proposals is about ${unique.length - fits} too many `
+                + `— roughly ${fits} fit.`
+        };
+    }
+    return { ids: unique };
 }
 
 const planView = (row) => ({

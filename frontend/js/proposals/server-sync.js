@@ -397,13 +397,27 @@ function rateLimitRetrySeconds(response) {
 function uploadRateLimitMessage(retryAfterSeconds) {
     const known = retryAfterSeconds !== null && retryAfterSeconds !== undefined;
     const minutes = known ? Math.max(1, Math.ceil(retryAfterSeconds / 60)) : null;
-    const key = known ? 'proposalDrafts.uploadRateLimitedIn' : 'proposalDrafts.uploadRateLimited';
-    const fallback = known
-        ? `Too many uploads for now. Try the rest in about ${minutes} minute${minutes === 1 ? '' : 's'}.`
-        : 'Too many uploads for now. Wait a few minutes and upload the rest.';
+    // A CLOCK TIME, not only a duration. "In about 5 minutes" starts counting from whenever you
+    // happened to read it, so after stepping away it says nothing; a time of day is still true ten
+    // minutes later. Both are given, because a duration is what you want when it is seconds away.
+    let at = null;
+    if (known) {
+        try {
+            const when = new Date(Date.now() + retryAfterSeconds * 1000);
+            at = when.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+        } catch (_) { at = null; }
+    }
+    const key = at
+        ? 'proposalDrafts.uploadRateLimitedAt'
+        : (known ? 'proposalDrafts.uploadRateLimitedIn' : 'proposalDrafts.uploadRateLimited');
+    const fallback = at
+        ? `Too many uploads for now. You can upload the rest at ${at}, in about ${minutes} minute${minutes === 1 ? '' : 's'}.`
+        : (known
+            ? `Too many uploads for now. Try the rest in about ${minutes} minute${minutes === 1 ? '' : 's'}.`
+            : 'Too many uploads for now. Wait a few minutes and upload the rest.');
     try {
         if (typeof window !== 'undefined' && window.i18n && typeof window.i18n.t === 'function') {
-            const translated = window.i18n.t(key, known ? { minutes, count: minutes } : {});
+            const translated = window.i18n.t(key, known ? { minutes, count: minutes, at: at || '' } : {});
             if (translated && translated !== key) return translated;
         }
     } catch (_) { /* fall through to English */ }

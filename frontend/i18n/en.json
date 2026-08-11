@@ -191,7 +191,12 @@
         "revertFailed": "Could not restore the previous version.",
         "geometryUpdated": "Geometry updated.",
         "builtButParked": "The object was created but could not be placed on the map (a conflict blocked it). It is parked in your proposals list — select it there to see and apply it.",
-        "builtButParkedBecause": "The object was created but could not be placed on the map: {{reason}} It is parked in your proposals list — select it there to see and apply it."
+        "builtButParkedBecause": "The object was created but could not be placed on the map: {{reason}} It is parked in your proposals list — select it there to see and apply it.",
+        "uploadRateLimitedAt": {
+            "one": "Too many uploads for now. You can upload the rest at {{at}}, in about {{minutes}} minute.",
+            "few": "Too many uploads for now. You can upload the rest at {{at}}, in about {{minutes}} minutes.",
+            "other": "Too many uploads for now. You can upload the rest at {{at}}, in about {{minutes}} minutes."
+        }
     },
     "languages": {
         "en": "English",
@@ -1835,7 +1840,8 @@
                     "pickedOnMap": "Selected {{title}} — {{parcel}}",
                     "pickedNotInPlan": "That proposal is not in this plan.",
                     "legendUploaded": "Uploaded",
-                    "legendNotUploaded": "Not uploaded yet"
+                    "legendNotUploaded": "Not uploaded yet",
+                    "showAllOnMap": "Show all on the map"
                 },
                 "rebased": "{{count}} of them take different ground here than when published: {{titles}} (details in the console).",
                 "checkingProposals": "Checking {{done}}/{{total}} proposals on the server...",

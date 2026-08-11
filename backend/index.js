@@ -182,7 +182,12 @@ function attachSqlLogging(pool, runQueryWithLogging) {
 //
 // Exported so the tests measure the real number instead of each keeping a copy of it — they had
 // 50 hardcoded in two places, and both went red the moment this moved.
-export const WRITE_RATE_LIMIT = 100;
+//
+// Raised 100 → 600. A plan is hundreds of proposals and uploading it is one write each, so a
+// hundred cut a real upload off a third of the way through and left it half-published. Six hundred
+// in fifteen minutes is still far below what an attacker needs to be worth rate-limiting, and above
+// what the largest plan here costs to publish in one go.
+export const WRITE_RATE_LIMIT = 600;
 
 export function createApp({ env = process.env, pool: providedPool } = {}) {
     const app = express();
@@ -232,6 +237,12 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
             credentials: true
         };
 
+        // Rate-limit headers are NOT on the CORS safe list, so a cross-origin page cannot read
+        // them unless they are named here — and the app is served from a different port to the API.
+        // Without this, `response.headers.get('RateLimit-Reset')` is null in the browser however
+        // faithfully the server sets it, and the client can only say "wait a few minutes" because
+        // it genuinely has no idea when. The header was there the whole time; nobody could see it.
+        corsOptions.exposedHeaders = ['RateLimit-Limit', 'RateLimit-Remaining', 'RateLimit-Reset', 'Retry-After'];
         app.use(cors(corsOptions));
         if (explicitAllowlist.length > 0) {
             console.log(`CORS allowlist enabled for origins: ${explicitAllowlist.join(', ')}`);

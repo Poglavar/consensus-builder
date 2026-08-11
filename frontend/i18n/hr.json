@@ -191,7 +191,12 @@
         "revertFailed": "Prethodnu verziju nije bilo moguće vratiti.",
         "geometryUpdated": "Geometrija ažurirana.",
         "builtButParked": "Objekt je stvoren, ali ga nije bilo moguće postaviti na kartu (blokirao ga je sukob). Parkiran je u vašem popisu prijedloga — odaberite ga tamo da ga vidite i primijenite.",
-        "builtButParkedBecause": "Objekt je stvoren, ali ga nije bilo moguće postaviti na kartu: {{reason}} Parkiran je u vašem popisu prijedloga — odaberite ga tamo da ga vidite i primijenite."
+        "builtButParkedBecause": "Objekt je stvoren, ali ga nije bilo moguće postaviti na kartu: {{reason}} Parkiran je u vašem popisu prijedloga — odaberite ga tamo da ga vidite i primijenite.",
+        "uploadRateLimitedAt": {
+            "one": "Zasad je previše slanja. Ostatak možete poslati u {{at}}, za otprilike {{minutes}} minutu.",
+            "few": "Zasad je previše slanja. Ostatak možete poslati u {{at}}, za otprilike {{minutes}} minute.",
+            "other": "Zasad je previše slanja. Ostatak možete poslati u {{at}}, za otprilike {{minutes}} minuta."
+        }
     },
     "languages": {
         "en": "Engleski",
@@ -1808,7 +1813,8 @@
                     "pickedOnMap": "Odabrano: {{title}} — {{parcel}}",
                     "pickedNotInPlan": "Taj prijedlog nije u ovom planu.",
                     "legendUploaded": "Poslano",
-                    "legendNotUploaded": "Još nije poslano"
+                    "legendNotUploaded": "Još nije poslano",
+                    "showAllOnMap": "Prikaži sve na karti"
                 },
                 "processingImageForUpload": "Obrada slike za prijenos...",
                 "walletConnectedStatus": "Novčanik povezan. Možete nastaviti s kovanjem prijedloga",

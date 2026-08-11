@@ -2068,17 +2068,41 @@ textarea.proposal-description-input {
     gap: 6px;
 }
 
+/* The swatches say what the two map treatments are, so they have to be READABLE as those two
+   treatments. At 16x10 with a 2px border this failed completely: a dashed border that short draws
+   about one dash per edge, so both swatches looked like the same solid box and the legend explained
+   nothing. Wider, with a thinner border, so the dashes are dashes. */
 .share-plan-legend i {
-    width: 16px;
-    height: 10px;
+    width: 30px;
+    height: 14px;
+    flex: 0 0 auto;
     border-radius: 2px;
-    background: rgba(67, 99, 216, 0.35);
-    border: 2px solid #4363d8;
+    background: rgba(67, 99, 216, 0.40);
+    border: 1.5px solid #4363d8;
 }
 
 .share-plan-legend .is-pending {
-    background: rgba(67, 99, 216, 0.14);
+    /* Faint fill AND a dashed edge, both of them the map's own treatment for a proposal that is
+       only on this machine. Two cues rather than one: the fill difference alone is easy to miss
+       against a busy map, and the dash alone disappears on a small shape. */
+    background: rgba(67, 99, 216, 0.10);
     border-style: dashed;
+}
+
+/* The opt-in whole-plan paint sits with the swatches it explains, and reads as a control rather
+   than as a third legend entry. */
+.share-plan-legend-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+    cursor: pointer;
+    user-select: none;
+}
+
+.share-plan-legend-toggle input {
+    margin: 0;
+    cursor: pointer;
 }
 
 .share-plan-share-area {

@@ -83,8 +83,27 @@ describe('what the author is told', () => {
     });
 
     it('uses the translation when one exists', () => {
+        // …At, not …In: when the retry-after is known the message now names a CLOCK TIME as well
+        // as a duration, and that is a different string with a different plural set.
         globalThis.window = { i18n: { t: (key, params) => `HR ${key} ${params.minutes}` } };
-        expect(uploadRateLimitMessage(120)).toBe('HR proposalDrafts.uploadRateLimitedIn 2');
+        expect(uploadRateLimitMessage(120)).toBe('HR proposalDrafts.uploadRateLimitedAt 2');
+    });
+
+    it('tells you WHEN, not only how long — a duration goes stale the moment you look away', () => {
+        delete globalThis.window;
+        const message = uploadRateLimitMessage(300);
+        // A time of day, in whatever form the locale writes one.
+        expect(message).toMatch(/\d{1,2}[:.]\d{2}/);
+        expect(message).toMatch(/5 minutes/);
+    });
+
+    it('still says something useful when the server did not say when', () => {
+        // The header is not always readable — it is not CORS-safe-listed, which is exactly how this
+        // came to say "a few minutes" for weeks.
+        delete globalThis.window;
+        const message = uploadRateLimitMessage(null);
+        expect(message.toLowerCase()).toContain('too many uploads');
+        expect(message).not.toMatch(/\bNaN\b|undefined|null/);
     });
 
     it('ignores a lookup that just echoed the key back', () => {
