@@ -361,6 +361,193 @@ describe('deterministic junction rules', () => {
         });
     });
 
+    // Taken from Jadranska avenija at osm-node:1556909381, where a slip road leaves at 28.4° — just
+    // inside the 30° through window. Both exits then classified as `through`, all four through-tagged
+    // lanes were read as turning into the slip road's single lane, and the whole approach was
+    // abandoned as `receiving_lane_undetermined`, losing the four-lane continuation with it.
+    describe('a shallow fork off the straight-on arm', () => {
+        // The exact inverse of bearingDegrees, so an arm can be stated as the angle that matters
+        // rather than as coordinates nobody can check by eye. The west approach arrives due east, so
+        // a bearing of 118° IS a 28° right fork.
+        function armAt(bearing, lengthM = 90) {
+            const radians = bearing * Math.PI / 180;
+            return [
+                CENTRE[0] + Math.sin(radians) * lengthM / (111320 * Math.cos(CENTRE[1] * Math.PI / 180)),
+                CENTRE[1] + Math.cos(radians) * lengthM / 110540
+            ];
+        }
+
+        // Four through lanes plus a slip lane, continuing east; the slip road peels off at 28°.
+        function slipRoad({ turn = 'through|through|through|through|slight_right', exitLanes = '4' } = {}) {
+            return [
+                way(1, [[15.9787, 45.8], CENTRE], {
+                    highway: 'trunk', name: 'Jadranska avenija', oneway: 'yes', lanes: '5',
+                    'turn:lanes': turn
+                }, [10, 100]),
+                way(2, [CENTRE, armAt(90)], {
+                    highway: 'trunk', name: 'Jadranska avenija', oneway: 'yes', lanes: exitLanes
+                }, [100, 20]),
+                way(3, [CENTRE, armAt(118)], {
+                    highway: 'service', oneway: 'yes', lanes: '1'
+                }, [100, 30])
+            ];
+        }
+
+        it('settles the junction instead of abandoning the approach', () => {
+            const graph = LaneTopologyGraph.build(slipRoad(), BUILD_OPTIONS);
+
+            expect(graph.stats.resolvedIntersections).toBe(1);
+            expect(graph.problems.filter(problem => problem.type === 'unresolved_intersection')).toHaveLength(0);
+            // Four lanes continue, one peels off — every arriving lane accounted for exactly once.
+            const connections = junctionConnections(graph);
+            expect(connections.filter(connection => connection.type === 'continue')).toHaveLength(4);
+            expect(connections.filter(connection => connection.type === 'turn')).toHaveLength(1);
+            expect(new Set(connections.map(connection => connection.fromLaneId)).size).toBe(5);
+        });
+
+        it('gives the straight-on slot to the straighter arm, not the first one', () => {
+            const graph = LaneTopologyGraph.build(slipRoad(), BUILD_OPTIONS);
+            const sectionOf = new Map(graph.lanes.map(lane => [lane.id, lane.sectionId]));
+            const nameOf = new Map(graph.sections.map(section => [section.id, section.name]));
+
+            // The 0°-off arm keeps `through`; the 28° one is a turn however OSM ordered the ways.
+            expect(junctionConnections(graph)
+                .filter(connection => connection.type === 'continue')
+                .every(connection => nameOf.get(sectionOf.get(connection.toLaneId)) === 'Jadranska avenija')).toBe(true);
+            const slip = junctionConnections(graph).find(connection => connection.type === 'turn');
+            expect(nameOf.get(sectionOf.get(slip.toLaneId))).toBe(null);
+            expect(slip.reason).toContain('shallower fork');
+            // Demotion rests on an angle; the confidence must not read like a counted certainty.
+            expect(slip.confidence).toBeLessThanOrEqual(0.9);
+        });
+
+        it('still refuses when the demoted fork cannot satisfy the lane counts', () => {
+            // Same 28° fork, but the continuation is a lane narrower than the through traffic
+            // feeding it. Which pair merges is a decision, and demoting the fork must not hide it.
+            const graph = LaneTopologyGraph.build(slipRoad({ exitLanes: '3' }), BUILD_OPTIONS);
+
+            expect(graph.stats.resolvedIntersections).toBe(0);
+            expect(graph.problems.find(problem => problem.type === 'unresolved_intersection').declineReason)
+                .toBe('receiving_lane_undetermined');
+            expect(junctionConnections(graph)).toHaveLength(0);
+        });
+
+        it('leaves a symmetric fork open, because no angle says which arm continues', () => {
+            const graph = LaneTopologyGraph.build([
+                way(1, [[15.9787, 45.8], CENTRE], {
+                    highway: 'secondary', name: 'Ilica', oneway: 'yes', lanes: '2',
+                    'turn:lanes': 'through|through'
+                }, [10, 100]),
+                // Mirrored 20° either side of the axis: both inside the through window, neither
+                // straighter than the other.
+                way(2, [CENTRE, armAt(70)], { highway: 'secondary', oneway: 'yes', lanes: '1' }, [100, 20]),
+                way(3, [CENTRE, armAt(110)], { highway: 'secondary', oneway: 'yes', lanes: '1' }, [100, 30])
+            ], BUILD_OPTIONS);
+
+            expect(graph.problems.find(problem => problem.type === 'unresolved_intersection').declineReason)
+                .toBe('ambiguous_arm_for_turn');
+            expect(junctionConnections(graph)).toHaveLength(0);
+        });
+
+        // The margin exists because these angles are measured off offset lane geometry: a perfectly
+        // symmetric Y gives -20.130° and +20.130°, which are not bit-identical. An equality test
+        // silently demoted one arm of every symmetric fork on a rounding error.
+        it('needs a real margin to call one arm straighter, not a floating-point difference', () => {
+            const mirrored = LaneTopologyGraph.build([
+                way(1, [armAt(270), CENTRE], {
+                    highway: 'secondary', oneway: 'yes', lanes: '2', 'turn:lanes': 'through|through'
+                }, [10, 100]),
+                way(2, [CENTRE, armAt(72)], { highway: 'secondary', oneway: 'yes', lanes: '1' }, [100, 20]),
+                way(3, [CENTRE, armAt(108)], { highway: 'secondary', oneway: 'yes', lanes: '1' }, [100, 30])
+            ], BUILD_OPTIONS);
+            // Neither arm claims the straight-on slot, so neither is demoted to a turn.
+            expect(junctionConnections(mirrored).filter(connection => connection.type === 'turn'))
+                .toHaveLength(0);
+
+            // Clearly lopsided: 2° against 25° is a continuation and a fork, and is treated as one.
+            const lopsided = LaneTopologyGraph.build([
+                way(1, [armAt(270), CENTRE], {
+                    highway: 'secondary', oneway: 'yes', lanes: '2', 'turn:lanes': 'through|slight_right'
+                }, [10, 100]),
+                way(2, [CENTRE, armAt(92)], { highway: 'secondary', oneway: 'yes', lanes: '1' }, [100, 20]),
+                way(3, [CENTRE, armAt(115)], { highway: 'secondary', oneway: 'yes', lanes: '1' }, [100, 30])
+            ], BUILD_OPTIONS);
+            expect(lopsided.problems.filter(problem => problem.type === 'unresolved_intersection'))
+                .toHaveLength(0);
+            expect(junctionConnections(lopsided).filter(connection => connection.type === 'turn'))
+                .toHaveLength(1);
+        });
+    });
+
+    // A lane tagged `left` where two arms are both left turns names ONE movement — one arrow is
+    // painted on the road. Sending it to both produced four movements at a junction with two, at
+    // full confidence, reported as resolved, with nothing flagged anywhere.
+    describe('two arms on the same side of a junction', () => {
+        function armAt(bearing, lengthM = 90) {
+            const radians = bearing * Math.PI / 180;
+            return [
+                CENTRE[0] + Math.sin(radians) * lengthM / (111320 * Math.cos(CENTRE[1] * Math.PI / 180)),
+                CENTRE[1] + Math.cos(radians) * lengthM / 110540
+            ];
+        }
+
+        function twoLefts(turn) {
+            return LaneTopologyGraph.build([
+                way(1, [armAt(270), CENTRE], {
+                    highway: 'secondary', name: 'Hatzova', oneway: 'yes', lanes: '2', 'turn:lanes': turn
+                }, [10, 100]),
+                way(2, [CENTRE, armAt(0)], {
+                    highway: 'secondary', name: 'Draskoviceva', oneway: 'yes', lanes: '2'
+                }, [100, 20]),
+                way(3, [CENTRE, armAt(51)], {
+                    highway: 'secondary', name: 'KnezaMislava', oneway: 'yes', lanes: '2'
+                }, [100, 30])
+            ], BUILD_OPTIONS);
+        }
+
+        function movementsByStreet(graph) {
+            const sectionOf = new Map(graph.lanes.map(lane => [lane.id, lane.sectionId]));
+            const nameOf = new Map(graph.sections.map(section => [section.id, section.name]));
+            return junctionConnections(graph).map(connection =>
+                `${connection.fromLaneId.split(':').pop()}→${nameOf.get(sectionOf.get(connection.toLaneId))}`)
+                .sort();
+        }
+
+        it('gives each distinguishable token its own arm instead of both arms every lane', () => {
+            const graph = twoLefts('left|slight_left');
+
+            // Two movements, not four: `left` means the 90° arm and `slight_left` the 39° one.
+            expect(movementsByStreet(graph)).toEqual(['0→Draskoviceva', '1→KnezaMislava']);
+            expect(graph.stats.resolvedIntersections).toBe(1);
+        });
+
+        it('opens the approach when the markings cannot tell the two arms apart', () => {
+            const graph = twoLefts('left|left');
+
+            expect(junctionConnections(graph)).toHaveLength(0);
+            expect(graph.problems.find(problem => problem.type === 'unresolved_intersection').declineReason)
+                .toBe('ambiguous_arm_for_turn');
+        });
+
+        it('still lets an unmarked approach reach both, because that is what unmarked means', () => {
+            // No turn:lanes at all. A single-lane approach has no assignment to make, so the
+            // all-to-all default stands and both arms remain reachable.
+            const graph = LaneTopologyGraph.build([
+                way(1, [armAt(270), CENTRE], {
+                    highway: 'residential', name: 'Hatzova', oneway: 'yes', lanes: '1'
+                }, [10, 100]),
+                way(2, [CENTRE, armAt(0)], {
+                    highway: 'residential', name: 'Draskoviceva', oneway: 'yes', lanes: '1'
+                }, [100, 20]),
+                way(3, [CENTRE, armAt(51)], {
+                    highway: 'residential', name: 'KnezaMislava', oneway: 'yes', lanes: '1'
+                }, [100, 30])
+            ], BUILD_OPTIONS);
+
+            expect(movementsByStreet(graph)).toEqual(['0→Draskoviceva', '0→KnezaMislava']);
+        });
+    });
+
     it('classifies a turn from the heading of the arms', () => {
         const arriving = JunctionRules.bearingDegrees(WEST, CENTRE);
         const north = JunctionRules.bearingDegrees(CENTRE, NORTH);
