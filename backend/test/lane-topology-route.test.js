@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
 import { setupLaneTopologyRoute } from '../routes/lane-topology.js';
 import { createRouteApp } from './helpers/create-route-app.js';
+import { listAllSolutions } from '../scripts/lib/stored-solutions.js';
 
 function fakePool() {
     const calls = [];
@@ -301,5 +302,65 @@ describe('lane-topology manager API', () => {
         expect(response.body.error).toContain('Zoom in');
         expect(response.body.error).toContain('maximum 0.20 m/px');
         expect(pool.calls).toHaveLength(0);
+    });
+
+    // The page cap used to be silent: asking for 500 returned the newest 100 and said nothing, so
+    // the coverage map and the worklist both counted 6 already-adjudicated solutions as open work.
+    describe('solution list paging', () => {
+        function poolWithSolutions(count) {
+            return {
+                calls: [],
+                async query(sql, params) {
+                    this.calls.push({ sql, params });
+                    if (!sql.includes('FROM public.lane_topology_solution s')) return { rows: [] };
+                    const [, limit, offset] = params;
+                    const page = [];
+                    for (let index = offset; index < Math.min(offset + limit, count); index += 1) {
+                        page.push({
+                            id: index + 1, city: 'zagreb', area_key: `k${index}`, status: 'candidate',
+                            source_kind: 'claude', selected_bbox: [15.9, 45.8, 15.91, 45.81],
+                            total_count: String(count), problem_counts: {}, stats: {}
+                        });
+                    }
+                    return { rows: page };
+                }
+            };
+        }
+
+        it('reports the true total so a truncated page is recognisable', async () => {
+            const listApp = createRouteApp(setupLaneTopologyRoute, poolWithSolutions(124), {});
+            const response = await request(listApp)
+                .get('/lane-topology/solutions?city=zagreb&limit=100')
+                .expect(200);
+            expect(response.body.solutions).toHaveLength(100);
+            expect(response.body.total).toBe(124);
+            expect(response.body.hasMore).toBe(true);
+        });
+
+        it('serves the tail through offset, and closes the list at the end', async () => {
+            const listApp = createRouteApp(setupLaneTopologyRoute, poolWithSolutions(124), {});
+            const response = await request(listApp)
+                .get('/lane-topology/solutions?city=zagreb&limit=100&offset=100')
+                .expect(200);
+            expect(response.body.solutions).toHaveLength(24);
+            expect(response.body.offset).toBe(100);
+            expect(response.body.hasMore).toBe(false);
+            // The 24 the old cap hid — ids 101..124, invisible to every report.
+            expect(response.body.solutions[0].id).toBe(101);
+            expect(response.body.solutions.at(-1).id).toBe(124);
+        });
+
+        it('pages until the list is complete rather than trusting one response', async () => {
+            const listApp = createRouteApp(setupLaneTopologyRoute, poolWithSolutions(124), {});
+            const server = listApp.listen(0);
+            try {
+                const base = `http://127.0.0.1:${server.address().port}`;
+                const all = await listAllSolutions({ api: base, city: 'zagreb' });
+                expect(all).toHaveLength(124);
+                expect(new Set(all.map(solution => solution.id)).size).toBe(124);
+            } finally {
+                server.close();
+            }
+        });
     });
 });

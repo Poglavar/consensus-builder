@@ -14,7 +14,7 @@
 //   node backend/scripts/topology-coverage.js --format json > coverage.json
 import { createRequire } from 'node:module';
 import { enumerationTiles, insideCore } from './lib/city-tiles.js';
-import { settledNodeIndex } from './lib/stored-solutions.js';
+import { settledNodeIndex, listAllSolutions } from './lib/stored-solutions.js';
 
 const require = createRequire(import.meta.url);
 const LaneTopologyGraph = require('../../frontend/js/lane-topology-graph.js');
@@ -32,6 +32,10 @@ const DEFAULTS = {
     minJunctions: 8
 };
 const CITY_BBOX = [15.5459, 45.5136, 16.3620, 46.0356];
+
+// stderr, not stdout: `--format json > coverage.json` means anything on stdout that is not the
+// report corrupts the file.
+const note = (message) => console.error(`[${new Date().toISOString()}] ${message}`);
 
 const USAGE = `
 Report lane-topology coverage per tile, and which tiles are nearly finished.
@@ -121,21 +125,21 @@ async function surveyTile(args, tile, storedByTile, settledNodes) {
 
 // Stored solutions are the only persisted part, so a tile's count of them says where real
 // recognition or adjudication has landed — as opposed to where the rules simply answered.
+// The city bbox is far wider than the endpoint's own ceiling, so passing it returned HTTP 400 and
+// this reported zero stored solutions everywhere, in silence. Ask for the city unfiltered and let
+// the per-tile overlap below do the narrowing.
 async function storedSolutionIndex(args) {
-    const url = `${args.api}/lane-topology/solutions?city=${encodeURIComponent(args.city)}`
-        + `&bbox=${CITY_BBOX.join(',')}&limit=500`;
+    let boxes = [];
     try {
-        const response = await fetch(url, { signal: AbortSignal.timeout(60_000) });
-        if (!response.ok) return () => 0;
-        const body = await response.json();
-        const boxes = (body.solutions || [])
+        boxes = (await listAllSolutions({ api: args.api, city: args.city, log: note }))
             .map(solution => solution.bbox)
             .filter(box => Array.isArray(box) && box.length === 4);
-        return core => boxes.filter(box => box[0] < core[2] && box[2] > core[0]
-            && box[1] < core[3] && box[3] > core[1]).length;
-    } catch (_) {
-        return () => 0;
+    } catch (error) {
+        // Loud, because a survey that quietly forgets stored work reads as "nothing has been done".
+        note(`WARNING: stored solutions unavailable (${error.message}); tile counts will read 0`);
     }
+    return core => boxes.filter(box => box[0] < core[2] && box[2] > core[0]
+        && box[1] < core[3] && box[3] > core[1]).length;
 }
 
 function link(args, tile) {

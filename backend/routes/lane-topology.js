@@ -379,6 +379,11 @@ function parseLimit(raw) {
     return Number.isFinite(value) ? Math.max(1, Math.min(MAX_LIMIT, value)) : DEFAULT_LIMIT;
 }
 
+function parseOffset(raw) {
+    const value = Number.parseInt(raw, 10);
+    return Number.isFinite(value) ? Math.max(0, value) : 0;
+}
+
 function serializedSolution(row, includeGraph = false) {
     const result = {
         id: Number(row.id),
@@ -791,20 +796,27 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
             return res.status(400).json({ error: `Invalid WGS84 bbox; maximum span is ${MAX_BBOX_SPAN_DEG}°.` });
         }
         const city = String(req.query.city || 'zagreb').slice(0, 64);
+        const limit = parseLimit(req.query.limit);
+        const offset = parseOffset(req.query.offset);
         try {
             await ensureSchema(pool);
-            const params = [city, parseLimit(req.query.limit)];
+            const params = [city, limit, offset];
             let spatial = '';
             if (bbox) {
                 params.push(...bbox);
-                spatial = `AND s.coverage && ST_MakeEnvelope($3,$4,$5,$6,4326)`;
+                spatial = `AND s.coverage && ST_MakeEnvelope($4,$5,$6,$7,4326)`;
             }
+            // count(*) OVER () rides along on the same scan, so `total` costs no second query — and
+            // without it a caller cannot tell a full page from a truncated one. Asking for 500 used
+            // to return the newest 100 in silence, which hid 6 adjudicated solutions from both the
+            // coverage map and the worklist: they reported settled work as still open.
             const { rows } = await pool.query(
                 `SELECT
                     s.id, s.parent_id, s.city, s.area_key, s.status, s.source_kind,
                     s.provider, s.model, s.prompt_version, s.graph_schema_version,
                     s.osm_snapshot_at, s.osm_snapshot_id, s.selected_bbox, s.stats, s.created_at, s.updated_at,
                     ST_AsGeoJSON(s.coverage)::json AS coverage,
+                    count(*) OVER () AS total_count,
                     jsonb_build_object(
                         'error', count(p.id) FILTER (WHERE p.severity='error'),
                         'warning', count(p.id) FILTER (WHERE p.severity='warning'),
@@ -814,11 +826,18 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
                  LEFT JOIN public.lane_topology_problem p ON p.solution_id=s.id
                  WHERE s.city=$1 ${spatial}
                  GROUP BY s.id
-                 ORDER BY s.created_at DESC
-                 LIMIT $2`,
+                 ORDER BY s.created_at DESC, s.id DESC
+                 LIMIT $2 OFFSET $3`,
                 params
             );
-            return res.json({ solutions: rows.map(row => serializedSolution(row)) });
+            const total = rows.length ? Number(rows[0].total_count) : 0;
+            return res.json({
+                solutions: rows.map(row => serializedSolution(row)),
+                total,
+                limit,
+                offset,
+                hasMore: offset + rows.length < total
+            });
         } catch (error) {
             console.error('[lane-topology] solution list failed:', error);
             return res.status(500).json({ error: 'Failed to list topology solutions.' });

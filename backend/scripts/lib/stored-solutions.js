@@ -8,7 +8,11 @@
 // A node counts as settled by a solution when that solution has movements at it and no longer calls
 // it unresolved. Partial resolution means the second half matters: a solution can answer one
 // approach of a node and leave another open, and the node is then still work.
-const SOLUTION_LIMIT = 500;
+// The endpoint caps a page at 100 whatever is asked for. Asking for 500 and taking what came back
+// silently dropped the 24 oldest solutions — 6 of them adjudicated — so both reports called settled
+// junctions open. Page until `total` is covered instead of trusting one response to be complete.
+const PAGE_SIZE = 100;
+const MAX_PAGES = 200;
 // The solutions endpoint rejects a bbox wider than the builder's own ceiling, so a city-wide report
 // must ask without one and narrow the list here instead. Asking with the city bbox returned HTTP 400
 // and the whole survey quietly fell back to derivation only.
@@ -19,20 +23,41 @@ function overlaps(a, b) {
         && a[0] < b[2] && a[2] > b[0] && a[1] < b[3] && a[3] > b[1];
 }
 
+// Every page of the solution list, in order. Throws rather than returning a short list: a caller
+// that cannot tell "all of them" from "the first hundred" is the bug this replaces.
+export async function listAllSolutions({ api, city = 'zagreb', bbox, fetchImpl = fetch, log }) {
+    const base = String(api).replace(/\/+$/, '');
+    const query = `city=${encodeURIComponent(city)}`
+        + (Array.isArray(bbox) ? `&bbox=${bbox.join(',')}` : '');
+    const all = [];
+    for (let page = 0; page < MAX_PAGES; page += 1) {
+        const url = `${base}/lane-topology/solutions?${query}&limit=${PAGE_SIZE}&offset=${all.length}`;
+        const response = await fetchImpl(url, { signal: AbortSignal.timeout(60_000) });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const body = await response.json();
+        const batch = body.solutions || [];
+        all.push(...batch);
+        // `hasMore` is the server's own judgement; the length check covers an older server that
+        // does not send it, and stops a zero-length page from looping forever.
+        if (!batch.length || body.hasMore === false || all.length >= (body.total ?? all.length)) {
+            return all;
+        }
+    }
+    log?.(`stopped paging solutions at ${all.length}; more remain`);
+    return all;
+}
+
 export async function settledNodeIndex({ api, city = 'zagreb', bbox, fetchImpl = fetch, log }) {
     const settled = new Set();
     const base = String(api).replace(/\/+$/, '');
     const wide = !Array.isArray(bbox)
         || (bbox[2] - bbox[0]) > MAX_BBOX_SPAN_DEG
         || (bbox[3] - bbox[1]) > MAX_BBOX_SPAN_DEG;
-    const listUrl = `${base}/lane-topology/solutions?city=${encodeURIComponent(city)}`
-        + (wide ? '' : `&bbox=${bbox.join(',')}`)
-        + `&limit=${SOLUTION_LIMIT}`;
     let solutions = [];
     try {
-        const response = await fetchImpl(listUrl, { signal: AbortSignal.timeout(60_000) });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        solutions = (await response.json()).solutions || [];
+        solutions = await listAllSolutions({
+            api: base, city, bbox: wide ? null : bbox, fetchImpl, log
+        });
     } catch (error) {
         // A report that silently forgets stored work is worse than one that says it could not look.
         log?.(`stored solutions unavailable (${error.message}); reporting derivation only`);
