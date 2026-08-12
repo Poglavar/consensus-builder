@@ -33,6 +33,19 @@
         return junctionRulesApi;
     }
 
+    // Only needed when a caller passes stored answers, so it is resolved lazily: a page that never
+    // shows decisions must not fail to build a graph because that script is not loaded.
+    let decisionsApi = null;
+    function decisionsModule() {
+        if (decisionsApi) return decisionsApi;
+        decisionsApi = (root && root.LaneTopologyDecisions)
+            || (typeof require === 'function' ? require('./lane-topology-decisions.js') : null);
+        if (!decisionsApi) {
+            throw new Error('LaneTopologyGraph was given decisions but lane-topology-decisions.js is not loaded.');
+        }
+        return decisionsApi;
+    }
+
     function finiteCoordinate(point) {
         return Array.isArray(point)
             && Number.isFinite(Number(point[0]))
@@ -828,6 +841,18 @@
                 warnings: problems.filter(problem => problem.severity === 'warning').length
             }
         };
+
+        // Answers a person already gave, folded in before the lane tallies below are taken — a
+        // decision adds real movements, and a lane whose only movement came from one would
+        // otherwise still count as going nowhere.
+        if (options.decisions?.length) {
+            graph.decisions = decisionsModule().applyDecisions(graph, options.decisions);
+            graph.connections.forEach(connection => {
+                if (connection.source === 'deterministic') return;
+                outgoingCounts.set(connection.fromLaneId, (outgoingCounts.get(connection.fromLaneId) || 0) + 1);
+                incomingCounts.set(connection.toLaneId, (incomingCounts.get(connection.toLaneId) || 0) + 1);
+            });
+        }
 
         // Derived counts are useful to the viewer but do not affect graph identity.
         graph.lanes.forEach(lane => {

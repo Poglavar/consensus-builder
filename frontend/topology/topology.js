@@ -187,6 +187,22 @@
         return body;
     }
 
+    // The guided pass over what the rules could not settle. Built here rather than in its own file's
+    // scope so it shares this page's one map, one api() and one toast.
+    const decisions = window.LaneTopologyDecisionsUi.create({
+        map,
+        api,
+        element,
+        showToast,
+        getGraph: () => state.derivedGraph,
+        // A saved answer is an input to the derivation, so the graph is rebuilt with it and the
+        // readout re-stated; the queue then re-reads the graph it produced.
+        onSaved: () => {
+            renderDerived();
+            updateDerivedReadout();
+        }
+    });
+
     async function updateImageryStatus() {
         const status = element('imagery-status');
         if (!state.imagerySource) {
@@ -587,27 +603,38 @@
             graph = window.LaneTopologyGraph.build(evidence, {
                 snapshotAt: evidence.snapshotAt || null,
                 restrictions: evidence.restrictions || [],
+                decisions: decisions.stored(),
                 profileFromTags: window.corridorProfileFromOsmTags,
                 orientProfile: window.OsmProfile.orientForRightHandTraffic
             });
         } catch (error) {
+            state.derivedGraph = null;
             state.derivedStats = null;
             updateDerivedReadout(error.message);
+            decisions?.refresh();
             return;
         }
+        // Kept, not just its stats: the decision queue asks its questions of this graph, and
+        // rebuilding it per question would derive the same viewport several times a keystroke.
+        state.derivedGraph = graph;
         state.derivedStats = graph.stats || null;
 
         const nodeDegree = new Map((graph.nodes || []).map(node => [node.id, node.degree]));
         (graph.connections || []).forEach(connection => {
             if ((nodeDegree.get(connection.nodeId) || 0) < 3) return; // mid-block, not a decision
+            // A movement somebody decided is drawn as its own thing, not as a slightly different
+            // derivation: the whole value of storing it is being able to see which is which.
+            const byHand = connection.source !== 'deterministic';
             L.polyline(lineCoordinates(connection.geometry), {
                 pane: 'topology-derived',
-                color: connection.type === 'continue' ? '#4b7f9c' : '#8a6bb1',
-                weight: 1.4,
-                opacity: .5,
-                dashArray: connection.type === 'continue' ? null : '4 4',
-                interactive: false
-            }).addTo(layers.derived);
+                color: byHand ? '#7ee2c4' : (connection.type === 'continue' ? '#4b7f9c' : '#8a6bb1'),
+                weight: byHand ? 2.6 : 1.4,
+                opacity: byHand ? .95 : .5,
+                dashArray: connection.receivingLaneAssumed ? '5 3'
+                    : (!byHand && connection.type === 'turn' ? '4 4' : null),
+                interactive: byHand
+            }).bindTooltip(byHand ? connection.reason : null,
+                { sticky: true, className: 'topology-tooltip' }).addTo(layers.derived);
         });
         (graph.problems || [])
             .filter(problem => problem.type === 'unresolved_intersection' && Array.isArray(problem.point))
@@ -621,13 +648,19 @@
                     fillOpacity: .15,
                     interactive: true
                 }).bindTooltip(
-                    open.length
+                    (open.length
                         ? `${open.length} approach${open.length === 1 ? '' : 'es'} still open · `
                             + open.map(entry => `${entry.name || entry.sectionId}: `
                                 + entry.reason.replaceAll('_', ' ')).join(' · ')
-                        : `whole junction open · ${(problem.declineReason || '').replaceAll('_', ' ')}`,
+                        : `whole junction open · ${(problem.declineReason || '').replaceAll('_', ' ')}`)
+                        + ' — click to decide',
                     { sticky: true, className: 'topology-tooltip' }
-                ).addTo(layers.derived);
+                ).on('click', () => {
+                    // The marker was the one thing on screen that looked clickable and led nowhere.
+                    if (!decisions.focusByNode(problem.nodeIds?.[0])) {
+                        inspect(`Problem · ${problem.type}`, problem);
+                    }
+                }).addTo(layers.derived);
             });
     }
 
@@ -912,8 +945,15 @@
                 pane: 'topology-problems',
                 icon: problemIcon(problem.severity)
             }).addTo(layers.problems);
-            marker.bindTooltip(problem.message || problem.type, { direction: 'top' });
-            marker.on('click', () => inspect(`Problem · ${problem.type}`, problem));
+            const answerable = problem.type === 'unresolved_intersection' && problem.nodeIds?.length;
+            marker.bindTooltip(
+                (problem.message || problem.type) + (answerable ? ' — click to decide' : ''),
+                { direction: 'top' }
+            );
+            marker.on('click', () => {
+                if (answerable && decisions.focusByNode(problem.nodeIds[0])) return;
+                inspect(`Problem · ${problem.type}`, problem);
+            });
         });
     }
 
@@ -1184,8 +1224,13 @@
             state.evidence = evidence;
             state.autoLoad.loadedBbox = plan.bbox;
             renderOsm();
+            // Stored answers first: they are inputs to the derivation, so deriving before they
+            // arrive would build a graph that ignores every decision already made here.
+            await decisions.load(plan.bbox.join(','));
+            if (isStale(token)) return;
             renderDerived();
             updateDerivedReadout();
+            decisions.refresh();
             showSnapshotLabel();
             await Promise.all([loadSolutions(scope), loadWidthAnalyses(scope)]);
             if (isStale(token)) return;
@@ -1724,10 +1769,15 @@
         setAllLayers(layerCheckboxes().some(checkbox => !checkbox.disabled && !checkbox.checked));
     });
     refreshLayersToggleAll();
+    element('decision-start').addEventListener('click', () => decisions.start());
     document.addEventListener('keydown', event => {
         if (event.key !== 'Escape') return;
         if (!element('run-dialog').hidden) {
             closeRunDialog();
+            return;
+        }
+        if (decisions.isOpen()) {
+            decisions.close();
             return;
         }
         if (state.pinnedFocus || state.selectedOsmLayer) clearTopologyFocus();

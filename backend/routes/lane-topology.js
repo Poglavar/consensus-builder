@@ -315,6 +315,10 @@ export async function storeTopologySolution(pool, {
             snapshotAt,
             snapshotId,
             bbox,
+            // Stored in its own column and exposed by every other reader of a solution; leaving it
+            // off here meant the response to a build was the one place you could not see the counts
+            // without digging into the whole graph.
+            stats: graph.stats || {},
             graph,
             createdAt: stored.created_at instanceof Date ? stored.created_at.toISOString() : stored.created_at
         };
@@ -345,6 +349,31 @@ export function withRestrictionProblems(graph, restrictions) {
     };
 }
 
+// The live answers covering an area, in the shape the graph builder folds in. Empty on failure
+// rather than fatal: a build without them is a worse graph, not no graph, and the caller sees the
+// junctions come back as open, which is the honest reading of "we could not find the answers".
+async function liveDecisions(pool, bbox, city) {
+    try {
+        await ensureSchema(pool);
+        const { rows } = await pool.query(
+            `SELECT decision_key, node_key, assignment, author
+             FROM public.lane_topology_decision
+             WHERE city=$1 AND superseded_at IS NULL
+               AND point && ST_MakeEnvelope($2,$3,$4,$5,4326)`,
+            [city, ...bbox]
+        );
+        return rows.map(row => ({
+            decisionKey: row.decision_key,
+            nodeKey: row.node_key,
+            assignment: row.assignment,
+            author: row.author
+        }));
+    } catch (error) {
+        console.error('[lane-topology] junction decisions unavailable for this build:', error.message);
+        return [];
+    }
+}
+
 async function buildDeterministicSolution(pool, bbox, city, parentId = null, options = {}) {
     const evidence = await fetchTopologyOsm(pool, bbox, city, options);
     // A parcel fetch that fails must not take the whole graph with it: the lane model alone is a
@@ -355,9 +384,14 @@ async function buildDeterministicSolution(pool, bbox, city, parentId = null, opt
     } catch (error) {
         console.warn('[lane-topology] road parcels unavailable, building without them:', error.message);
     }
+    // Answers a person already gave are part of the evidence for this area, so a stored solution
+    // has to carry them. A build that ignored them would re-record every answered junction as
+    // still open, and a model run started from that base would be asked the same questions again.
+    const decisions = await liveDecisions(pool, bbox, city);
     const graph = withRestrictionProblems(
         LaneTopologyGraph.build(evidence, {
             ...graphBuildOptions(evidence.snapshotAt, evidence.restrictions),
+            decisions,
             parcelFit: { parcels, turf, fit: LaneParcelFit, project: planarProjector(bbox) }
         }),
         evidence.restrictions
@@ -366,7 +400,9 @@ async function buildDeterministicSolution(pool, bbox, city, parentId = null, opt
         parentId,
         city,
         bbox,
-        sourceKind: 'deterministic',
+        // A graph that carries human answers is not purely deterministic, and calling it that
+        // would let a reader think it could be reproduced from the OSM snapshot alone.
+        sourceKind: graph.decisions?.applied ? 'adjudicated' : 'deterministic',
         snapshotAt: evidence.snapshotAt,
         snapshotId: evidence.snapshot?.id ?? null,
         graph
@@ -382,6 +418,23 @@ function parseLimit(raw) {
 function parseOffset(raw) {
     const value = Number.parseInt(raw, 10);
     return Number.isFinite(value) ? Math.max(0, value) : 0;
+}
+
+function serializedDecision(row) {
+    return {
+        id: Number(row.id),
+        decisionKey: row.decision_key,
+        nodeKey: row.node_key,
+        fromWayId: row.from_way_id,
+        reason: row.reason,
+        assignment: row.assignment,
+        note: row.note,
+        author: row.author,
+        snapshotId: row.osm_snapshot_id == null ? null : Number(row.osm_snapshot_id),
+        point: [Number(row.lng), Number(row.lat)],
+        createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at,
+        updatedAt: row.updated_at instanceof Date ? row.updated_at.toISOString() : row.updated_at
+    };
 }
 
 function serializedSolution(row, includeGraph = false) {
@@ -787,6 +840,135 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
         } catch (error) {
             console.error('[lane-topology] deterministic build failed:', error);
             return res.status(500).json({ error: 'Failed to build the deterministic lane graph.' });
+        }
+    });
+
+    // Answers a person gave to junctions the rules could not settle. Keyed by the junction, not by
+    // a viewport, so re-deriving the topology keeps them.
+    app.get('/lane-topology/decisions', async (req, res) => {
+        const bbox = req.query.bbox ? parseTopologyBbox(req.query.bbox) : null;
+        if (req.query.bbox && !bbox) {
+            return res.status(400).json({ error: `Invalid WGS84 bbox; maximum span is ${MAX_BBOX_SPAN_DEG}°.` });
+        }
+        const city = String(req.query.city || 'zagreb').slice(0, 64);
+        try {
+            await ensureSchema(pool);
+            const params = [city];
+            let spatial = '';
+            if (bbox) {
+                params.push(...bbox);
+                spatial = 'AND d.point && ST_MakeEnvelope($2,$3,$4,$5,4326)';
+            }
+            const { rows } = await pool.query(
+                `SELECT d.id, d.decision_key, d.node_key, d.from_way_id, d.reason, d.assignment,
+                        d.note, d.author, d.osm_snapshot_id, d.created_at, d.updated_at,
+                        ST_X(d.point) AS lng, ST_Y(d.point) AS lat
+                 FROM public.lane_topology_decision d
+                 WHERE d.city=$1 AND d.superseded_at IS NULL ${spatial}
+                 ORDER BY d.updated_at DESC`,
+                params
+            );
+            return res.json({ decisions: rows.map(serializedDecision) });
+        } catch (error) {
+            console.error('[lane-topology] decision list failed:', error);
+            return res.status(500).json({ error: 'Failed to list junction decisions.' });
+        }
+    });
+
+    app.post('/lane-topology/decisions', async (req, res) => {
+        const body = req.body || {};
+        const decisionKey = String(body.decisionKey || '').slice(0, 200);
+        const nodeKey = String(body.nodeKey || '').slice(0, 120);
+        const point = Array.isArray(body.point) ? body.point.map(Number) : null;
+        if (!decisionKey || !nodeKey) {
+            return res.status(400).json({ error: 'A decision needs a decisionKey and a nodeKey.' });
+        }
+        if (!point || point.length !== 2 || point.some(value => !Number.isFinite(value))) {
+            return res.status(400).json({ error: 'A decision needs the junction point it belongs to.' });
+        }
+        // The assignment IS the record; refusing an empty one keeps a stored answer from meaning
+        // "every lane is a dead end", which is what an empty movement set reads as downstream.
+        const lanes = body.assignment?.lanes;
+        if (!Array.isArray(lanes) || !lanes.length) {
+            return res.status(400).json({ error: 'A decision needs an assignment naming each lane.' });
+        }
+        if (lanes.some(lane => !Array.isArray(lane.exits) || !lane.exits.length)) {
+            return res.status(400).json({ error: 'Every lane in a decision must have somewhere to go.' });
+        }
+        const city = String(body.city || 'zagreb').slice(0, 64);
+        try {
+            await ensureSchema(pool);
+            const saved = await withTransaction(pool, async client => {
+                // Retire the previous answer BEFORE inserting: `lane_topology_decision_live_idx` is
+                // a partial unique index, which cannot be deferred, so two live rows never coexist
+                // even for the length of a statement. The transaction is what keeps this safe — a
+                // failed insert rolls the supersede back with it, so the junction is never left
+                // with its old answer retired and no new one in its place.
+                const previous = await client.query(
+                    `UPDATE public.lane_topology_decision
+                     SET superseded_at=now(), updated_at=now()
+                     WHERE city=$1 AND decision_key=$2 AND superseded_at IS NULL
+                     RETURNING id`,
+                    [city, decisionKey]
+                );
+                const inserted = await client.query(
+                    `INSERT INTO public.lane_topology_decision
+                        (city, decision_key, node_key, from_way_id, reason, osm_snapshot_id,
+                         point, assignment, note, author)
+                     VALUES ($1,$2,$3,$4,$5,$6, ST_SetSRID(ST_MakePoint($7,$8),4326), $9,$10,$11)
+                     RETURNING id`,
+                    [
+                        city, decisionKey, nodeKey,
+                        body.fromWayId == null ? null : String(body.fromWayId).slice(0, 32),
+                        body.reason == null ? null : String(body.reason).slice(0, 80),
+                        Number.isFinite(Number(body.snapshotId)) ? Number(body.snapshotId) : null,
+                        point[0], point[1],
+                        JSON.stringify(body.assignment),
+                        body.note == null ? null : String(body.note).slice(0, 2000),
+                        String(body.author || 'manual').slice(0, 64)
+                    ]
+                );
+                const id = Number(inserted.rows[0].id);
+                if (previous.rowCount) {
+                    await client.query(
+                        `UPDATE public.lane_topology_decision SET superseded_by=$1
+                         WHERE id = ANY($2::bigint[])`,
+                        [id, previous.rows.map(row => Number(row.id))]
+                    );
+                }
+                const { rows } = await client.query(
+                    `SELECT id, decision_key, node_key, from_way_id, reason, assignment, note, author,
+                            osm_snapshot_id, created_at, updated_at,
+                            ST_X(point) AS lng, ST_Y(point) AS lat
+                     FROM public.lane_topology_decision WHERE id=$1`,
+                    [id]
+                );
+                return rows[0];
+            });
+            return res.status(201).json({ decision: serializedDecision(saved) });
+        } catch (error) {
+            console.error('[lane-topology] decision save failed:', error);
+            return res.status(500).json({ error: 'Failed to save the junction decision.' });
+        }
+    });
+
+    // Withdrawing an answer is superseding it with nothing, so the junction returns to the queue
+    // and the history still shows it was once answered.
+    app.delete('/lane-topology/decisions/:key', async (req, res) => {
+        const city = String(req.query.city || 'zagreb').slice(0, 64);
+        try {
+            await ensureSchema(pool);
+            const { rowCount } = await pool.query(
+                `UPDATE public.lane_topology_decision
+                 SET superseded_at=now(), updated_at=now()
+                 WHERE city=$1 AND decision_key=$2 AND superseded_at IS NULL`,
+                [city, req.params.key]
+            );
+            if (!rowCount) return res.status(404).json({ error: 'No live decision for that approach.' });
+            return res.json({ withdrawn: req.params.key });
+        } catch (error) {
+            console.error('[lane-topology] decision withdrawal failed:', error);
+            return res.status(500).json({ error: 'Failed to withdraw the junction decision.' });
         }
     });
 

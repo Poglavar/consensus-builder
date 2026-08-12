@@ -63,6 +63,46 @@ CREATE INDEX IF NOT EXISTS lane_topology_problem_point_gix
 CREATE INDEX IF NOT EXISTS lane_topology_problem_solution_idx
     ON public.lane_topology_problem (solution_id, severity, status);
 
+-- One answered approach: "at this node, arriving on this way, these lanes may use these arms".
+--
+-- Deliberately NOT a solution row. A solution is a whole graph over a viewport rectangle, which is
+-- the right shape for a model run and the wrong one for a person answering one arm: re-deriving the
+-- viewport would discard the answer, and an area_key is a sha256 of a rectangle, so nothing can find
+-- the answer again from the junction it belongs to. This is keyed by the junction itself and
+-- survives re-derivation, which is the whole point — the topology is derived on demand and only the
+-- parts that are NOT derivable are stored.
+--
+-- `assignment` holds ordinals and OSM way ids, never lane or section ids: those embed the node pair
+-- of the piece they were cut between, so an edit to a neighbouring way renames them and an answer
+-- stored against them stops matching in silence.
+CREATE TABLE IF NOT EXISTS public.lane_topology_decision (
+    id BIGSERIAL PRIMARY KEY,
+    city VARCHAR(64) NOT NULL DEFAULT 'zagreb',
+    decision_key TEXT NOT NULL,
+    node_key TEXT NOT NULL,
+    from_way_id VARCHAR(32),
+    reason VARCHAR(80),
+    osm_snapshot_id BIGINT,
+    point geometry(Point, 4326),
+    assignment JSONB NOT NULL,
+    note TEXT,
+    author VARCHAR(64) NOT NULL DEFAULT 'manual',
+    -- History rather than overwrite: an answer that was replaced is still evidence of what someone
+    -- believed, and of how often a junction needed revisiting.
+    superseded_at TIMESTAMPTZ,
+    superseded_by BIGINT REFERENCES public.lane_topology_decision(id),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- One live answer per approach; superseded ones are unconstrained so the history can pile up.
+CREATE UNIQUE INDEX IF NOT EXISTS lane_topology_decision_live_idx
+    ON public.lane_topology_decision (city, decision_key) WHERE superseded_at IS NULL;
+CREATE INDEX IF NOT EXISTS lane_topology_decision_point_gix
+    ON public.lane_topology_decision USING gist (point);
+CREATE INDEX IF NOT EXISTS lane_topology_decision_node_idx
+    ON public.lane_topology_decision (city, node_key);
+
 CREATE TABLE IF NOT EXISTS public.lane_topology_job (
     id BIGSERIAL PRIMARY KEY,
     provider VARCHAR(32) NOT NULL CHECK (provider IN ('codex', 'claude')),

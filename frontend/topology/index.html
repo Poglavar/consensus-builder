@@ -44,6 +44,21 @@
                 <p class="muted"><a href="coverage.html">Coverage across the city →</a></p>
             </section>
 
+            <section class="panel panel--decisions">
+                <div class="panel-heading">
+                    <div>
+                        <div class="step">Decide</div>
+                        <h2>What still needs a person</h2>
+                    </div>
+                </div>
+                <p class="muted" id="decision-summary">nothing open in this view</p>
+                <div class="decision-progress" id="decision-progress" aria-hidden="true"></div>
+                <button class="button button--primary button--wide" id="decision-start">Nothing to decide here</button>
+                <div class="decision-list" id="decision-list">
+                    <div class="empty-state">Pan or zoom to an area with unresolved junctions.</div>
+                </div>
+            </section>
+
             <section class="panel">
                 <div class="panel-heading">
                     <div>
@@ -156,6 +171,7 @@
 
         <section class="map-shell">
             <div id="map" aria-label="Lane topology map"></div>
+            <section class="decision-card" id="decision-card" aria-live="polite" hidden></section>
             <div class="topology-focus-bar" aria-live="polite">
                 <span class="topology-focus-bar__icon">➤</span>
                 <span id="focus-status">Hover a lane or node to trace it. Click to pin; Esc clears.</span>
@@ -235,6 +251,7 @@
     <script src="../js/osm-profile.js"></script>
     <script src="../js/lane-topology-restrictions.js"></script>
     <script src="../js/lane-topology-junction-rules.js"></script>
+    <script src="../js/lane-topology-decisions.js"></script>
     <script src="../js/lane-topology-graph.js"></script>
     <script src="../js/lane-topology-viewport.js"></script>
     <script src="../js/lane-topology-junction-paint.js"></script>
@@ -243,6 +260,7 @@
     <script src="../js/lane-topology-run-plan.js"></script>
     <script src="../js/lane-turn-arrows.js"></script>
     <script src="../js/lane-topology-view.js"></script>
+    <script src="decisions-ui.js"></script>
     <script src="topology.js"></script>
 </body>
 </html>

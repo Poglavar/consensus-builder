@@ -233,10 +233,16 @@ describe('solution snapshot reference', () => {
     });
 
     it('every reader of a solution row exposes the snapshot id', () => {
-        const readers = serializers.match(/snapshotAt: row\.osm_snapshot_at/g) || [];
-        const withId = serializers.match(/snapshotId: row\.osm_snapshot_id/g) || [];
+        // Per serializer, not by counting the file: a row type may legitimately carry the id and
+        // no date of its own (a junction decision does), and comparing totals called that a
+        // failure. What must never happen is a serializer reading the DATE and dropping the id.
+        const blocks = serializers.match(/function serialized\w+\([\s\S]*?\n}/g) || [];
+        const readers = blocks.filter(block => block.includes('snapshotAt: row.osm_snapshot_at'));
+
         expect(readers.length).toBeGreaterThan(0);
-        expect(withId.length).toBe(readers.length);
+        readers.forEach(block => {
+            expect(block).toContain('snapshotId: row.osm_snapshot_id');
+        });
     });
 
     it('every place that records evidence provenance records the id, not only the date', () => {

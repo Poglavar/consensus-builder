@@ -974,3 +974,333 @@ input {
     color: #aebdc0;
     font: 10px/1.45 "SFMono-Regular", Consolas, monospace;
 }
+
+/* ---- The decision queue and its card -------------------------------------------------------
+   The queue lives in the sidebar and the card over the map, because the card has to be readable
+   while the junction it is asking about is visible. Arm letters and colours are shared between
+   the two and the map markers: B in the card is B on the road. */
+
+.panel--decisions {
+    background:
+        linear-gradient(145deg, rgba(232, 116, 59, .10), transparent 52%),
+        var(--panel);
+}
+
+.decision-progress {
+    height: 4px;
+    margin: 10px 0 12px;
+    overflow: hidden;
+    border-radius: 3px;
+    background: #1e2a2d;
+}
+
+.decision-progress::after {
+    display: block;
+    width: var(--progress, 0%);
+    height: 100%;
+    background: var(--accent-strong);
+    transition: width .2s;
+    content: "";
+}
+
+.decision-list {
+    max-height: 260px;
+    margin-top: 10px;
+    overflow-y: auto;
+}
+
+.decision-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 4px;
+    padding: 8px 9px;
+    color: var(--ink);
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background: var(--panel-2);
+    text-align: left;
+    cursor: pointer;
+}
+
+.decision-row:hover {
+    border-color: var(--line);
+}
+
+.decision-row--active {
+    border-color: var(--accent);
+    background: rgba(126, 226, 196, .10);
+}
+
+.decision-row--done .decision-row__mark {
+    color: #0a1012;
+    background: var(--accent-strong);
+}
+
+.decision-row__mark {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    color: var(--ink);
+    border-radius: 7px;
+    background: #24343a;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.decision-row__text {
+    min-width: 0;
+}
+
+.decision-row__text b {
+    display: block;
+    overflow: hidden;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.decision-row__text small {
+    display: block;
+    color: var(--muted);
+    font-size: 10.5px;
+}
+
+.decision-blocked {
+    margin-top: 10px;
+    padding-top: 9px;
+    border-top: 1px dashed var(--line);
+    color: var(--muted);
+}
+
+.decision-blocked b {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 11px;
+}
+
+.decision-blocked small {
+    display: block;
+    font-size: 10.5px;
+    line-height: 1.5;
+    opacity: .8;
+}
+
+.decision-card {
+    position: absolute;
+    z-index: 1200;
+    top: 62px;
+    right: 14px;
+    width: 330px;
+    max-height: calc(100% - 96px);
+    padding: 14px;
+    overflow-y: auto;
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    background: var(--panel);
+    box-shadow: var(--shadow);
+}
+
+.decision-card[hidden] {
+    display: none;
+}
+
+.decision-card__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.decision-card__step {
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.decision-card__close {
+    width: 26px;
+    height: 26px;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: transparent;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.decision-card h3 {
+    margin: 8px 0 2px;
+    font-size: 15px;
+}
+
+.decision-card__prompt {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.decision-card__why {
+    margin: 4px 0 12px;
+    color: var(--muted);
+    font-size: 11.5px;
+    line-height: 1.5;
+}
+
+.decision-card__lanes {
+    display: grid;
+    gap: 6px;
+}
+
+.lane-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 7px 9px;
+    border-radius: 9px;
+    background: var(--panel-2);
+}
+
+.lane-row__name b {
+    margin-right: 6px;
+    font-size: 13px;
+}
+
+.lane-row__name small {
+    color: var(--muted);
+    font-size: 10.5px;
+}
+
+.lane-row__arms {
+    display: flex;
+    flex-shrink: 0;
+    gap: 5px;
+}
+
+/* Deliberately 30px: this is the control someone taps dozens of times in a row, on a phone. */
+.arm-chip {
+    width: 30px;
+    height: 30px;
+    color: var(--arm);
+    border: 1.5px solid var(--arm);
+    border-radius: 8px;
+    background: transparent;
+    font-size: 12px;
+    font-weight: 700;
+    opacity: .45;
+    cursor: pointer;
+}
+
+.arm-chip--on {
+    color: #0a1012;
+    background: var(--arm);
+    opacity: 1;
+}
+
+.decision-card__legend {
+    display: grid;
+    gap: 5px;
+    margin: 12px 0 0;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+    font-size: 11px;
+}
+
+.decision-card__legend span {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.decision-card__legend i {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 19px;
+    height: 19px;
+    color: #0a1012;
+    border-radius: 6px;
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 800;
+}
+
+.decision-card__legend em {
+    color: var(--muted);
+    font-style: normal;
+}
+
+.decision-card__warn,
+.decision-card__note,
+.decision-card__saved {
+    margin-top: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.decision-card__warn {
+    color: #ffd2d0;
+    background: rgba(255, 100, 95, .14);
+}
+
+.decision-card__note,
+.decision-card__saved {
+    color: var(--muted);
+    background: var(--panel-2);
+}
+
+.decision-card__actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.decision-card__actions .button--primary {
+    flex: 1;
+}
+
+/* Map markers. The lane numbers and arm letters are the card's vocabulary drawn on the road. */
+.decision-badge {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 7px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .5);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.decision-badge--lane {
+    color: #0a1012;
+    background: #ffffff;
+}
+
+.decision-badge--arm {
+    color: #0a1012;
+    background: #ffe9a8;
+}
+
+@media (max-width: 760px) {
+    /* A bottom sheet, so the junction stays visible above the question being asked about it. */
+    .decision-card {
+        top: auto;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: auto;
+        max-height: 62%;
+        border-right: 0;
+        border-bottom: 0;
+        border-left: 0;
+        border-radius: 14px 14px 0 0;
+    }
+}
