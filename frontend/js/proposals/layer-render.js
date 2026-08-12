@@ -732,16 +732,8 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
     // Share-plan mode: no surface may select a proposal or open its details — the panel's own
     // row hover/click highlight is the only proposal interaction while the plan is being composed.
     if (window.sharePlanMode) return;
-    console.debug('[selectAndHighlightProposal] Called', {
-        proposalIdOrHash,
-        parcelId,
-        shouldCenter,
-        showDetails,
-        keepHighlightsWithoutUi
-    });
 
     const resolvedId = resolveProposalIdKey(proposalIdOrHash);
-    console.debug('[selectAndHighlightProposal] Resolved ID:', resolvedId);
 
     const proposal = getProposalByIdOrHash(resolvedId);
     if (!proposal) {
@@ -749,16 +741,9 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
         updateStatus('Error: Proposal not found');
         return;
     }
-    console.debug('[selectAndHighlightProposal] Proposal found', {
-        proposalId: proposal.proposalId,
-        proposalId: proposal.proposalId,
-        title: proposal.title,
-        parcelIdsCount: proposal.parentParcelIds?.length || 0
-    });
 
     const proposalKey = getProposalKey(proposal) || resolvedId;
     proposalListState.selectedId = proposalKey;
-    console.debug('[selectAndHighlightProposal] Set proposal key:', proposalKey);
 
     // Skip heavy restyle work if the same proposal is already active and we are not recentering
     const alreadySelected = window.currentlyHighlightedProposalId === proposalKey;
@@ -793,25 +778,19 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
     }
 
     // Clear any existing proposal highlights
-    console.debug('[selectAndHighlightProposal] Clearing existing proposal highlights...');
     clearProposalHighlights();
-    console.debug('[selectAndHighlightProposal] Cleared existing highlights');
 
     // Set the new state for the proposal and the selected parcel
     window.currentlyHighlightedProposal = proposal;
     window.currentlyHighlightedProposalId = proposalKey;
     window.selectedParcelInProposal = parcelId;
-    console.debug('[selectAndHighlightProposal] Set window state variables');
 
     // Show proposal info immediately (no visual changes yet)
     if (showDetails) {
-        console.debug('[selectAndHighlightProposal] Calling showProposalInfo...');
         window.__openProposalDetailsCollapsed = true;
         showProposalInfo(proposal, parcelId);
         showOwnParcelInfoForProposal(proposal);
-        console.debug('[selectAndHighlightProposal] showProposalInfo called');
     } else {
-        console.debug('[selectAndHighlightProposal] showDetails is false, hiding proposal details panel');
         hideProposalDetailsPanel();
     }
 

@@ -49,13 +49,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         try { hideProposalDetailsPanel(true); } catch (_) { }
         return;
     }
-    console.debug('[showProposalInfo] Called', {
-        proposalId: proposal?.proposalId,
-        proposalId: proposal?.proposalId,
-        title: proposal?.title,
-        currentParcelId,
-        preserveScrollPosition
-    });
 
     const i18nProposal = (typeof window !== 'undefined') ? window.i18n : null;
     const formatProposalString = (template, params = {}) => {
@@ -76,32 +69,25 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         return formatProposalString(fallback, params);
     };
 
-    console.debug('[showProposalInfo] Collapsing sidebar...');
     collapseSidebarIfOpen();
-    console.debug('[showProposalInfo] Sidebar collapsed');
 
     const parcelIds = ensureArrayOfStrings(proposal.parentParcelIds);
-    console.debug('[showProposalInfo] Got parcel IDs', { parcelIdsCount: parcelIds.length });
 
     // Check proposal category for map application controls
     // Ensure we have the full proposal from storage if needed
     // This needs to be done early because we use fullProposal for ancestor parcels
-    console.debug('[showProposalInfo] Getting full proposal from storage...');
     let fullProposal = proposal;
     if (proposal.proposalId && typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function') {
         try {
             const stored = proposalStorage.getProposal(proposal.proposalId);
             if (stored) {
-                console.debug('[showProposalInfo] Found full proposal in storage');
                 fullProposal = stored;
             } else {
-                console.debug('[showProposalInfo] Proposal not found in storage, using provided proposal');
             }
         } catch (err) {
             console.warn('[showProposalInfo] Error getting proposal from storage:', err);
         }
     } else {
-        console.debug('[showProposalInfo] Storage not available, using provided proposal');
     }
 
     // Remember which proposal is currently shown in details so downstream actions can use it directly
@@ -136,11 +122,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     }
 
     const perfEndParentIds = performance.now();
-    console.debug('[showProposalInfo] Parent parcel IDs extracted', {
-        count: parentParcelIds.length,
-        timeMs: (perfEndParentIds - perfStartParentIds).toFixed(2),
-        source: fullProposal.roadProposal ? 'roadProposal' : fullProposal.buildingProposal ? 'buildingProposal' : 'parcelIds'
-    });
 
     // Lazy ancestor list: we resolve each row's feature only when its DOM is rendered, so a
     // 700-parent proposal opens just as fast as a 7-parent one. The first batch resolves
@@ -199,11 +180,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // not by parentParcelIds.length.
     const parentParcels = parentParcelIds.slice(0, MAX_LIST_INITIAL).map(buildAncestorRow).filter(Boolean);
     const perfEndParcelFeatures = performance.now();
-    console.debug('[showProposalInfo] Initial ancestor batch resolved', {
-        totalIds: parentParcelIds.length,
-        resolvedNow: parentParcels.length,
-        timeMs: (perfEndParcelFeatures - perfStartParcelFeatures).toFixed(2)
-    });
 
     // Total area: sum across whatever we have resolved so far. As parcelDataLoaded fires and
     // more rows hydrate via the lazy list, this number is best-effort — accuracy improves as
@@ -986,11 +962,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     `;
 
     const perfEndHtml = performance.now();
-    console.debug('[showProposalInfo] HTML content generated', {
-        timeMs: (perfEndHtml - perfStartHtml).toFixed(2),
-        htmlLength: content.length,
-        note: 'HTML includes proposal metadata, ancestor parcels list, owner acceptance status, etc.'
-    });
 
     // Preserve scroll/anchor before the DOM rewrite
     const panel = document.getElementById('proposal-details-panel');
@@ -1023,7 +994,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     //   - Ancestors/descendants proposals
     //   - Ownership & acquisition stats
     // This HTML is inserted into #proposal-details-content to display the proposal info panel
-    console.debug('[showProposalInfo] Getting proposal details content element...', { parcelIdsCount: parcelIds.length });
     const detailsContent = document.getElementById('proposal-details-content');
     function populateAcceptanceSectionsAsync(proposalForStatus, precomputedOwnerSummary) {
         const parcelContainer = document.getElementById('proposal-parcel-acceptance-section');
@@ -1031,14 +1001,11 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         if (!parcelContainer && !ownerContainer) return;
 
         const doWork = () => {
-            const parcelStart = performance.now();
             if (parcelContainer) {
                 const parcelHtml = buildParcelAcceptanceStatusHtml(proposalForStatus);
                 parcelContainer.innerHTML = parcelHtml || '';
             }
-            const parcelAcceptanceMs = (performance.now() - parcelStart).toFixed(2);
 
-            const ownerStart = performance.now();
             let ownerSummary = precomputedOwnerSummary || buildProposalOwnerAcceptanceSummaryFast(proposalForStatus);
             if (!ownerSummary || ownerSummary.totalOwners === 0) {
                 ownerSummary = buildProposalOwnerAcceptanceSummary(proposalForStatus);
@@ -1047,14 +1014,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 const ownerHtml = buildOwnerAcceptanceStatusHtml(proposalForStatus, ownerSummary);
                 ownerContainer.innerHTML = ownerHtml || '';
             }
-            const ownerAcceptanceMs = (performance.now() - ownerStart).toFixed(2);
-
-            console.info('[showProposalInfo] Acceptance async render', {
-                ownerAcceptanceMs,
-                ownerCount: ownerSummary?.totalOwners || 0,
-                parcelAcceptanceMs,
-                parcelCount: Array.isArray(proposalForStatus?.parentParcelIds) ? proposalForStatus.parentParcelIds.length : 0
-            });
         };
 
         // Let the panel paint first, then populate acceptance sections
@@ -1079,7 +1038,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     };
 
     if (detailsContent && parcelIds.length > 20) {
-        console.debug('[showProposalInfo] Large proposal detected, showing loading spinner first...');
         // Only show spinner for proposals with many parcels
         const loadingText = tProposal('panel.proposal.rendering', 'Rendering proposal details...');
         detailsContent.innerHTML = `
@@ -1088,11 +1046,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <span class="loader-text" style="margin-top: 16px; color: #666;">${loadingText}</span>
             </div>
         `;
-        console.debug('[showProposalInfo] Loading spinner set, scheduling content render...');
 
         // Defer heavy DOM insertion and chunk it across animation frames
         setTimeout(() => {
-            console.debug('[showProposalInfo] Rendering proposal content (large proposal) in chunks...');
             if (!detailsContent) return;
 
             const container = document.createElement('div');
@@ -1112,7 +1068,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 if (index < nodes.length) {
                     requestAnimationFrame(appendChunk);
                 } else {
-                    console.debug('[showProposalInfo] Proposal content rendered to DOM');
                     runPostRender();
                 }
             };
@@ -1120,11 +1075,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             requestAnimationFrame(appendChunk);
         }, 0);
     } else {
-        console.debug('[showProposalInfo] Rendering proposal content directly (small proposal or no spinner needed)...');
         // Set innerHTML which resets scroll to 0
         if (detailsContent) {
             detailsContent.innerHTML = content;
-            console.debug('[showProposalInfo] Proposal content rendered to DOM');
             runPostRender();
         } else {
             console.warn('[showProposalInfo] Proposal details content element not found');
@@ -1514,15 +1467,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         });
     } catch (_) { }
 
-    console.debug('[showProposalInfo] Initializing expiry and decay countdowns...');
     // Initialize expiry countdown timer if present
     initializeExpiryCountdown();
 
     // Initialize decay countdown animation if present
     initializeDecayCountdown();
-    console.debug('[showProposalInfo] Countdowns initialized');
 
-    console.debug('[showProposalInfo] Making proposal details panel visible...');
     const detailsPanel = document.getElementById('proposal-details-panel');
     if (detailsPanel) {
         // Normally opening details expands the panel. Right after creating a proposal we open it
@@ -1532,12 +1482,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         if (typeof window !== 'undefined') window.__openProposalDetailsCollapsed = false;
         setProposalDetailsPanelMinimized(detailsPanel, startCollapsed, getProposalDetailsPanelLabels());
         detailsPanel.classList.add('visible');
-        console.debug('[showProposalInfo] Panel made visible');
     } else {
         console.warn('[showProposalInfo] Proposal details panel element not found');
     }
     document.body.classList.add('proposal-details-open');
-    console.debug('[showProposalInfo] Body class added, proposal details should now be visible');
     // Close on Escape when this panel is the active proposal surface
     installProposalDetailsEscapeHandler();
 
