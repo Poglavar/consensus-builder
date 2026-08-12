@@ -268,7 +268,10 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
     // Rate limit POST/PUT/PATCH routes — protects against abuse on write endpoints
     const writeRateLimiter = rateLimit({
         windowMs: 15 * 60 * 1000, // 15 minutes
-        max: 50,                   // 50 write requests per 15 min per IP
+        // Raised from 50: answering the junction queue is one write per approach, and someone
+        // working through it steadily passes 50 in a quarter of an hour without doing anything
+        // unusual. Still an abuse ceiling, just one set above ordinary human throughput.
+        max: 200,                  // 200 write requests per 15 min per IP
         standardHeaders: true,
         legacyHeaders: false,
         message: { error: 'Too many requests, please try again later.' }

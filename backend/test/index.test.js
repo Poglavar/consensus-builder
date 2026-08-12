@@ -475,7 +475,19 @@ describe('createApp', () => {
             res.status(200).json({ ok: true });
         });
 
-        for (let attempt = 0; attempt < 50; attempt += 1) {
+        // The ceiling is read off the app's own RateLimit-Limit header rather than restated here.
+        // Hardcoding it meant raising the limit broke this test, which says nothing about whether
+        // the limiter works — the behaviour under test is "allows up to the ceiling, then refuses".
+        const first = await request(app)
+            .patch('/_test/rate-limited')
+            .set('Origin', 'https://editor.example')
+            .send({});
+        expect(first.status).toBe(200);
+        const ceiling = Number(first.headers['ratelimit-limit']);
+        expect(Number.isFinite(ceiling)).toBe(true);
+        expect(ceiling).toBeGreaterThan(1);
+
+        for (let attempt = 1; attempt < ceiling; attempt += 1) {
             const allowed = await request(app)
                 .patch('/_test/rate-limited')
                 .set('Origin', 'https://editor.example')
