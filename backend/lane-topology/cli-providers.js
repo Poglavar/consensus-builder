@@ -386,6 +386,9 @@ const count = value => (typeof value === 'number' && Number.isFinite(value) ? va
 // nothing must not look alike.
 function normalizeUsage(fields) {
     const usage = {
+        // What the CLI actually ran, not the alias we asked for. `opus` moves between releases, so
+        // a ledger keyed on it cannot be read back in a year; the CLI names the resolved id.
+        resolvedModel: null,
         inputTokens: null,
         outputTokens: null,
         cacheReadTokens: null,
@@ -405,6 +408,8 @@ function claudeUsage(envelope) {
     const cost = Number(envelope?.total_cost_usd);
     if (!usage && !Number.isFinite(cost)) return null;
     return normalizeUsage({
+        // modelUsage is keyed by the resolved model id.
+        resolvedModel: Object.keys(envelope?.modelUsage || {})[0] || null,
         inputTokens: count(usage?.input_tokens),
         outputTokens: count(usage?.output_tokens),
         cacheReadTokens: count(usage?.cache_read_input_tokens),
@@ -450,6 +455,45 @@ function codexUsage(stdout) {
 
 export function providerUsage(provider, stdout, envelope) {
     return provider === 'codex' ? codexUsage(stdout) : claudeUsage(envelope);
+}
+
+// The shared ledger in agents/lib/llm-cost, which answers "what has the machine spent on
+// models" across every repo. It is a sibling checkout, not a dependency of this one, and it is
+// not deployed — so this is a soft link that says when it is missing rather than a hard import
+// that would take the backend down on a server where agents/ does not exist.
+let ledgerApi;
+function costLedger() {
+    if (ledgerApi !== undefined) return ledgerApi;
+    try {
+        ledgerApi = createRequire(import.meta.url)('../../../agents/lib/llm-cost/index.cjs');
+    } catch (error) {
+        console.warn('[lane-topology] shared cost ledger unavailable, recording usage locally only:',
+            error.message);
+        ledgerApi = null;
+    }
+    return ledgerApi;
+}
+
+// Recognition is billed to a Max or ChatGPT subscription, so it costs no money at the margin.
+// The tokens still matter — they are what says whether a prompt change doubled what a junction
+// takes — and Claude's own costed equivalent rides along without ever counting as spend.
+export function ledgerRecognitionRun({ provider, model, usage, meta = {} }) {
+    const ledger = costLedger();
+    if (!ledger || !usage) return null;
+    try {
+        return ledger.recordSubscriptionRun({
+            repo: 'consensus-builder',
+            script: 'lane-topology-recognition',
+            model: usage.resolvedModel || model || provider,
+            usage,
+            equivalentUsd: usage.equivalentUsd,
+            meta: { provider, promptVersion: TOPOLOGY_PROMPT_VERSION, ...meta }
+        });
+    } catch (error) {
+        // Accounting must never take down the work it is accounting for.
+        console.warn('[lane-topology] cost ledger write failed:', error.message);
+        return null;
+    }
 }
 
 function parseProviderOutput(provider, stdout, outputFileText) {
@@ -775,6 +819,20 @@ export async function runCliTopologyProvider(provider, input, options = {}) {
         const readFileImpl = options.readFileImpl || (path => readFile(path, 'utf8'));
         const outputFileText = provider === 'codex' ? await readFileImpl(outputPath) : '';
         const parsed = parseProviderOutput(provider, result.stdout, outputFileText);
+        // Ledger the run before the patch is applied: a patch this run cannot validate is still a
+        // run whose tokens were spent, and an accounting that only counts successes understates.
+        if (options.ledger !== false) {
+            ledgerRecognitionRun({
+                provider,
+                model: options.model,
+                usage: parsed.usage,
+                meta: {
+                    city: input.selection?.city ?? null,
+                    bbox: input.selection?.bbox ?? null,
+                    imagery: input.imagery?.source ?? null
+                }
+            });
+        }
         return {
             summary: String(parsed.summary || ''),
             graph: applyRecognitionPatch(parsed.patch, input.deterministicGraph, provider, {

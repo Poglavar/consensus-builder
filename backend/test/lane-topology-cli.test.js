@@ -513,6 +513,7 @@ describe('lane-topology CLI provider boundary', () => {
         });
 
         expect(result.usage).toEqual({
+            resolvedModel: null,      // codex does not name the model it resolved to
             inputTokens: 67471,
             outputTokens: 199,           // output plus reasoning, which is billed as output
             cacheReadTokens: 52480,
@@ -539,6 +540,8 @@ describe('lane-topology CLI provider boundary', () => {
         const envelope = JSON.stringify({
             type: 'result',
             usage: { input_tokens: 1234, output_tokens: 567, cache_read_input_tokens: 89 },
+            // Keyed by the resolved id, which is how the alias we asked for becomes recordable.
+            modelUsage: { 'claude-opus-5': { inputTokens: 1234 } },
             total_cost_usd: 1.25,
             duration_ms: 42000,
             structured_output: { summary: 'ok', patch_json: JSON.stringify(patch) }
@@ -568,6 +571,7 @@ describe('lane-topology CLI provider boundary', () => {
 
         expect(result.outputTail).not.toContain('input_tokens');
         expect(result.usage).toEqual({
+            resolvedModel: 'claude-opus-5',
             inputTokens: 1234,
             outputTokens: 567,
             cacheReadTokens: 89,
