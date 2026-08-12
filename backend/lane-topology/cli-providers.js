@@ -436,6 +436,10 @@ function codexUsage(stdout) {
         }
         if (event?.type !== 'turn.completed' || !event.usage) return;
         totals.turns += 1;
+        // OpenAI counts input_tokens INCLUSIVE of the cached ones, where Anthropic reports the two
+        // disjoint. The shared rate table assumes Anthropic's convention, so charging this verbatim
+        // would bill the cached tokens twice — at full rate and again at the cache rate. On a real
+        // junction that is 262,503 billed instead of 92,007, a threefold overstatement.
         totals.input += Number(event.usage.input_tokens) || 0;
         totals.cached += Number(event.usage.cached_input_tokens) || 0;
         totals.cacheWrite += Number(event.usage.cache_write_input_tokens) || 0;
@@ -445,7 +449,7 @@ function codexUsage(stdout) {
     });
     if (!totals.turns) return null;
     return normalizeUsage({
-        inputTokens: totals.input,
+        inputTokens: Math.max(0, totals.input - totals.cached),
         outputTokens: totals.output,
         cacheReadTokens: totals.cached,
         cacheCreationTokens: totals.cacheWrite,
@@ -474,19 +478,44 @@ function costLedger() {
     return ledgerApi;
 }
 
+// What the same tokens would have cost on the metered API, when the shared table knows the model.
+// computeCost throws on an unpriced model by design — that refusal is the feature, so it is caught
+// here and turned into "unknown" rather than allowed to fail the run or invent a number.
+function meteredEquivalent(ledger, model, usage) {
+    try {
+        return ledger.computeCost(model, {
+            input_tokens: usage.inputTokens ?? 0,
+            output_tokens: usage.outputTokens ?? 0,
+            cache_read_input_tokens: usage.cacheReadTokens ?? 0,
+            cache_creation_input_tokens: usage.cacheCreationTokens ?? 0
+        });
+    } catch (_) {
+        return null;
+    }
+}
+
 // Recognition is billed to a Max or ChatGPT subscription, so it costs no money at the margin.
 // The tokens still matter — they are what says whether a prompt change doubled what a junction
 // takes — and Claude's own costed equivalent rides along without ever counting as spend.
 export function ledgerRecognitionRun({ provider, model, usage, meta = {} }) {
     const ledger = costLedger();
     if (!ledger || !usage) return null;
+    // The CLI names the model it resolved to when it can; when it cannot, the model we ASKED for is
+    // still known — we passed it on the command line. Falling back to the provider name was giving
+    // up information we had.
+    const billed = usage.resolvedModel || model || provider;
     try {
         return ledger.recordSubscriptionRun({
             repo: 'consensus-builder',
             script: 'lane-topology-recognition',
-            model: usage.resolvedModel || model || provider,
+            model: billed,
             usage,
-            equivalentUsd: usage.equivalentUsd,
+            // A CLI that states its own cost is preferred; otherwise price it from the shared rate
+            // table, which is why the table is shared. An unpriced model yields null rather than a
+            // guess, and adding its rate later starts pricing these runs with no code change.
+            equivalentUsd: Number.isFinite(usage.equivalentUsd)
+                ? usage.equivalentUsd
+                : meteredEquivalent(ledger, billed, usage),
             meta: { provider, promptVersion: TOPOLOGY_PROMPT_VERSION, ...meta }
         });
     } catch (error) {

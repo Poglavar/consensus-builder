@@ -514,7 +514,10 @@ describe('lane-topology CLI provider boundary', () => {
 
         expect(result.usage).toEqual({
             resolvedModel: null,      // codex does not name the model it resolved to
-            inputTokens: 67471,
+            // 67,471 reported minus the 52,480 of it that were cached. OpenAI counts input
+            // INCLUSIVE of cached tokens where Anthropic reports them disjoint, and the shared
+            // rate table assumes the latter — billing this verbatim charges the cache twice.
+            inputTokens: 14991,
             outputTokens: 199,           // output plus reasoning, which is billed as output
             cacheReadTokens: 52480,
             cacheCreationTokens: 11,
