@@ -92,10 +92,35 @@ export function tracksOf(projectData) {
     return tracks.filter(track => track && Array.isArray(track.latlngs) && track.latlngs.length >= 2);
 }
 
+export function trackCountOf(track) {
+    const count = Number(track && track.trackCount);
+    return Number.isInteger(count) && count > 0 ? count : 1;
+}
+
 export function widthForTrack(track, override) {
     if (Number.isFinite(override) && override > 0) return override;
-    const count = Number(track && track.trackCount);
-    return WIDTH_PER_TRACK_M * (Number.isFinite(count) && count > 0 ? count : 1);
+    return WIDTH_PER_TRACK_M * trackCountOf(track);
+}
+
+// The planner names gauges ('g1435'); consensus-builder's rail lanes carry millimetres. Monorail
+// has no consensus-builder lane type, so its beam imports as a standard-gauge lane — the land-take
+// width is what matters here, and the default gauge is the least-wrong rendering.
+const PLANNER_GAUGE_MM = { g1000: 1000, g1435: 1435 };
+
+// The stored cross-section: one rail lane per parallel track, splitting the corridor width evenly.
+// Without this, consensus-builder's legacy synthesis draws the whole width as ONE rail lane — a
+// double-track alignment rendered single-track on the map and in 3D. The strips must sum exactly
+// to definition.width (corridorProfileOf's invariant), which even division preserves.
+export function trackCrossSectionProfile(track, widthM) {
+    const count = trackCountOf(track);
+    const gauge = PLANNER_GAUGE_MM[track && track.gauge] ?? 1435;
+    return {
+        strips: Array.from({ length: count }, () => ({
+            type: 'rail',
+            width: widthM / count,
+            gauge
+        }))
+    };
 }
 
 // ─── Authored absolute elevations (verticalProfile → per-vertex elevationM) ──
@@ -232,6 +257,7 @@ export function buildProposal({ project, track, trackIndex, spans, centreline, f
         segments: [centreline],
         width: widthM,
         polygon: footprint.geometry,
+        profile: trackCrossSectionProfile(track, widthM),
         metadata: {
             mode: 'import',
             type: 'track',
@@ -240,6 +266,7 @@ export function buildProposal({ project, track, trackIndex, spans, centreline, f
             isCorridor: true,
             source: 'transit-project',
             levels: true,
+            trackCount: trackCountOf(track),
             // Present only when every point carries elevationM: the sim's
             // proposal-track adapter requires the datum to trust absolute
             // heights, and a datum without heights would be a lie.

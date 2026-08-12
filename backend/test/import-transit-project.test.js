@@ -9,6 +9,8 @@ import {
     attachAuthoredElevations,
     parseArgs,
     profileElevationAtM,
+    trackCountOf,
+    trackCrossSectionProfile,
     tracksOf,
     vertexChainagesM,
     widthForTrack,
@@ -99,12 +101,49 @@ describe('widthForTrack', () => {
     });
 });
 
+describe('trackCrossSectionProfile', () => {
+    it('lays one rail lane per parallel track, splitting the corridor width evenly', () => {
+        const profile = trackCrossSectionProfile({ trackCount: 2, gauge: 'g1435' }, 6);
+        expect(profile.strips).toEqual([
+            { type: 'rail', width: 3, gauge: 1435 },
+            { type: 'rail', width: 3, gauge: 1435 }
+        ]);
+    });
+
+    it('sums exactly to the corridor width even when the width was overridden', () => {
+        const strips = trackCrossSectionProfile({ trackCount: 2 }, 12).strips;
+        expect(strips.reduce((sum, strip) => sum + strip.width, 0)).toBe(12);
+    });
+
+    it('translates planner gauge names to millimetres, defaulting the unrepresentable', () => {
+        expect(trackCrossSectionProfile({ trackCount: 1, gauge: 'g1000' }, 3).strips[0].gauge).toBe(1000);
+        expect(trackCrossSectionProfile({ trackCount: 1, gauge: 'monorail' }, 3).strips[0].gauge).toBe(1435);
+        expect(trackCrossSectionProfile({ trackCount: 1 }, 3).strips[0].gauge).toBe(1435);
+    });
+
+    it('treats a track without a count as single-track', () => {
+        expect(trackCountOf({})).toBe(1);
+        expect(trackCountOf({ trackCount: 2.5 })).toBe(1);
+        expect(trackCrossSectionProfile({}, 3).strips).toHaveLength(1);
+    });
+});
+
 describe('buildProposal', () => {
     it('stores the measured footprint on the definition, where the app treats it as authoritative', () => {
         const definition = build().roadProposal.definition;
         expect(definition.polygon).toBe(footprint.geometry);
         expect(definition.width).toBe(6);
-        expect(definition.metadata).toMatchObject({ type: 'track', isTrack: true, isRoad: false, levels: true });
+        expect(definition.metadata).toMatchObject({
+            type: 'track', isTrack: true, isRoad: false, levels: true, trackCount: 2
+        });
+    });
+
+    it('stores the double-track cross-section, so the map and 3D draw two tracks, not one wide one', () => {
+        const definition = build().roadProposal.definition;
+        expect(definition.profile.strips).toHaveLength(2);
+        expect(definition.profile.strips.every(strip => strip.type === 'rail')).toBe(true);
+        expect(definition.profile.strips.reduce((sum, strip) => sum + strip.width, 0))
+            .toBe(definition.width);
     });
 
     it('keeps the centreline whole so a part-tunnelled line stays one contiguous stretch', () => {
