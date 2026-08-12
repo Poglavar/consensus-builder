@@ -16,6 +16,7 @@
 // Long runs belong under `run-job` so they outlive the shell that started them.
 import { createRequire } from 'node:module';
 import { appendFile } from 'node:fs/promises';
+import { pathToFileURL } from 'node:url';
 import { enumerationTiles, insideCore } from './lib/city-tiles.js';
 
 const require = createRequire(import.meta.url);
@@ -164,7 +165,17 @@ function junctionBbox(junction, padM, minSpanM) {
     return roundBbox([west, south, east, north]);
 }
 
+// Injectable so the runner's own behaviour can be tested without a server. Everything below goes
+// through this one function, so a test that replaces it controls the whole conversation.
+let apiImpl = null;
+export function setApiImpl(impl) { apiImpl = impl; }
+
 async function api(base, path, init) {
+    if (apiImpl) return apiImpl(base, path, init);
+    return realApi(base, path, init);
+}
+
+async function realApi(base, path, init) {
     const response = await fetch(`${base}${path}`, {
         // Node's default is a 300 s headers timeout that surfaces as a bare "fetch failed"; a slow
         // evidence query has to fail as itself, with the path that was slow.
@@ -262,6 +273,22 @@ async function imageryForBbox(base, args, bbox) {
 
 const sleep = ms => new Promise(resolve => { setTimeout(resolve, ms); });
 
+// A short retry for reads that are incidental to the work. The junction's own run is never
+// retried here — that costs tokens and belongs to the caller's resume — but re-reading a row that
+// already exists is free, and one dropped connection should not be the end of it.
+export async function withRetry(operation, args, attempts = 3) {
+    let lastError;
+    for (let attempt = 1; attempt <= attempts; attempt += 1) {
+        try {
+            return await operation();
+        } catch (error) {
+            lastError = error;
+            if (attempt < attempts) await sleep(Math.min(args?.pollMs || 2000, 2000) * attempt);
+        }
+    }
+    throw lastError;
+}
+
 async function waitForJob(base, jobId, args) {
     const deadline = Date.now() + args.jobTimeoutMs;
     for (;;) {
@@ -274,7 +301,7 @@ async function waitForJob(base, jobId, args) {
     }
 }
 
-async function solveJunction(base, args, junction, bbox) {
+export async function solveJunction(base, args, junction, bbox) {
     const startedAt = Date.now();
     const imagerySource = await imageryForBbox(base, args, bbox);
     const enqueued = await api(base, '/lane-topology/process', {
@@ -302,13 +329,28 @@ async function solveJunction(base, args, junction, bbox) {
         usage: job.usage || null,
         at: new Date().toISOString()
     };
+    // The read-back exists to put "295 connections, 19 problems" on the progress line. It must
+    // never decide whether the junction succeeded: a transient `fetch failed` here used to throw
+    // out of solveJunction, the caller's catch built a `status: failed` record, and a junction
+    // whose answer was already computed, stored and costed was reported as lost. That happened on
+    // the Miramarska junction — job 62 completed, solution 139 with 192 connections, run summary
+    // said "1 failed". Someone reading that goes looking for work that is sitting in the database.
     if (job.status === 'completed' && job.resultSolutionId) {
-        const { solution } = await api(base, `/lane-topology/solutions/${job.resultSolutionId}`);
-        record.stats = {
-            connections: solution.stats?.connections ?? null,
-            problems: solution.stats?.problems ?? null,
-            errors: solution.stats?.errors ?? null
-        };
+        try {
+            const { solution } = await withRetry(
+                () => api(base, `/lane-topology/solutions/${job.resultSolutionId}`),
+                args
+            );
+            record.stats = {
+                connections: solution.stats?.connections ?? null,
+                problems: solution.stats?.problems ?? null,
+                errors: solution.stats?.errors ?? null
+            };
+        } catch (error) {
+            // Said out loud, because a silent miss would look like a junction that produced
+            // nothing rather than one whose summary could not be fetched.
+            record.statsError = String(error.message || error);
+        }
     }
     return record;
 }
@@ -452,10 +494,15 @@ async function main() {
             const tokens = record.usage
                 ? `, ${record.usage.outputTokens ?? '?'} out tokens`
                 : '';
-            const detail = record.status === 'completed'
-                ? `${record.stats?.connections ?? '?'} connections, `
-                    + `${record.stats?.problems ?? '?'} problems${tokens}`
-                : `FAILED: ${String(record.error || '').slice(0, 200)}`;
+            const detail = record.status !== 'completed'
+                ? `FAILED: ${String(record.error || '').slice(0, 200)}`
+                : (record.statsError
+                    // Solved and stored; only the summary read failed. Naming the solution makes
+                    // that checkable rather than something to take on trust.
+                    ? `solved, solution ${record.solutionId} stored `
+                        + `(summary unreadable: ${record.statsError.slice(0, 80)})${tokens}`
+                    : `${record.stats?.connections ?? '?'} connections, `
+                        + `${record.stats?.problems ?? '?'} problems${tokens}`);
             log(`${done}/${queue.length} · ${Math.round(100 * done / queue.length)}% · `
                 + `${record.armCount} arms · ${record.name} · ${record.durationS ?? '?'}s · ${detail} · `
                 + `ETA ${Math.floor(etaS / 60)}m${String(etaS % 60).padStart(2, '0')}s`);
@@ -470,7 +517,11 @@ async function main() {
     await Promise.all(Array.from({ length: Math.min(args.concurrency, queue.length) }, worker));
 
     const minutes = Math.round((Date.now() - startedAt) / 60000);
-    log(`done: ${solved} solved, ${failed} failed, ${queue.length - solved - failed} not attempted, ${minutes} min`);
+    // Counted separately: these junctions ARE solved and their solutions are stored, so they must
+    // not be added to `failed`, but a run where the summary read kept dropping is worth seeing.
+    const unsummarised = records.filter(record => record.statsError).length;
+    log(`done: ${solved} solved, ${failed} failed, ${queue.length - solved - failed} not attempted`
+        + `${unsummarised ? `, ${unsummarised} solved whose summary could not be read` : ''}, ${minutes} min`);
     log(`usage: ${summariseUsage(records)}`);
     if (stopped) {
         log(`STOPPED EARLY — ${stopped}`);
@@ -480,7 +531,11 @@ async function main() {
     return failed ? 1 : 0;
 }
 
-main().then(code => { process.exitCode = code; }).catch(error => {
-    console.error(`[${stamp()}] fatal: ${error.message}`);
-    process.exitCode = 1;
-});
+// Only when run as a command. Importing this file — which a test does, to drive solveJunction
+// without a server — must not start enumerating Zagreb or print the usage banner.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+    main().then(code => { process.exitCode = code; }).catch(error => {
+        console.error(`[${stamp()}] fatal: ${error.message}`);
+        process.exitCode = 1;
+    });
+}
