@@ -185,56 +185,127 @@
 
         // ---- map --------------------------------------------------------------------------
 
+        // Where an arm's letter goes: as far along the arm as it can sit while staying near the
+        // junction AND inside the frame.
+        //
+        // Two faults produced the missing B. `stubTowards` walked whole vertices, so an arm drawn
+        // as one long straight put its label at the far end — hundreds of metres away. And nothing
+        // consulted the viewport, so a label could be perfectly placed and still off screen, or
+        // hidden behind the decision card. Working in container pixels fixes both at once, and
+        // makes the distance from the junction look the same at every zoom.
+        const LABEL_REACH_PX = 78;
+        const FRAME_INSET_PX = 30;
+
+        function cardRect() {
+            const card = element('decision-card');
+            const container = map.getContainer();
+            if (!card || card.hidden || !container) return null;
+            const a = card.getBoundingClientRect();
+            const b = container.getBoundingClientRect();
+            // A margin, so a letter never sits tight against the card's edge either.
+            return { left: a.left - b.left - 12, top: a.top - b.top - 12,
+                right: a.right - b.left + 12, bottom: a.bottom - b.top + 12 };
+        }
+
+        function labelAnchor(coordinates, atNode, blocked) {
+            const points = (atNode ? [...coordinates].reverse() : coordinates)
+                .map(([lng, lat]) => map.latLngToContainerPoint([lat, lng]));
+            if (!points.length) return null;
+            const size = map.getSize();
+            const usable = point => point.x >= FRAME_INSET_PX && point.y >= FRAME_INSET_PX
+                && point.x <= size.x - FRAME_INSET_PX && point.y <= size.y - FRAME_INSET_PX
+                && !(blocked && point.x >= blocked.left && point.x <= blocked.right
+                    && point.y >= blocked.top && point.y <= blocked.bottom);
+
+            let best = usable(points[0]) ? points[0] : null;
+            let travelled = 0;
+            for (let index = 1; index < points.length; index += 1) {
+                const from = points[index - 1];
+                const to = points[index];
+                const span = from.distanceTo(to);
+                if (!span) continue;
+                // Sampled rather than per-vertex, so a single long segment is still walked.
+                const steps = Math.max(1, Math.ceil(span / 8));
+                for (let step = 1; step <= steps; step += 1) {
+                    const ratio = step / steps;
+                    if (travelled + span * ratio > LABEL_REACH_PX) {
+                        return map.containerPointToLatLng(best || points[0]);
+                    }
+                    const point = L.point(from.x + (to.x - from.x) * ratio,
+                        from.y + (to.y - from.y) * ratio);
+                    if (!usable(point)) return map.containerPointToLatLng(best || points[0]);
+                    best = point;
+                }
+                travelled += span;
+            }
+            return map.containerPointToLatLng(best || points[0]);
+        }
+
+        // Drawn layers, kept so hovering can single one out without redrawing everything.
+        const drawn = { lanes: new Map(), exits: new Map(), node: null };
+
         function paintFocus(decision) {
             layer.clearLayers();
+            drawn.lanes.clear();
+            drawn.exits.clear();
+            drawn.node = null;
             if (!decision) return;
             const graph = getGraph();
             if (!graph) return;
             const laneById = new Map((graph.lanes || []).map(lane => [lane.id, lane]));
+            const blocked = cardRect();
 
             decision.approach.lanes.forEach(lane => {
                 const record = laneById.get(lane.id);
                 if (!record) return;
-                const stub = stubTowards(record.geometry.coordinates, true);
-                L.polyline(latLngs({ coordinates: stub }), {
+                const parts = [];
+                parts.push(L.polyline(latLngs({ coordinates: stubTowards(record.geometry.coordinates, true) }), {
                     pane: 'topology-problems',
                     color: APPROACH_COLOR,
                     weight: 5,
                     opacity: .85,
                     interactive: false
-                }).addTo(layer);
-                L.marker(latLngs({ coordinates: stub })[0], {
-                    pane: 'topology-problems',
-                    icon: badge('decision-badge decision-badge--lane', String(lane.ordinal + 1)),
-                    interactive: false
-                }).addTo(layer);
+                }).addTo(layer));
+                const anchor = labelAnchor(record.geometry.coordinates, true, blocked);
+                if (anchor) {
+                    parts.push(L.marker(anchor, {
+                        pane: 'topology-problems',
+                        icon: badge('decision-badge decision-badge--lane', String(lane.ordinal + 1)),
+                        interactive: false
+                    }).addTo(layer));
+                }
+                drawn.lanes.set(lane.id, parts);
             });
 
             decision.exits.forEach((exit, index) => {
                 const colour = ARM_COLORS[index % ARM_COLORS.length];
                 const first = laneById.get(exit.lanes[0]?.id);
                 if (!first) return;
+                const parts = [];
                 exit.lanes.forEach(exitLane => {
                     const record = laneById.get(exitLane.id);
                     if (!record) return;
-                    L.polyline(latLngs({ coordinates: stubTowards(record.geometry.coordinates, false) }), {
+                    parts.push(L.polyline(latLngs({ coordinates: stubTowards(record.geometry.coordinates, false) }), {
                         pane: 'topology-problems',
                         color: colour,
                         weight: 4,
                         opacity: .8,
                         interactive: false
-                    }).addTo(layer);
+                    }).addTo(layer));
                 });
-                const stub = stubTowards(first.geometry.coordinates, false);
-                L.marker(latLngs({ coordinates: stub }).at(-1), {
-                    pane: 'topology-problems',
-                    icon: badge('decision-badge decision-badge--arm', ARM_LETTERS[index] || '?'),
-                    interactive: false
-                }).addTo(layer);
+                const anchor = labelAnchor(first.geometry.coordinates, false, blocked);
+                if (anchor) {
+                    parts.push(L.marker(anchor, {
+                        pane: 'topology-problems',
+                        icon: badge('decision-badge decision-badge--arm', ARM_LETTERS[index] || '?'),
+                        interactive: false
+                    }).addTo(layer));
+                }
+                drawn.exits.set(exit.sectionId, parts);
             });
 
             if (Array.isArray(decision.point)) {
-                L.circleMarker([decision.point[1], decision.point[0]], {
+                drawn.node = L.circleMarker([decision.point[1], decision.point[0]], {
                     pane: 'topology-problems',
                     radius: 8,
                     color: '#ffffff',
@@ -243,6 +314,47 @@
                     interactive: false
                 }).addTo(layer);
             }
+            applySpotlight();
+        }
+
+        // Hovering a row or an arm chip singles that piece out and hides the rest, because at a
+        // junction with three arms and five lanes the drawing is exactly as crowded as the road is.
+        let spotlight = null;
+
+        function setOpacity(parts, visible) {
+            (parts || []).forEach(part => {
+                if (part.setStyle) part.setStyle({ opacity: visible ? (part.options.weight > 4 ? .85 : .8) : 0 });
+                else if (part.getElement) {
+                    const element = part.getElement();
+                    if (element) element.style.opacity = visible ? '1' : '0';
+                }
+            });
+        }
+
+        function applySpotlight() {
+            const lit = key => !spotlight || spotlight.lanes.includes(key) || spotlight.exits.includes(key);
+            drawn.lanes.forEach((parts, id) => setOpacity(parts, lit(id)));
+            drawn.exits.forEach((parts, id) => setOpacity(parts, lit(id)));
+        }
+
+        function highlight(next) {
+            const same = JSON.stringify(next) === JSON.stringify(spotlight);
+            if (same) return;
+            spotlight = next;
+            applySpotlight();
+        }
+
+        // A lane row lights the lane and every arm that lane may use; an arm chip lights the arm
+        // and every lane assigned to it. Either way you see one movement's worth of road.
+        function spotlightForLane(laneId) {
+            return { lanes: [laneId], exits: [...(state.assignment[laneId] || [])] };
+        }
+
+        function spotlightForExit(sectionId) {
+            const lanes = Object.entries(state.assignment)
+                .filter(([, exits]) => (exits || []).includes(sectionId))
+                .map(([laneId]) => laneId);
+            return { lanes, exits: [sectionId] };
         }
 
         // ---- card -------------------------------------------------------------------------
@@ -254,10 +366,11 @@
                 return `<button type="button" class="arm-chip${on ? ' arm-chip--on' : ''}"
                     style="--arm: ${ARM_COLORS[index % ARM_COLORS.length]}"
                     data-lane="${escapeHtml(lane.id)}" data-exit="${escapeHtml(exit.sectionId)}"
+                    data-hover-pair="${escapeHtml(lane.id)}|${escapeHtml(exit.sectionId)}"
                     aria-pressed="${on}" title="${escapeHtml(exit.label)}">${ARM_LETTERS[index] || '?'}</button>`;
             }).join('');
             const kind = lane.type === 'driving' ? '' : ` · ${escapeHtml(lane.type)}`;
-            return `<div class="lane-row">
+            return `<div class="lane-row" data-hover-lane="${escapeHtml(lane.id)}">
                 <span class="lane-row__name"><b>${lane.ordinal + 1}</b>
                     <small>${escapeHtml(lane.side)}${kind}</small></span>
                 <span class="lane-row__arms">${buttons}</span>
@@ -314,7 +427,16 @@
                     <button type="button" class="decision-card__close" id="decision-close"
                         aria-label="Close">×</button>
                 </div>
-                <h3>${escapeHtml(decision.approach.name || 'Unnamed road')}</h3>
+                <h3>${escapeHtml(decision.approach.name || 'Unnamed road')}${(() => {
+                    // Looking along the approach at the junction: the view that shows the painted
+                    // arrows on the lanes being asked about.
+                    const straight = decision.exits.find(exit => exit.category === 'through')
+                        || decision.exits[0];
+                    const url = straight && decisionsModule().streetViewUrl(
+                        decisionsModule().streetViewViewpoint(decision, straight, getGraph()));
+                    return url ? ` <a class="street-view street-view--head" href="${escapeHtml(url)}"
+                        target="_blank" rel="noopener">street view</a>` : '';
+                })()}</h3>
                 <p class="decision-card__prompt">${escapeHtml(decision.prompt)}</p>
                 <p class="decision-card__why">${escapeHtml(decision.why)}</p>
                 <div class="decision-card__lanes">
@@ -322,10 +444,18 @@
                 </div>
                 ${receivingRows(decision)}
                 <div class="decision-card__legend">
-                    ${decision.exits.map((exit, index) => `<span>
-                        <i style="background:${ARM_COLORS[index % ARM_COLORS.length]}">${ARM_LETTERS[index] || '?'}</i>
-                        ${escapeHtml(exit.label)}${exit.forked ? ' <em>(fork)</em>' : ''}
-                    </span>`).join('')}
+                    ${decision.exits.map((exit, index) => {
+                        const view = decisionsModule().streetViewUrl(
+                            decisionsModule().streetViewViewpoint(decision, exit, getGraph()));
+                        return `<span data-hover-exit="${escapeHtml(exit.sectionId)}">
+                            <i style="background:${ARM_COLORS[index % ARM_COLORS.length]}">${ARM_LETTERS[index] || '?'}</i>
+                            <span class="decision-card__legend-text">${escapeHtml(exit.label)}${
+                                exit.forked ? ' <em>(fork)</em>' : ''}</span>
+                            ${view ? `<a class="street-view" href="${escapeHtml(view)}" target="_blank"
+                                rel="noopener" title="Street View from the approach, looking this way"
+                                >street view</a>` : ''}
+                        </span>`;
+                    }).join('')}
                 </div>
                 ${blocking.length
                     ? `<div class="decision-card__warn">${blocking.map(escapeHtml).join('<br>')}</div>` : ''}
@@ -343,6 +473,23 @@
             card.querySelectorAll('[data-lane]').forEach(button => {
                 button.addEventListener('click', () => toggle(button.dataset.lane, button.dataset.exit));
             });
+            const hover = (selector, resolve) => {
+                card.querySelectorAll(selector).forEach(node => {
+                    node.addEventListener('mouseenter', () => highlight(resolve(node)));
+                    node.addEventListener('mouseleave', () => highlight(null));
+                    // Touch has no hover, so a tap on the row does the same without changing the answer.
+                    node.addEventListener('focusin', () => highlight(resolve(node)));
+                    node.addEventListener('focusout', () => highlight(null));
+                });
+            };
+            hover('[data-hover-lane]', node => spotlightForLane(node.dataset.hoverLane));
+            hover('[data-hover-exit]', node => spotlightForExit(node.dataset.hoverExit));
+            hover('[data-hover-pair]', node => {
+                const [laneId, sectionId] = node.dataset.hoverPair.split('|');
+                return { lanes: [laneId], exits: [sectionId] };
+            });
+            card.addEventListener('mouseleave', () => highlight(null));
+
             card.querySelectorAll('[data-receive]').forEach(button => {
                 button.addEventListener('click', () => {
                     const key = button.dataset.receive;
@@ -492,6 +639,13 @@
             if (!next) { showToast('Nothing here needs a decision.'); return; }
             openDecision(next);
         }
+
+        // Label positions are computed in container pixels against the current frame, so they go
+        // stale the moment the map moves. Redrawn on the settled view rather than continuously:
+        // there is nothing to watch mid-gesture, and Leaflet fires these once per gesture.
+        map.on('moveend zoomend resize', () => {
+            if (state.current) paintFocus(state.current);
+        });
 
         return {
             load: loadStored,

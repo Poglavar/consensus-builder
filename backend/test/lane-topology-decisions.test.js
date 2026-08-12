@@ -579,6 +579,93 @@ describe('the decision queue', () => {
         });
     });
 
+    describe('walking a distance along an arm', () => {
+        // The label bug: an arm drawn as ONE long straight segment. Walking whole vertices puts the
+        // point at the far end of it — arm B ended up several hundred metres off screen, so the
+        // card offered a choice whose arm you could not see.
+        it('interpolates inside a long segment instead of jumping to its end', () => {
+            const line = [[15.98, 45.8], [15.98, 45.809]];   // ~1 km in one segment
+
+            const point = Decisions.pointAlong(line, 35);
+
+            const metres = (point[1] - 45.8) * 110540;
+            expect(Math.abs(metres - 35)).toBeLessThan(1);
+            expect(point[1]).toBeLessThan(45.809);
+        });
+
+        it('crosses vertices when the distance needs more than one segment', () => {
+            const line = [[15.98, 45.8], [15.98, 45.80009], [15.98, 45.80045]];
+
+            const point = Decisions.pointAlong(line, 30);
+
+            expect(Math.abs((point[1] - 45.8) * 110540 - 30)).toBeLessThan(1);
+        });
+
+        it('stops at the end of a line shorter than the distance asked for', () => {
+            const line = [[15.98, 45.8], [15.98, 45.8001]];
+
+            expect(Decisions.pointAlong(line, 500)).toEqual([15.98, 45.8001]);
+        });
+    });
+
+    describe('the Street View link', () => {
+        function junction() {
+            return LaneTopologyGraph.build([
+                way(1, [armAt(180), CENTRE], {
+                    highway: 'secondary', name: 'Ilica', oneway: 'yes', lanes: '3'
+                }, [10, 100]),
+                way(2, [CENTRE, armAt(0)], {
+                    highway: 'secondary', name: 'Ilica', oneway: 'yes', lanes: '2'
+                }, [100, 20]),
+                way(3, [CENTRE, armAt(90)], {
+                    highway: 'residential', name: 'Frankopanska', oneway: 'yes', lanes: '1'
+                }, [100, 30])
+            ], BUILD_OPTIONS);
+        }
+
+        it('stands back along the approach, not on the junction', () => {
+            const graph = junction();
+            const decision = Decisions.openDecisions(graph)[0];
+            const straightOn = decision.exits.find(exit => exit.category === 'through');
+            const viewpoint = Decisions.streetViewViewpoint(decision, straightOn, graph);
+
+            // The approach runs north into the node at 45.8, so standing back is south of it.
+            expect(viewpoint.lat).toBeLessThan(CENTRE[1]);
+            const setback = (CENTRE[1] - viewpoint.lat) * 110540;
+            expect(setback).toBeGreaterThan(5);
+            expect(setback).toBeLessThan(12);
+        });
+
+        it('looks the way the movement goes, not the way the road runs', () => {
+            const graph = junction();
+            const decision = Decisions.openDecisions(graph)[0];
+            const straightOn = decision.exits.find(exit => exit.category === 'through');
+            const right = decision.exits.find(exit => exit.category === 'right');
+
+            // Driving north: straight on is a heading near 0°, the right turn swings towards 90°.
+            const ahead = Decisions.streetViewViewpoint(decision, straightOn, graph).heading;
+            const across = Decisions.streetViewViewpoint(decision, right, graph).heading;
+            expect(Math.min(ahead, 360 - ahead)).toBeLessThan(15);
+            expect(across).toBeGreaterThan(30);
+            expect(across).toBeLessThan(90);
+        });
+
+        it('builds a pano link Google understands', () => {
+            const url = Decisions.streetViewUrl({ lat: 45.8, lng: 15.98, heading: 275 });
+
+            expect(url).toContain('map_action=pano');
+            expect(url).toContain('viewpoint=45.8,15.98');
+            expect(url).toContain('heading=275');
+        });
+
+        it('says nothing rather than guessing when the geometry is missing', () => {
+            const decision = { approach: { lanes: [{ id: 'nope' }] }, nodeId: 'osm-node:1' };
+
+            expect(Decisions.streetViewViewpoint(decision, { lanes: [] }, { lanes: [] })).toBeNull();
+            expect(Decisions.streetViewUrl(null)).toBeNull();
+        });
+    });
+
     it('puts answerable questions above ones nobody can answer', () => {
         const graph = untaggedApproach();
         const mixed = {

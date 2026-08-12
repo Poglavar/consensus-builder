@@ -1333,3 +1333,49 @@ input {
 .arm-chip--lane {
     --arm: var(--accent);
 }
+
+/* Street View deep links: small, never competing with the answer controls. */
+.street-view {
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .02em;
+    text-decoration: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.street-view:hover {
+    text-decoration: underline;
+}
+
+.street-view--head {
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+.decision-card__legend span {
+    align-items: baseline;
+}
+
+.decision-card__legend-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.decision-card__legend i {
+    align-self: center;
+}
+
+/* Hovering a row or an arm singles it out on the map; the cursor should say so. */
+.lane-row[data-hover-lane],
+.decision-card__legend span[data-hover-exit] {
+    border-radius: 9px;
+    cursor: default;
+    transition: background .12s;
+}
+
+.lane-row[data-hover-lane]:hover,
+.decision-card__legend span[data-hover-exit]:hover {
+    background: rgba(126, 226, 196, .10);
+}

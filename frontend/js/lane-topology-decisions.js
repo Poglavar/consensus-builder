@@ -481,6 +481,69 @@
         return coordinates[atEnd ? coordinates.length - 1 : 0] || null;
     }
 
+    // Where to stand, and which way to look, to see a movement in Street View.
+    //
+    // A few metres BACK along the approach, facing the arm being decided — the driver's view of the
+    // decision, which is the only view in which the painted arrows are legible. Standing on the
+    // junction itself looks across it rather than at the markings that answer the question.
+    const STREET_VIEW_SETBACK_M = 8;
+    const STREET_VIEW_AIM_M = 25;
+
+    function metresBetween(a, b) {
+        const meanLat = (a[1] + b[1]) * Math.PI / 360;
+        return Math.hypot((b[0] - a[0]) * 111320 * Math.cos(meanLat), (b[1] - a[1]) * 110540);
+    }
+
+    // A point `metres` along a polyline from its first vertex, interpolated inside the segment it
+    // lands in. Walking whole vertices instead puts the point at the far end of a long straight —
+    // which is exactly how an arm label ended up several hundred metres off screen.
+    function pointAlong(coordinates, metres) {
+        const points = coordinates || [];
+        if (points.length < 2) return points[0] || null;
+        let travelled = 0;
+        for (let index = 1; index < points.length; index += 1) {
+            const from = points[index - 1];
+            const to = points[index];
+            const span = metresBetween(from, to);
+            if (span <= 0) continue;
+            if (travelled + span >= metres) {
+                const ratio = (metres - travelled) / span;
+                return [from[0] + (to[0] - from[0]) * ratio, from[1] + (to[1] - from[1]) * ratio];
+            }
+            travelled += span;
+        }
+        return points[points.length - 1];
+    }
+
+    // { lat, lng, heading } for a Street View pano showing this movement, or null when the graph
+    // does not carry enough geometry to place one.
+    function streetViewViewpoint(decision, exit, graph) {
+        const lanesById = new Map((graph?.lanes || []).map(lane => [lane.id, lane]));
+        const approachLane = lanesById.get(decision?.approach?.lanes?.[0]?.id);
+        const exitLane = lanesById.get(exit?.lanes?.[0]?.id);
+        if (!approachLane || !exitLane) return null;
+        // Reversed: the approach runs INTO the node, so walking back from the node means walking
+        // forward along the reversed line.
+        const back = [...approachLane.geometry.coordinates].reverse();
+        const stand = pointAlong(back, STREET_VIEW_SETBACK_M);
+        const aim = pointAlong(exitLane.geometry.coordinates, STREET_VIEW_AIM_M);
+        if (!stand || !aim) return null;
+        return {
+            lat: Number(stand[1].toFixed(7)),
+            lng: Number(stand[0].toFixed(7)),
+            heading: Math.round(rules().bearingDegrees(stand, aim))
+        };
+    }
+
+    // Google's documented Street View deep link. `viewpoint` snaps to the nearest pano, so a point
+    // a few metres off the carriageway still lands on the road.
+    function streetViewUrl(viewpoint) {
+        if (!viewpoint) return null;
+        return 'https://www.google.com/maps/@?api=1&map_action=pano'
+            + `&viewpoint=${viewpoint.lat},${viewpoint.lng}`
+            + `&heading=${viewpoint.heading}&pitch=0&fov=80`;
+    }
+
     // The movements whose receiving lane nothing can deduce — the arm has spare lanes and no rule
     // says which. These are the ones worth putting to a person: everything else is already forced.
     //
@@ -714,6 +777,9 @@
         toStoredAssignment,
         fromStoredAssignment,
         validate,
+        pointAlong,
+        streetViewViewpoint,
+        streetViewUrl,
         openReceivingChoices,
         movementsFor,
         applyDecisions
