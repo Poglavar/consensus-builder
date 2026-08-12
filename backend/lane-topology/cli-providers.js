@@ -2,6 +2,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
+import { createRequire } from 'node:module';
 import { normalizeImageryObservations } from './imagery-observations.js';
 
 export const TOPOLOGY_PROMPT_VERSION = 'lane-topology-v10';
@@ -57,6 +58,30 @@ export function modelNote(model) {
 // endpoints regardless — and the long form was both a third of the prompt and the thing runs got
 // wrong: three of eight scored runs returned ids that did not exist.
 const LANE_HANDLE = /^L(\d+)$/;
+
+// The graph builder's restriction parser, not a second copy of it: via-node and member handling has
+// exactly one definition, and a via-way relation stays unusable in both places for the same reason.
+let restrictionsApi = null;
+function restrictionsModule() {
+    if (!restrictionsApi) {
+        restrictionsApi = createRequire(import.meta.url)('../../frontend/js/lane-topology-restrictions.js');
+    }
+    return restrictionsApi;
+}
+
+// node key -> the movement rules OSM states there.
+function restrictionIndex(restrictions) {
+    const index = new Map();
+    if (!Array.isArray(restrictions) || !restrictions.length) return index;
+    const { describe } = restrictionsModule();
+    restrictions.forEach(raw => {
+        const rule = describe(raw);
+        if (!rule.kind || !rule.fromWayId || !rule.toWayId || !rule.viaNodeKey) return;
+        if (!index.has(rule.viaNodeKey)) index.set(rule.viaNodeKey, []);
+        index.get(rule.viaNodeKey).push(rule);
+    });
+    return index;
+}
 
 export function laneHandle(index) {
     return `L${index}`;
@@ -440,6 +465,7 @@ export function applyRecognitionPatch(patch, deterministicGraph, provider = 'mod
     }
     const laneList = deterministicGraph.lanes || [];
     const laneById = new Map(laneList.map(lane => [lane.id, lane]));
+    const sectionById = new Map((deterministicGraph.sections || []).map(section => [section.id, section]));
     // A handle is an index into graph.lanes; a full id still resolves, so an older provider's
     // output applies unchanged.
     const resolveLane = reference => {
@@ -500,6 +526,26 @@ export function applyRecognitionPatch(patch, deterministicGraph, provider = 'mod
             const sections = (problem.openApproaches || []).map(entry => entry.sectionId).filter(Boolean);
             openApproachesByNode.set(nodeId, sections.length ? new Set(sections) : null);
         }));
+    // A movement OSM forbids is refused here exactly as the deterministic rules refuse it. Reporting
+    // it after the fact was not equivalent: a real batch of ten junctions came back with four
+    // turn_restriction_violation errors, each a connection the builder itself would never have made.
+    const restrictionsAtNode = restrictionIndex(context.restrictions);
+    const wayOfLane = lane => String(lane?.sourceWayId
+        ?? sectionById.get(lane?.sectionId)?.sourceWayId ?? '');
+    const forbidden = connection => {
+        const rules = restrictionsAtNode.get(connection.nodeId);
+        if (!rules?.length) return false;
+        const { PROHIBITIVE, MANDATORY } = restrictionsModule();
+        const fromWayId = wayOfLane(laneById.get(connection.fromLaneId));
+        const toWayId = wayOfLane(laneById.get(connection.toLaneId));
+        if (rules.some(rule => PROHIBITIVE.test(rule.kind)
+            && rule.fromWayId === fromWayId && rule.toWayId === toWayId)) return true;
+        const only = rules.find(rule => MANDATORY.test(rule.kind) && rule.fromWayId === fromWayId);
+        return !!(only && only.toWayId !== toWayId);
+    };
+    const permitted = connections.filter(connection => !forbidden(connection));
+    const refused = connections.length - permitted.length;
+
     const derivedNodes = new Set((deterministicGraph.connections || []).map(connection => connection.nodeId));
     const isOpen = connection => {
         if (openApproachesByNode.has(connection.nodeId)) {
@@ -508,8 +554,8 @@ export function applyRecognitionPatch(patch, deterministicGraph, provider = 'mod
         }
         return !derivedNodes.has(connection.nodeId);
     };
-    const accepted = connections.filter(isOpen);
-    const overreach = connections.length - accepted.length;
+    const accepted = permitted.filter(isOpen);
+    const overreach = permitted.length - accepted.length;
     const answeredApproaches = new Set(accepted.map(connection => (
         `${connection.nodeId}|${laneById.get(connection.fromLaneId)?.sectionId}`
     )));
@@ -552,6 +598,15 @@ export function applyRecognitionPatch(patch, deterministicGraph, provider = 'mod
             : { ...problem, openApproaches: stillOpen });
     });
     modelProblems.forEach(problem => byId.set(problem.id, problem));
+    if (refused) {
+        byId.set(`problem:${provider}:restricted-movements`, {
+            id: `problem:${provider}:restricted-movements`,
+            type: 'movements_against_restrictions',
+            severity: 'warning',
+            message: `${refused} returned movements are forbidden by an OSM turn restriction and were `
+                + 'refused; the deterministic rules never emit these, so a patch may not either.'
+        });
+    }
     if (overreach) {
         // Never a silent drop: a model spending its answer on the wrong nodes looks exactly like a
         // model that found little to say.
@@ -656,7 +711,8 @@ export async function runCliTopologyProvider(provider, input, options = {}) {
         return {
             summary: String(parsed.summary || ''),
             graph: applyRecognitionPatch(parsed.patch, input.deterministicGraph, provider, {
-                imagery: input.imagery
+                imagery: input.imagery,
+                restrictions: input.restrictions
             }),
             usage: parsed.usage || null,
             outputTail: `${result.stdout}\n${result.stderr}`.slice(-8000)

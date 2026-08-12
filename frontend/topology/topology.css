@@ -317,6 +317,8 @@ input {
     border: 1px solid #acc69c;
 }
 .swatch--topology { background: var(--forward); }
+/* Derived movements are drawn faintly and beneath a stored solution, so their swatch says the same. */
+.swatch--derived { background: #4b7f9c; opacity: .55; }
 .swatch--observation {
     background: #bef264;
     box-shadow: 0 0 0 2px rgba(190, 242, 100, .18);

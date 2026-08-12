@@ -96,17 +96,18 @@ function partiallyOpenGraph(openApproaches = [{ sectionId: 's2', name: 'Ilica', 
         coverage: null,
         source: {},
         stats: { sourceWays: 4 },
-        sections: ['s2', 's3', 's4', 's5'].map(id => ({ id })),
-        nodes: [{ id: 'B', degree: 4 }],
+        // Way ids so a turn restriction, which OSM states between WAYS, can be matched at all.
+        sections: ['s2', 's3', 's4', 's5'].map(id => ({ id, sourceWayId: id.replace('s', '1') })),
+        nodes: [{ id: 'osm-node:B', degree: 4 }],
         lanes: [
-            lane('lane:in:s2', 's2', 'w', 'B', [[0, 0], [1, 0]]),
-            lane('lane:in:s5', 's5', 'n', 'B', [[1, 1], [1, 0]]),
-            lane('lane:out:s3', 's3', 'B', 'e', [[1, 0], [2, 0]]),
-            lane('lane:out:s4', 's4', 'B', 's', [[1, 0], [1, -1]])
+            lane('lane:in:s2', 's2', 'w', 'osm-node:B', [[0, 0], [1, 0]]),
+            lane('lane:in:s5', 's5', 'n', 'osm-node:B', [[1, 1], [1, 0]]),
+            lane('lane:out:s3', 's3', 'osm-node:B', 'e', [[1, 0], [2, 0]]),
+            lane('lane:out:s4', 's4', 'osm-node:B', 's', [[1, 0], [1, -1]])
         ],
         connections: [{
             id: 'connection:B:s5->s3',
-            nodeId: 'B',
+            nodeId: 'osm-node:B',
             fromLaneId: 'lane:in:s5',
             toLaneId: 'lane:out:s3',
             type: 'turn',
@@ -116,7 +117,7 @@ function partiallyOpenGraph(openApproaches = [{ sectionId: 's2', name: 'Ilica', 
             id: 'problem:unresolved-intersection:B',
             type: 'unresolved_intersection',
             severity: 'warning',
-            nodeIds: ['B'],
+            nodeIds: ['osm-node:B'],
             declineReason: 'multi_lane_approach_without_turn_lanes',
             openApproaches
         }]
@@ -167,6 +168,37 @@ describe('lane-topology partial resolution', () => {
         }, partiallyOpenGraph(), 'claude');
 
         expect(applied.problems.some(problem => problem.type === 'unresolved_intersection')).toBe(false);
+    });
+
+    // A real batch of ten junctions came back with four turn_restriction_violation errors: movements
+    // OSM forbids, which the deterministic rules would never have emitted because restrictions are
+    // build input there. Reporting them afterwards is not the same as refusing them.
+    it('refuses a movement an OSM turn restriction forbids, as the rules do', () => {
+        const applied = applyRecognitionPatch({
+            connections: [
+                { fromLaneId: 'L0', toLaneId: 'L2', type: 'turn', confidence: 0.8 },
+                { fromLaneId: 'L0', toLaneId: 'L3', type: 'turn', confidence: 0.8 }
+            ],
+            problems: []
+        }, partiallyOpenGraph(), 'claude', {
+            restrictions: [{
+                osm_id: 700,
+                restriction: 'no_left_turn',
+                members: [
+                    { role: 'from', type: 'way', ref: '12' },
+                    { role: 'via', type: 'node', ref: 'B' },
+                    { role: 'to', type: 'way', ref: '13' }
+                ]
+            }]
+        });
+        const fromOpen = applied.connections.filter(connection => connection.source === 'claude');
+
+        expect(fromOpen).toHaveLength(1);
+        expect(fromOpen[0].toLaneId).toBe('lane:out:s4');
+        expect(applied.problems.find(problem => problem.type === 'movements_against_restrictions').message)
+            .toContain('1 returned movements');
+        // And the graph must not then also carry the violation it just refused.
+        expect(applied.problems.some(problem => problem.type === 'turn_restriction_violation')).toBe(false);
     });
 
     it('tells the model which approaches are open, not just which node', () => {

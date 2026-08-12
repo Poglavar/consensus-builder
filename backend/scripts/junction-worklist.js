@@ -11,6 +11,8 @@
 //
 // The list shrinks as junctions get solved, so re-run it rather than working from an old copy.
 import { createRequire } from 'node:module';
+import { enumerationTiles, insideCore } from './lib/city-tiles.js';
+import { settledNodeIndex } from './lib/stored-solutions.js';
 
 const require = createRequire(import.meta.url);
 const LaneTopologyJunctions = require('../../frontend/js/lane-topology-junctions.js');
@@ -25,10 +27,8 @@ const DEFAULTS = {
     top: 40,
     format: 'table'
 };
-// Whole Zagreb snapshot. The same tiling the batch runner uses, for the same reasons.
+// Whole Zagreb snapshot.
 const CITY_BBOX = [15.5459, 45.5136, 16.3620, 46.0356];
-const TILE_SPAN_DEG = 0.012;
-const TILE_OVERLAP_DEG = 0.0015;
 
 const USAGE = `
 Rank unresolved junctions by how much deciding they need.
@@ -70,30 +70,6 @@ function centerBbox([lat, lng], radiusM) {
     return [lng - dLng, lat - dLat, lng + dLng, lat + dLat];
 }
 
-function tiles(bbox) {
-    const [west, south, east, north] = bbox;
-    const out = [];
-    for (let x = west; x < east; x += TILE_SPAN_DEG) {
-        for (let y = south; y < north; y += TILE_SPAN_DEG) {
-            const core = [x, y, Math.min(x + TILE_SPAN_DEG, east), Math.min(y + TILE_SPAN_DEG, north)];
-            out.push({
-                core,
-                build: [
-                    core[0] - TILE_OVERLAP_DEG, core[1] - TILE_OVERLAP_DEG,
-                    core[2] + TILE_OVERLAP_DEG, core[3] + TILE_OVERLAP_DEG
-                ].map(value => Number(value.toFixed(7)))
-            });
-        }
-    }
-    return out;
-}
-
-function inCore(point, core) {
-    return Array.isArray(point)
-        && point[0] >= core[0] && point[0] < core[2]
-        && point[1] >= core[1] && point[1] < core[3];
-}
-
 // Candidate movements still open at one node: every lane of a still-open approach against every arm
 // it could leave by. Approaches the rules already settled are not work and must not inflate the
 // ranking — counting them put junctions above others by a margin that was already decided.
@@ -112,7 +88,16 @@ function decisionSurface(node, graph, open) {
 
 async function rank(args) {
     const found = new Map();
-    const list = tiles(args.bbox);
+    // Nodes a stored decision already closed are not work, however the rules see them.
+    const stored = await settledNodeIndex({
+        api: args.api, city: args.city, bbox: args.bbox,
+        log: message => process.stderr.write(`  ${message}\n`)
+    });
+    if (stored.settled.size) {
+        process.stderr.write(`  ${stored.settled.size} nodes already settled by `
+            + `${stored.consulted} stored solutions\n`);
+    }
+    const list = enumerationTiles(args.bbox);
     for (const [index, tile] of list.entries()) {
         const url = `${args.api}/lane-topology/osm?bbox=${tile.build.join(',')}`
             + `&city=${encodeURIComponent(args.city)}`;
@@ -131,12 +116,15 @@ async function rank(args) {
             .flatMap(problem => (problem.nodeIds || []).map(id => [id, problem])));
         const { junctions } = LaneTopologyJunctions.deriveJunctions(graph);
         junctions
-            .filter(junction => !junction.resolved && inCore(junction.point, tile.core))
+            .filter(junction => !junction.resolved && insideCore(junction.point, tile.core))
             .forEach(junction => {
                 if (found.has(junction.key)) return;
                 const unresolved = junction.unresolvedNodeIds
+                    .filter(id => !stored.settled.has(id))
                     .map(id => nodesById.get(id))
                     .filter(Boolean);
+                // Every open node of this junction has since been answered and stored.
+                if (!unresolved.length) return;
                 found.set(junction.key, {
                     name: junction.name,
                     arms: junction.armCount,

@@ -506,7 +506,10 @@ async function executeRecognitionJob(pool, job, evidence, deterministicSolution,
             },
             osmWays: evidence.features,
             deterministicGraph: deterministicSolution.graph,
-            imagery: imagery?.metadata || null
+            imagery: imagery?.metadata || null,
+            // The rules refuse to emit a movement OSM forbids; a patch has to be held to the same
+            // rule, or the model quietly reintroduces the violations the builder was built to avoid.
+            restrictions: evidence.restrictions || []
         }, {
             ...(options.providerOptions || {}),
             model: job.model || options.providerOptions?.model || null,

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lane topology coverage</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <style>
+        :root {
+            --ink: #16150f;
+            --muted: #6f695d;
+            --panel: #fffdf8;
+            --rule: #ddd7cb;
+            --settled: #2f7d4f;
+            --partial: #c98a1e;
+            --open: #b23a2c;
+        }
+        * { box-sizing: border-box; }
+        html, body { height: 100%; margin: 0; }
+        body {
+            font: 14px/1.5 "Avenir Next", "Segoe UI", system-ui, sans-serif;
+            color: var(--ink);
+            display: grid;
+            grid-template-columns: 320px 1fr;
+        }
+        #panel {
+            background: var(--panel);
+            border-right: 1px solid var(--rule);
+            padding: 20px 20px 32px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        h1 {
+            font-family: "Avenir Next Condensed", "Arial Narrow", sans-serif;
+            font-size: 22px; font-weight: 600; margin: 0;
+        }
+        .eyebrow {
+            font-family: "Avenir Next Condensed", "Arial Narrow", sans-serif;
+            text-transform: uppercase; letter-spacing: .16em; font-size: 11px;
+            font-weight: 600; color: var(--muted);
+        }
+        .totals { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+        .totals div { background: var(--panel); padding: 10px 12px; }
+        .totals .figure {
+            font-family: "SF Mono", Menlo, ui-monospace, monospace;
+            font-variant-numeric: tabular-nums; font-size: 19px; display: block;
+        }
+        .totals span:last-child { font-size: 11.5px; color: var(--muted); }
+        .legend { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; }
+        .legend i { display: inline-block; width: 14px; height: 10px; margin-right: 8px; vertical-align: middle; }
+        ol { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 9px; font-size: 12.5px; }
+        ol a { color: var(--ink); }
+        ol b { font-family: "SF Mono", Menlo, ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+        .note { color: var(--muted); font-size: 12px; }
+        code { font-family: "SF Mono", Menlo, ui-monospace, monospace; font-size: 11.5px; }
+        #map { height: 100%; }
+        #error { color: var(--open); font-size: 12.5px; }
+        @media (max-width: 760px) {
+            body { grid-template-columns: 1fr; grid-template-rows: auto 60vh; }
+            #panel { border-right: 0; border-bottom: 1px solid var(--rule); }
+        }
+    </style>
+</head>
+<body>
+    <aside id="panel">
+        <div>
+            <div class="eyebrow">Lane topology</div>
+            <h1>Coverage</h1>
+        </div>
+        <div class="totals" id="totals"></div>
+        <div class="legend">
+            <div><i style="background: var(--settled)"></i>every junction settled</div>
+            <div><i style="background: var(--partial)"></i>mostly settled — a few decisions left</div>
+            <div><i style="background: var(--open)"></i>a lot still open</div>
+            <div class="note">Shade follows the share of junctions settled; the tile label is how many
+            decisions remain. Click a tile to open it in the workbench.</div>
+        </div>
+        <div>
+            <div class="eyebrow">Nearest to finished</div>
+            <ol id="nearly"></ol>
+        </div>
+        <p class="note">Derived, not stored: the deterministic layer is a function of the OSM snapshot,
+        so this is regenerated rather than kept. Refresh it with
+        <code>node backend/scripts/topology-coverage.js --format json &gt; frontend/topology/coverage.json</code>.</p>
+        <p id="error"></p>
+    </aside>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="coverage.js"></script>
+</body>
+</html>

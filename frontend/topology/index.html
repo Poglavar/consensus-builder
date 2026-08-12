@@ -40,6 +40,8 @@
                 </div>
                 <p class="muted">OSM evidence follows the map: pan and zoom to a small area and it loads itself.</p>
                 <div class="bbox-readout" id="bbox-readout">—</div>
+                <p class="muted" id="derived-readout">nothing derived here</p>
+                <p class="muted"><a href="coverage.html">Coverage across the city →</a></p>
             </section>
 
             <section class="panel">
@@ -61,6 +63,11 @@
                     <input type="checkbox" id="toggle-osm" checked>
                     <span class="swatch swatch--osm"></span>
                     <span><b>Raw OSM ways</b><small>Way boundaries, source tags and rails</small></span>
+                </label>
+                <label class="layer-toggle">
+                    <input type="checkbox" id="toggle-derived" checked>
+                    <span class="swatch swatch--derived"></span>
+                    <span><b>Derived topology</b><small>Junction movements the rules settle anywhere, without a saved version</small></span>
                 </label>
                 <label class="layer-toggle">
                     <input type="checkbox" id="toggle-topology" checked>

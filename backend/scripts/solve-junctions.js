@@ -16,6 +16,7 @@
 // Long runs belong under `run-job` so they outlive the shell that started them.
 import { createRequire } from 'node:module';
 import { appendFile } from 'node:fs/promises';
+import { enumerationTiles, insideCore } from './lib/city-tiles.js';
 
 const require = createRequire(import.meta.url);
 const LaneTopologyJunctions = require('../../frontend/js/lane-topology-junctions.js');
@@ -34,18 +35,11 @@ const DEFAULTS = {
     padM: 70,
     minSpanM: 140,
     minArms: 3,
-    order: 'arms',
+    order: 'size',
     concurrency: 1,
     pollMs: 5000,
     jobTimeoutMs: 18 * 60 * 1000
 };
-// The builder's own ceiling; tiles for junction ENUMERATION must stay under it.
-const MAX_BBOX_SPAN_DEG = 0.08;
-// ~1.3 km of latitude. Big enough that most junctions sit in one tile's core, small enough that the
-// evidence query stays quick and never approaches the server's 5000-way evidence cap.
-const TILE_SPAN_DEG = 0.012;
-// Enumeration tiles overlap so a junction on a tile edge is still derived with all of its arms.
-const TILE_OVERLAP_DEG = 0.0015;
 const MAX_RECOGNITION_GSD_M = 0.35;
 const BBOX_EPSILON = 1e-6;
 // A CLI that reports the subscription window is exhausted will report it for every junction after
@@ -68,8 +62,8 @@ Solve lane-topology junctions in bulk with a CLI model.
   --pad M                 Padding around a junction's nodes (default ${DEFAULTS.padM} m).
   --min-span M            Smallest junction crop (default ${DEFAULTS.minSpanM} m).
   --min-arms N            Skip junctions with fewer arms (default ${DEFAULTS.minArms}).
-  --max-arms N            Skip junctions with more arms — they exceed one CLI call.
-  --order arms|spatial    Biggest junctions first, or nearest the centre (default ${DEFAULTS.order}).
+  --max-lanes N           Skip junctions with more lanes meeting them — a cost guard.
+  --order size|spatial    Most lanes first, or nearest the centre (default ${DEFAULTS.order}).
   --limit N               Stop after N junctions this run.
   --concurrency N         Junctions in flight at once (default ${DEFAULTS.concurrency}).
   --redo                  Re-run junctions this model already solved.
@@ -101,7 +95,7 @@ function parseArgs(argv) {
             case '--pad': args.padM = Number(take()); break;
             case '--min-span': args.minSpanM = Number(take()); break;
             case '--min-arms': args.minArms = Number(take()); break;
-            case '--max-arms': args.maxArms = Number(take()); break;
+            case '--max-lanes': args.maxLanes = Number(take()); break;
             case '--order': args.order = take(); break;
             case '--limit': args.limit = Number(take()); break;
             case '--concurrency': args.concurrency = Math.max(1, Number(take())); break;
@@ -145,44 +139,6 @@ function centerBbox(center, radiusM) {
     const [lat, lng] = center;
     const { dLat, dLng } = metresToDegrees(radiusM, lat);
     return [lng - dLng, lat - dLat, lng + dLng, lat + dLat];
-}
-
-// Cores tile the target exactly; each build box is a core grown by the overlap, so a junction is
-// enumerated once (by the core that holds its centre) but always with its full set of arms.
-function enumerationTiles(bbox) {
-    const [west, south, east, north] = bbox;
-    const columns = Math.max(1, Math.ceil((east - west) / TILE_SPAN_DEG));
-    const rows = Math.max(1, Math.ceil((north - south) / TILE_SPAN_DEG));
-    const spanX = (east - west) / columns;
-    const spanY = (north - south) / rows;
-    const tiles = [];
-    for (let row = 0; row < rows; row += 1) {
-        for (let column = 0; column < columns; column += 1) {
-            const core = [
-                west + column * spanX,
-                south + row * spanY,
-                west + (column + 1) * spanX,
-                south + (row + 1) * spanY
-            ];
-            const build = [
-                core[0] - TILE_OVERLAP_DEG,
-                core[1] - TILE_OVERLAP_DEG,
-                core[2] + TILE_OVERLAP_DEG,
-                core[3] + TILE_OVERLAP_DEG
-            ];
-            if (build[2] - build[0] > MAX_BBOX_SPAN_DEG || build[3] - build[1] > MAX_BBOX_SPAN_DEG) {
-                throw new Error('Enumeration tile exceeds the API bbox ceiling; lower TILE_SPAN_DEG.');
-            }
-            tiles.push({ core, build });
-        }
-    }
-    return tiles;
-}
-
-function insideCore(point, core) {
-    if (!Array.isArray(point)) return false;
-    const [lng, lat] = point.map(Number);
-    return lng >= core[0] && lng < core[2] && lat >= core[1] && lat < core[3];
 }
 
 function junctionBbox(junction, padM, minSpanM) {
@@ -274,7 +230,10 @@ function orderJunctions(junctions, args) {
             return distance(a) - distance(b);
         });
     }
-    return junctions.slice().sort((a, b) => (b.armCount - a.armCount)
+    // Lanes, not arms: "biggest junction" means the most road meeting there, and that is also what
+    // predicts the cost of solving it.
+    return junctions.slice().sort((a, b) => (b.laneCount - a.laneCount)
+        || (b.armCount - a.armCount)
         || a.key.localeCompare(b.key, undefined, { numeric: true }));
 }
 
@@ -412,13 +371,14 @@ async function main() {
     const all = enumerated.filter(junction => !deterministic.includes(junction));
     // A junction the run will not attempt has to be said out loud. Silent truncation reads as
     // "the area is solved" when the biggest interchanges in it were never tried.
-    const oversized = args.maxArms ? all.filter(junction => junction.armCount > args.maxArms) : [];
+    const oversized = args.maxLanes ? all.filter(junction => junction.laneCount > args.maxLanes) : [];
     const junctions = orderJunctions(all.filter(junction => !oversized.includes(junction)), args);
     log(`${enumerated.length} junctions with ${args.minArms}+ arms`
         + `; ${deterministic.length} already settled by the deterministic rules`
         + `; ${junctions.length} need recognition`
-        + (oversized.length ? `; SKIPPED ${oversized.length} over ${args.maxArms} arms: `
-            + oversized.map(junction => `${junction.name} (${junction.armCount})`).join(', ') : ''));
+        + (oversized.length ? `; SKIPPED ${oversized.length} over ${args.maxLanes} lanes: `
+            + oversized.map(junction => `${junction.name} (${junction.laneCount} lanes, `
+                + `${junction.armCount} arms)`).join(', ') : ''));
 
     const queue = [];
     let alreadyDone = 0;
@@ -436,7 +396,7 @@ async function main() {
 
     if (args.dryRun) {
         queue.slice(0, 20).forEach(({ junction, bbox }) => {
-            log(`  ${junction.armCount} arms · ${junction.name} · ${bbox.join(',')}`);
+            log(`  ${junction.laneCount} lanes · ${junction.armCount} arms · ${junction.name} · ${bbox.join(',')}`);
         });
         if (queue.length > 20) log(`  … and ${queue.length - 20} more`);
         return 0;

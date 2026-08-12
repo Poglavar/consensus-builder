@@ -31,6 +31,8 @@
     const panes = {
         imagery: 210,
         painted: 430,
+        // Below the stored topology on purpose: a derivation must never draw over a decision.
+        derived: 468,
         observations: 465,
         widths: 467,
         topology: 470,
@@ -44,6 +46,7 @@
     const layers = {
         imagery: L.layerGroup().addTo(map),
         osm: L.layerGroup().addTo(map),
+        derived: L.layerGroup().addTo(map),
         topology: L.layerGroup().addTo(map),
         observations: L.layerGroup().addTo(map),
         widths: L.layerGroup().addTo(map),
@@ -52,6 +55,7 @@
     };
     const state = {
         evidence: null,
+        derivedStats: null,
         currentSolution: null,
         solutions: [],
         currentWidthAnalysis: null,
@@ -560,6 +564,85 @@
             inspect(title, value);
             pinTopology(kind, id);
         });
+    }
+
+    // The topology of everywhere, not just of a stored rectangle.
+    //
+    // Nine movements in ten are a pure function of the OSM snapshot, so they are derived here from
+    // the evidence already loaded for this viewport rather than fetched or stored — that is why
+    // panning shows topology at all, where before the map went empty outside a solved bbox. Drawn
+    // faintly and beneath: a stored solution is a decision, this is a derivation, and the two must
+    // not look alike. Open approaches are marked, because a movement missing from a derived graph
+    // means "nobody decided", while a movement missing from a solved one means "not permitted".
+    function renderDerived() {
+        layers.derived.clearLayers();
+        const evidence = state.evidence;
+        if (!evidence?.features?.length) {
+            state.derivedStats = null;
+            updateDerivedReadout();
+            return;
+        }
+        let graph = null;
+        try {
+            graph = window.LaneTopologyGraph.build(evidence, {
+                snapshotAt: evidence.snapshotAt || null,
+                restrictions: evidence.restrictions || [],
+                profileFromTags: window.corridorProfileFromOsmTags,
+                orientProfile: window.OsmProfile.orientForRightHandTraffic
+            });
+        } catch (error) {
+            state.derivedStats = null;
+            updateDerivedReadout(error.message);
+            return;
+        }
+        state.derivedStats = graph.stats || null;
+
+        const nodeDegree = new Map((graph.nodes || []).map(node => [node.id, node.degree]));
+        (graph.connections || []).forEach(connection => {
+            if ((nodeDegree.get(connection.nodeId) || 0) < 3) return; // mid-block, not a decision
+            L.polyline(lineCoordinates(connection.geometry), {
+                pane: 'topology-derived',
+                color: connection.type === 'continue' ? '#4b7f9c' : '#8a6bb1',
+                weight: 1.4,
+                opacity: .5,
+                dashArray: connection.type === 'continue' ? null : '4 4',
+                interactive: false
+            }).addTo(layers.derived);
+        });
+        (graph.problems || [])
+            .filter(problem => problem.type === 'unresolved_intersection' && Array.isArray(problem.point))
+            .forEach(problem => {
+                const open = problem.openApproaches || [];
+                L.circleMarker([problem.point[1], problem.point[0]], {
+                    pane: 'topology-problems',
+                    radius: open.length ? 5 : 7,
+                    color: open.length ? '#c98a1e' : '#b23a2c',
+                    weight: 2,
+                    fillOpacity: .15,
+                    interactive: true
+                }).bindTooltip(
+                    open.length
+                        ? `${open.length} approach${open.length === 1 ? '' : 'es'} still open · `
+                            + open.map(entry => `${entry.name || entry.sectionId}: `
+                                + entry.reason.replaceAll('_', ' ')).join(' · ')
+                        : `whole junction open · ${(problem.declineReason || '').replaceAll('_', ' ')}`,
+                    { sticky: true, className: 'topology-tooltip' }
+                ).addTo(layers.derived);
+            });
+    }
+
+    function updateDerivedReadout(error) {
+        const readout = element('derived-readout');
+        if (!readout) return;
+        if (error) {
+            readout.textContent = `derived topology unavailable: ${error}`;
+            return;
+        }
+        const stats = state.derivedStats;
+        readout.textContent = stats
+            ? `${stats.resolvedIntersections} junctions settled, ${stats.partialIntersections} part-settled, `
+                + `${stats.unresolvedIntersections - stats.partialIntersections} untouched`
+            : 'nothing derived here';
     }
 
     function renderTopology(graph) {
@@ -1101,6 +1184,8 @@
             state.evidence = evidence;
             state.autoLoad.loadedBbox = plan.bbox;
             renderOsm();
+            renderDerived();
+            updateDerivedReadout();
             showSnapshotLabel();
             await Promise.all([loadSolutions(scope), loadWidthAnalyses(scope)]);
             if (isStale(token)) return;
@@ -1632,7 +1717,7 @@
     element('inspector-toggle').addEventListener('click', () => {
         setInspectorCollapsed(!element('inspector').classList.contains('is-collapsed'));
     });
-    ['imagery', 'osm', 'topology', 'observations', 'widths', 'painted', 'problems'].forEach(key => {
+    ['imagery', 'osm', 'derived', 'topology', 'observations', 'widths', 'painted', 'problems'].forEach(key => {
         element(`toggle-${key}`).addEventListener('change', applyLayerVisibility);
     });
     element('layers-toggle-all').addEventListener('click', () => {
