@@ -483,6 +483,102 @@ describe('the decision queue', () => {
         });
     });
 
+    // The question the card could not ask. One lane arriving, one arm leaving, three lanes on that
+    // arm: the lane-to-arm question is already answered and the card looked empty, while the real
+    // ambiguity had no control and Save wrote a guess — the LEFTMOST lane, for a right-side merge.
+    describe('which lane of the arm a movement enters', () => {
+        // Three lanes arriving, four leaving: the counts cannot balance, so a lane is left over and
+        // the rules cannot say which. Exactly the residue the merge rule leaves behind.
+        function unbalanced() {
+            return LaneTopologyGraph.build([
+                way(1, [armAt(270), CENTRE], {
+                    highway: 'trunk', oneway: 'yes', lanes: '3'
+                }, [10, 100]),
+                way(2, [armAt(254), CENTRE], {
+                    highway: 'motorway_link', oneway: 'yes', lanes: '1'
+                }, [20, 100]),
+                way(3, [CENTRE, armAt(90)], {
+                    highway: 'trunk', oneway: 'yes', lanes: '5'
+                }, [100, 30])
+            ], BUILD_OPTIONS);
+        }
+
+        it('is offered only when nothing can deduce it', () => {
+            const graph = unbalanced();
+            const decision = Decisions.openDecisions(graph)
+                .find(entry => entry.approach.highway === 'motorway_link');
+            const assignment = Decisions.suggestAssignment(decision);
+            const questions = Decisions.openReceivingChoices(decision, assignment, graph);
+
+            expect(questions).toHaveLength(1);
+            expect(questions[0].candidates.map(candidate => candidate.ordinal)).toEqual([0, 1, 2, 3, 4]);
+            expect(questions[0].key).toBe('0->3');
+        });
+
+        it('is not offered where the counts already force it', () => {
+            // A plain T: one lane in, one lane out on each arm. Nothing to choose.
+            const graph = LaneTopologyGraph.build([
+                way(1, [armAt(270), CENTRE], { highway: 'secondary', oneway: 'yes', lanes: '3' }, [10, 100]),
+                way(2, [CENTRE, armAt(90)], { highway: 'secondary', oneway: 'yes', lanes: '3' }, [100, 20]),
+                way(3, [CENTRE, armAt(180)], { highway: 'residential', oneway: 'yes', lanes: '1' }, [100, 30])
+            ], BUILD_OPTIONS);
+            const decision = Decisions.openDecisions(graph)[0];
+            const straightOn = decision.exits.find(exit => exit.category === 'through').sectionId;
+            const assignment = Object.fromEntries(
+                decision.approach.lanes.map(lane => [lane.id, [straightOn]])
+            );
+
+            expect(Decisions.openReceivingChoices(decision, assignment, graph)).toHaveLength(0);
+        });
+
+        it('an explicit choice outranks the rule, and is not marked assumed', () => {
+            const graph = unbalanced();
+            const decision = Decisions.openDecisions(graph)
+                .find(entry => entry.approach.highway === 'motorway_link');
+            const assignment = Decisions.suggestAssignment(decision);
+            const laneById = new Map(graph.lanes.map(lane => [lane.id, lane]));
+
+            const [movement] = Decisions.movementsFor(decision, assignment, graph, {
+                received: { '0->3': 1 }
+            });
+            expect(laneById.get(movement.toLaneId).ordinal).toBe(1);
+            expect(movement.receivingLaneAssumed).toBe(false);
+        });
+
+        it('hugs the side the approach joins from when nobody chose', () => {
+            const graph = unbalanced();
+            const decision = Decisions.openDecisions(graph)
+                .find(entry => entry.approach.highway === 'motorway_link');
+            const laneById = new Map(graph.lanes.map(lane => [lane.id, lane]));
+
+            const [movement] = Decisions.movementsFor(
+                decision, Decisions.suggestAssignment(decision), graph
+            );
+            // The ramp turns right to line up, so it came from the right: the RIGHTMOST of five,
+            // not lane 0 on the far side of the carriageway.
+            expect(laneById.get(movement.toLaneId).ordinal).toBe(4);
+            expect(movement.receivingLaneAssumed).toBe(true);
+        });
+
+        it('survives storage as ordinals, like the rest of the answer', () => {
+            const graph = unbalanced();
+            const decision = Decisions.openDecisions(graph)
+                .find(entry => entry.approach.highway === 'motorway_link');
+            const assignment = Decisions.suggestAssignment(decision);
+            const stored = Decisions.toStoredAssignment(decision, assignment, { '0->3': 2 });
+
+            expect(JSON.stringify(stored)).not.toContain('lane:');
+            expect(stored.received).toEqual({ '0->3': 2 });
+            const readBack = Decisions.fromStoredAssignment(decision, stored);
+            expect(readBack.received).toEqual({ '0->3': 2 });
+
+            const laneById = new Map(graph.lanes.map(lane => [lane.id, lane]));
+            const [movement] = Decisions.movementsFor(decision, readBack.assignment, graph,
+                { received: readBack.received });
+            expect(laneById.get(movement.toLaneId).ordinal).toBe(2);
+        });
+    });
+
     it('puts answerable questions above ones nobody can answer', () => {
         const graph = untaggedApproach();
         const mixed = {

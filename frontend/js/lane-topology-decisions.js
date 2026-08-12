@@ -389,9 +389,9 @@
     //
     // A way id alone is not enough either: a two-way street through the junction leaves it in both
     // directions on the same way, so the bearing is what tells the two apart.
-    function toStoredAssignment(decision, assignment) {
+    function toStoredAssignment(decision, assignment, received) {
         const exitById = new Map(decision.exits.map(exit => [exit.sectionId, exit]));
-        return {
+        const stored = {
             lanes: decision.approach.lanes.map(lane => ({
                 ordinal: lane.ordinal,
                 direction: lane.direction || null,
@@ -401,6 +401,11 @@
                     .map(exit => ({ wayId: exit.wayId, bearingDeg: Math.round(exit.relativeDeg) }))
             }))
         };
+        // Which lane of the arm each movement enters, when somebody said. Ordinals both sides, for
+        // the same reason the arms are way ids: a lane id does not survive an edit next door.
+        const entries = Object.entries(received || {}).filter(([, ordinal]) => Number.isInteger(ordinal));
+        if (entries.length) stored.received = Object.fromEntries(entries);
+        return stored;
     }
 
     function matchExit(exits, stored) {
@@ -418,6 +423,7 @@
     function fromStoredAssignment(decision, stored) {
         const assignment = {};
         const missing = [];
+        const received = { ...(stored?.received || {}) };
         const byOrdinal = new Map((stored?.lanes || []).map(lane => [lane.ordinal, lane.exits || []]));
         decision.approach.lanes.forEach(lane => {
             const wanted = byOrdinal.get(lane.ordinal);
@@ -432,7 +438,7 @@
                 return exit?.sectionId;
             }).filter(Boolean);
         });
-        return { assignment, missing };
+        return { assignment, missing, received };
     }
 
     // Reasons an answer cannot be saved. Empty means it can.
@@ -475,6 +481,46 @@
         return coordinates[atEnd ? coordinates.length - 1 : 0] || null;
     }
 
+    // The movements whose receiving lane nothing can deduce — the arm has spare lanes and no rule
+    // says which. These are the ones worth putting to a person: everything else is already forced.
+    //
+    // Returned as questions rather than left to the fallback, because the fallback is a guess. It
+    // is a better guess than it was (it hugs the side the approach joins from) but a one-lane ramp
+    // meeting a three-lane trunk still has three possible answers and only one right one.
+    function openReceivingChoices(decision, assignment, graph) {
+        const index = indexGraph(graph);
+        const lanesById = new Map((graph.lanes || []).map(lane => [lane.id, lane]));
+        const questions = [];
+        decision.exits.forEach(exit => {
+            const turning = decision.approach.lanes
+                .filter(lane => (assignment?.[lane.id] || []).includes(exit.sectionId))
+                .map(lane => lanesById.get(lane.id))
+                .filter(Boolean)
+                .sort((a, b) => (a.ordinal || 0) - (b.ordinal || 0));
+            if (!turning.length) return;
+            const exitLanes = orderedLanes(
+                (index.lanesBySection.get(exit.sectionId) || [])
+                    .filter(lane => lane.fromNode === decision.nodeId)
+            );
+            if (rules().receivingLanes(turning, exitLanes, exit.category)) return;   // already forced
+            const candidates = exitLanes.filter(lane => lane.type === 'driving' && lane.access === 'yes');
+            if (candidates.length < 2) return;
+            turning.forEach(lane => {
+                questions.push({
+                    key: `${lane.ordinal}->${exit.wayId}`,
+                    laneOrdinal: lane.ordinal,
+                    laneSide: laneSide(lane.ordinal, decision.approach.lanes.length),
+                    exit,
+                    candidates: candidates.map(candidate => ({
+                        ordinal: candidate.ordinal,
+                        side: laneSide(candidate.ordinal, candidates.length)
+                    }))
+                });
+            });
+        });
+        return questions;
+    }
+
     // The movements an answer means, in the same shape the deterministic rules emit.
     //
     // Which lane of the receiving arm each movement enters is settled by the SAME rule the
@@ -489,34 +535,9 @@
         const lanesById = new Map((graph.lanes || []).map(lane => [lane.id, lane]));
         const connections = [];
         const author = options.author || 'manual';
+        const received = options.received || {};
 
-        decision.exits.forEach(exit => {
-            const turning = decision.approach.lanes
-                .filter(lane => (assignment[lane.id] || []).includes(exit.sectionId))
-                .map(lane => lanesById.get(lane.id))
-                .filter(Boolean)
-                .sort((a, b) => (a.ordinal || 0) - (b.ordinal || 0));
-            if (!turning.length) return;
-            const exitLanes = orderedLanes(
-                (index.lanesBySection.get(exit.sectionId) || [])
-                    .filter(lane => lane.fromNode === decision.nodeId)
-            );
-            const settled = rules().receivingLanes(turning, exitLanes, exit.category);
-            let receiving = settled?.lanes;
-            let assumed = false;
-            if (!receiving) {
-                // More lanes turning than the arm can receive, or a through movement into a wider
-                // arm: pair from the side the turn comes from and say so.
-                const candidates = exitLanes.filter(lane => lane.type === 'driving' && lane.access === 'yes');
-                if (!candidates.length) return;
-                assumed = true;
-                receiving = turning.map((_, position) => candidates[
-                    exit.category === 'right'
-                        ? Math.max(0, candidates.length - turning.length) + Math.min(position, candidates.length - 1)
-                        : Math.min(position, candidates.length - 1)
-                ]);
-            }
-
+        const emit = (turning, receiving, exit, assumed) => {
             turning.forEach((from, position) => {
                 const to = receiving[position];
                 if (!to) return;
@@ -540,6 +561,50 @@
                     geometry: { type: 'LineString', coordinates: [fromPoint, toPoint] }
                 });
             });
+        };
+
+        decision.exits.forEach(exit => {
+            const turning = decision.approach.lanes
+                .filter(lane => (assignment[lane.id] || []).includes(exit.sectionId))
+                .map(lane => lanesById.get(lane.id))
+                .filter(Boolean)
+                .sort((a, b) => (a.ordinal || 0) - (b.ordinal || 0));
+            if (!turning.length) return;
+            const exitLanes = orderedLanes(
+                (index.lanesBySection.get(exit.sectionId) || [])
+                    .filter(lane => lane.fromNode === decision.nodeId)
+            );
+            // An explicit choice outranks every rule here: it is the one case where somebody looked
+            // at the picture. Keyed by lane and arm, and given as an ordinal so the choice survives
+            // the lane ids being renamed by an edit next door.
+            const chosen = turning
+                .map(lane => received?.[`${lane.ordinal}->${exit.wayId}`])
+                .map(ordinal => exitLanes.find(lane => lane.ordinal === ordinal));
+            if (chosen.length && chosen.every(Boolean)) {
+                emit(turning, chosen, exit, false);
+                return;
+            }
+
+            const settled = rules().receivingLanes(turning, exitLanes, exit.category);
+            let receiving = settled?.lanes;
+            let assumed = false;
+            if (!receiving) {
+                const candidates = exitLanes.filter(lane => lane.type === 'driving' && lane.access === 'yes');
+                if (!candidates.length) return;
+                assumed = true;
+                // Hug the side the approach joins from. An approach that has to turn RIGHT to line
+                // up with the arm came at it from the right, so it takes the rightmost lanes — a
+                // right-side on-ramp joins the nearside lane, it does not cross the carriageway.
+                // Pairing every through movement from the left, as this did, put a one-lane ramp
+                // into lane 0 of a three-lane trunk, across both through lanes.
+                const hugRight = exit.category === 'right'
+                    || (exit.category === 'through' && exit.relativeDeg > 0);
+                const offset = hugRight ? Math.max(0, candidates.length - turning.length) : 0;
+                receiving = turning.map((_, position) =>
+                    candidates[Math.min(offset + position, candidates.length - 1)]);
+            }
+
+            emit(turning, receiving, exit, assumed);
         });
 
         return connections;
@@ -579,11 +644,12 @@
         open.forEach(decision => {
             const record = byKey.get(decision.id);
             if (!record || decision.kind !== 'lane_exits') return;
-            const { assignment, missing } = fromStoredAssignment(decision, record.assignment);
+            const { assignment, missing, received } = fromStoredAssignment(decision, record.assignment);
             if (missing.length) { summary.stale.push({ id: decision.id, reasons: missing }); return; }
             let movements;
             try {
-                movements = movementsFor(decision, assignment, graph, { author: record.author || 'manual' });
+                movements = movementsFor(decision, assignment, graph,
+                    { author: record.author || 'manual', received });
             } catch (error) {
                 summary.stale.push({ id: decision.id, reasons: [error.message] });
                 return;
@@ -591,7 +657,7 @@
             graph.connections.push(...movements);
             summary.applied += 1;
             summary.movements += movements.length;
-            summary.answered.push({ ...decision, answered: true, assignment });
+            summary.answered.push({ ...decision, answered: true, assignment, received });
             if (!answeredByNode.has(decision.nodeId)) answeredByNode.set(decision.nodeId, new Set());
             answeredByNode.get(decision.nodeId).add(decision.sectionId);
         });
@@ -648,6 +714,7 @@
         toStoredAssignment,
         fromStoredAssignment,
         validate,
+        openReceivingChoices,
         movementsFor,
         applyDecisions
     };

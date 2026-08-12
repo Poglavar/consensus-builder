@@ -142,8 +142,12 @@
 
     // Says what settled the movement, because "deterministic" alone does not distinguish a movement
     // OSM states outright from one that follows only from there being nowhere else for a lane to go.
-    function movementReason(category, toName, arms, tagged, mandatoryKind, hugged, forked) {
+    function movementReason(category, toName, arms, tagged, mandatoryKind, hugged, forked, merged) {
         const head = `${movementWord(category)}${toName ? ` into ${toName}` : ''}`;
+        if (merged) {
+            return `${head}; every lane arriving here has its own lane to enter and nowhere else `
+                + 'to go, so the order settles which.';
+        }
         const receiving = hugged
             ? `it enters the ${category === 'left' ? 'leftmost' : 'rightmost'} lane, which is the only one it can reach without crossing`
             : 'the receiving lane follows in order without crossing';
@@ -159,8 +163,10 @@
         return `${head}; one lane per direction on all ${arms} arms, so no lane assignment is in question.`;
     }
 
-    function confidenceFor(category, tagged, forced, hugged, forked) {
+    function confidenceFor(category, tagged, forced, hugged, forked, merged) {
         if (forced) return 0.95;
+        // The counts leave no alternative, which is the strongest basis short of OSM saying so.
+        if (merged) return 0.92;
         // Hugging is a road-code rule rather than something the counts force, so it stays under the
         // in-order pairing even when turn:lanes named the movement itself.
         if (tagged) return hugged ? 0.8 : 0.9;
@@ -254,6 +260,51 @@
         if (category === 'left') return { lanes: candidates.slice(0, turning.length), hugged: true };
         if (category === 'right') return { lanes: candidates.slice(-turning.length), hugged: true };
         return null;
+    }
+
+    // A node where every arriving lane has its own lane to enter, and nowhere else to go.
+    //
+    // One exit arm, and its lanes number exactly the lanes arriving across all approaches: that is
+    // a merge — two carriageways becoming one, or a slip road adding a lane. Nobody chooses
+    // anything, because lanes cannot cross, so the order alone settles it. This was being put to a
+    // person as "which of these three lanes does the one-lane on-ramp enter", with no control to
+    // answer it and a fallback that would have said "the leftmost" — sending the ramp across both
+    // through lanes. About a tenth of the open approaches citywide, and most of them at
+    // interchanges, where they were the bulk of the queue.
+    //
+    // Approaches are ordered by the turn each must make to line up with the exit. A right-side
+    // on-ramp points leftward and turns RIGHT to straighten, so its angle is positive; a left-side
+    // one is the mirror. Ascending angle is therefore left-to-right across the exit.
+    function mergeAssignment(approaches, exits, headingOf) {
+        if (exits.size !== 1) return null;
+        const [exitSectionId, exitLanes] = [...exits.entries()][0];
+        const candidates = exitLanes.filter(lane => lane.type === 'driving' && lane.access === 'yes');
+        if (!candidates.length) return null;
+        const departing = headingOf(exitLanes[0], false);
+        if (departing === null) return null;
+
+        const ordered = [];
+        let arrivingTotal = 0;
+        for (const [sectionId, approach] of approaches) {
+            // The exit doubling as an approach is a two-way arm, not a merge.
+            if (sectionId === exitSectionId) return null;
+            // A bus lane is not interchangeable with a general one, so order cannot allocate it.
+            if (!ordinaryLanes(approach)) return null;
+            const arriving = headingOf(approach[0], true);
+            if (arriving === null) return null;
+            ordered.push({ sectionId, count: approach.length, turn: relativeTurnDegrees(arriving, departing) });
+            arrivingTotal += approach.length;
+        }
+        if (arrivingTotal !== candidates.length) return null;
+
+        ordered.sort((a, b) => a.turn - b.turn);
+        const assignment = new Map();
+        let cursor = 0;
+        ordered.forEach(entry => {
+            assignment.set(entry.sectionId, candidates.slice(cursor, cursor + entry.count));
+            cursor += entry.count;
+        });
+        return { exitSectionId, assignment };
     }
 
     // Which arm each TOKEN means, when several arms share a category — or null when the tokens
@@ -369,6 +420,10 @@
             if (leaving.length) exits.set(sectionId, leaving);
         });
         const multiLaneApproaches = [...approaches.values()].filter(group => group.length > 1);
+        // Node-level, so it is computed once rather than per approach: a merge is a fact about how
+        // the whole node's lanes line up, not about any one arm.
+        const merge = mergeAssignment(approaches, exits,
+            (lane, atEnd) => headingAtNode(lane.geometry.coordinates, atEnd));
         const rules = (context.restrictionsByNode || new Map()).get(node.id) || [];
         const matchers = rules.length ? restrictionsModule() : null;
         const isMandatory = rule => !!matchers && matchers.MANDATORY.test(rule.kind);
@@ -381,6 +436,7 @@
             taggedTurns: 0,
             huggedTurns: 0,
             forkedTurns: 0,
+            mergedApproaches: 0,
             multiLaneApproaches: multiLaneApproaches.length
         };
         const open = [];
@@ -407,8 +463,15 @@
             }
             // With one lane the token is optional — there is nothing to assign it to. With more,
             // an untagged lane is precisely the question a picture has to answer.
+            //
+            // Unless this approach is part of a merge: one arm out, and its lanes numbering exactly
+            // the lanes coming in. Then there is no assignment for a tag to disambiguate — every
+            // lane has one place to go — and demanding turn:lanes would hold open a junction whose
+            // answer the counts already force. That was every multi-lane carriageway feeding a
+            // motorway merge.
+            const mergedHere = !!merge?.assignment.get(fromSectionId);
             const permitted = approach.map(turnCategoriesOf);
-            if (approach.length > 1 && permitted.some(categories => !categories)) {
+            if (!mergedHere && approach.length > 1 && permitted.some(categories => !categories)) {
                 leaveOpen('multi_lane_approach_without_turn_lanes');
                 continue;
             }
@@ -451,9 +514,17 @@
                 const takers = allowed.get(toSectionId);
                 const turning = approach.filter((lane, index) => takers.has(index));
                 if (!turning.length) continue;
-                const receiving = receivingLanes(turning, exit, category);
+                // A merge allocates the whole approach by order. If turn:lanes narrowed the set,
+                // the allocation no longer describes what is turning, so the ordinary rule decides.
+                const merged = merge && toSectionId === merge.exitSectionId
+                    ? merge.assignment.get(fromSectionId)
+                    : null;
+                const receiving = merged && merged.length === turning.length
+                    ? { lanes: merged, hugged: false, merged: true }
+                    : receivingLanes(turning, exit, category);
                 if (!receiving) { undecidable = 'receiving_lane_undetermined'; break; }
                 if (receiving.hugged) evidence.huggedTurns += 1;
+                if (receiving.merged) evidence.mergedApproaches += 1;
 
                 const forced = !!(only && only.toWayId === toWayId);
                 const toName = sectionsById.get(toSectionId)?.name;
@@ -471,10 +542,11 @@
                         toLaneId: to.id,
                         type: category === 'through' ? 'continue' : 'turn',
                         priority: category === 'through' ? 'continuing' : 'yielding',
-                        confidence: confidenceFor(category, tagged, forced, receiving.hugged, forked),
+                        confidence: confidenceFor(category, tagged, forced, receiving.hugged, forked,
+                            receiving.merged),
                         source: 'deterministic',
                         reason: movementReason(category, toName, sectionIds.length, tagged,
-                            forced && only.kind, receiving.hugged, forked),
+                            forced && only.kind, receiving.hugged, forked, receiving.merged),
                         geometry: { type: 'LineString', coordinates: [fromPoint, toPoint] }
                     });
                 });

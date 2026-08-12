@@ -1304,3 +1304,32 @@ input {
         border-radius: 14px 14px 0 0;
     }
 }
+
+/* The second question on a card: which lane of the receiving arm a movement enters. Only shown
+   when nothing can deduce it — most approaches never see it. */
+.decision-card__sub {
+    margin-top: 12px;
+    padding-top: 11px;
+    border-top: 1px solid var(--line);
+}
+
+.decision-card__sub h4 {
+    margin: 0 0 2px;
+    font-size: 12.5px;
+    font-weight: 650;
+}
+
+.decision-card__sub p {
+    margin: 0 0 8px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.decision-card__sub .lane-row {
+    margin-bottom: 5px;
+}
+
+.arm-chip--lane {
+    --arm: var(--accent);
+}

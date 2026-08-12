@@ -548,6 +548,108 @@ describe('deterministic junction rules', () => {
         });
     });
 
+    // A one-lane on-ramp meeting a three-lane trunk was being put to a person as "which of these
+    // three lanes do you enter", with no control to answer it and a fallback that would have said
+    // "the leftmost" — sending the ramp across both through lanes. Taken from osm-node:361373664
+    // on the A3 corridor, where 11 of the 14 open approaches in view were this same shape.
+    describe('a merge where every arriving lane has its own lane to enter', () => {
+        function armAt(bearing, lengthM = 120) {
+            const radians = bearing * Math.PI / 180;
+            return [
+                CENTRE[0] + Math.sin(radians) * lengthM / (111320 * Math.cos(CENTRE[1] * Math.PI / 180)),
+                CENTRE[1] + Math.cos(radians) * lengthM / 110540
+            ];
+        }
+
+        // Mainline arrives from the west with 2 lanes, a slip road joins from the right, 3 leave.
+        function onRamp({ mainline = '2', ramp = '1', exit = '3' } = {}) {
+            return LaneTopologyGraph.build([
+                way(1, [armAt(270), CENTRE], {
+                    highway: 'trunk', oneway: 'yes', lanes: mainline
+                }, [10, 100]),
+                // Pointing left of the mainline, so it must turn right to straighten: a right-side
+                // on-ramp, and the sign of that turn is what says which side it joins from.
+                way(2, [armAt(254), CENTRE], {
+                    highway: 'motorway_link', oneway: 'yes', lanes: ramp
+                }, [20, 100]),
+                way(3, [CENTRE, armAt(90)], {
+                    highway: 'trunk', oneway: 'yes', lanes: exit
+                }, [100, 30])
+            ], BUILD_OPTIONS);
+        }
+
+        function pairs(graph) {
+            const laneById = new Map(graph.lanes.map(lane => [lane.id, lane]));
+            const wayOf = new Map(graph.sections.map(section => [section.id, String(section.sourceWayId)]));
+            return junctionConnections(graph)
+                .map(connection => {
+                    const from = laneById.get(connection.fromLaneId);
+                    return `way${wayOf.get(from.sectionId)}:${from.ordinal}->${laneById.get(connection.toLaneId).ordinal}`;
+                })
+                .sort();
+        }
+
+        it('settles it instead of asking, because order leaves no choice', () => {
+            const graph = onRamp();
+
+            expect(graph.problems.filter(problem => problem.type === 'unresolved_intersection'))
+                .toHaveLength(0);
+            expect(graph.stats.resolvedIntersections).toBe(1);
+        });
+
+        it('puts the right-side ramp in the RIGHTMOST lane, not the leftmost', () => {
+            // The whole point. Pairing from the left would give way2:0->0, across both through lanes.
+            expect(pairs(onRamp())).toEqual(['way1:0->0', 'way1:1->1', 'way2:0->2']);
+        });
+
+        it('mirrors it for a ramp joining from the left', () => {
+            const graph = LaneTopologyGraph.build([
+                way(1, [armAt(270), CENTRE], { highway: 'trunk', oneway: 'yes', lanes: '2' }, [10, 100]),
+                // Pointing right of the mainline: it turns LEFT to straighten, so it joins on the left.
+                way(2, [armAt(286), CENTRE], { highway: 'motorway_link', oneway: 'yes', lanes: '1' }, [20, 100]),
+                way(3, [CENTRE, armAt(90)], { highway: 'trunk', oneway: 'yes', lanes: '3' }, [100, 30])
+            ], BUILD_OPTIONS);
+
+            expect(pairs(graph)).toEqual(['way1:0->1', 'way1:1->2', 'way2:0->0']);
+        });
+
+        it('says the counts settled it, at a confidence that reflects that', () => {
+            const connection = junctionConnections(onRamp())[0];
+
+            expect(connection.reason).toContain('nowhere else');
+            expect(connection.confidence).toBeGreaterThan(0.9);
+        });
+
+        it('declines when the counts do not balance, rather than inventing an allocation', () => {
+            // 2 + 1 arriving into a 4-lane exit: one lane is unaccounted for and which stays empty
+            // is a real choice, so the merge rule must not fire at all.
+            const graph = onRamp({ exit: '4' });
+
+            expect(graph.stats.resolvedIntersections).toBe(0);
+            expect(graph.problems.some(problem => problem.type === 'unresolved_intersection')).toBe(true);
+            // Nothing allocated by order: no movement claims the counts settled it.
+            expect(junctionConnections(graph).some(connection => /nowhere else/.test(connection.reason)))
+                .toBe(false);
+        });
+
+        it('declines a merge whose approach carries a restricted lane', () => {
+            // A bus lane is not interchangeable with a general one, so order cannot allocate it —
+            // allocating by position would put general traffic into it.
+            const graph = LaneTopologyGraph.build([
+                way(1, [armAt(270), CENTRE], {
+                    highway: 'trunk', oneway: 'yes', lanes: '2',
+                    'access:lanes': 'no|yes', 'psv:lanes': 'designated|no'
+                }, [10, 100]),
+                way(2, [armAt(254), CENTRE], { highway: 'motorway_link', oneway: 'yes', lanes: '1' }, [20, 100]),
+                way(3, [CENTRE, armAt(90)], { highway: 'trunk', oneway: 'yes', lanes: '3' }, [100, 30])
+            ], BUILD_OPTIONS);
+
+            expect(graph.stats.resolvedIntersections).toBe(0);
+            expect(junctionConnections(graph).some(connection => /nowhere else/.test(connection.reason)))
+                .toBe(false);
+        });
+    });
+
     it('classifies a turn from the heading of the arms', () => {
         const arriving = JunctionRules.bearingDegrees(WEST, CENTRE);
         const north = JunctionRules.bearingDegrees(CENTRE, NORTH);

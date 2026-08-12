@@ -76,6 +76,7 @@
             stored: new Map(),      // decisionKey -> the saved record
             current: null,          // the decision being answered
             assignment: {},         // laneId -> [exit sectionId]
+            received: {},           // "laneOrdinal->exitWayId" -> receiving lane ordinal
             saving: false
         };
 
@@ -263,6 +264,35 @@
             </div>`;
         }
 
+        // The question the old card could not ask. A one-lane on-ramp meeting a three-lane trunk
+        // has one arriving lane and one arm, so the lane-to-arm question was already answered and
+        // the card looked empty — while the real ambiguity, which of the three lanes it enters,
+        // had no control at all and Save wrote a guess.
+        function receivingRows(decision) {
+            const questions = decisionsModule().openReceivingChoices(decision, state.assignment, getGraph());
+            if (!questions.length) return '';
+            const rows = questions.map(question => {
+                const picked = state.received[question.key];
+                const buttons = question.candidates.map(candidate => `
+                    <button type="button" class="arm-chip arm-chip--lane${picked === candidate.ordinal ? ' arm-chip--on' : ''}"
+                        data-receive="${escapeHtml(question.key)}" data-ordinal="${candidate.ordinal}"
+                        aria-pressed="${picked === candidate.ordinal}"
+                        title="${escapeHtml(candidate.side)}">${candidate.ordinal + 1}</button>`).join('');
+                return `<div class="lane-row">
+                    <span class="lane-row__name"><b>${question.laneOrdinal + 1}</b>
+                        <small>into ${escapeHtml(question.exit.label.toLowerCase())}</small></span>
+                    <span class="lane-row__arms">${buttons}</span>
+                </div>`;
+            }).join('');
+            const undecided = questions.filter(question => !Number.isInteger(state.received[question.key])).length;
+            return `<div class="decision-card__sub">
+                    <h4>Which lane of the arm does it enter?</h4>
+                    <p>Lane 1 is the leftmost of the receiving arm.${undecided
+                        ? ' Unanswered ones are paired by side, and marked as assumed.' : ''}</p>
+                    ${rows}
+                </div>`;
+        }
+
         function renderCard() {
             const card = element('decision-card');
             if (!card) return;
@@ -290,6 +320,7 @@
                 <div class="decision-card__lanes">
                     ${decision.approach.lanes.map(lane => laneRow(decision, lane)).join('')}
                 </div>
+                ${receivingRows(decision)}
                 <div class="decision-card__legend">
                     ${decision.exits.map((exit, index) => `<span>
                         <i style="background:${ARM_COLORS[index % ARM_COLORS.length]}">${ARM_LETTERS[index] || '?'}</i>
@@ -312,6 +343,16 @@
             card.querySelectorAll('[data-lane]').forEach(button => {
                 button.addEventListener('click', () => toggle(button.dataset.lane, button.dataset.exit));
             });
+            card.querySelectorAll('[data-receive]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const key = button.dataset.receive;
+                    const ordinal = Number(button.dataset.ordinal);
+                    // Tapping the chosen one again clears it, back to the rule's own pairing.
+                    if (state.received[key] === ordinal) delete state.received[key];
+                    else state.received[key] = ordinal;
+                    renderCard();
+                });
+            });
             element('decision-close').addEventListener('click', close);
             element('decision-skip').addEventListener('click', () => advance(true));
             element('decision-save').addEventListener('click', save);
@@ -333,14 +374,17 @@
             state.current = decision;
             const module = decisionsModule();
             const saved = state.stored.get(decision.id);
+            state.received = {};
             if (decision.assignment) {
                 // Already folded into the graph; the builder resolved it against today's lanes.
                 state.assignment = decision.assignment;
+                state.received = { ...(saved?.assignment?.received || {}) };
             } else if (saved) {
                 // An answer given before may have been given against a junction that has since
                 // changed shape; `missing` is how that says so instead of silently half-applying.
-                const { assignment, missing } = module.fromStoredAssignment(decision, saved.assignment);
+                const { assignment, missing, received } = module.fromStoredAssignment(decision, saved.assignment);
                 state.assignment = assignment;
+                state.received = received;
                 if (missing.length) showToast(`This junction changed since it was answered: ${missing[0]}`, true);
             } else {
                 state.assignment = module.suggestAssignment(decision);
@@ -395,6 +439,7 @@
         function close() {
             state.current = null;
             state.assignment = {};
+            state.received = {};
             layer.clearLayers();
             renderQueue();
             renderCard();
@@ -422,7 +467,7 @@
                         reason: decision.reason,
                         snapshotId: graph?.source?.snapshotId ?? null,
                         point: decision.point,
-                        assignment: module.toStoredAssignment(decision, state.assignment)
+                        assignment: module.toStoredAssignment(decision, state.assignment, state.received)
                     })
                 });
                 state.stored.set(decision.id, body.decision);
