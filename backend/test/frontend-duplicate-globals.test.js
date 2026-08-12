@@ -27,7 +27,12 @@ import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const FRONTEND_JS = path.resolve(fileURLToPath(new URL('.', import.meta.url)), '../../frontend/js');
+const FRONTEND_ROOT = path.resolve(fileURLToPath(new URL('.', import.meta.url)), '../../frontend');
+const FRONTEND_JS = path.join(FRONTEND_ROOT, 'js');
+// The topology manager loads its own classic scripts ALONGSIDE frontend/js ones, in one global
+// scope, so a name declared in both collides exactly as two frontend/js files would. Scanning only
+// frontend/js left that half of the page unguarded.
+const SCRIPT_DIRS = [FRONTEND_JS, path.join(FRONTEND_ROOT, 'topology')];
 
 // The migration backlog is intentionally empty. New classic-script globals must have one owner.
 const KNOWN_COLLISIONS = new Set();
@@ -62,7 +67,7 @@ function topLevelGlobalNames(source) {
 }
 
 describe('frontend global namespace', () => {
-    const files = listJsFiles(FRONTEND_JS);
+    const files = SCRIPT_DIRS.flatMap(listJsFiles);
 
     it('finds the frontend scripts', () => {
         expect(files.length).toBeGreaterThan(100);
@@ -72,10 +77,10 @@ describe('frontend global namespace', () => {
         const byName = new Map();
 
         for (const file of files) {
-            const relative = path.relative(FRONTEND_JS, file);
+            const relative = path.relative(FRONTEND_ROOT, file);
             for (const { name, line } of topLevelGlobalNames(readFileSync(file, 'utf8'))) {
                 if (!byName.has(name)) byName.set(name, []);
-                byName.get(name).push(`js/${relative}:${line}`);
+                byName.get(name).push(`${relative}:${line}`);
             }
         }
 
