@@ -6,8 +6,11 @@
 import { describe, it, expect } from 'vitest';
 import {
     WIDTH_PER_TRACK_M,
+    attachAuthoredElevations,
     parseArgs,
+    profileElevationAtM,
     tracksOf,
+    vertexChainagesM,
     widthForTrack,
     buildProposal
 } from '../scripts/import-transit-project.mjs';
@@ -141,5 +144,62 @@ describe('buildProposal', () => {
     it('states the underground edges in the description, since they are what it does not take', () => {
         expect(build().description).toMatch(/1 underground/);
         expect(build().levelSummary).toMatchObject({ edges: 3, underground: 1 });
+    });
+});
+
+describe('authored absolute elevations', () => {
+    const pvis = [
+        { dM: 0, elevAslM: 2.4 },
+        { dM: 1000, elevAslM: 20 },
+        { dM: 2000, elevAslM: 30 },
+    ];
+
+    it('interpolates the profile linearly and clamps at both ends', () => {
+        expect(profileElevationAtM(pvis, -50)).toBe(2.4);
+        expect(profileElevationAtM(pvis, 0)).toBe(2.4);
+        expect(profileElevationAtM(pvis, 500)).toBeCloseTo(11.2, 6);
+        expect(profileElevationAtM(pvis, 1500)).toBeCloseTo(25, 6);
+        expect(profileElevationAtM(pvis, 99999)).toBe(30);
+        expect(profileElevationAtM(null, 100)).toBeNull();
+        expect(profileElevationAtM([{ dM: 'x', elevAslM: 1 }], 100)).toBeNull();
+    });
+
+    it('chainages march monotonically in metres', () => {
+        const chainages = vertexChainagesM([
+            { lat: 43.75, lng: 15.85 },
+            { lat: 43.75, lng: 15.86 },   // ~805 m east at this latitude
+            { lat: 43.76, lng: 15.86 },   // ~1113 m north
+        ]);
+        expect(chainages[0]).toBe(0);
+        expect(chainages[1]).toBeGreaterThan(780);
+        expect(chainages[1]).toBeLessThan(830);
+        expect(chainages[2] - chainages[1]).toBeGreaterThan(1090);
+        expect(chainages[2] - chainages[1]).toBeLessThan(1140);
+    });
+
+    it('stamps every vertex with elevationM and keeps the levels', () => {
+        const track = { verticalProfile: { pvis } };
+        const vertices = attachAuthoredElevations([
+            { lat: 43.75, lng: 15.85, level: 0 },
+            { lat: 43.75, lng: 15.86, level: 0.62 },
+        ], track);
+        expect(vertices[0].elevationM).toBe(2.4);
+        expect(vertices[0].level).toBe(0);
+        expect(vertices[1].elevationM).toBeGreaterThan(11);
+        expect(vertices[1].level).toBe(0.62);
+    });
+
+    it('leaves vertices untouched without a usable profile — bare levels, as before', () => {
+        const vertices = [{ lat: 43.75, lng: 15.85, level: 1 }];
+        expect(attachAuthoredElevations(vertices, {})).toBe(vertices);
+        expect(attachAuthoredElevations(vertices, { verticalProfile: { pvis: [] } })).toBe(vertices);
+    });
+
+    it('the bay regression: small relative levels still carry the high absolute deck', () => {
+        // Two high shores, water between: levels near zero, profile 21.7→33.2 m.
+        const bay = [{ dM: 0, elevAslM: 21.7 }, { dM: 470, elevAslM: 33.2 }];
+        const mid = profileElevationAtM(bay, 235);
+        expect(mid).toBeGreaterThan(27);
+        expect(mid).toBeLessThan(28);
     });
 });

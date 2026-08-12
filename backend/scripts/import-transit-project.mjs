@@ -1,11 +1,18 @@
 // Imports a track drawn in the transit planner (zagreb.lol/prijevoz) into consensus-builder as a
 // track proposal, so its land take can be planned against the cadastre.
 //
-// The planner already stores a RELATIVE level (-1 / 0 / +1, fractional on ramps) per centreline
-// vertex, so nothing here converts elevations and consensus-builder needs no terrain model: the
-// absolute profile stays in the planner, where the DEM is. Fully underground stretches are cut out
-// of the acquisition footprint and out of nothing else — the centreline stays whole, so a
-// part-tunnelled line remains ONE proposal under the one-contiguous-stretch ruling of 2026-08-07.
+// The planner stores a RELATIVE level (-1 / 0 / +1, fractional on ramps) per centreline vertex —
+// enough for land take, which is all consensus-builder itself computes. But relative levels are
+// LOSSY exactly over water: between two high shores the solved profile is a 20–30 m bridge while
+// the shore-relative levels read near zero, and anything reconstructing rail = terrain + level×10
+// mid-crossing drops the deck to the sea (measured on Šibenik project 141, its bay crossing:
+// authored 21.7–33.2 m a.s.l., levels 0.62→0). So when the track carries its solved
+// verticalProfile, each vertex ALSO gets `elevationM` — the absolute EVRF2000 height sampled at
+// its chainage — and the metadata declares the datum. consensus-builder keeps reading `level`
+// (acquisition rules); the walk/cab sim reads `elevationM` and renders the authored alignment.
+// Fully underground stretches are cut out of the acquisition footprint and out of nothing else —
+// the centreline stays whole, so a part-tunnelled line remains ONE proposal under the
+// one-contiguous-stretch ruling of 2026-08-07.
 //
 // The footprint is buffered in EPSG:3765 (metres) rather than by the browser, and stored on the
 // definition, which consensus-builder treats as authoritative.
@@ -89,6 +96,58 @@ export function widthForTrack(track, override) {
     if (Number.isFinite(override) && override > 0) return override;
     const count = Number(track && track.trackCount);
     return WIDTH_PER_TRACK_M * (Number.isFinite(count) && count > 0 ? count : 1);
+}
+
+// ─── Authored absolute elevations (verticalProfile → per-vertex elevationM) ──
+
+// Planar chainage in metres along {lat, lng} vertices — the same running
+// distance the planner's profile is stationed by.
+export function vertexChainagesM(vertices) {
+    const chainages = [0];
+    for (let index = 1; index < (vertices || []).length; index += 1) {
+        const a = vertices[index - 1];
+        const b = vertices[index];
+        const dLatM = (b.lat - a.lat) * 111320;
+        const dLngM = (b.lng - a.lng) * 111320 * Math.cos((a.lat * Math.PI) / 180);
+        chainages.push(chainages[index - 1] + Math.hypot(dLatM, dLngM));
+    }
+    return chainages;
+}
+
+// Linear interpolation of the solved profile (PVIs: { dM, elevAslM }) at a
+// chainage, clamped to the profile's ends. Returns null when the profile is
+// unusable — the caller then imports bare levels, exactly as before.
+export function profileElevationAtM(pvis, dM) {
+    const points = (Array.isArray(pvis) ? pvis : [])
+        .map(pvi => ({ dM: Number(pvi?.dM), elevAslM: Number(pvi?.elevAslM) }))
+        .filter(pvi => Number.isFinite(pvi.dM) && Number.isFinite(pvi.elevAslM))
+        .sort((a, b) => a.dM - b.dM);
+    if (points.length === 0 || !Number.isFinite(Number(dM))) return null;
+    const at = Number(dM);
+    if (at <= points[0].dM) return points[0].elevAslM;
+    for (let index = 1; index < points.length; index += 1) {
+        if (at <= points[index].dM) {
+            const a = points[index - 1];
+            const b = points[index];
+            const span = b.dM - a.dM;
+            const t = span > 1e-9 ? (at - a.dM) / span : 0;
+            return a.elevAslM + (b.elevAslM - a.elevAslM) * t;
+        }
+    }
+    return points[points.length - 1].elevAslM;
+}
+
+// Stamp each vertex with the authored absolute height at its chainage. MUST
+// run on the FULL track, before any municipality clipping — a clipped window
+// starts its own chainage at zero and would sample the wrong stretch of the
+// profile. Without a usable profile the vertices come back untouched.
+export function attachAuthoredElevations(vertices, track) {
+    const pvis = track?.verticalProfile?.pvis;
+    if (!Array.isArray(vertices) || vertices.length === 0) return vertices;
+    const chainages = vertexChainagesM(vertices);
+    const elevations = chainages.map(dM => profileElevationAtM(pvis, dM));
+    if (elevations.some(elevation => elevation === null)) return vertices;
+    return vertices.map((vertex, index) => ({ ...vertex, elevationM: elevations[index] }));
 }
 
 // Cut the centreline to the requested cadastral municipalities. Returned as runs so a line that
@@ -180,7 +239,13 @@ export function buildProposal({ project, track, trackIndex, spans, centreline, f
             isRoad: false,
             isCorridor: true,
             source: 'transit-project',
-            levels: true
+            levels: true,
+            // Present only when every point carries elevationM: the sim's
+            // proposal-track adapter requires the datum to trust absolute
+            // heights, and a datum without heights would be a lie.
+            ...(centreline.every(point => Number.isFinite(point.elevationM))
+                ? { elevationDatum: 'EVRF2000' }
+                : {})
         }
     };
 
@@ -269,7 +334,10 @@ async function main() {
 
         for (const [trackIndex, track] of tracks.entries()) {
             const widthM = widthForTrack(track, args.width);
-            const vertices = corridorLevels.verticesFromTrack(track);
+            const vertices = attachAuthoredElevations(
+                corridorLevels.verticesFromTrack(track),
+                track,
+            );
             const windows = await clipToMunicipalities(pool, vertices, args.ko);
 
             if (windows.length > 1) {
