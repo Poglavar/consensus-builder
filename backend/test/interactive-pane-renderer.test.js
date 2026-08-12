@@ -64,6 +64,20 @@ describe('an interactive pane is never drawn on canvas', () => {
         expect(render).toContain("className: 'corridor-applied-hit-target'");
     });
 
+    it('and there is no hit target per STRIP — the footprint carries their exact handlers', () => {
+        // ~2,000 SVG paths whose click was rememberSegment(null) + the same forward the footprint
+        // target already does, over ground the footprint already covers. mapLoad measured them as
+        // the bulk of the SVG once the parcels moved to canvas. Per-SEGMENT targets stay: they are
+        // the only ones that remember which segment was clicked.
+        const targets = render.slice(render.indexOf('function renderAppliedCorridorHitTargets'), render.indexOf('function isAppliedCorridorProposal'));
+        expect(targets).not.toContain('strips.forEach');
+        expect(targets).toContain('rememberSegment(entry.segmentId)');
+        // Exactly one null-segment click WIRING remains (the footprint's). Matched as code —
+        // handler shape included — because the explanatory comment also says rememberSegment(null)
+        // and a prose match counted it.
+        expect(targets.match(/\.on\('click', event => \{ rememberSegment\(null\)/g) || []).toHaveLength(1);
+    });
+
     it('the non-interactive corridor panes still use canvas — this is not a blanket ban', () => {
         // Those panes are pointer-events:none, so their canvas cannot take a click from anything.
         // Reverting them would put ~9,700 paths back into the SVG for no reason.

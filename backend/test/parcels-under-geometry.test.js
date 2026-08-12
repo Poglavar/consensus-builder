@@ -120,6 +120,79 @@ describe('the answer', () => {
     });
 });
 
+describe('parcelsOnly: the lean mode a replay asks for', () => {
+    // A replay's ground load only needs the parcels on the map; it batches ~20 unrelated
+    // footprints per request, so taken_m2/coverage would describe the union of strangers —
+    // expensive and meaningless. The lean mode must skip that arithmetic ENTIRELY: the exact
+    // per-parcel ST_Intersection passes were measured as the bulk of 28.9 s of ground SQL.
+    const leanRow = (id) => ({
+        cestica_id: 1000 + id,
+        broj_cestice: String(id),
+        maticni_broj_ko: 330337,
+        parcelid: `HR-330337-${id}`,
+        geometry: { type: 'Polygon', coordinates: [] },
+        calculated_area: 800,
+        ownership_details: null
+    });
+
+    it('runs no exact intersection and no coverage union — while the full mode still does', async () => {
+        await request(appWith({ rows: [] })).post('/parcels/under')
+            .send({ geometry: CORRIDOR, parcelsOnly: true });
+        const leanSql = lastSql;
+        expect(leanSql).not.toMatch(/ST_Intersection\(/);
+        expect(leanSql).not.toMatch(/ST_Union\(/);
+        expect(leanSql).not.toMatch(/coverage/i);
+        // The assertion above is only meaningful if the full mode's SQL would have tripped it.
+        await request(appWith(rowsPayload([], 100, 0))).post('/parcels/under').send({ geometry: CORRIDOR });
+        expect(lastSql).toMatch(/ST_Intersection\(/);
+    });
+
+    it('keeps the index-friendly hit-test: subdivision, bbox on the pieces, current only, MakeValid', async () => {
+        await request(appWith({ rows: [] })).post('/parcels/under')
+            .send({ geometry: CORRIDOR, parcelsOnly: true });
+        expect(lastSql).toMatch(/ST_Subdivide\(/);
+        expect(lastSql).toMatch(/p\.geom && parts\.part/);
+        expect(lastSql).toMatch(/ST_Intersects\(p\.geom, parts\.part\)/);
+        expect(lastSql).toMatch(/p\.current = true/);
+        expect(lastSql).toMatch(/ST_MakeValid\(/);
+    });
+
+    it('answers features without taken_m2, and without coverage/footprintM2 keys at all', async () => {
+        // Key ABSENT, not zero: a caller must never mistake "not asked" for "uncovered".
+        response = await request(appWith({ rows: [leanRow(628), leanRow(680)] }))
+            .post('/parcels/under').send({ geometry: CORRIDOR, parcelsOnly: true });
+        expect(response.status).toBe(200);
+        expect(response.body.type).toBe('FeatureCollection');
+        expect(response.body.count).toBe(2);
+        expect(response.body).not.toHaveProperty('coverage');
+        expect(response.body).not.toHaveProperty('footprintM2');
+        const props = response.body.features[0].properties;
+        expect(props.parcelId).toBe('HR-330337-628');
+        expect(props.calculated_area).toBe(800);
+        expect(props).not.toHaveProperty('taken_m2');
+        expect(Number.isFinite(response.body.queryMs)).toBe(true);
+    });
+
+    it('is still refused over the parcel cap, before any row is built', async () => {
+        let builtRows = 0;
+        const app = appWith((sql) => {
+            if (/count\(\*\) AS parcels/.test(sql)) return { rows: [{ parcels: 5001 }] };
+            builtRows += 1;
+            return { rows: [] };
+        });
+        response = await request(app).post('/parcels/under').send({ geometry: CORRIDOR, parcelsOnly: true });
+        expect(response.status).toBe(413);
+        expect(builtRows, 'the lean query ran anyway').toBe(0);
+    });
+
+    it('is opt-in: anything but `parcelsOnly: true` gets the full answer', async () => {
+        response = await request(appWith(rowsPayload([parcelRow(628, 770)], 93542, 0.5)))
+            .post('/parcels/under').send({ geometry: CORRIDOR, parcelsOnly: 'yes' });
+        expect(response.body).toHaveProperty('coverage');
+        expect(response.body.features[0].properties.taken_m2).toBe(770);
+    });
+});
+
 describe('refusals', () => {
     it('rejects a missing geometry', async () => {
         response = await request(appWith(rowsPayload([], 1, 0))).post('/parcels/under').send({});

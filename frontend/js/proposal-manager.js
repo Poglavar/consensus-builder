@@ -421,6 +421,12 @@ const _now = () => ((typeof performance !== 'undefined' && performance.now) ? pe
 // Derivations of the corridor fabric run one at a time — see _deriveCorridorFabric.
 let _corridorFabricQueue = Promise.resolve();
 
+// Per-member building lists from the replay's ONE bulk demolition fetch (POST /buildings/under),
+// keyed by proposalId. Module-scoped for the same reason as the queue above. An entry present —
+// even an empty array — means that member's region was scanned; absence means it was not, and its
+// apply-time scan must fetch for itself.
+let _replayDemolitionBuildings = new Map();
+
 const ProposalManager = {
     _lastApplyFailureByProposalId: new Map(),
     // Where the last rebuild's time went. A rebuild is the expensive half of finishing a road, and
@@ -774,6 +780,7 @@ const ProposalManager = {
             return summary;
         } finally {
             this._rebuildInProgress = false;
+            _replayDemolitionBuildings = new Map();
             this._severedThisRebuild = [];
             this._replayInvalidated = false;
             if (hasStorageBatch) proposalStorage.endBatch();
@@ -795,6 +802,68 @@ const ProposalManager = {
     // so the box asked for 37,164 parcels to find the 661 actually under it, ingested ~98,000 layers,
     // and the tab never came back. /parcels/under asks the real question and subdivides the geometry
     // so the spatial index is not defeated by the same diagonal: 661 parcels, 618 ms.
+    // One request for every scanning member's demolition ground. Runs CONCURRENTLY with the
+    // ground load — both are independent reads over the same member list — so its latency
+    // disappears behind the much larger /parcels/under fetch.
+    //
+    // Failure here is never an answer: on any error, unsupported city, or truncation the map keeps
+    // only the keys a good response covered, and uncovered members fall back to their own
+    // per-region fetch. The one outcome this must never produce is an empty list standing in for
+    // "could not ask" — that is how a proposal gets stored as demolishing nothing.
+    async _prefetchDemolitionBuildings(appliedList) {
+        _replayDemolitionBuildings = new Map();
+        const prefetchApi = (typeof window !== 'undefined') ? window.__demolitionPrefetch : null;
+        if (!prefetchApi || typeof fetch !== 'function') return;
+        const regions = prefetchApi.collectDemolitionRegions(appliedList, {
+            structureGeometry: (proposal) => {
+                const sp = proposal.structureProposal || {};
+                if (sp.geometry && sp.geometry.type && Array.isArray(sp.geometry.coordinates)) return sp.geometry;
+                try {
+                    const kind = (sp.kind === 'park' || sp.kind === 'square' || sp.kind === 'lake' || sp.kind === 'station') ? sp.kind : 'square';
+                    return typeof this._getCanonicalStructureGeometry === 'function'
+                        ? this._getCanonicalStructureGeometry(proposal, kind)
+                        : null;
+                } catch (_) { return null; }
+            }
+        });
+        if (!regions.length) return;
+
+        const backendBase = (() => {
+            try {
+                if (typeof getBackendBase === 'function') {
+                    const base = getBackendBase();
+                    if (base && typeof base === 'string') return base.replace(/\/$/, '');
+                }
+            } catch (_) { }
+            return 'https://api.urbangametheory.xyz';
+        })();
+        const city = (typeof CityConfigManager !== 'undefined' && CityConfigManager.getCurrentCityId)
+            ? CityConfigManager.getCurrentCityId() : undefined;
+
+        // Chunked to stay under the endpoint's 400-region cap; each chunk's answer stands alone.
+        const PREFETCH_CHUNK = 200;
+        for (let index = 0; index < regions.length; index += PREFETCH_CHUNK) {
+            const chunk = regions.slice(index, index + PREFETCH_CHUNK);
+            try {
+                const response = await fetch(`${backendBase}/buildings/under`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                    body: JSON.stringify({ regions: chunk, city })
+                });
+                if (!response.ok) { console.warn('[replay] bulk building fetch HTTP', response.status); continue; }
+                const payload = await response.json();
+                if (!payload || payload.supported === false || payload.truncated === true) {
+                    if (payload && payload.truncated) console.warn('[replay] bulk building fetch truncated — falling back per proposal');
+                    continue;
+                }
+                const mapped = prefetchApi.buildingFeaturesFromBulk(payload.regions, payload.source);
+                mapped.forEach((features, key) => _replayDemolitionBuildings.set(key, features));
+            } catch (error) {
+                console.warn('[replay] bulk building fetch failed — members fall back to their own', error);
+            }
+        }
+    },
+
     async _loadReplayGround(appliedList) {
         const members = (Array.isArray(appliedList) ? appliedList : []).filter(Boolean);
         if (!members.length) return 0;
@@ -815,7 +884,9 @@ const ProposalManager = {
                     ? planOrderApi.footprintOf(proposal) : null;
                 let loaded = null;
                 if (footprint && typeof fetchParcelsUnderGeometry === 'function') {
-                    loaded = await fetchParcelsUnderGeometry(footprint);
+                    // Ground only — the replay derives its own takes, so the endpoint's coverage
+                    // arithmetic would be paid for and thrown away.
+                    loaded = await fetchParcelsUnderGeometry(footprint, { parcelsOnly: true });
                 }
                 if (!loaded) {
                     // No footprint to ask about, or the endpoint is unavailable: fall back to the
@@ -879,7 +950,9 @@ const ProposalManager = {
             if (!geometry || typeof fetchParcelsUnderGeometry !== 'function') return;
             const askStarted = _now();
             try {
-                const loaded = await fetchParcelsUnderGeometry(geometry);
+                // Ground only: batched footprints are strangers to each other, so the full mode's
+                // taken/coverage numbers would describe their union — expensive and meaningless.
+                const loaded = await fetchParcelsUnderGeometry(geometry, { parcelsOnly: true });
                 const took = _now() - askStarted;
                 profile.requests += 1;
                 if (took > profile.slowestMs) { profile.slowestMs = took; profile.slowest = entries.length; }
@@ -1037,13 +1110,20 @@ const ProposalManager = {
         const takes = this._appliedCorridorTakes();
         if (!takes.length) return null;
 
-        const scoped = ancestry.loadedCadastreParcels()
-            .filter(entry => arriving.has(String(entry.id)))
-            .filter(entry => A.takesOverlapping(entry.feature, takes).length > 0)
-            .map(entry => String(entry.id));
+        // The filter's exact overlaps travel with the scope, so the derivation arranges each
+        // arrival from them instead of intersecting the same corridors a second time.
+        const hitsById = new Map();
+        const scoped = [];
+        ancestry.loadedCadastreParcels().forEach(entry => {
+            if (!arriving.has(String(entry.id))) return;
+            const hits = A.takeHitsOn(entry.feature, takes);
+            if (!hits.length) return;
+            scoped.push(String(entry.id));
+            hitsById.set(String(entry.id), hits);
+        });
         if (!scoped.length) return null;
 
-        const fabric = await this._deriveCorridorFabric({ parcelIds: scoped, takes });
+        const fabric = await this._deriveCorridorFabric({ parcelIds: scoped, takes, hitsById });
         if (fabric && fabric.added) {
             try { if (typeof refreshAppliedCorridorStrips === 'function') scheduleCorridorStripRefresh(); } catch (_) { }
         }
@@ -1080,7 +1160,18 @@ const ProposalManager = {
         const breathe = async () => {
             if (typeof browserRoot.yieldToBrowser === 'function') await browserRoot.yieldToBrowser();
         };
+        // Breathing on the CLOCK, not a count. A fixed chunk of 40 was 40 clips — half a
+        // millisecond each on simple parcels and several on corridor-dense ones, so the same chunk
+        // was either nothing or several dropped frames depending on where the pan landed.
         const CHUNK = 40;
+        const _sliceNow = () => ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now());
+        let _sliceStarted = _sliceNow();
+        const breatheIfDue = async () => {
+            if (_sliceNow() - _sliceStarted >= 12) {
+                await breathe();
+                _sliceStarted = _sliceNow();
+            }
+        };
         const A = browserRoot.__parcelArrangement;
         const ancestry = browserRoot.__cadastreAncestry;
         if (!A || !ancestry || typeof ancestry.loadedCadastreParcels !== 'function') {
@@ -1093,25 +1184,39 @@ const ProposalManager = {
         const scope = options.parcelIds
             ? new Set(Array.from(options.parcelIds).map(String))
             : null;
+        // The exact overlaps the filter below computes, kept for the clip loop. Filtering used to
+        // call takesOverlapping and throw the intersections away, so every (parcel × take) exact
+        // clip ran twice — once to decide, once to arrange. Half the derivation's turf work was
+        // repeats. A scoped caller (deriveArrivingParcels) may hand its own map in the same way.
+        const hitsById = (options.hitsById && typeof options.hitsById.get === 'function')
+            ? options.hitsById
+            : new Map();
         const candidates = ancestry.loadedCadastreParcels();
         const parcels = [];
         for (let i = 0; i < candidates.length; i += CHUNK) {
             for (const entry of candidates.slice(i, i + CHUNK)) {
                 if (scope) { if (scope.has(String(entry.id))) parcels.push(entry); continue; }
                 // Unscoped: only parcels a corridor actually reaches have anything to derive.
-                if (A.takesOverlapping(entry.feature, takes).length > 0) parcels.push(entry);
+                const hits = A.takeHitsOn(entry.feature, takes);
+                if (hits.length > 0) {
+                    parcels.push(entry);
+                    hitsById.set(String(entry.id), hits);
+                }
             }
-            if (i + CHUNK < candidates.length) await breathe();
+            if (i + CHUNK < candidates.length) await breatheIfDue();
         }
         if (!parcels.length) return { added: 0, removed: 0, unchanged: 0, parcels: 0, failed: [] };
 
         const pieces = [];
         const failed = [];
-        for (let i = 0; i < parcels.length; i += CHUNK) {
-            const part = A.fabricOver(parcels.slice(i, i + CHUNK), takes);
+        // The clip loop goes ONE PARCEL at a time so the clock can be consulted between clips —
+        // fabricOver over a 40-parcel slice was itself an unbreakable 20-120 ms block, which is a
+        // budget consulted every 40th step bounding nothing.
+        for (let i = 0; i < parcels.length; i += 1) {
+            const part = A.fabricOver(parcels.slice(i, i + 1), takes, hitsById);
             if (part && Array.isArray(part.pieces)) pieces.push(...part.pieces);
             if (part && Array.isArray(part.failed)) failed.push(...part.failed);
-            if (i + CHUNK < parcels.length) await breathe();
+            if (i + 1 < parcels.length) await breatheIfDue();
         }
         // A parcel whose arrangement could not be computed keeps whatever it already has. Treating
         // it as "no pieces" would delete its ground from the map on the strength of a failure.
@@ -1666,7 +1771,10 @@ const ProposalManager = {
         // are independent reads, and asking for them one member at a time made finishing one road
         // cost a full HTTP round-trip for every proposal already on the map — the cost that grew
         // with the plan, in series, before any geometry ran at all.
-        const groundMs = await this._loadReplayGround(appliedList);
+        const [groundMs] = await Promise.all([
+            this._loadReplayGround(appliedList),
+            this._prefetchDemolitionBuildings(appliedList)
+        ]);
         const foldStarted = _now();
 
         // The corridors divide the cadastre in ONE derivation, not one member at a time. A parcel's
@@ -2907,18 +3015,31 @@ const ProposalManager = {
                 const sliceStartedAt = () => ((typeof performance !== 'undefined' && performance.now)
                     ? performance.now() : Date.now());
                 let heldSince = sliceStartedAt();
-                for (let cursor = 0; cursor < bulkCandidates.length; cursor += BULK_SLICE) {
-                    const slice = { type: 'FeatureCollection', features: bulkCandidates.slice(cursor, cursor + BULK_SLICE) };
-                    this._addBulkSlice(slice, { styleFn, onEachFeature, mapById, indexParcelLayer });
-                    // On the clock, not on the slice count: a slice of a hundred simple pieces is
-                    // nothing, a hundred complex ones is a frame, and only the clock knows which
-                    // this was.
-                    if (sliceStartedAt() - heldSince >= 12) {
-                        if (typeof window !== 'undefined' && typeof window.yieldToBrowser === 'function') {
-                            await window.yieldToBrowser();
+                // Redraws held for the whole insert: each addLayer otherwise schedules a repaint
+                // per frame, so a 3,672-piece insert repainted its dirtied region once per slice.
+                // The dirty rect keeps growing under the hold and ONE repaint covers it on release;
+                // pan/zoom repaints bypass the hold entirely. Released in a finally — a hold left
+                // behind silently swallows every later add-triggered repaint in the session.
+                const renderer = (typeof window !== 'undefined' && window.parcelCanvasRenderer)
+                    ? window.parcelCanvasRenderer() : null;
+                const canHold = renderer && typeof renderer.holdRedraws === 'function';
+                if (canHold) renderer.holdRedraws();
+                try {
+                    for (let cursor = 0; cursor < bulkCandidates.length; cursor += BULK_SLICE) {
+                        const slice = { type: 'FeatureCollection', features: bulkCandidates.slice(cursor, cursor + BULK_SLICE) };
+                        this._addBulkSlice(slice, { styleFn, onEachFeature, mapById, indexParcelLayer });
+                        // On the clock, not on the slice count: a slice of a hundred simple pieces
+                        // is nothing, a hundred complex ones is a frame, and only the clock knows
+                        // which this was.
+                        if (sliceStartedAt() - heldSince >= 12) {
+                            if (typeof window !== 'undefined' && typeof window.yieldToBrowser === 'function') {
+                                await window.yieldToBrowser();
+                            }
+                            heldSince = sliceStartedAt();
                         }
-                        heldSince = sliceStartedAt();
                     }
+                } finally {
+                    if (canHold) renderer.releaseRedraws();
                 }
             } catch (err) {
                 console.warn('[_addFeaturesToMap] Bulk add failed, falling back to per-feature path', err);
@@ -3255,6 +3376,13 @@ const ProposalManager = {
                     }
                 });
             } catch (_) { }
+        }
+        // A bulk-prefetched answer for this member replaces the scan's own network hop. Keyed by
+        // the same proposalId the apply passed in; only entries a good bulk response covered exist,
+        // so a failed prefetch degrades to the old per-region fetch instead of to empty ground.
+        if (this._rebuildInProgress && _replayDemolitionBuildings.size && options.proposalId !== undefined) {
+            const preloaded = _replayDemolitionBuildings.get(String(options.proposalId));
+            if (preloaded) options = { ...options, preloadedBuildings: preloaded };
         }
         const records = await browserRoot.demolishBuildingsUnderFootprint(geometry, options);
         if (appliedBefore.size) {

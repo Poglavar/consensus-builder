@@ -224,6 +224,17 @@
         pool.forEach(feature => {
             if (feature && feature.geometry) buildings.push(feature);
         });
+        // Server stock fetched for THIS scan in bulk (POST /buildings/under), riding alongside the
+        // pool rather than into it: the pool's coverage rectangles promise "everything in this rect
+        // is loaded", and per-footprint results cannot honestly make that promise. Added HERE, not
+        // at the call site, so they pass through applyDemolitionRecordsToBuildingFeatures below —
+        // a building already cut by an earlier road must be scanned as its remainder, wherever it
+        // came from. A building present in both lists is deduped at hit level by its identifier.
+        if (Array.isArray(options.extraPool)) {
+            options.extraPool.forEach(feature => {
+                if (feature && feature.geometry) buildings.push(feature);
+            });
+        }
         if (surveys && surveys.dgu) {
             corridorReferenceLayerFeatures(global.dguBuildingLayer).forEach(feature => buildings.push(feature));
         }
@@ -906,9 +917,15 @@
         const records = [];
         if (!geometry || !geometry.type) return records;
         const regionFeature = { type: 'Feature', properties: {}, geometry };
+        // Bulk-prefetched stock for this region (a replay fetches every member's in one request).
+        // Its presence — even as an empty array, which means "scanned, nothing there" — replaces
+        // the per-region network hop below. Absence means this scan was NOT covered by a bulk
+        // answer and must fetch for itself; the distinction is what keeps a failed prefetch from
+        // silently reading as empty ground.
+        const preloaded = Array.isArray(options.preloadedBuildings) ? options.preloadedBuildings : null;
         // Load footprints for the REGION itself — the pool only covers viewports the user
         // fetched, and a building never loaded can never be detected or demolished.
-        if (typeof global.ensureBuildingFootprintsForBounds === 'function' && global.turf?.bbox) {
+        if (!preloaded && typeof global.ensureBuildingFootprintsForBounds === 'function' && global.turf?.bbox) {
             try {
                 const [west, south, east, north] = global.turf.bbox(regionFeature);
                 await global.ensureBuildingFootprintsForBounds([[south, west], [north, east]]);
@@ -916,7 +933,11 @@
                 console.error('[corridor-tunnel] footprint preload for demolition region failed', error);
             }
         }
-        const hits = findBuildingTunnelIntersections(regionFeature, collectLoadedCorridorBuildings(), global.turf);
+        const hits = findBuildingTunnelIntersections(
+            regionFeature,
+            collectLoadedCorridorBuildings(preloaded ? { extraPool: preloaded } : {}),
+            global.turf
+        );
         for (const hit of hits) {
             const owner = tunnelHitProposalId(hit);
             if (owner) {

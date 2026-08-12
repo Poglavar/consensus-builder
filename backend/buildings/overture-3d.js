@@ -135,5 +135,74 @@ export function createOvertureProvider(pool, cityKey) {
         };
     }
 
-    return { near, footprints };
+    // Buildings TOUCHING each of many regions, in one query — the demolition scan's question,
+    // asked for a whole plan at once.
+    //
+    // NOT the `footprints` filter above: "mostly inside" (>=50%) is right for an urban rule reading
+    // a block's existing stock, and wrong for demolition, where a building overlapped by 2 m2 is
+    // exactly the partial-demolition case the scan exists to find. Here the region IS the proposal
+    // footprint, so any real intersection counts and the client's own clipper decides the rest.
+    //
+    // One request instead of one per proposal: a replay of 300 members used to fetch footprints per
+    // member — hundreds of round trips to answer a question PostGIS can join in one pass.
+    async function footprintsUnder(regions) {
+        const sql = `
+            WITH input AS (
+                -- ST_MakeValid because an authored region is not guaranteed to be OGC-valid — a
+                -- block's buildings often share edges, and a MultiPolygon of edge-touching members
+                -- is invalid. ST_Intersects THROWS on that ("side location conflict"), and one bad
+                -- region among three hundred killed the whole request. Same defence, same reason,
+                -- as /parcels/under.
+                SELECT (value->>'key') AS key,
+                       ST_MakeValid(ST_SetSRID(ST_GeomFromGeoJSON(value->>'geometry'), 4326)) AS g
+                FROM jsonb_array_elements($1::jsonb) AS value
+            )
+            SELECT i.key AS region_key,
+                   b.id AS id,
+                   b.height AS height_m,
+                   b.num_floors,
+                   ST_AsGeoJSON(b.geom, 7)::json AS geometry
+            FROM input i
+            JOIN overture_building_footprint b
+              ON b.geom && i.g
+             AND ST_Intersects(b.geom, i.g)
+            WHERE ($2::text IS NULL OR b.city = $2)
+            LIMIT ${MAX_BUILDINGS + 1}
+        `;
+        // `->>` serialises a jsonb object to text, and ST_GeomFromGeoJSON wants text — so the
+        // geometry rides as a plain object, no double encoding.
+        const payload = JSON.stringify(regions.map(region => ({
+            key: String(region.key),
+            geometry: region.geometry
+        })));
+
+        const { rows, scope } = await queryDownScopeLadder(
+            ladder,
+            async (label) => (await pool.query(sql, [payload, label])).rows,
+            scopeMemo,
+            `footprintsUnder:${cityKey}`
+        );
+        // Over the cap, the response cannot say WHICH region is short, so the whole answer is
+        // unusable for demolition — truncated means "fall back to per-proposal", never "use most
+        // of it". With compact regions (a block's buildings, a park) this does not trigger.
+        const truncated = rows.length > MAX_BUILDINGS;
+        const byKey = new Map(regions.map(region => [String(region.key), []]));
+        if (!truncated) {
+            rows.forEach(row => {
+                const bucket = byKey.get(String(row.region_key));
+                if (!bucket) return;
+                const measured = Number(row.height_m);
+                const floors = Number(row.num_floors);
+                bucket.push({
+                    id: String(row.id),
+                    geometry: row.geometry,
+                    height_m: Number.isFinite(measured) && measured > 0 ? measured : null,
+                    floors: Number.isFinite(floors) && floors > 0 ? floors : null
+                });
+            });
+        }
+        return { regions: byKey, truncated, scope, source: 'overture-footprints' };
+    }
+
+    return { near, footprints, footprintsUnder };
 }

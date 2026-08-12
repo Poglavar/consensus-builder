@@ -310,6 +310,7 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
     const RATE_LIMIT_EXEMPT_POST_PATHS = new Set([
         '/buildings/near',
         '/buildings/footprints',
+        '/buildings/under',
         '/parcels/under'
     ]);
     app.use((req, res, next) => {

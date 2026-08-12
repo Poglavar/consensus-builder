@@ -7,7 +7,81 @@
     function parcelCanvasRenderer() {
         if (_parcelCanvas) return _parcelCanvas;
         if (typeof L === 'undefined' || typeof L.canvas !== 'function') return undefined;
-        _parcelCanvas = L.canvas({ padding: 0.5 });
+
+        // The shared canvas, extended with two things the stock one lacks:
+        //
+        //  * MEASUREMENT. Every repaint through _draw is timed, split into full (moveend/zoom —
+        //    _redrawBounds is null and every in-view path repaints) and partial (adds/styles — only
+        //    the dirtied rect). A node-canvas benchmark put a full repaint of 15k parcel polygons
+        //    at ~200 ms in Cairo, so plausibly 50-100 ms in Chrome — the shape of "pan is not
+        //    supersmooth" — but that is an inference, and mapLoad() now reports the real number.
+        //
+        //  * A HOLD. Adding a layer schedules a repaint per frame, so a multi-batch ingest repaints
+        //    the dirtied region once per batch — during the exact pan that triggered the fetch.
+        //    holdRedraws() keeps EXTENDING the dirty rect but stops scheduling; releaseRedraws()
+        //    schedules the one repaint that covers everything. Deliberately does NOT touch _update:
+        //    moveend/zoom repaints bypass _requestRedraw entirely, so a pan mid-hold still paints.
+        //
+        // Leaflet 1.9.4 internals, feature-checked: the vendored build is pinned, and if any of
+        // these methods vanish in an upgrade the plain canvas is used and only the coalescing is
+        // lost, not rendering.
+        var proto = (L.Canvas && L.Canvas.prototype) || null;
+        var extendable = proto && typeof L.Canvas.extend === 'function'
+            && typeof proto._requestRedraw === 'function'
+            && typeof proto._extendRedrawBounds === 'function'
+            && typeof proto._draw === 'function';
+        if (!extendable) {
+            _parcelCanvas = L.canvas({ padding: 0.5 });
+            return _parcelCanvas;
+        }
+
+        var stats = {
+            fullDraws: 0, fullLastMs: 0, fullMaxMs: 0, fullTotalMs: 0,
+            partialDraws: 0, partialLastMs: 0, partialMaxMs: 0, partialTotalMs: 0,
+            redrawsCoalesced: 0
+        };
+        var nowMs = function () {
+            return (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+        };
+        var ParcelCanvas = L.Canvas.extend({
+            _requestRedraw: function (layer) {
+                if (this._holdDepth) {
+                    if (!this._map) return;
+                    if (layer) this._extendRedrawBounds(layer);
+                    this._heldRedraw = true;
+                    stats.redrawsCoalesced += 1;
+                    return;
+                }
+                return L.Canvas.prototype._requestRedraw.call(this, layer);
+            },
+            _draw: function () {
+                var full = !this._redrawBounds;
+                var started = nowMs();
+                var out = L.Canvas.prototype._draw.call(this);
+                var took = nowMs() - started;
+                if (full) {
+                    stats.fullDraws += 1; stats.fullLastMs = took; stats.fullTotalMs += took;
+                    if (took > stats.fullMaxMs) stats.fullMaxMs = took;
+                } else {
+                    stats.partialDraws += 1; stats.partialLastMs = took; stats.partialTotalMs += took;
+                    if (took > stats.partialMaxMs) stats.partialMaxMs = took;
+                }
+                return out;
+            },
+            holdRedraws: function () { this._holdDepth = (this._holdDepth || 0) + 1; },
+            releaseRedraws: function () {
+                if (this._holdDepth) this._holdDepth -= 1;
+                if (!this._holdDepth && this._heldRedraw) {
+                    this._heldRedraw = false;
+                    if (this._map) {
+                        this._redrawRequest = this._redrawRequest
+                            || L.Util.requestAnimFrame(this._redraw, this);
+                    }
+                }
+            }
+        });
+        _parcelCanvas = new ParcelCanvas({ padding: 0.5 });
+        global.__parcelCanvasStats = stats;
         return _parcelCanvas;
     }
     if (typeof window !== 'undefined') window.parcelCanvasRenderer = parcelCanvasRenderer;
@@ -80,10 +154,7 @@
             global.ensureParcelLayerInitialized();
         }
 
-        var tPrepStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
-
-        var renderableFeatures = [];
-        var idsToReplace = new Set();
+        var totalReplaceIds = 0;
         var hiddenBaseIds = new Set();
         var mapById = (global.parcelLayerById instanceof Map) ? global.parcelLayerById : null;
         var parcelStore = (global.ParcelsState && global.ParcelsState.getParcelCache)
@@ -91,7 +162,12 @@
             : global.parcelCache;
         var skippedExisting = 0;
         var orphanSlicesSkipped = [];
-        convertedFeatures.forEach(function (feature) {
+        // Per feature, called from the BATCHED loop below rather than a whole-list pass. As one
+        // pass this was the `prep` timing: up to ~90 ms of synchronous work on a big cell — a
+        // dropped frame of its own before a single layer was built, during the exact pan that
+        // triggered the fetch. The work is unchanged, feature-for-feature in the same order; only
+        // where the browser gets a frame back moved.
+        var prepFeature = function (feature, renderableFeatures, replaceIds) {
             var parcelId = normalizeFeatureParcelId(feature);
             if (!parcelId) return;
 
@@ -155,7 +231,7 @@
             }
 
             if (shouldReplaceExisting) {
-                idsToReplace.add(parcelId);
+                replaceIds.add(parcelId);
             }
 
             var isMultiPolygon = feature.geometry && feature.geometry.type === 'MultiPolygon';
@@ -170,30 +246,34 @@
             } else {
                 renderableFeatures.push(feature);
             }
-        });
+        };
 
         // Skip logging; best-effort skip of removed ancestors only.
-        if (orphanSlicesSkipped.length) {
-            console.warn('[ingestParcelFeatures] dropped ' + orphanSlicesSkipped.length
-                + ' orphan slice(s) whose minting proposal is not applied', orphanSlicesSkipped);
-        }
+        var reportOrphans = function () {
+            if (orphanSlicesSkipped.length) {
+                console.warn('[ingestParcelFeatures] dropped ' + orphanSlicesSkipped.length
+                    + ' orphan slice(s) whose minting proposal is not applied', orphanSlicesSkipped);
+            }
+        };
 
-        var prepMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tPrepStart;
-
-        var tRemoveStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+        var prepMs = 0;
         var removedExisting = 0;
         var removeMs = 0;
-        if (shouldReplaceExisting && idsToReplace.size > 0) {
+        // Removal of the slice's replaced ancestors, just before the slice's own layers go in —
+        // the same remove-before-add ordering the whole-list version had, held to per slice.
+        var removeReplacedIn = function (sliceIds) {
+            if (!shouldReplaceExisting || !sliceIds.size) return;
+            var tRemoveStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
             if (typeof global.fastRemoveParcelLayersByIds === 'function') {
-                removedExisting = global.fastRemoveParcelLayersByIds(idsToReplace);
+                removedExisting += global.fastRemoveParcelLayersByIds(sliceIds);
             } else if (typeof global.removeParcelLayerById === 'function') {
-                idsToReplace.forEach(function (id) {
+                sliceIds.forEach(function (id) {
                     global.removeParcelLayerById(id, { skipMapScan: true });
                     removedExisting++;
                 });
             }
-            removeMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tRemoveStart;
-        }
+            removeMs += ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tRemoveStart;
+        };
 
         var addedLayers = [];
         var tIngestStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
@@ -232,16 +312,44 @@
             if (layer.options) layer.options.interactive = true;
         };
 
+        var renderer = parcelCanvasRenderer();
+        var canHold = renderer && typeof renderer.holdRedraws === 'function';
+        if (canHold) renderer.holdRedraws();
+        var nowMs = function () {
+            return (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+        };
+        var heldSince = nowMs();
         try {
-            // In BATCHES, with a frame handed back between them.
+            // In BATCHES, with a frame handed back ON THE CLOCK — a batch of simple parcels is
+            // nothing, the same count of complex ones is a frame, and only the clock knows which
+            // this was. Each batch preps ITS features, removes ITS replaced ancestors, then builds
+            // ITS layers: the same work in the same order as the old prep-everything-then-build,
+            // but no phase left as one long synchronous block.
             //
-            // Panning into ground you have not visited lands a fetch of a few thousand parcels, and
-            // building every layer in one go is one long synchronous block — which is exactly when
-            // the drag stutters, and why it stops once an area has been visited and the answer is
-            // cached. Same layers, same order; only the browser's chance to draw is new.
-            var INGEST_BATCH = 250;
-            for (var batchStart = 0; batchStart < renderableFeatures.length; batchStart += INGEST_BATCH) {
-            var featureCollection = { type: 'FeatureCollection', features: renderableFeatures.slice(batchStart, batchStart + INGEST_BATCH) };
+            // The renderer's redraws are HELD for the whole call: every addLayer otherwise
+            // schedules a repaint per frame, so a multi-batch ingest repainted the dirtied region
+            // once per batch — during the exact pan that triggered the fetch. Held, the dirty rect
+            // keeps growing and ONE repaint covers it on release. Pan/zoom repaints bypass the
+            // hold, so the map never freezes mid-drag.
+            var INGEST_BATCH = 120;
+            for (var batchStart = 0; batchStart < convertedFeatures.length; batchStart += INGEST_BATCH) {
+            var renderableFeatures = [];
+            var sliceReplaceIds = new Set();
+            var tPrepSlice = nowMs();
+            for (var f = batchStart; f < Math.min(batchStart + INGEST_BATCH, convertedFeatures.length); f++) {
+                prepFeature(convertedFeatures[f], renderableFeatures, sliceReplaceIds);
+            }
+            prepMs += nowMs() - tPrepSlice;
+            totalReplaceIds += sliceReplaceIds.size;
+            removeReplacedIn(sliceReplaceIds);
+            if (!renderableFeatures.length) {
+                if (nowMs() - heldSince >= 12 && typeof global.yieldToBrowser === 'function') {
+                    await global.yieldToBrowser();
+                    heldSince = nowMs();
+                }
+                continue;
+            }
+            var featureCollection = { type: 'FeatureCollection', features: renderableFeatures };
             var geoJsonLayer = L.geoJSON(featureCollection, {
                 // ONE canvas for every parcel, instead of one SVG <path> each.
                 //
@@ -279,16 +387,27 @@
 
                 addedLayers.push(layer);
             });
-            if (batchStart + INGEST_BATCH < renderableFeatures.length
+            if (nowMs() - heldSince >= 12
+                && batchStart + INGEST_BATCH < convertedFeatures.length
                 && typeof global.yieldToBrowser === 'function') {
                 await global.yieldToBrowser();
+                heldSince = nowMs();
             }
             }
         } catch (error) {
             console.error('[ingestParcelFeatures] Error during bulk add:', error);
+        } finally {
+            // In a finally: a hold left behind would swallow every later add-triggered repaint in
+            // the session, silently — parcels would exist, be clickable, and not paint until the
+            // next pan.
+            if (canHold) renderer.releaseRedraws();
         }
+        reportOrphans();
 
-        var ingestMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tIngestStart;
+        // The loop now interleaves prep, removal and layer-building, so the loop total counts all
+        // three; subtracting the accumulators keeps `ingest` meaning what it always meant — layer
+        // construction alone — and the three figures still sum to the loop.
+        var ingestMs = Math.max(0, (((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tIngestStart) - prepMs - removeMs);
 
         if (addedLayers.length) {
             if (typeof global.addParcelLayerToMapIfAppropriate === 'function') {
@@ -319,7 +438,7 @@
 
         var totalMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tStart;
         if (typeof console !== 'undefined' && console.debug) {
-            console.debug('[ingestParcelFeatures] timings: convert=' + (convertMs.toFixed ? convertMs.toFixed(1) : convertMs) + 'ms, prep=' + (prepMs.toFixed ? prepMs.toFixed(1) : prepMs) + 'ms, removeExisting=' + (removeMs.toFixed ? removeMs.toFixed(1) : removeMs) + 'ms, ingest=' + (ingestMs.toFixed ? ingestMs.toFixed(1) : ingestMs) + 'ms, total=' + (totalMs.toFixed ? totalMs.toFixed(1) : totalMs) + 'ms for ' + convertedFeatures.length + ' features (raw=' + rawFeatures.length + ', addedLayers=' + addedLayers.length + ', idsToReplace=' + idsToReplace.size + ', removedExisting=' + removedExisting + ', skippedExisting=' + skippedExisting + ', replaceExisting=' + shouldReplaceExisting + ')');
+            console.debug('[ingestParcelFeatures] timings: convert=' + (convertMs.toFixed ? convertMs.toFixed(1) : convertMs) + 'ms, prep=' + (prepMs.toFixed ? prepMs.toFixed(1) : prepMs) + 'ms, removeExisting=' + (removeMs.toFixed ? removeMs.toFixed(1) : removeMs) + 'ms, ingest=' + (ingestMs.toFixed ? ingestMs.toFixed(1) : ingestMs) + 'ms, total=' + (totalMs.toFixed ? totalMs.toFixed(1) : totalMs) + 'ms for ' + convertedFeatures.length + ' features (raw=' + rawFeatures.length + ', addedLayers=' + addedLayers.length + ', idsToReplace=' + totalReplaceIds + ', removedExisting=' + removedExisting + ', skippedExisting=' + skippedExisting + ', replaceExisting=' + shouldReplaceExisting + ')');
         }
 
         return addedLayers;

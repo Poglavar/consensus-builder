@@ -364,7 +364,9 @@ async function ensurePublishGroundLoaded(proposal) {
         if (typeof fetchParcelsUnderGeometry !== 'function') return { ok: true };
         const footprint = planOrderApi.footprintOf(proposal);
         if (!footprint || !footprint.geometry) return { ok: true };
-        await fetchParcelsUnderGeometry(footprint);
+        // Ground only — the publish gate measures coverage against the live fabric it loads here,
+        // never against this response.
+        await fetchParcelsUnderGeometry(footprint, { parcelsOnly: true });
         return { ok: true };
     } catch (error) {
         console.warn('[uploadProposalToServer] could not load the ground under this proposal', error);

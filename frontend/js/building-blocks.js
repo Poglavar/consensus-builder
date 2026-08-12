@@ -1528,6 +1528,30 @@ const PROPOSED_BUILDING_STYLE = {
 const INELIGIBLE_PLOT_STYLE = { fillColor: '#b0453a', fillOpacity: 0.14, color: '#b0453a', weight: 1.5, dashArray: '2, 5' };
 const INELIGIBLE_MASS_STYLE = { fillColor: '#8a8f98', fillOpacity: 0.25, color: '#4b5563', weight: 2, dashArray: '6, 4' };
 
+// One canvas for every proposed building, in a pane of its own.
+//
+// These 725+ polygons were the LAST bulk of the map-level SVG: each drawn with the default
+// renderer, so every drag re-composited them and mapLoad kept fingering overlayPane. They are
+// interactive:false decoration — the exact opposite of the corridor hit targets, which need SVG for
+// its per-path pointer events. A pane above the parcels (400) and below the corridor strips (655)
+// keeps today's paint order; pointer-events none keeps the canvas from ever swallowing a click,
+// which is the invariant that put the hit targets back on SVG.
+let _proposedBuildingCanvas = null;
+function proposedBuildingCanvas() {
+    if (_proposedBuildingCanvas) return _proposedBuildingCanvas;
+    if (typeof map === 'undefined' || !map || typeof L === 'undefined' || typeof L.canvas !== 'function') return undefined;
+    try {
+        let pane = map.getPane('proposedBuildingsPane');
+        if (!pane && typeof map.createPane === 'function') pane = map.createPane('proposedBuildingsPane');
+        if (pane && pane.style) {
+            pane.style.zIndex = '645';
+            pane.style.pointerEvents = 'none';
+        }
+        _proposedBuildingCanvas = L.canvas({ pane: 'proposedBuildingsPane', padding: 0.5 });
+    } catch (_) { return undefined; }
+    return _proposedBuildingCanvas;
+}
+
 function ensureProposedBuildingLayer() {
     if (!proposedBuildingLayer) {
         proposedBuildingLayer = L.featureGroup().addTo(map);
@@ -1567,7 +1591,9 @@ function drawProposedBuildingsForProposal(proposalId, { announce = true } = {}) 
             const isPlot = part.properties && part.properties.kind === 'plot';
             L.geoJSON(part, {
                 style: isPlot ? INELIGIBLE_PLOT_STYLE : INELIGIBLE_MASS_STYLE,
-                interactive: false
+                interactive: false,
+                pane: 'proposedBuildingsPane',
+                renderer: proposedBuildingCanvas()
             }).addTo(group);
         } catch (error) {
             console.warn('[buildings] could not draw a non-buildable plot', part?.properties?.parcelId, error);
@@ -1581,7 +1607,12 @@ function drawProposedBuildingsForProposal(proposalId, { announce = true } = {}) 
         if (proposedBuildingKey(building.properties.proposalId) !== id) continue;
         try {
             // Buildings are an overlay on top of parcels; keep parcels clickable.
-            L.geoJSON(building, { style: PROPOSED_BUILDING_STYLE, interactive: false }).addTo(group);
+            L.geoJSON(building, {
+                style: PROPOSED_BUILDING_STYLE,
+                interactive: false,
+                pane: 'proposedBuildingsPane',
+                renderer: proposedBuildingCanvas()
+            }).addTo(group);
         } catch (error) {
             console.error(`Error rendering proposed building at index ${index}:`, error, building);
             // Drop the faulty building so it cannot fail again on every later refresh. Walking

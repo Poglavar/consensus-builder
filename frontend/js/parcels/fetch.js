@@ -866,10 +866,15 @@
             return 'https://api.urbangametheory.xyz';
         })();
 
+        // `parcelsOnly` asks the endpoint to skip the take/coverage arithmetic — the right question
+        // when the caller only needs the ground ON THE MAP (replay, publish preload). The response
+        // then carries no `coverage`, and this returns it as null rather than 0: "not asked" must
+        // never read as "the footprint is uncovered".
+        const parcelsOnly = options.parcelsOnly === true;
         const response = await fetch(`${backendBase}/parcels/under`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-            body: JSON.stringify({ geometry: geom, srid: options.srid || 4326 })
+            body: JSON.stringify({ geometry: geom, srid: options.srid || 4326, ...(parcelsOnly ? { parcelsOnly: true } : {}) })
         });
         if (!response.ok) {
             let detail = '';
@@ -884,7 +889,7 @@
         }
         return {
             ids: features.map(f => f && f.properties && f.properties.parcelId).filter(Boolean),
-            coverage: Number(payload.coverage) || 0,
+            coverage: payload.coverage === undefined ? null : (Number(payload.coverage) || 0),
             count: Number(payload.count) || features.length,
             queryMs: Number(payload.queryMs) || null
         };

@@ -691,17 +691,16 @@ function renderAppliedCorridorHitTargets(strips, proposal, group, definition, se
             try { window.__drillUi?.notifyHover?.(event); } catch (_) { }
         });
     };
-    strips.forEach(strip => {
-        (strip.polygons || []).forEach(polygon => {
-            const hit = L.polygon(polygon, hitOptions)
-                .on('click', event => { rememberSegment(null); forwardAppliedCorridorClick(proposal, event); });
-            attachHitBehaviour(hit);
-            hit.addTo(group);
-        });
-    });
-    // The strips leave gaps (junction fills, verges, rounding); a hit target over the FULL
-    // footprint keeps every click within the corridor on the corridor, instead of falling
-    // through to the parcel underneath.
+    // NO per-strip hit targets. There used to be one per lane polygon — ~2,000 SVG paths across a
+    // plan of 132 corridors, and mapLoad measured them as the bulk of everything left in the SVG
+    // after the parcels moved to canvas. They carried EXACTLY the footprint target's handlers
+    // (rememberSegment(null) + the same forward + the same hover), and the footprint target below
+    // covers at least their ground — it exists because the strips leave gaps. Redundant area,
+    // one-sixth of it, at fifteen paths a corridor. Only the per-SEGMENT targets further down are
+    // behaviourally distinct (they remember WHICH segment), and they stay.
+    //
+    // A hit target over the FULL footprint keeps every click within the corridor on the corridor,
+    // instead of falling through to the parcel underneath.
     if (footprint) {
         try {
             const geometry = footprint.type ? footprint : { type: 'Polygon', coordinates: footprint };

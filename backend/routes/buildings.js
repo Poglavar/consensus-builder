@@ -311,6 +311,61 @@ export function setupBuildingsRoute(app, pool) {
     //     count: N,
     //     source: '<provider id>'
     //   }
+    // POST /buildings/under — buildings touching EACH of many regions, one request for a plan.
+    //
+    // A replay used to ask /buildings/footprints once per proposal: hundreds of round trips, most
+    // of them cold-cache, to answer a question one PostGIS join answers at once. POST because the
+    // regions are geometry (far past any URL), but a pure read — it must stay in
+    // RATE_LIMIT_EXEMPT_POST_PATHS with its siblings.
+    //
+    // Contract the client leans on: EVERY requested key appears in the response, an empty array
+    // meaning "scanned, nothing there" — absence of a key is the only thing that may mean "not
+    // covered". `truncated: true` voids the whole answer (the cap cannot say which region is
+    // short), and the client falls back to per-proposal fetching rather than under-demolishing.
+    app.post('/buildings/under', async (req, res) => {
+        try {
+            const body = req.body || {};
+            const regions = Array.isArray(body.regions) ? body.regions : null;
+            const city = typeof body.city === 'string' ? body.city : undefined;
+            if (!regions || !regions.length) {
+                return res.status(400).json({ error: 'regions must be a non-empty array of { key, geometry }.' });
+            }
+            if (regions.length > 400) {
+                return res.status(400).json({ error: 'regions is capped at 400 per request.' });
+            }
+            const seen = new Set();
+            for (const region of regions) {
+                const key = region && region.key !== undefined && region.key !== null ? String(region.key) : '';
+                if (!key) return res.status(400).json({ error: 'Every region needs a key.' });
+                if (seen.has(key)) return res.status(400).json({ error: `Duplicate region key: ${key}` });
+                seen.add(key);
+                const geometry = region.geometry;
+                const kind = geometry && typeof geometry === 'object' ? geometry.type : null;
+                if ((kind !== 'Polygon' && kind !== 'MultiPolygon') || !Array.isArray(geometry.coordinates)) {
+                    return res.status(400).json({ error: `Region ${key}: geometry must be a Polygon or MultiPolygon.` });
+                }
+            }
+
+            const provider = buildingProviders.resolveExact(city);
+            if (!provider || typeof provider.footprintsUnder !== 'function') {
+                return res.json({ supported: false, regions: {}, truncated: false, source: null });
+            }
+            const result = await provider.footprintsUnder(regions);
+            const out = {};
+            result.regions.forEach((buildings, key) => { out[key] = buildings; });
+            res.json({
+                supported: true,
+                regions: out,
+                truncated: result.truncated === true,
+                scope: result.scope === undefined ? null : result.scope,
+                source: result.source
+            });
+        } catch (err) {
+            console.error('Error in POST /buildings/under:', err);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
     app.post('/buildings/footprints', async (req, res) => {
         try {
             const body = req.body || {};

@@ -642,7 +642,7 @@ const FOOTPRINT_SUBDIVIDE_VERTICES = 32;
 const MAX_PARCELS_UNDER = 5000;
 
 export function setupParcelsRoute(app, pool) {
-    // POST /parcels/under  { geometry: <GeoJSON Polygon|MultiPolygon>, srid?: 4326 }
+    // POST /parcels/under  { geometry: <GeoJSON Polygon|MultiPolygon>, srid?: 4326, parcelsOnly?: bool }
     //
     // The parcels a footprint actually covers, and how much of that footprint they account for.
     // Everything else here answers "what is near this point / in this box / at these ids"; nothing
@@ -652,6 +652,15 @@ export function setupParcelsRoute(app, pool) {
     // Coverage comes back with the parcels because it is the same question: a caller that has to
     // compute it separately, over whatever it happens to have loaded, gets a different answer than
     // the database would give — and then has to decide which to believe.
+    //
+    // `parcelsOnly: true` answers only "which parcels" and skips the take/coverage arithmetic.
+    // That arithmetic — two exact ST_Intersection passes per parcel against the raw input — was
+    // measured as the bulk of a replay's ground load (28.9 s of SQL for 15 requests), computing
+    // numbers the replay never reads. Worse: the replay batches ~20 unrelated footprints into one
+    // MultiPolygon, so `taken_m2`/`coverage` would describe the union of strangers — expensive AND
+    // meaningless. The lean answer has no `taken_m2` to filter on, so unlike the full mode it also
+    // returns parcels that merely share an edge with the footprint; for ground-loading a small
+    // superset is harmless (the client's own derivation decides what is actually taken).
     app.post('/parcels/under', async (req, res) => {
         try {
             const body = req.body || {};
@@ -663,6 +672,7 @@ export function setupParcelsRoute(app, pool) {
                 return res.status(400).json({ error: `Unsupported geometry type ${geometry.type}; expected Polygon or MultiPolygon.` });
             }
             const srid = Number.isFinite(Number(body.srid)) ? Number(body.srid) : 4326;
+            const parcelsOnly = body.parcelsOnly === true;
 
             // ST_MakeValid because an authored footprint is not guaranteed to be OGC-valid, and an
             // invalid geometry makes ST_Subdivide throw rather than return fewer parcels.
@@ -742,6 +752,65 @@ export function setupParcelsRoute(app, pool) {
                 return res.status(413).json({
                     error: `The geometry covers ${counted} parcels, over the ${MAX_PARCELS_UNDER} limit.`,
                     count: counted
+                });
+            }
+
+            if (parcelsOnly) {
+                // The same hit-test as the full mode, then plain rows: no per-parcel intersection,
+                // no coverage union, no footprint area — and no `coverage`/`footprintM2` in the
+                // response, so a caller cannot mistake "not asked" for "zero".
+                const parcelsOnlySql = `
+                    WITH input AS (
+                        SELECT ST_MakeValid(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON($1::text), $2::int), 3765)) AS g
+                    ),
+                    parts AS (
+                        SELECT ST_Subdivide(g, ${FOOTPRINT_SUBDIVIDE_VERTICES}) AS part FROM input
+                    ),
+                    hit AS (
+                        SELECT DISTINCT p.cestica_id
+                        FROM parcel p, parts
+                        WHERE p.current = true
+                          AND p.geom && parts.part
+                          AND ST_Intersects(p.geom, parts.part)
+                    )
+                    SELECT
+                        p.cestica_id,
+                        p.broj_cestice,
+                        p.maticni_broj_ko,
+                        'HR-' || p.maticni_broj_ko || '-' || p.broj_cestice AS parcelid,
+                        ST_AsGeoJSON(ST_Transform(p.geom, 4326))::json AS geometry,
+                        ST_Area(ST_Transform(p.geom, 4326)::geography) AS calculated_area,
+                        pd.details AS ownership_details
+                    FROM parcel p
+                    JOIN hit ON hit.cestica_id = p.cestica_id
+                    LEFT JOIN LATERAL (
+                        SELECT pi.details
+                        FROM parcel_info pi
+                        WHERE pi.maticni_broj_ko = p.maticni_broj_ko
+                          AND pi.broj_cestice = p.broj_cestice
+                          AND pi.details IS NOT NULL
+                        ORDER BY pi.version DESC
+                        LIMIT 1
+                    ) pd ON TRUE
+                `;
+                const leanResult = await pool.query(parcelsOnlySql, [JSON.stringify(geometry), srid]);
+                const leanFeatures = leanResult.rows.map(r => ({
+                    type: 'Feature',
+                    geometry: r.geometry,
+                    properties: {
+                        CESTICA_ID: r.cestica_id,
+                        BROJ_CESTICE: r.broj_cestice,
+                        MATICNI_BROJ_KO: r.maticni_broj_ko,
+                        parcelId: r.parcelid,
+                        calculated_area: r.calculated_area,
+                        ...extractOwnershipPropsFromRow({ ownership_details: r.ownership_details })
+                    }
+                }));
+                return res.json({
+                    type: 'FeatureCollection',
+                    features: leanFeatures,
+                    count: leanFeatures.length,
+                    queryMs: Date.now() - started
                 });
             }
 

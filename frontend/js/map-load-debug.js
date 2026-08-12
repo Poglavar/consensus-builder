@@ -86,22 +86,24 @@
                 if (props) {
                     census.withFeature += 1;
                     const id = props.parcelId ?? props.id ?? null;
-                    // A massing polygon is the PROPOSED BUILDING drawn over a parcel, and it carries
-                    // that parcel's id so it can be found again. It is a different thing standing on
-                    // the same ground, not a second copy of the parcel — counting it as a duplicate
-                    // reported 739 "extra layers rendered for nothing" that were in fact the entire
-                    // visible product of the plan. Anything that is not ground is not a duplicate of
-                    // ground.
-                    const isGround = !props.kind || props.kind === 'remainder' || props.kind === 'piece';
-                    if (id !== null && id !== undefined && isGround) {
+                    if (id !== null && id !== undefined) {
                         const key = String(id);
-                        ids.set(key, (ids.get(key) || 0) + 1);
-                        if (!homes.has(key)) homes.set(key, []);
-                        homes.get(key).push(homeOf(layer));
+                        // GROUND = registered in the parcel system: a member of parcelLayer, or the
+                        // layer the id index points at. Judging by PROPERTY SHAPE was tried twice
+                        // and convicted decoration twice — first massing polygons (kind stamped),
+                        // then the same buildings without a kind. Decoration legitimately borrows
+                        // the parcel id of the ground it stands on; only a second REGISTERED layer
+                        // is a copy of the parcel.
                         const inGroup = !!(global.parcelLayer && global.parcelLayer.hasLayer(layer));
                         const indexed = (global.parcelLayerById instanceof Map)
                             && global.parcelLayerById.get(key) === layer;
-                        if (!inGroup && !indexed) orphans.set(key, layer);
+                        if (!inGroup && !indexed) return;
+                        ids.set(key, (ids.get(key) || 0) + 1);
+                        if (!homes.has(key)) homes.set(key, []);
+                        homes.get(key).push(homeOf(layer));
+                        // Indexed but NOT in the group: registered ground the map is not showing —
+                        // a real registration anomaly, named by its properties.
+                        if (!inGroup && indexed) orphans.set(key, layer);
                     }
                 }
             });
@@ -191,9 +193,11 @@
             notes.push(`${report.perFramePanHandlers} handler(s) on move/drag run on EVERY FRAME of a pan.`);
         }
         if (census.duplicateIdCount) {
-            notes.push(`${census.duplicateIdCount} PARCEL id(s) drawn more than once = ${census.duplicateLayerCount} `
-                + 'extra layer(s) rendered and hit-tested for nothing (proposed buildings are not counted: '
-                + 'they carry a parcel id but are not a copy of it). duplicateIds shows the worst 20, '
+            notes.push(`${census.duplicateIdCount} PARCEL id(s) registered more than once = ${census.duplicateLayerCount} `
+                + 'extra layer(s) rendered and hit-tested for nothing. Counted among layers the parcel '
+                + 'system itself registers (parcelLayer members or the id-index target) — decoration that '
+                + 'borrows a parcel id, like a proposed building over its plot, is not a copy of the '
+                + 'parcel. duplicateIds shows the worst 20, '
                 + 'with orphanProps naming what made the copy nothing can find.');
         }
         if (census.interactive > 3000) {
@@ -201,6 +205,17 @@
         }
         report.notes = notes;
 
+        // What the parcel canvas has been costing. `full` repaints are moveend/zoom — every
+        // in-view path repainted; that number IS the end-of-pan hitch when it is big. `partial`
+        // are add/style repaints; `coalesced` is how many the ingest hold absorbed.
+        const canvasStats = global.__parcelCanvasStats || null;
+        if (canvasStats) {
+            report.parcelCanvas = { ...canvasStats };
+            console.log(`[mapLoad] parcel canvas: full repaints ${canvasStats.fullDraws}`
+                + ` (last ${Math.round(canvasStats.fullLastMs)} ms, worst ${Math.round(canvasStats.fullMaxMs)} ms)`
+                + ` · partial ${canvasStats.partialDraws} (worst ${Math.round(canvasStats.partialMaxMs)} ms)`
+                + ` · ${canvasStats.redrawsCoalesced} coalesced under holds`);
+        }
         console.log(`[mapLoad] ${report.renderer} · ${svgPaths} paths · ${markers} markers · `
             + `${census.total} layers (${census.interactive} interactive)`, report);
         // Which pane holds the paths decides what to move next; a total says only that something must.

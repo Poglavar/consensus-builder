@@ -239,11 +239,16 @@
      * @param {string} parcelId  Its cadastral id — the stem of every piece id.
      * @param {Array<{id: string, geometry: object}>} takes  Applied road/track footprints. Any that
      *        does not reach this parcel is ignored, so callers may pass the whole plan.
+     * @param {Array<{take: object, hit: object}>} [precomputedHits]  The output of
+     *        takeHitsOn(parcel, takes), when the caller already computed it to decide this parcel
+     *        was worth arranging. When given, `takes` is not consulted at all — the hits ARE the
+     *        takes that matter, and recomputing them here is the doubled work this parameter exists
+     *        to remove.
      * @returns {{pieces: Array, takersUsed: Array<string>}} `pieces` are `{ id, parcelId, kind,
      *        geometry, takers, areaM2 }`, ordered largest first. An untouched parcel comes back as a
      *        single piece carrying its OWN cadastral id: nothing took it, so it is still itself.
      */
-    function arrangementOf(parcel, parcelId, takes) {
+    function arrangementOf(parcel, parcelId, takes, precomputedHits) {
         const t = T();
         if (!t) throw new Error('parcel-arrangement: turf is unavailable');
         const parcelFeature = featureOf(parcel);
@@ -251,11 +256,9 @@
         const id = String(parcelId || '');
         if (!id) throw new Error('parcel-arrangement: a cadastral parcel id is required');
 
-        const relevant = (Array.isArray(takes) ? takes : [])
-            .map(take => (take && take.geometry) ? { id: String(take.id || ''), feature: featureOf(take.geometry) } : null)
-            .filter(take => take && take.feature && !boxesDisjoint(t, parcelFeature, take.feature));
+        const hits = Array.isArray(precomputedHits) ? precomputedHits : takeHitsOn(parcelFeature, takes);
 
-        if (!relevant.length) {
+        if (!hits.length) {
             return {
                 pieces: [{
                     id,
@@ -274,28 +277,11 @@
         let taken = null;
         const takersUsed = [];
         const takenParts = [];
-        relevant.forEach(take => {
-            let hit = null;
-            try { hit = clip('intersect', parcelFeature, take.feature); } catch (_) { hit = null; }
-            if (!hit || !(t.area(hit) > MIN_PIECE_M2)) return;
-            takersUsed.push(take.id);
-            takenParts.push(hit);
-            taken = taken ? (clip('union', taken, hit) || taken) : hit;
+        hits.forEach(entry => {
+            takersUsed.push(String(entry.take.id || ''));
+            takenParts.push(entry.hit);
+            taken = taken ? (clip('union', taken, entry.hit) || taken) : entry.hit;
         });
-
-        if (!taken) {
-            return {
-                pieces: [{
-                    id,
-                    parcelId: id,
-                    kind: 'remainder',
-                    geometry: parcelFeature.geometry,
-                    takers: [],
-                    areaM2: t.area(parcelFeature)
-                }],
-                takersUsed: []
-            };
-        }
 
         // Subtract the takes ONE AT A TIME rather than subtracting their union in a single call.
         // P \ (A ∪ B) is the same set as (P \ A) \ B, but the union of several corridors over a
@@ -320,14 +306,19 @@
             const pid = pieceId(id, kind, feature.geometry);
             if (!pid) return;
             const takers = kind === 'road'
-                ? relevant
-                    .filter(take => {
+                ? hits
+                    .filter(entry => {
                         try {
-                            const hit = clip('intersect', feature, take.feature);
-                            return !!hit && t.area(hit) > MIN_PIECE_M2;
+                            // A road piece is inside the parcel, so intersecting it with the
+                            // take's HIT (take ∩ parcel) answers the same membership question as
+                            // the take's whole footprint — against a handful of vertices instead
+                            // of a kilometres-long ribbon. A take whose hit was below MIN can
+                            // never claim a piece: the piece's overlap is a subset of the hit.
+                            const overlap = clip('intersect', feature, entry.hit);
+                            return !!overlap && t.area(overlap) > MIN_PIECE_M2;
                         } catch (_) { return false; }
                     })
-                    .map(take => take.id)
+                    .map(entry => String(entry.take.id || ''))
                     .sort()
                 : [];
             pieces.push({ id: pid, parcelId: id, kind, geometry: feature.geometry, takers, areaM2 });
@@ -363,7 +354,21 @@
         return box;
     }
 
-    function takesOverlapping(parcel, takes) {
+    /**
+     * The takes that reach this parcel, each paired with the exact piece of the parcel it takes.
+     *
+     * This is THE overlap test and THE overlap geometry, computed once. The whole-plan derivation
+     * used to ask twice — takesOverlapping to decide a parcel was worth arranging, then
+     * arrangementOf recomputing the same intersections to arrange it — which doubled the dominant
+     * cost of a replay (~12 s of turf clipping over 1,087 parcels × 132 corridors, half of it
+     * repeats). A caller that filters first hands the result to arrangementOf/fabricOver instead.
+     * clip() snaps both operands the same way on every call, so a handed-in hit is byte-identical
+     * to a recomputed one — reuse cannot change a piece id.
+     *
+     * @returns {Array<{take: object, hit: object}>} the caller's take objects, with the clipped
+     *          intersection feature of each; only takes whose overlap clears MIN_PIECE_M2 appear.
+     */
+    function takeHitsOn(parcel, takes) {
         const t = T();
         if (!t) return [];
         const parcelFeature = featureOf(parcel);
@@ -371,19 +376,25 @@
         // The parcel's box once per call rather than once per take.
         let parcelBox = null;
         try { parcelBox = t.bbox(parcelFeature); } catch (_) { parcelBox = null; }
-        return (Array.isArray(takes) ? takes : []).filter(take => {
-            if (!take || !take.geometry) return false;
+        const hits = [];
+        (Array.isArray(takes) ? takes : []).forEach(take => {
+            if (!take || !take.geometry) return;
             const takeBox = boxOf(t, take.geometry);
             if (parcelBox && takeBox
                 && (parcelBox[0] > takeBox[2] || takeBox[0] > parcelBox[2]
-                    || parcelBox[1] > takeBox[3] || takeBox[1] > parcelBox[3])) return false;
+                    || parcelBox[1] > takeBox[3] || takeBox[1] > parcelBox[3])) return;
             const feature = featureOf(take.geometry);
-            if (!parcelBox && boxesDisjoint(t, parcelFeature, feature)) return false;
+            if (!parcelBox && boxesDisjoint(t, parcelFeature, feature)) return;
             try {
                 const hit = clip('intersect', parcelFeature, feature);
-                return !!hit && t.area(hit) > MIN_PIECE_M2;
-            } catch (_) { return false; }
+                if (hit && t.area(hit) > MIN_PIECE_M2) hits.push({ take, hit });
+            } catch (_) { /* an unclippable take cannot reach this parcel */ }
         });
+        return hits;
+    }
+
+    function takesOverlapping(parcel, takes) {
+        return takeHitsOn(parcel, takes).map(entry => entry.take);
     }
 
     /**
@@ -393,15 +404,20 @@
      *
      * @param {Array<{id: string, feature: object}>} parcels  cadastral parcels to arrange.
      * @param {Array<{id: string, geometry: object}>} takes   every applied corridor.
+     * @param {Map<string, Array>} [hitsById]  takeHitsOn output per parcel id, for callers that
+     *        already filtered these parcels through it. A parcel with no entry computes its own.
      * @returns {{pieces: Array, failed: Array<{parcelId: string, error: string}>}}
      */
-    function fabricOver(parcels, takes) {
+    function fabricOver(parcels, takes, hitsById) {
         const pieces = [];
         const failed = [];
         (Array.isArray(parcels) ? parcels : []).forEach(entry => {
             if (!entry || !entry.feature || !entry.id) return;
             try {
-                pieces.push(...arrangementOf(entry.feature, entry.id, takes).pieces);
+                const precomputed = (hitsById && typeof hitsById.get === 'function')
+                    ? hitsById.get(String(entry.id))
+                    : undefined;
+                pieces.push(...arrangementOf(entry.feature, entry.id, takes, precomputed).pieces);
             } catch (error) {
                 // One unusable parcel is recorded and skipped; it must not void the rest of the map.
                 failed.push({ parcelId: String(entry.id), error: String(error && error.message || error) });
@@ -500,6 +516,7 @@
         diffPieces,
         featureForPiece,
         takesOverlapping,
+        takeHitsOn,
         pieceId,
         isPieceId,
         canonicalPolygon,

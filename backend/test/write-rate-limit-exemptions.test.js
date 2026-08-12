@@ -62,6 +62,16 @@ describe('read-only POSTs are not rationed as writes', () => {
         expect(served(codes)).toBe(WRITE_LIMIT + 5);
     }, 30000);
 
+    it('serves /buildings/under past it — one refused bulk scan would starve a whole replay', async () => {
+        // The bulk endpoint replaces hundreds of per-proposal footprint fetches with one request.
+        // Rationing it as a write would refuse the one request that matters, and the client would
+        // fall back to the hundreds it was built to avoid.
+        const geometry = { type: 'Polygon', coordinates: [[[15.9, 43.73], [15.91, 43.73], [15.91, 43.74], [15.9, 43.73]]] };
+        const codes = await hammer(app(), '/buildings/under', { regions: [{ key: 'a', geometry }], city: 'sibenik' }, WRITE_LIMIT + 5);
+        expect(codes).not.toContain(429);
+        expect(served(codes)).toBe(WRITE_LIMIT + 5);
+    }, 30000);
+
     it('serves /buildings/footprints past it, because a demolition scan asks once per proposal', async () => {
         // Applying a building proposal scans for the buildings it would demolish, and that scan
         // fetches footprints. A batch of a hundred block rules therefore spends a hundred of the

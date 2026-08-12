@@ -66,6 +66,10 @@ describe('ProposalManager._rebuildPass — ordered standing prefix', () => {
                 return true;
             }),
             _loadReplayGround: ProposalManager._loadReplayGround,
+            // The bulk demolition prefetch runs beside the ground load. Real method, like the
+            // others: with no fetch and no __demolitionPrefetch in this harness it collects
+            // nothing and returns — the fold under test is untouched.
+            _prefetchDemolitionBuildings: ProposalManager._prefetchDemolitionBuildings,
             _replayGroundFetched: new Set(),
             // The corridor half of the derivation. These proposals carry no road geometry, so
             // there are no takes and the fabric step is a no-op — the fold is what is under test.
@@ -115,6 +119,10 @@ describe('ProposalManager._rebuildPass — ordered standing prefix', () => {
                 return true;
             }),
             _loadReplayGround: ProposalManager._loadReplayGround,
+            // The bulk demolition prefetch runs beside the ground load. Real method, like the
+            // others: with no fetch and no __demolitionPrefetch in this harness it collects
+            // nothing and returns — the fold under test is untouched.
+            _prefetchDemolitionBuildings: ProposalManager._prefetchDemolitionBuildings,
             _replayGroundFetched: new Set(),
             // The corridor half of the derivation. These proposals carry no road geometry, so
             // there are no takes and the fabric step is a no-op — the fold is what is under test.

@@ -282,6 +282,101 @@ describe('takesOverlapping', () => {
     });
 });
 
+describe('takeHitsOn: the overlap test that keeps its answer', () => {
+    // The whole-plan derivation used to run every (parcel × take) exact intersection twice: once in
+    // takesOverlapping to decide the parcel mattered, then again inside arrangementOf to arrange it.
+    // takeHitsOn is the single computation; these tests pin that handing its result in changes
+    // NOTHING about the answer and genuinely skips the second round of clipping.
+
+    it('pairs each reaching take with the exact piece it takes', () => {
+        const far = { id: 'far', geometry: box(16.5, 46.5, 16.51, 46.51).geometry };
+        const hits = arrangement.takeHitsOn(PARCEL, [EAST_WEST, far, NORTH_SOUTH]);
+        expect(hits.map(entry => entry.take.id)).toEqual(['road-a', 'road-b']);
+        hits.forEach(entry => {
+            expect(entry.hit && entry.hit.geometry && entry.hit.geometry.type).toMatch(/Polygon/);
+            expect(turf.area(entry.hit)).toBeGreaterThan(arrangement.MIN_PIECE_M2);
+        });
+    });
+
+    it('drops a sliver overlap exactly as the arrangement itself would', () => {
+        const sliver = { id: 'sliver', geometry: box(16.00099999, 46.0000, 16.0010, 46.0010).geometry };
+        expect(arrangement.takeHitsOn(PARCEL, [sliver])).toEqual([]);
+    });
+
+    it('precomputed hits give the byte-identical arrangement', () => {
+        const fresh = arrangement.arrangementOf(PARCEL, PARCEL_ID, [EAST_WEST, NORTH_SOUTH]);
+        const handed = arrangement.arrangementOf(
+            PARCEL, PARCEL_ID, [EAST_WEST, NORTH_SOUTH],
+            arrangement.takeHitsOn(PARCEL, [EAST_WEST, NORTH_SOUTH]));
+        // Same ids means same geometry: a piece id is a content address of its outline.
+        expect(handed.pieces.map(p => ({ id: p.id, kind: p.kind, takers: p.takers })))
+            .toEqual(fresh.pieces.map(p => ({ id: p.id, kind: p.kind, takers: p.takers })));
+        expect(handed.takersUsed).toEqual(fresh.takersUsed);
+    });
+
+    it('handing hits in actually skips the recompute — fewer exact intersections run', () => {
+        // Counted through the real clipper: T() resolves the turf GLOBAL on every clip, so a
+        // counting wrapper sees exactly the intersect calls the arrangement makes. If someone
+        // "simplifies" arrangementOf back to recomputing, the counts equalise and this fails.
+        const plain = globalThis.turf;
+        const counted = () => {
+            let intersects = 0;
+            globalThis.turf = new Proxy(plain, {
+                get(target, prop) {
+                    if (prop === 'intersect') {
+                        return (...args) => { intersects += 1; return target.intersect(...args); };
+                    }
+                    return target[prop];
+                }
+            });
+            return () => { globalThis.turf = plain; return intersects; };
+        };
+
+        let stop = counted();
+        const hits = arrangement.takeHitsOn(PARCEL, [EAST_WEST, NORTH_SOUTH]);
+        arrangement.arrangementOf(PARCEL, PARCEL_ID, [EAST_WEST, NORTH_SOUTH], hits);
+        const withHandover = stop();
+
+        stop = counted();
+        arrangement.takeHitsOn(PARCEL, [EAST_WEST, NORTH_SOUTH]);
+        arrangement.arrangementOf(PARCEL, PARCEL_ID, [EAST_WEST, NORTH_SOUTH]);
+        const withRecompute = stop();
+
+        expect(withHandover).toBeLessThan(withRecompute);
+    });
+
+    it('fabricOver passes a hits map through to the arrangement', () => {
+        const plain = globalThis.turf;
+        let intersects = 0;
+        globalThis.turf = new Proxy(plain, {
+            get(target, prop) {
+                if (prop === 'intersect') {
+                    return (...args) => { intersects += 1; return target.intersect(...args); };
+                }
+                return target[prop];
+            }
+        });
+        try {
+            const takes = [EAST_WEST, NORTH_SOUTH];
+            const parcels = [{ id: PARCEL_ID, feature: PARCEL }];
+
+            const bare = arrangement.fabricOver(parcels, takes);
+            const bareCount = intersects;
+
+            intersects = 0;
+            const hitsById = new Map([[PARCEL_ID, arrangement.takeHitsOn(PARCEL, takes)]]);
+            const filterCost = intersects;
+            const handed = arrangement.fabricOver(parcels, takes, hitsById);
+            const handedCount = intersects - filterCost;
+
+            expect(handed.pieces.map(p => p.id).sort()).toEqual(bare.pieces.map(p => p.id).sort());
+            expect(handedCount).toBeLessThan(bareCount);
+        } finally {
+            globalThis.turf = plain;
+        }
+    });
+});
+
 describe('the fabric over many parcels', () => {
     const NEIGHBOUR = box(16.0010, 46.0000, 16.0020, 46.0010);
     const parcels = [
