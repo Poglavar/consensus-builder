@@ -64,7 +64,9 @@ Solve lane-topology junctions in bulk with a CLI model.
   --min-span M            Smallest junction crop (default ${DEFAULTS.minSpanM} m).
   --min-arms N            Skip junctions with fewer arms (default ${DEFAULTS.minArms}).
   --max-lanes N           Skip junctions with more lanes meeting them — a cost guard.
-  --order size|spatial    Most lanes first, or nearest the centre (default ${DEFAULTS.order}).
+  --order size|spatial|finish
+                          Most lanes first, nearest the centre, or the tiles closest to being
+                          finished first — whole tiles at a time, so a run completes them.
   --limit N               Stop after N junctions this run.
   --concurrency N         Junctions in flight at once (default ${DEFAULTS.concurrency}).
   --redo                  Re-run junctions this model already solved.
@@ -220,7 +222,13 @@ async function junctionsInArea(base, args) {
         });
         const { junctions, stats } = LaneTopologyJunctions.deriveJunctions(graph);
         const mine = junctions.filter(junction => insideCore(junction.point, tile.core));
-        mine.forEach(junction => { if (!found.has(junction.key)) found.set(junction.key, junction); });
+        mine.forEach(junction => {
+            if (found.has(junction.key)) return;
+            // Which tile owns it, so a run can be asked to FINISH tiles rather than to chew the
+            // biggest junctions. A tile is what the coverage map draws, so completing one is the
+            // unit of visible progress.
+            found.set(junction.key, { ...junction, tileKey: `${tile.row},${tile.column}` });
+        });
         log(`tile ${index + 1}/${tiles.length}: ${evidence.features?.length ?? '?'} ways, `
             + `${stats.junctions} junctions, ${mine.length} in core`
             + (evidence.truncated ? ' — EVIDENCE TRUNCATED, tile is too big' : ''));
@@ -228,7 +236,27 @@ async function junctionsInArea(base, args) {
     return [...found.values()];
 }
 
+// How many junctions each tile still has open, keyed by tile.
+function openPerTile(junctions) {
+    const counts = new Map();
+    junctions.forEach(junction => {
+        counts.set(junction.tileKey, (counts.get(junction.tileKey) || 0) + 1);
+    });
+    return counts;
+}
+
 function orderJunctions(junctions, args) {
+    if (args.order === 'finish') {
+        // Nearly-done tiles first. Completing a tile is worth more than shaving the largest
+        // junction in a tile that will still be half open afterwards: it is what the coverage map
+        // shows, and one decision can take a 109-junction tile from 99% to done.
+        const counts = openPerTile(junctions);
+        return junctions.slice().sort((a, b) =>
+            (counts.get(a.tileKey) - counts.get(b.tileKey))
+            || String(a.tileKey).localeCompare(String(b.tileKey))
+            || (b.laneCount - a.laneCount)
+            || a.key.localeCompare(b.key, undefined, { numeric: true }));
+    }
     if (args.order === 'spatial') {
         const [west, south, east, north] = args.bbox;
         const centerLng = (west + east) / 2;
@@ -435,17 +463,51 @@ async function main() {
 
     const queue = [];
     let alreadyDone = 0;
+    let completedTiles = 0;
+    // In `finish` mode the limit is applied per TILE, not per junction: half a tile completes
+    // nothing, so a tile that will not fit in what is left of the budget is skipped in favour of a
+    // smaller one. Every other mode keeps the plain per-junction limit.
+    const byTile = new Map();
     for (const junction of junctions) {
-        const bbox = junctionBbox(junction, args.padM, args.minSpanM);
-        if (!bbox) continue;
-        if (!args.redo) {
-            const existing = await existingSolution(base, args, bbox);
-            if (existing) { alreadyDone += 1; continue; }
+        const key = args.order === 'finish' ? junction.tileKey : '';
+        if (!byTile.has(key)) byTile.set(key, []);
+        byTile.get(key).push(junction);
+    }
+
+    for (const [tileKey, group] of byTile) {
+        const candidates = [];
+        for (const junction of group) {
+            const bbox = junctionBbox(junction, args.padM, args.minSpanM);
+            if (!bbox) continue;
+            if (!args.redo) {
+                const existing = await existingSolution(base, args, bbox);
+                if (existing) { alreadyDone += 1; continue; }
+            }
+            candidates.push({ junction, bbox });
+            // Outside `finish` mode this is the old behaviour exactly: stop at the limit.
+            if (args.order !== 'finish' && args.limit && queue.length + candidates.length >= args.limit) break;
         }
-        queue.push({ junction, bbox });
+        if (!candidates.length) {
+            // Every junction in it was already solved: the tile is finished, just not by this run.
+            if (args.order === 'finish' && tileKey) completedTiles += 0;
+            continue;
+        }
+        if (args.order === 'finish' && args.limit) {
+            const room = args.limit - queue.length;
+            if (candidates.length > room) {
+                // Never start a tile this run cannot finish — unless nothing has been queued at
+                // all, in which case a partial tile beats an empty run.
+                if (queue.length) continue;
+                queue.push(...candidates.slice(0, room));
+                break;
+            }
+            completedTiles += 1;
+        }
+        queue.push(...candidates);
         if (args.limit && queue.length >= args.limit) break;
     }
-    log(`${queue.length} to run, ${alreadyDone} already solved by ${args.provider}/${args.model}`);
+    log(`${queue.length} to run, ${alreadyDone} already solved by ${args.provider}/${args.model}`
+        + (args.order === 'finish' ? `; they finish ${completedTiles} tile${completedTiles === 1 ? '' : 's'}` : ''));
 
     if (args.dryRun) {
         queue.slice(0, 20).forEach(({ junction, bbox }) => {
