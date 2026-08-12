@@ -304,6 +304,21 @@ describe('lane-topology manager API', () => {
         expect(pool.calls).toHaveLength(0);
     });
 
+    // A blank crop is worse than a missing one: the WMS answers 200 with solid white outside its
+    // extent, and a recognition run handed that would describe an empty photograph rather than
+    // refuse it.
+    it('refuses an orthophoto crop outside the source coverage rather than serving white', async () => {
+        const outside = await request(app)
+            .get('/lane-topology/imagery/crop?bbox=15.7519,45.6730,15.7539,45.6745')
+            .expect(404);
+        expect(outside.body.error).toContain('no imagery here');
+
+        const spec = await request(app)
+            .get('/lane-topology/imagery/crop-spec?bbox=15.7519,45.6730,15.7539,45.6745')
+            .expect(404);
+        expect(spec.body.error).toContain('no imagery here');
+    });
+
     // The page cap used to be silent: asking for 500 returned the newest 100 and said nothing, so
     // the coverage map and the worklist both counted 6 already-adjudicated solutions as open work.
     describe('solution list paging', () => {

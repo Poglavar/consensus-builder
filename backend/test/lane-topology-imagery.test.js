@@ -3,6 +3,7 @@ import {
     LANE_IMAGERY_SOURCES,
     fetchImageryCrop,
     imageryCropSpec,
+    withinImageryCoverage,
     publicImagerySource,
     resolveImagerySource
 } from '../lane-topology/imagery.js';
@@ -73,5 +74,33 @@ describe('lane topology orthophoto evidence', () => {
                 })
             }
         )).rejects.toThrow('text/xml');
+    });
+
+    // Outside its extent this WMS answers 200 with a SOLID WHITE image — not an error, not
+    // transparency. As a map layer that blanks the screen with no explanation; as model input it is
+    // a blank photograph that a recognition run would confidently describe. The point that found
+    // it was 900 m west of the western edge, near Jastrebarsko.
+    describe('coverage', () => {
+        const source = LANE_IMAGERY_SOURCES.zagreb_cdof_2022;
+
+        it('carries the extent the server itself declares', () => {
+            // From the WMS GetCapabilities LatLonBoundingBox, not a guess at the city limits.
+            expect(source.bounds).toEqual([15.7643127, 45.6055652, 16.2692342, 45.9855807]);
+        });
+
+        it('rejects a bbox wholly outside it', () => {
+            // The Jastrebarsko viewport: west of the coverage, and it blanked the whole map.
+            expect(withinImageryCoverage(source, [15.7519, 45.6730, 15.7539, 45.6745])).toBe(false);
+        });
+
+        it('accepts one inside it, and one that merely overlaps the edge', () => {
+            expect(withinImageryCoverage(source, [15.9780, 45.8070, 15.9800, 45.8085])).toBe(true);
+            // Straddling the western edge still has imagery in part of it.
+            expect(withinImageryCoverage(source, [15.7600, 45.6730, 15.7700, 45.6800])).toBe(true);
+        });
+
+        it('does not gate a source that declares no extent', () => {
+            expect(withinImageryCoverage({ key: 'x' }, [0, 0, 1, 1])).toBe(true);
+        });
     });
 });

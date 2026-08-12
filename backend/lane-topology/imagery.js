@@ -12,9 +12,25 @@ export const LANE_IMAGERY_SOURCES = Object.freeze({
         layer: 'ZG_CDOF2022',
         attribution: 'Ortofoto © Grad Zagreb',
         role: 'primary',
-        coverage: 'zagreb'
+        coverage: 'zagreb',
+        // The server's own LatLonBoundingBox from GetCapabilities, not a guess at the city limits.
+        // Outside it this WMS does not error — it returns a SOLID WHITE image, which as a map layer
+        // blanks the screen and as model input is worse still: a blank crop is something a
+        // recognition run would happily describe. 900 m west of Jastrebarsko was enough to hit it.
+        //
+        // A rectangle is the outer bound, not the shape: the data follows the city's
+        // administrative outline, so inside this box imagery is possible, never guaranteed.
+        bounds: Object.freeze([15.7643127, 45.6055652, 16.2692342, 45.9855807])
     })
 });
+
+// Does a WGS84 bbox touch the source's coverage at all?
+export function withinImageryCoverage(source, bbox) {
+    const bounds = source?.bounds;
+    if (!Array.isArray(bounds) || !Array.isArray(bbox) || bbox.length !== 4) return true;
+    const [west, south, east, north] = bbox;
+    return west < bounds[2] && east > bounds[0] && south < bounds[3] && north > bounds[1];
+}
 
 function radians(value) {
     return value * Math.PI / 180;
@@ -52,7 +68,8 @@ export function publicImagerySource(source) {
         wmsLayer: source.layer,
         attribution: source.attribution,
         role: source.role,
-        coverage: source.coverage
+        coverage: source.coverage,
+        bounds: source.bounds || null
     };
 }
 

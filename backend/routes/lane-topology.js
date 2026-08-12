@@ -13,7 +13,8 @@ import {
     fetchImageryCrop,
     imageryCropSpec,
     publicImagerySource,
-    resolveImagerySource
+    resolveImagerySource,
+    withinImageryCoverage
 } from '../lane-topology/imagery.js';
 import {
     LANE_WIDTH_ALGORITHM_VERSION,
@@ -650,6 +651,15 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
         }
         const source = resolveImagerySource(req.query.source || 'zagreb_cdof_2022');
         if (!source) return res.status(400).json({ error: 'Unknown orthophoto source.' });
+        // Outside its extent this WMS answers 200 with a solid white image. Passing that on would
+        // hand a recognition run a blank photograph, which it would describe rather than reject —
+        // a confident answer about nothing is far worse than a missing crop.
+        if (!withinImageryCoverage(source, bbox)) {
+            return res.status(404).json({
+                error: `${source.label} has no imagery here; its coverage is `
+                    + `${source.bounds.join(',')}.`
+            });
+        }
         try {
             const crop = await (options.fetchImageryCrop || fetchImageryCrop)(source, bbox, {
                 fetchImpl: options.fetchImpl,
@@ -676,6 +686,12 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
         }
         const source = resolveImagerySource(req.query.source || 'zagreb_cdof_2022');
         if (!source) return res.status(400).json({ error: 'Unknown orthophoto source.' });
+        if (!withinImageryCoverage(source, bbox)) {
+            return res.status(404).json({
+                error: `${source.label} has no imagery here; its coverage is `
+                    + `${source.bounds.join(',')}.`
+            });
+        }
         const spec = imageryCropSpec(source, bbox, { maxDimension: req.query.maxDimension });
         return res.json({ crop: { ...spec, url: undefined } });
     });

@@ -203,6 +203,12 @@
         }
     });
 
+    function withinImageryCoverage(bounds, bbox) {
+        if (!Array.isArray(bounds) || !Array.isArray(bbox)) return true;
+        return bbox[0] < bounds[2] && bbox[2] > bounds[0]
+            && bbox[1] < bounds[3] && bbox[3] > bounds[1];
+    }
+
     async function updateImageryStatus() {
         const status = element('imagery-status');
         if (!state.imagerySource) {
@@ -212,6 +218,13 @@
         }
         if (planCurrentViewport().reason === 'too-large') {
             status.textContent = `Zoom in — the viewport is wider than the ${LaneTopologyViewport.MAX_SPAN_DEG}° evidence limit.`;
+            status.classList.add('is-error');
+            return;
+        }
+        // Said plainly, because the alternative is an empty imagery layer with no explanation —
+        // indistinguishable from a broken one.
+        if (!withinImageryCoverage(state.imagerySource.bounds, viewportBbox())) {
+            status.textContent = `Outside ${state.imagerySource.label} — no orthophoto here.`;
             status.classList.add('is-error');
             return;
         }
@@ -241,6 +254,7 @@
                 || null;
             layers.imagery.clearLayers();
             if (!state.imagerySource) throw new Error('No orthophoto source is configured.');
+            const extent = state.imagerySource.bounds;
             state.imageryTileLayer = L.tileLayer.wms(state.imagerySource.wmsUrl, {
                 pane: 'topology-imagery',
                 layers: state.imagerySource.wmsLayer,
@@ -249,7 +263,14 @@
                 transparent: false,
                 maxZoom: 22,
                 attribution: state.imagerySource.attribution,
-                opacity: .9
+                opacity: .9,
+                // Outside its extent this WMS returns a SOLID WHITE image rather than an error or
+                // anything transparent, so an opaque layer of it blanks the map — which is what
+                // 900 m west of the coverage edge looked like: everything gone, no message.
+                // Leaflet skips tiles outside `bounds`, so the basemap simply shows through.
+                ...(Array.isArray(extent)
+                    ? { bounds: L.latLngBounds([extent[1], extent[0]], [extent[3], extent[2]]) }
+                    : {})
             }).addTo(layers.imagery);
             await updateImageryStatus();
             applyLayerVisibility();
