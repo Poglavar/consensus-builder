@@ -32,6 +32,8 @@ const DEFAULTS = {
     minJunctions: 8
 };
 const CITY_BBOX = [15.5459, 45.5136, 16.3620, 46.0356];
+// Mirrors the bulk solver's --min-arms floor and the rules' own `fewer_than_three_arms` decline.
+const MIN_JUNCTION_ARMS = 3;
 
 // stderr, not stdout: `--format json > coverage.json` means anything on stdout that is not the
 // report corrupts the file.
@@ -102,7 +104,15 @@ async function surveyTile(args, tile, storedByTile, settledNodes) {
 
     // A junction whose open nodes have all been answered by a stored decision is finished, even
     // though a fresh derivation still calls it open.
-    const openJunctions = mine.filter(junction => !junction.resolved
+    //
+    // And a junction with fewer than three arms is not work at ALL: the rules decline it as
+    // `fewer_than_three_arms`, the bulk solver's arm floor skips it, and nothing a model could say
+    // would settle it — it is a mid-block node or a dead end that node fusion happened to group.
+    // Counting it as open put a permanent phantom in the tile, which is why five of the
+    // twenty-four "one junction from done" tiles had nothing to run: their last open junction had
+    // two arms, and they could never have reached 100%.
+    const workable = mine.filter(junction => (junction.armCount || 0) >= MIN_JUNCTION_ARMS);
+    const openJunctions = workable.filter(junction => !junction.resolved
         && junction.unresolvedNodeIds.some(id => !settledNodes.has(id)));
     const movements = openJunctions.reduce((total, junction) => total
         + junction.unresolvedNodeIds.filter(id => !settledNodes.has(id)).reduce((sum, nodeId) => {
@@ -113,13 +123,15 @@ async function surveyTile(args, tile, storedByTile, settledNodes) {
     return {
         core: tile.core.map(value => Number(value.toFixed(6))),
         centre: centre.map(value => Number(value.toFixed(6))),
-        junctions: mine.length,
-        settled: mine.length - openJunctions.length,
+        junctions: workable.length,
+        settled: workable.length - openJunctions.length,
         open: openJunctions.length,
+        // Kept visible rather than dropped: they are real nodes, they are simply not decisions.
+        notJunctions: mine.length - workable.length,
         movements,
         // Decisions that are not derivable and therefore had to be stored.
         storedSolutions: storedByTile(tile.core),
-        done: mine.length ? (mine.length - openJunctions.length) / mine.length : 1
+        done: workable.length ? (workable.length - openJunctions.length) / workable.length : 1
     };
 }
 
