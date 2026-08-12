@@ -850,7 +850,10 @@ export async function runCliTopologyProvider(provider, input, options = {}) {
         const parsed = parseProviderOutput(provider, result.stdout, outputFileText);
         // Ledger the run before the patch is applied: a patch this run cannot validate is still a
         // run whose tokens were spent, and an accounting that only counts successes understates.
-        if (options.ledger !== false) {
+        // An injected spawn means no CLI ran and no tokens were spent, so there is nothing to
+        // account for. Without this the test suite wrote its fixtures into the shared ledger —
+        // seven rows of invented usage sitting beside real spend, which is worse than none.
+        if (options.ledger !== false && !options.spawnImpl) {
             ledgerRecognitionRun({
                 provider,
                 model: options.model,
