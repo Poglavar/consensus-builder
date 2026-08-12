@@ -315,8 +315,10 @@ describe('lane-topology CLI provider boundary', () => {
         expect(args.slice(args.indexOf('--model'), args.indexOf('--model') + 2)).toEqual(['--model', 'sonnet']);
         expect(args).toContain('--json-schema');
         expect(args).not.toContain('--dangerously-skip-permissions');
+        // Same question, same crop, same ceiling — a provider must not be cut off at a point the
+        // other is allowed to work past, or a comparison between them measures the ceiling.
         expect(PROVIDER_TIMEOUT_MS.claude).toBe(15 * 60 * 1000);
-        expect(PROVIDER_TIMEOUT_MS.codex).toBe(10 * 60 * 1000);
+        expect(PROVIDER_TIMEOUT_MS.codex).toBe(PROVIDER_TIMEOUT_MS.claude);
     });
 
     it('gives Claude read-only access to an attached orthophoto in the isolated job directory', () => {
@@ -471,6 +473,59 @@ describe('lane-topology CLI provider boundary', () => {
         }
         expect(failure?.message).toMatch(/usage limit/i);
         expect(failure?.message).not.toMatch(/road arms meet here/);
+    });
+
+    // Codex states its usage nowhere but the JSONL event stream, so a run that never asked for
+    // events reported nothing — ten solved junctions with no token count at all. Both providers
+    // must land in the same shape or the comparison between them cannot be made.
+    it('reads Codex token usage out of its event stream', async () => {
+        function codexSpawn() {
+            const child = new EventEmitter();
+            child.stdout = new PassThrough();
+            child.stderr = new PassThrough();
+            child.kill = () => {};
+            child.stdin = {
+                end() {
+                    queueMicrotask(() => {
+                        child.stdout.end([
+                            '{"type":"turn.started"}',
+                            '{"type":"item.completed","item":{"type":"agent_message","text":"done"}}',
+                            '{"type":"turn.completed","usage":{"input_tokens":67471,'
+                                + '"cached_input_tokens":52480,"cache_write_input_tokens":11,'
+                                + '"output_tokens":159,"reasoning_output_tokens":40}}'
+                        ].join('\n'));
+                        child.emit('close', 0, null);
+                    });
+                }
+            };
+            return child;
+        }
+
+        const result = await runCliTopologyProvider('codex', {
+            deterministicGraph: fanInGraph()
+        }, {
+            spawnImpl: codexSpawn,
+            timeoutMs: 1000,
+            readFileImpl: async () => JSON.stringify({
+                summary: 'ok',
+                patch_json: JSON.stringify({ connections: [], problems: [] })
+            })
+        });
+
+        expect(result.usage).toEqual({
+            inputTokens: 67471,
+            outputTokens: 199,           // output plus reasoning, which is billed as output
+            cacheReadTokens: 52480,
+            cacheCreationTokens: 11,
+            equivalentUsd: null,          // Codex states no cost; inventing one would be a guess
+            durationMs: null,
+            numTurns: 1
+        });
+    });
+
+    it('asks Codex for the event stream that carries its usage', () => {
+        expect(providerCommand('codex').args({ jobDir: '/tmp/j', schemaPath: '/tmp/s', outputPath: '/tmp/o' }))
+            .toContain('--json');
     });
 
     // The envelope carries usage BEFORE the answer, so a large patch pushes the counts out of the

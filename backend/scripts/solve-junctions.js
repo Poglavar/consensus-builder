@@ -318,13 +318,24 @@ function summariseUsage(records) {
         if (!record.usage) return accumulator;
         accumulator.input += record.usage.inputTokens || 0;
         accumulator.output += record.usage.outputTokens || 0;
-        accumulator.usd += record.usage.equivalentUsd || 0;
+        accumulator.cached += record.usage.cacheReadTokens || 0;
         accumulator.counted += 1;
+        // Only Claude states a costed equivalent. Averaging over the runs that do would put a
+        // number on runs that did not, so the count travels with the money.
+        if (Number.isFinite(record.usage.equivalentUsd)) {
+            accumulator.usd += record.usage.equivalentUsd;
+            accumulator.costed += 1;
+        }
         return accumulator;
-    }, { input: 0, output: 0, usd: 0, counted: 0 });
+    }, { input: 0, output: 0, cached: 0, usd: 0, counted: 0, costed: 0 });
     if (!totals.counted) return 'usage not reported';
-    return `${totals.input.toLocaleString()} in / ${totals.output.toLocaleString()} out tokens`
-        + ` · $${totals.usd.toFixed(2)} equivalent (subscription-billed, not charged)`;
+    const money = totals.costed === totals.counted
+        ? ` · $${totals.usd.toFixed(2)} equivalent (subscription-billed, not charged)`
+        : (totals.costed
+            ? ` · $${totals.usd.toFixed(2)} equivalent over ${totals.costed}/${totals.counted} runs`
+            : ' · no costed equivalent reported by this CLI');
+    return `${totals.input.toLocaleString()} in (${totals.cached.toLocaleString()} cached)`
+        + ` / ${totals.output.toLocaleString()} out tokens${money}`;
 }
 
 async function main() {

@@ -6,8 +6,11 @@ import { createRequire } from 'node:module';
 import { normalizeImageryObservations } from './imagery-observations.js';
 
 export const TOPOLOGY_PROMPT_VERSION = 'lane-topology-v10';
+// Both providers answer the same question about the same crop, so they get the same ceiling. Codex
+// kept 10 minutes from when its runs averaged 222 s; measured against this prompt a junction takes
+// 337–911 s, so the shorter ceiling would have cut off work the other provider is allowed to finish.
 export const PROVIDER_TIMEOUT_MS = Object.freeze({
-    codex: 10 * 60 * 1000,
+    codex: 15 * 60 * 1000,
     claude: 15 * 60 * 1000
 });
 export const TOPOLOGY_OUTPUT_SCHEMA = {
@@ -138,6 +141,9 @@ export function providerCommand(provider) {
             command: 'codex',
             args: ({ jobDir, schemaPath, outputPath, imagePath, model, reasoningEffort }) => [
                 'exec',
+                // Events as JSONL, which is the only place Codex states its token usage. The answer
+                // still comes from --output-last-message, so stdout is free to carry the accounting.
+                '--json',
                 ...(model ? ['--model', model] : []),
                 '--config', `model_reasoning_effort="${reasoningEffort || 'medium'}"`,
                 '--skip-git-repo-check',
@@ -373,30 +379,88 @@ function runSpawn(command, args, prompt, options = {}) {
 // reliable place: by the time the run is a stored output tail, a large patch has pushed the counts
 // out of the tail entirely. Subscription-billed runs still need the counts — they are what says
 // whether a prompt change doubled the cost.
-function envelopeUsage(envelope) {
+const count = value => (typeof value === 'number' && Number.isFinite(value) ? value : null);
+
+// One shape for every provider, because the comparison between them is the point. Fields a CLI
+// does not report stay null rather than zero — a run that reported nothing and a run that cost
+// nothing must not look alike.
+function normalizeUsage(fields) {
+    const usage = {
+        inputTokens: null,
+        outputTokens: null,
+        cacheReadTokens: null,
+        cacheCreationTokens: null,
+        // What the same run would have cost on the metered API; the CLI itself bills a subscription.
+        equivalentUsd: null,
+        durationMs: null,
+        numTurns: null,
+        ...fields
+    };
+    return Object.values(usage).some(value => value !== null) ? usage : null;
+}
+
+// Claude prints one JSON envelope carrying its own usage and a costed equivalent.
+function claudeUsage(envelope) {
     const usage = envelope?.usage;
     const cost = Number(envelope?.total_cost_usd);
     if (!usage && !Number.isFinite(cost)) return null;
-    const count = value => (typeof value === 'number' && Number.isFinite(value) ? value : null);
-    return {
+    return normalizeUsage({
         inputTokens: count(usage?.input_tokens),
         outputTokens: count(usage?.output_tokens),
         cacheReadTokens: count(usage?.cache_read_input_tokens),
         cacheCreationTokens: count(usage?.cache_creation_input_tokens),
-        // What the same run would have cost on the metered API; the CLI itself bills a subscription.
         equivalentUsd: Number.isFinite(cost) ? cost : null,
         durationMs: count(envelope?.duration_ms),
         numTurns: count(envelope?.num_turns)
-    };
+    });
+}
+
+// Codex streams JSONL events and reports usage on turn.completed — one per exec run, covering the
+// whole run including its tool calls, so these sum rather than supersede. It states no cost, and
+// inventing one from a price table would be a guess dressed as a measurement, so it stays null.
+function codexUsage(stdout) {
+    const totals = { input: 0, cached: 0, cacheWrite: 0, output: 0, turns: 0 };
+    String(stdout || '').split('\n').forEach(line => {
+        const trimmed = line.trim();
+        if (!trimmed.startsWith('{')) return;
+        let event;
+        try {
+            event = JSON.parse(trimmed);
+        } catch (_) {
+            return;
+        }
+        if (event?.type !== 'turn.completed' || !event.usage) return;
+        totals.turns += 1;
+        totals.input += Number(event.usage.input_tokens) || 0;
+        totals.cached += Number(event.usage.cached_input_tokens) || 0;
+        totals.cacheWrite += Number(event.usage.cache_write_input_tokens) || 0;
+        totals.output += Number(event.usage.output_tokens) || 0;
+        // Reasoning tokens are billed as output and are invisible otherwise.
+        totals.output += Number(event.usage.reasoning_output_tokens) || 0;
+    });
+    if (!totals.turns) return null;
+    return normalizeUsage({
+        inputTokens: totals.input,
+        outputTokens: totals.output,
+        cacheReadTokens: totals.cached,
+        cacheCreationTokens: totals.cacheWrite,
+        numTurns: totals.turns
+    });
+}
+
+export function providerUsage(provider, stdout, envelope) {
+    return provider === 'codex' ? codexUsage(stdout) : claudeUsage(envelope);
 }
 
 function parseProviderOutput(provider, stdout, outputFileText) {
     let parsed;
     let usage = null;
-    if (provider === 'codex') parsed = JSON.parse(outputFileText);
-    else {
+    if (provider === 'codex') {
+        parsed = JSON.parse(outputFileText);
+        usage = providerUsage('codex', stdout);
+    } else {
         const envelope = JSON.parse(stdout);
-        usage = envelopeUsage(envelope);
+        usage = providerUsage(provider, stdout, envelope);
         const candidate = envelope.structured_output ?? envelope.result ?? envelope;
         parsed = typeof candidate === 'string' ? JSON.parse(candidate) : candidate;
     }
@@ -706,7 +770,10 @@ export async function runCliTopologyProvider(provider, input, options = {}) {
                 || PROVIDER_TIMEOUT_MS.codex,
             cwd: jobDir
         });
-        const outputFileText = provider === 'codex' ? await readFile(outputPath, 'utf8') : '';
+        // Injectable for the same reason the spawn is: a test must be able to exercise the parsing
+        // without a real CLI writing a real file.
+        const readFileImpl = options.readFileImpl || (path => readFile(path, 'utf8'));
+        const outputFileText = provider === 'codex' ? await readFileImpl(outputPath) : '';
         const parsed = parseProviderOutput(provider, result.stdout, outputFileText);
         return {
             summary: String(parsed.summary || ''),
