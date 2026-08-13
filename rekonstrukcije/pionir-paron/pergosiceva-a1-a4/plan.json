@@ -1,0 +1,16 @@
+{
+  "schema": "consensus-builder.reconstruction-plan.v1",
+  "project": "pergosiceva-a1-a4",
+  "title": "Pergošićeva A1–A4 – rekonstrukcija izvedenog stanja",
+  "status": "no-safe-surface-circulation",
+  "reason": "No OSM surface component passed the geometry and building-overlap gates.",
+  "generatedAt": "2026-08-13T00:00:00.000Z",
+  "planSlug": "pionir-pergosiceva-a1-a4",
+  "planTitle": "Pergošićeva A1–A4 – rekonstrukcija izvedenog stanja – zgrade",
+  "localPath": "/proposals/pionir-pergosiceva-a1-a4?city=zagreb",
+  "building": {
+    "proposalId": "pionir-pergosiceva-a1-a4-observed",
+    "file": "proposal.geojson"
+  },
+  "circulation": []
+}

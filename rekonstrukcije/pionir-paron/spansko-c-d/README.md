@@ -37,3 +37,9 @@ PGHOST=localhost node backend/scripts/seed-pionir-observed-proposals.mjs --apply
 ```
 
 `proposal.geojson` uses `consensus-builder.reconstruction.v1` and must survive a lossless export/import/export round trip.
+
+## Internal circulation and parking
+
+Three connected surface-road components are kept as separate proposals in `circulation-access-*.geojson`, totalling 527 m. Two private OSM parking courts are reconstructed in `circulation-parking-*.geojson`: approximately 39 and 41 spaces according to OSM's area estimate. Their polygons overlap DGU objects classified as underground garages, not the four above-ground buildings, so surface parking over the garage slabs is retained. The perpendicular bay pattern is inferred from each polygon's measured width around its mapped parking aisle; individual stall positions are not surveyed.
+
+[`plan.json`](plan.json) groups the three road, two parking and one building proposals as named local plan `pionir-spansko-c-d`.

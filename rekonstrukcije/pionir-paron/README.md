@@ -34,6 +34,41 @@ The parcel is not a newly discovered Pionir interest. In the [2016 GUP public-co
 
 Our 2026 cadastre snapshot resolves the site as parcel id `21362030`, 17,980.61 m². It contains 21 current DGU polygons (mostly economic buildings, plus three houses/structures and small stairs). The GDI 2022 layer contains 25 mostly low footprints. Those are demolition context only, not the proposed residential-commercial geometry. The national public eDozvola WFS identifies the article's exact pending case as `P20251224-1934214-Z11`, class `UP/I-361-03/25-01/002748`; see the [project chronology](zagrebacka-avenija-rudes/README.md).
 
+## Internal circulation and parking
+
+Completed-site reconstructions also carry companion road proposals where the current local OSM data is defensible. These companions remain separate from the building proposal because a proposal has one formation type; each `plan.json` manifest and named `/proposals/<slug>` plan groups the compatible proposals into one project view.
+
+Every one of the twelve canonical reconstruction folders has a stable named plan, including building-only projects. Circulation proposals precede the building proposal in plan order so the final building placement is evaluated on the resulting local ground fabric.
+
+| Project | Surface road network | Parking represented | Named local plan |
+|---|---:|---:|---|
+| Folnegovićeva–Rapska | 402 m / 1 proposal | no parking court safely mapped | `pionir-folnegoviceva-rapska` |
+| Lovinčićeva F1–F5 | 199 m / 2 connected proposals | none safely mapped | `pionir-lovinciceva-f1-f5` |
+| Savica F1–F3 | 37 m / 1 proposal | none safely mapped | `pionir-savica-f1-f3` |
+| Selska–Baštijanova–Vitezićeva | 101 m / 2 connected proposals | 1 private surface court, approximately 21 spaces | `pionir-selska-bastijanova-viteziceva` |
+| Špansko C–D | 527 m / 3 connected proposals | 2 private surface courts, approximately 39 + 41 spaces | `pionir-spansko-c-d` |
+| Špansko – Stenjevečki odvojak | 428 m / 1 proposal | none safely mapped | `pionir-spansko-stenjevecki-odvojak` |
+
+This is an observed-state reconstruction, not a claim that OSM is a survey. Centre lines and tags come from the locally ingested OSM snapshot. Widths use explicit OSM values where present and the app's OSM road-profile defaults otherwise. Each line is clipped to the reconstructed site, buffered in EPSG:3765, and rejected when it is underground/covered, shorter than 8 m, part of a connected component shorter than 30 m, or overlaps a non-underground DGU structure by at least 1 m². Public edge streets are excluded. One road proposal always contains one connected component.
+
+Parking is stricter: a polygon is used only when it lies almost wholly on the site, has a matching `service=parking_aisle` centre line, does not overlap an above-ground DGU structure, and its area-to-aisle ratio supports a credible two-sided cross-section. The rendered perpendicular bays are therefore a reconstruction of the parking form, not surveyed individual stall positions. OSM's area-derived capacities remain explicitly approximate.
+
+Pergošićeva A1–A4 and Selska–Drniška remain building-only because the available mapped drives are underground, too short, or cross DGU terrace/plinth geometry. Permit-derived design states—newer Lovinčićeva, Špansko-Sjever, Borongajska–Čavićeva and Zagrebačka avenija–Rudeš—are also building-only: adding today's observed OSM circulation would mix incompatible dates and design states.
+
+[`circulation-audit.json`](circulation-audit.json) records every candidate and rejection reason. Rebuild the companion proposals, canonical exports, plan manifests and audit with:
+
+```sh
+PGHOST=localhost node backend/scripts/seed-pionir-observed-circulation.mjs --apply --export
+```
+
+For environment migration, build a checksum-protected bundle from the canonical archives and inspect the target before applying it. The importer resolves proposal row ids independently in every database and writes all proposals and named plans in one transaction:
+
+```sh
+node backend/scripts/migrate-pionir-reconstruction-archive.cjs --build-bundle /tmp/pionir-paron.json
+node backend/scripts/migrate-pionir-reconstruction-archive.cjs --dry-run-bundle /tmp/pionir-paron.json --target production
+node backend/scripts/migrate-pionir-reconstruction-archive.cjs --apply-bundle /tmp/pionir-paron.json --target production --confirm-production
+```
+
 ## Historical portfolio candidates
 
 Pionir's [residential](https://pionir.hr/reference/stambeni-objekti/) and [mixed-use](https://pionir.hr/reference/stambeno-poslovni-objekti/) reference pages identify these as having at least three named buildings or houses. The portfolio pages do not consistently provide construction dates or site areas, so those fields remain unresolved rather than guessed.
@@ -69,4 +104,4 @@ Work order:
 3. Recover permit geometry for Savica F1–F3, Špansko-Sjever, Borongajska–Čavićeva, and Zagrebačka avenija–Rudeš. **Completed as source snapshots and dated canonical proposals for built Savica, Špansko, accepted 2022 Borongaj, and accepted 2025 Rudeš. The expanded 2025 Borongaj state and Rudeš's pending superseding request remain separate because their components cannot yet be combined safely.**
 4. Resolve historical candidates one site at a time. **Selska–Drniška, Pergošićeva A1–A4, Špansko C–D, Špansko–Stenjevečki odvojak and Selska–Baštijanova–Vitezićeva now have canonical observed-state proposals. Remetinečka A–C has been located but needs a defensible volume split and whole-site parcel union.**
 
-Official eDozvola source snapshots are refreshed reproducibly with `backend/scripts/fetch-pionir-edozvola-sources.mjs`. They use `consensus-builder.edozvola-source.v1`; these are evidence layers, not app proposals. Canonical proposal exports use `consensus-builder.reconstruction.v1` and must pass an export/import/export identity check.
+Official eDozvola source snapshots are refreshed reproducibly with `backend/scripts/fetch-pionir-edozvola-sources.mjs`. They use `consensus-builder.edozvola-source.v1`; these are evidence layers, not app proposals. Canonical building exports use `consensus-builder.reconstruction.v1`; companion road exports use `consensus-builder.corridor-reconstruction.v1`; both must pass an export/import/export identity check. Project manifests use `consensus-builder.reconstruction-plan.v1`.

@@ -1,0 +1,84 @@
+{
+  "schema": "consensus-builder.reconstruction-plan.v1",
+  "project": "spansko-c-d",
+  "title": "Špansko C–D – rekonstrukcija izvedenog stanja",
+  "status": "ready",
+  "reason": null,
+  "generatedAt": "2026-08-13T00:00:00.000Z",
+  "planSlug": "pionir-spansko-c-d",
+  "planTitle": "Špansko C–D – rekonstrukcija izvedenog stanja – zgrade, prometnice i parkirališta",
+  "localPath": "/proposals/pionir-spansko-c-d?city=zagreb",
+  "building": {
+    "proposalId": "pionir-spansko-c-d-observed",
+    "file": "proposal.geojson"
+  },
+  "circulation": [
+    {
+      "proposalId": "pionir-spansko-c-d-observed-access-921522149",
+      "kind": "access-road",
+      "file": "circulation-access-921522149.geojson",
+      "segmentCount": 2,
+      "osmWayIds": [
+        921522149,
+        921522153
+      ],
+      "parkingOsmId": null,
+      "capacity": null,
+      "lengthM": 218.69799730172397,
+      "footprintAreaM2": 596.8886562246779
+    },
+    {
+      "proposalId": "pionir-spansko-c-d-observed-access-921522150",
+      "kind": "access-road",
+      "file": "circulation-access-921522150.geojson",
+      "segmentCount": 1,
+      "osmWayIds": [
+        921522150
+      ],
+      "parkingOsmId": null,
+      "capacity": null,
+      "lengthM": 100.3596768780358,
+      "footprintAreaM2": 275.0481830442264
+    },
+    {
+      "proposalId": "pionir-spansko-c-d-observed-access-921522151",
+      "kind": "access-road",
+      "file": "circulation-access-921522151.geojson",
+      "segmentCount": 2,
+      "osmWayIds": [
+        921522151,
+        921522152
+      ],
+      "parkingOsmId": null,
+      "capacity": null,
+      "lengthM": 208.05818083381985,
+      "footprintAreaM2": 567.8826523761245
+    },
+    {
+      "proposalId": "pionir-spansko-c-d-observed-parking-952603068",
+      "kind": "parking",
+      "file": "circulation-parking-952603068.geojson",
+      "segmentCount": 1,
+      "osmWayIds": [
+        921522154
+      ],
+      "parkingOsmId": 952603068,
+      "capacity": 39,
+      "lengthM": null,
+      "footprintAreaM2": 980.7950335180359
+    },
+    {
+      "proposalId": "pionir-spansko-c-d-observed-parking-952603085",
+      "kind": "parking",
+      "file": "circulation-parking-952603085.geojson",
+      "segmentCount": 1,
+      "osmWayIds": [
+        253167378
+      ],
+      "parkingOsmId": 952603085,
+      "capacity": 41,
+      "lengthM": null,
+      "footprintAreaM2": 1034.2797682551306
+    }
+  ]
+}

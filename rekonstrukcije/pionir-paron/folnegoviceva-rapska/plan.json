@@ -1,0 +1,34 @@
+{
+  "schema": "consensus-builder.reconstruction-plan.v1",
+  "project": "folnegoviceva-rapska",
+  "title": "Folnegovićeva–Rapska – rekonstrukcija izvedenog stanja",
+  "status": "ready",
+  "reason": null,
+  "generatedAt": "2026-08-13T00:00:00.000Z",
+  "planSlug": "pionir-folnegoviceva-rapska",
+  "planTitle": "Folnegovićeva–Rapska – rekonstrukcija izvedenog stanja – zgrade i prometnice",
+  "localPath": "/proposals/pionir-folnegoviceva-rapska?city=zagreb",
+  "building": {
+    "proposalId": "paron-folnegoviceva-rapska-observed",
+    "file": "proposal.geojson"
+  },
+  "circulation": [
+    {
+      "proposalId": "paron-folnegoviceva-rapska-observed-access-241116394",
+      "kind": "access-road",
+      "file": "circulation-access-241116394.geojson",
+      "segmentCount": 5,
+      "osmWayIds": [
+        241116394,
+        241251587,
+        241251588,
+        692627239,
+        692627241
+      ],
+      "parkingOsmId": null,
+      "capacity": null,
+      "lengthM": 402.29891012820394,
+      "footprintAreaM2": 1089.8159948905227
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "schema": "consensus-builder.reconstruction-plan.v1",
+  "project": "savica-f1-f3",
+  "title": "Savica F1–F3 – rekonstrukcija izvedenog stanja",
+  "status": "ready",
+  "reason": null,
+  "generatedAt": "2026-08-13T00:00:00.000Z",
+  "planSlug": "pionir-savica-f1-f3",
+  "planTitle": "Savica F1–F3 – rekonstrukcija izvedenog stanja – zgrade i prometnice",
+  "localPath": "/proposals/pionir-savica-f1-f3?city=zagreb",
+  "building": {
+    "proposalId": "paron-savica-f1-f3-observed",
+    "file": "proposal.geojson"
+  },
+  "circulation": [
+    {
+      "proposalId": "paron-savica-f1-f3-observed-access-1443564105",
+      "kind": "access-road",
+      "file": "circulation-access-1443564105.geojson",
+      "segmentCount": 1,
+      "osmWayIds": [
+        1443564105
+      ],
+      "parkingOsmId": null,
+      "capacity": null,
+      "lengthM": 36.50160549651738,
+      "footprintAreaM2": 100.29670361312095
+    }
+  ]
+}

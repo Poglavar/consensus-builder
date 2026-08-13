@@ -33,3 +33,7 @@ PGHOST=localhost node backend/scripts/seed-pionir-observed-proposals.mjs --apply
 ```
 
 `proposal.geojson` uses `consensus-builder.reconstruction.v1` and must survive a lossless export/import/export round trip.
+
+## Internal circulation
+
+[`circulation-access-387376686.geojson`](circulation-access-387376686.geojson) reconstructs seven connected surface OSM segments, totalling 428 m, including the mapped grass-paver emergency access. One 5.3 m fragment is excluded. No parking-area polygon/aisle pair passes the evidence gate. [`plan.json`](plan.json) groups the road network with all seven buildings as named local plan `pionir-spansko-stenjevecki-odvojak`.

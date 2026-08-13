@@ -51,3 +51,9 @@ PGHOST=localhost node backend/scripts/seed-pionir-observed-proposals.mjs --apply
 ```
 
 `proposal.geojson` uses `consensus-builder.reconstruction.v1` and must survive a lossless export/import/export round trip.
+
+## Internal circulation and parking
+
+Two defensible surface components are archived as `circulation-access-*.geojson`, totalling 101 m. The mapped private parking court on OSM way `543917934` is paired with parking aisle `543917935` and reconstructed in [`circulation-parking-543917934.geojson`](circulation-parking-543917934.geojson). Its 21-space figure is an OSM area estimate, not a surveyed count, and the individual perpendicular bays are generated from the measured court width rather than claimed as exact stall positions.
+
+The surrounding Baštijanova–Selska–Vitezićeva street network remains excluded as public infrastructure. Short private drive fragments, building conflicts and unpaired parking polygons are listed with their rejection reasons in the collection-level `circulation-audit.json`. [`plan.json`](plan.json) groups the two road, one parking and eleven-building proposals as named local plan `pionir-selska-bastijanova-viteziceva`.

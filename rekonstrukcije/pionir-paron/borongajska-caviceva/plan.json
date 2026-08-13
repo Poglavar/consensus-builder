@@ -1,0 +1,16 @@
+{
+  "schema": "consensus-builder.reconstruction-plan.v1",
+  "project": "borongajska-caviceva",
+  "title": "Borongajska–Čavićeva – devet volumena iz lokacijske dozvole 2022.",
+  "status": "skipped-different-design-state",
+  "reason": "The proposal is permit-derived rather than an observed completed site.",
+  "generatedAt": "2026-08-13T00:00:00.000Z",
+  "planSlug": "pionir-borongajska-caviceva",
+  "planTitle": "Borongajska–Čavićeva – devet volumena iz lokacijske dozvole 2022. – zgrade",
+  "localPath": "/proposals/pionir-borongajska-caviceva?city=zagreb",
+  "building": {
+    "proposalId": "pionir-borongajska-caviceva-location-permit-2022",
+    "file": "proposal.geojson"
+  },
+  "circulation": []
+}

@@ -38,3 +38,7 @@ PGHOST=localhost node backend/scripts/seed-pionir-observed-proposals.mjs --apply
 ```
 
 The export performs an export/import/export identity check before writing each canonical GeoJSON.
+
+## Circulation status
+
+[`plan.json`](plan.json) records why this reconstruction remains building-only: the sole surface fragment inside the parcel is only 1.6 m long, while the other mapped service line is explicitly a tunnel at layer −1. Neither is a defensible surface-road proposal, and no parking layout is invented.

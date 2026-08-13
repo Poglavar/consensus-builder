@@ -1,0 +1,44 @@
+{
+  "schema": "consensus-builder.reconstruction-plan.v1",
+  "project": "lovinciceva-f1-f5",
+  "title": "Lovinčićeva F1–F5 – rekonstrukcija izvedenog stanja",
+  "status": "ready",
+  "reason": null,
+  "generatedAt": "2026-08-13T00:00:00.000Z",
+  "planSlug": "pionir-lovinciceva-f1-f5",
+  "planTitle": "Lovinčićeva F1–F5 – rekonstrukcija izvedenog stanja – zgrade i prometnice",
+  "localPath": "/proposals/pionir-lovinciceva-f1-f5?city=zagreb",
+  "building": {
+    "proposalId": "paron-lovinciceva-f1-f5-observed",
+    "file": "proposal.geojson"
+  },
+  "circulation": [
+    {
+      "proposalId": "paron-lovinciceva-f1-f5-observed-access-675451884",
+      "kind": "access-road",
+      "file": "circulation-access-675451884.geojson",
+      "segmentCount": 2,
+      "osmWayIds": [
+        675451884,
+        676021194
+      ],
+      "parkingOsmId": null,
+      "capacity": null,
+      "lengthM": 137.99573339201768,
+      "footprintAreaM2": 705.2368264876353
+    },
+    {
+      "proposalId": "paron-lovinciceva-f1-f5-observed-access-1175780971",
+      "kind": "access-road",
+      "file": "circulation-access-1175780971.geojson",
+      "segmentCount": 1,
+      "osmWayIds": [
+        1175780971
+      ],
+      "parkingOsmId": null,
+      "capacity": null,
+      "lengthM": 61.43113442664763,
+      "footprintAreaM2": 168.7523961731187
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "schema": "consensus-builder.reconstruction-plan.v1",
+  "project": "spansko-sjever-a-f",
+  "title": "Špansko-Sjever A–F – volumeni iz lokacijske dozvole",
+  "status": "skipped-different-design-state",
+  "reason": "The proposal is permit-derived rather than an observed completed site.",
+  "generatedAt": "2026-08-13T00:00:00.000Z",
+  "planSlug": "pionir-spansko-sjever-a-f",
+  "planTitle": "Špansko-Sjever A–F – volumeni iz lokacijske dozvole – zgrade",
+  "localPath": "/proposals/pionir-spansko-sjever-a-f?city=zagreb",
+  "building": {
+    "proposalId": "pionir-spansko-sjever-a-f-location-permit-2022",
+    "file": "proposal.geojson"
+  },
+  "circulation": []
+}

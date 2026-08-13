@@ -39,3 +39,7 @@ PGHOST=localhost node backend/scripts/seed-selska-drniska-proposal.mjs --apply -
 ```
 
 The export performs an export/import/export identity check before writing the canonical GeoJSON.
+
+## Circulation status
+
+[`plan.json`](plan.json) records why this reconstruction remains building-only. The current OSM service road and three parking aisles run across the DGU terrace/plinth geometry shared by the three buildings. That may be a drivable deck in reality, but the available layers do not establish a safe surface formation, so no road or parking proposal is fabricated.

@@ -46,3 +46,7 @@ PGHOST=localhost node backend/scripts/seed-savica-f1-f3-proposal.mjs --apply --e
 ```
 
 The export path performs an export/import/export identity check before writing the canonical GeoJSON.
+
+## Internal circulation
+
+[`circulation-access-1443564105.geojson`](circulation-access-1443564105.geojson) retains the 37 m surface access segment that clears all above-ground buildings. Its overlap with the documented underground garage slab is allowed and recorded as context; the longer OSM line is excluded because its modelled surface footprint crosses F1 and F2. No sufficiently explicit parking polygon/aisle pair is available, despite the use permit documenting outdoor spaces. [`plan.json`](plan.json) groups the safe road segment with F1–F3 as named local plan `pionir-savica-f1-f3`.
