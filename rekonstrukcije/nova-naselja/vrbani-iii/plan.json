@@ -1,0 +1,130 @@
+{
+  "schema": "consensus-builder.reconstruction-plan.v1",
+  "project": "vrbani-iii",
+  "title": "Vrbani III – rekonstrukcija naselja",
+  "planTitle": "Vrbani III – izvedene zgrade, parkovi i prometnice",
+  "sourcePlan": "UPU Vrbani III",
+  "planYears": "UPU 2005.; izmjene 2006.",
+  "implementationStatus": "većim dijelom izvedeno prema službenoj ocjeni realizacije plana",
+  "generatedAt": "2026-08-14T00:00:00.000Z",
+  "planSlug": "vrbani-iii",
+  "localPath": "/proposals/vrbani-iii?city=zagreb",
+  "sources": [
+    "https://www.zagreb.hr/UserDocsImages/arhiva/SlGlasnik.nsf/10288f1421388ff8c1256f2d0049015b/d4c62cbed2fe586ec1256fba003490f1-OpenDocument.htm",
+    "https://zagreb.hr/vrbani-iii-krajobrazno-uredjenje-naselja/12202",
+    "https://data.zagreb.hr/dataset/geoportal-urbanisticki-planovi-uredenja"
+  ],
+  "context": {
+    "file": "plan-land-use.geojson",
+    "areaM2": 290717.7758017461
+  },
+  "proposals": [
+    {
+      "proposalId": "reconstruction-vrbani-iii-roads",
+      "kind": "road",
+      "file": "proposal-roads.geojson",
+      "geometryCount": 41
+    },
+    {
+      "proposalId": "reconstruction-vrbani-iii-park-z1-481",
+      "kind": "park",
+      "file": "proposal-park-z1-481.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-vrbani-iii-park-z1-482",
+      "kind": "park",
+      "file": "proposal-park-z1-482.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-vrbani-iii-park-z1-483",
+      "kind": "park",
+      "file": "proposal-park-z1-483.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-vrbani-iii-park-z1-484",
+      "kind": "park",
+      "file": "proposal-park-z1-484.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-vrbani-iii-park-z1-485",
+      "kind": "park",
+      "file": "proposal-park-z1-485.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-vrbani-iii-park-z1-486",
+      "kind": "park",
+      "file": "proposal-park-z1-486.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-vrbani-iii-park-z1-487",
+      "kind": "park",
+      "file": "proposal-park-z1-487.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-vrbani-iii-park-z1-488",
+      "kind": "park",
+      "file": "proposal-park-z1-488.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-vrbani-iii-park-z1-489",
+      "kind": "park",
+      "file": "proposal-park-z1-489.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-vrbani-iii-park-z1-490",
+      "kind": "park",
+      "file": "proposal-park-z1-490.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-vrbani-iii-park-z1-491",
+      "kind": "park",
+      "file": "proposal-park-z1-491.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-vrbani-iii-park-z1-492",
+      "kind": "park",
+      "file": "proposal-park-z1-492.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-vrbani-iii-park-z1-493",
+      "kind": "park",
+      "file": "proposal-park-z1-493.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-vrbani-iii-park-z1-494",
+      "kind": "park",
+      "file": "proposal-park-z1-494.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-vrbani-iii-buildings",
+      "kind": "building",
+      "file": "proposal-buildings.geojson",
+      "geometryCount": 53
+    }
+  ],
+  "statistics": {
+    "proposalCount": 16,
+    "buildingCount": 53,
+    "observedBuildingCount": 53,
+    "planDerivedBuildingCount": 0,
+    "parkCount": 14,
+    "squareCount": 0,
+    "roadCentrelineCount": 41,
+    "roadLengthM": 3408.896683350939,
+    "roadFootprintAreaM2": 75407.22957938333
+  }
+}

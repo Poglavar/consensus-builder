@@ -1,0 +1,6228 @@
+{
+  "type": "FeatureCollection",
+  "name": "Vrbani III – rekonstrukcija izvedenih zgrada",
+  "bbox": [
+    15.909560364,
+    45.786500004,
+    15.920501526,
+    45.791887329
+  ],
+  "reconstruction": {
+    "schema": "consensus-builder.reconstruction.v1",
+    "proposal": {
+      "proposalId": "reconstruction-vrbani-iii-buildings",
+      "city": "zagreb",
+      "name": "Vrbani III – rekonstrukcija izvedenih zgrada",
+      "title": "Vrbani III – rekonstrukcija izvedenih zgrada",
+      "description": "Rekonstrukcija glavnih izvedenih zgrada unutar UPU-a Vrbani III. Tlocrti su aktualna pravna DGU geometrija, a visine su iz najboljega lokalnog podudaranja s GDI snimkom. Uključene su i veće kuće koje službena granica UPU-a obuhvaća; pomoćni DGU poligoni nisu zasebni volumeni.",
+      "author": "zagreb.lol – lokalna analiza",
+      "type": "building",
+      "goal": "single",
+      "primaryType": "Urban Rule",
+      "typologyType": "single",
+      "lifecycleStatus": "Active",
+      "createdAt": "2026-08-14T00:02:00.000Z",
+      "updatedAt": "2026-08-14T00:02:00.000Z",
+      "tags": [
+        "buildings",
+        "research",
+        "reconstruction",
+        "neighbourhood-plan",
+        "observed-built-state"
+      ],
+      "parentParcelIds": [
+        "HR-339318-5951/1",
+        "HR-339318-6653/1",
+        "HR-339318-5918/1",
+        "HR-339318-5914/1",
+        "HR-339318-6709/2",
+        "HR-339318-6712/2",
+        "HR-339318-6649/2",
+        "HR-339318-6670/1",
+        "HR-339318-5939/2",
+        "HR-339318-6683/3",
+        "HR-339318-5896/3",
+        "HR-339318-6656/2",
+        "HR-339318-6719/2",
+        "HR-339318-6679/2",
+        "HR-339318-6665/1",
+        "HR-339318-5921/2",
+        "HR-339318-6676/1",
+        "HR-339318-5954/3",
+        "HR-339318-5890/2",
+        "HR-339318-5926/3",
+        "HR-339318-5888/2",
+        "HR-339318-6661/1",
+        "HR-339318-5894/2",
+        "HR-339318-5953/1",
+        "HR-339318-5953/2",
+        "HR-339318-6682/5",
+        "HR-339318-6714/1",
+        "HR-339318-6686/2",
+        "HR-339318-5882/4",
+        "HR-339318-5883/37",
+        "HR-339318-5893/2",
+        "HR-339318-5878/1",
+        "HR-339318-5886/4",
+        "HR-339318-5883/42",
+        "HR-339318-5886/2",
+        "HR-339318-5895/3",
+        "HR-339318-5963/1",
+        "HR-339318-5897/2",
+        "HR-339318-5963/2"
+      ],
+      "cadastreParcelIds": [
+        "HR-339318-5951/1",
+        "HR-339318-6653/1",
+        "HR-339318-5918/1",
+        "HR-339318-5914/1",
+        "HR-339318-6709/2",
+        "HR-339318-6712/2",
+        "HR-339318-6649/2",
+        "HR-339318-6670/1",
+        "HR-339318-5939/2",
+        "HR-339318-6683/3",
+        "HR-339318-5896/3",
+        "HR-339318-6656/2",
+        "HR-339318-6719/2",
+        "HR-339318-6679/2",
+        "HR-339318-6665/1",
+        "HR-339318-5921/2",
+        "HR-339318-6676/1",
+        "HR-339318-5954/3",
+        "HR-339318-5890/2",
+        "HR-339318-5926/3",
+        "HR-339318-5888/2",
+        "HR-339318-6661/1",
+        "HR-339318-5894/2",
+        "HR-339318-5953/1",
+        "HR-339318-5953/2",
+        "HR-339318-6682/5",
+        "HR-339318-6714/1",
+        "HR-339318-6686/2",
+        "HR-339318-5882/4",
+        "HR-339318-5883/37",
+        "HR-339318-5893/2",
+        "HR-339318-5878/1",
+        "HR-339318-5886/4",
+        "HR-339318-5883/42",
+        "HR-339318-5886/2",
+        "HR-339318-5895/3",
+        "HR-339318-5963/1",
+        "HR-339318-5897/2",
+        "HR-339318-5963/2"
+      ],
+      "parcelIds": [
+        "HR-339318-5951/1",
+        "HR-339318-6653/1",
+        "HR-339318-5918/1",
+        "HR-339318-5914/1",
+        "HR-339318-6709/2",
+        "HR-339318-6712/2",
+        "HR-339318-6649/2",
+        "HR-339318-6670/1",
+        "HR-339318-5939/2",
+        "HR-339318-6683/3",
+        "HR-339318-5896/3",
+        "HR-339318-6656/2",
+        "HR-339318-6719/2",
+        "HR-339318-6679/2",
+        "HR-339318-6665/1",
+        "HR-339318-5921/2",
+        "HR-339318-6676/1",
+        "HR-339318-5954/3",
+        "HR-339318-5890/2",
+        "HR-339318-5926/3",
+        "HR-339318-5888/2",
+        "HR-339318-6661/1",
+        "HR-339318-5894/2",
+        "HR-339318-5953/1",
+        "HR-339318-5953/2",
+        "HR-339318-6682/5",
+        "HR-339318-6714/1",
+        "HR-339318-6686/2",
+        "HR-339318-5882/4",
+        "HR-339318-5883/37",
+        "HR-339318-5893/2",
+        "HR-339318-5878/1",
+        "HR-339318-5886/4",
+        "HR-339318-5883/42",
+        "HR-339318-5886/2",
+        "HR-339318-5895/3",
+        "HR-339318-5963/1",
+        "HR-339318-5897/2",
+        "HR-339318-5963/2"
+      ],
+      "acceptedParcelIds": [],
+      "bounds": [
+        15.909560364,
+        45.786500004,
+        15.920501526,
+        45.791887329
+      ],
+      "source": {
+        "planName": "UPU Vrbani III",
+        "planYears": "UPU 2005.; izmjene 2006.",
+        "implementationStatus": "većim dijelom izvedeno prema službenoj ocjeni realizacije plana",
+        "sources": [
+          "https://www.zagreb.hr/UserDocsImages/arhiva/SlGlasnik.nsf/10288f1421388ff8c1256f2d0049015b/d4c62cbed2fe586ec1256fba003490f1-OpenDocument.htm",
+          "https://zagreb.hr/vrbani-iii-krajobrazno-uredjenje-naselja/12202",
+          "https://data.zagreb.hr/dataset/geoportal-urbanisticki-planovi-uredenja"
+        ],
+        "coordinateSystem": "lokalni izvori u HTRS96/TM (EPSG:3765), izvoz za aplikaciju u WGS84",
+        "footprintBasis": "aktualni DGU pravni tlocrti glavnih zgrada",
+        "heightBasis": "najbolje lokalno DGU–GDI prostorno podudaranje",
+        "sourceStatistics": {
+          "parcelAreaM2": 290710.59980986256,
+          "footprintAreaM2": 55634.71458034511,
+          "siteCoveragePercent": 19.13749089876071,
+          "heightEquivalentAboveGroundGbpM2": 361515.3636203073,
+          "heightEquivalentKin": 1.24355755812397,
+          "buildingCount": 53,
+          "observedBuildingCount": 53,
+          "planDerivedBuildingCount": 0,
+          "method": "zbroj površine tlocrta × procijenjeni broj etaža; dijagnostička vrijednost, nije službeni GBP"
+        }
+      }
+    },
+    "buildingProposal": {
+      "parentParcelIds": [
+        "HR-339318-5951/1",
+        "HR-339318-6653/1",
+        "HR-339318-5918/1",
+        "HR-339318-5914/1",
+        "HR-339318-6709/2",
+        "HR-339318-6712/2",
+        "HR-339318-6649/2",
+        "HR-339318-6670/1",
+        "HR-339318-5939/2",
+        "HR-339318-6683/3",
+        "HR-339318-5896/3",
+        "HR-339318-6656/2",
+        "HR-339318-6719/2",
+        "HR-339318-6679/2",
+        "HR-339318-6665/1",
+        "HR-339318-5921/2",
+        "HR-339318-6676/1",
+        "HR-339318-5954/3",
+        "HR-339318-5890/2",
+        "HR-339318-5926/3",
+        "HR-339318-5888/2",
+        "HR-339318-6661/1",
+        "HR-339318-5894/2",
+        "HR-339318-5953/1",
+        "HR-339318-5953/2",
+        "HR-339318-6682/5",
+        "HR-339318-6714/1",
+        "HR-339318-6686/2",
+        "HR-339318-5882/4",
+        "HR-339318-5883/37",
+        "HR-339318-5893/2",
+        "HR-339318-5878/1",
+        "HR-339318-5886/4",
+        "HR-339318-5883/42",
+        "HR-339318-5886/2",
+        "HR-339318-5895/3",
+        "HR-339318-5963/1",
+        "HR-339318-5897/2",
+        "HR-339318-5963/2"
+      ],
+      "parentParcelNumbers": [
+        {
+          "id": "HR-339318-5951/1",
+          "number": "HR-339318-5951/1"
+        },
+        {
+          "id": "HR-339318-6653/1",
+          "number": "HR-339318-6653/1"
+        },
+        {
+          "id": "HR-339318-5918/1",
+          "number": "HR-339318-5918/1"
+        },
+        {
+          "id": "HR-339318-5914/1",
+          "number": "HR-339318-5914/1"
+        },
+        {
+          "id": "HR-339318-6709/2",
+          "number": "HR-339318-6709/2"
+        },
+        {
+          "id": "HR-339318-6712/2",
+          "number": "HR-339318-6712/2"
+        },
+        {
+          "id": "HR-339318-6649/2",
+          "number": "HR-339318-6649/2"
+        },
+        {
+          "id": "HR-339318-6670/1",
+          "number": "HR-339318-6670/1"
+        },
+        {
+          "id": "HR-339318-5939/2",
+          "number": "HR-339318-5939/2"
+        },
+        {
+          "id": "HR-339318-6683/3",
+          "number": "HR-339318-6683/3"
+        },
+        {
+          "id": "HR-339318-5896/3",
+          "number": "HR-339318-5896/3"
+        },
+        {
+          "id": "HR-339318-6656/2",
+          "number": "HR-339318-6656/2"
+        },
+        {
+          "id": "HR-339318-6719/2",
+          "number": "HR-339318-6719/2"
+        },
+        {
+          "id": "HR-339318-6679/2",
+          "number": "HR-339318-6679/2"
+        },
+        {
+          "id": "HR-339318-6665/1",
+          "number": "HR-339318-6665/1"
+        },
+        {
+          "id": "HR-339318-5921/2",
+          "number": "HR-339318-5921/2"
+        },
+        {
+          "id": "HR-339318-6676/1",
+          "number": "HR-339318-6676/1"
+        },
+        {
+          "id": "HR-339318-5954/3",
+          "number": "HR-339318-5954/3"
+        },
+        {
+          "id": "HR-339318-5890/2",
+          "number": "HR-339318-5890/2"
+        },
+        {
+          "id": "HR-339318-5926/3",
+          "number": "HR-339318-5926/3"
+        },
+        {
+          "id": "HR-339318-5888/2",
+          "number": "HR-339318-5888/2"
+        },
+        {
+          "id": "HR-339318-6661/1",
+          "number": "HR-339318-6661/1"
+        },
+        {
+          "id": "HR-339318-5894/2",
+          "number": "HR-339318-5894/2"
+        },
+        {
+          "id": "HR-339318-5953/1",
+          "number": "HR-339318-5953/1"
+        },
+        {
+          "id": "HR-339318-5953/2",
+          "number": "HR-339318-5953/2"
+        },
+        {
+          "id": "HR-339318-6682/5",
+          "number": "HR-339318-6682/5"
+        },
+        {
+          "id": "HR-339318-6714/1",
+          "number": "HR-339318-6714/1"
+        },
+        {
+          "id": "HR-339318-6686/2",
+          "number": "HR-339318-6686/2"
+        },
+        {
+          "id": "HR-339318-5882/4",
+          "number": "HR-339318-5882/4"
+        },
+        {
+          "id": "HR-339318-5883/37",
+          "number": "HR-339318-5883/37"
+        },
+        {
+          "id": "HR-339318-5893/2",
+          "number": "HR-339318-5893/2"
+        },
+        {
+          "id": "HR-339318-5878/1",
+          "number": "HR-339318-5878/1"
+        },
+        {
+          "id": "HR-339318-5886/4",
+          "number": "HR-339318-5886/4"
+        },
+        {
+          "id": "HR-339318-5883/42",
+          "number": "HR-339318-5883/42"
+        },
+        {
+          "id": "HR-339318-5886/2",
+          "number": "HR-339318-5886/2"
+        },
+        {
+          "id": "HR-339318-5895/3",
+          "number": "HR-339318-5895/3"
+        },
+        {
+          "id": "HR-339318-5963/1",
+          "number": "HR-339318-5963/1"
+        },
+        {
+          "id": "HR-339318-5897/2",
+          "number": "HR-339318-5897/2"
+        },
+        {
+          "id": "HR-339318-5963/2",
+          "number": "HR-339318-5963/2"
+        }
+      ],
+      "createdFrom": "reconstructed-neighbourhood-plan",
+      "typologyType": "single",
+      "blockName": "Vrbani III – rekonstrukcija naselja",
+      "parameters": {
+        "typology": "single",
+        "floorHeightM": 3,
+        "geometryBasis": "observed-built-state",
+        "sourceStatistics": {
+          "parcelAreaM2": 290710.59980986256,
+          "footprintAreaM2": 55634.71458034511,
+          "siteCoveragePercent": 19.13749089876071,
+          "heightEquivalentAboveGroundGbpM2": 361515.3636203073,
+          "heightEquivalentKin": 1.24355755812397,
+          "buildingCount": 53,
+          "observedBuildingCount": 53,
+          "planDerivedBuildingCount": 0,
+          "method": "zbroj površine tlocrta × procijenjeni broj etaža; dijagnostička vrijednost, nije službeni GBP"
+        }
+      },
+      "ancestorKey": "HR-339318-5878/1|HR-339318-5882/4|HR-339318-5883/37|HR-339318-5883/42|HR-339318-5886/2|HR-339318-5886/4|HR-339318-5888/2|HR-339318-5890/2|HR-339318-5893/2|HR-339318-5894/2|HR-339318-5895/3|HR-339318-5896/3|HR-339318-5897/2|HR-339318-5914/1|HR-339318-5918/1|HR-339318-5921/2|HR-339318-5926/3|HR-339318-5939/2|HR-339318-5951/1|HR-339318-5953/1|HR-339318-5953/2|HR-339318-5954/3|HR-339318-5963/1|HR-339318-5963/2|HR-339318-6649/2|HR-339318-6653/1|HR-339318-6656/2|HR-339318-6661/1|HR-339318-6665/1|HR-339318-6670/1|HR-339318-6676/1|HR-339318-6679/2|HR-339318-6682/5|HR-339318-6683/3|HR-339318-6686/2|HR-339318-6709/2|HR-339318-6712/2|HR-339318-6714/1|HR-339318-6719/2",
+      "takeWholeParcels": false,
+      "metadata": {
+        "sourceStatistics": {
+          "parcelAreaM2": 290710.59980986256,
+          "footprintAreaM2": 55634.71458034511,
+          "siteCoveragePercent": 19.13749089876071,
+          "heightEquivalentAboveGroundGbpM2": 361515.3636203073,
+          "heightEquivalentKin": 1.24355755812397,
+          "buildingCount": 53,
+          "observedBuildingCount": 53,
+          "planDerivedBuildingCount": 0,
+          "method": "zbroj površine tlocrta × procijenjeni broj etaža; dijagnostička vrijednost, nije službeni GBP"
+        }
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "plan-site:vrbani-iii",
+        "name": "UPU Vrbani III",
+        "source": "Grad Zagreb – planirana namjena površina",
+        "areaM2": 290717.7758017461,
+        "featureCount": 51,
+        "consensus:role": "site"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.910047323,
+              45.788825134
+            ],
+            [
+              15.909560364,
+              45.788858611
+            ],
+            [
+              15.909560509,
+              45.788859289
+            ],
+            [
+              15.909605239,
+              45.789068006
+            ],
+            [
+              15.909820757,
+              45.790075418
+            ],
+            [
+              15.909858819,
+              45.790253278
+            ],
+            [
+              15.910135247,
+              45.791544944
+            ],
+            [
+              15.910208587,
+              45.791887329
+            ],
+            [
+              15.910874405,
+              45.791822018
+            ],
+            [
+              15.911034269,
+              45.791817403
+            ],
+            [
+              15.911122288,
+              45.791813811
+            ],
+            [
+              15.911267808,
+              45.791810597
+            ],
+            [
+              15.912225955,
+              45.791713747
+            ],
+            [
+              15.912543614,
+              45.791682443
+            ],
+            [
+              15.912600881,
+              45.791675773
+            ],
+            [
+              15.912932983,
+              45.791639777
+            ],
+            [
+              15.913121818,
+              45.791621615
+            ],
+            [
+              15.913186508,
+              45.791615643
+            ],
+            [
+              15.913203646,
+              45.791614052
+            ],
+            [
+              15.913852762,
+              45.791553806
+            ],
+            [
+              15.913967422,
+              45.791543164
+            ],
+            [
+              15.914682927,
+              45.791466921
+            ],
+            [
+              15.914832029,
+              45.791451032
+            ],
+            [
+              15.914857315,
+              45.791447619
+            ],
+            [
+              15.914927075,
+              45.791438204
+            ],
+            [
+              15.915030698,
+              45.791424218
+            ],
+            [
+              15.915292947,
+              45.791383189
+            ],
+            [
+              15.915418222,
+              45.791360886
+            ],
+            [
+              15.915453914,
+              45.791354531
+            ],
+            [
+              15.915628146,
+              45.791321426
+            ],
+            [
+              15.915681662,
+              45.791310925
+            ],
+            [
+              15.915748105,
+              45.791297886
+            ],
+            [
+              15.915897276,
+              45.791265902
+            ],
+            [
+              15.916085443,
+              45.791225395
+            ],
+            [
+              15.916177538,
+              45.791203933
+            ],
+            [
+              15.916262131,
+              45.79118102
+            ],
+            [
+              15.916362113,
+              45.79115394
+            ],
+            [
+              15.916487113,
+              45.791122276
+            ],
+            [
+              15.916571303,
+              45.791097105
+            ],
+            [
+              15.916783368,
+              45.791033704
+            ],
+            [
+              15.916819523,
+              45.791022817
+            ],
+            [
+              15.9168289,
+              45.791020091
+            ],
+            [
+              15.916849391,
+              45.791013965
+            ],
+            [
+              15.916973965,
+              45.790974214
+            ],
+            [
+              15.916999701,
+              45.790965771
+            ],
+            [
+              15.917033316,
+              45.790954419
+            ],
+            [
+              15.917147863,
+              45.790915736
+            ],
+            [
+              15.917246706,
+              45.79088092
+            ],
+            [
+              15.917506736,
+              45.790786629
+            ],
+            [
+              15.917740581,
+              45.790695862
+            ],
+            [
+              15.917837175,
+              45.790655695
+            ],
+            [
+              15.917936058,
+              45.790613839
+            ],
+            [
+              15.91808032,
+              45.790549063
+            ],
+            [
+              15.918161034,
+              45.790512821
+            ],
+            [
+              15.91816443,
+              45.790511228
+            ],
+            [
+              15.918528855,
+              45.790340225
+            ],
+            [
+              15.919463528,
+              45.789905482
+            ],
+            [
+              15.919689322,
+              45.78979866
+            ],
+            [
+              15.919912366,
+              45.789675273
+            ],
+            [
+              15.920007215,
+              45.789627146
+            ],
+            [
+              15.920411708,
+              45.789440557
+            ],
+            [
+              15.920456617,
+              45.789417692
+            ],
+            [
+              15.920501526,
+              45.789394826
+            ],
+            [
+              15.920497114,
+              45.789344753
+            ],
+            [
+              15.920492567,
+              45.789322796
+            ],
+            [
+              15.920435091,
+              45.789233677
+            ],
+            [
+              15.920371383,
+              45.789134894
+            ],
+            [
+              15.920370427,
+              45.789133413
+            ],
+            [
+              15.92030255,
+              45.789028165
+            ],
+            [
+              15.920230062,
+              45.788915766
+            ],
+            [
+              15.920197881,
+              45.788865866
+            ],
+            [
+              15.92010117,
+              45.78873364
+            ],
+            [
+              15.920074802,
+              45.788696379
+            ],
+            [
+              15.919955916,
+              45.788531513
+            ],
+            [
+              15.919907681,
+              45.788469092
+            ],
+            [
+              15.919847674,
+              45.788387049
+            ],
+            [
+              15.919695948,
+              45.788200551
+            ],
+            [
+              15.919639315,
+              45.788135521
+            ],
+            [
+              15.919537053,
+              45.788013831
+            ],
+            [
+              15.919390546,
+              45.787847674
+            ],
+            [
+              15.919268775,
+              45.787710037
+            ],
+            [
+              15.919175839,
+              45.78760332
+            ],
+            [
+              15.918765358,
+              45.787131127
+            ],
+            [
+              15.918357053,
+              45.786673235
+            ],
+            [
+              15.918205212,
+              45.786500004
+            ],
+            [
+              15.916902232,
+              45.787065007
+            ],
+            [
+              15.916886043,
+              45.787072084
+            ],
+            [
+              15.916023557,
+              45.78744606
+            ],
+            [
+              15.915973721,
+              45.787467594
+            ],
+            [
+              15.91592557,
+              45.7874884
+            ],
+            [
+              15.915679967,
+              45.787588677
+            ],
+            [
+              15.915429604,
+              45.787690897
+            ],
+            [
+              15.915208952,
+              45.787773493
+            ],
+            [
+              15.914996328,
+              45.787853085
+            ],
+            [
+              15.914956132,
+              45.787867325
+            ],
+            [
+              15.914752951,
+              45.787937303
+            ],
+            [
+              15.9145328,
+              45.788009905
+            ],
+            [
+              15.91433044,
+              45.788073762
+            ],
+            [
+              15.914044881,
+              45.788158808
+            ],
+            [
+              15.913825606,
+              45.788220079
+            ],
+            [
+              15.913810906,
+              45.788224187
+            ],
+            [
+              15.913583132,
+              45.788284722
+            ],
+            [
+              15.913543709,
+              45.788294856
+            ],
+            [
+              15.913344123,
+              45.78834448
+            ],
+            [
+              15.913242145,
+              45.788368132
+            ],
+            [
+              15.912976787,
+              45.788429189
+            ],
+            [
+              15.912820952,
+              45.788462761
+            ],
+            [
+              15.912756922,
+              45.788476038
+            ],
+            [
+              15.912521505,
+              45.788522675
+            ],
+            [
+              15.912192164,
+              45.788582959
+            ],
+            [
+              15.911997097,
+              45.788615521
+            ],
+            [
+              15.911851816,
+              45.788638346
+            ],
+            [
+              15.91178247,
+              45.788648815
+            ],
+            [
+              15.911771578,
+              45.788650422
+            ],
+            [
+              15.911507865,
+              45.788687231
+            ],
+            [
+              15.911172059,
+              45.788729236
+            ],
+            [
+              15.910759465,
+              45.788771396
+            ],
+            [
+              15.910549906,
+              45.788788622
+            ],
+            [
+              15.910428523,
+              45.7887986
+            ],
+            [
+              15.910079052,
+              45.788822956
+            ],
+            [
+              15.910047323,
+              45.788825134
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "zgrada mješovite uporabe 1908",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 21.5695,
+        "heightM": 21.5695,
+        "floors": 7,
+        "storeys": 7,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#2f6fed",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266511,
+        "dguBuildingNumber": "1908",
+        "dguBuildingType": "ZGRADA MJEŠOVITE UPORABE",
+        "dguFootprintAreaM2": 5027.397200015815,
+        "gdiObjectId": 314421,
+        "gdiSurveyYear": 2019,
+        "gdiHeightM": 21.5695,
+        "gdiMatchOverlapRatio": 0.7162371053893635,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 0
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.91055554,
+                45.789349802
+              ],
+              [
+                15.910315329,
+                45.789381675
+              ],
+              [
+                15.910169527,
+                45.789401078
+              ],
+              [
+                15.910178782,
+                45.78942596
+              ],
+              [
+                15.910205805,
+                45.789497904
+              ],
+              [
+                15.910401117,
+                45.790016026
+              ],
+              [
+                15.910077274,
+                45.790050347
+              ],
+              [
+                15.90988477,
+                45.790070768
+              ],
+              [
+                15.90967135,
+                45.789099682
+              ],
+              [
+                15.910036528,
+                45.789060357
+              ],
+              [
+                15.910129895,
+                45.789305135
+              ],
+              [
+                15.91013363,
+                45.789304704
+              ],
+              [
+                15.910136266,
+                45.789310837
+              ],
+              [
+                15.910277448,
+                45.78929042
+              ],
+              [
+                15.910267073,
+                45.789261933
+              ],
+              [
+                15.910139335,
+                45.788922319
+              ],
+              [
+                15.910153374,
+                45.788920502
+              ],
+              [
+                15.910430028,
+                45.788884228
+              ],
+              [
+                15.91055554,
+                45.789349802
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "zgrada mješovite uporabe 2026",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 21.5695,
+        "heightM": 21.5695,
+        "floors": 7,
+        "storeys": 7,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#6f42c1",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266478,
+        "dguBuildingNumber": "2026",
+        "dguBuildingType": "ZGRADA MJEŠOVITE UPORABE",
+        "dguFootprintAreaM2": 5083.363699996691,
+        "gdiObjectId": 314421,
+        "gdiSurveyYear": 2019,
+        "gdiHeightM": 21.5695,
+        "gdiMatchOverlapRatio": 0.6989259170149715,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 1
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.910184908,
+                45.790040195
+              ],
+              [
+                15.910400591,
+                45.790017193
+              ],
+              [
+                15.910679378,
+                45.790755387
+              ],
+              [
+                15.910729551,
+                45.790986264
+              ],
+              [
+                15.910676113,
+                45.790991927
+              ],
+              [
+                15.910680776,
+                45.791013276
+              ],
+              [
+                15.91060828,
+                45.791021001
+              ],
+              [
+                15.910617605,
+                45.791063699
+              ],
+              [
+                15.910531975,
+                45.791072795
+              ],
+              [
+                15.910522649,
+                45.791030097
+              ],
+              [
+                15.91047861,
+                45.791034818
+              ],
+              [
+                15.910487937,
+                45.791077427
+              ],
+              [
+                15.910402177,
+                45.791086612
+              ],
+              [
+                15.91039298,
+                45.791043914
+              ],
+              [
+                15.910348942,
+                45.791048546
+              ],
+              [
+                15.910358267,
+                45.791091245
+              ],
+              [
+                15.910272508,
+                45.79110034
+              ],
+              [
+                15.910263183,
+                45.791057641
+              ],
+              [
+                15.910219273,
+                45.791062364
+              ],
+              [
+                15.910228469,
+                45.791105062
+              ],
+              [
+                15.910142839,
+                45.791114157
+              ],
+              [
+                15.910133514,
+                45.791071459
+              ],
+              [
+                15.910102996,
+                45.79107472
+              ],
+              [
+                15.909885143,
+                45.790072029
+              ],
+              [
+                15.910105332,
+                45.790048602
+              ],
+              [
+                15.910125941,
+                45.790143277
+              ],
+              [
+                15.910205518,
+                45.79013487
+              ],
+              [
+                15.910184908,
+                45.790040195
+              ]
+            ],
+            [
+              [
+                15.910203992,
+                45.790767331
+              ],
+              [
+                15.910217854,
+                45.790831018
+              ],
+              [
+                15.910538356,
+                45.79079686
+              ],
+              [
+                15.910524493,
+                45.790733173
+              ],
+              [
+                15.910203992,
+                45.790767331
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1424",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 4.5644,
+        "heightM": 4.5644,
+        "floors": 2,
+        "storeys": 2,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#d63384",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266307,
+        "dguBuildingNumber": "1424",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 97.8312500002759,
+        "gdiObjectId": 323320,
+        "gdiSurveyYear": 2022,
+        "gdiHeightM": 4.5644,
+        "gdiMatchOverlapRatio": 0.978955770671228,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 2
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.910414648,
+                45.791526228
+              ],
+              [
+                15.910415945,
+                45.791525245
+              ],
+              [
+                15.910379172,
+                45.791499591
+              ],
+              [
+                15.910344698,
+                45.791475389
+              ],
+              [
+                15.910426589,
+                45.791418494
+              ],
+              [
+                15.910459656,
+                45.79144188
+              ],
+              [
+                15.910412451,
+                45.791478438
+              ],
+              [
+                15.910480413,
+                45.791522609
+              ],
+              [
+                15.910518013,
+                45.791494279
+              ],
+              [
+                15.910560681,
+                45.791522033
+              ],
+              [
+                15.91049002,
+                45.791575206
+              ],
+              [
+                15.910414648,
+                45.791526228
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1369",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 4.5804,
+        "heightM": 4.5804,
+        "floors": 2,
+        "storeys": 2,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#198754",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266308,
+        "dguBuildingNumber": "1369",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 136.2706500022064,
+        "gdiObjectId": 323321,
+        "gdiSurveyYear": 2022,
+        "gdiHeightM": 4.5804,
+        "gdiMatchOverlapRatio": 0.9967297902881338,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 3
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.910582625,
+                45.791539062
+              ],
+              [
+                15.910648914,
+                45.791583314
+              ],
+              [
+                15.910585659,
+                45.791629508
+              ],
+              [
+                15.910476698,
+                45.791704169
+              ],
+              [
+                15.910396498,
+                45.791649587
+              ],
+              [
+                15.91041555,
+                45.791635918
+              ],
+              [
+                15.91043394,
+                45.791648431
+              ],
+              [
+                15.910519625,
+                45.791585347
+              ],
+              [
+                15.910582625,
+                45.791539062
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1461",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 25.0764,
+        "heightM": 25.0764,
+        "floors": 8,
+        "storeys": 8,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#fd7e14",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266170,
+        "dguBuildingNumber": "1461",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 923.1253499964756,
+        "gdiObjectId": 323350,
+        "gdiSurveyYear": 2022,
+        "gdiHeightM": 25.0764,
+        "gdiMatchOverlapRatio": 0.9602414678812858,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 4
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.911081927,
+                45.789183714
+              ],
+              [
+                15.911100574,
+                45.789244997
+              ],
+              [
+                15.911005006,
+                45.789257641
+              ],
+              [
+                15.91088625,
+                45.789273675
+              ],
+              [
+                15.910859514,
+                45.789174469
+              ],
+              [
+                15.910822876,
+                45.789038411
+              ],
+              [
+                15.910818047,
+                45.78902066
+              ],
+              [
+                15.910811364,
+                45.788995791
+              ],
+              [
+                15.910807029,
+                45.788979932
+              ],
+              [
+                15.910755162,
+                45.788787828
+              ],
+              [
+                15.91096742,
+                45.788759769
+              ],
+              [
+                15.911053949,
+                45.789080183
+              ],
+              [
+                15.911081927,
+                45.789183714
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1426",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 17.317,
+        "heightM": 17.317,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#0dcaf0",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266057,
+        "dguBuildingNumber": "1426",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 787.1261999948375,
+        "gdiObjectId": 314523,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 17.317,
+        "gdiMatchOverlapRatio": 0.9891988549461441,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 5
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.910793101,
+                45.791253832
+              ],
+              [
+                15.911219367,
+                45.791546394
+              ],
+              [
+                15.911067852,
+                45.791655839
+              ],
+              [
+                15.911005662,
+                45.791613138
+              ],
+              [
+                15.910700328,
+                45.79140371
+              ],
+              [
+                15.910640436,
+                45.79136264
+              ],
+              [
+                15.91065728,
+                45.79135094
+              ],
+              [
+                15.910766793,
+                45.791272592
+              ],
+              [
+                15.910793101,
+                45.791253832
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "stambena zgrada 1933",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 23.2564,
+        "heightM": 23.2564,
+        "floors": 8,
+        "storeys": 8,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#ffc107",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266450,
+        "dguBuildingNumber": "1933",
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguFootprintAreaM2": 852.0846499959187,
+        "gdiObjectId": 323469,
+        "gdiSurveyYear": 2022,
+        "gdiHeightM": 23.2564,
+        "gdiMatchOverlapRatio": 0.972743333532247,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 6
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.911001539,
+                45.789696725
+              ],
+              [
+                15.910992503,
+                45.789663116
+              ],
+              [
+                15.910977278,
+                45.78960662
+              ],
+              [
+                15.910970718,
+                45.789582292
+              ],
+              [
+                15.910968118,
+                45.789572651
+              ],
+              [
+                15.910941022,
+                45.789470924
+              ],
+              [
+                15.910947719,
+                45.789470058
+              ],
+              [
+                15.911026028,
+                45.789459844
+              ],
+              [
+                15.911136408,
+                45.789445297
+              ],
+              [
+                15.91119816,
+                45.789675963
+              ],
+              [
+                15.911204471,
+                45.789675096
+              ],
+              [
+                15.911268808,
+                45.789916934
+              ],
+              [
+                15.911061571,
+                45.789944119
+              ],
+              [
+                15.91102716,
+                45.789816351
+              ],
+              [
+                15.911022209,
+                45.789797969
+              ],
+              [
+                15.910996465,
+                45.789702188
+              ],
+              [
+                15.911002775,
+                45.78970141
+              ],
+              [
+                15.911001539,
+                45.789696725
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "stambena zgrada 1824",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 23.2194,
+        "heightM": 23.2194,
+        "floors": 8,
+        "storeys": 8,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#20c997",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266423,
+        "dguBuildingNumber": "1824",
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguFootprintAreaM2": 884.9984999985725,
+        "gdiObjectId": 323288,
+        "gdiSurveyYear": 2022,
+        "gdiHeightM": 23.2194,
+        "gdiMatchOverlapRatio": 0.9922976091791628,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 7
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.91139567,
+                45.790560494
+              ],
+              [
+                15.911230679,
+                45.790581959
+              ],
+              [
+                15.911195179,
+                45.790447706
+              ],
+              [
+                15.911180577,
+                45.790393013
+              ],
+              [
+                15.911115389,
+                45.790146582
+              ],
+              [
+                15.911108582,
+                45.790121172
+              ],
+              [
+                15.911145161,
+                45.790116412
+              ],
+              [
+                15.911323544,
+                45.790093306
+              ],
+              [
+                15.911331707,
+                45.790124302
+              ],
+              [
+                15.91142325,
+                45.790469756
+              ],
+              [
+                15.91143315,
+                45.790506789
+              ],
+              [
+                15.911445644,
+                45.790554003
+              ],
+              [
+                15.91139567,
+                45.790560494
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1427",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 17.49,
+        "heightM": 17.49,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#2f6fed",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266058,
+        "dguBuildingNumber": "1427",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 781.7327499918545,
+        "gdiObjectId": 314528,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 17.49,
+        "gdiMatchOverlapRatio": 0.9965569970794194,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 8
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.911565898,
+                45.791300285
+              ],
+              [
+                15.911417782,
+                45.791404709
+              ],
+              [
+                15.911412988,
+                45.791408013
+              ],
+              [
+                15.910986207,
+                45.791115539
+              ],
+              [
+                15.911136151,
+                45.791008606
+              ],
+              [
+                15.911197593,
+                45.791049053
+              ],
+              [
+                15.911565898,
+                45.791300285
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1482",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 25.0764,
+        "heightM": 25.0764,
+        "floors": 8,
+        "storeys": 8,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#6f42c1",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266023,
+        "dguBuildingNumber": "1482",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 925.6624000088756,
+        "gdiObjectId": 323351,
+        "gdiSurveyYear": 2022,
+        "gdiHeightM": 25.0764,
+        "gdiMatchOverlapRatio": 0.959540041982139,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 9
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.911580463,
+                45.788938388
+              ],
+              [
+                15.911599776,
+                45.789009752
+              ],
+              [
+                15.911644748,
+                45.789172937
+              ],
+              [
+                15.911430812,
+                45.789201438
+              ],
+              [
+                15.91141487,
+                45.78913972
+              ],
+              [
+                15.91138702,
+                45.78903619
+              ],
+              [
+                15.911300243,
+                45.788714694
+              ],
+              [
+                15.911512377,
+                45.788686184
+              ],
+              [
+                15.911568949,
+                45.788895858
+              ],
+              [
+                15.911575633,
+                45.788920727
+              ],
+              [
+                15.911580463,
+                45.788938388
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "stambena zgrada 1934",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 16.7086,
+        "heightM": 16.7086,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#d63384",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266449,
+        "dguBuildingNumber": "1934",
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguFootprintAreaM2": 852.4924500011398,
+        "gdiObjectId": 323468,
+        "gdiSurveyYear": 2022,
+        "gdiHeightM": 16.7086,
+        "gdiMatchOverlapRatio": 0.992087065166481,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 10
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.911785528,
+                45.78971642
+              ],
+              [
+                15.911790725,
+                45.789735883
+              ],
+              [
+                15.911799146,
+                45.789766789
+              ],
+              [
+                15.911819939,
+                45.789844279
+              ],
+              [
+                15.911728622,
+                45.789856226
+              ],
+              [
+                15.911611929,
+                45.789871732
+              ],
+              [
+                15.911547195,
+                45.789630882
+              ],
+              [
+                15.911553506,
+                45.789630015
+              ],
+              [
+                15.911491505,
+                45.789398447
+              ],
+              [
+                15.911601369,
+                45.789383986
+              ],
+              [
+                15.911679677,
+                45.789373772
+              ],
+              [
+                15.911686633,
+                45.789372818
+              ],
+              [
+                15.911713859,
+                45.789474545
+              ],
+              [
+                15.911716462,
+                45.789483827
+              ],
+              [
+                15.911722895,
+                45.789508064
+              ],
+              [
+                15.911738246,
+                45.789564921
+              ],
+              [
+                15.911747282,
+                45.78959853
+              ],
+              [
+                15.911748519,
+                45.789603215
+              ],
+              [
+                15.911754958,
+                45.789602439
+              ],
+              [
+                15.911780576,
+                45.789698039
+              ],
+              [
+                15.911785528,
+                45.78971642
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "stambena zgrada 1911",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 18.8409,
+        "heightM": 18.8409,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#198754",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266424,
+        "dguBuildingNumber": "1911",
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguFootprintAreaM2": 679.7774999855521,
+        "gdiObjectId": 314429,
+        "gdiSurveyYear": 2019,
+        "gdiHeightM": 18.8409,
+        "gdiMatchOverlapRatio": 0.9763443179908713,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 11
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.911385764,
+                45.790878431
+              ],
+              [
+                15.91152949,
+                45.790775425
+              ],
+              [
+                15.911627947,
+                45.790843057
+              ],
+              [
+                15.911634205,
+                45.790847228
+              ],
+              [
+                15.911912612,
+                45.79103654
+              ],
+              [
+                15.911920914,
+                45.791042071
+              ],
+              [
+                15.911777832,
+                45.791144901
+              ],
+              [
+                15.911775789,
+                45.791143541
+              ],
+              [
+                15.911718438,
+                45.791105454
+              ],
+              [
+                15.9116823,
+                45.791080434
+              ],
+              [
+                15.911665826,
+                45.791069192
+              ],
+              [
+                15.911496863,
+                45.790954677
+              ],
+              [
+                15.91148907,
+                45.790949598
+              ],
+              [
+                15.911471443,
+                45.79093799
+              ],
+              [
+                15.911385764,
+                45.790878431
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1481",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 17.55,
+        "heightM": 17.55,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#fd7e14",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14265971,
+        "dguBuildingNumber": "1481",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 1422.5559499709505,
+        "gdiObjectId": 314530,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 17.55,
+        "gdiMatchOverlapRatio": 0.2529214952931225,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 12
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.911324224,
+                45.791665888
+              ],
+              [
+                15.911720591,
+                45.791377565
+              ],
+              [
+                15.911831086,
+                45.791450297
+              ],
+              [
+                15.91212191,
+                45.791645521
+              ],
+              [
+                15.912053627,
+                45.791692859
+              ],
+              [
+                15.911343906,
+                45.791763348
+              ],
+              [
+                15.911324224,
+                45.791665888
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "stambena zgrada 1825",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 23.1994,
+        "heightM": 23.1994,
+        "floors": 8,
+        "storeys": 8,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#0dcaf0",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266422,
+        "dguBuildingNumber": "1825",
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguFootprintAreaM2": 885.478349998744,
+        "gdiObjectId": 323279,
+        "gdiSurveyYear": 2022,
+        "gdiHeightM": 23.1994,
+        "gdiMatchOverlapRatio": 0.9959710474230272,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 13
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.911824437,
+                45.790504935
+              ],
+              [
+                15.911774465,
+                45.790511336
+              ],
+              [
+                15.911752198,
+                45.79042718
+              ],
+              [
+                15.911660654,
+                45.790081636
+              ],
+              [
+                15.91165211,
+                45.790050189
+              ],
+              [
+                15.911867196,
+                45.790022683
+              ],
+              [
+                15.911874002,
+                45.790048182
+              ],
+              [
+                15.911989427,
+                45.790483559
+              ],
+              [
+                15.911824437,
+                45.790504935
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1516",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 23.13769871,
+        "heightM": 23.13769871,
+        "floors": 8,
+        "storeys": 8,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#ffc107",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266267,
+        "dguBuildingNumber": "1516",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 810.4650000018165,
+        "gdiObjectId": 323465,
+        "gdiSurveyYear": 2022,
+        "gdiHeightM": 23.13769871,
+        "gdiMatchOverlapRatio": 0.9675135781766734,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 14
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.911822079,
+                45.788809341
+              ],
+              [
+                15.911806237,
+                45.788811419
+              ],
+              [
+                15.911767368,
+                45.788667251
+              ],
+              [
+                15.911783469,
+                45.788664995
+              ],
+              [
+                15.911980913,
+                45.788639017
+              ],
+              [
+                15.912019911,
+                45.788783186
+              ],
+              [
+                15.912003812,
+                45.788785262
+              ],
+              [
+                15.912092704,
+                45.789113966
+              ],
+              [
+                15.911910843,
+                45.789137865
+              ],
+              [
+                15.911894499,
+                45.789077674
+              ],
+              [
+                15.911822079,
+                45.788809341
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1518",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 20.9794,
+        "heightM": 20.9794,
+        "floors": 7,
+        "storeys": 7,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#20c997",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266065,
+        "dguBuildingNumber": "1518",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 806.4425500045161,
+        "gdiObjectId": 323278,
+        "gdiSurveyYear": 2022,
+        "gdiHeightM": 20.9794,
+        "gdiMatchOverlapRatio": 0.9934452884574478,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 15
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.912208325,
+                45.790130254
+              ],
+              [
+                15.912202011,
+                45.790106917
+              ],
+              [
+                15.912172516,
+                45.790110814
+              ],
+              [
+                15.912166693,
+                45.790089639
+              ],
+              [
+                15.912138848,
+                45.789985479
+              ],
+              [
+                15.912335911,
+                45.789959499
+              ],
+              [
+                15.912432266,
+                45.790312806
+              ],
+              [
+                15.912461108,
+                45.79042003
+              ],
+              [
+                15.912438311,
+                45.790422972
+              ],
+              [
+                15.912286585,
+                45.790442887
+              ],
+              [
+                15.912262628,
+                45.790446093
+              ],
+              [
+                15.912246661,
+                45.790386624
+              ],
+              [
+                15.912233046,
+                45.790335806
+              ],
+              [
+                15.912229576,
+                45.79032337
+              ],
+              [
+                15.91224413,
+                45.790321466
+              ],
+              [
+                15.912237817,
+                45.790298039
+              ],
+              [
+                15.912223262,
+                45.790299943
+              ],
+              [
+                15.912220791,
+                45.790290303
+              ],
+              [
+                15.91217883,
+                45.790134152
+              ],
+              [
+                15.912208325,
+                45.790130254
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "stambena zgrada 1910",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 19.0167,
+        "heightM": 19.0167,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#2f6fed",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266425,
+        "dguBuildingNumber": "1910",
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguFootprintAreaM2": 681.5844000014723,
+        "gdiObjectId": 314569,
+        "gdiSurveyYear": 2019,
+        "gdiHeightM": 19.0167,
+        "gdiMatchOverlapRatio": 0.9839149453165402,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 16
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.912126743,
+                45.79073324
+              ],
+              [
+                15.912171846,
+                45.790700629
+              ],
+              [
+                15.912257925,
+                45.790758929
+              ],
+              [
+                15.912283979,
+                45.790776519
+              ],
+              [
+                15.912453198,
+                45.790891304
+              ],
+              [
+                15.912468012,
+                45.790901368
+              ],
+              [
+                15.912506199,
+                45.790927208
+              ],
+              [
+                15.912565459,
+                45.790967284
+              ],
+              [
+                15.91242186,
+                45.791070473
+              ],
+              [
+                15.912180609,
+                45.790906998
+              ],
+              [
+                15.912134888,
+                45.79087599
+              ],
+              [
+                15.912028245,
+                45.790803997
+              ],
+              [
+                15.912126743,
+                45.79073324
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1515",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 23.1964,
+        "heightM": 23.1964,
+        "floors": 8,
+        "storeys": 8,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#6f42c1",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266266,
+        "dguBuildingNumber": "1515",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 825.4993500012297,
+        "gdiObjectId": 323466,
+        "gdiSurveyYear": 2022,
+        "gdiHeightM": 23.1964,
+        "gdiMatchOverlapRatio": 0.9524008661272573,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 17
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.91231316,
+                45.788599696
+              ],
+              [
+                15.912310193,
+                45.788588253
+              ],
+              [
+                15.912523737,
+                45.788560018
+              ],
+              [
+                15.912564592,
+                45.788711304
+              ],
+              [
+                15.91254875,
+                45.788713382
+              ],
+              [
+                15.912594305,
+                45.788882509
+              ],
+              [
+                15.912629715,
+                45.789013431
+              ],
+              [
+                15.9126397,
+                45.789042366
+              ],
+              [
+                15.912455139,
+                45.789066252
+              ],
+              [
+                15.91236689,
+                45.788737371
+              ],
+              [
+                15.912351047,
+                45.788739539
+              ],
+              [
+                15.91231316,
+                45.788599696
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "dječji vrtić 2050",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 8.14429,
+        "heightM": 8.14429,
+        "floors": 3,
+        "storeys": 3,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#d63384",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266542,
+        "dguBuildingNumber": "2050",
+        "dguBuildingType": "DJEČJI VRTIĆ",
+        "dguFootprintAreaM2": 1789.804399978663,
+        "gdiObjectId": 323479,
+        "gdiSurveyYear": 2022,
+        "gdiHeightM": 8.14429,
+        "gdiMatchOverlapRatio": 0.995569889700586,
+        "observedUseClass": "D4- Predškolska",
+        "observedUseGroup": "Javne i društvene površine",
+        "consensus:role": "building",
+        "consensus:index": 18
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.912863008,
+                45.789542093
+              ],
+              [
+                15.912881814,
+                45.78953949
+              ],
+              [
+                15.912912525,
+                45.789652482
+              ],
+              [
+                15.912638952,
+                45.789689138
+              ],
+              [
+                15.912626048,
+                45.789644172
+              ],
+              [
+                15.91255211,
+                45.789654589
+              ],
+              [
+                15.912552653,
+                45.789700842
+              ],
+              [
+                15.912418183,
+                45.789719046
+              ],
+              [
+                15.912394883,
+                45.789635245
+              ],
+              [
+                15.912325454,
+                45.789644965
+              ],
+              [
+                15.912186869,
+                45.789663058
+              ],
+              [
+                15.912179688,
+                45.789636567
+              ],
+              [
+                15.91207614,
+                45.789637384
+              ],
+              [
+                15.912074962,
+                45.789565934
+              ],
+              [
+                15.912073197,
+                45.789489172
+              ],
+              [
+                15.91207302,
+                45.789481523
+              ],
+              [
+                15.912072184,
+                45.789438688
+              ],
+              [
+                15.912072142,
+                45.789418173
+              ],
+              [
+                15.91207165,
+                45.789403863
+              ],
+              [
+                15.912082454,
+                45.789403829
+              ],
+              [
+                15.912537162,
+                45.789400139
+              ],
+              [
+                15.912547838,
+                45.789400104
+              ],
+              [
+                15.912549373,
+                45.789486673
+              ],
+              [
+                15.912569953,
+                45.789486508
+              ],
+              [
+                15.912600311,
+                45.789486215
+              ],
+              [
+                15.912620634,
+                45.789486049
+              ],
+              [
+                15.912618712,
+                45.789399659
+              ],
+              [
+                15.912629903,
+                45.789399536
+              ],
+              [
+                15.91284999,
+                45.789397698
+              ],
+              [
+                15.912860794,
+                45.789397754
+              ],
+              [
+                15.91286103,
+                45.789411972
+              ],
+              [
+                15.91286133,
+                45.789432399
+              ],
+              [
+                15.912862063,
+                45.789472893
+              ],
+              [
+                15.912862216,
+                45.789482792
+              ],
+              [
+                15.912863008,
+                45.789542093
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1512",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 17.3356,
+        "heightM": 17.3356,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#198754",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266009,
+        "dguBuildingNumber": "1512",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 1908.6816499966667,
+        "gdiObjectId": 314427,
+        "gdiSurveyYear": 2019,
+        "gdiHeightM": 17.3356,
+        "gdiMatchOverlapRatio": 0.9903739968919839,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 19
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.912716565,
+                45.791631033
+              ],
+              [
+                15.912537592,
+                45.791648648
+              ],
+              [
+                15.912506552,
+                45.791628063
+              ],
+              [
+                15.912418926,
+                45.791570026
+              ],
+              [
+                15.912406408,
+                45.791561683
+              ],
+              [
+                15.912345096,
+                45.791521057
+              ],
+              [
+                15.9123313,
+                45.791511988
+              ],
+              [
+                15.912288126,
+                45.791483332
+              ],
+              [
+                15.912226813,
+                45.791442706
+              ],
+              [
+                15.91217227,
+                45.791406613
+              ],
+              [
+                15.912111086,
+                45.791365988
+              ],
+              [
+                15.912056544,
+                45.791329895
+              ],
+              [
+                15.91199536,
+                45.791289269
+              ],
+              [
+                15.911922553,
+                45.791240935
+              ],
+              [
+                15.912062943,
+                45.791137191
+              ],
+              [
+                15.912136649,
+                45.791185619
+              ],
+              [
+                15.912154669,
+                45.791172215
+              ],
+              [
+                15.912214188,
+                45.791212113
+              ],
+              [
+                15.912196564,
+                45.791224619
+              ],
+              [
+                15.91225263,
+                45.791262609
+              ],
+              [
+                15.912270265,
+                45.791249113
+              ],
+              [
+                15.912329919,
+                45.791288471
+              ],
+              [
+                15.912311898,
+                45.791301965
+              ],
+              [
+                15.912368099,
+                45.791339416
+              ],
+              [
+                15.912385984,
+                45.791326551
+              ],
+              [
+                15.912445899,
+                45.79136555
+              ],
+              [
+                15.912427752,
+                45.791378864
+              ],
+              [
+                15.912486253,
+                45.791417766
+              ],
+              [
+                15.91250453,
+                45.791404363
+              ],
+              [
+                15.912554732,
+                45.791437374
+              ],
+              [
+                15.912536454,
+                45.791450867
+              ],
+              [
+                15.912582051,
+                45.791481514
+              ],
+              [
+                15.912577125,
+                45.791485178
+              ],
+              [
+                15.912666314,
+                45.791504623
+              ],
+              [
+                15.912663749,
+                45.791491742
+              ],
+              [
+                15.91270186,
+                45.791488069
+              ],
+              [
+                15.912698064,
+                45.791469874
+              ],
+              [
+                15.912767078,
+                45.79146303
+              ],
+              [
+                15.912770746,
+                45.791481225
+              ],
+              [
+                15.913249072,
+                45.791434733
+              ],
+              [
+                15.913251641,
+                45.791447343
+              ],
+              [
+                15.913260434,
+                45.791491929
+              ],
+              [
+                15.913265081,
+                45.791514897
+              ],
+              [
+                15.913277298,
+                45.791576416
+              ],
+              [
+                15.9131685,
+                45.791586925
+              ],
+              [
+                15.913119443,
+                45.791591802
+              ],
+              [
+                15.913035879,
+                45.791600011
+              ],
+              [
+                15.912961458,
+                45.791607277
+              ],
+              [
+                15.912877896,
+                45.791615395
+              ],
+              [
+                15.91283927,
+                45.791619066
+              ],
+              [
+                15.912800128,
+                45.791622914
+              ],
+              [
+                15.912716565,
+                45.791631033
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1513",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 18.194,
+        "heightM": 18.194,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#fd7e14",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266010,
+        "dguBuildingNumber": "1513",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 524.0274499982349,
+        "gdiObjectId": 314424,
+        "gdiSurveyYear": 2019,
+        "gdiHeightM": 18.194,
+        "gdiMatchOverlapRatio": 0.9842133839165801,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 20
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.913016851,
+                45.791268427
+              ],
+              [
+                15.912876076,
+                45.791372261
+              ],
+              [
+                15.912818337,
+                45.791334172
+              ],
+              [
+                15.912799287,
+                45.791347751
+              ],
+              [
+                15.91274002,
+                45.791308305
+              ],
+              [
+                15.912758175,
+                45.791294272
+              ],
+              [
+                15.912702742,
+                45.791257095
+              ],
+              [
+                15.912683946,
+                45.791271036
+              ],
+              [
+                15.912624419,
+                45.791231768
+              ],
+              [
+                15.912642569,
+                45.791218275
+              ],
+              [
+                15.912583811,
+                45.791179281
+              ],
+              [
+                15.912612588,
+                45.791158104
+              ],
+              [
+                15.912650438,
+                45.791130315
+              ],
+              [
+                15.912694511,
+                45.791097879
+              ],
+              [
+                15.912725232,
+                45.791075272
+              ],
+              [
+                15.912782712,
+                45.791113359
+              ],
+              [
+                15.912844026,
+                45.791153895
+              ],
+              [
+                15.91289844,
+                45.791190076
+              ],
+              [
+                15.912959753,
+                45.791230612
+              ],
+              [
+                15.913011614,
+                45.791264981
+              ],
+              [
+                15.913016851,
+                45.791268427
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1466",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 19.1564,
+        "heightM": 19.1564,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#0dcaf0",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14265947,
+        "dguBuildingNumber": "1466",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 806.536449996144,
+        "gdiObjectId": 323287,
+        "gdiSurveyYear": 2022,
+        "gdiHeightM": 19.1564,
+        "gdiMatchOverlapRatio": 0.9741406190924907,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 21
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.912997044,
+                45.790349451
+              ],
+              [
+                15.912847893,
+                45.79036911
+              ],
+              [
+                15.912825097,
+                45.790372052
+              ],
+              [
+                15.912796253,
+                45.790264918
+              ],
+              [
+                15.912702344,
+                45.789911264
+              ],
+              [
+                15.912899663,
+                45.789885284
+              ],
+              [
+                15.912913151,
+                45.789935922
+              ],
+              [
+                15.912927766,
+                45.789989445
+              ],
+              [
+                15.912933331,
+                45.790010709
+              ],
+              [
+                15.912903836,
+                45.790014607
+              ],
+              [
+                15.912910151,
+                45.790037944
+              ],
+              [
+                15.912939646,
+                45.790034047
+              ],
+              [
+                15.912981985,
+                45.790191099
+              ],
+              [
+                15.912984209,
+                45.790199839
+              ],
+              [
+                15.912967335,
+                45.790202181
+              ],
+              [
+                15.91297365,
+                45.790225429
+              ],
+              [
+                15.912990523,
+                45.790223176
+              ],
+              [
+                15.913009092,
+                45.790292196
+              ],
+              [
+                15.913023576,
+                45.790345988
+              ],
+              [
+                15.912997044,
+                45.790349451
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1517",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 23.86668642,
+        "heightM": 23.86668642,
+        "floors": 8,
+        "storeys": 8,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#ffc107",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266268,
+        "dguBuildingNumber": "1517",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 909.9966500010718,
+        "gdiObjectId": 323467,
+        "gdiSurveyYear": 2022,
+        "gdiHeightM": 23.86668642,
+        "gdiMatchOverlapRatio": 0.9953472108866954,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 22
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.912892124,
+                45.788986256
+              ],
+              [
+                15.912840232,
+                45.788783625
+              ],
+              [
+                15.912831571,
+                45.788751008
+              ],
+              [
+                15.912814128,
+                45.788685143
+              ],
+              [
+                15.912777379,
+                45.788547015
+              ],
+              [
+                15.912761917,
+                45.788488448
+              ],
+              [
+                15.912958069,
+                45.788462912
+              ],
+              [
+                15.913106181,
+                45.788958383
+              ],
+              [
+                15.912892124,
+                45.788986256
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "zgrada mješovite uporabe 1787",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 16.938,
+        "heightM": 16.938,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#20c997",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266504,
+        "dguBuildingNumber": "1787",
+        "dguBuildingType": "ZGRADA MJEŠOVITE UPORABE",
+        "dguFootprintAreaM2": 749.5544999885618,
+        "gdiObjectId": 318834,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 16.938,
+        "gdiMatchOverlapRatio": 0.9924744196154799,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 23
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.913627359,
+                45.788368001
+              ],
+              [
+                15.913665332,
+                45.788426413
+              ],
+              [
+                15.913733309,
+                45.788530419
+              ],
+              [
+                15.913782552,
+                45.788605714
+              ],
+              [
+                15.913799514,
+                45.788631716
+              ],
+              [
+                15.913834071,
+                45.788684711
+              ],
+              [
+                15.913884705,
+                45.788762264
+              ],
+              [
+                15.913727404,
+                45.788811486
+              ],
+              [
+                15.913643599,
+                45.788683644
+              ],
+              [
+                15.91357613,
+                45.788580271
+              ],
+              [
+                15.913543089,
+                45.788529892
+              ],
+              [
+                15.913491443,
+                45.788450805
+              ],
+              [
+                15.913428781,
+                45.788355104
+              ],
+              [
+                15.913440654,
+                45.788351296
+              ],
+              [
+                15.913516793,
+                45.788326943
+              ],
+              [
+                15.913586093,
+                45.788304803
+              ],
+              [
+                15.913627359,
+                45.788368001
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "poslovna zgrada 1821",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 29.1281,
+        "heightM": 29.1281,
+        "floors": 10,
+        "storeys": 10,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#2f6fed",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266531,
+        "dguBuildingNumber": "1821",
+        "dguBuildingType": "POSLOVNA ZGRADA",
+        "dguFootprintAreaM2": 4861.03839997642,
+        "gdiObjectId": 316797,
+        "gdiSurveyYear": 2019,
+        "gdiHeightM": 29.1281,
+        "gdiMatchOverlapRatio": 0.9963726024873107,
+        "observedUseClass": "Poslovna",
+        "observedUseGroup": "Gospodarstvo",
+        "consensus:role": "building",
+        "consensus:index": 24
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.914395451,
+                45.791181382
+              ],
+              [
+                15.914146172,
+                45.791366183
+              ],
+              [
+                15.913943454,
+                45.791231793
+              ],
+              [
+                15.913937103,
+                45.791236439
+              ],
+              [
+                15.913724543,
+                45.791390654
+              ],
+              [
+                15.913690699,
+                45.791367626
+              ],
+              [
+                15.913542271,
+                45.791269146
+              ],
+              [
+                15.912973338,
+                45.790892268
+              ],
+              [
+                15.913107759,
+                45.790793261
+              ],
+              [
+                15.913440486,
+                45.790549864
+              ],
+              [
+                15.91350399,
+                45.790590051
+              ],
+              [
+                15.913581007,
+                45.790641735
+              ],
+              [
+                15.913734162,
+                45.790743118
+              ],
+              [
+                15.91390303,
+                45.79085484
+              ],
+              [
+                15.914084929,
+                45.790975086
+              ],
+              [
+                15.914229913,
+                45.791070848
+              ],
+              [
+                15.914244724,
+                45.791081272
+              ],
+              [
+                15.914249831,
+                45.791084897
+              ],
+              [
+                15.914315871,
+                45.791128606
+              ],
+              [
+                15.914386254,
+                45.791175307
+              ],
+              [
+                15.914395451,
+                45.791181382
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1430",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 3.548,
+        "heightM": 3.548,
+        "floors": 1,
+        "storeys": 1,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#6f42c1",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266322,
+        "dguBuildingNumber": "1430",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 133.39449999424582,
+        "gdiObjectId": 316592,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 3.548,
+        "gdiMatchOverlapRatio": 0.8273034694242961,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 25
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.913801827,
+                45.791343451
+              ],
+              [
+                15.91382521,
+                45.791358238
+              ],
+              [
+                15.913870186,
+                45.791325446
+              ],
+              [
+                15.913935592,
+                45.791368342
+              ],
+              [
+                15.913895391,
+                45.791399539
+              ],
+              [
+                15.913920555,
+                45.791416224
+              ],
+              [
+                15.913889566,
+                45.79143991
+              ],
+              [
+                15.913891483,
+                45.79144109
+              ],
+              [
+                15.91388902,
+                45.791442877
+              ],
+              [
+                15.913887232,
+                45.791441698
+              ],
+              [
+                15.913850796,
+                45.791469584
+              ],
+              [
+                15.913731934,
+                45.791397261
+              ],
+              [
+                15.913801827,
+                45.791343451
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "zgrada mješovite uporabe 1935",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 18.729,
+        "heightM": 18.729,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#d63384",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266510,
+        "dguBuildingNumber": "1935",
+        "dguBuildingType": "ZGRADA MJEŠOVITE UPORABE",
+        "dguFootprintAreaM2": 779.7716000022901,
+        "gdiObjectId": 318743,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 18.729,
+        "gdiMatchOverlapRatio": 0.22855721449677,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 26
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.914007237,
+                45.790153082
+              ],
+              [
+                15.914013399,
+                45.79016652
+              ],
+              [
+                15.913935686,
+                45.790181238
+              ],
+              [
+                15.913912868,
+                45.79018625
+              ],
+              [
+                15.913906038,
+                45.790187475
+              ],
+              [
+                15.913825206,
+                45.79000899
+              ],
+              [
+                15.91377492,
+                45.789898057
+              ],
+              [
+                15.913700495,
+                45.789734181
+              ],
+              [
+                15.913699492,
+                45.789731747
+              ],
+              [
+                15.91374513,
+                45.789721543
+              ],
+              [
+                15.913898422,
+                45.789686968
+              ],
+              [
+                15.914009102,
+                45.789926072
+              ],
+              [
+                15.914041784,
+                45.789998493
+              ],
+              [
+                15.914061656,
+                45.790041516
+              ],
+              [
+                15.913965735,
+                45.790063159
+              ],
+              [
+                15.914007237,
+                45.790153082
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1501",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 16.833,
+        "heightM": 16.833,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#198754",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266199,
+        "dguBuildingNumber": "1501",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 971.1033499901866,
+        "gdiObjectId": 318833,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 16.833,
+        "gdiMatchOverlapRatio": 0.9664434693708326,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 27
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.914035625,
+                45.788192835
+              ],
+              [
+                15.914046637,
+                45.788209718
+              ],
+              [
+                15.914239314,
+                45.78850359
+              ],
+              [
+                15.914312104,
+                45.788614819
+              ],
+              [
+                15.914328031,
+                45.788641445
+              ],
+              [
+                15.914131089,
+                45.78870549
+              ],
+              [
+                15.913841697,
+                45.788263914
+              ],
+              [
+                15.91382448,
+                45.788237732
+              ],
+              [
+                15.913854419,
+                45.788228168
+              ],
+              [
+                15.914023217,
+                45.788174056
+              ],
+              [
+                15.914035625,
+                45.788192835
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "zgrada mješovite uporabe 1936",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 18.762,
+        "heightM": 18.762,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#fd7e14",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266509,
+        "dguBuildingNumber": "1936",
+        "dguBuildingType": "ZGRADA MJEŠOVITE UPORABE",
+        "dguFootprintAreaM2": 790.5386500005319,
+        "gdiObjectId": 318749,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 18.762,
+        "gdiMatchOverlapRatio": 0.2299275992364164,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 28
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.914366823,
+                45.789972626
+              ],
+              [
+                15.914354574,
+                45.789975443
+              ],
+              [
+                15.914300962,
+                45.789862783
+              ],
+              [
+                15.914189917,
+                45.789621607
+              ],
+              [
+                15.914391414,
+                45.7895772
+              ],
+              [
+                15.91459487,
+                45.790021484
+              ],
+              [
+                15.914492117,
+                45.790044622
+              ],
+              [
+                15.914484821,
+                45.790028928
+              ],
+              [
+                15.914472874,
+                45.790002953
+              ],
+              [
+                15.914444716,
+                45.790002089
+              ],
+              [
+                15.914415831,
+                45.789996812
+              ],
+              [
+                15.914388805,
+                45.789986056
+              ],
+              [
+                15.914366823,
+                45.789972626
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1514",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 17.421,
+        "heightM": 17.421,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#0dcaf0",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266011,
+        "dguBuildingNumber": "1514",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 348.89905000657626,
+        "gdiObjectId": 316664,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 17.421,
+        "gdiMatchOverlapRatio": 0.9009027786991991,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 29
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.91423735,
+                45.790753797
+              ],
+              [
+                15.914359824,
+                45.790665435
+              ],
+              [
+                15.914595084,
+                45.790824196
+              ],
+              [
+                15.914474143,
+                45.790913556
+              ],
+              [
+                15.914358171,
+                45.790835489
+              ],
+              [
+                15.91423735,
+                45.790753797
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1458",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 18.256,
+        "heightM": 18.256,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#ffc107",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266060,
+        "dguBuildingNumber": "1458",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 1365.7974499844338,
+        "gdiObjectId": 316695,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 18.256,
+        "gdiMatchOverlapRatio": 0.8688111417039849,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 30
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.914239999,
+                45.790500968
+              ],
+              [
+                15.91391313,
+                45.790566146
+              ],
+              [
+                15.913764212,
+                45.790465505
+              ],
+              [
+                15.913785609,
+                45.790461206
+              ],
+              [
+                15.914268051,
+                45.790364702
+              ],
+              [
+                15.914292799,
+                45.7903597
+              ],
+              [
+                15.914662332,
+                45.790285651
+              ],
+              [
+                15.9146656,
+                45.790292956
+              ],
+              [
+                15.914672988,
+                45.790312069
+              ],
+              [
+                15.914694606,
+                45.79031119
+              ],
+              [
+                15.914713946,
+                45.790319028
+              ],
+              [
+                15.914733391,
+                45.790304461
+              ],
+              [
+                15.914740517,
+                45.790299548
+              ],
+              [
+                15.915035677,
+                45.790498745
+              ],
+              [
+                15.914912404,
+                45.790589894
+              ],
+              [
+                15.914686599,
+                45.790437121
+              ],
+              [
+                15.914704876,
+                45.790423628
+              ],
+              [
+                15.914607821,
+                45.790406124
+              ],
+              [
+                15.914615338,
+                45.790425329
+              ],
+              [
+                15.914316816,
+                45.790485795
+              ],
+              [
+                15.914239999,
+                45.790500968
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "škola 2051",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 11.6913,
+        "heightM": 11.6913,
+        "floors": 4,
+        "storeys": 4,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#20c997",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266540,
+        "dguBuildingNumber": "2051",
+        "dguBuildingType": "ŠKOLA",
+        "dguFootprintAreaM2": 2325.1191999745274,
+        "gdiObjectId": 318737,
+        "gdiSurveyYear": 2019,
+        "gdiHeightM": 11.6913,
+        "gdiMatchOverlapRatio": 0.928958809171634,
+        "observedUseClass": "D5- Školska",
+        "observedUseGroup": "Javne i društvene površine",
+        "consensus:role": "building",
+        "consensus:index": 31
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.914940932,
+                45.788871334
+              ],
+              [
+                15.915092102,
+                45.789100837
+              ],
+              [
+                15.915015057,
+                45.789125637
+              ],
+              [
+                15.914585051,
+                45.789263983
+              ],
+              [
+                15.914528318,
+                45.789179111
+              ],
+              [
+                15.914514674,
+                45.789180121
+              ],
+              [
+                15.914525955,
+                45.789245144
+              ],
+              [
+                15.914005105,
+                45.789288724
+              ],
+              [
+                15.913939899,
+                45.789190221
+              ],
+              [
+                15.913915278,
+                45.789048197
+              ],
+              [
+                15.914103873,
+                45.789032068
+              ],
+              [
+                15.914109104,
+                45.789048381
+              ],
+              [
+                15.914132404,
+                45.789046431
+              ],
+              [
+                15.914130821,
+                45.789037965
+              ],
+              [
+                15.914669949,
+                45.788992769
+              ],
+              [
+                15.914671526,
+                45.789001775
+              ],
+              [
+                15.91470358,
+                45.788999149
+              ],
+              [
+                15.914707347,
+                45.788946441
+              ],
+              [
+                15.914940932,
+                45.788871334
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1460",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 17.257,
+        "heightM": 17.257,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#2f6fed",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266062,
+        "dguBuildingNumber": "1460",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 975.4687000045374,
+        "gdiObjectId": 318825,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 17.257,
+        "gdiMatchOverlapRatio": 0.9740809032957478,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 32
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.914710821,
+                45.788295004
+              ],
+              [
+                15.914832999,
+                45.788480178
+              ],
+              [
+                15.914663816,
+                45.7885342
+              ],
+              [
+                15.914635299,
+                45.788543051
+              ],
+              [
+                15.91461602,
+                45.788517218
+              ],
+              [
+                15.914543099,
+                45.78840617
+              ],
+              [
+                15.91435055,
+                45.788112298
+              ],
+              [
+                15.914339538,
+                45.788095325
+              ],
+              [
+                15.914325866,
+                45.78807447
+              ],
+              [
+                15.914430004,
+                45.788041531
+              ],
+              [
+                15.914495169,
+                45.78802108
+              ],
+              [
+                15.914525107,
+                45.788011605
+              ],
+              [
+                15.914543084,
+                45.788039051
+              ],
+              [
+                15.914679806,
+                45.788247605
+              ],
+              [
+                15.914710821,
+                45.788295004
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1473",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 17.243,
+        "heightM": 17.243,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#6f42c1",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266269,
+        "dguBuildingNumber": "1473",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 842.2628999838048,
+        "gdiObjectId": 316662,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 17.243,
+        "gdiMatchOverlapRatio": 0.5934157207990512,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 33
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.914733293,
+                45.791088005
+              ],
+              [
+                15.914632904,
+                45.791020276
+              ],
+              [
+                15.91461681,
+                45.791009575
+              ],
+              [
+                15.914474143,
+                45.790913556
+              ],
+              [
+                15.914595084,
+                45.790824196
+              ],
+              [
+                15.914738016,
+                45.790919407
+              ],
+              [
+                15.914757175,
+                45.790932282
+              ],
+              [
+                15.914760624,
+                45.790934549
+              ],
+              [
+                15.91487302,
+                45.791010258
+              ],
+              [
+                15.914902909,
+                45.791030207
+              ],
+              [
+                15.915030699,
+                45.790937732
+              ],
+              [
+                15.915158414,
+                45.791024496
+              ],
+              [
+                15.915095685,
+                45.791069975
+              ],
+              [
+                15.914998612,
+                45.791140112
+              ],
+              [
+                15.914984096,
+                45.791150655
+              ],
+              [
+                15.914908146,
+                45.791205784
+              ],
+              [
+                15.914893458,
+                45.791195901
+              ],
+              [
+                15.914733293,
+                45.791088005
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1506",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 15.691,
+        "heightM": 15.691,
+        "floors": 5,
+        "storeys": 5,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#d63384",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266263,
+        "dguBuildingNumber": "1506",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 832.7500500010889,
+        "gdiObjectId": 318824,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 15.691,
+        "gdiMatchOverlapRatio": 0.9946767498467934,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 34
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.914636782,
+                45.789494956
+              ],
+              [
+                15.914738348,
+                45.789462184
+              ],
+              [
+                15.914824298,
+                45.789434551
+              ],
+              [
+                15.915069395,
+                45.789808412
+              ],
+              [
+                15.915103073,
+                45.789859513
+              ],
+              [
+                15.914916073,
+                45.789919652
+              ],
+              [
+                15.914846818,
+                45.789814471
+              ],
+              [
+                15.914738191,
+                45.789649252
+              ],
+              [
+                15.914650453,
+                45.789515902
+              ],
+              [
+                15.914636782,
+                45.789494956
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1503",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 16.543,
+        "heightM": 16.543,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#198754",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266201,
+        "dguBuildingNumber": "1503",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 850.8197499983771,
+        "gdiObjectId": 318765,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 16.543,
+        "gdiMatchOverlapRatio": 0.9978434106269393,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 35
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.914964637,
+                45.78790867
+              ],
+              [
+                15.915170999,
+                45.788222497
+              ],
+              [
+                15.915252913,
+                45.788346908
+              ],
+              [
+                15.915067332,
+                45.788407145
+              ],
+              [
+                15.914884907,
+                45.788128803
+              ],
+              [
+                15.914780091,
+                45.787968372
+              ],
+              [
+                15.914805518,
+                45.787959864
+              ],
+              [
+                15.914939472,
+                45.78791682
+              ],
+              [
+                15.914964637,
+                45.78790867
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1456",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 18.256,
+        "heightM": 18.256,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#fd7e14",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266068,
+        "dguBuildingNumber": "1456",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 209.43380000146317,
+        "gdiObjectId": 316695,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 18.256,
+        "gdiMatchOverlapRatio": 0.8618828741379412,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 36
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.91513773,
+                45.790567203
+              ],
+              [
+                15.915175409,
+                45.7905925
+              ],
+              [
+                15.915145986,
+                45.790614034
+              ],
+              [
+                15.91511838,
+                45.790634139
+              ],
+              [
+                15.915103475,
+                45.79064495
+              ],
+              [
+                15.915072369,
+                45.790667556
+              ],
+              [
+                15.915050338,
+                45.790683369
+              ],
+              [
+                15.914991978,
+                45.790643209
+              ],
+              [
+                15.914912404,
+                45.790589894
+              ],
+              [
+                15.915035677,
+                45.790498745
+              ],
+              [
+                15.915114229,
+                45.790551426
+              ],
+              [
+                15.91513773,
+                45.790567203
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1459",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 17.372,
+        "heightM": 17.372,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#0dcaf0",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266061,
+        "dguBuildingNumber": "1459",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 538.11524999545,
+        "gdiObjectId": 316660,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 17.372,
+        "gdiMatchOverlapRatio": 0.9929862749907339,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 37
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.91536982,
+                45.790684914
+              ],
+              [
+                15.915469043,
+                45.790753447
+              ],
+              [
+                15.915499308,
+                45.790774297
+              ],
+              [
+                15.915158414,
+                45.791024496
+              ],
+              [
+                15.915030699,
+                45.790937732
+              ],
+              [
+                15.915201171,
+                45.790810293
+              ],
+              [
+                15.915342588,
+                45.79070601
+              ],
+              [
+                15.91536982,
+                45.790684914
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1454",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 15.176,
+        "heightM": 15.176,
+        "floors": 5,
+        "storeys": 5,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#ffc107",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266051,
+        "dguBuildingNumber": "1454",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 830.6378999995418,
+        "gdiObjectId": 318788,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 15.176,
+        "gdiMatchOverlapRatio": 0.9952753910008424,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 38
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.915430227,
+                45.789754202
+              ],
+              [
+                15.915396549,
+                45.789703011
+              ],
+              [
+                15.915151192,
+                45.789329328
+              ],
+              [
+                15.915260888,
+                45.789293988
+              ],
+              [
+                15.915337803,
+                45.789269277
+              ],
+              [
+                15.915383253,
+                45.789338524
+              ],
+              [
+                15.91540136,
+                45.789365881
+              ],
+              [
+                15.915439214,
+                45.789423572
+              ],
+              [
+                15.915516065,
+                45.789540399
+              ],
+              [
+                15.915617097,
+                45.789694061
+              ],
+              [
+                15.91553747,
+                45.789719748
+              ],
+              [
+                15.915430227,
+                45.789754202
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1540",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 17.398,
+        "heightM": 17.398,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#20c997",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14265980,
+        "dguBuildingNumber": "1540",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 1417.331449993837,
+        "gdiObjectId": 316614,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 17.398,
+        "gdiMatchOverlapRatio": 0.657642439909428,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 39
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.91570512,
+                45.790477426
+              ],
+              [
+                15.915808286,
+                45.790402461
+              ],
+              [
+                15.91577853,
+                45.790382063
+              ],
+              [
+                15.91582714,
+                45.79034605
+              ],
+              [
+                15.915982194,
+                45.790450589
+              ],
+              [
+                15.915714946,
+                45.790644839
+              ],
+              [
+                15.915591698,
+                45.790561427
+              ],
+              [
+                15.915575605,
+                45.790550547
+              ],
+              [
+                15.915557213,
+                45.790538126
+              ],
+              [
+                15.915542909,
+                45.790528425
+              ],
+              [
+                15.915519791,
+                45.79051283
+              ],
+              [
+                15.915505615,
+                45.79050322
+              ],
+              [
+                15.915503571,
+                45.79050186
+              ],
+              [
+                15.915442906,
+                45.790460699
+              ],
+              [
+                15.9153263,
+                45.790381729
+              ],
+              [
+                15.915229616,
+                45.790316449
+              ],
+              [
+                15.915111095,
+                45.79023621
+              ],
+              [
+                15.915013263,
+                45.790170024
+              ],
+              [
+                15.915191596,
+                45.790127027
+              ],
+              [
+                15.915258778,
+                45.790110724
+              ],
+              [
+                15.915413771,
+                45.790073366
+              ],
+              [
+                15.91542049,
+                45.790070431
+              ],
+              [
+                15.915528787,
+                45.790144409
+              ],
+              [
+                15.91547889,
+                45.790180595
+              ],
+              [
+                15.915449901,
+                45.790160651
+              ],
+              [
+                15.915347757,
+                45.790236252
+              ],
+              [
+                15.91570512,
+                45.790477426
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1502",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 16.73,
+        "heightM": 16.73,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#2f6fed",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266200,
+        "dguBuildingNumber": "1502",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 853.4971500041141,
+        "gdiObjectId": 318764,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 16.73,
+        "gdiMatchOverlapRatio": 0.9959001765872042,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 40
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.915477999,
+                45.787743395
+              ],
+              [
+                15.915586879,
+                45.787908885
+              ],
+              [
+                15.91576718,
+                45.788181457
+              ],
+              [
+                15.915580957,
+                45.788241691
+              ],
+              [
+                15.915498656,
+                45.788117277
+              ],
+              [
+                15.915292683,
+                45.787803093
+              ],
+              [
+                15.915317847,
+                45.787795034
+              ],
+              [
+                15.915451801,
+                45.787751899
+              ],
+              [
+                15.915477999,
+                45.787743395
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1465",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 17.241,
+        "heightM": 17.241,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#6f42c1",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266283,
+        "dguBuildingNumber": "1465",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 505.662349994983,
+        "gdiObjectId": 316628,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 17.241,
+        "gdiMatchOverlapRatio": 0.9962357035398858,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 41
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.915860769,
+                45.791029889
+              ],
+              [
+                15.915889634,
+                45.791049382
+              ],
+              [
+                15.915914667,
+                45.791066336
+              ],
+              [
+                15.915943533,
+                45.79108574
+              ],
+              [
+                15.915968566,
+                45.791102694
+              ],
+              [
+                15.915991301,
+                45.791118017
+              ],
+              [
+                15.915957344,
+                45.791142677
+              ],
+              [
+                15.915931035,
+                45.791161709
+              ],
+              [
+                15.915871028,
+                45.791205222
+              ],
+              [
+                15.915844718,
+                45.791224253
+              ],
+              [
+                15.915811151,
+                45.791248556
+              ],
+              [
+                15.915788417,
+                45.791233143
+              ],
+              [
+                15.915763382,
+                45.791216369
+              ],
+              [
+                15.915752655,
+                45.791208936
+              ],
+              [
+                15.915579079,
+                45.791091884
+              ],
+              [
+                15.915612648,
+                45.791067491
+              ],
+              [
+                15.915638957,
+                45.79104846
+              ],
+              [
+                15.915698964,
+                45.791004947
+              ],
+              [
+                15.915725274,
+                45.790985916
+              ],
+              [
+                15.91575923,
+                45.790961345
+              ],
+              [
+                15.915781964,
+                45.790976668
+              ],
+              [
+                15.915806998,
+                45.790993532
+              ],
+              [
+                15.915835863,
+                45.791013115
+              ],
+              [
+                15.915860769,
+                45.791029889
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1537",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 17.763,
+        "heightM": 17.763,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#d63384",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266151,
+        "dguBuildingNumber": "1537",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 899.8578000060942,
+        "gdiObjectId": 318808,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 17.763,
+        "gdiMatchOverlapRatio": 0.9878392283036611,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 42
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.915648209,
+                45.789289311
+              ],
+              [
+                15.915637322,
+                45.789272609
+              ],
+              [
+                15.915583004,
+                45.789190359
+              ],
+              [
+                15.915785358,
+                45.789125259
+              ],
+              [
+                15.916007808,
+                45.789463641
+              ],
+              [
+                15.91606491,
+                45.789550313
+              ],
+              [
+                15.916002964,
+                45.789570242
+              ],
+              [
+                15.915935083,
+                45.78959203
+              ],
+              [
+                15.915862684,
+                45.789615325
+              ],
+              [
+                15.915819636,
+                45.789549959
+              ],
+              [
+                15.915736327,
+                45.789423382
+              ],
+              [
+                15.915648209,
+                45.789289311
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1451",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 16.87,
+        "heightM": 16.87,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#198754",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266019,
+        "dguBuildingNumber": "1451",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 658.780300001995,
+        "gdiObjectId": 316620,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 16.87,
+        "gdiMatchOverlapRatio": 1.0000000000000002,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 43
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.915646864,
+                45.790094894
+              ],
+              [
+                15.91565594,
+                45.790088012
+              ],
+              [
+                15.915573932,
+                45.790033784
+              ],
+              [
+                15.915735654,
+                45.789980174
+              ],
+              [
+                15.915793646,
+                45.790018622
+              ],
+              [
+                15.916181962,
+                45.790276419
+              ],
+              [
+                15.916067118,
+                45.790361223
+              ],
+              [
+                15.915964037,
+                45.790292582
+              ],
+              [
+                15.91595522,
+                45.790299375
+              ],
+              [
+                15.91592738,
+                45.790280247
+              ],
+              [
+                15.915936453,
+                45.790273545
+              ],
+              [
+                15.915684292,
+                45.790107323
+              ],
+              [
+                15.915675353,
+                45.790113485
+              ],
+              [
+                15.915646864,
+                45.790094894
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "stambena zgrada 1937",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 15.38,
+        "heightM": 15.38,
+        "floors": 5,
+        "storeys": 5,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#fd7e14",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266447,
+        "dguBuildingNumber": "1937",
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguFootprintAreaM2": 765.3607499920392,
+        "gdiObjectId": 318847,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 15.38,
+        "gdiMatchOverlapRatio": 0.9997675387286722,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 44
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.915866753,
+                45.788351578
+              ],
+              [
+                15.915876502,
+                45.788366385
+              ],
+              [
+                15.915940059,
+                45.788462988
+              ],
+              [
+                15.915955123,
+                45.7884861
+              ],
+              [
+                15.916006148,
+                45.788563383
+              ],
+              [
+                15.9160497,
+                45.788629741
+              ],
+              [
+                15.91607249,
+                45.78866432
+              ],
+              [
+                15.916074135,
+                45.788666938
+              ],
+              [
+                15.916089327,
+                45.78869005
+              ],
+              [
+                15.916113385,
+                45.788726435
+              ],
+              [
+                15.916152885,
+                45.788786654
+              ],
+              [
+                15.916161873,
+                45.788800377
+              ],
+              [
+                15.915999142,
+                45.788852453
+              ],
+              [
+                15.915769847,
+                45.788504768
+              ],
+              [
+                15.915703632,
+                45.788404102
+              ],
+              [
+                15.915747896,
+                45.788389932
+              ],
+              [
+                15.915811906,
+                45.788369294
+              ],
+              [
+                15.915866753,
+                45.788351578
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1447",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 17.98,
+        "heightM": 17.98,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#0dcaf0",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14265948,
+        "dguBuildingNumber": "1447",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 623.3086999932623,
+        "gdiObjectId": 316613,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 17.98,
+        "gdiMatchOverlapRatio": 0.995107951846744,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 45
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.916114497,
+                45.790947954
+              ],
+              [
+                15.916093294,
+                45.790933809
+              ],
+              [
+                15.916096923,
+                45.790931128
+              ],
+              [
+                15.915944413,
+                45.790829121
+              ],
+              [
+                15.916092299,
+                45.790721092
+              ],
+              [
+                15.916440231,
+                45.790954477
+              ],
+              [
+                15.916292223,
+                45.791061877
+              ],
+              [
+                15.916132942,
+                45.790955337
+              ],
+              [
+                15.916129314,
+                45.790957928
+              ],
+              [
+                15.916126631,
+                45.790956115
+              ],
+              [
+                15.916114497,
+                45.790947954
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1475",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 17.638,
+        "heightM": 17.638,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#ffc107",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266271,
+        "dguBuildingNumber": "1475",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 500.19675000200533,
+        "gdiObjectId": 318785,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 17.638,
+        "gdiMatchOverlapRatio": 0.9999999999999999,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 46
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.916246107,
+                45.789811731
+              ],
+              [
+                15.916274981,
+                45.789830324
+              ],
+              [
+                15.916265907,
+                45.789837117
+              ],
+              [
+                15.916405527,
+                45.789929339
+              ],
+              [
+                15.91641446,
+                45.789923716
+              ],
+              [
+                15.91644192,
+                45.789942302
+              ],
+              [
+                15.916433751,
+                45.789948559
+              ],
+              [
+                15.91653516,
+                45.790017192
+              ],
+              [
+                15.916421487,
+                45.790100833
+              ],
+              [
+                15.916099847,
+                45.789887467
+              ],
+              [
+                15.916040578,
+                45.789848112
+              ],
+              [
+                15.916202285,
+                45.789795851
+              ],
+              [
+                15.916236256,
+                45.789819059
+              ],
+              [
+                15.916246107,
+                45.789811731
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1536",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 17.507,
+        "heightM": 17.507,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#20c997",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266150,
+        "dguBuildingNumber": "1536",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 842.199399996744,
+        "gdiObjectId": 318759,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 17.507,
+        "gdiMatchOverlapRatio": 0.9944768990692139,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 47
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.91633898,
+                45.789046837
+              ],
+              [
+                15.916349868,
+                45.789063448
+              ],
+              [
+                15.916506865,
+                45.789302067
+              ],
+              [
+                15.91654752,
+                45.789362651
+              ],
+              [
+                15.916405835,
+                45.789406828
+              ],
+              [
+                15.91634389,
+                45.789426757
+              ],
+              [
+                15.916305146,
+                45.789367982
+              ],
+              [
+                15.916233358,
+                45.789258829
+              ],
+              [
+                15.916082566,
+                45.7890296
+              ],
+              [
+                15.916156514,
+                45.789005773
+              ],
+              [
+                15.916284663,
+                45.788964407
+              ],
+              [
+                15.91633898,
+                45.789046837
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1434",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 17.188,
+        "heightM": 17.188,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#2f6fed",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266175,
+        "dguBuildingNumber": "1434",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 647.0447999939898,
+        "gdiObjectId": 316612,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 17.188,
+        "gdiMatchOverlapRatio": 1.0000000000000002,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 48
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.916359723,
+                45.790559235
+              ],
+              [
+                15.916756122,
+                45.790819501
+              ],
+              [
+                15.91674316,
+                45.790829063
+              ],
+              [
+                15.916854677,
+                45.790902965
+              ],
+              [
+                15.916749928,
+                45.790981793
+              ],
+              [
+                15.916636367,
+                45.79090653
+              ],
+              [
+                15.916649589,
+                45.7908967
+              ],
+              [
+                15.916255361,
+                45.790637884
+              ],
+              [
+                15.916273382,
+                45.790624209
+              ],
+              [
+                15.91632472,
+                45.7905856
+              ],
+              [
+                15.916359723,
+                45.790559235
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1450",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 16.712,
+        "heightM": 16.712,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#6f42c1",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266018,
+        "dguBuildingNumber": "1450",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 406.9989000023408,
+        "gdiObjectId": 318777,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 16.712,
+        "gdiMatchOverlapRatio": 0.9999999999999999,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 49
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.916637245,
+                45.789589499
+              ],
+              [
+                15.916677748,
+                45.78961535
+              ],
+              [
+                15.916733179,
+                45.789652705
+              ],
+              [
+                15.916894896,
+                45.789759706
+              ],
+              [
+                15.916771625,
+                45.789851127
+              ],
+              [
+                15.916638898,
+                45.789763888
+              ],
+              [
+                15.916485748,
+                45.789661789
+              ],
+              [
+                15.916637245,
+                45.789589499
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "kuća 1469",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 17.395,
+        "heightM": 17.395,
+        "floors": 6,
+        "storeys": 6,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#d63384",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14265974,
+        "dguBuildingNumber": "1469",
+        "dguBuildingType": "KUĆA",
+        "dguFootprintAreaM2": 653.350399998909,
+        "gdiObjectId": 318761,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 17.395,
+        "gdiMatchOverlapRatio": 0.394730067804599,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 50
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.916787896,
+                45.789240606
+              ],
+              [
+                15.916703728,
+                45.789146867
+              ],
+              [
+                15.916510473,
+                45.788931638
+              ],
+              [
+                15.916685298,
+                45.788854608
+              ],
+              [
+                15.916754082,
+                45.788931083
+              ],
+              [
+                15.916836345,
+                45.789022472
+              ],
+              [
+                15.916849567,
+                45.789037296
+              ],
+              [
+                15.916964656,
+                45.789163046
+              ],
+              [
+                15.916787896,
+                45.789240606
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "stambena zgrada 2054",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 9,
+        "heightM": 9,
+        "floors": 3,
+        "storeys": 3,
+        "floorCountBasis": "rezervna procjena od 3 etaže; za ovaj DGU tlocrt nema podudarne GDI visine",
+        "color": "#198754",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + eksplicitno označena rezervna visina",
+        "dguBuildingId": 14266430,
+        "dguBuildingNumber": "2054",
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguFootprintAreaM2": 526.633549990654,
+        "gdiObjectId": null,
+        "gdiSurveyYear": null,
+        "gdiHeightM": null,
+        "gdiMatchOverlapRatio": null,
+        "observedUseClass": null,
+        "observedUseGroup": null,
+        "consensus:role": "building",
+        "consensus:index": 51
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.916912702,
+                45.789445947
+              ],
+              [
+                15.916922393,
+                45.789441678
+              ],
+              [
+                15.916904592,
+                45.789421971
+              ],
+              [
+                15.916920242,
+                45.789413593
+              ],
+              [
+                15.916949343,
+                45.789398085
+              ],
+              [
+                15.917136064,
+                45.789314997
+              ],
+              [
+                15.917143171,
+                45.789311884
+              ],
+              [
+                15.917316471,
+                45.789504515
+              ],
+              [
+                15.917311674,
+                45.789508179
+              ],
+              [
+                15.91729054,
+                45.789524448
+              ],
+              [
+                15.917130051,
+                45.789595703
+              ],
+              [
+                15.917044364,
+                45.789536599
+              ],
+              [
+                15.917057673,
+                45.789530728
+              ],
+              [
+                15.91703898,
+                45.789510208
+              ],
+              [
+                15.917024865,
+                45.789494659
+              ],
+              [
+                15.916999667,
+                45.789505868
+              ],
+              [
+                15.916912702,
+                45.789445947
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "sakralna zgrada 1492",
+        "block": "Vrbani III – rekonstrukcija naselja",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 12.141,
+        "heightM": 12.141,
+        "floors": 4,
+        "storeys": 4,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#fd7e14",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "dguBuildingId": 14266081,
+        "dguBuildingNumber": "1492",
+        "dguBuildingType": "SAKRALNA ZGRADA",
+        "dguFootprintAreaM2": 528.2567499947634,
+        "gdiObjectId": 316650,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 12.141,
+        "gdiMatchOverlapRatio": 0.856702303365899,
+        "observedUseClass": "D8- Vjerska",
+        "observedUseGroup": "Javne i društvene površine",
+        "consensus:role": "building",
+        "consensus:index": 52
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.91777006,
+                45.790547264
+              ],
+              [
+                15.91773441,
+                45.790573987
+              ],
+              [
+                15.917684588,
+                45.79054134
+              ],
+              [
+                15.917675252,
+                45.790548491
+              ],
+              [
+                15.917574712,
+                45.790482743
+              ],
+              [
+                15.917563821,
+                45.790491055
+              ],
+              [
+                15.917496495,
+                45.790447072
+              ],
+              [
+                15.917507257,
+                45.790438849
+              ],
+              [
+                15.917407098,
+                45.790373463
+              ],
+              [
+                15.917416952,
+                45.790365955
+              ],
+              [
+                15.91736713,
+                45.790333308
+              ],
+              [
+                15.91746669,
+                45.790258502
+              ],
+              [
+                15.917516642,
+                45.79029106
+              ],
+              [
+                15.917525978,
+                45.790283819
+              ],
+              [
+                15.917626138,
+                45.790349025
+              ],
+              [
+                15.917636639,
+                45.79034107
+              ],
+              [
+                15.917703705,
+                45.790385322
+              ],
+              [
+                15.917693722,
+                45.79039292
+              ],
+              [
+                15.917794522,
+                45.790458489
+              ],
+              [
+                15.917784669,
+                45.790465907
+              ],
+              [
+                15.917835005,
+                45.790498646
+              ],
+              [
+                15.917799747,
+                45.790524921
+              ],
+              [
+                15.917804473,
+                45.790528094
+              ],
+              [
+                15.917774787,
+                45.790550258
+              ],
+              [
+                15.91777006,
+                45.790547264
+              ]
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

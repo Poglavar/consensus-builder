@@ -363,6 +363,7 @@ function buildSharedProposalsPayload(appliedProposals) {
                 geometry: deepClone(sp.geometry),
                 decorations: deepClone(sp.decorations || null),
                 blockName: sp.blockName || null,
+                referenceOnly: sp.referenceOnly === true,
                 parentParcelIds: parentIds
             };
         }

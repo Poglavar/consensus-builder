@@ -784,6 +784,7 @@ function prepareProposalForImport(sharedProposal) {
             geometry: deepClone(sharedStructure.geometry),
             decorations: deepClone(sharedStructure.decorations || null),
             blockName: sharedStructure.blockName || null,
+            referenceOnly: sharedStructure.referenceOnly === true,
             parentParcelIds: ensureArrayOfStrings(sharedStructure.parentParcelIds && sharedStructure.parentParcelIds.length ? sharedStructure.parentParcelIds : base.parentParcelIds)
         };
         if (base.structureProposal.kind === 'station') {

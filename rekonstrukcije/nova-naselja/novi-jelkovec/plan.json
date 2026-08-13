@@ -1,0 +1,142 @@
+{
+  "schema": "consensus-builder.reconstruction-plan.v1",
+  "project": "novi-jelkovec",
+  "title": "Novi Jelkovec – rekonstrukcija naselja",
+  "planTitle": "Novi Jelkovec – zgrade, parkovi, trgovi i prometnice",
+  "sourcePlan": "DPU stambenog naselja na lokaciji Sopnica - Jelkovec",
+  "planYears": "DPU 2003.; izmjene 2007., 2016. i 2020.",
+  "implementationStatus": "izvedeno u cijelosti prema službenoj ocjeni realizacije plana",
+  "generatedAt": "2026-08-14T00:00:00.000Z",
+  "planSlug": "novi-jelkovec",
+  "localPath": "/proposals/novi-jelkovec?city=zagreb",
+  "sources": [
+    "https://zagreb.hr/izmjene-i-dopune-detaljnog-plana-uredjenja-stamben/168074",
+    "https://www.zagreb.hr/userdocsimages/arhiva/prostorni_planovi/dpu%20sopnica%20jelkovec/s-j_graficki%20dio_I%20%2820210120%29.pdf",
+    "https://data.zagreb.hr/dataset/geoportal-urbanisticki-planovi-uredenja"
+  ],
+  "context": {
+    "file": "plan-land-use.geojson",
+    "areaM2": 395338.6653480422
+  },
+  "proposals": [
+    {
+      "proposalId": "reconstruction-novi-jelkovec-roads",
+      "kind": "road",
+      "file": "proposal-roads.geojson",
+      "geometryCount": 85
+    },
+    {
+      "proposalId": "reconstruction-novi-jelkovec-park-jp-524",
+      "kind": "park",
+      "file": "proposal-park-jp-524.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-novi-jelkovec-park-jp-3648",
+      "kind": "park",
+      "file": "proposal-park-jp-3648.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-novi-jelkovec-park-pa-1277",
+      "kind": "park",
+      "file": "proposal-park-pa-1277.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-novi-jelkovec-park-pa-1278",
+      "kind": "park",
+      "file": "proposal-park-pa-1278.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-novi-jelkovec-park-pa-1279",
+      "kind": "park",
+      "file": "proposal-park-pa-1279.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-novi-jelkovec-park-pa-1280",
+      "kind": "park",
+      "file": "proposal-park-pa-1280.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-novi-jelkovec-park-pa-1281",
+      "kind": "park",
+      "file": "proposal-park-pa-1281.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-novi-jelkovec-park-pa-1282",
+      "kind": "park",
+      "file": "proposal-park-pa-1282.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-novi-jelkovec-park-pa-1283",
+      "kind": "park",
+      "file": "proposal-park-pa-1283.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-novi-jelkovec-park-pa-1284",
+      "kind": "park",
+      "file": "proposal-park-pa-1284.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-novi-jelkovec-park-pa-1285",
+      "kind": "park",
+      "file": "proposal-park-pa-1285.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-novi-jelkovec-square-jt-549",
+      "kind": "square",
+      "file": "proposal-square-jt-549.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-novi-jelkovec-square-jt1-550",
+      "kind": "square",
+      "file": "proposal-square-jt1-550.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-novi-jelkovec-square-jt1-551",
+      "kind": "square",
+      "file": "proposal-square-jt1-551.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-novi-jelkovec-square-jt1-552",
+      "kind": "square",
+      "file": "proposal-square-jt1-552.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-novi-jelkovec-square-jt1-553",
+      "kind": "square",
+      "file": "proposal-square-jt1-553.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-novi-jelkovec-buildings",
+      "kind": "building",
+      "file": "proposal-buildings.geojson",
+      "geometryCount": 64
+    }
+  ],
+  "statistics": {
+    "proposalCount": 18,
+    "buildingCount": 64,
+    "observedBuildingCount": 64,
+    "planDerivedBuildingCount": 0,
+    "parkCount": 11,
+    "squareCount": 5,
+    "roadCentrelineCount": 85,
+    "roadLengthM": 7364.914946573299,
+    "roadFootprintAreaM2": 149513.23262446502
+  }
+}

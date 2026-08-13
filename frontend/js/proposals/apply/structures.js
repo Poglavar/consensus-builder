@@ -7,7 +7,29 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
+    function structureNeedsGroundFormation(kind, structureProposal) {
+        return kind !== 'station' && structureProposal?.referenceOnly !== true;
+    }
+
+    function structureNeedsDemolitionScan(structureProposal) {
+        return structureProposal?.referenceOnly !== true;
+    }
+
+    function structureNeedsLiveParentResolution(structureProposal) {
+        return structureProposal?.referenceOnly !== true;
+    }
+
+    function declaredStructureParentIds(proposalData, structureProposal) {
+        const values = Array.isArray(structureProposal?.parentParcelIds) && structureProposal.parentParcelIds.length
+            ? structureProposal.parentParcelIds
+            : (Array.isArray(proposalData?.parentParcelIds) ? proposalData.parentParcelIds : []);
+        return Array.from(new Set(values.map(value => String(value || '').trim()).filter(Boolean)));
+    }
+
     return {
+    structureNeedsGroundFormation,
+    structureNeedsDemolitionScan,
+    structureNeedsLiveParentResolution,
     async _applyStructureProposal(proposalId, proposalData, options = {}) {
         const startTime = performance.now();
         const idLabel = _normalizeProposalId(proposalId) || 'unknown-proposal';
@@ -46,7 +68,9 @@
             sp.demolishedBuildings = [];
             delete sp.demolitionScanned;
             try {
-                if (geometry && typeof this._deriveDemolishedBuildings === 'function') {
+                if (structureNeedsDemolitionScan(sp)
+                    && geometry
+                    && typeof this._deriveDemolishedBuildings === 'function') {
                     sp.demolishedBuildings = await this._deriveDemolishedBuildings(geometry, {
                         ...options,
                         proposalId: idLabel
@@ -88,20 +112,32 @@
             if (geometry) {
                 try { sp.geometry = JSON.parse(JSON.stringify(geometry)); } catch (_) { sp.geometry = geometry; }
             }
-            const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, kind);
-            if (!liveParents.ok) return false;
-            let parentIds = liveParents.ids;
-            const flatParentIds = liveParents.cadastreIds.slice();
-            traceApply(`Step 2: Resolved ${parentIds.length} live parcel(s) from geometry (${(performance.now() - step2Time).toFixed(2)}ms)`);
+            let parentIds = [];
+            let flatParentIds = [];
+            let liveParentFeatures = [];
+            if (structureNeedsLiveParentResolution(sp)) {
+                const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, kind);
+                if (!liveParents.ok) return false;
+                parentIds = liveParents.ids;
+                flatParentIds = liveParents.cadastreIds.slice();
+                liveParentFeatures = liveParents.features;
+            } else {
+                // An archival plan overlay names today's intersecting cadastral parcels only as
+                // provenance/context. It makes no claim on the live derived fabric, so a road or
+                // later proposal cannot strand it by consuming/cutting those parcels.
+                parentIds = declaredStructureParentIds(proposalData, sp);
+                flatParentIds = parentIds.slice();
+            }
+            traceApply(`Step 2: Resolved ${parentIds.length} parent parcel reference(s) (${(performance.now() - step2Time).toFixed(2)}ms)`);
 
             // §15a structure formation (decision 2026-08-05): a park/square/lake TAKES its
             // ground — adopt the one parcel matching the footprint, or merge whole parcels into
             // one minted parcel — with ownership → City at apply. Partial coverage of any parcel
             // refuses with the offenders named. A station stays content on its corridor and
             // forms nothing.
-            if (kind !== 'station') {
+            if (structureNeedsGroundFormation(kind, sp)) {
                 const formation = await this._formStructureParcel(
-                    proposalId, proposalData, sp, geometry, parentIds, idLabel, liveParents.features);
+                    proposalId, proposalData, sp, geometry, parentIds, idLabel, liveParentFeatures);
                 if (!formation.ok) return false;
                 parentIds = formation.parentIds;
             }
@@ -148,6 +184,7 @@
                     platformHeightM: Number.isFinite(Number(sp.platformHeightM)) ? Number(sp.platformHeightM) : undefined,
                     attachment: sp.attachment ? JSON.parse(JSON.stringify(sp.attachment)) : undefined,
                     modelVersion: sp.modelVersion || undefined,
+                    referenceOnly: sp.referenceOnly === true,
                     name: proposalData.title || proposalData.name || undefined,
                     parentParcelIds: parentIds.slice()
                 },
@@ -160,7 +197,11 @@
                     if (!f || !f.properties) return true;
                     return f.properties.proposalId !== proposalId;
                 });
-                try { if (typeof ensureParkDecorations === 'function') ensureParkDecorations(feature); } catch (_) { }
+                try {
+                    if (sp.referenceOnly !== true && typeof ensureParkDecorations === 'function') {
+                        ensureParkDecorations(feature);
+                    }
+                } catch (_) { }
                 // Auto-layout is generated on the rendered feature. Keep the same canonical copy
                 // on the proposal so every generated item is present when Design is reopened.
                 if (feature.properties?.decorations) {
@@ -193,7 +234,11 @@
                     if (!f || !f.properties) return true;
                     return f.properties.proposalId !== proposalId;
                 });
-                try { if (typeof ensureSquareDecorations === 'function') ensureSquareDecorations(feature); } catch (_) { }
+                try {
+                    if (sp.referenceOnly !== true && typeof ensureSquareDecorations === 'function') {
+                        ensureSquareDecorations(feature);
+                    }
+                } catch (_) { }
                 if (feature.properties?.decorations) {
                     sp.decorations = JSON.parse(JSON.stringify(feature.properties.decorations));
                 }

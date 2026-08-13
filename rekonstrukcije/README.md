@@ -11,4 +11,4 @@ Each reconstruction should keep, where available:
 - reproducible extraction, conversion, import or upload scripts;
 - stable proposal identifiers or a link to the corresponding records in the system.
 
-Standalone plans live directly below this directory, such as [`upu-borovje/`](upu-borovje/). Collections organized around one developer or research series may have an intermediate folder, such as [`pionir-paron/`](pionir-paron/).
+Standalone plans live directly below this directory, such as [`upu-borovje/`](upu-borovje/). Collections organized around one developer or research series may have an intermediate folder, such as [`pionir-paron/`](pionir-paron/). The [`nova-naselja/`](nova-naselja/) collection reconstructs whole recently planned Zagreb neighbourhoods, including their buildings and the public-space/circulation framework where the source data supports it.
