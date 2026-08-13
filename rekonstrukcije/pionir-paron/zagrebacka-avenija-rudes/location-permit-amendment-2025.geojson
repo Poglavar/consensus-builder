@@ -1,0 +1,1522 @@
+{
+  "type": "FeatureCollection",
+  "name": "Zagrebačka avenija–Rudeš – izmjena lokacijske dozvole 2025.",
+  "bbox": [
+    15.92023674,
+    45.80295396,
+    15.92245919,
+    45.80469689
+  ],
+  "edozvola": {
+    "schema": "consensus-builder.edozvola-source.v1",
+    "archivedAt": "2026-08-13",
+    "source": "https://oss.uredjenazemlja.hr/OssWebServices/external/eDozvole",
+    "sourceService": "public national eDozvola WFS 2.0.0",
+    "sourceCrs": "EPSG:3765",
+    "outputCrs": "EPSG:4326",
+    "geometryOnly": true,
+    "caveat": "Public WFS geometry and case metadata are evidence, not a substitute for the signed permit and main project.",
+    "note": "Pravomoćna izmjena sadrži sedam nadzemnih poligona i jedan zajednički podzemni poligon.",
+    "layerFeatureCounts": {
+      "eDozvola_area_polygon": 1,
+      "eDozvola_building_line": 0,
+      "eDozvola_building_point": 0,
+      "eDozvola_building_polygon": 8
+    },
+    "caseId": "P20250513-1768397-Z06",
+    "caseClass": "UP/I-350-05/25-01/000390",
+    "caseType": "Lokacijska dozvola - izmjena i/ili dopuna",
+    "caseStatus": "Žalbeni rok / rok za pokretanje tužbe",
+    "requestReceivedAt": "2025-05-13",
+    "requestCompleteAt": "2025-07-30",
+    "decisionName": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+    "decisionNumber": "251-10-23-1/001-25-0008",
+    "decisionAt": "2025-11-11",
+    "finalAt": "2025-12-19"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250513-1768397-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ZALBA",
+        "predmet_status": "Žalbeni rok / rok za pokretanje tužbe",
+        "predmet_klasa": "UP/I-350-05/25-01/000390",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-05-13",
+        "zahtjev_dat_urednosti": "2025-07-30",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/001-25-0008",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-11",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-19",
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"799/1\", \"lokacija_kat_opcina\": \"Rudeš\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335614\"}}]",
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_area_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_area_polygon.154507",
+        "edozvola:geometryAreaM2": 17980.05
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.92125605,
+              45.80458062
+            ],
+            [
+              15.92127698,
+              45.8046097
+            ],
+            [
+              15.92152554,
+              45.80469689
+            ],
+            [
+              15.92215763,
+              45.80412323
+            ],
+            [
+              15.92243464,
+              45.80387197
+            ],
+            [
+              15.92245919,
+              45.80384969
+            ],
+            [
+              15.92229572,
+              45.80373279
+            ],
+            [
+              15.92224032,
+              45.80369103
+            ],
+            [
+              15.92222373,
+              45.8036779
+            ],
+            [
+              15.92218009,
+              45.80364285
+            ],
+            [
+              15.92211441,
+              45.80358718
+            ],
+            [
+              15.92205093,
+              45.80353036
+            ],
+            [
+              15.92200684,
+              45.80348928
+            ],
+            [
+              15.92195693,
+              45.80343963
+            ],
+            [
+              15.92189814,
+              45.80337662
+            ],
+            [
+              15.9218464,
+              45.80331661
+            ],
+            [
+              15.92180498,
+              45.80326682
+            ],
+            [
+              15.92174986,
+              45.80319681
+            ],
+            [
+              15.92169579,
+              45.80312608
+            ],
+            [
+              15.92143143,
+              45.80301299
+            ],
+            [
+              15.92135183,
+              45.80298487
+            ],
+            [
+              15.92127135,
+              45.80295396
+            ],
+            [
+              15.92114165,
+              45.80306812
+            ],
+            [
+              15.92095392,
+              45.80323228
+            ],
+            [
+              15.92045978,
+              45.80366599
+            ],
+            [
+              15.92023674,
+              45.80385985
+            ],
+            [
+              15.92031266,
+              45.80390756
+            ],
+            [
+              15.92026156,
+              45.80395976
+            ],
+            [
+              15.92024804,
+              45.80397364
+            ],
+            [
+              15.9203723,
+              45.80404967
+            ],
+            [
+              15.920402,
+              45.80406359
+            ],
+            [
+              15.92045193,
+              45.80408769
+            ],
+            [
+              15.92053359,
+              45.80412787
+            ],
+            [
+              15.92057259,
+              45.80415075
+            ],
+            [
+              15.92059817,
+              45.80416536
+            ],
+            [
+              15.92062016,
+              45.80417924
+            ],
+            [
+              15.92066875,
+              45.80420792
+            ],
+            [
+              15.92071604,
+              45.80423821
+            ],
+            [
+              15.92074029,
+              45.80425624
+            ],
+            [
+              15.92079157,
+              45.80429888
+            ],
+            [
+              15.92081643,
+              45.80432123
+            ],
+            [
+              15.92096498,
+              45.8044126
+            ],
+            [
+              15.92117307,
+              45.80454349
+            ],
+            [
+              15.92125605,
+              45.80458062
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250513-1768397-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ZALBA",
+        "predmet_status": "Žalbeni rok / rok za pokretanje tužbe",
+        "predmet_klasa": "UP/I-350-05/25-01/000390",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-05-13",
+        "zahtjev_dat_urednosti": "2025-07-30",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/001-25-0008",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-11",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-19",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"799/1\", \"lokacija_kat_opcina\": \"Rudeš\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335614\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": "nadzemni dio zgrade",
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.357658",
+        "edozvola:geometryAreaM2": 577.78
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.92135163,
+              45.8042965
+            ],
+            [
+              15.92116292,
+              45.80446777
+            ],
+            [
+              15.92140779,
+              45.80459984
+            ],
+            [
+              15.92159663,
+              45.80442848
+            ],
+            [
+              15.92135163,
+              45.8042965
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250513-1768397-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ZALBA",
+        "predmet_status": "Žalbeni rok / rok za pokretanje tužbe",
+        "predmet_klasa": "UP/I-350-05/25-01/000390",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-05-13",
+        "zahtjev_dat_urednosti": "2025-07-30",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/001-25-0008",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-11",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-19",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"799/1\", \"lokacija_kat_opcina\": \"Rudeš\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335614\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": "nadzemni dio zgrade",
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.357659",
+        "edozvola:geometryAreaM2": 666.17
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.92207021,
+              45.80364437
+            ],
+            [
+              15.92188138,
+              45.80381563
+            ],
+            [
+              15.9218824,
+              45.80381618
+            ],
+            [
+              15.9218611,
+              45.80383551
+            ],
+            [
+              15.92210419,
+              45.80396658
+            ],
+            [
+              15.92212549,
+              45.80394725
+            ],
+            [
+              15.92212638,
+              45.8039477
+            ],
+            [
+              15.92231521,
+              45.80377635
+            ],
+            [
+              15.92215938,
+              45.80369242
+            ],
+            [
+              15.92218068,
+              45.80367309
+            ],
+            [
+              15.9220924,
+              45.80362549
+            ],
+            [
+              15.92207111,
+              45.80364482
+            ],
+            [
+              15.92207021,
+              45.80364437
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250513-1768397-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ZALBA",
+        "predmet_status": "Žalbeni rok / rok za pokretanje tužbe",
+        "predmet_klasa": "UP/I-350-05/25-01/000390",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-05-13",
+        "zahtjev_dat_urednosti": "2025-07-30",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/001-25-0008",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-11",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-19",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"799/1\", \"lokacija_kat_opcina\": \"Rudeš\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335614\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": "nadzemni dio zgrade",
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.357660",
+        "edozvola:geometryAreaM2": 644.21
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.92173176,
+              45.80395156
+            ],
+            [
+              15.92154293,
+              45.80412282
+            ],
+            [
+              15.92161215,
+              45.80416015
+            ],
+            [
+              15.92160396,
+              45.80416758
+            ],
+            [
+              15.92161547,
+              45.80418707
+            ],
+            [
+              15.92164681,
+              45.80420388
+            ],
+            [
+              15.92164279,
+              45.80420746
+            ],
+            [
+              15.92176574,
+              45.80427367
+            ],
+            [
+              15.92178704,
+              45.80425444
+            ],
+            [
+              15.92178793,
+              45.80425489
+            ],
+            [
+              15.92197677,
+              45.80408354
+            ],
+            [
+              15.92182094,
+              45.80399961
+            ],
+            [
+              15.92184224,
+              45.80398028
+            ],
+            [
+              15.92175396,
+              45.80393268
+            ],
+            [
+              15.92173266,
+              45.80395201
+            ],
+            [
+              15.92173176,
+              45.80395156
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250513-1768397-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ZALBA",
+        "predmet_status": "Žalbeni rok / rok za pokretanje tužbe",
+        "predmet_klasa": "UP/I-350-05/25-01/000390",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-05-13",
+        "zahtjev_dat_urednosti": "2025-07-30",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/001-25-0008",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-11",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-19",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"799/1\", \"lokacija_kat_opcina\": \"Rudeš\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335614\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": "nadzemni dio zgrade",
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.357661",
+        "edozvola:geometryAreaM2": 667.62
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.92167548,
+              45.80372164
+            ],
+            [
+              15.92193405,
+              45.80348693
+            ],
+            [
+              15.92174624,
+              45.80338566
+            ],
+            [
+              15.92167052,
+              45.80345438
+            ],
+            [
+              15.92165005,
+              45.8034433
+            ],
+            [
+              15.92147758,
+              45.8035998
+            ],
+            [
+              15.92149805,
+              45.80361088
+            ],
+            [
+              15.92148754,
+              45.80362036
+            ],
+            [
+              15.9215666,
+              45.80366305
+            ],
+            [
+              15.92155283,
+              45.80367558
+            ],
+            [
+              15.92164661,
+              45.80372618
+            ],
+            [
+              15.92166051,
+              45.80371365
+            ],
+            [
+              15.92167548,
+              45.80372164
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250513-1768397-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ZALBA",
+        "predmet_status": "Žalbeni rok / rok za pokretanje tužbe",
+        "predmet_klasa": "UP/I-350-05/25-01/000390",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-05-13",
+        "zahtjev_dat_urednosti": "2025-07-30",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/001-25-0008",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-11",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-19",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"799/1\", \"lokacija_kat_opcina\": \"Rudeš\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335614\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": "nadzemni dio zgrade",
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.357662",
+        "edozvola:geometryAreaM2": 1448.59
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.92068495,
+              45.80365013
+            ],
+            [
+              15.92069276,
+              45.8036544
+            ],
+            [
+              15.92067691,
+              45.80366871
+            ],
+            [
+              15.92132633,
+              45.8040187
+            ],
+            [
+              15.92134217,
+              45.80400438
+            ],
+            [
+              15.92135586,
+              45.80401174
+            ],
+            [
+              15.92150067,
+              45.80388029
+            ],
+            [
+              15.92149274,
+              45.80387611
+            ],
+            [
+              15.92150858,
+              45.8038618
+            ],
+            [
+              15.92141634,
+              45.80381211
+            ],
+            [
+              15.92140049,
+              45.80382643
+            ],
+            [
+              15.92133409,
+              45.80379055
+            ],
+            [
+              15.92134994,
+              45.80377623
+            ],
+            [
+              15.92101205,
+              45.80359411
+            ],
+            [
+              15.92099621,
+              45.80360843
+            ],
+            [
+              15.92093889,
+              45.80357763
+            ],
+            [
+              15.92095474,
+              45.80356323
+            ],
+            [
+              15.92084637,
+              45.80350491
+            ],
+            [
+              15.92083066,
+              45.80351923
+            ],
+            [
+              15.92082976,
+              45.80351868
+            ],
+            [
+              15.92068495,
+              45.80365013
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250513-1768397-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ZALBA",
+        "predmet_status": "Žalbeni rok / rok za pokretanje tužbe",
+        "predmet_klasa": "UP/I-350-05/25-01/000390",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-05-13",
+        "zahtjev_dat_urednosti": "2025-07-30",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/001-25-0008",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-11",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-19",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"799/1\", \"lokacija_kat_opcina\": \"Rudeš\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335614\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": "nadzemni dio zgrade",
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.357663",
+        "edozvola:geometryAreaM2": 1175.81
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.9210291,
+              45.80430828
+            ],
+            [
+              15.92117391,
+              45.80417683
+            ],
+            [
+              15.92059473,
+              45.80386463
+            ],
+            [
+              15.92042862,
+              45.80401532
+            ],
+            [
+              15.92090967,
+              45.80427456
+            ],
+            [
+              15.92093084,
+              45.80425532
+            ],
+            [
+              15.9210291,
+              45.80430828
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250513-1768397-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ZALBA",
+        "predmet_status": "Žalbeni rok / rok za pokretanje tužbe",
+        "predmet_klasa": "UP/I-350-05/25-01/000390",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-05-13",
+        "zahtjev_dat_urednosti": "2025-07-30",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/001-25-0008",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-11",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-19",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"799/1\", \"lokacija_kat_opcina\": \"Rudeš\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335614\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": "nadzemni dio zgrade",
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.357664",
+        "edozvola:geometryAreaM2": 862.92
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.92122705,
+              45.80348003
+            ],
+            [
+              15.92130277,
+              45.8034113
+            ],
+            [
+              15.92132324,
+              45.80342239
+            ],
+            [
+              15.92154675,
+              45.80321953
+            ],
+            [
+              15.92152628,
+              45.80320845
+            ],
+            [
+              15.9215368,
+              45.80319897
+            ],
+            [
+              15.92145888,
+              45.803157
+            ],
+            [
+              15.92147473,
+              45.80314269
+            ],
+            [
+              15.92138082,
+              45.80309209
+            ],
+            [
+              15.9213651,
+              45.80310641
+            ],
+            [
+              15.92134886,
+              45.80309769
+            ],
+            [
+              15.92122054,
+              45.8032141
+            ],
+            [
+              15.92120007,
+              45.80320311
+            ],
+            [
+              15.92102916,
+              45.80335818
+            ],
+            [
+              15.92104963,
+              45.80336917
+            ],
+            [
+              15.92103911,
+              45.80337875
+            ],
+            [
+              15.92111703,
+              45.80342071
+            ],
+            [
+              15.92110313,
+              45.80343324
+            ],
+            [
+              15.92119704,
+              45.80348383
+            ],
+            [
+              15.9212108,
+              45.80347131
+            ],
+            [
+              15.92122705,
+              45.80348003
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250513-1768397-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ZALBA",
+        "predmet_status": "Žalbeni rok / rok za pokretanje tužbe",
+        "predmet_klasa": "UP/I-350-05/25-01/000390",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-05-13",
+        "zahtjev_dat_urednosti": "2025-07-30",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/001-25-0008",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-11",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-19",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"799/1\", \"lokacija_kat_opcina\": \"Rudeš\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335614\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": "podzemni dio zgrade",
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.357667",
+        "edozvola:geometryAreaM2": 11051.05
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.92043081,
+              45.80401515
+            ],
+            [
+              15.92045627,
+              45.80402886
+            ],
+            [
+              15.92047757,
+              45.80400963
+            ],
+            [
+              15.92102937,
+              45.80430702
+            ],
+            [
+              15.92100976,
+              45.80432482
+            ],
+            [
+              15.9209898,
+              45.8043141
+            ],
+            [
+              15.920962,
+              45.80433943
+            ],
+            [
+              15.9211646,
+              45.80446733
+            ],
+            [
+              15.92140755,
+              45.80459831
+            ],
+            [
+              15.92159444,
+              45.80442865
+            ],
+            [
+              15.92140087,
+              45.80432438
+            ],
+            [
+              15.92140918,
+              45.80431686
+            ],
+            [
+              15.92141971,
+              45.80431853
+            ],
+            [
+              15.92143038,
+              45.80431958
+            ],
+            [
+              15.92144118,
+              45.80432026
+            ],
+            [
+              15.92145199,
+              45.80432032
+            ],
+            [
+              15.9214628,
+              45.80431992
+            ],
+            [
+              15.92147349,
+              45.80431898
+            ],
+            [
+              15.92148405,
+              45.80431751
+            ],
+            [
+              15.92149449,
+              45.80431558
+            ],
+            [
+              15.92150468,
+              45.80431311
+            ],
+            [
+              15.92151462,
+              45.8043101
+            ],
+            [
+              15.9215243,
+              45.80430673
+            ],
+            [
+              15.9215336,
+              45.80430291
+            ],
+            [
+              15.9215424,
+              45.80429855
+            ],
+            [
+              15.92155094,
+              45.80429382
+            ],
+            [
+              15.92155884,
+              45.80428873
+            ],
+            [
+              15.92156623,
+              45.80428328
+            ],
+            [
+              15.92157311,
+              45.80427747
+            ],
+            [
+              15.92157947,
+              45.80427129
+            ],
+            [
+              15.92158507,
+              45.80426493
+            ],
+            [
+              15.92159016,
+              45.80425821
+            ],
+            [
+              15.92159448,
+              45.8042513
+            ],
+            [
+              15.92159815,
+              45.80424421
+            ],
+            [
+              15.92160119,
+              45.80423694
+            ],
+            [
+              15.92160345,
+              45.80422957
+            ],
+            [
+              15.92160494,
+              45.80422211
+            ],
+            [
+              15.92160579,
+              45.80421456
+            ],
+            [
+              15.92160574,
+              45.804207
+            ],
+            [
+              15.92160505,
+              45.80419944
+            ],
+            [
+              15.92160371,
+              45.80419196
+            ],
+            [
+              15.92160147,
+              45.80418457
+            ],
+            [
+              15.92159859,
+              45.80417727
+            ],
+            [
+              15.92159506,
+              45.80417014
+            ],
+            [
+              15.92159076,
+              45.80416319
+            ],
+            [
+              15.92158581,
+              45.80415651
+            ],
+            [
+              15.92159399,
+              45.80414899
+            ],
+            [
+              15.92178769,
+              45.80425336
+            ],
+            [
+              15.92197458,
+              45.80408379
+            ],
+            [
+              15.92173149,
+              45.80395272
+            ],
+            [
+              15.92178292,
+              45.8039061
+            ],
+            [
+              15.92179828,
+              45.80391428
+            ],
+            [
+              15.92184464,
+              45.80387222
+            ],
+            [
+              15.92182929,
+              45.80386405
+            ],
+            [
+              15.92188305,
+              45.80381519
+            ],
+            [
+              15.92212614,
+              45.80394617
+            ],
+            [
+              15.92231302,
+              45.80377661
+            ],
+            [
+              15.92206994,
+              45.80364563
+            ],
+            [
+              15.92210371,
+              45.80361493
+            ],
+            [
+              15.92190758,
+              45.8035092
+            ],
+            [
+              15.92193199,
+              45.8034871
+            ],
+            [
+              15.92174648,
+              45.80338719
+            ],
+            [
+              15.92152778,
+              45.80358566
+            ],
+            [
+              15.92150884,
+              45.80357548
+            ],
+            [
+              15.92151123,
+              45.80356803
+            ],
+            [
+              15.92151286,
+              45.80356048
+            ],
+            [
+              15.92151371,
+              45.80355283
+            ],
+            [
+              15.92151379,
+              45.80354518
+            ],
+            [
+              15.92151322,
+              45.80353753
+            ],
+            [
+              15.92151176,
+              45.80352997
+            ],
+            [
+              15.92150965,
+              45.8035224
+            ],
+            [
+              15.92150689,
+              45.80351501
+            ],
+            [
+              15.92150337,
+              45.80350779
+            ],
+            [
+              15.92149907,
+              45.80350075
+            ],
+            [
+              15.92149412,
+              45.80349389
+            ],
+            [
+              15.92148853,
+              45.80348738
+            ],
+            [
+              15.92148242,
+              45.80348105
+            ],
+            [
+              15.92147553,
+              45.80347508
+            ],
+            [
+              15.92146826,
+              45.80346937
+            ],
+            [
+              15.92146033,
+              45.80346411
+            ],
+            [
+              15.92145189,
+              45.80345921
+            ],
+            [
+              15.92144306,
+              45.80345476
+            ],
+            [
+              15.92143371,
+              45.80345066
+            ],
+            [
+              15.9214241,
+              45.8034471
+            ],
+            [
+              15.9214141,
+              45.80344399
+            ],
+            [
+              15.92140383,
+              45.80344133
+            ],
+            [
+              15.92139344,
+              45.80343912
+            ],
+            [
+              15.92138265,
+              45.80343753
+            ],
+            [
+              15.92137185,
+              45.8034364
+            ],
+            [
+              15.92136092,
+              45.8034358
+            ],
+            [
+              15.92134999,
+              45.80343566
+            ],
+            [
+              15.92133918,
+              45.80343605
+            ],
+            [
+              15.92132823,
+              45.80343708
+            ],
+            [
+              15.92131754,
+              45.80343846
+            ],
+            [
+              15.92130697,
+              45.80344048
+            ],
+            [
+              15.92129665,
+              45.80344295
+            ],
+            [
+              15.92128659,
+              45.80344595
+            ],
+            [
+              15.92127677,
+              45.80344932
+            ],
+            [
+              15.92126734,
+              45.80345324
+            ],
+            [
+              15.92125941,
+              45.80344897
+            ],
+            [
+              15.92153461,
+              45.80319914
+            ],
+            [
+              15.9213491,
+              45.80309913
+            ],
+            [
+              15.92104091,
+              45.80337894
+            ],
+            [
+              15.92100624,
+              45.80336022
+            ],
+            [
+              15.92048973,
+              45.80382901
+            ],
+            [
+              15.92052696,
+              45.80384908
+            ],
+            [
+              15.9205406,
+              45.80383665
+            ],
+            [
+              15.92059523,
+              45.80386599
+            ],
+            [
+              15.92043081,
+              45.80401515
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

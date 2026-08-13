@@ -1,0 +1,191 @@
+{
+  "type": "FeatureCollection",
+  "name": "Savica F1–F2 – građevinska dozvola 2022.",
+  "bbox": [
+    15.99791214,
+    45.79429246,
+    15.99876004,
+    45.79480773
+  ],
+  "edozvola": {
+    "schema": "consensus-builder.edozvola-source.v1",
+    "archivedAt": "2026-08-13",
+    "source": "https://oss.uredjenazemlja.hr/OssWebServices/external/eDozvole",
+    "sourceService": "public national eDozvola WFS 2.0.0",
+    "sourceCrs": "EPSG:3765",
+    "outputCrs": "EPSG:4326",
+    "geometryOnly": true,
+    "caveat": "Public WFS geometry and case metadata are evidence, not a substitute for the signed permit and main project.",
+    "note": "Zajednički akt za dva nadzemna stambena volumena; svaki je u javnom zapisu opisan sa 70 stanova.",
+    "layerFeatureCounts": {
+      "eDozvola_area_polygon": 0,
+      "eDozvola_building_line": 0,
+      "eDozvola_building_point": 0,
+      "eDozvola_building_polygon": 2
+    },
+    "caseId": "A20220330-2833642-V010101",
+    "caseClass": "UP/I-361-03/22-001/231",
+    "caseType": "Građevinska dozvola",
+    "caseStatus": "Arhiva",
+    "requestReceivedAt": "2022-02-10",
+    "requestCompleteAt": null,
+    "decisionName": "Građevinska dozvola",
+    "decisionNumber": "251-10-22-1/049-22-10",
+    "decisionAt": "2022-03-03",
+    "finalAt": "2022-03-30"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "A20220330-2833642-V010101",
+        "predmet_group_id": "V01",
+        "predmet_group": "Akti za građenje",
+        "predmet_vrsta_id": "V010101",
+        "predmet_vrsta": "Građevinska dozvola",
+        "predmet_status_id": "ARHIVA",
+        "predmet_status": "Arhiva",
+        "predmet_klasa": "UP/I-361-03/22-001/231",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2022-02-10",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": "Građevinska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-22-1/049-22-10",
+        "zavrsni_akt_dat_rjesavanja": "2022-03-03",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2022-03-30",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101117",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za graditeljstvo, Središnji odsjek za graditeljstvo",
+        "lokacija": null,
+        "gradjevina_zahvat_id": null,
+        "gradjevina_zahvat": null,
+        "gradjevina_zahvat_dodatno": "stambena, 70 stanova",
+        "gradjevina_namjena_id": "sn",
+        "gradjevina_namjena": "stambene namjene",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.6521",
+        "edozvola:geometryAreaM2": 692.64
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.99854943,
+              45.79467813
+            ],
+            [
+              15.99876004,
+              45.79461661
+            ],
+            [
+              15.99856665,
+              45.79429246
+            ],
+            [
+              15.99835605,
+              45.7943539
+            ],
+            [
+              15.99854943,
+              45.79467813
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "A20220330-2833642-V010101",
+        "predmet_group_id": "V01",
+        "predmet_group": "Akti za građenje",
+        "predmet_vrsta_id": "V010101",
+        "predmet_vrsta": "Građevinska dozvola",
+        "predmet_status_id": "ARHIVA",
+        "predmet_status": "Arhiva",
+        "predmet_klasa": "UP/I-361-03/22-001/231",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2022-02-10",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": "Građevinska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-22-1/049-22-10",
+        "zavrsni_akt_dat_rjesavanja": "2022-03-03",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2022-03-30",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101117",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za graditeljstvo, Središnji odsjek za graditeljstvo",
+        "lokacija": null,
+        "gradjevina_zahvat_id": null,
+        "gradjevina_zahvat": null,
+        "gradjevina_zahvat_dodatno": "stambena sa 70 stanova",
+        "gradjevina_namjena_id": "sn",
+        "gradjevina_namjena": "stambene namjene",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.6522",
+        "edozvola:geometryAreaM2": 692.46
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.99810552,
+              45.79480773
+            ],
+            [
+              15.99831612,
+              45.79474621
+            ],
+            [
+              15.99812261,
+              45.79442207
+            ],
+            [
+              15.99791214,
+              45.7944835
+            ],
+            [
+              15.99810552,
+              45.79480773
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

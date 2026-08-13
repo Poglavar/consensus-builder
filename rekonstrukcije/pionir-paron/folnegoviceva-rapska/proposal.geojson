@@ -1,0 +1,752 @@
+{
+  "type": "FeatureCollection",
+  "name": "Folnegovićeva–Rapska – rekonstrukcija izvedenog stanja",
+  "bbox": [
+    16.006076616,
+    45.79929865,
+    16.008515204,
+    45.800463061
+  ],
+  "reconstruction": {
+    "schema": "consensus-builder.reconstruction.v1",
+    "proposal": {
+      "proposalId": "paron-folnegoviceva-rapska-observed",
+      "city": "zagreb",
+      "name": "Folnegovićeva–Rapska – rekonstrukcija izvedenog stanja",
+      "title": "Folnegovićeva–Rapska – rekonstrukcija izvedenog stanja",
+      "description": "Rekonstrukcija triju izvedenih zgrada na k.č. 2708/1, k.o. Trnje. Tlocrti su aktualne pravne DGU geometrije, a visine su iz podudarnih GDI objekata snimljenih 2022. Broj etaža i izvedeni nadzemni GBP nisu preuzeti iz dozvole: prikaz etaža procjena je visine uz 3 m po etaži.",
+      "author": "zagreb.lol – lokalna analiza",
+      "type": "building",
+      "goal": "single",
+      "primaryType": "Urban Rule",
+      "typologyType": "single",
+      "lifecycleStatus": "Active",
+      "createdAt": "2026-08-13T00:00:00.000Z",
+      "updatedAt": "2026-08-13T00:00:00.000Z",
+      "tags": [
+        "buildings",
+        "research",
+        "reconstruction",
+        "observed-built-state"
+      ],
+      "parentParcelIds": [
+        "HR-335649-2708/1"
+      ],
+      "cadastreParcelIds": [
+        "HR-335649-2708/1"
+      ],
+      "parcelIds": [
+        "HR-335649-2708/1"
+      ],
+      "acceptedParcelIds": [],
+      "bounds": [
+        16.006076616,
+        45.79929865,
+        16.008515204,
+        45.800463061
+      ],
+      "source": {
+        "projectSource": "https://web.zagreb.hr/Sjednice/2013/Big_Attach_2013.nsf/0/4CDAF8356CA24D72C1257BE40035B06A/%24FILE/palijativna3.pdf",
+        "projectDates": "Glavni projekt 2008.; uporabne dozvole 2010.–2011.",
+        "parcel": "k.č. 2708/1, MB 335649, k.o. Trnje",
+        "coordinateSystem": "DGU/GDI HTRS96/TM (EPSG:3765), transformed to WGS84 for the app",
+        "footprintBasis": "current DGU legal building geometry",
+        "heightBasis": "matched GDI surveyed object",
+        "companyRoleNote": null,
+        "officialProjectLabels": null,
+        "sourceStatistics": {
+          "geometryDerived": {
+            "parcelAreaM2": 14197.923849373514,
+            "footprintAreaM2": 4570.094110431548,
+            "siteCoveragePercent": 32.188467545789834,
+            "heightEquivalentAboveGroundGbpM2": 47967.72968856034,
+            "heightEquivalentKin": 3.378503096470469,
+            "buildingCount": 3,
+            "method": "DGU footprint area × GDI height / 3 m; diagnostic estimate, not permit GBP"
+          }
+        }
+      }
+    },
+    "buildingProposal": {
+      "parentParcelIds": [
+        "HR-335649-2708/1"
+      ],
+      "parentParcelNumbers": [
+        {
+          "id": "HR-335649-2708/1",
+          "number": "2708/1",
+          "cadastre": "Trnje"
+        }
+      ],
+      "createdFrom": "single-building",
+      "typologyType": "single",
+      "blockName": "Folnegovićeva–Rapska – k.č. 2708/1",
+      "parameters": {
+        "typology": "single",
+        "floorHeightM": 3,
+        "geometryBasis": "observed-built-state",
+        "sourceStatistics": {
+          "geometryDerived": {
+            "parcelAreaM2": 14197.923849373514,
+            "footprintAreaM2": 4570.094110431548,
+            "siteCoveragePercent": 32.188467545789834,
+            "heightEquivalentAboveGroundGbpM2": 47967.72968856034,
+            "heightEquivalentKin": 3.378503096470469,
+            "buildingCount": 3,
+            "method": "DGU footprint area × GDI height / 3 m; diagnostic estimate, not permit GBP"
+          }
+        }
+      },
+      "ancestorKey": "HR-335649-2708/1",
+      "takeWholeParcels": true,
+      "metadata": {
+        "sourceStatistics": {
+          "geometryDerived": {
+            "parcelAreaM2": 14197.923849373514,
+            "footprintAreaM2": 4570.094110431548,
+            "siteCoveragePercent": 32.188467545789834,
+            "heightEquivalentAboveGroundGbpM2": 47967.72968856034,
+            "heightEquivalentKin": 3.378503096470469,
+            "buildingCount": 3,
+            "method": "DGU footprint area × GDI height / 3 m; diagnostic estimate, not permit GBP"
+          }
+        }
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "HR-335649-2708/1",
+        "cestica_id": 21309361,
+        "maticni_broj_ko": 335649,
+        "broj_cestice": "2708/1",
+        "areaM2": 14198.092900020261,
+        "source": "DGU katastar, aktualna čestica",
+        "consensus:role": "site"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                16.006298176,
+                45.800025409
+              ],
+              [
+                16.006268797,
+                45.800016374
+              ],
+              [
+                16.006225815,
+                45.800003501
+              ],
+              [
+                16.006196185,
+                45.799993656
+              ],
+              [
+                16.006083479,
+                45.799951598
+              ],
+              [
+                16.006078113,
+                45.799947436
+              ],
+              [
+                16.006076616,
+                45.79994212
+              ],
+              [
+                16.00608156,
+                45.799935753
+              ],
+              [
+                16.006352047,
+                45.799839564
+              ],
+              [
+                16.006704863,
+                45.799714306
+              ],
+              [
+                16.006911352,
+                45.799639525
+              ],
+              [
+                16.006979629,
+                45.799613995
+              ],
+              [
+                16.007050867,
+                45.799588208
+              ],
+              [
+                16.007470981,
+                45.799445963
+              ],
+              [
+                16.007768087,
+                45.799350335
+              ],
+              [
+                16.007926772,
+                45.79929865
+              ],
+              [
+                16.008149791,
+                45.799669427
+              ],
+              [
+                16.008367436,
+                45.800037301
+              ],
+              [
+                16.008515204,
+                45.800290959
+              ],
+              [
+                16.008426084,
+                45.80031676
+              ],
+              [
+                16.008421957,
+                45.800317912
+              ],
+              [
+                16.008461509,
+                45.800384397
+              ],
+              [
+                16.008424066,
+                45.800399893
+              ],
+              [
+                16.008363561,
+                45.800390095
+              ],
+              [
+                16.00832438,
+                45.800383717
+              ],
+              [
+                16.008308438,
+                45.800382569
+              ],
+              [
+                16.00830798,
+                45.800390755
+              ],
+              [
+                16.008306873,
+                45.800399658
+              ],
+              [
+                16.00829924,
+                45.800463061
+              ],
+              [
+                16.007662217,
+                45.800430895
+              ],
+              [
+                16.00708048,
+                45.800402293
+              ],
+              [
+                16.007000546,
+                45.800422103
+              ],
+              [
+                16.006797271,
+                45.800423925
+              ],
+              [
+                16.006770932,
+                45.800420212
+              ],
+              [
+                16.006751788,
+                45.80041752
+              ],
+              [
+                16.006690187,
+                45.800415275
+              ],
+              [
+                16.006701893,
+                45.800284135
+              ],
+              [
+                16.006677301,
+                45.800242728
+              ],
+              [
+                16.006649435,
+                45.800193389
+              ],
+              [
+                16.006637607,
+                45.800178041
+              ],
+              [
+                16.0065911,
+                45.800098028
+              ],
+              [
+                16.006551052,
+                45.800088048
+              ],
+              [
+                16.006463892,
+                45.800066616
+              ],
+              [
+                16.006298176,
+                45.800025409
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "DGU zgrada 6977",
+        "block": "Folnegovićeva–Rapska – k.č. 2708/1",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 29.02141124,
+        "heightM": 29.02141124,
+        "floors": 10,
+        "storeys": 10,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#2f6fed",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": null,
+        "officialProjectLabels": null,
+        "dguBuildingId": 5994131,
+        "dguBuildingNumber": "6977",
+        "dguBuildingType": "ZGRADA MJEŠOVITE UPORABE",
+        "dguFootprintAreaM2": 1136.9554499992382,
+        "parcelOverlapRatio": 1.0000000000000002,
+        "gdiObjectId": 357304,
+        "gdiSurveyYear": 2022,
+        "gdiHeightM": 29.02141124,
+        "gdiMatchOverlapRatio": 0.9975856533205497,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 0
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                16.007113511,
+                45.800230754
+              ],
+              [
+                16.00690109,
+                45.800292463
+              ],
+              [
+                16.006839603,
+                45.800189711
+              ],
+              [
+                16.006825532,
+                45.800166165
+              ],
+              [
+                16.006742495,
+                45.800027328
+              ],
+              [
+                16.006728422,
+                45.800003873
+              ],
+              [
+                16.006663261,
+                45.799894896
+              ],
+              [
+                16.006649189,
+                45.79987144
+              ],
+              [
+                16.00658796,
+                45.799768869
+              ],
+              [
+                16.006732925,
+                45.799726845
+              ],
+              [
+                16.006728616,
+                45.799719538
+              ],
+              [
+                16.00678343,
+                45.799703578
+              ],
+              [
+                16.006787867,
+                45.799710976
+              ],
+              [
+                16.006802313,
+                45.799706719
+              ],
+              [
+                16.007113511,
+                45.800230754
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "DGU zgrada 105",
+        "block": "Folnegovićeva–Rapska – k.č. 2708/1",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 28.78329053,
+        "heightM": 28.78329053,
+        "floors": 10,
+        "storeys": 10,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#198754",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": null,
+        "officialProjectLabels": null,
+        "dguBuildingId": 6002953,
+        "dguBuildingNumber": "105",
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguFootprintAreaM2": 1523.9578999940186,
+        "parcelOverlapRatio": 1.0000000000000007,
+        "gdiObjectId": 357302,
+        "gdiSurveyYear": 2022,
+        "gdiHeightM": 28.78329053,
+        "gdiMatchOverlapRatio": 0.9981444330887066,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 1
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                16.007141308,
+                45.799602276
+              ],
+              [
+                16.00728808,
+                45.799559538
+              ],
+              [
+                16.00728415,
+                45.799552953
+              ],
+              [
+                16.007338319,
+                45.79953717
+              ],
+              [
+                16.007342249,
+                45.799543755
+              ],
+              [
+                16.007356822,
+                45.799539589
+              ],
+              [
+                16.007563829,
+                45.799887713
+              ],
+              [
+                16.007576506,
+                45.799909003
+              ],
+              [
+                16.007768433,
+                45.800231418
+              ],
+              [
+                16.007553046,
+                45.800294015
+              ],
+              [
+                16.007491182,
+                45.800190182
+              ],
+              [
+                16.007479961,
+                45.800193463
+              ],
+              [
+                16.007467028,
+                45.800172082
+              ],
+              [
+                16.007478378,
+                45.800168711
+              ],
+              [
+                16.007411318,
+                45.800056038
+              ],
+              [
+                16.007400097,
+                45.800059319
+              ],
+              [
+                16.007387293,
+                45.800037938
+              ],
+              [
+                16.007398514,
+                45.800034567
+              ],
+              [
+                16.007361119,
+                45.79997169
+              ],
+              [
+                16.007348443,
+                45.79995031
+              ],
+              [
+                16.007295453,
+                45.799861452
+              ],
+              [
+                16.007284232,
+                45.799864733
+              ],
+              [
+                16.007271428,
+                45.799843352
+              ],
+              [
+                16.007282778,
+                45.799839982
+              ],
+              [
+                16.007215843,
+                45.799727759
+              ],
+              [
+                16.007204623,
+                45.79973095
+              ],
+              [
+                16.007191948,
+                45.79970948
+              ],
+              [
+                16.007203169,
+                45.799706199
+              ],
+              [
+                16.007141308,
+                45.799602276
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "DGU zgrada 104",
+        "block": "Folnegovićeva–Rapska – k.č. 2708/1",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 35.11581684,
+        "heightM": 35.11581684,
+        "floors": 12,
+        "storeys": 12,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#fd7e14",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": null,
+        "officialProjectLabels": null,
+        "dguBuildingId": 6002952,
+        "dguBuildingNumber": "104",
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguFootprintAreaM2": 1909.2332500117238,
+        "parcelOverlapRatio": 1,
+        "gdiObjectId": 357301,
+        "gdiSurveyYear": 2022,
+        "gdiHeightM": 35.11581684,
+        "gdiMatchOverlapRatio": 0.9919790346181453,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 2
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                16.00787034,
+                45.799732199
+              ],
+              [
+                16.00767234,
+                45.799398421
+              ],
+              [
+                16.007740566,
+                45.79937865
+              ],
+              [
+                16.007734353,
+                45.799368275
+              ],
+              [
+                16.007759375,
+                45.799360915
+              ],
+              [
+                16.007765587,
+                45.799371289
+              ],
+              [
+                16.007887852,
+                45.799335824
+              ],
+              [
+                16.007939444,
+                45.799422787
+              ],
+              [
+                16.007950149,
+                45.799419594
+              ],
+              [
+                16.00796422,
+                45.799443319
+              ],
+              [
+                16.007953515,
+                45.799446422
+              ],
+              [
+                16.008019055,
+                45.79955639
+              ],
+              [
+                16.008029631,
+                45.799553376
+              ],
+              [
+                16.008043574,
+                45.79957692
+              ],
+              [
+                16.008032998,
+                45.799580024
+              ],
+              [
+                16.008086112,
+                45.799669513
+              ],
+              [
+                16.008098282,
+                45.799689901
+              ],
+              [
+                16.008135552,
+                45.799752597
+              ],
+              [
+                16.008146127,
+                45.799749583
+              ],
+              [
+                16.008160198,
+                45.799773218
+              ],
+              [
+                16.008149623,
+                45.799776232
+              ],
+              [
+                16.008315559,
+                45.800055703
+              ],
+              [
+                16.008350898,
+                45.800045418
+              ],
+              [
+                16.008359264,
+                45.800059581
+              ],
+              [
+                16.00836763,
+                45.800073654
+              ],
+              [
+                16.008332421,
+                45.80008385
+              ],
+              [
+                16.008400747,
+                45.800199048
+              ],
+              [
+                16.008223021,
+                45.800250651
+              ],
+              [
+                16.008229358,
+                45.800261476
+              ],
+              [
+                16.008214011,
+                45.800265909
+              ],
+              [
+                16.008207545,
+                45.800255083
+              ],
+              [
+                16.008184716,
+                45.800261734
+              ],
+              [
+                16.008083938,
+                45.800091958
+              ],
+              [
+                16.007882511,
+                45.799752587
+              ],
+              [
+                16.00787034,
+                45.799732199
+              ]
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

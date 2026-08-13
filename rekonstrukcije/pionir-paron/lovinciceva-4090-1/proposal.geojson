@@ -1,0 +1,1036 @@
+{
+  "type": "FeatureCollection",
+  "name": "Lovinčićeva – volumeni iz lokacijske dozvole",
+  "bbox": [
+    16.017168644,
+    45.799445227,
+    16.020502185,
+    45.800910414
+  ],
+  "reconstruction": {
+    "schema": "consensus-builder.reconstruction.v1",
+    "proposal": {
+      "proposalId": "lovinciceva-location-permit-2019",
+      "city": "zagreb",
+      "name": "Lovinčićeva – volumeni iz lokacijske dozvole",
+      "title": "Lovinčićeva – volumeni iz lokacijske dozvole",
+      "description": "Radna rekonstrukcija 12 nadzemnih volumena A–E3 na k.č. 4090/1, k.o. Peščenica, za usporedbu alternativnog urbanog oblika. Položaji su preuzeti iz službenih ISPU geometrija lokacijske dozvole, uz B3 iz građevinske dozvole; etažnost i stanovi iz dozvole. Nacrtana geometrija daje približno 10.348 m² tlocrta, 33,0% izgrađenosti, 90.977 m² nadzemnog GBP-a i kin 2,904. Lokacijska dozvola navodi 11.519 m² tlocrta, 36,8%, 90.603 m² nadzemnog GBP-a, kin 2,9 i 1.370 stanova.",
+      "author": "zagreb.lol – lokalna analiza",
+      "type": "building",
+      "goal": "single",
+      "primaryType": "Urban Rule",
+      "typologyType": "single",
+      "lifecycleStatus": "Active",
+      "createdAt": "2026-08-09T00:00:00.000Z",
+      "updatedAt": "2026-08-09T00:00:00.000Z",
+      "tags": [
+        "buildings",
+        "research",
+        "location-permit"
+      ],
+      "parentParcelIds": [
+        "HR-335533-4090/1"
+      ],
+      "cadastreParcelIds": [
+        "HR-335533-4090/1"
+      ],
+      "parcelIds": [
+        "HR-335533-4090/1"
+      ],
+      "acceptedParcelIds": [],
+      "bounds": [
+        16.017168644,
+        45.799445227,
+        16.020502185,
+        45.800910414
+      ],
+      "source": {
+        "permitClass": "UP/I-350-05/20-001/297",
+        "parcel": "k.č. 4090/1, MB 335533, k.o. Peščenica",
+        "coordinateSystem": "HTRS96/TM (EPSG:3765), transformed to WGS84 for the app",
+        "sourceStatistics": {
+          "geometryDerived": {
+            "parcelAreaM2": 31332.18082350752,
+            "footprintAreaM2": 10347.712901851293,
+            "siteCoveragePercent": 33.02583040784617,
+            "aboveGroundGbpM2": 90976.46725215742,
+            "kin": 2.9036110752910225,
+            "apartments": 1370
+          },
+          "permitStated": {
+            "parcelAreaM2": 31332,
+            "footprintAreaM2": 11519,
+            "siteCoveragePercent": 36.8,
+            "aboveGroundGbpM2": 90603,
+            "undergroundGbpM2": 9832,
+            "totalGbpM2": 100435,
+            "kin": 2.9,
+            "apartments": 1370
+          }
+        }
+      }
+    },
+    "buildingProposal": {
+      "parentParcelIds": [
+        "HR-335533-4090/1"
+      ],
+      "parentParcelNumbers": [
+        {
+          "id": "HR-335533-4090/1",
+          "number": "4090/1",
+          "cadastre": "Peščenica"
+        }
+      ],
+      "createdFrom": "single-building",
+      "typologyType": "single",
+      "blockName": "Lovinčićeva – k.č. 4090/1",
+      "parameters": {
+        "typology": "single",
+        "floorHeightM": 3,
+        "sourceClass": "UP/I-350-05/20-001/297",
+        "sourceStatistics": {
+          "geometryDerived": {
+            "parcelAreaM2": 31332.18082350752,
+            "footprintAreaM2": 10347.712901851293,
+            "siteCoveragePercent": 33.02583040784617,
+            "aboveGroundGbpM2": 90976.46725215742,
+            "kin": 2.9036110752910225,
+            "apartments": 1370
+          },
+          "permitStated": {
+            "parcelAreaM2": 31332,
+            "footprintAreaM2": 11519,
+            "siteCoveragePercent": 36.8,
+            "aboveGroundGbpM2": 90603,
+            "undergroundGbpM2": 9832,
+            "totalGbpM2": 100435,
+            "kin": 2.9,
+            "apartments": 1370
+          }
+        }
+      },
+      "ancestorKey": "HR-335533-4090/1",
+      "takeWholeParcels": true,
+      "metadata": {
+        "sourceStatistics": {
+          "geometryDerived": {
+            "parcelAreaM2": 31332.18082350752,
+            "footprintAreaM2": 10347.712901851293,
+            "siteCoveragePercent": 33.02583040784617,
+            "aboveGroundGbpM2": 90976.46725215742,
+            "kin": 2.9036110752910225,
+            "apartments": 1370
+          },
+          "permitStated": {
+            "parcelAreaM2": 31332,
+            "footprintAreaM2": 11519,
+            "siteCoveragePercent": 36.8,
+            "aboveGroundGbpM2": 90603,
+            "undergroundGbpM2": 9832,
+            "totalGbpM2": 100435,
+            "kin": 2.9,
+            "apartments": 1370
+          }
+        }
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "HR-335533-4090/1",
+        "cestica_id": 21358541,
+        "maticni_broj_ko": 335533,
+        "broj_cestice": "4090/1",
+        "consensus:role": "site"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                16.017292452,
+                45.799445227
+              ],
+              [
+                16.01810411,
+                45.799483925
+              ],
+              [
+                16.018989965,
+                45.799526079
+              ],
+              [
+                16.019728329,
+                45.799561308
+              ],
+              [
+                16.020502185,
+                45.79959812
+              ],
+              [
+                16.020479657,
+                45.799824775
+              ],
+              [
+                16.02039265,
+                45.799845015
+              ],
+              [
+                16.020375635,
+                45.799848903
+              ],
+              [
+                16.020371131,
+                45.799894143
+              ],
+              [
+                16.020384403,
+                45.799921553
+              ],
+              [
+                16.020454927,
+                45.800068336
+              ],
+              [
+                16.020441457,
+                45.80019884
+              ],
+              [
+                16.020377673,
+                45.800196143
+              ],
+              [
+                16.019485073,
+                45.80015901
+              ],
+              [
+                16.019416992,
+                45.800910414
+              ],
+              [
+                16.017168644,
+                45.800806816
+              ],
+              [
+                16.017187312,
+                45.800641333
+              ],
+              [
+                16.017206549,
+                45.800469463
+              ],
+              [
+                16.017221073,
+                45.800336894
+              ],
+              [
+                16.017230003,
+                45.80025622
+              ],
+              [
+                16.017242992,
+                45.800256725
+              ],
+              [
+                16.017246027,
+                45.800232983
+              ],
+              [
+                16.01725389,
+                45.80021628
+              ],
+              [
+                16.01724862,
+                45.800066801
+              ],
+              [
+                16.017270351,
+                45.799710484
+              ],
+              [
+                16.01727369,
+                45.799666408
+              ],
+              [
+                16.017284466,
+                45.799520956
+              ],
+              [
+                16.017284886,
+                45.799516999
+              ],
+              [
+                16.017285331,
+                45.799510162
+              ],
+              [
+                16.017292452,
+                45.799445227
+              ]
+            ]
+          ]
+        ]
+      },
+      "areaM2": 31332.581500005246
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "A",
+        "block": "Lovinčićeva – k.č. 4090/1",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": 9,
+        "storeys": 9,
+        "apartments": 160,
+        "color": "#2f6fed",
+        "source": "ISPU lokacijska dozvola",
+        "sourceLayerId": 134407,
+        "footprintAreaM2": 1471.1932999987234,
+        "consensus:role": "building",
+        "consensus:index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.019600354,
+              45.799752966
+            ],
+            [
+              16.01969307,
+              45.799757135
+            ],
+            [
+              16.019693503,
+              45.799751738
+            ],
+            [
+              16.01987366,
+              45.799760054
+            ],
+            [
+              16.01989474,
+              45.799747095
+            ],
+            [
+              16.019911466,
+              45.799761832
+            ],
+            [
+              16.019885254,
+              45.800042819
+            ],
+            [
+              16.020139483,
+              45.800054414
+            ],
+            [
+              16.020181839,
+              45.799601005
+            ],
+            [
+              16.019709649,
+              45.799579405
+            ],
+            [
+              16.019710209,
+              45.799574009
+            ],
+            [
+              16.019617495,
+              45.79956975
+            ],
+            [
+              16.019600354,
+              45.799752966
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "B1",
+        "block": "Lovinčićeva – k.č. 4090/1",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": 9,
+        "storeys": 9,
+        "apartments": 64,
+        "color": "#d63384",
+        "source": "ISPU lokacijska dozvola",
+        "sourceLayerId": 165452,
+        "footprintAreaM2": 538.1673000025957,
+        "consensus:role": "building",
+        "consensus:index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.018480672,
+              45.799899149
+            ],
+            [
+              16.018461124,
+              45.80010746
+            ],
+            [
+              16.018758946,
+              45.800121132
+            ],
+            [
+              16.018778364,
+              45.799912821
+            ],
+            [
+              16.018480672,
+              45.799899149
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "B2",
+        "block": "Lovinčićeva – k.č. 4090/1",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": 9,
+        "storeys": 9,
+        "apartments": 64,
+        "color": "#d63384",
+        "source": "ISPU lokacijska dozvola",
+        "sourceLayerId": 239440,
+        "footprintAreaM2": 538.2625000030047,
+        "consensus:role": "building",
+        "consensus:index": 2
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.018813923,
+              45.799532986
+            ],
+            [
+              16.018516103,
+              45.799519404
+            ],
+            [
+              16.018496685,
+              45.799727715
+            ],
+            [
+              16.018794506,
+              45.799741297
+            ],
+            [
+              16.018813923,
+              45.799532986
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "B3",
+        "block": "Lovinčićeva – k.č. 4090/1",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": 9,
+        "storeys": 9,
+        "apartments": 186,
+        "color": "#d63384",
+        "source": "građevinska dozvola",
+        "sourceLayerId": null,
+        "footprintAreaM2": 1248.468199997838,
+        "consensus:role": "building",
+        "consensus:index": 3
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.019045682,
+              45.800122519
+            ],
+            [
+              16.019308141,
+              45.800134511
+            ],
+            [
+              16.019314229,
+              45.800069841
+            ],
+            [
+              16.019302655,
+              45.800069343
+            ],
+            [
+              16.019346853,
+              45.799597045
+            ],
+            [
+              16.019358298,
+              45.799597543
+            ],
+            [
+              16.019361982,
+              45.799558058
+            ],
+            [
+              16.019099526,
+              45.799546066
+            ],
+            [
+              16.019093438,
+              45.799610736
+            ],
+            [
+              16.019097938,
+              45.799610935
+            ],
+            [
+              16.019056142,
+              45.800058048
+            ],
+            [
+              16.019051641,
+              45.800057849
+            ],
+            [
+              16.019045682,
+              45.800122519
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "C1",
+        "block": "Lovinčićeva – k.č. 4090/1",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": 9,
+        "storeys": 9,
+        "apartments": 186,
+        "color": "#198754",
+        "source": "ISPU lokacijska dozvola",
+        "sourceLayerId": 103241,
+        "footprintAreaM2": 1244.497099991925,
+        "consensus:role": "building",
+        "consensus:index": 4
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.017336421,
+              45.800044318
+            ],
+            [
+              16.01759515,
+              45.800056208
+            ],
+            [
+              16.017601111,
+              45.799991537
+            ],
+            [
+              16.01759661,
+              45.799991339
+            ],
+            [
+              16.017640822,
+              45.799519042
+            ],
+            [
+              16.017648537,
+              45.799519434
+            ],
+            [
+              16.017652224,
+              45.799479859
+            ],
+            [
+              16.017393497,
+              45.799468059
+            ],
+            [
+              16.017387535,
+              45.799532729
+            ],
+            [
+              16.017392036,
+              45.799532928
+            ],
+            [
+              16.017350226,
+              45.79998004
+            ],
+            [
+              16.017342511,
+              45.799979648
+            ],
+            [
+              16.017336421,
+              45.800044318
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "C2",
+        "block": "Lovinčićeva – k.č. 4090/1",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": 9,
+        "storeys": 9,
+        "apartments": 64,
+        "color": "#198754",
+        "source": "ISPU lokacijska dozvola",
+        "sourceLayerId": 94321,
+        "footprintAreaM2": 538.2624999929301,
+        "consensus:role": "building",
+        "consensus:index": 5
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.01791519,
+              45.799701149
+            ],
+            [
+              16.01821301,
+              45.799714732
+            ],
+            [
+              16.01823243,
+              45.799506421
+            ],
+            [
+              16.017934611,
+              45.799492838
+            ],
+            [
+              16.01791519,
+              45.799701149
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "D1",
+        "block": "Lovinčićeva – k.č. 4090/1",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 24,
+        "heightM": 24,
+        "floors": 8,
+        "storeys": 8,
+        "apartments": 64,
+        "color": "#fd7e14",
+        "source": "ISPU lokacijska dozvola",
+        "sourceLayerId": 159992,
+        "footprintAreaM2": 538.1535500067878,
+        "consensus:role": "building",
+        "consensus:index": 6
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.01725584,
+              45.800809794
+            ],
+            [
+              16.017553666,
+              45.800823379
+            ],
+            [
+              16.017573087,
+              45.800615158
+            ],
+            [
+              16.017275263,
+              45.800601483
+            ],
+            [
+              16.01725584,
+              45.800809794
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "D2",
+        "block": "Lovinčićeva – k.č. 4090/1",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 24,
+        "heightM": 24,
+        "floors": 8,
+        "storeys": 8,
+        "apartments": 64,
+        "color": "#fd7e14",
+        "source": "ISPU lokacijska dozvola",
+        "sourceLayerId": 122997,
+        "footprintAreaM2": 538.2900000033441,
+        "consensus:role": "building",
+        "consensus:index": 7
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.017821915,
+              45.800835669
+            ],
+            [
+              16.01811974,
+              45.800849343
+            ],
+            [
+              16.018139289,
+              45.800641032
+            ],
+            [
+              16.017841464,
+              45.800627359
+            ],
+            [
+              16.017821915,
+              45.800835669
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "D3",
+        "block": "Lovinčićeva – k.č. 4090/1",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": 9,
+        "storeys": 9,
+        "apartments": 195,
+        "color": "#fd7e14",
+        "source": "ISPU lokacijska dozvola",
+        "sourceLayerId": 138631,
+        "footprintAreaM2": 1309.8864499808858,
+        "consensus:role": "building",
+        "consensus:index": 8
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.017309984,
+              45.800230644
+            ],
+            [
+              16.017291274,
+              45.800430859
+            ],
+            [
+              16.017385018,
+              45.800435215
+            ],
+            [
+              16.017386444,
+              45.800419024
+            ],
+            [
+              16.018051404,
+              45.800449455
+            ],
+            [
+              16.018051119,
+              45.800452603
+            ],
+            [
+              16.018087126,
+              45.800454194
+            ],
+            [
+              16.018085856,
+              45.800467236
+            ],
+            [
+              16.018142308,
+              45.800469814
+            ],
+            [
+              16.018161015,
+              45.800269598
+            ],
+            [
+              16.018068686,
+              45.800265339
+            ],
+            [
+              16.018067556,
+              45.800277032
+            ],
+            [
+              16.017397454,
+              45.8002464
+            ],
+            [
+              16.017397314,
+              45.800247749
+            ],
+            [
+              16.01736658,
+              45.800246359
+            ],
+            [
+              16.017367722,
+              45.800233317
+            ],
+            [
+              16.017309984,
+              45.800230644
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "E1",
+        "block": "Lovinčićeva – k.č. 4090/1",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 24,
+        "heightM": 24,
+        "floors": 8,
+        "storeys": 8,
+        "apartments": 64,
+        "color": "#6f42c1",
+        "source": "ISPU lokacijska dozvola",
+        "sourceLayerId": 9895,
+        "footprintAreaM2": 538.2625000043528,
+        "consensus:role": "building",
+        "consensus:index": 9
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.01837783,
+              45.800861139
+            ],
+            [
+              16.018675657,
+              45.800874721
+            ],
+            [
+              16.018695075,
+              45.80066641
+            ],
+            [
+              16.018397249,
+              45.800652827
+            ],
+            [
+              16.01837783,
+              45.800861139
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "E2",
+        "block": "Lovinčićeva – k.č. 4090/1",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 24,
+        "heightM": 24,
+        "floors": 8,
+        "storeys": 8,
+        "apartments": 64,
+        "color": "#6f42c1",
+        "source": "ISPU lokacijska dozvola",
+        "sourceLayerId": 172122,
+        "footprintAreaM2": 538.2625000043528,
+        "consensus:role": "building",
+        "consensus:index": 10
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.018943906,
+              45.800887008
+            ],
+            [
+              16.019241733,
+              45.800900589
+            ],
+            [
+              16.019261149,
+              45.800692277
+            ],
+            [
+              16.018963323,
+              45.800678697
+            ],
+            [
+              16.018943906,
+              45.800887008
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "E3",
+        "block": "Lovinčićeva – k.č. 4090/1",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": 9,
+        "storeys": 9,
+        "apartments": 195,
+        "color": "#6f42c1",
+        "source": "ISPU lokacijska dozvola",
+        "sourceLayerId": 164994,
+        "footprintAreaM2": 1306.1153500136927,
+        "consensus:role": "building",
+        "consensus:index": 11
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.018444822,
+              45.800282582
+            ],
+            [
+              16.018426116,
+              45.800482798
+            ],
+            [
+              16.018518446,
+              45.800487056
+            ],
+            [
+              16.018520001,
+              45.800470866
+            ],
+            [
+              16.019184961,
+              45.80050129
+            ],
+            [
+              16.019184677,
+              45.800504438
+            ],
+            [
+              16.019220555,
+              45.800506029
+            ],
+            [
+              16.019219414,
+              45.800519071
+            ],
+            [
+              16.019277152,
+              45.800521743
+            ],
+            [
+              16.019295855,
+              45.800321527
+            ],
+            [
+              16.019238117,
+              45.800318855
+            ],
+            [
+              16.019236987,
+              45.800330547
+            ],
+            [
+              16.018531007,
+              45.800298241
+            ],
+            [
+              16.018530867,
+              45.80029959
+            ],
+            [
+              16.018500004,
+              45.800298201
+            ],
+            [
+              16.018501274,
+              45.800285159
+            ],
+            [
+              16.018444822,
+              45.800282582
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

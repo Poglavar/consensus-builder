@@ -1,0 +1,522 @@
+{
+  "type": "FeatureCollection",
+  "name": "Špansko-Sjever – volumen B, izmjena građevinske dozvole",
+  "bbox": [
+    15.8826577,
+    45.80267438,
+    15.88579063,
+    45.80446401
+  ],
+  "edozvola": {
+    "schema": "consensus-builder.edozvola-source.v1",
+    "archivedAt": "2026-08-13",
+    "source": "https://oss.uredjenazemlja.hr/OssWebServices/external/eDozvole",
+    "sourceService": "public national eDozvola WFS 2.0.0",
+    "sourceCrs": "EPSG:3765",
+    "outputCrs": "EPSG:4326",
+    "geometryOnly": true,
+    "caveat": "Public WFS geometry and case metadata are evidence, not a substitute for the signed permit and main project.",
+    "note": "Imenovani pojedinačni akt služi za pridruživanje oznake B odgovarajućem poligonu lokacijske dozvole.",
+    "layerFeatureCounts": {
+      "eDozvola_area_polygon": 1,
+      "eDozvola_building_line": 0,
+      "eDozvola_building_point": 0,
+      "eDozvola_building_polygon": 1
+    },
+    "caseId": "P20221230-1014725-Z11",
+    "caseClass": "UP/I-361-03/21-001/186",
+    "caseType": "Građevinska dozvola - izmjena i/ili dopuna",
+    "caseStatus": "Arhiva",
+    "requestReceivedAt": "2021-02-17",
+    "requestCompleteAt": null,
+    "decisionName": null,
+    "decisionNumber": null,
+    "decisionAt": "2021-11-05",
+    "finalAt": "2021-12-03"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20221230-1014725-Z11",
+        "predmet_group_id": "V01",
+        "predmet_group": "Akt za građenje",
+        "predmet_vrsta_id": "Z11",
+        "predmet_vrsta": "Građevinska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVA",
+        "predmet_status": "Arhiva",
+        "predmet_klasa": "UP/I-361-03/21-001/186",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2021-02-17",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": null,
+        "zavrsni_akt_urbroj_rjesenja": null,
+        "zavrsni_akt_dat_rjesavanja": "2021-11-05",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2021-12-03",
+        "nadlezno_tijelo_id": "UJ-2101117",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za graditeljstvo, Središnji odsjek za graditeljstvo",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2795\", \"lokacija_kat_opcina\": \"Stenjevec\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": \" \", \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335592\"}}]",
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_area_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_area_polygon.90242",
+        "edozvola:geometryAreaM2": 33338.27
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.88274226,
+              45.80352847
+            ],
+            [
+              15.88272398,
+              45.80354115
+            ],
+            [
+              15.88270967,
+              45.8035561
+            ],
+            [
+              15.88269983,
+              45.80357278
+            ],
+            [
+              15.88269501,
+              45.80359048
+            ],
+            [
+              15.88268853,
+              45.80364111
+            ],
+            [
+              15.88267627,
+              45.80373741
+            ],
+            [
+              15.88266306,
+              45.80385062
+            ],
+            [
+              15.88265996,
+              45.80387481
+            ],
+            [
+              15.88265808,
+              45.80389415
+            ],
+            [
+              15.88265786,
+              45.80391349
+            ],
+            [
+              15.8826577,
+              45.80393985
+            ],
+            [
+              15.88293425,
+              45.80395637
+            ],
+            [
+              15.88310576,
+              45.80396666
+            ],
+            [
+              15.88308371,
+              45.80414578
+            ],
+            [
+              15.88304682,
+              45.80444602
+            ],
+            [
+              15.88304469,
+              45.80446401
+            ],
+            [
+              15.8830595,
+              45.80446247
+            ],
+            [
+              15.88310394,
+              45.80445812
+            ],
+            [
+              15.8831637,
+              45.80445232
+            ],
+            [
+              15.88332622,
+              45.80443799
+            ],
+            [
+              15.88348897,
+              45.80442546
+            ],
+            [
+              15.88364334,
+              45.80441523
+            ],
+            [
+              15.88379808,
+              45.80440662
+            ],
+            [
+              15.88389102,
+              45.80440217
+            ],
+            [
+              15.88396953,
+              45.80439899
+            ],
+            [
+              15.88409463,
+              45.80439463
+            ],
+            [
+              15.88418871,
+              45.8043919
+            ],
+            [
+              15.88419784,
+              45.80438025
+            ],
+            [
+              15.8842039,
+              45.80436768
+            ],
+            [
+              15.88429152,
+              45.80436681
+            ],
+            [
+              15.88429859,
+              45.80437863
+            ],
+            [
+              15.88430838,
+              45.80438948
+            ],
+            [
+              15.88436873,
+              45.80438882
+            ],
+            [
+              15.8845145,
+              45.8043878
+            ],
+            [
+              15.88477269,
+              45.80438955
+            ],
+            [
+              15.88509398,
+              45.80439785
+            ],
+            [
+              15.8853827,
+              45.80440732
+            ],
+            [
+              15.88555053,
+              45.80441281
+            ],
+            [
+              15.88556148,
+              45.80441188
+            ],
+            [
+              15.88557246,
+              45.80440771
+            ],
+            [
+              15.88558038,
+              45.80440101
+            ],
+            [
+              15.88558395,
+              45.80439266
+            ],
+            [
+              15.88560585,
+              45.80421426
+            ],
+            [
+              15.88564315,
+              45.80391123
+            ],
+            [
+              15.88569685,
+              45.8034734
+            ],
+            [
+              15.88572752,
+              45.80322261
+            ],
+            [
+              15.88576806,
+              45.8028936
+            ],
+            [
+              15.88579063,
+              45.80271277
+            ],
+            [
+              15.88578459,
+              45.8027005
+            ],
+            [
+              15.88577442,
+              45.80268974
+            ],
+            [
+              15.88576329,
+              45.80268329
+            ],
+            [
+              15.88574983,
+              45.80267908
+            ],
+            [
+              15.88572879,
+              45.80267438
+            ],
+            [
+              15.88569452,
+              45.8026786
+            ],
+            [
+              15.88556414,
+              45.80269518
+            ],
+            [
+              15.88545423,
+              45.80271123
+            ],
+            [
+              15.88534481,
+              45.80272909
+            ],
+            [
+              15.88523601,
+              45.80274884
+            ],
+            [
+              15.88512784,
+              45.8027703
+            ],
+            [
+              15.88506026,
+              45.80278469
+            ],
+            [
+              15.88499294,
+              45.8027999
+            ],
+            [
+              15.88492587,
+              45.80281573
+            ],
+            [
+              15.88487685,
+              45.80282789
+            ],
+            [
+              15.88482795,
+              45.80284031
+            ],
+            [
+              15.88478215,
+              45.80285248
+            ],
+            [
+              15.88473647,
+              45.80286492
+            ],
+            [
+              15.88464613,
+              45.80289062
+            ],
+            [
+              15.88455668,
+              45.80291758
+            ],
+            [
+              15.88446811,
+              45.8029459
+            ],
+            [
+              15.88434518,
+              45.80298771
+            ],
+            [
+              15.88423929,
+              45.80302358
+            ],
+            [
+              15.88389915,
+              45.8031389
+            ],
+            [
+              15.88377893,
+              45.80317964
+            ],
+            [
+              15.88349871,
+              45.80327459
+            ],
+            [
+              15.88328047,
+              45.80334854
+            ],
+            [
+              15.88306495,
+              45.80342161
+            ],
+            [
+              15.88282204,
+              45.8035038
+            ],
+            [
+              15.88278653,
+              45.80351603
+            ],
+            [
+              15.88274226,
+              45.80352847
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20221230-1014725-Z11",
+        "predmet_group_id": "V01",
+        "predmet_group": "Akt za građenje",
+        "predmet_vrsta_id": "Z11",
+        "predmet_vrsta": "Građevinska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVA",
+        "predmet_status": "Arhiva",
+        "predmet_klasa": "UP/I-361-03/21-001/186",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2021-02-17",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": null,
+        "zavrsni_akt_urbroj_rjesenja": null,
+        "zavrsni_akt_dat_rjesavanja": "2021-11-05",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2021-12-03",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101117",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za graditeljstvo, Središnji odsjek za graditeljstvo",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2795\", \"lokacija_kat_opcina\": \"Stenjevec\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": \" \", \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335592\"}}]",
+        "gradjevina_zahvat_id": null,
+        "gradjevina_zahvat": null,
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "sn",
+        "gradjevina_namjena": "stambene namjene",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.175647",
+        "edozvola:geometryAreaM2": 900.05
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.88441567,
+              45.80371242
+            ],
+            [
+              15.88439221,
+              45.80390359
+            ],
+            [
+              15.88439311,
+              45.80390369
+            ],
+            [
+              15.88449584,
+              45.80390982
+            ],
+            [
+              15.88449696,
+              45.80390083
+            ],
+            [
+              15.88486184,
+              45.80392277
+            ],
+            [
+              15.88486071,
+              45.80393167
+            ],
+            [
+              15.88496434,
+              45.8039379
+            ],
+            [
+              15.88496618,
+              45.80392252
+            ],
+            [
+              15.8849861,
+              45.80376111
+            ],
+            [
+              15.88498794,
+              45.80374574
+            ],
+            [
+              15.88488431,
+              45.80373951
+            ],
+            [
+              15.88488318,
+              45.8037485
+            ],
+            [
+              15.88451844,
+              45.80372656
+            ],
+            [
+              15.88451944,
+              45.80371757
+            ],
+            [
+              15.88441581,
+              45.80371134
+            ],
+            [
+              15.88441567,
+              45.80371242
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

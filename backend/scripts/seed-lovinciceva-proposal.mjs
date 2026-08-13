@@ -3,8 +3,11 @@
 
 import dotenv from 'dotenv';
 import * as turf from '@turf/turf';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { dirname, resolve } from 'node:path';
 import pg from 'pg';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { assertReconstructionGeoJSONRoundTrip } from '../proposals/reconstruction-geojson.js';
 
 dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
 await import('../../frontend/js/building-density-stats.js');
@@ -14,6 +17,11 @@ const densityStats = globalThis.BuildingDensityStats;
 
 export const PROPOSAL_ID = 'lovinciceva-location-permit-2019';
 export const PARCEL_ID = 'HR-335533-4090/1';
+export const RECONSTRUCTION_DATE = '2026-08-09T00:00:00.000Z';
+export const GEOJSON_PATH = fileURLToPath(new URL(
+    '../../rekonstrukcije/pionir-paron/lovinciceva-4090-1/proposal.geojson',
+    import.meta.url
+));
 export const OFFICIAL_TOTALS = Object.freeze({
     parcelAreaM2: 31332,
     footprintAreaM2: 11519,
@@ -77,10 +85,11 @@ export const VOLUMES = Object.freeze([
 ]);
 
 function usage() {
-    console.log(`Usage: node backend/scripts/seed-lovinciceva-proposal.mjs --dry-run|--apply
+    console.log(`Usage: node backend/scripts/seed-lovinciceva-proposal.mjs --dry-run|--apply [--export]
 
   --dry-run  Validate the local parcel, geometry and reconstructed totals without writing.
-  --apply    Upsert proposal ${PROPOSAL_ID} in the local Consensus Builder database.`);
+  --apply    Upsert proposal ${PROPOSAL_ID} in the local Consensus Builder database.
+  --export   Write the canonical proposal FeatureCollection to ${GEOJSON_PATH}.`);
 }
 
 function assertLocalDatabase() {
@@ -95,7 +104,7 @@ function geometryBounds(feature) {
     return [minX, minY, maxX, maxY];
 }
 
-async function readParcel(pool) {
+export async function readParcel(pool) {
     const result = await pool.query(`
         SELECT cestica_id,
                ST_Area(geom)::double precision AS area_m2,
@@ -121,7 +130,7 @@ async function readParcel(pool) {
     };
 }
 
-async function readVolumeFeature(pool, volume) {
+export async function readVolumeFeature(pool, volume) {
     const result = await pool.query(`
         WITH footprint AS (
             SELECT ST_GeomFromText($1, 3765) AS geom
@@ -164,7 +173,7 @@ async function readVolumeFeature(pool, volume) {
 }
 
 export function buildProposal({ parcelFeature, buildings, stats }) {
-    const now = new Date().toISOString();
+    const now = RECONSTRUCTION_DATE;
     const parcelIds = [PARCEL_ID];
     const parentParcelNumbers = [{ id: PARCEL_ID, number: '4090/1', cadastre: 'Pe\u0161\u010denica' }];
     const sourceStatistics = {
@@ -287,13 +296,44 @@ async function upsertProposal(pool, proposal) {
     return result.rows[0];
 }
 
+export async function constructLovincicevaProposal(pool) {
+    const parcelFeature = await readParcel(pool);
+    const buildings = [];
+    for (const volume of VOLUMES) buildings.push(await readVolumeFeature(pool, volume));
+    const stats = densityStats.summarizeDensity({
+        parcelFeature,
+        buildings,
+        turf,
+        floorHeightM: 3
+    });
+    const apartments = VOLUMES.reduce((sum, volume) => sum + volume.apartments, 0);
+    if (apartments !== OFFICIAL_TOTALS.apartments) {
+        throw new Error(`Apartment total ${apartments} does not match permit total ${OFFICIAL_TOTALS.apartments}.`);
+    }
+    if (Math.abs(stats.aboveGroundGbpM2 - OFFICIAL_TOTALS.aboveGroundGbpM2) / OFFICIAL_TOTALS.aboveGroundGbpM2 > 0.01) {
+        throw new Error('Geometry-derived GBP differs from the permit by more than 1%.');
+    }
+    return {
+        proposal: buildProposal({ parcelFeature, buildings, stats }),
+        stats,
+        apartments
+    };
+}
+
+async function exportProposal(proposal) {
+    const { collection, buildingCount } = assertReconstructionGeoJSONRoundTrip(proposal);
+    await mkdir(dirname(GEOJSON_PATH), { recursive: true });
+    await writeFile(GEOJSON_PATH, `${JSON.stringify(collection, null, 2)}\n`, 'utf8');
+    console.log(`Exported ${buildingCount} buildings to ${GEOJSON_PATH}; round trip passed.`);
+}
+
 async function main() {
     const args = process.argv.slice(2);
     if (!args.length || args.includes('--help') || args.includes('-h')) {
         usage();
         return;
     }
-    const allowed = new Set(['--dry-run', '--apply']);
+    const allowed = new Set(['--dry-run', '--apply', '--export']);
     const unknown = args.filter(arg => !allowed.has(arg));
     if (unknown.length || (args.includes('--dry-run') === args.includes('--apply'))) {
         usage();
@@ -303,24 +343,7 @@ async function main() {
     assertLocalDatabase();
     const pool = new Pool();
     try {
-        const parcelFeature = await readParcel(pool);
-        const buildings = [];
-        for (const volume of VOLUMES) buildings.push(await readVolumeFeature(pool, volume));
-        const stats = densityStats.summarizeDensity({
-            parcelFeature,
-            buildings,
-            turf,
-            floorHeightM: 3
-        });
-        const apartments = VOLUMES.reduce((sum, volume) => sum + volume.apartments, 0);
-        if (apartments !== OFFICIAL_TOTALS.apartments) {
-            throw new Error(`Apartment total ${apartments} does not match permit total ${OFFICIAL_TOTALS.apartments}.`);
-        }
-        if (Math.abs(stats.aboveGroundGbpM2 - OFFICIAL_TOTALS.aboveGroundGbpM2) / OFFICIAL_TOTALS.aboveGroundGbpM2 > 0.01) {
-            throw new Error('Geometry-derived GBP differs from the permit by more than 1%.');
-        }
-
-        const proposal = buildProposal({ parcelFeature, buildings, stats });
+        const { proposal, stats, apartments } = await constructLovincicevaProposal(pool);
         console.log(JSON.stringify({
             proposalId: proposal.proposalId,
             buildings: stats.buildingCount,
@@ -339,13 +362,14 @@ async function main() {
         } else {
             console.log('Dry run only; no database row was written.');
         }
+        if (args.includes('--export')) await exportProposal(proposal);
     } finally {
         await pool.end();
     }
 }
 
 const invokedDirectly = process.argv[1]
-    && fileURLToPath(import.meta.url) === fileURLToPath(new URL(`file://${process.argv[1]}`));
+    && import.meta.url === pathToFileURL(resolve(process.argv[1])).href;
 if (invokedDirectly) {
     main().catch(error => {
         console.error(error.message);

@@ -1,0 +1,366 @@
+{
+  "type": "FeatureCollection",
+  "name": "Savica F3 – građevinska dozvola 2024.",
+  "bbox": [
+    15.99725855,
+    45.7941712,
+    15.99893836,
+    45.79502036
+  ],
+  "edozvola": {
+    "schema": "consensus-builder.edozvola-source.v1",
+    "archivedAt": "2026-08-13",
+    "source": "https://oss.uredjenazemlja.hr/OssWebServices/external/eDozvole",
+    "sourceService": "public national eDozvola WFS 2.0.0",
+    "sourceCrs": "EPSG:3765",
+    "outputCrs": "EPSG:4326",
+    "geometryOnly": true,
+    "caveat": "Public WFS geometry and case metadata are evidence, not a substitute for the signed permit and main project.",
+    "note": "Pojedinačni akt za nadzemni poslovni volumen F3.",
+    "layerFeatureCounts": {
+      "eDozvola_area_polygon": 1,
+      "eDozvola_building_line": 0,
+      "eDozvola_building_point": 0,
+      "eDozvola_building_polygon": 1
+    },
+    "caseId": "P20240131-1445130-Z01",
+    "caseClass": "UP/I-361-03/24-01/000163",
+    "caseType": "Građevinska dozvola",
+    "caseStatus": "Arhiva",
+    "requestReceivedAt": "2024-02-02",
+    "requestCompleteAt": "2024-02-26",
+    "decisionName": "Građevinska dozvola",
+    "decisionNumber": "251-10-22-1/049-24-0013",
+    "decisionAt": "2024-04-22",
+    "finalAt": "2024-05-18"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20240131-1445130-Z01",
+        "predmet_group_id": "V01",
+        "predmet_group": "Akt za građenje",
+        "predmet_vrsta_id": "Z01",
+        "predmet_vrsta": "Građevinska dozvola",
+        "predmet_status_id": "ARHIVA",
+        "predmet_status": "Arhiva",
+        "predmet_klasa": "UP/I-361-03/24-01/000163",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2024-02-02",
+        "zahtjev_dat_urednosti": "2024-02-26",
+        "zavrsni_akt_naziv": "Građevinska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-22-1/049-24-0013",
+        "zavrsni_akt_dat_rjesavanja": "2024-04-22",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2024-05-18",
+        "nadlezno_tijelo_id": "UJ-2101117",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za graditeljstvo, Središnji odsjek za graditeljstvo",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2716/8\", \"lokacija_kat_opcina\": \"Trnje\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335649\"}}]",
+        "troskovi_gradjenja_id": "SG-00",
+        "troskovi_gradjenja": "Statistička grupa 0 (do 9.999 €)",
+        "edozvola:sourceLayer": "eDozvola_area_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_area_polygon.120944",
+        "edozvola:geometryAreaM2": 6666.47
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.99740592,
+              45.79501836
+            ],
+            [
+              15.99757204,
+              45.79496987
+            ],
+            [
+              15.99787744,
+              45.79488043
+            ],
+            [
+              15.99806742,
+              45.79482457
+            ],
+            [
+              15.9982997,
+              45.7947564
+            ],
+            [
+              15.9985517,
+              45.79468282
+            ],
+            [
+              15.99877224,
+              45.79461792
+            ],
+            [
+              15.99892869,
+              45.79457164
+            ],
+            [
+              15.99893836,
+              45.79456871
+            ],
+            [
+              15.99891846,
+              45.79453578
+            ],
+            [
+              15.9989158,
+              45.79453145
+            ],
+            [
+              15.99873963,
+              45.79423816
+            ],
+            [
+              15.99873735,
+              45.79423428
+            ],
+            [
+              15.99872366,
+              45.79421235
+            ],
+            [
+              15.99869573,
+              45.7941712
+            ],
+            [
+              15.99855012,
+              45.79421438
+            ],
+            [
+              15.99855036,
+              45.79421564
+            ],
+            [
+              15.99848033,
+              45.79423585
+            ],
+            [
+              15.99840966,
+              45.79425605
+            ],
+            [
+              15.9983118,
+              45.79428208
+            ],
+            [
+              15.99824051,
+              45.79429922
+            ],
+            [
+              15.99808533,
+              45.79433363
+            ],
+            [
+              15.99797129,
+              45.79435671
+            ],
+            [
+              15.99774338,
+              45.79439646
+            ],
+            [
+              15.99759951,
+              45.7944177
+            ],
+            [
+              15.99742913,
+              45.79444007
+            ],
+            [
+              15.9973887,
+              45.79444484
+            ],
+            [
+              15.99736384,
+              45.79444869
+            ],
+            [
+              15.99734477,
+              45.79445248
+            ],
+            [
+              15.99732722,
+              45.79445789
+            ],
+            [
+              15.99731404,
+              45.79446539
+            ],
+            [
+              15.99730339,
+              45.79447659
+            ],
+            [
+              15.99729763,
+              45.79448718
+            ],
+            [
+              15.99729483,
+              45.79449806
+            ],
+            [
+              15.99728041,
+              45.79464304
+            ],
+            [
+              15.99725855,
+              45.79487132
+            ],
+            [
+              15.99725907,
+              45.79488427
+            ],
+            [
+              15.99726284,
+              45.79489509
+            ],
+            [
+              15.99727179,
+              45.7949008
+            ],
+            [
+              15.99727758,
+              45.79490064
+            ],
+            [
+              15.99728808,
+              45.79492039
+            ],
+            [
+              15.99732058,
+              45.79498181
+            ],
+            [
+              15.99732501,
+              45.7949902
+            ],
+            [
+              15.99733111,
+              45.79499869
+            ],
+            [
+              15.99733851,
+              45.79500574
+            ],
+            [
+              15.99734554,
+              45.79501054
+            ],
+            [
+              15.99735617,
+              45.79501544
+            ],
+            [
+              15.99736669,
+              45.79501828
+            ],
+            [
+              15.99737735,
+              45.79501994
+            ],
+            [
+              15.99738983,
+              45.79502036
+            ],
+            [
+              15.99740592,
+              45.79501836
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20240131-1445130-Z01",
+        "predmet_group_id": "V01",
+        "predmet_group": "Akt za građenje",
+        "predmet_vrsta_id": "Z01",
+        "predmet_vrsta": "Građevinska dozvola",
+        "predmet_status_id": "ARHIVA",
+        "predmet_status": "Arhiva",
+        "predmet_klasa": "UP/I-361-03/24-01/000163",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2024-02-02",
+        "zahtjev_dat_urednosti": "2024-02-26",
+        "zavrsni_akt_naziv": "Građevinska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-22-1/049-24-0013",
+        "zavrsni_akt_dat_rjesavanja": "2024-04-22",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2024-05-18",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101117",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za graditeljstvo, Središnji odsjek za graditeljstvo",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2716/8\", \"lokacija_kat_opcina\": \"Trnje\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335649\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "gn_02",
+        "gradjevina_namjena": "poslovne namjene",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": "SG-00",
+        "troskovi_gradjenja": "Statistička grupa 0 (do 9.999 €)",
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.252849",
+        "edozvola:geometryAreaM2": 1318.66
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.9973927,
+              45.79501578
+            ],
+            [
+              15.99787621,
+              45.79487466
+            ],
+            [
+              15.99764025,
+              45.79447906
+            ],
+            [
+              15.99741301,
+              45.79454537
+            ],
+            [
+              15.9975557,
+              45.79478453
+            ],
+            [
+              15.9972993,
+              45.79485935
+            ],
+            [
+              15.9973927,
+              45.79501578
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,588 @@
+{
+  "type": "FeatureCollection",
+  "name": "Savica F1–F3 – rekonstrukcija izvedenog stanja",
+  "bbox": [
+    15.997258548,
+    45.794171158,
+    15.998938363,
+    45.795020318
+  ],
+  "reconstruction": {
+    "schema": "consensus-builder.reconstruction.v1",
+    "proposal": {
+      "proposalId": "paron-savica-f1-f3-observed",
+      "city": "zagreb",
+      "name": "Savica F1–F3 – rekonstrukcija izvedenog stanja",
+      "title": "Savica F1–F3 – rekonstrukcija izvedenog stanja",
+      "description": "Rekonstrukcija izvedenog kompleksa na k.č. 2716/8, k.o. Trnje: stambeni volumeni F1 i F2 sa po 70 stanova te poslovni volumen F3 s osam uredskih prostora. Tlocrti su aktualne DGU geometrije; oznake su sigurno pridružene prema označenoj lokacijskoj izmjeni. Svih osam nadzemnih etaža prikazano je s procijenjenih 24 m jer izmjerena visina nije dostupna. Zajedničke podzemne garaže i trafostanica ostaju kontekst, ne nadzemni volumeni prijedloga.",
+      "author": "zagreb.lol – lokalna analiza",
+      "type": "building",
+      "goal": "single",
+      "primaryType": "Urban Rule",
+      "typologyType": "single",
+      "lifecycleStatus": "Active",
+      "createdAt": "2026-08-13T00:00:00.000Z",
+      "updatedAt": "2026-08-13T00:00:00.000Z",
+      "tags": [
+        "buildings",
+        "research",
+        "reconstruction",
+        "observed-built-state",
+        "permit-cross-check"
+      ],
+      "parentParcelIds": [
+        "HR-335649-2716/8"
+      ],
+      "cadastreParcelIds": [
+        "HR-335649-2716/8"
+      ],
+      "parcelIds": [
+        "HR-335649-2716/8"
+      ],
+      "acceptedParcelIds": [],
+      "bounds": [
+        15.997258548,
+        45.794171158,
+        15.998938363,
+        45.795020318
+      ],
+      "source": {
+        "projectPage": "https://pionir.hr/prodaja-nekretnina/savica/objekt-f3/",
+        "f1UsePermit": "https://pionir.hr/wp-content/dokumentacija_dozvole/savica/Uporabna_dozvola_F1.pdf",
+        "f2UsePermit": "https://pionir.hr/wp-content/dokumentacija_dozvole/savica/uporabna_dozvola_f2.pdf",
+        "locationPermitLabelCaseId": "A20211027-2824386-V020101",
+        "latestLocationPermitCaseId": "P20230927-1364307-Z06",
+        "f1f2BuildingPermitCaseId": "A20220330-2833642-V010101",
+        "f3BuildingPermitCaseId": "P20240131-1445130-Z01",
+        "publicWfs": "https://oss.uredjenazemlja.hr/OssWebServices/external/eDozvole",
+        "parcel": "k.č. 2716/8, MB 335649, k.o. Trnje; DGU parcel id 21309385",
+        "investorRoles": {
+          "originalDesignAndEnergyDocuments": "PARON d.o.o.",
+          "laterPermitsAndUsePermits": "TEHNIKAGRADNJA d.o.o.",
+          "marketingAndPublishedDocuments": "GIP PIONIR d.o.o."
+        },
+        "sourceStatistics": {
+          "observedBuiltState": {
+            "parcelAreaM2": 6666.479037361671,
+            "aboveGroundFootprintAreaM2": 2704.1064196485895,
+            "siteCoveragePercent": 40.56273790847722,
+            "aboveGroundVolumes": 3,
+            "apartments": 140,
+            "offices": 8
+          },
+          "displayOnlyHeightEstimate": {
+            "heightEquivalentAboveGroundGbpM2": 21632.85135692005,
+            "heightEquivalentKin": 3.2450190326378765,
+            "method": "current DGU footprint × eight display levels; not permit GBP"
+          },
+          "caveat": "Current built footprints are DGU geometry. Permit footprints remain archived as evidence and are not silently substituted for as-built geometry."
+        }
+      }
+    },
+    "buildingProposal": {
+      "parentParcelIds": [
+        "HR-335649-2716/8"
+      ],
+      "parentParcelNumbers": [
+        {
+          "id": "HR-335649-2716/8",
+          "number": "2716/8",
+          "cadastre": "Trnje"
+        }
+      ],
+      "createdFrom": "single-building",
+      "typologyType": "single",
+      "blockName": "Savica F1–F3 – izvedeno stanje",
+      "parameters": {
+        "typology": "single",
+        "floorHeightM": 3,
+        "geometryBasis": "observed-built-state",
+        "sourceStatistics": {
+          "observedBuiltState": {
+            "parcelAreaM2": 6666.479037361671,
+            "aboveGroundFootprintAreaM2": 2704.1064196485895,
+            "siteCoveragePercent": 40.56273790847722,
+            "aboveGroundVolumes": 3,
+            "apartments": 140,
+            "offices": 8
+          },
+          "displayOnlyHeightEstimate": {
+            "heightEquivalentAboveGroundGbpM2": 21632.85135692005,
+            "heightEquivalentKin": 3.2450190326378765,
+            "method": "current DGU footprint × eight display levels; not permit GBP"
+          },
+          "caveat": "Current built footprints are DGU geometry. Permit footprints remain archived as evidence and are not silently substituted for as-built geometry."
+        }
+      },
+      "ancestorKey": "HR-335649-2716/8",
+      "takeWholeParcels": true,
+      "metadata": {
+        "sourceStatistics": {
+          "observedBuiltState": {
+            "parcelAreaM2": 6666.479037361671,
+            "aboveGroundFootprintAreaM2": 2704.1064196485895,
+            "siteCoveragePercent": 40.56273790847722,
+            "aboveGroundVolumes": 3,
+            "apartments": 140,
+            "offices": 8
+          },
+          "displayOnlyHeightEstimate": {
+            "heightEquivalentAboveGroundGbpM2": 21632.85135692005,
+            "heightEquivalentKin": 3.2450190326378765,
+            "method": "current DGU footprint × eight display levels; not permit GBP"
+          },
+          "caveat": "Current built footprints are DGU geometry. Permit footprints remain archived as evidence and are not silently substituted for as-built geometry."
+        }
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "HR-335649-2716/8",
+        "cestica_id": 21309385,
+        "maticni_broj_ko": 335649,
+        "broj_cestice": "2716/8",
+        "areaM2": 6666.564950017974,
+        "source": "DGU katastar, aktualna čestica",
+        "consensus:role": "site"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.997258548,
+                45.794871274
+              ],
+              [
+                15.99728041,
+                45.794643002
+              ],
+              [
+                15.997294834,
+                45.794498018
+              ],
+              [
+                15.997297633,
+                45.794487143
+              ],
+              [
+                15.997303388,
+                45.79447655
+              ],
+              [
+                15.997314036,
+                45.79446535
+              ],
+              [
+                15.997327224,
+                45.794457849
+              ],
+              [
+                15.997344767,
+                45.794452438
+              ],
+              [
+                15.997363838,
+                45.794448652
+              ],
+              [
+                15.997388698,
+                45.794444803
+              ],
+              [
+                15.997429131,
+                45.794440032
+              ],
+              [
+                15.997599511,
+                45.794417656
+              ],
+              [
+                15.997743383,
+                45.794396424
+              ],
+              [
+                15.997971287,
+                45.794356664
+              ],
+              [
+                15.998085333,
+                45.794333591
+              ],
+              [
+                15.998240513,
+                45.79429918
+              ],
+              [
+                15.9983118,
+                45.794282037
+              ],
+              [
+                15.998409664,
+                45.794256013
+              ],
+              [
+                15.998480334,
+                45.794235808
+              ],
+              [
+                15.998550362,
+                45.7942156
+              ],
+              [
+                15.998550116,
+                45.794214339
+              ],
+              [
+                15.998695727,
+                45.794171158
+              ],
+              [
+                15.998723657,
+                45.794212311
+              ],
+              [
+                15.998737352,
+                45.794234236
+              ],
+              [
+                15.998739633,
+                45.794238115
+              ],
+              [
+                15.9989158,
+                45.794531412
+              ],
+              [
+                15.998918463,
+                45.794535743
+              ],
+              [
+                15.998938363,
+                45.794568673
+              ],
+              [
+                15.998928689,
+                45.7945716
+              ],
+              [
+                15.998772245,
+                45.794617883
+              ],
+              [
+                15.998551703,
+                45.79468278
+              ],
+              [
+                15.998299697,
+                45.794756357
+              ],
+              [
+                15.998067419,
+                45.794824532
+              ],
+              [
+                15.997877443,
+                45.794880384
+              ],
+              [
+                15.997572039,
+                45.794969831
+              ],
+              [
+                15.997405924,
+                45.79501832
+              ],
+              [
+                15.997389827,
+                45.795020318
+              ],
+              [
+                15.997377354,
+                45.795019904
+              ],
+              [
+                15.997366692,
+                45.795018237
+              ],
+              [
+                15.99735617,
+                45.795015401
+              ],
+              [
+                15.997345538,
+                45.795010496
+              ],
+              [
+                15.997338506,
+                45.795005696
+              ],
+              [
+                15.997331109,
+                45.794998645
+              ],
+              [
+                15.997325011,
+                45.79499016
+              ],
+              [
+                15.997320584,
+                45.794981772
+              ],
+              [
+                15.997288078,
+                45.794920353
+              ],
+              [
+                15.997277579,
+                45.794900601
+              ],
+              [
+                15.997271789,
+                45.794900756
+              ],
+              [
+                15.997262836,
+                45.794895048
+              ],
+              [
+                15.997259074,
+                45.794884234
+              ],
+              [
+                15.997258548,
+                45.794871274
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "F1",
+        "block": "Savica F1–F3 – izvedeno stanje",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 24,
+        "heightM": 24,
+        "floors": 8,
+        "storeys": 8,
+        "floorCountBasis": "OSM/Overture building:levels=8; visina 24 m samo je prikazna procjena 8 × 3 m",
+        "heightBasis": "24 m display proxy; nije izmjerena visina",
+        "color": "#2f6fed",
+        "source": "aktualni DGU tlocrt, oznaka iz eDozvola lokacijske izmjene 2021.",
+        "programme": "residential",
+        "apartmentCount": 70,
+        "officeUnitCount": 0,
+        "dguBuildingId": 13086210,
+        "dguBuildingNumber": "19039",
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguFootprintAreaM2": 692.6580499966302,
+        "osmId": "w1323869702",
+        "osmFloors": 8,
+        "osmDguOverlapRatio": 0.9989108021849988,
+        "labelSourceCaseId": "A20211027-2824386-V020101",
+        "labelSourceFeatureId": "eDozvola_building_polygon.5189",
+        "permitToDguOverlapRatio": 0.9998606112629382,
+        "geometryBasis": "observed-built-footprint",
+        "consensus:role": "building",
+        "consensus:index": 0
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.998711626,
+                45.794535465
+              ],
+              [
+                15.998760036,
+                45.79461657
+              ],
+              [
+                15.99854943,
+                45.794678092
+              ],
+              [
+                15.998526745,
+                45.79464011
+              ],
+              [
+                15.998356047,
+                45.794353855
+              ],
+              [
+                15.998566652,
+                45.794292424
+              ],
+              [
+                15.998711626,
+                45.794535465
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "F2",
+        "block": "Savica F1–F3 – izvedeno stanje",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 24,
+        "heightM": 24,
+        "floors": 8,
+        "storeys": 8,
+        "floorCountBasis": "OSM/Overture building:levels=8; visina 24 m samo je prikazna procjena 8 × 3 m",
+        "heightBasis": "24 m display proxy; nije izmjerena visina",
+        "color": "#d63384",
+        "source": "aktualni DGU tlocrt, oznaka iz eDozvola lokacijske izmjene 2021.",
+        "programme": "residential",
+        "apartmentCount": 70,
+        "officeUnitCount": 0,
+        "dguBuildingId": 13086209,
+        "dguBuildingNumber": "19038",
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguFootprintAreaM2": 692.5541000103724,
+        "osmId": "w1323869703",
+        "osmFloors": 8,
+        "osmDguOverlapRatio": 0.9756030260388819,
+        "labelSourceCaseId": "A20211027-2824386-V020101",
+        "labelSourceFeatureId": "eDozvola_building_polygon.5188",
+        "permitToDguOverlapRatio": 0.999794870942048,
+        "geometryBasis": "observed-built-footprint",
+        "consensus:role": "building",
+        "consensus:index": 1
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.998316124,
+                45.794746172
+              ],
+              [
+                15.998105517,
+                45.794807693
+              ],
+              [
+                15.998082833,
+                45.794769712
+              ],
+              [
+                15.997912007,
+                45.794483545
+              ],
+              [
+                15.997913554,
+                45.794483102
+              ],
+              [
+                15.998122613,
+                45.794422115
+              ],
+              [
+                15.99829344,
+                45.794708191
+              ],
+              [
+                15.998316124,
+                45.794746172
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "F3",
+        "block": "Savica F1–F3 – izvedeno stanje",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 24,
+        "heightM": 24,
+        "floors": 8,
+        "storeys": 8,
+        "floorCountBasis": "Pionirov objavljeni opis navodi P+7; OSM/Overture također navodi 8 etaža",
+        "heightBasis": "24 m display proxy; nije izmjerena visina",
+        "color": "#198754",
+        "source": "aktualni DGU tlocrt, oznaka iz eDozvola lokacijske izmjene 2021.",
+        "programme": "office",
+        "apartmentCount": 0,
+        "officeUnitCount": 8,
+        "dguBuildingId": 13350652,
+        "dguBuildingNumber": "19105",
+        "dguBuildingType": "POSLOVNA ZGRADA",
+        "dguFootprintAreaM2": 1318.9301999945465,
+        "osmId": "w1323869704",
+        "osmFloors": 8,
+        "osmDguOverlapRatio": 0.8823419520301728,
+        "labelSourceCaseId": "A20211027-2824386-V020101",
+        "labelSourceFeatureId": "eDozvola_building_polygon.5187",
+        "permitToDguOverlapRatio": 0.99837831576831,
+        "geometryBasis": "observed-built-footprint",
+        "consensus:role": "building",
+        "consensus:index": 2
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.99764025,
+                45.794479022
+              ],
+              [
+                15.997674213,
+                45.794535858
+              ],
+              [
+                15.997853653,
+                45.794836639
+              ],
+              [
+                15.997876208,
+                45.79487462
+              ],
+              [
+                15.99739257,
+                45.795015741
+              ],
+              [
+                15.997299303,
+                45.794859306
+              ],
+              [
+                15.997555696,
+                45.794784491
+              ],
+              [
+                15.997413006,
+                45.794545327
+              ],
+              [
+                15.99764025,
+                45.794479022
+              ]
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,2958 @@
+{
+  "type": "FeatureCollection",
+  "name": "Borongajska–Čavićeva – izmjena lokacijske dozvole 2025.",
+  "bbox": [
+    16.02981262,
+    45.80378441,
+    16.03629705,
+    45.80589466
+  ],
+  "edozvola": {
+    "schema": "consensus-builder.edozvola-source.v1",
+    "archivedAt": "2026-08-13",
+    "source": "https://oss.uredjenazemlja.hr/OssWebServices/external/eDozvole",
+    "sourceService": "public national eDozvola WFS 2.0.0",
+    "sourceCrs": "EPSG:3765",
+    "outputCrs": "EPSG:4326",
+    "geometryOnly": true,
+    "caveat": "Public WFS geometry and case metadata are evidence, not a substitute for the signed permit and main project.",
+    "note": "Aktualnija službena geometrija s komponentama koje se preklapaju; prije izrade prijedloga treba ih svesti na devet pravnih nadzemnih volumena.",
+    "layerFeatureCounts": {
+      "eDozvola_area_polygon": 1,
+      "eDozvola_building_line": 0,
+      "eDozvola_building_point": 0,
+      "eDozvola_building_polygon": 23
+    },
+    "caseId": "P20250825-1836121-Z06",
+    "caseClass": "UP/I-350-05/25-01/000530",
+    "caseType": "Lokacijska dozvola - izmjena i/ili dopuna",
+    "caseStatus": "Arhiviranje predmeta",
+    "requestReceivedAt": "2025-08-25",
+    "requestCompleteAt": "2025-10-07",
+    "decisionName": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+    "decisionNumber": "251-10-23-1/004-25-0012",
+    "decisionAt": "2025-11-04",
+    "finalAt": "2025-12-05"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250825-1836121-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVIRANJE",
+        "predmet_status": "Arhiviranje predmeta",
+        "predmet_klasa": "UP/I-350-05/25-01/000530",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-08-25",
+        "zahtjev_dat_urednosti": "2025-10-07",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/004-25-0012",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-04",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-05",
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_area_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_area_polygon.162079",
+        "edozvola:geometryAreaM2": 67955.78
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.0301825,
+              45.80516016
+            ],
+            [
+              16.03035933,
+              45.80518401
+            ],
+            [
+              16.03050968,
+              45.80520523
+            ],
+            [
+              16.030791,
+              45.80524184
+            ],
+            [
+              16.03119363,
+              45.80529559
+            ],
+            [
+              16.0320742,
+              45.80541311
+            ],
+            [
+              16.03219847,
+              45.80542991
+            ],
+            [
+              16.03240357,
+              45.80545801
+            ],
+            [
+              16.03264388,
+              45.80549094
+            ],
+            [
+              16.03283431,
+              45.80551889
+            ],
+            [
+              16.03378865,
+              45.80564651
+            ],
+            [
+              16.0338326,
+              45.80565245
+            ],
+            [
+              16.0338398,
+              45.80565338
+            ],
+            [
+              16.03477036,
+              45.805779
+            ],
+            [
+              16.03484078,
+              45.80578847
+            ],
+            [
+              16.03496865,
+              45.80580572
+            ],
+            [
+              16.0350856,
+              45.80582159
+            ],
+            [
+              16.03626053,
+              45.80589466
+            ],
+            [
+              16.03626235,
+              45.80589304
+            ],
+            [
+              16.03626624,
+              45.80587353
+            ],
+            [
+              16.03628931,
+              45.80575935
+            ],
+            [
+              16.03629355,
+              45.80572914
+            ],
+            [
+              16.03629705,
+              45.80564889
+            ],
+            [
+              16.03628285,
+              45.80556137
+            ],
+            [
+              16.03627166,
+              45.80552983
+            ],
+            [
+              16.03624941,
+              45.8054673
+            ],
+            [
+              16.03623074,
+              45.80542268
+            ],
+            [
+              16.03616532,
+              45.80532101
+            ],
+            [
+              16.03611334,
+              45.80525952
+            ],
+            [
+              16.0360485,
+              45.8051978
+            ],
+            [
+              16.03590661,
+              45.80508718
+            ],
+            [
+              16.03589165,
+              45.80507551
+            ],
+            [
+              16.03546826,
+              45.80474951
+            ],
+            [
+              16.03534616,
+              45.80465678
+            ],
+            [
+              16.03515196,
+              45.80450923
+            ],
+            [
+              16.03490509,
+              45.80447692
+            ],
+            [
+              16.03460246,
+              45.80443483
+            ],
+            [
+              16.03458262,
+              45.8044227
+            ],
+            [
+              16.03438878,
+              45.80427893
+            ],
+            [
+              16.03440193,
+              45.80422904
+            ],
+            [
+              16.03444471,
+              45.80406644
+            ],
+            [
+              16.03446809,
+              45.80397755
+            ],
+            [
+              16.03446439,
+              45.80397466
+            ],
+            [
+              16.03441594,
+              45.80393739
+            ],
+            [
+              16.03430484,
+              45.80385352
+            ],
+            [
+              16.03422564,
+              45.80390926
+            ],
+            [
+              16.03409211,
+              45.80400013
+            ],
+            [
+              16.03393799,
+              45.80410766
+            ],
+            [
+              16.03391428,
+              45.80411179
+            ],
+            [
+              16.03386237,
+              45.8041042
+            ],
+            [
+              16.03306042,
+              45.80400321
+            ],
+            [
+              16.03305168,
+              45.80400209
+            ],
+            [
+              16.03205761,
+              45.80387565
+            ],
+            [
+              16.03203426,
+              45.80386764
+            ],
+            [
+              16.0319238,
+              45.80378441
+            ],
+            [
+              16.03175946,
+              45.80386759
+            ],
+            [
+              16.03169834,
+              45.80389947
+            ],
+            [
+              16.03140967,
+              45.8040499
+            ],
+            [
+              16.03124142,
+              45.80413757
+            ],
+            [
+              16.03106881,
+              45.80422531
+            ],
+            [
+              16.03089606,
+              45.80431305
+            ],
+            [
+              16.03064914,
+              45.80444026
+            ],
+            [
+              16.03046849,
+              45.80453336
+            ],
+            [
+              16.03028411,
+              45.80462834
+            ],
+            [
+              16.03012711,
+              45.80470922
+            ],
+            [
+              16.02998859,
+              45.80478063
+            ],
+            [
+              16.02991817,
+              45.80481688
+            ],
+            [
+              16.02981262,
+              45.80486935
+            ],
+            [
+              16.02998489,
+              45.80500719
+            ],
+            [
+              16.03011334,
+              45.80510741
+            ],
+            [
+              16.0301825,
+              45.80516016
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250825-1836121-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVIRANJE",
+        "predmet_status": "Arhiviranje predmeta",
+        "predmet_klasa": "UP/I-350-05/25-01/000530",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-08-25",
+        "zahtjev_dat_urednosti": "2025-10-07",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/004-25-0012",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-04",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-05",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "gradjevina_zahvat_id": "VZ-04",
+        "gradjevina_zahvat": "zahvat u prostoru",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "is_03_02_02",
+        "gradjevina_namjena": "infrastrukturne namjene energetskog sustava (dalekovod za prijenos električne energije)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": null,
+        "gradjevina_skupina": null,
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.375622",
+        "edozvola:geometryAreaM2": 4.43
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03198051,
+              45.80391034
+            ],
+            [
+              16.03200294,
+              45.8038586
+            ],
+            [
+              16.03199592,
+              45.80385273
+            ],
+            [
+              16.03197164,
+              45.80390913
+            ],
+            [
+              16.03198051,
+              45.80391034
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250825-1836121-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVIRANJE",
+        "predmet_status": "Arhiviranje predmeta",
+        "predmet_klasa": "UP/I-350-05/25-01/000530",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-08-25",
+        "zahtjev_dat_urednosti": "2025-10-07",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/004-25-0012",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-04",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-05",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.375634",
+        "edozvola:geometryAreaM2": 36.94
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03426388,
+              45.8042606
+            ],
+            [
+              16.03435126,
+              45.80427239
+            ],
+            [
+              16.03436427,
+              45.8042252
+            ],
+            [
+              16.03427688,
+              45.80421342
+            ],
+            [
+              16.03426388,
+              45.8042606
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250825-1836121-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVIRANJE",
+        "predmet_status": "Arhiviranje predmeta",
+        "predmet_klasa": "UP/I-350-05/25-01/000530",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-08-25",
+        "zahtjev_dat_urednosti": "2025-10-07",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/004-25-0012",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-04",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-05",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.375635",
+        "edozvola:geometryAreaM2": 1311.66
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03439025,
+              45.80458046
+            ],
+            [
+              16.03436518,
+              45.80467186
+            ],
+            [
+              16.03439293,
+              45.80467558
+            ],
+            [
+              16.03437715,
+              45.80473301
+            ],
+            [
+              16.03446363,
+              45.80474461
+            ],
+            [
+              16.03446868,
+              45.80472609
+            ],
+            [
+              16.03511252,
+              45.80481266
+            ],
+            [
+              16.03510747,
+              45.80483118
+            ],
+            [
+              16.03519383,
+              45.80484287
+            ],
+            [
+              16.03520962,
+              45.80478544
+            ],
+            [
+              16.03523738,
+              45.80478915
+            ],
+            [
+              16.03526258,
+              45.80469774
+            ],
+            [
+              16.0352347,
+              45.80469403
+            ],
+            [
+              16.03524544,
+              45.80465511
+            ],
+            [
+              16.03442876,
+              45.80454534
+            ],
+            [
+              16.03441814,
+              45.80458417
+            ],
+            [
+              16.03439025,
+              45.80458046
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250825-1836121-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVIRANJE",
+        "predmet_status": "Arhiviranje predmeta",
+        "predmet_klasa": "UP/I-350-05/25-01/000530",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-08-25",
+        "zahtjev_dat_urednosti": "2025-10-07",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/004-25-0012",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-04",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-05",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.375636",
+        "edozvola:geometryAreaM2": 904.3
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.034777,
+              45.80535154
+            ],
+            [
+              16.03507194,
+              45.80539125
+            ],
+            [
+              16.03508892,
+              45.80532905
+            ],
+            [
+              16.03506245,
+              45.80532543
+            ],
+            [
+              16.03507041,
+              45.80529667
+            ],
+            [
+              16.03508172,
+              45.80529816
+            ],
+            [
+              16.03508981,
+              45.80526868
+            ],
+            [
+              16.0350785,
+              45.8052671
+            ],
+            [
+              16.0351187,
+              45.80512078
+            ],
+            [
+              16.03513014,
+              45.80512236
+            ],
+            [
+              16.03513823,
+              45.80509279
+            ],
+            [
+              16.03512679,
+              45.8050913
+            ],
+            [
+              16.03513475,
+              45.80506245
+            ],
+            [
+              16.03516123,
+              45.80506607
+            ],
+            [
+              16.03517834,
+              45.80500387
+            ],
+            [
+              16.03488354,
+              45.80496416
+            ],
+            [
+              16.03486642,
+              45.80502635
+            ],
+            [
+              16.0348929,
+              45.80502997
+            ],
+            [
+              16.03482059,
+              45.80529296
+            ],
+            [
+              16.03479412,
+              45.80528934
+            ],
+            [
+              16.034777,
+              45.80535154
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250825-1836121-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVIRANJE",
+        "predmet_status": "Arhiviranje predmeta",
+        "predmet_klasa": "UP/I-350-05/25-01/000530",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-08-25",
+        "zahtjev_dat_urednosti": "2025-10-07",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/004-25-0012",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-04",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-05",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.375637",
+        "edozvola:geometryAreaM2": 1661.11
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03532445,
+              45.80541144
+            ],
+            [
+              16.03596496,
+              45.80549755
+            ],
+            [
+              16.03595979,
+              45.80551615
+            ],
+            [
+              16.03604627,
+              45.80552775
+            ],
+            [
+              16.03606259,
+              45.80546852
+            ],
+            [
+              16.03608906,
+              45.80547214
+            ],
+            [
+              16.03611294,
+              45.80538522
+            ],
+            [
+              16.03608647,
+              45.80538161
+            ],
+            [
+              16.03609788,
+              45.80534008
+            ],
+            [
+              16.03561275,
+              45.80527485
+            ],
+            [
+              16.03565825,
+              45.80510912
+            ],
+            [
+              16.03568485,
+              45.80511264
+            ],
+            [
+              16.03570144,
+              45.80505225
+            ],
+            [
+              16.03561675,
+              45.80504083
+            ],
+            [
+              16.03562192,
+              45.80502232
+            ],
+            [
+              16.03549752,
+              45.80500553
+            ],
+            [
+              16.03549248,
+              45.80502413
+            ],
+            [
+              16.0354331,
+              45.80501615
+            ],
+            [
+              16.03532445,
+              45.80541144
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250825-1836121-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVIRANJE",
+        "predmet_status": "Arhiviranje predmeta",
+        "predmet_klasa": "UP/I-350-05/25-01/000530",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-08-25",
+        "zahtjev_dat_urednosti": "2025-10-07",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/004-25-0012",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-04",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-05",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.375638",
+        "edozvola:geometryAreaM2": 528.48
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03516239,
+              45.80577664
+            ],
+            [
+              16.03545348,
+              45.80581579
+            ],
+            [
+              16.0355092,
+              45.80561312
+            ],
+            [
+              16.03521811,
+              45.80557396
+            ],
+            [
+              16.03516239,
+              45.80577664
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250825-1836121-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVIRANJE",
+        "predmet_status": "Arhiviranje predmeta",
+        "predmet_klasa": "UP/I-350-05/25-01/000530",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-08-25",
+        "zahtjev_dat_urednosti": "2025-10-07",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/004-25-0012",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-04",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-05",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.375639",
+        "edozvola:geometryAreaM2": 151.63
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03560322,
+              45.80561656
+            ],
+            [
+              16.03562022,
+              45.80564479
+            ],
+            [
+              16.03564205,
+              45.80566558
+            ],
+            [
+              16.0356697,
+              45.80568269
+            ],
+            [
+              16.03570188,
+              45.80569533
+            ],
+            [
+              16.0357372,
+              45.80570285
+            ],
+            [
+              16.03577398,
+              45.80570498
+            ],
+            [
+              16.03581055,
+              45.80570162
+            ],
+            [
+              16.03584536,
+              45.80569295
+            ],
+            [
+              16.03587661,
+              45.80567922
+            ],
+            [
+              16.03590741,
+              45.80565748
+            ],
+            [
+              16.03583734,
+              45.80562012
+            ],
+            [
+              16.035812,
+              45.80563558
+            ],
+            [
+              16.03578376,
+              45.80564258
+            ],
+            [
+              16.03575379,
+              45.80564236
+            ],
+            [
+              16.0357258,
+              45.80563478
+            ],
+            [
+              16.0357034,
+              45.80562101
+            ],
+            [
+              16.03568801,
+              45.80559999
+            ],
+            [
+              16.03560322,
+              45.80561656
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250825-1836121-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVIRANJE",
+        "predmet_status": "Arhiviranje predmeta",
+        "predmet_klasa": "UP/I-350-05/25-01/000530",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-08-25",
+        "zahtjev_dat_urednosti": "2025-10-07",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/004-25-0012",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-04",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-05",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.375640",
+        "edozvola:geometryAreaM2": 1334.64
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.0336673,
+              45.80520233
+            ],
+            [
+              16.03397984,
+              45.80524436
+            ],
+            [
+              16.03399736,
+              45.80518037
+            ],
+            [
+              16.03396202,
+              45.80517563
+            ],
+            [
+              16.03408594,
+              45.80472489
+            ],
+            [
+              16.03412128,
+              45.80472963
+            ],
+            [
+              16.03413892,
+              45.80466572
+            ],
+            [
+              16.03382639,
+              45.80462369
+            ],
+            [
+              16.03380874,
+              45.80468759
+            ],
+            [
+              16.03384408,
+              45.80469241
+            ],
+            [
+              16.03372016,
+              45.80514307
+            ],
+            [
+              16.03368482,
+              45.80513833
+            ],
+            [
+              16.0336673,
+              45.80520233
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250825-1836121-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVIRANJE",
+        "predmet_status": "Arhiviranje predmeta",
+        "predmet_klasa": "UP/I-350-05/25-01/000530",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-08-25",
+        "zahtjev_dat_urednosti": "2025-10-07",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/004-25-0012",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-04",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-05",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.375641",
+        "edozvola:geometryAreaM2": 1492.56
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.0307896,
+              45.80476485
+            ],
+            [
+              16.03081993,
+              45.80476893
+            ],
+            [
+              16.03080414,
+              45.80482637
+            ],
+            [
+              16.03089063,
+              45.80483797
+            ],
+            [
+              16.03089567,
+              45.80481945
+            ],
+            [
+              16.03174281,
+              45.80493333
+            ],
+            [
+              16.03175343,
+              45.80489451
+            ],
+            [
+              16.03178375,
+              45.80489859
+            ],
+            [
+              16.03180884,
+              45.80480718
+            ],
+            [
+              16.03177864,
+              45.8048031
+            ],
+            [
+              16.03179443,
+              45.80474567
+            ],
+            [
+              16.03170794,
+              45.80473407
+            ],
+            [
+              16.0317029,
+              45.80475267
+            ],
+            [
+              16.03144253,
+              45.80471759
+            ],
+            [
+              16.03136736,
+              45.80470748
+            ],
+            [
+              16.03085576,
+              45.8046387
+            ],
+            [
+              16.03084501,
+              45.80467753
+            ],
+            [
+              16.03081481,
+              45.80467345
+            ],
+            [
+              16.0307896,
+              45.80476485
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250825-1836121-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVIRANJE",
+        "predmet_status": "Arhiviranje predmeta",
+        "predmet_klasa": "UP/I-350-05/25-01/000530",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-08-25",
+        "zahtjev_dat_urednosti": "2025-10-07",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/004-25-0012",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-04",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-05",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.375642",
+        "edozvola:geometryAreaM2": 904.07
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.0341996,
+              45.80527387
+            ],
+            [
+              16.03449453,
+              45.80531358
+            ],
+            [
+              16.03451165,
+              45.80525139
+            ],
+            [
+              16.03448504,
+              45.80524777
+            ],
+            [
+              16.034493,
+              45.80521901
+            ],
+            [
+              16.03450431,
+              45.8052205
+            ],
+            [
+              16.03451254,
+              45.80519102
+            ],
+            [
+              16.0345011,
+              45.80518944
+            ],
+            [
+              16.0345413,
+              45.80504312
+            ],
+            [
+              16.03455274,
+              45.80504469
+            ],
+            [
+              16.03456083,
+              45.80501521
+            ],
+            [
+              16.03454952,
+              45.80501364
+            ],
+            [
+              16.03455735,
+              45.80498488
+            ],
+            [
+              16.03458395,
+              45.8049884
+            ],
+            [
+              16.03460107,
+              45.80492621
+            ],
+            [
+              16.03430614,
+              45.80488658
+            ],
+            [
+              16.03428902,
+              45.80494878
+            ],
+            [
+              16.03431562,
+              45.80495231
+            ],
+            [
+              16.03424331,
+              45.80521529
+            ],
+            [
+              16.03421671,
+              45.80521168
+            ],
+            [
+              16.0341996,
+              45.80527387
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250825-1836121-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVIRANJE",
+        "predmet_status": "Arhiviranje predmeta",
+        "predmet_klasa": "UP/I-350-05/25-01/000530",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-08-25",
+        "zahtjev_dat_urednosti": "2025-10-07",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/004-25-0012",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-04",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-05",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.375643",
+        "edozvola:geometryAreaM2": 532.89
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03018205,
+              45.8051068
+            ],
+            [
+              16.03047557,
+              45.80514624
+            ],
+            [
+              16.03053131,
+              45.80494357
+            ],
+            [
+              16.03023779,
+              45.80490412
+            ],
+            [
+              16.03018205,
+              45.8051068
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250825-1836121-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVIRANJE",
+        "predmet_status": "Arhiviranje predmeta",
+        "predmet_klasa": "UP/I-350-05/25-01/000530",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-08-25",
+        "zahtjev_dat_urednosti": "2025-10-07",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/004-25-0012",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-04",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-05",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.375644",
+        "edozvola:geometryAreaM2": 1322.34
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03310976,
+              45.80550427
+            ],
+            [
+              16.03311493,
+              45.80548576
+            ],
+            [
+              16.03384964,
+              45.80558458
+            ],
+            [
+              16.03386025,
+              45.80554567
+            ],
+            [
+              16.03389058,
+              45.80554975
+            ],
+            [
+              16.03391566,
+              45.80545834
+            ],
+            [
+              16.03388533,
+              45.80545426
+            ],
+            [
+              16.03390112,
+              45.80539683
+            ],
+            [
+              16.03381476,
+              45.80538523
+            ],
+            [
+              16.03380972,
+              45.80540383
+            ],
+            [
+              16.03307501,
+              45.805305
+            ],
+            [
+              16.03306427,
+              45.80534383
+            ],
+            [
+              16.03303394,
+              45.80533975
+            ],
+            [
+              16.03300886,
+              45.80543115
+            ],
+            [
+              16.03303919,
+              45.80543524
+            ],
+            [
+              16.0330234,
+              45.80549267
+            ],
+            [
+              16.03310976,
+              45.80550427
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250825-1836121-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVIRANJE",
+        "predmet_status": "Arhiviranje predmeta",
+        "predmet_klasa": "UP/I-350-05/25-01/000530",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-08-25",
+        "zahtjev_dat_urednosti": "2025-10-07",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/004-25-0012",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-04",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-05",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.375645",
+        "edozvola:geometryAreaM2": 1322.38
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03199942,
+              45.80535495
+            ],
+            [
+              16.03200446,
+              45.80533635
+            ],
+            [
+              16.03273916,
+              45.80543518
+            ],
+            [
+              16.03274991,
+              45.80539635
+            ],
+            [
+              16.03278024,
+              45.80540044
+            ],
+            [
+              16.03280532,
+              45.80530903
+            ],
+            [
+              16.03277499,
+              45.80530495
+            ],
+            [
+              16.03279078,
+              45.80524751
+            ],
+            [
+              16.03270442,
+              45.80523591
+            ],
+            [
+              16.03269925,
+              45.80525443
+            ],
+            [
+              16.03196468,
+              45.80515559
+            ],
+            [
+              16.03195393,
+              45.80519451
+            ],
+            [
+              16.0319236,
+              45.80519043
+            ],
+            [
+              16.03189852,
+              45.80528183
+            ],
+            [
+              16.03192885,
+              45.80528592
+            ],
+            [
+              16.03191306,
+              45.80534335
+            ],
+            [
+              16.03199942,
+              45.80535495
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250825-1836121-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVIRANJE",
+        "predmet_status": "Arhiviranje predmeta",
+        "predmet_klasa": "UP/I-350-05/25-01/000530",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-08-25",
+        "zahtjev_dat_urednosti": "2025-10-07",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/004-25-0012",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-04",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-05",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.375646",
+        "edozvola:geometryAreaM2": 1311.47
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03412745,
+              45.80564114
+            ],
+            [
+              16.03421394,
+              45.80565274
+            ],
+            [
+              16.03421898,
+              45.80563423
+            ],
+            [
+              16.03494919,
+              45.8057324
+            ],
+            [
+              16.03495994,
+              45.80569357
+            ],
+            [
+              16.03498769,
+              45.80569729
+            ],
+            [
+              16.0350129,
+              45.80560597
+            ],
+            [
+              16.03498501,
+              45.80560217
+            ],
+            [
+              16.0350008,
+              45.80554473
+            ],
+            [
+              16.03491444,
+              45.80553314
+            ],
+            [
+              16.03490927,
+              45.80555165
+            ],
+            [
+              16.03417906,
+              45.80545348
+            ],
+            [
+              16.03416844,
+              45.80549239
+            ],
+            [
+              16.03414056,
+              45.80548859
+            ],
+            [
+              16.03411548,
+              45.80558
+            ],
+            [
+              16.03414324,
+              45.80558371
+            ],
+            [
+              16.03412745,
+              45.80564114
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250825-1836121-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVIRANJE",
+        "predmet_status": "Arhiviranje predmeta",
+        "predmet_klasa": "UP/I-350-05/25-01/000530",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-08-25",
+        "zahtjev_dat_urednosti": "2025-10-07",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/004-25-0012",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-04",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-05",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.375647",
+        "edozvola:geometryAreaM2": 1492.7
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.0307066,
+              45.80518103
+            ],
+            [
+              16.03079296,
+              45.80519263
+            ],
+            [
+              16.03079813,
+              45.80517411
+            ],
+            [
+              16.03164527,
+              45.80528808
+            ],
+            [
+              16.03165589,
+              45.80524917
+            ],
+            [
+              16.03168622,
+              45.80525325
+            ],
+            [
+              16.0317113,
+              45.80516184
+            ],
+            [
+              16.03168097,
+              45.80515776
+            ],
+            [
+              16.03169689,
+              45.80510033
+            ],
+            [
+              16.03161041,
+              45.80508873
+            ],
+            [
+              16.03160536,
+              45.80510733
+            ],
+            [
+              16.03075822,
+              45.80499336
+            ],
+            [
+              16.03074747,
+              45.80503219
+            ],
+            [
+              16.03071715,
+              45.8050281
+            ],
+            [
+              16.03069206,
+              45.80511951
+            ],
+            [
+              16.03072239,
+              45.80512359
+            ],
+            [
+              16.0307066,
+              45.80518103
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250825-1836121-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVIRANJE",
+        "predmet_status": "Arhiviranje predmeta",
+        "predmet_klasa": "UP/I-350-05/25-01/000530",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-08-25",
+        "zahtjev_dat_urednosti": "2025-10-07",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/004-25-0012",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-04",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-05",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.375648",
+        "edozvola:geometryAreaM2": 36.94
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03190826,
+              45.80394955
+            ],
+            [
+              16.03199565,
+              45.80396124
+            ],
+            [
+              16.03200865,
+              45.80391405
+            ],
+            [
+              16.03192127,
+              45.80390236
+            ],
+            [
+              16.03190826,
+              45.80394955
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250825-1836121-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVIRANJE",
+        "predmet_status": "Arhiviranje predmeta",
+        "predmet_klasa": "UP/I-350-05/25-01/000530",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-08-25",
+        "zahtjev_dat_urednosti": "2025-10-07",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/004-25-0012",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-04",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-05",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.375649",
+        "edozvola:geometryAreaM2": 1847.57
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03116923,
+              45.80449206
+            ],
+            [
+              16.03175292,
+              45.80457058
+            ],
+            [
+              16.03174775,
+              45.80458918
+            ],
+            [
+              16.03183424,
+              45.80460078
+            ],
+            [
+              16.03196309,
+              45.80413207
+            ],
+            [
+              16.03198969,
+              45.8041356
+            ],
+            [
+              16.03200627,
+              45.8040752
+            ],
+            [
+              16.03192416,
+              45.80406415
+            ],
+            [
+              16.03193,
+              45.80404294
+            ],
+            [
+              16.0317993,
+              45.80402531
+            ],
+            [
+              16.03179347,
+              45.80404652
+            ],
+            [
+              16.03173795,
+              45.8040391
+            ],
+            [
+              16.031644,
+              45.80438054
+            ],
+            [
+              16.03130217,
+              45.8043346
+            ],
+            [
+              16.03130721,
+              45.80431609
+            ],
+            [
+              16.03122086,
+              45.8043044
+            ],
+            [
+              16.03120506,
+              45.80436183
+            ],
+            [
+              16.03117474,
+              45.80435774
+            ],
+            [
+              16.03114965,
+              45.80444915
+            ],
+            [
+              16.03117998,
+              45.80445323
+            ],
+            [
+              16.03116923,
+              45.80449206
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250825-1836121-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVIRANJE",
+        "predmet_status": "Arhiviranje predmeta",
+        "predmet_klasa": "UP/I-350-05/25-01/000530",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-08-25",
+        "zahtjev_dat_urednosti": "2025-10-07",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/004-25-0012",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-04",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-05",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.375650",
+        "edozvola:geometryAreaM2": 1322.07
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03222051,
+              45.80422526
+            ],
+            [
+              16.03295507,
+              45.8043241
+            ],
+            [
+              16.03295003,
+              45.8043427
+            ],
+            [
+              16.03303638,
+              45.8043543
+            ],
+            [
+              16.03305217,
+              45.80429687
+            ],
+            [
+              16.0330825,
+              45.80430095
+            ],
+            [
+              16.03310771,
+              45.80420955
+            ],
+            [
+              16.03307738,
+              45.80420546
+            ],
+            [
+              16.033088,
+              45.80416663
+            ],
+            [
+              16.03235331,
+              45.8040678
+            ],
+            [
+              16.03235849,
+              45.80404929
+            ],
+            [
+              16.032272,
+              45.8040376
+            ],
+            [
+              16.03225621,
+              45.80409503
+            ],
+            [
+              16.03222601,
+              45.80409094
+            ],
+            [
+              16.0322008,
+              45.80418235
+            ],
+            [
+              16.03223113,
+              45.80418643
+            ],
+            [
+              16.03222051,
+              45.80422526
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250825-1836121-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVIRANJE",
+        "predmet_status": "Arhiviranje predmeta",
+        "predmet_klasa": "UP/I-350-05/25-01/000530",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-08-25",
+        "zahtjev_dat_urednosti": "2025-10-07",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/004-25-0012",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-04",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-05",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.375651",
+        "edozvola:geometryAreaM2": 1322.59
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03331125,
+              45.80433167
+            ],
+            [
+              16.03334158,
+              45.80433575
+            ],
+            [
+              16.03333083,
+              45.80437467
+            ],
+            [
+              16.03406552,
+              45.8044735
+            ],
+            [
+              16.03406035,
+              45.80449201
+            ],
+            [
+              16.03414684,
+              45.80450361
+            ],
+            [
+              16.03416262,
+              45.80444618
+            ],
+            [
+              16.03419295,
+              45.80445026
+            ],
+            [
+              16.03421803,
+              45.80435894
+            ],
+            [
+              16.0341877,
+              45.80435486
+            ],
+            [
+              16.03419845,
+              45.80431594
+            ],
+            [
+              16.03346376,
+              45.80421712
+            ],
+            [
+              16.0334688,
+              45.8041986
+            ],
+            [
+              16.03338244,
+              45.804187
+            ],
+            [
+              16.03336665,
+              45.80424444
+            ],
+            [
+              16.03333633,
+              45.80424035
+            ],
+            [
+              16.03331125,
+              45.80433167
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250825-1836121-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVIRANJE",
+        "predmet_status": "Arhiviranje predmeta",
+        "predmet_klasa": "UP/I-350-05/25-01/000530",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-08-25",
+        "zahtjev_dat_urednosti": "2025-10-07",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/004-25-0012",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-04",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-05",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.375652",
+        "edozvola:geometryAreaM2": 1334.7
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03255684,
+              45.80505292
+            ],
+            [
+              16.03286938,
+              45.80509496
+            ],
+            [
+              16.03288702,
+              45.80503106
+            ],
+            [
+              16.03285168,
+              45.80502623
+            ],
+            [
+              16.03297561,
+              45.80457558
+            ],
+            [
+              16.03301095,
+              45.80458032
+            ],
+            [
+              16.0330286,
+              45.80451632
+            ],
+            [
+              16.03271593,
+              45.80447428
+            ],
+            [
+              16.03269842,
+              45.80453828
+            ],
+            [
+              16.03273376,
+              45.80454301
+            ],
+            [
+              16.03260982,
+              45.80499375
+            ],
+            [
+              16.03257448,
+              45.80498902
+            ],
+            [
+              16.03255684,
+              45.80505292
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250825-1836121-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVIRANJE",
+        "predmet_status": "Arhiviranje predmeta",
+        "predmet_klasa": "UP/I-350-05/25-01/000530",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-08-25",
+        "zahtjev_dat_urednosti": "2025-10-07",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/004-25-0012",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-04",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-05",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.375653",
+        "edozvola:geometryAreaM2": 1334.16
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03197764,
+              45.80497506
+            ],
+            [
+              16.03229018,
+              45.8050171
+            ],
+            [
+              16.0323077,
+              45.8049531
+            ],
+            [
+              16.03227236,
+              45.80494837
+            ],
+            [
+              16.03239629,
+              45.80449763
+            ],
+            [
+              16.03243163,
+              45.80450236
+            ],
+            [
+              16.03244928,
+              45.80443846
+            ],
+            [
+              16.03213674,
+              45.80439642
+            ],
+            [
+              16.0321191,
+              45.80446032
+            ],
+            [
+              16.03215456,
+              45.80446515
+            ],
+            [
+              16.03203063,
+              45.8049158
+            ],
+            [
+              16.03199516,
+              45.80491106
+            ],
+            [
+              16.03197764,
+              45.80497506
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250825-1836121-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVIRANJE",
+        "predmet_status": "Arhiviranje predmeta",
+        "predmet_klasa": "UP/I-350-05/25-01/000530",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-08-25",
+        "zahtjev_dat_urednosti": "2025-10-07",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/004-25-0012",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-04",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-05",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.375654",
+        "edozvola:geometryAreaM2": 1334.59
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03308797,
+              45.80512438
+            ],
+            [
+              16.03340051,
+              45.80516641
+            ],
+            [
+              16.03341816,
+              45.80510242
+            ],
+            [
+              16.03338282,
+              45.80509769
+            ],
+            [
+              16.03350674,
+              45.80464695
+            ],
+            [
+              16.03354208,
+              45.80465177
+            ],
+            [
+              16.0335596,
+              45.80458778
+            ],
+            [
+              16.03324706,
+              45.80454574
+            ],
+            [
+              16.03322955,
+              45.80460973
+            ],
+            [
+              16.03326489,
+              45.80461447
+            ],
+            [
+              16.03314096,
+              45.80506521
+            ],
+            [
+              16.03310562,
+              45.80506038
+            ],
+            [
+              16.03308797,
+              45.80512438
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20250825-1836121-Z06",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z06",
+        "predmet_vrsta": "Lokacijska dozvola - izmjena i/ili dopuna",
+        "predmet_status_id": "ARHIVIRANJE",
+        "predmet_status": "Arhiviranje predmeta",
+        "predmet_klasa": "UP/I-350-05/25-01/000530",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2025-08-25",
+        "zahtjev_dat_urednosti": "2025-10-07",
+        "zavrsni_akt_naziv": "Rješenje o izmjeni i dopuni lokacijske dozvole",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-23-1/004-25-0012",
+        "zavrsni_akt_dat_rjesavanja": "2025-11-04",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2025-12-05",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101127",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za projekte razvoja Grada, Odsjek za prostorno uređenje projekata razvoja Grada",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": null, \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "gradjevina_zahvat_id": "VZ-01",
+        "gradjevina_zahvat": "građenje zgrade",
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.375655",
+        "edozvola:geometryAreaM2": 276.32
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.0303355,
+              45.80474409
+            ],
+            [
+              16.03057093,
+              45.80477574
+            ],
+            [
+              16.03060928,
+              45.8046367
+            ],
+            [
+              16.03054348,
+              45.80462779
+            ],
+            [
+              16.0305464,
+              45.80461719
+            ],
+            [
+              16.03046891,
+              45.80460679
+            ],
+            [
+              16.03045577,
+              45.80465451
+            ],
+            [
+              16.03034834,
+              45.80464004
+            ],
+            [
+              16.03033586,
+              45.80468551
+            ],
+            [
+              16.03035102,
+              45.80468756
+            ],
+            [
+              16.0303355,
+              45.80474409
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

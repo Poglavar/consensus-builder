@@ -1,0 +1,1306 @@
+{
+  "type": "FeatureCollection",
+  "name": "Borongajska–Čavićeva – devet volumena iz lokacijske dozvole 2022.",
+  "bbox": [
+    16.03283431,
+    45.80397755,
+    16.03629705,
+    45.80589466
+  ],
+  "reconstruction": {
+    "schema": "consensus-builder.reconstruction.v1",
+    "proposal": {
+      "proposalId": "pionir-borongajska-caviceva-location-permit-2022",
+      "city": "zagreb",
+      "name": "Borongajska–Čavićeva – devet volumena iz lokacijske dozvole 2022.",
+      "title": "Borongajska–Čavićeva – devet volumena iz lokacijske dozvole 2022.",
+      "description": "Datirana rekonstrukcija prihvaćene lokacijske sheme iz 2022.: devet nadzemnih volumena A1–C3 na dijelu k.č. 2692/7. Šest oznaka A/B potvrđeno je izravnim prostornim podudaranjem s pojedinačnim građevinskim dozvolama; C1 je povezan s potpisanom dozvolom i kasnijim poligonom. Oznake C2 i C3 ostaju izričito označene kao izvedene iz redoslijeda preostalih poligona. Kasnija izmjena lokacijske dozvole iz 2025. nije stopljena u ovu povijesnu shemu.",
+      "author": "zagreb.lol – lokalna analiza",
+      "type": "building",
+      "goal": "single",
+      "primaryType": "Urban Rule",
+      "typologyType": "single",
+      "lifecycleStatus": "Active",
+      "createdAt": "2026-08-13T00:00:00.000Z",
+      "updatedAt": "2026-08-13T00:00:00.000Z",
+      "tags": [
+        "buildings",
+        "research",
+        "reconstruction",
+        "location-permit",
+        "historical-permit-state"
+      ],
+      "parentParcelIds": [
+        "HR-335533-2692/7"
+      ],
+      "cadastreParcelIds": [
+        "HR-335533-2692/7"
+      ],
+      "parcelIds": [
+        "HR-335533-2692/7"
+      ],
+      "acceptedParcelIds": [],
+      "bounds": [
+        16.03283431,
+        45.80397755,
+        16.03629705,
+        45.80589466
+      ],
+      "source": {
+        "locationPermitCaseId": "A20220613-2838627-V020101",
+        "migratedLocationPermitCaseId": "P20221230-1037184-Z02",
+        "locationPermitClass": "UP/I-350-05/22-001/22",
+        "locationPermitDecisionAt": "2022-05-16",
+        "locationPermitFinalAt": "2022-06-09",
+        "laterAmendmentCaseId": "P20250825-1836121-Z06",
+        "laterAmendmentFinalAt": "2025-12-05",
+        "publicWfs": "https://oss.uredjenazemlja.hr/OssWebServices/external/eDozvole",
+        "parcel": "k.č. 2692/7, MB 335533, k.o. Peščenica; proposal site is the 33,742 m² permit-area polygon, not the whole later 67,956 m² parcel",
+        "sourceStatistics": {
+          "accepted2022Scheme": {
+            "developmentAreaM2": 33741.52260767191,
+            "footprintAreaM2": 11016.110077204594,
+            "siteCoveragePercent": 32.64852687679195,
+            "aboveGroundVolumes": 9,
+            "knownApartmentsAcrossFourPublishedPhases": 559
+          },
+          "displayOnlyHeightEstimate": {
+            "heightEquivalentAboveGroundGbpM2": 99144.99069594129,
+            "heightEquivalentKin": 2.938367418943874,
+            "method": "footprint × nine 3 m display levels; not a permit GBP total"
+          },
+          "excludedSourceFeatures": {
+            "eDozvola_building_polygon.7190": "pomoćna/parterna geometrija",
+            "eDozvola_building_polygon.7195": "trafostanica ZTS 555"
+          },
+          "caveat": "This is the accepted 2022 nine-volume state. The final 2025 location-permit amendment expands the site and is archived separately; its 23 polygons are not merged here."
+        }
+      }
+    },
+    "buildingProposal": {
+      "parentParcelIds": [
+        "HR-335533-2692/7"
+      ],
+      "parentParcelNumbers": [
+        {
+          "id": "HR-335533-2692/7",
+          "number": "2692/7",
+          "cadastre": "Peščenica"
+        }
+      ],
+      "createdFrom": "single-building",
+      "typologyType": "single",
+      "blockName": "Borongajska–Čavićeva – prihvaćena shema iz 2022.",
+      "parameters": {
+        "typology": "single",
+        "floorHeightM": 3,
+        "geometryBasis": "permit-planned-footprint",
+        "sourceStatistics": {
+          "accepted2022Scheme": {
+            "developmentAreaM2": 33741.52260767191,
+            "footprintAreaM2": 11016.110077204594,
+            "siteCoveragePercent": 32.64852687679195,
+            "aboveGroundVolumes": 9,
+            "knownApartmentsAcrossFourPublishedPhases": 559
+          },
+          "displayOnlyHeightEstimate": {
+            "heightEquivalentAboveGroundGbpM2": 99144.99069594129,
+            "heightEquivalentKin": 2.938367418943874,
+            "method": "footprint × nine 3 m display levels; not a permit GBP total"
+          },
+          "excludedSourceFeatures": {
+            "eDozvola_building_polygon.7190": "pomoćna/parterna geometrija",
+            "eDozvola_building_polygon.7195": "trafostanica ZTS 555"
+          },
+          "caveat": "This is the accepted 2022 nine-volume state. The final 2025 location-permit amendment expands the site and is archived separately; its 23 polygons are not merged here."
+        }
+      },
+      "ancestorKey": "HR-335533-2692/7",
+      "takeWholeParcels": false,
+      "metadata": {
+        "sourceStatistics": {
+          "accepted2022Scheme": {
+            "developmentAreaM2": 33741.52260767191,
+            "footprintAreaM2": 11016.110077204594,
+            "siteCoveragePercent": 32.64852687679195,
+            "aboveGroundVolumes": 9,
+            "knownApartmentsAcrossFourPublishedPhases": 559
+          },
+          "displayOnlyHeightEstimate": {
+            "heightEquivalentAboveGroundGbpM2": 99144.99069594129,
+            "heightEquivalentKin": 2.938367418943874,
+            "method": "footprint × nine 3 m display levels; not a permit GBP total"
+          },
+          "excludedSourceFeatures": {
+            "eDozvola_building_polygon.7190": "pomoćna/parterna geometrija",
+            "eDozvola_building_polygon.7195": "trafostanica ZTS 555"
+          },
+          "caveat": "This is the accepted 2022 nine-volume state. The final 2025 location-permit amendment expands the site and is archived separately; its 23 polygons are not merged here."
+        }
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "permit-area-P20221230-1037184-Z02",
+        "parentParcelId": "HR-335533-2692/7",
+        "maticni_broj_ko": 335533,
+        "broj_cestice": "2692/7",
+        "areaM2": 33741.52260767191,
+        "source": "accepted 2022 location-permit area polygon",
+        "sourceCaseId": "P20221230-1037184-Z02",
+        "sourceFeatureId": "eDozvola_area_polygon.90641",
+        "consensus:role": "site"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03283431,
+              45.80551889
+            ],
+            [
+              16.03381063,
+              45.80564948
+            ],
+            [
+              16.0338326,
+              45.80565245
+            ],
+            [
+              16.0338398,
+              45.80565338
+            ],
+            [
+              16.03477036,
+              45.805779
+            ],
+            [
+              16.03484078,
+              45.80578847
+            ],
+            [
+              16.03496865,
+              45.80580572
+            ],
+            [
+              16.0350856,
+              45.80582159
+            ],
+            [
+              16.03626053,
+              45.80589466
+            ],
+            [
+              16.03626235,
+              45.80589304
+            ],
+            [
+              16.03626624,
+              45.80587353
+            ],
+            [
+              16.03628931,
+              45.80575935
+            ],
+            [
+              16.03629355,
+              45.80572914
+            ],
+            [
+              16.03629705,
+              45.80564889
+            ],
+            [
+              16.03628285,
+              45.80556137
+            ],
+            [
+              16.03627166,
+              45.80552983
+            ],
+            [
+              16.03624941,
+              45.8054673
+            ],
+            [
+              16.03623074,
+              45.80542268
+            ],
+            [
+              16.03616532,
+              45.80532101
+            ],
+            [
+              16.03611334,
+              45.80525952
+            ],
+            [
+              16.0360485,
+              45.8051978
+            ],
+            [
+              16.03590661,
+              45.80508718
+            ],
+            [
+              16.03589165,
+              45.80507551
+            ],
+            [
+              16.03546826,
+              45.80474951
+            ],
+            [
+              16.03534616,
+              45.80465678
+            ],
+            [
+              16.03515196,
+              45.80450923
+            ],
+            [
+              16.03490509,
+              45.80447692
+            ],
+            [
+              16.03460246,
+              45.80443483
+            ],
+            [
+              16.03458262,
+              45.8044227
+            ],
+            [
+              16.03438878,
+              45.80427893
+            ],
+            [
+              16.03440193,
+              45.80422904
+            ],
+            [
+              16.03444471,
+              45.80406644
+            ],
+            [
+              16.03446809,
+              45.80397755
+            ],
+            [
+              16.03439122,
+              45.80403149
+            ],
+            [
+              16.03423193,
+              45.80414179
+            ],
+            [
+              16.03418871,
+              45.80417167
+            ],
+            [
+              16.03415403,
+              45.80419573
+            ],
+            [
+              16.03398582,
+              45.80431094
+            ],
+            [
+              16.03380698,
+              45.80443672
+            ],
+            [
+              16.03380193,
+              45.80444012
+            ],
+            [
+              16.03346267,
+              45.8043941
+            ],
+            [
+              16.03310876,
+              45.80434605
+            ],
+            [
+              16.03304729,
+              45.804573
+            ],
+            [
+              16.0330113,
+              45.8046927
+            ],
+            [
+              16.03301606,
+              45.80486143
+            ],
+            [
+              16.03296231,
+              45.8050589
+            ],
+            [
+              16.03291426,
+              45.80523578
+            ],
+            [
+              16.0328913,
+              45.80531991
+            ],
+            [
+              16.03288904,
+              45.80532854
+            ],
+            [
+              16.03287708,
+              45.80537357
+            ],
+            [
+              16.0328646,
+              45.80542049
+            ],
+            [
+              16.0328568,
+              45.80544565
+            ],
+            [
+              16.03283431,
+              45.80551889
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "A1",
+        "block": "Borongajska–Čavićeva – prihvaćena shema iz 2022.",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": 9,
+        "storeys": 9,
+        "floorCountBasis": "devet nadzemnih razina (Pr+8K) potvrđeno pojedinačnim aktom ili prodajnim etažnim pregledom",
+        "heightBasis": "9 × 3 m display height",
+        "color": "#2f6fed",
+        "source": "accepted 2022 national eDozvola WFS location-permit geometry",
+        "sourceCaseId": "A20220613-2838627-V020101",
+        "sourceFeatureId": "eDozvola_building_polygon.7188",
+        "footprintAreaM2": 528.4837745153786,
+        "apartments": 64,
+        "offices": 6,
+        "permitGbpM2": 4757,
+        "permitCaseId": "P20240312-1476435-Z01",
+        "permitUrl": "https://pionir.hr/wp-content/dokumentacija_dozvole/borongajska-caviceva/objekt-a1/gradevinska-dozvola-a1.pdf",
+        "geometryBasis": "permit-planned-footprint",
+        "phaseLabelConfidence": "direct-permit-geometry-match",
+        "matchedPermitFeatureId": "eDozvola_building_polygon.263310",
+        "permitGeometryOverlapRatio": 0.9999999999796246,
+        "consensus:role": "building",
+        "consensus:index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03516239,
+              45.80577664
+            ],
+            [
+              16.03545348,
+              45.80581579
+            ],
+            [
+              16.0355092,
+              45.80561312
+            ],
+            [
+              16.03521811,
+              45.80557396
+            ],
+            [
+              16.03516239,
+              45.80577664
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "A2",
+        "block": "Borongajska–Čavićeva – prihvaćena shema iz 2022.",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": 9,
+        "storeys": 9,
+        "floorCountBasis": "devet nadzemnih razina (Pr+8K) potvrđeno pojedinačnim aktom ili prodajnim etažnim pregledom",
+        "heightBasis": "9 × 3 m display height",
+        "color": "#d63384",
+        "source": "accepted 2022 national eDozvola WFS location-permit geometry",
+        "sourceCaseId": "A20220613-2838627-V020101",
+        "sourceFeatureId": "eDozvola_building_polygon.7189",
+        "footprintAreaM2": 1661.1780582785125,
+        "apartments": 192,
+        "offices": 12,
+        "permitGbpM2": null,
+        "permitCaseId": "P20230630-1310132-Z01",
+        "permitUrl": "https://pionir.hr/wp-content/dokumentacija_dozvole/borongajska-caviceva/objekt-a2/badel_A2_gradevinska_dozvola_nadzemno.pdf",
+        "geometryBasis": "permit-planned-footprint",
+        "phaseLabelConfidence": "direct-permit-geometry-match",
+        "matchedPermitFeatureId": "eDozvola_building_polygon.213444",
+        "permitGeometryOverlapRatio": 0.9999999999818499,
+        "consensus:role": "building",
+        "consensus:index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03532445,
+              45.80541144
+            ],
+            [
+              16.03596496,
+              45.80549755
+            ],
+            [
+              16.03595979,
+              45.80551615
+            ],
+            [
+              16.03604627,
+              45.80552775
+            ],
+            [
+              16.03606246,
+              45.80546852
+            ],
+            [
+              16.03608906,
+              45.80547214
+            ],
+            [
+              16.03611294,
+              45.80538513
+            ],
+            [
+              16.03608647,
+              45.80538161
+            ],
+            [
+              16.03609788,
+              45.80534008
+            ],
+            [
+              16.03561275,
+              45.80527485
+            ],
+            [
+              16.03565825,
+              45.80510903
+            ],
+            [
+              16.03568485,
+              45.80511264
+            ],
+            [
+              16.03570144,
+              45.80505216
+            ],
+            [
+              16.03561675,
+              45.80504083
+            ],
+            [
+              16.03562192,
+              45.80502223
+            ],
+            [
+              16.03549752,
+              45.80500553
+            ],
+            [
+              16.03549248,
+              45.80502413
+            ],
+            [
+              16.03543311,
+              45.80501606
+            ],
+            [
+              16.03532445,
+              45.80541144
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "B1",
+        "block": "Borongajska–Čavićeva – prihvaćena shema iz 2022.",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": 9,
+        "storeys": 9,
+        "floorCountBasis": "devet nadzemnih razina (Pr+8K) potvrđeno pojedinačnim aktom ili prodajnim etažnim pregledom",
+        "heightBasis": "9 × 3 m display height",
+        "color": "#198754",
+        "source": "accepted 2022 national eDozvola WFS location-permit geometry",
+        "sourceCaseId": "A20220613-2838627-V020101",
+        "sourceFeatureId": "eDozvola_building_polygon.7193",
+        "footprintAreaM2": 1311.4702817470895,
+        "apartments": null,
+        "offices": null,
+        "permitGbpM2": null,
+        "permitCaseId": "P20241001-1609912-Z01",
+        "permitUrl": "https://pionir.hr/wp-content/dokumentacija_dozvole/borongajska-caviceva/objekt-b1/gradevinska-dozvola-nadzemno-b1.pdf",
+        "geometryBasis": "permit-planned-footprint",
+        "phaseLabelConfidence": "direct-permit-geometry-match",
+        "matchedPermitFeatureId": "eDozvola_building_polygon.299430",
+        "permitGeometryOverlapRatio": 0.9999999999983578,
+        "consensus:role": "building",
+        "consensus:index": 2
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03412745,
+              45.80564114
+            ],
+            [
+              16.03421394,
+              45.80565283
+            ],
+            [
+              16.03421898,
+              45.80563423
+            ],
+            [
+              16.03494919,
+              45.8057324
+            ],
+            [
+              16.03495994,
+              45.80569357
+            ],
+            [
+              16.03498769,
+              45.80569729
+            ],
+            [
+              16.03501277,
+              45.80560597
+            ],
+            [
+              16.03498501,
+              45.80560217
+            ],
+            [
+              16.0350008,
+              45.80554473
+            ],
+            [
+              16.03491444,
+              45.80553314
+            ],
+            [
+              16.03490927,
+              45.80555165
+            ],
+            [
+              16.03417906,
+              45.80545348
+            ],
+            [
+              16.03416831,
+              45.80549239
+            ],
+            [
+              16.03414056,
+              45.80548859
+            ],
+            [
+              16.03411548,
+              45.80558
+            ],
+            [
+              16.03414324,
+              45.80558371
+            ],
+            [
+              16.03412745,
+              45.80564114
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "B2",
+        "block": "Borongajska–Čavićeva – prihvaćena shema iz 2022.",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": 9,
+        "storeys": 9,
+        "floorCountBasis": "devet nadzemnih razina (Pr+8K) potvrđeno pojedinačnim aktom ili prodajnim etažnim pregledom",
+        "heightBasis": "9 × 3 m display height",
+        "color": "#fd7e14",
+        "source": "accepted 2022 national eDozvola WFS location-permit geometry",
+        "sourceCaseId": "A20220613-2838627-V020101",
+        "sourceFeatureId": "eDozvola_building_polygon.7194",
+        "footprintAreaM2": 904.294760197835,
+        "apartments": 126,
+        "offices": null,
+        "permitGbpM2": 8064,
+        "permitCaseId": "P20250717-1815302-Z01",
+        "permitUrl": null,
+        "geometryBasis": "permit-planned-footprint",
+        "phaseLabelConfidence": "direct-permit-geometry-match",
+        "matchedPermitFeatureId": "eDozvola_building_polygon.359191",
+        "permitGeometryOverlapRatio": 1.0000000000113123,
+        "consensus:role": "building",
+        "consensus:index": 3
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.0341996,
+              45.80527396
+            ],
+            [
+              16.03449453,
+              45.80531358
+            ],
+            [
+              16.03451165,
+              45.80525139
+            ],
+            [
+              16.03448504,
+              45.80524777
+            ],
+            [
+              16.03455735,
+              45.80498488
+            ],
+            [
+              16.03458383,
+              45.8049884
+            ],
+            [
+              16.03460094,
+              45.80492621
+            ],
+            [
+              16.03430614,
+              45.80488658
+            ],
+            [
+              16.03428902,
+              45.80494878
+            ],
+            [
+              16.03431549,
+              45.80495231
+            ],
+            [
+              16.03430766,
+              45.80498116
+            ],
+            [
+              16.03429623,
+              45.80497958
+            ],
+            [
+              16.03428813,
+              45.80500915
+            ],
+            [
+              16.03429944,
+              45.80501064
+            ],
+            [
+              16.03425924,
+              45.80515696
+            ],
+            [
+              16.03424793,
+              45.80515548
+            ],
+            [
+              16.03423984,
+              45.80518496
+            ],
+            [
+              16.03425115,
+              45.80518644
+            ],
+            [
+              16.03424319,
+              45.80521529
+            ],
+            [
+              16.03421671,
+              45.80521168
+            ],
+            [
+              16.0341996,
+              45.80527396
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "B3",
+        "block": "Borongajska–Čavićeva – prihvaćena shema iz 2022.",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": 9,
+        "storeys": 9,
+        "floorCountBasis": "devet nadzemnih razina (Pr+8K) potvrđeno pojedinačnim aktom ili prodajnim etažnim pregledom",
+        "heightBasis": "9 × 3 m display height",
+        "color": "#6f42c1",
+        "source": "accepted 2022 national eDozvola WFS location-permit geometry",
+        "sourceCaseId": "A20220613-2838627-V020101",
+        "sourceFeatureId": "eDozvola_building_polygon.7187",
+        "footprintAreaM2": 904.2717380135713,
+        "apartments": null,
+        "offices": null,
+        "permitGbpM2": null,
+        "permitCaseId": "P20250321-1729062-Z01",
+        "permitUrl": "https://pionir.hr/wp-content/dokumentacija_dozvole/borongajska-caviceva/objekt-b3/Gradevinska_dozvola_B3_nadzemno.pdf",
+        "geometryBasis": "permit-planned-footprint",
+        "phaseLabelConfidence": "direct-permit-geometry-match",
+        "matchedPermitFeatureId": "eDozvola_building_polygon.334404",
+        "permitGeometryOverlapRatio": 0.9999999999785655,
+        "consensus:role": "building",
+        "consensus:index": 4
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.034777,
+              45.80535154
+            ],
+            [
+              16.03507181,
+              45.80539125
+            ],
+            [
+              16.03508892,
+              45.80532905
+            ],
+            [
+              16.03506245,
+              45.80532543
+            ],
+            [
+              16.03507041,
+              45.80529667
+            ],
+            [
+              16.03508172,
+              45.80529816
+            ],
+            [
+              16.03508981,
+              45.80526868
+            ],
+            [
+              16.0350785,
+              45.8052671
+            ],
+            [
+              16.0351187,
+              45.80512078
+            ],
+            [
+              16.03513001,
+              45.80512236
+            ],
+            [
+              16.03513823,
+              45.80509279
+            ],
+            [
+              16.03512679,
+              45.8050913
+            ],
+            [
+              16.03513475,
+              45.80506245
+            ],
+            [
+              16.03516123,
+              45.80506607
+            ],
+            [
+              16.03517834,
+              45.80500387
+            ],
+            [
+              16.03488354,
+              45.80496416
+            ],
+            [
+              16.03486642,
+              45.80502635
+            ],
+            [
+              16.0348929,
+              45.80502997
+            ],
+            [
+              16.03482059,
+              45.80529296
+            ],
+            [
+              16.03479412,
+              45.80528934
+            ],
+            [
+              16.034777,
+              45.80535154
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "B4",
+        "block": "Borongajska–Čavićeva – prihvaćena shema iz 2022.",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": 9,
+        "storeys": 9,
+        "floorCountBasis": "devet nadzemnih razina (Pr+8K) potvrđeno pojedinačnim aktom ili prodajnim etažnim pregledom",
+        "heightBasis": "9 × 3 m display height",
+        "color": "#20c997",
+        "source": "accepted 2022 national eDozvola WFS location-permit geometry",
+        "sourceCaseId": "A20220613-2838627-V020101",
+        "sourceFeatureId": "eDozvola_building_polygon.7196",
+        "footprintAreaM2": 1311.642816108179,
+        "apartments": null,
+        "offices": null,
+        "permitGbpM2": null,
+        "permitCaseId": "P20250428-1757572-Z01",
+        "permitUrl": null,
+        "geometryBasis": "permit-planned-footprint",
+        "phaseLabelConfidence": "direct-permit-geometry-match",
+        "matchedPermitFeatureId": "eDozvola_building_polygon.341899",
+        "permitGeometryOverlapRatio": 0.9999999999532053,
+        "consensus:role": "building",
+        "consensus:index": 5
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03437715,
+              45.80473301
+            ],
+            [
+              16.0344635,
+              45.80474461
+            ],
+            [
+              16.03446868,
+              45.80472609
+            ],
+            [
+              16.03511252,
+              45.80481266
+            ],
+            [
+              16.03510734,
+              45.80483118
+            ],
+            [
+              16.03519383,
+              45.80484287
+            ],
+            [
+              16.03520962,
+              45.80478544
+            ],
+            [
+              16.03523738,
+              45.80478915
+            ],
+            [
+              16.03526245,
+              45.80469774
+            ],
+            [
+              16.0352347,
+              45.80469403
+            ],
+            [
+              16.03524544,
+              45.80465511
+            ],
+            [
+              16.03442876,
+              45.80454534
+            ],
+            [
+              16.03441801,
+              45.80458417
+            ],
+            [
+              16.03439025,
+              45.80458046
+            ],
+            [
+              16.03436518,
+              45.80467186
+            ],
+            [
+              16.03439293,
+              45.80467558
+            ],
+            [
+              16.03437715,
+              45.80473301
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "C1",
+        "block": "Borongajska–Čavićeva – prihvaćena shema iz 2022.",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": 9,
+        "storeys": 9,
+        "floorCountBasis": "devet nadzemnih razina (Pr+8K) potvrđeno pojedinačnim aktom ili prodajnim etažnim pregledom",
+        "heightBasis": "9 × 3 m display height",
+        "color": "#0dcaf0",
+        "source": "accepted 2022 national eDozvola WFS location-permit geometry",
+        "sourceCaseId": "A20220613-2838627-V020101",
+        "sourceFeatureId": "eDozvola_building_polygon.7191",
+        "footprintAreaM2": 1314.4939497499308,
+        "apartments": 177,
+        "offices": 0,
+        "permitGbpM2": 11874,
+        "permitCaseId": "P20260304-4502783-Z01",
+        "permitUrl": "https://pionir.hr/wp-content/dokumentacija_dozvole/borongajska-caviceva/objekt-c1/gradevinska_dozvola_nadzemno_c1.pdf",
+        "geometryBasis": "permit-planned-footprint",
+        "phaseLabelConfidence": "signed-permit-data-plus-later-footprint-match",
+        "matchedAmendmentFeatureId": "eDozvola_building_polygon.375644",
+        "amendmentGeometryOverlapRatio": 0.9730895427974909,
+        "consensus:role": "building",
+        "consensus:index": 6
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03302533,
+              45.80549295
+            ],
+            [
+              16.03310539,
+              45.80550371
+            ],
+            [
+              16.03311043,
+              45.8054852
+            ],
+            [
+              16.03376944,
+              45.80557382
+            ],
+            [
+              16.0337644,
+              45.80559233
+            ],
+            [
+              16.03385076,
+              45.80560393
+            ],
+            [
+              16.03386655,
+              45.8055465
+            ],
+            [
+              16.03389431,
+              45.8055503
+            ],
+            [
+              16.03391951,
+              45.8054589
+            ],
+            [
+              16.03389163,
+              45.80545518
+            ],
+            [
+              16.03390237,
+              45.80541627
+            ],
+            [
+              16.033157,
+              45.80531605
+            ],
+            [
+              16.03316205,
+              45.80529753
+            ],
+            [
+              16.03308199,
+              45.80528668
+            ],
+            [
+              16.03302533,
+              45.80549295
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "C2",
+        "block": "Borongajska–Čavićeva – prihvaćena shema iz 2022.",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": null,
+        "storeys": null,
+        "floorCountBasis": "neriješeno; 27 m je samo privremena visina za 3D prikaz",
+        "heightBasis": "27 m display proxy",
+        "color": "#ffc107",
+        "source": "accepted 2022 national eDozvola WFS location-permit geometry",
+        "sourceCaseId": "A20220613-2838627-V020101",
+        "sourceFeatureId": "eDozvola_building_polygon.7192",
+        "footprintAreaM2": 2284.5229531274163,
+        "apartments": null,
+        "offices": null,
+        "permitGbpM2": null,
+        "permitCaseId": null,
+        "permitUrl": null,
+        "geometryBasis": "permit-planned-footprint",
+        "phaseLabelConfidence": "inferred",
+        "phaseLabelBasis": "remaining C-group footprints in original WFS source order; no individual named permit is public yet",
+        "consensus:role": "building",
+        "consensus:index": 7
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03312883,
+              45.80511618
+            ],
+            [
+              16.03395438,
+              45.80522716
+            ],
+            [
+              16.033965,
+              45.80518833
+            ],
+            [
+              16.03399289,
+              45.80519205
+            ],
+            [
+              16.03401796,
+              45.80510073
+            ],
+            [
+              16.03399021,
+              45.80509693
+            ],
+            [
+              16.03400599,
+              45.80503949
+            ],
+            [
+              16.03391951,
+              45.80502789
+            ],
+            [
+              16.03391446,
+              45.8050465
+            ],
+            [
+              16.03341712,
+              45.80497959
+            ],
+            [
+              16.03352499,
+              45.80458763
+            ],
+            [
+              16.03355147,
+              45.80459116
+            ],
+            [
+              16.03356686,
+              45.80453517
+            ],
+            [
+              16.03327206,
+              45.80449554
+            ],
+            [
+              16.03325666,
+              45.80455154
+            ],
+            [
+              16.03328314,
+              45.80455506
+            ],
+            [
+              16.03312883,
+              45.80511618
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "C3",
+        "block": "Borongajska–Čavićeva – prihvaćena shema iz 2022.",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": null,
+        "storeys": null,
+        "floorCountBasis": "neriješeno; 27 m je samo privremena visina za 3D prikaz",
+        "heightBasis": "27 m display proxy",
+        "color": "#dc3545",
+        "source": "accepted 2022 national eDozvola WFS location-permit geometry",
+        "sourceCaseId": "A20220613-2838627-V020101",
+        "sourceFeatureId": "eDozvola_building_polygon.7197",
+        "footprintAreaM2": 795.7517455888968,
+        "apartments": null,
+        "offices": null,
+        "permitGbpM2": null,
+        "permitCaseId": null,
+        "permitUrl": null,
+        "geometryBasis": "permit-planned-footprint",
+        "phaseLabelConfidence": "inferred",
+        "phaseLabelBasis": "remaining C-group footprints in original WFS source order; no individual named permit is public yet",
+        "consensus:role": "building",
+        "consensus:index": 8
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03377836,
+              45.80485996
+            ],
+            [
+              16.03407329,
+              45.80489958
+            ],
+            [
+              16.03409081,
+              45.80483559
+            ],
+            [
+              16.03406433,
+              45.80483206
+            ],
+            [
+              16.0341255,
+              45.8046097
+            ],
+            [
+              16.03415197,
+              45.80461332
+            ],
+            [
+              16.03416961,
+              45.80454932
+            ],
+            [
+              16.03394421,
+              45.80451898
+            ],
+            [
+              16.03392762,
+              45.80457911
+            ],
+            [
+              16.0338581,
+              45.80456974
+            ],
+            [
+              16.03384151,
+              45.80463023
+            ],
+            [
+              16.03386812,
+              45.80463375
+            ],
+            [
+              16.03382248,
+              45.80479949
+            ],
+            [
+              16.033796,
+              45.80479596
+            ],
+            [
+              16.03377836,
+              45.80485996
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

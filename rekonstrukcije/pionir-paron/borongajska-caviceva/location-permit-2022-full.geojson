@@ -1,0 +1,1339 @@
+{
+  "type": "FeatureCollection",
+  "name": "Borongajska–Čavićeva – lokacijska dozvola 2022., puni izvorni zapis",
+  "bbox": [
+    16.03302533,
+    45.80421351,
+    16.03611294,
+    45.80581579
+  ],
+  "edozvola": {
+    "schema": "consensus-builder.edozvola-source.v1",
+    "archivedAt": "2026-08-13",
+    "source": "https://oss.uredjenazemlja.hr/OssWebServices/external/eDozvole",
+    "sourceService": "public national eDozvola WFS 2.0.0",
+    "sourceCrs": "EPSG:3765",
+    "outputCrs": "EPSG:4326",
+    "geometryOnly": true,
+    "caveat": "Public WFS geometry and case metadata are evidence, not a substitute for the signed permit and main project.",
+    "note": "Prihvaćeni izvorni zapis s devet nadzemnih volumena, jednom pomoćnom geometrijom i trafostanicom. Taj stariji javni ID čuva potpuniju geometriju zgrada od migriranog P-zapisa istog akta; poligon obuhvata ostao je uz P-zapis.",
+    "layerFeatureCounts": {
+      "eDozvola_area_polygon": 0,
+      "eDozvola_building_line": 0,
+      "eDozvola_building_point": 0,
+      "eDozvola_building_polygon": 11
+    },
+    "caseId": "A20220613-2838627-V020101",
+    "caseClass": "UP/I-350-05/22-001/22",
+    "caseType": "Lokacijska dozvola",
+    "caseStatus": "Arhiva",
+    "requestReceivedAt": "2022-01-25",
+    "requestCompleteAt": null,
+    "decisionName": "Lokacijska dozvola",
+    "decisionNumber": "251-10-21-1/024-22-14",
+    "decisionAt": "2022-05-16",
+    "finalAt": "2022-06-09"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "A20220613-2838627-V020101",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijske dozvole",
+        "predmet_vrsta_id": "V020101",
+        "predmet_vrsta": "Lokacijska dozvola",
+        "predmet_status_id": "ARHIVA",
+        "predmet_status": "Arhiva",
+        "predmet_klasa": "UP/I-350-05/22-001/22",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2022-01-25",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": "Lokacijska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-21-1/024-22-14",
+        "zavrsni_akt_dat_rjesavanja": "2022-05-16",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2022-06-09",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101015",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za prostorno uređenje, Središnji odsjek za prostorno uređenje",
+        "lokacija": null,
+        "gradjevina_zahvat_id": null,
+        "gradjevina_zahvat": null,
+        "gradjevina_zahvat_dodatno": "Stambeno - poslovni kompleks i transformatorska stanica",
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": null,
+        "gradjevina_skupina": null,
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.7187",
+        "edozvola:geometryAreaM2": 904.27
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.034777,
+              45.80535154
+            ],
+            [
+              16.03507181,
+              45.80539125
+            ],
+            [
+              16.03508892,
+              45.80532905
+            ],
+            [
+              16.03506245,
+              45.80532543
+            ],
+            [
+              16.03507041,
+              45.80529667
+            ],
+            [
+              16.03508172,
+              45.80529816
+            ],
+            [
+              16.03508981,
+              45.80526868
+            ],
+            [
+              16.0350785,
+              45.8052671
+            ],
+            [
+              16.0351187,
+              45.80512078
+            ],
+            [
+              16.03513001,
+              45.80512236
+            ],
+            [
+              16.03513823,
+              45.80509279
+            ],
+            [
+              16.03512679,
+              45.8050913
+            ],
+            [
+              16.03513475,
+              45.80506245
+            ],
+            [
+              16.03516123,
+              45.80506607
+            ],
+            [
+              16.03517834,
+              45.80500387
+            ],
+            [
+              16.03488354,
+              45.80496416
+            ],
+            [
+              16.03486642,
+              45.80502635
+            ],
+            [
+              16.0348929,
+              45.80502997
+            ],
+            [
+              16.03482059,
+              45.80529296
+            ],
+            [
+              16.03479412,
+              45.80528934
+            ],
+            [
+              16.034777,
+              45.80535154
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "A20220613-2838627-V020101",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijske dozvole",
+        "predmet_vrsta_id": "V020101",
+        "predmet_vrsta": "Lokacijska dozvola",
+        "predmet_status_id": "ARHIVA",
+        "predmet_status": "Arhiva",
+        "predmet_klasa": "UP/I-350-05/22-001/22",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2022-01-25",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": "Lokacijska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-21-1/024-22-14",
+        "zavrsni_akt_dat_rjesavanja": "2022-05-16",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2022-06-09",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101015",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za prostorno uređenje, Središnji odsjek za prostorno uređenje",
+        "lokacija": null,
+        "gradjevina_zahvat_id": null,
+        "gradjevina_zahvat": null,
+        "gradjevina_zahvat_dodatno": "Stambeno - poslovni kompleks i transformatorska stanica",
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": null,
+        "gradjevina_skupina": null,
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.7188",
+        "edozvola:geometryAreaM2": 528.48
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03516239,
+              45.80577664
+            ],
+            [
+              16.03545348,
+              45.80581579
+            ],
+            [
+              16.0355092,
+              45.80561312
+            ],
+            [
+              16.03521811,
+              45.80557396
+            ],
+            [
+              16.03516239,
+              45.80577664
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "A20220613-2838627-V020101",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijske dozvole",
+        "predmet_vrsta_id": "V020101",
+        "predmet_vrsta": "Lokacijska dozvola",
+        "predmet_status_id": "ARHIVA",
+        "predmet_status": "Arhiva",
+        "predmet_klasa": "UP/I-350-05/22-001/22",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2022-01-25",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": "Lokacijska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-21-1/024-22-14",
+        "zavrsni_akt_dat_rjesavanja": "2022-05-16",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2022-06-09",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101015",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za prostorno uređenje, Središnji odsjek za prostorno uređenje",
+        "lokacija": null,
+        "gradjevina_zahvat_id": null,
+        "gradjevina_zahvat": null,
+        "gradjevina_zahvat_dodatno": "Stambeno - poslovni kompleks i transformatorska stanica",
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": null,
+        "gradjevina_skupina": null,
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.7189",
+        "edozvola:geometryAreaM2": 1661.18
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03532445,
+              45.80541144
+            ],
+            [
+              16.03596496,
+              45.80549755
+            ],
+            [
+              16.03595979,
+              45.80551615
+            ],
+            [
+              16.03604627,
+              45.80552775
+            ],
+            [
+              16.03606246,
+              45.80546852
+            ],
+            [
+              16.03608906,
+              45.80547214
+            ],
+            [
+              16.03611294,
+              45.80538513
+            ],
+            [
+              16.03608647,
+              45.80538161
+            ],
+            [
+              16.03609788,
+              45.80534008
+            ],
+            [
+              16.03561275,
+              45.80527485
+            ],
+            [
+              16.03565825,
+              45.80510903
+            ],
+            [
+              16.03568485,
+              45.80511264
+            ],
+            [
+              16.03570144,
+              45.80505216
+            ],
+            [
+              16.03561675,
+              45.80504083
+            ],
+            [
+              16.03562192,
+              45.80502223
+            ],
+            [
+              16.03549752,
+              45.80500553
+            ],
+            [
+              16.03549248,
+              45.80502413
+            ],
+            [
+              16.03543311,
+              45.80501606
+            ],
+            [
+              16.03532445,
+              45.80541144
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "A20220613-2838627-V020101",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijske dozvole",
+        "predmet_vrsta_id": "V020101",
+        "predmet_vrsta": "Lokacijska dozvola",
+        "predmet_status_id": "ARHIVA",
+        "predmet_status": "Arhiva",
+        "predmet_klasa": "UP/I-350-05/22-001/22",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2022-01-25",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": "Lokacijska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-21-1/024-22-14",
+        "zavrsni_akt_dat_rjesavanja": "2022-05-16",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2022-06-09",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101015",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za prostorno uređenje, Središnji odsjek za prostorno uređenje",
+        "lokacija": null,
+        "gradjevina_zahvat_id": null,
+        "gradjevina_zahvat": null,
+        "gradjevina_zahvat_dodatno": "Stambeno - poslovni kompleks i transformatorska stanica",
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": null,
+        "gradjevina_skupina": null,
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.7190",
+        "edozvola:geometryAreaM2": 151.72
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03560309,
+              45.80561656
+            ],
+            [
+              16.03562009,
+              45.80564479
+            ],
+            [
+              16.03564192,
+              45.80566557
+            ],
+            [
+              16.03566957,
+              45.80568269
+            ],
+            [
+              16.03570188,
+              45.80569533
+            ],
+            [
+              16.0357372,
+              45.80570285
+            ],
+            [
+              16.03577398,
+              45.80570498
+            ],
+            [
+              16.03581055,
+              45.80570162
+            ],
+            [
+              16.03584536,
+              45.80569295
+            ],
+            [
+              16.03587661,
+              45.80567922
+            ],
+            [
+              16.03590728,
+              45.80565747
+            ],
+            [
+              16.03583734,
+              45.80562003
+            ],
+            [
+              16.035812,
+              45.80563558
+            ],
+            [
+              16.03578376,
+              45.80564258
+            ],
+            [
+              16.03575379,
+              45.80564236
+            ],
+            [
+              16.0357258,
+              45.80563478
+            ],
+            [
+              16.03570327,
+              45.80562092
+            ],
+            [
+              16.03568801,
+              45.80559999
+            ],
+            [
+              16.03560309,
+              45.80561656
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "A20220613-2838627-V020101",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijske dozvole",
+        "predmet_vrsta_id": "V020101",
+        "predmet_vrsta": "Lokacijska dozvola",
+        "predmet_status_id": "ARHIVA",
+        "predmet_status": "Arhiva",
+        "predmet_klasa": "UP/I-350-05/22-001/22",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2022-01-25",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": "Lokacijska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-21-1/024-22-14",
+        "zavrsni_akt_dat_rjesavanja": "2022-05-16",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2022-06-09",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101015",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za prostorno uređenje, Središnji odsjek za prostorno uređenje",
+        "lokacija": null,
+        "gradjevina_zahvat_id": null,
+        "gradjevina_zahvat": null,
+        "gradjevina_zahvat_dodatno": "Stambeno - poslovni kompleks i transformatorska stanica",
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": null,
+        "gradjevina_skupina": null,
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.7191",
+        "edozvola:geometryAreaM2": 1314.49
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03302533,
+              45.80549295
+            ],
+            [
+              16.03310539,
+              45.80550371
+            ],
+            [
+              16.03311043,
+              45.8054852
+            ],
+            [
+              16.03376944,
+              45.80557382
+            ],
+            [
+              16.0337644,
+              45.80559233
+            ],
+            [
+              16.03385076,
+              45.80560393
+            ],
+            [
+              16.03386655,
+              45.8055465
+            ],
+            [
+              16.03389431,
+              45.8055503
+            ],
+            [
+              16.03391951,
+              45.8054589
+            ],
+            [
+              16.03389163,
+              45.80545518
+            ],
+            [
+              16.03390237,
+              45.80541627
+            ],
+            [
+              16.033157,
+              45.80531605
+            ],
+            [
+              16.03316205,
+              45.80529753
+            ],
+            [
+              16.03308199,
+              45.80528668
+            ],
+            [
+              16.03302533,
+              45.80549295
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "A20220613-2838627-V020101",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijske dozvole",
+        "predmet_vrsta_id": "V020101",
+        "predmet_vrsta": "Lokacijska dozvola",
+        "predmet_status_id": "ARHIVA",
+        "predmet_status": "Arhiva",
+        "predmet_klasa": "UP/I-350-05/22-001/22",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2022-01-25",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": "Lokacijska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-21-1/024-22-14",
+        "zavrsni_akt_dat_rjesavanja": "2022-05-16",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2022-06-09",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101015",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za prostorno uređenje, Središnji odsjek za prostorno uređenje",
+        "lokacija": null,
+        "gradjevina_zahvat_id": null,
+        "gradjevina_zahvat": null,
+        "gradjevina_zahvat_dodatno": "Stambeno - poslovni kompleks i transformatorska stanica",
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": null,
+        "gradjevina_skupina": null,
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.7192",
+        "edozvola:geometryAreaM2": 2284.52
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03312883,
+              45.80511618
+            ],
+            [
+              16.03395438,
+              45.80522716
+            ],
+            [
+              16.033965,
+              45.80518833
+            ],
+            [
+              16.03399289,
+              45.80519205
+            ],
+            [
+              16.03401796,
+              45.80510073
+            ],
+            [
+              16.03399021,
+              45.80509693
+            ],
+            [
+              16.03400599,
+              45.80503949
+            ],
+            [
+              16.03391951,
+              45.80502789
+            ],
+            [
+              16.03391446,
+              45.8050465
+            ],
+            [
+              16.03341712,
+              45.80497959
+            ],
+            [
+              16.03352499,
+              45.80458763
+            ],
+            [
+              16.03355147,
+              45.80459116
+            ],
+            [
+              16.03356686,
+              45.80453517
+            ],
+            [
+              16.03327206,
+              45.80449554
+            ],
+            [
+              16.03325666,
+              45.80455154
+            ],
+            [
+              16.03328314,
+              45.80455506
+            ],
+            [
+              16.03312883,
+              45.80511618
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "A20220613-2838627-V020101",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijske dozvole",
+        "predmet_vrsta_id": "V020101",
+        "predmet_vrsta": "Lokacijska dozvola",
+        "predmet_status_id": "ARHIVA",
+        "predmet_status": "Arhiva",
+        "predmet_klasa": "UP/I-350-05/22-001/22",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2022-01-25",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": "Lokacijska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-21-1/024-22-14",
+        "zavrsni_akt_dat_rjesavanja": "2022-05-16",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2022-06-09",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101015",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za prostorno uređenje, Središnji odsjek za prostorno uređenje",
+        "lokacija": null,
+        "gradjevina_zahvat_id": null,
+        "gradjevina_zahvat": null,
+        "gradjevina_zahvat_dodatno": "Stambeno - poslovni kompleks i transformatorska stanica",
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": null,
+        "gradjevina_skupina": null,
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.7193",
+        "edozvola:geometryAreaM2": 1311.47
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03412745,
+              45.80564114
+            ],
+            [
+              16.03421394,
+              45.80565283
+            ],
+            [
+              16.03421898,
+              45.80563423
+            ],
+            [
+              16.03494919,
+              45.8057324
+            ],
+            [
+              16.03495994,
+              45.80569357
+            ],
+            [
+              16.03498769,
+              45.80569729
+            ],
+            [
+              16.03501277,
+              45.80560597
+            ],
+            [
+              16.03498501,
+              45.80560217
+            ],
+            [
+              16.0350008,
+              45.80554473
+            ],
+            [
+              16.03491444,
+              45.80553314
+            ],
+            [
+              16.03490927,
+              45.80555165
+            ],
+            [
+              16.03417906,
+              45.80545348
+            ],
+            [
+              16.03416831,
+              45.80549239
+            ],
+            [
+              16.03414056,
+              45.80548859
+            ],
+            [
+              16.03411548,
+              45.80558
+            ],
+            [
+              16.03414324,
+              45.80558371
+            ],
+            [
+              16.03412745,
+              45.80564114
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "A20220613-2838627-V020101",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijske dozvole",
+        "predmet_vrsta_id": "V020101",
+        "predmet_vrsta": "Lokacijska dozvola",
+        "predmet_status_id": "ARHIVA",
+        "predmet_status": "Arhiva",
+        "predmet_klasa": "UP/I-350-05/22-001/22",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2022-01-25",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": "Lokacijska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-21-1/024-22-14",
+        "zavrsni_akt_dat_rjesavanja": "2022-05-16",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2022-06-09",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101015",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za prostorno uređenje, Središnji odsjek za prostorno uređenje",
+        "lokacija": null,
+        "gradjevina_zahvat_id": null,
+        "gradjevina_zahvat": null,
+        "gradjevina_zahvat_dodatno": "Stambeno - poslovni kompleks i transformatorska stanica",
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": null,
+        "gradjevina_skupina": null,
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.7194",
+        "edozvola:geometryAreaM2": 904.29
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.0341996,
+              45.80527396
+            ],
+            [
+              16.03449453,
+              45.80531358
+            ],
+            [
+              16.03451165,
+              45.80525139
+            ],
+            [
+              16.03448504,
+              45.80524777
+            ],
+            [
+              16.03455735,
+              45.80498488
+            ],
+            [
+              16.03458383,
+              45.8049884
+            ],
+            [
+              16.03460094,
+              45.80492621
+            ],
+            [
+              16.03430614,
+              45.80488658
+            ],
+            [
+              16.03428902,
+              45.80494878
+            ],
+            [
+              16.03431549,
+              45.80495231
+            ],
+            [
+              16.03430766,
+              45.80498116
+            ],
+            [
+              16.03429623,
+              45.80497958
+            ],
+            [
+              16.03428813,
+              45.80500915
+            ],
+            [
+              16.03429944,
+              45.80501064
+            ],
+            [
+              16.03425924,
+              45.80515696
+            ],
+            [
+              16.03424793,
+              45.80515548
+            ],
+            [
+              16.03423984,
+              45.80518496
+            ],
+            [
+              16.03425115,
+              45.80518644
+            ],
+            [
+              16.03424319,
+              45.80521529
+            ],
+            [
+              16.03421671,
+              45.80521168
+            ],
+            [
+              16.0341996,
+              45.80527396
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "A20220613-2838627-V020101",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijske dozvole",
+        "predmet_vrsta_id": "V020101",
+        "predmet_vrsta": "Lokacijska dozvola",
+        "predmet_status_id": "ARHIVA",
+        "predmet_status": "Arhiva",
+        "predmet_klasa": "UP/I-350-05/22-001/22",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2022-01-25",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": "Lokacijska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-21-1/024-22-14",
+        "zavrsni_akt_dat_rjesavanja": "2022-05-16",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2022-06-09",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101015",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za prostorno uređenje, Središnji odsjek za prostorno uređenje",
+        "lokacija": null,
+        "gradjevina_zahvat_id": null,
+        "gradjevina_zahvat": null,
+        "gradjevina_zahvat_dodatno": "Stambeno - poslovni kompleks i transformatorska stanica",
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": null,
+        "gradjevina_skupina": null,
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.7195",
+        "edozvola:geometryAreaM2": 36.95
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03426388,
+              45.80426069
+            ],
+            [
+              16.03435126,
+              45.80427239
+            ],
+            [
+              16.03436427,
+              45.8042252
+            ],
+            [
+              16.03427675,
+              45.80421351
+            ],
+            [
+              16.03426388,
+              45.80426069
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "A20220613-2838627-V020101",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijske dozvole",
+        "predmet_vrsta_id": "V020101",
+        "predmet_vrsta": "Lokacijska dozvola",
+        "predmet_status_id": "ARHIVA",
+        "predmet_status": "Arhiva",
+        "predmet_klasa": "UP/I-350-05/22-001/22",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2022-01-25",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": "Lokacijska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-21-1/024-22-14",
+        "zavrsni_akt_dat_rjesavanja": "2022-05-16",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2022-06-09",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101015",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za prostorno uređenje, Središnji odsjek za prostorno uređenje",
+        "lokacija": null,
+        "gradjevina_zahvat_id": null,
+        "gradjevina_zahvat": null,
+        "gradjevina_zahvat_dodatno": "Stambeno - poslovni kompleks i transformatorska stanica",
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": null,
+        "gradjevina_skupina": null,
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.7196",
+        "edozvola:geometryAreaM2": 1311.64
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03437715,
+              45.80473301
+            ],
+            [
+              16.0344635,
+              45.80474461
+            ],
+            [
+              16.03446868,
+              45.80472609
+            ],
+            [
+              16.03511252,
+              45.80481266
+            ],
+            [
+              16.03510734,
+              45.80483118
+            ],
+            [
+              16.03519383,
+              45.80484287
+            ],
+            [
+              16.03520962,
+              45.80478544
+            ],
+            [
+              16.03523738,
+              45.80478915
+            ],
+            [
+              16.03526245,
+              45.80469774
+            ],
+            [
+              16.0352347,
+              45.80469403
+            ],
+            [
+              16.03524544,
+              45.80465511
+            ],
+            [
+              16.03442876,
+              45.80454534
+            ],
+            [
+              16.03441801,
+              45.80458417
+            ],
+            [
+              16.03439025,
+              45.80458046
+            ],
+            [
+              16.03436518,
+              45.80467186
+            ],
+            [
+              16.03439293,
+              45.80467558
+            ],
+            [
+              16.03437715,
+              45.80473301
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "A20220613-2838627-V020101",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijske dozvole",
+        "predmet_vrsta_id": "V020101",
+        "predmet_vrsta": "Lokacijska dozvola",
+        "predmet_status_id": "ARHIVA",
+        "predmet_status": "Arhiva",
+        "predmet_klasa": "UP/I-350-05/22-001/22",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2022-01-25",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": "Lokacijska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-21-1/024-22-14",
+        "zavrsni_akt_dat_rjesavanja": "2022-05-16",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2022-06-09",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101015",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za prostorno uređenje, Središnji odsjek za prostorno uređenje",
+        "lokacija": null,
+        "gradjevina_zahvat_id": null,
+        "gradjevina_zahvat": null,
+        "gradjevina_zahvat_dodatno": "Stambeno - poslovni kompleks i transformatorska stanica",
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": null,
+        "gradjevina_skupina": null,
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.7197",
+        "edozvola:geometryAreaM2": 795.75
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03377836,
+              45.80485996
+            ],
+            [
+              16.03407329,
+              45.80489958
+            ],
+            [
+              16.03409081,
+              45.80483559
+            ],
+            [
+              16.03406433,
+              45.80483206
+            ],
+            [
+              16.0341255,
+              45.8046097
+            ],
+            [
+              16.03415197,
+              45.80461332
+            ],
+            [
+              16.03416961,
+              45.80454932
+            ],
+            [
+              16.03394421,
+              45.80451898
+            ],
+            [
+              16.03392762,
+              45.80457911
+            ],
+            [
+              16.0338581,
+              45.80456974
+            ],
+            [
+              16.03384151,
+              45.80463023
+            ],
+            [
+              16.03386812,
+              45.80463375
+            ],
+            [
+              16.03382248,
+              45.80479949
+            ],
+            [
+              16.033796,
+              45.80479596
+            ],
+            [
+              16.03377836,
+              45.80485996
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,529 @@
+{
+  "type": "FeatureCollection",
+  "name": "Zagrebačka avenija–Rudeš – građevinska dozvola iz 2022.",
+  "bbox": [
+    15.92023674,
+    45.80295396,
+    15.92245919,
+    45.80469689
+  ],
+  "edozvola": {
+    "schema": "consensus-builder.edozvola-source.v1",
+    "archivedAt": "2026-08-13",
+    "source": "https://oss.uredjenazemlja.hr/OssWebServices/external/eDozvole",
+    "sourceService": "public national eDozvola WFS 2.0.0",
+    "sourceCrs": "EPSG:3765",
+    "outputCrs": "EPSG:4326",
+    "geometryOnly": true,
+    "caveat": "Public WFS geometry and case metadata are evidence, not a substitute for the signed permit and main project.",
+    "note": "Ranija dozvola prikazuje faze F1, F2, F3, G1 i G2 točkastom geometrijom; nije dokaz aktualnog projekta iz 2025.",
+    "layerFeatureCounts": {
+      "eDozvola_area_polygon": 1,
+      "eDozvola_building_line": 0,
+      "eDozvola_building_point": 5,
+      "eDozvola_building_polygon": 0
+    },
+    "caseId": "P20221230-1130193-Z01",
+    "caseClass": "UP/I-361-03/22-001/468",
+    "caseType": "Građevinska dozvola",
+    "caseStatus": "Žalbeni rok / rok za pokretanje tužbe",
+    "requestReceivedAt": "2022-03-17",
+    "requestCompleteAt": null,
+    "decisionName": "Građevinska dozvola",
+    "decisionNumber": "251-10-22-1/007-23-0016",
+    "decisionAt": "2023-03-02",
+    "finalAt": "2023-03-29"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20221230-1130193-Z01",
+        "predmet_group_id": "V01",
+        "predmet_group": "Akt za građenje",
+        "predmet_vrsta_id": "Z01",
+        "predmet_vrsta": "Građevinska dozvola",
+        "predmet_status_id": "ZALBA",
+        "predmet_status": "Žalbeni rok / rok za pokretanje tužbe",
+        "predmet_klasa": "UP/I-361-03/22-001/468",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2022-03-17",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": "Građevinska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-22-1/007-23-0016",
+        "zavrsni_akt_dat_rjesavanja": "2023-03-02",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2023-03-29",
+        "nadlezno_tijelo_id": "UJ-2101117",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za graditeljstvo, Središnji odsjek za graditeljstvo",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"799/1\", \"lokacija_kat_opcina\": \"Rudeš\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": \"   Zagrebačka cesta 145 b\", \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335614\"}}]",
+        "troskovi_gradjenja_id": "SG-07",
+        "troskovi_gradjenja": "Statistička grupa 7 (od 2.500.000 € do 4.999.999 €)",
+        "edozvola:sourceLayer": "eDozvola_area_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_area_polygon.92620",
+        "edozvola:geometryAreaM2": 17980.07
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.92125605,
+              45.80458062
+            ],
+            [
+              15.92127698,
+              45.8046097
+            ],
+            [
+              15.92152554,
+              45.80469689
+            ],
+            [
+              15.92215763,
+              45.80412323
+            ],
+            [
+              15.92243464,
+              45.80387197
+            ],
+            [
+              15.92245919,
+              45.80384969
+            ],
+            [
+              15.92229572,
+              45.80373279
+            ],
+            [
+              15.92224032,
+              45.80369103
+            ],
+            [
+              15.92222373,
+              45.8036779
+            ],
+            [
+              15.92218009,
+              45.80364285
+            ],
+            [
+              15.92211441,
+              45.80358718
+            ],
+            [
+              15.92205093,
+              45.80353036
+            ],
+            [
+              15.92200684,
+              45.80348928
+            ],
+            [
+              15.92195693,
+              45.80343963
+            ],
+            [
+              15.92189814,
+              45.80337662
+            ],
+            [
+              15.9218464,
+              45.80331661
+            ],
+            [
+              15.92180498,
+              45.80326682
+            ],
+            [
+              15.92174986,
+              45.80319681
+            ],
+            [
+              15.92169579,
+              45.80312608
+            ],
+            [
+              15.92143143,
+              45.80301299
+            ],
+            [
+              15.92135183,
+              45.80298487
+            ],
+            [
+              15.92127135,
+              45.80295396
+            ],
+            [
+              15.92114165,
+              45.80306812
+            ],
+            [
+              15.92095392,
+              45.80323228
+            ],
+            [
+              15.92045978,
+              45.80366599
+            ],
+            [
+              15.92023674,
+              45.80385985
+            ],
+            [
+              15.92031266,
+              45.80390756
+            ],
+            [
+              15.92026156,
+              45.80395976
+            ],
+            [
+              15.92024804,
+              45.80397364
+            ],
+            [
+              15.9203723,
+              45.80404967
+            ],
+            [
+              15.920402,
+              45.80406359
+            ],
+            [
+              15.92045193,
+              45.80408769
+            ],
+            [
+              15.92053359,
+              45.80412787
+            ],
+            [
+              15.92057259,
+              45.80415075
+            ],
+            [
+              15.92059817,
+              45.80416536
+            ],
+            [
+              15.92062003,
+              45.80417924
+            ],
+            [
+              15.92066875,
+              45.80420792
+            ],
+            [
+              15.92071604,
+              45.80423821
+            ],
+            [
+              15.92074029,
+              45.80425624
+            ],
+            [
+              15.92079157,
+              45.80429888
+            ],
+            [
+              15.92081643,
+              45.80432123
+            ],
+            [
+              15.92096498,
+              45.8044126
+            ],
+            [
+              15.92117307,
+              45.80454349
+            ],
+            [
+              15.92125605,
+              45.80458062
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20221230-1130193-Z01",
+        "predmet_group_id": "V01",
+        "predmet_group": "Akt za građenje",
+        "predmet_vrsta_id": "Z01",
+        "predmet_vrsta": "Građevinska dozvola",
+        "predmet_status_id": "ZALBA",
+        "predmet_status": "Žalbeni rok / rok za pokretanje tužbe",
+        "predmet_klasa": "UP/I-361-03/22-001/468",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2022-03-17",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": "Građevinska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-22-1/007-23-0016",
+        "zavrsni_akt_dat_rjesavanja": "2023-03-02",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2023-03-29",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101117",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za graditeljstvo, Središnji odsjek za graditeljstvo",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"799/1\", \"lokacija_kat_opcina\": \"Rudeš\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": \"   Zagrebačka cesta 145 b\", \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335614\"}}]",
+        "gradjevina_zahvat_id": null,
+        "gradjevina_zahvat": null,
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": "garažni prostor (podzemni dio zgrade F1)",
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": "SG-07",
+        "troskovi_gradjenja": "Statistička grupa 7 (od 2.500.000 € do 4.999.999 €)",
+        "edozvola:sourceLayer": "eDozvola_building_point",
+        "edozvola:sourceFeatureId": "eDozvola_building_point.2751254"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.92129717,
+          45.80319379
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20221230-1130193-Z01",
+        "predmet_group_id": "V01",
+        "predmet_group": "Akt za građenje",
+        "predmet_vrsta_id": "Z01",
+        "predmet_vrsta": "Građevinska dozvola",
+        "predmet_status_id": "ZALBA",
+        "predmet_status": "Žalbeni rok / rok za pokretanje tužbe",
+        "predmet_klasa": "UP/I-361-03/22-001/468",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2022-03-17",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": "Građevinska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-22-1/007-23-0016",
+        "zavrsni_akt_dat_rjesavanja": "2023-03-02",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2023-03-29",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101117",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za graditeljstvo, Središnji odsjek za graditeljstvo",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"799/1\", \"lokacija_kat_opcina\": \"Rudeš\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": \"   Zagrebačka cesta 145 b\", \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335614\"}}]",
+        "gradjevina_zahvat_id": null,
+        "gradjevina_zahvat": null,
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": "garažni prostor, podzemni dio zgrade F2",
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": "SG-07",
+        "troskovi_gradjenja": "Statistička grupa 7 (od 2.500.000 € do 4.999.999 €)",
+        "edozvola:sourceLayer": "eDozvola_building_point",
+        "edozvola:sourceFeatureId": "eDozvola_building_point.2751255"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.92170784,
+          45.80354104
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20221230-1130193-Z01",
+        "predmet_group_id": "V01",
+        "predmet_group": "Akt za građenje",
+        "predmet_vrsta_id": "Z01",
+        "predmet_vrsta": "Građevinska dozvola",
+        "predmet_status_id": "ZALBA",
+        "predmet_status": "Žalbeni rok / rok za pokretanje tužbe",
+        "predmet_klasa": "UP/I-361-03/22-001/468",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2022-03-17",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": "Građevinska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-22-1/007-23-0016",
+        "zavrsni_akt_dat_rjesavanja": "2023-03-02",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2023-03-29",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101117",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za graditeljstvo, Središnji odsjek za graditeljstvo",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"799/1\", \"lokacija_kat_opcina\": \"Rudeš\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": \"   Zagrebačka cesta 145 b\", \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335614\"}}]",
+        "gradjevina_zahvat_id": null,
+        "gradjevina_zahvat": null,
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": "garažni prostor, podzemni dio zgrade F3",
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": "SG-07",
+        "troskovi_gradjenja": "Statistička grupa 7 (od 2.500.000 € do 4.999.999 €)",
+        "edozvola:sourceLayer": "eDozvola_building_point",
+        "edozvola:sourceFeatureId": "eDozvola_building_point.2751256"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.92208275,
+          45.8038629
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20221230-1130193-Z01",
+        "predmet_group_id": "V01",
+        "predmet_group": "Akt za građenje",
+        "predmet_vrsta_id": "Z01",
+        "predmet_vrsta": "Građevinska dozvola",
+        "predmet_status_id": "ZALBA",
+        "predmet_status": "Žalbeni rok / rok za pokretanje tužbe",
+        "predmet_klasa": "UP/I-361-03/22-001/468",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2022-03-17",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": "Građevinska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-22-1/007-23-0016",
+        "zavrsni_akt_dat_rjesavanja": "2023-03-02",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2023-03-29",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101117",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za graditeljstvo, Središnji odsjek za graditeljstvo",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"799/1\", \"lokacija_kat_opcina\": \"Rudeš\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": \"   Zagrebačka cesta 145 b\", \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335614\"}}]",
+        "gradjevina_zahvat_id": null,
+        "gradjevina_zahvat": null,
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": "podzemna garaža G1",
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": "SG-07",
+        "troskovi_gradjenja": "Statistička grupa 7 (od 2.500.000 € do 4.999.999 €)",
+        "edozvola:sourceLayer": "eDozvola_building_point",
+        "edozvola:sourceFeatureId": "eDozvola_building_point.2751258"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.92125468,
+          45.80347072
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20221230-1130193-Z01",
+        "predmet_group_id": "V01",
+        "predmet_group": "Akt za građenje",
+        "predmet_vrsta_id": "Z01",
+        "predmet_vrsta": "Građevinska dozvola",
+        "predmet_status_id": "ZALBA",
+        "predmet_status": "Žalbeni rok / rok za pokretanje tužbe",
+        "predmet_klasa": "UP/I-361-03/22-001/468",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2022-03-17",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": "Građevinska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-10-22-1/007-23-0016",
+        "zavrsni_akt_dat_rjesavanja": "2023-03-02",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2023-03-29",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101117",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za graditeljstvo, Središnji odsjek za graditeljstvo",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"799/1\", \"lokacija_kat_opcina\": \"Rudeš\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": \"   Zagrebačka cesta 145 b\", \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335614\"}}]",
+        "gradjevina_zahvat_id": null,
+        "gradjevina_zahvat": null,
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": "podzemna garaža G2",
+        "gradjevina_skupina_id": "SK-02b",
+        "gradjevina_skupina": "2.b skupine",
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": "SG-07",
+        "troskovi_gradjenja": "Statistička grupa 7 (od 2.500.000 € do 4.999.999 €)",
+        "edozvola:sourceLayer": "eDozvola_building_point",
+        "edozvola:sourceFeatureId": "eDozvola_building_point.2751259"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.92179567,
+          45.80375563
+        ]
+      }
+    }
+  ]
+}

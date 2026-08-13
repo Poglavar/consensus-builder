@@ -1,0 +1,872 @@
+{
+  "type": "FeatureCollection",
+  "name": "Lovinčićeva F1–F5 – rekonstrukcija izvedenog stanja",
+  "bbox": [
+    16.020633042,
+    45.799561268,
+    16.022090937,
+    45.801059702
+  ],
+  "reconstruction": {
+    "schema": "consensus-builder.reconstruction.v1",
+    "proposal": {
+      "proposalId": "paron-lovinciceva-f1-f5-observed",
+      "city": "zagreb",
+      "name": "Lovinčićeva F1–F5 – rekonstrukcija izvedenog stanja",
+      "title": "Lovinčićeva F1–F5 – rekonstrukcija izvedenog stanja",
+      "description": "Rekonstrukcija pet izvedenih zgrada F1–F5 na k.č. 4091/5, k.o. Peščenica. Tlocrti su aktualne pravne DGU geometrije, a visine su iz podudarnih GDI objekata snimljenih 2022. Oznake F1–F5 još nisu sigurno pridružene pojedinim DGU poligonima, pa su zgrade imenovane katastarskim brojem. Broj etaža i nadzemni GBP procijenjeni su iz visine uz 3 m po etaži.",
+      "author": "zagreb.lol – lokalna analiza",
+      "type": "building",
+      "goal": "single",
+      "primaryType": "Urban Rule",
+      "typologyType": "single",
+      "lifecycleStatus": "Active",
+      "createdAt": "2026-08-13T00:00:00.000Z",
+      "updatedAt": "2026-08-13T00:00:00.000Z",
+      "tags": [
+        "buildings",
+        "research",
+        "reconstruction",
+        "observed-built-state"
+      ],
+      "parentParcelIds": [
+        "HR-335533-4091/5"
+      ],
+      "cadastreParcelIds": [
+        "HR-335533-4091/5"
+      ],
+      "parcelIds": [
+        "HR-335533-4091/5"
+      ],
+      "acceptedParcelIds": [],
+      "bounds": [
+        16.020633042,
+        45.799561268,
+        16.022090937,
+        45.801059702
+      ],
+      "source": {
+        "projectSource": "https://web.zagreb.hr/Sjednice/2013/Big_Attach_2013.nsf/0/E3D3DCECDA0D6ACEC1257E4D0046B8D7/%24FILE/Paron%20d%20o%20o%20.pdf",
+        "projectDates": "Dozvole po fazama od 2013.; datum završetka još nije utvrđen.",
+        "parcel": "k.č. 4091/5, MB 335533, k.o. Peščenica",
+        "coordinateSystem": "DGU/GDI HTRS96/TM (EPSG:3765), transformed to WGS84 for the app",
+        "footprintBasis": "current DGU legal building geometry",
+        "heightBasis": "matched GDI surveyed object",
+        "companyRoleNote": null,
+        "officialProjectLabels": null,
+        "sourceStatistics": {
+          "geometryDerived": {
+            "parcelAreaM2": 15254.848235027355,
+            "footprintAreaM2": 6327.033541827813,
+            "siteCoveragePercent": 41.47555874925076,
+            "heightEquivalentAboveGroundGbpM2": 60625.04485097728,
+            "heightEquivalentKin": 3.9741493272790054,
+            "buildingCount": 5,
+            "method": "DGU footprint area × GDI height / 3 m; diagnostic estimate, not permit GBP"
+          }
+        }
+      }
+    },
+    "buildingProposal": {
+      "parentParcelIds": [
+        "HR-335533-4091/5"
+      ],
+      "parentParcelNumbers": [
+        {
+          "id": "HR-335533-4091/5",
+          "number": "4091/5",
+          "cadastre": "Peščenica"
+        }
+      ],
+      "createdFrom": "single-building",
+      "typologyType": "single",
+      "blockName": "Lovinčićeva F1–F5 – k.č. 4091/5",
+      "parameters": {
+        "typology": "single",
+        "floorHeightM": 3,
+        "geometryBasis": "observed-built-state",
+        "sourceStatistics": {
+          "geometryDerived": {
+            "parcelAreaM2": 15254.848235027355,
+            "footprintAreaM2": 6327.033541827813,
+            "siteCoveragePercent": 41.47555874925076,
+            "heightEquivalentAboveGroundGbpM2": 60625.04485097728,
+            "heightEquivalentKin": 3.9741493272790054,
+            "buildingCount": 5,
+            "method": "DGU footprint area × GDI height / 3 m; diagnostic estimate, not permit GBP"
+          }
+        }
+      },
+      "ancestorKey": "HR-335533-4091/5",
+      "takeWholeParcels": true,
+      "metadata": {
+        "sourceStatistics": {
+          "geometryDerived": {
+            "parcelAreaM2": 15254.848235027355,
+            "footprintAreaM2": 6327.033541827813,
+            "siteCoveragePercent": 41.47555874925076,
+            "heightEquivalentAboveGroundGbpM2": 60625.04485097728,
+            "heightEquivalentKin": 3.9741493272790054,
+            "buildingCount": 5,
+            "method": "DGU footprint area × GDI height / 3 m; diagnostic estimate, not permit GBP"
+          }
+        }
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "HR-335533-4091/5",
+        "cestica_id": 21623762,
+        "maticni_broj_ko": 335533,
+        "broj_cestice": "4091/5",
+        "areaM2": 15254.990100004416,
+        "source": "DGU katastar, aktualna čestica",
+        "consensus:role": "site"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                16.021097649,
+                45.801042362
+              ],
+              [
+                16.021037635,
+                45.801049939
+              ],
+              [
+                16.020977124,
+                45.801055444
+              ],
+              [
+                16.020916375,
+                45.801058698
+              ],
+              [
+                16.020855388,
+                45.801059702
+              ],
+              [
+                16.020816802,
+                45.801058731
+              ],
+              [
+                16.020633042,
+                45.801049952
+              ],
+              [
+                16.020774937,
+                45.799579649
+              ],
+              [
+                16.020939579,
+                45.799567023
+              ],
+              [
+                16.021047946,
+                45.799561268
+              ],
+              [
+                16.021462766,
+                45.799582442
+              ],
+              [
+                16.022090937,
+                45.799611525
+              ],
+              [
+                16.022038512,
+                45.800206162
+              ],
+              [
+                16.022036481,
+                45.800233057
+              ],
+              [
+                16.022031284,
+                45.80029926
+              ],
+              [
+                16.022028624,
+                45.800324444
+              ],
+              [
+                16.022024808,
+                45.800349532
+              ],
+              [
+                16.022012903,
+                45.80040284
+              ],
+              [
+                16.022009335,
+                45.800413803
+              ],
+              [
+                16.021910433,
+                45.800410869
+              ],
+              [
+                16.021905133,
+                45.800474013
+              ],
+              [
+                16.02198604,
+                45.800475251
+              ],
+              [
+                16.021979478,
+                45.80049043
+              ],
+              [
+                16.021966777,
+                45.800516381
+              ],
+              [
+                16.021952793,
+                45.800542057
+              ],
+              [
+                16.021937653,
+                45.800567368
+              ],
+              [
+                16.021921359,
+                45.800592314
+              ],
+              [
+                16.021903782,
+                45.800616895
+              ],
+              [
+                16.021885051,
+                45.800641021
+              ],
+              [
+                16.021865166,
+                45.800664693
+              ],
+              [
+                16.021844255,
+                45.80068791
+              ],
+              [
+                16.021822191,
+                45.800710582
+              ],
+              [
+                16.021798975,
+                45.80073271
+              ],
+              [
+                16.021774861,
+                45.800754384
+              ],
+              [
+                16.021749595,
+                45.800775424
+              ],
+              [
+                16.021723434,
+                45.80079583
+              ],
+              [
+                16.02169625,
+                45.800815601
+              ],
+              [
+                16.02166804,
+                45.800834829
+              ],
+              [
+                16.021639065,
+                45.800853333
+              ],
+              [
+                16.021609196,
+                45.800871114
+              ],
+              [
+                16.021578561,
+                45.800888172
+              ],
+              [
+                16.021547031,
+                45.800904596
+              ],
+              [
+                16.021514736,
+                45.800920208
+              ],
+              [
+                16.021481676,
+                45.800935006
+              ],
+              [
+                16.021447979,
+                45.800949081
+              ],
+              [
+                16.021413645,
+                45.800962345
+              ],
+              [
+                16.021378675,
+                45.800974885
+              ],
+              [
+                16.021343198,
+                45.800986524
+              ],
+              [
+                16.021307085,
+                45.80099726
+              ],
+              [
+                16.021270464,
+                45.801007275
+              ],
+              [
+                16.021233465,
+                45.801016297
+              ],
+              [
+                16.021192221,
+                45.801025303
+              ],
+              [
+                16.02118312,
+                45.801006459
+              ],
+              [
+                16.021183558,
+                45.800970289
+              ],
+              [
+                16.021101396,
+                45.800965355
+              ],
+              [
+                16.021097649,
+                45.801042362
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "DGU zgrada 19730",
+        "block": "Lovinčićeva F1–F5 – k.č. 4091/5",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 29.16458035,
+        "heightM": 29.16458035,
+        "floors": 10,
+        "storeys": 10,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#6f42c1",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": null,
+        "officialProjectLabels": null,
+        "dguBuildingId": 6172356,
+        "dguBuildingNumber": "19730",
+        "dguBuildingType": "ZGRADA MJEŠOVITE UPORABE",
+        "dguFootprintAreaM2": 1360.3308000025042,
+        "parcelOverlapRatio": 1,
+        "gdiObjectId": 197125,
+        "gdiSurveyYear": 2022,
+        "gdiHeightM": 29.16458035,
+        "gdiMatchOverlapRatio": 0.9994721786403773,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 0
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                16.02070991,
+                45.801042266
+              ],
+              [
+                16.020692164,
+                45.801041472
+              ],
+              [
+                16.020703553,
+                45.800913479
+              ],
+              [
+                16.020749427,
+                45.800394398
+              ],
+              [
+                16.02075097,
+                45.800394495
+              ],
+              [
+                16.0209917,
+                45.800405312
+              ],
+              [
+                16.02098359,
+                45.800496067
+              ],
+              [
+                16.020934179,
+                45.801052744
+              ],
+              [
+                16.020725342,
+                45.801042961
+              ],
+              [
+                16.020724493,
+                45.801051955
+              ],
+              [
+                16.020709061,
+                45.801051261
+              ],
+              [
+                16.02070991,
+                45.801042266
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "DGU zgrada 19894",
+        "block": "Lovinčićeva F1–F5 – k.č. 4091/5",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 29.81100001,
+        "heightM": 29.81100001,
+        "floors": 10,
+        "storeys": 10,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#d63384",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": null,
+        "officialProjectLabels": null,
+        "dguBuildingId": 8873915,
+        "dguBuildingNumber": "19894",
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguFootprintAreaM2": 1250.0675000006597,
+        "parcelOverlapRatio": 1,
+        "gdiObjectId": 198760,
+        "gdiSurveyYear": 2022,
+        "gdiHeightM": 29.81100001,
+        "gdiMatchOverlapRatio": 0.9921665715441643,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 1
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                16.02104952,
+                45.799752932
+              ],
+              [
+                16.021027737,
+                45.799998035
+              ],
+              [
+                16.021012227,
+                45.800171631
+              ],
+              [
+                16.020771881,
+                45.800161175
+              ],
+              [
+                16.020770338,
+                45.800161079
+              ],
+              [
+                16.02078585,
+                45.799987393
+              ],
+              [
+                16.020787275,
+                45.799971203
+              ],
+              [
+                16.020804782,
+                45.79977476
+              ],
+              [
+                16.020806206,
+                45.79975875
+              ],
+              [
+                16.020822284,
+                45.799578858
+              ],
+              [
+                16.020823828,
+                45.799578864
+              ],
+              [
+                16.020823968,
+                45.799577515
+              ],
+              [
+                16.020992602,
+                45.799564456
+              ],
+              [
+                16.021064873,
+                45.799567548
+              ],
+              [
+                16.021063175,
+                45.799585537
+              ],
+              [
+                16.021048362,
+                45.799752927
+              ],
+              [
+                16.02104952,
+                45.799752932
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "DGU zgrada 19729",
+        "block": "Lovinčićeva F1–F5 – k.č. 4091/5",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 29.8858126,
+        "heightM": 29.8858126,
+        "floors": 10,
+        "storeys": 10,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#198754",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": null,
+        "officialProjectLabels": null,
+        "dguBuildingId": 6172357,
+        "dguBuildingNumber": "19729",
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguFootprintAreaM2": 1240.599350006017,
+        "parcelOverlapRatio": 0.9999999999999998,
+        "gdiObjectId": 197137,
+        "gdiSurveyYear": 2022,
+        "gdiHeightM": 29.8858126,
+        "gdiMatchOverlapRatio": 1,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 2
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                16.021564629,
+                45.800607017
+              ],
+              [
+                16.021541914,
+                45.800871103
+              ],
+              [
+                16.021300019,
+                45.800860911
+              ],
+              [
+                16.021309868,
+                45.800747398
+              ],
+              [
+                16.021312305,
+                45.800718165
+              ],
+              [
+                16.021322879,
+                45.800595117
+              ],
+              [
+                16.02134474,
+                45.800596109
+              ],
+              [
+                16.021352022,
+                45.800511918
+              ],
+              [
+                16.021359168,
+                45.800428537
+              ],
+              [
+                16.021597589,
+                45.800438623
+              ],
+              [
+                16.021827009,
+                45.800448222
+              ],
+              [
+                16.021812567,
+                45.800617503
+              ],
+              [
+                16.021564629,
+                45.800607017
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "DGU zgrada 19943",
+        "block": "Lovinčićeva F1–F5 – k.č. 4091/5",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27.40921603,
+        "heightM": 27.40921603,
+        "floors": 9,
+        "storeys": 9,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#fd7e14",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": null,
+        "officialProjectLabels": null,
+        "dguBuildingId": 9118800,
+        "dguBuildingNumber": "19943",
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguFootprintAreaM2": 1487.031100004039,
+        "parcelOverlapRatio": 1.0000000000000002,
+        "gdiObjectId": 197128,
+        "gdiSurveyYear": 2022,
+        "gdiHeightM": 27.40921603,
+        "gdiMatchOverlapRatio": 0.9818606718861376,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 3
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                16.021459352,
+                45.799770845
+              ],
+              [
+                16.021457784,
+                45.799788745
+              ],
+              [
+                16.021379726,
+                45.799785358
+              ],
+              [
+                16.021381295,
+                45.799767459
+              ],
+              [
+                16.02104952,
+                45.799752932
+              ],
+              [
+                16.021048362,
+                45.799752927
+              ],
+              [
+                16.021063175,
+                45.799585537
+              ],
+              [
+                16.021064873,
+                45.799567548
+              ],
+              [
+                16.021065012,
+                45.799566289
+              ],
+              [
+                16.021185634,
+                45.799571563
+              ],
+              [
+                16.021183925,
+                45.799590812
+              ],
+              [
+                16.021476607,
+                45.799603555
+              ],
+              [
+                16.02150014,
+                45.799604554
+              ],
+              [
+                16.021601216,
+                45.799608936
+              ],
+              [
+                16.021852748,
+                45.799619887
+              ],
+              [
+                16.02187628,
+                45.799620975
+              ],
+              [
+                16.022056956,
+                45.799628839
+              ],
+              [
+                16.022042017,
+                45.799796229
+              ],
+              [
+                16.021874072,
+                45.799788868
+              ],
+              [
+                16.021872503,
+                45.799806857
+              ],
+              [
+                16.021794446,
+                45.799803471
+              ],
+              [
+                16.021796015,
+                45.799785482
+              ],
+              [
+                16.021586276,
+                45.799776326
+              ],
+              [
+                16.021459352,
+                45.799770845
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "DGU zgrada 19944",
+        "block": "Lovinčićeva F1–F5 – k.č. 4091/5",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27.40261185,
+        "heightM": 27.40261185,
+        "floors": 9,
+        "storeys": 9,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#2f6fed",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": null,
+        "officialProjectLabels": null,
+        "dguBuildingId": 10751423,
+        "dguBuildingNumber": "19944",
+        "dguBuildingType": "ZGRADA MJEŠOVITE UPORABE",
+        "dguFootprintAreaM2": 989.072200010291,
+        "parcelOverlapRatio": 0.9999999999999999,
+        "gdiObjectId": 197127,
+        "gdiSurveyYear": 2022,
+        "gdiHeightM": 27.40261185,
+        "gdiMatchOverlapRatio": 0.9999999999999999,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 4
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                16.021347011,
+                45.800180592
+              ],
+              [
+                16.021362225,
+                45.800011404
+              ],
+              [
+                16.022035424,
+                45.800040766
+              ],
+              [
+                16.022023039,
+                45.800180273
+              ],
+              [
+                16.022035126,
+                45.800180863
+              ],
+              [
+                16.022034131,
+                45.800192017
+              ],
+              [
+                16.022021914,
+                45.800191515
+              ],
+              [
+                16.022020341,
+                45.800209955
+              ],
+              [
+                16.021847765,
+                45.800202394
+              ],
+              [
+                16.021808543,
+                45.8002007
+              ],
+              [
+                16.021347011,
+                45.800180592
+              ]
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

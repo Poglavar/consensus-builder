@@ -1,0 +1,1148 @@
+{
+  "type": "FeatureCollection",
+  "name": "Špansko-Sjever A–F – volumeni iz lokacijske dozvole",
+  "bbox": [
+    15.882657699,
+    45.803023536,
+    15.885678195,
+    45.804463966
+  ],
+  "reconstruction": {
+    "schema": "consensus-builder.reconstruction.v1",
+    "proposal": {
+      "proposalId": "pionir-spansko-sjever-a-f-location-permit-2022",
+      "city": "zagreb",
+      "name": "Špansko-Sjever A–F – volumeni iz lokacijske dozvole",
+      "title": "Špansko-Sjever A–F – volumeni iz lokacijske dozvole",
+      "description": "Radna rekonstrukcija šest nadzemnih volumena A–F na k.č. 2795/3. Tlocrti su iz službene izmjene lokacijske dozvole iz 2022. i svaki je prostorno uparen s današnjom DGU zgradom. Lokacijski akt navodi ukupno 896 stanova i 8 ureda; kasnija izmjena za F smanjila je taj volumen na 141 stan i 4 ureda, pa se ukupni broj iz lokacijske dozvole ne predstavlja kao konačno izvedeno stanje.",
+      "author": "zagreb.lol – lokalna analiza",
+      "type": "building",
+      "goal": "single",
+      "primaryType": "Urban Rule",
+      "typologyType": "single",
+      "lifecycleStatus": "Active",
+      "createdAt": "2026-08-13T00:00:00.000Z",
+      "updatedAt": "2026-08-13T00:00:00.000Z",
+      "tags": [
+        "buildings",
+        "research",
+        "reconstruction",
+        "location-permit"
+      ],
+      "parentParcelIds": [
+        "HR-340057-2795/3"
+      ],
+      "cadastreParcelIds": [
+        "HR-340057-2795/3"
+      ],
+      "parcelIds": [
+        "HR-340057-2795/3"
+      ],
+      "acceptedParcelIds": [],
+      "bounds": [
+        15.882657699,
+        45.803023536,
+        15.885678195,
+        45.804463966
+      ],
+      "source": {
+        "locationPermitCaseId": "P20221230-1168647-Z06",
+        "locationPermitClass": "UP/I-350-05/22-001/121",
+        "locationPermitDecisionAt": "2022-07-19",
+        "locationPermitFinalAt": "2022-08-16",
+        "publicWfs": "https://oss.uredjenazemlja.hr/OssWebServices/external/eDozvole",
+        "parcel": "current k.č. 2795/3, MB 340057, k.o. Stenjevec Jug; permit records use k.o. Stenjevec, MB 335592",
+        "sourceStatistics": {
+          "geometryDerivedFrom2022LocationPermit": {
+            "parcelAreaM2": 23451.140442173328,
+            "footprintAreaM2": 7286.889302668833,
+            "siteCoveragePercent": 31.072643655165123,
+            "buildingCount": 6
+          },
+          "displayOnlyHeightEstimate": {
+            "heightEquivalentAboveGroundGbpM2": 70845.92934163837,
+            "heightEquivalentKin": 3.021001452630111,
+            "method": "footprint × current GDI height where reliable, otherwise 27 m, divided by 3 m; not permit GBP"
+          },
+          "locationPermitStated": {
+            "locationPermitApartments": 896,
+            "locationPermitOffices": 8,
+            "plannedAboveGroundVolumes": 6,
+            "laterKnownF": {
+              "apartments": 141,
+              "offices": 4,
+              "storeys": "P+7+Uk",
+              "permitUrl": "https://pionir.hr/wp-content/dokumentacija_dozvole/spansko_sjever/objekt_f/rjesenje-o-izmjeni-i-dopuni-gradevinske-dozvole-nadzemno-f.pdf"
+            }
+          },
+          "caveat": "The proposal preserves the 2022 location-permit scheme. Later phase permits changed at least volume F, so this is not asserted to be the final as-built apartment total."
+        }
+      }
+    },
+    "buildingProposal": {
+      "parentParcelIds": [
+        "HR-340057-2795/3"
+      ],
+      "parentParcelNumbers": [
+        {
+          "id": "HR-340057-2795/3",
+          "number": "2795/3",
+          "cadastre": "Stenjevec Jug"
+        }
+      ],
+      "createdFrom": "single-building",
+      "typologyType": "single",
+      "blockName": "Špansko-Sjever A–F – k.č. 2795/3",
+      "parameters": {
+        "typology": "single",
+        "floorHeightM": 3,
+        "geometryBasis": "permit-planned-footprint",
+        "sourceStatistics": {
+          "geometryDerivedFrom2022LocationPermit": {
+            "parcelAreaM2": 23451.140442173328,
+            "footprintAreaM2": 7286.889302668833,
+            "siteCoveragePercent": 31.072643655165123,
+            "buildingCount": 6
+          },
+          "displayOnlyHeightEstimate": {
+            "heightEquivalentAboveGroundGbpM2": 70845.92934163837,
+            "heightEquivalentKin": 3.021001452630111,
+            "method": "footprint × current GDI height where reliable, otherwise 27 m, divided by 3 m; not permit GBP"
+          },
+          "locationPermitStated": {
+            "locationPermitApartments": 896,
+            "locationPermitOffices": 8,
+            "plannedAboveGroundVolumes": 6,
+            "laterKnownF": {
+              "apartments": 141,
+              "offices": 4,
+              "storeys": "P+7+Uk",
+              "permitUrl": "https://pionir.hr/wp-content/dokumentacija_dozvole/spansko_sjever/objekt_f/rjesenje-o-izmjeni-i-dopuni-gradevinske-dozvole-nadzemno-f.pdf"
+            }
+          },
+          "caveat": "The proposal preserves the 2022 location-permit scheme. Later phase permits changed at least volume F, so this is not asserted to be the final as-built apartment total."
+        }
+      },
+      "ancestorKey": "HR-340057-2795/3",
+      "takeWholeParcels": true,
+      "metadata": {
+        "sourceStatistics": {
+          "geometryDerivedFrom2022LocationPermit": {
+            "parcelAreaM2": 23451.140442173328,
+            "footprintAreaM2": 7286.889302668833,
+            "siteCoveragePercent": 31.072643655165123,
+            "buildingCount": 6
+          },
+          "displayOnlyHeightEstimate": {
+            "heightEquivalentAboveGroundGbpM2": 70845.92934163837,
+            "heightEquivalentKin": 3.021001452630111,
+            "method": "footprint × current GDI height where reliable, otherwise 27 m, divided by 3 m; not permit GBP"
+          },
+          "locationPermitStated": {
+            "locationPermitApartments": 896,
+            "locationPermitOffices": 8,
+            "plannedAboveGroundVolumes": 6,
+            "laterKnownF": {
+              "apartments": 141,
+              "offices": 4,
+              "storeys": "P+7+Uk",
+              "permitUrl": "https://pionir.hr/wp-content/dokumentacija_dozvole/spansko_sjever/objekt_f/rjesenje-o-izmjeni-i-dopuni-gradevinske-dozvole-nadzemno-f.pdf"
+            }
+          },
+          "caveat": "The proposal preserves the 2022 location-permit scheme. Later phase permits changed at least volume F, so this is not asserted to be the final as-built apartment total."
+        }
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "HR-340057-2795/3",
+        "cestica_id": 40366554,
+        "maticni_broj_ko": 340057,
+        "broj_cestice": "2795/3",
+        "areaM2": 23451.925300006213,
+        "source": "DGU katastar, aktualna čestica",
+        "permitCadastre": "k.o. Stenjevec (MB 335592)",
+        "currentCadastre": "k.o. Stenjevec Jug (MB 340057)",
+        "consensus:role": "site"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.883499353,
+                45.803274369
+              ],
+              [
+                15.883778928,
+                45.803179599
+              ],
+              [
+                15.883899152,
+                45.803138856
+              ],
+              [
+                15.884239289,
+                45.803023536
+              ],
+              [
+                15.884299258,
+                45.803080277
+              ],
+              [
+                15.88424131,
+                45.803552448
+              ],
+              [
+                15.884305207,
+                45.803556302
+              ],
+              [
+                15.884733335,
+                45.803582002
+              ],
+              [
+                15.884930428,
+                45.803593861
+              ],
+              [
+                15.885004612,
+                45.80359831
+              ],
+              [
+                15.885074938,
+                45.803602557
+              ],
+              [
+                15.885237189,
+                45.803612338
+              ],
+              [
+                15.885275631,
+                45.803614615
+              ],
+              [
+                15.885276477,
+                45.803607871
+              ],
+              [
+                15.885277323,
+                45.803601127
+              ],
+              [
+                15.885321036,
+                45.803603791
+              ],
+              [
+                15.885552842,
+                45.803617725
+              ],
+              [
+                15.885678195,
+                45.803625238
+              ],
+              [
+                15.885677349,
+                45.803631982
+              ],
+              [
+                15.885643146,
+                45.803911185
+              ],
+              [
+                15.885605851,
+                45.804214216
+              ],
+              [
+                15.885583948,
+                45.804392618
+              ],
+              [
+                15.885580383,
+                45.804400967
+              ],
+              [
+                15.885572461,
+                45.804407673
+              ],
+              [
+                15.88556148,
+                45.804411843
+              ],
+              [
+                15.885550534,
+                45.804412773
+              ],
+              [
+                15.885382701,
+                45.804407282
+              ],
+              [
+                15.885093977,
+                45.80439781
+              ],
+              [
+                15.884772691,
+                45.804389512
+              ],
+              [
+                15.884514502,
+                45.804387762
+              ],
+              [
+                15.884368726,
+                45.804388776
+              ],
+              [
+                15.88430838,
+                45.80438944
+              ],
+              [
+                15.884298593,
+                45.80437859
+              ],
+              [
+                15.884291519,
+                45.804366765
+              ],
+              [
+                15.884203896,
+                45.804367642
+              ],
+              [
+                15.884197839,
+                45.804380207
+              ],
+              [
+                15.884188705,
+                45.804391855
+              ],
+              [
+                15.884094629,
+                45.804394587
+              ],
+              [
+                15.883969529,
+                45.804398951
+              ],
+              [
+                15.883891016,
+                45.804402127
+              ],
+              [
+                15.883798078,
+                45.804406575
+              ],
+              [
+                15.883643341,
+                45.804415188
+              ],
+              [
+                15.883488972,
+                45.804425423
+              ],
+              [
+                15.883326215,
+                45.804437952
+              ],
+              [
+                15.883163696,
+                45.804452281
+              ],
+              [
+                15.883103937,
+                45.804458077
+              ],
+              [
+                15.883059503,
+                45.804462426
+              ],
+              [
+                15.883044691,
+                45.804463966
+              ],
+              [
+                15.883046819,
+                45.804445981
+              ],
+              [
+                15.883083712,
+                45.804145738
+              ],
+              [
+                15.883105759,
+                45.803966618
+              ],
+              [
+                15.882934249,
+                45.803956334
+              ],
+              [
+                15.882657699,
+                45.803939813
+              ],
+              [
+                15.882657862,
+                45.80391345
+              ],
+              [
+                15.882658076,
+                45.803894106
+              ],
+              [
+                15.882659962,
+                45.80387477
+              ],
+              [
+                15.882663059,
+                45.803850582
+              ],
+              [
+                15.882676274,
+                45.803737369
+              ],
+              [
+                15.882688531,
+                45.803641067
+              ],
+              [
+                15.882695008,
+                45.803590444
+              ],
+              [
+                15.882699835,
+                45.803572744
+              ],
+              [
+                15.882709668,
+                45.803556061
+              ],
+              [
+                15.882723985,
+                45.803541111
+              ],
+              [
+                15.882742265,
+                45.803528433
+              ],
+              [
+                15.88278653,
+                45.803515985
+              ],
+              [
+                15.882822044,
+                45.80350376
+              ],
+              [
+                15.883064429,
+                45.803421748
+              ],
+              [
+                15.883280471,
+                45.803348501
+              ],
+              [
+                15.883499353,
+                45.803274369
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "A",
+        "block": "Špansko-Sjever A–F – k.č. 2795/3",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 29.50879914,
+        "heightM": 29.50879914,
+        "floors": null,
+        "storeys": null,
+        "floorCountBasis": "unresolved in the archived source; 27 m is used only as a temporary display height",
+        "heightBasis": "matched GDI 2022 ridge height",
+        "color": "#2f6fed",
+        "source": "official national eDozvola WFS, 2022 location-permit amendment",
+        "sourceCaseId": "P20221230-1168647-Z06",
+        "sourceFeatureId": "eDozvola_building_polygon.180341",
+        "permitFootprintAreaM2": 900.1797488702399,
+        "locationPermitApartments": 116,
+        "locationPermitOffices": 0,
+        "laterKnownApartments": null,
+        "laterKnownOffices": null,
+        "matchedDguBuildingId": 13391447,
+        "matchedDguBuildingNumber": "1094",
+        "matchedDguBuildingType": "STAMBENA ZGRADA",
+        "observedDguFootprintAreaM2": 900.1820500247195,
+        "permitOverlapRatio": 0.9997655814521776,
+        "dguOverlapRatio": 0.9997630257302031,
+        "gdiObjectId": 301932,
+        "gdiHeightM": 29.50879914,
+        "gdiMatchOverlapRatio": 0.9969710170601703,
+        "geometryBasis": "permit-planned-footprint",
+        "consensus:role": "building",
+        "consensus:index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.88435999,
+              45.80416589
+            ],
+            [
+              15.88433653,
+              45.80435697
+            ],
+            [
+              15.88433639,
+              45.80435805
+            ],
+            [
+              15.88444014,
+              45.80436428
+            ],
+            [
+              15.88444114,
+              45.80435537
+            ],
+            [
+              15.88480602,
+              45.80437723
+            ],
+            [
+              15.88480489,
+              45.80438622
+            ],
+            [
+              15.88490865,
+              45.80439244
+            ],
+            [
+              15.88491091,
+              45.80437347
+            ],
+            [
+              15.88493225,
+              45.80420019
+            ],
+            [
+              15.88482849,
+              45.80419397
+            ],
+            [
+              15.88482736,
+              45.80420296
+            ],
+            [
+              15.88446262,
+              45.80418111
+            ],
+            [
+              15.88446374,
+              45.80417212
+            ],
+            [
+              15.88436089,
+              45.80416598
+            ],
+            [
+              15.88435999,
+              45.80416589
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "B",
+        "block": "Špansko-Sjever A–F – k.č. 2795/3",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 36.53437805,
+        "heightM": 36.53437805,
+        "floors": null,
+        "storeys": null,
+        "floorCountBasis": "unresolved in the archived source; 27 m is used only as a temporary display height",
+        "heightBasis": "matched GDI 2022 ridge height",
+        "color": "#d63384",
+        "source": "official national eDozvola WFS, 2022 location-permit amendment",
+        "sourceCaseId": "P20221230-1168647-Z06",
+        "sourceFeatureId": "eDozvola_building_polygon.180590",
+        "permitFootprintAreaM2": 900.0838554910812,
+        "locationPermitApartments": 116,
+        "locationPermitOffices": 0,
+        "laterKnownApartments": null,
+        "laterKnownOffices": null,
+        "matchedDguBuildingId": 13391448,
+        "matchedDguBuildingNumber": "1093",
+        "matchedDguBuildingType": "STAMBENA ZGRADA",
+        "observedDguFootprintAreaM2": 900.0589000049318,
+        "permitOverlapRatio": 0.99975275983534,
+        "dguOverlapRatio": 0.9997804794836327,
+        "gdiObjectId": 301394,
+        "gdiHeightM": 36.53437805,
+        "gdiMatchOverlapRatio": 0.9999999999999998,
+        "geometryBasis": "permit-planned-footprint",
+        "consensus:role": "building",
+        "consensus:index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.88441567,
+              45.80371242
+            ],
+            [
+              15.88439221,
+              45.80390359
+            ],
+            [
+              15.88439311,
+              45.80390369
+            ],
+            [
+              15.88449584,
+              45.80390982
+            ],
+            [
+              15.88449696,
+              45.80390083
+            ],
+            [
+              15.88486184,
+              45.80392277
+            ],
+            [
+              15.88486071,
+              45.80393167
+            ],
+            [
+              15.88496434,
+              45.8039379
+            ],
+            [
+              15.88496618,
+              45.80392252
+            ],
+            [
+              15.8849861,
+              45.80376111
+            ],
+            [
+              15.88498794,
+              45.80374574
+            ],
+            [
+              15.88488431,
+              45.80373951
+            ],
+            [
+              15.88488318,
+              45.8037485
+            ],
+            [
+              15.88451844,
+              45.80372656
+            ],
+            [
+              15.88451944,
+              45.80371757
+            ],
+            [
+              15.88441581,
+              45.80371134
+            ],
+            [
+              15.88441567,
+              45.80371242
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "C",
+        "block": "Špansko-Sjever A–F – k.č. 2795/3",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 30.38722175,
+        "heightM": 30.38722175,
+        "floors": null,
+        "storeys": null,
+        "floorCountBasis": "unresolved in the archived source; 27 m is used only as a temporary display height",
+        "heightBasis": "matched GDI 2022 ridge height",
+        "color": "#198754",
+        "source": "official national eDozvola WFS, 2022 location-permit amendment",
+        "sourceCaseId": "P20221230-1168647-Z06",
+        "sourceFeatureId": "eDozvola_building_polygon.180574",
+        "permitFootprintAreaM2": 1462.0223692944423,
+        "locationPermitApartments": 188,
+        "locationPermitOffices": 0,
+        "laterKnownApartments": null,
+        "laterKnownOffices": null,
+        "matchedDguBuildingId": 13391449,
+        "matchedDguBuildingNumber": "1091",
+        "matchedDguBuildingType": "STAMBENA ZGRADA",
+        "observedDguFootprintAreaM2": 1462.0047999865988,
+        "permitOverlapRatio": 0.999899257621572,
+        "dguOverlapRatio": 0.9999112736818955,
+        "gdiObjectId": 301395,
+        "gdiHeightM": 30.38722175,
+        "gdiMatchOverlapRatio": 1.0000000000000002,
+        "geometryBasis": "permit-planned-footprint",
+        "consensus:role": "building",
+        "consensus:index": 2
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.88535135,
+              45.80373681
+            ],
+            [
+              15.88534924,
+              45.80375362
+            ],
+            [
+              15.88534245,
+              45.80380937
+            ],
+            [
+              15.8853553,
+              45.80381016
+            ],
+            [
+              15.88529214,
+              45.80432432
+            ],
+            [
+              15.88527941,
+              45.80432363
+            ],
+            [
+              15.88527065,
+              45.80439511
+            ],
+            [
+              15.88527051,
+              45.8043961
+            ],
+            [
+              15.88554526,
+              45.80441261
+            ],
+            [
+              15.88555416,
+              45.80434013
+            ],
+            [
+              15.88554131,
+              45.80433934
+            ],
+            [
+              15.88560447,
+              45.80382509
+            ],
+            [
+              15.88561732,
+              45.80382588
+            ],
+            [
+              15.88562623,
+              45.80375331
+            ],
+            [
+              15.88535135,
+              45.80373681
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "D",
+        "block": "Špansko-Sjever A–F – k.č. 2795/3",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": null,
+        "storeys": null,
+        "floorCountBasis": "unresolved in the archived source; 27 m is used only as a temporary display height",
+        "heightBasis": "27 m display proxy (nine levels × 3 m); GDI predates completion",
+        "color": "#fd7e14",
+        "source": "official national eDozvola WFS, 2022 location-permit amendment",
+        "sourceCaseId": "P20221230-1168647-Z06",
+        "sourceFeatureId": "eDozvola_building_polygon.180371",
+        "permitFootprintAreaM2": 1462.0826663012901,
+        "locationPermitApartments": 188,
+        "locationPermitOffices": 0,
+        "laterKnownApartments": null,
+        "laterKnownOffices": null,
+        "matchedDguBuildingId": 13391445,
+        "matchedDguBuildingNumber": "1101",
+        "matchedDguBuildingType": "STAMBENA ZGRADA",
+        "observedDguFootprintAreaM2": 1462.0861500064048,
+        "permitOverlapRatio": 0.9999173755826827,
+        "dguOverlapRatio": 0.9999149930847187,
+        "gdiObjectId": 301436,
+        "gdiHeightM": 0.9075015,
+        "gdiMatchOverlapRatio": 0.38912944052528253,
+        "geometryBasis": "permit-planned-footprint",
+        "consensus:role": "building",
+        "consensus:index": 3
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.88382776,
+              45.80319646
+            ],
+            [
+              15.88381885,
+              45.80326902
+            ],
+            [
+              15.88383171,
+              45.80326972
+            ],
+            [
+              15.88376853,
+              45.80378398
+            ],
+            [
+              15.88375568,
+              45.80378319
+            ],
+            [
+              15.88374677,
+              45.80385575
+            ],
+            [
+              15.88402011,
+              45.80387216
+            ],
+            [
+              15.88402165,
+              45.80387226
+            ],
+            [
+              15.88403055,
+              45.8037997
+            ],
+            [
+              15.8840177,
+              45.80379891
+            ],
+            [
+              15.88408087,
+              45.80328474
+            ],
+            [
+              15.88409373,
+              45.80328553
+            ],
+            [
+              15.88410263,
+              45.80321297
+            ],
+            [
+              15.88382776,
+              45.80319646
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "E",
+        "block": "Špansko-Sjever A–F – k.č. 2795/3",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": null,
+        "storeys": null,
+        "floorCountBasis": "unresolved in the archived source; 27 m is used only as a temporary display height",
+        "heightBasis": "27 m display proxy (nine levels × 3 m); GDI predates completion",
+        "color": "#6f42c1",
+        "source": "official national eDozvola WFS, 2022 location-permit amendment",
+        "sourceCaseId": "P20221230-1168647-Z06",
+        "sourceFeatureId": "eDozvola_building_polygon.180327",
+        "permitFootprintAreaM2": 1082.8893767193233,
+        "locationPermitApartments": 142,
+        "locationPermitOffices": 0,
+        "laterKnownApartments": null,
+        "laterKnownOffices": null,
+        "matchedDguBuildingId": 13391446,
+        "matchedDguBuildingNumber": "1099",
+        "matchedDguBuildingType": "STAMBENA ZGRADA",
+        "observedDguFootprintAreaM2": 1082.8780500211378,
+        "permitOverlapRatio": 0.9997322199857648,
+        "dguOverlapRatio": 0.9997426769944018,
+        "gdiObjectId": 301438,
+        "gdiHeightM": 8.14231731,
+        "gdiMatchOverlapRatio": 1,
+        "geometryBasis": "permit-planned-footprint",
+        "consensus:role": "building",
+        "consensus:index": 4
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.88327523,
+              45.80416202
+            ],
+            [
+              15.88325162,
+              45.80435427
+            ],
+            [
+              15.88335537,
+              45.8043605
+            ],
+            [
+              15.8833565,
+              45.80435151
+            ],
+            [
+              15.88384172,
+              45.80438067
+            ],
+            [
+              15.88384059,
+              45.80438966
+            ],
+            [
+              15.88394435,
+              45.80439589
+            ],
+            [
+              15.88396795,
+              45.80420373
+            ],
+            [
+              15.8838642,
+              45.8041975
+            ],
+            [
+              15.8838632,
+              45.8042064
+            ],
+            [
+              15.88372434,
+              45.8041981
+            ],
+            [
+              15.88350578,
+              45.80418495
+            ],
+            [
+              15.88337785,
+              45.80417724
+            ],
+            [
+              15.88337898,
+              45.80416825
+            ],
+            [
+              15.88327523,
+              45.80416202
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "F",
+        "block": "Špansko-Sjever A–F – k.č. 2795/3",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": 9,
+        "storeys": 9,
+        "floorCountBasis": "P+7+Uk in the signed building permit; nine above-ground levels",
+        "heightBasis": "27 m display proxy (nine levels × 3 m); GDI predates completion",
+        "color": "#20c997",
+        "source": "official national eDozvola WFS, 2022 location-permit amendment",
+        "sourceCaseId": "P20221230-1168647-Z06",
+        "sourceFeatureId": "eDozvola_building_polygon.180619",
+        "permitFootprintAreaM2": 1479.8768138543744,
+        "locationPermitApartments": 146,
+        "locationPermitOffices": 8,
+        "laterKnownApartments": 141,
+        "laterKnownOffices": 4,
+        "matchedDguBuildingId": 13391664,
+        "matchedDguBuildingNumber": "1114",
+        "matchedDguBuildingType": "ZGRADA MJEŠOVITE UPORABE",
+        "observedDguFootprintAreaM2": 1639.023000020573,
+        "permitOverlapRatio": 0.9287333377942429,
+        "dguOverlapRatio": 0.8385550006546774,
+        "gdiObjectId": null,
+        "gdiHeightM": 0,
+        "gdiMatchOverlapRatio": 0,
+        "geometryBasis": "permit-planned-footprint",
+        "consensus:role": "building",
+        "consensus:index": 5
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.88274333,
+              45.80380445
+            ],
+            [
+              15.88274488,
+              45.80380455
+            ],
+            [
+              15.88284709,
+              45.80381068
+            ],
+            [
+              15.88284809,
+              45.80380168
+            ],
+            [
+              15.88337496,
+              45.80383332
+            ],
+            [
+              15.88338938,
+              45.80371571
+            ],
+            [
+              15.88341524,
+              45.80350574
+            ],
+            [
+              15.88342809,
+              45.80350644
+            ],
+            [
+              15.883437,
+              45.80343397
+            ],
+            [
+              15.88332296,
+              45.80342714
+            ],
+            [
+              15.88332749,
+              45.8033901
+            ],
+            [
+              15.88328069,
+              45.80338723
+            ],
+            [
+              15.88327616,
+              45.80342428
+            ],
+            [
+              15.88316212,
+              45.80341746
+            ],
+            [
+              15.88315322,
+              45.80348993
+            ],
+            [
+              15.88316762,
+              45.80349082
+            ],
+            [
+              15.88318163,
+              45.80349171
+            ],
+            [
+              15.88317922,
+              45.80351194
+            ],
+            [
+              15.88316508,
+              45.80351105
+            ],
+            [
+              15.88316354,
+              45.80351095
+            ],
+            [
+              15.88315887,
+              45.80354899
+            ],
+            [
+              15.88316041,
+              45.80354909
+            ],
+            [
+              15.88318201,
+              45.80355037
+            ],
+            [
+              15.88317524,
+              45.80360469
+            ],
+            [
+              15.88315377,
+              45.8036034
+            ],
+            [
+              15.88315222,
+              45.8036033
+            ],
+            [
+              15.88314714,
+              45.80364412
+            ],
+            [
+              15.88286957,
+              45.80362742
+            ],
+            [
+              15.8828707,
+              45.80361843
+            ],
+            [
+              15.88276694,
+              45.8036122
+            ],
+            [
+              15.88274333,
+              45.80380445
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

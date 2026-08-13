@@ -1,0 +1,351 @@
+{
+  "type": "FeatureCollection",
+  "name": "Savica F1–F3 – izmjena lokacijske dozvole 2021.",
+  "bbox": [
+    15.99730207,
+    45.79429246,
+    15.99887601,
+    45.79501614
+  ],
+  "edozvola": {
+    "schema": "consensus-builder.edozvola-source.v1",
+    "archivedAt": "2026-08-13",
+    "source": "https://oss.uredjenazemlja.hr/OssWebServices/external/eDozvole",
+    "sourceService": "public national eDozvola WFS 2.0.0",
+    "sourceCrs": "EPSG:3765",
+    "outputCrs": "EPSG:4326",
+    "geometryOnly": true,
+    "caveat": "Public WFS geometry and case metadata are evidence, not a substitute for the signed permit and main project.",
+    "note": "Stariji javni zapis izričito označava nadzemne volumene F1, F2 i F3 te trafostanicu; služi za sigurno pridruživanje oznaka geometriji.",
+    "layerFeatureCounts": {
+      "eDozvola_area_polygon": 0,
+      "eDozvola_building_line": 0,
+      "eDozvola_building_point": 0,
+      "eDozvola_building_polygon": 4
+    },
+    "caseId": "A20211027-2824386-V020101",
+    "caseClass": "UP/I-350-05/21-001/260",
+    "caseType": "Lokacijska dozvola",
+    "caseStatus": "Arhiva",
+    "requestReceivedAt": "2021-06-29",
+    "requestCompleteAt": null,
+    "decisionName": "Lokacijska dozvola",
+    "decisionNumber": "251-13-21-1/040-21-4",
+    "decisionAt": "2021-09-30",
+    "finalAt": "2021-10-27"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "A20211027-2824386-V020101",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijske dozvole",
+        "predmet_vrsta_id": "V020101",
+        "predmet_vrsta": "Lokacijska dozvola",
+        "predmet_status_id": "ARHIVA",
+        "predmet_status": "Arhiva",
+        "predmet_klasa": "UP/I-350-05/21-001/260",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2021-06-29",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": "Lokacijska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-13-21-1/040-21-4",
+        "zavrsni_akt_dat_rjesavanja": "2021-09-30",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2021-10-27",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101015",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za prostorno uređenje, Središnji odsjek za prostorno uređenje",
+        "lokacija": null,
+        "gradjevina_zahvat_id": null,
+        "gradjevina_zahvat": null,
+        "gradjevina_zahvat_dodatno": "prizemni objekt trafostanice",
+        "gradjevina_namjena_id": "is",
+        "gradjevina_namjena": "infrastrukturne namjene",
+        "gradjevina_namjena_dodatno": "građenje trafostanice",
+        "gradjevina_skupina_id": null,
+        "gradjevina_skupina": null,
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.5186",
+        "edozvola:geometryAreaM2": 16.62
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.99885079,
+              45.79450867
+            ],
+            [
+              15.9988121,
+              45.79452002
+            ],
+            [
+              15.99883732,
+              45.79456233
+            ],
+            [
+              15.99887601,
+              45.79455107
+            ],
+            [
+              15.99885079,
+              45.79450867
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "A20211027-2824386-V020101",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijske dozvole",
+        "predmet_vrsta_id": "V020101",
+        "predmet_vrsta": "Lokacijska dozvola",
+        "predmet_status_id": "ARHIVA",
+        "predmet_status": "Arhiva",
+        "predmet_klasa": "UP/I-350-05/21-001/260",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2021-06-29",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": "Lokacijska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-13-21-1/040-21-4",
+        "zavrsni_akt_dat_rjesavanja": "2021-09-30",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2021-10-27",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101015",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za prostorno uređenje, Središnji odsjek za prostorno uređenje",
+        "lokacija": null,
+        "gradjevina_zahvat_id": null,
+        "gradjevina_zahvat": null,
+        "gradjevina_zahvat_dodatno": "poslovna zgrada - nadzemni volumen F3",
+        "gradjevina_namjena_id": "gn_02",
+        "gradjevina_namjena": "poslovne namjene",
+        "gradjevina_namjena_dodatno": "jedinstveni poslovni prostor",
+        "gradjevina_skupina_id": null,
+        "gradjevina_skupina": null,
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.5187",
+        "edozvola:geometryAreaM2": 1267.09
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.99739141,
+              45.79501614
+            ],
+            [
+              15.99787621,
+              45.79487466
+            ],
+            [
+              15.99764126,
+              45.79448069
+            ],
+            [
+              15.99742705,
+              45.79454318
+            ],
+            [
+              15.99757278,
+              45.79478731
+            ],
+            [
+              15.99730207,
+              45.79486638
+            ],
+            [
+              15.99739141,
+              45.79501614
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "A20211027-2824386-V020101",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijske dozvole",
+        "predmet_vrsta_id": "V020101",
+        "predmet_vrsta": "Lokacijska dozvola",
+        "predmet_status_id": "ARHIVA",
+        "predmet_status": "Arhiva",
+        "predmet_klasa": "UP/I-350-05/21-001/260",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2021-06-29",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": "Lokacijska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-13-21-1/040-21-4",
+        "zavrsni_akt_dat_rjesavanja": "2021-09-30",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2021-10-27",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101015",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za prostorno uređenje, Središnji odsjek za prostorno uređenje",
+        "lokacija": null,
+        "gradjevina_zahvat_id": null,
+        "gradjevina_zahvat": null,
+        "gradjevina_zahvat_dodatno": "nadzemni volumen F2 ",
+        "gradjevina_namjena_id": "sn",
+        "gradjevina_namjena": "stambene namjene",
+        "gradjevina_namjena_dodatno": "70 stanova",
+        "gradjevina_skupina_id": null,
+        "gradjevina_skupina": null,
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.5188",
+        "edozvola:geometryAreaM2": 692.46
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.99810552,
+              45.79480773
+            ],
+            [
+              15.99831612,
+              45.79474621
+            ],
+            [
+              15.99812261,
+              45.79442207
+            ],
+            [
+              15.99791214,
+              45.7944835
+            ],
+            [
+              15.99810552,
+              45.79480773
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "A20211027-2824386-V020101",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijske dozvole",
+        "predmet_vrsta_id": "V020101",
+        "predmet_vrsta": "Lokacijska dozvola",
+        "predmet_status_id": "ARHIVA",
+        "predmet_status": "Arhiva",
+        "predmet_klasa": "UP/I-350-05/21-001/260",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2021-06-29",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": "Lokacijska dozvola",
+        "zavrsni_akt_urbroj_rjesenja": "251-13-21-1/040-21-4",
+        "zavrsni_akt_dat_rjesavanja": "2021-09-30",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2021-10-27",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101015",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za prostorno uređenje, Središnji odsjek za prostorno uređenje",
+        "lokacija": null,
+        "gradjevina_zahvat_id": null,
+        "gradjevina_zahvat": null,
+        "gradjevina_zahvat_dodatno": "nadzemni volumen F1 od stambene zgrade sa 2 nadzemna volumena",
+        "gradjevina_namjena_id": "sn",
+        "gradjevina_namjena": "stambene namjene",
+        "gradjevina_namjena_dodatno": "70 STAMBENIH JEDINICA",
+        "gradjevina_skupina_id": null,
+        "gradjevina_skupina": null,
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.5189",
+        "edozvola:geometryAreaM2": 692.64
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.99854943,
+              45.79467813
+            ],
+            [
+              15.99876004,
+              45.79461661
+            ],
+            [
+              15.99856665,
+              45.79429246
+            ],
+            [
+              15.99835605,
+              45.7943539
+            ],
+            [
+              15.99854943,
+              45.79467813
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}
