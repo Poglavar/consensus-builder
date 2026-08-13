@@ -324,8 +324,11 @@ export function buildProposal({ project, track, trackIndex, spans, centreline, f
 }
 
 async function upsertProposal(pool, proposal) {
+    // Unqualified on purpose: the proposal table lives in `public` locally and
+    // in `consensus` on production; the connection's search_path resolves it
+    // exactly as it does for the backend itself.
     const { rows } = await pool.query(
-        `INSERT INTO public.proposal (
+        `INSERT INTO proposal (
             proposal_id, city, name, title, description, author, type,
             lifecycle_status, created_at, updated_at,
             ancestor_parcel_ids, cadastre_parcel_ids, road_proposal, proposal_data, applied
