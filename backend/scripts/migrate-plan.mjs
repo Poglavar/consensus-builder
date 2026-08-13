@@ -14,7 +14,8 @@
 // target's own transit_project row, and spliced into the plan via --track-id.
 //
 // Dry-run by default:
-//   PGHOST=localhost node scripts/migrate-plan.mjs --slug sibenik-2066-1 \
+//   node scripts/migrate-plan.mjs --slug sibenik-2066-1 \
+//       --source-url postgresql://.../geodata \
 //       --target-url postgresql://.../geodata [--track-id 120] [--apply]
 //
 // The target is always stated explicitly; there is no default to fall into.
@@ -24,18 +25,17 @@ import { randomBytes, createHash } from 'node:crypto';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'node:url';
 
-dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
-
 const log = (message) => console.log(`[${new Date().toISOString()}] ${message}`);
 
 function parseArgs(argv) {
-    const args = { slug: null, targetUrl: null, trackId: null, apply: false, help: false };
+    const args = { slug: null, sourceUrl: null, targetUrl: null, trackId: null, apply: false, help: false };
     for (let index = 0; index < argv.length; index += 1) {
         const arg = argv[index];
         if (arg === '--help' || arg === '-h') args.help = true;
         else if (arg === '--apply') args.apply = true;
         else if (arg === '--dry-run') args.apply = false;
         else if (arg === '--slug') args.slug = String(argv[++index] || '').trim();
+        else if (arg === '--source-url') args.sourceUrl = String(argv[++index] || '').trim();
         else if (arg === '--target-url') args.targetUrl = String(argv[++index] || '').trim();
         else if (arg === '--track-id') args.trackId = Number(argv[++index]);
         else throw new Error(`Unknown argument: ${arg}`);
@@ -44,9 +44,10 @@ function parseArgs(argv) {
 }
 
 function usage() {
-    console.log(`Usage: PGHOST=localhost node scripts/migrate-plan.mjs --slug <plan> --target-url <postgres url> [--track-id <id>] [--apply]
+    console.log(`Usage: node scripts/migrate-plan.mjs --slug <plan> [--source-url <postgres url>] --target-url <postgres url> [--track-id <id>] [--apply]
 
   --slug        ens_plan slug to replicate (required)
+  --source-url  source database; defaults to the standard PG* environment
   --target-url  the DATABASE THE PLAN SHIPS TO — stated, never guessed (required)
   --track-id    target-side proposal id of the natively re-imported rail track;
                 spliced where the source plan listed its own transit import
@@ -59,8 +60,11 @@ const isTransitImport = (row) => String(row.proposal_id || '').startsWith('trans
 async function main() {
     const args = parseArgs(process.argv.slice(2));
     if (args.help || !args.slug || !args.targetUrl) { usage(); process.exit(args.help ? 0 : 1); }
+    if (!args.sourceUrl) {
+        dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
+    }
 
-    const source = new pg.Pool({ max: 1 });
+    const source = new pg.Pool({ ...(args.sourceUrl ? { connectionString: args.sourceUrl } : {}), max: 1 });
     const target = new pg.Pool({ connectionString: args.targetUrl, max: 1 });
     try {
         // ── Read the plan and its proposals from the source ────────────────
@@ -121,63 +125,75 @@ async function main() {
         }
 
         // ── Upsert proposals, re-minting ids ────────────────────────────────
+        const targetClient = await target.connect();
         const idMap = new Map();   // source id → target id
         let inserted = 0;
         let updated = 0;
-        for (const row of migrate) {
-            const data = { ...row.proposal_data };
-            delete data.screenshotUrl;
-            const columns = shared;
-            const values = columns.map((column) => {
-                if (column === 'proposal_data') return JSON.stringify(data);
-                if (column === 'screenshot_url') return null;
-                const value = row[column];
-                return value !== null && typeof value === 'object' ? JSON.stringify(value) : value;
-            });
-            const placeholders = columns.map((_, index) => `$${index + 1}`);
-            const updates = columns.map((column) => `${column} = EXCLUDED.${column}`);
-            const { rows: [written] } = await target.query(
-                `INSERT INTO proposal (${columns.join(', ')})
-                 VALUES (${placeholders.join(', ')})
-                 ON CONFLICT (proposal_id) DO UPDATE SET ${updates.join(', ')}
-                 RETURNING id, (xmax = 0) AS was_insert`,
-                values,
-            );
-            // The app treats the embedded id as authoritative — align it with
-            // the row id the target actually minted.
-            await target.query(
-                `UPDATE proposal SET proposal_data = jsonb_set(proposal_data, '{id}', to_jsonb(id))
-                 WHERE id = $1`, [written.id],
-            );
-            idMap.set(row.id, written.id);
-            if (written.was_insert) inserted += 1; else updated += 1;
-        }
-        log(`proposals: ${inserted} inserted, ${updated} updated`);
-
-        // ── Plan row, ids in the source's order ─────────────────────────────
         const targetIds = [];
-        for (const id of orderedIds) {
-            const row = byId.get(id);
-            if (isTransitImport(row)) {
-                if (Number.isInteger(args.trackId)) targetIds.push(String(args.trackId));
-                else log(`WARNING: plan listed transit import ${id} but no --track-id was given — omitted`);
-            } else {
-                targetIds.push(String(idMap.get(id)));
+        let editToken = null;
+        let planWasInserted = false;
+        try {
+            await targetClient.query('BEGIN');
+            for (const row of migrate) {
+                const data = { ...row.proposal_data };
+                delete data.screenshotUrl;
+                const columns = shared;
+                const values = columns.map((column) => {
+                    if (column === 'proposal_data') return JSON.stringify(data);
+                    if (column === 'screenshot_url') return null;
+                    const value = row[column];
+                    return value !== null && typeof value === 'object' ? JSON.stringify(value) : value;
+                });
+                const placeholders = columns.map((_, index) => `$${index + 1}`);
+                const updates = columns.map((column) => `${column} = EXCLUDED.${column}`);
+                const { rows: [written] } = await targetClient.query(
+                    `INSERT INTO proposal (${columns.join(', ')})
+                     VALUES (${placeholders.join(', ')})
+                     ON CONFLICT (proposal_id) DO UPDATE SET ${updates.join(', ')}
+                     RETURNING id, (xmax = 0) AS was_insert`,
+                    values,
+                );
+                // The app treats the embedded id as authoritative — align it with
+                // the row id the target actually minted.
+                await targetClient.query(
+                    `UPDATE proposal SET proposal_data = jsonb_set(proposal_data, '{id}', to_jsonb(id))
+                     WHERE id = $1`, [written.id],
+                );
+                idMap.set(row.id, written.id);
+                if (written.was_insert) inserted += 1; else updated += 1;
             }
+            for (const id of orderedIds) {
+                const row = byId.get(id);
+                if (isTransitImport(row)) {
+                    if (Number.isInteger(args.trackId)) targetIds.push(String(args.trackId));
+                    else log(`WARNING: plan listed transit import ${id} but no --track-id was given — omitted`);
+                } else {
+                    targetIds.push(String(idMap.get(id)));
+                }
+            }
+            editToken = randomBytes(24).toString('base64url');
+            const tokenHash = createHash('sha256').update(editToken).digest('hex');
+            const { rows: [planWritten] } = await targetClient.query(
+                `INSERT INTO ens_plan (slug, proposal_ids, title, city, edit_token_hash)
+                 VALUES ($1, $2::jsonb, $3, $4, $5)
+                 ON CONFLICT (slug) DO UPDATE SET proposal_ids = EXCLUDED.proposal_ids,
+                                                  title = COALESCE(ens_plan.title, EXCLUDED.title),
+                                                  city = EXCLUDED.city,
+                                                  updated_at = CURRENT_TIMESTAMP
+                 RETURNING (xmax = 0) AS was_insert`,
+                [args.slug, JSON.stringify(targetIds), plan.title, plan.city, tokenHash],
+            );
+            planWasInserted = planWritten.was_insert;
+            await targetClient.query('COMMIT');
+        } catch (error) {
+            await targetClient.query('ROLLBACK').catch(() => {});
+            throw error;
+        } finally {
+            targetClient.release();
         }
-        const editToken = randomBytes(24).toString('base64url');
-        const tokenHash = createHash('sha256').update(editToken).digest('hex');
-        const { rows: [planWritten] } = await target.query(
-            `INSERT INTO ens_plan (slug, proposal_ids, title, city, edit_token_hash)
-             VALUES ($1, $2::jsonb, $3, $4, $5)
-             ON CONFLICT (slug) DO UPDATE SET proposal_ids = EXCLUDED.proposal_ids,
-                                              title = COALESCE(ens_plan.title, EXCLUDED.title),
-                                              city = EXCLUDED.city,
-                                              updated_at = CURRENT_TIMESTAMP
-             RETURNING (xmax = 0) AS was_insert`,
-            [args.slug, JSON.stringify(targetIds), plan.title, plan.city, tokenHash],
-        );
-        if (planWritten.was_insert) {
+
+        log(`proposals: ${inserted} inserted, ${updated} updated`);
+        if (planWasInserted) {
             log(`plan '${args.slug}' created with ${targetIds.length} ids`);
             log(`EDIT TOKEN (shown once, save it): ${editToken}`);
         } else {
