@@ -1249,6 +1249,28 @@ async function handleProposalRouteFromUrl(attempt = 0) {
         // Check if URL matches /proposals/:id or comma-separated ids
         const pathMatch = pathname.match(/^\/proposals\/([0-9,]+)$/);
         if (!pathMatch) {
+            // NAMED PLAN route: /proposals/<slug> resolves the slug through
+            // GET /plans/<slug> and opens the ids it lists. No ambiguity with
+            // the numeric form — the backend refuses digit-only slugs exactly
+            // so the two can share this namespace. This is what lets a report
+            // link a plan by NAME instead of enumerating ids that differ
+            // between environments.
+            const slugMatch = pathname.match(/^\/proposals\/([a-z0-9][a-z0-9-]{1,61}[a-z0-9])$/i);
+            if (slugMatch && !/^[0-9]+(-[0-9]+)*$/.test(slugMatch[1])) {
+                const slug = slugMatch[1].toLowerCase();
+                const base = (typeof resolveBackendBaseUrl === 'function') ? resolveBackendBaseUrl() : '';
+                const resp = await fetch(`${base}/plans/${encodeURIComponent(slug)}`);
+                if (resp.ok) {
+                    const plan = await resp.json();
+                    const ids = Array.isArray(plan.proposalIds) ? plan.proposalIds.map(String).filter(Boolean) : [];
+                    if (ids.length > 0) {
+                        console.log('[handleProposalRouteFromUrl] Named plan resolved:', slug, `${ids.length} proposals`);
+                        await handleSharedPlanRoute(ids);
+                        return;
+                    }
+                }
+                console.warn('[handleProposalRouteFromUrl] named plan did not resolve:', slug, resp.status);
+            }
             console.debug('[handleProposalRouteFromUrl] Proposal path did not match expected pattern:', pathname);
             return;
         }
