@@ -45,6 +45,11 @@ let TOTAL_SPENT = 0; // Total amount spent on roads in EUR
 // at once, which is how you SEE the surveys disagree. NONE is ever read by detection — that reads
 // buildingFeaturePool (the DATA), so no checkbox can change what a corridor cuts.
 let buildingLayer = null;
+// Indexes for LOCAL outcome updates. Applying one park/road changes a handful of surveyed
+// buildings; it must not discard and recreate every loaded footprint in the city.
+let buildingFeatureById = new Map();
+let buildingRenderedLayersById = new Map();
+let renderedBuildingOutcomeSignatures = new Map();
 let dguBuildingLayer = null;
 let osmBuildingLayer = null;
 let roadLayer = null;
@@ -636,8 +641,81 @@ function hideOsmBuildingLayer() {
 }
 window.hideOsmBuildingLayer = hideOsmBuildingLayer;
 
-// Rebuild the visible 2D GDI building layer from the pooled features, recoloured by what every
-// APPLIED corridor did to each building. Called after fetches and after corridor apply/unapply/edit.
+function buildingPoolFeatureKey(feature) {
+    if (typeof window.corridorBuildingKey === 'function') return window.corridorBuildingKey(feature);
+    const props = feature?.properties || {};
+    const direct = props.object_id ?? props.objectId ?? props.OBJECT_ID ?? props.id ?? feature?.id;
+    return (direct !== undefined && direct !== null) ? String(direct) : '';
+}
+
+function currentBuildingOutcomeState() {
+    const demolishedById = new Map();
+    collectDemolishedBuildingRecords().forEach(record => {
+        if (record && record.id) demolishedById.set(String(record.id), record);
+    });
+    const tunnelledIds = (typeof window.collectTunnelledBuildingIds === 'function')
+        ? window.collectTunnelledBuildingIds() : new Set();
+    return {
+        demolishedById,
+        tunnelledIds,
+        affectedIds: new Set([...demolishedById.keys(), ...tunnelledIds])
+    };
+}
+
+function buildingOutcomeSignatures(state) {
+    const signatures = new Map();
+    state.affectedIds.forEach(id => {
+        const record = state.demolishedById.get(id);
+        if (!record) {
+            signatures.set(id, 'tunnelled');
+            return;
+        }
+        try {
+            signatures.set(id, JSON.stringify([
+                record.remainder ? 'cut' : 'destroyed',
+                record.geometry || null,
+                record.demolishedPart || null,
+                record.remainder || null
+            ]));
+        } catch (_) {
+            signatures.set(id, record.remainder ? 'cut' : 'destroyed');
+        }
+    });
+    return signatures;
+}
+
+function buildingFeatureWithOutcome(feature, state) {
+    const id = buildingPoolFeatureKey(feature);
+    const record = state.demolishedById.get(id);
+    const classify = (typeof window.classifyBuildingOutcome === 'function') ? window.classifyBuildingOutcome : null;
+    const outcome = classify
+        ? classify(id, state)
+        : (record ? (record.remainder ? 'cut' : 'destroyed') : (state.tunnelledIds.has(id) ? 'tunnelled' : null));
+    const geometry = (record && record.remainder) ? record.remainder : feature.geometry;
+    return { ...feature, geometry, properties: { ...(feature.properties || {}), __outcome: outcome } };
+}
+
+function buildingLayerOptions() {
+    return {
+        // Context only: existing buildings must never intercept clicks meant for the parcels
+        // beneath them (they are inspectable in 3D, not in 2D).
+        interactive: false,
+        style: (feature) => (typeof window.buildingOutcomeStyle === 'function')
+            ? window.buildingOutcomeStyle(feature?.properties?.__outcome)
+            : (window.BuildingLayersDialog?.style || { color: '#7c3aed', opacity: 0.55, weight: 1, fillColor: '#7c3aed', fillOpacity: 0.12 }),
+        onEachFeature: (feature, layer) => {
+            const id = buildingPoolFeatureKey(feature);
+            if (!id) return;
+            const layers = buildingRenderedLayersById.get(id) || [];
+            layers.push(layer);
+            buildingRenderedLayersById.set(id, layers);
+        }
+    };
+}
+
+// Rebuild the visible 2D GDI building layer from the pooled features. This is appropriate when a
+// footprint FETCH changes the pool. Proposal application uses refreshBuildingOutcomesFromRecords
+// below, which replaces only the buildings whose demolition/tunnel outcome changed.
 //
 // This is a VIEW of the pool, never the other way round. The pool is the working set and stays
 // complete; only how each building is DRAWN is decided here. The persistent outcome colour scheme:
@@ -645,38 +723,13 @@ window.hideOsmBuildingLayer = hideOsmBuildingLayer;
 // tunnelled = yellow, untouched = blue (see buildingOutcomeStyle in corridor-tunnel.js).
 function rebuildBuildingLayerFromPool() {
     const pool = Array.isArray(window.buildingFeaturePool) ? window.buildingFeaturePool : [];
-    // Hard dependency on corridor-tunnel.js — a missing export is a load-order bug, fail loud.
-    // Records WITHOUT `remainder` are a full demolition; records WITH it are PARTIAL demolitions
-    // (the building keeps standing with the remainder footprint).
-    const demolishedById = new Map();
-    collectDemolishedBuildingRecords().forEach(record => {
-        if (record && record.id) demolishedById.set(String(record.id), record);
+    const state = currentBuildingOutcomeState();
+    buildingFeatureById = new Map();
+    pool.forEach(feature => {
+        const id = buildingPoolFeatureKey(feature);
+        if (id && feature?.geometry) buildingFeatureById.set(id, feature);
     });
-    const tunnelledIds = (typeof window.collectTunnelledBuildingIds === 'function')
-        ? window.collectTunnelledBuildingIds() : new Set();
-    // Identity must be the SAME one demolition/tunnel records were written with (corridor-tunnel.js):
-    // the GDI object_id.
-    const keyOf = (feature) => {
-        if (typeof window.corridorBuildingKey === 'function') return window.corridorBuildingKey(feature);
-        const props = feature?.properties || {};
-        const direct = props.object_id ?? props.objectId ?? props.OBJECT_ID ?? props.id ?? feature?.id;
-        return (direct !== undefined && direct !== null) ? String(direct) : '';
-    };
-    const classify = (typeof window.classifyBuildingOutcome === 'function') ? window.classifyBuildingOutcome : null;
-    // Tag each feature with its persistent outcome (and swap to the remainder footprint for a cut) so
-    // the style function below can colour it. No recolouring needed when nothing was touched.
-    const features = (demolishedById.size || tunnelledIds.size)
-        ? pool.map(feature => {
-            const id = keyOf(feature);
-            const record = demolishedById.get(id);
-            const outcome = classify
-                ? classify(id, { demolishedById, tunnelledIds })
-                : (record ? (record.remainder ? 'cut' : 'destroyed') : (tunnelledIds.has(id) ? 'tunnelled' : null));
-            // A cut draws its standing remainder; destroyed/tunnelled keep the full footprint.
-            const geometry = (record && record.remainder) ? record.remainder : feature.geometry;
-            return { ...feature, geometry, properties: { ...(feature.properties || {}), __outcome: outcome } };
-        })
-        : pool;
+    const features = pool.map(feature => buildingFeatureWithOutcome(feature, state));
     // The sidebar checkbox is the source of truth for visibility. Deciding from "was the old
     // layer on the map" broke the show-buildings toggle: the corridor preload fills the pool and
     // rebuilds the layer OFF-map while the box is unticked, and the next tick inherited hidden.
@@ -685,18 +738,46 @@ function rebuildBuildingLayerFromPool() {
     if (buildingLayer) {
         map.removeLayer(buildingLayer);
     }
-    buildingLayer = L.geoJSON({ type: 'FeatureCollection', features }, {
-        // Context only: existing buildings must never intercept clicks meant for the parcels
-        // beneath them (they are inspectable in 3D, not in 2D).
-        interactive: false,
-        style: (feature) => (typeof window.buildingOutcomeStyle === 'function')
-            ? window.buildingOutcomeStyle(feature?.properties?.__outcome)
-            : (window.BuildingLayersDialog?.style || { color: '#7c3aed', opacity: 0.55, weight: 1, fillColor: '#7c3aed', fillOpacity: 0.12 })
-    });
+    buildingRenderedLayersById = new Map();
+    buildingLayer = L.geoJSON({ type: 'FeatureCollection', features }, buildingLayerOptions());
+    renderedBuildingOutcomeSignatures = buildingOutcomeSignatures(state);
     if (shouldShow) buildingLayer.addTo(map);
     try { window.buildingLayer = buildingLayer; } catch (_) { }
 }
 window.rebuildBuildingLayerFromPool = rebuildBuildingLayerFromPool;
+
+// A proposal only changes outcome records for buildings under its own geometry. Compare the ids
+// represented before and after the mutation, then replace those Leaflet features in place. The
+// untouched thousands never leave the layer and never pay GeoJSON parsing/styling again.
+function refreshBuildingOutcomesFromRecords() {
+    const state = currentBuildingOutcomeState();
+    const nextSignatures = buildingOutcomeSignatures(state);
+    const changedIds = new Set();
+    renderedBuildingOutcomeSignatures.forEach((signature, id) => {
+        if (nextSignatures.get(id) !== signature) changedIds.add(id);
+    });
+    nextSignatures.forEach((signature, id) => {
+        if (renderedBuildingOutcomeSignatures.get(id) !== signature) changedIds.add(id);
+    });
+    renderedBuildingOutcomeSignatures = nextSignatures;
+    if (!buildingLayer || !changedIds.size) return;
+
+    changedIds.forEach(id => {
+        const oldLayers = buildingRenderedLayersById.get(id) || [];
+        oldLayers.forEach(layer => {
+            try { buildingLayer.removeLayer(layer); } catch (_) { }
+        });
+        buildingRenderedLayersById.delete(id);
+
+        const source = buildingFeatureById.get(id);
+        if (!source?.geometry) return;
+        try { buildingLayer.addData(buildingFeatureWithOutcome(source, state)); } catch (error) {
+            console.error('[map-core] local building outcome refresh failed', id, error);
+        }
+    });
+    try { window.buildingLayer = buildingLayer; } catch (_) { }
+}
+window.refreshBuildingOutcomesFromRecords = refreshBuildingOutcomesFromRecords;
 
 // Function to update the total spent display
 function updateTotalSpentDisplay() {

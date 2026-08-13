@@ -218,7 +218,13 @@
         const buildings = [];
         const seenProposalBuildings = new Set();
         const surveys = options.surveys || null;
-        const pool = (!surveys || surveys.gdi) && Array.isArray(global.buildingFeaturePool)
+        // A bulk replay answer is an exact stock-building answer for ONE proposal footprint.
+        // In that path the caller sets includeLoadedSurveyPool=false: adding the viewport/city
+        // pool would turn a local scan back into an O(all loaded buildings) scan and could also
+        // contradict an authoritative empty answer. Proposal-owned buildings remain included
+        // below because they live only in client state and still have to be parked on overlap.
+        const includeLoadedSurveyPool = options.includeLoadedSurveyPool !== false;
+        const pool = includeLoadedSurveyPool && (!surveys || surveys.gdi) && Array.isArray(global.buildingFeaturePool)
             ? global.buildingFeaturePool
             : [];
         pool.forEach(feature => {
@@ -935,7 +941,9 @@
         }
         const hits = findBuildingTunnelIntersections(
             regionFeature,
-            collectLoadedCorridorBuildings(preloaded ? { extraPool: preloaded } : {}),
+            collectLoadedCorridorBuildings(preloaded
+                ? { extraPool: preloaded, includeLoadedSurveyPool: false }
+                : {}),
             global.turf
         );
         for (const hit of hits) {

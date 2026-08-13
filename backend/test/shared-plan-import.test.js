@@ -7,7 +7,7 @@ const source = readFileSync(
     'utf8'
 );
 
-function loadImporter(overrides = {}) {
+function loadSharedImportHelpers(overrides = {}) {
     const context = {
         console,
         prepareProposalForImport: proposal => structuredClone(proposal),
@@ -18,14 +18,14 @@ function loadImporter(overrides = {}) {
     };
     vm.createContext(context);
     vm.runInContext(
-        `${source}\nthis.importAndApplySharedProposalForTest = importAndApplySharedProposal;`,
+        `${source}\nthis.sharedImportHelpersForTest = { importAndApplySharedProposal, materializeQueuedSharedProposals };`,
         context
     );
-    return context.importAndApplySharedProposalForTest;
+    return context.sharedImportHelpersForTest;
 }
 
 describe('shared-plan import boundary', () => {
-    it('imports a missing proposal before marking it applied', async () => {
+    it('imports a missing proposal parked, ready for the scoped apply pass', async () => {
         const imported = [];
         const proposalStorage = {
             getProposal: vi.fn(() => null),
@@ -37,7 +37,7 @@ describe('shared-plan import boundary', () => {
             _indexProposal: vi.fn(),
             save: vi.fn()
         };
-        const importProposal = loadImporter({ proposalStorage });
+        const { importAndApplySharedProposal: importProposal } = loadSharedImportHelpers({ proposalStorage });
 
         const result = await importProposal({
             proposalId: 'shared-building',
@@ -52,8 +52,27 @@ describe('shared-plan import boundary', () => {
             queued: true
         });
         expect(imported).toHaveLength(1);
-        expect(imported[0].applied).toBe(true);
+        expect(imported[0].applied).toBe(false);
         expect(proposalStorage._indexProposal).toHaveBeenCalledWith(imported[0]);
         expect(proposalStorage.save).toHaveBeenCalledOnce();
+    });
+
+    it('materialises only the queued ids through scoped apply, never a whole-plan rebuild', async () => {
+        const applyProposal = vi.fn(async id => id !== 'bad');
+        const ProposalManager = { applyProposal };
+        const { materializeQueuedSharedProposals } = loadSharedImportHelpers({ ProposalManager });
+
+        const result = await materializeQueuedSharedProposals(['new-a', 'bad', 'new-b', 'new-a']);
+
+        expect(result).toEqual({
+            appliedIds: ['new-a', 'new-b'],
+            failedIds: ['bad']
+        });
+        expect(applyProposal.mock.calls).toEqual([
+            ['new-a', { silent: true }],
+            ['bad', { silent: true }],
+            ['new-b', { silent: true }]
+        ]);
+        expect(ProposalManager.rebuildAppliedFabric).toBeUndefined();
     });
 });

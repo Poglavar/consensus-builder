@@ -736,14 +736,20 @@ const ProposalManager = {
                     });
                 }
             };
-            // One redraw of the proposed buildings for the whole replay instead of one per member.
-            // Rebuilding that layer redraws every building already on it, so leaving it unheld makes
-            // the replay quadratic in its own output.
+            // One redraw of the proposed buildings and each structure layer for the whole replay
+            // instead of one per member. Surveyed-building outcomes are updated separately and
+            // locally by changed building id; they are never rebuilt as a side effect of this.
             const holdBuildings = (typeof window !== 'undefined')
                 ? window.withProposedBuildingsRefreshHeld
                 : null;
-            if (typeof holdBuildings === 'function') await holdBuildings(runPasses);
-            else await runPasses();
+            const holdStructures = (typeof window !== 'undefined')
+                ? window.withStructureLayersRefreshHeld
+                : null;
+            const runWithStructuresHeld = () => (typeof holdStructures === 'function')
+                ? holdStructures(runPasses)
+                : runPasses();
+            if (typeof holdBuildings === 'function') await holdBuildings(runWithStructuresHeld);
+            else await runWithStructuresHeld();
 
             const stripsStarted = _now();
             try { if (typeof refreshAppliedCorridorStrips === 'function') refreshAppliedCorridorStrips(); } catch (_) { }

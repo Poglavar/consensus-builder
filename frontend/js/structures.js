@@ -22,6 +22,65 @@
     const PARKS_PANE = 'parksPane';
     const LAKES_PANE = 'lakesPane';
 
+    // A canonical plan replay creates every park/square/lake in turn. Hold the corresponding
+    // structure-layer presentation until the records exist, then render each affected kind once.
+    // Surveyed buildings are refreshed separately by changed demolition ids only; a local
+    // structure must never rebuild the city-wide footprint layer.
+    //
+    // Hold those presentation refreshes while the derived records are being rebuilt, remember the
+    // kinds that changed, then draw each affected structure layer once and refresh the exact changed
+    // building outcomes once. Record/fabric mutations still happen immediately.
+    let structureLayersRefreshHeld = 0;
+    let structureLayersRefreshFlushing = false;
+    let structureBuildingRefreshMissed = false;
+    const missedStructureLayerRefreshes = new Set();
+
+    function deferStructureLayerRefresh(kind) {
+        if (!structureLayersRefreshHeld) return false;
+        missedStructureLayerRefreshes.add(kind);
+        structureBuildingRefreshMissed = true;
+        return true;
+    }
+
+    function refreshBuildingsAfterStructureChange() {
+        if (structureLayersRefreshHeld || structureLayersRefreshFlushing) {
+            structureBuildingRefreshMissed = true;
+            return;
+        }
+        try {
+            if (typeof window.refreshBuildingOutcomesFromRecords === 'function') {
+                window.refreshBuildingOutcomesFromRecords();
+            }
+        } catch (error) {
+            console.error('[structures] local building demolition refresh failed', error);
+        }
+    }
+
+    async function withStructureLayersRefreshHeld(run) {
+        structureLayersRefreshHeld += 1;
+        try {
+            return await run();
+        } finally {
+            structureLayersRefreshHeld -= 1;
+            if (!structureLayersRefreshHeld) {
+                const pending = Array.from(missedStructureLayerRefreshes);
+                missedStructureLayerRefreshes.clear();
+                structureLayersRefreshFlushing = true;
+                try {
+                    if (pending.includes('parks')) updateParksLayer();
+                    if (pending.includes('squares')) updateSquaresLayer();
+                    if (pending.includes('lakes')) updateLakesLayer();
+                } finally {
+                    structureLayersRefreshFlushing = false;
+                    if (structureBuildingRefreshMissed) {
+                        structureBuildingRefreshMissed = false;
+                        refreshBuildingsAfterStructureChange();
+                    }
+                }
+            }
+        }
+    }
+
     // Claims model (rethink-proposals.md §13): a structure is the TOP claim on its ground, so its
     // base fill is clickable and opens the proposal; the parcels beneath stay one tap away via
     // the details panel's "on parcels" breadcrumb. Decorations stay inert. In cadastre view the
@@ -692,8 +751,9 @@
     }
 
     function updateParksLayer() {
+        if (deferStructureLayerRefresh('parks')) return;
         // Structures demolish buildings by default: any structure change can raze or restore.
-        try { if (typeof window !== 'undefined' && typeof window.rebuildBuildingLayerFromPool === 'function' && window.buildingFeaturePool?.length) window.rebuildBuildingLayerFromPool(); } catch (error) { console.error('[structures] building demolition refresh failed', error); }
+        refreshBuildingsAfterStructureChange();
         if (typeof map === 'undefined') return;
         ensureParksPane();
         const group = ensureParksLayer();
@@ -1148,8 +1208,9 @@
     }
 
     function updateSquaresLayer() {
+        if (deferStructureLayerRefresh('squares')) return;
         // Structures demolish buildings by default: any structure change can raze or restore.
-        try { if (typeof window !== 'undefined' && typeof window.rebuildBuildingLayerFromPool === 'function' && window.buildingFeaturePool?.length) window.rebuildBuildingLayerFromPool(); } catch (error) { console.error('[structures] building demolition refresh failed', error); }
+        refreshBuildingsAfterStructureChange();
         if (typeof map === 'undefined') return;
         ensureSquaresPane();
         const group = ensureSquaresLayer();
@@ -1211,8 +1272,9 @@
     }
 
     function updateLakesLayer() {
+        if (deferStructureLayerRefresh('lakes')) return;
         // Structures demolish buildings by default: any structure change can raze or restore.
-        try { if (typeof window !== 'undefined' && typeof window.rebuildBuildingLayerFromPool === 'function' && window.buildingFeaturePool?.length) window.rebuildBuildingLayerFromPool(); } catch (error) { console.error('[structures] building demolition refresh failed', error); }
+        refreshBuildingsAfterStructureChange();
         if (typeof map === 'undefined') return;
         ensureLakesPane();
         const group = ensureLakesLayer();
@@ -1488,6 +1550,7 @@
     window.updateSquaresLayer = updateSquaresLayer;
     window.toggleSquaresVisibility = toggleSquaresVisibility;
     window.updateLakesLayer = updateLakesLayer;
+    window.withStructureLayersRefreshHeld = withStructureLayersRefreshHeld;
     window.updateBuildingGroundLayer = updateBuildingGroundLayer;
     window.ensureLakeGraphics = ensureLakeGraphics;
     window.lakesLayerRef = () => lakesLayer;

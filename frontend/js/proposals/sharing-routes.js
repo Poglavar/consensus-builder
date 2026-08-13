@@ -453,19 +453,30 @@ function buildSharedProposalsPayload(appliedProposals) {
     };
 }
 
-async function parkFailedSharedImports(proposalIds) {
+// Materialise only the records this shared link just imported.
+//
+// Startup has already restored the standing plan before either shared-import path reaches here.
+// Rebuilding that whole plan again made opening ONE proposal proportional to everything the user
+// happened to have applied locally (and, on a 26-member plan, paid the same 20-second replay twice).
+// The ordinary Apply entry point is already the canonical scoped mutation: it serialises changes,
+// rolls a failed member back, and derives only the ground that member changes. Shared imports use
+// that same path now, in their established immutable order.
+async function materializeQueuedSharedProposals(proposalIds) {
     const ids = Array.from(new Set((Array.isArray(proposalIds) ? proposalIds : [])
         .map(id => String(id || '')).filter(Boolean)));
-    if (!ids.length || typeof proposalStorage === 'undefined') return;
-    ids.forEach(id => {
-        const record = proposalStorage.getProposal(id);
-        if (!record) return;
-        if (typeof setProposalApplied === 'function') setProposalApplied(record, false, { stamp: false });
-        else record.applied = false;
-        proposalStorage._indexProposal?.(record);
-    });
-    proposalStorage.save?.();
-    await ProposalManager.rebuildAppliedFabric({ silent: true });
+    const appliedIds = [];
+    const failedIds = [];
+    for (const id of ids) {
+        try {
+            const ok = await ProposalManager.applyProposal(id, { silent: true });
+            if (ok) appliedIds.push(id);
+            else failedIds.push(id);
+        } catch (error) {
+            console.error('[shared-apply] scoped apply failed', id, error);
+            failedIds.push(id);
+        }
+    }
+    return { appliedIds, failedIds };
 }
 
 // Enter URL-driven 3D framed on `focusIds`, waiting (capped) until at least one of those
@@ -884,15 +895,12 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
         }
 
         if (actuallyApplied.length > 0) {
-            const replay = await ProposalManager.rebuildAppliedFabric();
-            const replayFailures = new Set((replay?.failed || []).map(entry => String(entry?.proposalId || '')));
-            if (replayFailures.size) {
-                await parkFailedSharedImports(actuallyApplied.filter(id => replayFailures.has(String(id))));
-                for (let i = actuallyApplied.length - 1; i >= 0; i -= 1) {
-                    if (!replayFailures.has(String(actuallyApplied[i]))) continue;
-                    failures.push(actuallyApplied[i]);
-                    actuallyApplied.splice(i, 1);
-                }
+            const scoped = await materializeQueuedSharedProposals(actuallyApplied);
+            const scopedFailures = new Set(scoped.failedIds.map(String));
+            for (let i = actuallyApplied.length - 1; i >= 0; i -= 1) {
+                if (!scopedFailures.has(String(actuallyApplied[i]))) continue;
+                failures.push(actuallyApplied[i]);
+                actuallyApplied.splice(i, 1);
             }
         }
 
@@ -1104,11 +1112,12 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
         existing.roadProposal.parentParcelIds = normalized.roadProposal.parentParcelIds.slice();
     }
 
-    // Import changes records only. The caller flips every plan member first, then invokes the one
-    // canonical cadastre replay after the whole plan is present; no member applies against a
-    // half-imported plan and no retry pass can observe a later tile batch.
-    if (typeof setProposalApplied === 'function') setProposalApplied(existing, true);
-    else existing.applied = true;
+    // Import changes records only. Keep every queued member parked until the complete ordered set
+    // is present; the caller then sends them through the ordinary scoped Apply path one by one.
+    // Pre-marking them made later members look as if they already stood on the map, and forced the
+    // caller to rebuild every unrelated local proposal merely to materialise this queue.
+    if (typeof setProposalApplied === 'function') setProposalApplied(existing, false, { stamp: false });
+    else existing.applied = false;
     proposalStorage._indexProposal?.(existing);
     proposalStorage.save?.();
     return { applied: true, skipped: false, proposalId: existing.proposalId || proposalId, queued: true };
@@ -1813,22 +1822,16 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
 
         }
 
-        // All imported members are now records with their applied flag set. Materialize that target
-        // set once, from cadastre, after the queue is complete.
+        // All imported members are now parked records. Materialise only that queue through the
+        // same scoped Apply path used by the proposal list; startup already restored everything
+        // else on the map.
         if (applied.length > 0) {
-            // Its OWN key: `plan.applying` is the per-proposal line and its translation carries an
-            // {{id}}. Borrowing it here — with no id to fill — rendered the placeholder verbatim,
-            // so the overlay read "Applying proposal #{{id}}…" for the whole plan.
             updateProposalLoadOverlay({ status: tShare('plan.applyingAll', 'Applying shared plan…') });
-            const replay = await ProposalManager.rebuildAppliedFabric();
-            const replayFailures = new Map((replay?.failed || []).map(entry => [String(entry?.proposalId || ''), entry]));
-            await parkFailedSharedImports(applied
-                .filter(entry => replayFailures.has(String(entry.id)))
-                .map(entry => entry.id));
+            const scoped = await materializeQueuedSharedProposals(applied.map(entry => entry.id));
+            const scopedFailures = new Set(scoped.failedIds.map(String));
             for (let i = applied.length - 1; i >= 0; i -= 1) {
                 const entry = applied[i];
-                const replayFailure = replayFailures.get(String(entry.id));
-                if (!replayFailure) continue;
+                if (!scopedFailures.has(String(entry.id))) continue;
                 const record = proposalStorage.getProposal(entry.id);
                 failed.push({
                     id: entry.id,

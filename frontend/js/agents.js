@@ -235,21 +235,35 @@ function getAvatarImagePath(avatarIndex) {
  * @param {string} agentId - The agent ID
  * @returns {Array} - Array of parcel IDs owned by the agent
  */
+function forEachPersistentParcelOwnership(iterator) {
+    if (typeof iterator !== 'function') return;
+    // PersistentStorage.key(i) materialises Array.from(cache.keys()) on every call. Walking N
+    // entries through that API is therefore O(N²) and made a two-parcel readjustment pause for
+    // about two seconds in a mature plan. The storage already exposes its cache's linear walk.
+    if (PersistentStorage && typeof PersistentStorage.forEach === 'function') {
+        PersistentStorage.forEach((ownerId, key) => {
+            if (key && key.startsWith('parcel_') && key.endsWith('_owner')) {
+                iterator(String(ownerId), key.slice(7, -6));
+            }
+        });
+        return;
+    }
+    // Compatibility for older embedded storage adapters.
+    for (let i = 0; i < PersistentStorage.length; i += 1) {
+        const key = PersistentStorage.key(i);
+        if (key && key.startsWith('parcel_') && key.endsWith('_owner')) {
+            iterator(String(PersistentStorage.getItem(key)), key.slice(7, -6));
+        }
+    }
+}
+
 function getAgentOwnedParcels(agentId, { includePersistent = true, includeTransient = true } = {}) {
     const parcels = [];
 
     if (includePersistent) {
-        // Check PersistentStorage for parcel ownership
-        for (let i = 0; i < PersistentStorage.length; i++) {
-            const key = PersistentStorage.key(i);
-            if (key.startsWith('parcel_') && key.endsWith('_owner')) {
-                const ownerId = PersistentStorage.getItem(key);
-                if (ownerId === agentId) {
-                    const parcelId = key.replace('parcel_', '').replace('_owner', '');
-                    parcels.push(parcelId);
-                }
-            }
-        }
+        forEachPersistentParcelOwnership((ownerId, parcelId) => {
+            if (ownerId === agentId) parcels.push(parcelId);
+        });
     }
 
     if (includeTransient) {
@@ -278,14 +292,7 @@ function buildAgentOwnedParcelIndex({ includePersistent = true, includeTransient
     };
 
     if (includePersistent) {
-        for (let i = 0; i < PersistentStorage.length; i++) {
-            const key = PersistentStorage.key(i);
-            if (key && key.startsWith('parcel_') && key.endsWith('_owner')) {
-                const ownerId = PersistentStorage.getItem(key);
-                const parcelId = key.replace('parcel_', '').replace('_owner', '');
-                addOwnership(ownerId, parcelId);
-            }
-        }
+        forEachPersistentParcelOwnership(addOwnership);
     }
 
     if (includeTransient) {

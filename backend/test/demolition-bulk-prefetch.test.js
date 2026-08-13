@@ -77,7 +77,12 @@ describe('the scan uses what was fetched for it', () => {
     let tunnel;
 
     beforeEach(() => {
-        saved = { window: globalThis.window, turf: globalThis.turf, fetch: globalThis.fetch };
+        saved = {
+            window: globalThis.window,
+            turf: globalThis.turf,
+            fetch: globalThis.fetch,
+            ProposalManager: globalThis.ProposalManager
+        };
         ensureCalls = [];
         globalThis.window = globalThis;
         globalThis.turf = turf;
@@ -95,6 +100,8 @@ describe('the scan uses what was fetched for it', () => {
         delete globalThis.buildingFeaturePool; delete globalThis.proposedBuildings;
         delete globalThis.demolishedBuildingRecordsFrom;
         delete globalThis.proposalStorage; delete globalThis.ensureBuildingFootprintsForBounds;
+        if (saved.ProposalManager === undefined) delete globalThis.ProposalManager;
+        else globalThis.ProposalManager = saved.ProposalManager;
         vi.restoreAllMocks();
     });
 
@@ -115,11 +122,36 @@ describe('the scan uses what was fetched for it', () => {
     });
 
     it('an EMPTY preloaded list means "scanned, nothing there" — still no network', async () => {
-        const records = await tunnel.demolishBuildingsUnderFootprint(square(15.87, 43.75, 0.0008), {
+        const region = square(15.87, 43.75, 0.0008);
+        // Deliberately put an overlapping building in the viewport pool. The exact server answer
+        // for this proposal is empty, so replay must not scan the unrelated loaded-city pool.
+        globalThis.buildingFeaturePool = [buildingUnder(region)];
+        const records = await tunnel.demolishBuildingsUnderFootprint(region, {
             preloadedBuildings: []
         });
         expect(ensureCalls).toHaveLength(0);
         expect(records).toEqual([]);
+    });
+
+    it('an exact stock answer still checks proposal-owned buildings', async () => {
+        const region = square(15.87, 43.75, 0.0008);
+        globalThis.proposedBuildings = [{
+            type: 'Feature',
+            properties: { id: 'proposal-building', proposalId: 'older-proposal' },
+            geometry: buildingUnder(region).geometry
+        }];
+        const unapplied = [];
+        globalThis.ProposalManager = {
+            unapplyProposal: async id => { unapplied.push(id); }
+        };
+
+        const records = await tunnel.demolishBuildingsUnderFootprint(region, {
+            preloadedBuildings: [],
+            proposalId: 'new-proposal'
+        });
+
+        expect(records).toEqual([]);
+        expect(unapplied).toEqual(['older-proposal']);
     });
 
     it('with NO preloaded entry it fetches for itself, as before', async () => {

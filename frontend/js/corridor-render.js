@@ -935,8 +935,13 @@ function refreshAppliedCorridorStrips() {
     // Demolitions live on applied corridors: any corridor change can raze or restore buildings.
     // Not optional cosmetics — a failure here leaves razed buildings standing, so it must be loud.
     if (window.buildingFeaturePool?.length) {
-        try { window.rebuildBuildingLayerFromPool(); } catch (error) {
-            console.error('[corridor-render] building demolition refresh failed — 2D building layer is stale', error);
+        try {
+            if (typeof window.refreshBuildingOutcomesFromRecords !== 'function') {
+                throw new Error('map-core local building outcome refresher is unavailable');
+            }
+            window.refreshBuildingOutcomesFromRecords();
+        } catch (error) {
+            console.error('[corridor-render] local building demolition refresh failed — 2D building layer is stale', error);
         }
     }
 
