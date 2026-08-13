@@ -1,8 +1,8 @@
 {
  "totals": {
   "junctions": 21806,
-  "settled": 20440,
-  "movements": 12892
+  "settled": 20553,
+  "movements": 12087
  },
  "tiles": [
   {
@@ -401,7 +401,7 @@
    "open": 1,
    "notJunctions": 0,
    "movements": 2,
-   "storedSolutions": 0,
+   "storedSolutions": 1,
    "done": 0.8,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.65003&lng=16.11954&zoom=16"
   },
@@ -557,12 +557,12 @@
     45.661895
    ],
    "junctions": 7,
-   "settled": 6,
-   "open": 1,
+   "settled": 7,
+   "open": 0,
    "notJunctions": 0,
-   "movements": 4,
-   "storedSolutions": 0,
-   "done": 0.8571428571428571,
+   "movements": 0,
+   "storedSolutions": 4,
+   "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.66190&lng=15.70557&zoom=16"
   },
   {
@@ -577,12 +577,12 @@
     45.661895
    ],
    "junctions": 7,
-   "settled": 6,
-   "open": 1,
+   "settled": 7,
+   "open": 0,
    "notJunctions": 0,
-   "movements": 4,
-   "storedSolutions": 0,
-   "done": 0.8571428571428571,
+   "movements": 0,
+   "storedSolutions": 2,
+   "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.66190&lng=15.71740&zoom=16"
   },
   {
@@ -957,12 +957,12 @@
     45.661895
    ],
    "junctions": 6,
-   "settled": 0,
-   "open": 6,
+   "settled": 6,
+   "open": 0,
    "notJunctions": 0,
-   "movements": 37,
-   "storedSolutions": 0,
-   "done": 0,
+   "movements": 0,
+   "storedSolutions": 12,
+   "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.66190&lng=16.07222&zoom=16"
   },
   {
@@ -1637,12 +1637,12 @@
     45.673759
    ],
    "junctions": 6,
-   "settled": 5,
-   "open": 1,
+   "settled": 6,
+   "open": 0,
    "notJunctions": 0,
-   "movements": 2,
-   "storedSolutions": 0,
-   "done": 0.8333333333333334,
+   "movements": 0,
+   "storedSolutions": 2,
+   "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.67376&lng=16.11954&zoom=16"
   },
   {
@@ -2181,7 +2181,7 @@
    "open": 1,
    "notJunctions": 0,
    "movements": 16,
-   "storedSolutions": 5,
+   "storedSolutions": 10,
    "done": 0.9230769230769231,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.68562&lng=16.06040&zoom=16"
   },
@@ -2197,12 +2197,12 @@
     45.685623
    ],
    "junctions": 11,
-   "settled": 7,
-   "open": 4,
+   "settled": 11,
+   "open": 0,
    "notJunctions": 0,
-   "movements": 18,
-   "storedSolutions": 2,
-   "done": 0.6363636363636364,
+   "movements": 0,
+   "storedSolutions": 12,
+   "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.68562&lng=16.07222&zoom=16"
   },
   {
@@ -2861,7 +2861,7 @@
    "open": 0,
    "notJunctions": 0,
    "movements": 0,
-   "storedSolutions": 2,
+   "storedSolutions": 4,
    "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.69749&lng=16.06040&zoom=16"
   },
@@ -2881,7 +2881,7 @@
    "open": 0,
    "notJunctions": 0,
    "movements": 0,
-   "storedSolutions": 2,
+   "storedSolutions": 10,
    "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.69749&lng=16.07222&zoom=16"
   },
@@ -2897,12 +2897,12 @@
     45.697486
    ],
    "junctions": 4,
-   "settled": 2,
-   "open": 2,
+   "settled": 4,
+   "open": 0,
    "notJunctions": 0,
-   "movements": 18,
-   "storedSolutions": 0,
-   "done": 0.5,
+   "movements": 0,
+   "storedSolutions": 6,
+   "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.69749&lng=16.08405&zoom=16"
   },
   {
@@ -3840,8 +3840,8 @@
    "settled": 84,
    "open": 6,
    "notJunctions": 1,
-   "movements": 25,
-   "storedSolutions": 0,
+   "movements": 21,
+   "storedSolutions": 2,
    "done": 0.9333333333333333,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.70935&lng=16.06040&zoom=16"
   },
@@ -3857,12 +3857,12 @@
     45.70935
    ],
    "junctions": 89,
-   "settled": 81,
-   "open": 8,
+   "settled": 89,
+   "open": 0,
    "notJunctions": 2,
-   "movements": 42,
-   "storedSolutions": 0,
-   "done": 0.9101123595505618,
+   "movements": 0,
+   "storedSolutions": 18,
+   "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.70935&lng=16.07222&zoom=16"
   },
   {
@@ -3877,12 +3877,12 @@
     45.70935
    ],
    "junctions": 52,
-   "settled": 40,
-   "open": 12,
+   "settled": 52,
+   "open": 0,
    "notJunctions": 0,
-   "movements": 111,
-   "storedSolutions": 0,
-   "done": 0.7692307692307693,
+   "movements": 0,
+   "storedSolutions": 27,
+   "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.70935&lng=16.08405&zoom=16"
   },
   {
@@ -4477,12 +4477,12 @@
     45.721214
    ],
    "junctions": 7,
-   "settled": 2,
-   "open": 5,
+   "settled": 7,
+   "open": 0,
    "notJunctions": 0,
-   "movements": 21,
-   "storedSolutions": 0,
-   "done": 0.2857142857142857,
+   "movements": 0,
+   "storedSolutions": 10,
+   "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.72121&lng=15.87116&zoom=16"
   },
   {
@@ -4817,12 +4817,12 @@
     45.721214
    ],
    "junctions": 67,
-   "settled": 60,
-   "open": 7,
+   "settled": 61,
+   "open": 6,
    "notJunctions": 1,
-   "movements": 37,
-   "storedSolutions": 0,
-   "done": 0.8955223880597015,
+   "movements": 33,
+   "storedSolutions": 2,
+   "done": 0.9104477611940298,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.72121&lng=16.07222&zoom=16"
   },
   {
@@ -8717,12 +8717,12 @@
     45.768668
    ],
    "junctions": 13,
-   "settled": 8,
-   "open": 5,
+   "settled": 13,
+   "open": 0,
    "notJunctions": 0,
-   "movements": 28,
-   "storedSolutions": 2,
-   "done": 0.6153846153846154,
+   "movements": 0,
+   "storedSolutions": 12,
+   "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.76867&lng=16.22598&zoom=16"
   },
   {
@@ -10521,7 +10521,7 @@
    "open": 8,
    "notJunctions": 0,
    "movements": 54,
-   "storedSolutions": 0,
+   "storedSolutions": 2,
    "done": 0.5294117647058824,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.79239&lng=16.16685&zoom=16"
   },
@@ -10537,12 +10537,12 @@
     45.792395
    ],
    "junctions": 3,
-   "settled": 2,
-   "open": 1,
+   "settled": 3,
+   "open": 0,
    "notJunctions": 0,
-   "movements": 8,
-   "storedSolutions": 0,
-   "done": 0.6666666666666666,
+   "movements": 0,
+   "storedSolutions": 2,
+   "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.79239&lng=16.17867&zoom=16"
   },
   {
@@ -12897,12 +12897,12 @@
     45.827986
    ],
    "junctions": 33,
-   "settled": 29,
-   "open": 4,
+   "settled": 33,
+   "open": 0,
    "notJunctions": 0,
-   "movements": 16,
-   "storedSolutions": 0,
-   "done": 0.8787878787878788,
+   "movements": 0,
+   "storedSolutions": 8,
+   "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.82799&lng=15.71740&zoom=16"
   },
   {
@@ -13877,12 +13877,12 @@
     45.83985
    ],
    "junctions": 46,
-   "settled": 42,
-   "open": 4,
+   "settled": 46,
+   "open": 0,
    "notJunctions": 0,
-   "movements": 22,
-   "storedSolutions": 0,
-   "done": 0.9130434782608695,
+   "movements": 0,
+   "storedSolutions": 8,
+   "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.83985&lng=15.68192&zoom=16"
   },
   {
@@ -13897,12 +13897,12 @@
     45.83985
    ],
    "junctions": 71,
-   "settled": 57,
-   "open": 14,
+   "settled": 71,
+   "open": 0,
    "notJunctions": 0,
-   "movements": 80,
-   "storedSolutions": 0,
-   "done": 0.8028169014084507,
+   "movements": 0,
+   "storedSolutions": 40,
+   "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.83985&lng=15.69374&zoom=16"
   },
   {
@@ -13917,12 +13917,12 @@
     45.83985
    ],
    "junctions": 14,
-   "settled": 7,
-   "open": 7,
+   "settled": 14,
+   "open": 0,
    "notJunctions": 1,
-   "movements": 48,
-   "storedSolutions": 0,
-   "done": 0.5,
+   "movements": 0,
+   "storedSolutions": 17,
+   "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.83985&lng=15.70557&zoom=16"
   },
   {
@@ -14057,12 +14057,12 @@
     45.83985
    ],
    "junctions": 17,
-   "settled": 13,
-   "open": 4,
+   "settled": 17,
+   "open": 0,
    "notJunctions": 0,
-   "movements": 70,
-   "storedSolutions": 0,
-   "done": 0.7647058823529411,
+   "movements": 0,
+   "storedSolutions": 7,
+   "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.83985&lng=15.81202&zoom=16"
   },
   {
@@ -14077,12 +14077,12 @@
     45.83985
    ],
    "junctions": 21,
-   "settled": 16,
-   "open": 5,
+   "settled": 17,
+   "open": 4,
    "notJunctions": 0,
-   "movements": 63,
-   "storedSolutions": 0,
-   "done": 0.7619047619047619,
+   "movements": 51,
+   "storedSolutions": 2,
+   "done": 0.8095238095238095,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.83985&lng=15.82385&zoom=16"
   },
   {
@@ -14737,12 +14737,12 @@
     45.851714
    ],
    "junctions": 19,
-   "settled": 11,
-   "open": 8,
+   "settled": 19,
+   "open": 0,
    "notJunctions": 0,
-   "movements": 49,
-   "storedSolutions": 0,
-   "done": 0.5789473684210527,
+   "movements": 0,
+   "storedSolutions": 24,
+   "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.85171&lng=15.69374&zoom=16"
   },
   {
@@ -14821,7 +14821,7 @@
    "open": 0,
    "notJunctions": 0,
    "movements": 0,
-   "storedSolutions": 6,
+   "storedSolutions": 10,
    "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.85171&lng=15.80019&zoom=16"
   },
@@ -14837,12 +14837,12 @@
     45.851714
    ],
    "junctions": 89,
-   "settled": 82,
-   "open": 7,
+   "settled": 89,
+   "open": 0,
    "notJunctions": 1,
-   "movements": 31,
-   "storedSolutions": 2,
-   "done": 0.9213483146067416,
+   "movements": 0,
+   "storedSolutions": 21,
+   "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.85171&lng=15.81202&zoom=16"
   },
   {
@@ -14861,7 +14861,7 @@
    "open": 7,
    "notJunctions": 0,
    "movements": 38,
-   "storedSolutions": 0,
+   "storedSolutions": 2,
    "done": 0.65,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.85171&lng=15.82385&zoom=16"
   },
@@ -15537,12 +15537,12 @@
     45.863577
    ],
    "junctions": 77,
-   "settled": 72,
-   "open": 5,
+   "settled": 77,
+   "open": 0,
    "notJunctions": 0,
-   "movements": 53,
-   "storedSolutions": 6,
-   "done": 0.935064935064935,
+   "movements": 0,
+   "storedSolutions": 16,
+   "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.86358&lng=15.80019&zoom=16"
   },
   {
@@ -15561,7 +15561,7 @@
    "open": 0,
    "notJunctions": 0,
    "movements": 0,
-   "storedSolutions": 0,
+   "storedSolutions": 2,
    "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.86358&lng=15.81202&zoom=16"
   },
@@ -15577,12 +15577,12 @@
     45.863577
    ],
    "junctions": 12,
-   "settled": 8,
-   "open": 4,
+   "settled": 12,
+   "open": 0,
    "notJunctions": 0,
-   "movements": 39,
-   "storedSolutions": 0,
-   "done": 0.6666666666666666,
+   "movements": 0,
+   "storedSolutions": 8,
+   "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.86358&lng=15.82385&zoom=16"
   },
   {
@@ -16337,12 +16337,12 @@
     45.875441
    ],
    "junctions": 19,
-   "settled": 12,
-   "open": 7,
+   "settled": 19,
+   "open": 0,
    "notJunctions": 0,
-   "movements": 83,
-   "storedSolutions": 4,
-   "done": 0.631578947368421,
+   "movements": 0,
+   "storedSolutions": 20,
+   "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.87544&lng=15.82385&zoom=16"
   },
   {
@@ -16417,12 +16417,12 @@
     45.875441
    ],
    "junctions": 3,
-   "settled": 2,
-   "open": 1,
+   "settled": 3,
+   "open": 0,
    "notJunctions": 0,
-   "movements": 1,
-   "storedSolutions": 0,
-   "done": 0.6666666666666666,
+   "movements": 0,
+   "storedSolutions": 2,
+   "done": 1,
    "url": "http://localhost:5913/topology/?backend=http%3A%2F%2Flocalhost%3A4913&lat=45.87544&lng=15.94212&zoom=16"
   },
   {

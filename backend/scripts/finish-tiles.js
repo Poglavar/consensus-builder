@@ -43,6 +43,9 @@ const USAGE = `
 Close the coverage tiles that are within a few junctions of finished.
 
   --coverage FILE     Coverage report to read (default frontend/topology/coverage.json).
+  --tiles FILE        Process exactly these tile cores, one "W,S,E,N" per line, in this order.
+                      Overrides the nearly-done filter; the coverage report is still read, to
+                      recover how many junctions each tile has open.
   --max-open N        Only tiles with at most N open junctions (default ${DEFAULTS.maxOpen}).
   --min-junctions N   Ignore tiles smaller than this (default ${DEFAULTS.minJunctions}).
   --limit N           Stop after N tiles.
@@ -63,6 +66,7 @@ function parseArgs(argv) {
         const take = () => { index += 1; return value; };
         switch (argv[index]) {
             case '--coverage': args.coverage = take(); break;
+            case '--tiles': args.tiles = take(); break;
             case '--solver': args.solver = take(); break;
             case '--max-open': args.maxOpen = Number(take()); break;
             case '--min-junctions': args.minJunctions = Number(take()); break;
@@ -98,6 +102,29 @@ export function tilesToFinish(coverage, args) {
             && tile.open <= args.maxOpen)
         .sort((a, b) => a.open - b.open || b.junctions - a.junctions)
         .slice(0, args.limit || undefined);
+}
+
+// An explicit list of tile cores, in the caller's own order. "Nearly done" is one way to choose
+// tiles worth running; "outside the ring road" and "this district" are others, and none of them
+// belong in here — the selection is a question about the map, this script is the thing that grinds
+// through whatever was selected. The coverage report still supplies each tile's open count, which
+// is what sets the per-tile limit.
+export function tilesFromList(coverage, listing, args) {
+    const known = new Map((coverage.tiles || []).map(tile => [tile.core.join(','), tile]));
+    const missing = [];
+    const tiles = listing.split('\n').map(line => line.trim()).filter(Boolean).map(line => {
+        const core = line.split(',').map(Number);
+        if (core.length !== 4 || core.some(value => !Number.isFinite(value))) {
+            throw new Error(`"${line}" is not a W,S,E,N tile core.`);
+        }
+        const match = known.get(core.map(value => Number(value.toFixed(6))).join(','))
+            || known.get(line);
+        if (!match) missing.push(line);
+        // A tile the report has never seen still runs; it just cannot say how much is open, so it
+        // gets the default budget rather than a tailored one.
+        return match || { core, open: args.maxOpen, junctions: 0, done: 0, unknown: true };
+    }).slice(0, args.limit || undefined);
+    return { tiles, missing };
 }
 
 // One solver run over one tile core. Resolves with what it managed, never rejects: a tile that
@@ -138,10 +165,22 @@ async function main() {
         return 0;
     }
     const coverage = JSON.parse(readFileSync(args.coverage, 'utf8'));
-    const tiles = tilesToFinish(coverage, args);
-    const junctions = tiles.reduce((total, tile) => total + tile.open, 0);
-    log(`${tiles.length} tiles within ${args.maxOpen} junction${args.maxOpen === 1 ? '' : 's'} of `
-        + `finished, ${junctions} junctions to close them`);
+    let tiles;
+    if (args.tiles) {
+        const listed = tilesFromList(coverage, readFileSync(args.tiles, 'utf8'), args);
+        tiles = listed.tiles;
+        if (listed.missing.length) {
+            log(`WARNING: ${listed.missing.length} listed tiles are not in the coverage report; `
+                + `running them on the default budget of ${args.maxOpen}`);
+        }
+        log(`${tiles.length} tiles from ${path.resolve(args.tiles)}, `
+            + `${tiles.reduce((total, tile) => total + tile.open, 0)} junctions open in them`);
+    } else {
+        tiles = tilesToFinish(coverage, args);
+        const junctions = tiles.reduce((total, tile) => total + tile.open, 0);
+        log(`${tiles.length} tiles within ${args.maxOpen} junction${args.maxOpen === 1 ? '' : 's'} of `
+            + `finished, ${junctions} junctions to close them`);
+    }
     log(`coverage snapshot: ${path.resolve(args.coverage)}`);
 
     if (args.dryRun) {

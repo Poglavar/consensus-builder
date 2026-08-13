@@ -81,12 +81,27 @@ function decisionSurface(node, graph, open) {
         + Math.max(0, exitArms.size - (exitArms.has(lane.sectionId) ? 1 : 0)), 0);
 }
 
-async function surveyTile(args, tile, storedByTile, settledNodes) {
+// The evidence for one tile, retried: the upstream roads API drops a connection now and then, and
+// a whole-city survey walks 3,036 tiles, so "now and then" is a near certainty over 40 minutes.
+async function tileEvidence(args, tile, attempts = 3) {
     const url = `${args.api}/lane-topology/osm?bbox=${tile.build.join(',')}`
         + `&city=${encodeURIComponent(args.city)}`;
-    const response = await fetch(url, { signal: AbortSignal.timeout(120_000) });
-    if (!response.ok) throw new Error(`GET ${url} → ${response.status}`);
-    const evidence = await response.json();
+    let lastError;
+    for (let attempt = 1; attempt <= attempts; attempt += 1) {
+        try {
+            const response = await fetch(url, { signal: AbortSignal.timeout(120_000) });
+            if (!response.ok) throw new Error(`GET ${url} → ${response.status}`);
+            return await response.json();
+        } catch (error) {
+            lastError = error;
+            if (attempt < attempts) await new Promise(resolve => setTimeout(resolve, 2000 * attempt));
+        }
+    }
+    throw lastError;
+}
+
+async function surveyTile(args, tile, storedByTile, settledNodes) {
+    const evidence = await tileEvidence(args, tile);
     if (!evidence.features?.length) return null;
     const graph = LaneTopologyGraph.build(evidence, {
         snapshotAt: evidence.snapshotAt,
@@ -159,7 +174,7 @@ function link(args, tile) {
         + `&lat=${tile.centre[1].toFixed(5)}&lng=${tile.centre[0].toFixed(5)}&zoom=16`;
 }
 
-function report(args, tiles) {
+function report(args, tiles, skipped = []) {
     const totals = tiles.reduce((sum, tile) => ({
         junctions: sum.junctions + tile.junctions,
         settled: sum.settled + tile.settled,
@@ -167,7 +182,13 @@ function report(args, tiles) {
     }), { junctions: 0, settled: 0, movements: 0 });
 
     if (args.format === 'json') {
-        console.log(JSON.stringify({ totals, tiles: tiles.map(tile => ({ ...tile, url: link(args, tile) })) }, null, 1));
+        // `skipped` travels with the report: a tile that could not be surveyed lowers every total
+        // silently, and a reader has no way to tell an incomplete survey from a finished city.
+        console.log(JSON.stringify({
+            totals,
+            ...(skipped.length ? { skipped } : {}),
+            tiles: tiles.map(tile => ({ ...tile, url: link(args, tile) }))
+        }, null, 1));
         return;
     }
     console.log(`${tiles.length} tiles with roads · ${totals.junctions} junctions · `
@@ -207,14 +228,28 @@ async function main() {
     }
     const list = enumerationTiles(args.bbox);
     const tiles = [];
+    const skipped = [];
     for (const [index, tile] of list.entries()) {
-        const surveyed = await surveyTile(args, tile, storedByTile, stored.settled);
+        // One tile must never cost the survey. A transient ECONNRESET from the upstream roads API
+        // used to abort the whole run — forty minutes and two thousand tiles thrown away over a
+        // dropped connection, leaving a zero-byte report behind.
+        let surveyed = null;
+        try {
+            surveyed = await surveyTile(args, tile, storedByTile, stored.settled);
+        } catch (error) {
+            skipped.push({ core: tile.core, reason: String(error.message || error) });
+            note(`tile ${tile.core.join(',')} skipped: ${String(error.message || error).slice(0, 120)}`);
+        }
         if (surveyed) tiles.push(surveyed);
         if ((index + 1) % 250 === 0) {
             process.stderr.write(`  … ${index + 1}/${list.length} tiles, ${tiles.length} with roads\n`);
         }
     }
-    report(args, tiles);
+    if (skipped.length) {
+        note(`WARNING: ${skipped.length} tiles could not be surveyed; every total below is short by `
+            + 'whatever was in them');
+    }
+    report(args, tiles, skipped);
     return 0;
 }
 
