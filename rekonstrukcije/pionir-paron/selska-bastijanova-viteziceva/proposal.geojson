@@ -1,0 +1,1968 @@
+{
+  "type": "FeatureCollection",
+  "name": "Selska–Baštijanova–Vitezićeva – rekonstrukcija izvedenog stanja",
+  "bbox": [
+    15.938659386,
+    45.801822526,
+    15.942891234,
+    45.804079517
+  ],
+  "reconstruction": {
+    "schema": "consensus-builder.reconstruction.v1",
+    "proposal": {
+      "proposalId": "pionir-selska-bastijanova-viteziceva-observed",
+      "city": "zagreb",
+      "name": "Selska–Baštijanova–Vitezićeva – rekonstrukcija izvedenog stanja",
+      "title": "Selska–Baštijanova–Vitezićeva – rekonstrukcija izvedenog stanja",
+      "description": "Rekonstrukcija Pionirova stambenog sklopa na prostoru bivšega Logora Krste Frankopana, između Selske ceste, Baštijanove, Vitezićeve i Stubičke. Arhivirane prodajne stranice izravno vežu faze S, S1–S12 uz osam današnjih čestica. Trinaest službenih oznaka prikazano je s jedanaest aktualnih DGU tlocrta: parovi S4–S5 i S6–S7 danas su svaki jedan spojeni pravni poligon. Kod ostalih parova naziv tlocrta navodi skup mogućih oznaka dok situacijski nacrt ne potvrdi pojedinačnu vezu.",
+      "author": "zagreb.lol – lokalna analiza",
+      "type": "building",
+      "goal": "single",
+      "primaryType": "Urban Rule",
+      "typologyType": "single",
+      "lifecycleStatus": "Active",
+      "createdAt": "2026-08-13T00:00:00.000Z",
+      "updatedAt": "2026-08-13T00:00:00.000Z",
+      "tags": [
+        "buildings",
+        "research",
+        "reconstruction",
+        "observed-built-state"
+      ],
+      "parentParcelIds": [
+        "HR-339270-2682/89",
+        "HR-339270-2682/91",
+        "HR-339270-2682/93",
+        "HR-339270-2682/95",
+        "HR-339270-2682/97",
+        "HR-339270-2682/99",
+        "HR-339270-2682/102",
+        "HR-339270-2682/104"
+      ],
+      "cadastreParcelIds": [
+        "HR-339270-2682/89",
+        "HR-339270-2682/91",
+        "HR-339270-2682/93",
+        "HR-339270-2682/95",
+        "HR-339270-2682/97",
+        "HR-339270-2682/99",
+        "HR-339270-2682/102",
+        "HR-339270-2682/104"
+      ],
+      "parcelIds": [
+        "HR-339270-2682/89",
+        "HR-339270-2682/91",
+        "HR-339270-2682/93",
+        "HR-339270-2682/95",
+        "HR-339270-2682/97",
+        "HR-339270-2682/99",
+        "HR-339270-2682/102",
+        "HR-339270-2682/104"
+      ],
+      "acceptedParcelIds": [],
+      "bounds": [
+        15.938659386,
+        45.801822526,
+        15.942891234,
+        45.804079517
+      ],
+      "source": {
+        "projectSource": "https://web.archive.org/web/20190101000000/http://www.pionir.hr/selska-s.html",
+        "projectSources": [
+          "https://web.archive.org/web/20110325060405/http://www.pionir.hr/prodaja-nekretnina-selska-objekti-s4-s5.html",
+          "https://web.archive.org/web/20110325060405/http://www.pionir.hr/prodaja-nekretnina-selska-objekti-s6-s7.html",
+          "https://web.archive.org/web/20130403061240/http://www.pionir.hr/prodaja-nekretnina-selska-objekti-s11-s12.html",
+          "https://web.archive.org/web/20141022183448/http://www.pionir.hr/objekti-s9-s10.html",
+          "https://web.archive.org/web/20150803100004/http://www.pionir.hr/objekt-s8-v2.html",
+          "https://web.archive.org/web/20150803100004/http://www.pionir.hr/selska-s3.html",
+          "https://web.archive.org/web/20151213093458/http://www.pionir.hr/selska-s2.html",
+          "https://web.archive.org/web/20160617104904/http://www.pionir.hr/selska-s1.html",
+          "https://web.archive.org/web/20190101000000/http://www.pionir.hr/selska-s.html"
+        ],
+        "projectDates": "S4–S7 su u Pionirovoj ponudi najkasnije 2011.; S11–S12 2013.; S9–S10 i S8 2015.; S2–S3 2016.; S1 2017.; S je useljiv u arhivi 2019. i dovršen 2018. prema projektantskoj referenci.",
+        "parcel": "k.č. 2682/89, 2682/91, 2682/93, 2682/95, 2682/97, 2682/99, 2682/102, 2682/104, MB 339270, k.o. Trešnjevka",
+        "coordinateSystem": "DGU/GDI HTRS96/TM (EPSG:3765), transformed to WGS84 for the app",
+        "footprintBasis": "current DGU legal building geometry",
+        "heightBasis": "matched GDI surveyed object",
+        "companyRoleNote": "Pionirove arhivirane prodajne stranice izravno vode faze S i S1–S12.",
+        "officialProjectLabels": [
+          "S",
+          "S1",
+          "S2",
+          "S3",
+          "S4",
+          "S5",
+          "S6",
+          "S7",
+          "S8",
+          "S9",
+          "S10",
+          "S11",
+          "S12"
+        ],
+        "sourceStatistics": {
+          "geometryDerived": {
+            "parcelAreaM2": 25205.117733064995,
+            "footprintAreaM2": 12372.573468026854,
+            "siteCoveragePercent": 49.087544835373095,
+            "heightEquivalentAboveGroundGbpM2": 90189.33753845954,
+            "heightEquivalentKin": 3.578215285229391,
+            "buildingCount": 11,
+            "method": "DGU footprint area × GDI height / 3 m; diagnostic estimate, not permit GBP"
+          }
+        }
+      }
+    },
+    "buildingProposal": {
+      "parentParcelIds": [
+        "HR-339270-2682/89",
+        "HR-339270-2682/91",
+        "HR-339270-2682/93",
+        "HR-339270-2682/95",
+        "HR-339270-2682/97",
+        "HR-339270-2682/99",
+        "HR-339270-2682/102",
+        "HR-339270-2682/104"
+      ],
+      "parentParcelNumbers": [
+        {
+          "id": "HR-339270-2682/89",
+          "number": "2682/89",
+          "cadastre": "Trešnjevka"
+        },
+        {
+          "id": "HR-339270-2682/91",
+          "number": "2682/91",
+          "cadastre": "Trešnjevka"
+        },
+        {
+          "id": "HR-339270-2682/93",
+          "number": "2682/93",
+          "cadastre": "Trešnjevka"
+        },
+        {
+          "id": "HR-339270-2682/95",
+          "number": "2682/95",
+          "cadastre": "Trešnjevka"
+        },
+        {
+          "id": "HR-339270-2682/97",
+          "number": "2682/97",
+          "cadastre": "Trešnjevka"
+        },
+        {
+          "id": "HR-339270-2682/99",
+          "number": "2682/99",
+          "cadastre": "Trešnjevka"
+        },
+        {
+          "id": "HR-339270-2682/102",
+          "number": "2682/102",
+          "cadastre": "Trešnjevka"
+        },
+        {
+          "id": "HR-339270-2682/104",
+          "number": "2682/104",
+          "cadastre": "Trešnjevka"
+        }
+      ],
+      "createdFrom": "single-building",
+      "typologyType": "single",
+      "blockName": "Selska–Baštijanova–Vitezićeva – Pionirove faze S–S12",
+      "parameters": {
+        "typology": "single",
+        "floorHeightM": 3,
+        "geometryBasis": "observed-built-state",
+        "sourceStatistics": {
+          "geometryDerived": {
+            "parcelAreaM2": 25205.117733064995,
+            "footprintAreaM2": 12372.573468026854,
+            "siteCoveragePercent": 49.087544835373095,
+            "heightEquivalentAboveGroundGbpM2": 90189.33753845954,
+            "heightEquivalentKin": 3.578215285229391,
+            "buildingCount": 11,
+            "method": "DGU footprint area × GDI height / 3 m; diagnostic estimate, not permit GBP"
+          }
+        }
+      },
+      "ancestorKey": "site:pionir-selska-bastijanova-viteziceva-observed",
+      "takeWholeParcels": true,
+      "metadata": {
+        "sourceStatistics": {
+          "geometryDerived": {
+            "parcelAreaM2": 25205.117733064995,
+            "footprintAreaM2": 12372.573468026854,
+            "siteCoveragePercent": 49.087544835373095,
+            "heightEquivalentAboveGroundGbpM2": 90189.33753845954,
+            "heightEquivalentKin": 3.578215285229391,
+            "buildingCount": 11,
+            "method": "DGU footprint area × GDI height / 3 m; diagnostic estimate, not permit GBP"
+          }
+        }
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "site:pionir-selska-bastijanova-viteziceva-observed",
+        "parcelIds": [
+          "HR-339270-2682/89",
+          "HR-339270-2682/91",
+          "HR-339270-2682/93",
+          "HR-339270-2682/95",
+          "HR-339270-2682/97",
+          "HR-339270-2682/99",
+          "HR-339270-2682/102",
+          "HR-339270-2682/104"
+        ],
+        "cestica_ids": [
+          40533555,
+          40533060,
+          40533256,
+          40533159,
+          40533375,
+          40533289,
+          40533290,
+          40533087
+        ],
+        "maticni_broj_ko": 339270,
+        "broj_cestice": null,
+        "brojevi_cestica": [
+          "2682/89",
+          "2682/91",
+          "2682/93",
+          "2682/95",
+          "2682/97",
+          "2682/99",
+          "2682/102",
+          "2682/104"
+        ],
+        "areaM2": 25205.70645001662,
+        "source": "DGU katastar, unija aktualnih čestica",
+        "consensus:role": "site"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.939168352,
+                45.803155731
+              ],
+              [
+                15.939099324,
+                45.803149903
+              ],
+              [
+                15.939076059,
+                45.803147899
+              ],
+              [
+                15.939071946,
+                45.803147519
+              ],
+              [
+                15.938870914,
+                45.803129706
+              ],
+              [
+                15.938823364,
+                45.803124703
+              ],
+              [
+                15.938727234,
+                45.803114603
+              ],
+              [
+                15.938697198,
+                45.803287127
+              ],
+              [
+                15.938670819,
+                45.803441402
+              ],
+              [
+                15.938667138,
+                45.80346208
+              ],
+              [
+                15.93866063,
+                45.80349525
+              ],
+              [
+                15.938659386,
+                45.803516569
+              ],
+              [
+                15.938659943,
+                45.80352521
+              ],
+              [
+                15.938661941,
+                45.803531248
+              ],
+              [
+                15.938665243,
+                45.803535494
+              ],
+              [
+                15.93867061,
+                45.803539119
+              ],
+              [
+                15.939345458,
+                45.803660486
+              ],
+              [
+                15.939447257,
+                45.803028428
+              ],
+              [
+                15.939292483,
+                45.803016332
+              ],
+              [
+                15.939265143,
+                45.803163944
+              ],
+              [
+                15.939168352,
+                45.803155731
+              ]
+            ]
+          ],
+          [
+            [
+              [
+                15.939986338,
+                45.803782582
+              ],
+              [
+                15.940099384,
+                45.803080215
+              ],
+              [
+                15.939991531,
+                45.803071678
+              ],
+              [
+                15.939774668,
+                45.803054599
+              ],
+              [
+                15.939728648,
+                45.803050954
+              ],
+              [
+                15.939622189,
+                45.803711782
+              ],
+              [
+                15.939712585,
+                45.803729322
+              ],
+              [
+                15.939986338,
+                45.803782582
+              ]
+            ]
+          ],
+          [
+            [
+              [
+                15.94029656,
+                45.803842769
+              ],
+              [
+                15.940443068,
+                45.80387111
+              ],
+              [
+                15.940545678,
+                45.803889519
+              ],
+              [
+                15.940649606,
+                45.803904694
+              ],
+              [
+                15.94075421,
+                45.803916634
+              ],
+              [
+                15.940834596,
+                45.80341728
+              ],
+              [
+                15.940844054,
+                45.803359199
+              ],
+              [
+                15.94087904,
+                45.80314126
+              ],
+              [
+                15.940844203,
+                45.80313857
+              ],
+              [
+                15.940415362,
+                45.803104708
+              ],
+              [
+                15.940380526,
+                45.803101928
+              ],
+              [
+                15.940262278,
+                45.803835942
+              ],
+              [
+                15.94029656,
+                45.803842769
+              ]
+            ]
+          ],
+          [
+            [
+              [
+                15.941084933,
+                45.801862486
+              ],
+              [
+                15.940586564,
+                45.801822526
+              ],
+              [
+                15.940427991,
+                45.802807027
+              ],
+              [
+                15.940926633,
+                45.802846269
+              ],
+              [
+                15.941084933,
+                45.801862486
+              ]
+            ]
+          ],
+          [
+            [
+              [
+                15.94124693,
+                45.803957195
+              ],
+              [
+                15.941479988,
+                45.803976151
+              ],
+              [
+                15.941533721,
+                45.803980553
+              ],
+              [
+                15.941658823,
+                45.80320275
+              ],
+              [
+                15.941607661,
+                45.803198631
+              ],
+              [
+                15.941400696,
+                45.803182323
+              ],
+              [
+                15.941376527,
+                45.803180495
+              ],
+              [
+                15.941214041,
+                45.803167643
+              ],
+              [
+                15.941160307,
+                45.803163421
+              ],
+              [
+                15.941035211,
+                45.803939964
+              ],
+              [
+                15.94124693,
+                45.803957195
+              ]
+            ]
+          ],
+          [
+            [
+              [
+                15.941706412,
+                45.802907669
+              ],
+              [
+                15.941753856,
+                45.802614297
+              ],
+              [
+                15.94180826,
+                45.802280829
+              ],
+              [
+                15.941866103,
+                45.801924972
+              ],
+              [
+                15.941366191,
+                45.801884917
+              ],
+              [
+                15.94120777,
+                45.80286843
+              ],
+              [
+                15.941706412,
+                45.802907669
+              ]
+            ]
+          ],
+          [
+            [
+              [
+                15.942279946,
+                45.804041245
+              ],
+              [
+                15.942405442,
+                45.803261554
+              ],
+              [
+                15.942370348,
+                45.803258773
+              ],
+              [
+                15.942207346,
+                45.80324592
+              ],
+              [
+                15.942184336,
+                45.803244098
+              ],
+              [
+                15.941975957,
+                45.803227604
+              ],
+              [
+                15.94194009,
+                45.803224909
+              ],
+              [
+                15.941814858,
+                45.804003342
+              ],
+              [
+                15.942279946,
+                45.804041245
+              ]
+            ]
+          ],
+          [
+            [
+              [
+                15.942646455,
+                45.803372685
+              ],
+              [
+                15.942634387,
+                45.803447579
+              ],
+              [
+                15.94262328,
+                45.803516449
+              ],
+              [
+                15.942583501,
+                45.803764059
+              ],
+              [
+                15.942535635,
+                45.804061478
+              ],
+              [
+                15.942765744,
+                45.804079517
+              ],
+              [
+                15.942864621,
+                45.803465798
+              ],
+              [
+                15.942890817,
+                45.803302882
+              ],
+              [
+                15.942891234,
+                45.803299825
+              ],
+              [
+                15.942661129,
+                45.803281607
+              ],
+              [
+                15.942659205,
+                45.803294015
+              ],
+              [
+                15.942646455,
+                45.803372685
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "S4–S5 (k.č. 2682/95)",
+        "block": "Selska–Baštijanova–Vitezićeva – Pionirove faze S–S12",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 21.18412635,
+        "heightM": 21.18412635,
+        "floors": 7,
+        "storeys": 7,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#2f6fed",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "arhivska oznaka potvrđena je na razini čestice; kod dvaju tlocrta na istoj čestici pojedinačna oznaka ostaje nerazriješena",
+        "officialProjectLabels": [
+          "S4",
+          "S5"
+        ],
+        "dguBuildingId": 13499596,
+        "dguBuildingIds": [
+          13499596
+        ],
+        "dguBuildingNumber": "6873",
+        "dguBuildingNumbers": [
+          "6873"
+        ],
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguBuildingTypes": [
+          "STAMBENA ZGRADA"
+        ],
+        "dguFootprintAreaM2": 1814.3880500009534,
+        "parcelOverlapRatio": 1.0000000000000002,
+        "gdiObjectId": 344880,
+        "gdiObjectIds": [
+          344880
+        ],
+        "gdiSurveyYear": 2022,
+        "gdiSurveyYears": [
+          2022
+        ],
+        "gdiHeightM": 21.18412635,
+        "gdiHeightsM": [
+          21.18412635
+        ],
+        "gdiMatchOverlapRatio": 0.5556679997597087,
+        "gdiMatchOverlapRatios": [
+          0.5556679997597087
+        ],
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseClasses": [
+          "Stambena i mješovita"
+        ],
+        "observedUseGroup": "Stambene i mješovite površine",
+        "observedUseGroups": [
+          "Stambene i mješovite površine"
+        ],
+        "consensus:role": "building",
+        "consensus:index": 0
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.941376527,
+                45.803180495
+              ],
+              [
+                15.941400696,
+                45.803182323
+              ],
+              [
+                15.941607661,
+                45.803198631
+              ],
+              [
+                15.941580948,
+                45.803361363
+              ],
+              [
+                15.941561081,
+                45.803482739
+              ],
+              [
+                15.941544777,
+                45.803582267
+              ],
+              [
+                15.941541493,
+                45.803601956
+              ],
+              [
+                15.94150739,
+                45.803808923
+              ],
+              [
+                15.941504235,
+                45.803828523
+              ],
+              [
+                15.941479988,
+                45.803976151
+              ],
+              [
+                15.94124693,
+                45.803957195
+              ],
+              [
+                15.941328023,
+                45.803463964
+              ],
+              [
+                15.94133679,
+                45.803410649
+              ],
+              [
+                15.941345555,
+                45.803357423
+              ],
+              [
+                15.941348015,
+                45.803343039
+              ],
+              [
+                15.941186812,
+                45.803330373
+              ],
+              [
+                15.941214041,
+                45.803167643
+              ],
+              [
+                15.941376527,
+                45.803180495
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "S6–S7 (k.č. 2682/97)",
+        "block": "Selska–Baštijanova–Vitezićeva – Pionirove faze S–S12",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 23.23124987,
+        "heightM": 23.23124987,
+        "floors": 8,
+        "storeys": 8,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#6f42c1",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "arhivska oznaka potvrđena je na razini čestice; kod dvaju tlocrta na istoj čestici pojedinačna oznaka ostaje nerazriješena",
+        "officialProjectLabels": [
+          "S6",
+          "S7"
+        ],
+        "dguBuildingId": 13499569,
+        "dguBuildingIds": [
+          13499569
+        ],
+        "dguBuildingNumber": "6874",
+        "dguBuildingNumbers": [
+          "6874"
+        ],
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguBuildingTypes": [
+          "STAMBENA ZGRADA"
+        ],
+        "dguFootprintAreaM2": 1814.4356000014795,
+        "parcelOverlapRatio": 1,
+        "gdiObjectId": 341031,
+        "gdiObjectIds": [
+          341031
+        ],
+        "gdiSurveyYear": 2022,
+        "gdiSurveyYears": [
+          2022
+        ],
+        "gdiHeightM": 23.23124987,
+        "gdiHeightsM": [
+          23.23124987
+        ],
+        "gdiMatchOverlapRatio": 0.5563552319117493,
+        "gdiMatchOverlapRatios": [
+          0.5563552319117493
+        ],
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseClasses": [
+          "Stambena i mješovita"
+        ],
+        "observedUseGroup": "Stambene i mješovite površine",
+        "observedUseGroups": [
+          "Stambene i mješovite površine"
+        ],
+        "consensus:role": "building",
+        "consensus:index": 1
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.942181407,
+                45.803421524
+              ],
+              [
+                15.942181263,
+                45.803423143
+              ],
+              [
+                15.942172751,
+                45.803476819
+              ],
+              [
+                15.942172339,
+                45.803479336
+              ],
+              [
+                15.942164633,
+                45.803529597
+              ],
+              [
+                15.942155022,
+                45.803590287
+              ],
+              [
+                15.942145445,
+                45.803647557
+              ],
+              [
+                15.942084959,
+                45.804023197
+              ],
+              [
+                15.941851894,
+                45.804004872
+              ],
+              [
+                15.941875627,
+                45.803857152
+              ],
+              [
+                15.941878506,
+                45.80383935
+              ],
+              [
+                15.941912372,
+                45.803630132
+              ],
+              [
+                15.941915254,
+                45.803612151
+              ],
+              [
+                15.941931307,
+                45.803511902
+              ],
+              [
+                15.9419504,
+                45.803390702
+              ],
+              [
+                15.941975957,
+                45.803227604
+              ],
+              [
+                15.942184336,
+                45.803244098
+              ],
+              [
+                15.942207346,
+                45.80324592
+              ],
+              [
+                15.942370348,
+                45.803258773
+              ],
+              [
+                15.942344665,
+                45.803421691
+              ],
+              [
+                15.942183462,
+                45.803409026
+              ],
+              [
+                15.942181407,
+                45.803421524
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "S11/S12 – sjeverni tlocrt (k.č. 2682/102)",
+        "block": "Selska–Baštijanova–Vitezićeva – Pionirove faze S–S12",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 21.30631201,
+        "heightM": 21.30631201,
+        "floors": 7,
+        "storeys": 7,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#d63384",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "arhivska oznaka potvrđena je na razini čestice; kod dvaju tlocrta na istoj čestici pojedinačna oznaka ostaje nerazriješena",
+        "officialProjectLabels": [
+          "S11",
+          "S12"
+        ],
+        "dguBuildingId": 13499600,
+        "dguBuildingIds": [
+          13499600
+        ],
+        "dguBuildingNumber": "6876",
+        "dguBuildingNumbers": [
+          "6876"
+        ],
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguBuildingTypes": [
+          "STAMBENA ZGRADA"
+        ],
+        "dguFootprintAreaM2": 589.2869499972041,
+        "parcelOverlapRatio": 0.9999999999999998,
+        "gdiObjectId": 344885,
+        "gdiObjectIds": [
+          344885
+        ],
+        "gdiSurveyYear": 2022,
+        "gdiSurveyYears": [
+          2022
+        ],
+        "gdiHeightM": 21.30631201,
+        "gdiHeightsM": [
+          21.30631201
+        ],
+        "gdiMatchOverlapRatio": 1,
+        "gdiMatchOverlapRatios": [
+          1
+        ],
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseClasses": [
+          "Stambena i mješovita"
+        ],
+        "observedUseGroup": "Stambene i mješovite površine",
+        "observedUseGroups": [
+          "Stambene i mješovite površine"
+        ],
+        "consensus:role": "building",
+        "consensus:index": 2
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.941337127,
+                45.802681815
+              ],
+              [
+                15.941412715,
+                45.802687673
+              ],
+              [
+                15.941652845,
+                45.802706483
+              ],
+              [
+                15.94168704,
+                45.802709079
+              ],
+              [
+                15.941659613,
+                45.802878917
+              ],
+              [
+                15.941459846,
+                45.802863364
+              ],
+              [
+                15.941426423,
+                45.802860771
+              ],
+              [
+                15.941262907,
+                45.802848004
+              ],
+              [
+                15.941290464,
+                45.802678167
+              ],
+              [
+                15.941337127,
+                45.802681815
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "S11/S12 – južni tlocrt (k.č. 2682/102)",
+        "block": "Selska–Baštijanova–Vitezićeva – Pionirove faze S–S12",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 22.53429425,
+        "heightM": 22.53429425,
+        "floors": 8,
+        "storeys": 8,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#198754",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "arhivska oznaka potvrđena je na razini čestice; kod dvaju tlocrta na istoj čestici pojedinačna oznaka ostaje nerazriješena",
+        "officialProjectLabels": [
+          "S11",
+          "S12"
+        ],
+        "dguBuildingId": 13499599,
+        "dguBuildingIds": [
+          13499599
+        ],
+        "dguBuildingNumber": "6877",
+        "dguBuildingNumbers": [
+          "6877"
+        ],
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguBuildingTypes": [
+          "STAMBENA ZGRADA"
+        ],
+        "dguFootprintAreaM2": 1317.2743999933489,
+        "parcelOverlapRatio": 1.0000000000000004,
+        "gdiObjectId": 344957,
+        "gdiObjectIds": [
+          344957
+        ],
+        "gdiSurveyYear": 2022,
+        "gdiSurveyYears": [
+          2022
+        ],
+        "gdiHeightM": 22.53429425,
+        "gdiHeightsM": [
+          22.53429425
+        ],
+        "gdiMatchOverlapRatio": 1.0000000000000004,
+        "gdiMatchOverlapRatios": [
+          1.0000000000000004
+        ],
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseClasses": [
+          "Stambena i mješovita"
+        ],
+        "observedUseGroup": "Stambene i mješovite površine",
+        "observedUseGroups": [
+          "Stambene i mješovite površine"
+        ],
+        "consensus:role": "building",
+        "consensus:index": 3
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.941678446,
+                45.802551933
+              ],
+              [
+                15.941435747,
+                45.802532841
+              ],
+              [
+                15.941441233,
+                45.802498765
+              ],
+              [
+                15.941430436,
+                45.802497813
+              ],
+              [
+                15.941454276,
+                45.802416588
+              ],
+              [
+                15.941454675,
+                45.80241533
+              ],
+              [
+                15.941534387,
+                45.801918222
+              ],
+              [
+                15.941777856,
+                45.801937318
+              ],
+              [
+                15.941698274,
+                45.802434426
+              ],
+              [
+                15.941695632,
+                45.802518634
+              ],
+              [
+                15.941684833,
+                45.802517862
+              ],
+              [
+                15.941678446,
+                45.802551933
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "S9/S10 – sjeverni tlocrt (k.č. 2682/104)",
+        "block": "Selska–Baštijanova–Vitezićeva – Pionirove faze S–S12",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 20.89441835,
+        "heightM": 20.89441835,
+        "floors": 7,
+        "storeys": 7,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#fd7e14",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "arhivska oznaka potvrđena je na razini čestice; kod dvaju tlocrta na istoj čestici pojedinačna oznaka ostaje nerazriješena",
+        "officialProjectLabels": [
+          "S9",
+          "S10"
+        ],
+        "dguBuildingId": 13499587,
+        "dguBuildingIds": [
+          13499587
+        ],
+        "dguBuildingNumber": "6879",
+        "dguBuildingNumbers": [
+          "6879"
+        ],
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguBuildingTypes": [
+          "STAMBENA ZGRADA"
+        ],
+        "dguFootprintAreaM2": 584.1208500005476,
+        "parcelOverlapRatio": 0.9999999999999998,
+        "gdiObjectId": 344882,
+        "gdiObjectIds": [
+          344882
+        ],
+        "gdiSurveyYear": 2022,
+        "gdiSurveyYears": [
+          2022
+        ],
+        "gdiHeightM": 20.89441835,
+        "gdiHeightsM": [
+          20.89441835
+        ],
+        "gdiMatchOverlapRatio": 0.9999999999999998,
+        "gdiMatchOverlapRatios": [
+          0.9999999999999998
+        ],
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseClasses": [
+          "Stambena i mješovita"
+        ],
+        "observedUseGroup": "Stambene i mješovite površine",
+        "observedUseGroups": [
+          "Stambene i mješovite površine"
+        ],
+        "consensus:role": "building",
+        "consensus:index": 4
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.940512026,
+                45.80262451
+              ],
+              [
+                15.940832365,
+                45.802650102
+              ],
+              [
+                15.940906022,
+                45.802656042
+              ],
+              [
+                15.94087927,
+                45.802822553
+              ],
+              [
+                15.940774373,
+                45.802814301
+              ],
+              [
+                15.940680084,
+                45.80281321
+              ],
+              [
+                15.940587721,
+                45.802799531
+              ],
+              [
+                15.940482439,
+                45.802791277
+              ],
+              [
+                15.940509197,
+                45.802624316
+              ],
+              [
+                15.940512026,
+                45.80262451
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "S9/S10 – južni tlocrt (k.č. 2682/104)",
+        "block": "Selska–Baštijanova–Vitezićeva – Pionirove faze S–S12",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 21.33692686,
+        "heightM": 21.33692686,
+        "floors": 7,
+        "storeys": 7,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#0dcaf0",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "arhivska oznaka potvrđena je na razini čestice; kod dvaju tlocrta na istoj čestici pojedinačna oznaka ostaje nerazriješena",
+        "officialProjectLabels": [
+          "S9",
+          "S10"
+        ],
+        "dguBuildingId": 13499598,
+        "dguBuildingIds": [
+          13499598
+        ],
+        "dguBuildingNumber": "6878",
+        "dguBuildingNumbers": [
+          "6878"
+        ],
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguBuildingTypes": [
+          "STAMBENA ZGRADA"
+        ],
+        "dguFootprintAreaM2": 1359.0684499953527,
+        "parcelOverlapRatio": 1.0000000000000002,
+        "gdiObjectId": 344956,
+        "gdiObjectIds": [
+          344956
+        ],
+        "gdiSurveyYear": 2022,
+        "gdiSurveyYears": [
+          2022
+        ],
+        "gdiHeightM": 21.33692686,
+        "gdiHeightsM": [
+          21.33692686
+        ],
+        "gdiMatchOverlapRatio": 0.9932046713587391,
+        "gdiMatchOverlapRatios": [
+          0.9932046713587391
+        ],
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseClasses": [
+          "Stambena i mješovita"
+        ],
+        "observedUseGroup": "Stambene i mješovite površine",
+        "observedUseGroups": [
+          "Stambene i mješovite površine"
+        ],
+        "consensus:role": "building",
+        "consensus:index": 5
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.940536533,
+                45.802463926
+              ],
+              [
+                15.940557809,
+                45.8023305
+              ],
+              [
+                15.940549196,
+                45.802329828
+              ],
+              [
+                15.94056961,
+                45.802256865
+              ],
+              [
+                15.94057306,
+                45.802182018
+              ],
+              [
+                15.940593593,
+                45.802110045
+              ],
+              [
+                15.940596532,
+                45.802034837
+              ],
+              [
+                15.940612812,
+                45.80197643
+              ],
+              [
+                15.940580161,
+                45.80197384
+              ],
+              [
+                15.940586364,
+                45.80193257
+              ],
+              [
+                15.940621199,
+                45.80193535
+              ],
+              [
+                15.940637537,
+                45.801832583
+              ],
+              [
+                15.940876764,
+                45.80185121
+              ],
+              [
+                15.940855511,
+                45.801982476
+              ],
+              [
+                15.940852992,
+                45.802054268
+              ],
+              [
+                15.940831919,
+                45.802128848
+              ],
+              [
+                15.940829258,
+                45.802201988
+              ],
+              [
+                15.94080819,
+                45.802276028
+              ],
+              [
+                15.940805129,
+                45.802350517
+              ],
+              [
+                15.940796131,
+                45.802349843
+              ],
+              [
+                15.940792281,
+                45.802374568
+              ],
+              [
+                15.940774343,
+                45.802482996
+              ],
+              [
+                15.940536533,
+                45.802463926
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "S8 (k.č. 2682/99)",
+        "block": "Selska–Baštijanova–Vitezićeva – Pionirove faze S–S12",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 26.1024,
+        "heightM": 26.1024,
+        "floors": 9,
+        "storeys": 9,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#ffc107",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "arhivska oznaka potvrđena je na razini čestice; kod dvaju tlocrta na istoj čestici pojedinačna oznaka ostaje nerazriješena",
+        "officialProjectLabels": [
+          "S8"
+        ],
+        "dguBuildingId": 13499621,
+        "dguBuildingIds": [
+          13499621
+        ],
+        "dguBuildingNumber": "6875",
+        "dguBuildingNumbers": [
+          "6875"
+        ],
+        "dguBuildingType": "ZGRADA MJEŠOVITE UPORABE",
+        "dguBuildingTypes": [
+          "ZGRADA MJEŠOVITE UPORABE"
+        ],
+        "dguFootprintAreaM2": 774.7148999949206,
+        "parcelOverlapRatio": 1,
+        "gdiObjectId": 341034,
+        "gdiObjectIds": [
+          341034
+        ],
+        "gdiSurveyYear": 2022,
+        "gdiSurveyYears": [
+          2022
+        ],
+        "gdiHeightM": 26.1024,
+        "gdiHeightsM": [
+          26.1024
+        ],
+        "gdiMatchOverlapRatio": 0.5277629354448188,
+        "gdiMatchOverlapRatios": [
+          0.5277629354448188
+        ],
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseClasses": [
+          "Stambena i mješovita"
+        ],
+        "observedUseGroup": "Stambene i mješovite površine",
+        "observedUseGroups": [
+          "Stambene i mješovite površine"
+        ],
+        "consensus:role": "building",
+        "consensus:index": 6
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.942791553,
+                45.803529687
+              ],
+              [
+                15.942796052,
+                45.803530069
+              ],
+              [
+                15.942756275,
+                45.803777589
+              ],
+              [
+                15.942583501,
+                45.803764059
+              ],
+              [
+                15.94262328,
+                45.803516449
+              ],
+              [
+                15.942681514,
+                45.803520962
+              ],
+              [
+                15.942692621,
+                45.803452182
+              ],
+              [
+                15.942634387,
+                45.803447579
+              ],
+              [
+                15.942646455,
+                45.803372685
+              ],
+              [
+                15.942659205,
+                45.803294015
+              ],
+              [
+                15.942661129,
+                45.803281607
+              ],
+              [
+                15.942891234,
+                45.803299825
+              ],
+              [
+                15.942890817,
+                45.803302882
+              ],
+              [
+                15.942864621,
+                45.803465798
+              ],
+              [
+                15.942802659,
+                45.803460907
+              ],
+              [
+                15.942791553,
+                45.803529687
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "S2/S3 – sjeverni tlocrt (k.č. 2682/93)",
+        "block": "Selska–Baštijanova–Vitezićeva – Pionirove faze S–S12",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 21.03883717,
+        "heightM": 21.03883717,
+        "floors": 7,
+        "storeys": 7,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#20c997",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "arhivska oznaka potvrđena je na razini čestice; kod dvaju tlocrta na istoj čestici pojedinačna oznaka ostaje nerazriješena",
+        "officialProjectLabels": [
+          "S2",
+          "S3"
+        ],
+        "dguBuildingId": 13499570,
+        "dguBuildingIds": [
+          13499570
+        ],
+        "dguBuildingNumber": "6871",
+        "dguBuildingNumbers": [
+          "6871"
+        ],
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguBuildingTypes": [
+          "STAMBENA ZGRADA"
+        ],
+        "dguFootprintAreaM2": 997.1451500023775,
+        "parcelOverlapRatio": 0.9999999999999999,
+        "gdiObjectId": 344961,
+        "gdiObjectIds": [
+          344961
+        ],
+        "gdiSurveyYear": 2022,
+        "gdiSurveyYears": [
+          2022
+        ],
+        "gdiHeightM": 21.03883717,
+        "gdiHeightsM": [
+          21.03883717
+        ],
+        "gdiMatchOverlapRatio": 0.9919074921450178,
+        "gdiMatchOverlapRatios": [
+          0.9919074921450178
+        ],
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseClasses": [
+          "Stambena i mješovita"
+        ],
+        "observedUseGroup": "Stambene i mješovite površine",
+        "observedUseGroups": [
+          "Stambene i mješovite površine"
+        ],
+        "consensus:role": "building",
+        "consensus:index": 7
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.940615546,
+                45.803400011
+              ],
+              [
+                15.940541322,
+                45.803861963
+              ],
+              [
+                15.940499028,
+                45.803858697
+              ],
+              [
+                15.940497799,
+                45.803865799
+              ],
+              [
+                15.940371432,
+                45.803855913
+              ],
+              [
+                15.940372662,
+                45.80384872
+              ],
+              [
+                15.94029656,
+                45.803842769
+              ],
+              [
+                15.940370917,
+                45.803380548
+              ],
+              [
+                15.940615546,
+                45.803400011
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "S2/S3 – južni tlocrt (k.č. 2682/93)",
+        "block": "Selska–Baštijanova–Vitezićeva – Pionirove faze S–S12",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 20.9049034,
+        "heightM": 20.9049034,
+        "floors": 7,
+        "storeys": 7,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#2f6fed",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "arhivska oznaka potvrđena je na razini čestice; kod dvaju tlocrta na istoj čestici pojedinačna oznaka ostaje nerazriješena",
+        "officialProjectLabels": [
+          "S2",
+          "S3"
+        ],
+        "dguBuildingId": 13499597,
+        "dguBuildingIds": [
+          13499597
+        ],
+        "dguBuildingNumber": "6872",
+        "dguBuildingNumbers": [
+          "6872"
+        ],
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguBuildingTypes": [
+          "STAMBENA ZGRADA"
+        ],
+        "dguFootprintAreaM2": 630.8239999880745,
+        "parcelOverlapRatio": 1,
+        "gdiObjectId": 344884,
+        "gdiObjectIds": [
+          344884
+        ],
+        "gdiSurveyYear": 2022,
+        "gdiSurveyYears": [
+          2022
+        ],
+        "gdiHeightM": 20.9049034,
+        "gdiHeightsM": [
+          20.9049034
+        ],
+        "gdiMatchOverlapRatio": 0.9999878528414593,
+        "gdiMatchOverlapRatios": [
+          0.9999878528414593
+        ],
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseClasses": [
+          "Stambena i mješovita"
+        ],
+        "observedUseGroup": "Stambene i mješovite površine",
+        "observedUseGroups": [
+          "Stambene i mješovite površine"
+        ],
+        "consensus:role": "building",
+        "consensus:index": 8
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.940415362,
+                45.803104708
+              ],
+              [
+                15.940844203,
+                45.80313857
+              ],
+              [
+                15.940817045,
+                45.803306969
+              ],
+              [
+                15.94076691,
+                45.803303034
+              ],
+              [
+                15.940388466,
+                45.803272568
+              ],
+              [
+                15.940415362,
+                45.803104708
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "S1 (k.č. 2682/91)",
+        "block": "Selska–Baštijanova–Vitezićeva – Pionirove faze S–S12",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 21.30713438,
+        "heightM": 21.30713438,
+        "floors": 7,
+        "storeys": 7,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#6f42c1",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "arhivska oznaka potvrđena je na razini čestice; kod dvaju tlocrta na istoj čestici pojedinačna oznaka ostaje nerazriješena",
+        "officialProjectLabels": [
+          "S1"
+        ],
+        "dguBuildingId": 13499584,
+        "dguBuildingIds": [
+          13499584
+        ],
+        "dguBuildingNumber": "7036",
+        "dguBuildingNumbers": [
+          "7036"
+        ],
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguBuildingTypes": [
+          "STAMBENA ZGRADA"
+        ],
+        "dguFootprintAreaM2": 1105.013799994886,
+        "parcelOverlapRatio": 0.9999999999999998,
+        "gdiObjectId": 344960,
+        "gdiObjectIds": [
+          344960
+        ],
+        "gdiSurveyYear": 2022,
+        "gdiSurveyYears": [
+          2022
+        ],
+        "gdiHeightM": 21.30713438,
+        "gdiHeightsM": [
+          21.30713438
+        ],
+        "gdiMatchOverlapRatio": 0.9999999999999998,
+        "gdiMatchOverlapRatios": [
+          0.9999999999999998
+        ],
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseClasses": [
+          "Stambena i mješovita"
+        ],
+        "observedUseGroup": "Stambene i mješovite površine",
+        "observedUseGroups": [
+          "Stambene i mješovite površine"
+        ],
+        "consensus:role": "building",
+        "consensus:index": 9
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.939680832,
+                45.803637027
+              ],
+              [
+                15.939774668,
+                45.803054599
+              ],
+              [
+                15.939991531,
+                45.803071678
+              ],
+              [
+                15.939897697,
+                45.803654106
+              ],
+              [
+                15.939680832,
+                45.803637027
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "S (k.č. 2682/89)",
+        "block": "Selska–Baštijanova–Vitezićeva – Pionirove faze S–S12",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 20.63423472,
+        "heightM": 20.63423472,
+        "floors": 7,
+        "storeys": 7,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#d63384",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "arhivska oznaka potvrđena je na razini čestice; kod dvaju tlocrta na istoj čestici pojedinačna oznaka ostaje nerazriješena",
+        "officialProjectLabels": [
+          "S"
+        ],
+        "dguBuildingId": 13499564,
+        "dguBuildingIds": [
+          13499564
+        ],
+        "dguBuildingNumber": "7052",
+        "dguBuildingNumbers": [
+          "7052"
+        ],
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguBuildingTypes": [
+          "STAMBENA ZGRADA"
+        ],
+        "dguFootprintAreaM2": 1386.5948999960417,
+        "parcelOverlapRatio": 1,
+        "gdiObjectId": 344879,
+        "gdiObjectIds": [
+          344879
+        ],
+        "gdiSurveyYear": 2022,
+        "gdiSurveyYears": [
+          2022
+        ],
+        "gdiHeightM": 20.63423472,
+        "gdiHeightsM": [
+          20.63423472
+        ],
+        "gdiMatchOverlapRatio": 1,
+        "gdiMatchOverlapRatios": [
+          1
+        ],
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseClasses": [
+          "Stambena i mješovita"
+        ],
+        "observedUseGroup": "Stambene i mješovite površine",
+        "observedUseGroups": [
+          "Stambene i mješovite površine"
+        ],
+        "consensus:role": "building",
+        "consensus:index": 10
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.939057471,
+                45.803230949
+              ],
+              [
+                15.939047501,
+                45.803288667
+              ],
+              [
+                15.939026881,
+                45.803407519
+              ],
+              [
+                15.939366618,
+                45.80343636
+              ],
+              [
+                15.939337674,
+                45.803602861
+              ],
+              [
+                15.938759876,
+                45.803553775
+              ],
+              [
+                15.938773936,
+                45.803473222
+              ],
+              [
+                15.938777488,
+                45.803452634
+              ],
+              [
+                15.938833886,
+                45.803127365
+              ],
+              [
+                15.938870914,
+                45.803129706
+              ],
+              [
+                15.939071946,
+                45.803147519
+              ],
+              [
+                15.939057471,
+                45.803230949
+              ]
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

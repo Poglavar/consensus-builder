@@ -1,0 +1,1156 @@
+{
+  "type": "FeatureCollection",
+  "name": "Špansko – Stenjevečki odvojak – rekonstrukcija izvedenog stanja",
+  "bbox": [
+    15.886194112,
+    45.800979854,
+    15.8877244,
+    45.802252671
+  ],
+  "reconstruction": {
+    "schema": "consensus-builder.reconstruction.v1",
+    "proposal": {
+      "proposalId": "pionir-spansko-stenjevecki-odvojak-observed",
+      "city": "zagreb",
+      "name": "Špansko – Stenjevečki odvojak – rekonstrukcija izvedenog stanja",
+      "title": "Špansko – Stenjevečki odvojak – rekonstrukcija izvedenog stanja",
+      "description": "Rekonstrukcija svih sedam izvedenih zgrada Pionirova projekta Špansko – Stenjevečki odvojak na k.č. 2976/1, između Ulice Marije Radić i Ulice Antuna Šoljana. Arhiva potvrđuje faze N2, E, N1, F1, F2, N4 i N3 od 2014. do 2019. Današnji katastar ima točno sedam nadzemnih DGU poligona. Oznake faza nisu pridružene pojedinim tlocrtima bez situacijskog nacrta, pa interni nazivi opisuju samo položaj.",
+      "author": "zagreb.lol – lokalna analiza",
+      "type": "building",
+      "goal": "single",
+      "primaryType": "Urban Rule",
+      "typologyType": "single",
+      "lifecycleStatus": "Active",
+      "createdAt": "2026-08-13T00:00:00.000Z",
+      "updatedAt": "2026-08-13T00:00:00.000Z",
+      "tags": [
+        "buildings",
+        "research",
+        "reconstruction",
+        "observed-built-state"
+      ],
+      "parentParcelIds": [
+        "HR-340057-2976/1"
+      ],
+      "cadastreParcelIds": [
+        "HR-340057-2976/1"
+      ],
+      "parcelIds": [
+        "HR-340057-2976/1"
+      ],
+      "acceptedParcelIds": [],
+      "bounds": [
+        15.886194112,
+        45.800979854,
+        15.8877244,
+        45.802252671
+      ],
+      "source": {
+        "projectSource": "https://web.archive.org/web/20190111195457/http://pionir.hr/prodaja-nekretnina/pansko-stenjevaki-odvojak.html",
+        "projectSources": [
+          "https://web.archive.org/web/20140321092231/http://www.pionir.hr/objekt-n2.html",
+          "https://web.archive.org/web/20160127173003/http://pionir.hr/objekt-e.html",
+          "https://web.archive.org/web/20160127173003/http://pionir.hr/objekt-n1.html",
+          "https://web.archive.org/web/20160812094800/http://pionir.hr/objekt-f1-spansko-stenjevecki.html",
+          "https://web.archive.org/web/20180318124812/http://pionir.hr/spansko-stenjecacki-objekt-f2.html",
+          "https://web.archive.org/web/20180318124812/http://pionir.hr/pansko-stenjevaki-odvojak-objekt-n4.html",
+          "https://web.archive.org/web/20190111195457/http://pionir.hr/spansko-stenjevecki-odvojak-n3.html"
+        ],
+        "projectDates": "N2: studeni 2014.; E: prosinac 2015.; N1: prosinac 2016.; F1: srpanj 2017.; F2: ožujak 2018.; N4: prosinac 2018.; N3: svibanj 2019.",
+        "parcel": "k.č. 2976/1, MB 340057, k.o. Stenjevec Jug",
+        "coordinateSystem": "DGU/GDI HTRS96/TM (EPSG:3765), transformed to WGS84 for the app",
+        "footprintBasis": "current DGU legal building geometry",
+        "heightBasis": "matched GDI surveyed object",
+        "companyRoleNote": "Pionirove arhivirane prodajne stranice izravno vode svih sedam faza.",
+        "officialProjectLabels": [
+          "N2",
+          "E",
+          "N1",
+          "F1",
+          "F2",
+          "N4",
+          "N3"
+        ],
+        "sourceStatistics": {
+          "geometryDerived": {
+            "parcelAreaM2": 13712.144442115448,
+            "footprintAreaM2": 4656.789916060748,
+            "siteCoveragePercent": 33.96106229568217,
+            "heightEquivalentAboveGroundGbpM2": 46278.31565141527,
+            "heightEquivalentKin": 3.3749874679905036,
+            "buildingCount": 7,
+            "method": "DGU footprint area × GDI height / 3 m; diagnostic estimate, not permit GBP"
+          }
+        }
+      }
+    },
+    "buildingProposal": {
+      "parentParcelIds": [
+        "HR-340057-2976/1"
+      ],
+      "parentParcelNumbers": [
+        {
+          "id": "HR-340057-2976/1",
+          "number": "2976/1",
+          "cadastre": "Stenjevec Jug"
+        }
+      ],
+      "createdFrom": "single-building",
+      "typologyType": "single",
+      "blockName": "Špansko – Stenjevečki odvojak – k.č. 2976/1",
+      "parameters": {
+        "typology": "single",
+        "floorHeightM": 3,
+        "geometryBasis": "observed-built-state",
+        "sourceStatistics": {
+          "geometryDerived": {
+            "parcelAreaM2": 13712.144442115448,
+            "footprintAreaM2": 4656.789916060748,
+            "siteCoveragePercent": 33.96106229568217,
+            "heightEquivalentAboveGroundGbpM2": 46278.31565141527,
+            "heightEquivalentKin": 3.3749874679905036,
+            "buildingCount": 7,
+            "method": "DGU footprint area × GDI height / 3 m; diagnostic estimate, not permit GBP"
+          }
+        }
+      },
+      "ancestorKey": "HR-340057-2976/1",
+      "takeWholeParcels": true,
+      "metadata": {
+        "sourceStatistics": {
+          "geometryDerived": {
+            "parcelAreaM2": 13712.144442115448,
+            "footprintAreaM2": 4656.789916060748,
+            "siteCoveragePercent": 33.96106229568217,
+            "heightEquivalentAboveGroundGbpM2": 46278.31565141527,
+            "heightEquivalentKin": 3.3749874679905036,
+            "buildingCount": 7,
+            "method": "DGU footprint area × GDI height / 3 m; diagnostic estimate, not permit GBP"
+          }
+        }
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "HR-340057-2976/1",
+        "parcelIds": [
+          "HR-340057-2976/1"
+        ],
+        "cestica_ids": [
+          40367937
+        ],
+        "maticni_broj_ko": 340057,
+        "broj_cestice": "2976/1",
+        "brojevi_cestica": [
+          "2976/1"
+        ],
+        "areaM2": 13712.587299981511,
+        "source": "DGU katastar, aktualna čestica",
+        "consensus:role": "site"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.887270671,
+              45.801123805
+            ],
+            [
+              15.887309199,
+              45.80112977
+            ],
+            [
+              15.887345929,
+              45.801135546
+            ],
+            [
+              15.887377008,
+              45.801140392
+            ],
+            [
+              15.8877244,
+              45.801194892
+            ],
+            [
+              15.887719652,
+              45.801322998
+            ],
+            [
+              15.887717776,
+              45.801365098
+            ],
+            [
+              15.887715386,
+              45.801407106
+            ],
+            [
+              15.887712353,
+              45.80144911
+            ],
+            [
+              15.887708675,
+              45.801491201
+            ],
+            [
+              15.887704614,
+              45.80153311
+            ],
+            [
+              15.887699909,
+              45.801575105
+            ],
+            [
+              15.88769469,
+              45.801617008
+            ],
+            [
+              15.887688699,
+              45.801658906
+            ],
+            [
+              15.887682323,
+              45.801700712
+            ],
+            [
+              15.887675433,
+              45.801742516
+            ],
+            [
+              15.887668028,
+              45.801784317
+            ],
+            [
+              15.887659853,
+              45.801825934
+            ],
+            [
+              15.887651291,
+              45.801867638
+            ],
+            [
+              15.887642087,
+              45.80190925
+            ],
+            [
+              15.887580592,
+              45.802179489
+            ],
+            [
+              15.887010991,
+              45.802209547
+            ],
+            [
+              15.886867593,
+              45.802217146
+            ],
+            [
+              15.886660606,
+              45.802228002
+            ],
+            [
+              15.886529437,
+              45.802234946
+            ],
+            [
+              15.886239165,
+              45.802250304
+            ],
+            [
+              15.886194112,
+              45.802252671
+            ],
+            [
+              15.886211837,
+              45.802114647
+            ],
+            [
+              15.886231169,
+              45.801959176
+            ],
+            [
+              15.886240633,
+              45.801882294
+            ],
+            [
+              15.886249824,
+              45.801806761
+            ],
+            [
+              15.886286826,
+              45.801506607
+            ],
+            [
+              15.886320023,
+              45.801236577
+            ],
+            [
+              15.886351529,
+              45.800979854
+            ],
+            [
+              15.887270671,
+              45.801123805
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Zgrada 1 (sjeverozapadna)",
+        "block": "Špansko – Stenjevečki odvojak – k.č. 2976/1",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 30.12118904,
+        "heightM": 30.12118904,
+        "floors": 10,
+        "storeys": 10,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#2f6fed",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "interni naziv prema položaju; službene fazne oznake nisu sigurno pridružene pojedinim DGU tlocrtima",
+        "officialProjectLabels": [
+          "N2",
+          "E",
+          "N1",
+          "F1",
+          "F2",
+          "N4",
+          "N3"
+        ],
+        "dguBuildingId": 13392284,
+        "dguBuildingIds": [
+          13392284
+        ],
+        "dguBuildingNumber": "338",
+        "dguBuildingNumbers": [
+          "338"
+        ],
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguBuildingTypes": [
+          "STAMBENA ZGRADA"
+        ],
+        "dguFootprintAreaM2": 787.1966000024124,
+        "parcelOverlapRatio": 0.9999999999999999,
+        "gdiObjectId": 300564,
+        "gdiObjectIds": [
+          300564
+        ],
+        "gdiSurveyYear": 2022,
+        "gdiSurveyYears": [
+          2022
+        ],
+        "gdiHeightM": 30.12118904,
+        "gdiHeightsM": [
+          30.12118904
+        ],
+        "gdiMatchOverlapRatio": 0.9982154551042794,
+        "gdiMatchOverlapRatios": [
+          0.9982154551042794
+        ],
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseClasses": [
+          "Stambena i mješovita"
+        ],
+        "observedUseGroup": "Stambene i mješovite površine",
+        "observedUseGroups": [
+          "Stambene i mješovite površine"
+        ],
+        "consensus:role": "building",
+        "consensus:index": 0
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.886513165,
+                45.802217133
+              ],
+              [
+                15.886271723,
+                45.802202519
+              ],
+              [
+                15.886274822,
+                45.802178061
+              ],
+              [
+                15.886251938,
+                45.802176679
+              ],
+              [
+                15.886282287,
+                45.801931737
+              ],
+              [
+                15.886306199,
+                45.801933215
+              ],
+              [
+                15.88631339,
+                45.801875847
+              ],
+              [
+                15.886576429,
+                45.801891746
+              ],
+              [
+                15.88656048,
+                45.802020421
+              ],
+              [
+                15.886537724,
+                45.80201904
+              ],
+              [
+                15.886532072,
+                45.802065169
+              ],
+              [
+                15.886554828,
+                45.802066551
+              ],
+              [
+                15.886538031,
+                45.80220206
+              ],
+              [
+                15.886515277,
+                45.802200588
+              ],
+              [
+                15.886513722,
+                45.802213267
+              ],
+              [
+                15.886513165,
+                45.802217133
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Zgrada 2 (sjeverna središnja)",
+        "block": "Špansko – Stenjevečki odvojak – k.č. 2976/1",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 30.08427689,
+        "heightM": 30.08427689,
+        "floors": 10,
+        "storeys": 10,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#6f42c1",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "interni naziv prema položaju; službene fazne oznake nisu sigurno pridružene pojedinim DGU tlocrtima",
+        "officialProjectLabels": [
+          "N2",
+          "E",
+          "N1",
+          "F1",
+          "F2",
+          "N4",
+          "N3"
+        ],
+        "dguBuildingId": 13392285,
+        "dguBuildingIds": [
+          13392285
+        ],
+        "dguBuildingNumber": "336",
+        "dguBuildingNumbers": [
+          "336"
+        ],
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguBuildingTypes": [
+          "STAMBENA ZGRADA"
+        ],
+        "dguFootprintAreaM2": 530.7090499887711,
+        "parcelOverlapRatio": 1.0000000000000002,
+        "gdiObjectId": 300566,
+        "gdiObjectIds": [
+          300566
+        ],
+        "gdiSurveyYear": 2022,
+        "gdiSurveyYears": [
+          2022
+        ],
+        "gdiHeightM": 30.08427689,
+        "gdiHeightsM": [
+          30.08427689
+        ],
+        "gdiMatchOverlapRatio": 0.9996879679486999,
+        "gdiMatchOverlapRatios": [
+          0.9996879679486999
+        ],
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseClasses": [
+          "Stambena i mješovita"
+        ],
+        "observedUseGroup": "Stambene i mješovite površine",
+        "observedUseGroups": [
+          "Stambene i mješovite površine"
+        ],
+        "consensus:role": "building",
+        "consensus:index": 1
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.887027257,
+                45.802122264
+              ],
+              [
+                15.88702712,
+                45.802123073
+              ],
+              [
+                15.886768966,
+                45.802107381
+              ],
+              [
+                15.886768974,
+                45.802106571
+              ],
+              [
+                15.886754704,
+                45.802105685
+              ],
+              [
+                15.886753804,
+                45.80210568
+              ],
+              [
+                15.886779218,
+                45.801899943
+              ],
+              [
+                15.886859827,
+                45.801904785
+              ],
+              [
+                15.8870474,
+                45.801916139
+              ],
+              [
+                15.887074526,
+                45.801917814
+              ],
+              [
+                15.887049114,
+                45.802123551
+              ],
+              [
+                15.887027257,
+                45.802122264
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Zgrada 3 (sjeveroistočna)",
+        "block": "Špansko – Stenjevečki odvojak – k.č. 2976/1",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 29.64017708,
+        "heightM": 29.64017708,
+        "floors": 10,
+        "storeys": 10,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#d63384",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "interni naziv prema položaju; službene fazne oznake nisu sigurno pridružene pojedinim DGU tlocrtima",
+        "officialProjectLabels": [
+          "N2",
+          "E",
+          "N1",
+          "F1",
+          "F2",
+          "N4",
+          "N3"
+        ],
+        "dguBuildingId": 13392294,
+        "dguBuildingIds": [
+          13392294
+        ],
+        "dguBuildingNumber": "86",
+        "dguBuildingNumbers": [
+          "86"
+        ],
+        "dguBuildingType": "ZGRADA MJEŠOVITE UPORABE",
+        "dguBuildingTypes": [
+          "ZGRADA MJEŠOVITE UPORABE"
+        ],
+        "dguFootprintAreaM2": 519.9617000098665,
+        "parcelOverlapRatio": 1.0000000000000002,
+        "gdiObjectId": 300569,
+        "gdiObjectIds": [
+          300569
+        ],
+        "gdiSurveyYear": 2022,
+        "gdiSurveyYears": [
+          2022
+        ],
+        "gdiHeightM": 29.64017708,
+        "gdiHeightsM": [
+          29.64017708
+        ],
+        "gdiMatchOverlapRatio": 0.9988806809367973,
+        "gdiMatchOverlapRatios": [
+          0.9988806809367973
+        ],
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseClasses": [
+          "Stambena i mješovita"
+        ],
+        "observedUseGroup": "Stambene i mješovite površine",
+        "observedUseGroups": [
+          "Stambene i mješovite površine"
+        ],
+        "consensus:role": "building",
+        "consensus:index": 2
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.887566847,
+                45.802154131
+              ],
+              [
+                15.887274493,
+                45.802136457
+              ],
+              [
+                15.887299762,
+                45.801932069
+              ],
+              [
+                15.887591986,
+                45.801949742
+              ],
+              [
+                15.887566847,
+                45.802154131
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Zgrada 4 (zapadna središnja)",
+        "block": "Špansko – Stenjevečki odvojak – k.č. 2976/1",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 30.12118904,
+        "heightM": 30.12118904,
+        "floors": 10,
+        "storeys": 10,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#198754",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "interni naziv prema položaju; službene fazne oznake nisu sigurno pridružene pojedinim DGU tlocrtima",
+        "officialProjectLabels": [
+          "N2",
+          "E",
+          "N1",
+          "F1",
+          "F2",
+          "N4",
+          "N3"
+        ],
+        "dguBuildingId": 13392283,
+        "dguBuildingIds": [
+          13392283
+        ],
+        "dguBuildingNumber": "360",
+        "dguBuildingNumbers": [
+          "360"
+        ],
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguBuildingTypes": [
+          "STAMBENA ZGRADA"
+        ],
+        "dguFootprintAreaM2": 778.9104000032115,
+        "parcelOverlapRatio": 1.0000000000000002,
+        "gdiObjectId": 300564,
+        "gdiObjectIds": [
+          300564
+        ],
+        "gdiSurveyYear": 2022,
+        "gdiSurveyYears": [
+          2022
+        ],
+        "gdiHeightM": 30.12118904,
+        "gdiHeightsM": [
+          30.12118904
+        ],
+        "gdiMatchOverlapRatio": 0.9996068274193649,
+        "gdiMatchOverlapRatios": [
+          0.9996068274193649
+        ],
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseClasses": [
+          "Stambena i mješovita"
+        ],
+        "observedUseGroup": "Stambene i mješovite površine",
+        "observedUseGroups": [
+          "Stambene i mješovite površine"
+        ],
+        "consensus:role": "building",
+        "consensus:index": 3
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.886576429,
+                45.801891746
+              ],
+              [
+                15.88631339,
+                45.801875847
+              ],
+              [
+                15.886320452,
+                45.801818478
+              ],
+              [
+                15.88629654,
+                45.801817
+              ],
+              [
+                15.886322527,
+                45.801606047
+              ],
+              [
+                15.886345411,
+                45.801607429
+              ],
+              [
+                15.886352614,
+                45.801548981
+              ],
+              [
+                15.886354157,
+                45.801549079
+              ],
+              [
+                15.886594053,
+                45.801563595
+              ],
+              [
+                15.886591084,
+                45.801587963
+              ],
+              [
+                15.88661384,
+                45.801589345
+              ],
+              [
+                15.886598031,
+                45.801716941
+              ],
+              [
+                15.886575275,
+                45.80171556
+              ],
+              [
+                15.886569624,
+                45.801761599
+              ],
+              [
+                15.88659238,
+                45.801762981
+              ],
+              [
+                15.88659026,
+                45.801780335
+              ],
+              [
+                15.886576429,
+                45.801891746
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Zgrada 5 (istočna središnja)",
+        "block": "Špansko – Stenjevečki odvojak – k.č. 2976/1",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 29.30329418,
+        "heightM": 29.30329418,
+        "floors": 10,
+        "storeys": 10,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#fd7e14",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "interni naziv prema položaju; službene fazne oznake nisu sigurno pridružene pojedinim DGU tlocrtima",
+        "officialProjectLabels": [
+          "N2",
+          "E",
+          "N1",
+          "F1",
+          "F2",
+          "N4",
+          "N3"
+        ],
+        "dguBuildingId": 13392293,
+        "dguBuildingIds": [
+          13392293
+        ],
+        "dguBuildingNumber": "96",
+        "dguBuildingNumbers": [
+          "96"
+        ],
+        "dguBuildingType": "ZGRADA MJEŠOVITE UPORABE",
+        "dguBuildingTypes": [
+          "ZGRADA MJEŠOVITE UPORABE"
+        ],
+        "dguFootprintAreaM2": 978.7248499918844,
+        "parcelOverlapRatio": 1,
+        "gdiObjectId": 300541,
+        "gdiObjectIds": [
+          300541
+        ],
+        "gdiSurveyYear": 2022,
+        "gdiSurveyYears": [
+          2022
+        ],
+        "gdiHeightM": 29.30329418,
+        "gdiHeightsM": [
+          29.30329418
+        ],
+        "gdiMatchOverlapRatio": 0.9932709991229,
+        "gdiMatchOverlapRatios": [
+          0.9932709991229
+        ],
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseClasses": [
+          "Stambena i mješovita"
+        ],
+        "observedUseGroup": "Stambene i mješovite površine",
+        "observedUseGroups": [
+          "Stambene i mješovite površine"
+        ],
+        "consensus:role": "building",
+        "consensus:index": 4
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.887598531,
+                45.801786824
+              ],
+              [
+                15.887387044,
+                45.801774083
+              ],
+              [
+                15.887388875,
+                45.801759696
+              ],
+              [
+                15.887373833,
+                45.801758805
+              ],
+              [
+                15.887412082,
+                45.80144984
+              ],
+              [
+                15.887431032,
+                45.801305434
+              ],
+              [
+                15.887671443,
+                45.80131995
+              ],
+              [
+                15.887615273,
+                45.801773417
+              ],
+              [
+                15.88760036,
+                45.801772527
+              ],
+              [
+                15.887598531,
+                45.801786824
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Zgrada 6 (jugozapadna)",
+        "block": "Špansko – Stenjevečki odvojak – k.č. 2976/1",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 30.08427689,
+        "heightM": 30.08427689,
+        "floors": 10,
+        "storeys": 10,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#0dcaf0",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "interni naziv prema položaju; službene fazne oznake nisu sigurno pridružene pojedinim DGU tlocrtima",
+        "officialProjectLabels": [
+          "N2",
+          "E",
+          "N1",
+          "F1",
+          "F2",
+          "N4",
+          "N3"
+        ],
+        "dguBuildingId": 13392281,
+        "dguBuildingIds": [
+          13392281
+        ],
+        "dguBuildingNumber": "370",
+        "dguBuildingNumbers": [
+          "370"
+        ],
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguBuildingTypes": [
+          "STAMBENA ZGRADA"
+        ],
+        "dguFootprintAreaM2": 530.7985999999083,
+        "parcelOverlapRatio": 1,
+        "gdiObjectId": 300565,
+        "gdiObjectIds": [
+          300565
+        ],
+        "gdiSurveyYear": 2022,
+        "gdiSurveyYears": [
+          2022
+        ],
+        "gdiHeightM": 30.08427689,
+        "gdiHeightsM": [
+          30.08427689
+        ],
+        "gdiMatchOverlapRatio": 0.9980272341974561,
+        "gdiMatchOverlapRatios": [
+          0.9980272341974561
+        ],
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseClasses": [
+          "Stambena i mješovita"
+        ],
+        "observedUseGroup": "Stambene i mješovite površine",
+        "observedUseGroups": [
+          "Stambene i mješovite površine"
+        ],
+        "consensus:role": "building",
+        "consensus:index": 5
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.886397935,
+                45.801182287
+              ],
+              [
+                15.886413234,
+                45.801183179
+              ],
+              [
+                15.886413372,
+                45.80118237
+              ],
+              [
+                15.886671651,
+                45.801197974
+              ],
+              [
+                15.886671514,
+                45.801198783
+              ],
+              [
+                15.88669324,
+                45.801200159
+              ],
+              [
+                15.886667962,
+                45.801405267
+              ],
+              [
+                15.886667826,
+                45.801405896
+              ],
+              [
+                15.886374192,
+                45.801388123
+              ],
+              [
+                15.88637252,
+                45.801388024
+              ],
+              [
+                15.886397935,
+                45.801182287
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Zgrada 7 (jugoistočna)",
+        "block": "Špansko – Stenjevečki odvojak – k.č. 2976/1",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 29.47411753,
+        "heightM": 29.47411753,
+        "floors": 10,
+        "storeys": 10,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#ffc107",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "interni naziv prema položaju; službene fazne oznake nisu sigurno pridružene pojedinim DGU tlocrtima",
+        "officialProjectLabels": [
+          "N2",
+          "E",
+          "N1",
+          "F1",
+          "F2",
+          "N4",
+          "N3"
+        ],
+        "dguBuildingId": 13392282,
+        "dguBuildingIds": [
+          13392282
+        ],
+        "dguBuildingNumber": "365",
+        "dguBuildingNumbers": [
+          "365"
+        ],
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguBuildingTypes": [
+          "STAMBENA ZGRADA"
+        ],
+        "dguFootprintAreaM2": 530.6431499913222,
+        "parcelOverlapRatio": 1.0000000000000002,
+        "gdiObjectId": 306455,
+        "gdiObjectIds": [
+          306455
+        ],
+        "gdiSurveyYear": 2022,
+        "gdiSurveyYears": [
+          2022
+        ],
+        "gdiHeightM": 29.47411753,
+        "gdiHeightsM": [
+          29.47411753
+        ],
+        "gdiMatchOverlapRatio": 1,
+        "gdiMatchOverlapRatios": [
+          1
+        ],
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseClasses": [
+          "Stambena i mješovita"
+        ],
+        "observedUseGroup": "Stambene i mješovite površine",
+        "observedUseGroups": [
+          "Stambene i mješovite površine"
+        ],
+        "consensus:role": "building",
+        "consensus:index": 6
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.886892945,
+                45.801418892
+              ],
+              [
+                15.886918351,
+                45.801213784
+              ],
+              [
+                15.88693365,
+                45.801214676
+              ],
+              [
+                15.886933659,
+                45.801213867
+              ],
+              [
+                15.887191939,
+                45.801229469
+              ],
+              [
+                15.887191801,
+                45.801230278
+              ],
+              [
+                15.887213656,
+                45.801231655
+              ],
+              [
+                15.887188115,
+                45.801437392
+              ],
+              [
+                15.88710725,
+                45.801432459
+              ],
+              [
+                15.886892938,
+                45.801419522
+              ],
+              [
+                15.886892945,
+                45.801418892
+              ]
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

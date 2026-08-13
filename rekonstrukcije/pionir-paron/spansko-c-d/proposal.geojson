@@ -1,0 +1,1070 @@
+{
+  "type": "FeatureCollection",
+  "name": "Špansko C–D – rekonstrukcija izvedenog stanja",
+  "bbox": [
+    15.885929552,
+    45.802551559,
+    15.887491121,
+    45.804430037
+  ],
+  "reconstruction": {
+    "schema": "consensus-builder.reconstruction.v1",
+    "proposal": {
+      "proposalId": "pionir-spansko-c-d-observed",
+      "city": "zagreb",
+      "name": "Špansko C–D – rekonstrukcija izvedenog stanja",
+      "title": "Špansko C–D – rekonstrukcija izvedenog stanja",
+      "description": "Rekonstrukcija četiriju izvedenih nadzemnih građevina između Ulice Vilima Korajca i Ulice Antuna Šoljana. Pionirova arhiva vodi ih kao projekte C i D na tadašnjoj k.č. 2811/1; današnji katastar dijeli sklop na k.č. 2811/1 i 2811/3. Pet DGU poligona svedeno je na četiri fizička tlocrta jer se zgrade 795 i 796 dodiruju i čine jedan spojeni objekt. Oznake C i D nisu pridružene pojedinim tlocrtima bez arhivskog situacijskog nacrta.",
+      "author": "zagreb.lol – lokalna analiza",
+      "type": "building",
+      "goal": "single",
+      "primaryType": "Urban Rule",
+      "typologyType": "single",
+      "lifecycleStatus": "Active",
+      "createdAt": "2026-08-13T00:00:00.000Z",
+      "updatedAt": "2026-08-13T00:00:00.000Z",
+      "tags": [
+        "buildings",
+        "research",
+        "reconstruction",
+        "observed-built-state"
+      ],
+      "parentParcelIds": [
+        "HR-340057-2811/1",
+        "HR-340057-2811/3"
+      ],
+      "cadastreParcelIds": [
+        "HR-340057-2811/1",
+        "HR-340057-2811/3"
+      ],
+      "parcelIds": [
+        "HR-340057-2811/1",
+        "HR-340057-2811/3"
+      ],
+      "acceptedParcelIds": [],
+      "bounds": [
+        15.885929552,
+        45.802551559,
+        15.887491121,
+        45.804430037
+      ],
+      "source": {
+        "projectSource": "https://web.archive.org/web/20111116184239/http://pionir.hr/prodaja-nekretnina-spansko-objekt-c.html",
+        "projectSources": [
+          "https://web.archive.org/web/20111116184239/http://pionir.hr/prodaja-nekretnina-spansko-objekt-c.html",
+          "https://web.archive.org/web/20111116184239/http://pionir.hr/prodaja-nekretnina-spansko-objekt-d.html",
+          "https://www.vecernji.hr/zagreb/parking-spansko-automat-zagreb-1200726"
+        ],
+        "projectDates": "Pionirova arhiva potvrđuje useljive objekte C i D najkasnije u ožujku 2011.; širi sklop nastajao je fazno od druge polovice 2000-ih.",
+        "parcel": "k.č. 2811/1, 2811/3, MB 340057, k.o. Stenjevec Jug",
+        "coordinateSystem": "DGU/GDI HTRS96/TM (EPSG:3765), transformed to WGS84 for the app",
+        "footprintBasis": "current DGU legal building geometry",
+        "heightBasis": "matched GDI surveyed object",
+        "companyRoleNote": "Pionirove arhivirane prodajne stranice izravno vode projekte C i D.",
+        "officialProjectLabels": [
+          "C",
+          "D"
+        ],
+        "sourceStatistics": {
+          "geometryDerived": {
+            "parcelAreaM2": 20724.699568316442,
+            "footprintAreaM2": 7041.349445881797,
+            "siteCoveragePercent": 33.97564062470892,
+            "heightEquivalentAboveGroundGbpM2": 66260.14033071387,
+            "heightEquivalentKin": 3.1971580631263388,
+            "buildingCount": 4,
+            "method": "DGU footprint area × GDI height / 3 m; diagnostic estimate, not permit GBP"
+          },
+          "publishedProjectTotals": {
+            "apartments": 756,
+            "physicalBuildings": 4,
+            "source": "Večernji list navodi 756 stanova u četiri zgrade cijelog sklopa između Korajca i Šoljana."
+          }
+        }
+      }
+    },
+    "buildingProposal": {
+      "parentParcelIds": [
+        "HR-340057-2811/1",
+        "HR-340057-2811/3"
+      ],
+      "parentParcelNumbers": [
+        {
+          "id": "HR-340057-2811/1",
+          "number": "2811/1",
+          "cadastre": "Stenjevec Jug"
+        },
+        {
+          "id": "HR-340057-2811/3",
+          "number": "2811/3",
+          "cadastre": "Stenjevec Jug"
+        }
+      ],
+      "createdFrom": "single-building",
+      "typologyType": "single",
+      "blockName": "Špansko C–D – današnje k.č. 2811/1 i 2811/3",
+      "parameters": {
+        "typology": "single",
+        "floorHeightM": 3,
+        "geometryBasis": "observed-built-state",
+        "sourceStatistics": {
+          "geometryDerived": {
+            "parcelAreaM2": 20724.699568316442,
+            "footprintAreaM2": 7041.349445881797,
+            "siteCoveragePercent": 33.97564062470892,
+            "heightEquivalentAboveGroundGbpM2": 66260.14033071387,
+            "heightEquivalentKin": 3.1971580631263388,
+            "buildingCount": 4,
+            "method": "DGU footprint area × GDI height / 3 m; diagnostic estimate, not permit GBP"
+          },
+          "publishedProjectTotals": {
+            "apartments": 756,
+            "physicalBuildings": 4,
+            "source": "Večernji list navodi 756 stanova u četiri zgrade cijelog sklopa između Korajca i Šoljana."
+          }
+        }
+      },
+      "ancestorKey": "site:pionir-spansko-c-d-observed",
+      "takeWholeParcels": true,
+      "metadata": {
+        "sourceStatistics": {
+          "geometryDerived": {
+            "parcelAreaM2": 20724.699568316442,
+            "footprintAreaM2": 7041.349445881797,
+            "siteCoveragePercent": 33.97564062470892,
+            "heightEquivalentAboveGroundGbpM2": 66260.14033071387,
+            "heightEquivalentKin": 3.1971580631263388,
+            "buildingCount": 4,
+            "method": "DGU footprint area × GDI height / 3 m; diagnostic estimate, not permit GBP"
+          },
+          "publishedProjectTotals": {
+            "apartments": 756,
+            "physicalBuildings": 4,
+            "source": "Večernji list navodi 756 stanova u četiri zgrade cijelog sklopa između Korajca i Šoljana."
+          }
+        }
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "site:pionir-spansko-c-d-observed",
+        "parcelIds": [
+          "HR-340057-2811/1",
+          "HR-340057-2811/3"
+        ],
+        "cestica_ids": [
+          40366319,
+          40366445
+        ],
+        "maticni_broj_ko": 340057,
+        "broj_cestice": null,
+        "brojevi_cestica": [
+          "2811/1",
+          "2811/3"
+        ],
+        "areaM2": 20725.37860001106,
+        "source": "DGU katastar, unija aktualnih čestica",
+        "consensus:role": "site"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.886036659,
+              45.803492915
+            ],
+            [
+              15.886012653,
+              45.803687232
+            ],
+            [
+              15.885973932,
+              45.804003123
+            ],
+            [
+              15.885936624,
+              45.804307413
+            ],
+            [
+              15.885929552,
+              45.804365592
+            ],
+            [
+              15.885935011,
+              45.80437228
+            ],
+            [
+              15.885948793,
+              45.804382522
+            ],
+            [
+              15.885966375,
+              45.804386485
+            ],
+            [
+              15.886012025,
+              45.80438853
+            ],
+            [
+              15.886099337,
+              45.804392509
+            ],
+            [
+              15.88651095,
+              45.804411456
+            ],
+            [
+              15.88679719,
+              45.8044246
+            ],
+            [
+              15.886948948,
+              45.804429463
+            ],
+            [
+              15.887089432,
+              45.804430037
+            ],
+            [
+              15.88721863,
+              45.804427311
+            ],
+            [
+              15.887341942,
+              45.804421763
+            ],
+            [
+              15.887361295,
+              45.804416738
+            ],
+            [
+              15.887374154,
+              45.80440556
+            ],
+            [
+              15.887377014,
+              45.804391178
+            ],
+            [
+              15.887363644,
+              45.804319843
+            ],
+            [
+              15.887331908,
+              45.80415168
+            ],
+            [
+              15.887319928,
+              45.804082692
+            ],
+            [
+              15.88730942,
+              45.804008492
+            ],
+            [
+              15.887300763,
+              45.803929714
+            ],
+            [
+              15.887294698,
+              45.803849239
+            ],
+            [
+              15.887291577,
+              45.80377013
+            ],
+            [
+              15.887291258,
+              45.803717131
+            ],
+            [
+              15.887224654,
+              45.803654957
+            ],
+            [
+              15.887292839,
+              45.803619781
+            ],
+            [
+              15.887296416,
+              45.803563473
+            ],
+            [
+              15.887299222,
+              45.803518678
+            ],
+            [
+              15.887309831,
+              45.803419397
+            ],
+            [
+              15.887324556,
+              45.803320139
+            ],
+            [
+              15.88734216,
+              45.803228184
+            ],
+            [
+              15.887350151,
+              45.803191695
+            ],
+            [
+              15.887431378,
+              45.802835091
+            ],
+            [
+              15.887442462,
+              45.802786292
+            ],
+            [
+              15.887459763,
+              45.802710261
+            ],
+            [
+              15.887491121,
+              45.802572311
+            ],
+            [
+              15.887488795,
+              45.802561501
+            ],
+            [
+              15.88747974,
+              45.802554344
+            ],
+            [
+              15.887463818,
+              45.802551559
+            ],
+            [
+              15.886766245,
+              45.802589838
+            ],
+            [
+              15.886380195,
+              45.8026108
+            ],
+            [
+              15.886367579,
+              45.802611542
+            ],
+            [
+              15.886227913,
+              45.80261889
+            ],
+            [
+              15.886201878,
+              45.802623249
+            ],
+            [
+              15.886187663,
+              45.802629021
+            ],
+            [
+              15.886173319,
+              45.802634793
+            ],
+            [
+              15.88616086,
+              45.802644714
+            ],
+            [
+              15.886148401,
+              45.802654635
+            ],
+            [
+              15.886142608,
+              45.802666661
+            ],
+            [
+              15.886136943,
+              45.802678778
+            ],
+            [
+              15.886135852,
+              45.802684441
+            ],
+            [
+              15.886114239,
+              45.802860055
+            ],
+            [
+              15.886078481,
+              45.803152297
+            ],
+            [
+              15.886037228,
+              45.803487879
+            ],
+            [
+              15.886036659,
+              45.803492915
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tlocrt 1 (krajnji sjeverni; k.č. 2811/3)",
+        "block": "Špansko C–D – današnje k.č. 2811/1 i 2811/3",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 21,
+        "heightM": 21,
+        "floors": 7,
+        "storeys": 7,
+        "floorCountBasis": "OpenStreetMap way 224229831 preko Overturea: 7 etaža × 3 m; GDI 2008 bilježi samo 1,4 m jer je snimanje prethodilo dovršetku",
+        "color": "#2f6fed",
+        "source": "DGU tlocrt + zamjenska visinska osnova: OpenStreetMap way 224229831 preko Overturea: 7 etaža × 3 m; GDI 2008 bilježi samo 1,4 m jer je snimanje prethodilo dovršetku",
+        "positionalLabelBasis": "interni naziv prema položaju; arhivske oznake C i D još nisu sigurno pridružene pojedinim tlocrtima",
+        "officialProjectLabels": [
+          "C",
+          "D"
+        ],
+        "dguBuildingId": null,
+        "dguBuildingIds": [
+          13391660,
+          13391842
+        ],
+        "dguBuildingNumber": null,
+        "dguBuildingNumbers": [
+          "795",
+          "796"
+        ],
+        "dguBuildingType": "spojeni aktualni DGU poligoni",
+        "dguBuildingTypes": [
+          "ZGRADA MJEŠOVITE UPORABE",
+          "STAMBENA ZGRADA"
+        ],
+        "dguFootprintAreaM2": 1968.6674499887113,
+        "parcelOverlapRatio": 1,
+        "gdiObjectId": null,
+        "gdiObjectIds": [
+          305972,
+          305972
+        ],
+        "gdiSurveyYear": null,
+        "gdiSurveyYears": [
+          2008,
+          2008
+        ],
+        "gdiHeightM": null,
+        "gdiHeightsM": [
+          1.385,
+          1.385
+        ],
+        "gdiMatchOverlapRatio": null,
+        "gdiMatchOverlapRatios": [
+          0.43383537588594157,
+          0.9942124165636049
+        ],
+        "observedUseClass": null,
+        "observedUseClasses": [
+          "Stambena i mješovita"
+        ],
+        "observedUseGroup": null,
+        "observedUseGroups": [
+          "Stambene i mješovite površine"
+        ],
+        "consensus:role": "building",
+        "consensus:index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.886019316,
+              45.804322075
+            ],
+            [
+              15.886066096,
+              45.80395188
+            ],
+            [
+              15.88629469,
+              45.803965615
+            ],
+            [
+              15.886283284,
+              45.804055263
+            ],
+            [
+              15.886280049,
+              45.80408044
+            ],
+            [
+              15.886272991,
+              45.804137359
+            ],
+            [
+              15.88628315,
+              45.804137774
+            ],
+            [
+              15.886282142,
+              45.804147576
+            ],
+            [
+              15.88628055,
+              45.804163674
+            ],
+            [
+              15.886278132,
+              45.804184716
+            ],
+            [
+              15.886690322,
+              45.804209604
+            ],
+            [
+              15.887137354,
+              45.804236568
+            ],
+            [
+              15.887118995,
+              45.804397353
+            ],
+            [
+              15.886984126,
+              45.804389251
+            ],
+            [
+              15.886960469,
+              45.804387864
+            ],
+            [
+              15.886783816,
+              45.804377109
+            ],
+            [
+              15.886760801,
+              45.804375815
+            ],
+            [
+              15.886670546,
+              45.804370382
+            ],
+            [
+              15.886580292,
+              45.804364859
+            ],
+            [
+              15.886557278,
+              45.804363475
+            ],
+            [
+              15.886377024,
+              45.80435261
+            ],
+            [
+              15.88635401,
+              45.804351226
+            ],
+            [
+              15.886129402,
+              45.804337603
+            ],
+            [
+              15.886130657,
+              45.804328791
+            ],
+            [
+              15.886019316,
+              45.804322075
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tlocrt 2 (središnji sjeverni; k.č. 2811/3)",
+        "block": "Špansko C–D – današnje k.č. 2811/1 i 2811/3",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 29.79446039,
+        "heightM": 29.79446039,
+        "floors": 10,
+        "storeys": 10,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#6f42c1",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "interni naziv prema položaju; arhivske oznake C i D još nisu sigurno pridružene pojedinim tlocrtima",
+        "officialProjectLabels": [
+          "C",
+          "D"
+        ],
+        "dguBuildingId": 13391843,
+        "dguBuildingIds": [
+          13391843
+        ],
+        "dguBuildingNumber": "794",
+        "dguBuildingNumbers": [
+          "794"
+        ],
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguBuildingTypes": [
+          "STAMBENA ZGRADA"
+        ],
+        "dguFootprintAreaM2": 1557.11359997048,
+        "parcelOverlapRatio": 0.9999999999999999,
+        "gdiObjectId": 306454,
+        "gdiObjectIds": [
+          306454
+        ],
+        "gdiSurveyYear": 2022,
+        "gdiSurveyYears": [
+          2022
+        ],
+        "gdiHeightM": 29.79446039,
+        "gdiHeightsM": [
+          29.79446039
+        ],
+        "gdiMatchOverlapRatio": 0.9993034768525794,
+        "gdiMatchOverlapRatios": [
+          0.9993034768525794
+        ],
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseClasses": [
+          "Stambena i mješovita"
+        ],
+        "observedUseGroup": "Stambene i mješovite površine",
+        "observedUseGroups": [
+          "Stambene i mješovite površine"
+        ],
+        "consensus:role": "building",
+        "consensus:index": 1
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.887209406,
+                45.803684569
+              ],
+              [
+                15.88718976,
+                45.803845347
+              ],
+              [
+                15.887054507,
+                45.803837243
+              ],
+              [
+                15.887030851,
+                45.803835767
+              ],
+              [
+                15.8868506,
+                45.803824812
+              ],
+              [
+                15.886826943,
+                45.803823425
+              ],
+              [
+                15.886644121,
+                45.803812276
+              ],
+              [
+                15.886620339,
+                45.803810619
+              ],
+              [
+                15.886440215,
+                45.803799844
+              ],
+              [
+                15.886416558,
+                45.803798457
+              ],
+              [
+                15.886235922,
+                45.803787499
+              ],
+              [
+                15.886212265,
+                45.803786112
+              ],
+              [
+                15.886085884,
+                45.803778415
+              ],
+              [
+                15.886077913,
+                45.803777922
+              ],
+              [
+                15.886095504,
+                45.803617043
+              ],
+              [
+                15.887209406,
+                45.803684569
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tlocrt 3 (središnji južni; k.č. 2811/1)",
+        "block": "Špansko C–D – današnje k.č. 2811/1 i 2811/3",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 30.6167,
+        "heightM": 30.6167,
+        "floors": 10,
+        "storeys": 10,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#198754",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "interni naziv prema položaju; arhivske oznake C i D još nisu sigurno pridružene pojedinim tlocrtima",
+        "officialProjectLabels": [
+          "C",
+          "D"
+        ],
+        "dguBuildingId": 13391661,
+        "dguBuildingIds": [
+          13391661
+        ],
+        "dguBuildingNumber": "798",
+        "dguBuildingNumbers": [
+          "798"
+        ],
+        "dguBuildingType": "ZGRADA MJEŠOVITE UPORABE",
+        "dguBuildingTypes": [
+          "ZGRADA MJEŠOVITE UPORABE"
+        ],
+        "dguFootprintAreaM2": 1967.3952500020687,
+        "parcelOverlapRatio": 0.9999999999999999,
+        "gdiObjectId": 305974,
+        "gdiObjectIds": [
+          305974
+        ],
+        "gdiSurveyYear": 2008,
+        "gdiSurveyYears": [
+          2008
+        ],
+        "gdiHeightM": 30.6167,
+        "gdiHeightsM": [
+          30.6167
+        ],
+        "gdiMatchOverlapRatio": 0.970085760578607,
+        "gdiMatchOverlapRatios": [
+          0.970085760578607
+        ],
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseClasses": [
+          "Stambena i mješovita"
+        ],
+        "observedUseGroup": "Stambene i mješovite površine",
+        "observedUseGroups": [
+          "Stambene i mješovite površine"
+        ],
+        "consensus:role": "building",
+        "consensus:index": 2
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.88647875,
+                45.803242807
+              ],
+              [
+                15.886514621,
+                45.803244889
+              ],
+              [
+                15.886682527,
+                45.803255148
+              ],
+              [
+                15.886718397,
+                45.80325732
+              ],
+              [
+                15.886886304,
+                45.803267489
+              ],
+              [
+                15.886922174,
+                45.803269661
+              ],
+              [
+                15.887090081,
+                45.80327983
+              ],
+              [
+                15.887125822,
+                45.803282001
+              ],
+              [
+                15.887254131,
+                45.803289798
+              ],
+              [
+                15.88723475,
+                45.803449858
+              ],
+              [
+                15.887106055,
+                45.803442149
+              ],
+              [
+                15.887070186,
+                45.803439887
+              ],
+              [
+                15.886902406,
+                45.803429809
+              ],
+              [
+                15.886866536,
+                45.803427637
+              ],
+              [
+                15.8866985,
+                45.803417467
+              ],
+              [
+                15.886662758,
+                45.803415296
+              ],
+              [
+                15.886494851,
+                45.803405127
+              ],
+              [
+                15.886458852,
+                45.803402954
+              ],
+              [
+                15.88624569,
+                45.803390021
+              ],
+              [
+                15.886246674,
+                45.803382379
+              ],
+              [
+                15.886135345,
+                45.803374852
+              ],
+              [
+                15.886180839,
+                45.80300438
+              ],
+              [
+                15.886410457,
+                45.803018211
+              ],
+              [
+                15.88639943,
+                45.803108671
+              ],
+              [
+                15.886396323,
+                45.803133849
+              ],
+              [
+                15.886389527,
+                45.803190409
+              ],
+              [
+                15.886399813,
+                45.803190914
+              ],
+              [
+                15.886396573,
+                45.803216541
+              ],
+              [
+                15.886394025,
+                45.803237673
+              ],
+              [
+                15.88647875,
+                45.803242807
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tlocrt 4 (krajnji južni; k.č. 2811/1)",
+        "block": "Špansko C–D – današnje k.č. 2811/1 i 2811/3",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 32.8186,
+        "heightM": 32.8186,
+        "floors": 11,
+        "storeys": 11,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#fd7e14",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "interni naziv prema položaju; arhivske oznake C i D još nisu sigurno pridružene pojedinim tlocrtima",
+        "officialProjectLabels": [
+          "C",
+          "D"
+        ],
+        "dguBuildingId": 13391844,
+        "dguBuildingIds": [
+          13391844
+        ],
+        "dguBuildingNumber": "799",
+        "dguBuildingNumbers": [
+          "799"
+        ],
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguBuildingTypes": [
+          "STAMBENA ZGRADA"
+        ],
+        "dguFootprintAreaM2": 1548.3905499903524,
+        "parcelOverlapRatio": 1.0000000000000002,
+        "gdiObjectId": 306178,
+        "gdiObjectIds": [
+          306178
+        ],
+        "gdiSurveyYear": 2008,
+        "gdiSurveyYears": [
+          2008
+        ],
+        "gdiHeightM": 32.8186,
+        "gdiHeightsM": [
+          32.8186
+        ],
+        "gdiMatchOverlapRatio": 0.9891940523481665,
+        "gdiMatchOverlapRatios": [
+          0.9891940523481665
+        ],
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseClasses": [
+          "Stambena i mješovita"
+        ],
+        "observedUseGroup": "Stambene i mješovite površine",
+        "observedUseGroups": [
+          "Stambene i mješovite površine"
+        ],
+        "consensus:role": "building",
+        "consensus:index": 3
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.886993068,
+                45.802717656
+              ],
+              [
+                15.887325025,
+                45.802737523
+              ],
+              [
+                15.887305516,
+                45.802897582
+              ],
+              [
+                15.887169622,
+                45.802889475
+              ],
+              [
+                15.887147509,
+                45.802888097
+              ],
+              [
+                15.886965844,
+                45.802877314
+              ],
+              [
+                15.886943731,
+                45.802875936
+              ],
+              [
+                15.886758853,
+                45.802864956
+              ],
+              [
+                15.88673674,
+                45.802863578
+              ],
+              [
+                15.886554947,
+                45.802852794
+              ],
+              [
+                15.886532834,
+                45.802851415
+              ],
+              [
+                15.886351299,
+                45.802840543
+              ],
+              [
+                15.886329058,
+                45.802839164
+              ],
+              [
+                15.886202034,
+                45.802831643
+              ],
+              [
+                15.886194191,
+                45.802831151
+              ],
+              [
+                15.886213575,
+                45.802671001
+              ],
+              [
+                15.886546559,
+                45.802690965
+              ],
+              [
+                15.886582043,
+                45.802693135
+              ],
+              [
+                15.886750465,
+                45.802703127
+              ],
+              [
+                15.886786077,
+                45.802705298
+              ],
+              [
+                15.886957584,
+                45.802715486
+              ],
+              [
+                15.886993068,
+                45.802717656
+              ]
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}
