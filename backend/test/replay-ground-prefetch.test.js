@@ -316,6 +316,54 @@ describe('finishing a corridor asks the map before the database', () => {
     });
 });
 
+describe('a shared corridor package materialises as one cadastral mutation', () => {
+    it('marks every road first and derives their combined take set once', async () => {
+        const roadA = member(0);
+        const roadB = member(1);
+        installGlobal('turf', turf);
+        const records = new Map([[roadA.proposalId, roadA], [roadB.proposalId, roadB]]);
+        installGlobal('proposalStorage', {
+            getProposal: id => records.get(String(id)) || null,
+            save: vi.fn()
+        });
+        installGlobal('setProposalApplied', (record, applied) => { record.applied = applied === true; });
+        installGlobal('window', {
+            __planOrder: planOrder,
+            __parcelArrangement: {
+                takeHitsOn: () => [{ take: {}, hit: square(16, 46, 16.0001, 46.0001) }]
+            },
+            __cadastreAncestry: {
+                loadedCadastreParcels: () => [{ id: 'HR-1-1', feature: square(15.9, 45.9, 16.2, 46.2) }]
+            },
+            CorridorNetworkNodes: { normalize: vi.fn() }
+        });
+
+        const combinedTakes = [
+            { id: roadA.proposalId, geometry: roadA.roadProposal.definition.polygon },
+            { id: roadB.proposalId, geometry: roadB.roadProposal.definition.polygon }
+        ];
+        const derive = vi.fn(async () => ({ added: 3, removed: 0, unchanged: 0, parcels: 1, failed: [] }));
+        const manager = {
+            materializeCorridorBatch: ProposalManager.materializeCorridorBatch,
+            _enqueueFabricChange: operation => operation(),
+            _loadReplayGround: vi.fn(async () => 0),
+            _appliedCorridorTakes: vi.fn(() => combinedTakes),
+            _deriveCorridorFabric: derive,
+            _sweepGroundNoLongerWhole: vi.fn(async () => ({ unapplied: [] })),
+            _setLastApplyFailure: vi.fn()
+        };
+
+        const result = await manager.materializeCorridorBatch([roadA.proposalId, roadB.proposalId]);
+
+        expect(result.ok, result.reason).toBe(true);
+        expect(result.appliedIds).toEqual([roadA.proposalId, roadB.proposalId]);
+        expect(roadA.applied).toBe(true);
+        expect(roadB.applied).toBe(true);
+        expect(derive).toHaveBeenCalledOnce();
+        expect(derive).toHaveBeenCalledWith({ parcelIds: ['HR-1-1'], takes: combinedTakes });
+    });
+});
+
 describe('the fold itself no longer fetches', () => {
     const pass = (() => {
         const start = managerSource.indexOf('async _rebuildPass(');

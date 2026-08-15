@@ -6,7 +6,10 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const turf = require('@turf/turf');
-const { _formBuildingParcel } = require('../../frontend/js/proposals/apply/buildings.js');
+const {
+    _formBuildingParcel,
+    shouldFormOwnBuildingParcel
+} = require('../../frontend/js/proposals/apply/buildings.js');
 const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
 require('../../frontend/js/proposal-parcel-identity.js'); // installs _getParcelIdFromFeature etc.
 const formationEdit = require('../../frontend/js/proposals/formation-edit.js');
@@ -67,6 +70,21 @@ function makeManager(parcels) {
         _formBuildingParcel
     };
 }
+
+describe('building parcel formation routing', () => {
+    it('forms an ordinary one-footprint freeform building parcel', () => {
+        expect(shouldFormOwnBuildingParcel({ goal: 'single' }, 'single', 1)).toBe(true);
+    });
+
+    it('keeps a coordinated-plan building on the plot already created by its readjustment', () => {
+        expect(shouldFormOwnBuildingParcel({ coordinatedPlanId: 'upu-borovje' }, 'single', 1)).toBe(false);
+    });
+
+    it('does not form parcels for multi-footprint or non-single building proposals', () => {
+        expect(shouldFormOwnBuildingParcel({}, 'single', 2)).toBe(false);
+        expect(shouldFormOwnBuildingParcel({}, 'buildings', 1)).toBe(false);
+    });
+});
 
 describe('_formBuildingParcel — footprint mode (default)', () => {
     it('mints the building parcel from the footprint and cuts host remainders back to their owners', async () => {

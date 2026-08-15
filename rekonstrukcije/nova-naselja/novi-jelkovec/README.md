@@ -10,8 +10,8 @@ The reconstruction follows the official `DPU stambenog naselja na lokaciji Sopni
 
 - 64 principal built volumes from current DGU building footprints;
 - GDI-matched measured height where available, converted to an explicitly approximate floor count at 3 m per floor;
-- 11 official green-space polygons (`JP` and `PA`) as non-destructive reference park proposals;
-- 5 official public-square polygons (`JT` and `JT1`) as non-destructive reference square proposals;
+- 11 official green-space polygons (`JP` and `PA`) as ordinary park proposals;
+- 5 official public-square polygons (`JT` and `JT1`) as ordinary square proposals;
 - 85 current OSM road pieces, totalling 7.36 km, clipped to the official `IS` traffic-system footprint.
 
 The building filter keeps principal residential, mixed-use, public, school, sports, garage, business, religious and kindergarten volumes of at least 80 m². It excludes terraces, stairs, canopies, transformer stations and other auxiliary DGU polygons. This makes the 64 a modelling inventory, not a claim about the legal number of buildings or addresses.

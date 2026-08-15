@@ -68,7 +68,24 @@
         return out;
     }
 
-    const api = { TOUCHES_M2, WHOLE_FRACTION, designParts, inspectDesignAgainstPieces };
+    // Whether any authored part occupies area held by one of the supplied pieces. Used for a
+    // coordinated readjustment after its road phase: plots that merely meet road parcels at their
+    // boundaries remain valid; a road that actually crosses a plot invalidates the formation.
+    function partsOverlapPieces(parts, pieces, ops, options) {
+        const settings = options || {};
+        const minimumM2 = Number.isFinite(settings.minimumM2) ? settings.minimumM2 : TOUCHES_M2;
+        const list = Array.isArray(parts) ? parts.filter(Boolean) : [];
+        const grounds = Array.isArray(pieces) ? pieces.filter(Boolean) : [];
+        if (!list.length || !grounds.length || !ops || typeof ops.intersectionArea !== 'function') return false;
+        for (const part of list) {
+            for (const piece of grounds) {
+                if ((ops.intersectionArea(part, piece) || 0) > minimumM2) return true;
+            }
+        }
+        return false;
+    }
+
+    const api = { TOUCHES_M2, WHOLE_FRACTION, designParts, inspectDesignAgainstPieces, partsOverlapPieces };
     if (typeof module === 'object' && module.exports) module.exports = api;
     if (typeof window !== 'undefined') global.__groundSweep = api;
 }(typeof globalThis !== 'undefined' ? globalThis : this));

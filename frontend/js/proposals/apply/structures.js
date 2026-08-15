@@ -7,29 +7,12 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
-    function structureNeedsGroundFormation(kind, structureProposal) {
-        return kind !== 'station' && structureProposal?.referenceOnly !== true;
-    }
-
-    function structureNeedsDemolitionScan(structureProposal) {
-        return structureProposal?.referenceOnly !== true;
-    }
-
-    function structureNeedsLiveParentResolution(structureProposal) {
-        return structureProposal?.referenceOnly !== true;
-    }
-
-    function declaredStructureParentIds(proposalData, structureProposal) {
-        const values = Array.isArray(structureProposal?.parentParcelIds) && structureProposal.parentParcelIds.length
-            ? structureProposal.parentParcelIds
-            : (Array.isArray(proposalData?.parentParcelIds) ? proposalData.parentParcelIds : []);
-        return Array.from(new Set(values.map(value => String(value || '').trim()).filter(Boolean)));
+    function structureNeedsGroundFormation(kind) {
+        return kind !== 'station';
     }
 
     return {
     structureNeedsGroundFormation,
-    structureNeedsDemolitionScan,
-    structureNeedsLiveParentResolution,
     async _applyStructureProposal(proposalId, proposalData, options = {}) {
         const startTime = performance.now();
         const idLabel = _normalizeProposalId(proposalId) || 'unknown-proposal';
@@ -68,8 +51,7 @@
             sp.demolishedBuildings = [];
             delete sp.demolitionScanned;
             try {
-                if (structureNeedsDemolitionScan(sp)
-                    && geometry
+                if (geometry
                     && typeof this._deriveDemolishedBuildings === 'function') {
                     sp.demolishedBuildings = await this._deriveDemolishedBuildings(geometry, {
                         ...options,
@@ -115,19 +97,11 @@
             let parentIds = [];
             let flatParentIds = [];
             let liveParentFeatures = [];
-            if (structureNeedsLiveParentResolution(sp)) {
-                const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, kind);
-                if (!liveParents.ok) return false;
-                parentIds = liveParents.ids;
-                flatParentIds = liveParents.cadastreIds.slice();
-                liveParentFeatures = liveParents.features;
-            } else {
-                // An archival plan overlay names today's intersecting cadastral parcels only as
-                // provenance/context. It makes no claim on the live derived fabric, so a road or
-                // later proposal cannot strand it by consuming/cutting those parcels.
-                parentIds = declaredStructureParentIds(proposalData, sp);
-                flatParentIds = parentIds.slice();
-            }
+            const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, kind);
+            if (!liveParents.ok) return false;
+            parentIds = liveParents.ids;
+            flatParentIds = liveParents.cadastreIds.slice();
+            liveParentFeatures = liveParents.features;
             traceApply(`Step 2: Resolved ${parentIds.length} parent parcel reference(s) (${(performance.now() - step2Time).toFixed(2)}ms)`);
 
             // §15a structure formation (decision 2026-08-05): a park/square/lake TAKES its
@@ -184,7 +158,6 @@
                     platformHeightM: Number.isFinite(Number(sp.platformHeightM)) ? Number(sp.platformHeightM) : undefined,
                     attachment: sp.attachment ? JSON.parse(JSON.stringify(sp.attachment)) : undefined,
                     modelVersion: sp.modelVersion || undefined,
-                    referenceOnly: sp.referenceOnly === true,
                     name: proposalData.title || proposalData.name || undefined,
                     parentParcelIds: parentIds.slice()
                 },
@@ -198,7 +171,7 @@
                     return f.properties.proposalId !== proposalId;
                 });
                 try {
-                    if (sp.referenceOnly !== true && typeof ensureParkDecorations === 'function') {
+                    if (typeof ensureParkDecorations === 'function') {
                         ensureParkDecorations(feature);
                     }
                 } catch (_) { }
@@ -235,7 +208,7 @@
                     return f.properties.proposalId !== proposalId;
                 });
                 try {
-                    if (sp.referenceOnly !== true && typeof ensureSquareDecorations === 'function') {
+                    if (typeof ensureSquareDecorations === 'function') {
                         ensureSquareDecorations(feature);
                     }
                 } catch (_) { }

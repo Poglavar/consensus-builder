@@ -10,10 +10,10 @@ The reconstruction follows the official 29.07 ha `UPU Vrbani III`, adopted in 20
 
 - 53 principal built volumes from current DGU building footprints;
 - GDI-matched measured height where available and one clearly marked 9 m fallback where no match exists;
-- 14 official `Z1` polygons as non-destructive reference park proposals;
+- 14 official `Z1` polygons as ordinary park proposals;
 - 41 current OSM road pieces, totalling 3.41 km, clipped to the official `IS` traffic-system footprint.
 
-The building inventory includes the larger houses that lie inside the official UPU boundary as well as apartment, mixed-use and public buildings. Auxiliary DGU geometry is excluded. Several narrow `Z1` strips cut across today's condominium parcels, which is why the park proposals are reference overlays: applying this historical plan must not simulate a present-day cadastral taking. No separate official square code exists in the ingested plan layer.
+The building inventory includes the larger houses that lie inside the official UPU boundary as well as apartment, mixed-use and public buildings. Auxiliary DGU geometry is excluded. Several narrow `Z1` strips cut across today's condominium parcels; because these are now ordinary park proposals, those boundaries must be reconciled with a valid readjustment before the complete historical plan can be applied. No separate official square code exists in the ingested plan layer.
 
 ## Sources
 

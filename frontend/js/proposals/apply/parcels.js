@@ -19,6 +19,16 @@
             return false;
         }
         const plan = proposalData.reparcellization;
+        const coordinatedPlanId = proposalData.coordinatedPlanId === undefined
+            || proposalData.coordinatedPlanId === null
+            ? ''
+            : String(proposalData.coordinatedPlanId).trim();
+        // `geometry` on a readjustment is apply-time pool state, not authored input. Old local
+        // copies may still carry it from before coordinated packages existed; retaining it would
+        // make the intentional road gaps part of this record's footprint again.
+        if (coordinatedPlanId && proposalData.geometry && /Polygon/.test(String(proposalData.geometry.type || ''))) {
+            delete proposalData.geometry;
+        }
         if (!Array.isArray(plan.polygons) || plan.polygons.length === 0) {
             if (typeof updateStatus === 'function') {
                 updateStatus('Cannot apply reparcellization proposal: missing generated slices.');
@@ -262,7 +272,10 @@
         // the fabric that hover can only resolve to the hidden ancestor (the Cibona sliver).
         try {
             const turfRemainder = (typeof turf !== 'undefined') ? turf : null;
-            if (turfRemainder && typeof turfRemainder.difference === 'function' && parentFeatures.length) {
+            // A coordinated package's missing ground is not an accidental remainder: sibling road
+            // records own those bands. Leave the gap until their immediately following phase
+            // materialises it. Ordinary standalone readjustments still conserve every scrap here.
+            if (!coordinatedPlanId && turfRemainder && typeof turfRemainder.difference === 'function' && parentFeatures.length) {
                 let plotsUnion = null;
                 childFeatures.forEach(feature => {
                     const f = { type: 'Feature', properties: {}, geometry: feature.geometry };
@@ -353,7 +366,10 @@
         // ground instead of re-minting under the taker.
         try {
             const turfPool = (typeof turf !== 'undefined') ? turf : null;
-            if (turfPool && typeof turfPool.union === 'function' && parentFeatures.length) {
+            // A coordinated readjustment claims its authored plots only. Expanding the persisted
+            // footprint to the whole parent pool would reclaim its deliberately omitted streets
+            // and cause the road phase to invalidate the plan it belongs to.
+            if (!coordinatedPlanId && turfPool && typeof turfPool.union === 'function' && parentFeatures.length) {
                 let pool = null;
                 parentFeatures.forEach(parentFeature => {
                     if (!parentFeature || !parentFeature.geometry) return;

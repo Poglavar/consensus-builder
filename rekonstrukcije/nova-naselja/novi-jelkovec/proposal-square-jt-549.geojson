@@ -14,7 +14,7 @@
       "city": "zagreb",
       "name": "Novi Jelkovec – rekonstrukcija naselja – javni trg JT",
       "title": "Novi Jelkovec – rekonstrukcija naselja – javni trg JT",
-      "description": "Površina javnog trga JT (7549 m²) iz službenoga kartografskog prikaza plana. Arhivski je referentni sloj i pri primjeni ne simulira novu parcelaciju ni prijenos vlasništva.",
+      "description": "Površina javnog trga JT (7549 m²) iz službenoga kartografskog prikaza plana. U sustavu se primjenjuje kao redovan prijedlog javnog trga.",
       "author": "zagreb.lol – lokalna analiza",
       "type": "structure",
       "goal": "square",
@@ -27,8 +27,7 @@
         "research",
         "reconstruction",
         "neighbourhood-plan",
-        "official-plan-footprint",
-        "reference-overlay"
+        "official-plan-footprint"
       ],
       "parentParcelIds": [
         "HR-338796-3661/8",
@@ -64,8 +63,7 @@
         "officialLandUseCode": "JT",
         "officialLandUseName": "Javni trg",
         "officialLandUseGroup": "Prometne površine",
-        "areaM2": 7549.05532145573,
-        "applicationSemantics": "referenceOnly: prikaz bez nove parcelacije ili prijenosa vlasništva"
+        "areaM2": 7549.05532145573
       }
     },
     "structureProposal": {
@@ -75,7 +73,6 @@
         "HR-338796-3661/8",
         "HR-338796-3661/9"
       ],
-      "referenceOnly": true,
       "applied": false
     }
   },

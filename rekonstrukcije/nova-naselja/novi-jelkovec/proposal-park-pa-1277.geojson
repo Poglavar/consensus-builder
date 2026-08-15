@@ -14,7 +14,7 @@
       "city": "zagreb",
       "name": "Novi Jelkovec – rekonstrukcija naselja – parkovna površina PA 1",
       "title": "Novi Jelkovec – rekonstrukcija naselja – parkovna površina PA 1",
-      "description": "Ostale parkovne površine PA (3120 m²) iz službenoga kartografskog prikaza plana. Arhivski je referentni sloj i pri primjeni ne simulira novu parcelaciju ni prijenos vlasništva.",
+      "description": "Ostale parkovne površine PA (3120 m²) iz službenoga kartografskog prikaza plana. U sustavu se primjenjuje kao redovan prijedlog parka.",
       "author": "zagreb.lol – lokalna analiza",
       "type": "structure",
       "goal": "park",
@@ -27,8 +27,7 @@
         "research",
         "reconstruction",
         "neighbourhood-plan",
-        "official-plan-footprint",
-        "reference-overlay"
+        "official-plan-footprint"
       ],
       "parentParcelIds": [
         "HR-338796-3661/36",
@@ -70,8 +69,7 @@
         "officialLandUseCode": "PA",
         "officialLandUseName": "Ostale parkovne površine",
         "officialLandUseGroup": "Javne zelene površine",
-        "areaM2": 3119.6088972664156,
-        "applicationSemantics": "referenceOnly: prikaz bez nove parcelacije ili prijenosa vlasništva"
+        "areaM2": 3119.6088972664156
       }
     },
     "structureProposal": {
@@ -83,7 +81,6 @@
         "HR-338796-3661/33",
         "HR-338796-3661/34"
       ],
-      "referenceOnly": true,
       "applied": false
     }
   },

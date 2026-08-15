@@ -308,11 +308,6 @@
             && String(parkFeature?.properties?.proposalId || '') === String(window.structureGeometryEditorEditingProposalId)) {
             return;
         }
-        // An adopted-plan reference supplies a land-use footprint, not an invented landscape
-        // design. Render explicit sourced decorations if the archive contains them, but never
-        // procedurally add ponds, paths or trees merely because the polygon is called a park.
-        if (parkFeature?.properties?.referenceOnly === true
-            && !parkFeature.properties.decorations) return;
         // Ensure deterministic decorations are present and persisted
         ensureParkDecorations(parkFeature);
         const decorations = (parkFeature.properties && parkFeature.properties.decorations) ? parkFeature.properties.decorations : null;
@@ -405,7 +400,6 @@
         try {
             if (!parkFeature || !parkFeature.geometry) return;
             const props = parkFeature.properties = parkFeature.properties || {};
-            if (props.referenceOnly === true && !props.decorations) return;
             // If decorations exist, verify and upgrade if needed (e.g., ensure paths avoid ponds)
             if (props.decorations && typeof props.decorations === 'object') {
                 const dec = props.decorations;
@@ -858,10 +852,6 @@
             && String(squareFeature?.properties?.proposalId || '') === String(window.structureGeometryEditorEditingProposalId)) {
             return;
         }
-        // A reference square records the adopted public-space boundary. Unless its archive
-        // explicitly carries furniture, do not fabricate fountains, stalls or statues.
-        if (squareFeature?.properties?.referenceOnly === true
-            && !squareFeature.properties.decorations) return;
         // Ensure decorations exist for legacy squares
         try { ensureSquareDecorations(squareFeature); } catch (_) { }
         const dec = squareFeature.properties && squareFeature.properties.decorations;
@@ -977,7 +967,6 @@
         try {
             if (!squareFeature || !squareFeature.geometry) return;
             const props = squareFeature.properties = squareFeature.properties || {};
-            if (props.referenceOnly === true && !props.decorations) return;
             if (props.decorations && typeof props.decorations === 'object') {
                 // Upgrade: squares predating statues get their one auto-placed statue.
                 if (!Array.isArray(props.decorations.statues)) {

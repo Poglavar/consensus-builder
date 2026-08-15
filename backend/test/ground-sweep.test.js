@@ -129,6 +129,19 @@ describe('what the cut actually severed', () => {
     });
 });
 
+describe('coordinated plots meeting road parcels', () => {
+    const road = rect(at(4), lat(0), at(5), lat(4));
+
+    it('keeps plots that meet the road only at their boundary', () => {
+        expect(sweep.partsOverlapPieces([parcelOne], [road], ops)).toBe(false);
+    });
+
+    it('detects a road that actually crosses a plot', () => {
+        const crossingRoad = rect(at(3), lat(0), at(5), lat(4));
+        expect(sweep.partsOverlapPieces([parcelOne], [crossingRoad], ops)).toBe(true);
+    });
+});
+
 // The sweep runs in the browser against Leaflet layers, so the wiring is read from source.
 describe('the sweep uses it', () => {
     const manager = require('node:fs').readFileSync(
@@ -144,6 +157,11 @@ describe('the sweep uses it', () => {
         // record is asynchronous and an async forEach callback would race the releases.
         expect(fn).toContain('if (!verdict.standsHere) continue;');
         expect(fn).toContain('if (isBuildingDesign && !verdict.severed) continue;');
+    });
+
+    it('preserves a coordinated readjustment only while roads stay out of its plots', () => {
+        expect(fn).toContain("goalKey === 'reparcellization' && _coordinatedPlanIdOf(record)");
+        expect(fn).toContain('sweepApi.partsOverlapPieces(plots, corridorPieces, geometryOps)');
     });
 
     it('a missing module leaves the sweep silent rather than sweeping blind', () => {

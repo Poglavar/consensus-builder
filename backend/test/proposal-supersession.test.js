@@ -143,6 +143,38 @@ describe('one design per parcel', () => {
         expect(collectAppliedProposalAlternatives(chosen, [parked, chosen])).toEqual([]);
     });
 
+    it('lets disjoint building members of one coordinated plan share their original parent parcel', () => {
+        const standing = {
+            ...blockOn('plan-building-a', ['HR-BASE'], 15.900, true),
+            coordinatedPlanId: 'upu-borovje'
+        };
+        const chosen = {
+            ...blockOn('plan-building-b', ['HR-BASE'], 15.902),
+            coordinatedPlanId: 'upu-borovje'
+        };
+
+        expect(collectAppliedProposalAlternatives(chosen, [standing, chosen], {
+            planOrder: require('../../frontend/js/proposals/plan-order.js')
+        })).toEqual([]);
+    });
+
+    it('still rejects genuinely overlapping building members of one coordinated plan', () => {
+        const standing = {
+            ...blockOn('plan-building-a', ['HR-BASE'], 15.900, true),
+            coordinatedPlanId: 'upu-borovje'
+        };
+        const chosen = {
+            ...blockOn('plan-building-b', ['HR-BASE'], 15.9001),
+            coordinatedPlanId: 'upu-borovje'
+        };
+
+        const alternatives = collectAppliedProposalAlternatives(chosen, [standing, chosen], {
+            planOrder: require('../../frontend/js/proposals/plan-order.js')
+        });
+
+        expect(alternatives.map(entry => entry.proposalId)).toEqual(['plan-building-a']);
+    });
+
     it('still stands down an overlapping design that declares no parcels', () => {
         // The footprint rule has to survive: a record with no parcel list is decided on geometry.
         const standing = building('single-a', 15.900, true);

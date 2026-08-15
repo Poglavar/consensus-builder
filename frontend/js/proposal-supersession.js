@@ -27,6 +27,11 @@
         return value === undefined || value === null || !String(value) ? null : String(value);
     }
 
+    function coordinatedPlanId(proposal) {
+        const value = proposal?.coordinatedPlanId;
+        return value === undefined || value === null ? '' : String(value).trim();
+    }
+
     // A direct edit points at its immutable source, but alternatives form an undirected family for
     // map application: choosing the source again must park its replacement just as choosing the
     // replacement parks the source. Follow the whole component so A -> B -> C can be toggled in any
@@ -141,15 +146,20 @@
             : null;
 
         const targetParcels = isBuildingContentProposal(proposal) ? occupiedParcelIds(proposal) : null;
+        const targetPlanId = coordinatedPlanId(proposal);
 
         return list.filter(candidate => {
             const candidateId = proposalRecordId(candidate);
             if (!candidateId || candidateId === targetId || !proposalIsAppliedForReplacement(candidate)) return false;
             if (familyIds.has(candidateId)) return true;
             if (!isBuildingContentProposal(candidate)) return false;
+            const sameCoordinatedPlan = !!targetPlanId && coordinatedPlanId(candidate) === targetPlanId;
             // One design per parcel: two building designs claiming the same parcel are two answers
-            // to the same question, however far apart the buildings themselves landed.
-            if (sharesAnyParcel(targetParcels, occupiedParcelIds(candidate))) return true;
+            // to the same question, however far apart the buildings themselves landed. Members of
+            // one coordinated plan are the exception: their original cadastral parents describe
+            // the plan's input ground, while its readjustment gives each building a distinct live
+            // plot. They coexist unless their authored building footprints actually overlap.
+            if (!sameCoordinatedPlan && sharesAnyParcel(targetParcels, occupiedParcelIds(candidate))) return true;
             if (!targetFootprint || !planOrder || typeof planOrder.footprintOf !== 'function'
                 || typeof planOrder.intersectionArea !== 'function') return false;
             const candidateFootprint = planOrder.footprintOf(candidate);

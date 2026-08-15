@@ -23,7 +23,7 @@ Each project contains:
 - one canonical proposal archive for each park or square;
 - `plan.json`, the named-plan manifest and quantitative inventory.
 
-Park and square proposals use `structureProposal.referenceOnly = true`. This is intentional: an adopted-plan polygon must be visible in a historical reconstruction without pretending that the app is newly repartitioning or acquiring today's cadastral/condominium land. Reference overlays also do not mark buildings beneath them for demolition and do not receive the app's procedural ponds, paths, trees, fountains or stalls unless a source archive explicitly supplies them. Ordinary user-authored parks and squares retain the normal whole-parcel formation and decoration semantics.
+Park and square polygons are ordinary proposals. They resolve live parcel ground, form public-space parcels, scan buildings beneath them and receive the same procedural decoration treatment as user-authored parks and squares. A reconstruction therefore succeeds only where its roads, readjustment and public-space polygons compose into a valid parcel fabric; the archive does not have a presentation-only bypass.
 
 The reconstruction is reproducible from the local spatial database:
 

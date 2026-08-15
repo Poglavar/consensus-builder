@@ -14,7 +14,7 @@
       "city": "zagreb",
       "name": "Podbrežje – rekonstrukcija UPU-a – javni park Z1",
       "title": "Podbrežje – rekonstrukcija UPU-a – javni park Z1",
-      "description": "Javni park Z1 (37264 m²) iz službenoga kartografskog prikaza plana. Arhivski je referentni sloj i pri primjeni ne simulira novu parcelaciju ni prijenos vlasništva.",
+      "description": "Javni park Z1 (37264 m²) iz službenoga kartografskog prikaza plana. U sustavu se primjenjuje kao redovan prijedlog parka.",
       "author": "zagreb.lol – lokalna analiza",
       "type": "structure",
       "goal": "park",
@@ -27,8 +27,7 @@
         "research",
         "reconstruction",
         "neighbourhood-plan",
-        "official-plan-footprint",
-        "reference-overlay"
+        "official-plan-footprint"
       ],
       "parentParcelIds": [
         "HR-335495-1556/1",
@@ -195,8 +194,7 @@
         "officialLandUseCode": "Z1",
         "officialLandUseName": "Javni park",
         "officialLandUseGroup": "Javne zelene površine",
-        "areaM2": 37263.63708586819,
-        "applicationSemantics": "referenceOnly: prikaz bez nove parcelacije ili prijenosa vlasništva"
+        "areaM2": 37263.63708586819
       }
     },
     "structureProposal": {
@@ -249,7 +247,6 @@
         "HR-335495-2451",
         "HR-335495-2461"
       ],
-      "referenceOnly": true,
       "applied": false
     }
   },

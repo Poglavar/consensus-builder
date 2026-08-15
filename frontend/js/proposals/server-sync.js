@@ -703,6 +703,10 @@ function prepareProposalForImport(sharedProposal) {
         color: sharedProposal.color || null,
         parentParcelIds: parentIds
     };
+    if (sharedProposal.coordinatedPlanId !== undefined && sharedProposal.coordinatedPlanId !== null
+        && String(sharedProposal.coordinatedPlanId).trim()) {
+        base.coordinatedPlanId = String(sharedProposal.coordinatedPlanId).trim();
+    }
     // Publish-time stamps ride along unchanged: base ancestry, ownership flow, and the effect
     // hash. They describe the PUBLISHED version, so an import must never recompute them.
     const stampedCadastre = ensureArrayOfStrings(sharedProposal.cadastreParcelIds);
@@ -784,7 +788,6 @@ function prepareProposalForImport(sharedProposal) {
             geometry: deepClone(sharedStructure.geometry),
             decorations: deepClone(sharedStructure.decorations || null),
             blockName: sharedStructure.blockName || null,
-            referenceOnly: sharedStructure.referenceOnly === true,
             parentParcelIds: ensureArrayOfStrings(sharedStructure.parentParcelIds && sharedStructure.parentParcelIds.length ? sharedStructure.parentParcelIds : base.parentParcelIds)
         };
         if (base.structureProposal.kind === 'station') {

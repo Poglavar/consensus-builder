@@ -15,7 +15,7 @@ The official detailed land-use layer contains exactly eleven `M1` residential fi
 
 The seven inferred slabs follow the winning masterplan's comb-like urban form. Their 18.75 m width and 3.5 m end clearance are calibrated to the four built slabs; their indicative P+8 height follows the built blocks and the current A11 programme. These are not future building-permit footprints. The source evidence does not safely map the labels A1–A11 to individual `M1` polygons, so the archive leaves `officialPhaseLabel` unresolved instead of guessing.
 
-The plan also contains one official `Z1` green-space reference proposal and 23 current OSM road pieces (1.46 km) inside the official `IS` traffic-system footprint. No separate official square code exists in the ingested plan layer, so none is invented.
+The plan also contains one ordinary park proposal for the official `Z1` green space and 23 current OSM road pieces (1.46 km) inside the official `IS` traffic-system footprint. No separate official square code exists in the ingested plan layer, so none is invented.
 
 ## Sources
 

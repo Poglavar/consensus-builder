@@ -7,7 +7,17 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
+    function shouldFormOwnBuildingParcel(proposalData, goalKey, featureCount) {
+        const planId = proposalData?.coordinatedPlanId;
+        const belongsToCoordinatedPlan = planId !== undefined && planId !== null
+            && String(planId).trim() !== '';
+        // A coordinated plan has already published and applied the plot tessellation on which its
+        // buildings sit. Cutting a second footprint parcel here destroys that authored fabric.
+        return goalKey === 'single' && featureCount === 1 && !belongsToCoordinatedPlan;
+    }
+
     return {
+    shouldFormOwnBuildingParcel,
     async _applyBuildingProposal(proposalId, proposalData, options = {}) {
         const startTime = performance.now();
         const idLabel = _normalizeProposalId(proposalId) || 'unknown-proposal';
@@ -146,7 +156,7 @@
             const goalKey = (typeof window !== 'undefined' && window.__applyRoute && typeof window.__applyRoute.normalizeGoalKey === 'function')
                 ? window.__applyRoute.normalizeGoalKey(proposalData.goal)
                 : String(proposalData.goal || '');
-            if (goalKey === 'single' && preparedFeatures.length === 1) {
+            if (shouldFormOwnBuildingParcel(proposalData, goalKey, preparedFeatures.length)) {
                 const formation = await this._formBuildingParcel(
                     proposalId, proposalData, buildingProposal, preparedFeatures[0].geometry,
                     uniqueParentIds, idLabel, liveParents.features);

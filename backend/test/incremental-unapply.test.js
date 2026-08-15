@@ -87,6 +87,7 @@ function buildWorld() {
             visible.add(id);
         }),
         _appliedCorridorTakes: ProposalManager._appliedCorridorTakes,
+        _coordinatedReadjustmentGroundByParcel: ProposalManager._coordinatedReadjustmentGroundByParcel,
         _deriveCorridorFabric: ProposalManager._deriveCorridorFabric,
         _deriveCorridorFabricBody: ProposalManager._deriveCorridorFabricBody,
         _parcelsClaimedByDerivedGround: ProposalManager._parcelsClaimedByDerivedGround,
@@ -227,6 +228,45 @@ describe('ground that is spoken for stays hidden', () => {
         await manager._deriveCorridorFabric({ parcelIds: ['HR-A'] });
 
         expect(visible.has('HR-A')).toBe(true);
+    });
+
+    it('fills a coordinated plan\'s reserved road band without duplicating its plots', async () => {
+        const { byId, visible, records, manager } = buildWorld();
+        const west = turf.polygon([[[0, 0], [0.0004, 0], [0.0004, 0.001], [0, 0.001], [0, 0]]]);
+        const east = turf.polygon([[[0.0006, 0], [0.001, 0], [0.001, 0.001], [0.0006, 0.001], [0.0006, 0]]]);
+        const planId = 'coordinated-plan';
+        const readjustment = {
+            proposalId: 'plots',
+            coordinatedPlanId: planId,
+            goal: 'reparcellization',
+            applied: true,
+            reparcellization: { polygons: [{ geometry: west.geometry }, { geometry: east.geometry }] }
+        };
+        const record = { ...road('road-1', RIBBON), coordinatedPlanId: planId };
+        records.set(readjustment.proposalId, readjustment);
+        records.set(record.proposalId, record);
+        [west, east].forEach((plot, index) => {
+            const id = `HR-A#plot-${index + 1}`;
+            plot.properties = {
+                parcelId: id,
+                ancestorProposal: readjustment.proposalId,
+                rootParcelId: 'HR-A',
+                baseParcelIds: ['HR-A']
+            };
+            byId.set(id, layerFor(plot));
+            visible.add(id);
+        });
+        visible.delete('HR-A');
+
+        await manager._deriveGroundUnder([turf.feature(RIBBON.geometry)]);
+
+        const live = Array.from(byId.entries())
+            .filter(([id]) => id.includes('#'))
+            .map(([, layer]) => layer.feature);
+        expect(live.filter(feature => feature.properties.isCorridor === true)).toHaveLength(1);
+        expect(live.filter(feature => feature.properties.ancestorProposal === 'plots')).toHaveLength(2);
+        const total = live.reduce((sum, feature) => sum + turf.area(feature), 0);
+        expect(total).toBeCloseTo(turf.area(PARCEL), 0);
     });
 });
 

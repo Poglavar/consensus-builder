@@ -112,6 +112,18 @@
         return computeBaseAncestry(footprint, baseParcels, options).map(hit => hit.id);
     }
 
+    // Polygon-clipping occasionally cannot close an output ring when two valid polygons reuse a
+    // long run of EXACTLY the same vertices. That is not hypothetical: the UPU Borovje
+    // readjustment was cut from the cadastral fabric itself, and intersecting its 80-part union
+    // with parcel 1791/69 threw here. The caller caught that as zero area and reported 37% live
+    // coverage although every square metre was present.
+    //
+    // Moving one operand outwards by a tenth of a millimetre breaks only the coincident-segment
+    // ambiguity. Even along a kilometre of shared boundary it adds 0.1 m2 — below the measured
+    // 0.25 m2 ancestry floor — and the returned area is clamped to the unbuffered operands, so it
+    // cannot manufacture a larger take. The retry runs only after the exact intersection throws.
+    const TOPOLOGY_REPAIR_BUFFER_M = 0.0001;
+
     function intersectionArea(a, b) {
         const t = T();
         if (!t || !a || !b) return 0;
@@ -119,9 +131,25 @@
             const hit = t.intersect(a, b);
             return hit ? t.area(hit) : 0;
         } catch (_) {
-            // A self-intersecting or otherwise degenerate footprint must not take the whole plan
-            // down; treat it as "no measurable relationship" and let the caller see it in warnings.
-            return 0;
+            if (typeof t.buffer !== 'function') return 0;
+            const retry = (left, right) => {
+                try {
+                    const repaired = t.buffer(right, TOPOLOGY_REPAIR_BUFFER_M, { units: 'meters' });
+                    const hit = repaired ? t.intersect(left, repaired) : null;
+                    if (!hit) return 0;
+                    const measured = Number(t.area(hit)) || 0;
+                    const ceiling = Math.min(Number(t.area(a)) || 0, Number(t.area(b)) || 0);
+                    return ceiling > 0 ? Math.max(0, Math.min(measured, ceiling)) : 0;
+                } catch (_) {
+                    return null;
+                }
+            };
+            // Base-ancestry callers pass the parcel second, which is the useful first repair. The
+            // symmetric retry also keeps this exported helper honest for its other callers.
+            const repairedB = retry(a, b);
+            if (repairedB !== null) return repairedB;
+            const repairedA = retry(b, a);
+            return repairedA === null ? 0 : repairedA;
         }
     }
 

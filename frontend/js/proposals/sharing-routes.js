@@ -279,6 +279,10 @@ function buildSharedProposalsPayload(appliedProposals) {
                 imageUrl: proposal.onchain.imageUrl || null
             } : null
         };
+        if (proposal.coordinatedPlanId !== undefined && proposal.coordinatedPlanId !== null
+            && String(proposal.coordinatedPlanId).trim()) {
+            sanitizedProposal.coordinatedPlanId = String(proposal.coordinatedPlanId).trim();
+        }
 
         // Ancestors will be computed per proposal type below (prefer true parents)
         const lensEntries = normalizeLensEntries(proposal.lens || proposal.lensEntries || proposal.lensAddresses);
@@ -363,7 +367,6 @@ function buildSharedProposalsPayload(appliedProposals) {
                 geometry: deepClone(sp.geometry),
                 decorations: deepClone(sp.decorations || null),
                 blockName: sp.blockName || null,
-                referenceOnly: sp.referenceOnly === true,
                 parentParcelIds: parentIds
             };
         }
@@ -454,6 +457,82 @@ function buildSharedProposalsPayload(appliedProposals) {
     };
 }
 
+function coordinatedPlanIdOfSharedRecord(record) {
+    if (!record || record.coordinatedPlanId === undefined || record.coordinatedPlanId === null) return '';
+    return String(record.coordinatedPlanId).trim();
+}
+
+function sharedMaterializationPhase(record) {
+    const rawGoal = record && record.goal;
+    const goal = (typeof applyRoute !== 'undefined' && applyRoute && typeof applyRoute.normalizeGoalKey === 'function')
+        ? applyRoute.normalizeGoalKey(rawGoal)
+        : String(rawGoal || '');
+    // A coordinated plan explicitly publishes complementary readjustment plots and road bands.
+    // Its plots must stand first so corridor derivation can retain them and fill their intentional
+    // gaps. Ordinary packages keep the interactive authoring order: roads form blocks first, then
+    // a readjustment partitions the remainders.
+    if (coordinatedPlanIdOfSharedRecord(record)) {
+        if (goal === 'reparcellization' || goal === 'decide-later'
+            || !!(record && (record.reparcellization || record.decideLaterProposal))) return 0;
+        if (goal === 'road-track' || !!(record && record.roadProposal)) return 1;
+        const coordinatedBuilding = !!(record && record.buildingProposal)
+            || !!(typeof applyRoute !== 'undefined' && applyRoute
+                && typeof applyRoute.isBuildingGoal === 'function' && applyRoute.isBuildingGoal(goal));
+        if (coordinatedBuilding) return 2;
+        if (goal === 'park' || goal === 'square' || goal === 'lake' || goal === 'station'
+            || !!(record && record.structureProposal)) return 3;
+        return 4;
+    }
+    if (goal === 'road-track' || !!(record && record.roadProposal)) return 0;
+    if (goal === 'reparcellization' || goal === 'decide-later'
+        || !!(record && (record.reparcellization || record.decideLaterProposal))) return 1;
+    const building = !!(record && record.buildingProposal)
+        || !!(typeof applyRoute !== 'undefined' && applyRoute
+            && typeof applyRoute.isBuildingGoal === 'function' && applyRoute.isBuildingGoal(goal));
+    if (building) return 2;
+    if (goal === 'park' || goal === 'square' || goal === 'lake' || goal === 'station'
+        || !!(record && record.structureProposal)) return 3;
+    return 4;
+}
+
+function orderQueuedSharedProposalIds(proposalIds) {
+    return Array.from(new Set((Array.isArray(proposalIds) ? proposalIds : [])
+        .map(id => String(id || '')).filter(Boolean)))
+        .map((id, index) => {
+            let record = null;
+            try {
+                record = (typeof proposalStorage !== 'undefined' && proposalStorage.getProposal)
+                    ? proposalStorage.getProposal(id) : null;
+            } catch (_) { record = null; }
+            return { id, index, phase: sharedMaterializationPhase(record) };
+        })
+        .sort((a, b) => a.phase - b.phase || a.index - b.index)
+        .map(entry => entry.id);
+}
+
+async function resetPartiallyAppliedSharedPlan(proposals) {
+    const ids = (Array.isArray(proposals) ? proposals : [])
+        .map(proposal => proposal && (proposal.proposalId || proposal.serverProposalId))
+        .filter(Boolean);
+    // Undo in the exact reverse of package materialisation: public spaces and buildings leave
+    // before the readjustment ground beneath them, and roads leave last. Each unapply stays local
+    // to this package; opening one shared plan must not rebuild every unrelated applied proposal.
+    const ordered = orderQueuedSharedProposalIds(ids).reverse();
+    const unappliedIds = [];
+    const failedIds = [];
+    for (const id of ordered) {
+        try {
+            const ok = await ProposalManager.unapplyProposal(id);
+            if (ok) unappliedIds.push(id);
+            else failedIds.push(id);
+        } catch (error) {
+            console.error('[shared-apply] could not reset partially applied member', id, error);
+            failedIds.push(id);
+        }
+    }
+    return { unappliedIds, failedIds };
+}
+
 // Materialise only the records this shared link just imported.
 //
 // Startup has already restored the standing plan before either shared-import path reaches here.
@@ -461,21 +540,67 @@ function buildSharedProposalsPayload(appliedProposals) {
 // happened to have applied locally (and, on a 26-member plan, paid the same 20-second replay twice).
 // The ordinary Apply entry point is already the canonical scoped mutation: it serialises changes,
 // rolls a failed member back, and derives only the ground that member changes. Shared imports use
-// that same path now, in their established immutable order.
+// that same path now, in package dependency order with immutable order inside each phase.
 async function materializeQueuedSharedProposals(proposalIds) {
-    const ids = Array.from(new Set((Array.isArray(proposalIds) ? proposalIds : [])
-        .map(id => String(id || '')).filter(Boolean)));
+    // Package dependencies outrank URL and creation order. Ordinary packages form road-bounded
+    // blocks before partitioning them; explicitly coordinated packages publish a pre-tessellated
+    // readjustment first, then fill its reserved road bands. Buildings and public spaces follow in
+    // both cases. Immutable input order still breaks ties within each phase.
+    const orderedIds = orderQueuedSharedProposalIds(proposalIds);
     const appliedIds = [];
     const failedIds = [];
-    for (const id of ids) {
+    for (let index = 0; index < orderedIds.length;) {
+        const id = orderedIds[index];
+        let record = null;
+        try { record = proposalStorage.getProposal(id); } catch (_) { record = null; }
+        const goal = (typeof applyRoute !== 'undefined' && applyRoute && typeof applyRoute.normalizeGoalKey === 'function')
+            ? applyRoute.normalizeGoalKey(record && record.goal)
+            : String((record && record.goal) || '');
+        const isRoad = goal === 'road-track' || !!(record && record.roadProposal);
+
+        // Consecutive roads in the ordered package are one network mutation. This is equally valid
+        // before an ordinary readjustment and after a coordinated one; only their phase changes.
+        if (isRoad && ProposalManager && typeof ProposalManager.materializeCorridorBatch === 'function') {
+            const roadIds = [];
+            let cursor = index;
+            while (cursor < orderedIds.length) {
+                const roadId = orderedIds[cursor];
+                let roadRecord = null;
+                try { roadRecord = proposalStorage.getProposal(roadId); } catch (_) { roadRecord = null; }
+                const roadGoal = (typeof applyRoute !== 'undefined' && applyRoute && typeof applyRoute.normalizeGoalKey === 'function')
+                    ? applyRoute.normalizeGoalKey(roadRecord && roadRecord.goal)
+                    : String((roadRecord && roadRecord.goal) || '');
+                if (!(roadGoal === 'road-track' || !!(roadRecord && roadRecord.roadProposal))) break;
+                roadIds.push(roadId);
+                cursor += 1;
+            }
+            try {
+                const batch = await ProposalManager.materializeCorridorBatch(roadIds);
+                appliedIds.push(...(Array.isArray(batch?.appliedIds) ? batch.appliedIds : []));
+                failedIds.push(...(Array.isArray(batch?.failedIds) ? batch.failedIds : (batch?.ok ? [] : roadIds)));
+            } catch (error) {
+                console.error('[shared-apply] corridor batch failed', error);
+                failedIds.push(...roadIds);
+            }
+            index = cursor;
+            continue;
+        }
+
         try {
-            const ok = await ProposalManager.applyProposal(id, { silent: true });
+            // Members of a coordinated package are complementary parts of one published plan, not
+            // successive interactive choices. Replay applies each member's own local payload and
+            // deliberately bypasses the explicit-Apply alternative sweep between sibling records.
+            const applyOptions = coordinatedPlanIdOfSharedRecord(record)
+                ? { replay: true, silent: true }
+                : { silent: true };
+            const ok = await ProposalManager.applyProposal(id, applyOptions);
             if (ok) appliedIds.push(id);
             else failedIds.push(id);
         } catch (error) {
             console.error('[shared-apply] scoped apply failed', id, error);
             failedIds.push(id);
         }
+        index += 1;
     }
     return { appliedIds, failedIds };
 }
@@ -1104,10 +1229,11 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
         }
     }
 
-    if (!existing) {
-        existing = proposalStorage.importProposal(normalized, { overwrite: true });
-        if (!existing) return { applied: false, skipped: false, proposalId, reason: 'Failed to import proposal' };
-    }
+    // A parked local copy may be an older server snapshot left by an interrupted/partial package
+    // apply. Replace it too; otherwise the route repairs its order but faithfully replays stale
+    // road and readjustment geometry forever. Applied records returned above remain untouched.
+    existing = proposalStorage.importProposal(normalized, { overwrite: true });
+    if (!existing) return { applied: false, skipped: false, proposalId, reason: 'Failed to import proposal' };
     if (normalized.roadProposal?.parentParcelIds) {
         existing.roadProposal = existing.roadProposal || {};
         existing.roadProposal.parentParcelIds = normalized.roadProposal.parentParcelIds.slice();
@@ -1458,6 +1584,23 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             });
             return best;
         };
+
+        // A partly applied package is not a useful stable state. Its remaining members would be
+        // tested against stale ground and, because already-applied records are normally skipped,
+        // would never receive repaired server definitions. Remove only this package's standing
+        // members, then let the ordinary queue download and materialise every member afresh.
+        if (coveredIncomingIds.size > 0 && coveredIncomingIds.size < totalProposals) {
+            updateProposalLoadOverlay({
+                title: tShare('plan.rebuildingPlanTitle', 'Rebuilding applied plan'),
+                status: tShare('plan.rebuildingPlan', 'Replaying its formations from the cadastre…')
+            });
+            const reset = await resetPartiallyAppliedSharedPlan(incomingAlreadyApplied);
+            if (reset.failedIds.length) {
+                throw new Error(`Could not reset partially applied shared plan: ${reset.failedIds.join(', ')}`);
+            }
+            incomingAlreadyApplied = [];
+            coveredIncomingIds.clear();
+        }
 
         // Counted over COVERED incoming ids, not list length — with a source and its
         // replacement both standing, the list double-counts one member.

@@ -49,6 +49,7 @@ describe('proposal import boundary', () => {
             lifecycleStatus: 'Executed',
             applied: true,
             goal: 'buildings',
+            coordinatedPlanId: 'district-plan',
             parentParcelIds: [10],
             buildingProposal: {
                 applied: true,
@@ -64,6 +65,7 @@ describe('proposal import boundary', () => {
         expect(imported.buildingProposal).not.toHaveProperty('applied');
         expect(imported.buildingProposal).not.toHaveProperty('status');
         expect(imported.parentParcelIds).toEqual(['10']);
+        expect(imported.coordinatedPlanId).toBe('district-plan');
     });
 
     it('normalizes legacy lifecycle words without importing legacy application state', () => {

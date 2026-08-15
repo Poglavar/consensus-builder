@@ -40,6 +40,11 @@ function _normalizeProposalId(value) {
     }
 }
 
+function _coordinatedPlanIdOf(record) {
+    if (!record || record.coordinatedPlanId === undefined || record.coordinatedPlanId === null) return '';
+    return String(record.coordinatedPlanId).trim();
+}
+
 function _getProposalApplyLabel(proposalId, proposalData) {
     const title = proposalData && typeof proposalData.title === 'string'
         ? proposalData.title.trim()
@@ -1074,10 +1079,66 @@ const ProposalManager = {
                 id: String(record.proposalId),
                 geometry: footprint.geometry,
                 isTrack: !!(definition && definition.metadata && definition.metadata.isTrack),
-                name: record.title || record.name || 'Road'
+                name: record.title || record.name || 'Road',
+                coordinatedPlanId: _coordinatedPlanIdOf(record) || null
             });
         });
         return takes;
+    },
+
+    // Non-road plots that an explicitly coordinated plan has already formed. Its road records are
+    // published separately, but the two geometries are one tessellation: road bands occupy the
+    // intentional gaps between these plots. Corridor derivation starts from the cadastre, so its
+    // ordinary remainders must be clipped around the standing plots instead of duplicated over
+    // them. Only plans represented in the active take set participate; unrelated readjustments
+    // retain the ordinary latest-formation-wins behaviour.
+    _coordinatedReadjustmentGroundByParcel(takes) {
+        const planIds = new Set((Array.isArray(takes) ? takes : [])
+            .map(take => take && take.coordinatedPlanId ? String(take.coordinatedPlanId) : '')
+            .filter(Boolean));
+        const occupied = new Map();
+        if (!planIds.size) return occupied;
+
+        const browserRoot = (typeof window !== 'undefined') ? window : globalThis;
+        const byId = (browserRoot.parcelLayerById instanceof Map) ? browserRoot.parcelLayerById : null;
+        if (!byId) return occupied;
+        const formationEdit = browserRoot.__formationEdit;
+        const baseIdOf = id => {
+            if (formationEdit && typeof formationEdit.baseIdOf === 'function') {
+                try { return String(formationEdit.baseIdOf(String(id)) || ''); } catch (_) { }
+            }
+            return String(id || '').split('#')[0];
+        };
+
+        byId.forEach((layer, layerId) => {
+            const props = (layer && layer.feature && layer.feature.properties) || {};
+            const ownerId = props.ancestorProposal || props.proposalId;
+            if (!ownerId) return;
+            const record = (typeof _getProposalRecord === 'function') ? _getProposalRecord(ownerId) : null;
+            if (!record || !appliedOf(record)) return;
+            const planId = _coordinatedPlanIdOf(record);
+            if (!planId || !planIds.has(planId)) return;
+            const goalKey = (applyRoute && typeof applyRoute.normalizeGoalKey === 'function')
+                ? applyRoute.normalizeGoalKey(record.goal)
+                : String(record.goal || '');
+            if (goalKey !== 'reparcellization' || !record.reparcellization) return;
+
+            let feature = null;
+            try { feature = layer.toGeoJSON(false); } catch (_) { feature = null; }
+            if (feature && feature.type === 'FeatureCollection') feature = feature.features && feature.features[0];
+            if (!feature || !feature.geometry || !/Polygon/.test(String(feature.geometry.type || ''))) return;
+
+            const anchors = [];
+            if (Array.isArray(props.baseParcelIds)) anchors.push(...props.baseParcelIds);
+            if (Array.isArray(props.parentParcelIds)) anchors.push(...props.parentParcelIds);
+            if (props.rootParcelId) anchors.push(props.rootParcelId);
+            if (!anchors.length) anchors.push(layerId);
+            Array.from(new Set(anchors.map(baseIdOf).filter(Boolean))).forEach(baseId => {
+                if (!occupied.has(baseId)) occupied.set(baseId, []);
+                occupied.get(baseId).push(feature);
+            });
+        });
+        return occupied;
     },
 
     // Derive the parcel fabric from the cadastre and the corridors over it.
@@ -1213,7 +1274,7 @@ const ProposalManager = {
         }
         if (!parcels.length) return { added: 0, removed: 0, unchanged: 0, parcels: 0, failed: [] };
 
-        const pieces = [];
+        let pieces = [];
         const failed = [];
         // The clip loop goes ONE PARCEL at a time so the clock can be consulted between clips —
         // fabricOver over a 40-parcel slice was itself an unbreakable 20-120 ms block, which is a
@@ -1236,6 +1297,12 @@ const ProposalManager = {
 
         // An untouched parcel comes back as itself; that is the base layer showing, not a piece to
         // mint. Everything else is derived ground.
+        const coordinatedGround = typeof this._coordinatedReadjustmentGroundByParcel === 'function'
+            ? this._coordinatedReadjustmentGroundByParcel(takes)
+            : new Map();
+        if (coordinatedGround.size && typeof A.remaindersOutsideOccupiedGround === 'function') {
+            pieces = A.remaindersOutsideOccupiedGround(pieces, coordinatedGround);
+        }
         const derived = pieces.filter(piece => piece.id !== piece.parcelId);
         const untouched = new Set(pieces.filter(piece => piece.id === piece.parcelId).map(piece => piece.parcelId));
 
@@ -1573,6 +1640,126 @@ const ProposalManager = {
         return await this._deriveCorridorFabric({ parcelIds });
     },
 
+    // Several consecutive corridors in one shared package are one change to the cadastral fabric,
+    // not a sequence of unrelated clicks. Materialise their complete take set in one pass, exactly
+    // as a canonical rebuild does. The package phase decides whether this batch runs before an
+    // ordinary readjustment or after a coordinated, pre-tessellated one.
+    async materializeCorridorBatch(proposalIds) {
+        const ids = Array.from(new Set((Array.isArray(proposalIds) ? proposalIds : [])
+            .map(id => String(id || '')).filter(Boolean)));
+        if (!ids.length) return { ok: true, appliedIds: [], failedIds: [] };
+
+        return this._enqueueFabricChange(async () => {
+            const records = [];
+            const missingIds = [];
+            ids.forEach(id => {
+                const record = _getProposalRecord(id);
+                const goalKey = record && applyRoute && typeof applyRoute.normalizeGoalKey === 'function'
+                    ? applyRoute.normalizeGoalKey(record.goal)
+                    : String(record?.goal || '');
+                if (!record || goalKey !== 'road-track') missingIds.push(id);
+                else records.push(record);
+            });
+            if (missingIds.length) {
+                return { ok: false, appliedIds: [], failedIds: ids, reason: `Missing corridor record(s): ${missingIds.join(', ')}` };
+            }
+
+            const prior = new Map(records.map(record => [String(record.proposalId), {
+                applied: appliedOf(record),
+                hadAppliedAt: Object.prototype.hasOwnProperty.call(record, 'appliedAt'),
+                appliedAt: record.appliedAt,
+                hadUpdatedAt: Object.prototype.hasOwnProperty.call(record, 'updatedAt'),
+                updatedAt: record.updatedAt
+            }]));
+            let parcelIds = [];
+            try {
+                // The loader normally has this ground already, but the batch is a public operation
+                // and must be correct when called independently too.
+                await this._loadReplayGround(records);
+
+                records.forEach(record => {
+                    try { setProposalApplied(record, true); } catch (_) { record.applied = true; }
+                });
+
+                const browserRoot = (typeof window !== 'undefined') ? window : globalThis;
+                const arrangement = browserRoot.__parcelArrangement;
+                const ancestry = browserRoot.__cadastreAncestry;
+                const planOrderApi = browserRoot.__planOrder;
+                if (!arrangement || !ancestry || !planOrderApi
+                    || typeof ancestry.loadedCadastreParcels !== 'function'
+                    || typeof arrangement.takeHitsOn !== 'function'
+                    || typeof planOrderApi.footprintOf !== 'function') {
+                    throw new Error('Corridor batch geometry is unavailable.');
+                }
+
+                const arrivingTakes = records.map(record => {
+                    let footprint = null;
+                    try { footprint = planOrderApi.footprintOf(record); } catch (_) { footprint = null; }
+                    return footprint && footprint.geometry
+                        ? { id: String(record.proposalId), geometry: footprint.geometry }
+                        : null;
+                }).filter(Boolean);
+                if (arrivingTakes.length !== records.length) {
+                    throw new Error('One or more corridors have no usable footprint.');
+                }
+
+                parcelIds = ancestry.loadedCadastreParcels()
+                    .filter(entry => arrangement.takeHitsOn(entry.feature, arrivingTakes).length > 0)
+                    .map(entry => String(entry.id));
+                if (!parcelIds.length) throw new Error('No cadastral ground was found under the corridor batch.');
+
+                const fabric = await this._deriveCorridorFabric({
+                    parcelIds,
+                    takes: this._appliedCorridorTakes()
+                });
+                if (fabric && Array.isArray(fabric.failed) && fabric.failed.length) {
+                    throw new Error(`Could not arrange ${fabric.failed.length} cadastral parcel(s).`);
+                }
+
+                const sweep = await this._sweepGroundNoLongerWhole(parcelIds);
+                try { browserRoot.CorridorNetworkNodes?.normalize?.(); } catch (error) {
+                    console.error('[materializeCorridorBatch] network noding failed', error);
+                }
+                try { if (typeof refreshAppliedCorridorStrips === 'function') refreshAppliedCorridorStrips(); } catch (_) { }
+                try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
+                try { if (typeof proposalStorage !== 'undefined' && proposalStorage.save) proposalStorage.save(); } catch (_) { }
+                return { ok: true, appliedIds: records.map(record => String(record.proposalId)), failedIds: [], fabric, sweep };
+            } catch (error) {
+                records.forEach(record => {
+                    const snapshot = prior.get(String(record.proposalId));
+                    if (!snapshot) return;
+                    try { setProposalApplied(record, snapshot.applied, { stamp: false }); } catch (_) { record.applied = snapshot.applied; }
+                    if (snapshot.hadAppliedAt) record.appliedAt = snapshot.appliedAt;
+                    else delete record.appliedAt;
+                    if (snapshot.hadUpdatedAt) record.updatedAt = snapshot.updatedAt;
+                    else delete record.updatedAt;
+                    try {
+                        this._setLastApplyFailure(String(record.proposalId), {
+                            code: 'corridor-batch-failed',
+                            message: String(error && error.message || error)
+                        });
+                    } catch (_) { }
+                });
+                // Restore this scope from the take set that stood before the batch. A failed group
+                // is atomic: it must not leave a successfully cut prefix behind.
+                if (parcelIds.length) {
+                    try {
+                        await this._deriveCorridorFabric({ parcelIds, takes: this._appliedCorridorTakes() });
+                    } catch (rollbackError) {
+                        console.error('[materializeCorridorBatch] rollback failed', rollbackError);
+                    }
+                }
+                try { if (typeof proposalStorage !== 'undefined' && proposalStorage.save) proposalStorage.save(); } catch (_) { }
+                return {
+                    ok: false,
+                    appliedIds: [],
+                    failedIds: records.map(record => String(record.proposalId)),
+                    reason: String(error && error.message || error)
+                };
+            }
+        });
+    },
+
     async deriveCorridorIncrementally(proposal, options = {}) {
         const browserRoot = (typeof window !== 'undefined') ? window : globalThis;
         const A = browserRoot.__parcelArrangement;
@@ -1684,6 +1871,17 @@ const ProposalManager = {
             if (key === root || !touched.has(root)) return;
             try { pieces.push(layer.toGeoJSON(false)); } catch (_) { }
         });
+        const geometryOps = {
+            intersectionArea: (a, b) => {
+                try { const hit = t.intersect(a, b); return hit ? (t.area(hit) || 0) : 0; } catch (_) { return 0; }
+            },
+            area: shape => { try { return t.area(shape) || 0; } catch (_) { return 0; } }
+        };
+        const corridorPieces = pieces.filter(piece => {
+            const props = (piece && piece.properties) || {};
+            return props.isCorridor === true || props.isTrack === true
+                || (Array.isArray(props.formedByProposalIds) && props.formedByProposalIds.length > 0);
+        });
 
         const records = (typeof proposalStorage !== 'undefined' && proposalStorage.getAllProposals)
             ? proposalStorage.getAllProposals().filter(record => appliedOf(record))
@@ -1699,6 +1897,21 @@ const ProposalManager = {
                 : String(record.goal || '');
             if (goalKey === 'road-track') continue;
 
+            // A coordinated plan's readjustment is authored around its own road bands. It remains
+            // valid when those roads fill the gaps: shared edges are not a cut through a plot. A
+            // road piece with measurable area inside any plot is a real conflict and falls through
+            // to the ordinary sweep below, which removes the readjustment and restores its ground.
+            if (goalKey === 'reparcellization' && _coordinatedPlanIdOf(record)
+                && record.reparcellization && Array.isArray(record.reparcellization.polygons)
+                && typeof sweepApi.partsOverlapPieces === 'function') {
+                const plots = record.reparcellization.polygons
+                    .map(slice => slice && slice.geometry
+                        ? { type: 'Feature', properties: {}, geometry: slice.geometry }
+                        : null)
+                    .filter(Boolean);
+                if (!sweepApi.partsOverlapPieces(plots, corridorPieces, geometryOps)) continue;
+            }
+
             let footprint = null;
             try { footprint = planOrderApi.footprintOf(record); } catch (_) { footprint = null; }
             if (!footprint || !footprint.geometry) continue;
@@ -1711,12 +1924,7 @@ const ProposalManager = {
             const isBuildingDesign = goalKey === 'building'
                 || !!(applyRoute && applyRoute.isBuildingGoal && applyRoute.isBuildingGoal(goalKey));
             const parts = sweepApi.designParts(record, isBuildingDesign, footprint);
-            const verdict = sweepApi.inspectDesignAgainstPieces(parts, pieces, {
-                intersectionArea: (a, b) => {
-                    try { const hit = t.intersect(a, b); return hit ? (t.area(hit) || 0) : 0; } catch (_) { return 0; }
-                },
-                area: shape => { try { return t.area(shape) || 0; } catch (_) { return 0; } }
-            });
+            const verdict = sweepApi.inspectDesignAgainstPieces(parts, pieces, geometryOps);
             if (!verdict.standsHere) continue;
             // A park, square or lake takes whole parcels by definition: divided ground is fatal to
             // it whatever the geometry says. A building design survives an untouched cut.

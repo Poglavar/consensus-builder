@@ -14,7 +14,7 @@
       "city": "zagreb",
       "name": "Vrbani III – rekonstrukcija naselja – javni park Z1 6",
       "title": "Vrbani III – rekonstrukcija naselja – javni park Z1 6",
-      "description": "Javne zelene površine-javni park Z1 (856 m²) iz službenoga kartografskog prikaza plana. Arhivski je referentni sloj i pri primjeni ne simulira novu parcelaciju ni prijenos vlasništva.",
+      "description": "Javne zelene površine-javni park Z1 (856 m²) iz službenoga kartografskog prikaza plana. U sustavu se primjenjuje kao redovan prijedlog parka.",
       "author": "zagreb.lol – lokalna analiza",
       "type": "structure",
       "goal": "park",
@@ -27,8 +27,7 @@
         "research",
         "reconstruction",
         "neighbourhood-plan",
-        "official-plan-footprint",
-        "reference-overlay"
+        "official-plan-footprint"
       ],
       "parentParcelIds": [
         "HR-339318-7468"
@@ -61,8 +60,7 @@
         "officialLandUseCode": "Z1",
         "officialLandUseName": "Javne zelene površine-javni park",
         "officialLandUseGroup": "Javne zelene površine",
-        "areaM2": 856.1497061109637,
-        "applicationSemantics": "referenceOnly: prikaz bez nove parcelacije ili prijenosa vlasništva"
+        "areaM2": 856.1497061109637
       }
     },
     "structureProposal": {
@@ -71,7 +69,6 @@
       "parentParcelIds": [
         "HR-339318-7468"
       ],
-      "referenceOnly": true,
       "applied": false
     }
   },

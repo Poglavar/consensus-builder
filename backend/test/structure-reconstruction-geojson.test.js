@@ -31,8 +31,7 @@ function proposal() {
             kind: 'park',
             geometry: polygon(16).geometry,
             blockName: 'Z1',
-            parentParcelIds: ['HR-1-2/3'],
-            referenceOnly: true
+            parentParcelIds: ['HR-1-2/3']
         }
     };
 }
@@ -45,11 +44,10 @@ describe('structure reconstruction GeoJSON', () => {
             .toEqual(['site', 'structure-footprint']);
     });
 
-    it('restores reference-overlay metadata without restoring applied state', () => {
+    it('does not restore applied state', () => {
         const collection = structureProposalToReconstructionGeoJSON(proposal(), polygon(15.999));
         const { proposal: imported } = structureReconstructionGeoJSONToProposal(collection);
         expect(imported.applied).toBe(false);
-        expect(imported.structureProposal.referenceOnly).toBe(true);
         expect(imported.structureProposal.geometry).toEqual(polygon(16).geometry);
     });
 

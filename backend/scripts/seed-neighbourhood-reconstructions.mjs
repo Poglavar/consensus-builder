@@ -4,8 +4,8 @@
 // seven explicitly marked plan-derived residential envelopes because only four of its eleven M1
 // fields are in the current DGU building layer. Roads use the adopted plan's IS polygons as the
 // authoritative footprint and local OSM only for editable centrelines/profiles. Parks and squares
-// use the adopted plan polygons as reference overlays: they must not pretend to repartition or
-// acquire current condominium parcels when an archival reconstruction is applied.
+// use the adopted plan polygons and follow the same parcel-formation rules as user-authored public
+// spaces; the reconstruction does not carry a second, presentation-only application mode.
 //
 // Usage:
 //   PGHOST=localhost node backend/scripts/seed-neighbourhood-reconstructions.mjs --dry-run --export
@@ -786,7 +786,7 @@ async function readStructureRows(pool, config, whereSql, kind) {
             lifecycleStatus: 'Active',
             createdAt: isoOffset(1),
             updatedAt: isoOffset(1),
-            tags: [kind, 'research', 'reconstruction', 'neighbourhood-plan', 'official-plan-footprint', 'reference-overlay'],
+            tags: [kind, 'research', 'reconstruction', 'neighbourhood-plan', 'official-plan-footprint'],
             parentParcelIds,
             cadastreParcelIds: clone(parentParcelIds),
             parcelIds: clone(parentParcelIds),
@@ -798,7 +798,6 @@ async function readStructureRows(pool, config, whereSql, kind) {
                 geometry: clone(row.geometry),
                 blockName: `${config.title} – ${row.oznaka} ${ordinal}`,
                 parentParcelIds: clone(parentParcelIds),
-                referenceOnly: true,
                 applied: false
             },
             source: planSource(config, {
@@ -807,8 +806,7 @@ async function readStructureRows(pool, config, whereSql, kind) {
                 officialLandUseCode: row.oznaka,
                 officialLandUseName: row.namjena,
                 officialLandUseGroup: row.skupna_namjena,
-                areaM2: Number(row.area_m2),
-                applicationSemantics: 'referenceOnly: prikaz bez nove parcelacije ili prijenosa vlasništva'
+                areaM2: Number(row.area_m2)
             })
         });
     }
@@ -820,13 +818,13 @@ function structureDescriptor(config, kind, row, ordinal, total) {
     if (kind === 'square') {
         return {
             title: `${config.title} – javni trg ${row.oznaka}${suffix}`,
-            description: `Površina javnog trga ${row.oznaka} (${Math.round(Number(row.area_m2))} m²) iz službenoga kartografskog prikaza plana. Arhivski je referentni sloj i pri primjeni ne simulira novu parcelaciju ni prijenos vlasništva.`
+            description: `Površina javnog trga ${row.oznaka} (${Math.round(Number(row.area_m2))} m²) iz službenoga kartografskog prikaza plana. U sustavu se primjenjuje kao redovan prijedlog javnog trga.`
         };
     }
     const label = row.oznaka === 'PA' ? 'parkovna površina' : 'javni park';
     return {
         title: `${config.title} – ${label} ${row.oznaka}${suffix}`,
-        description: `${row.namjena || label} ${row.oznaka} (${Math.round(Number(row.area_m2))} m²) iz službenoga kartografskog prikaza plana. Arhivski je referentni sloj i pri primjeni ne simulira novu parcelaciju ni prijenos vlasništva.`
+        description: `${row.namjena || label} ${row.oznaka} (${Math.round(Number(row.area_m2))} m²) iz službenoga kartografskog prikaza plana. U sustavu se primjenjuje kao redovan prijedlog parka.`
     };
 }
 

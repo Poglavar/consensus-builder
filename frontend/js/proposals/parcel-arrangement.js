@@ -427,6 +427,73 @@
     }
 
     /**
+     * Remove already-formed parcel ground from corridor REMAINDERS.
+     *
+     * A coordinated plan may publish its non-road plots first and its road bands second. The
+     * corridor arrangement is still derived from the cadastre, so its ordinary remainder is the
+     * entire cadastral parcel minus the road. Minting that remainder on top of the standing plots
+     * would create two live parcels over the same land. The plots remain authoritative there; only
+     * the part of the remainder outside them is new ground.
+     *
+     * Road pieces are never clipped here. If a road actually crosses a standing plot, the ground
+     * sweep invalidates that plot formation and the next derivation restores its remainder. This
+     * helper handles only the valid, pre-tessellated case where plots and road bands meet at edges.
+     *
+     * @param {Array<object>} pieces arrangementOf/fabricOver output
+     * @param {Map<string, Array<object>>} occupiedByParcel base parcel id -> GeoJSON shapes
+     */
+    function remaindersOutsideOccupiedGround(pieces, occupiedByParcel) {
+        const t = T();
+        if (!t || !(occupiedByParcel instanceof Map) || occupiedByParcel.size === 0) {
+            return Array.isArray(pieces) ? pieces.slice() : [];
+        }
+        const out = [];
+        (Array.isArray(pieces) ? pieces : []).forEach(piece => {
+            if (!piece || piece.kind !== 'remainder') {
+                if (piece) out.push(piece);
+                return;
+            }
+            const occupied = occupiedByParcel.get(String(piece.parcelId)) || [];
+            if (!occupied.length) {
+                out.push(piece);
+                return;
+            }
+
+            let fragments = [featureOf(piece.geometry)];
+            occupied.forEach(shape => {
+                const blocker = featureOf(shape);
+                if (!blocker || !blocker.geometry || !fragments.length) return;
+                const next = [];
+                fragments.forEach(fragment => {
+                    if (boxesDisjoint(t, fragment, blocker)) {
+                        next.push(fragment);
+                        return;
+                    }
+                    const leftover = clip('difference', fragment, blocker);
+                    if (leftover) next.push(...explode(leftover));
+                });
+                fragments = next;
+            });
+
+            fragments.forEach(fragment => {
+                const areaM2 = t.area(fragment);
+                if (!(areaM2 > MIN_PIECE_M2)) return;
+                const id = pieceId(piece.parcelId, 'remainder', fragment.geometry);
+                if (!id) return;
+                out.push({
+                    ...piece,
+                    id,
+                    geometry: fragment.geometry,
+                    areaM2,
+                    takers: []
+                });
+            });
+        });
+        out.sort((a, b) => (b.areaM2 - a.areaM2) || String(a.id).localeCompare(String(b.id)));
+        return out;
+    }
+
+    /**
      * What changed between the fabric on the map and the fabric that should be there.
      *
      * Because a piece is named by its own shape, this is a set difference and nothing more: pieces
@@ -513,6 +580,7 @@
         MIN_PIECE_M2,
         arrangementOf,
         fabricOver,
+        remaindersOutsideOccupiedGround,
         diffPieces,
         featureForPiece,
         takesOverlapping,

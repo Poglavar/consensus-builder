@@ -467,6 +467,34 @@ describe('diffing the map against what it should be', () => {
     });
 });
 
+describe('corridors beside pre-formed coordinated plots', () => {
+    it('does not mint cadastral remainders on top of standing plots', () => {
+        const arranged = arrangement.arrangementOf(PARCEL, PARCEL_ID, [EAST_WEST]).pieces;
+        const road = arranged.filter(piece => piece.kind === 'road');
+        const plots = arranged.filter(piece => piece.kind === 'remainder');
+        const occupied = new Map([[PARCEL_ID, plots.map(piece => piece.geometry)]]);
+
+        const reconciled = arrangement.remaindersOutsideOccupiedGround(arranged, occupied);
+
+        expect(reconciled.map(piece => piece.id)).toEqual(road.map(piece => piece.id));
+        const conserved = reconciled.reduce((sum, piece) => sum + piece.areaM2, 0)
+            + plots.reduce((sum, piece) => sum + piece.areaM2, 0);
+        expect(conserved).toBeCloseTo(turf.area(PARCEL), 0);
+    });
+
+    it('keeps the genuinely free part of a remainder', () => {
+        const arranged = arrangement.arrangementOf(PARCEL, PARCEL_ID, [EAST_WEST]).pieces;
+        const plots = arranged.filter(piece => piece.kind === 'remainder');
+        const occupied = new Map([[PARCEL_ID, [plots[0].geometry]]]);
+
+        const reconciled = arrangement.remaindersOutsideOccupiedGround(arranged, occupied);
+
+        expect(reconciled.filter(piece => piece.kind === 'road')).toHaveLength(1);
+        expect(reconciled.filter(piece => piece.kind === 'remainder')).toHaveLength(1);
+        expect(reconciled.some(piece => piece.id === plots[1].id)).toBe(true);
+    });
+});
+
 describe('a piece as a map feature', () => {
     const base = {
         type: 'Feature',

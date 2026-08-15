@@ -21,7 +21,7 @@ Run these commands from this folder:
 
 ```
 python3 extract-plan.py --step all      # tiles → data/*.geojson (+ overlay-*.png diagnostics)
-node build-and-upload.mjs --dry-run     # build 21 proposals, print summary
+node build-and-upload.mjs --dry-run     # build 19 proposals, print summary
 node build-and-upload.mjs --apply       # POST to http://localhost:3000 (deterministic ids upu-borovje-*)
 ```
 
@@ -63,9 +63,10 @@ The six GeoJSON files above are committed in this folder as the canonical recons
   cycleway + sidewalks + verges), IS-1 18 m shared surface, IS-2 9 m pedestrian.
 - **1 land-readjustment proposal** (`p-upu-borovje-parcelacija`) — the plan's new
   parcelation as a reparcellization: one građevna čestica per building
-  (multi-kazeta blocks split by nearest building envelope), one parcel per
-  park/recreation zone, streets as prometne površine. M1-12 keeps its existing
-  parcels (PP-5), so that area is excluded.
+  (multi-kazeta blocks split by nearest building envelope) and one parcel per
+  park/recreation zone. The separate road proposal owns the `IS` polygons, so
+  street land is not duplicated inside the readjustment. M1-12 keeps its
+  existing parcels (PP-5), so that area is excluded.
 
 ## Extraction notes
 
@@ -76,17 +77,25 @@ The six GeoJSON files above are committed in this folder as the canonical recons
   color measured on the eroded cell interior (hatch bleeds across thin lines).
 - Georeference verified against the vector parcels: alignment ≈ 0.3 m.
 
-## Sequencing: the parcelation goes first
+## Sequencing and tessellation
 
-The plan is a package: the reparcellization mints one građevna čestica per
-building/zone/street, and every other proposal anchors to those NEW parcels
-(`parentParcelIds` = the synthetic child ids, precomputed here). This mirrors
-the real plan and avoids parcel-occupancy conflicts between kazete that share
-one big source parcel today. Mechanics: the parcelation's proposal id starts
-with `p-` so its children get `...#p-...` ids, which the shared-plan queue
-classifies as DERIVED parents — it waits for the earlier apply in the link to
-create them instead of fetching them from the server. Open the plan with the
-parcelation first in the id list.
+The plan is a coordinated package (`coordinatedPlanId: upu-borovje`). The
+readjustment first forms only its authored non-road plots and deliberately does
+not mint the omitted street bands as accidental remainders. The road proposals
+then fill those reserved bands from cadastral ground; their ordinary cadastral
+remainders are clipped around the plots already standing there. The plot union
+and road union therefore tile the plan without overlaps or gaps. Buildings,
+parks and recreation proposals then resolve their live parcels geometrically.
+Shared-plan loading enforces the full dependency order: land readjustment →
+roads → buildings → parks and recreation.
+If only part of the package is already applied, the loader first removes those
+stale package members and imports every current definition before replaying the
+whole package in that order.
+
+`repair-imported-proposals.mjs` migrates the historical rows to that model. It
+clips every readjustment plot by the road union, retains the former street verge
+as non-road plots, and refuses to write unless PostGIS verifies: no plot/plot
+overlap, no road/plot overlap, and conservation of the complete plan pool.
 
 ## Named proposal links
 

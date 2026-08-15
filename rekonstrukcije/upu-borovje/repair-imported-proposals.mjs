@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // One-off repair of the imported UPU Borovje plan (rows 633-651 + the split road 699).
 //
-// The plan itself is authored correctly — measured, not assumed: its 38 readjustment plots are a
-// perfect partition (sum = union = 103,150 m², zero overlap), they tessellate the 29 declared input
+// The plan itself is authored correctly — measured, not assumed: its 82 imported readjustment
+// parts form a perfect partition (sum = union = 103,150 m², zero overlap), they tessellate 29 input
 // parcels exactly, every building sits 100% inside exactly one plot, and every park fills its plot
 // to 100.0%. Two things came out of the ArcGIS extraction wrong, and both are repaired here.
 //
@@ -22,17 +22,16 @@
 // 3. NAMING. The plan is a re-parcellation, not a komasacija — no land was pooled and
 //    redistributed between owners here — so "(urbana komasacija)" is struck from every title.
 //
-// 4. NOTHING STANDS ON THE STREET. A road, once placed, is a parcel, and no body may sit on it.
-//    Where the corridor met a neighbour's BODY the neighbour yields: the park/square bodies are
-//    clipped by the corridor, and one building — M1-9, a 602 m² block whose plot is 2,506 m² — is
-//    TRANSLATED clear instead of being notched, because a building with a bite out of it is not a
-//    building.
+// 4. ONE TESSELLATION. Corridors are parcels in their own right, so their geometry is removed from
+//    every readjustment plot. The remaining plots are clipped and the old irregular street verges
+//    become ordinary non-road plots. The road union plus the readjustment union must reproduce the
+//    plan pool, with neither gaps nor overlaps. The post-2026-08-10 readjustment engine supports a
+//    partial cadastral take and mints only the ground its authored polygons claim, so the older
+//    whole-input-parcel rationale for keeping streets inside the plots no longer applies.
 //
-//    What is NOT touched is the readjustment's plots. A readjustment MINTS the ground; the road
-//    stands on it and consumes what it needs at apply time. That is the vertical stack, not an
-//    overlap, and pre-clipping the plots to "tessellate" them with the street broke the one thing
-//    the plan must satisfy — covering every input parcel whole — so the readjustment refused and
-//    the road, with no plots under it, refused after it. The plots stay as authored.
+// 5. NOTHING STANDS ON THE STREET. Where the corridor met a neighbour's BODY the neighbour yields:
+//    park/square bodies are clipped by the corridor, and a building is translated clear instead of
+//    being notched, because a building with a bite out of it is not a building.
 //
 // Clipping is written to roadProposal.definition.polygon, which is the authoritative cut geometry
 // ("the resolver and the parcel cut consume via footprintOf → definition.polygon", apply/road.js)
@@ -62,10 +61,11 @@ const pkg = require('pg');
 require('dotenv').config({ path: path.join(repoRoot, 'backend', '.env') });
 const { Pool } = pkg;
 
-const READJUSTMENT_ID = 633;          // the plan's ground: 38 plots, a perfect partition
+const READJUSTMENT_ID = 633;          // the plan's ground: 82 imported parts, a perfect partition
 const MEMBER_IDS = [634, 635, 636, 637, 638, 639, 640, 641, 642, 643, 644, 645, 646, 647, 648, 649, 650];
 const ROAD_IDS = [651, 699];          // the street network, split into two connected stretches
 const ALL_IDS = [READJUSTMENT_ID, ...MEMBER_IDS, ...ROAD_IDS];
+const COORDINATED_PLAN_ID = 'upu-borovje';
 
 // Same floor as plan-order.js: below this an intersection is shared-border noise, not a claim.
 const MIN_INTERSECTION_M2 = 0.25;
@@ -89,9 +89,9 @@ const CURTILAGE_MARGIN_M = 16;
 // Boundary sampling for the nearest-building partition: a vertex every this many metres makes the
 // point-Voronoi a good stand-in for a true polygon-Voronoi.
 const SEED_SPACING_M = 2;
-// Marks a plot list this script rebuilt, so the restore step does not mistake it for the earlier
-// over-repair and put the authored plots back.
+// Marks the optional building-curtilage layout and the universal corridor/plot tessellation.
 const REPARCEL_MARK = 'repair-upu-borovje/curtilage';
+const TESSELLATION_MARK = 'repair-upu-borovje/corridor-tessellation';
 // Below this an offcut is not a parcel; it joins the building parcel it abuts.
 const MIN_OPEN_PARCEL_M2 = 150;
 // Unioning the corridor with the plots it swallowed can leave a pinhole where their edges very
@@ -108,11 +108,9 @@ function usage() {
         '',
         '  --apply              Write the changes. Without this the script only reports.',
         '  --rebuild-corridors  Derive each road parcel again instead of keeping the stored one.',
-        '  --reparcel           Rebuild the plots: one surrounding parcel per building, grown to',
-        '                       its neighbours, plus the parks, the streets and what is left over.',
+        '  --reparcel           Rebuild the non-road plots: one surrounding parcel per building,',
+        '                       grown to its neighbours, plus parks and remaining open ground.',
         '  --restore-authored   Put the authored plot list back, undoing --reparcel.',
-        '  --street-plots       Re-cut the readjustment street plots as constant-width bands and',
-        '                       seat each road inside its own, so the road cuts (almost) nothing.',
         '  --help    Show this message.'
     ].join('\n'));
 }
@@ -192,9 +190,6 @@ async function main() {
     const reparcel = argv.includes('--reparcel');
     // Puts the authored plot list back, undoing --reparcel.
     const restoreAuthored = argv.includes('--restore-authored');
-    // Re-cuts the readjustment's STREET plots as constant-width bands around the centrelines, so a
-    // road can sit inside its parcel instead of carving an irregular one.
-    const streetPlots = argv.includes('--street-plots');
 
     const pool = new Pool();
     const client = await pool.connect();
@@ -222,6 +217,23 @@ async function main() {
         const byId = new Map(rows.map(r => [r.id, r]));
         const missing = ALL_IDS.filter(id => !byId.has(id));
         if (missing.length) throw new Error(`rows not found: ${missing.join(', ')} — is this the right database?`);
+
+        // All twenty rows are one pre-tessellated package: the readjustment owns the non-road
+        // plots, the two road records own the complementary bands, and content follows both. The
+        // marker is generic application metadata — no Borovje id is hard-coded in the runtime.
+        // Remove the readjustment's old apply-time pool geometry too: its authored footprint is its
+        // plot list, while the omitted street bands intentionally belong to sibling records.
+        const coordinationWrites = [];
+        for (const row of rows) {
+            const data = row.effective;
+            let changed = data.coordinatedPlanId !== COORDINATED_PLAN_ID;
+            data.coordinatedPlanId = COORDINATED_PLAN_ID;
+            if (row.id === READJUSTMENT_ID && data.geometry && /Polygon/.test(String(data.geometry.type || ''))) {
+                delete data.geometry;
+                changed = true;
+            }
+            if (changed) coordinationWrites.push({ id: row.id });
+        }
 
         // The plan's own ground, and the bodies standing on it, as PostGIS geometry in 3765.
         // The plan's TOTAL ground: its plots plus whatever the streets already hold. Once a repair
@@ -270,9 +282,9 @@ async function main() {
         }
 
         // --- 0. undo an earlier over-repair -------------------------------------------------
-        // A previous pass clipped the plan's plots by the street and stamped the record as amended.
-        // Both are reverted from the pre-repair backup: the plan must cover its input parcels
-        // whole, or the whole-parcel gate refuses it and nothing downstream has ground to stand on.
+        // A previous pass clipped the plan's plots by the street without retaining the displaced
+        // verge and stamped the record as amended. Restore only that incomplete repair from backup;
+        // the conserved corridor tessellation below immediately replaces it.
         {
             const planRecord = byId.get(READJUSTMENT_ID).effective;
             const plots = (planRecord.reparcellization && planRecord.reparcellization.polygons) || [];
@@ -280,7 +292,8 @@ async function main() {
                 'SELECT reparcellization, backed_up_at FROM public.proposal_reparcellization_backup WHERE id = $1', [READJUSTMENT_ID]);
             const authored = backup && backup.reparcellization && Array.isArray(backup.reparcellization.polygons)
                 ? backup.reparcellization.polygons : null;
-            const rebuilt = planRecord.reparcellization && planRecord.reparcellization.rebuiltBy === REPARCEL_MARK;
+            const rebuiltBy = planRecord.reparcellization && planRecord.reparcellization.rebuiltBy;
+            const rebuilt = rebuiltBy === REPARCEL_MARK || rebuiltBy === TESSELLATION_MARK;
             if (authored && (restoreAuthored || (!rebuilt && (plots.length !== authored.length || planRecord.amendedByTaking === true)))) {
                 console.log(`RESTORE\n  #${READJUSTMENT_ID} ${plots.length} plot(s) -> ${authored.length} as authored `
                     + `(backup of ${new Date(backup.backed_up_at).toISOString().slice(0, 10)}); amended stamp dropped`);
@@ -297,8 +310,8 @@ async function main() {
             }
         }
 
-        // Read at call time: the street plots are re-cut mid-run, and a park must be seated on the
-        // parcel that exists AFTER that, not the one that existed before.
+        // Read at call time: the road is removed from the plots mid-run, and a park must be seated
+        // on the parcel that exists AFTER that, not the one that existed before.
         const currentPlots = () => ((byId.get(READJUSTMENT_ID).effective.reparcellization || {}).polygons || [])
             .filter(slice => slice && slice.geometry);
 
@@ -367,9 +380,8 @@ async function main() {
                 pieces AS (SELECT (ST_Dump(ST_CollectionExtract(ST_Intersection(corridor.g, ground.pool), 3))).geom AS g
                            FROM corridor, ground),
                 inpool AS (SELECT ST_UnaryUnion(ST_Collect(g)) AS g FROM pieces WHERE ST_Area(g) > 1),
-                -- No nibble rule any more: the readjustment cuts the street plots to this very
-                -- band (--street-plots), so the road adopts its parcel instead of grazing its
-                -- neighbours, and the band keeps the constant width its profile describes.
+                -- No nibble rule: the corridor keeps the constant width its profile describes;
+                -- the readjustment is clipped away from this exact band in the next step.
                 clipped AS (SELECT ST_UnaryUnion(ST_Collect(d.geom)) AS g
                             FROM (SELECT (ST_Dump(ST_CollectionExtract(inpool.g, 3))).geom AS geom FROM inpool) d
                             WHERE ST_Area(d.geom) > 1),
@@ -398,16 +410,12 @@ async function main() {
             if (changed) roadWrites.push({ id, geometry });
         }
 
-        // --- 2. the readjustment's STREET plots become constant-width bands -----------------
-        // The import drew the street land as irregular polygons of wandering width, so a road
-        // placed inside one had to carve its own shape out of it — which is why the road parcel
-        // came out ragged and stopped agreeing with the band that is drawn. The readjustment makes
-        // ALL the parcels including the streets, so its street plots are re-cut as the corridor
-        // itself: centreline × that segment's profile width. The road then ADOPTS its parcel and
-        // cuts nothing (a bend may still shave a little, which is fine and stays small).
-        // The verge those irregular plots used to hold does not vanish — every square metre goes to
-        // the neighbouring plot it is NEAREST to, so the plan still tiles its input parcels whole.
-        if (streetPlots) {
+        // --- 2. roads and readjustment plots become one non-overlapping tessellation -----------
+        // The imported readjustment included the street land as plots, while the road proposals
+        // claimed the same land again. Roads are already parcels; the readjustment therefore keeps
+        // only ground outside their union. Old irregular street verges remain as ordinary plots so
+        // the union of roads and plots still reproduces the complete plan pool.
+        {
             console.log('\nSTREET PLOTS');
             const bands = ROAD_IDS
                 .map(id => ({ id, geometry: (byId.get(id).effective.roadProposal.definition || {}).polygon }))
@@ -422,13 +430,9 @@ async function main() {
                 allband AS (SELECT ST_UnaryUnion(ST_Collect(g)) AS g FROM band),
                 plot AS (SELECT ord, ST_Transform(ST_MakeValid(ST_SetSRID(ST_GeomFromGeoJSON(g->'geometry')::geometry, 4326)), 3765) AS g
                          FROM jsonb_array_elements($2::jsonb) WITH ORDINALITY AS t(g, ord)),
-                -- a plot the bands mostly cover WAS street land; the bands replace it. Every other
-                -- plot is kept exactly as authored — this recut is about the streets, and quietly
-                -- redistributing everyone else's land would be a different plan.
-                -- and where a street merely CROSSES a plot, the plot yields that strip — the road
-                -- adjusts the readjustment, which is the whole point of doing the streets first.
-                -- A plot a street cuts right through becomes two parcels, as a street through a
-                -- block should.
+                -- A plot mostly covered by a corridor was imported street land and disappears from
+                -- the readjustment. Every other plot yields exactly the corridor overlap; a road
+                -- through a block can therefore split one authored plot into two valid plots.
                 keep AS (SELECT plot.ord,
                                 (ST_Dump(ST_CollectionExtract(ST_Difference(plot.g, allband.g), 3))).geom AS g
                          FROM plot, allband
@@ -442,29 +446,34 @@ async function main() {
                 SELECT ord, round(ST_Area(g)::numeric, 0) AS m2, 'plot'::text AS kind,
                        ST_AsGeoJSON(ST_Transform(g, 4326), $4) AS geojson FROM keep WHERE ST_Area(g) > 1
                 UNION ALL
-                SELECT -id, round(ST_Area(g)::numeric, 0), 'street', ST_AsGeoJSON(ST_Transform(g, 4326), $4) FROM band
-                UNION ALL
                 SELECT NULL, round(ST_Area(g)::numeric, 0), 'verge', ST_AsGeoJSON(ST_Transform(g, 4326), $4)
                 FROM verge WHERE ST_Area(g) > 1
                 ORDER BY 1 NULLS LAST`,
             [JSON.stringify(bands), JSON.stringify(plots), STREET_PLOT_SHARE, GEOJSON_DIGITS]);
 
-            const streets = rebuilt.filter(row => row.kind === 'street');
             const kept = rebuilt.filter(row => row.kind === 'plot');
             const verge = rebuilt.filter(row => row.kind === 'verge');
-            console.log(`  ${plots.length - kept.length} irregular street plot(s) replaced by ${streets.length} constant-width band(s)`
-                + ` — ${streets.map(row => fmt(row.m2)).join(', ')} m²`);
-            console.log(`  ${kept.length} plot(s) kept as authored; ${verge.length} verge parcel(s)`
-                + ` — ${verge.map(row => fmt(row.m2)).join(', ')} m²`);
+            console.log(`  ${plots.length - kept.length} street/consumed plot part(s) removed; roads remain separate proposals`);
+            console.log(`  ${kept.length} non-road plot part(s); ${verge.length} verge parcel(s)`
+                + (verge.length ? ` — ${verge.map(row => fmt(row.m2)).join(', ')} m²` : ''));
 
             const first = plots[0] || {};
             const carry = { ownerKey: first.ownerKey || null, displayName: first.displayName || null, color: first.color || null };
-            planRecord.reparcellization = {
+            const nextPolygons = rebuilt.map(row => ({ ...carry, geometry: JSON.parse(row.geojson) }));
+            const nextPlan = {
                 ...planRecord.reparcellization,
-                polygons: rebuilt.map(row => ({ ...carry, geometry: JSON.parse(row.geojson) })),
-                rebuiltBy: REPARCEL_MARK
+                polygons: nextPolygons,
+                rebuiltBy: TESSELLATION_MARK
             };
-            reparcelled = true;
+            const alreadyStored = planRecord.reparcellization.rebuiltBy === TESSELLATION_MARK
+                && roadWrites.length === 0
+                && plots.length === nextPolygons.length;
+            if (!alreadyStored) {
+                planRecord.reparcellization = nextPlan;
+                reparcelled = true;
+            } else {
+                console.log('  tessellation already stored — no rewrite');
+            }
         }
 
         // --- 3. neighbours: nothing stands on the street, and a park sits on its parcel -----
@@ -713,17 +722,54 @@ async function main() {
             const rebuiltPlots = [
                 ...parcels.map(row => ({ ...ownerOf(), geometry: JSON.parse(row.parcel_geojson) })),
                 ...parks.map(entry => ({ ...ownerOf(), geometry: entry.geometry })),
-                ...roads.map(geometry => ({ ...ownerOf(), geometry })),
                 ...open.map(row => ({ ...ownerOf(), geometry: JSON.parse(row.geojson) }))
             ];
             console.log(`  plots ${authoredPlots.length} -> ${rebuiltPlots.length}`
-                + ` (${parcels.length} building, ${parks.length} park, ${roads.length} street, ${open.length} open)`);
+                + ` (${parcels.length} building, ${parks.length} park, ${open.length} open; ${roads.length} road parcel(s) stay separate)`);
             planRecord.reparcellization = {
                 ...planRecord.reparcellization,
                 polygons: rebuiltPlots,
-                rebuiltBy: REPARCEL_MARK
+                rebuiltBy: TESSELLATION_MARK,
+                parcelLayout: REPARCEL_MARK
             };
             reparcelled = true;
+        }
+
+        // The migration's contract, checked against the exact geometries about to be written. A
+        // readjustment plot may meet a road or another plot at its boundary, never in area; together
+        // the two proposal types must conserve the full plan pool.
+        {
+            const plotGeometries = currentPlots().map(slice => slice.geometry);
+            const roadGeometries = ROAD_IDS
+                .map(id => (byId.get(id).effective.roadProposal.definition || {}).polygon)
+                .filter(Boolean);
+            const { rows: [mesh] } = await client.query(`
+                WITH plot AS (
+                    SELECT ST_Transform(ST_MakeValid(ST_SetSRID(ST_GeomFromGeoJSON(g)::geometry, 4326)), 3765) AS g
+                    FROM jsonb_array_elements($1::jsonb) g
+                ), road AS (
+                    SELECT ST_Transform(ST_MakeValid(ST_SetSRID(ST_GeomFromGeoJSON(g)::geometry, 4326)), 3765) AS g
+                    FROM jsonb_array_elements($2::jsonb) g
+                ), pu AS (SELECT ST_UnaryUnion(ST_Collect(g)) AS g FROM plot),
+                ru AS (SELECT ST_UnaryUnion(ST_Collect(g)) AS g FROM road),
+                allmesh AS (SELECT ST_UnaryUnion(ST_Collect(pu.g, ru.g)) AS g FROM pu, ru)
+                SELECT round(((SELECT sum(ST_Area(g)) FROM plot) - ST_Area(pu.g))::numeric, 3) AS plot_overlap_m2,
+                       round(ST_Area(ST_Intersection(pu.g, ru.g))::numeric, 3) AS road_plot_overlap_m2,
+                       round(ST_Area(ST_Difference(ground.pool, allmesh.g))::numeric, 3) AS gap_m2,
+                       round(ST_Area(ST_Difference(allmesh.g, ground.pool))::numeric, 3) AS outside_m2,
+                       round(ST_Area(pu.g)::numeric, 1) AS plots_m2,
+                       round(ST_Area(ru.g)::numeric, 1) AS roads_m2,
+                       round(ST_Area(ground.pool)::numeric, 1) AS pool_m2
+                FROM pu, ru, allmesh, ground`,
+            [JSON.stringify(plotGeometries), JSON.stringify(roadGeometries)]);
+            console.log(`\nVALIDATION\n  plots ${fmt(mesh.plots_m2)} m² + roads ${fmt(mesh.roads_m2)} m² = pool ${fmt(mesh.pool_m2)} m²`);
+            console.log(`  plot overlap ${mesh.plot_overlap_m2} m²; road/plot overlap ${mesh.road_plot_overlap_m2} m²; gap ${mesh.gap_m2} m²; outside ${mesh.outside_m2} m²`);
+            if (Number(mesh.plot_overlap_m2) > MIN_INTERSECTION_M2
+                || Number(mesh.road_plot_overlap_m2) > MIN_INTERSECTION_M2
+                || Number(mesh.gap_m2) > 1
+                || Number(mesh.outside_m2) > 1) {
+                throw new Error('roads and readjustment plots do not form one conserved tessellation — not written');
+            }
         }
 
         // --- 2. anchors (after the clip, so a road anchors to the ground it keeps) ---------------------------------------------------------------------
@@ -783,7 +829,8 @@ async function main() {
 
         if (!apply) {
             console.log(`\nDRY RUN — ${roadWrites.length} corridor(s), ${bodyWrites.length} neighbour(s), `
-                + `${anchorWrites.length} anchor rewrite(s), ${renameWrites.length} rename(s)`
+                + `${anchorWrites.length} anchor rewrite(s), ${renameWrites.length} rename(s), `
+                + `${coordinationWrites.length} coordinated-package stamp(s)`
                 + `${restored ? ', plan restored' : ''}${reparcelled ? ', plots rebuilt' : ''}. Re-run with --apply.`);
             await client.query('ROLLBACK');
             return;
@@ -803,6 +850,7 @@ async function main() {
         const touched = Array.from(new Set([
             ...anchorWrites.map(w => w.id), ...roadWrites.map(w => w.id),
             ...bodyWrites.map(w => w.id), ...renameWrites.map(w => w.id),
+            ...coordinationWrites.map(w => w.id),
             ...(restored || reparcelled ? [READJUSTMENT_ID] : [])
         ]));
         for (const id of touched) {

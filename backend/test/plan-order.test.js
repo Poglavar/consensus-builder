@@ -64,6 +64,47 @@ describe('base-parcel ancestry', () => {
         const anc = planOrder.computeBaseAncestry(byId(97).footprint, base, { minAreaM2: 1e9 });
         expect(anc).toEqual([]);
     });
+
+    it('repairs an exact-boundary topology failure instead of counting the parcel as absent', () => {
+        // Regression for UPU Borovje: polygon-clipping could not close the intersection ring for
+        // cadastral parcel 1791/69. The old catch returned 0, dropping 55,702 m2 and turning full
+        // live coverage into 37%. A sub-millimetre buffer resolves only that coincident-edge
+        // ambiguity, and the result remains capped by the two original operands.
+        const realTurf = globalThis.turf;
+        const footprint = { name: 'footprint' };
+        const parcel = { name: 'parcel' };
+        const repairedParcel = { name: 'repaired-parcel' };
+        const hit = { name: 'intersection' };
+        let exactAttempts = 0;
+        globalThis.turf = {
+            intersect(left, right) {
+                if (left === footprint && right === parcel) {
+                    exactAttempts += 1;
+                    throw new Error('Unable to complete output ring');
+                }
+                if (left === footprint && right === repairedParcel) return hit;
+                return null;
+            },
+            buffer(subject, distance, options) {
+                expect(subject).toBe(parcel);
+                expect(distance).toBe(0.0001);
+                expect(options).toEqual({ units: 'meters' });
+                return repairedParcel;
+            },
+            area(subject) {
+                if (subject === hit) return 55702.2;
+                if (subject === footprint) return 88994.8;
+                if (subject === parcel) return 58226.1;
+                return 0;
+            }
+        };
+        try {
+            expect(planOrder.intersectionArea(footprint, parcel)).toBe(55702.2);
+            expect(exactAttempts).toBe(1);
+        } finally {
+            globalThis.turf = realTurf;
+        }
+    });
 });
 
 // The ancestry floor separates a REAL take from coordinate-rounding noise, and it belongs at the
