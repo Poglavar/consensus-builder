@@ -7,6 +7,7 @@
     const appliedOf = (typeof isApplied === 'function')
         ? isApplied
         : require('./proposals/status.js').isApplied;
+    const turfRef = global.turf || null;
 
     const CREATABLE_PROPOSAL_GOALS = [
         'as-is',
@@ -248,9 +249,9 @@
 
     function geometryArea(value) {
         try {
-            if (global.turf && typeof global.turf.area === 'function' && value) {
+            if (turfRef && typeof turfRef.area === 'function' && value) {
                 const feature = value.type === 'Feature' ? value : { type: 'Feature', properties: {}, geometry: value };
-                return global.turf.area(feature);
+                return turfRef.area(feature);
             }
         } catch (_) { }
         return null;
@@ -283,7 +284,31 @@
             }
             geometryKeys.add(key);
         });
-        const targetArea = Number(plan?.totalArea);
+        const poolGeometry = plan?.poolGeometry;
+        if (poolGeometry && poolGeometry.type === 'MultiPolygon' && (poolGeometry.coordinates || []).length > 1) {
+            errors.push(issue(
+                'disconnected-readjustment',
+                'A land readjustment must be contiguous. Publish each disconnected area as a separate readjustment.',
+                'editorPayload.plan.poolGeometry',
+                poolGeometry
+            ));
+        }
+        let plotUnion = null;
+        if (turfRef && typeof turfRef.union === 'function') {
+            for (const item of features) {
+                try { plotUnion = plotUnion ? turfRef.union(plotUnion, item) : item; } catch (_) { }
+            }
+            if (plotUnion?.geometry?.type === 'MultiPolygon' && (plotUnion.geometry.coordinates || []).length > 1) {
+                errors.push(issue(
+                    'disconnected-readjustment',
+                    'A land readjustment must be contiguous. Publish each disconnected area as a separate readjustment.',
+                    'editorPayload.plan.polygons',
+                    plotUnion.geometry
+                ));
+            }
+        }
+        const explicitPoolArea = Number(geometryArea(poolGeometry));
+        const targetArea = explicitPoolArea > 0 ? explicitPoolArea : Number(plan?.totalArea);
         const assignedArea = (plan?.polygons || []).reduce((sum, polygon) => {
             const recorded = Number(polygon?.area);
             if (Number.isFinite(recorded) && recorded >= 0) return sum + recorded;
@@ -297,13 +322,28 @@
                 errors.push(issue('coverage-excess', 'Replacement parcel areas exceed the required parent coverage.', 'editorPayload.plan.polygons'));
             }
         }
-        if (!global.turf || typeof global.turf.intersect !== 'function' || typeof global.turf.area !== 'function') return { errors, warnings };
+        if (!turfRef || typeof turfRef.intersect !== 'function' || typeof turfRef.area !== 'function') return { errors, warnings };
+        if (poolGeometry && plotUnion) {
+            try {
+                const poolFeature = { type: 'Feature', properties: {}, geometry: poolGeometry };
+                const gap = turfRef.difference(poolFeature, plotUnion);
+                const outside = turfRef.difference(plotUnion, poolFeature);
+                if ((gap && turfRef.area(gap) > 0.5) || (outside && turfRef.area(outside) > 0.5)) {
+                    errors.push(issue(
+                        'pool-coverage-mismatch',
+                        'Replacement parcels must tile the saved readjustment extent exactly.',
+                        'editorPayload.plan.polygons',
+                        poolGeometry
+                    ));
+                }
+            } catch (_) { }
+        }
         for (let i = 0; i < features.length; i += 1) {
             for (let j = i + 1; j < features.length; j += 1) {
                 try {
-                    const intersection = global.turf.intersect(features[i], features[j]);
+                    const intersection = turfRef.intersect(features[i], features[j]);
                     if (!intersection) continue;
-                    const overlapArea = Number(global.turf.area(intersection)) || 0;
+                    const overlapArea = Number(turfRef.area(intersection)) || 0;
                     const smaller = Math.min(
                         Number(geometryArea(features[i].geometry)) || 0,
                         Number(geometryArea(features[j].geometry)) || 0
@@ -1066,7 +1106,8 @@
             return global.openReparcellizationModal({
                 algorithm: plan.algorithm || 'sweep-line',
                 ownershipMode: plan.ownershipMode || 'multiple',
-                initialPolygons: clone(plan.polygons || [])
+                initialPolygons: clone(plan.polygons || []),
+                poolGeometry: clone(plan.poolGeometry || null)
             });
         },
         serializeProposal(draft) {

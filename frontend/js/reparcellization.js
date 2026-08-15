@@ -2732,7 +2732,8 @@
         // step that appears to do nothing when used.
         const changed = state.slices.some((slice, idx) => {
             const geometry = geometries[idx];
-            return !!geometry && JSON.stringify(slice.geometry) !== JSON.stringify(geometry);
+            if (geometry === undefined) return false;
+            return JSON.stringify(slice.geometry || null) !== JSON.stringify(geometry || null);
         });
         if (!changed) return false;
         // Repair, do not refuse. Any edit can leave the layout momentarily untidy — a removed node
@@ -3466,6 +3467,11 @@
             algorithm: state.algorithm,
             generatedAt: new Date().toISOString(),
             parcelIds: state.selection.ids.slice(),
+            // The exact connected ground this readjustment subdivides. Parent cadastral parcels can
+            // be only partially involved (a road may already own the rest), so their whole union is
+            // not always the boundary. Persisting the pool prevents a later edit from resurrecting
+            // those outside remainders as thick-red-outline slivers.
+            poolGeometry: JSON.parse(JSON.stringify(state.superParcel.geometry)),
             totalArea: state.totalArea,
             // Land-readjustment accounting metadata so downstream views/audits can
             // reconstruct entitlements and cash balances without re-deriving them.
@@ -3929,10 +3935,20 @@
         if (savedPolygons && savedPolygons.length) {
             const planIds = declaredPlanParcelIds(selection);
             const resolved = planIds.length ? await resolveInputParcelLayers(planIds) : { layers: [], missing: [] };
+            const savedPool = options.poolGeometry
+                || (window.pendingReparcellizationPlan && window.pendingReparcellizationPlan.poolGeometry)
+                || null;
+            const explicitPool = savedPool && /Polygon/.test(String(savedPool.type || ''))
+                ? { type: 'Feature', properties: { parcelIds: planIds.slice() }, geometry: JSON.parse(JSON.stringify(savedPool)) }
+                : null;
             const inputPool = resolved.layers.length && !resolved.missing.length
                 ? buildSuperParcel({ ids: planIds, layers: resolved.layers })
                 : null;
-            if (inputPool) {
+            if (explicitPool) {
+                console.debug('[reparcellization] pooled from the plan\'s saved connected extent',
+                    { inputs: planIds.length, plots: savedPolygons.length });
+                planPool = explicitPool;
+            } else if (inputPool) {
                 console.debug('[reparcellization] pooled from the plan\'s declared inputs',
                     { inputs: planIds.length, plots: savedPolygons.length });
                 planPool = inputPool;

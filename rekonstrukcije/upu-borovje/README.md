@@ -21,13 +21,23 @@ Run these commands from this folder:
 
 ```
 python3 extract-plan.py --step all      # tiles → data/*.geojson (+ overlay-*.png diagnostics)
-node build-and-upload.mjs --dry-run     # build 19 proposals, print summary
+node build-and-upload.mjs --dry-run     # build 22 proposals, print summary
 node build-and-upload.mjs --apply       # POST to http://localhost:3000 (deterministic ids upu-borovje-*)
 ```
 
 `repair-imported-proposals.mjs` is a separate, dry-run-by-default migration for the historical
 database rows 633–651 and 699. It is retained beside the reconstruction because its assumptions and
 fixed record identifiers are specific to this import; it is not part of a clean new upload.
+
+`apply-clean-topology.mjs` is the final local migration for those historical rows. It rebuilds the
+ground from the actual UPU extent, straightens the collector road, stores two connected road
+polygons and splits the non-road ground into three connected readjustments. It is dry-run by
+default, backs up the original affected rows, and is idempotent:
+
+```
+PGHOST=127.0.0.1 node apply-clean-topology.mjs
+PGHOST=127.0.0.1 node apply-clean-topology.mjs --apply
+```
 
 `proposal_id` is UNIQUE server-side and there is no update route - to refresh
 already-uploaded proposals, delete the rows first:
@@ -53,20 +63,19 @@ The six GeoJSON files above are committed in this folder as the canonical recons
   plan's provedbena pravila: PP-1 P+3, PP-2 P+4, PP-3 P+8 (tower), PP-4 P+5.
 - **6 park proposals** (5× Z1 + the central R2 recreation zone — modeled as a
   park until a dedicated playground/sports-field structure kind exists).
-- **1 street-network road proposal** (`upu-borovje-ulice`) — 6 interconnected
-  centerline segments extracted from **sheet 2a (Prometni i komunikacijski
+- **2 connected street-network road proposals** (`upu-borovje-ulice` and
+  `upu-borovje-ulice-split-1`) — 6 centerline segments extracted from **sheet 2a (Prometni i komunikacijski
   sustav)**, which draws the roads explicitly: the collector is the red-hatched
-  planned-road band (centerline = smoothed diameter path of the band), the
+  planned-road band (centerline simplified to its five intentional vertices), the
   IS-1/IS-2 crossings are clean colored cells (straight PCA axes). Crossing
-  endpoints are inserted as junction vertices into the collector polyline, so
-  the network is properly noded. Per-class cross-sections: SP 19 m (lanes +
+  endpoints are junction vertices in the collector polyline. Per-class cross-sections: SP 19 m (lanes +
   cycleway + sidewalks + verges), IS-1 18 m shared surface, IS-2 9 m pedestrian.
-- **1 land-readjustment proposal** (`p-upu-borovje-parcelacija`) — the plan's new
-  parcelation as a reparcellization: one građevna čestica per building
-  (multi-kazeta blocks split by nearest building envelope) and one parcel per
-  park/recreation zone. The separate road proposal owns the `IS` polygons, so
-  street land is not duplicated inside the readjustment. M1-12 keeps its
-  existing parcels (PP-5), so that area is excluded.
+- **3 connected land-readjustment proposals** (`p-upu-borovje-parcelacija`, `-2`,
+  `-3`) — the road network divides the non-road plan into three disconnected
+  blocks, so each block is a separate readjustment with its own saved
+  `poolGeometry`. Together they contain 17 real plots: one per M1 building area,
+  park or recreation zone. The road proposals own the complementary `IS` ground;
+  no outside cadastral remainder or street sliver is promoted into a plot.
 
 ## Extraction notes
 
@@ -79,23 +88,21 @@ The six GeoJSON files above are committed in this folder as the canonical recons
 
 ## Sequencing and tessellation
 
-The plan is a coordinated package (`coordinatedPlanId: upu-borovje`). The
-readjustment first forms only its authored non-road plots and deliberately does
-not mint the omitted street bands as accidental remainders. The road proposals
-then fill those reserved bands from cadastral ground; their ordinary cadastral
-remainders are clipped around the plots already standing there. The plot union
-and road union therefore tile the plan without overlaps or gaps. Buildings,
+The plan is a coordinated package (`coordinatedPlanId: upu-borovje`). Its three
+readjustments first form only their connected non-road blocks. The two road
+proposals then occupy the complementary bands. Their unions reproduce the
+73.634,7 m² UPU extent with no overlaps, gaps or land outside the plan. Buildings,
 parks and recreation proposals then resolve their live parcels geometrically.
-Shared-plan loading enforces the full dependency order: land readjustment →
+Shared-plan loading enforces the full dependency order: land readjustments →
 roads → buildings → parks and recreation.
 If only part of the package is already applied, the loader first removes those
 stale package members and imports every current definition before replaying the
 whole package in that order.
 
-`repair-imported-proposals.mjs` migrates the historical rows to that model. It
-clips every readjustment plot by the road union, retains the former street verge
-as non-road plots, and refuses to write unless PostGIS verifies: no plot/plot
-overlap, no road/plot overlap, and conservation of the complete plan pool.
+`apply-clean-topology.mjs` refuses to write unless the canonical mesh verifies:
+every plot and road is connected, no plot is smaller than 150 m², the three
+readjustment pools are connected, and road plus plot union has no gap, overlap
+or area outside the UPU extent.
 
 ## Named proposal links
 

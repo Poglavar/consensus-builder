@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 // One-off repair of the imported UPU Borovje plan (rows 633-651 + the split road 699).
+// Superseded rows marked clean-connected-plan-v1 are intentionally left alone; their three
+// connected readjustments are maintained by apply-clean-topology.mjs.
 //
 // The plan itself is authored correctly — measured, not assumed: its 82 imported readjustment
 // parts form a perfect partition (sum = union = 103,150 m², zero overlap), they tessellate 29 input
@@ -92,6 +94,7 @@ const SEED_SPACING_M = 2;
 // Marks the optional building-curtilage layout and the universal corridor/plot tessellation.
 const REPARCEL_MARK = 'repair-upu-borovje/curtilage';
 const TESSELLATION_MARK = 'repair-upu-borovje/corridor-tessellation';
+const CLEAN_TOPOLOGY_MARK = 'repair-upu-borovje/clean-connected-plan-v1';
 // Below this an offcut is not a parcel; it joins the building parcel it abuts.
 const MIN_OPEN_PARCEL_M2 = 150;
 // Unioning the corridor with the plots it swallowed can leave a pinhole where their edges very
@@ -217,6 +220,11 @@ async function main() {
         const byId = new Map(rows.map(r => [r.id, r]));
         const missing = ALL_IDS.filter(id => !byId.has(id));
         if (missing.length) throw new Error(`rows not found: ${missing.join(', ')} — is this the right database?`);
+        if (byId.get(READJUSTMENT_ID).effective.reparcellization?.rebuiltBy === CLEAN_TOPOLOGY_MARK) {
+            console.log('Borovje already uses the clean three-readjustment topology; this historical repair is a no-op.');
+            await client.query('ROLLBACK');
+            return;
+        }
 
         // All twenty rows are one pre-tessellated package: the readjustment owns the non-road
         // plots, the two road records own the complementary bands, and content follows both. The

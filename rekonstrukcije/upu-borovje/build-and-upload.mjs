@@ -4,9 +4,8 @@
 // geometry (see extract-plan.py) and upload them to the backend via POST /proposals.
 // Buildings become single-building proposals (one per kazeta, heights from the
 // plan's PP rules), green zones become park structure proposals, and street corridors become
-// first-class road proposals whose official IS polygons are their parcel footprint. The remaining
-// non-road parcelation becomes one land-readjustment proposal, so the two proposal types form a
-// conserved tessellation instead of claiming the street twice.
+// first-class road proposals. The complementary non-road ground becomes three contiguous
+// land-readjustment proposals, so road and plot proposals form one conserved tessellation.
 //
 // Usage:
 //   node build-and-upload.mjs --dry-run                 # build + report, POST nothing
@@ -22,6 +21,8 @@ import process from 'node:process';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 
+import { buildBorovjeTopology, roadDefinitionFor } from './plan-topology.mjs';
+
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, '..', '..');
 const require = createRequire(path.join(repoRoot, 'backend', 'package.json'));
@@ -29,9 +30,12 @@ const turf = require('@turf/turf');
 
 const CITY = 'zagreb';
 const COORDINATED_PLAN_ID = 'upu-borovje';
-// Kept stable because the historical import and shared links already use it. Consumers anchor to
-// cadastral ground and resolve live derived parcels geometrically; this id is never an input parent.
-const PARCELATION_ID = 'p-upu-borovje-parcelacija';
+// Kept stable because the historical import and shared links already use these identifiers.
+const PARCELATION_IDS = [
+    'p-upu-borovje-parcelacija',
+    'p-upu-borovje-parcelacija-2',
+    'p-upu-borovje-parcelacija-3'
+];
 const AUTHOR = 'UPU Borovje – zona jug (Grad Zagreb, prijedlog plana 2026)';
 const FLOOR_HEIGHT_M = 3.5;
 
@@ -180,11 +184,9 @@ function sliceDisplayName(props) {
 
 const areaOf = (geometry) => turf.area({ type: 'Feature', properties: {}, geometry });
 
-// The parcelation must be clipped against the CADASTRE THE APP ACTUALLY SERVES
-// (its parcel table), not the UPU FeatureServer snapshot: the snapshot carries a
-// different parcel generation in places (e.g. its 1791/69 overlaps land the live
-// cadastre assigns to 1791/7), so remainders computed from it would double-claim
-// land. Fetching from the target backend keeps this correct for local AND prod.
+// Proposal anchors must come from the cadastre the target app actually serves, not the UPU
+// FeatureServer snapshot: the two sources carry different parcel generations in places.
+// The plan geometry remains the canonical UPU mesh; these live parcels only anchor that geometry.
 async function fetchAppParcels(baseUrl) {
     // plan-area bbox in EPSG:3765 (HTRS96/TM), generous margin around the obuhvat
     const bbox = '461744,5071628,462447,5072233';
@@ -197,192 +199,19 @@ async function fetchAppParcels(baseUrl) {
     return fc;
 }
 
-function unionAll(features) {
-    let u = null;
-    for (const f of features) {
-        if (!f) continue;
-        try { u = u ? turf.union(u, f) : f; }
-        catch (error) { console.warn(`union failed on a piece: ${error.message}`); }
-    }
-    return u;
-}
-
-function explodeToPolygons(geometry) {
-    if (!geometry) return [];
-    if (geometry.type === 'Polygon') return [geometry];
-    if (geometry.type === 'MultiPolygon') return geometry.coordinates.map(c => ({ type: 'Polygon', coordinates: c }));
-    if (geometry.type === 'GeometryCollection') return geometry.geometries.flatMap(g => explodeToPolygons(g));
-    return [];
-}
-
-// Turn the raster-extracted parcelation into an EXACT planar partition of its
-// parent parcels. The extractor's slices deliberately overshoot the drawn plan
-// boundary by ~3.6 m so no boundary-line sliver stays unclaimed; here that
-// overshoot is trimmed to the vector union of the parent parcels, and every
-// piece of parent land NOT covered by a slice becomes an explicit remainder
-// parcel. The app replaces a reparcellization's parents wholesale and takes the
-// slice geometry as-is, so this step is what guarantees the Zagreb principle:
-// all land stays under a parcel, and under at most one (no gaps, no double claims).
-function clipParcelationToParents(parcelation, parcels) {
-    // Parents = parcels genuinely under the DRAWN plan area. Erode each slice by
-    // the overshoot margin first, so a ~3.6 m spill over the plan edge cannot
-    // drag a neighbouring parcel into the readjustment.
-    const parentIds = new Set();
-    for (const f of parcelation.features) {
-        let core = f;
-        try {
-            const eroded = turf.buffer(f, -4, { units: 'meters' });
-            if (eroded && turf.area(eroded) > 1) core = eroded;
-        } catch (_) { /* thin slice - keep unbuffered */ }
-        const cb = turf.bbox(core);
-        for (const p of parcels.features) {
-            if (parentIds.has(p.properties.parcelId)) continue;
-            const pb = turf.bbox(p);
-            if (pb[0] > cb[2] || pb[2] < cb[0] || pb[1] > cb[3] || pb[3] < cb[1]) continue;
-            try {
-                const overlap = turf.intersect(core, p);
-                if (overlap && turf.area(overlap) > 10) parentIds.add(p.properties.parcelId);
-            } catch (_) { /* degenerate ring - skip */ }
-        }
-    }
-    const parentFeatures = parcels.features.filter(f => parentIds.has(f.properties.parcelId));
-    const parentUnion = unionAll(parentFeatures);
-
-    // Clip every slice to the parent union. A clip can split a slice; the largest
-    // part keeps the slice identity (building/park/street anchors reference the
-    // slice by INDEX, so slices stay index-aligned with parcelation.features),
-    // extra parts are appended as their own entries so no land is dropped.
-    const slices = [];
-    const extras = [];
-    for (const f of parcelation.features) {
-        let clipped = null;
-        try { clipped = turf.intersect(f, parentUnion); } catch (error) {
-            console.warn(`${f.properties.name}: clip failed (${error.message}) - keeping raster outline`);
-        }
-        const parts = (clipped ? explodeToPolygons(clipped.geometry) : [f.geometry])
-            .map(g => ({ g, a: areaOf(g) }))
-            .sort((x, y) => y.a - x.a);
-        const [main, ...rest] = parts;
-        slices.push({ kind: f.properties.kind, name: f.properties.name, area_m2: Math.round(main.a), geometry: main.g });
-        rest.filter(x => x.a > 0.5).forEach((x, n) => extras.push({
-            kind: f.properties.kind,
-            name: `${f.properties.name} (dio ${n + 2})`,
-            area_m2: Math.round(x.a),
-            geometry: x.g,
-        }));
-    }
-
-    // Remainders: per parent, whatever the slices do not cover stays a parcel of
-    // its own. Road/canal parents run far beyond the plan - without this, their
-    // land outside the plan would silently vanish from the map on apply.
-    const sliceUnion = unionAll([...slices, ...extras].map(e => ({ type: 'Feature', properties: {}, geometry: e.geometry })));
-    const remainders = [];
-    for (const p of parentFeatures) {
-        let rem = null;
-        try { rem = turf.difference(p, sliceUnion); } catch (error) {
-            console.warn(`${p.properties.parcelId}: remainder failed (${error.message})`);
-        }
-        if (!rem) continue;
-        const broj = p.properties.BROJ_CESTICE || p.properties.KATASTARSKA_CESTICA || p.properties.parcelId.split('-').pop();
-        const kept = explodeToPolygons(rem.geometry)
-            .map(g => ({ g, a: areaOf(g) }))
-            .filter(x => x.a > 0.5)
-            .sort((x, y) => y.a - x.a);
-        kept.forEach((x, n) => remainders.push({
-            kind: 'OST',
-            name: kept.length > 1 ? `k.č. ${broj} – ostatak ${n + 1}` : `k.č. ${broj} – ostatak`,
-            area_m2: Math.round(x.a),
-            geometry: x.g,
-        }));
-    }
-
-    // Coverage report: the children must tile the parents exactly (± numeric dust).
-    const all = [...slices, ...extras, ...remainders];
-    const totalChildren = all.reduce((s, e) => s + areaOf(e.geometry), 0);
-    const totalParents = parentUnion ? turf.area(parentUnion) : 0;
-    let maxOverlap = 0; let overlapPair = null;
-    for (let i = 0; i < all.length; i++) {
-        const bi = turf.bbox({ type: 'Feature', properties: {}, geometry: all[i].geometry });
-        for (let j = i + 1; j < all.length; j++) {
-            const bj = turf.bbox({ type: 'Feature', properties: {}, geometry: all[j].geometry });
-            if (bj[0] > bi[2] || bj[2] < bi[0] || bj[1] > bi[3] || bj[3] < bi[1]) continue;
-            try {
-                const ov = turf.intersect(
-                    { type: 'Feature', properties: {}, geometry: all[i].geometry },
-                    { type: 'Feature', properties: {}, geometry: all[j].geometry });
-                const a = ov ? turf.area(ov) : 0;
-                if (a > maxOverlap) { maxOverlap = a; overlapPair = `${all[i].name} × ${all[j].name}`; }
-            } catch (_) { /* degenerate - skip */ }
-        }
-    }
-    console.log(`parcelation: ${slices.length} slices + ${extras.length} split parts + ${remainders.length} remainders`
-        + ` over ${parentIds.size} parents`);
-    console.log(`  coverage: parents ${Math.round(totalParents)} m² vs children ${Math.round(totalChildren)} m²`
-        + ` (diff ${(totalParents - totalChildren).toFixed(1)} m²)`);
-    console.log(`  max pairwise overlap: ${maxOverlap.toFixed(2)} m²${overlapPair ? ` (${overlapPair})` : ''}`);
-    if (Math.abs(totalParents - totalChildren) > 50 || maxOverlap > 5) {
-        throw new Error('parcelation coverage check failed - children do not tile the parents');
-    }
-
-    return { slices, extras, remainders, parentParcelIds: Array.from(parentIds).sort() };
-}
-
-const ROAD_PROFILES = {
-    // sabirna ulica: 19 m corridor per the plan text - carriageway + cycleway
-    // (sheet 2a draws it along the collector) + sidewalks + verges
-    'SP': { strips: [
-        { type: 'verge', width: 2.75 },
-        { type: 'sidewalk', width: 2 },
-        { type: 'driving', width: 3.5, direction: 'forward' },
-        { type: 'driving', width: 3.5, direction: 'backward' },
-        { type: 'cycleway', width: 2.5 },
-        { type: 'sidewalk', width: 2 },
-        { type: 'verge', width: 2.75 },
-    ] },
-    // kolno-pjesacka povrsina (IS-1): 18 m shared-surface calmed street
-    'IS-1': { strips: [
-        { type: 'sidewalk', width: 5 },
-        { type: 'driving', width: 4, direction: 'forward' },
-        { type: 'driving', width: 4, direction: 'backward' },
-        { type: 'sidewalk', width: 5 },
-    ] },
-    // pjesacka povrsina (IS-2): pedestrian surface
-    'IS-2': { strips: [{ type: 'sidewalk', width: 9 }] },
-};
-
-function buildStreetNetworkProposal(streets, parentParcelIds, roadPolygon) {
-    const segments = streets.features.map(f =>
-        f.geometry.coordinates.map(([lng, lat]) => ({ lat, lng })));
-    const segmentIds = streets.features.map(f => `upu-${f.properties.name}`);
-    const segmentProfiles = {};
-    streets.features.forEach((f, n) => {
-        segmentProfiles[segmentIds[n]] = ROAD_PROFILES[f.properties.kind];
-    });
-    const totalLen = Math.round(streets.features.reduce((s2, f) => s2 + f.properties.length_m, 0));
-    const definition = {
-        kind: 'road',
-        width: 19,
-        points: segments,
-        segments,
-        segmentIds,
-        segmentProfiles,
-        polygon: roadPolygon,
-        tunnels: [],
-        demolishedBuildings: [],
-    };
-    const title = 'UPU Borovje – ulična mreža';
+function buildStreetNetworkProposal(road, parentParcelIds, options = {}) {
+    const definition = roadDefinitionFor(road.streets, road.geometry);
+    const totalLen = Math.round(road.streets.reduce((sum, feature) => sum + Number(feature.properties?.length_m || 0), 0));
+    const title = options.title || 'UPU Borovje – ulična mreža';
     return {
-        proposalId: 'upu-borovje-ulice',
+        proposalId: options.proposalId || 'upu-borovje-ulice',
         coordinatedPlanId: COORDINATED_PLAN_ID,
         city: CITY,
         goal: 'road-track',
         type: 'road',
         title,
         name: title,
-        description: `Planirana ulična mreža (${totalLen} m osi): sabirna ulica (19 m koridor,`
-            + ' kolnik + biciklistička staza + nogostupi) po južnom i istočnom rubu, dvije'
-            + ' kolno-pješačke površine IS-1 (18 m), pješačke površine IS-2 (9 m) te spoj na'
-            + ' sjeveroistoku - međusobno povezane u čvorovima. Osi izvedene iz kartografskog'
+        description: `Planirana ulična mreža (${totalLen} m osi). Osi su izvedene iz kartografskog`
             + ' prikaza 2a. Prometni i komunikacijski sustav, UPU Borovje – zona jug'
             + ' (prijedlog plana za javnu raspravu, 2026).',
         author: AUTHOR,
@@ -399,46 +228,44 @@ function buildStreetNetworkProposal(streets, parentParcelIds, roadPolygon) {
     };
 }
 
-function buildReparcellizationProposal(clip) {
-    // Road proposals own every IS polygon. The readjustment claims only the complementary plots;
-    // their union plus the road union is the exact full partition validated above.
-    const all = [...clip.slices, ...clip.extras, ...clip.remainders]
-        .filter(entry => entry.kind !== 'IS');
-    const totalArea = all.reduce((sum, e) => sum + e.area_m2, 0);
-    const polygons = all.map(e => ({
-        ownerKey: slugify(e.name),
-        displayName: sliceDisplayName(e),
-        color: SLICE_COLORS[e.kind] || '#999999',
-        percent: Math.round((e.area_m2 / totalArea) * 1000) / 10,
-        geometry: e.geometry,
+function buildReparcellizationProposal(component, index, parentParcelIds) {
+    // A road can split the UPU's non-road land into separate blocks. One readjustment is one
+    // connected pool, so each component is published independently and persists its exact extent.
+    const totalArea = component.plots.reduce((sum, plot) => sum + areaOf(plot.geometry), 0);
+    const polygons = component.plots.map(plot => ({
+        ownerKey: slugify(plot.properties.name),
+        displayName: sliceDisplayName(plot.properties),
+        color: SLICE_COLORS[plot.properties.kind] || '#999999',
+        percent: Math.round((areaOf(plot.geometry) / totalArea) * 1000) / 10,
+        area: Math.round(areaOf(plot.geometry) * 10) / 10,
+        sourceKind: plot.properties.kind,
+        sourceName: plot.properties.name,
+        geometry: plot.geometry,
     }));
-    const parentParcelIds = clip.parentParcelIds;
-    const title = 'UPU Borovje – nova parcelacija';
+    const title = `UPU Borovje – nova parcelacija – blok ${index + 1}/3`;
     return {
-        proposalId: PARCELATION_ID,
+        proposalId: PARCELATION_IDS[index],
         coordinatedPlanId: COORDINATED_PLAN_ID,
         city: CITY,
         goal: 'reparcellization',
         type: 'parcel',
         title,
         name: title,
-        description: `Nova parcelacija obuhvata: ${all.length - clip.remainders.length} građevnih čestica`
-            + ' (po jedna za svaku zgradu M1-1…M1-11, parkove Z1 i rekreaciju R2) te'
-            + ` ${clip.remainders.length} preostalih čestica za dijelove ulaznih`
-            + ' parcela izvan zahvata plana. Kazeta M1-12 zadržava postojeće čestice (PP-5).'
-            + ' Prometne površine tvore zasebni cestovni prijedlozi i nisu ponovno uključene u parcelaciju.'
-            + ' Izvedeno iz UPU Borovje – zona jug (prijedlog plana za javnu raspravu, 2026).',
+        description: `Nova parcelacija povezanog bloka ${index + 1} od 3. Ulična mreža odvaja ga od ostalih dijelova obuhvata, zato su tri nepovezana područja objavljena kao tri zasebna prijedloga parcelacije.`,
         author: AUTHOR,
         lifecycleStatus: 'Active',
         parentParcelIds,
         acceptedParcelIds: [],
         reparcellization: {
             algorithm: 'upu-plan',
-            generatedAt: new Date().toISOString(),
-            parcelIds: parentParcelIds,
-            totalArea: Math.round(totalArea),
+            parcelIds: parentParcelIds.slice(),
+            parentParcelIds: parentParcelIds.slice(),
+            poolGeometry: component.geometry,
+            totalArea: Math.round(totalArea * 10) / 10,
             ownerShares: [],
             polygons,
+            rebuiltBy: 'repair-upu-borovje/clean-connected-plan-v1',
+            validated: true,
             applied: false,
         },
     };
@@ -484,84 +311,27 @@ async function main() {
     const intersecting = parcelIntersectors(parcels);
     const exactIntersecting = parcelIntersectors(parcels, { minAreaM2: 0.25, minShare: 0 });
 
-    // The plan is a coordinated package: the readjustment publishes the complementary non-road
-    // plots first, official IS surfaces fill its reserved street bands, then buildings and parks
-    // resolve the finished live parcels beneath them. Every stored parent remains a base cadastral
-    // id; coordinatedPlanId carries only the package/materialisation relationship.
-    const clip = clipParcelationToParents(parcelation, parcels);
-    const streetEntries = [...clip.slices, ...clip.extras].filter(entry => entry.kind === 'IS');
-    const roadFootprint = unionAll(streetEntries.map(entry => ({
-        type: 'Feature',
-        properties: {},
-        geometry: entry.geometry
-    })));
-    if (!roadFootprint || !roadFootprint.geometry) {
-        throw new Error('official IS slices did not produce a road footprint');
-    }
-    const nonRoadEntries = [...clip.slices, ...clip.extras, ...clip.remainders]
-        .filter(entry => entry.kind !== 'IS');
-    const nonRoadFootprint = unionAll(nonRoadEntries.map(entry => ({
-        type: 'Feature',
-        properties: {},
-        geometry: entry.geometry
-    })));
-    if (!nonRoadFootprint || !nonRoadFootprint.geometry) {
-        throw new Error('non-road slices did not produce a readjustment footprint');
-    }
-    const roadPlotOverlap = (() => {
-        try {
-            const hit = turf.intersect(roadFootprint, nonRoadFootprint);
-            return hit ? turf.area(hit) : 0;
-        } catch (_) { return Infinity; }
-    })();
-    const completePartition = unionAll([...clip.slices, ...clip.extras, ...clip.remainders].map(entry => ({
-        type: 'Feature', properties: {}, geometry: entry.geometry
-    })));
-    const tessellation = unionAll([roadFootprint, nonRoadFootprint]);
-    const coverageErrorM2 = Math.abs(turf.area(completePartition) - turf.area(tessellation));
-    console.log(`road/readjustment tessellation: overlap ${roadPlotOverlap.toFixed(2)} m², coverage error ${coverageErrorM2.toFixed(2)} m²`);
-    if (roadPlotOverlap > 0.25 || coverageErrorM2 > 1) {
-        throw new Error('roads and readjustment do not form one conserved tessellation');
-    }
-    const repar = buildReparcellizationProposal(clip);
-    const reparParents = exactIntersecting(nonRoadFootprint.geometry);
-    repar.parentParcelIds = reparParents;
-    repar.reparcellization.parcelIds = reparParents.slice();
-    const sliceForPoint = (geometry) => {
-        const pt = turf.pointOnFeature({ type: 'Feature', properties: {}, geometry });
-        const idx = parcelation.features.findIndex(f => {
-            try { return turf.booleanPointInPolygon(pt, f); } catch (_) { return false; }
-        });
-        return idx >= 0 ? { index: idx, feature: parcelation.features[idx] } : null;
-    };
-    const seatStructureOnSlice = (proposal, geometry, label) => {
-        const slice = sliceForPoint(geometry);
-        if (!slice) {
-            console.warn(`${label}: no parcelation slice found - keeping the traced structure geometry`);
-            return;
-        }
-        if (proposal.structureProposal) {
-            // park/recreation surfaces adopt the exact građevna-čestica geometry so
-            // the structure fills its parcel edge-to-edge (the zones.geojson trace
-            // has raster jitter and would leave slivers against the parcel border)
-            const clippedGeom = clip.slices[slice.index]?.geometry;
-            if (clippedGeom && ['Z1', 'R2'].includes(slice.feature.properties.kind)) {
-                proposal.structureProposal.geometry = clippedGeom;
-                const baseParents = exactIntersecting(clippedGeom);
-                proposal.parentParcelIds = baseParents;
-                proposal.structureProposal.parentParcelIds = baseParents.slice();
-            }
-        }
-    };
-
-    const roadParents = exactIntersecting(roadFootprint.geometry);
-    const proposals = [
-        repar,
-        buildStreetNetworkProposal(
-            streets,
-            roadParents.length ? roadParents : clip.parentParcelIds,
-            roadFootprint.geometry)
+    // The canonical plan extent, not every whole cadastral parcel touched by it, is authoritative.
+    // The pure topology builder absorbs sub-parcel debris into the adjoining road and returns one
+    // readjustment per connected non-road block.
+    const topology = buildBorovjeTopology(parcelation, streets, turf);
+    console.log(`plan mesh: ${topology.stats.poolM2.toFixed(1)} m²; ${topology.stats.readjustmentCount} connected readjustments; `
+        + `${topology.stats.plotCount} plots; gap ${topology.stats.gapM2.toFixed(3)} m²; overlap ${topology.stats.overlapM2.toFixed(3)} m²`);
+    const proposals = topology.readjustments.map((component, index) => {
+        const parentParcelIds = exactIntersecting(component.geometry);
+        if (!parentParcelIds.length) throw new Error(`readjustment block ${index + 1}: no cadastral anchors`);
+        return buildReparcellizationProposal(component, index, parentParcelIds);
+    });
+    const roadOptions = [
+        ['main', { proposalId: 'upu-borovje-ulice', title: 'UPU Borovje – ulična mreža' }],
+        ['west', { proposalId: 'upu-borovje-ulice-split-1', title: 'UPU Borovje – ulična mreža (2)' }]
     ];
+    roadOptions.forEach(([key, options]) => {
+        const road = topology.roads[key];
+        const parentParcelIds = exactIntersecting(road.geometry);
+        if (!parentParcelIds.length) throw new Error(`${key} road: no cadastral anchors`);
+        proposals.push(buildStreetNetworkProposal(road, parentParcelIds, options));
+    });
     for (const f of buildings.features) {
         const p = buildBuildingProposal(f, intersecting);
         if (!p) continue;
@@ -569,7 +339,12 @@ async function main() {
     }
     for (const f of zones.features) {
         const p = buildParkProposal(f, intersecting);
-        seatStructureOnSlice(p, f.geometry, p.proposalId);
+        const sourceName = f.properties.kind === 'R2' ? 'R2-1' : f.properties.name;
+        const plot = topology.plots.find(item => item.properties?.name === sourceName);
+        if (!plot) throw new Error(`${p.proposalId}: no canonical plot ${sourceName}`);
+        p.structureProposal.geometry = plot.geometry;
+        p.parentParcelIds = exactIntersecting(plot.geometry);
+        p.structureProposal.parentParcelIds = p.parentParcelIds.slice();
         proposals.push(p);
     }
 
@@ -578,7 +353,7 @@ async function main() {
     }
     console.log(`\n${proposals.length} proposals built`
         + ` (${buildings.features.length - 1} buildings + ${zones.features.length} parks`
-        + ` + 1 street network + 1 reparcellization).`);
+        + ` + 2 connected roads + 3 connected readjustments).`);
 
     if (dryRun) {
         console.log('Dry run - nothing uploaded.');

@@ -8,6 +8,7 @@ const require = createRequire(import.meta.url);
 // corridor-profile.js loading as a classic script. Under node nothing does that, so seed the corridor
 // helpers onto globalThis before requiring the adapters — otherwise draftFromProposal throws.
 Object.assign(globalThis, require('../../frontend/js/corridor-profile.js'));
+globalThis.turf = require('@turf/turf');
 
 const {
     CREATABLE_PROPOSAL_GOALS,
@@ -374,6 +375,32 @@ describe('reparcellization adapter', () => {
 
         expect(replacement.reparcellization.polygons).toEqual(polygons);
         expect(replacement.reparcellization.algorithm).toBe('manual');
+    });
+
+    it('rejects one readjustment record made of disconnected islands', () => {
+        const draft = draftFor(reparcellizationAdapter, proposal);
+        draft.editorPayload.plan.polygons = [
+            polygons[0],
+            polygon([[16.0, 45.8], [16.005, 45.8], [16.005, 45.81], [16.0, 45.81], [16.0, 45.8]])
+        ];
+
+        expect(reparcellizationAdapter.validate(draft)).toMatchObject({
+            valid: false,
+            errors: expect.arrayContaining([expect.objectContaining({ code: 'disconnected-readjustment' })])
+        });
+    });
+
+    it('round-trips the saved partial-parcel pool geometry', () => {
+        const withPool = structuredClone(proposal);
+        withPool.reparcellization.poolGeometry = {
+            type: 'Polygon',
+            coordinates: [[[15.9, 45.8], [15.91, 45.8], [15.91, 45.81], [15.9, 45.81], [15.9, 45.8]]]
+        };
+        const draft = draftFor(reparcellizationAdapter, withPool);
+        const replacement = reparcellizationAdapter.serializeProposal(draft);
+
+        expect(replacement.reparcellization.poolGeometry).toEqual(withPool.reparcellization.poolGeometry);
+        expect(reparcellizationAdapter.validate(draft).valid).toBe(true);
     });
 
     it('rejects malformed replacement polygons', () => {
