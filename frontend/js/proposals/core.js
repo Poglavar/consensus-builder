@@ -1140,6 +1140,7 @@ function showProposalLoadOverlay(status, options = {}) {
     proposalLoadProgressTotal = total > 0 ? total : 0;
     proposalLoadProgressDone = 0;
     renderProposalLoadProgress();
+    startProposalLoadByteObserver();
     if (proposalLoadOverlay) proposalLoadOverlay.style.display = 'flex';
 }
 
@@ -1169,6 +1170,7 @@ function updateProposalLoadOverlay(options = {}) {
 }
 
 function hideProposalLoadOverlay(finalStatus) {
+    stopProposalLoadByteObserver();
     if (proposalLoadOverlay) {
         proposalLoadOverlay.style.display = 'none';
     }
@@ -1177,18 +1179,35 @@ function hideProposalLoadOverlay(finalStatus) {
     }
 }
 
-async function addResponseBytes(response) {
-    if (!response) return;
+// The overlay's MB counter sums EVERY resource the page loads while the
+// overlay is visible — parcels, buildings, ownership, proposal JSON, tiles —
+// in wire bytes (transferSize; falls back to body sizes for servers without
+// Timing-Allow-Origin). The old fetch-level counter measured only the two
+// proposal-JSON fetches, in DECODED bytes: it missed ~95% of a plan open's
+// traffic while overstating what it did count ~5× against gzip.
+let proposalLoadResourceObserver = null;
+
+function startProposalLoadByteObserver() {
+    stopProposalLoadByteObserver();
+    if (typeof PerformanceObserver === 'undefined') return;
     try {
-        const lenHeader = response.headers ? response.headers.get('content-length') : null;
-        if (lenHeader && Number.isFinite(Number(lenHeader))) {
-            updateProposalLoadOverlay({ bytesDelta: Number(lenHeader) });
-            return;
-        }
-        const clone = response.clone();
-        const buf = await clone.arrayBuffer();
-        updateProposalLoadOverlay({ bytesDelta: buf.byteLength });
-    } catch (_) { /* ignore */ }
+        proposalLoadResourceObserver = new PerformanceObserver((list) => {
+            let delta = 0;
+            for (const entry of list.getEntries()) {
+                delta += entry.transferSize || entry.encodedBodySize || entry.decodedBodySize || 0;
+            }
+            if (delta > 0) updateProposalLoadOverlay({ bytesDelta: delta });
+        });
+        proposalLoadResourceObserver.observe({ type: 'resource', buffered: false });
+    } catch (_) {
+        proposalLoadResourceObserver = null;
+    }
+}
+
+function stopProposalLoadByteObserver() {
+    if (!proposalLoadResourceObserver) return;
+    try { proposalLoadResourceObserver.disconnect(); } catch (_) { /* ignore */ }
+    proposalLoadResourceObserver = null;
 }
 
 function formatSharedProposalLabel(proposal, fallbackId) {

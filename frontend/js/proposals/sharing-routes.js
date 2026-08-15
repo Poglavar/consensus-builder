@@ -1721,7 +1721,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     if (loadedById.has(qid)) return;
                     try {
                         const resp = await fetch(`${backendBase}/proposals/${encodeURIComponent(qid)}`);
-                        await addResponseBytes(resp);
                         if (resp.ok) loadedById.set(qid, await resp.json());
                     } catch (_) { /* the apply loop retries and reports this id itself */ }
                 }));
@@ -1768,13 +1767,18 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 return { attempted: [], missingAfter };
             }
 
-            // Bulk fetch (per proposal): one request chain for the full list.
+            // Bulk fetch: one request chain for the full list. NOT forced — a
+            // parcel already live on the map (viewport grid, /parcels/under,
+            // or an earlier proposal in this plan) is this session's fresh
+            // server state; re-downloading it wastes the bytes and, worse,
+            // would overwrite ground an earlier apply in this plan already
+            // modified locally.
             const batchPromise = (async () => {
                 try {
                     if (typeof fetchParcelsForIds === 'function') {
-                        await fetchParcelsForIds(toFetch, { forceRefresh: true });
+                        await fetchParcelsForIds(toFetch, { forceRefresh: false });
                     } else if (typeof ensureParentParcelsLoaded === 'function') {
-                        await ensureParentParcelsLoaded(toFetch, { forceRefreshParcels: true });
+                        await ensureParentParcelsLoaded(toFetch, { forceRefreshParcels: false });
                     }
                     if (typeof waitForParcelLayersReady === 'function') {
                         // The fetch above has already resolved, so every parcel it returned is in the
@@ -1820,6 +1824,24 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             return { attempted: toFetch, missingAfter };
         };
 
+        // One union prefetch for the whole plan: every preloaded proposal's
+        // declared BASE prerequisites start downloading in one batched chain up
+        // front, so the per-proposal awaits inside the loop find them fetched
+        // or in flight instead of paying one serial round-trip chain per
+        // proposal. Proposals whose payload was not preloaded (single-proposal
+        // links, fetch failures) still fetch their bases in the loop as before.
+        try {
+            const unionBaseIds = [];
+            for (const qid of queue) {
+                const payload = loadedById.get(qid);
+                if (!payload) continue;
+                unionBaseIds.push(...basePrerequisiteIds(getPrerequisiteParcelIdsForProposal(payload)));
+            }
+            if (unionBaseIds.length > 0) startFetchBaseParcels(unionBaseIds, { await: false });
+        } catch (err) {
+            console.warn('[handleSharedPlanRoute] Union base-parcel prefetch failed; per-proposal fetches cover it', err);
+        }
+
         while (queue.length > 0) {
             const id = queue.shift();
             try {
@@ -1835,7 +1857,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                         progress: { done: fetchProgressIds.size, total: totalProposals }
                     });
                     const response = await fetch(`${backendBase}/proposals/${encodeURIComponent(id)}`);
-                    await addResponseBytes(response);
                     if (!response.ok) {
                         let reason;
                         if (response.status === 404) {
