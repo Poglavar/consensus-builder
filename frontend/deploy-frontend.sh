@@ -95,10 +95,25 @@ for p in paths:
 PY
 echo "🆕 Cache-bust token: $BUILD_ID"
 
-# Back up current docroot.
+# Back up current docroot, then prune old ones. Without the prune this leaked a
+# full ~25 MB copy per deploy forever: by 2026-08-15 there were 222 backups
+# eating 4.4 GB on a disk that was 95% full.
+# The timestamp format sorts lexicographically, so newest-first + skipping the
+# first N leaves exactly the stale ones. `sort -r | tail -n +N` is POSIX;
+# `head -n -N` would be shorter but is GNU-only and fails on macOS.
+KEEP_BACKUPS="${KEEP_BACKUPS:-3}"
 if [ -d "$DOCROOT" ] && [ -n "$(ls -A "$DOCROOT" 2>/dev/null)" ]; then
     BACKUP="${DOCROOT}_backup_$(date +%Y%m%d_%H%M%S)"
     cp -r "$DOCROOT" "$BACKUP"; echo "💾 Backup: $BACKUP"
+
+    # Match only our own timestamped backups, never $DOCROOT itself.
+    STALE=$(ls -d "${DOCROOT}"_backup_* 2>/dev/null \
+        | grep -E "^${DOCROOT}_backup_[0-9]{8}_[0-9]{6}$" \
+        | sort -r | tail -n +"$((KEEP_BACKUPS + 1))")
+    if [ -n "$STALE" ]; then
+        echo "$STALE" | xargs rm -rf
+        echo "🧹 Pruned $(echo "$STALE" | wc -l | tr -d ' ') old backup(s), keeping the newest ${KEEP_BACKUPS}"
+    fi
 fi
 
 # Sync frontend/ -> docroot (server-local rsync). Keep dev/deploy artefacts out of the docroot.
