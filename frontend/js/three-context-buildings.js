@@ -6,10 +6,9 @@
 
 (function () {
     if (typeof window === 'undefined') return;
-    if (typeof THREE === 'undefined') {
-        console.warn('[ContextBuildings3D] THREE.js not available; skipping init.');
-        return;
-    }
+    // No parse-time THREE usage: window.THREE loads on demand (whenThreeReady),
+    // so availability is checked inside the entry points instead of the old
+    // whole-file bail, which would permanently disable the module.
 
     const DEFAULT_BUFFER_METERS = 100;
     const MAX_BUFFER_METERS = 250;
@@ -158,6 +157,7 @@
     // - opts.material: optional THREE.Material override.
     // - opts.force: bypass the bbox cache.
     async function loadInto(contextGroup, opts) {
+        if (typeof THREE === 'undefined') return 0;
         if (!contextGroup || !opts || !opts.geometry || typeof opts.latLngToLocalXY !== 'function') return 0;
         const bufferMeters = Math.max(0, Math.min(MAX_BUFFER_METERS, Number(opts.bufferMeters) || DEFAULT_BUFFER_METERS));
         const key = computeCacheKey(opts.geometry, bufferMeters);

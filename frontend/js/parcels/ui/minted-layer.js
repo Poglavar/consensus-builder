@@ -213,6 +213,8 @@
             console.log('Fetch already in progress, skipping');
             return;
         }
+        // Chain reads need the on-demand wallet vendors (index.html).
+        if (typeof window.ensureWalletVendors === 'function') await window.ensureWalletVendors();
 
         state.fetchInProgress = true;
 

@@ -800,6 +800,7 @@
     };
 
     const openMintedProposalsModal = async () => {
+        if (typeof window.ensureWalletVendors === 'function') await window.ensureWalletVendors();
         const run = async () => {
             const overlay = ensureModal();
             if (!overlay.parentNode) {

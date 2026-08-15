@@ -16,7 +16,10 @@ const ATTESTIFY_BASE_URLS = Object.freeze({
 function isProposalDeepLinkPath() {
     try {
         const path = (typeof window !== 'undefined' && window.location && window.location.pathname) ? window.location.pathname : '';
-        return /^\/proposals\/\d+(?:\/)?$/.test(path);
+        // Numeric id, comma-separated ids, or a named-plan slug — the same
+        // three forms handleProposalRouteFromUrl (js/proposals/core.js) routes.
+        return /^\/proposals\/[0-9,]+\/?$/.test(path)
+            || /^\/proposals\/[a-z0-9][a-z0-9-]{1,61}[a-z0-9]\/?$/i.test(path);
     } catch (_) {
         return false;
     }
@@ -1231,6 +1234,7 @@ function formatCityTokenAmount(raw, decimals) {
 
 async function resolveCityTokenContract(options = {}) {
     const requireSigner = options.requireSigner === true;
+    if (typeof window.ensureWalletVendors === 'function') await window.ensureWalletVendors();
     if (!window.walletManager) {
         throw new Error('Wallet not ready');
     }
@@ -2255,6 +2259,9 @@ async function refreshUserEthBalanceDisplay() {
 
     const requestId = ++userWalletBalanceRequestId;
     try {
+        // Vendors are injected on demand; the connect path fires the loader but
+        // this event may race it, so wait here before touching window.ethers.
+        if (typeof window.ensureWalletVendors === 'function') await window.ensureWalletVendors();
         const balanceEth = await readConnectedWalletEthBalance(state);
         if (requestId !== userWalletBalanceRequestId) {
             return;

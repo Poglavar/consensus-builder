@@ -1358,11 +1358,45 @@
          drop it: every compressed link already shared would stop resolving. -->
     <script src="vendor/pako-2.1.0/pako.min.js"></script>
     <!-- ethers was pinned only to `@6`, so a CDN minor bump could change wallet-signing behaviour
-         with no commit to bisect. Now frozen at the 6.17.0 that `@6` resolved to. -->
-    <script src="vendor/ethers-6.17.0/ethers.umd.min.js"></script>
-    <script src="vendor/solana-web3-1.98.4/index.iife.min.js"></script>
+         with no commit to bisect. Now frozen at the 6.17.0 that `@6` resolved to.
+
+         Both wallet vendors (~1 MB) load ON DEMAND: wallet auto-connect is raw
+         EIP-1193 and needs neither library, and every chain reader is either
+         wallet-connection-gated, gesture-gated, or awaits this loader itself.
+         The connect path (wallet-connection.js / solana wallet-adapter.js)
+         fires the loader so post-connect consumers find the globals; the few
+         walletless readers (JsonRpcProvider paths, minted layer, chain deep
+         links) await it directly. The Solana IIFE build does not self-assign
+         to window, so the promotion below must follow injection. -->
     <script>
-        if (typeof solanaWeb3 !== 'undefined') { window.solanaWeb3 = solanaWeb3; }
+        window.ensureWalletVendors = (() => {
+            let promise = null;
+            return function ensureWalletVendors() {
+                if (!promise) {
+                    promise = new Promise((resolve) => {
+                        var remaining = 2;
+                        var done = function () {
+                            remaining -= 1;
+                            if (remaining > 0) return;
+                            if (typeof solanaWeb3 !== 'undefined') { window.solanaWeb3 = solanaWeb3; }
+                            resolve(typeof window.ethers !== 'undefined');
+                        };
+                        [
+                            'vendor/ethers-6.17.0/ethers.umd.min.js',
+                            'vendor/solana-web3-1.98.4/index.iife.min.js'
+                        ].forEach(function (src) {
+                            var tag = document.createElement('script');
+                            tag.src = src;
+                            tag.async = false;
+                            tag.onload = done;
+                            tag.onerror = done;
+                            document.head.appendChild(tag);
+                        });
+                    });
+                }
+                return promise;
+            };
+        })();
     </script>
     <script>
         window.writeVersionedLocalScripts([
@@ -1600,30 +1634,15 @@
             'js/centerline-animation.js'
         ]);
     </script>
-    <script>
-        // Resolves once the ESM bootstrap below has populated window.THREE (or after a timeout
-        // if the CDN failed). Defined as a parse-time classic script so every later classic
-        // script can call it unconditionally before touching THREE.
-        window.whenThreeReady = (() => {
-            let promise = null;
-            return () => {
-                if (typeof window.THREE !== 'undefined') return Promise.resolve(true);
-                if (!promise) {
-                    promise = new Promise((resolve) => {
-                        window.addEventListener('threeReady', () => resolve(true), { once: true });
-                        setTimeout(() => resolve(typeof window.THREE !== 'undefined'), 10000);
-                    });
-                }
-                return promise;
-            };
-        })();
-    </script>
-    <!-- Three.js r184 as ESM: the import map + bootstrap module below populate the global
-         `THREE` that every classic script keeps using, including the OrbitControls/GLTFLoader
-         addons that used to ship as examples/js UMD builds (dropped after r147). Same pinned
-         URLs as zagreb-isochrone's photoreal sim, so both projects share one 3d-tiles-renderer
-         stack (and the browser cache). Module scripts are deferred, so no classic script may
-         touch THREE at parse time — all 3D code runs on user interaction, after `threeReady`. -->
+    <!-- Three.js r184 as ESM, loaded ON DEMAND: the first whenThreeReady() call
+         performs the dynamic import (the import map below applies to dynamic
+         imports from classic scripts too) and populates the global `THREE`,
+         including the OrbitControls/GLTFLoader addons that used to ship as
+         examples/js UMD builds (dropped after r147). Same pinned URLs as
+         zagreb-isochrone's photoreal sim, so both projects share one
+         3d-tiles-renderer stack. Callers keep the old eager-bootstrap contract:
+         resolves true once window.THREE exists, false if the CDN fails, and
+         'threeReady' still fires for legacy listeners. -->
     <script type="importmap">
     {
         "imports": {
@@ -1634,39 +1653,44 @@
         }
     }
     </script>
-    <script type="module">
-        import * as THREE_NS from 'three';
-        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-        // Module namespace objects are frozen — spread into a plain object so the addon
-        // classes can sit where the classic scripts expect them (THREE.OrbitControls etc.).
-        window.THREE = Object.assign({}, THREE_NS, { OrbitControls, GLTFLoader });
-        window.dispatchEvent(new Event('threeReady'));
+    <script>
+        window.whenThreeReady = (() => {
+            let promise = null;
+            return () => {
+                if (typeof window.THREE !== 'undefined') return Promise.resolve(true);
+                if (!promise) {
+                    promise = Promise.all([
+                        import('three'),
+                        import('three/addons/controls/OrbitControls.js'),
+                        import('three/addons/loaders/GLTFLoader.js')
+                    ]).then(([THREE_NS, orbit, gltf]) => {
+                        // Module namespace objects are frozen — spread into a
+                        // plain object so the addon classes can sit where the
+                        // classic scripts expect them (THREE.OrbitControls etc.).
+                        window.THREE = Object.assign({}, THREE_NS, {
+                            OrbitControls: orbit.OrbitControls,
+                            GLTFLoader: gltf.GLTFLoader
+                        });
+                        window.dispatchEvent(new Event('threeReady'));
+                        return true;
+                    }).catch((error) => {
+                        console.warn('[3D] three.js import failed', error);
+                        return typeof window.THREE !== 'undefined';
+                    });
+                }
+                return promise;
+            };
+        })();
     </script>
     <script>
+        // 2D-coupled files from the old deferred 3D block. None touches THREE at
+        // evaluation (the building editors await whenThreeReady() on demand), so
+        // they load eagerly like the rest of the 2D app: parcel-blocks,
+        // building-blocks and government-roads are hard dependencies of parcel
+        // selection, proposal apply and the area monitor.
         window.writeVersionedLocalScripts([
             'js/local-frame.js',
-            'js/building-height.js',
             'js/urban-rule-variation.js',
-            'js/proposals/gain.js',
-            'js/three-mesh-sanitize.js',
-            'js/three-screen-door.js',
-            'js/three-smooth-transparency.js',
-            'js/three-building-display.js',
-            'js/three-structure-refresh.js',
-            'js/three-square-paving.js',
-            'js/three-snapshot-navigation.js',
-            'js/three-keyboard-context.js',
-            'js/elevated-rail-3d.js',
-            'js/three-mode.js',
-            'js/photoreal-frame.js',
-            'js/photoreal-ground.js',
-            'js/photoreal-seam.js',
-            'js/photoreal-protect.js',
-            'js/photoreal-mode.js',
-            'js/ai-scene-frustum.js',
-            'js/ai-scene.js',
-            'js/ai-scene-follow.js',
             'js/three-edit-scene.js',
             'js/three-context-buildings.js',
             'js/parcel-blocks.js',
@@ -1681,10 +1705,93 @@
             'js/row-house.js',
             'js/parcel-based.js',
             'js/government-roads.js?v=20260404b'
-            // deferred: this stack assumes `window.THREE` exists when it evaluates (three-mode's
-            // whole IIFE bails without it). The ESM bootstrap above is a module (= deferred), and
-            // deferred classics run after it, in order — parse-time tags would run BEFORE it.
-        ], { defer: true });
+        ]);
+    </script>
+    <script>
+        // The 3D/photoreal/AI stack loads on first 3D interaction instead of on
+        // every page open (~1 MB of app JS plus ~2 MB of three.js from the CDN
+        // that the old eager bootstrap always pulled). Order matters and is the
+        // old defer-list order: three-mode.js hard-requires the sanitizer/
+        // screen-door/display globals at evaluation and touches THREE at
+        // evaluation, so the loader resolves window.THREE first and injects
+        // with async=false to preserve execution order.
+        window.__ensure3DModeStack = (() => {
+            let promise = null;
+            return function ensure3DModeStack() {
+                if (!promise) {
+                    promise = window.whenThreeReady().then((threeOk) => new Promise((resolve) => {
+                        if (!threeOk) { resolve(false); return; }
+                        var paths = [
+                            'js/building-height.js',
+                            'js/proposals/gain.js',
+                            'js/three-mesh-sanitize.js',
+                            'js/three-screen-door.js',
+                            'js/three-smooth-transparency.js',
+                            'js/three-building-display.js',
+                            'js/three-structure-refresh.js',
+                            'js/three-square-paving.js',
+                            'js/three-snapshot-navigation.js',
+                            'js/three-keyboard-context.js',
+                            'js/elevated-rail-3d.js',
+                            'js/three-mode.js',
+                            'js/photoreal-frame.js',
+                            'js/photoreal-ground.js',
+                            'js/photoreal-seam.js',
+                            'js/photoreal-protect.js',
+                            'js/photoreal-mode.js',
+                            'js/ai-scene-frustum.js',
+                            'js/ai-scene.js',
+                            'js/ai-scene-follow.js'
+                        ];
+                        var remaining = paths.length;
+                        var done = function () {
+                            remaining -= 1;
+                            if (remaining > 0) return;
+                            window.__threeModeStackReady = true;
+                            resolve(true);
+                        };
+                        paths.forEach(function (path) {
+                            var tag = document.createElement('script');
+                            tag.src = appendBuildToken(path);
+                            tag.async = false;
+                            tag.onload = done;
+                            tag.onerror = done;
+                            document.head.appendChild(tag);
+                        });
+                    }));
+                }
+                return promise;
+            };
+        })();
+        // The URL-driven ?3d/?photo entry and photoreal's existence checks see
+        // this wrapper until three-mode.js replaces it with the real enter3D at
+        // stack evaluation.
+        window.enterThreeMode = function lazyEnterThreeMode(options) {
+            window.__ensure3DModeStack().then(function (ok) {
+                if (ok && window.enterThreeMode !== lazyEnterThreeMode) {
+                    window.enterThreeMode(options);
+                }
+            });
+        };
+        // Mode buttons: the first press loads the stack, then re-clicks so the
+        // real handlers (attached by three-mode/photoreal-mode at evaluation)
+        // take over.
+        ['mode-3d-toggle', 'mode-walk-toggle', 'mode-realistic-toggle'].forEach(function (id) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('click', function shim(event) {
+                if (window.__threeModeStackReady) {
+                    el.removeEventListener('click', shim, true);
+                    return;
+                }
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                window.__ensure3DModeStack().then(function (ok) {
+                    el.removeEventListener('click', shim, true);
+                    if (ok) el.click();
+                });
+            }, true);
+        });
     </script>
     <!-- <script src="js/memory-monitor.js"></script> -->
 

@@ -408,6 +408,7 @@
         if (!globalScope) {
             throw new Error('Global scope not available.');
         }
+        if (typeof globalScope.ensureWalletVendors === 'function') await globalScope.ensureWalletVendors();
 
         // Check Solana wallet first
         const solanaWalletManager = globalScope.solanaWalletManager;

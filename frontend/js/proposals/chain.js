@@ -387,6 +387,8 @@ async function refreshProposalBalanceDisplay() {
     const currencySelect = document.getElementById('proposalCurrency');
     const currency = currencySelect && currencySelect.value ? currencySelect.value.toUpperCase() : 'USDT';
     if (!balanceEl) return;
+    // Wallet vendors are injected on demand (index.html ensureWalletVendors).
+    if (typeof window.ensureWalletVendors === 'function') await window.ensureWalletVendors();
     const requestId = ++proposalBalanceRequestSeq;
     const tBalance = (statusKey, valueParams = {}) => formatProposalBalanceText(statusKey, valueParams);
     const setText = (text) => {
@@ -563,6 +565,7 @@ async function checkParcelsHaveNFTsSolana(parcelIds, chainId) {
     if (!parcelIds || parcelIds.length === 0) {
         return { allHaveNFTs: true, missingParcels: [], chainId, chainName: 'Solana' };
     }
+    if (typeof window.ensureWalletVendors === 'function') await window.ensureWalletVendors();
 
     const loader = window.SolanaChainDataLoader;
     const hasBatchStatusLoader = loader && typeof loader.getParcelMintStatuses === 'function';
@@ -648,6 +651,7 @@ async function checkParcelsHaveNFTs(parcelIds, chainId) {
         return { allHaveNFTs: true, missingParcels: [], chainId: null, chainName: null };
     }
 
+    if (typeof window.ensureWalletVendors === 'function') await window.ensureWalletVendors();
     const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
     if (!globalScope || !globalScope.ethers) {
         // If blockchain library is not available, assume parcels don't have NFTs

@@ -899,7 +899,14 @@ function enterUrlDrivenView(focusProposalIds) {
     const restoreView = (typeof window.getAiSceneRestoreView === 'function') ? window.getAiSceneRestoreView() : null;
     const entered = tryEnterThreeMode({ fromUrl: true, focusProposalIds: focusProposalIds, restoreView: restoreView });
     if (entered && isRealisticModeRequestedFromUrl()) {
-        tryEnterRealisticMode({ frameProposal: true, pitchDeg: -45, autoRotate: true });
+        const activateRealistic = () => tryEnterRealisticMode({ frameProposal: true, pitchDeg: -45, autoRotate: true });
+        if (typeof window.__ensure3DModeStack === 'function' && !window.PhotorealMode) {
+            // The lazy 3D stack may still be loading (enterThreeMode is the
+            // loader wrapper until it lands); PhotorealMode arrives with it.
+            window.__ensure3DModeStack().then(activateRealistic);
+        } else {
+            activateRealistic();
+        }
     }
     return entered;
 }
@@ -1294,6 +1301,9 @@ async function handleProposalRouteFromUrl(attempt = 0) {
 // Open a proposal from its on-chain location: reconstruct it from the NFT (wallet-gated read via the
 // connected wallet's provider), add it to local storage, and focus it. Never touches the server.
 async function handleChainProposalRoute(ref) {
+    // On-chain deep links read the chain without any gesture; the wallet
+    // vendors are injected on demand (index.html ensureWalletVendors).
+    if (typeof window.ensureWalletVendors === 'function') await window.ensureWalletVendors();
     const loader = window.ChainProposalLoader;
     if (!loader || typeof loader.loadChainProposalFromRef !== 'function') {
         if (typeof updateStatus === 'function') updateStatus('On-chain proposals are unavailable.');
