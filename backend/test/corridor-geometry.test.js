@@ -13,6 +13,7 @@ const {
     splitCorridorSelfJunctions,
     normalizeCorridorGraph,
     normalizeCorridorDefinitionTopology,
+    insertCorridorNode,
     removeCorridorEdge,
     removeCorridorNodes,
     segmentsIntersect,
@@ -264,6 +265,44 @@ describe('normalizeCorridorGraph', () => {
 });
 
 describe('authored corridor edits', () => {
+    it('inserts a projected node without changing segment identity, profile, or source inputs', () => {
+        const segments = [[
+            { lat: 0, lng: 0, level: -1, elevationM: 100 },
+            { lat: 0, lng: 10, level: -1, elevationM: 120 }
+        ]];
+        const profiles = { main: { strips: [{ type: 'driving', width: 6 }] } };
+        const source = structuredClone({ segments, profiles });
+        const result = insertCorridorNode(
+            segments,
+            ['main'],
+            profiles,
+            0,
+            0,
+            { lat: 4, lng: 2.5 }
+        );
+
+        expect(result.changed).toBe(true);
+        expect(result.segments[0]).toHaveLength(3);
+        expect(result.segments[0][1]).toEqual({ lat: 0, lng: 2.5, level: -1, elevationM: 105 });
+        expect(result.segmentIds).toEqual(['main']);
+        expect(result.segmentProfiles).toEqual(profiles);
+        expect({ segments, profiles }).toEqual(source);
+    });
+
+    it('refuses insertion on protected edges, ramps, and endpoints', () => {
+        const flat = [[P(0, 0), P(0, 10)]];
+        expect(insertCorridorNode(flat, ['main'], null, 0, 0, P(0, 5), { protected: true }))
+            .toMatchObject({ changed: false, reason: 'protected' });
+
+        const ramp = [[{ lat: 0, lng: 0, level: 0 }, { lat: 0, lng: 10, level: -1 }]];
+        expect(insertCorridorNode(ramp, ['main'], null, 0, 0, P(0, 5)))
+            .toMatchObject({ changed: false, reason: 'ramp' });
+        expect(insertCorridorNode(flat, ['main'], null, 0, 0, P(0, 10)))
+            .toMatchObject({ changed: false, reason: 'endpoint' });
+        expect(insertCorridorNode(flat, ['main'], null, 0, 0, { lat: null, lng: 5 }))
+            .toMatchObject({ changed: false, reason: 'invalid-point' });
+    });
+
     it('removes only the selected edge and keeps every disconnected remainder in one result', () => {
         const segments = [
             [P(0, 0), P(0, 1), P(0, 2), P(0, 3)],

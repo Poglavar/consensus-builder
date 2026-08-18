@@ -37,7 +37,7 @@ describe('UPU Borovje clean ground topology', () => {
         const mainRoad = roadDefinitionFor(topology.roads.main.streets, topology.roads.main.geometry);
         const westRoad = roadDefinitionFor(topology.roads.west.streets, topology.roads.west.geometry);
         expect(mainRoad.segmentIds).toHaveLength(5);
-        expect(mainRoad.points[0]).toHaveLength(5);
+        expect(mainRoad.points[0]).toHaveLength(11);
         expect(mainRoad.width).toBe(19);
         expect(westRoad.segmentIds).toEqual(['upu-kolno-pjesacka-zapad']);
         expect(westRoad.width).toBe(18);
@@ -48,14 +48,20 @@ describe('UPU Borovje clean ground topology', () => {
         });
     });
 
-    it('keeps only intentional collector vertices and the three real junctions', async () => {
+    it('uses ten smooth collector edges while preserving the three real junctions', async () => {
         const streets = await load('streets.geojson');
         const collector = streets.features.find(item => item.properties?.name === 'sabirna-ulica');
 
         expect(collector.geometry.coordinates).toEqual([
             [16.0091642, 45.7857289],
+            [16.0104704, 45.7859064],
             [16.0117491, 45.7860024],
+            [16.0122932, 45.7859729],
+            [16.013031, 45.7861242],
             [16.0138234, 45.7865089],
+            [16.0143727, 45.7867054],
+            [16.0149304, 45.7869368],
+            [16.0152712, 45.7871633],
             [16.0151698, 45.7873453],
             [16.0150382, 45.7873486]
         ]);

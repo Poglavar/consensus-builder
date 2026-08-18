@@ -30,7 +30,7 @@ database rows 633–651 and 699. It is retained beside the reconstruction becaus
 fixed record identifiers are specific to this import; it is not part of a clean new upload.
 
 `apply-clean-topology.mjs` is the final local migration for those historical rows. It rebuilds the
-ground from the actual UPU extent, straightens the collector road, stores two connected road
+ground from the actual UPU extent, smooths the collector road to ten intentional edges, stores two connected road
 polygons and splits the non-road ground into three connected readjustments. It is dry-run by
 default, backs up the original affected rows, and is idempotent:
 
@@ -50,7 +50,7 @@ already-uploaded proposals, delete the rows first:
 | `parcels.geojson` | FeatureServer (vector) | 178 parcels, KO Žitnjak (335550), with app `parcelId` `HR-335550-<broj>` |
 | `buildings.geojson` | sheet 4 raster | 12 building envelopes M1-1…M1-12, named via `kazete-mapping.json`, floors from PP rules |
 | `zones.geojson` | sheet 1 raster | 5× Z1 park + 1× R2 recreation, planar-partitioned along drawn boundary lines |
-| `streets.geojson` | sheet 2a raster | 6 road-axis segments (collector + crossings), junction vertices shared |
+| `streets.geojson` | sheet 2a raster | 6 named road axes (collector + crossings), junction vertices shared |
 | `parcelation.geojson` | sheet 1 raster | 20 new-parcel slices (građevne čestice per kazeta, parks, streets) |
 | `parcel-fixes.geojson` | local parcel DB | current cadastre where the UPU snapshot is stale (4304 → 4304/1…/6) |
 
@@ -64,9 +64,9 @@ The six GeoJSON files above are committed in this folder as the canonical recons
 - **6 park proposals** (5× Z1 + the central R2 recreation zone — modeled as a
   park until a dedicated playground/sports-field structure kind exists).
 - **2 connected street-network road proposals** (`upu-borovje-ulice` and
-  `upu-borovje-ulice-split-1`) — 6 centerline segments extracted from **sheet 2a (Prometni i komunikacijski
+  `upu-borovje-ulice-split-1`) — 6 named centerlines extracted from **sheet 2a (Prometni i komunikacijski
   sustav)**, which draws the roads explicitly: the collector is the red-hatched
-  planned-road band (centerline simplified to its five intentional vertices), the
+  planned-road band (centerline smoothed to eleven vertices / ten edges while retaining its broad curve), the
   IS-1/IS-2 crossings are clean colored cells (straight PCA axes). Crossing
   endpoints are junction vertices in the collector polyline. Per-class cross-sections: SP 19 m (lanes +
   cycleway + sidewalks + verges), IS-1 18 m shared surface, IS-2 9 m pedestrian.

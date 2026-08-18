@@ -499,9 +499,55 @@ body.proposal-editor-open #proposal-details-panel.visible {
     border-color: #16a34a;
 }
 
-/* Bulldoze handle at each road edge midpoint (node-edit mode). */
+/* Add-node + bulldoze controls at each road edge midpoint (node-edit mode). */
+.road-edge-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: transparent;
+    border: 0;
+}
+
+.road-edge-action {
+    box-sizing: border-box;
+    display: inline-flex;
+    width: 16px;
+    height: 16px;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    font-size: 14px;
+    font-weight: 800;
+    user-select: none;
+}
+
+.road-edge-add {
+    cursor: pointer;
+    color: #166534;
+    background: #dcfce7;
+    border: 2px solid #15803d;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.35);
+}
+
+.road-edge-add:hover {
+    color: #ffffff;
+    background: #16a34a;
+}
+
+.road-edge-add--disabled,
+.road-edge-add--disabled:hover {
+    cursor: not-allowed;
+    color: #64748b;
+    background: #e2e8f0;
+    border-color: #94a3b8;
+    opacity: 0.75;
+}
+
 .road-edge-bulldoze {
     cursor: pointer;
+    color: #991b1b;
     background: #fee2e2;
     border: 2px solid #b91c1c;
     border-radius: 3px;
@@ -510,8 +556,17 @@ body.proposal-editor-open #proposal-details-panel.visible {
 }
 
 .road-edge-bulldoze:hover {
+    color: #ffffff;
     opacity: 1;
     background: #ef4444;
+}
+
+@media (pointer: coarse) {
+    .road-edge-action {
+        width: 26px;
+        height: 26px;
+        font-size: 20px;
+    }
 }
 
 /* Junction node: one bigger handle that moves every leg branching from it. */
@@ -520,4 +575,3 @@ body.proposal-editor-open #proposal-details-panel.visible {
     border-color: #b45309;
     border-width: 4px;
 }
-

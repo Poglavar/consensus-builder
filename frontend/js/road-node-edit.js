@@ -8,10 +8,10 @@
     let handleGroup = null;
     let activeKey = null;
     let busy = false;
-    // The bulldoze squares, with the stretch each one belongs to, so they can be re-placed on zoom
-    // without rebuilding every handle. And how big the node handle at each position is, which is
-    // what they have to keep clear of.
-    let bulldozeHandles = [];
+    // The midpoint action clusters, with the stretch each one belongs to, so they can be re-placed
+    // on zoom without rebuilding every handle. And how big the node handle at each position is,
+    // which is what they have to keep clear of.
+    let edgeActionHandles = [];
     const handleRadiusByPosition = new Map();
 
     function drawingActive() {
@@ -34,7 +34,7 @@
             try { global.map?.removeLayer(handleGroup); } catch (_) { }
         }
         clearDragPreview();
-        bulldozeHandles = [];
+        edgeActionHandles = [];
         handleRadiusByPosition.clear();
         handleGroup = null;
         activeKey = null;
@@ -64,12 +64,15 @@
         });
     }
 
-    function bulldozeIcon() {
-        const size = coarsePointer ? 24 : 12;
+    function edgeActionsIcon(addDisabled) {
+        const height = coarsePointer ? 26 : 16;
+        const width = coarsePointer ? 56 : 38;
         return global.L.divIcon({
-            className: 'road-edge-bulldoze',
-            iconSize: [size, size],
-            iconAnchor: [size / 2, size / 2]
+            className: 'road-edge-actions',
+            html: `<span class="road-edge-action road-edge-add${addDisabled ? ' road-edge-add--disabled' : ''}" data-road-edge-action="add">+</span>`
+                + '<span class="road-edge-action road-edge-bulldoze" data-road-edge-action="bulldoze">×</span>',
+            iconSize: [width, height],
+            iconAnchor: [width / 2, height / 2]
         });
     }
 
@@ -173,6 +176,52 @@
         const history = ensureHistory(proposalKey);
         if (history) history.record();
         runExclusiveEdit(() => global.updateLocalCorridorGeometry(proposalKey, mutator));
+    }
+
+    function edgeInsertionBlocked(definition, from, to) {
+        const levelOf = point => (typeof point?.level === 'number' && Number.isFinite(point.level))
+            ? point.level
+            : 0;
+        if (levelOf(from) !== levelOf(to)) return true;
+        const tunnels = Array.isArray(definition.tunnels) ? definition.tunnels : [];
+        const gradeSeparations = Array.isArray(definition.gradeSeparations) ? definition.gradeSeparations : [];
+        if (typeof global.corridorTunnelEdgeKey !== 'function') {
+            return tunnels.length > 0 || gradeSeparations.length > 0;
+        }
+        const edgeKey = global.corridorTunnelEdgeKey(from, to);
+        if (!edgeKey) return false;
+        try {
+            const protectedKeys = global.corridorProtectedEdgeKeySet?.(
+                tunnels,
+                gradeSeparations
+            );
+            if (protectedKeys?.has?.(edgeKey)) return true;
+        } catch (_) { }
+        // Keep the guard even if the shared helper is unavailable during an unusual load order.
+        if (tunnels.some(record => record?.edgeKey === edgeKey)) return true;
+        return gradeSeparations.some(record => (
+            record?.edgeKey === edgeKey || (record?.edgeKeys || []).includes(edgeKey)
+        ));
+    }
+
+    function addNode(proposalKey, segIndex, edgeIndex) {
+        mutateGeometry(proposalKey, definition => {
+            const segments = normalizedSegmentsOf(definition);
+            const from = segments[segIndex]?.[edgeIndex];
+            const to = segments[segIndex]?.[edgeIndex + 1];
+            if (!from || !to) return;
+            const result = global.CorridorGeometry.insertCorridorNode(
+                segments,
+                definition.segmentIds,
+                definition.segmentProfiles,
+                segIndex,
+                edgeIndex,
+                { lat: (from.lat + to.lat) / 2, lng: (from.lng + to.lng) / 2 },
+                { protected: edgeInsertionBlocked(definition, from, to) }
+            );
+            if (!result.changed) return;
+            writeSegments(definition, result.segments, result.segmentIds, result.segmentProfiles);
+        });
     }
 
     // Bulldoze one stretch. Disconnected remainders stay stretches of this same road formation.
@@ -643,46 +692,68 @@
         });
 
         segments.forEach((segment, segIndex) => {
-            // Bulldoze handles: one per stretch, nominally at the edge midpoint.
+            // One compact midpoint cluster per stretch: add a vertex or bulldoze the stretch.
             for (let edgeIndex = 0; edgeIndex < segment.length - 1; edgeIndex += 1) {
                 const a = segment[edgeIndex];
                 const b = segment[edgeIndex + 1];
+                const addDisabled = edgeInsertionBlocked(proposal.roadProposal.definition, a, b);
                 const midpoint = global.L.marker([(a.lat + b.lat) / 2, (a.lng + b.lng) / 2], {
-                    icon: bulldozeIcon(),
+                    icon: edgeActionsIcon(addDisabled),
                     pane: 'road-node-handles',
                     keyboard: false
                 });
-                midpoint.bindTooltip(editHint('panel.road.bulldozeHint', '🚜 Bulldoze this stretch'), { sticky: true, pane: 'road-node-handles' });
+                midpoint.bindTooltip(editHint(
+                    addDisabled ? 'panel.road.edgeActionsProtectedHint' : 'panel.road.edgeActionsHint',
+                    addDisabled
+                        ? 'A node cannot be added on a ramp, tunnel, or grade-separated stretch · 🚜 Bulldoze this stretch'
+                        : '＋ Add a node · 🚜 Bulldoze this stretch'
+                ), { sticky: true, pane: 'road-node-handles' });
                 midpoint.on('click', (event) => {
                     try { global.L.DomEvent.stop(event.originalEvent || event); } catch (_) { }
-                    bulldozeEdge(activeKey, segIndex, edgeIndex);
+                    const target = event.originalEvent?.target;
+                    const actionTarget = target?.dataset?.roadEdgeAction
+                        ? target
+                        : target?.closest?.('[data-road-edge-action]');
+                    const action = actionTarget?.dataset?.roadEdgeAction;
+                    if (action === 'add') {
+                        if (addDisabled) {
+                            global.updateStatus?.(editHint(
+                                'panel.road.addNodeProtectedStatus',
+                                'A node cannot be added on a ramp, tunnel, or grade-separated stretch.'
+                            ));
+                            return;
+                        }
+                        addNode(activeKey, segIndex, edgeIndex);
+                    } else if (action === 'bulldoze') {
+                        bulldozeEdge(activeKey, segIndex, edgeIndex);
+                    }
                 });
                 handleGroup.addLayer(midpoint);
-                bulldozeHandles.push({ marker: midpoint, a, b });
+                edgeActionHandles.push({ marker: midpoint, a, b });
             }
         });
-        placeBulldozeHandles();
+        placeEdgeActionHandles();
     }
 
-    // Keep the bulldoze square off the node handles at either end of its stretch.
+    // Keep the midpoint action cluster off the node handles at either end of its stretch.
     //
     // The midpoint of a short stretch between two junctions lands right on top of a junction circle,
-    // burying the one handle you most need to grab. So the square slides ALONG its own stretch to the
+    // burying the one handle you most need to grab. So the cluster slides ALONG its own stretch to the
     // nearest spot that clears both ends — never onto another stretch, so it still unambiguously
     // names the one it would bulldoze. A stretch with no clear spot at all keeps the midpoint: being
     // in the way beats being somewhere it does not belong.
     //
     // The clearances are pixels, so this is redone on zoom rather than baked into a latlng.
-    function bulldozeRadiusPx() {
-        return (coarsePointer ? 24 : 12) / 2;
+    function edgeActionsReachPx() {
+        return (coarsePointer ? 56 : 38) / 2;
     }
 
-    function placeBulldozeHandles() {
+    function placeEdgeActionHandles() {
         const map = global.map;
         if (!map || !global.L) return;
         const gap = 2;
-        const reach = bulldozeRadiusPx();
-        bulldozeHandles.forEach(({ marker, a, b }) => {
+        const reach = edgeActionsReachPx();
+        edgeActionHandles.forEach(({ marker, a, b }) => {
             const start = map.latLngToLayerPoint(a);
             const end = map.latLngToLayerPoint(b);
             const dx = end.x - start.x;
@@ -706,8 +777,8 @@
         }
         global.document?.addEventListener('corridor-drawing-mode-changed', refresh);
         // Clearances are pixels; zooming changes how much of a stretch a fixed pixel gap covers, so
-        // the squares are re-placed rather than left where the old zoom happened to want them.
-        try { global.map?.on?.('zoomend', () => { if (handleGroup) placeBulldozeHandles(); }); } catch (_) { }
+        // the clusters are re-placed rather than left where the old zoom happened to want them.
+        try { global.map?.on?.('zoomend', () => { if (handleGroup) placeEdgeActionHandles(); }); } catch (_) { }
         // Re-applies, parks, and deletes all funnel through proposalCreated/list refreshes; the
         // selection subscription covers most, this covers geometry rebuilds while selected.
         global.document?.addEventListener('proposalCreated', refresh);

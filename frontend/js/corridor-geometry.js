@@ -572,6 +572,65 @@
         return segmentProfiles;
     }
 
+    // Insert one authored vertex into an existing centerline edge without changing the road's
+    // locus, segment identity, or profile. The requested point is projected onto the edge so a
+    // click that is a few screen pixels off the line cannot introduce a tiny kink. Inputs are never
+    // mutated. Protected edges (building tunnels / grade separations) and ramps are refused: both
+    // carry edge-level meaning that cannot simply be copied onto two replacement edges.
+    function insertCorridorNode(segments, segmentIds, segmentProfiles, segmentIndex, edgeIndex, point, options = {}) {
+        const result = corridorEditInputs(segments, segmentIds, segmentProfiles);
+        const target = result.segments[segmentIndex];
+        const from = target?.[edgeIndex];
+        const to = target?.[edgeIndex + 1];
+        if (!from || !to || options.protected === true) {
+            return { ...result, changed: false, reason: options.protected === true ? 'protected' : 'missing-edge' };
+        }
+
+        const fromLevel = (typeof from.level === 'number' && Number.isFinite(from.level)) ? from.level : 0;
+        const toLevel = (typeof to.level === 'number' && Number.isFinite(to.level)) ? to.level : 0;
+        if (fromLevel !== toLevel) return { ...result, changed: false, reason: 'ramp' };
+
+        const finiteCoordinate = value => typeof value === 'number' && Number.isFinite(value);
+        if (!finiteCoordinate(from.lat) || !finiteCoordinate(from.lng)
+            || !finiteCoordinate(to.lat) || !finiteCoordinate(to.lng)
+            || !finiteCoordinate(point?.lat) || !finiteCoordinate(point?.lng)) {
+            return { ...result, changed: false, reason: 'invalid-point' };
+        }
+        const requestedLat = point.lat;
+        const requestedLng = point.lng;
+        const dx = to.lng - from.lng;
+        const dy = to.lat - from.lat;
+        const lengthSq = dx * dx + dy * dy;
+        if (!Number.isFinite(lengthSq) || lengthSq < 1e-24) {
+            return { ...result, changed: false, reason: 'invalid-point' };
+        }
+
+        const rawT = ((requestedLng - from.lng) * dx + (requestedLat - from.lat) * dy) / lengthSq;
+        const t = Math.max(0, Math.min(1, rawT));
+        if (t <= 1e-9 || t >= 1 - 1e-9) return { ...result, changed: false, reason: 'endpoint' };
+
+        const insertedPoint = {
+            lat: from.lat + dy * t,
+            lng: from.lng + dx * t
+        };
+        if ((typeof from.level === 'number' && Number.isFinite(from.level))
+            || (typeof to.level === 'number' && Number.isFinite(to.level))) {
+            insertedPoint.level = fromLevel;
+        }
+        // Imported alignments may carry a sampled absolute height. Keep the new point on the same
+        // vertical line instead of dropping it back to terrain/default height.
+        ['elevAslM', 'elevationM', 'elevation', 'z'].forEach(field => {
+            const a = from[field];
+            const b = to[field];
+            if (typeof a === 'number' && Number.isFinite(a) && typeof b === 'number' && Number.isFinite(b)) {
+                insertedPoint[field] = a + (b - a) * t;
+            }
+        });
+
+        target.splice(edgeIndex + 1, 0, insertedPoint);
+        return { ...result, changed: true, insertedPoint, t };
+    }
+
     // Remove exactly one authored centerline edge. A road is one formation even when this leaves
     // disconnected stretches: those stretches remain in this ONE result and replay re-derives its
     // complete footprint. Segment identity stays index-aligned; when one polyline becomes two, the
@@ -1110,6 +1169,7 @@
         normalizeCorridorGraph,
         normalizeCorridorNetwork,
         normalizeCorridorDefinitionTopology,
+        insertCorridorNode,
         removeCorridorEdge,
         removeCorridorNodes,
         segmentsIntersect,
