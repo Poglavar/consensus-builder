@@ -4,6 +4,7 @@ import { PassThrough } from 'node:stream';
 import {
     applyRecognitionPatch,
     buildRecognitionPrompt,
+    dominantModel,
     modelAcceptsImagery,
     PROVIDER_TIMEOUT_MS,
     providerAvailability,
@@ -524,6 +525,39 @@ describe('lane-topology CLI provider boundary', () => {
             equivalentUsd: null,          // Codex states no cost; inventing one would be a guess
             durationMs: null,
             numTurns: 1
+        });
+    });
+
+    // A real Opus probe came back attributed to Haiku: the CLI farms background chores out to a
+    // small model, and the ledger took whichever key `modelUsage` listed first. Every claude row in
+    // the cost ledger then named the wrong model.
+    describe('dominantModel', () => {
+        it('credits the model that spent the output tokens, not the first key listed', () => {
+            expect(dominantModel({
+                'claude-haiku-4-5-20251001': { outputTokens: 312 },
+                'claude-opus-5': { outputTokens: 12150 }
+            })).toBe('claude-opus-5');
+        });
+
+        it('reads the snake_case counts the CLI also emits', () => {
+            expect(dominantModel({
+                'claude-haiku-4-5-20251001': { output_tokens: 900 },
+                'claude-opus-5': { output_tokens: 11000 }
+            })).toBe('claude-opus-5');
+        });
+
+        it('keeps the single-model answer unchanged', () => {
+            expect(dominantModel({ 'claude-opus-5': { outputTokens: 4 } })).toBe('claude-opus-5');
+        });
+
+        it('falls back to the CLI order when nothing reports output tokens', () => {
+            expect(dominantModel({ 'claude-opus-5': {}, 'claude-haiku-4-5-20251001': {} }))
+                .toBe('claude-opus-5');
+        });
+
+        it('has no answer when no model was billed', () => {
+            expect(dominantModel({})).toBe(null);
+            expect(dominantModel(undefined)).toBe(null);
         });
     });
 

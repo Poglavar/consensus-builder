@@ -7,7 +7,7 @@
 // summary "1 failed". The cost of getting this wrong is someone re-running work that is already in
 // the database — or, worse, believing the area is less complete than it is.
 import { afterEach, describe, expect, it } from 'vitest';
-import { setApiImpl, solveJunction, withRetry } from '../scripts/solve-junctions.js';
+import { classifyJunctions, setApiImpl, solveJunction, withRetry } from '../scripts/solve-junctions.js';
 
 const ARGS = {
     city: 'zagreb', provider: 'codex', model: 'gpt-5.6-sol',
@@ -115,5 +115,70 @@ describe('withRetry', () => {
 
         expect(value).toBe('ok');
         expect(attempts).toBe(1);
+    });
+});
+
+// Which junctions a run will actually pay for. Every branch here has been a real miscount.
+describe('classifyJunctions', () => {
+    const junction = (id, extra = {}) => ({
+        key: `junction:${id}`, name: `J${id}`, laneCount: 4, resolved: false,
+        unresolvedNodeIds: [`osm-node:${id}`], ...extra
+    });
+
+    it('leaves a junction nothing has answered as work', () => {
+        const { open, deterministic, adjudicated } = classifyJunctions([junction(1)], {});
+        expect(open.map(j => j.key)).toEqual(['junction:1']);
+        expect(deterministic).toEqual([]);
+        expect(adjudicated).toEqual([]);
+    });
+
+    it('does not pay a model to re-derive what the rules already settle', () => {
+        const { open, deterministic } = classifyJunctions([junction(1, { resolved: true })], {});
+        expect(open).toEqual([]);
+        expect(deterministic.map(j => j.key)).toEqual(['junction:1']);
+    });
+
+    // The bug this was written for: a Claude sweep re-asking what Codex had already answered,
+    // because resume keys on (junction, bbox, provider, model) and nothing consulted the store.
+    it('skips a junction another provider has already answered', () => {
+        const { open, adjudicated } = classifyJunctions([junction(1)], {
+            settledNodes: new Set(['osm-node:1'])
+        });
+        expect(open).toEqual([]);
+        expect(adjudicated.map(j => j.key)).toEqual(['junction:1']);
+    });
+
+    it('keeps a junction whose stored answer settled only some of its nodes', () => {
+        const partly = junction(1, { unresolvedNodeIds: ['osm-node:1', 'osm-node:2'] });
+        const { open, adjudicated } = classifyJunctions([partly], {
+            settledNodes: new Set(['osm-node:1'])
+        });
+        expect(open.map(j => j.key)).toEqual(['junction:1']);
+        expect(adjudicated).toEqual([]);
+    });
+
+    // `[].every(...)` is true, so an empty list would silently classify as fully answered.
+    it('does not treat a junction with no named open nodes as answered', () => {
+        const nameless = junction(1, { unresolvedNodeIds: [] });
+        const { open, adjudicated } = classifyJunctions([nameless], {
+            settledNodes: new Set(['osm-node:1'])
+        });
+        expect(open.map(j => j.key)).toEqual(['junction:1']);
+        expect(adjudicated).toEqual([]);
+    });
+
+    it('sets the cost guard aside as skipped rather than dropping it', () => {
+        const big = junction(1, { laneCount: 40 });
+        const { open, oversized } = classifyJunctions([big], { maxLanes: 20 });
+        expect(open).toEqual([]);
+        expect(oversized.map(j => j.key)).toEqual(['junction:1']);
+    });
+
+    it('makes everything work again under --include-resolved', () => {
+        const done = junction(1, { resolved: true });
+        const { open } = classifyJunctions([done], {
+            includeResolved: true, settledNodes: new Set(['osm-node:1'])
+        });
+        expect(open.map(j => j.key)).toEqual(['junction:1']);
     });
 });

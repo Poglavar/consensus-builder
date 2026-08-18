@@ -18,6 +18,7 @@ import { createRequire } from 'node:module';
 import { appendFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import { enumerationTiles, insideCore } from './lib/city-tiles.js';
+import { settledNodeIndex } from './lib/stored-solutions.js';
 
 const require = createRequire(import.meta.url);
 const LaneTopologyJunctions = require('../../frontend/js/lane-topology-junctions.js');
@@ -70,6 +71,8 @@ Solve lane-topology junctions in bulk with a CLI model.
   --limit N               Stop after N junctions this run.
   --concurrency N         Junctions in flight at once (default ${DEFAULTS.concurrency}).
   --redo                  Re-run junctions this model already solved.
+  --ignore-stored         Do not consult other providers' stored answers; a junction another
+                          model has already settled becomes work again (cross-model comparison).
   --include-resolved      Also run junctions the deterministic rules already settled.
   --allow-disabled-model  Run a model this task has measured as unfit (see MODEL_NOTES).
   --log FILE              Append one JSON line per junction here.
@@ -104,6 +107,7 @@ function parseArgs(argv) {
             case '--concurrency': args.concurrency = Math.max(1, Number(take())); break;
             case '--log': args.log = take(); break;
             case '--redo': args.redo = true; break;
+            case '--ignore-stored': args.ignoreStored = true; break;
             case '--include-resolved': args.includeResolved = true; break;
             case '--allow-disabled-model': args.allowDisabledModel = true; break;
             case '--dry-run': args.dryRun = true; break;
@@ -408,6 +412,39 @@ function summariseUsage(records) {
         + ` / ${totals.output.toLocaleString()} out tokens${money}`;
 }
 
+// What in an enumerated area is actually work, and why each of the rest is not. Pure, because the
+// three reasons a junction gets skipped are the three ways a run can silently understate what it
+// did, and every one of them has already been a bug:
+//
+//   deterministic — the rules settle it for free; paying a model to re-derive it is the whole cost
+//                   problem, and this is the filter that keeps a sweep affordable.
+//   adjudicated   — ANOTHER provider has already answered it. The runner could not see this: resume
+//                   keys on (junction, bbox, provider, model), and open/closed is a fresh
+//                   derivation, so a Claude sweep re-asked roughly a fifth of what Codex had done.
+//                   Same predicate the coverage report uses, so the two now agree on what is left.
+//   oversized     — over the --max-lanes cost guard. Reported out loud, because silent truncation
+//                   reads as "the area is solved" when its biggest interchanges were never tried.
+export function classifyJunctions(enumerated, { settledNodes, includeResolved, maxLanes } = {}) {
+    const settled = settledNodes || new Set();
+    const deterministic = [];
+    const adjudicated = [];
+    const oversized = [];
+    const open = [];
+    for (const junction of enumerated || []) {
+        if (!includeResolved && junction.resolved) { deterministic.push(junction); continue; }
+        // An empty list means the derivation names no open node, so there is nothing for a stored
+        // answer to have settled — `every` on an empty array is true and would skip it silently.
+        if (!includeResolved && junction.unresolvedNodeIds?.length
+            && junction.unresolvedNodeIds.every(id => settled.has(id))) {
+            adjudicated.push(junction);
+            continue;
+        }
+        if (maxLanes && junction.laneCount > maxLanes) { oversized.push(junction); continue; }
+        open.push(junction);
+    }
+    return { deterministic, adjudicated, oversized, open };
+}
+
 async function main() {
     const args = parseArgs(process.argv.slice(2));
     if (args.help || (!args.bbox && !args.center)) {
@@ -446,16 +483,16 @@ async function main() {
 
     const enumerated = (await junctionsInArea(base, args))
         .filter(junction => junction.armCount >= args.minArms);
-    // Junctions the deterministic rules already settled are not recognition work. Spending a CLI
-    // call to re-derive an answer the builder produces for free is the whole cost problem.
-    const deterministic = args.includeResolved ? [] : enumerated.filter(junction => junction.resolved);
-    const all = enumerated.filter(junction => !deterministic.includes(junction));
-    // A junction the run will not attempt has to be said out loud. Silent truncation reads as
-    // "the area is solved" when the biggest interchanges in it were never tried.
-    const oversized = args.maxLanes ? all.filter(junction => junction.laneCount > args.maxLanes) : [];
-    const junctions = orderJunctions(all.filter(junction => !oversized.includes(junction)), args);
+    const stored = (args.includeResolved || args.ignoreStored)
+        ? { settled: new Set(), consulted: 0 }
+        : await settledNodeIndex({ api: base, city: args.city, bbox: args.bbox, log });
+    const { deterministic, adjudicated, oversized, open } =
+        classifyJunctions(enumerated, { settledNodes: stored.settled, ...args });
+    const junctions = orderJunctions(open, args);
     log(`${enumerated.length} junctions with ${args.minArms}+ arms`
         + `; ${deterministic.length} already settled by the deterministic rules`
+        + (adjudicated.length ? `; ${adjudicated.length} already answered by a stored solution `
+            + `(${stored.consulted} consulted)` : '')
         + `; ${junctions.length} need recognition`
         + (oversized.length ? `; SKIPPED ${oversized.length} over ${args.maxLanes} lanes: `
             + oversized.map(junction => `${junction.name} (${junction.laneCount} lanes, `

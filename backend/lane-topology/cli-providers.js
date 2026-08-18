@@ -402,6 +402,21 @@ function normalizeUsage(fields) {
     return Object.values(usage).some(value => value !== null) ? usage : null;
 }
 
+// A claude run bills more than one model: the CLI hands background chores (summarising a tool
+// result, naming the session) to a small model, so `modelUsage` routinely carries a Haiku entry
+// beside the Opus one that did the work. Whichever the CLI happened to list first then became the
+// ledger's answer to "which model solved this junction" — an Opus run recorded as Haiku, which is
+// the first-wins merge bug in miniature. The model that produced the answer is the one that spent
+// the output tokens on it, so pick by that rather than by key order.
+export function dominantModel(modelUsage) {
+    const entries = Object.entries(modelUsage || {});
+    if (!entries.length) return null;
+    const weight = ([, usage]) => Number(usage?.outputTokens ?? usage?.output_tokens) || 0;
+    // Ties (including every-model-reports-zero) keep the CLI's own order, so this can only ever
+    // improve on the old behaviour, never scramble a single-model run.
+    return entries.reduce((best, entry) => (weight(entry) > weight(best) ? entry : best))[0] || null;
+}
+
 // Claude prints one JSON envelope carrying its own usage and a costed equivalent.
 function claudeUsage(envelope) {
     const usage = envelope?.usage;
@@ -409,7 +424,7 @@ function claudeUsage(envelope) {
     if (!usage && !Number.isFinite(cost)) return null;
     return normalizeUsage({
         // modelUsage is keyed by the resolved model id.
-        resolvedModel: Object.keys(envelope?.modelUsage || {})[0] || null,
+        resolvedModel: dominantModel(envelope?.modelUsage),
         inputTokens: count(usage?.input_tokens),
         outputTokens: count(usage?.output_tokens),
         cacheReadTokens: count(usage?.cache_read_input_tokens),
