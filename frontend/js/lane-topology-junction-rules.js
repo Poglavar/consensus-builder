@@ -382,6 +382,34 @@
     // { connections, arms, evidence, open } — the movements the rules can settle at this node, and
     // the approaches still open, each with why. An empty `open` means the node is fully settled.
     //
+    // How many lane-to-lane movements are actually in question at a node — the size of the decision,
+    // and the one honest test of whether there is one at all.
+    //
+    // Some nodes the rules decline have nothing to decide: three OSM ways meet, but only one of them
+    // produced a drivable lane, so the sole movement available is a U-turn. Those became junctions
+    // that could never be closed by anyone — five of the six left open in two fully swept tiles.
+    // The tempting fix is to blame the decline REASON, but that over-reaches badly: measured over
+    // the same tiles, nine nodes declined for too-few-arms still had real movements in question, and
+    // suppressing them would have hidden genuine work. So this counts, rather than infers.
+    //
+    // Only the open approaches count. The rest were settled by the rules and a consumer must not
+    // reopen them.
+    function decisionSurface(node, lanes, openApproaches) {
+        const touching = (lanes || []).filter(lane => lane.fromNode === node.id
+            || lane.toNode === node.id);
+        const openSections = openApproaches?.length
+            ? new Set(openApproaches.map(entry => entry.sectionId))
+            : null;
+        const incoming = touching.filter(lane => lane.toNode === node.id
+            && (!openSections || openSections.has(lane.sectionId)));
+        const exitArms = new Set(touching.filter(lane => lane.fromNode === node.id)
+            .map(lane => lane.sectionId));
+        // Arriving on an arm, you may leave by any OTHER arm; going back the way you came is a
+        // U-turn, not a movement this model decides.
+        return incoming.reduce((total, lane) => total
+            + Math.max(0, exitArms.size - (exitArms.has(lane.sectionId) ? 1 : 0)), 0);
+    }
+
     // `{ declined }` instead means nothing at the node could be looked at: the whole node is open.
     // Those two are different states and a caller must not confuse them, because a missing
     // connection in this model reads as a movement that is forbidden, not one nobody decided —
@@ -563,6 +591,7 @@
     }
 
     return {
+        decisionSurface,
         MAX_RESOLVABLE_ARMS,
         BEARING_BASELINE_M,
         THROUGH_MAX_DEG,

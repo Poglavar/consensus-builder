@@ -685,3 +685,116 @@ describe('deterministic junction rules', () => {
         expect(hard.stats.unresolved).toBe(1);
     });
 });
+
+// A junction nobody can close is not a junction that needs closing.
+//
+// Real case: osm-node:4916936232 on Zagrebačka cesta. Three OSM ways meet, so the rules treat it as
+// a junction, but only one of them produced drivable lanes — so the sole movement on offer is a
+// U-turn. It was reported as an open intersection, the solver queued it, a model was paid to look
+// at it, and it stayed open, because there was no answer to give. Five of the six junctions left
+// open across two fully-swept tiles were this shape, and those tiles could never reach 100%.
+describe('decisionSurface', () => {
+    const node = { id: 'n', degree: 3 };
+    const lane = (id, from, to, sectionId) => ({ id, fromNode: from, toNode: to, sectionId });
+
+    it('counts nothing where the only way out is back the way you came', () => {
+        // One section, one lane each way: arrive on A, and A is the only exit arm.
+        const lanes = [lane('in', 'x', 'n', 'A'), lane('out', 'n', 'x', 'A')];
+        expect(JunctionRules.decisionSurface(node, lanes, null)).toBe(0);
+    });
+
+    it('counts the other arms an approach could leave by', () => {
+        const lanes = [
+            lane('in', 'x', 'n', 'A'),
+            lane('outB', 'n', 'y', 'B'),
+            lane('outC', 'n', 'z', 'C')
+        ];
+        expect(JunctionRules.decisionSurface(node, lanes, null)).toBe(2);
+    });
+
+    it('does not count a U-turn as one of them', () => {
+        const lanes = [
+            lane('in', 'x', 'n', 'A'),
+            lane('backA', 'n', 'x', 'A'),
+            lane('outB', 'n', 'y', 'B')
+        ];
+        expect(JunctionRules.decisionSurface(node, lanes, null)).toBe(1);
+    });
+
+    it('measures only the approaches still open, not the ones the rules settled', () => {
+        const lanes = [
+            lane('inA', 'x', 'n', 'A'),
+            lane('inB', 'y', 'n', 'B'),
+            lane('outC', 'n', 'z', 'C'),
+            lane('outD', 'n', 'w', 'D')
+        ];
+        expect(JunctionRules.decisionSurface(node, lanes, null)).toBe(4);
+        expect(JunctionRules.decisionSurface(node, lanes, [{ sectionId: 'A' }])).toBe(2);
+    });
+
+    it('ignores lanes that do not touch the node', () => {
+        const lanes = [lane('elsewhere', 'p', 'q', 'A'), lane('in', 'x', 'n', 'A'),
+            lane('outB', 'n', 'y', 'B')];
+        expect(JunctionRules.decisionSurface(node, lanes, null)).toBe(1);
+    });
+
+    // The over-reach guard. The first attempt at this fix keyed on the DECLINE REASON instead of
+    // measuring, and over the same two tiles it flagged nine nodes as having nothing to decide when
+    // they had real movements in question — hiding genuine work behind a completeness number.
+    it('still counts movements at a node the rules declined for having too few arms', () => {
+        const twoArms = [
+            lane('inA', 'x', 'n', 'A'),
+            lane('outB', 'n', 'y', 'B'),
+            lane('inB', 'y', 'n', 'B'),
+            lane('outA', 'n', 'x', 'A')
+        ];
+        expect(JunctionRules.decisionSurface(node, twoArms, null)).toBe(2);
+    });
+});
+
+// End to end: the same shape, through the builder and the junction deriver.
+describe('a node where three ways meet but only one is drivable', () => {
+    // Two of the three arms are streets whose profile is rail, not carriageway — a highway way with
+    // rails still in it. They stay in the graph as sections (they ARE highways) but contribute no
+    // driving lane, so the one remaining arm can only turn back on itself. This is the real shape
+    // from Zagrebačka cesta, where the rail profile came from a `railway` tag on the street.
+    const railInTheStreet = { highway: 'residential', railway: 'disused' };
+    const features = [
+        way(1, [WEST, CENTRE], { highway: 'service' }, [10, 100]),
+        way(2, [CENTRE, EAST], railInTheStreet, [100, 20]),
+        way(3, [CENTRE, SOUTH], railInTheStreet, [100, 30])
+    ];
+
+    const graph = LaneTopologyGraph.build({ features }, BUILD_OPTIONS);
+    const problem = graph.problems.find(entry => entry.type === 'unresolved_intersection'
+        && (entry.nodeIds || []).includes('osm-node:100'));
+
+    it('still reports the node, because the rules genuinely could not settle it', () => {
+        expect(problem).toBeTruthy();
+    });
+
+    it('marks it as carrying no decision', () => {
+        expect(problem.decidable).toBe(false);
+    });
+
+    it('does not leave a junction that no answer could ever close', () => {
+        const { junctions } = require('../../frontend/js/lane-topology-junctions.js')
+            .deriveJunctions(graph);
+        const mine = junctions.find(junction => junction.nodeIds.includes('osm-node:100'));
+        expect(mine?.unresolvedNodeIds).toEqual([]);
+        expect(mine?.resolved).toBe(true);
+    });
+});
+
+// The counterpart, so the flag cannot quietly swallow real work: a plain T has three drivable arms
+// and every approach has somewhere to go.
+describe('a junction that does carry a decision', () => {
+    const graph = LaneTopologyGraph.build({ features: tJunction() }, BUILD_OPTIONS);
+    const problem = graph.problems.find(entry => entry.type === 'unresolved_intersection'
+        && (entry.nodeIds || []).includes('osm-node:100'));
+
+    it('is either settled outright or still counted as work, never silently dropped', () => {
+        if (problem) expect(problem.decidable).toBe(true);
+        else expect(graph.connections.some(c => c.nodeId === 'osm-node:100')).toBe(true);
+    });
+});

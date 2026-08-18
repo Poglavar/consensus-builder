@@ -19,6 +19,10 @@ import { settledNodeIndex, listAllSolutions } from './lib/stored-solutions.js';
 const require = createRequire(import.meta.url);
 const LaneTopologyGraph = require('../../frontend/js/lane-topology-graph.js');
 const LaneTopologyJunctions = require('../../frontend/js/lane-topology-junctions.js');
+// The same measure the builder uses to decide whether a node is work at all, not a second copy
+// of it: a report that scores completeness by a different rule than the one that sets it will
+// disagree with the map it is describing.
+const JunctionRules = require('../../frontend/js/lane-topology-junction-rules.js');
 const CorridorProfile = require('../../frontend/js/corridor-profile.js');
 const OsmProfile = require('../../frontend/js/osm-profile.js');
 
@@ -71,15 +75,6 @@ function parseArgs(argv) {
     return args;
 }
 
-function decisionSurface(node, graph, open) {
-    const lanes = graph.lanes.filter(lane => lane.fromNode === node.id || lane.toNode === node.id);
-    const openSections = open && open.length ? new Set(open.map(entry => entry.sectionId)) : null;
-    const incoming = lanes.filter(lane => lane.toNode === node.id
-        && (!openSections || openSections.has(lane.sectionId)));
-    const exitArms = new Set(lanes.filter(lane => lane.fromNode === node.id).map(lane => lane.sectionId));
-    return incoming.reduce((total, lane) => total
-        + Math.max(0, exitArms.size - (exitArms.has(lane.sectionId) ? 1 : 0)), 0);
-}
 
 // The evidence for one tile, retried: the upstream roads API drops a connection now and then, and
 // a whole-city survey walks 3,036 tiles, so "now and then" is a near certainty over 40 minutes.
@@ -132,7 +127,10 @@ async function surveyTile(args, tile, storedByTile, settledNodes) {
     const movements = openJunctions.reduce((total, junction) => total
         + junction.unresolvedNodeIds.filter(id => !settledNodes.has(id)).reduce((sum, nodeId) => {
             const node = nodesById.get(nodeId);
-            return node ? sum + decisionSurface(node, graph, problemOf.get(nodeId)?.openApproaches) : sum;
+            return node
+                ? sum + JunctionRules.decisionSurface(node, graph.lanes,
+                    problemOf.get(nodeId)?.openApproaches)
+                : sum;
         }, 0), 0);
     const centre = [(tile.core[0] + tile.core[2]) / 2, (tile.core[1] + tile.core[3]) / 2];
     return {

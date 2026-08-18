@@ -164,9 +164,14 @@
 
         // A junction the deterministic rules already settled is not work; it is only still a
         // junction. Reading it off the problems keeps one definition of "unresolved" — the builder's.
+        // `decidable === false` means the builder looked and found no decision to make — too few
+        // drivable arms, no incoming or no outgoing lane. Those nodes are reported as problems but
+        // they are not work, and counting them made junctions that could never be closed.
+        // Undefined means an older graph that predates the flag, which is taken as work as before.
         const unresolvedNodeIds = new Set(
             (Array.isArray(graph?.problems) ? graph.problems : [])
                 .filter(problem => problem?.type === 'unresolved_intersection')
+                .filter(problem => problem.decidable !== false)
                 .flatMap(problem => problem.nodeIds || [])
         );
 

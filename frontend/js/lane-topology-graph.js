@@ -783,6 +783,8 @@
             // at. A populated one means only those approaches are; the rest are settled above and a
             // consumer must not reopen them.
             const reason = outcome.declined || commonest(open.map(entry => entry.reason));
+            const nodeLanes = [...new Set(node.sectionIds || [])]
+                .flatMap(sectionId => lanesBySection.get(sectionId) || []);
             problems.push({
                 id: `problem:unresolved-intersection:${node.id}`,
                 type: 'unresolved_intersection',
@@ -793,6 +795,13 @@
                 // What the rules could not settle, so a caller can route the node to a model, to a
                 // split, or to a person instead of treating every unsolved junction alike.
                 declineReason: reason,
+                // ...and whether routing it anywhere could help. A node whose open approaches have
+                // no movement in question — three ways meet but only one carries lanes, so the only
+                // way out is back — is still reported, because the rules genuinely could not settle
+                // it, but it is not WORK: no answer exists for a model or a person to give. Counting
+                // it as work left junctions that could never be closed, and tiles that could never
+                // reach 100%.
+                decidable: rules.decisionSurface(node, nodeLanes, open) > 0,
                 openApproaches: open,
                 message: open.length && outcome.connections?.length
                     ? `${node.degree} road arms meet here; ${open.length} of ${open.length
