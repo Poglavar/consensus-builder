@@ -546,6 +546,15 @@ describe('lane-topology CLI provider boundary', () => {
             })).toBe('claude-opus-5');
         });
 
+        // A real envelope: the chore model listed first, 1.7% of the bill, and the model that
+        // actually answered listed second.
+        it('credits by the per-model cost the CLI reports when it has one', () => {
+            expect(dominantModel({
+                'claude-haiku-4-5-20251001': { outputTokens: 13, costUSD: 0.000971 },
+                'claude-opus-5': { outputTokens: 166, costUSD: 0.054617 }
+            })).toBe('claude-opus-5');
+        });
+
         it('keeps the single-model answer unchanged', () => {
             expect(dominantModel({ 'claude-opus-5': { outputTokens: 4 } })).toBe('claude-opus-5');
         });

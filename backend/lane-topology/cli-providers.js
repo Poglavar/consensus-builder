@@ -411,7 +411,11 @@ function normalizeUsage(fields) {
 export function dominantModel(modelUsage) {
     const entries = Object.entries(modelUsage || {});
     if (!entries.length) return null;
-    const weight = ([, usage]) => Number(usage?.outputTokens ?? usage?.output_tokens) || 0;
+    // Each entry carries its own costUSD, which is exactly "how much of this run was this model" —
+    // measured on a real run, the chore model was 1.7% of the bill. Output tokens are the fallback
+    // for an envelope that does not price its models.
+    const weight = ([, usage]) => Number(usage?.costUSD)
+        || Number(usage?.outputTokens ?? usage?.output_tokens) || 0;
     // Ties (including every-model-reports-zero) keep the CLI's own order, so this can only ever
     // improve on the old behaviour, never scramble a single-model run.
     return entries.reduce((best, entry) => (weight(entry) > weight(best) ? entry : best))[0] || null;
