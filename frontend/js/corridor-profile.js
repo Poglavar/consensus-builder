@@ -744,9 +744,24 @@ function corridorParkingTypeFromOsm(orientation) {
 // lanes at their class's typical width plus the furniture. Guessing a total from the highway class and
 // then subtracting furniture from it does the opposite, and throws away every street whose guess was
 // too narrow for the furniture it actually has.
+// `railway=*` values that describe a track which is NOT in the street: removed, never built, or
+// still to come. OSM records the history of a corridor on the way that replaced it, so a perfectly
+// ordinary two-lane street carries `railway=razed` where a tram line was lifted decades ago.
+//
+// Read as "this is a railway", that tag replaced the whole carriageway with a rail strip: way
+// 29231352, `highway=residential lanes=2 name="Zagrebačka cesta"`, derived a profile of one rail
+// strip and NO driving lanes. Its sections then had no lanes at all, so the junctions on it had no
+// movements to decide and sat permanently open as junctions nothing could ever close.
+//
+// `disused` is deliberately absent: those rails are still in the ground and still take street width.
+const OSM_ABSENT_RAILWAYS = new Set([
+    'abandoned', 'razed', 'dismantled', 'demolished', 'removed',
+    'proposed', 'planned', 'construction'
+]);
+
 function corridorProfileFromOsmTags(tags, fallbackWidth) {
     const source = tags || {};
-    if (source.railway) {
+    if (source.railway && !OSM_ABSENT_RAILWAYS.has(source.railway)) {
         // OSM's `gauge` is the same millimetre figure a rail lane carries, so it maps straight across —
         // and with no tagged width the gauge is what says how much street each track takes.
         const gauge = corridorRailGauge(source.gauge);

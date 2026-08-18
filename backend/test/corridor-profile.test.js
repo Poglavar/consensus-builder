@@ -1554,3 +1554,46 @@ describe('the bands of a cross-section can be told apart from above', () => {
         expect(new Set(parking.map(surfaceOf)).size).toBe(1);
     });
 });
+
+// OSM records what a corridor USED to be on the way that replaced it, so an ordinary street carries
+// `railway=razed` where a tram line was lifted. Reading that as "this is a railway" replaced the
+// whole carriageway with a rail strip and left the street with no driving lanes at all.
+//
+// Way 29231352 — `highway=residential lanes=2 name="Zagrebačka cesta" railway=razed` — derived one
+// rail strip and nothing else. Its sections had no lanes, so the junctions along it had no movements
+// to decide and sat open forever as junctions that nothing could close. 47 Zagreb streets carry one
+// of these values, and every one of them is a highway.
+describe('a railway tag that describes a track which is not there', () => {
+    const street = {
+        highway: 'residential', lanes: '2', name: 'Zagrebačka cesta', surface: 'asphalt'
+    };
+
+    it('keeps the carriageway of a street whose railway was razed', () => {
+        const profile = corridorProfileFromOsmTags({ ...street, railway: 'razed' });
+        const driving = profile.strips.filter(strip => strip.type === 'driving');
+        expect(driving).toHaveLength(2);
+        expect(profile.strips.some(strip => strip.type === 'rail')).toBe(false);
+    });
+
+    it('does the same for every other value that means the rails are gone or not yet built', () => {
+        ['abandoned', 'dismantled', 'demolished', 'removed', 'proposed', 'planned', 'construction']
+            .forEach(value => {
+                const profile = corridorProfileFromOsmTags({ ...street, railway: value });
+                expect(profile.strips.filter(strip => strip.type === 'driving'),
+                    `railway=${value}`).toHaveLength(2);
+            });
+    });
+
+    // The other half of the guard: real track must still read as track.
+    it('still reads a tram, a rail line and a disused track as rail', () => {
+        expect(corridorProfileFromOsmTags({ railway: 'tram', gauge: '1000' }).strips[0].type)
+            .toBe('rail');
+        expect(corridorProfileFromOsmTags({ railway: 'rail' }).strips[0].type).toBe('rail');
+        // Disused rails are still in the ground and still take street width.
+        expect(corridorProfileFromOsmTags({ railway: 'disused' }).strips[0].type).toBe('rail');
+    });
+
+    it('gives a razed railway with no road nothing at all', () => {
+        expect(corridorProfileFromOsmTags({ railway: 'razed' })).toBe(null);
+    });
+});
