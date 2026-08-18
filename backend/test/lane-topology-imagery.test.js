@@ -104,3 +104,86 @@ describe('lane topology orthophoto evidence', () => {
         });
     });
 });
+
+// Two of the first six junctions of one batch were lost to a reset socket at geoportal.zagreb.hr,
+// after the run had already paid to enumerate them and hand them to a model. undici reports the
+// same fault under two names depending on when the reset lands — `fetch failed` during the
+// connection, `terminated` midway through the image — so the retry has to cover the body too.
+describe('an orthophoto fetch against a server having a bad moment', () => {
+    const SOURCE = LANE_IMAGERY_SOURCES.zagreb_cdof_2022;
+    const jpeg = () => new Response(Buffer.from([0xff, 0xd8, 0xff]), {
+        status: 200, headers: { 'content-type': 'image/jpeg' }
+    });
+    const reset = () => Object.assign(new TypeError('fetch failed'),
+        { cause: Object.assign(new Error('read ECONNRESET'), { code: 'ECONNRESET' }) });
+
+    it('asks again when the connection is reset', async () => {
+        let calls = 0;
+        const crop = await fetchImageryCrop(SOURCE, SAVSKA_BBOX, {
+            fetchImpl: async () => { calls += 1; if (calls < 3) throw reset(); return jpeg(); }
+        });
+        expect(calls).toBe(3);
+        expect(crop.buffer).toEqual(Buffer.from([0xff, 0xd8, 0xff]));
+    });
+
+    // The `terminated` case: headers arrived, the body did not.
+    it('asks again when the image body dies halfway through', async () => {
+        let calls = 0;
+        const crop = await fetchImageryCrop(SOURCE, SAVSKA_BBOX, {
+            fetchImpl: async () => {
+                calls += 1;
+                if (calls === 1) {
+                    return { ok: true, status: 200,
+                        headers: new Headers({ 'content-type': 'image/jpeg' }),
+                        arrayBuffer: async () => { throw new TypeError('terminated'); } };
+                }
+                return jpeg();
+            }
+        });
+        expect(calls).toBe(2);
+        expect(crop.buffer).toHaveLength(3);
+    });
+
+    it('retries a 5xx, because that is the server and not us', async () => {
+        let calls = 0;
+        await fetchImageryCrop(SOURCE, SAVSKA_BBOX, {
+            fetchImpl: async () => {
+                calls += 1;
+                return calls === 1 ? new Response('busy', { status: 503 }) : jpeg();
+            }
+        });
+        expect(calls).toBe(2);
+    });
+
+    // The other half: an answer that will not change is not worth asking for three times. A crop
+    // outside the flown area 404s, and hammering it just makes the run slower.
+    it('does not repeat a request the server has already refused', async () => {
+        let calls = 0;
+        await expect(fetchImageryCrop(SOURCE, SAVSKA_BBOX, {
+            fetchImpl: async () => { calls += 1; return new Response('nope', { status: 404 }); }
+        })).rejects.toThrow('HTTP 404');
+        expect(calls).toBe(1);
+    });
+
+    it('does not repeat a request that came back as an XML fault', async () => {
+        let calls = 0;
+        await expect(fetchImageryCrop(SOURCE, SAVSKA_BBOX, {
+            fetchImpl: async () => {
+                calls += 1;
+                return new Response('<ServiceException>bad layer</ServiceException>', {
+                    status: 200, headers: { 'content-type': 'text/xml' }
+                });
+            }
+        })).rejects.toThrow('bad layer');
+        expect(calls).toBe(1);
+    });
+
+    it('gives up after the last attempt and reports the real fault', async () => {
+        let calls = 0;
+        await expect(fetchImageryCrop(SOURCE, SAVSKA_BBOX, {
+            attempts: 2,
+            fetchImpl: async () => { calls += 1; throw reset(); }
+        })).rejects.toThrow('fetch failed');
+        expect(calls).toBe(2);
+    });
+});

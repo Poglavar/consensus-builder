@@ -132,7 +132,38 @@ export function imageryCropSpec(source, bbox, options = {}) {
     };
 }
 
+// An error the city's WMS will give again however many times we ask: out of coverage, an XML
+// fault, an image over the safety limit. Anything else — a reset socket, a 5xx, a timeout — is
+// weather, and asking again is the whole fix.
+function permanent(error) {
+    return Object.assign(error, { permanentImageryError: true });
+}
+
+// One reset connection from geoportal.zagreb.hr used to lose a whole junction, AFTER the run had
+// paid to enumerate it and hand it to a model: two of the first six junctions of one batch died
+// this way, `TypeError: fetch failed` and `TypeError: terminated`, both `read ECONNRESET` under the
+// covers — undici names them differently only by whether the reset arrived during the connection or
+// midway through the image. The same fault took out a 40-minute coverage rebuild once already,
+// which is why tileEvidence retries; this call site never got the same treatment.
+//
+// The retry has to cover the BODY, not just the request: `terminated` is thrown by arrayBuffer()
+// long after the response headers arrived.
 export async function fetchImageryCrop(source, bbox, options = {}) {
+    const attempts = Math.max(1, Number(options.attempts) || 3);
+    let lastError;
+    for (let attempt = 1; attempt <= attempts; attempt += 1) {
+        try {
+            return await fetchImageryCropOnce(source, bbox, options);
+        } catch (error) {
+            lastError = error;
+            if (error?.permanentImageryError || attempt === attempts) throw error;
+            await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        }
+    }
+    throw lastError;
+}
+
+async function fetchImageryCropOnce(source, bbox, options = {}) {
     const spec = imageryCropSpec(source, bbox, options);
     const fetchImpl = options.fetchImpl || globalThis.fetch;
     if (typeof fetchImpl !== 'function') throw new Error('No fetch implementation is available for imagery.');
@@ -159,17 +190,21 @@ export async function fetchImageryCrop(source, bbox, options = {}) {
     }
 
     if (!response.ok) {
-        throw new Error(`Orthophoto WMS returned HTTP ${response.status}.`);
+        const error = new Error(`Orthophoto WMS returned HTTP ${response.status}.`);
+        // A 5xx is the server having a bad moment; a 4xx is our request, and repeating it is rude
+        // and pointless.
+        throw response.status >= 500 ? error : permanent(error);
     }
     const reportedContentType = String(response.headers.get('content-type') || '').split(';')[0].trim();
     if (!reportedContentType.startsWith('image/')) {
         const text = await response.text();
-        throw new Error(`Orthophoto WMS returned ${reportedContentType || 'non-image data'}: ${text.slice(0, 300)}`);
+        throw permanent(new Error(`Orthophoto WMS returned ${reportedContentType || 'non-image data'}: `
+            + text.slice(0, 300)));
     }
     const buffer = Buffer.from(await response.arrayBuffer());
     if (!buffer.length) throw new Error('Orthophoto WMS returned an empty image.');
     if (buffer.length > MAX_IMAGE_BYTES) {
-        throw new Error(`Orthophoto image exceeds the ${MAX_IMAGE_BYTES} byte safety limit.`);
+        throw permanent(new Error(`Orthophoto image exceeds the ${MAX_IMAGE_BYTES} byte safety limit.`));
     }
     return {
         buffer,
