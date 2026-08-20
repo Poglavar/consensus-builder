@@ -6,7 +6,15 @@
 set -e  # Exit on any error
 
 # Configuration
-SSHKRPA='ssh root@207.154.200.141 -i ~/.ssh/id_ed25519'
+#
+# 2026-08-20: retargeted from krpa (207.154.200.141) to do. krpa was decommissioned, and
+# DigitalOcean releases a destroyed droplet's IP for reassignment — so that address now
+# belongs to somebody else. This script opened an SSH session to it and then ran `cp -r`,
+# `rm -rf` and `unzip` against $REMOTE_PATH, so leaving the old IP in place pointed a
+# destructive rollback at a stranger's machine. urbangametheory.xyz is served from do now
+# (/etc/nginx/sites-available/urbangametheory.xyz), which is where its backups live.
+SSH_HOST="${SSH_HOST:-root@67.205.138.129}"
+SSHKRPA="ssh $SSH_HOST -i ~/.ssh/id_ed25519"
 REMOTE_PATH='/var/www/urbangametheory.xyz'
 BACKUP_BASE='/var/www'
 
@@ -206,4 +214,4 @@ echo -e "\n${YELLOW}📊 Rollback Summary:${NC}"
 echo -e "  • Rolled back to: $SELECTED_NAME"
 echo -e "  • Pre-rollback backup: ${REMOTE_PATH}_$CURRENT_BACKUP_NAME"
 echo -e "  • Remote path: $REMOTE_PATH"
-echo -e "  • Server: 207.154.200.141"
+echo -e "  • Server: $SSH_HOST"
