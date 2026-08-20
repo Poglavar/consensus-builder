@@ -78,7 +78,7 @@ Parcel and proposal mint scripts accept `--storage=walrus`:
 # Parcels — note the env: NYC data is in the `zagreb` DB, and base-sepolia needs ETHEREUM_RPC_URL.
 cd blockchain
 ETHEREUM_RPC_URL=https://sepolia.base.org \
-PGDATABASE=zagreb PGUSER=consensus PGPASSWORD=consensus PGHOST=localhost PGPORT=5432 \
+PGDATABASE=geodata PGUSER=consensus PGPASSWORD=consensus PGHOST=localhost PGPORT=5432 \
 node scripts/mint-parcels-nyc.js --network=base-sepolia --storage=walrus --limit=20 [--dry-run]
 
 # Proposals
@@ -90,7 +90,7 @@ from `parcel_nyc_geom ⋈ parcel_nyc_unit`. Cost is logged as a running WAL tota
 
 ### Gotchas (learned the hard way)
 - **DB**: the ~42k NYC parcels live only in the local `zagreb` database, not `consensus` — set
-  `PGDATABASE=zagreb` (or load the tables into the target DB).
+  `PGDATABASE=geodata` (or load the tables into the target DB).
 - **RPC**: the harness prefers `ETHEREUM_RPC_URL` over `RPC_URL` for `base-sepolia` — point it at a
   Base Sepolia endpoint (`https://sepolia.base.org`).
 - **Public RPCs strip revert data**, so `ownerOfParcelId` on an unminted parcel surfaces as a
@@ -117,7 +117,7 @@ Current deployments (Base Sepolia):
 ### Minting a proposal on Walrus
 `mint-proposals.js` needs lens addresses and the `zagreb` DB (NYC geometries):
 ```bash
-ETHEREUM_RPC_URL=https://sepolia.base.org PGDATABASE=zagreb PGUSER=consensus PGPASSWORD=consensus \
+ETHEREUM_RPC_URL=https://sepolia.base.org PGDATABASE=geodata PGUSER=consensus PGPASSWORD=consensus \
 PGHOST=localhost PGPORT=5432 LENS_ADDRESSES=0x<some-eoa> \
 node scripts/mint-proposals.js --network=base-sepolia --storage=walrus --parcel-id=US-NY-<swis_sbl_id>
 ```
