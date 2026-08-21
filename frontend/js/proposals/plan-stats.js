@@ -494,6 +494,90 @@
         }
     }
 
+    // ?planStats=1 opens this dialog on load, so a document can CITE the figures with a
+    // URL instead of telling the reader to find a button. Anything but 0/false counts as on.
+    const PLAN_STATS_URL_KEYS = ['planStats', 'plan-stats'];
+    const PLAN_STATS_WAIT_MS = 30000;      // how long to wait for the first applied proposal
+    const PLAN_STATS_QUIET_MS = 20000;     // stop following once the plan has not moved for this long
+    const PLAN_STATS_FOLLOW_MS = 300000;   // hard ceiling on following, whatever happens
+    const PLAN_STATS_POLL_MS = 250;
+
+    function planStatsRequestedByUrl() {
+        let params;
+        try {
+            params = new URLSearchParams(window.location.search);
+        } catch (_) {
+            return false;
+        }
+        return PLAN_STATS_URL_KEYS.some(key => {
+            const value = params.get(key);
+            return value !== null && value !== '0' && value !== 'false';
+        });
+    }
+
+    function planSnapshot() {
+        if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') {
+            return { total: 0, applied: 0 };
+        }
+        const all = proposalStorage.getAllProposals() || [];
+        return { total: all.length, applied: all.filter(p => p && p.applied === true).length };
+    }
+
+    function planStatsModalIsOpen() {
+        const modal = document.getElementById('plan-stats-modal');
+        return !!modal && modal.style.display === 'flex';
+    }
+
+    // A plan does not arrive at once. The dialog counts only APPLIED proposals and computes
+    // once, and on the real Šibenik plan the applied flags resolve over more than a minute
+    // (measured: 138 → 149 across 35 s, long after all 299 proposals were in). Opening on the
+    // first sighting therefore quotes a fraction of the plan, and opening on "nothing yet"
+    // quotes a plan of zeros indistinguishable from a genuinely empty one.
+    //
+    // Waiting for the stream to "settle" cannot be made sound either — a quiet gap between two
+    // polls looks exactly like the end of it. So: never open on nothing, then keep watching and
+    // RE-RENDER whenever the plan moves under us, until it goes quiet or the reader closes the
+    // dialog. The figures converge on the truth instead of freezing part-way. Re-rendering
+    // preserves whatever assumptions the reader typed, because openPlanStats reads them back
+    // out of the modal first.
+    function openPlanStatsWhenPlanIsLoaded() {
+        const waitUntil = Date.now() + PLAN_STATS_WAIT_MS;
+        const followUntil = Date.now() + PLAN_STATS_FOLLOW_MS;
+        let shown = null;        // what the dialog currently displays
+        let previous = null;     // what the previous poll saw
+        let lastChangeAt = Date.now();
+
+        (function attempt() {
+            const now = planSnapshot();
+
+            // "Quiet" means the PLAN stopped moving, which is not the same as "nothing new to
+            // draw". The store briefly empties and refills while proposals are applied, and
+            // measuring quiet against the rendered snapshot let that lull count as the end of
+            // loading: the follower gave up at 0 applied and never saw the 159 that followed.
+            if (!previous || now.total !== previous.total || now.applied !== previous.applied) {
+                lastChangeAt = Date.now();
+            }
+            previous = now;
+
+            const changed = !shown || now.total !== shown.total || now.applied !== shown.applied;
+            if (now.applied > 0 && changed) {
+                // Opened once already and the reader closed it — their call, stop following.
+                if (shown && !planStatsModalIsOpen()) return;
+                shown = now;
+                openPlanStats();
+            } else if (!shown && Date.now() >= waitUntil) {
+                console.warn(`[plan-stats] ?planStats: nothing applied after ${PLAN_STATS_WAIT_MS} ms `
+                    + `(${now.applied} of ${now.total}) — opening with what is loaded`);
+                openPlanStats();
+                return;
+            }
+
+            const quiet = shown && (Date.now() - lastChangeAt) >= PLAN_STATS_QUIET_MS;
+            if (quiet || Date.now() >= followUntil) return;
+            setTimeout(attempt, PLAN_STATS_POLL_MS);
+        })();
+    }
+
     function initializePlanStatsUi() {
         const button = document.getElementById('planStatsButton');
         if (button && !button.dataset.planStatsBound) {
@@ -503,6 +587,7 @@
                 openPlanStats();
             });
         }
+        if (planStatsRequestedByUrl()) openPlanStatsWhenPlanIsLoaded();
     }
 
     document.addEventListener('DOMContentLoaded', () => {

@@ -63,7 +63,7 @@ function makeNode(tag) {
     return node;
 }
 
-function makeWindow(proposals) {
+function makeWindow(proposals, { search = '', getProposals = null } = {}) {
     const root = makeNode('root');
     const document = {
         body: root,
@@ -74,29 +74,53 @@ function makeWindow(proposals) {
         querySelector(selector) { return root.querySelector(selector); },
         querySelectorAll(selector) { return root.querySelectorAll(selector); }
     };
+    // Timers are collected rather than run, and the clock is the test's to move, so the
+    // deep-link's follow loop is stepped deliberately — no sleeping, no flake, and its
+    // give-up rules are reachable at all (with a real clock they never fire in a test that
+    // finishes in milliseconds, which makes any assertion about them decoration).
+    const timers = [];
+    let clock = 1_000_000;
+    const RealDate = Date;
+    function FakeDate(...args) { return new RealDate(...args); }
+    FakeDate.now = () => clock;
+    FakeDate.prototype = RealDate.prototype;
     const window = {
         document,
         console,
         __planYield: planYield,
         requestAnimationFrame: fn => fn(),
-        proposalStorage: { getAllProposals: () => proposals }
+        location: { search },
+        setTimeout: fn => { timers.push(fn); return timers.length; },
+        proposalStorage: { getAllProposals: getProposals || (() => proposals) }
     };
     window.window = window;
+    window.__timers = timers;
+    window.__tick = () => { const due = timers.splice(0); due.forEach(fn => fn()); };
+    window.__advance = ms => { clock += ms; };
+    window.__Date = FakeDate;
     return window;
 }
 
-function openDialog(proposals) {
-    const window = makeWindow(proposals);
+function openDialog(proposals, options = {}) {
+    const window = makeWindow(proposals, options);
     vm.runInNewContext(source, {
         window,
         globalThis: window,
         document: window.document,
         proposalStorage: window.proposalStorage,
         requestAnimationFrame: window.requestAnimationFrame,
+        setTimeout: window.setTimeout,
+        URLSearchParams,
+        Date: window.__Date,
         console
     });
     return window;
 }
+
+// The dialog binds itself on DOMContentLoaded; the tests above call showPlanStatsModal directly,
+// so only the deep-link tests need the event actually fired.
+const fireReady = window => (window.document.listeners.DOMContentLoaded || []).forEach(fn => fn());
+const isOpen = window => window.document.getElementById('plan-stats-modal')?.style.display === 'flex';
 
 const rect = (lon0, lat0, lon1, lat1) => [[[lon0, lat0], [lon1, lat0], [lon1, lat1], [lon0, lat1], [lon0, lat0]]];
 const SIBENIK = rect(15.8850, 43.7350, 15.8870, 43.7365);
@@ -246,5 +270,158 @@ describe('when the arithmetic module did not load', () => {
 
         expect(slot(window, 'scope')).toMatch(/unavailable/i);
         expect(slot(window, 'apartments')).toBe('—');
+    });
+});
+
+// A report that quotes these figures needs to link to them, not to a button the reader has to
+// find. The link is only worth anything if it opens the dialog with the plan actually in it —
+// so the wait is what these tests are really about.
+describe('?planStats deep link', () => {
+    it('opens the dialog on load, with no click', async () => {
+        const window = openDialog(plan, { search: '?planStats=1' });
+        fireReady(window);
+        await Promise.resolve();
+        await Promise.resolve();
+
+        expect(isOpen(window)).toBe(true);
+        expect(digits(slot(window, 'apartments'))).toBeGreaterThan(0);
+    });
+
+    it('stays shut without the parameter, and when it is switched off', async () => {
+        for (const search of ['', '?city=sibenik', '?planStats=0', '?planStats=false']) {
+            const window = openDialog(plan, { search });
+            fireReady(window);
+            await Promise.resolve();
+            expect(isOpen(window), search || '(no query)').toBe(false);
+        }
+    });
+
+    // The one that matters, and it is not hypothetical: on the real Sibenik plan the first
+    // proposals appear with NONE of them applied yet, so a dialog opened then reports a plan
+    // of zeros that is indistinguishable from a genuinely empty one — and quotable.
+    it('never opens on a plan with nothing applied yet', async () => {
+        let visible = [];
+        const window = openDialog(plan, { search: '?planStats=1', getProposals: () => visible });
+        fireReady(window);
+        await Promise.resolve();
+        expect(isOpen(window)).toBe(false);
+
+        visible = plan.map(p => ({ ...p, applied: false }));   // present, none applied — the real state
+        window.__tick();
+        await Promise.resolve();
+        window.__tick();
+        await Promise.resolve();
+        expect(isOpen(window), 'opened while nothing was applied').toBe(false);
+
+        visible = plan;
+        window.__tick();
+        await Promise.resolve();
+        await Promise.resolve();
+        expect(isOpen(window)).toBe(true);
+        expect(digits(slot(window, 'people'))).toBe(
+            planYield.planYield(plan.filter(p => p.applied), { appliedOnly: true }).total.people
+        );
+    });
+
+    // A quiet gap mid-stream is indistinguishable from the end of it, so an early open cannot
+    // be ruled out — it is made harmless instead: the figures re-render as the rest lands.
+    it('corrects itself when the rest of the plan lands after it opened', async () => {
+        let visible = plan.slice(0, 1);
+        const window = openDialog(plan, { search: '?planStats=1', getProposals: () => visible });
+        fireReady(window);
+        await Promise.resolve();
+        await Promise.resolve();
+
+        expect(isOpen(window)).toBe(true);
+        const partial = digits(slot(window, 'people'));
+        expect(partial).toBeGreaterThan(0);
+
+        visible = plan;                          // the rest of the stream arrives
+        window.__tick();
+        await Promise.resolve();
+        await Promise.resolve();
+
+        const full = planYield.planYield(plan.filter(p => p.applied), { appliedOnly: true }).total.people;
+        expect(digits(slot(window, 'people'))).toBe(full);
+        expect(full).toBeGreaterThan(partial);
+    });
+});
+
+// Following the plan must not fight the reader: once they close the dialog it has to stay
+// closed, however much the plan keeps moving behind it.
+describe('?planStats deep link, after the reader closes it', () => {
+    it('stops re-opening once dismissed', async () => {
+        let visible = plan.slice(0, 1);
+        const window = openDialog(plan, { search: '?planStats=1', getProposals: () => visible });
+        fireReady(window);
+        await Promise.resolve();
+        await Promise.resolve();
+        expect(isOpen(window)).toBe(true);
+
+        window.document.getElementById('plan-stats-modal').style.display = 'none';   // reader closes it
+        visible = plan;                                                              // plan keeps loading
+        window.__tick();
+        await Promise.resolve();
+        await Promise.resolve();
+
+        expect(isOpen(window), 'reopened a dialog the reader had closed').toBe(false);
+    });
+});
+
+// The store empties and refills while proposals are applied. Measuring "the plan went quiet"
+// against the RENDERED snapshot let that lull read as the end of loading, and the follower gave
+// up at 0 applied — never seeing the rest of the plan arrive. Reproduced against the real plan:
+// the dialog froze at 2.861 apartments while the store climbed past 159 applied proposals.
+describe('?planStats deep link, across a lull', () => {
+    it('keeps following after the store briefly empties', async () => {
+        let visible = plan.slice(0, 1);
+        const window = openDialog(plan, { search: '?planStats=1', getProposals: () => visible });
+        fireReady(window);
+        await Promise.resolve();
+        await Promise.resolve();
+        const partial = digits(slot(window, 'people'));
+        expect(partial).toBeGreaterThan(0);
+
+        // The store empties. That IS the plan moving, so it must restart the quiet countdown.
+        window.__advance(15000);
+        visible = [];
+        window.__tick();
+        await Promise.resolve();
+        expect(digits(slot(window, 'people')), 'wiped the figures on an empty store').toBe(partial);
+
+        // Ten more seconds of nothing: 25 s since the last RENDER, but only 10 s since the last
+        // CHANGE. Counting from the render is what killed the follower here.
+        window.__advance(10000);
+        window.__tick();
+        await Promise.resolve();
+
+        visible = plan;
+        window.__advance(2000);
+        window.__tick();
+        await Promise.resolve();
+        await Promise.resolve();
+
+        expect(digits(slot(window, 'people'))).toBe(
+            planYield.planYield(plan.filter(p => p.applied), { appliedOnly: true }).total.people
+        );
+    });
+
+    it('does stop once the plan really has gone quiet', async () => {
+        let visible = plan.slice(0, 1);
+        const window = openDialog(plan, { search: '?planStats=1', getProposals: () => visible });
+        fireReady(window);
+        await Promise.resolve();
+        await Promise.resolve();
+        const partial = digits(slot(window, 'people'));
+
+        window.__advance(25000);                 // nothing changes for longer than the quiet window
+        window.__tick();
+        await Promise.resolve();
+        expect(window.__timers.length, 'kept polling forever').toBe(0);
+
+        visible = plan;                          // too late — it has stopped watching
+        window.__tick();
+        await Promise.resolve();
+        expect(digits(slot(window, 'people'))).toBe(partial);
     });
 });
