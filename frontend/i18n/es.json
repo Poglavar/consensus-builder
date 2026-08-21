@@ -547,6 +547,68 @@
                 "noteParcelArea": "El tamaño medio de parcela se calcula sobre las {{measured}} parcelas cuya forma está cargada; {{missing}} se cuentan pero no se miden.",
                 "unavailable": "El cálculo del plan no está disponible — plan-yield.js no se cargó."
             },
+            "grainScore": {
+                "buttonLabel": "Invocar al gallo urbanista",
+                "buttonHint": "Que pruebe cada parcela resultante",
+                "buttonEmpty": "Aplica primero al menos una propuesta",
+                "institute": "Institut za zrnatost",
+                "title": "Puntuación de grano urbano",
+                "currentPlan": "Plan aplicado actualmente",
+                "unnamedRoute": "Plan sin nombre · la puntuación queda en este navegador",
+                "closeAria": "Cerrar puntuación de grano",
+                "loading": "Preparando el plan para la revisión…",
+                "loadingNamed": "Cargando el plan con nombre…",
+                "applyingPlan": "Reconstruyendo el plan en el mapa…",
+                "ready": {
+                    "one": "El gallo encontró {{count}} parcela resultante medible. La probará ahora.",
+                    "other": "El gallo encontró {{count}} parcelas resultantes medibles. Las probará una a una."
+                },
+                "start": "Iniciar la revisión",
+                "unavailable": "La puntuación de grano no está disponible para este plan.",
+                "noApplied": "Aplica al menos una propuesta antes de invocar al gallo.",
+                "noGeometry": "No se pudieron medir las formas de las parcelas resultantes.",
+                "planNotFound": "No se encontró este plan con nombre.",
+                "planLoadFailed": "No se pudo cargar el plan con nombre.",
+                "emptyPlan": "Este plan con nombre no contiene propuestas.",
+                "incompletePlan": "El plan no se puede puntuar porque no se pudieron aplicar todas sus propuestas.",
+                "verdictFine": "Grano fino",
+                "verdictGood": "Buena dirección",
+                "verdictMixed": "Grano mixto",
+                "verdictCoarse": "Grano grueso",
+                "verdictUnavailable": "No medible",
+                "summary": {
+                    "one": "El gallo se comió {{eaten}} de {{measured}} parcelas medidas.",
+                    "other": "El gallo se comió {{eaten}} de {{measured}} parcelas medidas."
+                },
+                "countTitle": "Número de parcelas",
+                "countIncrease": "El número de parcelas aumentó: {{before}} → {{after}} (+{{delta}}).",
+                "countDecrease": "El número de parcelas disminuyó: {{before}} → {{after}} ({{delta}}).",
+                "countUnchanged": "El número de parcelas no cambió: {{before}} → {{after}}.",
+                "fineTitle": "Parcelas comestibles",
+                "fineCopy": {
+                    "one": "{{eaten}} de {{measured}} parcelas medidas mide menos de 10 × 10 m.",
+                    "other": "{{eaten}} de {{measured}} parcelas medidas miden menos de 10 × 10 m."
+                },
+                "methodologyTitle": "Metodología del prototipo",
+                "methodologyBody": "Un aumento del número de parcelas obtiene 100 puntos, ningún cambio 50 y una disminución 0. El grano fino es la proporción de parcelas resultantes medidas cuyo rectángulo envolvente mínimo girado mide menos de 10 m en ambas direcciones. El total es la media de esas dos dimensiones.",
+                "repeat": "Revisar de nuevo",
+                "totalAria": "Puntuación total: {{score}} de 100",
+                "missingGeometry": {
+                    "one": "No estaba disponible la forma de {{missing}} parcela resultante y no se incluyó en el porcentaje de grano fino.",
+                    "other": "No estaban disponibles las formas de {{missing}} parcelas resultantes y no se incluyeron en el porcentaje de grano fino."
+                },
+                "soundOn": "Sonido activado",
+                "soundOff": "Sonido desactivado",
+                "speechStart": "Veamos.",
+                "speechEaten": "Deliciosa.",
+                "speechRejected": "Bocado demasiado grande.",
+                "speechDone": "El dictamen está listo.",
+                "progress": "Revisando parcela {{current}} de {{total}} · {{width}} × {{depth}} m",
+                "complete": {
+                    "one": "Revisión terminada · {{eaten}} de {{total}} parcelas comidas",
+                    "other": "Revisión terminada · {{eaten}} de {{total}} parcelas comidas"
+                }
+            },
             "newGame": "Nueva partida",
             "showAgents": "Mostrar agentes",
             "showAgentsCount": "Mostrar agentes ({{count}})",

@@ -1233,6 +1233,22 @@ function formatSharedProposalTypeLabel(proposal) {
 async function handleProposalRouteFromUrl(attempt = 0) {
     try {
         const pathname = window.location.pathname || '';
+        const planScoreRoute = window.GrainScoreRules
+            && typeof window.GrainScoreRules.parsePlanScorePath === 'function'
+            ? window.GrainScoreRules.parsePlanScorePath(pathname)
+            : null;
+
+        // A score URL is a plan deep-link first: resolve and apply the named plan through the same
+        // loader as /proposals/<slug>, then let the grain inspector take over the map. It lives on
+        // the public frontend origin; GET /plans/:slug on the API remains only the name resolver.
+        if (planScoreRoute) {
+            if (typeof window.openPlanGrainScoreRoute === 'function') {
+                await window.openPlanGrainScoreRoute(planScoreRoute.slug);
+            } else if (attempt < 10) {
+                setTimeout(() => handleProposalRouteFromUrl(attempt + 1), 100);
+            }
+            return;
+        }
         const isProposalPath = pathname.startsWith('/proposals/');
 
         // Ignore non-proposal routes entirely
@@ -1290,6 +1306,7 @@ async function handleProposalRouteFromUrl(attempt = 0) {
                     const plan = await resp.json();
                     const ids = Array.isArray(plan.proposalIds) ? plan.proposalIds.map(String).filter(Boolean) : [];
                     if (ids.length > 0) {
+                        window.__currentNamedPlan = { ...plan, slug };
                         console.log('[handleProposalRouteFromUrl] Named plan resolved:', slug, `${ids.length} proposals`);
                         await handleSharedPlanRoute(ids);
                         return;

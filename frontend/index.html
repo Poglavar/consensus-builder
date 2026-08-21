@@ -106,6 +106,7 @@
                 'css/panels.css',
                 'css/modals.css',
                 'css/proposals.css',
+                'css/grain-score.css',
                 'css/proposal-editor.css',
                 'css/structure-geometry-editor.css',
                 'css/station-geometry-editor.css',
@@ -365,6 +366,20 @@
                                     <i class="fas fa-spinner fa-spin"></i>
                                     <span class="plan-stats-spinner-text"
                                         data-i18n-key="sidebar.proposals.planStats.calculating">Calculating...</span>
+                                </span>
+                            </button>
+                            <button id="roosterScoreButton" class="btn grain-score-button" type="button" disabled
+                                title="Summon the urbanist rooster"
+                                data-i18n-key="sidebar.proposals.grainScore.buttonLabel"
+                                data-i18n-attr="title,aria-label" aria-label="Summon the urbanist rooster">
+                                <img class="grain-score-button__portrait" src="/images/grain-rooster-critic.png"
+                                    width="44" height="44" alt="">
+                                <span class="grain-score-button__copy">
+                                    <strong data-i18n-key="sidebar.proposals.grainScore.buttonLabel">Summon the urbanist rooster</strong>
+                                    <small class="grain-score-button__hint"
+                                        data-i18n-key="sidebar.proposals.grainScore.buttonHint">Let him inspect every resulting parcel</small>
+                                    <small class="grain-score-button__empty"
+                                        data-i18n-key="sidebar.proposals.grainScore.buttonEmpty">Apply a proposal first</small>
                                 </span>
                             </button>
                             <button id="mintedProposalsButton" class="btn btn-info minted-proposals-button"
@@ -1522,6 +1537,7 @@
             'js/proposals/dialog-share.js',
             'js/proposals/sharing-routes.js',
             'js/proposals/chain-ref.js',
+            'js/proposals/grain-score-rules.js',
             'js/proposals/chain-proposal-loader.js',
             'js/proposals/core.js',
             'js/proposals/data.js',
@@ -1530,6 +1546,7 @@
             'js/proposals/plan-yield.js',
             'js/proposals/maintenance.js',
             'js/proposals/demolition-prefetch.js',
+            'js/proposals/grain-score.js',
             'js/proposals/plan-stats.js',
             'js/parcel-coverage-debug.js',
             'js/ui-helpers.js',

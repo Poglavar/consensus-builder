@@ -1157,7 +1157,8 @@ async function focusMapThenMaybeEnter3D(focusFn) {
     // handled, and the route's focused entry was skipped: the camera framed EVERY applied
     // proposal instead of the link's. Same rule handleStandalone3DModeFromUrl already applies.
     const hasProposalParams = params && (params.has('proposalShare') || params.has('shared')
-        || window.location.pathname.startsWith('/proposals/'));
+        || window.location.pathname.startsWith('/proposals/')
+        || window.location.pathname.startsWith('/plans/'));
     if (hasProposalParams) {
         doFocus();
         return false;

@@ -375,6 +375,68 @@
                 "noteParcelArea": "The average parcel size is over the {{measured}} parcels whose shape is loaded; {{missing}} are counted but not measured.",
                 "unavailable": "Plan arithmetic is unavailable — plan-yield.js did not load."
             },
+            "grainScore": {
+                "buttonLabel": "Summon the urbanist rooster",
+                "buttonHint": "Let him inspect every resulting parcel",
+                "buttonEmpty": "Apply a proposal first",
+                "institute": "Institut za zrnatost",
+                "title": "Urban grain score",
+                "currentPlan": "Current applied plan",
+                "unnamedRoute": "Unnamed plan · score stays in this browser",
+                "closeAria": "Close grain score",
+                "loading": "Preparing the plan for inspection…",
+                "loadingNamed": "Loading named plan…",
+                "applyingPlan": "Rebuilding the plan on the map…",
+                "ready": {
+                    "one": "The rooster found {{count}} measurable resulting parcel. He will try it now.",
+                    "other": "The rooster found {{count}} measurable resulting parcels. He will try them one by one."
+                },
+                "start": "Start the inspection",
+                "unavailable": "The grain score is unavailable for this plan.",
+                "noApplied": "Apply at least one proposal before summoning the rooster.",
+                "noGeometry": "The resulting parcel shapes could not be measured.",
+                "planNotFound": "This named plan could not be found.",
+                "planLoadFailed": "The named plan could not be loaded.",
+                "emptyPlan": "This named plan contains no proposals.",
+                "incompletePlan": "The plan cannot be scored because not all of its proposals could be applied.",
+                "verdictFine": "Fine grain",
+                "verdictGood": "A good direction",
+                "verdictMixed": "Mixed grain",
+                "verdictCoarse": "Coarse grain",
+                "verdictUnavailable": "Not measurable",
+                "summary": {
+                    "one": "The rooster ate {{eaten}} of {{measured}} measured parcels.",
+                    "other": "The rooster ate {{eaten}} of {{measured}} measured parcels."
+                },
+                "countTitle": "Number of parcels",
+                "countIncrease": "Parcel count increased: {{before}} → {{after}} (+{{delta}}).",
+                "countDecrease": "Parcel count decreased: {{before}} → {{after}} ({{delta}}).",
+                "countUnchanged": "Parcel count stayed the same: {{before}} → {{after}}.",
+                "fineTitle": "Edible parcels",
+                "fineCopy": {
+                    "one": "{{eaten}} of {{measured}} measured parcels is smaller than 10 × 10 m.",
+                    "other": "{{eaten}} of {{measured}} measured parcels are smaller than 10 × 10 m."
+                },
+                "methodologyTitle": "Prototype methodology",
+                "methodologyBody": "An increase in parcel count scores 100 points, no change 50, and a decrease 0. Fine grain is the share of measured resulting parcels whose minimum rotated bounding rectangle is under 10 m in both directions. The total is the average of those two dimensions.",
+                "repeat": "Inspect again",
+                "totalAria": "Overall score: {{score}} out of 100",
+                "missingGeometry": {
+                    "one": "{{missing}} resulting parcel shape was unavailable and was not included in the fine-grain percentage.",
+                    "other": "{{missing}} resulting parcel shapes were unavailable and were not included in the fine-grain percentage."
+                },
+                "soundOn": "Sound on",
+                "soundOff": "Sound off",
+                "speechStart": "Let us see.",
+                "speechEaten": "Delicious.",
+                "speechRejected": "Too large a bite.",
+                "speechDone": "The finding is ready.",
+                "progress": "Checking parcel {{current}} of {{total}} · {{width}} × {{depth}} m",
+                "complete": {
+                    "one": "Inspection complete · {{eaten}} of {{total}} parcels eaten",
+                    "other": "Inspection complete · {{eaten}} of {{total}} parcels eaten"
+                }
+            },
             "newGame": "New Game",
             "showGameLog": "Show Game Log",
             "showGameLogCount": "Show Game Log ({{count}})",

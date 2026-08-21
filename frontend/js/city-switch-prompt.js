@@ -33,7 +33,7 @@
             url.searchParams.delete('city');
             url.searchParams.delete('proposalShare');
             url.searchParams.delete('shared');
-            const path = url.pathname.startsWith('/proposals/') ? '/' : url.pathname;
+            const path = (url.pathname.startsWith('/proposals/') || url.pathname.startsWith('/plans/')) ? '/' : url.pathname;
             global.history.replaceState(null, '', `${path}${url.search}${url.hash}`);
         } catch (_) { /* a stale URL is better than a thrown error */ }
     }

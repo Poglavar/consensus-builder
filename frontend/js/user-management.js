@@ -16,10 +16,11 @@ const ATTESTIFY_BASE_URLS = Object.freeze({
 function isProposalDeepLinkPath() {
     try {
         const path = (typeof window !== 'undefined' && window.location && window.location.pathname) ? window.location.pathname : '';
-        // Numeric id, comma-separated ids, or a named-plan slug — the same
-        // three forms handleProposalRouteFromUrl (js/proposals/core.js) routes.
+        // Numeric id, comma-separated ids, a named-plan slug, or the named plan's score view — the
+        // same forms handleProposalRouteFromUrl (js/proposals/core.js) routes.
         return /^\/proposals\/[0-9,]+\/?$/.test(path)
-            || /^\/proposals\/[a-z0-9][a-z0-9-]{1,61}[a-z0-9]\/?$/i.test(path);
+            || /^\/proposals\/[a-z0-9][a-z0-9-]{1,61}[a-z0-9]\/?$/i.test(path)
+            || /^\/plans\/[a-z0-9][a-z0-9-]{1,61}[a-z0-9]\/score\/?$/i.test(path);
     } catch (_) {
         return false;
     }

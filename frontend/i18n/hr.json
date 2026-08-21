@@ -350,6 +350,73 @@
                 "noteParcelArea": "Prosječna veličina čestice računa se na {{measured}} čestica čiji je oblik učitan; {{missing}} ih je izbrojeno, ali nije izmjereno.",
                 "unavailable": "Izračun plana nije dostupan — plan-yield.js se nije učitao."
             },
+            "grainScore": {
+                "buttonLabel": "Prizovi pijetla urbanista",
+                "buttonHint": "Neka iskuša svaku nastalu česticu",
+                "buttonEmpty": "Prvo primijeni barem jedan prijedlog",
+                "institute": "Institut za zrnatost",
+                "title": "Ocjena zrnatosti",
+                "currentPlan": "Trenutačno primijenjeni plan",
+                "unnamedRoute": "Neimenovani plan · ocjena ostaje u ovom pregledniku",
+                "closeAria": "Zatvori ocjenu zrnatosti",
+                "loading": "Priprema plana za provjeru…",
+                "loadingNamed": "Učitavanje imenovanog plana…",
+                "applyingPlan": "Ponovno sastavljanje plana na karti…",
+                "ready": {
+                    "one": "Pijetao je pronašao {{count}} mjerljivu nastalu česticu. Odmah će je iskušati.",
+                    "few": "Pijetao je pronašao {{count}} mjerljive nastale čestice. Iskušat će ih jednu po jednu.",
+                    "other": "Pijetao je pronašao {{count}} mjerljivih nastalih čestica. Iskušat će ih jednu po jednu."
+                },
+                "start": "Pokreni provjeru",
+                "unavailable": "Ocjena zrnatosti nije dostupna za ovaj plan.",
+                "noApplied": "Primijeni barem jedan prijedlog prije nego što prizoveš pijetla.",
+                "noGeometry": "Oblici nastalih čestica nisu se mogli izmjeriti.",
+                "planNotFound": "Imenovani plan nije pronađen.",
+                "planLoadFailed": "Imenovani plan nije se mogao učitati.",
+                "emptyPlan": "Imenovani plan ne sadržava prijedloge.",
+                "incompletePlan": "Plan nije moguće ocijeniti jer nisu primijenjeni svi njegovi prijedlozi.",
+                "verdictFine": "Fina zrnatost",
+                "verdictGood": "Dobar smjer",
+                "verdictMixed": "Mješovita zrnatost",
+                "verdictCoarse": "Gruba zrnatost",
+                "verdictUnavailable": "Nije mjerljivo",
+                "summary": {
+                    "one": "Pijetao je pojeo {{eaten}} od {{measured}} izmjerenih čestica.",
+                    "few": "Pijetao je pojeo {{eaten}} od {{measured}} izmjerenih čestica.",
+                    "other": "Pijetao je pojeo {{eaten}} od {{measured}} izmjerenih čestica."
+                },
+                "countTitle": "Broj čestica",
+                "countIncrease": "Broj čestica raste: {{before}} → {{after}} (+{{delta}}).",
+                "countDecrease": "Broj čestica pada: {{before}} → {{after}} ({{delta}}).",
+                "countUnchanged": "Broj čestica ostaje isti: {{before}} → {{after}}.",
+                "fineTitle": "Jestive čestice",
+                "fineCopy": {
+                    "one": "{{eaten}} od {{measured}} izmjerenih čestica manja je od 10 × 10 m.",
+                    "few": "{{eaten}} od {{measured}} izmjerenih čestica manje su od 10 × 10 m.",
+                    "other": "{{eaten}} od {{measured}} izmjerenih čestica manje je od 10 × 10 m."
+                },
+                "methodologyTitle": "Metodologija prototipa",
+                "methodologyBody": "Porast broja čestica nosi 100 bodova, isti broj 50, a smanjenje 0. Fina zrnatost je udio izmjerenih nastalih čestica čiji je najmanji zakrenuti pravokutnik kraći od 10 m u oba smjera. Ukupna ocjena prosjek je tih dviju dimenzija.",
+                "repeat": "Ponovi provjeru",
+                "totalAria": "Ukupna ocjena: {{score}} od 100",
+                "missingGeometry": {
+                    "one": "Oblik {{missing}} nastale čestice nije bio dostupan pa nije uključena u postotak fine zrnatosti.",
+                    "few": "Oblici {{missing}} nastale čestice nisu bili dostupni pa nisu uključene u postotak fine zrnatosti.",
+                    "other": "Oblici {{missing}} nastalih čestica nisu bili dostupni pa nisu uključene u postotak fine zrnatosti."
+                },
+                "soundOn": "Zvuk uključen",
+                "soundOff": "Zvuk isključen",
+                "speechStart": "Da vidimo.",
+                "speechEaten": "Mljac.",
+                "speechRejected": "Prevelik zalogaj.",
+                "speechDone": "Nalaz je gotov.",
+                "progress": "Provjera čestice {{current}} od {{total}} · {{width}} × {{depth}} m",
+                "complete": {
+                    "one": "Provjera dovršena · pojedena {{eaten}} od {{total}} čestica",
+                    "few": "Provjera dovršena · pojedene {{eaten}} od {{total}} čestica",
+                    "other": "Provjera dovršena · pojedeno {{eaten}} od {{total}} čestica"
+                }
+            },
             "newGame": "Nova igra",
             "showAgents": "Prikaži agente",
             "showAgentsCount": "Prikaži agente ({{count}})",

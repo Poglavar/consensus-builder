@@ -350,6 +350,73 @@
                 "noteParcelArea": "Prosečna veličina parcele računa se na {{measured}} parcela čiji je oblik učitan; {{missing}} je izbrojano, ali nije izmereno.",
                 "unavailable": "Izračun plana nije dostupan — plan-yield.js se nije učitao."
             },
+            "grainScore": {
+                "buttonLabel": "Prizovi petla urbanistu",
+                "buttonHint": "Neka isproba svaku nastalu parcelu",
+                "buttonEmpty": "Prvo primeni barem jedan predlog",
+                "institute": "Institut za zrnatost",
+                "title": "Ocena zrnatosti",
+                "currentPlan": "Trenutno primenjeni plan",
+                "unnamedRoute": "Neimenovani plan · ocena ostaje u ovom pregledaču",
+                "closeAria": "Zatvori ocenu zrnatosti",
+                "loading": "Pripremam plan za proveru…",
+                "loadingNamed": "Učitavam imenovani plan…",
+                "applyingPlan": "Ponovo sastavljam plan na mapi…",
+                "ready": {
+                    "one": "Petao je pronašao {{count}} merljivu nastalu parcelu. Odmah će je isprobati.",
+                    "few": "Petao je pronašao {{count}} merljive nastale parcele. Isprobaće ih jednu po jednu.",
+                    "other": "Petao je pronašao {{count}} merljivih nastalih parcela. Isprobaće ih jednu po jednu."
+                },
+                "start": "Pokreni proveru",
+                "unavailable": "Ocena zrnatosti nije dostupna za ovaj plan.",
+                "noApplied": "Primeni barem jedan predlog pre nego što prizoveš petla.",
+                "noGeometry": "Oblici nastalih parcela nisu mogli da se izmere.",
+                "planNotFound": "Imenovani plan nije pronađen.",
+                "planLoadFailed": "Imenovani plan nije mogao da se učita.",
+                "emptyPlan": "Imenovani plan ne sadrži predloge.",
+                "incompletePlan": "Plan nije moguće oceniti jer nisu primenjeni svi njegovi predlozi.",
+                "verdictFine": "Fina zrnatost",
+                "verdictGood": "Dobar smer",
+                "verdictMixed": "Mešovita zrnatost",
+                "verdictCoarse": "Gruba zrnatost",
+                "verdictUnavailable": "Nije merljivo",
+                "summary": {
+                    "one": "Petao je pojeo {{eaten}} od {{measured}} izmerenih parcela.",
+                    "few": "Petao je pojeo {{eaten}} od {{measured}} izmerenih parcela.",
+                    "other": "Petao je pojeo {{eaten}} od {{measured}} izmerenih parcela."
+                },
+                "countTitle": "Broj parcela",
+                "countIncrease": "Broj parcela raste: {{before}} → {{after}} (+{{delta}}).",
+                "countDecrease": "Broj parcela opada: {{before}} → {{after}} ({{delta}}).",
+                "countUnchanged": "Broj parcela ostaje isti: {{before}} → {{after}}.",
+                "fineTitle": "Jestive parcele",
+                "fineCopy": {
+                    "one": "{{eaten}} od {{measured}} izmerenih parcela manja je od 10 × 10 m.",
+                    "few": "{{eaten}} od {{measured}} izmerenih parcela manje su od 10 × 10 m.",
+                    "other": "{{eaten}} od {{measured}} izmerenih parcela manje je od 10 × 10 m."
+                },
+                "methodologyTitle": "Metodologija prototipa",
+                "methodologyBody": "Povećanje broja parcela donosi 100 bodova, isti broj 50, a smanjenje 0. Fina zrnatost je udeo izmerenih nastalih parcela čiji je najmanji zarotirani pravougaonik kraći od 10 m u oba smera. Ukupna ocena je prosek te dve dimenzije.",
+                "repeat": "Ponovi proveru",
+                "totalAria": "Ukupna ocena: {{score}} od 100",
+                "missingGeometry": {
+                    "one": "Oblik {{missing}} nastale parcele nije bio dostupan pa nije uključena u procenat fine zrnatosti.",
+                    "few": "Oblici {{missing}} nastale parcele nisu bili dostupni pa nisu uključene u procenat fine zrnatosti.",
+                    "other": "Oblici {{missing}} nastalih parcela nisu bili dostupni pa nisu uključene u procenat fine zrnatosti."
+                },
+                "soundOn": "Zvuk uključen",
+                "soundOff": "Zvuk isključen",
+                "speechStart": "Da vidimo.",
+                "speechEaten": "Mljac.",
+                "speechRejected": "Prevelik zalogaj.",
+                "speechDone": "Nalaz je gotov.",
+                "progress": "Provera parcele {{current}} od {{total}} · {{width}} × {{depth}} m",
+                "complete": {
+                    "one": "Provera završena · pojedena {{eaten}} od {{total}} parcela",
+                    "few": "Provera završena · pojedene {{eaten}} od {{total}} parcela",
+                    "other": "Provera završena · pojedeno {{eaten}} od {{total}} parcela"
+                }
+            },
             "newGame": "Nova igra",
             "showAgents": "Prikaži agente",
             "showAgentsCount": "Prikaži agente ({{count}})",

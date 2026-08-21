@@ -1278,7 +1278,7 @@ async function sharedProposalCityBlocksLoad(firstProposalId) {
     }
 }
 
-async function handleSharedPlanRoute(idParts, attempt = 0) {
+async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
     try {
         const t = getProposalI18nHelper();
         const tShare = getShareI18nHelper();
@@ -1288,7 +1288,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         if (typeof map === 'undefined' || !map) {
             if (attempt < 15) {
                 console.log('[handleSharedPlanRoute] Map not ready, retrying... attempt:', attempt);
-                setTimeout(() => handleSharedPlanRoute(idParts, attempt + 1), 400);
+                setTimeout(() => handleSharedPlanRoute(idParts, attempt + 1, options), 400);
             } else {
                 console.error('[handleSharedPlanRoute] Map not ready after 15 attempts');
             }
@@ -1353,7 +1353,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         if (cityCheck.blocked) {
             console.log('[handleSharedPlanRoute] Aborting: proposal belongs to another city.');
             hideProposalLoadOverlay();
-            return;
+            return { applied: [], skipped: [], failed: [], blocked: true };
         }
         const prefetchedFirst = cityCheck.payload || null;
 
@@ -1654,6 +1654,16 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             // "Show me" button on this dialog. Opening the link is already the request to see it;
             // the dialog just explains why nothing needed applying.
             await frameAppliedProposals(focusId);
+            if (options.suppressSummary) {
+                return {
+                    applied: [],
+                    skipped: incomingAlreadyApplied.map(proposal => ({
+                        id: proposal.proposalId || proposal.serverProposalId,
+                        label: formatSharedProposalLabel(proposal, proposal.proposalId || proposal.serverProposalId)
+                    })),
+                    failed: []
+                };
+            }
             // Resolve via onClose so dismissing the modal (×, Escape, overlay click)
             // does not leave this promise — and the whole route handler — hanging.
             await new Promise(resolve => {
@@ -1674,7 +1684,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     onClose: () => resolve()
                 });
             });
-            return;
+            return { applied: [], skipped: incomingAlreadyApplied, failed: [] };
         }
 
         // Build set of already-applied server IDs to exclude from queue — including members
@@ -1711,7 +1721,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             const lastApplied = mostRecentIncomingApplied() || incomingAlreadyApplied[0];
             const focusId = lastApplied ? (lastApplied.proposalId || lastApplied.serverProposalId) : null;
             await focusOnAppliedProposals(focusId);
-            return;
+            return { applied: [], skipped, failed: [] };
         }
 
         // Fetch every record once, then use the same immutable record order as canonical replay.
@@ -2106,7 +2116,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         // the proposal and centered the map; without this call, window.currentlyHighlightedProposal
         // stays null and no overlays are drawn. For a multi-id share we highlight the last one
         // (same semantics as centering, which uses the last applied id).
-        if (lastProposalId && typeof focusProposalDetails === 'function') {
+        if (!options.suppressDetails && lastProposalId && typeof focusProposalDetails === 'function') {
             try {
                 await focusProposalDetails(lastProposalId, {
                     centerOnProposal: false, // camera has already been fit to bounds above
@@ -2118,7 +2128,9 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         }
 
         const summaryHasIssues = failed.length > 0;
-        const showSummaryModal = bodyLines.length > 0 && (summaryHasIssues || !wants3DFromUrl);
+        const showSummaryModal = !options.suppressSummary
+            && bodyLines.length > 0
+            && (summaryHasIssues || !wants3DFromUrl);
 
         let planSummaryModal = null;
         if (showSummaryModal) {
@@ -2196,9 +2208,15 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 }
             } catch (_) { }
         }
+        return { applied, skipped, failed };
     } catch (error) {
         console.error('handleSharedPlanRoute failed', error);
         hideProposalLoadOverlay();
+        return {
+            applied: [],
+            skipped: [],
+            failed: [{ id: null, label: '', reason: error && error.message ? error.message : 'Unexpected error' }]
+        };
     } finally {
         if (typeof window !== 'undefined') {
             window.skipParcelFetchUntilProposalLoaded = false;
@@ -2214,7 +2232,9 @@ function handleStandalone3DModeFromUrl(attempt = 0) {
 
         // Check if there are proposal-related URL params - if so, let proposal handlers deal with 3D
         const params = new URLSearchParams(window.location.search || '');
-        const hasProposalParams = params.has('proposalShare') || params.has('shared') || window.location.pathname.startsWith('/proposals/');
+        const hasProposalParams = params.has('proposalShare') || params.has('shared')
+            || window.location.pathname.startsWith('/proposals/')
+            || window.location.pathname.startsWith('/plans/');
         if (hasProposalParams) {
             // Proposal handlers will handle 3D mode, so we don't need to do anything here
             return;

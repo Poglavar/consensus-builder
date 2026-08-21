@@ -12,13 +12,14 @@ const IS_PROPOSAL_DEEP_LINK = (() => {
     try {
         const path = window.location.pathname || '';
         // Mirrors handleProposalRouteFromUrl (js/proposals/core.js): numeric id,
-        // comma-separated ids, or a named-plan slug. All of them load their own
+        // comma-separated ids, a named-plan slug, or its grain-score view. All of them load their own
         // ground via the share flow, so the boot viewport parcel fetch must stay
         // suppressed. Before the slug/comma forms were covered, opening a named
         // plan link fetched the DEFAULT city's viewport parcels (Manhattan)
         // while a Zagreb plan was loading.
         if (/^\/proposals\/[0-9,]+\/?$/i.test(path)) return true;
         if (/^\/proposals\/[a-z0-9][a-z0-9-]{1,61}[a-z0-9]\/?$/i.test(path)) return true;
+        if (/^\/plans\/[a-z0-9][a-z0-9-]{1,61}[a-z0-9]\/score\/?$/i.test(path)) return true;
         if (typeof window.shouldSkipWelcomeForProposalLink === 'function') {
             return window.shouldSkipWelcomeForProposalLink();
         }
