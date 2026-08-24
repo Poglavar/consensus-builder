@@ -3102,6 +3102,11 @@
             "parcelsLabel": "Parcele",
             "avgPerParcel": "Prosek / parceli"
         },
+        "isolation": {
+            "singleParcel": "Prikaz jedne parcele",
+            "proposalView": "Prikaz predloga",
+            "exitAria": "Izađi iz ovog prikaza"
+        },
         "ai": {
             "title": "AI fotorealistični prikaz",
             "sourceLabel": "Snimljena scena",

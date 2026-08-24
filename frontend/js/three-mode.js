@@ -321,6 +321,8 @@
     // reached via the [show] button in the parcel panel. null = not isolating a proposal.
     let isolatedProposalId = null;
     let isolationResetEl = null;
+    // Top-centre "Single parcel view [×]" banner: says the scene is filtered and how to leave.
+    let isolationBannerEl = null;
     let parcelInfoPanelEl = null;
     // Floor areas of the currently-shown parcel, kept so the price slider can recompute the
     // value gain without re-running the (price-independent) volume maths on every tick.
@@ -835,9 +837,44 @@
         notifyIsolationChanged();
     }
 
+    // Isolation is entered by a click, but exited by clicking "somewhere else" — which nothing on
+    // screen said. The banner names the view and carries an explicit way out.
+    function ensureIsolationBanner() {
+        if (!threeContainer) return null;
+        if (isolationBannerEl && isolationBannerEl.parentElement === threeContainer) return isolationBannerEl;
+        isolationBannerEl = document.createElement('div');
+        isolationBannerEl.className = 'three-mode-isolation-banner';
+        isolationBannerEl.style.display = 'none';
+        const label = document.createElement('span');
+        label.className = 'isolation-banner-label';
+        isolationBannerEl.appendChild(label);
+        const close = document.createElement('button');
+        close.type = 'button';
+        close.className = 'isolation-banner-close';
+        close.innerHTML = '&times;';
+        close.setAttribute('aria-label', threeI18n('threeMode.isolation.exitAria', 'Exit this view'));
+        close.addEventListener('click', () => clearIsolation());
+        isolationBannerEl.appendChild(close);
+        threeContainer.appendChild(isolationBannerEl);
+        return isolationBannerEl;
+    }
+
     function updateIsolationButton() {
+        const isolated = isolatedParcelId !== null || isolatedProposalId !== null;
         try {
-            if (isolationResetEl) isolationResetEl.style.display = (isolatedParcelId === null && isolatedProposalId === null) ? 'none' : '';
+            if (isolationResetEl) isolationResetEl.style.display = isolated ? '' : 'none';
+        } catch (_) { }
+        try {
+            const banner = ensureIsolationBanner();
+            if (banner) {
+                banner.style.display = isolated ? '' : 'none';
+                const label = banner.querySelector('.isolation-banner-label');
+                if (label) {
+                    label.textContent = isolatedProposalId !== null
+                        ? threeI18n('threeMode.isolation.proposalView', 'Proposal view')
+                        : threeI18n('threeMode.isolation.singleParcel', 'Single parcel view');
+                }
+            }
         } catch (_) { }
     }
 
@@ -5727,7 +5764,9 @@
         }
         clickDownXY = null;
         isolatedParcelId = null;
+        isolatedProposalId = null;
         isolationResetEl = null;
+        isolationBannerEl = null;
         parcelInfoPanelEl = null;
         displayStateSelects = { built: null, planned: null };
         representationSelect = null;

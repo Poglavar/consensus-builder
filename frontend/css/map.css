@@ -470,6 +470,50 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
     color: #c0392b;
 }
 
+/* Top-centre banner shown while the 3D view is filtered to one parcel or one proposal.
+   Isolation is entered by a click but exited by clicking elsewhere — which nothing on
+   screen said; the banner names the view and its × is the explicit way out. */
+#three-container .three-mode-isolation-banner {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px 6px 12px;
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 999px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    pointer-events: auto;
+    z-index: 10;
+    font-size: 12px;
+    font-weight: 600;
+    color: #2d3748;
+    white-space: nowrap;
+}
+
+#three-container .three-mode-isolation-banner .isolation-banner-close {
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.08);
+    color: #2d3748;
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#three-container .three-mode-isolation-banner .isolation-banner-close:hover {
+    background: rgba(0, 0, 0, 0.16);
+}
+
 /* On phones there is no horizontal room for the parcel panel (top-left) and the
    Built/Both/Planned controls (top-right) side by side, so the panel docks to the
    bottom of the 3D view instead. The right inset keeps it clear of the 2D/walk

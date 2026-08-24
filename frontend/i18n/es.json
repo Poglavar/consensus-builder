@@ -3116,6 +3116,11 @@
             "parcelsLabel": "Parcelas",
             "avgPerParcel": "Media / parcela"
         },
+        "isolation": {
+            "singleParcel": "Vista de una parcela",
+            "proposalView": "Vista de la propuesta",
+            "exitAria": "Salir de esta vista"
+        },
         "ai": {
             "title": "Renderizado fotorrealista con IA",
             "sourceLabel": "Escena capturada",

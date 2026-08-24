@@ -3067,6 +3067,11 @@
             "parcelsLabel": "Parcels",
             "avgPerParcel": "Avg / parcel"
         },
+        "isolation": {
+            "singleParcel": "Single parcel view",
+            "proposalView": "Proposal view",
+            "exitAria": "Exit this view"
+        },
         "ai": {
             "title": "AI photorealistic render",
             "sourceLabel": "Captured scene",

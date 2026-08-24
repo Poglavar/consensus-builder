@@ -3102,6 +3102,11 @@
             "parcelsLabel": "Čestice",
             "avgPerParcel": "Prosjek / čestici"
         },
+        "isolation": {
+            "singleParcel": "Prikaz jedne čestice",
+            "proposalView": "Prikaz prijedloga",
+            "exitAria": "Izađi iz ovog prikaza"
+        },
         "ai": {
             "title": "AI fotorealistični prikaz",
             "sourceLabel": "Snimljena scena",
