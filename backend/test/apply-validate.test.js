@@ -1,174 +1,115 @@
-// The gate that replaces rollback. If this decides wrongly, the choice is between applying
-// something that cannot stand and refusing something that could — so every rule it encodes is
-// pinned here, including the two distinctions that are easy to lose: a proposal never conflicts
-// with itself, and "the ground is taken" is a final answer while "not loaded yet" is not.
+// The precheck's one dangerous failure mode is a FALSE refusal: it would silently drop work the
+// apply would have accepted, and nobody would ever see the proposal that was never attempted. So
+// these tests lean on that direction — it must stay quiet whenever it is unsure — and they check
+// its counting against the real rule in apply/buildings.js rather than restating it loosely.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
-const { validateApply, validatePlan, CODE_CONFLICT, CODE_MISSING } =
+const { validateApply, validatePlan, CODE_INVALID, CODE_NO_BUILDING_GEOMETRY } =
     require('../../frontend/js/proposals/apply/validate.js');
+const applyRoute = require('../../frontend/js/proposals/apply/route.js');
 
-const holders = (map) => (parcelId) => map[parcelId] || [];
-const titles = (map) => (proposalId) => map[proposalId] || proposalId;
+// The real classifier, so "is this a building" means the same here as in the apply.
+const deps = { classify: (record) => applyRoute.classifyApplyRoute(record) };
+
+const building = (buildings) => ({
+    proposalId: 'b1',
+    title: 'Block A',
+    goal: 'buildings',
+    buildingProposal: {},
+    geometry: { buildings }
+});
+const footprint = () => ({
+    type: 'Feature',
+    properties: {},
+    geometry: { type: 'Polygon', coordinates: [[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]] }
+});
 
 describe('validateApply', () => {
-    it('passes a proposal whose ground is free and resolved', () => {
-        const verdict = validateApply({
-            declaredParentIds: ['p1', 'p2'],
-            unresolvableIds: [],
-            selfProposalId: 'me',
-            occupiedBy: holders({})
-        });
-        expect(verdict.ok).toBe(true);
-        expect(verdict.code).toBe(null);
-        expect(verdict.conflicts).toEqual([]);
+    it('refuses an empty record, with the apply\'s own code', () => {
+        expect(validateApply(null, deps).code).toBe(CODE_INVALID);
+        expect(validateApply(undefined, deps).code).toBe(CODE_INVALID);
+        expect(validateApply('nonsense', deps).code).toBe(CODE_INVALID);
     });
 
-    it('refuses ground another applied proposal is standing on, and names it', () => {
-        const verdict = validateApply({
-            declaredParentIds: ['p1', 'p2'],
-            unresolvableIds: [],
-            selfProposalId: 'me',
-            occupiedBy: holders({ p2: ['other'] }),
-            titleOf: titles({ other: 'Block 1108-0100' })
-        });
+    it('passes a building proposal that has a usable footprint', () => {
+        expect(validateApply(building([footprint()]), deps).ok).toBe(true);
+    });
+
+    it('refuses a building proposal storing no footprints', () => {
+        const verdict = validateApply(building([]), deps);
         expect(verdict.ok).toBe(false);
-        expect(verdict.code).toBe(CODE_CONFLICT);
-        expect(verdict.message).toContain('Block 1108-0100');
-        expect(verdict.conflicts).toEqual([
-            { proposalId: 'other', title: 'Block 1108-0100', parcelIds: ['p2'] }
-        ]);
+        expect(verdict.code).toBe(CODE_NO_BUILDING_GEOMETRY);
     });
 
-    // Re-applying a proposal over its own ground is a no-op, not a conflict. Getting this wrong
-    // makes every already-applied member of a plan look blocked on reload.
-    it('does not let a proposal conflict with itself', () => {
-        const verdict = validateApply({
-            declaredParentIds: ['p1'],
-            unresolvableIds: [],
-            selfProposalId: 'me',
-            occupiedBy: holders({ p1: ['me'] })
+    // Same counting rule as apply/buildings.js: an entry without `.geometry` is dropped there too,
+    // so a record holding only those has no footprints by either count.
+    it('does not count entries the apply itself would drop', () => {
+        expect(validateApply(building([{ type: 'Feature' }, null]), deps).code).toBe(CODE_NO_BUILDING_GEOMETRY);
+        expect(validateApply(building([{ type: 'Feature' }, footprint()]), deps).ok).toBe(true);
+    });
+
+    // The safety direction. Every one of these is a case where the precheck cannot be sure, so it
+    // must defer to the apply rather than refuse.
+    describe('stays quiet when it cannot be sure', () => {
+        it('passes kinds it has no record-level rule for', () => {
+            for (const goal of ['road-track', 'reparcellization', 'decide-later', 'park', 'square']) {
+                expect(validateApply({ proposalId: 'x', goal }, deps).ok, goal).toBe(true);
+            }
         });
-        expect(verdict.ok).toBe(true);
-    });
 
-    it('reports an unresolved parent as a missing dependency', () => {
-        const verdict = validateApply({
-            declaredParentIds: ['p1', 'p2'],
-            unresolvableIds: ['p2'],
-            selfProposalId: 'me',
-            occupiedBy: holders({})
+        it('passes when no classifier is available — a rule aimed at the wrong kind is a false refusal', () => {
+            expect(validateApply(building([]), undefined).ok).toBe(true);
+            expect(validateApply(building([]), {}).ok).toBe(true);
         });
-        expect(verdict.ok).toBe(false);
-        expect(verdict.code).toBe(CODE_MISSING);
-        expect(verdict.notLoaded).toEqual(['p2']);
-    });
 
-    // The distinction that decides whether a caller may retry. Occupied ground will still be
-    // occupied after a refetch; a parcel that merely was not loaded may not be.
-    it('calls an occupied parcel taken, not missing, even when it is also unresolved', () => {
-        const verdict = validateApply({
-            declaredParentIds: ['p1'],
-            unresolvableIds: ['p1'],
-            selfProposalId: 'me',
-            occupiedBy: holders({ p1: ['other'] }),
-            titleOf: titles({ other: 'Road Ilica' })
+        it('passes when the classifier throws', () => {
+            const throwing = { classify: () => { throw new Error('classifier exploded'); } };
+            expect(validateApply(building([]), throwing).ok).toBe(true);
         });
-        expect(verdict.code).toBe(CODE_CONFLICT);
-        expect(verdict.notLoaded).toEqual([]);
-        expect(verdict.retryable, 'a taken parcel is not worth retrying').toBe(false);
-    });
-
-    it('marks a missing dependency retryable, so a fetch is worth attempting', () => {
-        const verdict = validateApply({
-            declaredParentIds: ['p1', 'p2'],
-            unresolvableIds: ['p1'],
-            selfProposalId: 'me',
-            occupiedBy: holders({ p2: ['other'] })
-        });
-        expect(verdict.code).toBe(CODE_MISSING);
-        expect(verdict.retryable).toBe(true);
-        expect(verdict.conflicts.length, 'the occupier is still reported alongside').toBe(1);
-    });
-
-    it('groups several taken parcels under the one proposal holding them', () => {
-        const verdict = validateApply({
-            declaredParentIds: ['p1', 'p2', 'p3'],
-            unresolvableIds: [],
-            selfProposalId: 'me',
-            occupiedBy: holders({ p1: ['other'], p3: ['other'] })
-        });
-        expect(verdict.conflicts).toHaveLength(1);
-        expect(verdict.conflicts[0].parcelIds).toEqual(['p1', 'p3']);
-    });
-
-    it('survives being handed nothing at all', () => {
-        expect(validateApply().ok).toBe(true);
-        expect(validateApply({}).ok).toBe(true);
-        expect(validateApply({ declaredParentIds: null, occupiedBy: 'not a function' }).ok).toBe(true);
     });
 });
 
 describe('validatePlan', () => {
-    const members = [
-        { proposalId: 'a', title: 'Block A', declaredParentIds: ['p1'], unresolvableIds: [] },
-        { proposalId: 'b', title: 'Block B', declaredParentIds: ['p2'], unresolvableIds: [] },
-        { proposalId: 'c', title: 'Block C', declaredParentIds: ['p3'], unresolvableIds: ['p3'] }
-    ];
-
-    it('splits a plan into what can be applied and what cannot, before anything is applied', () => {
-        const report = validatePlan(members, {
-            occupiedBy: holders({ p2: ['x'] }),
-            titleOf: titles({ x: 'Road X' })
-        });
+    it('splits a plan before any member is applied', () => {
+        const report = validatePlan([
+            building([footprint()]),
+            { ...building([]), proposalId: 'b2', title: 'Block B' },
+            { proposalId: 'r1', title: 'Road', goal: 'road-track' }
+        ], deps);
 
         expect(report.total).toBe(3);
-        expect(report.applicable.map(e => e.proposalId)).toEqual(['a']);
-        expect(report.blocked.map(e => e.proposalId)).toEqual(['b', 'c']);
-        expect(report.blocked[0].verdict.code).toBe(CODE_CONFLICT);
-        expect(report.blocked[0].verdict.message).toContain('Road X');
-        expect(report.blocked[1].verdict.code).toBe(CODE_MISSING);
+        expect(report.applicable.map(e => e.proposalId)).toEqual(['b1', 'r1']);
+        expect(report.blocked.map(e => e.proposalId)).toEqual(['b2']);
+        expect(report.blocked[0].title).toBe('Block B');
+        expect(report.blocked[0].verdict.code).toBe(CODE_NO_BUILDING_GEOMETRY);
     });
 
-    it('passes a whole plan whose ground is clear', () => {
-        const report = validatePlan(members.slice(0, 2), { occupiedBy: holders({}) });
-        expect(report.blocked).toEqual([]);
-        expect(report.applicable).toHaveLength(2);
+    it('accepts {proposalId, record} pairs as well as bare records', () => {
+        const report = validatePlan([{ proposalId: 'given', record: building([]) }], deps);
+        expect(report.blocked[0].proposalId).toBe('given');
     });
 
     it('handles an empty plan without inventing work', () => {
-        expect(validatePlan([], {})).toEqual({ applicable: [], blocked: [], total: 0 });
-        expect(validatePlan(null, null).total).toBe(0);
+        expect(validatePlan([], deps)).toEqual({ applicable: [], blocked: [], total: 0 });
+        expect(validatePlan(null, deps).total).toBe(0);
     });
 });
 
-// §15b: within one plan the taker amends the taken, so members overlapping each other is the design,
-// not a conflict. Re-opening a plan whose members are already applied would otherwise report almost
-// every member as blocked by its own plan-mates — a gate that refuses everything is worse than none.
-describe('validatePlan and a plan\'s own members', () => {
-    const members = [
-        { proposalId: 'a', title: 'Block A', declaredParentIds: ['shared'], unresolvableIds: [] },
-        { proposalId: 'b', title: 'Block B', declaredParentIds: ['shared'], unresolvableIds: [] }
-    ];
-
-    it('does not block a member on ground held by another member of the same plan', () => {
-        const report = validatePlan(members, {
-            occupiedBy: () => ['a'],                       // 'a' is applied and holds the ground
-            titleOf: (id) => `Block ${String(id).toUpperCase()}`
-        });
-        expect(report.blocked, 'blocked members on their own plan-mates').toEqual([]);
-        expect(report.applicable).toHaveLength(2);
-    });
-
-    it('still blocks on ground held by something outside the plan', () => {
-        const report = validatePlan(members, {
-            occupiedBy: () => ['a', 'outsider'],
-            titleOf: (id) => (id === 'outsider' ? 'Road Ilica' : `Block ${id}`)
-        });
-        expect(report.applicable).toEqual([]);
-        expect(report.blocked).toHaveLength(2);
-        expect(report.blocked[0].verdict.message).toContain('Road Ilica');
-        expect(report.blocked[0].verdict.message, 'named a plan-mate as a blocker').not.toContain('Block a');
+// A precheck that disagrees with the apply is worse than none: it either blocks good work or lets
+// bad work through with a reassuring green. This pins the two to the same source text.
+describe('the precheck and the apply agree on what a footprint is', () => {
+    it('reads geometry.buildings, filtered on .geometry, exactly as the apply does', () => {
+        const source = readFileSync(
+            fileURLToPath(new URL('../../frontend/js/proposals/apply/buildings.js', import.meta.url)), 'utf8');
+        expect(source, 'apply/buildings.js no longer reads geometry.buildings')
+            .toMatch(/proposalData\?\.geometry\?\.buildings/);
+        expect(source, 'apply/buildings.js no longer keeps entries on .geometry')
+            .toMatch(/cloned && cloned\.geometry \? cloned : null/);
+        expect(source, "apply/buildings.js no longer refuses with this precheck's code")
+            .toContain(CODE_NO_BUILDING_GEOMETRY);
     });
 });

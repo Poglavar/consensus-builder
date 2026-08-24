@@ -1890,6 +1890,46 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
             console.warn('[handleSharedPlanRoute] Union base-parcel prefetch failed; per-proposal fetches cover it', err);
         }
 
+        // Judge the WHOLE plan from its records before applying any of it. The apply already
+        // refuses in ~30 named ways, but it does so one member at a time after the expensive setup,
+        // so a plan of 299 learns at member 140 that member 140 was never applicable. Blocked
+        // members are reported at the end alongside real failures — the clear ones still apply,
+        // which is the point: one unusable record must not cost the other 298.
+        //
+        // The precheck is deliberately conservative and defers to the apply whenever it is unsure,
+        // so this can only ever skip work the apply would itself have refused.
+        try {
+            const validator = (typeof window !== 'undefined') ? window.__applyValidate : null;
+            const routeApi = (typeof window !== 'undefined') ? window.__applyRoute : null;
+            if (validator && typeof validator.validatePlan === 'function') {
+                const report = validator.validatePlan(
+                    queue.map(qid => ({ proposalId: qid, record: loadedById.get(qid) })),
+                    routeApi ? { classify: (record) => routeApi.classifyApplyRoute(record) } : null
+                );
+                // Announced on every plan, including the clean case: a precheck that only speaks
+                // when it refuses something is indistinguishable from one that never ran.
+                console.log(`[handleSharedPlanRoute] precheck: ${report.applicable.length} applicable, `
+                    + `${report.blocked.length} refused of ${report.total}`);
+                if (report.blocked.length) {
+                    const blockedIds = new Set(report.blocked.map(item => String(item.proposalId)));
+                    report.blocked.forEach(item => {
+                        console.warn('[handleSharedPlanRoute] precheck refused', item.proposalId,
+                            item.verdict.code, item.verdict.message);
+                        failed.push({
+                            id: item.proposalId,
+                            label: formatSharedProposalLabel(loadedById.get(item.proposalId), item.proposalId),
+                            reason: item.verdict.message
+                        });
+                        markFetchProgress(item.proposalId);
+                    });
+                    queue = queue.filter(qid => !blockedIds.has(String(qid)));
+                }
+            }
+        } catch (precheckError) {
+            // A precheck that throws must never cost the plan its apply.
+            console.warn('[handleSharedPlanRoute] precheck failed; applying without it', precheckError);
+        }
+
         // Captured before the loop drains it. Applying is the long half of a plan open — a
         // 299-proposal plan spends minutes here, one proposal at a time — and until now the
         // overlay had no counter for it: it sat at the fetch phase's completed 299/299 while
