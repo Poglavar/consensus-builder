@@ -9,6 +9,9 @@
 // The fake DOM is deliberately tiny: create/append/setAttribute, plus the three querySelector forms
 // this dialog uses. It is not a browser; it is enough surface for the file to run on.
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+
+// Mirrors PLAN_STATS_RERENDER_MS in plan-stats.js; the source is an IIFE-local constant.
+const PLAN_STATS_RERENDER_MS_FOR_TEST = 10000;
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
@@ -337,6 +340,7 @@ describe('?planStats deep link', () => {
         expect(partial).toBeGreaterThan(0);
 
         visible = plan;                          // the rest of the stream arrives
+        window.__advance(PLAN_STATS_RERENDER_MS_FOR_TEST);   // past the re-render floor
         window.__tick();
         await Promise.resolve();
         await Promise.resolve();
@@ -423,5 +427,63 @@ describe('?planStats deep link, across a lull', () => {
         window.__tick();
         await Promise.resolve();
         expect(digits(slot(window, 'people'))).toBe(partial);
+    });
+});
+
+// Throttling re-renders while the plan applies (a 299-proposal plan takes ~18 minutes, one
+// proposal at a time, on this same thread) creates its own hazard: the LAST change is the one
+// most likely to be skipped, and stopping on it leaves a stale figure on screen — quotable and
+// wrong, which is the failure this whole path exists to avoid.
+describe('?planStats deep link, re-render throttle', () => {
+    it('does not recompute on every single change while the plan applies', async () => {
+        let visible = plan.slice(0, 1);
+        const window = openDialog(plan, { search: '?planStats=1', getProposals: () => visible });
+        fireReady(window);
+        await Promise.resolve();
+        await Promise.resolve();
+        const first = digits(slot(window, 'people'));
+
+        // A change arrives well inside the throttle window: seen, but not drawn.
+        window.__advance(2000);
+        visible = plan;
+        window.__tick();
+        await Promise.resolve();
+        await Promise.resolve();
+        expect(digits(slot(window, 'people')), 'redrew inside the throttle window').toBe(first);
+
+        // Past the floor, the figures catch up.
+        window.__advance(PLAN_STATS_RERENDER_MS_FOR_TEST);
+        window.__tick();
+        await Promise.resolve();
+        await Promise.resolve();
+        expect(digits(slot(window, 'people'))).toBe(
+            planYield.planYield(plan.filter(p => p.applied), { appliedOnly: true }).total.people
+        );
+    });
+
+    it('draws the final state before it stops following', async () => {
+        let visible = plan.slice(0, 1);
+        const window = openDialog(plan, { search: '?planStats=1', getProposals: () => visible });
+        fireReady(window);
+        await Promise.resolve();
+        await Promise.resolve();
+        const partial = digits(slot(window, 'people'));
+
+        // The last change lands inside the throttle window, then the plan goes quiet forever.
+        window.__advance(2000);
+        visible = plan;
+        window.__tick();
+        await Promise.resolve();
+        expect(digits(slot(window, 'people'))).toBe(partial);   // skipped, as designed
+
+        window.__advance(25000);                                 // quiet long enough to give up
+        window.__tick();
+        await Promise.resolve();
+        await Promise.resolve();
+
+        expect(window.__timers.length, 'kept polling').toBe(0);
+        expect(digits(slot(window, 'people')), 'stopped on a stale figure').toBe(
+            planYield.planYield(plan.filter(p => p.applied), { appliedOnly: true }).total.people
+        );
     });
 });

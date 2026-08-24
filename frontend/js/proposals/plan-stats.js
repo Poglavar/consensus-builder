@@ -499,6 +499,7 @@
     const PLAN_STATS_URL_KEYS = ['planStats', 'plan-stats'];
     const PLAN_STATS_WAIT_MS = 30000;      // how long to wait for the first applied proposal
     const PLAN_STATS_QUIET_MS = 20000;     // stop following once the plan has not moved for this long
+    const PLAN_STATS_RERENDER_MS = 10000;  // floor between re-renders while the plan is still applying
     const PLAN_STATS_FOLLOW_MS = 300000;   // hard ceiling on following, whatever happens
     const PLAN_STATS_POLL_MS = 250;
 
@@ -546,6 +547,7 @@
         let shown = null;        // what the dialog currently displays
         let previous = null;     // what the previous poll saw
         let lastChangeAt = Date.now();
+        let lastRenderAt = 0;
 
         (function attempt() {
             const now = planSnapshot();
@@ -559,11 +561,20 @@
             }
             previous = now;
 
+            // Re-rendering is not free — it re-runs plan-yield and walks every resulting parcel's
+            // geometry — and the plan is at its most expensive exactly while it is applying:
+            // a 299-proposal plan applies one proposal at a time, ~3.6 s each, for about 18
+            // minutes, on this same main thread. Following it change-for-change would put a full
+            // recompute into every one of those gaps. The first render is immediate; after that
+            // the figures refresh on a floor, and the final state is guaranteed by the quiet rule
+            // below rather than by catching every intermediate value.
             const changed = !shown || now.total !== shown.total || now.applied !== shown.applied;
-            if (now.applied > 0 && changed) {
+            const dueForRender = !shown || (Date.now() - lastRenderAt) >= PLAN_STATS_RERENDER_MS;
+            if (now.applied > 0 && changed && dueForRender) {
                 // Opened once already and the reader closed it — their call, stop following.
                 if (shown && !planStatsModalIsOpen()) return;
                 shown = now;
+                lastRenderAt = Date.now();
                 openPlanStats();
             } else if (!shown && Date.now() >= waitUntil) {
                 console.warn(`[plan-stats] ?planStats: nothing applied after ${PLAN_STATS_WAIT_MS} ms `
@@ -573,7 +584,25 @@
             }
 
             const quiet = shown && (Date.now() - lastChangeAt) >= PLAN_STATS_QUIET_MS;
-            if (quiet || Date.now() >= followUntil) return;
+            const givingUp = quiet || Date.now() >= followUntil;
+            if (givingUp) {
+                // The throttle above means the LAST change is the one most likely to have been
+                // skipped — and stopping here on a stale figure is precisely the quotable-but-wrong
+                // number this whole path exists to avoid. Draw the final state before letting go.
+                //
+                // Unreachable while RERENDER_MS < QUIET_MS, because the render floor is then always
+                // crossed before the quiet window expires and the normal path above has already
+                // redrawn. It is the backstop for someone changing those constants: set the floor
+                // above the quiet window and this becomes the only thing standing between the
+                // reader and a stale number. Its test fails when both are gone.
+                const stale = now.applied > 0
+                    && (!shown || now.total !== shown.total || now.applied !== shown.applied);
+                if (stale && planStatsModalIsOpen()) {
+                    shown = now;
+                    openPlanStats();
+                }
+                return;
+            }
             setTimeout(attempt, PLAN_STATS_POLL_MS);
         })();
     }
