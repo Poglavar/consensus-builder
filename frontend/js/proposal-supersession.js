@@ -27,11 +27,6 @@
         return value === undefined || value === null || !String(value) ? null : String(value);
     }
 
-    function coordinatedPlanId(proposal) {
-        const value = proposal?.coordinatedPlanId;
-        return value === undefined || value === null ? '' : String(value).trim();
-    }
-
     // A direct edit points at its immutable source, but alternatives form an undirected family for
     // map application: choosing the source again must park its replacement just as choosing the
     // replacement parks the source. Follow the whole component so A -> B -> C can be toggled in any
@@ -66,35 +61,6 @@
         return family;
     }
 
-    // Which cadastral parcels a proposal stands ON.
-    //
-    // A block, a row or a parcel-based design is CONTENT on existing parcels: the parcel is what it
-    // occupies, and its building rings are merely where it put them. Comparing footprints therefore
-    // misses the case that matters — two block designs over overlapping parcels, whose rings sit in
-    // different places and do not touch, both applied, both standing on the same ground. The parcel
-    // is the unit a design competes for, so it is the unit that decides.
-    function occupiedParcelIds(proposal) {
-        const ids = new Set();
-        const add = list => (Array.isArray(list) ? list : []).forEach(id => {
-            if (id === null || id === undefined) return;
-            const text = String(id);
-            if (text) ids.add(text);
-        });
-        add(proposal && proposal.parentParcelIds);
-        add(proposal && proposal.cadastreParcelIds);
-        add(proposal && proposal.parcelIds);
-        add(proposal && proposal.buildingProposal && proposal.buildingProposal.parentParcelIds);
-        return ids;
-    }
-
-    function sharesAnyParcel(left, right) {
-        if (!left || !left.size || !right || !right.size) return false;
-        for (const id of right) {
-            if (left.has(id)) return true;
-        }
-        return false;
-    }
-
     function isBuildingContentProposal(proposal) {
         return !!(proposal && (
             proposal.buildingProposal
@@ -126,11 +92,21 @@
         return null;
     }
 
-    // Explicit application is a choice, not merely another replay request. Return every currently
-    // applied alternative that must stand down before the chosen record is replayed:
-    //   1. another member of the immutable replacement family; or
-    //   2. an independent building proposal meaningfully overlapped by the chosen proposal.
-    // The 2 m² floor is the same one used by the building-demolition scanner.
+    // Which applied proposals are in the way of this one, and so must be unapplied before it can
+    // be applied.
+    //
+    // The test is GEOMETRIC: an applied proposal is in the way only when the ground it holds
+    // actually overlaps the ground this one takes. Sharing a cadastral parcel is NOT enough. Roads
+    // and land readjustments cut a cadastral parcel into many plots and a plan puts a different
+    // building on each, so judging by parcel identity made every one of them a rival: on the
+    // 299-member Sibenik plan that left 34 of 166 buildings applied, each new member unapplying
+    // the one before it, while the summary still reported 298 applied.
+    //
+    // One exception, and it is about identity rather than ground: members of an immutable
+    // replacement family are versions of each other, so choosing either unapplies the other however
+    // far apart their footprints sit.
+    //
+    // The 2 m² floor is the same one the building-demolition scanner uses.
     function collectAppliedProposalAlternatives(proposal, records, options = {}) {
         const targetId = proposalRecordId(proposal);
         if (!targetId) return [];
@@ -145,21 +121,13 @@
             ? planOrder.footprintOf(proposal)
             : null;
 
-        const targetParcels = isBuildingContentProposal(proposal) ? occupiedParcelIds(proposal) : null;
-        const targetPlanId = coordinatedPlanId(proposal);
-
         return list.filter(candidate => {
             const candidateId = proposalRecordId(candidate);
             if (!candidateId || candidateId === targetId || !proposalIsAppliedForReplacement(candidate)) return false;
             if (familyIds.has(candidateId)) return true;
             if (!isBuildingContentProposal(candidate)) return false;
-            const sameCoordinatedPlan = !!targetPlanId && coordinatedPlanId(candidate) === targetPlanId;
-            // One design per parcel: two building designs claiming the same parcel are two answers
-            // to the same question, however far apart the buildings themselves landed. Members of
-            // one coordinated plan are the exception: their original cadastral parents describe
-            // the plan's input ground, while its readjustment gives each building a distinct live
-            // plot. They coexist unless their authored building footprints actually overlap.
-            if (!sameCoordinatedPlan && sharesAnyParcel(targetParcels, occupiedParcelIds(candidate))) return true;
+            // No measurable footprint on either side means no demonstrable overlap, and ground that
+            // cannot be shown to be taken is left free: refusing here would block on a suspicion.
             if (!targetFootprint || !planOrder || typeof planOrder.footprintOf !== 'function'
                 || typeof planOrder.intersectionArea !== 'function') return false;
             const candidateFootprint = planOrder.footprintOf(candidate);

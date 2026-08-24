@@ -99,11 +99,15 @@ describe('proposal replacement supersession', () => {
     });
 });
 
-// A block, a row or a parcel-based design is CONTENT on existing parcels, and the only thing it
-// competes for is the parcel. Alternatives were decided by comparing FOOTPRINTS — which for these
-// designs is the union of their building rings — so two block designs over overlapping parcels
-// whose rings landed in different places did not overlap, were not alternatives, and both stayed
-// applied on the same ground.
+// What "the ground is taken" means. Decided 2026-08-24 (Simun): GEOMETRY, not parcel identity.
+//
+// A cadastral parcel is not the unit a proposal competes for. Roads and land readjustments cut one
+// cadastral parcel into many plots, and a plan puts a different building on each — so two buildings
+// sharing a cadastral ancestor are usually neighbours, not rivals. Deciding by parcel identity made
+// them rivals: on the 299-member Sibenik plan it left 34 of 166 buildings applied, each new member
+// unapplying the one before it, while the summary still reported 298 applied and the map showed 34.
+//
+// A proposal is in the way only when the ground it holds actually overlaps the ground being taken.
 const blockOn = (proposalId, parcelIds, west, applied = false) => ({
     proposalId,
     applied,
@@ -118,13 +122,23 @@ const blockOn = (proposalId, parcelIds, west, applied = false) => ({
     }
 });
 
-describe('one design per parcel', () => {
-    it('stands down a block that shares a parcel, even when the two rings are nowhere near each other', () => {
-        // Rings ~90 m apart: no footprint overlap at all, so the old rule saw nothing.
+describe('ground is taken by overlap, not by parcel identity', () => {
+    it('leaves a block that merely shares a cadastral parcel applied', () => {
+        // Rings ~90 m apart on a shared cadastral ancestor: two buildings on different plots of one
+        // parcel. The old rule unapplied the standing one; both now stay applied.
         const standing = blockOn('block-a', ['HR-1', 'HR-2'], 15.900, true);
         const chosen = blockOn('block-b', ['HR-2', 'HR-3'], 15.902);
 
-        const alternatives = collectAppliedProposalAlternatives(chosen, [standing, chosen]);
+        expect(collectAppliedProposalAlternatives(chosen, [standing, chosen])).toEqual([]);
+    });
+
+    it('unapplies a block whose ground the new one actually takes', () => {
+        const standing = blockOn('block-a', ['HR-1'], 15.900, true);
+        const chosen = blockOn('block-b', ['HR-1'], 15.9001);   // rings overlap
+
+        const alternatives = collectAppliedProposalAlternatives(chosen, [standing, chosen], {
+            planOrder: require('../../frontend/js/proposals/plan-order.js')
+        });
 
         expect(alternatives.map(entry => entry.proposalId)).toEqual(['block-a']);
     });
@@ -143,22 +157,22 @@ describe('one design per parcel', () => {
         expect(collectAppliedProposalAlternatives(chosen, [parked, chosen])).toEqual([]);
     });
 
-    it('lets disjoint building members of one coordinated plan share their original parent parcel', () => {
+    // These two used to need coordinatedPlanId to carve out an exception. They now hold for the
+    // ordinary reason — disjoint footprints do not overlap — so one of them drops the marker
+    // entirely: if it ever fails, the parcel-identity rule has come back.
+    it('lets disjoint building members of one plan share their original parent parcel', () => {
         const standing = {
             ...blockOn('plan-building-a', ['HR-BASE'], 15.900, true),
             coordinatedPlanId: 'upu-borovje'
         };
-        const chosen = {
-            ...blockOn('plan-building-b', ['HR-BASE'], 15.902),
-            coordinatedPlanId: 'upu-borovje'
-        };
+        const chosen = blockOn('plan-building-b', ['HR-BASE'], 15.902);   // no marker
 
         expect(collectAppliedProposalAlternatives(chosen, [standing, chosen], {
             planOrder: require('../../frontend/js/proposals/plan-order.js')
         })).toEqual([]);
     });
 
-    it('still rejects genuinely overlapping building members of one coordinated plan', () => {
+    it('still unapplies genuinely overlapping building members of one plan', () => {
         const standing = {
             ...blockOn('plan-building-a', ['HR-BASE'], 15.900, true),
             coordinatedPlanId: 'upu-borovje'
@@ -175,7 +189,7 @@ describe('one design per parcel', () => {
         expect(alternatives.map(entry => entry.proposalId)).toEqual(['plan-building-a']);
     });
 
-    it('still stands down an overlapping design that declares no parcels', () => {
+    it('still unapplies an overlapping design that declares no parcels', () => {
         // The footprint rule has to survive: a record with no parcel list is decided on geometry.
         const standing = building('single-a', 15.900, true);
         const chosen = building('single-b', 15.9005);
