@@ -19,7 +19,7 @@ function loadSharedImportHelpers(overrides = {}) {
     };
     vm.createContext(context);
     vm.runInContext(
-        `${source}\nthis.sharedImportHelpersForTest = { importAndApplySharedProposal, materializeQueuedSharedProposals, resetPartiallyAppliedSharedPlan };`,
+        `${source}\nthis.sharedImportHelpersForTest = { importAndApplySharedProposal, materializeQueuedSharedProposals };`,
         context
     );
     return context.sharedImportHelpersForTest;
@@ -202,29 +202,18 @@ describe('shared-plan import boundary', () => {
         });
     });
 
-    it('takes a partial package off in reverse dependency order before refreshing it', async () => {
-        const records = new Map([
-            ['plots', { proposalId: 'plots', goal: 'reparcellization' }],
-            ['park', { proposalId: 'park', goal: 'park' }],
-            ['building', { proposalId: 'building', goal: 'single', buildingProposal: {} }],
-            ['road', { proposalId: 'road', goal: 'road-track' }]
-        ]);
-        const unapplyProposal = vi.fn(async () => true);
-        const { resetPartiallyAppliedSharedPlan } = loadSharedImportHelpers({
-            ProposalManager: { unapplyProposal },
-            proposalStorage: { getProposal: id => records.get(id) || null },
-            applyRoute: {
-                normalizeGoalKey: goal => goal,
-                isBuildingGoal: goal => goal === 'single'
-            }
-        });
-
-        const result = await resetPartiallyAppliedSharedPlan([
-            records.get('road'), records.get('building'), records.get('plots'), records.get('park')
-        ]);
-
-        expect(result.failedIds).toEqual([]);
-        expect(unapplyProposal.mock.calls.map(call => call[0]))
-            .toEqual(['park', 'building', 'plots', 'road']);
+    // Deleted behaviour, pinned so it cannot come back. A partly applied plan used to be taken off
+    // the map entirely — every standing member unapplied one at a time — and then re-applied. It
+    // could not converge: one member that can never apply leaves the plan permanently "partly
+    // applied", so every re-open unapplied 298 members to re-derive the same 298 (measured on the
+    // Sibenik plan). What is on the map now stays on the map; only the missing members are applied.
+    it('never takes standing members off the map to refresh a partly applied plan', () => {
+        expect(source, 'the partial-plan reset is back')
+            .not.toMatch(/resetPartiallyAppliedSharedPlan/);
+        expect(source, 'the plan route unapplies members again')
+            .not.toMatch(/coveredIncomingIds\.size > 0 && coveredIncomingIds\.size < totalProposals/);
+        // The remaining "Rebuilding applied plan" is the boot replay awaiting reapplyAppliedProposals,
+        // which is a different phase that happens to share the wording.
+        expect(source).toMatch(/await ProposalManager\.reapplyAppliedProposals\(\)/);
     });
 });

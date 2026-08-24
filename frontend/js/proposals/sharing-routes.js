@@ -510,28 +510,6 @@ function orderQueuedSharedProposalIds(proposalIds) {
         .map(entry => entry.id);
 }
 
-async function resetPartiallyAppliedSharedPlan(proposals) {
-    const ids = (Array.isArray(proposals) ? proposals : [])
-        .map(proposal => proposal && (proposal.proposalId || proposal.serverProposalId))
-        .filter(Boolean);
-    // Undo in the exact reverse of package materialisation: public spaces and buildings leave
-    // before the readjustment ground beneath them, and roads leave last. Each unapply stays local
-    // to this package; opening one shared plan must not rebuild every unrelated applied proposal.
-    const ordered = orderQueuedSharedProposalIds(ids).reverse();
-    const unappliedIds = [];
-    const failedIds = [];
-    for (const id of ordered) {
-        try {
-            const ok = await ProposalManager.unapplyProposal(id);
-            if (ok) unappliedIds.push(id);
-            else failedIds.push(id);
-        } catch (error) {
-            console.error('[shared-apply] could not reset partially applied member', id, error);
-            failedIds.push(id);
-        }
-    }
-    return { unappliedIds, failedIds };
-}
 
 // Materialise only the records this shared link just imported.
 //
@@ -1621,22 +1599,16 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
             return best;
         };
 
-        // A partly applied package is not a useful stable state. Its remaining members would be
-        // tested against stale ground and, because already-applied records are normally skipped,
-        // would never receive repaired server definitions. Remove only this package's standing
-        // members, then let the ordinary queue download and materialise every member afresh.
-        if (coveredIncomingIds.size > 0 && coveredIncomingIds.size < totalProposals) {
-            updateProposalLoadOverlay({
-                title: tShare('plan.rebuildingPlanTitle', 'Rebuilding applied plan'),
-                status: tShare('plan.rebuildingPlan', 'Replaying its formations from the cadastre…')
-            });
-            const reset = await resetPartiallyAppliedSharedPlan(incomingAlreadyApplied);
-            if (reset.failedIds.length) {
-                throw new Error(`Could not reset partially applied shared plan: ${reset.failedIds.join(', ')}`);
-            }
-            incomingAlreadyApplied = [];
-            coveredIncomingIds.clear();
-        }
+        // What is already on the map STAYS on the map. A partly applied plan used to be torn down
+        // and rebuilt from scratch — every standing member unapplied one at a time, then the whole
+        // plan re-applied — on the reasoning that the remainder would otherwise be tested against
+        // stale ground. The cost was out of all proportion to that, and it could not converge: one
+        // member that can never apply (an unalignable park) leaves the plan permanently "partly
+        // applied", so EVERY re-open unapplied 298 members to re-derive the same 298. Measured.
+        //
+        // Now the already-applied members are simply skipped by the filter below and only what is
+        // missing is attempted. The one thing this gives up is that a member applied locally will
+        // not pick up a repaired server definition on re-open; unapplying it explicitly still will.
 
         // Counted over COVERED incoming ids, not list length — with a source and its
         // replacement both standing, the list double-counts one member.
