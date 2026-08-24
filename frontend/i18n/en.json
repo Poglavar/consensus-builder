@@ -1812,6 +1812,7 @@
                     "fetchingParcels": "Fetching ancestor parcels for proposal #{{id}}…",
                     "applying": "Applying proposal #{{id}}…",
                     "applyingNamed": "Applying {{label}} ({{done}}/{{total}})…",
+                    "applyingAllTitle": "Applying the shared plan",
                     "fetchingPlan": "Fetching plan…",
                     "fetchingPlanTitle": "Fetching proposal",
                     "rebuildingPlanTitle": "Rebuilding applied plan",

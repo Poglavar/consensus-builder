@@ -560,6 +560,11 @@ async function materializeQueuedSharedProposals(proposalIds) {
             const tShare = getShareI18nHelper();
             const label = formatSharedProposalLabel(record, id);
             updateProposalLoadOverlay({
+                // The title carries the phase, because this is the SECOND count to the same total
+                // in one open: the fabric replay runs first and counts to its own end, then this
+                // starts again from one. Without the heading changing, that reset reads as the bar
+                // going backwards.
+                title: tShare('plan.applyingAllTitle', 'Applying the shared plan'),
                 status: tShare('plan.applyingNamed', 'Applying {{label}} ({{done}}/{{total}})…',
                     { label, done, total: orderedIds.length }),
                 progress: { done, total: orderedIds.length }
