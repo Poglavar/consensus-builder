@@ -2641,6 +2641,43 @@ const ProposalManager = {
                 if (!proposal) return false;
                 if (appliedOf(proposal)) return true;
 
+                // Superseding is what an explicit Apply CLICK means: "this design, not that one."
+                // A plan apply is not that — opening someone's plan link should never quietly stand
+                // down work you had applied — so callers that are not a deliberate choice pass
+                // supersede:false and get a refusal instead, reported with everything else the plan
+                // could not apply. Checked here, before any mutation: it is read-only.
+                if (applyOptions.supersede === false) {
+                    // Holders that belong to the plan being applied are not blockers: re-opening an
+                    // applied plan finds every member's ground held by its own plan-mates, and
+                    // refusing on that refused 100+ of 299 members in one run. Only ground held by
+                    // something OUTSIDE this plan is the reader's existing work.
+                    // Duck-typed, not `instanceof Set`: a Set built in another realm (a worker, a
+                    // sandbox, an iframe) fails that check, and failing it here degrades silently
+                    // into "every plan-mate is a blocker" — the exact refuse-everything bug this
+                    // exclusion exists to prevent.
+                    const membership = applyOptions.planMemberIds;
+                    const inPlan = (membership && typeof membership.has === 'function')
+                        ? (id) => membership.has(id)
+                        : () => false;
+                    const held = this._collectAppliedAlternativesForExplicitApply(proposal)
+                        .filter(alt => !inPlan(String(alt.proposalId || '')));
+                    if (held.length) {
+                        const names = held
+                            .map(alt => alt.title || alt.name || String(alt.proposalId))
+                            .join('; ');
+                        try {
+                            this._setLastApplyFailure(proposalId, {
+                                code: 'ground-held-by-proposal',
+                                message: `The ground is held by ${held.length} applied proposal(s): ${names}. `
+                                    + 'Apply this one directly to choose it over them.',
+                                conflictTitles: held.map(alt => alt.title || alt.name || '').filter(Boolean),
+                                conflictProposalIds: held.map(alt => String(alt.proposalId || '')).filter(Boolean)
+                            });
+                        } catch (_) { /* reporting must not break the refusal */ }
+                        return false;
+                    }
+                }
+
                 // Clicking Apply chooses this proposal over any currently-standing alternative.
                 // Keep a complete record snapshot until the canonical replay proves that choice can
                 // stand; if it cannot, restore both sides rather than leaving half of a switch.

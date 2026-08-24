@@ -549,6 +549,10 @@ async function materializeQueuedSharedProposals(proposalIds) {
     const orderedIds = orderQueuedSharedProposalIds(proposalIds);
     const appliedIds = [];
     const failedIds = [];
+    // Who belongs to THIS plan. A member standing on ground another member holds is the plan
+    // working as designed — on a re-open that is nearly every member — so those are not the
+    // "someone else's applied work" the supersede refusal is protecting.
+    const planMemberIds = new Set(orderedIds.map(id => String(id)));
     // This loop is the tail of a plan open and it is minutes long. Without a per-item report the
     // overlay held one "Applying shared plan…" for the whole of it — the phase the reader actually
     // waits through, showing the least. Roads apply in consecutive runs, so `index` is a position
@@ -617,9 +621,14 @@ async function materializeQueuedSharedProposals(proposalIds) {
             // Members of a coordinated package are complementary parts of one published plan, not
             // successive interactive choices. Replay applies each member's own local payload and
             // deliberately bypasses the explicit-Apply alternative sweep between sibling records.
+            // supersede:false for the non-coordinated case: applying a shared PLAN is not the
+            // explicit "this design, not that one" a click is, so a member whose ground is already
+            // held by an applied proposal is refused and reported rather than standing that
+            // proposal down behind the reader's back. Coordinated members already bypass the
+            // alternative sweep for their own reason (complementary parts of one published plan).
             const applyOptions = coordinatedPlanIdOfSharedRecord(record)
                 ? { replay: true, silent: true }
-                : { silent: true };
+                : { silent: true, supersede: false, planMemberIds };
             const ok = await ProposalManager.applyProposal(id, applyOptions);
             if (ok) appliedIds.push(id);
             else failedIds.push(id);

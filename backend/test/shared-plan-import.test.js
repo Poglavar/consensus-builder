@@ -112,11 +112,19 @@ describe('shared-plan import boundary', () => {
             appliedIds: ['new-b', 'new-a'],
             failedIds: ['bad']
         });
-        expect(applyProposal.mock.calls).toEqual([
-            ['new-b', { silent: true }],
-            ['new-a', { silent: true }],
-            ['bad', { silent: true }]
-        ]);
+        // Each member is applied silently AND without the explicit-Apply supersede sweep: applying
+        // a shared plan is not the "this design, not that one" a click is, so ground held by the
+        // reader's own applied work is refused and reported rather than stood down. The plan's own
+        // membership rides along, because a member on a plan-mate's ground is the plan working.
+        expect(applyProposal.mock.calls.map(([id]) => id)).toEqual(['new-b', 'new-a', 'bad']);
+        applyProposal.mock.calls.forEach(([id, options]) => {
+            expect(options.silent, id).toBe(true);
+            expect(options.supersede, id).toBe(false);
+            // Duck-typed on purpose — the helper builds its Set in another realm, and the
+            // production guard accepts any membership with .has() for exactly that reason.
+            expect(typeof options.planMemberIds.has, id).toBe('function');
+            expect([...options.planMemberIds].sort(), id).toEqual(['bad', 'new-a', 'new-b']);
+        });
         expect(ProposalManager.rebuildAppliedFabric).toBeUndefined();
     });
 
