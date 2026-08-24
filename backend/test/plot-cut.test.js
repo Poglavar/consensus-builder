@@ -327,6 +327,56 @@ describe('the two faces quote the same numbers along their new border', () => {
     });
 });
 
+describe('a crossing that lands on an existing node', () => {
+    // The fabric after one horizontal cut: A and B both carry a vertex at [16.001, 45.8005] on
+    // their shared boundary, so the topology has a NODE exactly where the next line will cross.
+    const NODE = [16.001, 45.8005];
+    const PLOT_A2 = { geometry: polygon([
+        [16.000, 45.800], [16.001, 45.800], NODE, [16.001, 45.801], [16.000, 45.801], [16.000, 45.800]
+    ]) };
+    const PLOT_B2 = { geometry: polygon([
+        [16.001, 45.800], [16.002, 45.800], [16.002, 45.801], [16.001, 45.801], NODE, [16.001, 45.800]
+    ]) };
+    const PLOTS2 = [PLOT_A2, PLOT_B2];
+
+    it('is reported at the node\'s own coordinate, not dropped', () => {
+        const context = contextFor(PLOTS2);
+        const crossings = cut.crossingsOf([[15.999, 45.8005], [16.003, 45.8005]], context, { scale: SCALE });
+
+        const atNode = crossings.find(c => c.nodeId != null);
+        expect(atNode).toBeTruthy();
+        expect(atNode.coord).toEqual(NODE);
+        // West outline, the node on the A|B boundary, east outline.
+        const xs = crossings.map(c => Number(c.coord[0].toFixed(6))).sort();
+        expect(xs).toEqual([16.000, 16.001, 16.002]);
+    });
+
+    it('still splits BOTH plots when the line runs straight through the node', () => {
+        // The regression: the node-coincident crossing used to be silently dropped, so it was
+        // neither an anchor nor a line vertex — the line had one mark on each plot's boundary,
+        // neither plot split, and on a denser plan the line visibly cut only some of the
+        // boundaries it was drawn across.
+        const context = contextFor(PLOTS2);
+        const result = cut.cutPlots(PLOTS2, [[15.999, 45.8005], [16.003, 45.8005]], context, { turf }, { scale: SCALE });
+
+        expect(result.ok).toBe(true);
+        expect(result.results.filter(r => r.sourceIndex === 0).length).toBe(2);
+        expect(result.results.filter(r => r.sourceIndex === 1).length).toBe(2);
+        expect(result.results.reduce((sum, r) => sum + areaOf(r.geometry), 0)).toBeCloseTo(areaOf(POOL), 3);
+    });
+
+    it('bends the line through a node the crossing merely brushes past', () => {
+        const context = contextFor(PLOTS2);
+        // Drawn 2 px above the node: within the merge radius, so the crossing IS the node and the
+        // committed line carries the node's exact coordinate.
+        const y = 45.8005 + 2 * SCALE.y;
+        const resolved = cut.resolveCut([[15.999, y], [16.003, y]], context, { turf }, { scale: SCALE });
+
+        expect(resolved.ok).toBe(true);
+        expect(resolved.points.some(p => p[0] === NODE[0] && p[1] === NODE[1])).toBe(true);
+    });
+});
+
 describe('boundaryGroups', () => {
     it('groups the edges two plots share, and offers nothing on the pooled outline', () => {
         const context = contextFor();

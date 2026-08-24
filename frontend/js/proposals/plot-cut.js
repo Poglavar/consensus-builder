@@ -184,6 +184,12 @@
 
     // Where a polyline crosses the existing fabric — the nodes a cut is about to create. Reported
     // before the cut is committed so they can be drawn, and used after to node the rings.
+    //
+    // A crossing that falls on an EXISTING node is not dropped — it is that node, so it is
+    // reported AT the node's own coordinate (bit-for-bit). Dropping it looked harmless, but the
+    // crossing is also the anchor and the line vertex: without it the line was trimmed short of
+    // that boundary and the plots on either side of the node were never split — a line drawn
+    // across six boundaries would visibly cut only the ones whose crossings missed every node.
     function crossingsOf(points, context, options) {
         const opts = options || {};
         const scale = scaleOf(context, opts);
@@ -193,8 +199,16 @@
         const segments = segmentsFor(context);
         const nodes = (context.topology && context.topology.nodes) || [];
         const out = [];
-        const alreadyThere = coord => nodes.some(node => pixelDistance(coord, node.coord, scale) <= mergePx)
-            || out.some(hit => pixelDistance(coord, hit.coord, scale) <= mergePx);
+        const nodeNear = coord => {
+            let best = null;
+            nodes.forEach(node => {
+                const distance = pixelDistance(coord, node.coord, scale);
+                if (distance > mergePx) return;
+                if (!best || distance < best.distance) best = { node, distance };
+            });
+            return best ? best.node : null;
+        };
+        const alreadyReported = coord => out.some(hit => pixelDistance(coord, hit.coord, scale) <= mergePx);
 
         for (let i = 0; i < pts.length - 1; i++) {
             segments.forEach(segment => {
@@ -205,11 +219,24 @@
                 // that is a hair off the line it is supposed to node does not node it at all.
                 const atStart = pixelDistance(hit.coord, pts[i], scale) <= mergePx;
                 const atEnd = pixelDistance(hit.coord, pts[i + 1], scale) <= mergePx;
-                const coord = atStart ? pts[i] : (atEnd ? pts[i + 1] : hit.coord);
-                if (alreadyThere(coord)) return;
+                let coord = atStart ? pts[i] : (atEnd ? pts[i + 1] : hit.coord);
+                let nodeId = null;
+                if (atStart || atEnd) {
+                    // An end or bend near a node is handled by point snapping (an anchor without a
+                    // crossing); reporting it here too would double it up or, when frozen, invent a
+                    // sub-pixel edge next to the node.
+                    if (nodeNear(coord)) return;
+                } else {
+                    // A mid-line pass over (or within the merge radius of) an existing node IS that
+                    // node: quote its coordinate so the line runs exactly through it and no new
+                    // vertex is inserted anywhere.
+                    const node = nodeNear(coord);
+                    if (node) { coord = [node.coord[0], node.coord[1]]; nodeId = node.id; }
+                }
+                if (alreadyReported(coord)) return;
                 out.push({
                     coord, edgeId: segment.edgeId, plots: segment.plots, onBoundary: segment.onBoundary,
-                    segment: i, t: hit.t, onVertex: atStart || atEnd
+                    segment: i, t: hit.t, onVertex: atStart || atEnd, nodeId
                 });
             });
         }
@@ -244,7 +271,8 @@
         (snaps || []).forEach((snap, index) => {
             if (snap && snap.kind === 'node' && points[index]) add(index, points[index], 'node');
         });
-        (crossings || []).forEach(hit => add(hit.segment + hit.t, hit.coord, hit.onVertex ? 'edge' : 'crossing'));
+        (crossings || []).forEach(hit => add(hit.segment + hit.t, hit.coord,
+            hit.nodeId != null ? 'node' : (hit.onVertex ? 'edge' : 'crossing')));
         anchors.sort((a, b) => a.position - b.position);
         return anchors;
     }
