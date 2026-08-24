@@ -108,6 +108,52 @@ function _multiPolygonOfFootprints(footprints) {
 // `proposalId` rides along as DATA rather than being parsed back out of the sentence later. A
 // status line reads "Applied block Block 1108-0116", and recovering the proposal from that would
 // mean matching titles — which are not unique, are translated, and are chosen by users.
+// Applying a plan redraws the map once per member, and every one of those redraws is a full
+// rebuild: updateProposedBuildingsLayer removes its layer and rebuilds it from the whole list,
+// and the same is true of parks, lakes, squares, reparcellizations and the parcel styles. For a
+// 299-member plan that is 299 teardowns of the same layers — the reason coordinate reprojection
+// dominated a CPU profile of the replay. Leaflet is not the problem; it is being told to throw
+// everything away and start again, 299 times.
+//
+// So the refresh is HELD across bulk work and run once at the end. The counter mirrors the store's
+// beginBatch/endBatch, and proposed buildings already had exactly this for their own layer
+// (withProposedBuildingsRefreshHeld) with a single caller — this is the same idea for the whole
+// post-apply refresh.
+let _uiRefreshHeld = 0;
+let _uiRefreshMissed = false;
+let _uiRefreshLastProposal = null;
+
+function _holdUIRefresh() {
+    _uiRefreshHeld += 1;
+}
+
+function _releaseUIRefresh(manager) {
+    if (_uiRefreshHeld > 0) _uiRefreshHeld -= 1;
+    if (_uiRefreshHeld > 0 || !_uiRefreshMissed) return;
+    const proposal = _uiRefreshLastProposal;
+    _uiRefreshMissed = false;
+    _uiRefreshLastProposal = null;
+    try {
+        if (manager && typeof manager._refreshUIAfterProposalChange === 'function') {
+            manager._refreshUIAfterProposalChange(proposal);
+        }
+    } catch (error) {
+        console.warn('[proposal-manager] deferred UI refresh failed', error);
+    }
+}
+
+// For bulk work outside this file — the shared-plan apply in sharing-routes.js does the same
+// hundreds of applies in a row and pays the same redraw. Classic script, so this top-level
+// declaration IS window.withProposalUIRefreshHeld; do not assign a wrapper over it.
+async function withProposalUIRefreshHeld(run) {
+    _holdUIRefresh();
+    try {
+        return await run();
+    } finally {
+        _releaseUIRefresh(typeof ProposalManager !== 'undefined' ? ProposalManager : null);
+    }
+}
+
 function _announceApply(message, proposalId) {
     if (typeof updateStatus !== 'function') return;
     try { updateStatus(message, proposalId ? { proposalId } : undefined); } catch (_) { }
@@ -2040,6 +2086,7 @@ const ProposalManager = {
             && typeof batchStore.beginBatch === 'function'
             && typeof batchStore.endBatch === 'function');
         if (replayBatched) batchStore.beginBatch();
+        _holdUIRefresh();
         try {
 
         for (const proposal of appliedList) {
@@ -2103,8 +2150,10 @@ const ProposalManager = {
 
         } finally {
             // finally, not after the loop: a throw mid-replay must still leave the store's batch
-            // depth where it found it, or every later save in the session is silently suppressed.
+            // depth and the refresh hold where it found them, or every later save is silently
+            // suppressed and the map stops redrawing for the rest of the session.
             if (replayBatched) batchStore.endBatch();
+            _releaseUIRefresh(this);
         }
         // Recorded, not yet printed: the caller adds the strip refresh and the pass count, so a
         // rebuild reports itself in ONE line instead of one per phase.
@@ -2905,6 +2954,14 @@ const ProposalManager = {
      * This is called after the record change and canonical replay.
      */
     _refreshUIAfterProposalChange(proposalData) {
+        // Held during bulk work: remember that a refresh is owed and run it once on release. The
+        // LAST proposal wins because that is what the panels key off; the layers below rebuild
+        // from the whole state regardless, so nothing is lost by coalescing.
+        if (_uiRefreshHeld > 0) {
+            _uiRefreshMissed = true;
+            if (proposalData) _uiRefreshLastProposal = proposalData;
+            return;
+        }
         // Core proposal UI
         // The corridor parcel a road proposal creates has just appeared or vanished; its cross-section
         // has to follow. This is the one place both unapply paths meet — the direct one and the one
