@@ -172,7 +172,10 @@ describe('a line about a proposal goes to that proposal', () => {
         // of "Applied block Block 1108-0116" is not a thing that can be made to work.
         expect(ui).toContain('const proposalId = options && options.proposalId ? String(options.proposalId) : null;');
         expect(ui).toContain('statusLog.push({ message, timestamp, proposalId });');
-        expect(manager).toContain('_announceApply(`Applied ${kind} ${label}`, proposalId)');
+        // Matched on the SHAPE, not the wording: the announcement's verb now distinguishes a
+        // replay ("Re-derived") from an apply ("Applied"), and pinning the literal text made a
+        // wording change look like the proposal id had stopped travelling as a field.
+        expect(manager).toMatch(/_announceApply\(`\$\{verb\} \$\{kind\} \$\{label\}`, proposalId\)/);
     });
 
     it('renders as a real button, so it is reachable by keyboard', () => {

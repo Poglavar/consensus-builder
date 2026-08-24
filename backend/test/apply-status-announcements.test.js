@@ -71,8 +71,16 @@ describe('two lines per proposal, whatever its type', () => {
 
     it('announces the start and the end', () => {
         // Every announcement carries the proposal id, so the status log can offer to go there.
-        expect(summary).toContain('_announceApply(`Applying ${kind} ${label}...`, proposalId)');
-        expect(summary).toContain('_announceApply(`Applied ${kind} ${label}`, proposalId)');
+        // The VERB is a variable now — a replay says "Re-deriving"/"Re-derived" where a genuine
+        // apply says "Applying"/"Applied" — so this pins the shape and the id, not the wording.
+        expect(summary).toMatch(/_announceApply\(`\$\{gerund\} \$\{kind\} \$\{label\}\.\.\.`, proposalId\)/);
+        expect(summary).toMatch(/_announceApply\(`\$\{verb\} \$\{kind\} \$\{label\}`, proposalId\)/);
+    });
+
+    it('distinguishes a replay from an apply, so a log of 299 lines says which happened', () => {
+        expect(summary).toContain("const replaying = !!(ProposalManager && ProposalManager._rebuildInProgress === true);");
+        expect(summary).toMatch(/const verb = replaying \? 'Re-derived' : 'Applied';/);
+        expect(summary).toMatch(/const gerund = replaying \? 'Re-deriving' : 'Applying';/);
     });
 
     it('says so when an apply refuses, rather than going quiet', () => {

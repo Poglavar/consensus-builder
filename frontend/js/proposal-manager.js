@@ -148,25 +148,33 @@ function _corridorCountPhrase(takes) {
 // on the way out. Applying used to reach the status log only from the per-type tails, and the road
 // path has no tail at all, so a reload replaying a hundred corridors looked like the app had simply
 // stopped responding.
+// A REPLAY says so. Every path through here — a fresh apply, a plan apply, and the boot replay
+// re-deriving the fabric — printed the identical "Applied building X" line, so a console showing
+// 299 of them said nothing about which had happened. On a plan whose members were already applied
+// the replay's lines read as the plan applying, and the plan's own summary then reported skipping
+// everything: two true statements that look like a contradiction.
 async function _runProposalApplyWithSummary(proposalId, proposalData, runApply) {
     const label = _getProposalApplyLabel(proposalId, proposalData);
     const kind = _proposalApplyKind(proposalData);
+    const replaying = !!(ProposalManager && ProposalManager._rebuildInProgress === true);
+    const verb = replaying ? 'Re-derived' : 'Applied';
+    const gerund = replaying ? 'Re-deriving' : 'Applying';
     // The ONE line per proposal. The per-type step traces are behind window.DEBUG_APPLY, because
     // six lines each is how you watch a single apply and how you lose a replay of three hundred.
     const startedAt = _now();
-    _announceApply(`Applying ${kind} ${label}...`, proposalId);
+    _announceApply(`${gerund} ${kind} ${label}...`, proposalId);
     try {
         const result = await runApply();
         if (result === false) {
-            console.warn(`Applying proposal ${label} ... failed`);
+            console.warn(`${gerund} proposal ${label} ... failed`);
             _announceApply(`Could not apply ${kind} ${label}`, proposalId);
             return false;
         }
-        console.log(`Applied ${kind} ${label} — ${Math.round(_now() - startedAt)} ms`);
-        _announceApply(`Applied ${kind} ${label}`, proposalId);
+        console.log(`${verb} ${kind} ${label} — ${Math.round(_now() - startedAt)} ms`);
+        _announceApply(`${verb} ${kind} ${label}`, proposalId);
         return result;
     } catch (error) {
-        console.warn(`Applying proposal ${label} ... failed`);
+        console.warn(`${gerund} proposal ${label} ... failed`);
         _announceApply(`Could not apply ${kind} ${label}`, proposalId);
         throw error;
     }
