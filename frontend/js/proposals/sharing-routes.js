@@ -558,7 +558,11 @@ async function materializeQueuedSharedProposals(proposalIds) {
         if (typeof updateProposalLoadOverlay !== 'function') return;
         try {
             const tShare = getShareI18nHelper();
-            const label = formatSharedProposalLabel(record, id);
+            // The name alone. formatSharedProposalLabel appends "(#id)", which is what the
+            // failure summaries need to be unambiguous but is noise on a status line that
+            // changes every second — and the id is only a fallback when there is no name.
+            const title = (record && typeof record.title === 'string') ? record.title.trim() : '';
+            const label = title || formatSharedProposalLabel(record, id);
             updateProposalLoadOverlay({
                 // The title carries the phase, because this is the SECOND count to the same total
                 // in one open: the fabric replay runs first and counts to its own end, then this

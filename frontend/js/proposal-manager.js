@@ -2028,6 +2028,20 @@ const ProposalManager = {
         let slowest = null;
         let replayDone = 0;
 
+        // ONE batch around the whole replay, not one per member. Each apply already opens its own
+        // batch, so without an outer one the store re-serialises EVERY proposal it holds after
+        // every single apply: 299 members means 299 full JSON writes of a collection that is
+        // growing as it goes. A CPU profile of 26 s of replay put _persist and its garbage among
+        // the top costs; the batch counter is designed for exactly this — inner endBatch calls
+        // decrement to 1 and write nothing, and the single write happens here at the end.
+        // Same reasoning as the game turn loop (game.js), which batches for the same reason.
+        const batchStore = (typeof proposalStorage !== 'undefined') ? proposalStorage : null;
+        const replayBatched = !!(batchStore
+            && typeof batchStore.beginBatch === 'function'
+            && typeof batchStore.endBatch === 'function');
+        if (replayBatched) batchStore.beginBatch();
+        try {
+
         for (const proposal of appliedList) {
             const key = (typeof getProposalKey === 'function' && getProposalKey(proposal)) || proposal.proposalId;
             const memberStarted = _now();
@@ -2085,6 +2099,12 @@ const ProposalManager = {
                 });
                 console.warn('[rebuildAppliedFabric] could not re-apply', key, failure || '');
             }
+        }
+
+        } finally {
+            // finally, not after the loop: a throw mid-replay must still leave the store's batch
+            // depth where it found it, or every later save in the session is silently suppressed.
+            if (replayBatched) batchStore.endBatch();
         }
         // Recorded, not yet printed: the caller adds the strip refresh and the pass count, so a
         // rebuild reports itself in ONE line instead of one per phase.

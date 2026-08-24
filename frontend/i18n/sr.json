@@ -1789,7 +1789,7 @@
                     "fetching": "Preuzimanje predloga #{{id}}…",
                     "fetchingParcels": "Preuzimanje parcela predaka za predlog #{{id}}…",
                     "applying": "Primеnjivanje predloga #{{id}}…",
-                    "applyingNamed": "Primenjujem {{label}} ({{done}}/{{total}})…",
+                    "applyingNamed": "Primenjujem {{label}}…",
                     "applyingAllTitle": "Primena zajedničkog plana",
                     "fetchingPlan": "Preuzimanje plana…",
                     "fetchingPlanTitle": "Preuzimanje predloga",

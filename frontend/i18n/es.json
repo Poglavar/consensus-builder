@@ -1831,7 +1831,7 @@
                     "fetching": "Obteniendo propuesta #{{id}}…",
                     "fetchingParcels": "Obteniendo parcelas ancestras para propuesta #{{id}}…",
                     "applying": "Aplicando propuesta #{{id}}…",
-                    "applyingNamed": "Aplicando {{label}} ({{done}}/{{total}})…",
+                    "applyingNamed": "Aplicando {{label}}…",
                     "applyingAllTitle": "Aplicando el plan compartido",
                     "fetchingPlan": "Obteniendo plan…",
                     "fetchingPlanTitle": "Obteniendo propuesta",
