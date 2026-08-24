@@ -549,13 +549,6 @@ async function materializeQueuedSharedProposals(proposalIds) {
     const orderedIds = orderQueuedSharedProposalIds(proposalIds);
     const appliedIds = [];
     const failedIds = [];
-    // One redraw for the whole plan, not one per member. Each apply otherwise tears down and
-    // rebuilds every proposal layer — buildings, parks, lakes, squares, reparcellizations and the
-    // parcel styles — from the full state, which for a 299-member plan is 299 teardowns of the
-    // same layers and the reason reprojection dominated the replay's CPU profile.
-    const holdRefresh = (typeof withProposalUIRefreshHeld === 'function')
-        ? withProposalUIRefreshHeld
-        : (run => run());
     // This loop is the tail of a plan open and it is minutes long. Without a per-item report the
     // overlay held one "Applying shared plan…" for the whole of it — the phase the reader actually
     // waits through, showing the least. Roads apply in consecutive runs, so `index` is a position
@@ -582,9 +575,6 @@ async function materializeQueuedSharedProposals(proposalIds) {
             });
         } catch (_) { /* progress must never break an apply */ }
     };
-    // Body left at its own indentation: wrapping it in the hold is a one-line change either way,
-    // and re-indenting seventy lines would bury it in a diff nobody can read.
-    await holdRefresh(async () => {
     for (let index = 0; index < orderedIds.length;) {
         const id = orderedIds[index];
         let record = null;
@@ -639,7 +629,6 @@ async function materializeQueuedSharedProposals(proposalIds) {
         }
         index += 1;
     }
-    });
     return { appliedIds, failedIds };
 }
 
