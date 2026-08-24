@@ -1470,6 +1470,10 @@
 
     window.CityConfigManager = {
         getCurrentCityId: () => currentCityId,
+        // Whether the visitor has actually CHOSEN a city, as opposed to sitting on the default.
+        // A deep link needs the difference: following the link's city over an untouched default is
+        // doing what the reader asked, while overriding a city they picked themselves is not.
+        hasStoredCityId: () => !!getStoredCityId(),
         setCurrentCityId: setStoredCityId,
         switchCity,
         navigateToCity,

@@ -1230,6 +1230,35 @@ function formatSharedProposalTypeLabel(proposal) {
     }
 }
 
+// Puts the app in the plan's city before its route runs. Returns true when it navigated away,
+// meaning the caller must stop: the reload re-enters this route with the city already correct.
+//
+// Silent when the visitor is merely sitting on the default and has never chosen a city — following
+// the link is doing what they asked. When they HAVE chosen one, this defers to the existing prompt
+// rather than overriding a deliberate choice.
+async function ensurePlanCity(planCityId) {
+    const manager = (typeof window !== 'undefined') ? window.CityConfigManager : null;
+    if (!manager || !planCityId) return false;
+    try {
+        const current = manager.getCurrentCityId();
+        if (String(planCityId) === String(current)) return false;
+
+        const chosen = (typeof manager.hasStoredCityId === 'function') ? manager.hasStoredCityId() : true;
+        if (!chosen && typeof manager.navigateToCity === 'function') {
+            console.log('[handleProposalRouteFromUrl] Plan is in', planCityId,
+                '— switching from the default', current, 'before loading');
+            manager.navigateToCity(String(planCityId));
+            return true;
+        }
+        if (typeof promptCityMismatchForProposal === 'function') {
+            return await promptCityMismatchForProposal(String(planCityId));
+        }
+    } catch (error) {
+        console.warn('[handleProposalRouteFromUrl] Could not settle the plan city:', error);
+    }
+    return false;
+}
+
 async function handleProposalRouteFromUrl(attempt = 0) {
     try {
         const pathname = window.location.pathname || '';
@@ -1308,6 +1337,14 @@ async function handleProposalRouteFromUrl(attempt = 0) {
                     if (ids.length > 0) {
                         window.__currentNamedPlan = { ...plan, slug };
                         console.log('[handleProposalRouteFromUrl] Named plan resolved:', slug, `${ids.length} proposals`);
+                        // The city has to be right BEFORE anything is fetched. Parcel requests are
+                        // routed by the current city, and the default is New York: a Sibenik plan
+                        // opened on an untouched default sent every parcel lookup to /parcel-nyc,
+                        // which rejects HR- ids outright. Measured on one open: 2,985 requests,
+                        // all HTTP 400, and no prompt — the per-proposal city check reads
+                        // payload.city, which is null on a proposal record. The PLAN record is
+                        // where the city actually lives, and by here it is already in hand.
+                        if (await ensurePlanCity(plan.city)) return;   // switching navigates away
                         await handleSharedPlanRoute(ids);
                         return;
                     }
