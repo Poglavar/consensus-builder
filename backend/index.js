@@ -253,6 +253,20 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
 
     app.use(helmet());
 
+    // Resource Timing hides every size on a cross-origin response unless the server says
+    // otherwise: transferSize, encodedBodySize and decodedBodySize all read 0. The app is served
+    // from a different origin to this API, so the plan-load overlay's byte counter — which sums
+    // resource entries — was counting nothing and honestly reporting "0.00 MB" while a plan open
+    // pulled three thousand requests through it. Measured: 224 same-origin resources contributed
+    // 2.99 MB; all 3,059 API responses contributed zero.
+    //
+    // This exposes only timing and transfer SIZES, never bodies or headers, and CORS still governs
+    // who may read the responses themselves.
+    app.use((req, res, next) => {
+        res.setHeader('Timing-Allow-Origin', '*');
+        next();
+    });
+
     // Origin check on write requests — rejects POST/PUT/PATCH from unknown origins
     const ALLOWED_ORIGINS = env.ALLOWED_ORIGINS
         ? env.ALLOWED_ORIGINS.split(',').map(o => o.trim()).filter(Boolean)

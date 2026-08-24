@@ -113,6 +113,24 @@ function _announceApply(message, proposalId) {
     try { updateStatus(message, proposalId ? { proposalId } : undefined); } catch (_) { }
 }
 
+// The replay is the long half of opening a plan — one proposal at a time, minutes of it — and the
+// load overlay had no counter for it: it sat on the fetch phase's finished 299/299 while the work
+// went past in the console only. Same wording and key as the shared-plan queue, because to the
+// reader they are the same wait.
+function _reportApplyProgress(label, done, total) {
+    if (typeof updateProposalLoadOverlay !== 'function') return;
+    try {
+        // Same namespaced key the shared-plan queue uses (getShareI18nHelper prefixes it), so one
+        // translation serves both paths and neither can drift into a different wording.
+        const t = (typeof getShareI18nHelper === 'function') ? getShareI18nHelper() : null;
+        const fallback = `Applying ${label} (${done}/${total})…`;
+        const status = t
+            ? t('plan.applyingNamed', fallback, { label, done, total })
+            : fallback;
+        updateProposalLoadOverlay({ status, progress: { done, total } });
+    } catch (_) { /* progress must never break an apply */ }
+}
+
 // "112 roads", "3 tracks", "112 roads and 3 tracks" — a track is a road-track record with a flag,
 // not a goal of its own, so the two are counted apart only here, where the number is the message.
 function _corridorCountPhrase(takes) {
@@ -2008,6 +2026,7 @@ const ProposalManager = {
         // Which member cost the most. A replay of twenty proposals that takes three seconds is a
         // very different problem depending on whether that is twenty × 150 ms or one × 2,800 ms.
         let slowest = null;
+        let replayDone = 0;
 
         for (const proposal of appliedList) {
             const key = (typeof getProposalKey === 'function' && getProposalKey(proposal)) || proposal.proposalId;
@@ -2026,6 +2045,8 @@ const ProposalManager = {
                 }
                 continue;
             }
+            replayDone += 1;
+            _reportApplyProgress(_getProposalApplyLabel(key, proposal), replayDone, appliedList.length);
             try {
                 ok = await this.applyProposal(key, { replay: true });
             } catch (error) {

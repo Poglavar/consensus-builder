@@ -549,10 +549,28 @@ async function materializeQueuedSharedProposals(proposalIds) {
     const orderedIds = orderQueuedSharedProposalIds(proposalIds);
     const appliedIds = [];
     const failedIds = [];
+    // This loop is the tail of a plan open and it is minutes long. Without a per-item report the
+    // overlay held one "Applying shared plan…" for the whole of it — the phase the reader actually
+    // waits through, showing the least. Roads apply in consecutive runs, so `index` is a position
+    // in the ordered list rather than a count of completed applies; it is still what "how far
+    // along" means here.
+    const reportProgress = (record, id, done) => {
+        if (typeof updateProposalLoadOverlay !== 'function') return;
+        try {
+            const tShare = getShareI18nHelper();
+            const label = formatSharedProposalLabel(record, id);
+            updateProposalLoadOverlay({
+                status: tShare('plan.applyingNamed', 'Applying {{label}} ({{done}}/{{total}})…',
+                    { label, done, total: orderedIds.length }),
+                progress: { done, total: orderedIds.length }
+            });
+        } catch (_) { /* progress must never break an apply */ }
+    };
     for (let index = 0; index < orderedIds.length;) {
         const id = orderedIds[index];
         let record = null;
         try { record = proposalStorage.getProposal(id); } catch (_) { record = null; }
+        reportProgress(record, id, index + 1);
         const goal = (typeof applyRoute !== 'undefined' && applyRoute && typeof applyRoute.normalizeGoalKey === 'function')
             ? applyRoute.normalizeGoalKey(record && record.goal)
             : String((record && record.goal) || '');
@@ -1852,6 +1870,13 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
             console.warn('[handleSharedPlanRoute] Union base-parcel prefetch failed; per-proposal fetches cover it', err);
         }
 
+        // Captured before the loop drains it. Applying is the long half of a plan open — a
+        // 299-proposal plan spends minutes here, one proposal at a time — and until now the
+        // overlay had no counter for it: it sat at the fetch phase's completed 299/299 while
+        // the real work scrolled past in the console. The bar now follows what is happening.
+        const applyTotal = queue.length;
+        let applyDone = 0;
+
         while (queue.length > 0) {
             const id = queue.shift();
             try {
@@ -1914,7 +1939,15 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
 
                 // Fallback wording matches the locale entry — en.json wins over the fallback, so a
                 // divergent fallback only ever lies about what the user will see.
-                updateProposalLoadOverlay({ status: tShare('plan.applying', 'Applying proposal #{{id}}…', { id }) });
+                applyDone += 1;
+                updateProposalLoadOverlay({
+                    status: tShare(
+                        'plan.applyingNamed',
+                        'Applying {{label}} ({{done}}/{{total}})…',
+                        { label: formatSharedProposalLabel(proposal, id), done: applyDone, total: applyTotal }
+                    ),
+                    progress: { done: applyDone, total: applyTotal }
+                });
                 const result = await importAndApplySharedProposal(proposal, { skipDependencyFetch: true });
 
                 const proposalId = (result && result.proposalId) || proposal?.proposalId || id;
