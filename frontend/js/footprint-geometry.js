@@ -126,6 +126,59 @@
         }
     }
 
+    // Vertices deviating less than this from the line between their kept neighbours are noise left
+    // behind by the ±GEOM_EPSILON_M buffer dance, not geometry.
+    const DECHATTER_TOL_M = 0.05;
+
+    // Douglas–Peucker over an open chain of [x, y] points (planar metres).
+    function rdpChain(pts, tol) {
+        if (!Array.isArray(pts) || pts.length <= 2) return (pts || []).slice();
+        const keep = new Array(pts.length).fill(false);
+        keep[0] = keep[pts.length - 1] = true;
+        const stack = [[0, pts.length - 1]];
+        while (stack.length) {
+            const [s, e] = stack.pop();
+            if (e - s < 2) continue;
+            const [ax, ay] = pts[s];
+            const [bx, by] = pts[e];
+            const dx = bx - ax;
+            const dy = by - ay;
+            const len = Math.hypot(dx, dy);
+            let worst = -1;
+            let wi = -1;
+            for (let i = s + 1; i < e; i++) {
+                const d = len > 0
+                    ? Math.abs((pts[i][0] - ax) * dy - (pts[i][1] - ay) * dx) / len
+                    : Math.hypot(pts[i][0] - ax, pts[i][1] - ay);
+                if (d > worst) { worst = d; wi = i; }
+            }
+            if (worst > tol) {
+                keep[wi] = true;
+                stack.push([s, wi], [wi, e]);
+            }
+        }
+        return pts.filter((_, i) => keep[i]);
+    }
+
+    // Douglas–Peucker for a closed ring (open form, no repeated first point): anchor on the vertex
+    // farthest from v0 so both chains start and end on real geometry, simplify each, rejoin.
+    function dechatterRing(openMeterRing, tol) {
+        const n = Array.isArray(openMeterRing) ? openMeterRing.length : 0;
+        if (n <= 4) return openMeterRing;
+        let k = 1;
+        let best = -1;
+        for (let i = 1; i < n; i++) {
+            const dx = openMeterRing[i][0] - openMeterRing[0][0];
+            const dy = openMeterRing[i][1] - openMeterRing[0][1];
+            const d = dx * dx + dy * dy;
+            if (d > best) { best = d; k = i; }
+        }
+        const a = rdpChain(openMeterRing.slice(0, k + 1), tol);
+        const b = rdpChain(openMeterRing.slice(k).concat([openMeterRing[0]]), tol);
+        const out = a.slice(0, -1).concat(b.slice(0, -1));
+        return out.length >= 3 ? out : openMeterRing;
+    }
+
     // Chamfer (row-house style) applied selectively to sharp-ish vertices.
     // We chamfer vertices whose *internal* angle is <= maxInternalAngleDeg.
     function applySelectiveChamferToPolygonGeometry(geometry, chamferLengthMeters, maxInternalAngleDeg = 100) {
@@ -170,59 +223,161 @@
             ];
 
             const openRing = ring.slice(0, -1);
-            const meterRing = openRing.map(toMeters);
+            // De-chatter before looking for corners. The buffer/union pipeline leaves collinear
+            // micro-vertex trains along straight walls (a 384-vertex ring for an 11-vertex parcel),
+            // and the 0.4×edge chamfer cap then measures "edge length" to the first artifact vertex
+            // instead of to the wall's real end — a corner with a stray vertex 5 m away got a 2 m
+            // nick instead of the requested cut. Douglas–Peucker at 5 cm removes only vertices that
+            // deviate less than that from the wall line, so the shape is untouched to the eye and
+            // every real bend (and both facets of a split corner) survives for the pass below.
+            const meterRing = dechatterRing(openRing.map(toMeters), DECHATTER_TOL_M);
             const n = meterRing.length;
             if (n < 3) return ring;
 
             const areaSign = signedArea(meterRing) >= 0 ? 1 : -1; // +1 CCW, -1 CW
             const chamferedRing = [];
 
-            for (let i = 0; i < n; i++) {
+            const edgeLen = (i) => {
+                const a = meterRing[i];
+                const b = meterRing[(i + 1) % n];
+                return Math.hypot(b[0] - a[0], b[1] - a[1]);
+            };
+            const turnAt = (i) => {
                 const prev = meterRing[(i - 1 + n) % n];
                 const curr = meterRing[i];
                 const next = meterRing[(i + 1) % n];
-
-                const toPrev = [prev[0] - curr[0], prev[1] - curr[1]];
-                const toNext = [next[0] - curr[0], next[1] - curr[1]];
-                const lenToPrev = Math.sqrt(toPrev[0] * toPrev[0] + toPrev[1] * toPrev[1]);
-                const lenToNext = Math.sqrt(toNext[0] * toNext[0] + toNext[1] * toNext[1]);
-
-                if (lenToPrev < 0.001 || lenToNext < 0.001) {
-                    chamferedRing.push(curr);
-                    continue;
-                }
-
                 const incoming = [curr[0] - prev[0], curr[1] - prev[1]];
                 const outgoing = [next[0] - curr[0], next[1] - curr[1]];
                 const dot = incoming[0] * outgoing[0] + incoming[1] * outgoing[1];
                 const cross = incoming[0] * outgoing[1] - incoming[1] * outgoing[0];
-                const turn = Math.atan2(cross, dot);
-                const internal = Math.PI - areaSign * turn;
-                const internalDeg = internal * 180 / Math.PI;
+                return Math.atan2(cross, dot);
+            };
+            const turnDegAbs = (i) => Math.abs(turnAt(i)) * 180 / Math.PI;
+            // A vertex turning no harder than this is wall, not corner: the leg of a chamfer may
+            // run straight past it. Complement of the chamferability threshold, so a vertex is
+            // either a corner candidate or traversable, never both.
+            const gentleDeg = 180 - maxInternalAngleDeg;
 
-                // Same cap as row-house chamfer to avoid destroying small edges
-                const effectiveChamfer = Math.min(chamferLengthMeters, lenToPrev * 0.4, lenToNext * 0.4);
+            // How much wall is available for a chamfer leg from `start` in direction dir (±1):
+            // walk edge by edge THROUGH gentle bends, stopping at the first real corner or once
+            // the wall has cumulatively curved past gentleDeg. Measuring only to the next VERTEX
+            // was the bug behind visibly unequal corners on one ring: a 0.5° bend 16 m from one
+            // corner capped its cut at 6.6 m while the twin corner 80 m away got the full 10 m.
+            const runFrom = (start, dir, needed) => {
+                let run = 0;
+                let cum = 0;
+                let i = start;
+                for (let guard = 0; guard < n; guard++) {
+                    run += dir > 0 ? edgeLen(i) : edgeLen((i - 1 + n) % n);
+                    if (run >= needed) return run;
+                    const next = (i + dir + n) % n;
+                    const t = turnDegAbs(next);
+                    if (t > gentleDeg || cum + t > gentleDeg) return run;
+                    cum += t;
+                    i = next;
+                }
+                return run;
+            };
 
-                if (!(internalDeg <= maxInternalAngleDeg) || effectiveChamfer < 0.001) {
-                    chamferedRing.push(curr);
+            // The point `dist` along the boundary from `start` in direction dir, plus the gentle
+            // vertices the leg passes over — the diagonal replaces them.
+            const pointAlong = (start, dir, dist) => {
+                let remaining = dist;
+                let i = start;
+                const swallowed = [];
+                for (let guard = 0; guard < n; guard++) {
+                    const j = (i + dir + n) % n;
+                    const a = meterRing[i];
+                    const b = meterRing[j];
+                    const len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+                    if (remaining <= len && len > 0) {
+                        const t = remaining / len;
+                        return { point: [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t], swallowed };
+                    }
+                    remaining -= len;
+                    swallowed.push(j);
+                    i = j;
+                }
+                return { point: [meterRing[start][0], meterRing[start][1]], swallowed: [] };
+            };
+
+            const consumed = new Array(n).fill(false);
+            const cuts = new Map(); // corner entry index → [p1, p2]
+
+            // Plan one corner cut spanning ring vertices first..last (equal for a single-vertex
+            // corner). Legs are capped at 0.4× the available wall on each side, so two cuts on one
+            // wall can never overlap, and a genuinely short edge (a notch step) is never consumed.
+            const planCut = (first, last, members) => {
+                const needed = chamferLengthMeters / 0.4;
+                const runPrev = runFrom(first, -1, needed);
+                const runNext = runFrom(last, 1, needed);
+                const eff = Math.min(chamferLengthMeters, runPrev * 0.4, runNext * 0.4);
+                if (eff < 0.001) return;
+                const back = pointAlong(first, -1, eff);
+                const fwd = pointAlong(last, 1, eff);
+                members.forEach(v => { consumed[v] = true; });
+                back.swallowed.forEach(v => { consumed[v] = true; });
+                fwd.swallowed.forEach(v => { consumed[v] = true; });
+                cuts.set(first, [back.point, fwd.point]);
+            };
+
+            const planVertex = (i) => {
+                const internalDeg = 180 - areaSign * turnAt(i) * 180 / Math.PI;
+                if (internalDeg <= maxInternalAngleDeg) planCut(i, i, [i]);
+            };
+
+            // A corner does not always arrive as one vertex: buffering, simplify and clipping leave
+            // some corners as a CLUSTER of 2–3 vertices a few decimetres apart. Per-vertex chamfering
+            // caps each cut at 0.4× the tiny glue edge, so exactly those corners came out looking
+            // uncut ("chamfered 2 of 4"). Group vertices joined by glue edges (< glueMax) into
+            // chains; a short chain whose cumulative turn still reads as one chamferable corner is
+            // cut as ONE corner, anchored on the walls either side of it. Chains that turn too
+            // little (a gentle curved front), too much (a spike, a U-tip) or span too far (a wide
+            // rounded arc) fall back to the per-vertex behaviour unchanged.
+            const glueMax = Math.min(chamferLengthMeters, 2.5);
+            const isGlue = [];
+            let glueCount = 0;
+            for (let i = 0; i < n; i++) {
+                isGlue[i] = edgeLen(i) < glueMax;
+                if (isGlue[i]) glueCount++;
+            }
+
+            if (glueCount === 0 || glueCount === n) {
+                // No clusters at all, or the whole ring is one (a tiny/densely digitised ring
+                // where "cluster" has no meaning) — plain per-vertex pass.
+                for (let i = 0; i < n; i++) planVertex(i);
+            } else {
+                const starts = [];
+                for (let i = 0; i < n; i++) {
+                    if (!isGlue[(i - 1 + n) % n]) starts.push(i);
+                }
+                starts.forEach(start => {
+                    const chain = [start];
+                    while (isGlue[chain[chain.length - 1]]) chain.push((chain[chain.length - 1] + 1) % n);
+                    if (chain.length === 1) { planVertex(start); return; }
+
+                    let totalTurn = 0;
+                    let span = 0;
+                    chain.forEach((v, k) => {
+                        totalTurn += turnAt(v);
+                        if (k < chain.length - 1) span += edgeLen(v);
+                    });
+                    const internalDeg = 180 - areaSign * totalTurn * 180 / Math.PI;
+                    const collapse = internalDeg > 0 && internalDeg <= maxInternalAngleDeg
+                        && span <= 2 * glueMax;
+                    if (collapse) planCut(chain[0], chain[chain.length - 1], chain);
+                    else chain.forEach(v => planVertex(v));
+                });
+            }
+
+            for (let i = 0; i < n; i++) {
+                const cut = cuts.get(i);
+                if (cut) {
+                    chamferedRing.push(cut[0]);
+                    chamferedRing.push(cut[1]);
                     continue;
                 }
-
-                const normPrev = [toPrev[0] / lenToPrev, toPrev[1] / lenToPrev];
-                const normNext = [toNext[0] / lenToNext, toNext[1] / lenToNext];
-
-                const p1 = [
-                    curr[0] + normPrev[0] * effectiveChamfer,
-                    curr[1] + normPrev[1] * effectiveChamfer
-                ];
-
-                const p2 = [
-                    curr[0] + normNext[0] * effectiveChamfer,
-                    curr[1] + normNext[1] * effectiveChamfer
-                ];
-
-                chamferedRing.push(p1);
-                chamferedRing.push(p2);
+                if (!consumed[i]) chamferedRing.push(meterRing[i]);
             }
 
             const degreesRing = chamferedRing.map(toDegrees);
