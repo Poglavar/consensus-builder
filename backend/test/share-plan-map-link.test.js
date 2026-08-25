@@ -75,7 +75,7 @@ describe('a click on the map finds the row', () => {
 });
 
 describe('the map shows what is already on the server', () => {
-    const paint = dialog.slice(dialog.indexOf('const syncPlanOverlay = (key) => {'), dialog.indexOf('const keyOfProposal ='));
+    const paint = dialog.slice(dialog.indexOf('const overlayStyleFor = (uploaded, color)'), dialog.indexOf('const keyOfProposal ='));
 
     it('paints uploaded solid and not-yet-uploaded dashed', () => {
         expect(paint).toContain('const uploaded = !!(uploadState.get(key) || {}).uploaded;');
@@ -98,45 +98,43 @@ describe('the map shows what is already on the server', () => {
         expect(update).toContain('if (overlayByKey.has(key)) syncPlanOverlay(key);');
     });
 
-    it('the legend swatch is big enough for a dash to BE a dash', () => {
-        // Shipped at 16x10 with a 2px dashed border, which draws about one dash per edge: the two
-        // swatches looked like the same solid box, so the legend explained nothing. The test that
-        // passed throughout only asked whether the rules existed.
-        const swatch = css.slice(css.indexOf('.share-plan-legend i {'), css.indexOf('.share-plan-legend .is-pending {'));
-        const width = Number((swatch.match(/width:\s*(\d+)px/) || [])[1]);
-        const border = Number((swatch.match(/border:\s*([\d.]+)px/) || [])[1]);
-        expect(width, 'swatch too narrow to show a dash pattern').toBeGreaterThanOrEqual(24);
-        expect(border, 'a thick border on a short edge draws one dash and reads as solid').toBeLessThanOrEqual(2);
-    });
-
-    it('the two swatches differ in BOTH fill and edge, not one of them', () => {
-        // To the closing brace, not a fixed character count — a comment inside the rule pushed the
-        // declarations past a 300-char window and the test failed on its own slice.
-        const start = css.indexOf('.share-plan-legend .is-pending {');
-        const pending = css.slice(start, css.indexOf('}', start));
-        expect(pending).toContain('border-style: dashed;');
-        expect(pending).toMatch(/background:\s*rgba\([^)]*0\.1/);
-    });
-
     it('the map opacities are far enough apart to see over imagery', () => {
-        const paint = dialog.slice(dialog.indexOf('const syncPlanOverlay = (key) => {'), dialog.indexOf('const keyOfProposal ='));
+        const paint = dialog.slice(dialog.indexOf('const overlayStyleFor = (uploaded, color)'), dialog.indexOf('const keyOfProposal ='));
         const pair = paint.match(/fillOpacity: uploaded \? ([\d.]+) : ([\d.]+)/);
         expect(pair, 'fillOpacity pair not found').toBeTruthy();
         expect(Number(pair[1]) - Number(pair[2])).toBeGreaterThanOrEqual(0.25);
     });
 
-    it('carries a legend, because a dashed outline explains nothing on its own', () => {
-        expect(dialog).toContain("legendEntry('plan.legendUploaded'");
-        expect(dialog).toContain("legendEntry('plan.legendNotUploaded'");
-        expect(css).toContain('.share-plan-legend {');
-        expect(css).toContain('.share-plan-legend .is-pending {');
+    // The legend of two swatches is GONE, and its tests with it. It existed because the map painted
+    // uploaded and not-yet-uploaded together and a dashed outline explains nothing on its own. The
+    // subset filter replaced that: each mode shows one state and the pressed button names it, so the
+    // legend described a distinction that is never on screen at the same time.
+    it('names the subset with the filter instead of a legend', () => {
+        expect(dialog, 'the legend swatches are back').not.toContain('legendEntry(');
+        expect(css, 'the legend rules are back').not.toContain('.share-plan-legend {');
+        expect(dialog).toContain("{ value: 'uploaded', key: 'plan.filterUploaded'");
+        expect(dialog).toContain("{ value: 'pending', key: 'plan.filterPending'");
+    });
+
+    // The filter row is panel content and has to line up with it. It sat on its own 2px inset while
+    // the header and body use 14px, which read as a misaligned strip across the top of the panel.
+    it('lines the filter row up with the rest of the panel', () => {
+        const gutter = (rule) => {
+            const start = css.indexOf(rule);
+            const block = css.slice(start, css.indexOf('}', start));
+            const padding = (block.match(/padding:\s*([^;]+);/) || [])[1] || '';
+            const parts = padding.trim().split(/\s+/);
+            return parts.length >= 2 ? parts[1] : parts[0];
+        };
+        expect(gutter('.share-plan-filter {')).toBe(gutter('.share-plan-panel-body {'));
+        expect(gutter('.share-plan-filter {')).toBe(gutter('.share-plan-panel-header {'));
     });
 });
 
 describe('every language can say it', () => {
-    it.each(locales)('%s names the picks and the legend', locale => {
+    it.each(locales)('%s names the picks and the subset filter', locale => {
         const plan = planStrings(locale);
-        ['picked', 'pickedOnMap', 'pickedNotInPlan', 'legendUploaded', 'legendNotUploaded']
+        ['picked', 'pickedOnMap', 'pickedNotInPlan', 'filterAll', 'filterUploaded', 'filterPending']
             .forEach(key => expect(plan[key], `${locale} missing ${key}`).toBeTruthy());
         // Interpolated, and in the project's {{name}} form — a literal "{title}" would ship as text.
         expect(plan.picked).toContain('{{title}}');

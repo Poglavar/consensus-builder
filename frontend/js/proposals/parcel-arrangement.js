@@ -151,16 +151,115 @@
         }
     }
 
+    // The clipper sometimes returns two separate lobes as ONE polygon, joined by a slit far thinner
+    // than the grid its own inputs were snapped to. Cadastral parcel HR-330264-575, cut by the two
+    // corridors meeting south of it, came back as a single 1,165 m² Polygon whose ring runs out along
+    // a corridor edge and back: the turn segment measures 0.019 mm, against a 0.1 mm grid. GEOS, given
+    // the identical rows, returns the two parts it actually is (859.87 + 305.35 m²).
+    //
+    // A connection narrower than the grid cannot be survey data, so it is an artifact by construction
+    // — that is what makes this measurable rather than a tolerance someone picked. Below the grid the
+    // clipper is describing its own rounding, not ground.
+    //
+    // Snapping cannot simply be dropped to avoid it (see CLIP_SNAP_DECIMALS: unsnapped clips threw
+    // several times per second across Šibenik), and re-normalising the output through a self-union
+    // shatters the parcel into four or five slivers. So the artifact is removed here instead, at the
+    // one function that answers "how many pieces is this".
+    const NECK_OPEN_MM = 1;
+    // ~3 mm in degrees at this latitude. Below this nothing on a cadastral boundary is real, and a
+    // false positive costs only the erosion probe below, which then finds nothing and changes
+    // nothing — so the threshold is deliberately generous.
+    const NECK_DEGREES = 3e-8;
+    // The pair scan is O(n²), so it is skipped on rings far larger than any parcel. `explode` only
+    // ever sees a parcel's own remainder or the takes over it, both small; this is a backstop.
+    const NECK_SCAN_MAX_VERTICES = 400;
+
+    // The slit takes a different shape depending on where the clipper turned it — on this one parcel
+    // it is a 0.019 mm turn segment with two takes, and 260 mm edges running back alongside each
+    // other with three. Neither a short-edge test nor a vertex-pair test sees both, and the vertex of
+    // one lobe often lies near an EDGE of the other with no vertex anywhere close.
+    //
+    // So ask the question directly: does the boundary come within a neck's width of ITSELF, anywhere
+    // it is not simply continuing along its own length? Point-to-segment, which covers every shape a
+    // slit can take. Planar in degrees — this is a threshold test, and at 3e-8 the latitude scaling
+    // is far too small to matter.
+    function pointToSegmentDegrees(px, py, ax, ay, bx, by) {
+        const dx = bx - ax;
+        const dy = by - ay;
+        const lengthSq = (dx * dx) + (dy * dy);
+        let t = lengthSq > 0 ? (((px - ax) * dx) + ((py - ay) * dy)) / lengthSq : 0;
+        t = Math.max(0, Math.min(1, t));
+        const cx = ax + (t * dx);
+        const cy = ay + (t * dy);
+        return Math.hypot(px - cx, py - cy);
+    }
+
+    function hasArtifactNeck(polygonGeometry) {
+        const rings = polygonGeometry && polygonGeometry.coordinates;
+        if (!Array.isArray(rings)) return false;
+        for (const ring of rings) {
+            if (!Array.isArray(ring) || ring.length < 4) continue;
+            if (ring.length > NECK_SCAN_MAX_VERTICES) continue;
+            const open = ring.length - 1; // the closing vertex repeats the first
+            for (let i = 0; i < open; i += 1) {
+                for (let j = 0; j < open; j += 1) {
+                    // Skip the two edges this vertex is an endpoint of: the boundary is always
+                    // zero distance from those, and that is it continuing, not closing on itself.
+                    const next = (j + 1) % open;
+                    if (j === i || next === i) continue;
+                    const d = pointToSegmentDegrees(
+                        ring[i][0], ring[i][1],
+                        ring[j][0], ring[j][1], ring[next][0], ring[next][1]
+                    );
+                    if (d < NECK_DEGREES) return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    // Open the polygon by a hair: erode, keep whatever separates, then dilate each component back and
+    // clip it to the original outline, so the pieces are made of the ORIGINAL boundary and no ground
+    // is invented or lost. Returns null when nothing separates, which is the overwhelmingly common
+    // case and costs one buffer.
+    function splitAtArtifactNeck(feature) {
+        const t = T();
+        const metres = NECK_OPEN_MM / 1000;
+        let eroded = null;
+        try { eroded = t.buffer(feature, -metres, { units: 'meters' }); } catch (_) { return null; }
+        const geom = eroded && eroded.geometry;
+        if (!geom || geom.type !== 'MultiPolygon' || geom.coordinates.length < 2) return null;
+
+        const pieces = [];
+        for (const rings of geom.coordinates) {
+            let grown = null;
+            try { grown = t.buffer(featureOf({ type: 'Polygon', coordinates: rings }), metres * 1.5, { units: 'meters' }); }
+            catch (_) { return null; }
+            let piece = null;
+            try { piece = clip('intersect', feature, grown); } catch (_) { return null; }
+            if (piece && piece.geometry) pieces.push(featureOf(piece.geometry));
+        }
+        // All or nothing: a partial split would drop ground, which is the one outcome worse than the
+        // artifact itself.
+        return pieces.length === geom.coordinates.length ? pieces : null;
+    }
+
+    function asPieces(polygonGeometry) {
+        const feature = featureOf(polygonGeometry);
+        if (!hasArtifactNeck(polygonGeometry)) return [feature];
+        return splitAtArtifactNeck(feature) || [feature];
+    }
+
     // Every polygon of a Polygon/MultiPolygon, as separate features. A polygon WITH holes stays one
     // piece — a hole is part of that piece's shape, not a separate one.
     function explode(geometry) {
         const geom = geometryOf(geometry);
         if (!geom) return [];
-        if (geom.type === 'Polygon') return [featureOf(geom)];
+        if (geom.type === 'Polygon') return asPieces(geom);
         if (geom.type === 'MultiPolygon') {
             return geom.coordinates
                 .filter(rings => Array.isArray(rings) && rings.length)
-                .map(rings => featureOf({ type: 'Polygon', coordinates: rings }));
+                .reduce((all, rings) => all.concat(asPieces({ type: 'Polygon', coordinates: rings })), []);
         }
         return [];
     }

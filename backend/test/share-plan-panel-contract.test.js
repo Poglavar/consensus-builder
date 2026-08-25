@@ -43,14 +43,21 @@ describe('share plan panel contract', () => {
         const closeFn = sourceSection(dialogShare, 'function closeSharePlanPanel()', 'function showSharePlanPanel');
         expect(closeFn).toContain('window.sharePlanMode = false');
         expect(closeFn).toContain("document.body.classList.remove('share-plan-mode')");
-        expect(closeFn).toContain('map.removeLayer(state.overlayGroup)');
+        // Both highlight groups come off the map, not just whichever was showing.
+        expect(closeFn).toContain('map.removeLayer(state.overlayGroups[bucket])');
+        expect(closeFn).toContain('Object.keys(state.overlayGroups)');
         // A failed open must not leave the map locked.
         expect(panelFn).toContain('try { closeSharePlanPanel(); } catch (_) { }');
     });
 
     it('paints a proposal when its row is toggled, and only then', () => {
         expect(panelFn).toContain('const syncPlanOverlay = (key)');
-        expect(panelFn).toContain('if (!selected.has(key)) return;');
+        // Unchecking a row drops its overlay from whichever group holds it; only checked proposals
+        // are ever painted.
+        const sync = sourceSection(panelFn, 'const syncPlanOverlay = (key)', 'const applyHighlightMode');
+        expect(sync).toContain('if (!selected.has(key)) {');
+        expect(sync).toContain('overlayByKey.delete(key)');
+        expect(panelFn).toContain('if (!overlayGroups || overlayByKey.has(key) || !selected.has(key)) return;');
         const checkboxChange = sourceSection(panelFn, 'const onCheckboxChange =', 'const attachRow =');
         expect(checkboxChange).toContain('syncPlanOverlay(key)');
     });
@@ -71,16 +78,84 @@ describe('share plan panel contract', () => {
         expect(fill.match(/if \(!await inChunks\(/g) || []).toHaveLength(1);
     });
 
-    it('offers the whole-plan paint as a toggle, off until it is asked for', () => {
+    it('offers the subset highlight as All/Uploaded/Not-uploaded, starting on All', () => {
         // Hovering rows one at a time answers "is THIS one uploaded"; it cannot answer "which of my
-        // three hundred are". The toggle can, in the treatments the legend defines.
-        expect(panelFn).toContain("tShare('plan.showAllOnMap'");
-        expect(panelFn).toContain("showAll.type = 'checkbox';");
-        expect(panelFn).not.toContain('showAll.checked = true');
+        // three hundred are". The filter can, in the treatments the legend defines. "All" is the
+        // base drawing the map already shows, so it must be the starting mode and paint nothing.
+        expect(panelFn).toContain("{ value: 'all', key: 'plan.filterAll'");
+        expect(panelFn).toContain("{ value: 'uploaded', key: 'plan.filterUploaded'");
+        expect(panelFn).toContain("{ value: 'pending', key: 'plan.filterPending'");
+        expect(panelFn).toContain("let highlightMode = 'all';");
         // And it draws in slices, like the row build — 300 overlays in one task is the freeze the
         // panel was rebuilt to avoid.
-        const handler = panelFn.slice(panelFn.indexOf("showAll.addEventListener('change'"));
-        expect(handler.slice(0, 1400)).toContain('await inChunks(keys, key => syncPlanOverlay(key)');
+        const apply = sourceSection(panelFn, 'const applyHighlightMode', 'const setHighlightMode');
+        expect(apply).toContain('await inChunks([...proposalsByHash.keys()], key => buildPlanOverlay(key)');
+    });
+
+    // The property that makes the filter usable at all: flipping between subsets must not redo the
+    // geometry. The checkbox this replaced rebuilt every footprint on each tick — a turf resolve per
+    // proposal — which is why nobody waited for it.
+    it('switches subsets by moving Leaflet groups, not by rebuilding overlays', () => {
+        const apply = sourceSection(panelFn, 'const applyHighlightMode', 'const setHighlightMode');
+        // Builds once, behind a latch...
+        expect(panelFn).toContain('let overlaysBuilt = false;');
+        expect(apply).toContain('if (!overlaysBuilt)');
+        // ...and every later switch is add/remove of a whole group.
+        expect(apply).toContain('map.removeLayer(overlayGroups[bucket])');
+        expect(apply).toContain('overlayGroups[show].addTo(map)');
+        // Nothing in the switch resolves geometry again.
+        expect(apply, 'the mode switch rebuilds overlay geometry').not.toContain('groundFeaturesFor(');
+        expect(apply, 'the mode switch re-resolves proposal features').not.toContain('proposalFeaturesFor(');
+    });
+
+    // Painting the subset ON TOP of the base drawing answered nothing: the whole city is already
+    // drawn, so "Not uploaded yet" looked like "All" with one more shape in it. Choosing a subset
+    // has to push everything else back.
+    it('dims everything that is not the chosen subset, and undims on All', () => {
+        const apply = sourceSection(panelFn, 'const applyHighlightMode', 'const setHighlightMode');
+        expect(apply).toContain("document.body.classList.add('share-plan-highlighting')");
+        expect(apply).toContain("document.body.classList.remove('share-plan-highlighting')");
+        // The subset itself sits in its own pane, above the dimming.
+        expect(panelFn).toContain("const HIGHLIGHT_PANE = 'shareplan-highlight'");
+        expect(panelFn).toContain('pane: map.getPane(HIGHLIGHT_PANE) ? HIGHLIGHT_PANE : undefined');
+        // Closing with a subset chosen must not leave the map dimmed behind the panel.
+        const closeFn = sourceSection(dialogShare, 'function closeSharePlanPanel()', 'function showSharePlanPanel');
+        expect(closeFn).toContain("document.body.classList.remove('share-plan-highlighting')");
+    });
+
+    it('dims by Leaflet pane structure, not by this app\'s pane names', () => {
+        // A rule listing pane names leaves the next fabric pane as the one thing still bright.
+        const rule = proposalsCss.slice(proposalsCss.indexOf('body.share-plan-highlighting .leaflet-map-pane'));
+        expect(rule.slice(0, 260)).toContain(':not(.leaflet-tile-pane)');
+        expect(rule.slice(0, 260)).toContain(':not(.leaflet-shareplan-highlight-pane)');
+        const opacity = Number((rule.match(/opacity:\s*([\d.]+)/) || [])[1]);
+        expect(opacity, 'dimming too faint to separate the subset').toBeLessThanOrEqual(0.3);
+    });
+
+    // Parcels switch off below a zoom, and a whole-plan highlight is exactly the zoomed-out case. A
+    // highlight that can only resolve LOADED PARCEL LAYERS therefore paints almost nothing at the
+    // zoom where it is wanted: on a 298-member plan it drew a handful of scattered shapes, the ones
+    // whose geometry happens to be self-contained.
+    it('highlights the proposal\'s OWN geometry, not the parcels under it', () => {
+        const build = sourceSection(panelFn, 'const buildPlanOverlay = (key)', 'const syncPlanOverlay = (key)');
+        expect(build).toContain('const body = proposalBodyFeaturesFor(proposal);');
+        // Body first. Ground is the hover treatment — it answers "what does this stand on", which is
+        // a different question and a much worse shape here: the rail track has no child parcels, so
+        // its ground came out as twelve 0-4 px fragments against a 472x155 px corridor.
+        expect(build).toContain('(body && body.length)');
+        expect(build).toMatch(/\?\s*body\s*\n\s*:\s*groundFeaturesFor\(/);
+        expect(build, 'an empty resolve must not abandon the proposal')
+            .not.toMatch(/const features = groundFeaturesFor\([^)]*\);\s*\n\s*if \(!features\.length\) return;/);
+    });
+
+    // An upload changes only which treatment a proposal wears and which group it sits in. Rebuilding
+    // its layer would throw away geometry that did not change.
+    it('restyles and moves a layer on upload instead of rebuilding it', () => {
+        const sync = sourceSection(panelFn, 'const syncPlanOverlay = (key)', 'const applyHighlightMode');
+        expect(sync).toContain('existing.layer.setStyle(overlayStyleFor(');
+        expect(sync).toContain('overlayGroups[bucket].addLayer(existing.layer)');
+        expect(sync, 'syncPlanOverlay still rebuilds geometry for an existing layer')
+            .not.toContain('groundFeaturesFor(');
     });
 
     it('rows highlight on hover/click and never open details', () => {

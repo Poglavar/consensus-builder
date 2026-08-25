@@ -2050,59 +2050,72 @@ textarea.proposal-description-input {
     border-style: dashed;
 }
 
-/* Key for the two map treatments. Without it the difference on the map is a difference nobody can
-   read: a dashed outline means nothing until something says what it means. */
-.share-plan-legend {
+/* The subset filter row. Aligned to the SAME 14px gutter as the panel header and body — it used to
+   carry a legend and sat on its own 2px inset, which left it visibly out of line with everything
+   below it. */
+.share-plan-filter {
     display: flex;
     align-items: center;
-    gap: 14px;
-    flex-wrap: wrap;
-    padding: 4px 2px 8px;
-    font-size: 11px;
-    color: #475569;
+    padding: 0 14px 10px;
 }
 
-.share-plan-legend span {
+/* A segmented control rather than a dropdown: three options that are switched between constantly
+   should cost one click, not two. */
+.share-plan-mode-switch {
     display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-/* The swatches say what the two map treatments are, so they have to be READABLE as those two
-   treatments. At 16x10 with a 2px border this failed completely: a dashed border that short draws
-   about one dash per edge, so both swatches looked like the same solid box and the legend explained
-   nothing. Wider, with a thinner border, so the dashes are dashes. */
-.share-plan-legend i {
-    width: 30px;
-    height: 14px;
-    flex: 0 0 auto;
-    border-radius: 2px;
-    background: rgba(67, 99, 216, 0.40);
-    border: 1.5px solid #4363d8;
-}
-
-.share-plan-legend .is-pending {
-    /* Faint fill AND a dashed edge, both of them the map's own treatment for a proposal that is
-       only on this machine. Two cues rather than one: the fill difference alone is easy to miss
-       against a busy map, and the dash alone disappears on a small shape. */
-    background: rgba(67, 99, 216, 0.10);
-    border-style: dashed;
-}
-
-/* The opt-in whole-plan paint sits with the swatches it explains, and reads as a control rather
-   than as a third legend entry. */
-.share-plan-legend-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
+    align-items: stretch;
     margin-left: auto;
-    cursor: pointer;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+    overflow: hidden;
     user-select: none;
 }
 
-.share-plan-legend-toggle input {
-    margin: 0;
+.share-plan-mode-btn {
+    appearance: none;
+    border: 0;
+    border-left: 1px solid #cbd5e1;
+    background: #fff;
+    color: #475569;
+    font: inherit;
+    font-size: 11px;
+    line-height: 1;
+    padding: 5px 9px;
     cursor: pointer;
+    white-space: nowrap;
+}
+
+.share-plan-mode-btn:first-child {
+    border-left: 0;
+}
+
+.share-plan-mode-btn:hover:not(:disabled) {
+    background: #f1f5f9;
+}
+
+.share-plan-mode-btn[aria-pressed="true"] {
+    background: #4363d8;
+    color: #fff;
+}
+
+.share-plan-mode-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+/* Subset highlighting: everything that is NOT the chosen subset drops back, so "Not uploaded yet"
+   shows the one proposal that is not uploaded rather than the whole city with one more shape on it.
+   Selecting on Leaflet's own pane structure rather than on this app's pane NAMES, so a new fabric
+   pane is dimmed automatically instead of being the one thing left bright.
+   The tile pane is excluded — dimming the basemap as well removes the context you are reading the
+   subset against, and the highlight pane is excluded because it IS the subset. */
+body.share-plan-highlighting .leaflet-map-pane > .leaflet-pane:not(.leaflet-tile-pane):not(.leaflet-shareplan-highlight-pane) {
+    opacity: 0.15;
+    transition: opacity 120ms ease-out;
+}
+
+body.share-plan-highlighting .leaflet-shareplan-highlight-pane {
+    opacity: 1;
 }
 
 .share-plan-share-area {

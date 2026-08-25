@@ -644,7 +644,7 @@ const SHARE_PLAN_COLORS = [
 const SHARE_PLAN_HOVER_PARCEL_COLOR = '#FFEB3B'; // parcels involved — dashed, hollow
 const SHARE_PLAN_HOVER_BODY_COLOR = '#00E5FF';   // the proposal itself — solid, lightly filled
 
-let _sharePlanPanelState = null; // { root, overlayGroup, onKeyDown }
+let _sharePlanPanelState = null; // { root, overlayGroups, onKeyDown }
 
 function sharePlanColorForIndex(index) {
     const n = SHARE_PLAN_COLORS.length;
@@ -661,12 +661,16 @@ function closeSharePlanPanel() {
         window.__sharePlanPickProposal = null;
     }
     try { document.body.classList.remove('share-plan-mode'); } catch (_) { }
+    // Leaving the panel with a subset chosen must not leave the map dimmed behind it.
+    try { document.body.classList.remove('share-plan-highlighting'); } catch (_) { }
     if (state) {
         try { document.removeEventListener('keydown', state.onKeyDown); } catch (_) { }
         try { if (state.root && state.root.parentNode) state.root.parentNode.removeChild(state.root); } catch (_) { }
         try {
-            if (state.overlayGroup && typeof map !== 'undefined' && map && typeof map.removeLayer === 'function') {
-                map.removeLayer(state.overlayGroup);
+            if (state.overlayGroups && typeof map !== 'undefined' && map && typeof map.removeLayer === 'function') {
+                Object.keys(state.overlayGroups).forEach(bucket => {
+                    try { map.removeLayer(state.overlayGroups[bucket]); } catch (_) { }
+                });
             }
         } catch (_) { }
     }
@@ -755,66 +759,84 @@ function showSharePlanPanel() {
         panelHeader.append(panelTitle, panelCloseBtn);
         panelContent.appendChild(panelHeader);
 
-        // What the two map treatments mean. A dashed outline is not self-explanatory, and a
-        // difference nobody can read is not a difference.
-        const legend = document.createElement('div');
-        legend.className = 'share-plan-legend';
-        const legendEntry = (labelKey, fallback, pending) => {
-            const entry = document.createElement('span');
-            const swatch = document.createElement('i');
-            if (pending) swatch.className = 'is-pending';
-            const label = document.createElement('span');
-            label.textContent = tShare(labelKey, fallback);
-            entry.append(swatch, label);
-            return entry;
-        };
-        legend.append(
-            legendEntry('plan.legendUploaded', 'Uploaded', false),
-            legendEntry('plan.legendNotUploaded', 'Not uploaded yet', true)
-        );
+        // The subset filter. There used to be a legend of two swatches beside it, explaining that a
+        // solid shape is uploaded and a dashed one is not — necessary while the map painted both at
+        // once and you had to tell them apart. It no longer does: each mode shows one state and the
+        // pressed button names it, so the legend explained a distinction that is never on screen.
+        const filterRow = document.createElement('div');
+        filterRow.className = 'share-plan-filter';
 
-        // Opt-in whole-plan paint. Hovering rows one at a time answers "is THIS one uploaded"; it
-        // does not answer "which of my three hundred are". This does, in the two treatments the
-        // swatches above define — and it stays OFF by default, because opening a list is still not
-        // a request to draw three hundred overlays.
-        const showAllWrap = document.createElement('label');
-        showAllWrap.className = 'share-plan-legend-toggle';
-        const showAll = document.createElement('input');
-        showAll.type = 'checkbox';
-        const showAllText = document.createElement('span');
-        showAllText.textContent = tShare('plan.showAllOnMap', 'Show all on the map');
-        showAllWrap.append(showAll, showAllText);
-        showAll.addEventListener('change', async () => {
-            const keys = [...proposalsByHash.keys()];
-            if (!showAll.checked) {
-                keys.forEach(key => {
-                    const layer = overlayByKey.get(key);
-                    if (!layer) return;
-                    try { overlayGroup.removeLayer(layer); } catch (_) { }
-                    overlayByKey.delete(key);
-                });
-                setStatus('');
-                return;
-            }
-            // In frame-sized slices, like the row build: three hundred overlays in one task is the
-            // freeze this panel was rebuilt to avoid.
-            showAll.disabled = true;
-            await inChunks(keys, key => syncPlanOverlay(key), 'drawingProposals', 'Drawing {done}/{total} proposals on the map...');
-            showAll.disabled = false;
-            setStatus('');
+        // Which subset to highlight on the map.
+        //
+        // The map ALREADY draws every applied proposal, so "All" is the view you arrived with and
+        // paints nothing extra. The other two answer the only question this panel actually raises —
+        // "which of my three hundred are not on the server yet" — by highlighting that subset on top
+        // of what is already there. Nothing is hidden: the highlight is strong enough to read
+        // against the base drawing, and hiding the rest would cost a second pass over every layer.
+        //
+        // Switching is an add/remove of a Leaflet layer GROUP, not a rebuild. The overlays are built
+        // once, on the first switch away from All, and then kept — which is the whole point. The
+        // checkbox this replaces rebuilt three hundred footprints on every tick, each one a
+        // geometry resolve, and was slow enough that the answer was not worth the wait.
+        const HIGHLIGHT_MODES = [
+            { value: 'all', key: 'plan.filterAll', fallback: 'All' },
+            { value: 'uploaded', key: 'plan.filterUploaded', fallback: 'Uploaded' },
+            { value: 'pending', key: 'plan.filterPending', fallback: 'Not uploaded yet' }
+        ];
+        let highlightMode = 'all';
+        const modeButtons = new Map();
+        const modeWrap = document.createElement('div');
+        modeWrap.className = 'share-plan-mode-switch';
+        modeWrap.setAttribute('role', 'group');
+        modeWrap.setAttribute('aria-label', tShare('plan.filterLabel', 'Highlight on the map'));
+        HIGHLIGHT_MODES.forEach(mode => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'share-plan-mode-btn';
+            button.textContent = tShare(mode.key, mode.fallback);
+            button.setAttribute('aria-pressed', String(mode.value === highlightMode));
+            button.addEventListener('click', () => { setHighlightMode(mode.value); });
+            modeButtons.set(mode.value, button);
+            modeWrap.appendChild(button);
         });
-        legend.appendChild(showAllWrap);
-        panelContent.appendChild(legend);
+        filterRow.appendChild(modeWrap);
+        panelContent.appendChild(filterRow);
 
         const container = document.createElement('div');
         container.className = 'share-plan-panel-body';
         panelContent.appendChild(container);
 
-        // One coloured, non-interactive map sublayer per CHECKED proposal, keyed by proposal.
-        const overlayGroup = (typeof L !== 'undefined' && typeof map !== 'undefined' && map)
-            ? L.layerGroup().addTo(map)
+        // One coloured, non-interactive map sublayer per CHECKED proposal, keyed by proposal, and
+        // held in the group for its upload state. Splitting them by state at build time is what
+        // makes switching subsets free: the filter adds one group and removes the other, instead of
+        // walking three hundred layers to decide which still belong.
+        //
+        // Neither group is on the map until a subset is chosen — "All" is the base drawing alone.
+        const hasLeafletMap = (typeof L !== 'undefined' && typeof map !== 'undefined' && map);
+        const overlayGroups = hasLeafletMap
+            ? { uploaded: L.layerGroup(), pending: L.layerGroup() }
             : null;
-        const overlayByKey = new Map();
+        const overlayByKey = new Map(); // key -> { layer, bucket }
+        let overlaysBuilt = false;
+
+        // Choosing a subset has to REMOVE the rest from view, not just draw on top of it. Painting
+        // the subset over the base drawing answered nothing on a 298-member plan: the whole city is
+        // already blue, so "Not uploaded yet" looked exactly like "All" with one more shape in it.
+        //
+        // The base drawing belongs to the app, not to this panel, so it cannot be filtered
+        // layer-by-layer from here — and walking hundreds of layers to restyle them is the cost this
+        // control exists to avoid. Instead the highlight gets its own pane above everything, and a
+        // single body class drops the opacity of every other pane. One class toggle, no layer work,
+        // and it reverts exactly.
+        const HIGHLIGHT_PANE = 'shareplan-highlight';
+        if (hasLeafletMap && typeof map.createPane === 'function' && !map.getPane(HIGHLIGHT_PANE)) {
+            try {
+                const pane = map.createPane(HIGHLIGHT_PANE);
+                // Above every fabric pane, below popups (700) so nothing swallows a click target.
+                pane.style.zIndex = '690';
+                pane.style.pointerEvents = 'none';
+            } catch (_) { /* no pane: the highlight still draws, just not above everything */ }
+        }
 
         const proposalFeaturesFor = (proposal) => {
             // Live CHILDREN first — the applied footprint (a road's corridor pieces, a structure's
@@ -879,42 +901,131 @@ function showSharePlanPanel() {
             });
         };
 
-        const syncPlanOverlay = (key) => {
-            if (!overlayGroup) return;
-            const existing = overlayByKey.get(key);
-            if (existing) {
-                try { overlayGroup.removeLayer(existing); } catch (_) { }
-                overlayByKey.delete(key);
-            }
-            if (!selected.has(key)) return;
+        // Already on the server, or still only here? Shown as SOLID versus DASHED rather than as two
+        // colours: every proposal already owns a colour to tell it from its neighbours, so a second
+        // colour axis would collide with the first. A dashed, fainter shape reads as provisional,
+        // which is exactly what "not uploaded yet" is.
+        const overlayStyleFor = (uploaded, color) => ({
+            color,
+            weight: uploaded ? 2 : 3,
+            dashArray: uploaded ? null : '7 6',
+            fillColor: color,
+            // 0.40 against 0.10, not 0.35 against 0.14: over aerial imagery a quarter of a step in
+            // opacity is not a difference anyone can see, and the dash is the only other cue on a
+            // shape too small to show one.
+            fillOpacity: uploaded ? 0.40 : 0.10
+        });
+
+        // Resolving a proposal's ground is the expensive half — turf work per proposal — so it
+        // happens once per key and never again while the panel is open.
+        //
+        // The ground is resolved through LOADED PARCEL LAYERS, and parcels switch off below a zoom
+        // ("Parcels disabled at this zoom"). Whole-plan highlighting is exactly the case you look at
+        // zoomed OUT, so at the zoom where this panel is most useful the ground resolves to nothing
+        // for almost every member and the highlight painted a handful of scattered shapes — the ones
+        // whose geometry happens to be self-contained, like the rail track.
+        //
+        // So paint the proposal's OWN body — its corridor, footprint or structure polygon, straight
+        // off the stored record. It needs no parcels, no map state and no zoom, which is what a
+        // plan-wide view requires.
+        //
+        // The body is preferred over the parcel ground, not the other way round. Ground is the right
+        // treatment for HOVER, where you are asking "what does this stand on"; here the question is
+        // "where is this proposal", and the two answers diverge badly. The rail track resolves to no
+        // child parcels at all — it crosses mostly unparcelled land — so its ground fell through to
+        // a fallback that produced twelve fragments measuring 0-4 px on screen, while its body is
+        // the 472x155 px corridor you actually want to see. Ground remains the fallback for anything
+        // with no body geometry of its own, such as a decide-later claim over existing parcels.
+        const buildPlanOverlay = (key) => {
+            if (!overlayGroups || overlayByKey.has(key) || !selected.has(key)) return;
             const proposal = proposalsByHash.get(key);
-            const features = groundFeaturesFor(proposalFeaturesFor(proposal), proposalBodyFeaturesFor(proposal));
+            const body = proposalBodyFeaturesFor(proposal);
+            const features = (body && body.length)
+                ? body
+                : groundFeaturesFor(proposalFeaturesFor(proposal), body);
             if (!features.length) return;
             try {
                 const color = colorByKey.get(key) || '#4363d8';
-                // Already on the server, or still only here? Shown as SOLID versus DASHED rather
-                // than as two colours: every proposal already owns a colour to tell it from its
-                // neighbours, so a second colour axis would collide with the first. A dashed,
-                // fainter shape reads as provisional, which is exactly what "not uploaded yet" is.
                 const uploaded = !!(uploadState.get(key) || {}).uploaded;
+                const bucket = uploaded ? 'uploaded' : 'pending';
                 const layer = L.geoJSON({ type: 'FeatureCollection', features }, {
-                    style: {
-                        color,
-                        weight: uploaded ? 2 : 3,
-                        dashArray: uploaded ? null : '7 6',
-                        fillColor: color,
-                        // 0.40 against 0.10, not 0.35 against 0.14: over aerial imagery a quarter
-                        // of a step in opacity is not a difference anyone can see, and the dash is
-                        // the only other cue on a shape too small to show one.
-                        fillOpacity: uploaded ? 0.40 : 0.10
-                    },
-                    interactive: false
+                    style: overlayStyleFor(uploaded, color),
+                    interactive: false,
+                    // Its own pane, so the subset stays at full strength while everything else dims.
+                    pane: map.getPane(HIGHLIGHT_PANE) ? HIGHLIGHT_PANE : undefined
                 });
-                overlayGroup.addLayer(layer);
-                overlayByKey.set(key, layer);
+                overlayGroups[bucket].addLayer(layer);
+                overlayByKey.set(key, { layer, bucket });
             } catch (error) {
                 console.warn('share plan: could not paint proposal', key, error);
             }
+        };
+
+        // Bring one proposal's overlay back in line with its current selection and upload state.
+        // An upload only changes the STYLE and which group it belongs to, so it restyles and moves
+        // the existing layer — the geometry it was built from has not changed.
+        const syncPlanOverlay = (key) => {
+            if (!overlayGroups) return;
+            const existing = overlayByKey.get(key);
+
+            if (!selected.has(key)) {
+                if (existing) {
+                    try { overlayGroups[existing.bucket].removeLayer(existing.layer); } catch (_) { }
+                    overlayByKey.delete(key);
+                }
+                return;
+            }
+            if (!existing) {
+                // Before the first switch away from All nothing is built, and building on selection
+                // would pay the whole cost the filter exists to defer.
+                if (overlaysBuilt) buildPlanOverlay(key);
+                return;
+            }
+            const uploaded = !!(uploadState.get(key) || {}).uploaded;
+            const bucket = uploaded ? 'uploaded' : 'pending';
+            if (existing.bucket !== bucket) {
+                try { overlayGroups[existing.bucket].removeLayer(existing.layer); } catch (_) { }
+                try { overlayGroups[bucket].addLayer(existing.layer); } catch (_) { }
+                existing.bucket = bucket;
+            }
+            try { existing.layer.setStyle(overlayStyleFor(uploaded, colorByKey.get(key) || '#4363d8')); } catch (_) { }
+        };
+
+        // Add one group, remove the other. Everything expensive already happened.
+        const applyHighlightMode = async () => {
+            if (!overlayGroups || typeof map === 'undefined' || !map) return;
+            const detach = (bucket) => {
+                try { if (map.hasLayer(overlayGroups[bucket])) map.removeLayer(overlayGroups[bucket]); } catch (_) { }
+            };
+            if (highlightMode === 'all') {
+                detach('uploaded');
+                detach('pending');
+                try { document.body.classList.remove('share-plan-highlighting'); } catch (_) { }
+                setStatus('');
+                return;
+            }
+            if (!overlaysBuilt) {
+                modeButtons.forEach(button => { button.disabled = true; });
+                overlaysBuilt = true;
+                // In frame-sized slices, like the row build: three hundred overlays in one task is
+                // the freeze this panel was rebuilt to avoid.
+                const finished = await inChunks([...proposalsByHash.keys()], key => buildPlanOverlay(key),
+                    'drawingProposals', 'Drawing {done}/{total} proposals on the map...');
+                modeButtons.forEach(button => { button.disabled = false; });
+                if (finished === false) return; // the panel closed mid-build
+            }
+            const show = highlightMode === 'uploaded' ? 'uploaded' : 'pending';
+            detach(show === 'uploaded' ? 'pending' : 'uploaded');
+            try { if (!map.hasLayer(overlayGroups[show])) overlayGroups[show].addTo(map); } catch (_) { }
+            try { document.body.classList.add('share-plan-highlighting'); } catch (_) { }
+            setStatus('');
+        };
+
+        const setHighlightMode = (mode) => {
+            if (highlightMode === mode) return;
+            highlightMode = mode;
+            modeButtons.forEach((button, value) => button.setAttribute('aria-pressed', String(value === mode)));
+            applyHighlightMode();
         };
 
         // The panel's own key for a proposal, formed exactly as proposalsByHash was built. A proposal
@@ -969,7 +1080,7 @@ function showSharePlanPanel() {
                     // Last, so the body sits above the parcels rather than under them.
                     //
                     // Solid and filled when the server already has it, dashed and hollow when it is
-                    // still only here — the same language the legend and the plan overlay use. This
+                    // still only here — the same language the subset filter and the plan overlay use. This
                     // is the surface that actually gets looked at: the overlay repaints on a
                     // CHECKBOX toggle, and every row starts checked, so unless you untick and retick
                     // a row the overlay never runs and the upload state was invisible.
@@ -1011,7 +1122,7 @@ function showSharePlanPanel() {
         const countLine = document.createElement('div');
         countLine.style.fontSize = '13px';
         countLine.style.color = '#475569';
-        countLine.textContent = tShare('plan.countHeading', 'There are {{count}} proposals in the current plan', {
+        countLine.textContent = tShare('plan.countHeading', 'There are {{count}} proposals in the current plan (that is, applied on the map)', {
             count: totalInPlan
         });
         container.appendChild(countLine);
@@ -1576,7 +1687,7 @@ function showSharePlanPanel() {
             if (event.key === 'Escape') closeSharePlanPanel();
         };
         document.addEventListener('keydown', onKeyDown);
-        _sharePlanPanelState = { root: panelRoot, overlayGroup, onKeyDown, token: panelToken };
+        _sharePlanPanelState = { root: panelRoot, overlayGroups, onKeyDown, token: panelToken };
 
         // Clicking a proposal ON THE MAP finds it in the list. The map and the panel are two views
         // of one plan, so pointing at something in either should say where it is in the other —

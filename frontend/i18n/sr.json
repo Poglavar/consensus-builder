@@ -1796,9 +1796,9 @@
                     "rebuildingPlanTitle": "Ponovna izgradnja primenjenog plana",
                     "rebuildingPlan": "Ponovna primena formacija iz katastra…",
                     "countHeading": {
-                        "one": "U trenutnom planu je {{count}} predlog",
-                        "few": "U trenutnom planu su {{count}} predloga",
-                        "other": "U trenutnom planu je {{count}} predloga"
+                        "one": "U trenutnom planu je {{count}} predlog (to jest, primenjen na mapi)",
+                        "few": "U trenutnom planu su {{count}} predloga (to jest, primenjena na mapi)",
+                        "other": "U trenutnom planu je {{count}} predloga (to jest, primenjenih na mapi)"
                     },
                     "nameHeading": "Ili dajte ovom planu prepoznatljivo ime (ENS):",
                     "namePlaceholder": "npr. luka-obnova",
@@ -1883,9 +1883,11 @@
                     "picked": "Izabrano: {{title}}",
                     "pickedOnMap": "Izabrano: {{title}} — {{parcel}}",
                     "pickedNotInPlan": "Taj predlog nije u ovom planu.",
-                    "legendUploaded": "Poslato",
-                    "legendNotUploaded": "Još nije poslato",
-                    "showAllOnMap": "Prikaži sve na mapi"
+
+                    "filterLabel": "Istakni na mapi",
+                    "filterAll": "Sve",
+                    "filterUploaded": "Poslato",
+                    "filterPending": "Još nije poslato"
                 },
                 "processingImageForUpload": "Obrada slike za otpremanje...",
                 "walletConnectedStatus": "Novčanik povezan. Možete nastaviti sa kovanjem predloga",

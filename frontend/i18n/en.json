@@ -1818,9 +1818,9 @@
                     "rebuildingPlanTitle": "Rebuilding applied plan",
                     "rebuildingPlan": "Replaying its formations from the cadastre…",
                     "countHeading": {
-                        "one": "There is {{count}} proposal in the current plan",
-                        "few": "There are {{count}} proposals in the current plan",
-                        "other": "There are {{count}} proposals in the current plan"
+                        "one": "There is {{count}} proposal in the current plan (that is, applied on the map)",
+                        "few": "There are {{count}} proposals in the current plan (that is, applied on the map)",
+                        "other": "There are {{count}} proposals in the current plan (that is, applied on the map)"
                     },
                     "nameHeading": "Or give this plan a memorable name (ENS):",
                     "namePlaceholder": "e.g. harbor-redevelopment",
@@ -1905,9 +1905,11 @@
                     "picked": "Selected {{title}}",
                     "pickedOnMap": "Selected {{title}} — {{parcel}}",
                     "pickedNotInPlan": "That proposal is not in this plan.",
-                    "legendUploaded": "Uploaded",
-                    "legendNotUploaded": "Not uploaded yet",
-                    "showAllOnMap": "Show all on the map"
+
+                    "filterLabel": "Highlight on the map",
+                    "filterAll": "All",
+                    "filterUploaded": "Uploaded",
+                    "filterPending": "Not uploaded yet"
                 },
                 "rebased": "{{count}} of them take different ground here than when published: {{titles}} (details in the console).",
                 "checkingProposals": "Checking {{done}}/{{total}} proposals on the server...",

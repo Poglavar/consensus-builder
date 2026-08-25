@@ -1838,9 +1838,9 @@
                     "rebuildingPlanTitle": "Reconstruyendo el plan aplicado",
                     "rebuildingPlan": "Reaplicando sus formaciones desde el catastro…",
                     "countHeading": {
-                        "one": "Hay {{count}} propuesta en el plan actual",
-                        "few": "Hay {{count}} propuestas en el plan actual",
-                        "other": "Hay {{count}} propuestas en el plan actual"
+                        "one": "Hay {{count}} propuesta en el plan actual (es decir, aplicada en el mapa)",
+                        "few": "Hay {{count}} propuestas en el plan actual (es decir, aplicadas en el mapa)",
+                        "other": "Hay {{count}} propuestas en el plan actual (es decir, aplicadas en el mapa)"
                     },
                     "nameHeading": "O dale a este plan un nombre memorable (ENS):",
                     "namePlaceholder": "p. ej. puerto-remodelacion",
@@ -1925,9 +1925,11 @@
                     "picked": "Seleccionado: {{title}}",
                     "pickedOnMap": "Seleccionado: {{title}} — {{parcel}}",
                     "pickedNotInPlan": "Esa propuesta no está en este plan.",
-                    "legendUploaded": "Subida",
-                    "legendNotUploaded": "Aún sin subir",
-                    "showAllOnMap": "Mostrar todo en el mapa"
+
+                    "filterLabel": "Resaltar en el mapa",
+                    "filterAll": "Todas",
+                    "filterUploaded": "Subidas",
+                    "filterPending": "Aún sin subir"
                 },
                 "rebased": "{{count}} de ellas ocupan aquí un terreno distinto al de su publicación: {{titles}} (detalles en la consola).",
                 "checkingProposals": "Verificando {{done}}/{{total}} propuestas en el servidor...",
