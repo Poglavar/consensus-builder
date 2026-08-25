@@ -37,10 +37,6 @@ CREATE INDEX IF NOT EXISTS lane_topology_solution_status_idx
 ALTER TABLE public.lane_topology_solution
     ADD COLUMN IF NOT EXISTS osm_snapshot_id BIGINT;
 
--- Width analyses have the same gap: they record when they were measured, not against which
--- evidence, so nothing can tell that the roads moved under a stored measurement.
-ALTER TABLE public.lane_width_analysis
-    ADD COLUMN IF NOT EXISTS osm_snapshot_id BIGINT;
 CREATE INDEX IF NOT EXISTS lane_topology_solution_snapshot_idx
     ON public.lane_topology_solution (osm_snapshot_id);
 
@@ -160,3 +156,13 @@ CREATE INDEX IF NOT EXISTS lane_width_analysis_area_idx
     ON public.lane_width_analysis (city, area_key, created_at DESC);
 CREATE INDEX IF NOT EXISTS lane_width_analysis_status_idx
     ON public.lane_width_analysis (status, created_at DESC);
+
+-- Width analyses have the same gap as solutions: they record when they were measured, not against
+-- which evidence, so nothing can tell that the roads moved under a stored measurement.
+--
+-- This ALTER used to sit beside the matching one on lane_topology_solution, a hundred lines ABOVE
+-- the CREATE it depends on. That is fine forever on a database where the table already exists, and
+-- fails immediately on a new one — which is how the file came to be unrunnable against a fresh
+-- database without anyone noticing.
+ALTER TABLE public.lane_width_analysis
+    ADD COLUMN IF NOT EXISTS osm_snapshot_id BIGINT;

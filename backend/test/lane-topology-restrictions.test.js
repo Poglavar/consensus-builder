@@ -261,4 +261,25 @@ describe('solution snapshot reference', () => {
         expect(ddl).toMatch(/lane_topology_solution\s+ADD COLUMN IF NOT EXISTS osm_snapshot_id BIGINT/);
         expect(ddl).toMatch(/lane_width_analysis\s+ADD COLUMN IF NOT EXISTS osm_snapshot_id BIGINT/);
     });
+
+    // ...and the file has to RUN, which the assertion above cannot tell you. It matched a DDL whose
+    // ALTER on lane_width_analysis sat a hundred lines above the CREATE it depends on: fine forever
+    // on a database where the table exists, and an immediate failure on a new one. It was found by
+    // applying the schema to an empty database for the first time, not by any test.
+    it('never touches a table before the statement that creates it', async () => {
+        const ddl = await import('node:fs').then(fs =>
+            fs.readFileSync(new URL('../routes/lane-topology-ddl.sql', import.meta.url), 'utf8'));
+        const createdAt = new Map();
+        for (const match of ddl.matchAll(/CREATE TABLE (?:IF NOT EXISTS )?(public\.\w+)/g)) {
+            if (!createdAt.has(match[1])) createdAt.set(match[1], match.index);
+        }
+        const touches = [...ddl.matchAll(/(?:ALTER TABLE|CREATE INDEX[^;]*?\bON)\s+(public\.\w+)/g)];
+        expect(touches.length).toBeGreaterThan(3);
+        touches.forEach(match => {
+            const created = createdAt.get(match[1]);
+            expect(created, `${match[1]} is used but never created`).toBeDefined();
+            expect(created, `${match[1]} is used at ${match.index} before it is created at ${created}`)
+                .toBeLessThan(match.index);
+        });
+    });
 });
