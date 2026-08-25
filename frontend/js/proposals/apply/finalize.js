@@ -31,7 +31,15 @@ function persistAppliedProposal(proposalData, proposalId) {
 function refreshProposalUIAfterApply(statusMessage) {
     try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
     try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
-    try { if (typeof refreshParcelStylesForAppliedProposals === 'function') refreshParcelStylesForAppliedProposals(); } catch (_) { }
+    // Restyling walks EVERY parcel layer on the map, so during a whole-plan rebuild it is
+    // O(members × layers) — 1.5 s of a 16 s Šibenik replay spent repainting the same layers 167
+    // times. The rebuild repaints once at the end (rebuildAppliedFabric's strip phase); a single
+    // apply keeps the immediate repaint.
+    const inRebuild = (typeof ProposalManager !== 'undefined' && ProposalManager
+        && ProposalManager._rebuildInProgress === true);
+    if (!inRebuild) {
+        try { if (typeof refreshParcelStylesForAppliedProposals === 'function') refreshParcelStylesForAppliedProposals(); } catch (_) { }
+    }
     if (statusMessage && typeof updateStatus === 'function') {
         try { updateStatus(statusMessage); } catch (_) { }
     }

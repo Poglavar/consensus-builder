@@ -192,9 +192,9 @@ describe('shared-plan import boundary', () => {
 
         expect(events).toEqual(['plots', 'roads:road-a+road-b', 'building', 'park']);
         expect(applyProposal.mock.calls).toEqual([
-            ['plots', { replay: true, silent: true }],
-            ['building', { replay: true, silent: true }],
-            ['park', { replay: true, silent: true }]
+            ['plots', { replay: true, silent: true, _lightweightSnapshots: true }],
+            ['building', { replay: true, silent: true, _lightweightSnapshots: true }],
+            ['park', { replay: true, silent: true, _lightweightSnapshots: true }]
         ]);
         expect(result).toEqual({
             appliedIds: ['plots', 'road-a', 'road-b', 'building', 'park'],

@@ -186,12 +186,20 @@ async function _runProposalMutationBoundary(manager, kind, proposalId, options, 
         return operation(supplied, { ...(options || {}), _mutationTransaction: supplied });
     }
 
+    // A whole-store record snapshot is this boundary's rollback insurance, and it deep-clones
+    // EVERY proposal in the store. A plan-batch caller applying hundreds of members one after
+    // another pays that clone per member over a store that grows as it goes — O(members²) work
+    // that measured as the largest cost of opening the 298-member Šibenik plan. Such a caller
+    // passes `_lightweightSnapshots: true`: rollback then falls back to the per-record restore
+    // paths the operations already carry (fallback applied-state flips, set-aside reporting),
+    // and the presentation snapshot — which is cheap — still guards the map.
+    const lightweightSnapshots = !!(options && options._lightweightSnapshots === true);
     return proposalMutationTransactions.enqueue({
         kind,
         proposalId: _normalizeProposalId(proposalId)
     }, async transaction => {
         const store = typeof proposalStorage !== 'undefined' ? proposalStorage : null;
-        const proposalSnapshot = store && store.proposals instanceof Map
+        const proposalSnapshot = !lightweightSnapshots && store && store.proposals instanceof Map
             ? proposalMutationTransactions.snapshotRecordMap(store.proposals)
             : null;
         const nextProposalId = store ? store.nextProposalId : undefined;
@@ -785,6 +793,9 @@ const ProposalManager = {
             const stripsStarted = _now();
             try { if (typeof refreshAppliedCorridorStrips === 'function') refreshAppliedCorridorStrips(); } catch (_) { }
             try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
+            // The one repaint the whole replay gets — the per-member repaint is held while
+            // _rebuildInProgress (see refreshProposalUIAfterApply).
+            try { if (typeof refreshParcelStylesForAppliedProposals === 'function') refreshParcelStylesForAppliedProposals(); } catch (_) { }
             // Built by _rebuildPass; defaulted here so a caller that supplies its own pass (tests
             // do) is not broken by the reporting.
             const profile = this._lastRebuildProfile || { members: 0, resetMs: 0, groundMs: 0, foldMs: 0, failed: 0, slowest: null };
@@ -1626,7 +1637,9 @@ const ProposalManager = {
             try { setProposalApplied(proposal, false, { stamp: false }); } catch (_) { proposal.applied = false; }
             let applied = false;
             try {
-                applied = await this.applyProposal(key, { replay: true });
+                applied = await this.applyProposal(key, options._lightweightSnapshots === true
+                    ? { replay: true, _lightweightSnapshots: true }
+                    : { replay: true });
             } catch (error) {
                 console.error('[deriveForNewProposal] apply threw for', key, error);
                 applied = false;
@@ -1897,12 +1910,41 @@ const ProposalManager = {
             if (key === root || !touched.has(root)) return;
             try { pieces.push(layer.toGeoJSON(false)); } catch (_) { }
         });
+        // Bounding boxes before any real clip. The sweep asks (design part × piece) for every
+        // applied record against every new piece, and almost all of those pairs are nowhere near
+        // each other — on the 298-member Šibenik plan one road apply spent 3.9 s here, nearly all
+        // of it establishing disjointness the boxes already knew. Boxes are cached per shape
+        // object; a disjoint pair costs four comparisons and cannot hide an overlap.
+        const sweepBoxCache = (typeof WeakMap === 'function') ? new WeakMap() : null;
+        const sweepBoxOf = shape => {
+            if (!shape || typeof shape !== 'object') return null;
+            let box = sweepBoxCache ? sweepBoxCache.get(shape) : null;
+            if (!box) {
+                try { box = t.bbox(shape); } catch (_) { box = null; }
+                if (box && sweepBoxCache) sweepBoxCache.set(shape, box);
+            }
+            return box;
+        };
+        const sweepBoxesDisjoint = (a, b) => (!!a && !!b)
+            && (a[0] > b[2] || b[0] > a[2] || a[1] > b[3] || b[1] > a[3]);
         const geometryOps = {
             intersectionArea: (a, b) => {
+                if (sweepBoxesDisjoint(sweepBoxOf(a), sweepBoxOf(b))) return 0;
                 try { const hit = t.intersect(a, b); return hit ? (t.area(hit) || 0) : 0; } catch (_) { return 0; }
             },
             area: shape => { try { return t.area(shape) || 0; } catch (_) { return 0; } }
         };
+        // The whole sweep's ground, as one box: a record whose footprint cannot reach ANY new
+        // piece has nothing to answer for and skips the per-part inspection entirely.
+        let sweepGroundBox = null;
+        pieces.forEach(piece => {
+            const box = sweepBoxOf(piece);
+            if (!box) return;
+            sweepGroundBox = sweepGroundBox
+                ? [Math.min(sweepGroundBox[0], box[0]), Math.min(sweepGroundBox[1], box[1]),
+                    Math.max(sweepGroundBox[2], box[2]), Math.max(sweepGroundBox[3], box[3])]
+                : box.slice();
+        });
         const corridorPieces = pieces.filter(piece => {
             const props = (piece && piece.properties) || {};
             return props.isCorridor === true || props.isTrack === true
@@ -1941,6 +1983,7 @@ const ProposalManager = {
             let footprint = null;
             try { footprint = planOrderApi.footprintOf(record); } catch (_) { footprint = null; }
             if (!footprint || !footprint.geometry) continue;
+            if (sweepGroundBox && sweepBoxesDisjoint(sweepBoxOf(footprint), sweepGroundBox)) continue;
 
             // Ask per BUILDING, not of the union. A block is one building per parcel, so the union
             // of them cannot fit inside a single piece of a single parcel once the block spans more
@@ -2050,6 +2093,20 @@ const ProposalManager = {
         if (replayBatched) batchStore.beginBatch();
         try {
 
+        // ONE mutation transaction around the whole fold, not one per member. Each replay-apply
+        // used to open its own root transaction, and a root transaction's insurance is a deep
+        // clone of EVERY record in the store — 298 members × a multi-MB store was the single
+        // largest cost of a rebuild (measured on the Šibenik plan: 4.7 s of a 16 s replay, plus
+        // the GC those clones feed). The fold does not need per-member rollback: the pass has
+        // already cleared the whole target set, a member that fails is set aside with its reason
+        // and stays unapplied, and everything an apply writes into a record is recomputed by the
+        // next successful apply of that record. The transaction still guards the pass as a whole —
+        // a throw out of the fold mechanics restores the pre-fold records and presentation exactly
+        // as a per-member throw used to.
+        await _runProposalMutationBoundary(this, 'rebuild-fold', null, opts, async (_transaction, txOptions) => {
+        const foldTransaction = txOptions._mutationTransaction;
+        let lastFoldYield = _now();
+
         for (const proposal of appliedList) {
             const key = (typeof getProposalKey === 'function' && getProposalKey(proposal)) || proposal.proposalId;
             const memberStarted = _now();
@@ -2070,16 +2127,20 @@ const ProposalManager = {
             replayDone += 1;
             _reportApplyProgress(_getProposalApplyLabel(key, proposal), replayDone, appliedList.length);
             try {
-                ok = await this.applyProposal(key, { replay: true });
+                ok = await this.applyProposal(key, { replay: true, _mutationTransaction: foldTransaction });
             } catch (error) {
                 console.error('[rebuildAppliedFabric] apply threw for', key, error);
                 ok = false;
             }
             // Between members, not inside one: a replay of 180 proposals is a minute of work, and
-            // without a macrotask boundary the whole minute is one frame. Costs ~4 ms a member and
-            // buys back a map you can pan while it runs.
-            if (typeof window !== 'undefined' && typeof window.yieldToBrowser === 'function') {
+            // without a macrotask boundary the whole minute is one frame. On the CLOCK, not per
+            // member — a macrotask hop costs ~4 ms, so yielding after every one of 167 members was
+            // ~0.7 s of pure waiting; yielding only once ~12 ms of work have accumulated keeps the
+            // map pannable at the same frame budget the corridor derivation uses.
+            if (typeof window !== 'undefined' && typeof window.yieldToBrowser === 'function'
+                && _now() - lastFoldYield >= 12) {
                 await window.yieldToBrowser();
+                lastFoldYield = _now();
             }
             const memberMs = _now() - memberStarted;
             if (!slowest || memberMs > slowest.ms) slowest = { key: String(key), ms: memberMs };
@@ -2108,6 +2169,11 @@ const ProposalManager = {
                 console.warn('[rebuildAppliedFabric] could not re-apply', key, failure || '');
             }
         }
+
+        // Never `false`: the boundary treats a false return as "roll the transaction back", and
+        // set-aside members are a reported outcome of a successful pass, not a failure of it.
+        return true;
+        });
 
         } finally {
             // finally, not after the loop: a throw mid-replay must still leave the store's batch
@@ -2689,7 +2755,10 @@ const ProposalManager = {
                 // Clicking Apply chooses this proposal over any currently-standing alternative.
                 // Keep a complete record snapshot until the canonical replay proves that choice can
                 // stand; if it cannot, restore both sides rather than leaving half of a switch.
-                const recordSnapshot = proposalStorage.proposals instanceof Map
+                // Same O(members²) guard as the boundary above: a plan-batch caller opts out of
+                // the whole-store clone and failure restore uses the per-record fallbackStates.
+                const recordSnapshot = applyOptions._lightweightSnapshots !== true
+                        && proposalStorage.proposals instanceof Map
                     ? proposalMutationTransactions.snapshotRecordMap(proposalStorage.proposals)
                     : null;
                 let switchedAlternatives = [];
@@ -2757,7 +2826,8 @@ const ProposalManager = {
                     // enqueueing behind the operation it is part of.
                     const derived = await this.deriveForNewProposal(proposal, {
                         _fabricQueue: true,
-                        supersededFootprints: parkedFootprints
+                        supersededFootprints: parkedFootprints,
+                        _lightweightSnapshots: applyOptions._lightweightSnapshots === true
                     });
                     const refreshed = _getProposalRecord(proposalId) || proposal;
                     const standing = !!derived && ((typeof isProposalCurrentlyApplied === 'function')

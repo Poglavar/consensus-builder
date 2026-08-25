@@ -127,12 +127,12 @@ describe('a plan\'s own members are not blockers', () => {
 describe('the shared-plan route asks for that behaviour', () => {
     it('passes supersede:false for members that are not part of a coordinated plan', () => {
         expect(sharingSource, 'the plan route no longer opts out of superseding')
-            .toMatch(/\{ silent: true, supersede: false, planMemberIds \}/);
+            .toMatch(/\{ silent: true, supersede: false, planMemberIds, _lightweightSnapshots: true \}/);
     });
 
     // Coordinated members are complementary parts of one published plan and already bypass the
     // sweep via replay; if that ever changed they would start refusing each other.
     it('leaves coordinated members on the replay path', () => {
-        expect(sharingSource).toMatch(/coordinatedPlanIdOfSharedRecord\(record\)\s*\n\s*\?\s*\{ replay: true, silent: true \}/);
+        expect(sharingSource).toMatch(/coordinatedPlanIdOfSharedRecord\(record\)\s*\n\s*\?\s*\{ replay: true, silent: true, _lightweightSnapshots: true \}/);
     });
 });

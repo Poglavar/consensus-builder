@@ -382,6 +382,6 @@ describe('the fold itself no longer fetches', () => {
 
     it('still applies members one at a time, in order', () => {
         const loop = pass.slice(pass.indexOf('for (const proposal of appliedList)'));
-        expect(loop).toMatch(/await this\.applyProposal\(key, \{ replay: true \}\)/);
+        expect(loop).toMatch(/await this\.applyProposal\(key, \{ replay: true, _mutationTransaction: foldTransaction \}\)/);
     });
 });

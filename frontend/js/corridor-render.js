@@ -799,6 +799,32 @@ async function withCorridorStripRefreshHeld(run) {
     }
 }
 
+// One corridor's finished render — its strip/edge-fill/junction group with hit targets, plus the
+// centerline and marking DATA the global passes (cross-corridor junctions, lane markings) consume —
+// keyed by corridor id and guarded by a fingerprint of everything the render reads. A strips
+// refresh rebuilds EVERY applied corridor from its profile: on a 130-corridor plan that is ~2.5 s
+// of turf/proj4 per refresh, and a refresh runs after every corridor apply, unapply and edit —
+// almost always with 129 of 130 corridors byte-identical to the last time. Leaflet layer groups
+// re-add cleanly after their parent leaves the map, so an unchanged corridor costs a map lookup.
+const appliedCorridorRenderCache = new Map();
+
+function appliedCorridorRenderFingerprint(proposal) {
+    try {
+        // Everything the per-corridor render derives from: the authored road payload (definition,
+        // cross-section, segments), the metadata that flips rail rendering, and the lifecycle
+        // (an executed corridor may read differently from an active one). Selection highlight
+        // and demolition overlays are separate passes and deliberately not part of this.
+        const text = JSON.stringify([proposal.roadProposal || null, proposal.metadata || null,
+            proposal.lifecycleStatus || null]);
+        let hash = 0x811c9dc5;
+        for (let i = 0; i < text.length; i += 1) {
+            hash ^= text.charCodeAt(i);
+            hash = Math.imul(hash, 0x01000193) >>> 0;
+        }
+        return `${text.length}:${hash >>> 0}`;
+    } catch (_) { return null; }
+}
+
 function refreshAppliedCorridorStrips() {
     if (corridorRefreshHeld) {
         corridorRefreshMissed = true;
@@ -814,6 +840,7 @@ function refreshAppliedCorridorStrips() {
     let drawn = 0;
     const renderedCorridors = [];
     const renderedMarkings = [];
+    const liveCorridorIds = new Set();
 
     const proposals = proposalStorage.getAllProposals();
     proposals.filter(isAppliedCorridorProposal).forEach(proposal => {
@@ -829,6 +856,17 @@ function refreshAppliedCorridorStrips() {
             (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null)
             || proposal.proposalId
         );
+        liveCorridorIds.add(corridorId);
+        const fingerprint = appliedCorridorRenderFingerprint(proposal);
+        const cached = fingerprint ? appliedCorridorRenderCache.get(corridorId) : null;
+        if (cached && cached.fingerprint === fingerprint) {
+            cached.group.addTo(layer);
+            renderedCorridors.push(...cached.corridors);
+            renderedMarkings.push(...cached.markings);
+            drawn += 1;
+            return;
+        }
+        appliedCorridorRenderCache.delete(corridorId);
         const entries = corridorRenderEntries(proposal, definition)
             .filter(entry => Array.isArray(entry.points) && entry.points.length >= 2)
             .map(entry => ({
@@ -842,6 +880,8 @@ function refreshAppliedCorridorStrips() {
 
         const group = L.layerGroup();
         const allStrips = [];
+        const corridorMarkings = [];
+        const corridorCenterlines = [];
         const ownerClass = corridorOwnerClass((typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId);
         entries.forEach((entry, entryIndex) => {
             const strips = buildCorridorStrips([entry.points], entry.profile);
@@ -860,7 +900,7 @@ function refreshAppliedCorridorStrips() {
             if (segmentGroup) {
                 segmentGroup.addTo(group);
                 allStrips.push(...strips);
-                renderedMarkings.push(...markings);
+                corridorMarkings.push(...markings);
             }
         });
         if (!allStrips.length) return;
@@ -874,7 +914,9 @@ function refreshAppliedCorridorStrips() {
         if (junctions.length) renderCorridorJunctions(junctions, group, CORRIDOR_STRIPS_PANE);
 
         group.addTo(layer);
-        renderAppliedCorridorHitTargets(allStrips, proposal, layer, definition, entries);
+        // Into the corridor's OWN group (not the whole strips layer), so the hit targets travel
+        // with the group when the cache re-adds it on the next refresh.
+        renderAppliedCorridorHitTargets(allStrips, proposal, group, definition, entries);
         const gradeSpans = (typeof gradeSeparationSpanRecords === 'function')
             ? gradeSeparationSpanRecords(definition.gradeSeparations || [])
             : [];
@@ -885,18 +927,33 @@ function refreshAppliedCorridorStrips() {
             const junctionRuns = gradeSpans.length && typeof corridorSurfaceRuns === 'function'
                 ? corridorSurfaceRuns([entry.points], gradeSpans)
                 : [entry.points];
-            if (junctionRuns.length) renderedCorridors.push({
+            if (junctionRuns.length) corridorCenterlines.push({
                 centerline: junctionRuns,
                 profile: entry.profile,
                 corridorId
             });
         });
+        renderedCorridors.push(...corridorCenterlines);
+        renderedMarkings.push(...corridorMarkings);
+        if (fingerprint) {
+            appliedCorridorRenderCache.set(corridorId, {
+                fingerprint,
+                group,
+                corridors: corridorCenterlines,
+                markings: corridorMarkings
+            });
+        }
         drawn += 1;
         } catch (error) {
             // One corrupt road must not strip the asphalt off EVERY road on the map.
             console.error('[corridor-render] strips failed for proposal', proposal?.proposalId, error);
         }
     });
+
+    // A corridor no longer applied has no render to keep warm.
+    for (const cachedId of Array.from(appliedCorridorRenderCache.keys())) {
+        if (!liveCorridorIds.has(cachedId)) appliedCorridorRenderCache.delete(cachedId);
+    }
 
     // Where two applied roads meet (a drawing snapped onto an existing road shares its exact
     // coordinates), form a real intersection: the same asphalt + zebra treatment as a road's

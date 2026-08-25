@@ -604,9 +604,14 @@ async function materializeQueuedSharedProposals(proposalIds) {
             // held by an applied proposal is refused and reported rather than standing that
             // proposal down behind the reader's back. Coordinated members already bypass the
             // alternative sweep for their own reason (complementary parts of one published plan).
+            // _lightweightSnapshots: a batch of hundreds of members must not deep-clone the whole
+            // proposal store per member as rollback insurance — that is O(members²) over a store
+            // that grows as the batch runs, and it was the largest local cost of opening the
+            // 298-member Šibenik plan. A member that fails restores through the per-record
+            // fallback paths and is reported like any other refusal.
             const applyOptions = coordinatedPlanIdOfSharedRecord(record)
-                ? { replay: true, silent: true }
-                : { silent: true, supersede: false, planMemberIds };
+                ? { replay: true, silent: true, _lightweightSnapshots: true }
+                : { silent: true, supersede: false, planMemberIds, _lightweightSnapshots: true };
             const ok = await ProposalManager.applyProposal(id, applyOptions);
             if (ok) appliedIds.push(id);
             else failedIds.push(id);
