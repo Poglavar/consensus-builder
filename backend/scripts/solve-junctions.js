@@ -584,7 +584,13 @@ async function main() {
         queue.push(...candidates);
         if (args.limit && queue.length >= args.limit) break;
     }
-    log(`${queue.length} to run, ${alreadyDone} already solved by ${args.provider}/${args.model}`
+    // "already solved" was a lie that cost a diagnosis. A junction whose stored answer SETTLED it is
+    // filtered out earlier as `adjudicated`; anything still unresolved that reaches this check has an
+    // answer from this provider and model which did NOT settle it. It is skipped — rerunning the same
+    // model would reproduce the same non-answer — but it is not done, and calling it done sent me
+    // looking for stale snapshots when six tiles of a batch reported nothing to run.
+    log(`${queue.length} to run, ${alreadyDone} attempted by ${args.provider}/${args.model} `
+        + 'and STILL UNRESOLVED (skipped; needs a different model, a split, or a person)'
         + (args.order === 'finish' ? `; they finish ${completedTiles} tile${completedTiles === 1 ? '' : 's'}` : ''));
 
     if (args.dryRun) {
