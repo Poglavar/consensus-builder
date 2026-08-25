@@ -7,7 +7,8 @@
 // summary "1 failed". The cost of getting this wrong is someone re-running work that is already in
 // the database — or, worse, believing the area is less complete than it is.
 import { afterEach, describe, expect, it } from 'vitest';
-import { classifyJunctions, setApiImpl, solveJunction, withRetry } from '../scripts/solve-junctions.js';
+import { classifyJunctions, jobTimeoutFor, setApiImpl, solveJunction, withRetry } from '../scripts/solve-junctions.js';
+import { PROVIDER_TIMEOUT_MS } from '../lane-topology/cli-providers.js';
 
 const ARGS = {
     city: 'zagreb', provider: 'codex', model: 'gpt-5.6-sol',
@@ -180,5 +181,28 @@ describe('classifyJunctions', () => {
             includeResolved: true, settledNodes: new Set(['osm-node:1'])
         });
         expect(open.map(j => j.key)).toEqual(['junction:1']);
+    });
+});
+
+// The runner watches a job the backend is running, so its patience has to outlast the ceiling the
+// backend puts on the CLI. An 18-minute runner over a 15-minute provider looked fine until the
+// provider ceiling was raised for Opus and the runner became the shorter of the two — at which
+// point it would give up on work still allowed to finish and report it failed. "Job 377 still
+// running after 1080s" is what that reads like.
+describe('jobTimeoutFor', () => {
+    it('waits longer than the provider is allowed to take, for every provider', () => {
+        Object.entries(PROVIDER_TIMEOUT_MS).forEach(([provider, ceiling]) => {
+            expect(jobTimeoutFor(provider, PROVIDER_TIMEOUT_MS),
+                `${provider} runner patience`).toBeGreaterThan(ceiling);
+        });
+    });
+
+    it('tracks a ceiling that changes, instead of holding a number of its own', () => {
+        expect(jobTimeoutFor('claude', { claude: 25 * 60 * 1000 }))
+            .toBeGreaterThan(jobTimeoutFor('codex', { codex: 15 * 60 * 1000 }));
+    });
+
+    it('still gives an unknown provider a sane wait', () => {
+        expect(jobTimeoutFor('nobody', PROVIDER_TIMEOUT_MS)).toBeGreaterThan(15 * 60 * 1000);
     });
 });

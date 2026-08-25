@@ -316,10 +316,33 @@ describe('lane-topology CLI provider boundary', () => {
         expect(args.slice(args.indexOf('--model'), args.indexOf('--model') + 2)).toEqual(['--model', 'sonnet']);
         expect(args).toContain('--json-schema');
         expect(args).not.toContain('--dangerously-skip-permissions');
-        // Same question, same crop, same ceiling — a provider must not be cut off at a point the
-        // other is allowed to work past, or a comparison between them measures the ceiling.
-        expect(PROVIDER_TIMEOUT_MS.claude).toBe(15 * 60 * 1000);
-        expect(PROVIDER_TIMEOUT_MS.codex).toBe(PROVIDER_TIMEOUT_MS.claude);
+    });
+
+    // This used to require both providers to share one ceiling, on the reasoning that a provider cut
+    // off where the other may keep working makes a comparison unfair. The measurement says otherwise:
+    // codex averages 222 s and Opus 458 s, so one number cannot sit clear of both spreads. Set at
+    // Opus's observed worst case of 911 s, 15 minutes cut off a real junction after spending the
+    // whole 15 minutes on it — the ceiling stopped being a backstop and became a limit ordinary work
+    // reached. What has to hold is headroom over each provider's OWN spread.
+    describe('the ceiling on a CLI run', () => {
+        // Measured over a 47-junction Opus batch: 458 s mean, 911 s worst — and that worst one was
+        // cut off by the old 15-minute ceiling with nothing to show for the 15 minutes.
+        const OPUS_WORST_OBSERVED_MS = 911_000;
+
+        it('leaves Opus real headroom over its slowest measured junction', () => {
+            expect(PROVIDER_TIMEOUT_MS.claude).toBeGreaterThan(OPUS_WORST_OBSERVED_MS * 1.5);
+        });
+
+        it('gives the slower provider the longer ceiling', () => {
+            // Opus measured ~4x codex's wall clock over a 47-junction batch.
+            expect(PROVIDER_TIMEOUT_MS.claude).toBeGreaterThan(PROVIDER_TIMEOUT_MS.codex);
+        });
+
+        it('keeps every ceiling a backstop rather than an hour-long hang', () => {
+            Object.values(PROVIDER_TIMEOUT_MS).forEach(ceiling => {
+                expect(ceiling).toBeLessThanOrEqual(30 * 60 * 1000);
+            });
+        });
     });
 
     it('gives Claude read-only access to an attached orthophoto in the isolated job directory', () => {

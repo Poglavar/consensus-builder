@@ -6,12 +6,20 @@ import { createRequire } from 'node:module';
 import { normalizeImageryObservations } from './imagery-observations.js';
 
 export const TOPOLOGY_PROMPT_VERSION = 'lane-topology-v10';
-// Both providers answer the same question about the same crop, so they get the same ceiling. Codex
-// kept 10 minutes from when its runs averaged 222 s; measured against this prompt a junction takes
-// 337–911 s, so the shorter ceiling would have cut off work the other provider is allowed to finish.
+// The same question about the same crop, but not at the same speed, so not the same ceiling.
+//
+// 15 minutes came from codex, whose runs average 222 s and whose slowest measured junction was
+// 911 s. Opus takes about four times as long — 458 s average over a 47-junction batch — and one
+// junction in that batch ran to 911 s and was cut off with nothing to show for it: the ceiling had
+// been set AT the top of the observed range, so the first heavy junction walked straight into it.
+// A cut-off junction is the worst outcome available, because the full 15 minutes is spent and the
+// answer is thrown away.
+//
+// So each provider gets a ceiling with real headroom over its own measured spread, and the ceiling
+// stays a backstop against a hung CLI rather than a limit ordinary work can reach.
 export const PROVIDER_TIMEOUT_MS = Object.freeze({
     codex: 15 * 60 * 1000,
-    claude: 15 * 60 * 1000
+    claude: 25 * 60 * 1000
 });
 export const TOPOLOGY_OUTPUT_SCHEMA = {
     type: 'object',

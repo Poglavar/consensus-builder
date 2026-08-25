@@ -40,8 +40,21 @@ const DEFAULTS = {
     order: 'size',
     concurrency: 1,
     pollMs: 5000,
-    jobTimeoutMs: 18 * 60 * 1000
+    // Left null so it can be derived from the provider's own ceiling once --provider is known;
+    // see jobTimeoutFor. A fixed number here is how the two ceilings drift apart.
+    jobTimeoutMs: null
 };
+
+// How long the runner waits for a job the backend is running. It must outlast the ceiling the
+// backend puts on the CLI, or the runner gives up on work that is still allowed to finish and
+// reports it failed — which is exactly what "Job 377 still running after 1080s" was: an 18-minute
+// runner watching a 15-minute provider, with a restart in between. The slack covers enqueue,
+// polling and the read-back either side of the model call.
+const JOB_TIMEOUT_SLACK_MS = 5 * 60 * 1000;
+export function jobTimeoutFor(provider, ceilings) {
+    const ceiling = (ceilings || {})[provider];
+    return (Number(ceiling) || 15 * 60 * 1000) + JOB_TIMEOUT_SLACK_MS;
+}
 const MAX_RECOGNITION_GSD_M = 0.35;
 const BBOX_EPSILON = 1e-6;
 // A CLI that reports the subscription window is exhausted will report it for every junction after
@@ -450,6 +463,9 @@ async function main() {
     if (args.help || (!args.bbox && !args.center)) {
         console.log(USAGE);
         return 0;
+    }
+    if (!args.jobTimeoutMs) {
+        args.jobTimeoutMs = jobTimeoutFor(args.provider, CliProviders.PROVIDER_TIMEOUT_MS);
     }
     if (!args.bbox) args.bbox = centerBbox(args.center, args.radiusM);
     args.bbox = roundBbox(args.bbox);
