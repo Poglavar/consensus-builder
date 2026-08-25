@@ -12,11 +12,11 @@
   ],
   "junctions": [
     {
-      "key": "junction:3412509715+3412509722",
-      "name": "Ulica 153. brigade Hrvatske vojske",
-      "arms": 4,
-      "lanes": 17,
-      "why": "Four failures across two providers and three unrelated causes: ECONNRESET, then the 15-minute ceiling, then the 25-minute ceiling at 1507s. Raising the limit did not rescue it, so it is not a timeout problem. Nothing has yet read the junction itself.",
+      "key": "junction:361429807+1438436282+1438436422+2745836176+3412509720+3412509728+3412509735+3433758698+9982143631+9982143674+9982143681",
+      "name": "Ulica 153. brigade Hrvatske vojske × Ulica Slavka Kolara",
+      "arms": 8,
+      "lanes": 56,
+      "why": "Five failures across two providers on three unrelated causes: ECONNRESET, the 15-minute ceiling, then the 25-minute ceiling at 1507 s, twice. Raising the limit did not rescue it, so it is not a timeout problem. Eleven fused nodes, 8 arms and 56 lanes: the movement space is far larger than anything else being solved, and it is plausibly too big to answer in one pass rather than broken in any way. Needs splitting or adjudicating by hand, not another run.",
       "since": "2026-08-25"
     }
   ]
