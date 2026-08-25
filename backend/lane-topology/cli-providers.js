@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { createRequire } from 'node:module';
 import { normalizeImageryObservations } from './imagery-observations.js';
 
-export const TOPOLOGY_PROMPT_VERSION = 'lane-topology-v10';
+export const TOPOLOGY_PROMPT_VERSION = 'lane-topology-v11';
 // The same question about the same crop, but not at the same speed, so not the same ceiling.
 //
 // 15 minutes came from codex, whose runs average 222 s and whose slowest measured junction was
@@ -125,12 +125,37 @@ function withLaneHandles(graph) {
 // commonest scored failure was a patch full of movements at every node except the one that mattered.
 export function recognitionTargets(graph) {
     const degreeOf = new Map((graph?.nodes || []).map(node => [node.id, node.degree]));
+    const lanes = graph?.lanes || [];
+    // The handles that are actually legal at this node, named rather than left to be inferred.
+    //
+    // A movement must run from a lane ENDING here into a lane STARTING here, and the model had to
+    // work that out from fromNode/toNode across every lane in the crop. Two things made that hard
+    // enough to fail five times: a two-way street contributes both an arriving and a departing lane
+    // that differ only in direction, so barely a quarter of naive pairings are legal; and a crop
+    // routinely holds ten unresolved nodes whose ids differ by a couple of digits, so a lane
+    // arriving at one node pairs plausibly with a lane leaving another.
+    //
+    // Handing over the two lists turns an inference into a lookup.
+    const handlesAt = (nodeId, openSections) => {
+        const enterFrom = [];
+        const leaveInto = [];
+        lanes.forEach((lane, index) => {
+            const handle = laneHandle(index);
+            if (lane.toNode === nodeId
+                && (!openSections || openSections.has(lane.sectionId))) enterFrom.push(handle);
+            if (lane.fromNode === nodeId) leaveInto.push(handle);
+        });
+        return { enterFrom, leaveInto };
+    };
     return (graph?.problems || [])
         .filter(problem => problem.type === 'unresolved_intersection')
         .flatMap(problem => (problem.nodeIds || []).map(nodeId => ({
             nodeId,
             arms: degreeOf.get(nodeId) ?? null,
             whyUnsettled: problem.declineReason || null,
+            ...handlesAt(nodeId, problem.openApproaches?.length
+                ? new Set(problem.openApproaches.map(entry => entry.sectionId))
+                : null),
             // Named approaches mean the rest of the node is already decided and must be left alone.
             // Absent means every approach there is open.
             ...(problem.openApproaches?.length
@@ -273,6 +298,13 @@ export function buildRecognitionPrompt(input) {
         '- Only record visible evidence. Omit occluded or guessed geometry and explain uncertainty as a problem instead.',
         '- Retain unresolved ambiguity as a problem with severity and evidence. Do not hallucinate missing connections.',
         '- Every connection must reference lane IDs present in graph.lanes.',
+        '- A movement runs from a lane that ENDS at the junction node into a lane that STARTS there: '
+            + 'fromLaneId must be a lane whose toNode is that node, and toLaneId a lane whose '
+            + 'fromNode is that node. Each target below lists its legal handles as enterFrom and '
+            + 'leaveInto — take fromLaneId from enterFrom and toLaneId from leaveInto, for the same '
+            + 'target, and no other pairing is possible.',
+        '- A two-way street contributes one lane arriving at the node and one leaving it. They differ '
+            + 'only in direction, and the arriving one is never a valid destination.',
         '- Keep stable IDs from the deterministic graph whenever the same entity survives.',
         '',
         `Prompt version: ${TOPOLOGY_PROMPT_VERSION}`,
@@ -637,28 +669,50 @@ export function applyRecognitionPatch(patch, deterministicGraph, provider = 'mod
         return handle ? (laneList[Number(handle[1])] || null) : (laneById.get(reference) || null);
     };
     const seenPairs = new Set();
-    const connections = patch.connections.map((decision, index) => {
+    // A malformed connection is DROPPED and reported, not thrown.
+    //
+    // It used to throw, which discarded the entire patch: five runs died this way, one of them on
+    // connection 34 of 34 — thirty-three good movements destroyed by the last one — for 61 minutes
+    // of model time that produced nothing at all. Refused-by-restriction and answered-the-wrong-node
+    // movements have always been handled this way, and a movement between lanes that do not meet is
+    // no different in kind: it is one bad answer among good ones.
+    //
+    // The two things that keep this honest are below: a patch where NOTHING survives still fails,
+    // and an approach is only ever closed by a connection that was actually accepted, so dropping
+    // one cannot quietly mark its junction settled.
+    const malformed = [];
+    const connections = [];
+    patch.connections.forEach((decision, index) => {
+        const reject = why => malformed.push(`connection ${index} ${why}`);
         const fromLane = resolveLane(decision?.fromLaneId);
         const toLane = resolveLane(decision?.toLaneId);
         if (!fromLane || !toLane) {
-            throw new Error(`Patch connection ${index} references a missing lane.`);
+            reject(`references a lane that is not in the graph `
+                + `(${decision?.fromLaneId} -> ${decision?.toLaneId})`);
+            return;
         }
         if (!fromLane.toNode || fromLane.toNode !== toLane.fromNode) {
-            throw new Error(
-                `Patch connection ${index} joins lanes that do not share a directed endpoint.`
-            );
+            // Overwhelmingly the commonest one: the arriving and departing lane of a two-way street
+            // look alike apart from direction, and only about a quarter of naive pairings are legal.
+            reject(`joins lanes that do not share a directed endpoint `
+                + `(${decision?.fromLaneId} ends at ${fromLane.toNode || 'nowhere'}, `
+                + `${decision?.toLaneId} starts at ${toLane.fromNode || 'nowhere'})`);
+            return;
         }
         const pair = `${fromLane.id}->${toLane.id}`;
-        if (seenPairs.has(pair)) throw new Error(`Patch contains duplicate connection ${pair}.`);
+        if (seenPairs.has(pair)) return;
         seenPairs.add(pair);
         const fromPoint = laneEndpoint(fromLane, true);
         const toPoint = laneEndpoint(toLane, false);
-        if (!fromPoint || !toPoint) throw new Error(`Patch connection ${pair} has missing lane geometry.`);
+        if (!fromPoint || !toPoint) {
+            reject(`has missing lane geometry (${pair})`);
+            return;
+        }
         const type = ['continue', 'merge', 'split', 'turn'].includes(decision.type)
             ? decision.type
             : 'continue';
         const confidence = Number(decision.confidence);
-        return {
+        connections.push({
             id: `connection:${fromLane.toNode}:${pair}`,
             nodeId: fromLane.toNode,
             fromLaneId: fromLane.id,
@@ -672,8 +726,14 @@ export function applyRecognitionPatch(patch, deterministicGraph, provider = 'mod
                 type: 'LineString',
                 coordinates: [fromPoint, toPoint]
             }
-        };
+        });
     });
+    // A patch that proposed movements and had none survive is not a partial answer, it is a broken
+    // one, and storing it would mark the junction answered with nothing in it.
+    if (patch.connections.length && !connections.length) {
+        throw new Error(`Every one of the ${patch.connections.length} returned movements was `
+            + `unusable: ${malformed.slice(0, 3).join('; ')}`);
+    }
     // The patch is a decision at the open APPROACHES, not a replacement graph. Before the rules
     // settled junctions there was nothing to lose by overwriting; now nine movements in ten are
     // derived, and a model answering one junction would have deleted the rest. What is already
@@ -769,6 +829,18 @@ export function applyRecognitionPatch(patch, deterministicGraph, provider = 'mod
             severity: 'warning',
             message: `${refused} returned movements are forbidden by an OSM turn restriction and were `
                 + 'refused; the deterministic rules never emit these, so a patch may not either.'
+        });
+    }
+    if (malformed.length) {
+        // Loud, and with the offending references in it: the whole reason this class of failure went
+        // five occurrences without a diagnosis is that nothing ever recorded WHAT the model said.
+        byId.set(`problem:${provider}:malformed-movements`, {
+            id: `problem:${provider}:malformed-movements`,
+            type: 'malformed_movements',
+            severity: 'warning',
+            message: `${malformed.length} returned movements could not be used and were dropped; `
+                + `the approaches they were meant to answer stay open. ${malformed.slice(0, 5).join('; ')}`
+                + (malformed.length > 5 ? `; and ${malformed.length - 5} more` : '')
         });
     }
     if (overreach) {
@@ -892,14 +964,27 @@ export async function runCliTopologyProvider(provider, input, options = {}) {
                 }
             });
         }
-        return {
-            summary: String(parsed.summary || ''),
-            graph: applyRecognitionPatch(parsed.patch, input.deterministicGraph, provider, {
+        const outputTail = `${result.stdout}\n${result.stderr}`.slice(-8000);
+        let graph;
+        try {
+            graph = applyRecognitionPatch(parsed.patch, input.deterministicGraph, provider, {
                 imagery: input.imagery,
                 restrictions: input.restrictions
-            }),
+            });
+        } catch (error) {
+            // The job record keeps `error.outputTail` in preference to the stack, so without this
+            // a rejected patch was replaced by OUR OWN stack trace and the model's answer was gone.
+            // That is why the malformed-movement failures sat undiagnosed across five jobs and two
+            // providers: the evidence was destroyed at the moment it was needed.
+            error.outputTail = `PATCH REJECTED: ${error.message}\n\n`
+                + `--- what the model returned ---\n${outputTail}`;
+            throw error;
+        }
+        return {
+            summary: String(parsed.summary || ''),
+            graph,
             usage: parsed.usage || null,
-            outputTail: `${result.stdout}\n${result.stderr}`.slice(-8000)
+            outputTail
         };
     } finally {
         await rm(jobDir, { recursive: true, force: true });

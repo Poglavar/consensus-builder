@@ -9,6 +9,7 @@ import {
     PROVIDER_TIMEOUT_MS,
     providerAvailability,
     providerCommand,
+    recognitionTargets,
     runCliTopologyProvider,
     TOPOLOGY_OUTPUT_SCHEMA,
     validateCandidateGraph
@@ -220,9 +221,15 @@ describe('lane-topology recognition contract', () => {
         expect(prompt).not.toContain('lane:section:osm:11:0:x:A:forward:0');
         // The work is exactly the unresolved node, with why it is hard — and node A, which the
         // rules answered, is not in it. A still appears in the evidence, as a movement to respect.
-        expect(prompt).toContain(
-            '[{"nodeId":"B","arms":3,"whyUnsettled":"multi_lane_approach_without_turn_lanes"}]'
-        );
+        // Asserted field by field rather than as one serialized blob: pinning the exact JSON made
+        // every addition to a target look like a regression.
+        const targets = JSON.parse(prompt.match(/\[\{"nodeId".*?\}\]/s)[0]);
+        expect(targets).toHaveLength(1);
+        expect(targets[0]).toMatchObject({
+            nodeId: 'B', arms: 3, whyUnsettled: 'multi_lane_approach_without_turn_lanes'
+        });
+        // Node A is absent from the WORK; it still appears in the evidence as a settled movement.
+        expect(targets.map(t => t.nodeId)).not.toContain('A');
     });
 
     it('resolves a handle back to the lane it stands for', () => {
@@ -784,5 +791,122 @@ describe('lane-topology CLI provider boundary', () => {
             connections: [{ fromLaneId: 'l1', toLaneId: 'l2' }],
             problems: []
         }, graph, 'codex')).toThrow(/do not share/i);
+    });
+});
+
+// One bad movement among good ones used to destroy the whole answer.
+//
+// applyRecognitionPatch threw on the first unusable connection, so the entire patch died with it:
+// five real jobs failed this way, one of them on connection 34 of 34 — thirty-three good movements
+// thrown away by the last — costing 61 minutes of model time that produced nothing. Restricted and
+// wrong-node movements were already dropped-and-reported; a movement between lanes that do not meet
+// is the same kind of thing.
+describe('a patch with one unusable movement in it', () => {
+    const graph = fanInGraph;
+    const good = { fromLaneId: 'in1', toLaneId: 'out', type: 'turn', confidence: 0.9, reason: 'ok' };
+    // `out` leaves the junction and `in2` arrives at it, so this runs the wrong way down `in2`.
+    const backwards = { fromLaneId: 'out', toLaneId: 'in2', type: 'turn', confidence: 0.9, reason: 'x' };
+
+    it('keeps the movements that are usable', () => {
+        const result = applyRecognitionPatch({ connections: [good, backwards], problems: [] }, graph());
+        expect(result.connections.map(c => `${c.fromLaneId}->${c.toLaneId}`)).toEqual(['in1->out']);
+    });
+
+    it('reports what it dropped, naming the lanes, so the next one is diagnosable', () => {
+        const result = applyRecognitionPatch({ connections: [good, backwards], problems: [] }, graph());
+        const problem = result.problems.find(p => p.type === 'malformed_movements');
+        expect(problem).toBeTruthy();
+        expect(problem.message).toContain('connection 1');
+        expect(problem.message).toContain('out');
+        expect(problem.message).toContain('in2');
+    });
+
+    it('drops a movement naming a lane that is not in the graph', () => {
+        const result = applyRecognitionPatch({
+            connections: [good, { fromLaneId: 'L999', toLaneId: 'out', confidence: 0.5 }],
+            problems: []
+        }, graph());
+        expect(result.connections).toHaveLength(1);
+        expect(result.problems.some(p => p.type === 'malformed_movements')).toBe(true);
+    });
+
+    // The guard that keeps "partial" from becoming "empty": a patch where nothing survives is a
+    // broken answer, and storing it would mark the junction answered with nothing in it.
+    it('still fails when not one movement survives', () => {
+        expect(() => applyRecognitionPatch({ connections: [backwards], problems: [] }, graph()))
+            .toThrow(/Every one of the 1 returned movements was unusable/);
+    });
+
+    it('leaves a patch that proposed nothing alone', () => {
+        expect(() => applyRecognitionPatch({ connections: [], problems: [] }, graph())).not.toThrow();
+    });
+});
+
+// The rule the validator enforces, now stated instead of inferred. A movement runs from a lane
+// ENDING at the node into a lane STARTING there; measured on a real crop only ~28% of naive lane
+// pairings satisfy that, because every two-way street offers an arriving lane and a departing one
+// that differ only in direction.
+describe('what a recognition target tells the model about its own node', () => {
+    const targetsFor = graph => recognitionTargets(graph);
+
+    it('names the legal handles on each side of the movement', () => {
+        const graph = fanInGraph();
+        graph.problems = [{
+            id: 'p1', type: 'unresolved_intersection', nodeIds: ['junction'], openApproaches: []
+        }];
+        const [target] = targetsFor(graph);
+        // in1/in2/in3 arrive (indices 0,1,2); out leaves (index 3).
+        expect(target.enterFrom).toEqual(['L0', 'L1', 'L2']);
+        expect(target.leaveInto).toEqual(['L3']);
+    });
+
+    it('narrows the arriving side to the approaches that are actually open', () => {
+        const graph = fanInGraph();
+        graph.problems = [{
+            id: 'p1', type: 'unresolved_intersection', nodeIds: ['junction'],
+            openApproaches: [{ sectionId: 's2' }]
+        }];
+        const [target] = targetsFor(graph);
+        expect(target.enterFrom).toEqual(['L1']);
+        // Everything leaving the node is still a legal destination.
+        expect(target.leaveInto).toEqual(['L3']);
+    });
+
+    it('states the rule in the prompt, not just in the validator', () => {
+        const graph = fanInGraph();
+        graph.problems = [{ id: 'p1', type: 'unresolved_intersection', nodeIds: ['junction'], openApproaches: [] }];
+        const prompt = buildRecognitionPrompt({ deterministicGraph: graph, selection: {}, osmWays: [] });
+        expect(prompt).toContain('enterFrom');
+        expect(prompt).toContain('leaveInto');
+        expect(prompt).toMatch(/ENDS at the junction node/);
+    });
+});
+
+// The honesty guard on partial patches. Dropping a movement must not let its junction read as
+// answered — a half-answered junction that counts as settled is worse than a failed job, because
+// nothing ever comes back to it.
+describe('an approach whose movement was dropped', () => {
+    it('stays open while the approach that WAS answered closes', () => {
+        const graph = fanInGraph();
+        graph.problems = [{
+            id: 'p1', type: 'unresolved_intersection', nodeIds: ['junction'],
+            openApproaches: [{ sectionId: 's1' }, { sectionId: 's2' }]
+        }];
+
+        const result = applyRecognitionPatch({
+            connections: [
+                // Answers the s1 approach, and is fine.
+                { fromLaneId: 'in1', toLaneId: 'out', type: 'turn', confidence: 0.9 },
+                // Meant to answer s2, but runs backwards up a lane that arrives here. Dropped.
+                { fromLaneId: 'out', toLaneId: 'in2', type: 'turn', confidence: 0.9 }
+            ],
+            problems: []
+        }, graph);
+
+        expect(result.connections).toHaveLength(1);
+        const open = result.problems.find(p => p.type === 'unresolved_intersection');
+        expect(open, 'the junction must not be closed by a movement that was thrown away').toBeTruthy();
+        expect(open.openApproaches.map(a => a.sectionId)).toEqual(['s2']);
+        expect(result.problems.some(p => p.type === 'malformed_movements')).toBe(true);
     });
 });
