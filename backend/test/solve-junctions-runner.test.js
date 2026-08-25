@@ -7,7 +7,7 @@
 // summary "1 failed". The cost of getting this wrong is someone re-running work that is already in
 // the database — or, worse, believing the area is less complete than it is.
 import { afterEach, describe, expect, it } from 'vitest';
-import { classifyJunctions, jobTimeoutFor, setApiImpl, solveJunction, withRetry } from '../scripts/solve-junctions.js';
+import { classifyJunctions, jobTimeoutFor, manualReviewKeys, setApiImpl, solveJunction, withRetry } from '../scripts/solve-junctions.js';
 import { PROVIDER_TIMEOUT_MS } from '../lane-topology/cli-providers.js';
 
 const ARGS = {
@@ -204,5 +204,60 @@ describe('jobTimeoutFor', () => {
 
     it('still gives an unknown provider a sane wait', () => {
         expect(jobTimeoutFor('nobody', PROVIDER_TIMEOUT_MS)).toBeGreaterThan(15 * 60 * 1000);
+    });
+});
+
+// Some junctions are not model work. One failed four times across two providers on three unrelated
+// causes — a reset socket, then the 15-minute ceiling, then the 25-minute one at 1507 s — so each
+// further attempt spends a full provider ceiling to learn nothing. Retrying a reproducible failure
+// is the thing we keep saying not to do, and a note in a summary does not stop the next batch.
+describe('junctions that must be looked at by a person', () => {
+    const junction = (key, extra = {}) => ({
+        key, name: key, laneCount: 4, resolved: false, unresolvedNodeIds: [`${key}:n`], ...extra
+    });
+
+    it('keeps a listed junction out of the work', () => {
+        const { open, needsPerson } = classifyJunctions([junction('a'), junction('b')], {
+            manualReview: new Set(['a'])
+        });
+        expect(needsPerson.map(j => j.key)).toEqual(['a']);
+        expect(open.map(j => j.key)).toEqual(['b']);
+    });
+
+    // It is still open work — it is just not work a model does. Counting it settled would hide it.
+    it('does not pretend a listed junction is settled', () => {
+        const { deterministic, adjudicated } = classifyJunctions([junction('a')], {
+            manualReview: new Set(['a'])
+        });
+        expect(deterministic).toEqual([]);
+        expect(adjudicated).toEqual([]);
+    });
+
+    it('accepts a plain array as well as a Set', () => {
+        const { needsPerson } = classifyJunctions([junction('a')], { manualReview: ['a'] });
+        expect(needsPerson).toHaveLength(1);
+    });
+
+    it('sends everything to the model when the list is empty', () => {
+        const { open, needsPerson } = classifyJunctions([junction('a')], {});
+        expect(needsPerson).toEqual([]);
+        expect(open).toHaveLength(1);
+    });
+
+    it('reads the shipped list, and every entry says why it is there', async () => {
+        const keys = manualReviewKeys();
+        expect(keys.size).toBeGreaterThan(0);
+        const listed = JSON.parse(await import('node:fs').then(fs => fs.readFileSync(
+            new URL('../lane-topology/manual-review.json', import.meta.url), 'utf8')));
+        listed.junctions.forEach(entry => {
+            expect(entry.key, 'every entry needs a stable junction key').toMatch(/^junction:/);
+            expect(entry.why, `${entry.key} must say why a person has to look at it`)
+                .toBeTruthy();
+            expect(entry.since, `${entry.key} must say when it was parked`).toBeTruthy();
+        });
+    });
+
+    it('treats a missing list as empty rather than failing a batch over it', () => {
+        expect(manualReviewKeys('/nonexistent/manual-review.json').size).toBe(0);
     });
 });

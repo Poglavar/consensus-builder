@@ -1,0 +1,23 @@
+{
+  "comment": [
+    "Junctions that must be looked at by a person, and must NOT be sent to a model again.",
+    "",
+    "A junction lands here when repeated runs fail on it for DIFFERENT reasons. That pattern says",
+    "the junction itself is the problem, not the weather: retrying it burns the full provider",
+    "ceiling and returns nothing, every time. Keyed by junction key, which is built from OSM node",
+    "ids and so survives re-enumeration; the name is for humans and is not matched on.",
+    "",
+    "Remove an entry once the junction has been adjudicated, or once the cause is understood and",
+    "fixed. This list should only ever shrink."
+  ],
+  "junctions": [
+    {
+      "key": "junction:3412509715+3412509722",
+      "name": "Ulica 153. brigade Hrvatske vojske",
+      "arms": 4,
+      "lanes": 17,
+      "why": "Four failures across two providers and three unrelated causes: ECONNRESET, then the 15-minute ceiling, then the 25-minute ceiling at 1507s. Raising the limit did not rescue it, so it is not a timeout problem. Nothing has yet read the junction itself.",
+      "since": "2026-08-25"
+    }
+  ]
+}

@@ -16,6 +16,7 @@
 // Long runs belong under `run-job` so they outlive the shell that started them.
 import { createRequire } from 'node:module';
 import { appendFile } from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { enumerationTiles, insideCore } from './lib/city-tiles.js';
 import { settledNodeIndex } from './lib/stored-solutions.js';
@@ -425,6 +426,20 @@ function summariseUsage(records) {
         + ` / ${totals.output.toLocaleString()} out tokens${money}`;
 }
 
+// Junctions a person has to look at, which a model must not be sent to again. Read from disk each
+// run so the list can be edited without a restart; a missing or unreadable file means an empty list
+// rather than a crash, because a worklist is not worth failing a batch over.
+export function manualReviewKeys(file) {
+    const path = file || new URL('../lane-topology/manual-review.json', import.meta.url);
+    try {
+        return new Set((JSON.parse(readFileSync(path, 'utf8')).junctions || [])
+            .map(entry => entry.key).filter(Boolean));
+    } catch (error) {
+        if (error.code !== 'ENOENT') log(`manual-review list unreadable (${error.message})`);
+        return new Set();
+    }
+}
+
 // What in an enumerated area is actually work, and why each of the rest is not. Pure, because the
 // three reasons a junction gets skipped are the three ways a run can silently understate what it
 // did, and every one of them has already been a bug:
@@ -437,14 +452,22 @@ function summariseUsage(records) {
 //                   Same predicate the coverage report uses, so the two now agree on what is left.
 //   oversized     — over the --max-lanes cost guard. Reported out loud, because silent truncation
 //                   reads as "the area is solved" when its biggest interchanges were never tried.
-export function classifyJunctions(enumerated, { settledNodes, includeResolved, maxLanes } = {}) {
+//   needsPerson   — on the manual-review list: repeated failures for unrelated reasons, so the
+//                   junction is the problem and another run just spends the ceiling again.
+export function classifyJunctions(enumerated,
+    { settledNodes, includeResolved, maxLanes, manualReview } = {}) {
     const settled = settledNodes || new Set();
+    const manual = manualReview instanceof Set ? manualReview : new Set(manualReview || []);
     const deterministic = [];
     const adjudicated = [];
     const oversized = [];
+    const needsPerson = [];
     const open = [];
     for (const junction of enumerated || []) {
         if (!includeResolved && junction.resolved) { deterministic.push(junction); continue; }
+        // Sent to a model again it would fail again, at the cost of a full provider ceiling. It is
+        // still open work — it is just not work a model does.
+        if (manual.has(junction.key)) { needsPerson.push(junction); continue; }
         // An empty list means the derivation names no open node, so there is nothing for a stored
         // answer to have settled — `every` on an empty array is true and would skip it silently.
         if (!includeResolved && junction.unresolvedNodeIds?.length
@@ -455,7 +478,7 @@ export function classifyJunctions(enumerated, { settledNodes, includeResolved, m
         if (maxLanes && junction.laneCount > maxLanes) { oversized.push(junction); continue; }
         open.push(junction);
     }
-    return { deterministic, adjudicated, oversized, open };
+    return { deterministic, adjudicated, oversized, needsPerson, open };
 }
 
 async function main() {
@@ -502,13 +525,15 @@ async function main() {
     const stored = (args.includeResolved || args.ignoreStored)
         ? { settled: new Set(), consulted: 0 }
         : await settledNodeIndex({ api: base, city: args.city, bbox: args.bbox, log });
-    const { deterministic, adjudicated, oversized, open } =
-        classifyJunctions(enumerated, { settledNodes: stored.settled, ...args });
+    const { deterministic, adjudicated, oversized, needsPerson, open } = classifyJunctions(
+        enumerated, { settledNodes: stored.settled, manualReview: manualReviewKeys(), ...args });
     const junctions = orderJunctions(open, args);
     log(`${enumerated.length} junctions with ${args.minArms}+ arms`
         + `; ${deterministic.length} already settled by the deterministic rules`
         + (adjudicated.length ? `; ${adjudicated.length} already answered by a stored solution `
             + `(${stored.consulted} consulted)` : '')
+        + (needsPerson.length ? `; SKIPPED ${needsPerson.length} on the manual-review list: `
+            + needsPerson.map(junction => junction.name).join(', ') : '')
         + `; ${junctions.length} need recognition`
         + (oversized.length ? `; SKIPPED ${oversized.length} over ${args.maxLanes} lanes: `
             + oversized.map(junction => `${junction.name} (${junction.laneCount} lanes, `
