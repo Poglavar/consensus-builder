@@ -36,6 +36,13 @@ const DEFAULTS = {
     minJunctions: 8,
     // Above this a tile is not a quick win, it is ordinary work — run the bulk solver instead.
     maxOpen: 3,
+    concurrency: 1,
+    // A junction far larger than anything being solved successfully is not a junction a model
+    // answers in one pass — it is one that spends the whole provider ceiling and returns nothing.
+    // The interchange at Ulica Slavka Kolara (8 arms, 56 lanes, eleven fused nodes) did exactly
+    // that five times. Passed through so a run can be told where the cliff is; the solver reports
+    // what it skipped rather than dropping it silently.
+    maxLanes: null,
     log: null
 };
 
@@ -49,6 +56,9 @@ Close the coverage tiles that are within a few junctions of finished.
   --max-open N        Only tiles with at most N open junctions (default ${DEFAULTS.maxOpen}).
   --min-junctions N   Ignore tiles smaller than this (default ${DEFAULTS.minJunctions}).
   --limit N           Stop after N tiles.
+  --concurrency N     Junctions in flight at once, per tile (default ${DEFAULTS.concurrency}).
+  --max-lanes N       Skip junctions with more lanes than this; they are named, never dropped
+                      quietly. Nothing above ~50 lanes has ever been solved in one pass.
   --provider claude|codex   Recognition CLI (default ${DEFAULTS.provider}).
   --model NAME        Model passed to the CLI (default ${DEFAULTS.model}).
   --city NAME         City key (default ${DEFAULTS.city}).
@@ -69,6 +79,8 @@ function parseArgs(argv) {
             case '--tiles': args.tiles = take(); break;
             case '--solver': args.solver = take(); break;
             case '--max-open': args.maxOpen = Number(take()); break;
+            case '--concurrency': args.concurrency = Math.max(1, Number(take())); break;
+            case '--max-lanes': args.maxLanes = Number(take()); break;
             case '--min-junctions': args.minJunctions = Number(take()); break;
             case '--limit': args.limit = Number(take()); break;
             case '--provider': args.provider = take(); break;
@@ -138,6 +150,8 @@ function solveTile(args, tile) {
             '--provider', args.provider,
             '--model', args.model,
             '--order', 'finish',
+            ...(args.concurrency > 1 ? ['--concurrency', String(args.concurrency)] : []),
+            ...(args.maxLanes ? ['--max-lanes', String(args.maxLanes)] : []),
             // Slack over the reported count: the coverage snapshot may be a little behind the
             // graph, and a tile is only closed if everything open in it is run.
             '--limit', String(tile.open + 2),
