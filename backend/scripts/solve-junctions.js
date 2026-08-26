@@ -60,7 +60,14 @@ const MAX_RECOGNITION_GSD_M = 0.35;
 const BBOX_EPSILON = 1e-6;
 // A CLI that reports the subscription window is exhausted will report it for every junction after
 // this one too, so the run stops rather than burning the queue into identical failures.
-const QUOTA_PATTERN = /rate.?limit|usage limit|quota|too many requests|overloaded/i;
+//
+// It has to actually MATCH what the CLI says. "You've hit your session limit" was not in this list,
+// so a run carried on past the first refusal and burned 27 further junctions into the same error in
+// 79 seconds — four tiles marked failed that had never been tried. Phrases, not a bare /limit/:
+// "Orthophoto image exceeds the … byte safety limit" is an ordinary per-junction error and must not
+// stop a run.
+export const QUOTA_PATTERN =
+    /session limit|usage limit|rate.?limit|limit reached|quota|too many requests|overloaded/i;
 
 const USAGE = `
 Solve lane-topology junctions in bulk with a CLI model.

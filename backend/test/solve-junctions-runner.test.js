@@ -7,7 +7,7 @@
 // summary "1 failed". The cost of getting this wrong is someone re-running work that is already in
 // the database — or, worse, believing the area is less complete than it is.
 import { afterEach, describe, expect, it } from 'vitest';
-import { classifyJunctions, jobTimeoutFor, manualReviewKeys, setApiImpl, solveJunction, withRetry } from '../scripts/solve-junctions.js';
+import { QUOTA_PATTERN, classifyJunctions, jobTimeoutFor, manualReviewKeys, setApiImpl, solveJunction, withRetry } from '../scripts/solve-junctions.js';
 import { PROVIDER_TIMEOUT_MS } from '../lane-topology/cli-providers.js';
 
 const ARGS = {
@@ -260,4 +260,37 @@ describe('junctions that must be looked at by a person', () => {
     it('treats a missing list as empty rather than failing a batch over it', () => {
         expect(manualReviewKeys('/nonexistent/manual-review.json').size).toBe(0);
     });
+});
+
+// When the subscription window is spent, every remaining junction fails the same way. The run is
+// supposed to stop at the first refusal — and did not, because the pattern did not match what the
+// CLI actually says: "You've hit your session limit" contains neither "usage limit" nor "rate
+// limit". One batch burned 27 further junctions into identical errors in 79 seconds and marked four
+// untried tiles as failed.
+describe('recognising that the window is spent', () => {
+    const STOP = [
+        "claude exited 1: You've hit your session limit · resets at 3am",
+        'Error: rate limit exceeded',
+        'ratelimit_error',
+        'usage limit reached for this window',
+        '429 Too Many Requests',
+        'Overloaded'
+    ];
+    // Ordinary per-junction failures. Stopping a whole run on one of these would throw away the
+    // rest of the queue over a single bad junction.
+    const CARRY_ON = [
+        'Orthophoto image exceeds the 8388608 byte safety limit.',
+        'claude topology recognition timed out after 1500000 ms.',
+        'Patch connection 6 joins lanes that do not share a directed endpoint.',
+        'TypeError: fetch failed',
+        'Job 377 still running after 1080s.'
+    ];
+
+    STOP.forEach(message => it(`stops the run on: ${message.slice(0, 42)}`, () => {
+        expect(QUOTA_PATTERN.test(message)).toBe(true);
+    }));
+
+    CARRY_ON.forEach(message => it(`keeps going on: ${message.slice(0, 42)}`, () => {
+        expect(QUOTA_PATTERN.test(message)).toBe(false);
+    }));
 });
