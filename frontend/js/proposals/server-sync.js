@@ -629,17 +629,7 @@ async function preloadProposalParcelOwners(parcelIds, options = {}) {
 function findMissingParentParcels(parentIds) {
     if (!Array.isArray(parentIds) || parentIds.length === 0) return [];
 
-    // Check if parcelLayer is available before checking for missing parcels
-    // This prevents warnings when the layer isn't ready yet
-    const isParcelLayerReady = (typeof parcelLayer !== 'undefined' && parcelLayer && typeof parcelLayer.eachLayer === 'function') ||
-        (typeof multiParcelSelection !== 'undefined' && multiParcelSelection && typeof multiParcelSelection.findParcelById === 'function');
-
-    if (!isParcelLayerReady) {
-        // If parcel layer isn't ready, assume all parcels are missing (they'll be loaded)
-        return parentIds.map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean);
-    }
-
-    const missing = [];
+    const fetchableParentIds = [];
     parentIds.forEach(id => {
         const parcelId = id && id.toString ? id.toString() : String(id);
         if (!parcelId) return;
@@ -647,6 +637,30 @@ function findMissingParentParcels(parentIds) {
             && ProposalManager.isSyntheticParcelId(parcelId)) {
             return;
         }
+        // A standing formation deliberately removed this cadastral parent from the live fabric.
+        // Fetching it again cannot satisfy findParcelById: ingestion keeps the immutable base for
+        // future replay but does not resurrect it as a selectable layer over its descendants.
+        if (typeof isParcelReplacedByChildren === 'function') {
+            try {
+                if (isParcelReplacedByChildren(parcelId)) return;
+            } catch (_) { /* treat an uncertain replacement state as ordinarily missing */ }
+        }
+        fetchableParentIds.push(parcelId);
+    });
+
+    // Check if parcelLayer is available before checking for missing parcels
+    // This prevents warnings when the layer isn't ready yet
+    const isParcelLayerReady = (typeof parcelLayer !== 'undefined' && parcelLayer && typeof parcelLayer.eachLayer === 'function') ||
+        (typeof multiParcelSelection !== 'undefined' && multiParcelSelection && typeof multiParcelSelection.findParcelById === 'function');
+
+    if (!isParcelLayerReady) {
+        // If parcel layer isn't ready, assume every fetchable parcel is missing. Synthetic and
+        // intentionally replaced ids were removed above because neither can become a live layer.
+        return fetchableParentIds;
+    }
+
+    const missing = [];
+    fetchableParentIds.forEach(parcelId => {
         const layer = (typeof multiParcelSelection !== 'undefined' && typeof multiParcelSelection.findParcelById === 'function')
             ? multiParcelSelection.findParcelById(parcelId)
             : null;

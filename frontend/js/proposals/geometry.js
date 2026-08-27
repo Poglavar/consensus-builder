@@ -901,12 +901,16 @@ function calculateBoundsForLastAppliedProposal(proposalId) {
     const proposal = getProposalByIdOrHash(proposalId);
     if (!proposal) return null;
 
-    // Just get the child parcel IDs of this proposal directly
-    let parcelIdsForBounds = [];
+    // The live derivation is authoritative when this proposal formed parcels. A block/row-house
+    // proposal normally forms none, though: it is content ON the standing fabric, and its original
+    // cadastral parents may have been replaced by an earlier member of the same plan. In that case
+    // its authored geometry is the stable focus source; probing the retired parents first only
+    // creates a false warning and a fetch that can never make them live again.
+    const childParcelIds = [];
     const addAll = (list) => {
         (Array.isArray(list) ? list : []).forEach(id => {
             const val = id && id.toString ? id.toString() : String(id || '');
-            if (val) parcelIdsForBounds.push(val);
+            if (val) childParcelIds.push(val);
         });
     };
 
@@ -916,16 +920,10 @@ function calculateBoundsForLastAppliedProposal(proposalId) {
     addAll(proposal?.decideLaterProposal?.childParcelIds);
     addAll(proposal?.structureProposal?.childParcelIds);
 
-    console.debug('[calculateBoundsForLastAppliedProposal] Child parcels:', parcelIdsForBounds.length);
+    console.debug('[calculateBoundsForLastAppliedProposal] Child parcels:', childParcelIds.length);
 
-    // If no children, fall back to parents
-    if (!parcelIdsForBounds.length) {
-        parcelIdsForBounds = ensureArrayOfStrings(proposal.parentParcelIds || []);
-    }
-
-    // First try the formation's current child parcels. Do not fall back if children exist.
-    if (parcelIdsForBounds.length > 0) {
-        const bounds = calculateProposalBounds(parcelIdsForBounds, { proposal });
+    const leafletBoundsForParcels = (parcelIds) => {
+        const bounds = calculateProposalBounds(parcelIds, { proposal, warnIfMissing: false });
         if (bounds) {
             try {
                 if (typeof L !== 'undefined' && L && typeof L.latLngBounds === 'function') {
@@ -935,14 +933,40 @@ function calculateBoundsForLastAppliedProposal(proposalId) {
                     );
                 }
             } catch (_) { /* ignore */ }
-            return null;
         }
+        return null;
+    };
+
+    // Formations focus their current children, never their retired cadastral parents.
+    if (childParcelIds.length > 0) {
+        const childBounds = leafletBoundsForParcels(childParcelIds);
+        if (childBounds) return childBounds;
     }
 
-    // If no parcels or they are unavailable, fall back to proposal geometries
+    // Stored bounds/definitions and authored geometries survive replay and do not depend on which
+    // parcel layers happen to be visible. This is the normal path for buildings with no children.
+    const standaloneBounds = (typeof resolveStandaloneProposalFocusBounds === 'function')
+        ? resolveStandaloneProposalFocusBounds(proposal)
+        : null;
+    if (standaloneBounds) return standaloneBounds;
     const geometryBounds = calculateProposalGeometryBounds(proposal);
     if (geometryBounds) return geometryBounds;
 
+    // Only a proposal that formed no children and stores no usable geometry needs its original
+    // parents. If another formation replaced them they will remain absent, and the single warning
+    // below describes the complete failure rather than an expected intermediate miss.
+    if (!childParcelIds.length) {
+        const parentIds = ensureArrayOfStrings(proposal.parentParcelIds || []);
+        if (parentIds.length) {
+            const parentBounds = leafletBoundsForParcels(parentIds);
+            if (parentBounds) return parentBounds;
+        }
+    }
+
+    console.warn('[calculateBoundsForLastAppliedProposal] Cannot calculate bounds — no live parcels or stored geometry found', {
+        proposalId: String(proposalId),
+        childParcelCount: childParcelIds.length
+    });
     return null;
 }
 
@@ -1053,7 +1077,9 @@ function calculateProposalBounds(parcelIds, options = {}) {
     });
 
     if (positions.length === 0) {
-        console.warn('Cannot calculate bounds - no valid parcel positions found');
+        if (options.warnIfMissing !== false) {
+            console.warn('Cannot calculate bounds - no valid parcel positions found');
+        }
         return null;
     }
 

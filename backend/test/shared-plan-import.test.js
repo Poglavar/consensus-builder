@@ -19,11 +19,33 @@ function loadSharedImportHelpers(overrides = {}) {
     };
     vm.createContext(context);
     vm.runInContext(
-        `${source}\nthis.sharedImportHelpersForTest = { importAndApplySharedProposal, materializeQueuedSharedProposals, fetchSharedProposalBatch };`,
+        `${source}\nthis.sharedImportHelpersForTest = { importAndApplySharedProposal, materializeQueuedSharedProposals, fetchSharedProposalBatch, selectSharedPlanFocusId };`,
         context
     );
     return context.sharedImportHelpersForTest;
 }
+
+describe('shared-plan focus selection', () => {
+    it('chooses only a final successful/present member, latest in link order', () => {
+        const { selectSharedPlanFocusId } = loadSharedImportHelpers();
+        const alreadyApplied = [{ serverProposalId: 'server-existing', ord: 3 }];
+
+        const selected = selectSharedPlanFocusId(
+            [{ id: 'local-success', ord: 1, childParcelIds: [] }],
+            [{ id: 'local-duplicate', ord: 2 }],
+            alreadyApplied,
+            proposal => proposal.ord
+        );
+
+        expect(selected).toBe('server-existing');
+    });
+
+    it('returns no focus target when every parked import failed materialisation', () => {
+        const { selectSharedPlanFocusId } = loadSharedImportHelpers();
+
+        expect(selectSharedPlanFocusId([], [], [], () => 99)).toBeNull();
+    });
+});
 
 describe('shared-plan import boundary', () => {
     it('loads a whole proposal id set through one ordered batch response', async () => {

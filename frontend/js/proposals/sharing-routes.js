@@ -510,6 +510,33 @@ function orderQueuedSharedProposalIds(proposalIds) {
         .map(entry => entry.id);
 }
 
+// Presentation focus is chosen only from the FINAL result sets. An imported record is parked before
+// materialisation, so "last imported" is not proof that it ever reached the map; keeping that value
+// as a fallback made an all-failed queue focus a proposal whose geometry/fabric was never applied.
+function selectSharedPlanFocusId(appliedItems, skippedItems, alreadyAppliedProposals, linkOrderResolver) {
+    let selectedId = null;
+    let selectedOrder = -1;
+    const consider = (candidateId, order) => {
+        if (!candidateId) return;
+        const effectiveOrder = Number.isFinite(order) ? order : -1;
+        if (effectiveOrder >= selectedOrder) {
+            selectedOrder = effectiveOrder;
+            selectedId = String(candidateId);
+        }
+    };
+
+    (Array.isArray(appliedItems) ? appliedItems : [])
+        .forEach(item => consider(item && item.id, item && item.ord));
+    (Array.isArray(skippedItems) ? skippedItems : [])
+        .forEach(item => consider(item && item.id, item && item.ord));
+    (Array.isArray(alreadyAppliedProposals) ? alreadyAppliedProposals : []).forEach(proposal => {
+        const order = (typeof linkOrderResolver === 'function') ? linkOrderResolver(proposal) : -1;
+        consider(proposal && (proposal.proposalId || proposal.serverProposalId), order);
+    });
+
+    return selectedId;
+}
+
 
 // Materialise only the records this shared link just imported.
 //
@@ -1544,7 +1571,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         const applied = [];
         const skipped = [];
         const failed = [];
-        let lastLoadedProposalIdFor3D = null;
 
         const fetchProgressIds = new Set();
         const markFetchProgress = (rawId) => {
@@ -2191,13 +2217,11 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
 
                 if (result && result.skipped) {
                     skipped.push({ id: proposalId, label, ord: linkOrder.has(normalizeId(id)) ? linkOrder.get(normalizeId(id)) : -1 });
-                    if (proposalId) lastLoadedProposalIdFor3D = proposalId;
                     continue;
                 }
 
                 if (result && result.applied) {
                     applied.push({ id: proposalId, label, ord: linkOrder.has(normalizeId(id)) ? linkOrder.get(normalizeId(id)) : -1 });
-                    if (proposalId) lastLoadedProposalIdFor3D = proposalId;
                     continue;
                 }
 
@@ -2339,25 +2363,12 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         // latest in link order among everything now on the map (applied, skipped as duplicate,
         // or filtered out earlier because it was already applied) — as if it were loaded alone.
         // Link order is a presentation choice; fabric precedence remains immutable record order.
-        let rawLastProposalId = null;
-        let rawLastOrd = -1;
-        const considerFocusCandidate = (candidateId, ord) => {
-            if (!candidateId) return;
-            const effectiveOrd = Number.isFinite(ord) ? ord : -1;
-            if (effectiveOrd >= rawLastOrd) {
-                rawLastOrd = effectiveOrd;
-                rawLastProposalId = candidateId;
-            }
-        };
-        applied.forEach(item => considerFocusCandidate(item.id, item.ord));
-        skipped.forEach(item => considerFocusCandidate(item.id, item.ord));
-        incomingAlreadyApplied.forEach(p => considerFocusCandidate(p.proposalId || p.serverProposalId, linkOrderForProposal(p)));
-        if (!rawLastProposalId) {
-            rawLastProposalId = lastLoadedProposalIdFor3D
-                || (applied.length > 0 ? applied[applied.length - 1].id : null)
-                || (skipped.length > 0 ? skipped[skipped.length - 1].id : null);
-        }
-        const lastProposalId = rawLastProposalId;
+        const lastProposalId = selectSharedPlanFocusId(
+            applied,
+            skipped,
+            incomingAlreadyApplied,
+            linkOrderForProposal
+        );
         console.log('[handleSharedPlanRoute] Centering on proposal:', lastProposalId);
 
         if (lastProposalId && typeof map !== 'undefined' && map) {
