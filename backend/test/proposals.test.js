@@ -664,6 +664,51 @@ describe('POST /proposals', () => {
     });
 });
 
+describe('POST /proposals/batch', () => {
+    it('returns full records in requested order, deduplicated, with explicit misses', async () => {
+        const first = proposalDbRow({ id: 11, proposal_id: 'proposal-a', name: 'A' });
+        const second = proposalDbRow({ id: 22, proposal_id: 'proposal-b', name: 'B' });
+        // Database order is deliberately different from request order.
+        pool.setResult({ rows: [second, first], rowCount: 2 });
+
+        const res = await request(app)
+            .post('/proposals/batch')
+            .send({ ids: ['proposal-a', 'missing', 'proposal-b', 'proposal-a'] });
+
+        expect(res.status).toBe(200);
+        expect(res.body.count).toBe(2);
+        expect(res.body.items.map(item => item.id)).toEqual(['proposal-a', 'missing', 'proposal-b']);
+        expect(res.body.items[0].proposal).toMatchObject({ id: 11, proposalId: 'proposal-a', name: 'A' });
+        expect(res.body.items[1].proposal).toBeNull();
+        expect(res.body.items[2].proposal).toMatchObject({ id: 22, proposalId: 'proposal-b', name: 'B' });
+        expect(pool.getCalls()[0].params).toEqual([['proposal-a', 'missing', 'proposal-b']]);
+    });
+
+    it('prefers an exact public proposal id over an equal database id', async () => {
+        const databaseIdMatch = proposalDbRow({ id: 1, proposal_id: 'different-public-id' });
+        const publicIdMatch = proposalDbRow({ id: 9, proposal_id: '1' });
+        pool.setResult({ rows: [databaseIdMatch, publicIdMatch], rowCount: 2 });
+
+        const res = await request(app).post('/proposals/batch').send({ ids: [1] });
+
+        expect(res.status).toBe(200);
+        expect(res.body.items[0].proposal).toMatchObject({ id: 9, proposalId: '1' });
+    });
+
+    it('validates a non-empty bounded identifier list', async () => {
+        const empty = await request(app).post('/proposals/batch').send({ ids: [] });
+        expect(empty.status).toBe(400);
+
+        const tooMany = await request(app)
+            .post('/proposals/batch')
+            .send({ ids: Array.from({ length: 1001 }, (_, index) => String(index + 1)) });
+        expect(tooMany.status).toBe(400);
+
+        const invalid = await request(app).post('/proposals/batch').send({ ids: ['ok', ''] });
+        expect(invalid.status).toBe(400);
+    });
+});
+
 describe('GET /proposals/:id', () => {
     it('returns 400 when invoked without a route id param', async () => {
         const handler = getRouteHandler(app, '/proposals/:id', 'get');

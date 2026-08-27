@@ -19,13 +19,49 @@ function loadSharedImportHelpers(overrides = {}) {
     };
     vm.createContext(context);
     vm.runInContext(
-        `${source}\nthis.sharedImportHelpersForTest = { importAndApplySharedProposal, materializeQueuedSharedProposals };`,
+        `${source}\nthis.sharedImportHelpersForTest = { importAndApplySharedProposal, materializeQueuedSharedProposals, fetchSharedProposalBatch };`,
         context
     );
     return context.sharedImportHelpersForTest;
 }
 
 describe('shared-plan import boundary', () => {
+    it('loads a whole proposal id set through one ordered batch response', async () => {
+        const fetch = vi.fn(async () => ({
+            ok: true,
+            json: async () => ({
+                items: [
+                    { id: 'a', proposal: { proposalId: 'a' } },
+                    { id: 'missing', proposal: null },
+                    { id: 'b', proposal: { proposalId: 'b' } }
+                ]
+            })
+        }));
+        const { fetchSharedProposalBatch } = loadSharedImportHelpers({ fetch });
+
+        const result = await fetchSharedProposalBatch(['a', 'missing', 'b', 'a'], 'http://api.test');
+
+        expect(fetch).toHaveBeenCalledOnce();
+        expect(fetch).toHaveBeenCalledWith('http://api.test/proposals/batch', expect.objectContaining({
+            method: 'POST',
+            body: JSON.stringify({ ids: ['a', 'missing', 'b'] })
+        }));
+        expect([...result.records.keys()]).toEqual(['a', 'b']);
+        expect([...result.missing]).toEqual(['missing']);
+        expect(result).toMatchObject({ supported: true, requests: 1 });
+    });
+
+    it('marks an unavailable batch endpoint for individual-request fallback', async () => {
+        const fetch = vi.fn(async () => ({ ok: false, status: 404 }));
+        const { fetchSharedProposalBatch } = loadSharedImportHelpers({ fetch });
+
+        const result = await fetchSharedProposalBatch(['a'], 'http://api.test');
+
+        expect(result.supported).toBe(false);
+        expect(result.records.size).toBe(0);
+        expect(result.requests).toBe(1);
+    });
+
     it('imports a missing proposal parked, ready for the scoped apply pass', async () => {
         const imported = [];
         const proposalStorage = {
@@ -112,20 +148,138 @@ describe('shared-plan import boundary', () => {
             appliedIds: ['new-b', 'new-a'],
             failedIds: ['bad']
         });
-        // Each member is applied silently AND without the explicit-Apply supersede sweep: applying
-        // a shared plan is not the "this design, not that one" a click is, so ground held by the
-        // reader's own applied work is refused and reported rather than stood down. The plan's own
-        // membership rides along, because a member on a plan-mate's ground is the plan working.
+        // Shared members go straight through the one-boundary replay materializer. The live
+        // unrelated-holder check is a separate in-memory gate, not the interactive supersede path.
         expect(applyProposal.mock.calls.map(([id]) => id)).toEqual(['new-b', 'new-a', 'bad']);
         applyProposal.mock.calls.forEach(([id, options]) => {
             expect(options.silent, id).toBe(true);
-            expect(options.supersede, id).toBe(false);
-            // Duck-typed on purpose — the helper builds its Set in another realm, and the
-            // production guard accepts any membership with .has() for exactly that reason.
-            expect(typeof options.planMemberIds.has, id).toBe('function');
-            expect([...options.planMemberIds].sort(), id).toEqual(['bad', 'new-a', 'new-b']);
+            expect(options.replay, id).toBe(true);
+            expect(options.deferPresentation, id).toBe(true);
+            expect(options.supersede, id).toBeUndefined();
         });
         expect(ProposalManager.rebuildAppliedFabric).toBeUndefined();
+    });
+
+    it('prefetches demolition stock once and passes exact covered-empty slices', async () => {
+        const applyProposal = vi.fn(async () => true);
+        const prefetch = vi.fn(async () => new Map([
+            ['building', []],
+            ['park', [{ type: 'Feature', properties: { id: 'surveyed-1' }, geometry: {} }]]
+        ]));
+        const records = new Map([
+            ['building', { proposalId: 'building', goal: 'single', buildingProposal: {} }],
+            ['park', { proposalId: 'park', goal: 'park', structureProposal: {} }]
+        ]);
+        const ProposalManager = {
+            applyProposal,
+            _prefetchDemolitionBuildings: prefetch,
+            validateSharedProposalGround: () => ({ ok: true, blockers: [] })
+        };
+        const { materializeQueuedSharedProposals } = loadSharedImportHelpers({
+            ProposalManager,
+            proposalStorage: { getProposal: id => records.get(id) || null },
+            applyRoute: { normalizeGoalKey: goal => goal, isBuildingGoal: goal => goal === 'single' }
+        });
+
+        await materializeQueuedSharedProposals(['building', 'park']);
+
+        expect(prefetch).toHaveBeenCalledOnce();
+        expect(prefetch).toHaveBeenCalledWith([records.get('building'), records.get('park')]);
+        expect(applyProposal.mock.calls).toEqual([
+            ['building', { replay: true, silent: true, deferPresentation: true, preloadedBuildings: [] }],
+            ['park', {
+                replay: true,
+                silent: true,
+                deferPresentation: true,
+                preloadedBuildings: [{ type: 'Feature', properties: { id: 'surveyed-1' }, geometry: {} }]
+            }]
+        ]);
+    });
+
+    it('refuses an externally-held ordinary member before replay without stopping its siblings', async () => {
+        const applyProposal = vi.fn(async () => true);
+        const alreadyStanding = { proposalId: 'outside', goal: 'building', buildingProposal: {}, applied: true };
+        const planMate = { proposalId: 'already-applied-plan-mate', goal: 'building', buildingProposal: {}, applied: true };
+        const records = new Map([
+            ['clear', { proposalId: 'clear', goal: 'building', buildingProposal: {} }],
+            ['held', { proposalId: 'held', goal: 'building', buildingProposal: {} }],
+            ['outside', alreadyStanding],
+            ['already-applied-plan-mate', planMate]
+        ]);
+        const validateSharedProposalGround = vi.fn(id => ({ ok: id !== 'held', blockers: id === 'held' ? [{}] : [] }));
+        const { materializeQueuedSharedProposals } = loadSharedImportHelpers({
+            ProposalManager: { applyProposal, validateSharedProposalGround },
+            proposalStorage: {
+                getProposal: id => records.get(id) || null,
+                getAllProposals: () => [...records.values()]
+            },
+            applyRoute: { normalizeGoalKey: goal => goal }
+        });
+
+        const result = await materializeQueuedSharedProposals(['clear', 'held'], {
+            planMemberIds: new Set(['already-applied-plan-mate'])
+        });
+
+        expect(result).toEqual({ appliedIds: ['clear'], failedIds: ['held'] });
+        expect(applyProposal).toHaveBeenCalledOnce();
+        expect(applyProposal).toHaveBeenCalledWith('clear', {
+            replay: true,
+            silent: true,
+            deferPresentation: true
+        });
+        expect(validateSharedProposalGround).toHaveBeenCalledTimes(2);
+        const membership = validateSharedProposalGround.mock.calls[0][1];
+        expect([...membership].sort()).toEqual(['already-applied-plan-mate', 'clear', 'held']);
+        expect(validateSharedProposalGround.mock.calls[0][2], 'plan-mates were scanned as external holders')
+            .toEqual([alreadyStanding]);
+    });
+
+    it('persists and refreshes presentation once for the whole materialization batch', async () => {
+        let batchDepth = 0;
+        let pending = false;
+        let writes = 0;
+        const records = new Map([
+            ['a', { proposalId: 'a', goal: 'building', buildingProposal: {} }],
+            ['b', { proposalId: 'b', goal: 'building', buildingProposal: {} }]
+        ]);
+        const proposalStorage = {
+            getProposal: id => records.get(id) || null,
+            beginBatch: vi.fn(() => { batchDepth += 1; }),
+            save: vi.fn(() => {
+                if (batchDepth) pending = true;
+                else writes += 1;
+            }),
+            endBatch: vi.fn(() => {
+                batchDepth -= 1;
+                if (!batchDepth && pending) {
+                    pending = false;
+                    writes += 1;
+                }
+            })
+        };
+        const refresh = vi.fn();
+        const applyProposal = vi.fn(async id => {
+            proposalStorage.save();
+            return id !== 'b';
+        });
+        const { materializeQueuedSharedProposals } = loadSharedImportHelpers({
+            ProposalManager: {
+                applyProposal,
+                validateSharedProposalGround: () => ({ ok: true, blockers: [] }),
+                _refreshUIAfterProposalChange: refresh
+            },
+            proposalStorage,
+            applyRoute: { normalizeGoalKey: goal => goal }
+        });
+
+        const result = await materializeQueuedSharedProposals(['a', 'b']);
+
+        expect(result).toEqual({ appliedIds: ['a'], failedIds: ['b'] });
+        expect(proposalStorage.beginBatch).toHaveBeenCalledOnce();
+        expect(proposalStorage.endBatch).toHaveBeenCalledOnce();
+        expect(writes).toBe(1);
+        expect(refresh).toHaveBeenCalledOnce();
+        expect(refresh).toHaveBeenCalledWith(null);
     });
 
     it('materialises package roads in one batch, then readjustment, buildings and public spaces', async () => {
@@ -153,7 +307,10 @@ describe('shared-plan import boundary', () => {
             'park', 'building-a', 'road-a', 'building-b', 'plots', 'road-b'
         ]);
 
-        expect(materializeCorridorBatch).toHaveBeenCalledWith(['road-a', 'road-b']);
+        expect(materializeCorridorBatch).toHaveBeenCalledWith(
+            ['road-a', 'road-b'],
+            { deferPresentation: true }
+        );
         expect(applyProposal.mock.calls.map(call => call[0]))
             .toEqual(['plots', 'building-a', 'building-b', 'park']);
         expect(result).toEqual({
@@ -192,9 +349,9 @@ describe('shared-plan import boundary', () => {
 
         expect(events).toEqual(['plots', 'roads:road-a+road-b', 'building', 'park']);
         expect(applyProposal.mock.calls).toEqual([
-            ['plots', { replay: true, silent: true }],
-            ['building', { replay: true, silent: true }],
-            ['park', { replay: true, silent: true }]
+            ['plots', { replay: true, silent: true, deferPresentation: true }],
+            ['building', { replay: true, silent: true, deferPresentation: true }],
+            ['park', { replay: true, silent: true, deferPresentation: true }]
         ]);
         expect(result).toEqual({
             appliedIds: ['plots', 'road-a', 'road-b', 'building', 'park'],

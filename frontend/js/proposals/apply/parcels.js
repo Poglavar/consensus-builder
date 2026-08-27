@@ -498,7 +498,7 @@
 
         persistAppliedProposal(proposalData, proposalId);
         // The status line is written once, for every type, by _runProposalApplyWithSummary.
-        refreshProposalUIAfterApply();
+        if (options.deferPresentation !== true) refreshProposalUIAfterApply();
 
         // §15b: this plan's authored polygons are the ground it took — amend every other
         // applied plan that still claims any of it (one partition, latest wins).
@@ -523,7 +523,7 @@
         return true;
     },
 
-    async _applyDecideLaterProposal(proposalId, proposalData) {
+    async _applyDecideLaterProposal(proposalId, proposalData, options = {}) {
         const startTime = performance.now();
         const idLabel = _normalizeProposalId(proposalId) || 'unknown-proposal';
         console.debug(`[_applyDecideLaterProposal] Starting application for ${idLabel}...`);
@@ -642,7 +642,7 @@
         proposalData.parentParcelIds = flatParentIds;
         proposalData.childParcelIds = [String(childParcelId)];
         persistAppliedProposal(proposalData, proposalId);
-        refreshProposalUIAfterApply();
+        if (options.deferPresentation !== true) refreshProposalUIAfterApply();
 
         console.debug(`[_applyDecideLaterProposal] ✓ Completed application in ${(performance.now() - startTime).toFixed(2)}ms`);
         return true;

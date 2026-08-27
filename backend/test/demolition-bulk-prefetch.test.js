@@ -174,7 +174,7 @@ describe('the scan uses what was fetched for it', () => {
     });
 });
 
-describe('the manager end to end: prefetch fills, derive injects', () => {
+describe('the manager end to end: prefetch returns exact apply options', () => {
     let saved;
 
     beforeEach(() => {
@@ -224,8 +224,11 @@ describe('the manager end to end: prefetch fills, derive injects', () => {
             return { ok: true, json: async () => ({ supported: true, truncated: false, source: 'overture-footprints', regions }) };
         };
 
-        const fakeThis = { _rebuildInProgress: true };
-        await ProposalManager._prefetchDemolitionBuildings.call(fakeThis, [member('p-a', 15.87), member('p-b', 15.88)]);
+        const fakeThis = {};
+        const prefetched = await ProposalManager._prefetchDemolitionBuildings.call(
+            fakeThis,
+            [member('p-a', 15.87), member('p-b', 15.88)]
+        );
         expect(posts).toHaveLength(1);
         expect(posts[0].url).toBe('http://backend.test/buildings/under');
         expect(posts[0].body.regions.map(region => region.key)).toEqual(['p-a', 'p-b']);
@@ -235,8 +238,14 @@ describe('the manager end to end: prefetch fills, derive injects', () => {
             scans.push(options.preloadedBuildings);
             return [];
         };
-        await ProposalManager._deriveDemolishedBuildings.call(fakeThis, square(15.87, 43.75), { proposalId: 'p-a' });
-        await ProposalManager._deriveDemolishedBuildings.call(fakeThis, square(15.88, 43.75), { proposalId: 'p-b' });
+        await ProposalManager._deriveDemolishedBuildings.call(fakeThis, square(15.87, 43.75), {
+            proposalId: 'p-a',
+            preloadedBuildings: prefetched.get('p-a')
+        });
+        await ProposalManager._deriveDemolishedBuildings.call(fakeThis, square(15.88, 43.75), {
+            proposalId: 'p-b',
+            preloadedBuildings: prefetched.get('p-b')
+        });
         expect(scans[0]).toHaveLength(1);
         expect(scans[0][0].properties.id).toBe('bld-1');
         // Covered-but-empty arrives as [], which the scan reads as "nothing there, no fetch".
@@ -246,8 +255,9 @@ describe('the manager end to end: prefetch fills, derive injects', () => {
     it('a failed bulk fetch leaves NO entries, so every member fetches for itself', async () => {
         const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
         globalThis.fetch = async () => ({ ok: false, status: 500, json: async () => ({}) });
-        const fakeThis = { _rebuildInProgress: true };
-        await ProposalManager._prefetchDemolitionBuildings.call(fakeThis, [member('p-a', 15.87)]);
+        const fakeThis = {};
+        const prefetched = await ProposalManager._prefetchDemolitionBuildings.call(fakeThis, [member('p-a', 15.87)]);
+        expect(prefetched.has('p-a')).toBe(false);
 
         const scans = [];
         globalThis.demolishBuildingsUnderFootprint = async (geometry, options) => {
@@ -268,8 +278,10 @@ describe('the manager end to end: prefetch fills, derive injects', () => {
             JSON.parse(init.body).regions.forEach(region => { regions[region.key] = []; });
             return { ok: true, json: async () => ({ supported: true, truncated: false, source: 'x', regions }) };
         };
-        const fakeThis = { _rebuildInProgress: true };
-        await ProposalManager._prefetchDemolitionBuildings.call(fakeThis, [member('p-a', 15.87)]);
+        const fakeThis = {};
+        const prefetched = await ProposalManager._prefetchDemolitionBuildings.call(fakeThis, [member('p-a', 15.87)]);
+        expect(prefetched.has('p-a')).toBe(true);
+        expect(prefetched.has('p-zz')).toBe(false);
 
         const scans = [];
         globalThis.demolishBuildingsUnderFootprint = async (geometry, options) => {
@@ -288,8 +300,9 @@ describe('the manager end to end: prefetch fills, derive injects', () => {
             ok: true,
             json: async () => ({ supported: true, truncated: true, source: 'overture-footprints', regions: { 'p-a': [] } })
         });
-        const fakeThis = { _rebuildInProgress: true };
-        await ProposalManager._prefetchDemolitionBuildings.call(fakeThis, [member('p-a', 15.87)]);
+        const fakeThis = {};
+        const prefetched = await ProposalManager._prefetchDemolitionBuildings.call(fakeThis, [member('p-a', 15.87)]);
+        expect(prefetched.has('p-a')).toBe(false);
 
         const scans = [];
         globalThis.demolishBuildingsUnderFootprint = async (geometry, options) => {

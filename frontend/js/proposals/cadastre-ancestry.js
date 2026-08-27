@@ -143,6 +143,34 @@
         }
     }
 
+    // How much of a proposal footprint is already backed by ORIGINAL cadastre in the registry.
+    // Unlike resolveParentsByGeometry this deliberately includes hidden consumed originals: replay
+    // needs source ground, not the visible partition currently standing above it. A parcel loaded
+    // once stays in this registry for the session, so complete coverage is a safe substitute for a
+    // second /parcels/under request.
+    function loadedCadastreCoverage(proposal) {
+        const api = planOrder();
+        const t = (typeof global.turf !== 'undefined' && global.turf) ? global.turf : null;
+        if (!api || !t || !proposal) return { ids: [], coverage: 0 };
+        try {
+            const footprint = api.footprintOf(proposal);
+            if (!footprint) return { ids: [], coverage: 0 };
+            const footprintM2 = t.area(footprint);
+            if (!(footprintM2 > 0)) return { ids: [], coverage: 0 };
+            let box = null;
+            try { box = t.bbox(footprint); } catch (_) { box = null; }
+            const hits = api.computeBaseAncestry(footprint, loadedCadastreParcels(box));
+            const coveredM2 = hits.reduce((sum, hit) => sum + (Number(hit.area) || 0), 0);
+            return {
+                ids: hits.map(hit => String(hit.id)),
+                coverage: Math.min(1, coveredM2 / footprintM2)
+            };
+        } catch (error) {
+            console.warn('[cadastre-ancestry] loaded cadastre coverage failed', error);
+            return { ids: [], coverage: 0 };
+        }
+    }
+
     // Resolve the publish-time cadastral declaration from geometry alone. A partial viewport must
     // refuse publication; falling back to stale declared ids is exactly how unrelated parcels became
     // occupied after reload. The caller may load more ground and try again.
@@ -160,16 +188,9 @@
             error.code = 'proposal-footprint-missing';
             throw error;
         }
-        let footprintBox = null;
-        try { footprintBox = t.bbox(footprint); } catch (_) { footprintBox = null; }
-        const candidates = loadedCadastreParcels(footprintBox);
-        const hits = api.computeBaseAncestry(footprint, candidates);
-        const hitIds = new Set(hits.map(hit => String(hit.id)));
-        const coveredM2 = candidates.reduce((total, entry) => {
-            if (!hitIds.has(String(entry.id))) return total;
-            return total + api.intersectionArea(footprint, entry.feature);
-        }, 0);
-        const coverage = Math.min(1, coveredM2 / t.area(footprint));
+        const resolved = loadedCadastreCoverage(proposal);
+        const hits = resolved.ids;
+        const coverage = resolved.coverage;
         const minimum = Number.isFinite(Number(options?.minCoverage))
             ? Number(options.minCoverage)
             : MIN_CADASTRE_COVERAGE;
@@ -179,7 +200,7 @@
             error.coverage = coverage;
             throw error;
         }
-        const ids = hits.map(hit => String(hit.id));
+        const ids = hits.slice();
         const declared = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds.length : 0;
         console.debug(`[cadastre-ancestry] ${ids.length} cadastral parcel(s) for `
             + `${proposal.proposalId || proposal.title || 'proposal'} (declared ${declared} parent(s))`, ids);
@@ -206,6 +227,7 @@
         MIN_CADASTRE_COVERAGE,
         loadedCadastreParcels,
         loadedLiveParcels,
+        loadedCadastreCoverage,
         computeCadastreParcelIds,
         computeOwnershipFlow,
         resolveParentsByGeometry

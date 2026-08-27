@@ -62,6 +62,35 @@ describe('loadedCadastreParcels', () => {
     });
 });
 
+describe('loadedCadastreCoverage', () => {
+    it('counts a hidden original parcel as loaded replay ground', () => {
+        const hiddenBase = fakeLayer(A);
+        globalThis.getParcelLayerIdMap = () => new Map([['HR-1-1', hiddenBase]]);
+        globalThis.parcelLayer = { hasLayer: () => false };
+        const proposal = { structureProposal: { geometry: A.geometry } };
+
+        const result = ancestry.loadedCadastreCoverage(proposal);
+
+        expect(result.ids).toEqual(['HR-1-1']);
+        expect(result.coverage).toBeGreaterThan(0.999);
+    });
+
+    it('reports incomplete coverage instead of trusting declared parcel ids', () => {
+        const base = fakeLayer(A);
+        globalThis.getParcelLayerIdMap = () => new Map([['HR-1-1', base]]);
+        const proposal = {
+            cadastreParcelIds: ['HR-1-1', 'HR-not-loaded'],
+            structureProposal: { geometry: square(16.000, 46.000, 16.002, 46.001).geometry }
+        };
+
+        const result = ancestry.loadedCadastreCoverage(proposal);
+
+        expect(result.ids).toEqual(['HR-1-1']);
+        expect(result.coverage).toBeGreaterThan(0.45);
+        expect(result.coverage).toBeLessThan(0.55);
+    });
+});
+
 describe('computeCadastreParcelIds', () => {
     it('publishes geometry-derived cadastral ids and ignores stale declarations', () => {
         const base = fakeLayer(A);

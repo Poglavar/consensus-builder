@@ -112,6 +112,23 @@ describe('_applyBuildingProposal (characterization)', () => {
         expect(globalThis.upsertProposedBuildingFeature.calls[0][0].properties.proposalState).toBe('executed');
     });
 
+    it('updates canonical state but performs no presentation work when a plan defers it', async () => {
+        const data = buildingProposalData();
+
+        const result = await _applyBuildingProposal.call(makeManager(), 'p-b1', data, {
+            deferPresentation: true,
+            preloadedBuildings: []
+        });
+
+        expect(result).toBe(true);
+        expect(globalThis.upsertProposedBuildingFeature.calls).toHaveLength(1);
+        expect(store.saved).toBeGreaterThan(0);
+        expect(globalThis.updateProposedBuildingsLayer.calls).toHaveLength(0);
+        expect(globalThis.updateShowProposalsButton.calls).toHaveLength(0);
+        expect(globalThis.updateProposalList.calls).toHaveLength(0);
+        expect(globalThis.refreshParcelStylesForAppliedProposals.calls).toHaveLength(0);
+    });
+
     it('refuses (no persist) when there are no ancestor parcels', async () => {
         const data = buildingProposalData();
         const result = await _applyBuildingProposal.call(makeManager({

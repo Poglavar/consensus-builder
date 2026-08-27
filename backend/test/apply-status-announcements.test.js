@@ -86,6 +86,11 @@ describe('two lines per proposal, whatever its type', () => {
     it('says so when an apply refuses, rather than going quiet', () => {
         expect(summary.match(/_announceApply\(`Could not apply/g) || []).toHaveLength(2); // false, and throw
     });
+
+    it('defers per-member status DOM updates while a shared plan owns the progress overlay', () => {
+        expect(summary).toContain('options.deferPresentation === true');
+        expect(summary).toContain('if (!deferPresentation) _announceApply');
+    });
 });
 
 // Two lines, not five: the per-type tails used to write their own "Applied ..." message, which would

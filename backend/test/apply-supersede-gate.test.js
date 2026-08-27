@@ -3,50 +3,41 @@
 // Superseding is what an explicit Apply click means — "this design, not that one" — and
 // proposal-supersession.js implements it deliberately (one design per parcel). The bug was that the
 // shared-plan route reached the very same path, so opening someone's plan link could quietly unapply
-// your proposals and say so only in a toast. The plan path now passes supersede:false and gets a
-// refusal it can report instead.
+// your proposals and say so only in a toast. The plan path now runs the same holder validation in
+// memory, then goes straight to the one-boundary replay materializer.
 //
-// Driven through the real branch in proposal-manager.js rather than restated: the guard is lifted
-// from the source, so deleting it fails these tests.
+// Driven through the real validator in proposal-manager.js; the route contract is pinned from its
+// shipped source so removing either half fails these tests.
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import vm from 'node:vm';
+import { createRequire } from 'node:module';
 
-const managerSource = readFileSync(
-    fileURLToPath(new URL('../../frontend/js/proposal-manager.js', import.meta.url)), 'utf8');
+const require = createRequire(import.meta.url);
+const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
+
 const sharingSource = readFileSync(
     fileURLToPath(new URL('../../frontend/js/proposals/sharing-routes.js', import.meta.url)), 'utf8');
 
-// The guard is a self-contained block inside applyProposal. Lift it and run it against a fake
-// manager, so the branch under test is the shipped text.
+// Exercise the shipped validator with its collaborators replaced for one synchronous call.
 function runGuard({ supersede, held, planMemberIds }) {
-    const start = managerSource.indexOf('if (applyOptions.supersede === false) {');
-    if (start < 0) throw new Error('proposal-manager.js no longer guards on applyOptions.supersede');
-    const end = managerSource.indexOf('\n                }\n', start);
-    const block = managerSource.slice(start, end + 18);
-
     const failures = [];
-    const sandbox = {
-        applyOptions: { supersede, planMemberIds },
-        Set,
-        proposalId: 'p-1',
-        proposal: { proposalId: 'p-1', title: 'Mine' },
-        console: { warn() {} },
-        self: {
-            _collectAppliedAlternativesForExplicitApply: () => held,
-            _setLastApplyFailure: (id, failure) => failures.push({ id, failure })
-        }
-    };
-    sandbox.globalThis = sandbox;
-    const context = vm.createContext(sandbox);
-    // `this` inside the block is the manager; wrap it in a function called with our fake.
-    const refused = vm.runInContext(
-        `(function () {\n${block}\n  return 'not-refused';\n}).call(self)`,
-        context,
-        { filename: 'supersede-guard.js' }
-    );
-    return { refused: refused === false, failures };
+    if (supersede !== false) return { refused: false, failures };
+    const priorStorage = globalThis.proposalStorage;
+    const priorCollect = ProposalManager._collectAppliedAlternativesForExplicitApply;
+    const priorFailure = ProposalManager._setLastApplyFailure;
+    globalThis.proposalStorage = { getProposal: () => ({ proposalId: 'p-1', title: 'Mine' }) };
+    ProposalManager._collectAppliedAlternativesForExplicitApply = () => held;
+    ProposalManager._setLastApplyFailure = (id, failure) => failures.push({ id, failure });
+    try {
+        const validation = ProposalManager.validateSharedProposalGround('p-1', planMemberIds);
+        return { refused: validation.ok !== true, failures };
+    } finally {
+        if (priorStorage === undefined) delete globalThis.proposalStorage;
+        else globalThis.proposalStorage = priorStorage;
+        ProposalManager._collectAppliedAlternativesForExplicitApply = priorCollect;
+        ProposalManager._setLastApplyFailure = priorFailure;
+    }
 }
 
 const alternative = (id, title) => ({ proposalId: id, title });
@@ -125,14 +116,13 @@ describe('a plan\'s own members are not blockers', () => {
 });
 
 describe('the shared-plan route asks for that behaviour', () => {
-    it('passes supersede:false for members that are not part of a coordinated plan', () => {
-        expect(sharingSource, 'the plan route no longer opts out of superseding')
-            .toMatch(/\{ silent: true, supersede: false, planMemberIds \}/);
+    it('validates external holders before materializing an ordinary member', () => {
+        expect(sharingSource, 'the plan route no longer checks unrelated holders')
+            .toMatch(/validateSharedProposalGround\(\s*id,\s*planMemberIds,\s*preexistingAppliedRecords\s*\)/);
     });
 
-    // Coordinated members are complementary parts of one published plan and already bypass the
-    // sweep via replay; if that ever changed they would start refusing each other.
-    it('leaves coordinated members on the replay path', () => {
-        expect(sharingSource).toMatch(/coordinatedPlanIdOfSharedRecord\(record\)\s*\n\s*\?\s*\{ replay: true, silent: true \}/);
+    it('uses the direct replay path without the interactive supersession transaction', () => {
+        expect(sharingSource).toMatch(/\{ replay: true, silent: true, deferPresentation: true \}/);
+        expect(sharingSource).not.toMatch(/\{ silent: true, supersede: false, planMemberIds \}/);
     });
 });

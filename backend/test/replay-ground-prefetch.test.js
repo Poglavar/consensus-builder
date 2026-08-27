@@ -176,6 +176,49 @@ describe('the ground for a whole replay is fetched in one request', () => {
 });
 
 describe('ground already on the map is not fetched again', () => {
+    it('makes no request when loaded cadastre already covers every footprint', async () => {
+        let calls = 0;
+        installGlobal('fetchParcelsUnderGeometry', async () => { calls += 1; return { ids: [] }; });
+        const manager = harness();
+        globalThis.window.__cadastreAncestry = {
+            loadedCadastreCoverage: () => ({ ids: ['HR-1-1'], coverage: 1 })
+        };
+
+        await manager._loadReplayGround([member(0), member(1), member(2)]);
+
+        expect(calls).toBe(0);
+        expect(manager._lastReplayGroundProfile).toMatchObject({
+            coveredMembers: 3,
+            fetchedMembers: 0,
+            requests: 0
+        });
+    });
+
+    it('batches only members whose loaded coverage is incomplete', async () => {
+        const seen = [];
+        installGlobal('fetchParcelsUnderGeometry', async geometry => {
+            seen.push(geometry);
+            return { ids: [], count: 0 };
+        });
+        const manager = harness();
+        globalThis.window.__cadastreAncestry = {
+            loadedCadastreCoverage: proposal => ({
+                ids: proposal.proposalId === 'road-1' ? [] : ['HR-1-1'],
+                coverage: proposal.proposalId === 'road-1' ? 0.5 : 1
+            })
+        };
+
+        await manager._loadReplayGround([member(0), member(1), member(2)]);
+
+        expect(seen).toHaveLength(1);
+        expect(seen[0].coordinates).toHaveLength(1);
+        expect(manager._lastReplayGroundProfile).toMatchObject({
+            coveredMembers: 2,
+            fetchedMembers: 1,
+            requests: 1
+        });
+    });
+
     it('asks once per formation, however many rebuilds follow', async () => {
         // This is the cost that scaled with the plan: N members × one round-trip, on EVERY finish.
         let calls = 0;
@@ -382,6 +425,7 @@ describe('the fold itself no longer fetches', () => {
 
     it('still applies members one at a time, in order', () => {
         const loop = pass.slice(pass.indexOf('for (const proposal of appliedList)'));
-        expect(loop).toMatch(/await this\.applyProposal\(key, \{ replay: true \}\)/);
+        expect(loop).toMatch(/const replayOptions = \{ replay: true \}/);
+        expect(loop).toMatch(/await this\.applyProposal\(key, replayOptions\)/);
     });
 });

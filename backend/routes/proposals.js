@@ -265,6 +265,23 @@ const proposalCreateBodyValidator = createJsonBodyValidator({
     }
 });
 
+// A shared plan can carry hundreds of proposal ids. Fetching each record through
+// GET /proposals/:id turns one plan open into hundreds of HTTP requests, even though Postgres can
+// answer the same set in one query. Keep this endpoint additive: an older backend simply makes the
+// frontend fall back to the individual route.
+const proposalBatchBodyValidator = createJsonBodyValidator({
+    schema: {
+        ids: {
+            required: true,
+            validate: validators.arrayOf(validateIdentifierField('ids'), {
+                label: 'ids',
+                minItems: 1,
+                maxItems: 1000
+            })
+        }
+    }
+});
+
 // PATCH /proposals/:id/epoch — epochYear: 2026–2966 postavlja bucket, null ga briše.
 const proposalEpochPatchValidator = createJsonBodyValidator({
     schema: {
@@ -323,6 +340,22 @@ export function setupProposalsRoute(app, pool) {
             WHEN LOWER(COALESCE(lifecycle_status, '')) = 'draft' THEN 'draft'
             ELSE 'Active'
         END`;
+
+    // The complete public proposal representation. The single and batch endpoints deliberately
+    // share this list and serializeProposalRow so a plan does not receive a thinner record than a
+    // direct proposal link.
+    const FULL_PROPOSAL_COLUMNS = `
+        id, proposal_id, city, name, title, description, author, type,
+        lifecycle_status, ${EFFECTIVE_STATUS_SQL} AS effective_status,
+        offer, offer_currency, budget, budget_currency,
+        created_at, expires_at, updated_at,
+        decay_enabled, decay_percent, decay_duration_ms,
+        deposit_enabled, deposit_percent,
+        is_conditional, disbursement_mode,
+        ancestor_parcel_ids, cadastre_parcel_ids, ownership_flow, cadastre_frame,
+        accepted_parcel_ids, owner_acceptances,
+        road_proposal, building_proposal, structure_proposal, reparcellization,
+        lens, bounds, onchain_data, screenshot_url, epoch_year, proposal_data`;
 
     // ORDER BY only over columns the summary actually carries. Computed sorts the client offers
     // (area, parcel count, acceptance ratio) need per-row geometry/JSONB work the list endpoint
@@ -905,6 +938,37 @@ export function setupProposalsRoute(app, pool) {
         }
     });
 
+    app.post('/proposals/batch', proposalBatchBodyValidator, async (req, res) => {
+        try {
+            const ids = Array.from(new Set(req.validatedBody.ids.map(String)));
+            const result = await pool.query(`
+                SELECT ${FULL_PROPOSAL_COLUMNS}
+                FROM proposal
+                WHERE proposal_id = ANY($1::text[]) OR id::text = ANY($1::text[])
+            `, [ids]);
+
+            // A proposal_id is the public identity and wins if a requested numeric string happens
+            // to equal another row's database id. That is the same intended priority as the single
+            // endpoint, made deterministic for a set response.
+            const byProposalId = new Map();
+            const byDatabaseId = new Map();
+            for (const row of result.rows) {
+                if (row.proposal_id !== undefined && row.proposal_id !== null) {
+                    byProposalId.set(String(row.proposal_id), row);
+                }
+                if (row.id !== undefined && row.id !== null) byDatabaseId.set(String(row.id), row);
+            }
+            const items = ids.map(id => {
+                const row = byProposalId.get(id) || byDatabaseId.get(id) || null;
+                return { id, proposal: row ? serializeProposalRow(row) : null };
+            });
+            res.json({ items, count: items.filter(item => item.proposal).length });
+        } catch (err) {
+            console.error('Error in POST /proposals/batch:', err);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
     app.get('/proposals/:id', async (req, res) => {
         try {
             const idParam = req.params.id;
@@ -913,18 +977,7 @@ export function setupProposalsRoute(app, pool) {
             }
 
             const sql = `
-                SELECT
-                    id, proposal_id, city, name, title, description, author, type,
-                    lifecycle_status, ${EFFECTIVE_STATUS_SQL} AS effective_status,
-                    offer, offer_currency, budget, budget_currency,
-                    created_at, expires_at, updated_at,
-                    decay_enabled, decay_percent, decay_duration_ms,
-                    deposit_enabled, deposit_percent,
-                    is_conditional, disbursement_mode,
-                    ancestor_parcel_ids, cadastre_parcel_ids, ownership_flow, cadastre_frame,
-                    accepted_parcel_ids, owner_acceptances,
-                    road_proposal, building_proposal, structure_proposal, reparcellization,
-                    lens, bounds, onchain_data, screenshot_url, epoch_year, proposal_data
+                SELECT ${FULL_PROPOSAL_COLUMNS}
                 FROM proposal
                 WHERE proposal_id = $1 OR id::text = $1
             `;

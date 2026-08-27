@@ -83,6 +83,13 @@ describe('read-only POSTs are not rationed as writes', () => {
         expect(codes).not.toContain(429);
         expect(served(codes)).toBe(WRITE_LIMIT + 10);
     }, 30000);
+
+    it('serves /proposals/batch past it because it only reads proposal records', async () => {
+        const codes = await hammer(app(), '/proposals/batch', { ids: ['one', 'two'] }, WRITE_LIMIT + 5);
+        expect(codes).not.toContain(403);
+        expect(codes).not.toContain(429);
+        expect(served(codes)).toBe(WRITE_LIMIT + 5);
+    }, 30000);
 });
 
 describe('genuine writes are still rationed', () => {

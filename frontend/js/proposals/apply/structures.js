@@ -234,11 +234,13 @@
             proposalData.parentParcelIds = flatParentIds.slice();
             proposalData.structureProposal = sp;
             persistAppliedProposal(proposalData, proposalId);
-            try { refreshStructureLayer(); } catch (error) {
-                console.error(`[_applyStructureProposal] Failed to refresh ${kind} presentation`, error);
+            if (options.deferPresentation !== true) {
+                try { refreshStructureLayer(); } catch (error) {
+                    console.error(`[_applyStructureProposal] Failed to refresh ${kind} presentation`, error);
+                }
             }
             // The status line is written once, for every type, by _runProposalApplyWithSummary.
-            refreshProposalUIAfterApply();
+            if (options.deferPresentation !== true) refreshProposalUIAfterApply();
 
             const totalTime = performance.now() - startTime;
             traceApply(`✓ Structure proposal application completed in ${totalTime.toFixed(2)}ms`);

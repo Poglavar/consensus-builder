@@ -139,15 +139,17 @@ describe('the silence before the first proposal', () => {
 
     it('says what it is doing, and how long it took', () => {
         expect(loader).toContain('_announceApply(`Loading ground for ${pendingMembers.length} proposal');
-        expect(loader).toContain('_announceApply(`Ground loaded for ${pendingMembers.length} proposal');
+        expect(loader).toContain('_announceApply(`Ground loaded for ${memoPending.length} proposal');
         expect(loader).toContain('(elapsed / 1000).toFixed(1)');
     });
 
     it('counts only the members that still need fetching', () => {
-        // Ground already on the map is never re-fetched, so announcing the whole list would
-        // promise work that is not about to happen — and with nothing pending it says nothing.
+        // Ground already memoized or geometrically covered on the map is never re-fetched, so
+        // announcing the whole list would promise work that is not about to happen.
         expect(loader).toContain('!this._replayGroundFetched.has(memo)');
-        expect(loader).toContain('if (!pendingMembers.length) return _now() - started;');
+        expect(loader).toContain('if (!memoPending.length) return _now() - started;');
+        expect(loader).toContain("typeof ancestry.loadedCadastreCoverage !== 'function'");
+        expect(loader).toContain('if (!pendingMembers.length) {');
     });
 });
 

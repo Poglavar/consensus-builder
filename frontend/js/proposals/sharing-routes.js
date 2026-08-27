@@ -516,10 +516,10 @@ function orderQueuedSharedProposalIds(proposalIds) {
 // Startup has already restored the standing plan before either shared-import path reaches here.
 // Rebuilding that whole plan again made opening ONE proposal proportional to everything the user
 // happened to have applied locally (and, on a 26-member plan, paid the same 20-second replay twice).
-// The ordinary Apply entry point is already the canonical scoped mutation: it serialises changes,
-// rolls a failed member back, and derives only the ground that member changes. Shared imports use
-// that same path now, in package dependency order with immutable order inside each phase.
-async function materializeQueuedSharedProposals(proposalIds) {
+// Each parked member goes directly through the canonical replay materializer. It keeps the rollback
+// boundary, but avoids the explicit-click state transition and supersession pass that used to run
+// before the same materializer. Package dependency order remains immutable inside each phase.
+async function materializeQueuedSharedProposals(proposalIds, options = {}) {
     // Package dependencies outrank URL and creation order. Ordinary packages form road-bounded
     // blocks before partitioning them; explicitly coordinated packages publish a pre-tessellated
     // readjustment first, then fill its reserved road bands. Buildings and public spaces follow in
@@ -527,10 +527,70 @@ async function materializeQueuedSharedProposals(proposalIds) {
     const orderedIds = orderQueuedSharedProposalIds(proposalIds);
     const appliedIds = [];
     const failedIds = [];
+    const now = () => ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now());
+    const started = now();
+    let presentationMs = 0;
+    let storageMs = 0;
+    const batchStore = (typeof proposalStorage !== 'undefined') ? proposalStorage : null;
+    const storageBatched = !!(batchStore
+        && typeof batchStore.beginBatch === 'function'
+        && typeof batchStore.endBatch === 'function');
     // Who belongs to THIS plan. A member standing on ground another member holds is the plan
     // working as designed — on a re-open that is nearly every member — so those are not the
     // "someone else's applied work" the supersede refusal is protecting.
     const planMemberIds = new Set(orderedIds.map(id => String(id)));
+    const suppliedPlanMembership = options.planMemberIds;
+    if (suppliedPlanMembership && typeof suppliedPlanMembership[Symbol.iterator] === 'function') {
+        for (const id of suppliedPlanMembership) {
+            if (id !== undefined && id !== null && String(id)) planMemberIds.add(String(id));
+        }
+    }
+    const orderedRecords = orderedIds
+        .map(id => {
+            try { return proposalStorage.getProposal(id); } catch (_) { return null; }
+        })
+        .filter(Boolean);
+    // Incoming records are parked at this point. Capture only what stood before the plan began;
+    // otherwise every newly-applied sibling enlarges the next member's geometric holder scan and a
+    // 299-member plan degenerates into ~90,000 pairwise checks before plan-mates are filtered out.
+    let preexistingAppliedRecords = null;
+    try {
+        if (proposalStorage && typeof proposalStorage.getAllProposals === 'function') {
+            preexistingAppliedRecords = proposalStorage.getAllProposals()
+                .filter(record => {
+                    if (!record || !isProposalCurrentlyApplied(record)) return false;
+                    const identities = [record.proposalId, record.serverProposalId];
+                    try {
+                        if (typeof getServerProposalId === 'function') identities.push(getServerProposalId(record));
+                    } catch (_) { }
+                    return !identities.some(id => id !== undefined && id !== null
+                        && planMemberIds.has(String(id)));
+                });
+        }
+    } catch (_) { preexistingAppliedRecords = null; }
+    try {
+        if (ProposalManager) {
+            ProposalManager._lastReplayGroundProfile = null;
+            ProposalManager._lastDemolitionPrefetchProfile = null;
+        }
+    } catch (_) { }
+    // Start the one existing-stock request immediately. Ordinary packages begin with a corridor
+    // batch, so this network wait runs behind their ground derivation and is normally finished by
+    // the time the first building needs its exact slice.
+    const demolitionPromise = (ProposalManager && typeof ProposalManager._prefetchDemolitionBuildings === 'function')
+        ? Promise.resolve(ProposalManager._prefetchDemolitionBuildings(orderedRecords))
+            .catch(error => {
+                console.warn('[shared-apply] demolition prefetch failed; members fall back individually', error);
+                return new Map();
+            })
+        : Promise.resolve(new Map());
+    let demolitionBuildings = null;
+    const demolitionFor = async id => {
+        if (!demolitionBuildings) demolitionBuildings = await demolitionPromise;
+        if (!demolitionBuildings || typeof demolitionBuildings.has !== 'function'
+            || !demolitionBuildings.has(String(id))) return { covered: false, features: undefined };
+        return { covered: true, features: demolitionBuildings.get(String(id)) };
+    };
     // This loop is the tail of a plan open and it is minutes long. Without a per-item report the
     // overlay held one "Applying shared plan…" for the whole of it — the phase the reader actually
     // waits through, showing the least. Roads apply in consecutive runs, so `index` is a position
@@ -557,64 +617,122 @@ async function materializeQueuedSharedProposals(proposalIds) {
             });
         } catch (_) { /* progress must never break an apply */ }
     };
-    for (let index = 0; index < orderedIds.length;) {
-        const id = orderedIds[index];
-        let record = null;
-        try { record = proposalStorage.getProposal(id); } catch (_) { record = null; }
-        reportProgress(record, id, index + 1);
-        const goal = (typeof applyRoute !== 'undefined' && applyRoute && typeof applyRoute.normalizeGoalKey === 'function')
-            ? applyRoute.normalizeGoalKey(record && record.goal)
-            : String((record && record.goal) || '');
-        const isRoad = goal === 'road-track' || !!(record && record.roadProposal);
+    if (storageBatched) batchStore.beginBatch();
+    try {
+        for (let index = 0; index < orderedIds.length;) {
+            const id = orderedIds[index];
+            let record = null;
+            try { record = proposalStorage.getProposal(id); } catch (_) { record = null; }
+            reportProgress(record, id, index + 1);
+            const goal = (typeof applyRoute !== 'undefined' && applyRoute && typeof applyRoute.normalizeGoalKey === 'function')
+                ? applyRoute.normalizeGoalKey(record && record.goal)
+                : String((record && record.goal) || '');
+            const isRoad = goal === 'road-track' || !!(record && record.roadProposal);
 
-        // Consecutive roads in the ordered package are one network mutation. This is equally valid
-        // before an ordinary readjustment and after a coordinated one; only their phase changes.
-        if (isRoad && ProposalManager && typeof ProposalManager.materializeCorridorBatch === 'function') {
-            const roadIds = [];
-            let cursor = index;
-            while (cursor < orderedIds.length) {
-                const roadId = orderedIds[cursor];
-                let roadRecord = null;
-                try { roadRecord = proposalStorage.getProposal(roadId); } catch (_) { roadRecord = null; }
-                const roadGoal = (typeof applyRoute !== 'undefined' && applyRoute && typeof applyRoute.normalizeGoalKey === 'function')
-                    ? applyRoute.normalizeGoalKey(roadRecord && roadRecord.goal)
-                    : String((roadRecord && roadRecord.goal) || '');
-                if (!(roadGoal === 'road-track' || !!(roadRecord && roadRecord.roadProposal))) break;
-                roadIds.push(roadId);
-                cursor += 1;
+            // Consecutive roads in the ordered package are one network mutation. This is equally valid
+            // before an ordinary readjustment and after a coordinated one; only their phase changes.
+            if (isRoad && ProposalManager && typeof ProposalManager.materializeCorridorBatch === 'function') {
+                const roadIds = [];
+                let cursor = index;
+                while (cursor < orderedIds.length) {
+                    const roadId = orderedIds[cursor];
+                    let roadRecord = null;
+                    try { roadRecord = proposalStorage.getProposal(roadId); } catch (_) { roadRecord = null; }
+                    const roadGoal = (typeof applyRoute !== 'undefined' && applyRoute && typeof applyRoute.normalizeGoalKey === 'function')
+                        ? applyRoute.normalizeGoalKey(roadRecord && roadRecord.goal)
+                        : String((roadRecord && roadRecord.goal) || '');
+                    if (!(roadGoal === 'road-track' || !!(roadRecord && roadRecord.roadProposal))) break;
+                    roadIds.push(roadId);
+                    cursor += 1;
+                }
+                try {
+                    const batch = await ProposalManager.materializeCorridorBatch(roadIds, { deferPresentation: true });
+                    appliedIds.push(...(Array.isArray(batch?.appliedIds) ? batch.appliedIds : []));
+                    failedIds.push(...(Array.isArray(batch?.failedIds) ? batch.failedIds : (batch?.ok ? [] : roadIds)));
+                } catch (error) {
+                    console.error('[shared-apply] corridor batch failed', error);
+                    failedIds.push(...roadIds);
+                }
+                index = cursor;
+                continue;
             }
+
             try {
-                const batch = await ProposalManager.materializeCorridorBatch(roadIds);
-                appliedIds.push(...(Array.isArray(batch?.appliedIds) ? batch.appliedIds : []));
-                failedIds.push(...(Array.isArray(batch?.failedIds) ? batch.failedIds : (batch?.ok ? [] : roadIds)));
+                // Refuse unrelated holders in memory, then use the direct one-boundary materializer for
+                // every shared member. The old non-coordinated path first marked state in one full-map
+                // transaction and then replay-applied in a second; neither extra snapshot nor the
+                // explicit-Apply supersession path belongs to opening a plan link.
+                if (!coordinatedPlanIdOfSharedRecord(record)
+                    && ProposalManager && typeof ProposalManager.validateSharedProposalGround === 'function') {
+                    const validation = ProposalManager.validateSharedProposalGround(
+                        id,
+                        planMemberIds,
+                        preexistingAppliedRecords
+                    );
+                    if (!validation || validation.ok !== true) {
+                        failedIds.push(id);
+                        index += 1;
+                        continue;
+                    }
+                }
+                const applyOptions = { replay: true, silent: true, deferPresentation: true };
+                const demolition = await demolitionFor(id);
+                if (demolition.covered) applyOptions.preloadedBuildings = demolition.features;
+                const ok = await ProposalManager.applyProposal(id, applyOptions);
+                if (ok) appliedIds.push(id);
+                else failedIds.push(id);
             } catch (error) {
-                console.error('[shared-apply] corridor batch failed', error);
-                failedIds.push(...roadIds);
+                console.error('[shared-apply] scoped apply failed', id, error);
+                failedIds.push(id);
             }
-            index = cursor;
-            continue;
+            index += 1;
         }
-
+    } finally {
+        // Every handler has updated the canonical arrays and live parcel fabric, but deliberately
+        // skipped list/style/layer presentation. Flush the complete view once, even after a failed
+        // member, so partial-success plans never leave stale UI behind.
+        const presentationStarted = now();
         try {
-            // Members of a coordinated package are complementary parts of one published plan, not
-            // successive interactive choices. Replay applies each member's own local payload and
-            // deliberately bypasses the explicit-Apply alternative sweep between sibling records.
-            // supersede:false for the non-coordinated case: applying a shared PLAN is not the
-            // explicit "this design, not that one" a click is, so a member whose ground is already
-            // held by an applied proposal is refused and reported rather than standing that
-            // proposal down behind the reader's back. Coordinated members already bypass the
-            // alternative sweep for their own reason (complementary parts of one published plan).
-            const applyOptions = coordinatedPlanIdOfSharedRecord(record)
-                ? { replay: true, silent: true }
-                : { silent: true, supersede: false, planMemberIds };
-            const ok = await ProposalManager.applyProposal(id, applyOptions);
-            if (ok) appliedIds.push(id);
-            else failedIds.push(id);
+            if (ProposalManager && typeof ProposalManager._refreshUIAfterProposalChange === 'function') {
+                ProposalManager._refreshUIAfterProposalChange(null);
+            }
         } catch (error) {
-            console.error('[shared-apply] scoped apply failed', id, error);
-            failedIds.push(id);
+            console.error('[shared-apply] final presentation refresh failed', error);
         }
-        index += 1;
+        presentationMs = now() - presentationStarted;
+
+        const storageStarted = now();
+        try {
+            // Imports may have suppressed their own save. Ensure the outer batch has one pending
+            // write even if every queued member was refused before reaching a type handler.
+            if (batchStore && typeof batchStore.save === 'function') batchStore.save();
+        } finally {
+            if (storageBatched) batchStore.endBatch();
+        }
+        storageMs = now() - storageStarted;
+
+        const ground = (ProposalManager && ProposalManager._lastReplayGroundProfile) || {};
+        const demolition = (ProposalManager && ProposalManager._lastDemolitionPrefetchProfile) || {};
+        const profile = {
+            members: orderedIds.length,
+            applied: appliedIds.length,
+            failed: failedIds.length,
+            proposalBatchRequests: Number(options.recordFetchProfile?.batchRequests) || 0,
+            proposalIndividualRequests: Number(options.recordFetchProfile?.individualRequests) || 0,
+            proposalBatchSupported: options.recordFetchProfile?.batchSupported === true,
+            holderCandidates: Array.isArray(preexistingAppliedRecords) ? preexistingAppliedRecords.length : null,
+            groundCoveredMembers: Number(ground.coveredMembers) || 0,
+            groundFetchedMembers: Number(ground.fetchedMembers) || 0,
+            groundRequests: Number(ground.requests) || 0,
+            demolitionRegions: Number(demolition.regions) || 0,
+            demolitionRequests: Number(demolition.requests) || 0,
+            demolitionFallbacks: Number(demolition.fallbackRegions) || 0,
+            presentationMs,
+            storageMs,
+            totalMs: now() - started
+        };
+        try { if (ProposalManager) ProposalManager._lastSharedApplyProfile = profile; } catch (_) { }
+        console.info('[shared-apply] profile', profile);
     }
     return { appliedIds, failedIds };
 }
@@ -1016,7 +1134,7 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
                 }
             } catch (_) { }
 
-            const result = await importAndApplySharedProposal(proposal);
+            const result = await importAndApplySharedProposal(proposal, { deferSave: true });
             const proposalId = (result && result.proposalId) || getProposalKey(proposal) || proposal.proposalId;
 
             if (result && result.skipped) {
@@ -1035,7 +1153,15 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
         }
 
         if (actuallyApplied.length > 0) {
-            const scoped = await materializeQueuedSharedProposals(actuallyApplied);
+            const payloadPlanMemberIds = new Set();
+            sorted.forEach(record => {
+                [getProposalKey(record), record && record.proposalId, record && record.serverProposalId]
+                    .filter(Boolean)
+                    .forEach(id => payloadPlanMemberIds.add(String(id)));
+            });
+            const scoped = await materializeQueuedSharedProposals(actuallyApplied, {
+                planMemberIds: payloadPlanMemberIds
+            });
             const scopedFailures = new Set(scoped.failedIds.map(String));
             for (let i = actuallyApplied.length - 1; i >= 0; i -= 1) {
                 if (!scopedFailures.has(String(actuallyApplied[i]))) continue;
@@ -1254,13 +1380,13 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
     }
 
     // Import changes records only. Keep every queued member parked until the complete ordered set
-    // is present; the caller then sends them through the ordinary scoped Apply path one by one.
+    // is present; the caller then sends them through the direct scoped materializer one by one.
     // Pre-marking them made later members look as if they already stood on the map, and forced the
     // caller to rebuild every unrelated local proposal merely to materialise this queue.
     if (typeof setProposalApplied === 'function') setProposalApplied(existing, false, { stamp: false });
     else existing.applied = false;
     proposalStorage._indexProposal?.(existing);
-    proposalStorage.save?.();
+    if (options.deferSave !== true) proposalStorage.save?.();
     return { applied: true, skipped: false, proposalId: existing.proposalId || proposalId, queued: true };
 }
 
@@ -1269,26 +1395,60 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
 // other city, or the user chose to stay and the route was dropped. Never blocks on legacy proposals
 // that predate the `city` stamp, nor on a server that cannot be reached — those fall through to the
 // existing behaviour rather than stranding the user on a dialog.
-async function sharedProposalCityBlocksLoad(firstProposalId) {
+async function fetchSharedProposalBatch(ids, backendBase) {
+    const requested = Array.from(new Set((Array.isArray(ids) ? ids : [])
+        .map(id => String(id || '').trim()).filter(Boolean)));
+    const records = new Map();
+    const missing = new Set();
+    if (!requested.length) return { records, missing, supported: true, requests: 0 };
+    try {
+        const response = await fetch(`${backendBase}/proposals/batch`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ ids: requested })
+        });
+        if (!response.ok) return { records, missing, supported: false, requests: 1 };
+        const payload = await response.json();
+        if (!payload || !Array.isArray(payload.items)) return { records, missing, supported: false, requests: 1 };
+        const seen = new Set();
+        payload.items.forEach(item => {
+            const id = item && item.id !== undefined && item.id !== null ? String(item.id) : '';
+            if (!id) return;
+            seen.add(id);
+            if (item.proposal) records.set(id, item.proposal);
+            else missing.add(id);
+        });
+        return { records, missing, supported: requested.every(id => seen.has(id)), requests: 1 };
+    } catch (error) {
+        console.warn('[shared-plan] batch proposal fetch unavailable; falling back', error);
+        return { records, missing, supported: false, requests: 1 };
+    }
+}
+
+async function sharedProposalCityBlocksLoad(firstProposalId, prefetchedPayload = null) {
     // Returns { blocked, payload }. Measured: this fetch (of the WHOLE proposal, just to read its
     // .city) was the biggest single cost on a shared-link open, and the apply loop then fetched the
     // very same proposal a SECOND time. Hand the payload back so the caller can reuse it — one fetch
     // instead of two. `blocked` is true only when the user chose to stay in the other city.
-    if (!firstProposalId) return { blocked: false, payload: null };
-    let payload = null;
+    if (!firstProposalId) return { blocked: false, payload: null, requestMade: false };
+    let payload = prefetchedPayload || null;
+    let requestMade = false;
     try {
-        const backendBase = resolveBackendBaseUrl();
-        const response = await fetch(`${backendBase}/proposals/${encodeURIComponent(firstProposalId)}`);
-        if (!response.ok) return { blocked: false, payload: null };
-        payload = await response.json();
-        if (typeof promptCityMismatchForProposal !== 'function') return { blocked: false, payload };
+        if (!payload) {
+            const backendBase = resolveBackendBaseUrl();
+            requestMade = true;
+            const response = await fetch(`${backendBase}/proposals/${encodeURIComponent(firstProposalId)}`);
+            if (!response.ok) return { blocked: false, payload: null, requestMade };
+            payload = await response.json();
+        }
+        if (typeof promptCityMismatchForProposal !== 'function') return { blocked: false, payload, requestMade };
         const proposalCityId = payload && (payload.city || (payload.proposal_data && payload.proposal_data.city));
-        if (!proposalCityId) return { blocked: false, payload };
+        if (!proposalCityId) return { blocked: false, payload, requestMade };
         const blocked = await promptCityMismatchForProposal(String(proposalCityId));
-        return { blocked, payload };
+        return { blocked, payload, requestMade };
     } catch (error) {
         console.warn('[sharedProposalCityBlocksLoad] Could not determine the proposal city:', error);
-        return { blocked: false, payload };
+        return { blocked: false, payload, requestMade };
     }
 }
 
@@ -1348,8 +1508,9 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
             return s;
         };
 
-        const totalProposals = Array.from(new Set(idParts.map(normalizeId).filter(Boolean))).length;
-        const firstProposalId = idParts.map(normalizeId).filter(Boolean)[0];
+        const uniqueIncomingIds = Array.from(new Set(idParts.map(normalizeId).filter(Boolean)));
+        const totalProposals = uniqueIncomingIds.length;
+        const firstProposalId = uniqueIncomingIds[0];
 
         // Show the overlay BEFORE the city check: that check fetches the first proposal (the slowest
         // single step on a shared-link open), and it used to run with a frozen, feedback-less screen.
@@ -1359,11 +1520,20 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
             title: tShare('plan.fetchingPlanTitle', 'Fetching proposal')
         });
 
+        const backendBase = resolveBackendBaseUrl();
+        const batchRecords = await fetchSharedProposalBatch(uniqueIncomingIds, backendBase);
+        const recordFetchProfile = {
+            batchRequests: batchRecords.requests,
+            individualRequests: 0,
+            batchSupported: batchRecords.supported
+        };
+
         // The ?city= param is only a hint the sharer's browser attached; it can be absent or lost.
         // The proposal itself knows which city it belongs to, so ask before applying it to whatever
         // map happens to be on screen. The fetched payload is reused below (see prefetchedFirst) so
         // the apply loop does not fetch this same proposal again.
-        const cityCheck = await sharedProposalCityBlocksLoad(firstProposalId);
+        const cityCheck = await sharedProposalCityBlocksLoad(firstProposalId, batchRecords.records.get(firstProposalId));
+        if (cityCheck.requestMade) recordFetchProfile.individualRequests += 1;
         if (cityCheck.blocked) {
             console.log('[handleSharedPlanRoute] Aborting: proposal belongs to another city.');
             hideProposalLoadOverlay();
@@ -1371,7 +1541,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         }
         const prefetchedFirst = cityCheck.payload || null;
 
-        const backendBase = resolveBackendBaseUrl();
         const applied = [];
         const skipped = [];
         const failed = [];
@@ -1453,6 +1622,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         // cleanPlanUrl) only broke refresh and re-sharing from the URL bar.
         updateProposalLoadOverlay({ progress: { done: fetchProgressIds.size, total: totalProposals } });
         const loadedById = new Map();
+        batchRecords.records.forEach((proposal, id) => loadedById.set(id, proposal));
         // Reuse the proposal the city check already fetched — keyed by the same normalized id the
         // apply loop shifts off the queue — so the loop's `if (!proposal)` fetch is skipped for it.
         if (prefetchedFirst && firstProposalId) loadedById.set(firstProposalId, prefetchedFirst);
@@ -1737,7 +1907,9 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
             if (typeof window !== 'undefined' && window.__planOrder && queue.length > 1) {
                 await Promise.all(queue.map(async (qid) => {
                     if (loadedById.has(qid)) return;
+                    if (batchRecords.supported && batchRecords.missing.has(qid)) return;
                     try {
+                        recordFetchProfile.individualRequests += 1;
                         const resp = await fetch(`${backendBase}/proposals/${encodeURIComponent(qid)}`);
                         if (resp.ok) loadedById.set(qid, await resp.json());
                     } catch (_) { /* the apply loop retries and reports this id itself */ }
@@ -1912,6 +2084,15 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
             try {
                 let proposal = loadedById.get(id);
                 if (!proposal) {
+                    if (batchRecords.supported && batchRecords.missing.has(id)) {
+                        failed.push({
+                            id,
+                            label: formatSharedProposalLabel(null, id),
+                            reason: tShare('plan.notFoundOnServer', 'Not found on server')
+                        });
+                        markFetchProgress(id);
+                        continue;
+                    }
                     const baseStatus = tShare('plan.fetching', 'Fetching proposal #{{id}}…', { id });
                     const ordinal = getFetchOrdinal(id);
                     const fetchingStatus = (totalProposals > 0)
@@ -1921,6 +2102,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                         status: fetchingStatus,
                         progress: { done: fetchProgressIds.size, total: totalProposals }
                     });
+                    recordFetchProfile.individualRequests += 1;
                     const response = await fetch(`${backendBase}/proposals/${encodeURIComponent(id)}`);
                     if (!response.ok) {
                         let reason;
@@ -1978,7 +2160,10 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                     ),
                     progress: { done: applyDone, total: applyTotal }
                 });
-                const result = await importAndApplySharedProposal(proposal, { skipDependencyFetch: true });
+                const result = await importAndApplySharedProposal(proposal, {
+                    skipDependencyFetch: true,
+                    deferSave: true
+                });
 
                 const proposalId = (result && result.proposalId) || proposal?.proposalId || id;
                 const label = formatSharedProposalLabel(proposal, proposalId);
@@ -2061,11 +2246,26 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         }
 
         // All imported members are now parked records. Materialise only that queue through the
-        // same scoped Apply path used by the proposal list; startup already restored everything
-        // else on the map.
+        // direct replay materializer; startup already restored everything else on the map.
         if (applied.length > 0) {
             updateProposalLoadOverlay({ status: tShare('plan.applyingAll', 'Applying shared plan…') });
-            const scoped = await materializeQueuedSharedProposals(applied.map(entry => entry.id));
+            const sharedPlanMemberIds = new Set(uniqueIncomingIds);
+            [...incomingAlreadyApplied, ...applied].forEach(entry => {
+                const record = entry && entry.id ? proposalStorage.getProposal(entry.id) : entry;
+                [entry && entry.id, record && record.proposalId, record && record.serverProposalId]
+                    .filter(Boolean)
+                    .forEach(id => sharedPlanMemberIds.add(String(id)));
+                try {
+                    const serverId = record && typeof getServerProposalId === 'function'
+                        ? getServerProposalId(record)
+                        : null;
+                    if (serverId) sharedPlanMemberIds.add(String(serverId));
+                } catch (_) { }
+            });
+            const scoped = await materializeQueuedSharedProposals(applied.map(entry => entry.id), {
+                recordFetchProfile,
+                planMemberIds: sharedPlanMemberIds
+            });
             const scopedFailures = new Set(scoped.failedIds.map(String));
             for (let i = applied.length - 1; i >= 0; i -= 1) {
                 const entry = applied[i];

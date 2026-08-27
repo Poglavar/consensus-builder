@@ -325,7 +325,8 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
         '/buildings/near',
         '/buildings/footprints',
         '/buildings/under',
-        '/parcels/under'
+        '/parcels/under',
+        '/proposals/batch'
     ]);
     app.use((req, res, next) => {
         if (['POST', 'PUT', 'PATCH'].includes(req.method)) {

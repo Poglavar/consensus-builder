@@ -187,10 +187,12 @@
 
         // THIS proposal's buildings, not every proposal's. The full rebuild is for removals and
         // boot; an apply has one proposal to draw and should cost one proposal.
-        if (typeof drawProposedBuildingsForProposal === 'function') {
-            drawProposedBuildingsForProposal(proposalId);
-        } else if (typeof updateProposedBuildingsLayer === 'function') {
-            updateProposedBuildingsLayer();
+        if (options.deferPresentation !== true) {
+            if (typeof drawProposedBuildingsForProposal === 'function') {
+                drawProposedBuildingsForProposal(proposalId);
+            } else if (typeof updateProposedBuildingsLayer === 'function') {
+                updateProposedBuildingsLayer();
+            }
         }
 
         const showBuildingsCheckbox = document.getElementById('showProposedBuildings');
@@ -217,7 +219,7 @@
         traceApply(`Formed from ${workingParentIds.length} live parcel(s)`);
 
         // The status line is written once, for every type, by _runProposalApplyWithSummary.
-        refreshProposalUIAfterApply();
+        if (options.deferPresentation !== true) refreshProposalUIAfterApply();
 
         const totalTime = performance.now() - startTime;
         traceApply(`✓ Building proposal application completed in ${totalTime.toFixed(2)}ms`);
