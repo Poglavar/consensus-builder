@@ -19,7 +19,7 @@
         if (!properties || properties.isCorridor !== true || properties.isRoad !== true || typeof findProposal !== 'function') {
             return null;
         }
-        const candidates = [properties.ancestorProposal, properties.proposalId]
+        const candidates = [properties.producedByProposalId, properties.ancestorProposal, properties.proposalId]
             .map(value => value !== undefined && value !== null ? String(value) : null)
             .filter(Boolean);
         for (const candidate of candidates) {

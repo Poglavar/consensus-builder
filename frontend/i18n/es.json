@@ -860,7 +860,7 @@
                 "agentMissing": "Agente no encontrado ({{id}})"
             },
             "proposalsSection": {
-                "ancestorPill": "Ancestro",
+                "producerPill": "Origen de la parcela",
                 "create": "Crear propuesta",
                 "empty": "Sin propuestas",
                 "fallbackTitle": "Propuesta",
@@ -1041,11 +1041,8 @@
             "loading": "Cargando detalles de la propuesta...",
             "rendering": "Renderizando detalles de la propuesta...",
             "sections": {
-                "ancestorsParcels": "Antecesores (parcelas):",
-                "ancestorsProposals": "Antecesores (propuestas):",
-                "descendantsParcels": "Descendientes (parcelas):",
-                "noneAncestors": "No se encontraron propuestas antecesoras.",
-                "noneDescendants": "No se encontraron parcelas descendientes.",
+                "cadastralParcels": "Parcelas catastrales:",
+                "generatedParcels": "Parcelas generadas:",
                 "proposalTypeFallback": "propuesta"
             },
             "parcels": {

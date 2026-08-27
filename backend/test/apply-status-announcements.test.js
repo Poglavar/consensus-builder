@@ -230,12 +230,12 @@ describe('the corridor derivation announces itself', () => {
 
     it('says it on the way in and on the way out, around the one derivation', () => {
         const pass = managerSource.slice(
-            managerSource.indexOf('const takes = this._appliedCorridorTakes(appliedList);\n        //'),
-            managerSource.indexOf('const corridorIds = new Set(takes.map(take => take.id));')
+            managerSource.indexOf('const componentTakes = this._appliedCorridorTakes(appliedList);'),
+            managerSource.indexOf('const corridorIds = new Set(componentTakes.map(take => take.id));')
         );
-        expect(pass).toContain('_announceApply(`Applying ${_corridorCountPhrase(takes)}...`)');
-        expect(pass).toContain('_announceApply(`Applied ${_corridorCountPhrase(takes)}`)');
+        expect(pass).toContain('_announceApply(`Applying ${_corridorCountPhrase(componentTakes)}...`)');
+        expect(pass).toContain('_announceApply(`Applied ${_corridorCountPhrase(componentTakes)}`)');
         // Nothing to say when the plan has no corridors at all.
-        expect(pass.match(/if \(takes\.length\)/g) || []).toHaveLength(2);
+        expect(pass.match(/if \(componentTakes\.length\)/g) || []).toHaveLength(2);
     });
 });

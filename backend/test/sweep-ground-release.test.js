@@ -1,10 +1,6 @@
-// A road edit that divides ground somebody else needed WHOLE sweeps them off the map.
-//
-// "Off the map" was only ever half done: the sweep flipped `applied` to false and stopped there. A
-// record's buildings, parks, squares and lakes live in presentation collections keyed to it, so a
-// block swept away by a road edit stayed drawn, looking applied, while every other part of the app
-// read the record as unapplied. These tests pin that a swept record leaves as thoroughly as an
-// explicitly unapplied one does.
+// Corridor cuts invalidate records inside the same cadastral-component replay. The decision parks
+// authored records only; the reset has already discarded presentation/generated output, and the
+// next pass simply omits the parked members.
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 
@@ -95,78 +91,70 @@ function buildWorld(records) {
     });
 
     const manager = {
-        _deriveCorridorFabric: ProposalManager._deriveCorridorFabric,
-        _parcelsClaimedByDerivedGround: ProposalManager._parcelsClaimedByDerivedGround,
-        _deriveGroundUnder: ProposalManager._deriveGroundUnder,
-        _clearDerivedRecordState: ProposalManager._clearDerivedRecordState,
-        _undoProposalPayload: ProposalManager._undoProposalPayload,
-        _releaseUnappliedRecord: ProposalManager._releaseUnappliedRecord,
-        _sweepGroundNoLongerWhole: ProposalManager._sweepGroundNoLongerWhole
+        _severedThisRebuild: [],
+        _replayInvalidated: false,
+        _parkRecordsInvalidatedByCorridors: ProposalManager._parkRecordsInvalidatedByCorridors
     };
     return { win, manager, byId };
 }
 
-describe('sweeping a record whose ground stopped being whole', () => {
-    it('takes its buildings OFF the map, not just its applied flag', async () => {
+describe('parking a record whose ground stopped being whole', () => {
+    it('parks the record and invalidates the current replay pass', () => {
         const divided = blockRecord('block-divided', BLOCK);
-        const { win, manager } = buildWorld([divided]);
+        const { manager } = buildWorld([divided]);
 
-        const sweep = await manager._sweepGroundNoLongerWhole([PARCEL_ID]);
+        const sweep = manager._parkRecordsInvalidatedByCorridors([PARCEL_ID], [divided]);
 
         expect(sweep.unapplied.map(entry => entry.proposalId)).toEqual(['block-divided']);
         expect(divided.applied).toBe(false);
-        // The bug: this used to still hold the block, so it stayed drawn on the map looking applied.
-        expect(win.proposedBuildings.some(f => f.properties.proposalId === 'block-divided')).toBe(false);
+        expect(manager._severedThisRebuild).toEqual(['block-divided']);
+        expect(manager._replayInvalidated).toBe(true);
     });
 
-    it('leaves a block that still fits inside one piece alone, on the map and applied', async () => {
+    it('leaves a block that still fits inside one piece applied', () => {
         const safe = blockRecord('block-safe', SAFE_BLOCK);
-        const { win, manager } = buildWorld([safe]);
+        const { manager } = buildWorld([safe]);
 
-        const sweep = await manager._sweepGroundNoLongerWhole([PARCEL_ID]);
+        const sweep = manager._parkRecordsInvalidatedByCorridors([PARCEL_ID], [safe]);
 
         expect(sweep.unapplied).toEqual([]);
         expect(safe.applied).toBe(true);
-        expect(win.proposedBuildings.some(f => f.properties.proposalId === 'block-safe')).toBe(true);
     });
 
     // A block is one building per parcel. Judging the UNION of them asked whether the whole block
     // fits inside a single piece of a single parcel — which it cannot once it spans two, so moving a
     // road's nodes removed four blocks, then twelve, with the cut nowhere near a building.
-    it('keeps a block whose buildings each sit inside a piece, though the block spans both', async () => {
+    it('keeps a block whose buildings each sit inside a piece, though the block spans both', () => {
         const inWest = turf.polygon([[[0.0001, 0.0002], [0.0003, 0.0002], [0.0003, 0.0008], [0.0001, 0.0008], [0.0001, 0.0002]]]);
         const inEast = turf.polygon([[[0.0007, 0.0002], [0.0009, 0.0002], [0.0009, 0.0008], [0.0007, 0.0008], [0.0007, 0.0002]]]);
         const spanning = blockRecord('block-two-parcels', inWest, inEast);
-        const { win, manager } = buildWorld([spanning]);
+        const { manager } = buildWorld([spanning]);
 
-        const sweep = await manager._sweepGroundNoLongerWhole([PARCEL_ID]);
+        const sweep = manager._parkRecordsInvalidatedByCorridors([PARCEL_ID], [spanning]);
 
         expect(sweep.unapplied).toEqual([]);
         expect(spanning.applied).toBe(true);
-        expect(win.proposedBuildings).toHaveLength(2);
     });
 
-    it('still sweeps a spanning block when the cut goes through one of its buildings', async () => {
+    it('still parks a spanning block when the cut goes through one of its buildings', () => {
         const inWest = turf.polygon([[[0.0001, 0.0002], [0.0003, 0.0002], [0.0003, 0.0008], [0.0001, 0.0008], [0.0001, 0.0002]]]);
         const severed = blockRecord('block-one-cut', inWest, BLOCK);
-        const { win, manager } = buildWorld([severed]);
+        const { manager } = buildWorld([severed]);
 
-        const sweep = await manager._sweepGroundNoLongerWhole([PARCEL_ID]);
+        const sweep = manager._parkRecordsInvalidatedByCorridors([PARCEL_ID], [severed]);
 
         expect(sweep.unapplied.map(entry => entry.proposalId)).toEqual(['block-one-cut']);
         expect(severed.applied).toBe(false);
-        expect(win.proposedBuildings).toHaveLength(0);
     });
 
-    it('sweeps only the divided block when both stand on the same parcel', async () => {
+    it('parks only the divided block when both stand on the same parcel', () => {
         const divided = blockRecord('block-divided', BLOCK);
         const safe = blockRecord('block-safe', SAFE_BLOCK);
-        const { win, manager } = buildWorld([divided, safe]);
+        const { manager } = buildWorld([divided, safe]);
 
-        await manager._sweepGroundNoLongerWhole([PARCEL_ID]);
+        manager._parkRecordsInvalidatedByCorridors([PARCEL_ID], [divided, safe]);
 
         expect(divided.applied).toBe(false);
         expect(safe.applied).toBe(true);
-        expect(win.proposedBuildings.map(f => f.properties.proposalId)).toEqual(['block-safe']);
     });
 });

@@ -19,6 +19,72 @@ const proposalListTranslationsHydrated = new Set();
 
 const proposalAreaCache = new Map();
 
+// proposalStorage is the durable authored log, not a snapshot of the current browser's replay.
+// Persist only authored fields + applied/order state. Child ids, formation receipts, parent feature
+// snapshots and demolition scans are disposable materialization output and are regenerated from
+// cadastre on boot. Keeping them in the durable blob is how dead generations became prerequisites.
+function proposalRecordForPersistence(record) {
+    if (!record || typeof record !== 'object') return record;
+    const root = typeof window !== 'undefined' ? window : globalThis;
+    const depthApi = root && root.__formationDepth;
+    let out = null;
+    if (depthApi && typeof depthApi.stripDerivedRecordData === 'function') {
+        out = depthApi.stripDerivedRecordData(record);
+    } else {
+        // data.js is also evaluated alone by storage tests. Keep the fallback deliberately small and
+        // conservative, but never let a missing optional module make replay output durable.
+        out = JSON.parse(JSON.stringify(record));
+        const governmentPlan = out.tags?.governmentPlan === true
+            || out.roadProposal?.definition?.kind === 'government_plan';
+        delete out.childParcelIds;
+        delete out.descendantParcelIds;
+        delete out.parentFeatures;
+        if (!governmentPlan) delete out.childFeatures;
+        ['roadProposal', 'reparcellization', 'decideLaterProposal', 'buildingProposal', 'structureProposal']
+            .forEach(key => {
+                const sub = out[key];
+                if (!sub || typeof sub !== 'object' || Array.isArray(sub)) return;
+                delete sub.childParcelIds;
+                delete sub.parentFeatures;
+                delete sub.parentsToRemove;
+                delete sub.formation;
+                if (!(key === 'roadProposal' && governmentPlan)) delete sub.childFeatures;
+                if (key === 'buildingProposal' || key === 'structureProposal') {
+                    delete sub.demolishedBuildings;
+                    delete sub.demolitionScanned;
+                }
+            });
+    }
+
+    const order = root && root.__planOrder;
+    const flatten = values => {
+        const declared = Array.isArray(values) ? values : [];
+        if (order && typeof order.cadastreIdsFromDeclared === 'function') {
+            return order.cadastreIdsFromDeclared(declared);
+        }
+        return Array.from(new Set(declared
+            .map(value => String(value || '').split('#')[0])
+            .filter(Boolean)));
+    };
+    const anchors = flatten(Array.isArray(out.cadastreParcelIds) && out.cadastreParcelIds.length
+        ? out.cadastreParcelIds
+        : out.parentParcelIds);
+    if (anchors.length) {
+        out.cadastreParcelIds = anchors.slice();
+        out.parentParcelIds = anchors.slice();
+        ['roadProposal', 'reparcellization', 'decideLaterProposal', 'buildingProposal', 'structureProposal']
+            .forEach(key => {
+                const sub = out[key];
+                if (!sub || typeof sub !== 'object' || Array.isArray(sub)) return;
+                sub.parentParcelIds = anchors.slice();
+            });
+        if (out.reparcellization && Array.isArray(out.reparcellization.parcelIds)) {
+            out.reparcellization.parcelIds = anchors.slice();
+        }
+    }
+    return out;
+}
+
 const proposalStorage = {
     proposals: new Map(),
     nextProposalId: 0,
@@ -548,7 +614,7 @@ const proposalStorage = {
             return;
         }
         try {
-            const serialisable = Array.from(this.proposals.values());
+            const serialisable = Array.from(this.proposals.values()).map(proposalRecordForPersistence);
             PersistentStorage.setItem(PROPOSALS_STORAGE_KEY, JSON.stringify(serialisable));
             // Persist the next proposal id counter
             PersistentStorage.setItem(PROPOSALS_NEXT_ID_KEY, String(this.nextProposalId));
@@ -564,7 +630,7 @@ const proposalStorage = {
     _persistRecovery() {
         if (typeof PersistentStorage === 'undefined') return;
         try {
-            const serialisable = Array.from(this.proposals.values());
+            const serialisable = Array.from(this.proposals.values()).map(proposalRecordForPersistence);
             if (!serialisable.length) return;
             PersistentStorage.setItem(PROPOSALS_RECOVERY_KEY, JSON.stringify({
                 savedAt: new Date().toISOString(),

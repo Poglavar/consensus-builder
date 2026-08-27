@@ -185,7 +185,7 @@
             cancelText: tParcel('panel.parcel.suggestWholeBlockNo', {}, 'No, just this parcel')
         });
         if (!wantsBlock) return false;
-        try { await Promise.resolve(global.animateFloodfillFromSelected?.()); } catch (error) {
+        try { await Promise.resolve(global.animateFloodfillFromSelected?.({ replaceSelection: true })); } catch (error) {
             console.warn('[buildPalette] block selection failed', error);
         }
         try {

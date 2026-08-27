@@ -65,7 +65,7 @@ describe('buildDrillStack', () => {
         const stack = drill.buildDrillStack([5, 5], ctxWith({
             parcels: [
                 { id: BASE_ID, feature: rect(0, 0, 10, 10), live: false },
-                { id: SLICE_ID, feature: rect(0, 0, 10, 10, { ancestorProposal: 'c-rep' }), live: true }
+                { id: SLICE_ID, feature: rect(0, 0, 10, 10, { producedByProposalId: 'c-rep' }), live: true }
             ],
             proposals: [
                 {
@@ -102,7 +102,7 @@ describe('buildDrillStack', () => {
 
     it('places a road ABOVE its own corridor parcel — that parcel is the road\'s body', () => {
         const stack = drill.buildDrillStack([5, 5], ctxWith({
-            parcels: [{ id: `${BASE_ID}#c-road-1`, feature: rect(0, 0, 10, 10, { ancestorProposal: 'c-road' }), live: true }],
+            parcels: [{ id: `${BASE_ID}#c-road-1`, feature: rect(0, 0, 10, 10, { producedByProposalId: 'c-road' }), live: true }],
             proposals: [{
                 key: 'c-road',
                 proposal: { goal: 'road-track' },
@@ -113,10 +113,10 @@ describe('buildDrillStack', () => {
         expect(stack[0].depth).toBe(1.5);
     });
 
-    it('places a ground-authoring formation below the slices it minted, via ancestorProposal', () => {
+    it('places a ground-authoring formation below the slices it produced', () => {
         const stack = drill.buildDrillStack([5, 5], ctxWith({
             parcels: [
-                { id: SLICE_ID, feature: rect(0, 0, 10, 10, { ancestorProposal: 'c-rep' }), live: true }
+                { id: SLICE_ID, feature: rect(0, 0, 10, 10, { producedByProposalId: 'c-rep' }), live: true }
             ],
             proposals: [{
                 key: 'c-rep',
@@ -127,7 +127,7 @@ describe('buildDrillStack', () => {
         expect(stack.map(e => e.kind === 'proposal' ? e.key : e.id)).toEqual([SLICE_ID, 'c-rep']);
     });
 
-    it('falls back to id parsing when ancestorProposal is missing', () => {
+    it('falls back to id parsing when producer provenance is missing', () => {
         const stack = drill.buildDrillStack([5, 5], ctxWith({
             parcels: [{ id: SLICE_ID, feature: rect(0, 0, 10, 10), live: true }],
             proposals: [{
@@ -172,7 +172,7 @@ describe('buildDrillStack', () => {
     it('puts a re-based proposal with no declared parent here on top of the deepest ground', () => {
         const stack = drill.buildDrillStack([5, 5], ctxWith({
             parcels: [
-                { id: SLICE_ID, feature: rect(0, 0, 10, 10, { ancestorProposal: 'c-rep' }), live: true }
+                { id: SLICE_ID, feature: rect(0, 0, 10, 10, { producedByProposalId: 'c-rep' }), live: true }
             ],
             proposals: [{
                 key: 'c-park',
@@ -186,7 +186,7 @@ describe('buildDrillStack', () => {
 
     it('collects typology-level parents too', () => {
         const stack = drill.buildDrillStack([5, 5], ctxWith({
-            parcels: [{ id: SLICE_ID, feature: rect(0, 0, 10, 10, { ancestorProposal: 'c-rep' }), live: true }],
+            parcels: [{ id: SLICE_ID, feature: rect(0, 0, 10, 10, { producedByProposalId: 'c-rep' }), live: true }],
             proposals: [{
                 key: 'c-road',
                 proposal: { goal: 'road-track', roadProposal: { parentParcelIds: [SLICE_ID] } },
@@ -226,7 +226,7 @@ describe('buildDrillStack', () => {
         const corridorId = `${BASE_ID}#c-road-1`;
         const stack = drill.buildDrillStack([5, 5], ctxWith({
             parcels: [
-                { id: corridorId, feature: rect(0, 0, 10, 10, { ancestorProposal: 'c-road', isCorridor: true }), live: true },
+                { id: corridorId, feature: rect(0, 0, 10, 10, { producedByProposalId: 'c-road', isCorridor: true }), live: true },
                 { id: BASE_ID, feature: rect(0, 0, 10, 10), live: false }
             ],
             proposals: [

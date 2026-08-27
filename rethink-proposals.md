@@ -1,14 +1,68 @@
 # Rethinking proposals, parcels and ancestry
 
-Working document. Captures what broke, what we measured, which dilemmas are still open, and which
-approaches are worth investigating. Nothing here is implemented yet except where marked SHIPPED.
+Architecture decision record and historical investigation. The current contract is stated first;
+later sections preserve the failures and experiments that led to it and must not be read as current
+runtime design.
 
 Written 2026-07-21 after two production failures traced to the same root: **proposals identify the
 land they affect by pointing at parcels that only exist in one browser's memory.**
 
 ---
 
-## 1. The model we have today
+## 0. Current architecture: flat cadastral components
+
+Implemented 2026-08-27. Durable land state has only two kinds of entity:
+
+1. original cadastral parcels;
+2. authored proposal records, each stamped with the original parcel IDs in `cadastreParcelIds`.
+
+`parentParcelIds` remains a transport-compatibility alias, but after normalization it contains the
+same flat cadastral IDs. Generated parcel IDs, child lists, formation receipts, parent-feature
+snapshots, demolition scans, and map layers are replay output. They may exist in memory or a cache,
+but they are not proposal prerequisites and are stripped from durable proposal storage.
+
+```mermaid
+flowchart LR
+    C1["Cadastral parcel A"] --- P1["Proposal 1"]
+    C1 --- P2["Proposal 2"]
+    C2["Cadastral parcel B"] --- P2
+    C2 --- P3["Proposal 3"]
+
+    P1 -.-> O1["Disposable map output"]
+    P2 -.-> O2["Disposable map output"]
+    P3 -.-> O3["Disposable map output"]
+
+    classDef durable fill:#dcfce7,stroke:#16a34a
+    classDef output fill:#f3f4f6,stroke:#6b7280,stroke-dasharray: 5 5
+    class C1,C2,P1,P2,P3 durable
+    class O1,O2,O3 output
+```
+
+Applying, unapplying, editing, or deleting a proposal follows one materialization path:
+
+1. resolve the changed record's geometry to original cadastral IDs;
+2. find the transitive connected component in the flat
+   `cadastral parcel <-> standing proposal` graph;
+3. purge every generated layer in that component and reveal its cadastral ground;
+4. derive corridor fabric from cadastral geometry and authored corridor takes;
+5. replay the component's authored records in immutable creation order.
+
+The scoped path and the full boot rebuild call the same replay pass. If complete cadastral coverage
+cannot be proved, the scoped path falls back to the canonical full rebuild; it never guesses through
+a generated predecessor.
+
+Runtime output can carry `producedByProposalId` for click routing and ownership presentation. This is
+one-hop provenance only. It is not an ancestry edge, does not affect replay scope or order, and new
+output never writes the legacy `ancestorProposal` key.
+
+The contract is enforced in:
+
+- `frontend/js/proposals/claims.js` — flat anchors and connected components;
+- `frontend/js/proposal-manager.js` — the sole component materializer;
+- `frontend/js/proposals/data.js` — authored-log persistence projection;
+- `frontend/js/proposal-editor-adapters.js` — base IDs resolved to current live pieces at edit time.
+
+## 1. Historical model (retired)
 
 Every proposal stores `parentParcelIds` — the parcels it was authored against. Those ids come in two
 very different flavours, and the system treats them as one thing:

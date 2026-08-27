@@ -1886,7 +1886,7 @@ above the scroll fold.
 }
 
 /* Marks the proposal this parcel descends from (the road/rule that created it by splitting). */
-.proposal-item-ancestor-pill {
+.proposal-item-producer-pill {
     padding: 1px 6px;
     border: 1px solid #94a3b8;
     border-radius: 999px;

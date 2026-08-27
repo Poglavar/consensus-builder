@@ -1851,8 +1851,10 @@ function clearRejectionLabels() {
     }
 }
 
-// Floodfill the current block and add all member parcels to multi-select without entering block mode
-function selectCurrentBlockIntoMultiSelection(startParcel) {
+// Floodfill the current block and add all member parcels to multi-select without entering block mode.
+// A whole-block suggestion replaces its one-parcel source selection; the explicit Detect button
+// remains additive so users can deliberately collect more than one block.
+function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
     const button = document.querySelector('button[onclick="animateFloodfillFromSelected()"]');
 
     const run = () => {
@@ -1971,6 +1973,14 @@ function selectCurrentBlockIntoMultiSelection(startParcel) {
             return failBlockDetection(message);
         }
 
+        if (options.replaceSelection === true) {
+            if (typeof multiParcelSelection.clearSelection === 'function') {
+                multiParcelSelection.clearSelection();
+            } else {
+                multiParcelSelection.selectedParcels.clear();
+            }
+        }
+
         let addedCount = 0;
         blockParcels.forEach(parcel => {
             const pid = parcelIdFromLayer(parcel);
@@ -2045,7 +2055,7 @@ function detectBlockParcelIdsForParcel(parcelId) {
 }
 window.detectBlockParcelIdsForParcel = detectBlockParcelIdsForParcel;
 
-function animateFloodfillFromSelected() {
+function animateFloodfillFromSelected(options = {}) {
     if (window.debugLayer) window.debugLayer.clearLayers();
     clearRejectionLabels();
 
@@ -2065,7 +2075,7 @@ function animateFloodfillFromSelected() {
 
     if (hasMultiSelect && multiParcelSelection.isActive) {
         // Allow multi-select flow even if single selection was cleared by toggle
-        return selectCurrentBlockIntoMultiSelection(currentParcel && currentParcel.layer);
+        return selectCurrentBlockIntoMultiSelection(currentParcel && currentParcel.layer, options);
     }
 
     if (!currentParcel || !currentParcel.layer) {

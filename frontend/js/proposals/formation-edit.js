@@ -1,7 +1,6 @@
 // Pure geometry and identity rules for stamping one flat formation over the live fabric.
-// Edits mint a replacement proposal and the fabric is replayed from immutable cadastre, so this
-// module deliberately contains no restore, previous-generation matching, or unloaded-parent
-// recovery machinery.
+// Every edit is rematerialised from immutable cadastre, so this module deliberately contains no
+// restore, previous-generation traversal, or unloaded-parent recovery machinery.
 //
 // Pure: plain records in, verdicts out; the caller injects the geometry primitives (turf).
 (function (global, factory) {
@@ -371,18 +370,23 @@
     }
 
     // Unique base cadastral ids under a set of features — the flat declaration a formation writes
-    // (`cadastreParcelIds`), derived from what it actually consumed, one hop deep.
+    // (`cadastreParcelIds`). A synthetic feature can span several original parcels, so its complete
+    // `baseParcelIds` stamp is authoritative; root/id is only the fallback for an original parcel.
     function baseIdsOfFeatures(features) {
         const seen = new Set();
         const out = [];
         (Array.isArray(features) ? features : []).forEach(feature => {
             const props = (feature && feature.properties) || {};
-            const raw = props.rootParcelId || props.parcelId || props.parcel_id || props.id || null;
-            const baseId = baseIdOf(raw);
-            if (baseId && baseId !== 'parcel' && !seen.has(baseId)) {
-                seen.add(baseId);
-                out.push(baseId);
-            }
+            const declared = Array.isArray(props.baseParcelIds) && props.baseParcelIds.length
+                ? props.baseParcelIds
+                : [props.rootParcelId || props.parcelId || props.parcel_id || props.id || null];
+            declared.forEach(raw => {
+                const baseId = baseIdOf(raw);
+                if (baseId && baseId !== 'parcel' && !seen.has(baseId)) {
+                    seen.add(baseId);
+                    out.push(baseId);
+                }
+            });
         });
         return out;
     }

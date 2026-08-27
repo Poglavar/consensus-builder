@@ -457,15 +457,15 @@
                 const mapApplied = (typeof global.isProposalApplied === 'function') ? global.isProposalApplied(proposal) : false;
 
                 const hasAccepted = proposal.acceptedParcelIds && proposal.acceptedParcelIds.includes(parcelId.toString());
-                // The proposal this parcel DESCENDS from (the road/rule that created it by
-                // splitting). Shown as a pill only when several proposals share the list, so
-                // it is clear which entry is the parcel's ancestor.
-                const isParcelAncestor = parcelProposals.length > 1 && (
-                    String(feature?.properties?.ancestorProposal ?? '') === String(proposal.proposalId)
+                // One-hop output provenance: which proposal produced this disposable live piece.
+                // It is presentation metadata, not a proposal dependency or ancestry edge.
+                const isParcelProducer = parcelProposals.length > 1 && (
+                    String(feature?.properties?.producedByProposalId
+                        ?? feature?.properties?.ancestorProposal ?? '') === String(proposal.proposalId)
                     || (Array.isArray(proposal.childParcelIds) && proposal.childParcelIds.map(String).includes(String(parcelId)))
                 );
-                const ancestorPill = isParcelAncestor
-                    ? `<span class="proposal-item-ancestor-pill" data-i18n-key="panel.parcel.proposalsSection.ancestorPill">${tParcel('panel.parcel.proposalsSection.ancestorPill', {}, 'Ancestor')}</span>`
+                const producerPill = isParcelProducer
+                    ? `<span class="proposal-item-producer-pill" data-i18n-key="panel.parcel.proposalsSection.producerPill">${tParcel('panel.parcel.proposalsSection.producerPill', {}, 'Parcel source')}</span>`
                     : '';
 
                 // The consent channel this proposal lands in for THIS parcel (§10), plus what its
@@ -569,7 +569,7 @@
                         <div class="proposal-item-header">
                             <span class="proposal-item-title">${proposalTitle}${roadSuffix}</span>
                             <div class="proposal-item-badges">
-                                ${ancestorPill}
+                                ${producerPill}
                                 ${channelChip}
                                 <span class="proposal-item-status ${statusClass}">${statusText}</span>
                                 ${mapApplied ? `<span class="proposal-item-map-badge applied">${appliedBadgeLabel}</span>` : ''}

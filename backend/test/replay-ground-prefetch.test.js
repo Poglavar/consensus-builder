@@ -293,74 +293,8 @@ describe('when the footprint question cannot be asked', () => {
     });
 });
 
-describe('finishing a corridor asks the map before the database', () => {
-    // Inherited from the retired corridor-ground-staging test: a corridor must not derive against
-    // ground that is not there. The check moved rather than went away — the parcels under a ribbon
-    // the user just drew are almost always already loaded (they were fetched to draw over), and the
-    // round trip was the largest remaining cost of finishing a road (~270 ms against ~30 ms of
-    // geometry). Anything short of complete cover still fetches.
-    const corridor = {
-        proposalId: 'road-new',
-        goal: 'road-track',
-        roadProposal: { definition: { polygon: square(16.0000, 46.0000, 16.0010, 46.0010).geometry } }
-    };
-
-    function corridorHarness(loadedParcels) {
-        installGlobal('turf', turf);
-        installGlobal('getProposalKey', proposal => proposal.proposalId);
-        installGlobal('proposalStorage', { getAllProposals: () => [], save: () => { } });
-        installGlobal('window', {
-            __planOrder: planOrder,
-            __formationEdit: null,
-            __parcelArrangement: require('../../frontend/js/proposals/parcel-arrangement.js'),
-            __cadastreAncestry: { loadedCadastreParcels: () => loadedParcels }
-        });
-        return {
-            _loadReplayGround: ProposalManager._loadReplayGround,
-            _replayGroundFetched: new Set(),
-            _appliedCorridorTakes: () => [],
-            _deriveCorridorFabric: () => ({ added: 0, removed: 0, unchanged: 0, parcels: 0, failed: [] }),
-            _sweepGroundNoLongerWhole: () => ({ unapplied: [] }),
-            deriveCorridorIncrementally: ProposalManager.deriveCorridorIncrementally
-        };
-    }
-
-    it('does not fetch when the loaded cadastre already covers the ribbon', async () => {
-        let calls = 0;
-        installGlobal('fetchParcelsUnderGeometry', async () => { calls += 1; return { ids: [] }; });
-        // One parcel that swallows the whole footprint.
-        const manager = corridorHarness([{ id: 'HR-1-1', feature: square(15.999, 45.999, 16.002, 46.002) }]);
-        const result = await manager.deriveCorridorIncrementally(corridor);
-        expect(result).toBeTruthy();
-        expect(calls).toBe(0);
-    });
-
-    it('fetches when the loaded cadastre covers only part of it', async () => {
-        let calls = 0;
-        installGlobal('fetchParcelsUnderGeometry', async () => { calls += 1; return { ids: [] }; });
-        // Half the ribbon has no parcel under it.
-        const manager = corridorHarness([{ id: 'HR-1-1', feature: square(16.0000, 46.0000, 16.0005, 46.0010) }]);
-        await manager.deriveCorridorIncrementally(corridor);
-        expect(calls).toBe(1);
-    });
-
-    it('fetches when nothing at all is loaded', async () => {
-        let calls = 0;
-        installGlobal('fetchParcelsUnderGeometry', async () => { calls += 1; return { ids: [] }; });
-        const manager = corridorHarness([]);
-        await manager.deriveCorridorIncrementally(corridor);
-        expect(calls).toBe(1);
-    });
-
-    it('leaves anything that is not a corridor to the ordinary path', async () => {
-        const manager = corridorHarness([]);
-        await expect(manager.deriveCorridorIncrementally({ proposalId: 'p', goal: 'park' })).resolves.toBe(null);
-        await expect(manager.deriveCorridorIncrementally(null)).resolves.toBe(null);
-    });
-});
-
 describe('a shared corridor package materialises as one cadastral mutation', () => {
-    it('marks every road first and derives their combined take set once', async () => {
+    it('marks every road first and rematerialises their flat component once', async () => {
         const roadA = member(0);
         const roadB = member(1);
         installGlobal('turf', turf);
@@ -381,18 +315,11 @@ describe('a shared corridor package materialises as one cadastral mutation', () 
             CorridorNetworkNodes: { normalize: vi.fn() }
         });
 
-        const combinedTakes = [
-            { id: roadA.proposalId, geometry: roadA.roadProposal.definition.polygon },
-            { id: roadB.proposalId, geometry: roadB.roadProposal.definition.polygon }
-        ];
-        const derive = vi.fn(async () => ({ added: 3, removed: 0, unchanged: 0, parcels: 1, failed: [] }));
+        const rematerialize = vi.fn(async () => ({ ok: true, applied: 2, failed: [], baseParcelIds: ['HR-1-1'] }));
         const manager = {
             materializeCorridorBatch: ProposalManager.materializeCorridorBatch,
             _enqueueFabricChange: operation => operation(),
-            _loadReplayGround: vi.fn(async () => 0),
-            _appliedCorridorTakes: vi.fn(() => combinedTakes),
-            _deriveCorridorFabric: derive,
-            _sweepGroundNoLongerWhole: vi.fn(async () => ({ unapplied: [] })),
+            rematerializeFlatScope: rematerialize,
             _setLastApplyFailure: vi.fn()
         };
 
@@ -402,8 +329,11 @@ describe('a shared corridor package materialises as one cadastral mutation', () 
         expect(result.appliedIds).toEqual([roadA.proposalId, roadB.proposalId]);
         expect(roadA.applied).toBe(true);
         expect(roadB.applied).toBe(true);
-        expect(derive).toHaveBeenCalledOnce();
-        expect(derive).toHaveBeenCalledWith({ parcelIds: ['HR-1-1'], takes: combinedTakes });
+        expect(rematerialize).toHaveBeenCalledOnce();
+        expect(rematerialize).toHaveBeenCalledWith([roadA, roadB], {
+            _fabricQueue: true,
+            silent: false
+        });
     });
 });
 

@@ -69,6 +69,16 @@ describe('baseIdsOfFeatures', () => {
         ]);
         expect(ids).toEqual(['HR-1', 'HR-2']);
     });
+
+    it('keeps every flat anchor of a synthetic parcel spanning several bases', () => {
+        expect(fe.baseIdsOfFeatures([{
+            properties: {
+                parcelId: 'HR-1#c-plan-1',
+                rootParcelId: 'HR-1',
+                baseParcelIds: ['HR-1', 'HR-2#old-7']
+            }
+        }])).toEqual(['HR-1', 'HR-2']);
+    });
 });
 
 describe('overlappingBaseIds', () => {

@@ -1,293 +1,310 @@
-// Taking ONE record off the map, without rebuilding the plan.
+// Flat cadastral-component rematerialization.
 //
-// Unapply used to be a record flip that leaned on the whole-plan rebuild: reset every derived layer
-// back to pristine cadastre, then replay whatever was still standing. That is why applying or
-// unapplying a single proposal from the list cost the entire plan — 13 s on a 112-road plan.
-//
-// The replacement is `_undoProposalPayload` (take this record's result off) plus `_deriveGroundUnder`
-// (recompute the parcels whose take set changed, and nothing else). These tests drive the real
-// arrangement engine over a real parcel, so they fail if the pieces are not removed, if the parent
-// does not come back, or if another record's ground is disturbed.
+// Durable state has two sides only: original cadastral parcels and authored proposal records.
+// Generated parcels are disposable replay output. A mutation finds the connected component in the
+// base-parcel <-> standing-proposal graph, purges every generated layer in that component, and
+// replays its records in plan order. These tests prevent the retired hidden-parent undo model from
+// returning.
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
 
 const require = createRequire(import.meta.url);
 const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
-const { setProposalApplied } = require('../../frontend/js/proposals/status.js');
-const arrangement = require('../../frontend/js/proposals/parcel-arrangement.js');
 const planOrder = require('../../frontend/js/proposals/plan-order.js');
+const formationEdit = require('../../frontend/js/proposals/formation-edit.js');
 const turf = require('@turf/turf');
 
-const saved = new Map();
-function installGlobal(name, value) {
-    if (!saved.has(name)) {
-        saved.set(name, { existed: Object.prototype.hasOwnProperty.call(globalThis, name), value: globalThis[name] });
+const touched = new Map();
+function install(name, value) {
+    if (!touched.has(name)) {
+        touched.set(name, {
+            existed: Object.prototype.hasOwnProperty.call(globalThis, name),
+            value: globalThis[name]
+        });
     }
     globalThis[name] = value;
 }
+
 afterEach(() => {
-    for (const [name, prior] of saved) {
-        if (prior.existed) globalThis[name] = prior.value;
+    for (const [name, previous] of touched) {
+        if (previous.existed) globalThis[name] = previous.value;
         else delete globalThis[name];
     }
-    saved.clear();
+    touched.clear();
     vi.restoreAllMocks();
 });
 
-// ~111 m square of cadastre.
-const PARCEL = turf.polygon([[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]], {
-    parcelId: 'HR-A', PARCEL_ID: 'HR-A', BROJ_CESTICE: '1234/5'
-});
-// A ribbon crossing it end to end, so the parcel is left with a strip and two remainders.
-const RIBBON = turf.polygon([[[0.0004, -0.0002], [0.0006, -0.0002], [0.0006, 0.0012], [0.0004, 0.0012], [0.0004, -0.0002]]]);
-
-function layerFor(feature) {
-    return { feature, toGeoJSON: () => JSON.parse(JSON.stringify(feature)) };
+function feature(parcelId, properties = {}) {
+    return {
+        type: 'Feature',
+        properties: { parcelId, ...properties },
+        geometry: turf.polygon([[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]]).geometry
+    };
 }
 
-// The browser's parcel registry, plus the show/hide state the map keeps for each entry.
-function buildWorld() {
-    const byId = new Map([['HR-A', layerFor(JSON.parse(JSON.stringify(PARCEL)))]]);
-    const visible = new Set(['HR-A']);
-    const records = new Map();
-
-    const win = {
-        parcelLayerById: byId,
-        __parcelArrangement: arrangement,
-        __planOrder: planOrder,
-        __cadastreAncestry: {
-            loadedCadastreParcels: () => Array.from(byId.entries())
-                .filter(([id]) => String(id).indexOf('#') === -1)
-                .map(([id, layer]) => ({ id, feature: layer.feature }))
-        },
-        removeParcelLayerById: id => { visible.delete(String(id)); byId.delete(String(id)); },
-        showParcelLayerById: id => visible.add(String(id)),
-        hideParcelLayerById: id => visible.delete(String(id)),
-        parks: [],
-        squares: [],
-        lakes: [],
-        transitStations: [],
-        proposedBuildings: []
-    };
-
-    installGlobal('window', win);
-    installGlobal('turf', turf);
-    installGlobal('setProposalApplied', setProposalApplied);
-    installGlobal('proposalStorage', {
-        save: vi.fn(),
-        getAllProposals: () => Array.from(records.values()),
-        getProposal: id => records.get(String(id))
-    });
-
-    const manager = {
-        _addFeaturesToMap: features => features.forEach(feature => {
-            const id = String(feature.properties.parcelId);
-            byId.set(id, layerFor(feature));
-            visible.add(id);
-        }),
-        _appliedCorridorTakes: ProposalManager._appliedCorridorTakes,
-        _coordinatedReadjustmentGroundByParcel: ProposalManager._coordinatedReadjustmentGroundByParcel,
-        _deriveCorridorFabric: ProposalManager._deriveCorridorFabric,
-        _deriveCorridorFabricBody: ProposalManager._deriveCorridorFabricBody,
-        _parcelsClaimedByDerivedGround: ProposalManager._parcelsClaimedByDerivedGround,
-        _deriveGroundUnder: ProposalManager._deriveGroundUnder,
-        _clearDerivedRecordState: ProposalManager._clearDerivedRecordState,
-        _undoProposalPayload: ProposalManager._undoProposalPayload,
-        _releaseUnappliedRecord: ProposalManager._releaseUnappliedRecord
-    };
-
-    return { byId, visible, records, win, manager };
+function layer(value) {
+    return { feature: value, toGeoJSON: () => JSON.parse(JSON.stringify(value)) };
 }
 
-const road = (proposalId, polygon) => ({
-    proposalId,
-    goal: 'road-track',
-    applied: true,
-    roadProposal: { definition: { polygon } }
-});
+describe('scoped reset starts from cadastral facts', () => {
+    it('purges every generated layer on the changed bases and never reveals a synthetic predecessor', () => {
+        const baseA = layer(feature('HR-A'));
+        const baseB = layer(feature('HR-B'));
+        const priorA = layer(feature('HR-A#prior-1', {
+            ancestorProposal: 'prior',
+            baseParcelIds: ['HR-A']
+        }));
+        const parkA = layer(feature('HR-A#park-1', {
+            ancestorProposal: 'park',
+            // Deliberately legacy metadata: scope still comes from the flat base stamp.
+            parentParcelId: 'HR-A#prior-1',
+            baseParcelIds: ['HR-A']
+        }));
+        const remoteB = layer(feature('HR-B#remote-1', {
+            ancestorProposal: 'remote',
+            baseParcelIds: ['HR-B']
+        }));
+        const byId = new Map([
+            ['HR-A', baseA], ['HR-B', baseB],
+            ['HR-A#prior-1', priorA], ['HR-A#park-1', parkA],
+            ['HR-B#remote-1', remoteB]
+        ]);
+        const cache = new Map(byId);
+        const visible = new Set([parkA, remoteB]);
+        const cleared = vi.fn();
+        const persistent = new Map([
+            ['parcel_HR-A#prior-1_owner', 'agent-a'],
+            ['parcel_HR-A#park-1_owner', 'agent-a'],
+            ['parcel_HR-B#remote-1_owner', 'agent-b']
+        ]);
+        const prior = { proposalId: 'prior', childParcelIds: ['HR-A#prior-1'] };
+        const park = { proposalId: 'park', childParcelIds: ['HR-A#park-1'] };
 
-const pieceIds = byId => Array.from(byId.keys()).filter(id => id.indexOf('#') !== -1);
-
-describe('a road cut, then taken back', () => {
-    it('cuts only the parcel it crosses, and gives it back whole when the road is unapplied', async () => {
-        const { byId, visible, records, manager } = buildWorld();
-        const record = road('road-1', RIBBON);
-        records.set('road-1', record);
-
-        await manager._deriveGroundUnder([turf.feature(RIBBON.geometry)]);
-
-        // The parcel is now a corridor strip and two remainders, and the parcel itself is hidden.
-        expect(pieceIds(byId).length).toBe(3);
-        expect(visible.has('HR-A')).toBe(false);
-        expect(pieceIds(byId).every(id => visible.has(id))).toBe(true);
-
-        // Unapply: flip the record, take its payload off, derive the ground it held without it.
-        setProposalApplied(record, false, { stamp: false });
-        const freed = await manager._releaseUnappliedRecord(record);
-
-        expect(freed).toBeTruthy();
-        expect(pieceIds(byId)).toEqual([]);
-        expect(visible.has('HR-A')).toBe(true);
-    });
-
-    it('leaves a second road standing when the first is unapplied', async () => {
-        const { byId, visible, records, manager } = buildWorld();
-        // A second cadastral parcel, well clear of the first, with its own road.
-        const far = turf.polygon([[[1, 1], [1.001, 1], [1.001, 1.001], [1, 1.001], [1, 1]]], {
-            parcelId: 'HR-B', PARCEL_ID: 'HR-B', BROJ_CESTICE: '9999/1'
+        install('window', {
+            parcelLayerById: byId,
+            parcelLayer: { hasLayer: entry => visible.has(entry) },
+            ParcelsState: { getParcelCache: () => ({ byId: cache }) },
+            __formationEdit: formationEdit,
+            removeParcelLayerById: id => visible.delete(byId.get(String(id))),
+            showParcelLayerById: id => visible.add(byId.get(String(id))),
+            parks: [
+                { properties: { proposalId: 'park' } },
+                { properties: { proposalId: 'remote' } },
+                { properties: { surveyed: true } }
+            ],
+            squares: [], lakes: [], transitStations: [], proposedBuildings: []
         });
-        byId.set('HR-B', layerFor(far));
-        visible.add('HR-B');
-        const farRibbon = turf.polygon([[[1.0004, 0.9998], [1.0006, 0.9998], [1.0006, 1.0012], [1.0004, 1.0012], [1.0004, 0.9998]]]);
+        install('PersistentStorage', {
+            getItem: key => persistent.get(key) || null,
+            removeItem: key => persistent.delete(key),
+            setItem: vi.fn()
+        });
+        install('clearPersistedParcelRecord', cleared);
+        install('updateAgentOwnedParcels', vi.fn());
 
-        const first = road('road-1', RIBBON);
-        const second = road('road-2', farRibbon);
-        records.set('road-1', first);
-        records.set('road-2', second);
-        await manager._deriveGroundUnder([turf.feature(RIBBON.geometry), turf.feature(farRibbon.geometry)]);
-        expect(pieceIds(byId).length).toBe(6);
+        const manager = { _clearDerivedRecordState: ProposalManager._clearDerivedRecordState };
+        ProposalManager._resetDerivedFabric.call(manager, [prior], {
+            baseParcelIds: ['HR-A'],
+            proposalIds: ['prior', 'park'],
+            recordsToClear: [prior, park]
+        });
 
-        setProposalApplied(first, false, { stamp: false });
-        await manager._releaseUnappliedRecord(first);
-
-        const left = pieceIds(byId);
-        expect(left.length).toBe(3);
-        expect(left.every(id => id.startsWith('HR-B#'))).toBe(true);
-        expect(visible.has('HR-A')).toBe(true);
-        expect(visible.has('HR-B')).toBe(false);
-    });
-});
-
-describe('what a record put on the map', () => {
-    it('takes back its buildings and leaves everyone else\'s alone', async () => {
-        const { win, manager } = buildWorld();
-        win.proposedBuildings = [
-            { properties: { proposalId: 'mine', id: 'b1' } },
-            { properties: { proposalId: 'yours', id: 'b2' } },
-            { properties: { id: 'surveyed' } }
-        ];
-        win.parks = [{ properties: { proposalId: 'mine' } }, { properties: { proposalId: 'other' } }];
-
-        manager._undoProposalPayload({ proposalId: 'mine' });
-
-        expect(win.proposedBuildings.map(f => f.properties.id)).toEqual(['b2', 'surveyed']);
-        expect(win.parks).toHaveLength(1);
-        expect(win.parks[0].properties.proposalId).toBe('other');
+        expect([...byId.keys()].sort()).toEqual(['HR-A', 'HR-B', 'HR-B#remote-1']);
+        expect(byId.has('HR-A#prior-1')).toBe(false);
+        expect(visible.has(priorA)).toBe(false);
+        expect(visible.has(parkA)).toBe(false);
+        expect(visible.has(baseA)).toBe(true);
+        expect(visible.has(remoteB)).toBe(true);
+        expect(cache.has('HR-A#prior-1')).toBe(false);
+        expect(cache.has('HR-A#park-1')).toBe(false);
+        expect(cache.has('HR-B#remote-1')).toBe(true);
+        expect(globalThis.window.parks.map(entry => entry.properties.proposalId || 'surveyed'))
+            .toEqual(['remote', 'surveyed']);
+        expect(prior.childParcelIds).toBeUndefined();
+        expect(park.childParcelIds).toBeUndefined();
+        expect(cleared.mock.calls.map(([id]) => id).sort()).toEqual(['HR-A#park-1', 'HR-A#prior-1']);
+        expect(persistent.has('parcel_HR-B#remote-1_owner')).toBe(true);
     });
 
-    it('takes back its derived parcels — and only those', async () => {
-        const { byId, manager } = buildWorld();
-        byId.set('HR-A#mine', layerFor({ type: 'Feature', properties: { parcelId: 'HR-A#mine', ancestorProposal: 'mine' } }));
-        byId.set('HR-A#yours', layerFor({ type: 'Feature', properties: { parcelId: 'HR-A#yours', ancestorProposal: 'yours' } }));
-        // A remainder belongs to no one: it is what is LEFT of the parcel, and must survive.
-        byId.set('HR-A#rest', layerFor({ type: 'Feature', properties: { parcelId: 'HR-A#rest', parentParcelId: 'HR-A' } }));
+    it('consumes generated input by deleting it, while a base input is merely hidden', () => {
+        const base = feature('HR-A');
+        const generated = feature('HR-A#old-1', {
+            ancestorProposal: 'old',
+            baseParcelIds: ['HR-A']
+        });
+        const baseLayer = layer(base);
+        const generatedLayer = layer(generated);
+        const byId = new Map([['HR-A', baseLayer], ['HR-A#old-1', generatedLayer]]);
+        const cache = new Map(byId);
+        const hidden = vi.fn();
+        const removed = vi.fn();
 
-        manager._undoProposalPayload({ proposalId: 'mine' });
+        install('window', {
+            parcelLayerById: byId,
+            ParcelsState: { getParcelCache: () => ({ byId: cache }) },
+            hideParcelLayerById: hidden,
+            removeParcelLayerById: removed
+        });
+        install('clearPersistedParcelRecord', vi.fn());
 
-        expect(Array.from(byId.keys()).sort()).toEqual(['HR-A', 'HR-A#rest', 'HR-A#yours']);
-    });
+        ProposalManager._consumeFeaturesFromLiveFabric([base, generated]);
 
-    it('never removes a cadastral parcel, whatever a record claims', async () => {
-        const { byId, manager } = buildWorld();
-        byId.get('HR-A').feature.properties.proposalId = 'mine';
-
-        manager._undoProposalPayload({ proposalId: 'mine' });
-
+        expect(hidden).toHaveBeenCalledWith('HR-A');
+        expect(removed).toHaveBeenCalledWith('HR-A#old-1');
         expect(byId.has('HR-A')).toBe(true);
+        expect(byId.has('HR-A#old-1')).toBe(false);
+        expect(cache.has('HR-A#old-1')).toBe(false);
     });
 });
 
-describe('ground that is spoken for stays hidden', () => {
-    it('keeps a parcel hidden while a readjustment\'s plots stand on it', async () => {
-        const { byId, visible, records, manager } = buildWorld();
-        // No road over it, so the arrangement leaves it untouched — but a plan's plots are there.
-        byId.set('HR-A#plot-1', layerFor({
-            type: 'Feature',
-            properties: { parcelId: 'HR-A#plot-1', ancestorProposal: 'lr-1', rootParcelId: 'HR-A' }
-        }));
-        visible.delete('HR-A');
-        records.set('lr-1', { proposalId: 'lr-1', goal: 'reparcellization', applied: true });
-
-        await manager._deriveCorridorFabric({ parcelIds: ['HR-A'] });
-
-        // The old rule was "no pieces → show", which would have put the cadastral parcel back on
-        // the map underneath the plots standing on it.
-        expect(visible.has('HR-A')).toBe(false);
-    });
-
-    it('shows it again once nothing derived claims it', async () => {
-        const { byId, visible, manager } = buildWorld();
-        byId.set('HR-A#plot-1', layerFor({
-            type: 'Feature',
-            properties: { parcelId: 'HR-A#plot-1', ancestorProposal: 'lr-1', rootParcelId: 'HR-A' }
-        }));
-        visible.delete('HR-A');
-
-        manager._undoProposalPayload({ proposalId: 'lr-1' });
-        await manager._deriveCorridorFabric({ parcelIds: ['HR-A'] });
-
-        expect(visible.has('HR-A')).toBe(true);
-    });
-
-    it('fills a coordinated plan\'s reserved road band without duplicating its plots', async () => {
-        const { byId, visible, records, manager } = buildWorld();
-        const west = turf.polygon([[[0, 0], [0.0004, 0], [0.0004, 0.001], [0, 0.001], [0, 0]]]);
-        const east = turf.polygon([[[0.0006, 0], [0.001, 0], [0.001, 0.001], [0.0006, 0.001], [0.0006, 0]]]);
-        const planId = 'coordinated-plan';
-        const readjustment = {
-            proposalId: 'plots',
-            coordinatedPlanId: planId,
-            goal: 'reparcellization',
-            applied: true,
-            reparcellization: { polygons: [{ geometry: west.geometry }, { geometry: east.geometry }] }
-        };
-        const record = { ...road('road-1', RIBBON), coordinatedPlanId: planId };
-        records.set(readjustment.proposalId, readjustment);
-        records.set(record.proposalId, record);
-        [west, east].forEach((plot, index) => {
-            const id = `HR-A#plot-${index + 1}`;
-            plot.properties = {
-                parcelId: id,
-                ancestorProposal: readjustment.proposalId,
-                rootParcelId: 'HR-A',
-                baseParcelIds: ['HR-A']
-            };
-            byId.set(id, layerFor(plot));
-            visible.add(id);
+describe('generated parcel provenance', () => {
+    it('writes one-hop producer metadata while flattening every land reference to cadastre', () => {
+        const child = feature('temporary', {
+            proposalId: 'new-plan',
+            ancestorProposal: 'legacy-plan',
+            rootParcelId: 'HR-A',
+            rootParcelNumber: '1',
+            baseParcelIds: ['HR-A#old-1']
         });
-        visible.delete('HR-A');
+        install('window', { __formationEdit: formationEdit });
 
-        await manager._deriveGroundUnder([turf.feature(RIBBON.geometry)]);
+        ProposalManager._assignSyntheticChildIdentities('new-plan', [child]);
 
-        const live = Array.from(byId.entries())
-            .filter(([id]) => id.includes('#'))
-            .map(([, layer]) => layer.feature);
-        expect(live.filter(feature => feature.properties.isCorridor === true)).toHaveLength(1);
-        expect(live.filter(feature => feature.properties.ancestorProposal === 'plots')).toHaveLength(2);
-        const total = live.reduce((sum, feature) => sum + turf.area(feature), 0);
-        expect(total).toBeCloseTo(turf.area(PARCEL), 0);
+        expect(child.properties.baseParcelIds).toEqual(['HR-A']);
+        expect(child.properties.parentParcelIds).toEqual(['HR-A']);
+        expect(child.properties.parentParcelId).toBe('HR-A');
+        expect(child.properties.producedByProposalId).toBe('new-plan');
+        expect(child.properties).not.toHaveProperty('ancestorProposal');
     });
 });
 
-describe('deriving from inside the fabric queue', () => {
-    it('does not enqueue behind the operation it is part of', async () => {
-        installGlobal('proposalStorage', { save: vi.fn(), getProposal: () => null, getAllProposals: () => [] });
+describe('flat connected-component replay', () => {
+    it('re-stamps every declaration from loaded cadastral geometry and removes generated ids', () => {
+        const footprint = turf.polygon([[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]]);
+        const record = {
+            proposalId: 'legacy-road',
+            goal: 'road-track',
+            cadastreParcelIds: ['HR-OLD#dead-1'],
+            parentParcelIds: ['HR-OLD#dead-1'],
+            roadProposal: {
+                parentParcelIds: ['HR-OLD#dead-1'],
+                definition: { polygon: footprint.geometry }
+            }
+        };
+        install('__planOrder', planOrder);
+        install('turf', turf);
+        install('window', {
+            __planOrder: planOrder,
+            __cadastreAncestry: {
+                loadedCadastreCoverage: () => ({ ids: ['HR-A#old-7', 'HR-B'], coverage: 1 })
+            }
+        });
+
+        const result = ProposalManager._resolveAndStampFlatCadastreAnchors(record);
+
+        expect(result).toEqual({ baseParcelIds: ['HR-A', 'HR-B'], complete: true });
+        expect(record.cadastreParcelIds).toEqual(['HR-A', 'HR-B']);
+        expect(record.parentParcelIds).toEqual(['HR-A', 'HR-B']);
+        expect(record.roadProposal.parentParcelIds).toEqual(['HR-A', 'HR-B']);
+    });
+
+    it('does not replace a durable stamp from incomplete loaded geometry', () => {
+        const footprint = turf.polygon([[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]]);
+        const record = {
+            proposalId: 'partly-loaded',
+            cadastreParcelIds: ['HR-A'],
+            geometry: footprint.geometry
+        };
+        install('__planOrder', planOrder);
+        install('turf', turf);
+        install('window', {
+            __planOrder: planOrder,
+            __cadastreAncestry: {
+                loadedCadastreCoverage: () => ({ ids: ['HR-B'], coverage: 0.8 })
+            }
+        });
+
+        const result = ProposalManager._resolveAndStampFlatCadastreAnchors(record);
+
+        expect(result).toEqual({ baseParcelIds: ['HR-A'], complete: false });
+        expect(record.cadastreParcelIds).toEqual(['HR-A']);
+        expect(record.parentParcelIds).toBeUndefined();
+    });
+
+    it('expands transitively through base parcels but leaves an unrelated component untouched', async () => {
+        const square = west => turf.polygon([[[west, 0], [west + 0.001, 0], [west + 0.001, 0.001], [west, 0.001], [west, 0]]]);
+        const records = [
+            { proposalId: 'on-a', applied: true, createdAt: '2026-01-01', cadastreParcelIds: ['HR-A'] },
+            { proposalId: 'bridge', applied: true, createdAt: '2026-01-02', cadastreParcelIds: ['HR-A', 'HR-B'] },
+            {
+                proposalId: 'road-b', applied: true, createdAt: '2026-01-03', goal: 'road-track',
+                cadastreParcelIds: ['HR-B'], roadProposal: { definition: { polygon: square(0).geometry } }
+            },
+            { proposalId: 'remote', applied: true, createdAt: '2026-01-04', cadastreParcelIds: ['HR-C'] }
+        ];
+        const removedPark = { proposalId: 'park-old', applied: false, cadastreParcelIds: ['HR-A'] };
+        const rebuildPass = vi.fn(async members => ({ ok: true, applied: members.length, failed: [] }));
+
+        install('__planOrder', planOrder);
+        install('turf', turf);
+        install('window', { __planOrder: planOrder, CityConfigManager: null });
+        install('isProposalCurrentlyApplied', record => record.applied === true);
+        install('proposalStorage', {
+            getAllProposals: () => records,
+            getProposal: id => records.find(record => record.proposalId === String(id)) || null,
+            beginBatch: vi.fn(), endBatch: vi.fn(), save: vi.fn()
+        });
+
         const manager = {
-            _fabricChangeTail: null,
-            _enqueueFabricChange: ProposalManager._enqueueFabricChange,
-            deriveForNewProposal: ProposalManager.deriveForNewProposal,
-            deriveCorridorIncrementally: vi.fn(async () => ({ added: 0, removed: 0 }))
+            _rebuildInProgress: false,
+            _flatScopeSeeds: vi.fn(async () => ({ baseParcelIds: ['HR-A'], complete: true })),
+            _orderedStandingProposals: ProposalManager._orderedStandingProposals,
+            _appliedCorridorTakes: ProposalManager._appliedCorridorTakes,
+            _rebuildPass: rebuildPass,
+            rematerializeFlatScope: ProposalManager.rematerializeFlatScope
         };
 
-        // Without the `_fabricQueue` opt-out this waits on the slot it is running in: a deadlock,
-        // not a delay. A timeout is the only way to tell the two apart.
-        const inQueue = manager._enqueueFabricChange(() => manager.deriveForNewProposal(
-            { proposalId: 'r', goal: 'road-track' },
-            { _fabricQueue: true }
-        ));
-        const timeout = new Promise(resolve => setTimeout(() => resolve('DEADLOCK'), 250));
-        await expect(Promise.race([inQueue, timeout])).resolves.not.toBe('DEADLOCK');
-        expect(manager.deriveCorridorIncrementally).toHaveBeenCalledOnce();
+        const result = await manager.rematerializeFlatScope([removedPark], { _fabricQueue: true });
+
+        expect(result.ok).toBe(true);
+        expect(result.baseParcelIds.sort()).toEqual(['HR-A', 'HR-B']);
+        expect(result.proposalIds).toEqual(['on-a', 'bridge', 'road-b']);
+        expect(rebuildPass).toHaveBeenCalledOnce();
+        const [members, options] = rebuildPass.mock.calls[0];
+        expect(members.map(record => record.proposalId)).toEqual(['on-a', 'bridge', 'road-b']);
+        expect(options.baseParcelIds.sort()).toEqual(['HR-A', 'HR-B']);
+        expect(options.resetProposalIds.sort()).toEqual(['bridge', 'on-a', 'park-old', 'road-b']);
+        expect(options.corridorTakes.map(take => take.id)).toEqual(['road-b']);
+        expect(options.resetProposalIds).not.toContain('remote');
+    });
+
+    it('falls back to the canonical rebuild when cadastral coverage cannot be established', async () => {
+        const rebuildAppliedFabric = vi.fn(async () => ({ ok: true, applied: 3, failed: [] }));
+        const manager = {
+            _flatScopeSeeds: vi.fn(async () => ({ baseParcelIds: ['HR-A'], complete: false })),
+            rebuildAppliedFabric,
+            rematerializeFlatScope: ProposalManager.rematerializeFlatScope
+        };
+
+        const result = await manager.rematerializeFlatScope([{ proposalId: 'p' }], { _fabricQueue: true, silent: true });
+
+        expect(result.fallback).toBe('full-rebuild');
+        expect(rebuildAppliedFabric).toHaveBeenCalledWith({ _fabricQueue: true, silent: true });
+    });
+});
+
+describe('one materializer', () => {
+    it('contains no payload undo, ground-under restore, or corridor-specific incremental apply API', () => {
+        const source = readFileSync(new URL('../../frontend/js/proposal-manager.js', import.meta.url), 'utf8');
+        expect(source).not.toContain('_undoProposalPayload');
+        expect(source).not.toContain('_deriveGroundUnder');
+        expect(source).not.toContain('_releaseUnappliedRecord');
+        expect(source).not.toContain('deriveCorridorIncrementally');
+        expect(source).not.toContain('_offerToFreeReadjustmentGround');
+        expect(source).not.toContain('_addProposalAsAncestor');
+        expect(source).not.toContain('_getParcelAncestors');
+        expect(source).toContain('rematerializeFlatScope');
     });
 });

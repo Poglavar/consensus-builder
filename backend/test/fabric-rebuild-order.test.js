@@ -81,7 +81,7 @@ describe('ProposalManager._rebuildPass — ordered standing prefix', () => {
 
         const result = await manager._rebuildPass(proposals, new Map(), { silent: true });
 
-        expect(result).toEqual({ ok: true, applied: 3, failed: [] });
+        expect(result).toEqual({ ok: true, applied: 3, failed: [], invalidated: [] });
         expect(stateBeforeEachApply).toEqual([
             [false, false, false],
             [true, false, false],
@@ -138,6 +138,44 @@ describe('ProposalManager._rebuildPass — ordered standing prefix', () => {
         expect(beforeLater).toEqual([[false, false]]);
         expect(proposals.map(item => item.applied)).toEqual([true, true]);
         expect(proposals.map(item => item.appliedAt)).toEqual(['before-a', 'before-b']);
+    });
+});
+
+describe('coordinated corridor ground', () => {
+    it('comes from authored readjustment polygons and flat cadastral anchors, not generated layers', () => {
+        const plot = turf.polygon([[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]]);
+        const coordinated = {
+            proposalId: 'plots',
+            goal: 'reparcellization',
+            applied: false, // replay temporarily clears this before it derives corridors
+            coordinatedPlanId: 'plan-a',
+            cadastreParcelIds: ['HR-A#legacy-piece', 'HR-B'],
+            reparcellization: { polygons: [{ geometry: plot.geometry }] }
+        };
+        const unrelated = {
+            proposalId: 'other-plots',
+            goal: 'reparcellization',
+            applied: false,
+            coordinatedPlanId: 'plan-b',
+            cadastreParcelIds: ['HR-C'],
+            reparcellization: { polygons: [{ geometry: plot.geometry }] }
+        };
+
+        // Deliberately no parcelLayerById: generated output was purged before this phase.
+        installGlobal('window', { __planOrder: planOrder });
+        const occupied = ProposalManager._coordinatedReadjustmentGroundByParcel(
+            [{ id: 'road', coordinatedPlanId: 'plan-a' }],
+            [coordinated, unrelated]
+        );
+
+        expect([...occupied.keys()].sort()).toEqual(['HR-A', 'HR-B']);
+        expect(occupied.get('HR-A')).toHaveLength(1);
+        expect(occupied.get('HR-A')[0]).toEqual({
+            type: 'Feature',
+            properties: {},
+            geometry: plot.geometry
+        });
+        expect(occupied.has('HR-C')).toBe(false);
     });
 });
 
@@ -285,12 +323,8 @@ describe('ProposalManager.applyProposal — canonical external mutation', () => 
 
         const manager = {
             _enqueueFabricChange: ProposalManager._enqueueFabricChange,
-            // Whatever a half-finished apply put on the map comes off, and the ground it stood on
-            // is derived again — no plan-wide reset.
             deriveForNewProposal: vi.fn(async () => null),
-            _undoProposalPayload: vi.fn(() => null),
-            _deriveGroundUnder: vi.fn(),
-            _rematerializeParkedAlternatives: ProposalManager._rematerializeParkedAlternatives,
+            rematerializeFlatScope: vi.fn(async () => ({ ok: true, failed: [] })),
             _restoreAfterFailedApply: ProposalManager._restoreAfterFailedApply,
             _refreshUIAfterProposalChange: vi.fn(),
             _collectAppliedAlternativesForExplicitApply: ProposalManager._collectAppliedAlternativesForExplicitApply,
@@ -300,7 +334,8 @@ describe('ProposalManager.applyProposal — canonical external mutation', () => 
         await expect(manager.applyProposal(proposal.proposalId)).resolves.toBe(false);
         expect(proposal.applied).toBe(false);
         expect(manager.deriveForNewProposal).toHaveBeenCalledOnce();
-        expect(manager._undoProposalPayload).toHaveBeenCalledWith(proposal);
+        expect(manager.rematerializeFlatScope).toHaveBeenCalledOnce();
+        expect(manager.rematerializeFlatScope.mock.calls[0][0][0]).toBe(proposal);
     });
 });
 

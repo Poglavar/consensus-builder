@@ -12,7 +12,7 @@ describe('ProposalManager mutation boundary', () => {
     let originalRefresh;
     let originalRebuild;
     let originalDerive;
-    let originalUndoPayload;
+    let originalRematerialize;
     let originalCollectAlternatives;
     let previousSetProposalApplied;
     let store;
@@ -24,7 +24,7 @@ describe('ProposalManager mutation boundary', () => {
         originalRefresh = ProposalManager._refreshUIAfterProposalChange;
         originalRebuild = ProposalManager.rebuildAppliedFabric;
         originalDerive = ProposalManager.deriveForNewProposal;
-        originalUndoPayload = ProposalManager._undoProposalPayload;
+        originalRematerialize = ProposalManager.rematerializeFlatScope;
         originalCollectAlternatives = ProposalManager._collectAppliedAlternativesForExplicitApply;
         previousSetProposalApplied = globalThis.setProposalApplied;
 
@@ -54,7 +54,7 @@ describe('ProposalManager mutation boundary', () => {
         ProposalManager._refreshUIAfterProposalChange = originalRefresh;
         ProposalManager.rebuildAppliedFabric = originalRebuild;
         ProposalManager.deriveForNewProposal = originalDerive;
-        ProposalManager._undoProposalPayload = originalUndoPayload;
+        ProposalManager.rematerializeFlatScope = originalRematerialize;
         ProposalManager._collectAppliedAlternativesForExplicitApply = originalCollectAlternatives;
         if (previousSetProposalApplied === undefined) delete globalThis.setProposalApplied;
         else globalThis.setProposalApplied = previousSetProposalApplied;
@@ -107,8 +107,6 @@ describe('ProposalManager mutation boundary', () => {
 
     it('makes the explicitly applied alternative the only standing member', async () => {
         ProposalManager._collectAppliedAlternativesForExplicitApply = () => [store.getProposal('conflict')];
-        // The parked alternative's payload comes off the map with its record flip.
-        ProposalManager._undoProposalPayload = () => null;
         ProposalManager.deriveForNewProposal = async () => ({ applied: true });
 
         await expect(ProposalManager.applyProposal('target')).resolves.toBe(true);
@@ -118,19 +116,25 @@ describe('ProposalManager mutation boundary', () => {
     });
 
     it('restores the previous alternative when the derivation removes the chosen proposal', async () => {
-        let derivations = 0;
+        let targetDerivations = 0;
+        let componentRestores = 0;
         ProposalManager._collectAppliedAlternativesForExplicitApply = () => [store.getProposal('conflict')];
-        ProposalManager._undoProposalPayload = () => null;
         ProposalManager.deriveForNewProposal = async () => {
-            derivations += 1;
-            if (derivations === 1) setProposalApplied(store.getProposal('target'), false, { stamp: false });
+            targetDerivations += 1;
+            setProposalApplied(store.getProposal('target'), false, { stamp: false });
             return { applied: true };
+        };
+        ProposalManager.rematerializeFlatScope = async () => {
+            componentRestores += 1;
+            return { ok: true, failed: [] };
         };
 
         await expect(ProposalManager.applyProposal('target')).resolves.toBe(false);
 
-        // One derivation for the target, one to put the parked alternative back on the map.
-        expect(derivations).toBe(2);
+        // One attempted target derivation, then one cadastre-first component replay after the
+        // authored record map is restored. There is no payload undo or per-alternative restore.
+        expect(targetDerivations).toBe(1);
+        expect(componentRestores).toBe(1);
         expect(store.getProposal('target')).toEqual({ proposalId: 'target', applied: false, value: 'before' });
         expect(store.getProposal('conflict')).toEqual({ proposalId: 'conflict', applied: true, value: 'before' });
     });

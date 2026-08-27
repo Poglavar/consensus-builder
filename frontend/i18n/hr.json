@@ -843,7 +843,7 @@
                 "agentMissing": "Agent nije pronađen ({{id}})"
             },
             "proposalsSection": {
-                "ancestorPill": "Predak",
+                "producerPill": "Izvor čestice",
                 "create": "Kreiraj prijedlog",
                 "empty": "Nema prijedloga",
                 "fallbackTitle": "Prijedlog",
@@ -1024,11 +1024,8 @@
             "loading": "Učitavanje detalja prijedloga...",
             "rendering": "Prikazivanje detalja prijedloga...",
             "sections": {
-                "ancestorsParcels": "Prethodnici (parcele):",
-                "ancestorsProposals": "Prethodnici (prijedlozi):",
-                "descendantsParcels": "Potomci (parcele):",
-                "noneAncestors": "Nema prethodnih prijedloga.",
-                "noneDescendants": "Nema potomaka parcela.",
+                "cadastralParcels": "Katastarske čestice:",
+                "generatedParcels": "Izvedene čestice:",
                 "proposalTypeFallback": "prijedlog"
             },
             "parcels": {

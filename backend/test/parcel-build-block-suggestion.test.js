@@ -130,7 +130,7 @@ describe('whole-block fresh-proposal suggestion', () => {
         });
 
         await expect(window.maybeSuggestWholeBlockForFreshProposal('row', ['parcel-1'])).resolves.toBe(true);
-        expect(animateFloodfillFromSelected).toHaveBeenCalledOnce();
+        expect(animateFloodfillFromSelected).toHaveBeenCalledWith({ replaceSelection: true });
     });
 
     it('runs the same preflight when Detached is launched from the classic proposal dialog', async () => {

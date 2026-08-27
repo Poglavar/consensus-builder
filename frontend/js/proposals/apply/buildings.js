@@ -87,7 +87,7 @@
                     ...(cloned.properties || {}),
                     proposalId,
                     proposalState,
-                    parentParcelIds: uniqueParentIds,
+                    parentParcelIds: flatParentIds,
                     parentParcelNumbers: buildingProposal.parentParcelNumbers || null,
                     title: proposalData.title || null,
                     author: proposalData.author || null,
@@ -162,7 +162,7 @@
                     uniqueParentIds, idLabel, liveParents.features);
                 if (!formation.ok) return false;
                 workingParentIds = formation.parentIds;
-                preparedFeatures[0].properties.parentParcelIds = workingParentIds.slice();
+                preparedFeatures[0].properties.parentParcelIds = flatParentIds.slice();
             }
         }
 
@@ -360,13 +360,17 @@
             bodyFeatures.forEach(feature => {
                 const childId = _getParcelIdFromFeature(feature);
                 try { this._persistParcelFeature(feature); } catch (_) { }
-                try { if (childId) this._addProposalAsAncestor(childId, proposalId); } catch (_) { }
+                try { if (childId) this._markParcelProducedByProposal(childId, proposalId); } catch (_) { }
             });
-            this._hideFeaturesFromMap(takenFeatures);
+            this._consumeFeaturesFromLiveFabric(takenFeatures);
             buildingProposal.childParcelIds = childIds;
             proposalData.childParcelIds = buildingProposal.childParcelIds.slice();
             try { this._addChildParcels(proposalId, buildingProposal.childParcelIds, proposalData); } catch (_) { }
-            buildingProposal.formation = { mode: plan.mode, parcelIds: takenIds.slice(), childParcelIds: buildingProposal.childParcelIds.slice() };
+            buildingProposal.formation = {
+                mode: plan.mode,
+                parcelIds: formationEdit.baseIdsOfFeatures(takenFeatures),
+                childParcelIds: buildingProposal.childParcelIds.slice()
+            };
             finishOwnership(buildingProposal.childParcelIds, buildingProposal.formation);
             return { ok: true, parentIds: takenIds.slice() };
         }
@@ -549,7 +553,7 @@
                 && childId !== undefined && childId !== null) buildingParcelIds.push(String(childId));
             try { this._persistParcelFeature(child); } catch (_) { }
             try {
-                if (childId) this._addProposalAsAncestor(
+                if (childId) this._markParcelProducedByProposal(
                     childId,
                     ownsChild ? proposalId : String(child.properties.proposalId)
                 );
@@ -563,7 +567,7 @@
         const reusedHostIds = new Set(children
             .map(child => String(_getParcelIdFromFeature(child) || ''))
             .filter(Boolean));
-        this._hideFeaturesFromMap(hostFeatures.filter(hostFeature => {
+        this._consumeFeaturesFromLiveFabric(hostFeatures.filter(hostFeature => {
             const hostId = String(_getParcelIdFromFeature(hostFeature) || '');
             return !(hostId && reusedHostIds.has(hostId));
         }));
@@ -573,7 +577,7 @@
 
         buildingProposal.formation = {
             mode: 'footprint',
-            parcelIds: hostIds.slice(),
+            parcelIds: formationEdit.baseIdsOfFeatures(hostFeatures),
             childParcelIds: childIds.slice(),
             buildingParcelIds
         };

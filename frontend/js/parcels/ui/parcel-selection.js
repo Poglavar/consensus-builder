@@ -79,6 +79,7 @@
             if (browseProposal && typeof global.selectAndHighlightProposal === 'function') {
                 const proposalKey = (typeof global.getProposalKey === 'function' && global.getProposalKey(browseProposal))
                     || browseProposal.proposalId
+                    || feature.properties.producedByProposalId
                     || feature.properties.ancestorProposal
                     || feature.properties.proposalId;
                 global.selectAndHighlightProposal(proposalKey, parcelId, true, true); // center + details; its tail closes the list
@@ -271,6 +272,7 @@
         if (appliedProposal && typeof global.selectAndHighlightProposal === 'function') {
             const proposalKey = (typeof global.getProposalKey === 'function' && global.getProposalKey(appliedProposal))
                 || appliedProposal.proposalId
+                || feature.properties.producedByProposalId
                 || feature.properties.ancestorProposal
                 || feature.properties.proposalId;
             global.__openProposalDetailsCollapsed = true;

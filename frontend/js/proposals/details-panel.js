@@ -821,7 +821,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             ${parentParcelIds.length > 0 ? `
             <div class="metric-group">
                 <div class="metric-label-count-container">
-                    <span class="metric-label">${tProposal('panel.proposal.sections.ancestorsParcels', 'Parents (Parcels):')}</span> <span class="metric-value">${parentParcelIds.length}</span>
+                    <span class="metric-label">${tProposal('panel.proposal.sections.cadastralParcels', 'Cadastral parcels:')}</span> <span class="metric-value">${parentParcelIds.length}</span>
                 </div>
                 <div class="proposal-parcels-list" id="proposal-parent-parcels-list" style="max-height: 420px; overflow-y: auto;">
                     ${parentParcelItemsInitial}
@@ -829,24 +829,18 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             </div>
             ` : `
             <div class="metric-group">
-                <span class="metric-label">${tProposal('panel.proposal.sections.ancestorsParcels', 'Ancestors (Parcels):')}</span> <span class="metric-value">0</span>
+                <span class="metric-label">${tProposal('panel.proposal.sections.cadastralParcels', 'Cadastral parcels:')}</span> <span class="metric-value">0</span>
             </div>
             `}
             
-            <!-- Ancestors (Proposals) Section -->
-            <div class="metric-group" id="proposal-ancestors-proposals-section">
-                <div class="metric-label">${tProposal('panel.proposal.sections.ancestorsProposals', 'Ancestors (Proposals):')}</div>
-                <div class="metric-value" id="proposal-ancestors-proposals-content">Loading...</div>
-            </div>
-            
-            <!-- Descendants Section -->
+            <!-- Generated parcel output -->
             ${(() => {
             if (typeof ProposalManager !== 'undefined') {
                 if (descendantKeys.length > 0) {
                     return `
             <div class="metric-group">
                 <div class="metric-label-count-container">
-                    <span class="metric-label">${tProposal('panel.proposal.sections.descendantsParcels', 'Descendants (parcels):')}</span> <span class="metric-value">${descendantKeys.length}</span>
+                    <span class="metric-label">${tProposal('panel.proposal.sections.generatedParcels', 'Generated parcels:')}</span> <span class="metric-value">${descendantKeys.length}</span>
                 </div>
                 <div class="proposal-descendants-list" id="proposal-descendants-list" style="max-height: 420px; overflow-y: auto;">
                     ${descendantItemsInitial}
@@ -855,13 +849,13 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 } else {
                     return `
             <div class="metric-group">
-                <span class="metric-label">${tProposal('panel.proposal.sections.descendantsParcels', 'Descendants (parcels):')}</span> <span class="metric-value">0</span>
+                <span class="metric-label">${tProposal('panel.proposal.sections.generatedParcels', 'Generated parcels:')}</span> <span class="metric-value">0</span>
             </div>`;
                 }
             }
             return `
             <div class="metric-group">
-                <span class="metric-label">${tProposal('panel.proposal.sections.descendantsParcels', 'Descendants (parcels):')}</span> <span class="metric-value">0</span>
+                <span class="metric-label">${tProposal('panel.proposal.sections.generatedParcels', 'Generated parcels:')}</span> <span class="metric-value">0</span>
             </div>`;
         })()}
             
@@ -1031,8 +1025,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         setupLazyList('proposal-parent-parcels-list', parentParcelItemsRemaining, renderAncestorParcelItem);
         // Lazy append remaining descendant parcels
         setupLazyList('proposal-descendants-list', descendantItemsRemaining, renderDescendantItem);
-        // Render ancestor proposals list (after DOM exists)
-        renderAncestorsProposalsSection();
         // Populate acceptance sections asynchronously to avoid blocking panel open
         populateAcceptanceSectionsAsync(fullProposal || proposal, ownerAcceptanceSummaryFast);
     };
@@ -1161,142 +1153,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         }
     })();
 
-    function renderAncestorsProposalsSection() {
-        try {
-            const ancestorsSection = document.getElementById('proposal-ancestors-proposals-section');
-            const ancestorsContent = document.getElementById('proposal-ancestors-proposals-content');
-            if (!ancestorsSection || !ancestorsContent) return false;
-
-            // Fast path: derive ancestors from in-memory parentParcels (already built above) to avoid
-            // reading/parsing persisted parcel records.
-            const ancestorsSet = new Set();
-            if (Array.isArray(parentParcels) && parentParcels.length > 0) {
-                parentParcels.forEach(ap => {
-                    const anc = ap?.feature?.properties?.ancestorProposal;
-                    if (anc) ancestorsSet.add(String(anc));
-                });
-            }
-
-            // Backup: consult persisted parcel records for ancestorProposal linkage without hydrating layers.
-            // Cap the scan at MAX_LIST_INITIAL — this is a best-effort detection used to render a small
-            // ancestors section, not a correctness invariant. For very large proposals we sample the first
-            // batch and accept that the section may need a refresh after later rows are scrolled into view.
-            if (ancestorsSet.size === 0 && Array.isArray(parentParcelIds) && parentParcelIds.length > 0) {
-                const cap = Math.min(parentParcelIds.length, MAX_LIST_INITIAL);
-                for (let i = 0; i < cap; i++) {
-                    try {
-                        const record = readPersistedParcelRecord(parentParcelIds[i]);
-                        const anc = record?.properties?.ancestorProposal;
-                        if (anc) ancestorsSet.add(String(anc));
-                    } catch (_) { }
-                }
-            }
-
-            // Fallback: query ProposalManager for ancestor linkage using parcel IDs
-            if (ancestorsSet.size === 0 && typeof ProposalManager !== 'undefined') {
-                const parcelsToCheck = (fullProposal.roadProposal && Array.isArray(parentParcelIds) && parentParcelIds.length > 0)
-                    ? parentParcelIds
-                    : proposal.parentParcelIds;
-
-                parcelsToCheck.forEach(parcelId => {
-                    const parcelAncestors = ProposalManager._getParcelAncestors(parcelId);
-                    parcelAncestors.forEach(ancestorHash => {
-                        ancestorsSet.add(String(ancestorHash));
-                    });
-                });
-            }
-
-            const ancestors = Array.from(ancestorsSet);
-
-            if (ancestors.length > 0) {
-                const ancestorsHtml = ancestors.map(ancestorId => {
-                    const ancestorData = proposalStorage.getProposal(ancestorId);
-                    if (ancestorData) {
-                        return `<div class="ancestor-item" data-proposal-id="${ancestorData.proposalId || ancestorId}" tabindex="0" style="padding: 5px; border: 1px solid #ddd; margin: 2px 0; border-radius: 3px; cursor: pointer;">
-                            <strong>${ancestorData.title}</strong> (${ancestorData.type || 'proposal'})
-                        </div>`;
-                    }
-                    return null;
-                }).filter(Boolean).join('');
-
-                ancestorsSection.innerHTML = `
-                    <div class="metric-label">${tProposal('panel.proposal.sections.ancestorsProposals', 'Ancestors (Proposals):')}</div>
-                    <div class="proposal-ancestors-list" id="proposal-ancestors-proposals-content">${ancestorsHtml}</div>
-                `;
-
-                // Attach event listeners for ancestor items (same as in showProposalInfo)
-                const ancestorItems = ancestorsSection.querySelectorAll('.ancestor-item[data-proposal-id]');
-                ancestorItems.forEach(item => {
-                    item.addEventListener('mouseenter', () => {
-                        try {
-                            if (typeof handleAncestorItemHover === 'function') {
-                                handleAncestorItemHover(item);
-                            }
-                        } catch (_) { }
-                    });
-                    item.addEventListener('mouseleave', () => {
-                        try {
-                            if (typeof clearProposalHoverLayers === 'function') {
-                                clearProposalHoverLayers();
-                            }
-                        } catch (_) { }
-                    });
-                    item.addEventListener('focus', () => {
-                        try {
-                            if (typeof handleAncestorItemHover === 'function') {
-                                handleAncestorItemHover(item);
-                            }
-                        } catch (_) { }
-                    });
-                    item.addEventListener('blur', () => {
-                        try {
-                            if (typeof clearProposalHoverLayers === 'function') {
-                                clearProposalHoverLayers();
-                            }
-                        } catch (_) { }
-                    });
-                    item.addEventListener('click', event => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        try {
-                            if (typeof handleAncestorItemClick === 'function') {
-                                handleAncestorItemClick(item);
-                            }
-                        } catch (_) { }
-                    });
-                    item.addEventListener('keydown', event => {
-                        if (event.key === 'Enter' || event.key === ' ') {
-                            event.preventDefault();
-                            event.stopPropagation();
-                            try {
-                                if (typeof handleAncestorItemClick === 'function') {
-                                    handleAncestorItemClick(item);
-                                }
-                            } catch (_) { }
-                        }
-                    });
-                });
-            } else {
-                ancestorsSection.innerHTML = `
-                    <div class="metric-label">${tProposal('panel.proposal.sections.ancestorsProposals', 'Ancestors (Proposals):')}</div>
-                    <div class="metric-value" id="proposal-ancestors-proposals-content">0</div>
-                `;
-            }
-            return true;
-        } catch (err) {
-            console.warn('Failed to populate ancestors proposals section', err);
-            const ancestorsSection = document.getElementById('proposal-ancestors-proposals-section');
-            const ancestorsContent = document.getElementById('proposal-ancestors-proposals-content');
-            if (ancestorsSection && ancestorsContent) {
-                ancestorsSection.innerHTML = `
-                    <div class="metric-label">${tProposal('panel.proposal.sections.ancestorsProposals', 'Ancestors (Proposals):')}</div>
-                    <div class="metric-value">0</div>
-                `;
-            }
-            return false;
-        }
-    }
-
     function setupLazyList(containerId, items, renderItem) {
         if (!items || items.length === 0) return;
         const container = document.getElementById(containerId);
@@ -1424,47 +1280,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             });
         });
 
-        const ancestorItems = proposalDetailsContainer
-            ? proposalDetailsContainer.querySelectorAll('.ancestor-item[data-proposal-id]')
-            : [];
-        ancestorItems.forEach(item => {
-            item.addEventListener('mouseenter', () => {
-                try {
-                    handleAncestorItemHover(item);
-                } catch (_) { }
-            });
-            item.addEventListener('mouseleave', () => {
-                try {
-                    clearProposalHoverLayers();
-                } catch (_) { }
-            });
-            item.addEventListener('focus', () => {
-                try {
-                    handleAncestorItemHover(item);
-                } catch (_) { }
-            });
-            item.addEventListener('blur', () => {
-                try {
-                    clearProposalHoverLayers();
-                } catch (_) { }
-            });
-            item.addEventListener('click', event => {
-                event.preventDefault();
-                event.stopPropagation();
-                try {
-                    handleAncestorItemClick(item);
-                } catch (_) { }
-            });
-            item.addEventListener('keydown', event => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    try {
-                        handleAncestorItemClick(item);
-                    } catch (_) { }
-                }
-            });
-        });
     } catch (_) { }
 
     // Initialize expiry countdown timer if present

@@ -23,10 +23,9 @@
             || proposalData.coordinatedPlanId === null
             ? ''
             : String(proposalData.coordinatedPlanId).trim();
-        // `geometry` on a readjustment is apply-time pool state, not authored input. Old local
-        // copies may still carry it from before coordinated packages existed; retaining it would
-        // make the intentional road gaps part of this record's footprint again.
-        if (coordinatedPlanId && proposalData.geometry && /Polygon/.test(String(proposalData.geometry.type || ''))) {
+        // The authored polygons are the readjustment. Its resolved live pool is disposable replay
+        // state and must never be persisted as a second, history-dependent footprint.
+        if (proposalData.geometry && /Polygon/.test(String(proposalData.geometry.type || ''))) {
             delete proposalData.geometry;
         }
         if (!Array.isArray(plan.polygons) || plan.polygons.length === 0) {
@@ -359,29 +358,6 @@
             console.warn('[_applyReparcellizationProposal] remainder minting failed', remainderError);
         }
 
-        // §15b: the record's geometry IS its current claim — the resolved pool, the union of
-        // the ground actually consumed. Stored so §14.2 remainder ground is part of the
-        // amendable plan: when a later formation takes a remainder, the amend pass clips THIS
-        // geometry, footprintOf shrinks with it, and the next re-derivation avoids the taken
-        // ground instead of re-minting under the taker.
-        try {
-            const turfPool = (typeof turf !== 'undefined') ? turf : null;
-            // A coordinated readjustment claims its authored plots only. Expanding the persisted
-            // footprint to the whole parent pool would reclaim its deliberately omitted streets
-            // and cause the road phase to invalidate the plan it belongs to.
-            if (!coordinatedPlanId && turfPool && typeof turfPool.union === 'function' && parentFeatures.length) {
-                let pool = null;
-                parentFeatures.forEach(parentFeature => {
-                    if (!parentFeature || !parentFeature.geometry) return;
-                    const f = { type: 'Feature', properties: {}, geometry: parentFeature.geometry };
-                    try { pool = pool ? turfPool.union(pool, f) : f; } catch (_) { }
-                });
-                if (pool && pool.geometry) proposalData.geometry = JSON.parse(JSON.stringify(pool.geometry));
-            }
-        } catch (poolError) {
-            console.warn('[_applyReparcellizationProposal] pool claim persistence failed', poolError);
-        }
-
         this._assignSyntheticChildIdentities(proposalId, childFeatures);
 
         await this._addFeaturesToMap(childFeatures, true, proposalData);
@@ -397,12 +373,13 @@
                 ? String(feature.properties.proposalId) : String(proposalId);
             if (pieceProposalId !== String(proposalId)) {
                 this._persistParcelFeature(feature);
-                this._addProposalAsAncestor(parcelId, pieceProposalId);
+                this._markParcelProducedByProposal(parcelId, pieceProposalId);
                 return;
             }
-            feature.properties.ancestorProposal = proposalId;
+            feature.properties.producedByProposalId = proposalId;
+            delete feature.properties.ancestorProposal;
             this._persistParcelFeature(feature);
-            this._addProposalAsAncestor(parcelId, proposalId);
+            this._markParcelProducedByProposal(parcelId, proposalId);
             if (parcelId !== undefined && parcelId !== null) {
                 childParcelIds.push(String(parcelId));
                 // Per-slice ownership from the readjustment plan. The modal now REQUIRES a real owner
@@ -443,12 +420,8 @@
             }
         }
 
-        // The record keeps only ground ACTUALLY consumed: ids whose parcels were LIVE on the
-        // map at this moment (the hide below is what consumes them). Feature resolution alone
-        // is not the test — the registry keeps dead layers forever, so a conflict the gate just
-        // PARKED still resolves a feature; recording its id as a parent made it a standing
-        // claim that blocked the parked structure's own re-mint and was resurrected by every
-        // later unapply.
+        // The record keeps only flat cadastral ground actually consumed. Live generated ids are
+        // local cut inputs; after replacement they are deleted rather than retained as lineage.
         // §15b: an id carried onto a minted piece is the LIVE piece now — hiding it or
         // recording it as a consumed parent would consume the victim's surviving plot. The
         // ground it lost is anchored to the BASE parcel instead, so this readjustment's unapply
@@ -478,7 +451,7 @@
         carriedBaseAnchors.forEach(baseId => {
             if (!consumedParentIds.includes(baseId)) consumedParentIds.push(baseId);
         });
-        this._hideFeaturesFromMap(parentFeatures.filter(f => {
+        this._consumeFeaturesFromLiveFabric(parentFeatures.filter(f => {
             try { return !mintedIdSet.has(String(_getParcelIdFromFeature(f))); } catch (_) { return true; }
         }));
         if (childParcelIds.length) {
@@ -564,7 +537,7 @@
             geometry: mergedGeometry,
             properties: {
                 proposalId,
-                ancestorProposal: proposalId,
+                producedByProposalId: proposalId,
                 parentParcelIds: parentIds,
                 parentParcelNumbers: parentNumbers,
                 parentParcelId: primaryId || null,
@@ -628,12 +601,11 @@
 
         this._persistParcelFeature(childFeature);
         await this._addFeaturesToMap([childFeature], true, proposalData);
-        this._addProposalAsAncestor(childParcelId, proposalId);
+        this._markParcelProducedByProposal(childParcelId, proposalId);
         this._addChildParcels(proposalId, [childParcelId], proposalData);
 
 
-        // Hide parents from visible layer but keep in parcelLayerById for descendant proposals
-        this._hideFeaturesFromMap(parentFeatures);
+        this._consumeFeaturesFromLiveFabric(parentFeatures);
 
         proposalData.decideLaterProposal = {
             parentParcelIds: flatParentIds,

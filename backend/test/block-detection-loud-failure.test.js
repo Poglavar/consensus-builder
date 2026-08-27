@@ -16,7 +16,7 @@ function sectionOf(startMarker, endMarker) {
 }
 
 // From the entry point to the first line of the success path: everything in between is a refusal.
-const refusals = () => sectionOf('function selectCurrentBlockIntoMultiSelection(startParcel)', 'let addedCount = 0;');
+const refusals = () => sectionOf('function selectCurrentBlockIntoMultiSelection(startParcel, options = {})', 'let addedCount = 0;');
 
 describe('a block that cannot be formed', () => {
     it('says so in a dialog, not only in the status line', () => {
@@ -43,5 +43,11 @@ describe('a block that cannot be formed', () => {
         const body = refusals();
         expect(body).not.toContain('map.fitBounds(');
         expect(body).not.toContain('selectParcel(');
+    });
+
+    it('replaces stale source ids only after a whole block was formed successfully', () => {
+        const success = sectionOf('if (options.replaceSelection === true)', 'const lastParcelId =');
+        expect(success).toContain('multiParcelSelection.clearSelection()');
+        expect(success).toContain('blockParcels.forEach');
     });
 });

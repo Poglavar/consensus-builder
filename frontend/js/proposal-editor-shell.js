@@ -920,6 +920,13 @@
             if (typeof global.showStyledAlert === 'function') global.showStyledAlert(message);
             return null;
         }
+        // Selection ids can outlive the parcel layers they named: unapplying a formation or
+        // re-cutting a corridor replaces those layers while their ancestry remains indexed. The
+        // adapter has just resolved that intent onto the current visible fabric; publish exactly
+        // those ids alongside the geometry, never the stale request that led to them.
+        const liveIds = Array.isArray(selection.ids) && selection.ids.length
+            ? selection.ids.map(String)
+            : ids;
         const geometry = typeof global.buildGeometryFromParcels === 'function'
             ? global.buildGeometryFromParcels(selection.layers)
             : null;
@@ -943,13 +950,13 @@
             goal: kind,
             proposalType: STRUCTURE_KIND_LABELS[kind],
             adapterKey: kind,
-            fields: { name: '', description: '', parentParcelIds: ids, offer: 0, offerCurrency: 'USDT' },
+            fields: { name: '', description: '', parentParcelIds: liveIds, offer: 0, offerCurrency: 'USDT' },
             editorPayload: {
                 structureProposal: {
                     kind,
                     applied: false,
                     geometry: structureGeometry,
-                    parentParcelIds: ids.slice(),
+                    parentParcelIds: liveIds.slice(),
                     blockName: null,
                     lakeGraphics: lakeGraphics || null
                 }
@@ -1376,9 +1383,10 @@
         // And "a conflict blocked it" is not a word: the apply that refused recorded exactly WHY,
         // and this used to throw that away, leaving the one person who could act on it guessing.
         // Say the reason when there is one.
+        let landed = false;
         try {
             const persisted = global.proposalStorage?.getProposal?.(proposalId);
-            const landed = persisted && typeof global.isProposalApplied === 'function' && global.isProposalApplied(persisted);
+            landed = !!(persisted && typeof global.isProposalApplied === 'function' && global.isProposalApplied(persisted));
             if (persisted && !landed && typeof global.showStyledAlert === 'function') {
                 const reason = global.ProposalManager?.getLastApplyFailure?.(proposalId) || '';
                 global.showStyledAlert(reason
@@ -1392,8 +1400,15 @@
         // The drawing seeded the multi-parcel selection, which pops the parcel info panel — hide
         // it; the object's own details panel opens collapsed instead.
         try { global.document?.getElementById('parcel-info-panel')?.classList.remove('visible'); } catch (_) { }
-        global.__openProposalDetailsCollapsed = true;
-        try { global.selectAndHighlightProposal?.(proposalId, (proposal.parentParcelIds || [])[0] || null, false, true); } catch (_) { }
+        // A refused object is parked in the list, but it is not the thing the user selected on the
+        // map. Focusing it collapses a carefully built multi-parcel/block selection to its first
+        // declared parent; pressing Park again then takes only that fragment. Preserve the source
+        // selection on refusal so retrying is genuinely the same operation. A landed object keeps
+        // the normal focus/details behaviour.
+        if (landed) {
+            global.__openProposalDetailsCollapsed = true;
+            try { global.selectAndHighlightProposal?.(proposalId, (proposal.parentParcelIds || [])[0] || null, false, true); } catch (_) { }
+        }
         return proposalId;
     }
 

@@ -229,7 +229,7 @@ describe('the spinner', () => {
         // reports on whichever one happens to come last.
         const rebuild = manager.slice(
             manager.indexOf('    async rebuildAppliedFabric(options = {}) {'),
-            manager.indexOf('    async _loadReplayGround(appliedList) {')
+            manager.indexOf('    _orderedStandingProposals() {')
         );
         expect(rebuild).toContain('window.beginStatusActivity()');
         // In `finally` — a derivation that throws must not leave the bar spinning for ever.

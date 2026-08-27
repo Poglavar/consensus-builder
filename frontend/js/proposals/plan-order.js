@@ -92,7 +92,10 @@
         if (definition && definition.polygon) push(definition.polygon);
         else if (definition) push(corridorFootprintFromCenterline(definition));
         if (proposal.structureProposal && proposal.structureProposal.geometry) push(proposal.structureProposal.geometry);
-        if (proposal.geometry && /Polygon/.test(proposal.geometry.type || '')) push(proposal.geometry);
+        // A readjustment's authored polygons are its complete footprint. `proposal.geometry` was
+        // formerly an apply-time union of whatever live pool it happened to consume; including it
+        // made replay depend on historical fabric rather than the published plan.
+        if (!proposal.reparcellization && proposal.geometry && /Polygon/.test(proposal.geometry.type || '')) push(proposal.geometry);
         if (proposal.buildingGeometry) push(proposal.buildingGeometry);
         if (proposal.geometry && Array.isArray(proposal.geometry.buildings)) proposal.geometry.buildings.forEach(push);
 

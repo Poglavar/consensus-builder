@@ -2,11 +2,6 @@
 (function attachProposalEditorAdapters(global) {
     'use strict';
 
-    // Canonical map-application accessor from proposals/status.js. Global in the browser (status.js
-    // loads first), required directly in node tests. The require branch never runs in the browser.
-    const appliedOf = (typeof isApplied === 'function')
-        ? isApplied
-        : require('./proposals/status.js').isApplied;
     const turfRef = global.turf || null;
 
     const CREATABLE_PROPOSAL_GOALS = [
@@ -73,30 +68,14 @@
     }
 
     function sourceParcels(proposal) {
-        const values = proposal?.parentParcelIds
+        const values = (Array.isArray(proposal?.cadastreParcelIds) && proposal.cadastreParcelIds.length
+            ? proposal.cadastreParcelIds
+            : proposal?.parentParcelIds)
             || proposal?.buildingProposal?.parentParcelIds
             || proposal?.roadProposal?.parentParcelIds
             || proposal?.reparcellization?.parcelIds
             || [];
-        return Array.isArray(values) ? values.map(String) : [];
-    }
-
-    function sourceChildParcels(proposal) {
-        const values = [
-            ...(Array.isArray(proposal?.childParcelIds) ? proposal.childParcelIds : []),
-            ...(Array.isArray(proposal?.roadProposal?.childParcelIds) ? proposal.roadProposal.childParcelIds : []),
-            ...(Array.isArray(proposal?.buildingProposal?.childParcelIds) ? proposal.buildingProposal.childParcelIds : []),
-            ...(Array.isArray(proposal?.reparcellization?.childParcelIds) ? proposal.reparcellization.childParcelIds : []),
-            ...(Array.isArray(proposal?.decideLaterProposal?.childParcelIds) ? proposal.decideLaterProposal.childParcelIds : [])
-        ];
-        return [...new Set(values.map(String).filter(Boolean))];
-    }
-
-    function sourceIsApplied(proposal) {
-        if (!proposal) return false;
-        if (appliedOf(proposal)) return true;
-        return ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization', 'decideLaterProposal']
-            .some(k => proposal[k] && appliedOf(proposal, proposal[k]));
+        return Array.isArray(values) ? [...new Set(values.map(baseParcelId).filter(Boolean))] : [];
     }
 
     function sourceFields(proposal) {
@@ -464,18 +443,73 @@
         };
     }
 
+    function parcelLayerIsLive(layer) {
+        if (!layer) return false;
+        const live = global.parcelLayer;
+        // Node/unit callers and early boot can legitimately have no layer group yet. Once the
+        // group exists, however, membership is the definition of live: parcelLayerById also holds
+        // consumed parents on purpose, and those must never be turned back into authored ground.
+        if (!live || typeof live.hasLayer !== 'function') return true;
+        try { return live.hasLayer(layer); } catch (_) { return false; }
+    }
+
     function resolveParcelLayer(id) {
         try {
             if (global.multiParcelSelection && typeof global.multiParcelSelection.findParcelById === 'function') {
                 const value = global.multiParcelSelection.findParcelById(id);
-                if (value) return value;
+                if (parcelLayerIsLive(value)) return value;
             }
-            if (typeof global.resolveParcelLayerById === 'function') return global.resolveParcelLayerById(id);
+            if (typeof global.resolveParcelLayerById === 'function') {
+                const value = global.resolveParcelLayerById(id);
+                if (parcelLayerIsLive(value)) return value;
+            }
         } catch (_) { }
         return null;
     }
 
-    async function prepareParcelSelection(parcelIds) {
+    function baseParcelId(value) {
+        const id = value === undefined || value === null ? '' : String(value).trim();
+        if (!id) return '';
+        try {
+            if (global.__formationEdit && typeof global.__formationEdit.baseIdOf === 'function') {
+                return String(global.__formationEdit.baseIdOf(id) || '');
+            }
+        } catch (_) { }
+        let current = id;
+        let previous = '';
+        while (current && current !== previous) {
+            previous = current;
+            current = current.replace(/#[A-Za-z0-9_-]+-\d+$/i, '');
+        }
+        return current.split('#')[0];
+    }
+
+    function liveLayerBaseIds(id, layer) {
+        const props = layer?.feature?.properties || {};
+        const anchors = Array.isArray(props.baseParcelIds) && props.baseParcelIds.length
+            ? props.baseParcelIds
+            : [props.rootParcelId, id];
+        return [...new Set(anchors.map(baseParcelId).filter(Boolean))];
+    }
+
+    function layerOverlapsFootprint(layer, footprint) {
+        if (!footprint) return true;
+        const feature = layer?.feature || null;
+        if (!feature?.geometry) return false;
+        try {
+            const order = global.__planOrder;
+            if (order && typeof order.intersectionArea === 'function') {
+                return order.intersectionArea(feature, footprint) > 0.25;
+            }
+            if (turfRef && typeof turfRef.intersect === 'function' && typeof turfRef.area === 'function') {
+                const hit = turfRef.intersect(feature, footprint);
+                return !!hit && turfRef.area(hit) > 0.25;
+            }
+        } catch (_) { return false; }
+        return true;
+    }
+
+    async function prepareParcelSelection(parcelIds, footprint = null) {
         const ids = [...new Set((parcelIds || []).map(String).filter(Boolean))];
         if (!ids.length) return { ids: [], layers: [], substituted: false };
         try {
@@ -483,28 +517,40 @@
         } catch (error) {
             console.warn('[ProposalEditorAdapters] Could not hydrate all draft parcels', error);
         }
-        // Resolve each id to a live layer; an id whose parcel was split away (e.g. a road cut
-        // slices out of it) substitutes its CURRENT descendants, so proposing over a partially
-        // replaced parent keeps working on today's parcel fabric.
+        // Authored selection is flat: requested ids identify original cadastral ground. Resolve
+        // that ground to whatever live, non-corridor parcel pieces occupy it now. No generated
+        // parent/child link is followed, so deleting and replaying disposable output cannot change
+        // how the editor finds the land.
         const resolved = [];
+        const resolvedIds = new Set();
         let substituted = false;
         const layerIndex = global.parcelLayerById instanceof Map
             ? global.parcelLayerById
             : (typeof global.getParcelLayerIdMap === 'function' ? global.getParcelLayerIdMap() : null);
+        const addResolved = (id, layer) => {
+            const key = String(id || '');
+            if (!key || !layer || resolvedIds.has(key)) return;
+            resolvedIds.add(key);
+            resolved.push({ id: key, layer });
+        };
         ids.forEach(id => {
             const direct = resolveParcelLayer(id);
-            if (direct) {
-                resolved.push({ id, layer: direct });
+            if (direct && layerOverlapsFootprint(direct, footprint)) {
+                addResolved(id, direct);
                 return;
             }
             if (layerIndex && typeof layerIndex.forEach === 'function') {
-                const prefix = id + '#p-';
+                const requestedBase = baseParcelId(id);
                 layerIndex.forEach((layer, key) => {
-                    if (typeof key !== 'string' || !key.startsWith(prefix) || !layer) return;
+                    const childId = key === undefined || key === null ? '' : String(key);
+                    if (!childId || !layer || !parcelLayerIsLive(layer)) return;
+                    const props = layer.feature?.properties || {};
+                    if (!liveLayerBaseIds(childId, layer).includes(requestedBase)) return;
                     // The corridor slice that caused the split belongs to the road, not to this
                     // proposal's land — only the remainder slices substitute the parent.
-                    if (layer.feature?.properties?.isCorridor === true) return;
-                    resolved.push({ id: key, layer });
+                    if (props.isCorridor === true) return;
+                    if (!layerOverlapsFootprint(layer, footprint)) return;
+                    addResolved(childId, layer);
                     substituted = true;
                 });
             }
@@ -552,14 +598,13 @@
         if (Array.isArray(draftOrParcelIds)) return prepareParcelSelection(draftOrParcelIds);
         const draft = draftOrParcelIds || {};
         const originalIds = (draft.fields?.parentParcelIds || []).map(String);
-        const childIds = sourceChildParcels(draft.sourceSnapshot || {});
-        if (sourceIsApplied(draft.sourceSnapshot) && childIds.length) {
-            const descendants = await prepareParcelSelection(childIds);
-            if (descendants.layers.length) {
-                return { ...descendants, usesSourceChildren: true, originalIds };
-            }
-        }
-        return { ...(await prepareParcelSelection(originalIds)), usesSourceChildren: false, originalIds };
+        const footprint = draft.editorPayload?.structureProposal?.geometry
+            || draft.editorPayload?.definition?.polygon
+            || draft.editorPayload?.plan?.poolGeometry
+            || draft.editorPayload?.geometry
+            || draft.previewGeometry
+            || null;
+        return { ...(await prepareParcelSelection(originalIds, footprint)), usesSourceChildren: false, originalIds };
     }
 
     function proposalTypeLabel(goal) {
@@ -1277,7 +1322,8 @@
             buildGenericAdapter,
             buildStructureAdapter,
             buildStationAdapter,
-            summarizeCommonChanges
+            summarizeCommonChanges,
+            prepareParcelSelection
         };
     }
 })(typeof window !== 'undefined' ? window : globalThis);

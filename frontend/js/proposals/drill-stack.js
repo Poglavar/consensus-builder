@@ -111,8 +111,11 @@
             // A proposal that MINTED a slice under the point sits just below that slice.
             let minMintedDepth = null;
             parcelsAt.forEach(p => {
-                const minter = (p.feature && p.feature.properties && p.feature.properties.ancestorProposal)
-                    ? String(p.feature.properties.ancestorProposal)
+                const producer = p.feature && p.feature.properties
+                    ? (p.feature.properties.producedByProposalId || p.feature.properties.ancestorProposal)
+                    : null;
+                const minter = producer
+                    ? String(producer)
                     : mintingProposalIdOf(p.id);
                 if (minter !== key) return;
                 if (minMintedDepth === null || p.depth < minMintedDepth) minMintedDepth = p.depth;
@@ -141,8 +144,11 @@
                     let foreignLiveDepth = null;
                     parcelsAt.forEach(p => {
                         if (!p.live || p.depth <= 0) return;
-                        const minter = (p.feature && p.feature.properties && p.feature.properties.ancestorProposal)
-                            ? String(p.feature.properties.ancestorProposal)
+                        const producer = p.feature && p.feature.properties
+                            ? (p.feature.properties.producedByProposalId || p.feature.properties.ancestorProposal)
+                            : null;
+                        const minter = producer
+                            ? String(producer)
                             : mintingProposalIdOf(p.id);
                         if (!minter || minter === key) return;
                         if (foreignLiveDepth === null || p.depth > foreignLiveDepth) foreignLiveDepth = p.depth;

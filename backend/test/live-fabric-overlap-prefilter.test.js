@@ -8,12 +8,13 @@
 // skips a real overlap. So the pin here is the REFUSAL, not the speed: a genuine double-cover must
 // still be caught, and neighbours that merely share an edge must still be allowed.
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
 
 const require = createRequire(import.meta.url);
 const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
+const arrangement = require('../../frontend/js/proposals/parcel-arrangement.js');
 
 const box = (west, south, width, height) => ({
     type: 'Feature',
@@ -93,5 +94,32 @@ describe('an honest partition still passes', () => {
     it('allows parcels that are far apart', () => {
         features = [box(15.90, 43.73, 0.001, 0.001), box(16.50, 44.10, 0.001, 0.001)];
         expect(resolve().ok).toBe(true);
+    });
+
+    it('uses the hardened parcel clipper when raw Turf rejects last-bit Sibenik geometry', () => {
+        const west = 15.873701234414993;
+        features = [
+            box(west, 43.754, 0.001, 0.001),
+            box(west + 0.001, 43.754, 0.001, 0.001)
+        ];
+        const fragileTurf = {
+            ...turf,
+            intersect(left) {
+                const x = left.geometry.coordinates[0][0][0];
+                if (x !== Number(x.toFixed(9))) {
+                    throw new Error('Unable to complete output ring');
+                }
+                return null;
+            }
+        };
+        globalThis.turf = fragileTurf;
+        window.__parcelArrangement = {
+            clip: vi.fn((operation, left, right) => arrangement.clip(operation, left, right))
+        };
+
+        const result = resolve();
+
+        expect(result.ok).toBe(true);
+        expect(window.__parcelArrangement.clip).toHaveBeenCalledWith('intersect', features[0], features[1]);
     });
 });

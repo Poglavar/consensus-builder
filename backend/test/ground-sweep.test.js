@@ -147,14 +147,12 @@ describe('the sweep uses it', () => {
     const manager = require('node:fs').readFileSync(
         new URL('../../frontend/js/proposal-manager.js', import.meta.url), 'utf8');
     const fn = manager.slice(
-        manager.indexOf('_sweepGroundNoLongerWhole(parcelIds) {'),
+        manager.indexOf('_parkRecordsInvalidatedByCorridors(parcelIds, candidateRecords) {'),
         manager.indexOf('async _rebuildPass(appliedList, opts) {'));
 
     it('judges parts, not the union', () => {
         expect(fn).toContain('sweepApi.designParts(record, isBuildingDesign, footprint)');
         expect(fn).toContain('sweepApi.inspectDesignAgainstPieces(parts, pieces');
-        // `continue`, not `return`: the record loop is a for..of now, because releasing a
-        // record is asynchronous and an async forEach callback would race the releases.
         expect(fn).toContain('if (!verdict.standsHere) continue;');
         expect(fn).toContain('if (isBuildingDesign && !verdict.severed) continue;');
     });

@@ -124,32 +124,6 @@ function handleDescendantItemClick(element) {
     }
 }
 
-function handleAncestorItemHover(element) {
-    if (!element) return;
-    const proposalId = element.getAttribute('data-proposal-id');
-    if (!proposalId) return;
-    highlightProposalHoverById(proposalId, {
-        color: '#FFB74D',
-        weight: 4,
-        dashArray: '6 3',
-        showLabels: true,
-        includeParents: false
-    });
-}
-
-function handleAncestorItemClick(element) {
-    if (!element) return;
-    clearProposalHoverLayers();
-
-    const proposalIdAttr = element.getAttribute('data-proposal-id');
-    if (!proposalIdAttr) return;
-    const ancestorProposal = getProposalByIdOrHash(proposalIdAttr);
-    if (!ancestorProposal) return;
-    const parentIds = Array.isArray(ancestorProposal.parentParcelIds) ? ancestorProposal.parentParcelIds : [];
-    const fallbackParcel = parentIds[0] || null;
-    selectAndHighlightProposal(getProposalKey(ancestorProposal) || proposalIdAttr, fallbackParcel, true);
-}
-
 function handleProposalParcelClick(parcelId, event) {
     // Handle case where event is not provided (legacy call)
     if (!event) {

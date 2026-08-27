@@ -64,7 +64,7 @@ describe('road drawing finalization contract', () => {
         expect(drawingSource).toContain("updateStatus('Wait for the current segment to finish validating.');");
     });
 
-    it('edits the road IN PLACE and derives only the ground it touched', () => {
+    it('edits the road in place and rematerialises its flat cadastral component', () => {
         const edit = sourceSection(
             drawingSource,
             'async function runLocalCorridorGeometryUpdate',
@@ -77,15 +77,12 @@ describe('road drawing finalization contract', () => {
         expect(edit).toContain('writeRoadDefinition(sourceProposal, componentDefinitions[0])');
         expect(edit).toContain('detachPublishedIdentity(sourceProposal)');
         expect(edit).not.toContain('makeFreshRoadSnapshot(sourceProposal, componentDefinitions[0]');
-        expect(edit).toContain('setProposalApplied(sourceProposal, false');
-        // An edit is a park plus a create: the old position releases its ground, each replacement
-        // derives the parcels under its own footprint. It must NEVER reach for the whole plan —
-        // that is what made editing a road cost the same as reloading the map.
-        expect(edit).toContain('ProposalManager._undoProposalPayload?.(sourceProposal)');
-        expect(edit).toContain('ProposalManager.deriveForNewProposal(stored, {');
-        // The edited road re-derives under its own id, not under a replacement's.
-        expect(edit).toContain('for (const id of [sourceKey, ...extraStretchIds])');
-        expect(edit).not.toContain('rebuildAppliedFabric');
+        // Old and new positions seed one component replay. There is no per-payload undo and no
+        // generated predecessor to reveal.
+        expect(edit).toContain('ProposalManager.rematerializeFlatScope?.([sourceBefore, ...editedRecords]');
+        expect(edit).not.toContain('_undoProposalPayload');
+        expect(edit).not.toContain('_releaseUnappliedRecord');
+        expect(edit).not.toContain('deriveForNewProposal');
         // Ruling 2026-08-07: an authored disconnect SPLITS into one proposal per connected
         // component — via the tested pure engine, with per-stretch metadata carried, still
         // inside the same single transaction and single replay.
@@ -115,13 +112,12 @@ describe('road drawing finalization contract', () => {
         expect(wrapper).toContain('ProposalManager._enqueueFabricChange');
         expect(wrapper).toContain('proposalStorage.beginBatch()');
         expect(wrapper).toContain('proposalStorage.endBatch()');
-        // A failed edit leaves nothing behind: every split-off stretch comes off the map and out of
-        // storage, and the road itself goes back to the shape AND the identity it had.
-        expect(edit).toContain('extraStretchIds.forEach(id => {');
-        expect(edit).toContain('proposalStorage.removeProposal(id);');
-        expect(edit).toContain('ProposalManager._releaseUnappliedRecord?.(stored)');
-        expect(edit).toContain('writeRoadDefinition(sourceProposal, originalDefinition)');
-        expect(edit).toContain('restorePublishedIdentity(sourceProposal, publishedIdentity)');
+        // A failed edit restores the complete authored-record map, then replays both attempted and
+        // original footprints so partial output at the new position is also discarded.
+        expect(edit).toContain('transactionApi.snapshotRecordMap(proposalStorage.proposals)');
+        expect(edit).toContain('transactionApi.restoreRecordMap(proposalStorage.proposals, recordSnapshot)');
+        expect(edit).toContain('rollbackRecordAndFabric(attemptedSeeds)');
+        expect(edit).toContain('ProposalManager.rematerializeFlatScope?.([');
         expect(edit).toContain('_fabricQueue: options._fabricQueue === true');
     });
 

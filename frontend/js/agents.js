@@ -621,12 +621,12 @@ function isRoadLikeParcel(layer) {
  * agent proposals.
  */
 function isStructureDescendantParcel(layer) {
-    const ancestorId = layer && layer.feature && layer.feature.properties
-        ? layer.feature.properties.ancestorProposal
+    const producerId = layer && layer.feature && layer.feature.properties
+        ? (layer.feature.properties.producedByProposalId || layer.feature.properties.ancestorProposal)
         : null;
-    if (!ancestorId) return false;
+    if (!producerId) return false;
     if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getProposal !== 'function') return false;
-    const proposal = proposalStorage.getProposal(ancestorId);
+    const proposal = proposalStorage.getProposal(producerId);
     if (!proposal) return false;
     const goal = (proposal.goal || '').toString().toLowerCase();
     return goal === 'park' || goal === 'square' || goal === 'lake';

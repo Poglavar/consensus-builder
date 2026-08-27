@@ -11,8 +11,26 @@
         return kind !== 'station';
     }
 
+    function structureTakeContext(turfRef, arrangement) {
+        const intersect = arrangement && typeof arrangement.clip === 'function'
+            ? (left, right) => arrangement.clip('intersect', left, right)
+            : (left, right) => turfRef.intersect(left, right);
+        return {
+            area: feature => {
+                try { return turfRef.area(feature) || 0; } catch (_) { return 0; }
+            },
+            intersectionArea: (left, right) => {
+                try {
+                    const hit = intersect(left, right);
+                    return hit ? turfRef.area(hit) : 0;
+                } catch (_) { return 0; }
+            }
+        };
+    }
+
     return {
     structureNeedsGroundFormation,
+    structureTakeContext,
     async _applyStructureProposal(proposalId, proposalData, options = {}) {
         const startTime = performance.now();
         const idLabel = _normalizeProposalId(proposalId) || 'unknown-proposal';
@@ -159,7 +177,7 @@
                     attachment: sp.attachment ? JSON.parse(JSON.stringify(sp.attachment)) : undefined,
                     modelVersion: sp.modelVersion || undefined,
                     name: proposalData.title || proposalData.name || undefined,
-                    parentParcelIds: parentIds.slice()
+                    parentParcelIds: flatParentIds.slice()
                 },
                 geometry: JSON.parse(JSON.stringify(geometry))
             };
@@ -276,12 +294,12 @@
             } catch (_) { }
             return { ok: false };
         }
-        const takeCtx = {
-            area: f => { try { return turfRef.area(f) || 0; } catch (_) { return 0; } },
-            intersectionArea: (a, b) => {
-                try { const hit = turfRef.intersect(a, b); return hit ? turfRef.area(hit) : 0; } catch (_) { return 0; }
-            }
-        };
+        // The candidates came from the snapped live-fabric clipper. Judge whole-parcel coverage
+        // through that same clipper: raw Turf can reject their last-bit shared vertices, and this
+        // check used to swallow the exception as zero overlap — a complete Sibenik block then
+        // became "41% uncovered" even though the live-parent resolver had just measured it whole.
+        const arrangement = (typeof window !== 'undefined') ? window.__parcelArrangement : null;
+        const takeCtx = structureTakeContext(turfRef, arrangement);
         const footprint = { type: 'Feature', properties: {}, geometry };
 
         const candidateIds = declaredParentIds.slice();
@@ -453,9 +471,9 @@
             bodyFeatures.forEach(feature => {
                 const bodyId = _getParcelIdFromFeature(feature);
                 try { this._persistParcelFeature(feature); } catch (_) { }
-                try { if (bodyId) this._addProposalAsAncestor(bodyId, proposalId); } catch (_) { }
+                try { if (bodyId) this._markParcelProducedByProposal(bodyId, proposalId); } catch (_) { }
             });
-            this._hideFeaturesFromMap(takenFeatures);
+            this._consumeFeaturesFromLiveFabric(takenFeatures);
             // §15c rebuild partial cuts: mint each outside piece. Derived parents keep their
             // identity (largest piece carries the parcel's own id; splits continue the OWNER's
             // numbering); base parents' leftovers mint as this structure's remainder children.
@@ -515,14 +533,14 @@
                 }
                 foreignPieces.forEach(({ feature, proposalId: ownerProposalId }) => {
                     const pid = _getParcelIdFromFeature(feature);
-                    try { if (pid && ownerProposalId) this._addProposalAsAncestor(pid, ownerProposalId); } catch (_) { }
+                    try { if (pid && ownerProposalId) this._markParcelProducedByProposal(pid, ownerProposalId); } catch (_) { }
                 });
                 structureRemainders.forEach(feature => {
                     const pid = _getParcelIdFromFeature(feature);
                     try {
                         if (pid) {
                             structureRemainderIds.push(String(pid));
-                            this._addProposalAsAncestor(pid, proposalId);
+                            this._markParcelProducedByProposal(pid, proposalId);
                         }
                     } catch (_) { }
                 });
@@ -532,7 +550,7 @@
             try { this._addChildParcels(proposalId, sp.childParcelIds, proposalData); } catch (_) { }
             sp.formation = {
                 mode: plan.mode,
-                parcelIds: takenIds.slice(),
+                parcelIds: formationEdit.baseIdsOfFeatures(takenFeatures),
                 childParcelIds: sp.childParcelIds.slice(),
                 bodyParcelIds,
                 remainderParcelIds: structureRemainderIds.slice()

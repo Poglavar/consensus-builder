@@ -813,7 +813,7 @@
                 "agentMissing": "Agent not found ({{id}})"
             },
             "proposalsSection": {
-                "ancestorPill": "Ancestor",
+                "producerPill": "Parcel source",
                 "create": "Create proposal",
                 "empty": "No proposals",
                 "fallbackTitle": "Proposal",
@@ -994,11 +994,8 @@
             "loading": "Loading proposal details...",
             "rendering": "Rendering proposal details...",
             "sections": {
-                "ancestorsParcels": "Ancestors (Parcels):",
-                "ancestorsProposals": "Ancestors (Proposals):",
-                "descendantsParcels": "Descendants (parcels):",
-                "noneAncestors": "No ancestor proposals found.",
-                "noneDescendants": "No descendant parcels found.",
+                "cadastralParcels": "Cadastral parcels:",
+                "generatedParcels": "Generated parcels:",
                 "proposalTypeFallback": "proposal"
             },
             "parcels": {
