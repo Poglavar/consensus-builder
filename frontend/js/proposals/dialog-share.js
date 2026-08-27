@@ -677,7 +677,23 @@ function closeSharePlanPanel() {
     try { if (typeof clearProposalHoverLayers === 'function') clearProposalHoverLayers(); } catch (_) { }
 }
 
-function showSharePlanPanel() {
+// Returns a promise that settles once the panel is worth LOOKING at — rows listed and the map
+// fitted — so a caller can hold its own dialog up until then instead of dropping the user onto a
+// half-built map. It deliberately does NOT wait for the upload checks: those are a per-proposal
+// round trip each, they report their own progress inside the panel, and making the user watch a
+// spinner through them would be worse than the flicker this replaces.
+//
+// options.onProgress(text) receives the same progress line the panel shows, because while the
+// caller's dialog is up the panel is behind it and cannot be read.
+function showSharePlanPanel(options) {
+    const onProgress = (options && typeof options.onProgress === 'function') ? options.onProgress : null;
+    const readySignal = (typeof __readySignal === 'object' && __readySignal)
+        ? __readySignal.createReadySignal()
+        : require('./ready-signal.js').createReadySignal();
+    // Set the moment the async fill takes over. Everything else — an early return, a throw — has
+    // already finished by the time the `finally` below runs, and settles there. One place rather
+    // than one per `return` is the point: a return added later cannot leave a caller spinning.
+    let fillStarted = false;
     try {
         const t = getProposalI18nHelper();
         const tShare = getShareI18nHelper();
@@ -1545,9 +1561,19 @@ function showSharePlanPanel() {
             // `known` is the whole server list when it could be fetched completely; consult it
             // rather than making a request per proposal. Null means we could not get an
             // authoritative list, so ask about this one — slow, never wrong.
-            const exists = (known instanceof Set)
+            //
+            // But it is authoritative only FOR ITS CITY: the list is fetched with ?city=, so a
+            // proposal stored without one (or under another) is missing from it while sitting
+            // happily on the server. A miss is therefore not proof of absence, and treating it as
+            // proof is not merely cosmetic — the row invites an upload that creates a SECOND copy
+            // of something already there. So a miss is confirmed one proposal at a time, which
+            // costs a request only for the rows that were about to be reported as missing anyway.
+            let exists = (known instanceof Set)
                 ? known.has(String(serverId))
                 : await headProposalExists(serverId, proposal.city, proposal);
+            if (!exists && (known instanceof Set)) {
+                exists = await headProposalExists(serverId, proposal.city, proposal);
+            }
 
             // After headProposalExists, the proposal may have been synced with serverProposalId
             // Get the serial ID (numeric) if available
@@ -1589,8 +1615,10 @@ function showSharePlanPanel() {
         };
 
         const showProgress = (phraseKey, fallback, done, total) => {
-            if (!progressText) return;
-            progressText.textContent = tShare(phraseKey, fallback, { done, total });
+            const text = tShare(phraseKey, fallback, { done, total });
+            if (progressText) progressText.textContent = text;
+            // Mirrored to the opener: its dialog is covering this panel until we are ready.
+            if (onProgress) { try { onProgress(text); } catch (_) { } }
         };
         const clearProgress = () => {
             // Gone rather than hidden: finished work has nothing left to say, and a panel that
@@ -1708,6 +1736,7 @@ function showSharePlanPanel() {
             revealRow(key, parcelId);
         };
 
+        fillStarted = true;
         (async () => {
             try {
                 const entries = [...proposalsByHash.entries()];
@@ -1722,10 +1751,18 @@ function showSharePlanPanel() {
                 // what HOVER and CLICK are for, and toggling a row still syncs its own overlay.
                 try { if (typeof fitMapToAppliedProposals === 'function') fitMapToAppliedProposals(); } catch (_) { }
 
+                // Rows are up and the map is framed: this is the moment the panel stops looking
+                // half-built, so whoever is holding a dialog over it can let go. The upload
+                // checks below fill in badges afterwards, in plain sight.
+                readySignal.settle('ready');
+
                 await initializeUploadChecks();
             } catch (error) {
                 console.error('share plan: filling the panel failed', error);
             } finally {
+                // Backstop: a cancelled build (panel closed mid-fill) or a throw before the line
+                // above must not leave the opener's dialog spinning with no way out.
+                readySignal.settle('incomplete');
                 if (panelStillOpen()) clearProgress();
             }
         })();
@@ -1737,7 +1774,12 @@ function showSharePlanPanel() {
             const t = getProposalI18nHelper();
             showEphemeralMessage(t('ephemeral.messages.failed_to_generate_share_link', 'Failed to generate share link.'), 5000, 'error');
         }
+    } finally {
+        // Nothing async took over, so there is nothing left to wait for: no applied proposals,
+        // no storage, or a throw. Settling here covers every such exit at once.
+        if (!fillStarted) readySignal.settle('not-shown');
     }
+    return readySignal.promise;
 }
 
 function showShareLinkModal(shareUrl, payload, options = {}) {

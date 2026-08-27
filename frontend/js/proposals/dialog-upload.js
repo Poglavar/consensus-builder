@@ -615,22 +615,50 @@ function showUploadProposalModal(proposal) {
     sharePlanButton.style.marginBottom = '0.75rem';
     sharePlanButton.textContent = tShare('sharePlanButton', 'Share the whole plan instead (all applied proposals)…');
     sharePlanButton.addEventListener('click', () => {
-        // Say it on the control that was pressed: closing the modal first leaves nothing to spin,
-        // and the sidebar's own Share button is behind a sidebar this flow folds away.
+        // The dialog STAYS UP until the plan panel behind it is built and the map framed. Closing
+        // first is what made this feel broken: the modal vanished instantly and left the user on a
+        // bare map for as long as three hundred rows and a map fit take, with nothing saying why.
+        // So the wait is shown where the click happened, and the dialog is the thing that hides it.
         sharePlanButton.disabled = true;
         sharePlanButton.textContent = '';
         const spinner = document.createElement('i');
         spinner.className = 'fas fa-spinner fa-spin';
         spinner.style.marginRight = '6px';
+        const label = document.createElement('span');
+        label.textContent = tShare('preparingPlan', 'Preparing plan...');
         sharePlanButton.appendChild(spinner);
-        sharePlanButton.appendChild(document.createTextNode(tShare('preparingPlan', 'Preparing plan...')));
-        const go = () => {
+        sharePlanButton.appendChild(label);
+
+        // THIS dialog, not every share modal on the page. The old code closed them all, which was
+        // harmless when the gap was two frames; now it is however long the panel takes, which is
+        // long enough for the user to dismiss this one and open another — and closing that one for
+        // them would look like the app losing its place. Resolved at click time, since the button
+        // lives in a fragment until the modal is mounted.
+        const ownOverlay = typeof sharePlanButton.closest === 'function'
+            ? sharePlanButton.closest('.share-modal-overlay')
+            : null;
+        const closeThisDialog = () => {
             try {
-                document.querySelectorAll('.share-modal-overlay .share-modal-close').forEach(btn => btn.click());
+                // Already gone (Escape, ×, overlay click) — nothing to close, and nothing to steal.
+                if (!ownOverlay || !ownOverlay.isConnected) return;
+                const closeButton = ownOverlay.querySelector('.share-modal-close');
+                if (closeButton) closeButton.click();
             } catch (_) { }
-            if (typeof shareAppliedProposals === 'function') shareAppliedProposals();
         };
-        // One frame to apply the spinner, one to be sure it painted, before the modal goes.
+
+        const go = () => {
+            if (typeof shareAppliedProposals !== 'function') { closeThisDialog(); return; }
+            // The panel counts its own rows; show that instead of an unchanging spinner, because
+            // "Listing 40/299" is the difference between waiting and wondering if it hung.
+            const ready = shareAppliedProposals({
+                onProgress: (text) => { if (text) label.textContent = text; }
+            });
+            // Close on success AND on failure: a panel that never becomes ready must not trap the
+            // user behind a dialog whose only other exit is the close button they cannot see past.
+            if (ready && typeof ready.then === 'function') ready.then(closeThisDialog, closeThisDialog);
+            else closeThisDialog();
+        };
+        // One frame to apply the spinner, one to be sure it painted, before the work starts.
         if (typeof requestAnimationFrame === 'function') {
             requestAnimationFrame(() => requestAnimationFrame(go));
         } else {

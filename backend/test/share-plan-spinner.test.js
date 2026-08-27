@@ -40,7 +40,7 @@ function fakeButton() {
 }
 
 describe('spinner na gumbu', () => {
-    const body = sliceBetween(routes, 'function setSharePlanButtonBusy(busy) {', 'function shareAppliedProposals() {');
+    const body = sliceBetween(routes, 'function setSharePlanButtonBusy(busy) {', 'function shareAppliedProposals(');
     const load = button => new Function('document',
         `${body} return setSharePlanButtonBusy;`)({ getElementById: () => button });
 
@@ -72,7 +72,7 @@ describe('spinner na gumbu', () => {
 });
 
 describe('otvaranje plana', () => {
-    const body = sliceBetween(routes, 'function shareAppliedProposals() {', 'function shareSingleProposal(');
+    const body = sliceBetween(routes, 'function shareAppliedProposals(', 'function shareSingleProposal(');
 
     function harness({ panel } = {}) {
         const frames = [];
@@ -233,8 +233,10 @@ describe('punjenje panela u odsječcima', () => {
     });
 });
 
-// The modal's "Share the whole plan instead" closes the modal and hands over to the same panel —
-// so the sidebar's spinner is behind a folded sidebar and the pressed control was about to vanish.
+// The modal's "Share the whole plan instead" hands over to the same panel — and now HOLDS ITSELF
+// OPEN until that panel is ready, because closing first dropped the user on a bare map for as long
+// as the build took. The sidebar's own spinner is behind a folded sidebar, so the wait is shown on
+// the pressed control, which stays on screen until there is something worth revealing.
 describe('spinner na "podijeli cijeli plan"', () => {
     const handler = sliceBetween(read('../../frontend/js/proposals/dialog-upload.js'),
         'sharePlanButton.addEventListener(\'click\', () => {', 'fragment.appendChild(sharePlanButton);');
@@ -249,9 +251,18 @@ describe('spinner na "podijeli cijeli plan"', () => {
         expect(close).toBeGreaterThan(spin);
     });
 
-    it('zatvaranje i predaja čekaju dva okvira, da spinner stigne na ekran', () => {
+    it('predaja čeka dva okvira, da spinner stigne na ekran', () => {
         expect(handler).toContain('requestAnimationFrame(() => requestAnimationFrame(go));');
-        expect(handler).toContain('shareAppliedProposals();');
+        // Predaje se s opcijama (napredak se preslikava na gumb), pa poziv više nije gol.
+        expect(handler).toMatch(/shareAppliedProposals\(\{/);
+    });
+
+    it('dijalog se zatvara TEK kad panel javi da je spreman', () => {
+        // Prije se zatvarao odmah, pa je korisnik gledao praznu kartu dok se panel gradio.
+        const call = handler.indexOf('shareAppliedProposals({');
+        const close = handler.indexOf('ready.then(closeThisDialog');
+        expect(call).toBeGreaterThan(-1);
+        expect(close).toBeGreaterThan(call);
     });
 });
 

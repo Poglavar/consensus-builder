@@ -26,7 +26,7 @@ function sourceSection(source, startMarker, endMarker) {
 }
 
 describe('share plan panel contract', () => {
-    const panelFn = sourceSection(dialogShare, 'function showSharePlanPanel()', 'function showShareLinkModal');
+    const panelFn = sourceSection(dialogShare, 'function showSharePlanPanel(', 'function showShareLinkModal');
 
     it('opens as a right-docked panel, never through the share modal', () => {
         expect(panelFn).toContain("panelRoot.className = 'share-plan-panel'");
@@ -34,7 +34,7 @@ describe('share plan panel contract', () => {
         expect(panelFn).not.toContain('showSimpleShareModal(');
         // The panel replaced the modal entirely — no share-plan modal entry point remains.
         expect(dialogShare).not.toContain('function showSharePlanModal');
-        expect(sharingRoutes).toContain('showSharePlanPanel()');
+        expect(sharingRoutes).toContain('showSharePlanPanel(');
     });
 
     it('enters and leaves share-plan mode symmetrically', () => {

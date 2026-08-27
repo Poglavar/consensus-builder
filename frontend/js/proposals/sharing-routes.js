@@ -131,26 +131,34 @@ function setSharePlanButtonBusy(busy) {
     }
 }
 
-function shareAppliedProposals() {
+// Resolves when the panel is ready to look at, so a caller that opened this from its own dialog
+// can keep that dialog up meanwhile. `options` is passed straight through (see showSharePlanPanel).
+function shareAppliedProposals(options) {
     if (typeof setSharePlanButtonBusy === 'function') setSharePlanButtonBusy(true);
-    // Opening the panel is a long SYNCHRONOUS block: a row per applied proposal, plus one map
-    // overlay each (turf intersections + a Leaflet layer), plus fitting the map. Starting it in
+    // Opening the panel starts with a long SYNCHRONOUS block: a row per applied proposal, plus one
+    // map overlay each (turf intersections + a Leaflet layer), plus fitting the map. Starting it in
     // this same task would freeze the page before the spinner ever painted, so yield two frames —
     // one to apply the style, one to be sure it reached the screen.
-    const open = () => {
-        try {
-            showSharePlanPanel();
-        } finally {
-            // The panel folds the sidebar away, so this is mostly for the next time it is opened —
-            // and for the failure path, where the button must not stay stuck spinning.
-            if (typeof setSharePlanButtonBusy === 'function') setSharePlanButtonBusy(false);
+    return new Promise((resolve) => {
+        const open = () => {
+            let ready = null;
+            try {
+                ready = showSharePlanPanel(options);
+            } finally {
+                // The panel folds the sidebar away, so this is mostly for the next time it is opened —
+                // and for the failure path, where the button must not stay stuck spinning.
+                if (typeof setSharePlanButtonBusy === 'function') setSharePlanButtonBusy(false);
+            }
+            // A thenable is adopted; an older build that returns nothing resolves right away, which
+            // is the previous behaviour rather than a hang.
+            resolve(ready);
+        };
+        if (typeof requestAnimationFrame === 'function') {
+            requestAnimationFrame(() => requestAnimationFrame(open));
+        } else {
+            open();
         }
-    };
-    if (typeof requestAnimationFrame === 'function') {
-        requestAnimationFrame(() => requestAnimationFrame(open));
-    } else {
-        open();
-    }
+    });
 }
 
 function shareSingleProposal(proposalIdOrProposal) {
