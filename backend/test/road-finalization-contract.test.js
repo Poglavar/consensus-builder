@@ -77,8 +77,8 @@ describe('road drawing finalization contract', () => {
         expect(edit).toContain('writeRoadDefinition(sourceProposal, componentDefinitions[0])');
         expect(edit).toContain('detachPublishedIdentity(sourceProposal)');
         expect(edit).not.toContain('makeFreshRoadSnapshot(sourceProposal, componentDefinitions[0]');
-        // Old and new positions seed one component replay. There is no per-payload undo and no
-        // generated predecessor to reveal.
+        // Old and new positions seed one local cadastral derivation. There is no generated
+        // predecessor to reveal.
         expect(edit).toContain('ProposalManager.rematerializeFlatScope?.([sourceBefore, ...editedRecords]');
         expect(edit).not.toContain('_undoProposalPayload');
         expect(edit).not.toContain('_releaseUnappliedRecord');

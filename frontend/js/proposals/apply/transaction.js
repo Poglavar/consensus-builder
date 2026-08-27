@@ -70,7 +70,25 @@
             ? Array.from(browserRoot.parcelLayerById.entries())
             : null;
         const group = browserRoot.parcelLayer || null;
-        return { index, group, visibleLayers: layerList(group) };
+        const collections = {};
+        ['parks', 'squares', 'lakes', 'transitStations', 'proposedBuildings'].forEach(name => {
+            if (Array.isArray(browserRoot[name])) collections[name] = browserRoot[name].slice();
+        });
+        let parcelCacheIndex = null;
+        try {
+            const cache = browserRoot.ParcelsState
+                && typeof browserRoot.ParcelsState.getParcelCache === 'function'
+                ? browserRoot.ParcelsState.getParcelCache()
+                : browserRoot.parcelCache;
+            if (cache && cache.byId instanceof Map) parcelCacheIndex = Array.from(cache.byId.entries());
+        } catch (_) { /* presentation rollback remains best effort */ }
+        return {
+            index,
+            group,
+            visibleLayers: layerList(group),
+            collections,
+            parcelCacheIndex
+        };
     }
 
     function restoreParcelPresentation(browserRoot, snapshot) {
@@ -96,6 +114,21 @@
         if (Array.isArray(snapshot.index) && browserRoot.parcelLayerById instanceof Map) {
             browserRoot.parcelLayerById.clear();
             snapshot.index.forEach(([key, layer]) => browserRoot.parcelLayerById.set(key, layer));
+        }
+        Object.entries(snapshot.collections || {}).forEach(([name, entries]) => {
+            browserRoot[name] = Array.isArray(entries) ? entries.slice() : [];
+        });
+        if (Array.isArray(snapshot.parcelCacheIndex)) {
+            try {
+                const cache = browserRoot.ParcelsState
+                    && typeof browserRoot.ParcelsState.getParcelCache === 'function'
+                    ? browserRoot.ParcelsState.getParcelCache()
+                    : browserRoot.parcelCache;
+                if (cache && cache.byId instanceof Map) {
+                    cache.byId.clear();
+                    snapshot.parcelCacheIndex.forEach(([key, value]) => cache.byId.set(key, value));
+                }
+            } catch (_) { /* presentation rollback remains best effort */ }
         }
         return true;
     }

@@ -54,49 +54,6 @@
         return api.cadastreIdsFromDeclared(declared);
     }
 
-    // The smallest part of the live plan that can change when one or more cadastral parcels
-    // change. Proposals and original parcels form a bipartite graph: a proposal is connected to
-    // every base parcel in its flat cadastre stamp. Starting from the changed bases, walk that
-    // graph to a fixed point. Generated parcel ids never participate, so the answer cannot depend
-    // on which replay happened to mint or consume a transient child.
-    function connectedComponent(seedParcelIds, proposals, options) {
-        const opts = options || {};
-        const include = typeof opts.include === 'function' ? opts.include : (() => true);
-        const api = planOrder();
-        const roots = new Set();
-        (Array.isArray(seedParcelIds) ? seedParcelIds : Array.from(seedParcelIds || [])).forEach(id => {
-            const root = api ? api.cadastreRootId(id) : String(id || '');
-            if (root) roots.add(root);
-        });
-
-        const candidates = (Array.isArray(proposals) ? proposals : [])
-            .filter(proposal => proposal && include(proposal))
-            .map(proposal => ({ proposal, baseParcelIds: baseParcelIdsOf(proposal) }));
-        const members = [];
-        const memberIds = new Set();
-        let changed = true;
-        while (changed) {
-            changed = false;
-            candidates.forEach(entry => {
-                const key = entry.proposal.proposalId === undefined || entry.proposal.proposalId === null
-                    ? entry.proposal
-                    : String(entry.proposal.proposalId);
-                if (memberIds.has(key)) return;
-                if (!entry.baseParcelIds.some(id => roots.has(id))) return;
-                memberIds.add(key);
-                members.push(entry.proposal);
-                entry.baseParcelIds.forEach(id => {
-                    if (!roots.has(id)) {
-                        roots.add(id);
-                        changed = true;
-                    }
-                });
-                changed = true;
-            });
-        }
-        return { baseParcelIds: Array.from(roots), proposals: members };
-    }
-
     // Whether this replay's formation replaces the cadastral layer for one base parcel. The
     // formation's child ids are intentionally irrelevant to the match: a corridor spanning many
     // roots can name its single body after only the first root.
@@ -156,7 +113,6 @@
         claimKindForGoal,
         claimRank,
         baseParcelIdsOf,
-        connectedComponent,
         formationReplacesCadastreParcel,
         dossierFor,
         shortParcelLabel

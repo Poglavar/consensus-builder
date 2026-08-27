@@ -704,8 +704,9 @@ const ProposalManager = {
 
                 if (!appliedInCity.length) return undefined;
 
-                // Boot uses the SAME derivation as an edit and an unapply: pristine cadastre, then one
-                // ordered replay. The former stored-order `_reapplyAppliedProposal` loop was a second
+                // Boot/recovery deliberately uses a complete cadastre-first ordered replay. Local
+                // apply/edit/unapply mutations use their own original cadastral anchors instead.
+                // The former stored-order `_reapplyAppliedProposal` loop was a second
                 // implementation with different precedence and restore semantics; whichever happened
                 // to run first could establish a different fabric. Non-conforming stored records are
                 // handled by the explicit migration script, never by a live healing pass here.
@@ -721,11 +722,10 @@ const ProposalManager = {
         return replayPromise;
     },
 
-    // §15c (drawing board, 2026-08-06): the live fabric is a DERIVATION — cadastre first (the
-    // physical ground fact), then the applied formations in order, each cutting what stands.
-    // Every change operation (a road edit, an unapply, a severance destroy) flips the records
-    // and calls THIS: reset the derived fabric to pristine cadastre, then replay the applied
-    // list through the ordinary apply layer. Nothing is ever "restored" — a cadastral parcel
+    // Canonical boot/recovery derivation: cadastre first (the physical ground fact), then every
+    // standing formation in order, each cutting what stands. Ordinary mutations do not call this;
+    // they rederive only their flat cadastral anchors. Nothing is ever "restored" from a historical
+    // parent — a cadastral parcel
     // simply shows wherever no formation claims it, and a road's own remainders tile
     // parent-minus-corridor by construction. Identity stays stable because connected pieces are
     // sorted geometrically and numbered afresh from one for each proposal on every replay.
@@ -950,11 +950,13 @@ const ProposalManager = {
         return { baseParcelIds: Array.from(ids), complete };
     },
 
-    // Re-materialise exactly one connected component of the flat
-    //     original cadastral parcel <-> standing proposal
-    // graph. All generated parcel layers in that component are discarded and replayed from the
-    // original cadastre in immutable proposal order. No generated parent is revealed or reused as
-    // history; it is merely a transient input while this fold is running.
+    // Re-materialise only the authored records named by this mutation, over only the original
+    // cadastral parcels under their old/new footprints.
+    //
+    // A cadastral id is an anchor, never a dependency edge. In particular, a track sharing one
+    // parcel with a park is consulted as a take on that parcel but does not bring the other 660
+    // parcels along. The full standing plan is replayed only at boot/recovery; ordinary apply/edit
+    // removes seed-owned output, recomputes this parcel set, and applies the standing seed records.
     async rematerializeFlatScope(seedRecords, options = {}) {
         const opts = options || {};
         if (opts._fabricQueue !== true) {
@@ -970,29 +972,17 @@ const ProposalManager = {
         const seeds = (Array.isArray(seedRecords) ? seedRecords : [seedRecords]).filter(Boolean);
         const seedResolution = await this._flatScopeSeeds(seeds, opts.extraBaseParcelIds || []);
         if (!seedResolution.complete) {
-            console.warn('[flat-rematerialize] incomplete cadastral coverage — using canonical full rebuild');
-            const full = await this.rebuildAppliedFabric({ _fabricQueue: true, silent: opts.silent === true });
-            return { ...full, fallback: 'full-rebuild' };
+            console.warn('[flat-rematerialize] incomplete local cadastral coverage — mutation refused');
+            return {
+                ok: false,
+                applied: 0,
+                failed: [{ reason: 'cadastral ground is incomplete' }],
+                baseParcelIds: seedResolution.baseParcelIds,
+                proposalIds: []
+            };
         }
         if (!seedResolution.baseParcelIds.length) {
             return { ok: true, applied: 0, failed: [], baseParcelIds: [], proposalIds: [] };
-        }
-
-        // A standing visual record with no base stamp cannot safely be ruled out of this component.
-        // Canonical replay will resolve and stamp it; guessing would silently drop its output.
-        const standingBefore = this._orderedStandingProposals();
-        const unanchored = standingBefore.filter(record => {
-            if (proposalClaims.baseParcelIdsOf(record).length) return false;
-            try {
-                const order = (typeof window !== 'undefined') ? window.__planOrder : null;
-                return !!(order && typeof order.footprintOf === 'function' && order.footprintOf(record));
-            } catch (_) { return false; }
-        });
-        if (unanchored.length) {
-            console.warn('[flat-rematerialize] standing proposal lacks flat cadastral anchors — using canonical full rebuild',
-                unanchored.map(record => String(record.proposalId)));
-            const full = await this.rebuildAppliedFabric({ _fabricQueue: true, silent: opts.silent === true });
-            return { ...full, fallback: 'full-rebuild' };
         }
 
         this._rebuildInProgress = true;
@@ -1002,49 +992,109 @@ const ProposalManager = {
             && typeof proposalStorage.endBatch === 'function';
         if (hasStorageBatch) proposalStorage.beginBatch();
         try {
-            const baseIds = new Set(seedResolution.baseParcelIds);
-            const seedProposalIds = new Set(seeds
-                .map(record => record && record.proposalId)
-                .filter(value => value !== undefined && value !== null)
-                .map(String));
-            let summary = { ok: true, applied: 0, failed: [] };
-            let component = { baseParcelIds: Array.from(baseIds), proposals: [] };
-            const maxPasses = Math.max(2, standingBefore.length + 1);
-            const runPasses = async () => {
-                for (let pass = 0; pass < maxPasses; pass += 1) {
-                    const standing = this._orderedStandingProposals();
-                    component = proposalClaims.connectedComponent(Array.from(baseIds), standing);
-                    component.baseParcelIds.forEach(id => baseIds.add(id));
-                    const componentIds = new Set(component.proposals.map(record => String(record.proposalId)));
-                    const recordsToClear = [
-                        ...component.proposals,
-                        ...seeds.filter(record => !componentIds.has(String(record.proposalId || '')))
-                    ];
-                    this._severedThisRebuild = [];
-                    this._replayInvalidated = false;
-                    summary = await this._rebuildPass(component.proposals, {
-                        ...opts,
-                        baseParcelIds: Array.from(baseIds),
-                        corridorTakes: this._appliedCorridorTakes(standing),
-                        resetProposalIds: Array.from(new Set([...componentIds, ...seedProposalIds])),
-                        recordsToClear
-                    });
-                    if (summary.failed.length || (!this._severedThisRebuild.length && !this._replayInvalidated)) break;
-                }
-            };
-            const holdBuildings = (typeof window !== 'undefined') ? window.withProposedBuildingsRefreshHeld : null;
-            const holdStructures = (typeof window !== 'undefined') ? window.withStructureLayersRefreshHeld : null;
-            const withStructures = () => typeof holdStructures === 'function' ? holdStructures(runPasses) : runPasses();
-            if (typeof holdBuildings === 'function') await holdBuildings(withStructures);
-            else await withStructures();
+            const baseParcelIds = Array.from(new Set(seedResolution.baseParcelIds.map(String).filter(Boolean)));
+            const seedById = new Map();
+            seeds.forEach(seed => {
+                const id = seed && seed.proposalId;
+                if (id === undefined || id === null || !String(id)) return;
+                const key = String(id);
+                const live = _getProposalRecord(key);
+                // Geometry-only old-footprint seeds are not authored records and own no output.
+                if (!live && key.startsWith('old-footprint-')) return;
+                if (!seedById.has(key)) seedById.set(key, live || seed);
+            });
 
-            try { if (typeof refreshAppliedCorridorStrips === 'function') refreshAppliedCorridorStrips(); } catch (_) { }
+            const replay = [];
+            const replayStamps = new Map();
+            seedById.forEach((record, id) => {
+                const live = _getProposalRecord(id) || record;
+                const goalKey = (applyRoute && typeof applyRoute.normalizeGoalKey === 'function')
+                    ? applyRoute.normalizeGoalKey(live.goal)
+                    : String(live.goal || '');
+                if (!appliedOf(live) || goalKey === 'road-track') return;
+                replayStamps.set(id, {
+                    hadAppliedAt: Object.prototype.hasOwnProperty.call(live, 'appliedAt'),
+                    appliedAt: live.appliedAt,
+                    hadUpdatedAt: Object.prototype.hasOwnProperty.call(live, 'updatedAt'),
+                    updatedAt: live.updatedAt
+                });
+                replay.push(live);
+            });
+            const order = (typeof window !== 'undefined') ? window.__planOrder : null;
+            const orderedReplay = order && typeof order.orderFormations === 'function'
+                ? order.orderFormations(replay)
+                : replay;
+
+            // Capture standing state before output cleanup clears derived record fields.
+            orderedReplay.forEach(record => {
+                try { setProposalApplied(record, false, { stamp: false }); } catch (_) { record.applied = false; }
+            });
+            const removedOutputs = [];
+            seedById.forEach(record => removedOutputs.push(this._removeProposalOwnedOutput(record)));
+
+            const fabric = await this._deriveCorridorFabric({
+                parcelIds: baseParcelIds,
+                takes: this._appliedCorridorTakes()
+            });
+            const failed = [];
+            if (fabric && Array.isArray(fabric.failed)) {
+                fabric.failed.forEach(entry => failed.push({
+                    proposalId: null,
+                    title: entry.parcelId || 'Cadastral parcel',
+                    reason: entry.error || 'corridor arrangement failed'
+                }));
+            }
+
+            let appliedCount = 0;
+            if (!failed.length) {
+                for (const record of orderedReplay) {
+                    const id = String(record.proposalId || '');
+                    let stood = false;
+                    try {
+                        stood = await this.applyProposal(id, {
+                            replay: true,
+                            deferPresentation: opts.silent === true
+                        });
+                    } catch (error) {
+                        failed.push({
+                            proposalId: id,
+                            title: record.title || record.name || id,
+                            reason: String(error && error.message || error)
+                        });
+                    }
+                    if (!stood) {
+                        if (!failed.some(entry => String(entry.proposalId || '') === id)) {
+                            const failure = this.getLastApplyFailure?.(id);
+                            failed.push({
+                                proposalId: id,
+                                title: record.title || record.name || id,
+                                reason: failure?.message || 'proposal could not be materialized locally'
+                            });
+                        }
+                        continue;
+                    }
+                    const stamp = replayStamps.get(id);
+                    if (stamp) {
+                        if (stamp.hadAppliedAt) record.appliedAt = stamp.appliedAt;
+                        else delete record.appliedAt;
+                        if (stamp.hadUpdatedAt) record.updatedAt = stamp.updatedAt;
+                        else delete record.updatedAt;
+                    }
+                    appliedCount += 1;
+                }
+            }
+
+            if (!failed.length) removedOutputs.forEach(output => this._commitRemovedProposalOutput(output));
+            try { if (typeof scheduleCorridorStripRefresh === 'function') scheduleCorridorStripRefresh(); } catch (_) { }
             try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
             try { if (typeof proposalStorage !== 'undefined' && proposalStorage.save) proposalStorage.save(); } catch (_) { }
             return {
-                ...summary,
-                baseParcelIds: Array.from(baseIds),
-                proposalIds: component.proposals.map(record => String(record.proposalId))
+                ok: failed.length === 0,
+                applied: appliedCount,
+                failed,
+                fabric,
+                baseParcelIds,
+                proposalIds: orderedReplay.map(record => String(record.proposalId))
             };
         } finally {
             this._rebuildInProgress = false;
@@ -1712,8 +1762,151 @@ const ProposalManager = {
         return claimed;
     },
 
-    // Roll a failed state switch back, then rematerialise the same flat component from the restored
-    // records. There is no per-type undo and no generated parent to reveal.
+    // Remove exactly the disposable output authored by ONE proposal.
+    //
+    // Cadastral ids are durable anchors, not dependency edges. Sharing one of those anchors with
+    // a long corridor does not make every proposal along that corridor part of this mutation. The
+    // producer stamp written by _assignSyntheticChildIdentities is the complete ownership boundary
+    // for generated parcels; presentation collections carry the same proposalId boundary.
+    //
+    // Persistent cleanup is returned to the caller and committed only after local ground
+    // derivation succeeds. A failed clip can therefore roll the transaction's map/cache snapshot
+    // back without discovering that the parcel records were already destroyed underneath it.
+    _removeProposalOwnedOutput(record) {
+        const browserRoot = (typeof window !== 'undefined') ? window : globalThis;
+        if (!record) return { proposalId: '', removedParcelIds: [], ownership: new Map() };
+        const proposalId = String(record.proposalId || '');
+        if (!proposalId) return { proposalId: '', removedParcelIds: [], ownership: new Map() };
+
+        const byId = browserRoot.parcelLayerById instanceof Map ? browserRoot.parcelLayerById : null;
+        const removedParcelIds = [];
+        const ownership = new Map();
+        if (byId) {
+            byId.forEach((layer, layerId) => {
+                const id = String(layerId);
+                if (id.indexOf('#') === -1) return; // original cadastre is never proposal output
+                const props = layer?.feature?.properties || {};
+                const producer = String(
+                    props.producedByProposalId
+                    || props.ancestorProposal // one-release compatibility with old cached output
+                    || props.proposalId
+                    || ''
+                );
+                if (producer !== proposalId) return;
+                removedParcelIds.push(id);
+                try {
+                    const owner = (typeof PersistentStorage !== 'undefined')
+                        ? PersistentStorage.getItem(`parcel_${id}_owner`)
+                        : null;
+                    if (owner) ownership.set(id, String(owner));
+                } catch (_) { }
+            });
+
+            removedParcelIds.forEach(id => {
+                try { browserRoot.removeParcelLayerById?.(id); } catch (_) { }
+                try { byId.delete(id); } catch (_) { }
+                try {
+                    const cache = browserRoot.ParcelsState
+                        && typeof browserRoot.ParcelsState.getParcelCache === 'function'
+                        ? browserRoot.ParcelsState.getParcelCache()
+                        : browserRoot.parcelCache;
+                    if (cache && cache.byId instanceof Map) cache.byId.delete(id);
+                } catch (_) { }
+            });
+        }
+
+        const dropAuthored = name => {
+            if (!Array.isArray(browserRoot[name])) return;
+            browserRoot[name] = browserRoot[name].filter(feature => (
+                String(feature?.properties?.proposalId || '') !== proposalId
+            ));
+        };
+        dropAuthored('parks');
+        dropAuthored('squares');
+        dropAuthored('lakes');
+        dropAuthored('transitStations');
+        dropAuthored('proposedBuildings');
+        try { if (typeof proposalFeatureCache !== 'undefined') proposalFeatureCache.clear(); } catch (_) { }
+        try { if (typeof proposalAreaCache !== 'undefined') proposalAreaCache.clear(); } catch (_) { }
+
+        this._clearDerivedRecordState(record);
+        return { proposalId, removedParcelIds, ownership };
+    },
+
+    _commitRemovedProposalOutput(removed) {
+        if (!removed || !removed.proposalId) return;
+        const browserRoot = (typeof window !== 'undefined') ? window : globalThis;
+        (removed.removedParcelIds || []).forEach(id => {
+            try {
+                if (typeof PersistentStorage !== 'undefined') {
+                    PersistentStorage.removeItem(`parcel_${id}_owner`);
+                }
+            } catch (_) { }
+            try { if (typeof clearPersistedParcelRecord === 'function') clearPersistedParcelRecord(id); } catch (_) { }
+        });
+        const affectedAgents = new Set(Array.from((removed.ownership || new Map()).values()));
+        affectedAgents.forEach(agentId => {
+            try { if (typeof updateAgentOwnedParcels === 'function') updateAgentOwnedParcels(agentId); } catch (_) { }
+        });
+        try {
+            if (typeof PersistentStorage !== 'undefined') {
+                if (Array.isArray(browserRoot.parks)) PersistentStorage.setItem('cb_parks', JSON.stringify(browserRoot.parks));
+                if (Array.isArray(browserRoot.squares)) PersistentStorage.setItem('cb_squares', JSON.stringify(browserRoot.squares));
+                if (Array.isArray(browserRoot.lakes)) PersistentStorage.setItem('cb_lakes', JSON.stringify(browserRoot.lakes));
+                if (Array.isArray(browserRoot.transitStations)) {
+                    PersistentStorage.setItem('cb_transit_stations', JSON.stringify(browserRoot.transitStations));
+                }
+            }
+        } catch (_) { }
+    },
+
+    // Release one proposal from its flat cadastral anchors. The only derived fabric recomputed is
+    // the arrangement of those original parcels against the corridor takes that still stand.
+    // Other proposals are neither reset nor re-applied, even when a corridor shares one anchor and
+    // continues through hundreds of parcels elsewhere.
+    async _releaseProposalLocally(record, options = {}) {
+        if (!record) return { ok: false, failed: [{ reason: 'missing proposal record' }] };
+        const resolved = options.scope || await this._flatScopeSeeds([record]);
+        if (!resolved || resolved.complete !== true) {
+            return { ok: false, failed: [{ reason: 'cadastral ground is incomplete' }] };
+        }
+        const baseParcelIds = Array.from(new Set((resolved.baseParcelIds || []).map(String).filter(Boolean)));
+        const removed = this._removeProposalOwnedOutput(record);
+        let fabric = { added: 0, removed: 0, unchanged: 0, parcels: 0, parcelIds: [], failed: [] };
+        if (baseParcelIds.length) {
+            fabric = await this._deriveCorridorFabric({
+                parcelIds: baseParcelIds,
+                takes: this._appliedCorridorTakes()
+            });
+        }
+        if (fabric && Array.isArray(fabric.failed) && fabric.failed.length) {
+            return { ok: false, failed: fabric.failed, baseParcelIds, removed };
+        }
+
+        // _deriveCorridorFabric normally performs this visibility reconciliation. Keep it explicit
+        // for content-only records and test/minimal runtimes where the arrangement engine is not
+        // installed: ground is visible exactly when no live generated output claims its base id.
+        const browserRoot = (typeof window !== 'undefined') ? window : globalThis;
+        const claimed = this._parcelsClaimedByDerivedGround();
+        baseParcelIds.forEach(id => {
+            try {
+                if (claimed.has(String(id))) browserRoot.hideParcelLayerById?.(String(id));
+                else browserRoot.showParcelLayerById?.(String(id));
+            } catch (_) { }
+        });
+
+        const commitOutput = () => this._commitRemovedProposalOutput(removed);
+        const transaction = options._mutationTransaction;
+        if (proposalMutationTransactions.isActiveTransaction(transaction)) {
+            transaction.deferCommit(`remove output for ${removed.proposalId}`, commitOutput);
+        } else {
+            commitOutput();
+        }
+        return { ok: true, baseParcelIds, removedParcelIds: removed.removedParcelIds, fabric };
+    },
+
+    // Roll a failed state switch back, then rematerialise only the explicitly restored records over
+    // their old/new cadastral anchors. There is no generated parent to reveal.
     async _restoreAfterFailedApply(proposalId, proposal, switchedAlternatives, restorePreApplyState) {
         restorePreApplyState();
         await this.rematerializeFlatScope([
@@ -1722,7 +1915,7 @@ const ProposalManager = {
         ], { _fabricQueue: true });
     },
 
-    // Materialise a new or edited record through the same flat component replay as unapply.
+    // Materialise a new or edited record over only its old/new flat cadastral anchors.
     async deriveForNewProposal(proposal, options = {}) {
         if (!proposal) return null;
         if (options._fabricQueue !== true) {
@@ -1756,7 +1949,14 @@ const ProposalManager = {
             proposalId: `old-footprint-${index}`,
             geometry: footprint.geometry
         }));
-        const summary = await this.rematerializeFlatScope([proposal, ...oldFootprintSeeds], {
+        // Alternatives were parked as record-state changes above. Name the records as seeds so
+        // their proposal-owned output is removed; their flat anchors stay local and no other
+        // proposal sharing those anchors is pulled into the operation.
+        const supersededRecords = (Array.isArray(options.supersededRecords)
+            ? options.supersededRecords
+            : []).filter(Boolean);
+        const localSeeds = [proposal, ...supersededRecords, ...oldFootprintSeeds];
+        const summary = await this.rematerializeFlatScope(localSeeds, {
             _fabricQueue: true,
             silent: options.silent === true
         });
@@ -1765,7 +1965,7 @@ const ProposalManager = {
             || (Array.isArray(summary.failed) && summary.failed.some(entry => String(entry.proposalId) === key));
         if (targetFailed) {
             try { setProposalApplied(proposal, false, { stamp: false }); } catch (_) { proposal.applied = false; }
-            await this.rematerializeFlatScope([proposal, ...oldFootprintSeeds], {
+            await this.rematerializeFlatScope(localSeeds, {
                 _fabricQueue: true,
                 silent: true
             });
@@ -1815,7 +2015,7 @@ const ProposalManager = {
                 });
                 if (!derived || derived.ok !== true) {
                     throw new Error((derived && derived.failed && derived.failed[0] && derived.failed[0].reason)
-                        || 'The corridor component could not be derived.');
+                        || 'The corridor ground could not be derived locally.');
                 }
                 try {
                     const browserRoot = (typeof window !== 'undefined') ? window : globalThis;
@@ -1828,7 +2028,7 @@ const ProposalManager = {
                     ok: true,
                     appliedIds: records.map(record => String(record.proposalId)),
                     failedIds: [],
-                    component: derived
+                    scope: derived
                 };
             } catch (error) {
                 records.forEach(record => {
@@ -1859,10 +2059,10 @@ const ProposalManager = {
         });
     },
 
-    // Decide which standing records a corridor cut invalidates before the ordinary replay fold.
-    // This changes record state only. Presentation and parcel output were already cleared by the
-    // component reset, so the next pass simply omits these records; there is no nested unapply and
-    // no second materializer racing the replay.
+    // Decide which standing records a corridor cut invalidates during the canonical boot/recovery
+    // replay. This changes record state only. Presentation and parcel output were already cleared
+    // by that replay's complete reset, so its next pass simply omits these records; there is no
+    // nested unapply and no second materializer racing the replay.
     _parkRecordsInvalidatedByCorridors(parcelIds, candidateRecords) {
         const browserRoot = (typeof window !== 'undefined') ? window : globalThis;
         const planOrderApi = browserRoot.__planOrder;
@@ -2458,7 +2658,7 @@ const ProposalManager = {
             writePersistedParcelRecord(idStr, rec => {
                 rec.geometry = JSON.parse(JSON.stringify(feature.geometry));
                 rec.properties = { ...feature.properties };
-                // Visibility is regenerated by the flat component replay, not persisted lineage.
+                // Visibility is regenerated from live proposal-owned output, not persisted lineage.
             });
         }
     },
@@ -2761,7 +2961,8 @@ const ProposalManager = {
                     // enqueueing behind the operation it is part of.
                     const derived = await this.deriveForNewProposal(proposal, {
                         _fabricQueue: true,
-                        supersededFootprints: parkedFootprints
+                        supersededFootprints: parkedFootprints,
+                        supersededRecords: switchedAlternatives
                     });
                     const refreshed = _getProposalRecord(proposalId) || proposal;
                     const standing = !!derived && ((typeof isProposalCurrentlyApplied === 'function')
@@ -2841,9 +3042,9 @@ const ProposalManager = {
 
         result = await _runProposalApplyWithSummary(safeId, proposalData, async () => {
             if (route === 'road-track') {
-                // During a replay corridors were already folded together by _rebuildPass. A direct
-                // low-level call still uses the same flat-component materializer; there is no second
-                // corridor-specific apply algorithm.
+                // During boot replay corridors were already folded together by _rebuildPass. A
+                // direct low-level call derives only this road's flat cadastral scope against the
+                // complete standing take set.
                 try { setProposalApplied(proposalData, true, { stamp: false }); } catch (_) { proposalData.applied = true; }
                 if (this._rebuildInProgress) return true;
                 const derived = await this.rematerializeFlatScope([proposalData]);
@@ -2898,43 +3099,33 @@ const ProposalManager = {
         const suppliedTransaction = proposalMutationTransactions.isActiveTransaction(options._mutationTransaction);
         if (!suppliedTransaction && options.skipRebuild !== true && !this._rebuildInProgress) {
             return this._enqueueFabricChange(async () => {
-                const before = (typeof proposalStorage !== 'undefined' && proposalStorage.proposals instanceof Map)
-                    ? proposalMutationTransactions.snapshotRecordMap(proposalStorage.proposals)
-                    : null;
                 const seed = _getProposalRecord(proposalId);
+                if (!seed) return false;
+
+                // Ground discovery is the only read that may need the server, and it happens before
+                // any state or layer changes. In the normal case loadedCadastreCoverage proves the
+                // proposal's few anchors are already present and this resolves without a request.
+                const scope = await this._flatScopeSeeds([seed]);
+                if (!scope.complete) {
+                    console.warn('[unapplyProposal] local cadastral ground is incomplete; leaving the proposal applied');
+                    return false;
+                }
                 const result = await _runProposalMutationBoundary(
                     this,
-                    'unapply-state',
+                    'unapply-local',
                     proposalId,
                     options,
-                    (_transaction, transactionOptions) => this._unapplyProposalTransactionBody(proposalId, transactionOptions)
+                    async (transaction, transactionOptions) => {
+                        const changed = await this._unapplyProposalTransactionBody(proposalId, transactionOptions);
+                        if (changed !== true) return changed;
+                        const released = await this._releaseProposalLocally(seed, {
+                            scope,
+                            _mutationTransaction: transaction
+                        });
+                        return released && released.ok === true;
+                    }
                 );
                 if (result === true) {
-                    let derived = null;
-                    try {
-                        derived = await this.rematerializeFlatScope([seed || _getProposalRecord(proposalId)], {
-                            _fabricQueue: true
-                        });
-                    } catch (error) {
-                        console.error('[unapplyProposal] flat rematerialization failed', error);
-                    }
-                    if (!derived || derived.ok !== true) {
-                        if (before && proposalStorage.proposals instanceof Map) {
-                            proposalMutationTransactions.restoreRecordMap(proposalStorage.proposals, before);
-                            proposalStorage.save?.();
-                        }
-                        const restored = _getProposalRecord(proposalId) || seed;
-                        try {
-                            const rollback = await this.rematerializeFlatScope([restored], { _fabricQueue: true, silent: true });
-                            if (!rollback || rollback.ok !== true) {
-                                await this.rebuildAppliedFabric({ _fabricQueue: true, silent: true });
-                            }
-                        } catch (rollbackError) {
-                            console.error('[unapplyProposal] could not restore the pre-unapply fabric', rollbackError);
-                        }
-                        this._refreshUIAfterProposalChange(restored);
-                        return false;
-                    }
                     this._refreshUIAfterProposalChange(_getProposalRecord(proposalId));
                 }
                 return result;
@@ -2965,8 +3156,9 @@ const ProposalManager = {
         if (!supported) return false;
         if (!appliedOf(proposalData)) return true;
 
-        // Unapply is only a record-state change. The following rebuild removes every derived
-        // layer and starts from cadastre; there is no per-type reversal or restore algorithm.
+        // The outer direct-unapply path removes this record's proposal-owned output and re-derives
+        // only these flat cadastral anchors. Nested/replay callers intentionally perform the state
+        // change alone because their enclosing materialization owns the map mutation.
         this._clearDerivedRecordState(proposalData);
         setProposalApplied(proposalData, false, { stamp: false });
         proposalStorage._indexProposal?.(proposalData);
@@ -3057,28 +3249,30 @@ const ProposalManager = {
         if (!proposalData) return false;
         const title = proposalData.title || proposalData.name || 'Proposal';
         const wasApplied = appliedOf(proposalData);
-        const before = proposalStorage.proposals instanceof Map
-            ? proposalMutationTransactions.snapshotRecordMap(proposalStorage.proposals)
-            : null;
+        const scope = wasApplied && !this._rebuildInProgress
+            ? await this._flatScopeSeeds([proposalData])
+            : { complete: true, baseParcelIds: [] };
+        if (!scope.complete) return false;
 
-        // Deleting a record has the same fabric semantics as unapplying it: its payload comes off
-        // the map and the ground it held is derived again without it. There is no descendant family.
-        proposalStorage.removeProposal(proposalId);
-        if (wasApplied && !this._rebuildInProgress) {
-            try {
-                const derived = await this.rematerializeFlatScope([proposalData], { _fabricQueue: true });
-                if (!derived || derived.ok !== true) throw new Error('flat rematerialization refused');
+        // Delete is the same local mutation as unapply, followed by removing the authored record.
+        // Keep both inside one transaction so a failed local clip restores record, layers, caches,
+        // and presentation collections without a whole-plan replay.
+        const deleted = await _runProposalMutationBoundary(
+            this,
+            'delete-local',
+            proposalId,
+            options,
+            async transaction => {
+                proposalStorage.removeProposal(proposalId);
+                if (!wasApplied || this._rebuildInProgress) return true;
+                const released = await this._releaseProposalLocally(proposalData, {
+                    scope,
+                    _mutationTransaction: transaction
+                });
+                return released && released.ok === true;
             }
-            catch (error) {
-                console.error('[deleteProposal] could not release the deleted record\'s ground', error);
-                if (before && proposalStorage.proposals instanceof Map) {
-                    proposalMutationTransactions.restoreRecordMap(proposalStorage.proposals, before);
-                    proposalStorage.save?.();
-                    try { await this.rematerializeFlatScope([_getProposalRecord(proposalId)], { _fabricQueue: true, silent: true }); } catch (_) { }
-                }
-                return false;
-            }
-        }
+        );
+        if (deleted !== true) return false;
         try {
             if (window.currentlyHighlightedProposalId
                 && String(window.currentlyHighlightedProposalId) === String(proposalId)) {

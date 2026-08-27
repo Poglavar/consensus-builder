@@ -294,7 +294,7 @@ describe('when the footprint question cannot be asked', () => {
 });
 
 describe('a shared corridor package materialises as one cadastral mutation', () => {
-    it('marks every road first and rematerialises their flat component once', async () => {
+    it('marks every road first and rematerialises their combined local ground once', async () => {
         const roadA = member(0);
         const roadB = member(1);
         installGlobal('turf', turf);

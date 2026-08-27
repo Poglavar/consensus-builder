@@ -1,6 +1,6 @@
-// Corridor cuts invalidate records inside the same cadastral-component replay. The decision parks
-// authored records only; the reset has already discarded presentation/generated output, and the
-// next pass simply omits the parked members.
+// During canonical boot/recovery replay, corridor cuts invalidate only records whose authored
+// geometry no longer fits the resulting live pieces. The decision itself changes record state;
+// replay's complete reset already removed disposable presentation and parcel output.
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 

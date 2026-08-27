@@ -9,7 +9,7 @@ land they affect by pointing at parcels that only exist in one browser's memory.
 
 ---
 
-## 0. Current architecture: flat cadastral components
+## 0. Current architecture: flat cadastral anchors and proposal-owned output
 
 Implemented 2026-08-27. Durable land state has only two kinds of entity:
 
@@ -38,18 +38,28 @@ flowchart LR
     class O1,O2,O3 output
 ```
 
-Applying, unapplying, editing, or deleting a proposal follows one materialization path:
+The relationships are deliberately **not** a dependency graph. A proposal that names cadastral
+parcel A and a 17 km track that also crosses A do not become transitive dependencies. Cadastral IDs
+answer “which original ground is under this proposal?”; they do not answer “what must be replayed?”.
 
-1. resolve the changed record's geometry to original cadastral IDs;
-2. find the transitive connected component in the flat
-   `cadastral parcel <-> standing proposal` graph;
-3. purge every generated layer in that component and reveal its cadastral ground;
-4. derive corridor fabric from cadastral geometry and authored corridor takes;
-5. replay the component's authored records in immutable creation order.
+Ordinary unapply and delete are local mutations:
 
-The scoped path and the full boot rebuild call the same replay pass. If complete cadastral coverage
-cannot be proved, the scoped path falls back to the canonical full rebuild; it never guesses through
-a generated predecessor.
+1. prove the changed record's original cadastral anchors are loaded (fetch only its footprint when
+   they are not);
+2. remove generated parcels and presentation features owned by that record's
+   `producedByProposalId`;
+3. re-derive corridor arrangement only for those cadastral anchors, using the corridor takes that
+   still stand;
+4. reconcile visibility: an original cadastral layer is shown exactly when no live derived output
+   claims it.
+
+No other proposal is reset or re-applied. A corridor may be consulted as a geometric take over one
+affected parcel, but its hundreds of other cadastral anchors are outside the mutation. If local
+coverage or clipping cannot be proved, the transaction rolls back and leaves the proposal applied;
+ordinary unapply never escalates to a whole-plan rebuild.
+
+The full replay remains a boot/recovery materializer: it discards disposable output and derives all
+standing authored records from cadastre. It is not the implementation of a local removal.
 
 Runtime output can carry `producedByProposalId` for click routing and ownership presentation. This is
 one-hop provenance only. It is not an ancestry edge, does not affect replay scope or order, and new
@@ -57,8 +67,11 @@ output never writes the legacy `ancestorProposal` key.
 
 The contract is enforced in:
 
-- `frontend/js/proposals/claims.js` — flat anchors and connected components;
-- `frontend/js/proposal-manager.js` — the sole component materializer;
+- `frontend/js/proposals/claims.js` — flat anchor projection and claim dossiers;
+- `frontend/js/proposal-manager.js` — proposal-owned removal and per-cadastral-parcel corridor
+  derivation;
+- `frontend/js/proposals/apply/transaction.js` — atomic rollback of record, parcel, cache, and
+  presentation state;
 - `frontend/js/proposals/data.js` — authored-log persistence projection;
 - `frontend/js/proposal-editor-adapters.js` — base IDs resolved to current live pieces at edit time.
 

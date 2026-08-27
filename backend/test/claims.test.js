@@ -57,31 +57,6 @@ describe('baseParcelIdsOf', () => {
     });
 });
 
-describe('connectedComponent', () => {
-    it('closes transitively over only flat cadastral anchors', () => {
-        const proposals = [
-            { proposalId: 'ab', applied: true, cadastreParcelIds: ['A', 'B'] },
-            { proposalId: 'bc', applied: true, cadastreParcelIds: ['B', 'C'] },
-            { proposalId: 'd', applied: true, cadastreParcelIds: ['D'] },
-            { proposalId: 'parked', applied: false, cadastreParcelIds: ['C', 'E'] }
-        ];
-        const component = claims.connectedComponent(['A#old-1'], proposals, {
-            include: proposal => proposal.applied === true
-        });
-        expect(component.baseParcelIds).toEqual(['A', 'B', 'C']);
-        expect(component.proposals.map(proposal => proposal.proposalId)).toEqual(['ab', 'bc']);
-    });
-
-    it('does not use transient child ids as graph edges', () => {
-        const component = claims.connectedComponent(['A'], [
-            { proposalId: 'a', applied: true, cadastreParcelIds: ['A'], childParcelIds: ['D#child-1'] },
-            { proposalId: 'd', applied: true, cadastreParcelIds: ['D'] }
-        ]);
-        expect(component.baseParcelIds).toEqual(['A']);
-        expect(component.proposals.map(proposal => proposal.proposalId)).toEqual(['a']);
-    });
-});
-
 describe('dossierFor', () => {
     const proposals = [
         { proposalId: 'p-road', title: 'Road X', goal: 'road-track', applied: true, cadastreParcelIds: ['HR-1-100', 'HR-1-101'] },

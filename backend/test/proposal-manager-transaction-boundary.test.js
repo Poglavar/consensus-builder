@@ -131,8 +131,8 @@ describe('ProposalManager mutation boundary', () => {
 
         await expect(ProposalManager.applyProposal('target')).resolves.toBe(false);
 
-        // One attempted target derivation, then one cadastre-first component replay after the
-        // authored record map is restored. There is no payload undo or per-alternative restore.
+        // One attempted target derivation, then one local old/new-ground derivation after the
+        // authored record map is restored.
         expect(targetDerivations).toBe(1);
         expect(componentRestores).toBe(1);
         expect(store.getProposal('target')).toEqual({ proposalId: 'target', applied: false, value: 'before' });

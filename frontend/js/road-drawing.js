@@ -1045,8 +1045,8 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
         });
         proposalStorage.save?.();
 
-        // Old and new footprints seed one flat cadastral component. The replay throws away every
-        // generated parcel in that component and folds the standing records once, in plan order.
+        // Old and new footprints provide the exact local cadastral scope. Only the edited road's
+        // output is discarded; corridor arrangement is recomputed on those parcels and nowhere else.
         if (sourceWasApplied) {
             const editedRecords = [sourceKey, ...extraStretchIds]
                 .map(id => proposalStorage.getProposal(id))

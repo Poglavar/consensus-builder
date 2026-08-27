@@ -87,10 +87,12 @@ describe('transaction snapshots', () => {
         expect(records.has('p-2')).toBe(false);
     });
 
-    it('restores the parcel index and visible layer membership', () => {
+    it('restores the parcel index, cache, proposal collections, and visible layer membership', () => {
         const parent = { id: 'parent' };
         const child = { id: 'child' };
         const extra = { id: 'extra' };
+        const park = { properties: { proposalId: 'park' } };
+        const parcelCache = { byId: new Map([['parent', parent], ['child', child]]) };
         const layers = [parent];
         const group = {
             getLayers: () => layers.slice(),
@@ -103,7 +105,13 @@ describe('transaction snapshots', () => {
         };
         const browserRoot = {
             parcelLayer: group,
-            parcelLayerById: new Map([['parent', parent], ['child', child]])
+            parcelLayerById: new Map([['parent', parent], ['child', child]]),
+            ParcelsState: { getParcelCache: () => parcelCache },
+            parks: [park],
+            squares: [],
+            lakes: [],
+            transitStations: [],
+            proposedBuildings: []
         };
         const snapshot = transactions.snapshotParcelPresentation(browserRoot);
 
@@ -111,6 +119,9 @@ describe('transaction snapshots', () => {
         group.addLayer(extra);
         browserRoot.parcelLayerById.delete('parent');
         browserRoot.parcelLayerById.set('extra', extra);
+        parcelCache.byId.delete('parent');
+        parcelCache.byId.set('extra', extra);
+        browserRoot.parks = [];
 
         expect(transactions.restoreParcelPresentation(browserRoot, snapshot)).toBe(true);
         expect(layers).toEqual([parent]);
@@ -118,5 +129,10 @@ describe('transaction snapshots', () => {
             ['parent', parent],
             ['child', child]
         ]);
+        expect(Array.from(parcelCache.byId.entries())).toEqual([
+            ['parent', parent],
+            ['child', child]
+        ]);
+        expect(browserRoot.parks).toEqual([park]);
     });
 });
