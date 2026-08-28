@@ -950,13 +950,58 @@ const ProposalManager = {
         return { baseParcelIds: Array.from(ids), complete };
     },
 
-    // Re-materialise only the authored records named by this mutation, over only the original
-    // cadastral parcels under their old/new footprints.
+    // Corridors are geometric takes over whatever current cadastral ground exists; they are not
+    // formations that require every square metre of their authored ribbon to have a parcel host.
+    // A bridge, shoreline road, cadastral gap, or superseded parcel can therefore leave legitimate
+    // uncovered ribbon. Load the footprint, then scope the mutation to the union of its published
+    // flat anchors and the current cadastral parcels the loaded geometry actually reaches. Coverage
+    // is intentionally not a validity gate here.
+    async _corridorScopeSeeds(records, extraBaseParcelIds = []) {
+        const members = (Array.isArray(records) ? records : []).filter(Boolean);
+        if (members.length) await this._loadReplayGround(members);
+        const ids = new Set(proposalClaims.baseParcelIdsOf({ cadastreParcelIds: extraBaseParcelIds }));
+        const browserRoot = (typeof window !== 'undefined') ? window : globalThis;
+        const ancestry = browserRoot.__cadastreAncestry;
+
+        members.forEach(record => {
+            proposalClaims.baseParcelIdsOf(record).forEach(id => ids.add(String(id)));
+            if (!ancestry || typeof ancestry.loadedCadastreCoverage !== 'function') return;
+            let resolved = null;
+            try { resolved = ancestry.loadedCadastreCoverage(record); } catch (_) { resolved = null; }
+            const currentIds = Array.isArray(resolved && resolved.ids) ? resolved.ids : [];
+            proposalClaims.baseParcelIdsOf({ cadastreParcelIds: currentIds })
+                .forEach(id => ids.add(String(id)));
+        });
+
+        return { baseParcelIds: Array.from(ids), complete: true };
+    },
+
+    // Corridor mutations share the resolved-scope materializer (owned-output removal,
+    // per-cadastral-parcel arrangement, rollback), but use corridor scope semantics above instead
+    // of the strict host-ground proof required by buildings and structures.
+    async rematerializeCorridorScope(seedRecords, options = {}) {
+        const opts = options || {};
+        if (opts._fabricQueue !== true) {
+            return this._enqueueFabricChange(() => this.rematerializeCorridorScope(seedRecords, {
+                ...opts,
+                _fabricQueue: true
+            }));
+        }
+        if (this._rebuildInProgress) {
+            return { ok: false, reentered: true, failed: [] };
+        }
+        const seeds = (Array.isArray(seedRecords) ? seedRecords : [seedRecords]).filter(Boolean);
+        const seedResolution = await this._corridorScopeSeeds(seeds, opts.extraBaseParcelIds || []);
+        return this._rematerializeResolvedScope(seeds, seedResolution, opts);
+    },
+
+    // Re-materialise only the authored non-corridor records named by this mutation, over only the
+    // original cadastral parcels under their old/new footprints.
     //
-    // A cadastral id is an anchor, never a dependency edge. In particular, a track sharing one
-    // parcel with a park is consulted as a take on that parcel but does not bring the other 660
-    // parcels along. The full standing plan is replayed only at boot/recovery; ordinary apply/edit
-    // removes seed-owned output, recomputes this parcel set, and applies the standing seed records.
+    // A cadastral id is an anchor, never a dependency edge. A track sharing one parcel with a park
+    // is consulted as a take on that parcel but does not bring the other 660 parcels along. Corridor
+    // mutations enter through rematerializeCorridorScope because uncovered ribbon is valid; this
+    // strict path refuses a building/structure whose complete host ground cannot be proved.
     async rematerializeFlatScope(seedRecords, options = {}) {
         const opts = options || {};
         if (opts._fabricQueue !== true) {
@@ -981,6 +1026,14 @@ const ProposalManager = {
                 proposalIds: []
             };
         }
+        return this._rematerializeResolvedScope(seeds, seedResolution, opts);
+    },
+
+    // Execute a local mutation after its domain-specific scope resolver has answered. Keeping the
+    // resolver outside this method makes the distinction structural: formations prove complete
+    // host ground; corridors name the current cadastral parcels reached by their geometry.
+    async _rematerializeResolvedScope(seeds, seedResolution, options = {}) {
+        const opts = options || {};
         if (!seedResolution.baseParcelIds.length) {
             return { ok: true, applied: 0, failed: [], baseParcelIds: [], proposalIds: [] };
         }
@@ -1909,13 +1962,21 @@ const ProposalManager = {
     // their old/new cadastral anchors. There is no generated parent to reveal.
     async _restoreAfterFailedApply(proposalId, proposal, switchedAlternatives, restorePreApplyState) {
         restorePreApplyState();
-        await this.rematerializeFlatScope([
+        const seeds = [
             _getProposalRecord(proposalId) || proposal,
             ...(Array.isArray(switchedAlternatives) ? switchedAlternatives : [])
-        ], { _fabricQueue: true });
+        ];
+        const hasCorridor = seeds.some(record => {
+            const goalKey = (applyRoute && typeof applyRoute.normalizeGoalKey === 'function')
+                ? applyRoute.normalizeGoalKey(record && record.goal)
+                : String(record?.goal || '');
+            return goalKey === 'road-track' || !!record?.roadProposal;
+        });
+        const materialize = hasCorridor ? this.rematerializeCorridorScope : this.rematerializeFlatScope;
+        await materialize.call(this, seeds, { _fabricQueue: true });
     },
 
-    // Materialise a new or edited record over only its old/new flat cadastral anchors.
+    // Materialise a new or edited record over only its old/new local cadastral scope.
     async deriveForNewProposal(proposal, options = {}) {
         if (!proposal) return null;
         if (options._fabricQueue !== true) {
@@ -1956,7 +2017,10 @@ const ProposalManager = {
             ? options.supersededRecords
             : []).filter(Boolean);
         const localSeeds = [proposal, ...supersededRecords, ...oldFootprintSeeds];
-        const summary = await this.rematerializeFlatScope(localSeeds, {
+        const materialize = goalKey === 'road-track'
+            ? this.rematerializeCorridorScope
+            : this.rematerializeFlatScope;
+        const summary = await materialize.call(this, localSeeds, {
             _fabricQueue: true,
             silent: options.silent === true
         });
@@ -1965,7 +2029,7 @@ const ProposalManager = {
             || (Array.isArray(summary.failed) && summary.failed.some(entry => String(entry.proposalId) === key));
         if (targetFailed) {
             try { setProposalApplied(proposal, false, { stamp: false }); } catch (_) { proposal.applied = false; }
-            await this.rematerializeFlatScope(localSeeds, {
+            await materialize.call(this, localSeeds, {
                 _fabricQueue: true,
                 silent: true
             });
@@ -2009,7 +2073,7 @@ const ProposalManager = {
                 records.forEach(record => {
                     try { setProposalApplied(record, true); } catch (_) { record.applied = true; }
                 });
-                const derived = await this.rematerializeFlatScope(records, {
+                const derived = await this.rematerializeCorridorScope(records, {
                     _fabricQueue: true,
                     silent: options.deferPresentation === true
                 });
@@ -2046,7 +2110,7 @@ const ProposalManager = {
                         });
                     } catch (_) { }
                 });
-                try { await this.rematerializeFlatScope(records, { _fabricQueue: true, silent: true }); }
+                try { await this.rematerializeCorridorScope(records, { _fabricQueue: true, silent: true }); }
                 catch (rollbackError) { console.error('[materializeCorridorBatch] rollback failed', rollbackError); }
                 try { if (typeof proposalStorage !== 'undefined' && proposalStorage.save) proposalStorage.save(); } catch (_) { }
                 return {
@@ -3043,11 +3107,13 @@ const ProposalManager = {
         result = await _runProposalApplyWithSummary(safeId, proposalData, async () => {
             if (route === 'road-track') {
                 // During boot replay corridors were already folded together by _rebuildPass. A
-                // direct low-level call derives only this road's flat cadastral scope against the
-                // complete standing take set.
+                // direct low-level call derives only this road's local corridor scope against the
+                // complete standing take set. Corridor ribbon may legitimately cross water,
+                // bridges, or cadastral gaps, so it uses the corridor scope resolver rather than
+                // the strict complete-host proof used by buildings and structures.
                 try { setProposalApplied(proposalData, true, { stamp: false }); } catch (_) { proposalData.applied = true; }
                 if (this._rebuildInProgress) return true;
-                const derived = await this.rematerializeFlatScope([proposalData]);
+                const derived = await this.rematerializeCorridorScope([proposalData]);
                 if (derived && derived.ok === true) return true;
                 try { setProposalApplied(proposalData, false, { stamp: false }); } catch (_) { proposalData.applied = false; }
                 const message = 'Cannot apply road: its footprint could not be read.';

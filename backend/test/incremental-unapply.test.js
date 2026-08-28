@@ -482,6 +482,7 @@ describe('flat local materialization', () => {
             _deriveCorridorFabric: derive,
             applyProposal: apply,
             getLastApplyFailure: vi.fn(),
+            _rematerializeResolvedScope: ProposalManager._rematerializeResolvedScope,
             rematerializeFlatScope: ProposalManager.rematerializeFlatScope
         };
 

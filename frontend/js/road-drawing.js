@@ -860,7 +860,7 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
         const restored = restoreRecordSnapshot();
         proposalStorage.save?.();
         try {
-            const rollback = await ProposalManager.rematerializeFlatScope?.([
+            const rollback = await ProposalManager.rematerializeCorridorScope?.([
                 ...(Array.isArray(attemptedSeeds) ? attemptedSeeds : []),
                 sourceBefore,
                 restored
@@ -869,10 +869,7 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
                 silent: true
             });
             if (!rollback || rollback.ok !== true) {
-                await ProposalManager.rebuildAppliedFabric?.({
-                    _fabricQueue: options._fabricQueue === true,
-                    silent: true
-                });
+                throw new Error('The pre-edit corridor scope could not be restored.');
             }
         } catch (restoreError) {
             console.error('[updateLocalCorridorGeometry] could not restore the pre-edit fabric', restoreError);
@@ -914,10 +911,10 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
             }
             proposalStorage.save?.();
             if (sourceWasApplied) {
-                const derived = await ProposalManager.rematerializeFlatScope?.([sourceBefore, sourceProposal], {
+                const derived = await ProposalManager.rematerializeCorridorScope?.([sourceBefore, sourceProposal], {
                     _fabricQueue: options._fabricQueue === true
                 });
-                if (!derived || derived.ok !== true) throw new Error('The erased road component could not be rematerialised.');
+                if (!derived || derived.ok !== true) throw new Error('The erased road scope could not be rematerialised.');
             }
             try { window.ProposalSelection?.clear?.(); } catch (_) { }
             try { if (typeof hideProposalDetailsPanel === 'function') hideProposalDetailsPanel(); } catch (_) { }
@@ -1045,17 +1042,17 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
         });
         proposalStorage.save?.();
 
-        // Old and new footprints provide the exact local cadastral scope. Only the edited road's
-        // output is discarded; corridor arrangement is recomputed on those parcels and nowhere else.
+        // Old and new footprints provide the exact local corridor scope. Only the edited road's
+        // output is discarded; corridor arrangement is recomputed there and nowhere else.
         if (sourceWasApplied) {
             const editedRecords = [sourceKey, ...extraStretchIds]
                 .map(id => proposalStorage.getProposal(id))
                 .filter(Boolean);
-            const derived = await ProposalManager.rematerializeFlatScope?.([sourceBefore, ...editedRecords], {
+            const derived = await ProposalManager.rematerializeCorridorScope?.([sourceBefore, ...editedRecords], {
                 _fabricQueue: options._fabricQueue === true
             });
             if (!derived || derived.ok !== true) {
-                throw new Error('The edited road component could not be rematerialised from the cadastre.');
+                throw new Error('The edited road scope could not be rematerialised from the cadastre.');
             }
         }
 

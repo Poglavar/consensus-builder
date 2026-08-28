@@ -64,7 +64,7 @@ describe('road drawing finalization contract', () => {
         expect(drawingSource).toContain("updateStatus('Wait for the current segment to finish validating.');");
     });
 
-    it('edits the road in place and rematerialises its flat cadastral component', () => {
+    it('edits the road in place and rematerialises only its corridor scope', () => {
         const edit = sourceSection(
             drawingSource,
             'async function runLocalCorridorGeometryUpdate',
@@ -77,9 +77,10 @@ describe('road drawing finalization contract', () => {
         expect(edit).toContain('writeRoadDefinition(sourceProposal, componentDefinitions[0])');
         expect(edit).toContain('detachPublishedIdentity(sourceProposal)');
         expect(edit).not.toContain('makeFreshRoadSnapshot(sourceProposal, componentDefinitions[0]');
-        // Old and new positions seed one local cadastral derivation. There is no generated
-        // predecessor to reveal.
-        expect(edit).toContain('ProposalManager.rematerializeFlatScope?.([sourceBefore, ...editedRecords]');
+        // Old and new positions seed one local corridor derivation. A road need not be a fully
+        // parcel-hosted formation, so it never enters the strict flat-ground resolver.
+        expect(edit).toContain('ProposalManager.rematerializeCorridorScope?.([sourceBefore, ...editedRecords]');
+        expect(edit).not.toContain('ProposalManager.rematerializeFlatScope');
         expect(edit).not.toContain('_undoProposalPayload');
         expect(edit).not.toContain('_releaseUnappliedRecord');
         expect(edit).not.toContain('deriveForNewProposal');
@@ -117,7 +118,8 @@ describe('road drawing finalization contract', () => {
         expect(edit).toContain('transactionApi.snapshotRecordMap(proposalStorage.proposals)');
         expect(edit).toContain('transactionApi.restoreRecordMap(proposalStorage.proposals, recordSnapshot)');
         expect(edit).toContain('rollbackRecordAndFabric(attemptedSeeds)');
-        expect(edit).toContain('ProposalManager.rematerializeFlatScope?.([');
+        expect(edit).toContain('ProposalManager.rematerializeCorridorScope?.([');
+        expect(edit).not.toContain('ProposalManager.rebuildAppliedFabric');
         expect(edit).toContain('_fabricQueue: options._fabricQueue === true');
     });
 

@@ -294,7 +294,7 @@ describe('when the footprint question cannot be asked', () => {
 });
 
 describe('a shared corridor package materialises as one cadastral mutation', () => {
-    it('marks every road first and rematerialises their combined local ground once', async () => {
+    it('marks every road first and rematerialises their combined corridor scope once', async () => {
         const roadA = member(0);
         const roadB = member(1);
         installGlobal('turf', turf);
@@ -319,7 +319,7 @@ describe('a shared corridor package materialises as one cadastral mutation', () 
         const manager = {
             materializeCorridorBatch: ProposalManager.materializeCorridorBatch,
             _enqueueFabricChange: operation => operation(),
-            rematerializeFlatScope: rematerialize,
+            rematerializeCorridorScope: rematerialize,
             _setLastApplyFailure: vi.fn()
         };
 
@@ -334,6 +334,74 @@ describe('a shared corridor package materialises as one cadastral mutation', () 
             _fabricQueue: true,
             silent: false
         });
+    });
+
+    it('does not reject a 131-road batch because its track has only 97.8% cadastral coverage', async () => {
+        const ordinaryRoads = Array.from({ length: 130 }, (_, index) => {
+            const road = member(index);
+            road.cadastreParcelIds = [`HR-ROAD-${index}`];
+            return road;
+        });
+        const publishedTrackIds = Array.from({ length: 661 }, (_, index) => `HR-TRACK-${index}`);
+        const currentTrackIds = publishedTrackIds.slice(0, 649);
+        const track = member(130);
+        track.cadastreParcelIds = publishedTrackIds;
+        const corridorRecords = [...ordinaryRoads, track];
+
+        const records = new Map(corridorRecords.map(record => [record.proposalId, record]));
+        installGlobal('proposalStorage', {
+            getProposal: id => records.get(String(id)) || null,
+            save: vi.fn()
+        });
+        installGlobal('setProposalApplied', (record, applied) => { record.applied = applied === true; });
+        installGlobal('window', {
+            __planOrder: planOrder,
+            __cadastreAncestry: {
+                loadedCadastreCoverage: record => record === track
+                    ? { ids: currentTrackIds, coverage: 0.9777625757001458 }
+                    : { ids: record.cadastreParcelIds, coverage: 1 }
+            },
+            CorridorNetworkNodes: { normalize: vi.fn() }
+        });
+
+        const localMaterialize = vi.fn(async (_records, resolution) => ({
+            ok: resolution?.complete === true,
+            failed: [],
+            baseParcelIds: resolution?.baseParcelIds || []
+        }));
+        const manager = {
+            materializeCorridorBatch: ProposalManager.materializeCorridorBatch,
+            rematerializeCorridorScope: ProposalManager.rematerializeCorridorScope,
+            _corridorScopeSeeds: ProposalManager._corridorScopeSeeds,
+            _loadReplayGround: vi.fn(async () => 0),
+            _rematerializeResolvedScope: localMaterialize,
+            _enqueueFabricChange: operation => operation(),
+            _setLastApplyFailure: vi.fn()
+        };
+
+        const corridorIds = corridorRecords.map(record => record.proposalId);
+        const result = await manager.materializeCorridorBatch(corridorIds);
+
+        expect(result.ok, result.reason).toBe(true);
+        expect(result.appliedIds).toEqual(corridorIds);
+        expect(manager._loadReplayGround).toHaveBeenCalledWith(corridorRecords);
+        expect(localMaterialize).toHaveBeenCalledOnce();
+        const resolution = localMaterialize.mock.calls[0][1];
+        expect(resolution.complete).toBe(true);
+        expect(resolution.baseParcelIds).toHaveLength(791);
+        expect(resolution.baseParcelIds).toContain('HR-ROAD-129');
+        expect(resolution.baseParcelIds).toContain('HR-TRACK-660');
+    });
+
+    it('never routes a corridor batch through the strict host-ground resolver', () => {
+        const batchStart = managerSource.indexOf('async materializeCorridorBatch(');
+        const batch = managerSource.slice(batchStart, managerSource.indexOf('\n    },', batchStart));
+        const scopeStart = managerSource.indexOf('async rematerializeCorridorScope(');
+        const scope = managerSource.slice(scopeStart, managerSource.indexOf('\n    },', scopeStart));
+        expect(batch).toContain('rematerializeCorridorScope');
+        expect(batch).not.toContain('rematerializeFlatScope');
+        expect(scope).toContain('_rematerializeResolvedScope');
+        expect(scope).not.toContain('rematerializeFlatScope');
     });
 });
 

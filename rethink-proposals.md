@@ -58,6 +58,14 @@ affected parcel, but its hundreds of other cadastral anchors are outside the mut
 coverage or clipping cannot be proved, the transaction rolls back and leaves the proposal applied;
 ordinary unapply never escalates to a whole-plan rebuild.
 
+Corridors use a distinct local scope rule because a road ribbon is a **take**, not content requiring
+a complete parcel host. Bridges, shorelines, cadastral gaps, and retired parcel identifiers can
+legitimately leave part of a ribbon outside current cadastre (the Šibenik track is 97.78% covered).
+A corridor mutation therefore uses the union of its published flat anchors and the current loaded
+cadastral parcels its geometry reaches, then derives only those parcels against the standing take
+set. It never turns one member's sub-99.9% footprint coverage into failure of the whole road batch.
+The strict complete-host proof remains for buildings, parks, and other ground-hosted formations.
+
 The full replay remains a boot/recovery materializer: it discards disposable output and derives all
 standing authored records from cadastre. It is not the implementation of a local removal.
 
