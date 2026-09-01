@@ -1970,28 +1970,16 @@
     function findNeighbourPolygonsFromCache(parcelId) {
         if (!parcelId) return [];
         try {
-            // Get the parcel cache (grid of loaded features)
+            // Grid cells remember membership only. CadastralGroundService owns source geometry;
+            // this UI reads the independent presentation copies indexed by parcel id.
             const cache = (global.ParcelsState && typeof global.ParcelsState.getParcelCache === 'function')
                 ? global.ParcelsState.getParcelCache()
                 : global.parcelCache;
-            if (!cache || !cache.grid) return [];
+            if (!cache || !cache.grid || !(cache.byId instanceof Map)) return [];
 
             // Find the target feature
             const targetId = parcelId.toString();
-            let targetFeature = null;
-            if (cache.byId instanceof Map) {
-                targetFeature = cache.byId.get(targetId);
-            }
-            if (!targetFeature) {
-                for (const [, cellData] of cache.grid) {
-                    if (!cellData || !Array.isArray(cellData.features)) continue;
-                    targetFeature = cellData.features.find(f => {
-                        const fId = f?.properties?.parcelId || f?.properties?.BROJ_CESTICE;
-                        return fId && fId.toString() === targetId;
-                    });
-                    if (targetFeature) break;
-                }
-            }
+            const targetFeature = cache.byId.get(targetId) || null;
             if (!targetFeature || !targetFeature.geometry) return [];
 
             // Use turf to find touching/intersecting parcels from loaded cache
@@ -2010,8 +1998,9 @@
             if (!targetBox) return [];
 
             for (const [, cellData] of cache.grid) {
-                if (!cellData || !Array.isArray(cellData.features)) continue;
-                for (const feature of cellData.features) {
+                if (!cellData || !Array.isArray(cellData.ids)) continue;
+                for (const id of cellData.ids) {
+                    const feature = cache.byId.get(String(id));
                     if (!feature || !feature.geometry) continue;
                     const fId = (feature.properties?.parcelId || feature.properties?.BROJ_CESTICE || '').toString();
                     if (!fId || seen.has(fId)) continue;

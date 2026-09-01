@@ -84,6 +84,7 @@ async function drain(promise, state, members) {
 
 function harness() {
     const root = { __planOrder: planOrder, __formationEdit: null };
+    const materialized = new Map();
     installGlobal('window', root);
     installGlobal('getProposalKey', proposal => proposal.proposalId);
     installGlobal('turf', turf);
@@ -103,17 +104,21 @@ function harness() {
                 return globalThis.fetchParcelsByIds(...args);
             }
         },
-        resolveParcelLayerById: id => {
-            if (typeof globalThis.resolveParcelLayerById === 'function') {
-                return globalThis.resolveParcelLayerById(id);
-            }
-            return null;
-        },
-        loadedCoverageOf: proposal => root.__cadastreAncestry?.loadedCadastreCoverage?.(proposal) || null
+        resolveParcelLayerById: id => materialized.get(String(id)) || null,
+        ingestFeatures: async features => features.map(feature => {
+            const id = String(feature?.properties?.parcelId || '');
+            const layer = { feature };
+            if (id) materialized.set(id, layer);
+            return layer;
+        }),
+        convertFeatures: featureCollection => featureCollection
     });
     root.CadastralGroundService = service;
     installGlobal('CadastralGroundService', service);
-    return { _loadReplayGround: ProposalManager._loadReplayGround };
+    return {
+        _loadReplayGround: ProposalManager._loadReplayGround,
+        groundService: service
+    };
 }
 
 describe('the ground for a whole replay is fetched in one request', () => {
@@ -203,14 +208,15 @@ describe('the ground for a whole replay is fetched in one request', () => {
     });
 });
 
-describe('ground already on the map is not fetched again', () => {
-    it('makes no request when loaded cadastre already covers every footprint', async () => {
+describe('ground retained by the service is not fetched again', () => {
+    it('makes no request when retained cadastre already covers every footprint', async () => {
         let calls = 0;
         installGlobal('fetchParcelsUnderGeometry', async () => { calls += 1; return { ids: [] }; });
         const manager = harness();
-        globalThis.window.__cadastreAncestry = {
-            loadedCadastreCoverage: () => ({ ids: ['HR-1-1'], coverage: 1 })
-        };
+        await manager.groundService.acceptFeatures([{
+            ...square(15.99, 45.99, 16.01, 46.01),
+            properties: { parcelId: 'HR-1-1' }
+        }], { skipConversion: true });
 
         await manager._loadReplayGround([member(0), member(1), member(2)]);
 
@@ -229,12 +235,10 @@ describe('ground already on the map is not fetched again', () => {
             return { ids: [], count: 0 };
         });
         const manager = harness();
-        globalThis.window.__cadastreAncestry = {
-            loadedCadastreCoverage: proposal => ({
-                ids: proposal.proposalId === 'road-1' ? [] : ['HR-1-1'],
-                coverage: proposal.proposalId === 'road-1' ? 0.5 : 1
-            })
-        };
+        await manager.groundService.acceptFeatures([
+            { ...square(16, 46, 16.0005, 46.001), properties: { parcelId: 'HR-1-0' } },
+            { ...square(16.002, 46, 16.0025, 46.001), properties: { parcelId: 'HR-1-2' } }
+        ], { skipConversion: true });
 
         await manager._loadReplayGround([member(0), member(1), member(2)]);
 

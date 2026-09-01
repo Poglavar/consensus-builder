@@ -1595,7 +1595,8 @@ const multiParcelSelection = {
         return foundParcel;
     },
 
-    // Recover parcel from grid cache and instantiate as layer
+    // Recover a presentation copy and instantiate it as a layer. Viewport cells retain ids only;
+    // authoritative cadastral geometry belongs to CadastralGroundService.
     recoverParcelFromCache(parcelId) {
         const id = parcelId === undefined || parcelId === null ? '' : String(parcelId);
         const isGeneratedId = (typeof isSyntheticParcelId === 'function' && isSyntheticParcelId(id))
@@ -1608,21 +1609,9 @@ const multiParcelSelection = {
             return null;
         }
 
-        if (!parcelCache || !parcelCache.grid) return null;
-
-        // Search all grid cells for the parcel
-        for (const [gridKey, cellData] of parcelCache.grid) {
-            if (cellData && cellData.features) {
-                const feature = cellData.features.find(f =>
-                    getParcelIdFromFeature(f)?.toString() === parcelId.toString()
-                );
-
-                if (feature) {
-                    return this.createParcelLayerFromFeature(feature);
-                }
-            }
-        }
-        return null;
+        if (!parcelCache || !(parcelCache.byId instanceof Map)) return null;
+        const feature = parcelCache.byId.get(id) || null;
+        return feature ? this.createParcelLayerFromFeature(feature) : null;
     },
 
     // Recover parcel from PersistentStorage and instantiate as layer

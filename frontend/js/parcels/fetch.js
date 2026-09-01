@@ -238,9 +238,7 @@
                     startIndex += numberReturned;
                 }
 
-                // Cache the cell data
-                cache.grid.set(cell, { type: 'FeatureCollection', features: allFeatures });
-
+                let cellParcelIds = [];
                 // Ingest immediately - no waiting for other cells
                 if (allFeatures.length > 0) {
                     // Determine if we should skip conversion (backend returns WGS84)
@@ -248,8 +246,21 @@
                     if (!skipConversion && typeof console !== 'undefined' && console.log) {
                         console.log('Parcel fetch: converting to WGS84 for cell', cell);
                     }
-                    await ingestParcelFeatures(allFeatures, { skipConversion, replaceExisting: false });
+                    const ground = global.CadastralGroundService;
+                    if (!ground || typeof ground.acceptFeatures !== 'function') {
+                        throw new Error('Cadastral ground service is unavailable.');
+                    }
+                    cellParcelIds = await ground.acceptFeatures(allFeatures, {
+                        skipConversion,
+                        replaceExisting: false
+                    });
                     totalFeaturesIngested += allFeatures.length;
+                }
+
+                // A viewport cell is a fetch marker, not another GeoJSON cache. Geometry is owned
+                // by CadastralGroundService; presentation copies are indexed by parcel id.
+                if (!allFeatures.length || cellParcelIds.length) {
+                    cache.grid.set(cell, { ids: cellParcelIds });
                 }
 
                 completedCells++;
@@ -298,39 +309,35 @@
 
     async function fetchParcelsByIds(parcelIds, options = {}) {
         if (!Array.isArray(parcelIds) || parcelIds.length === 0) {
-            return { ids: [], layers: [] };
+            return { ids: [], features: [] };
         }
         const normalizedIds = Array.from(new Set(parcelIds
             .map(value => value !== undefined && value !== null ? value.toString() : null)
             .filter(Boolean)));
         if (!normalizedIds.length) {
-            return { ids: [], layers: [] };
+            return { ids: [], features: [] };
         }
 
         // This is transport, not policy. CadastralGroundService has already removed loaded,
         // in-flight, and known-missing ids; every id reaching here is intentionally requested.
+        let rawFeatures = [];
         global.setParcelMergeInProgressState(true);
         try {
-            const rawFeatures = await fetchParcelFeaturesByIds(normalizedIds, {
+            rawFeatures = await fetchParcelFeaturesByIds(normalizedIds, {
                 onProgress: (current, total) => {
                     if (options && typeof options.onProgress === 'function') {
                         options.onProgress(current, total);
                     }
                 }
             });
-            if (rawFeatures.length) {
-                await ingestParcelFeatures(rawFeatures, { replaceExisting: true });
-            }
         } finally {
             global.setParcelMergeInProgressState(false);
         }
 
-        const layers = normalizedIds
-            .map(id => global.resolveParcelLayerById ? global.resolveParcelLayerById(id) : null)
-            .filter(Boolean);
         return {
-            ids: layers.map(layer => normalizeFeatureParcelId(layer && (layer.feature || layer))).filter(Boolean),
-            layers
+            ids: rawFeatures.map(normalizeFeatureParcelId).filter(Boolean),
+            features: rawFeatures,
+            ingestOptions: { replaceExisting: true }
         };
     }
 
@@ -842,12 +849,10 @@
         }
         const payload = await response.json();
         const features = Array.isArray(payload.features) ? payload.features : [];
-        if (features.length && typeof ingestParcelFeatures === 'function') {
-            // The endpoint returns WGS84 already.
-            await ingestParcelFeatures(features, { skipConversion: true, replaceExisting: false });
-        }
         return {
             ids: features.map(f => f && f.properties && f.properties.parcelId).filter(Boolean),
+            features,
+            ingestOptions: { skipConversion: true, replaceExisting: false },
             coverage: payload.coverage === undefined ? null : (Number(payload.coverage) || 0),
             count: Number(payload.count) || features.length,
             queryMs: Number(payload.queryMs) || null

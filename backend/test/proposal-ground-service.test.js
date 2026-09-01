@@ -22,19 +22,48 @@ const polygon = offset => ({
     }
 });
 
+const parcelFeature = (id, offset = 0) => ({
+    ...polygon(offset),
+    properties: { parcelId: String(id) }
+});
+
+const parcelResult = (ids, extra = {}) => ({
+    ids: ids.map(String),
+    features: ids.map((id, index) => parcelFeature(id, index * 0.01)),
+    ...extra
+});
+
 function fixture(options = {}) {
     const loaded = options.loaded instanceof Set ? options.loaded : new Set(options.loaded || []);
+    const presentedFeatures = options.presentedFeatures instanceof Map
+        ? options.presentedFeatures
+        : new Map(Array.from(loaded, id => [String(id), parcelFeature(id)]));
     const root = options.root || {};
     const fetchParcelsByIds = options.fetchParcelsByIds || vi.fn(async ids => {
-        ids.forEach(id => loaded.add(id));
-        return { ids };
+        const features = ids.map((id, index) => parcelFeature(id, index * 0.01));
+        return { ids, features };
     });
     const fetchParcelsUnderGeometry = options.fetchParcelsUnderGeometry || vi.fn(async () => ({
         ids: [], count: 0, queryMs: 1
     }));
+    const ingestFeatures = options.ingestFeatures || vi.fn(async features => {
+        features.forEach(feature => {
+            const id = String(feature?.properties?.parcelId || '');
+            if (!id) return;
+            loaded.add(id);
+            presentedFeatures.set(id, feature);
+        });
+        return features.map(feature => ({ feature }));
+    });
     const service = createCadastralGroundService({
         root,
-        resolveParcelLayerById: id => (loaded.has(String(id)) ? { id: String(id) } : null),
+        resolveParcelLayerById: id => {
+            const key = String(id);
+            if (!loaded.has(key)) return null;
+            return { id: key, feature: presentedFeatures.get(key) || parcelFeature(key) };
+        },
+        ingestFeatures,
+        convertFeatures: featureCollection => featureCollection,
         transport: {
             fetchByIds: fetchParcelsByIds,
             fetchUnderGeometry: fetchParcelsUnderGeometry
@@ -43,17 +72,19 @@ function fixture(options = {}) {
         baseParcelIdsOf: record => record.cadastreParcelIds || [],
         loadedCoverageOf: options.loadedCoverageOf || (() => ({ ids: [], coverage: 0 }))
     });
-    return { service, loaded, fetchParcelsByIds, fetchParcelsUnderGeometry };
+    return { service, loaded, presentedFeatures, ingestFeatures, fetchParcelsByIds, fetchParcelsUnderGeometry };
 }
 
 describe('CadastralGroundService', () => {
     it('serves loaded and known-missing ids from its cache after one transport request', async () => {
-        const loaded = new Set(['HR-A']);
+        const loaded = new Set();
         const fetchParcelsByIds = vi.fn(async ids => {
-            if (ids.includes('HR-B')) loaded.add('HR-B');
-            return { ids: ids.filter(id => id === 'HR-B') };
+            const found = ids.filter(id => id === 'HR-B');
+            return parcelResult(found);
         });
-        const { service } = fixture({ loaded, fetchParcelsByIds });
+        const { service, ingestFeatures } = fixture({ loaded, fetchParcelsByIds });
+        await service.acceptFeatures([parcelFeature('HR-A')], { skipConversion: true });
+        ingestFeatures.mockClear();
 
         const first = await service.ensureIds(['HR-A', 'HR-B', 'HR-MISSING']);
         const second = await service.ensureIds(['HR-A', 'HR-B', 'HR-MISSING']);
@@ -71,6 +102,58 @@ describe('CadastralGroundService', () => {
         await service.ensureIds(['HR-A']);
         await service.ensureIds(['HR-A'], { forceRefresh: true });
 
+        expect(fetchParcelsByIds).toHaveBeenCalledOnce();
+    });
+
+    it('never treats a Leaflet layer as cadastral cache data', async () => {
+        const loaded = new Set(['HR-A']);
+        const { service, fetchParcelsByIds } = fixture({ loaded });
+
+        await service.ensureIds(['HR-A']);
+
+        expect(fetchParcelsByIds).toHaveBeenCalledOnce();
+    });
+
+    it('recreates a removed registry layer from cached geometry without another server request', async () => {
+        const loaded = new Set();
+        const { service, presentedFeatures, ingestFeatures, fetchParcelsByIds } = fixture({ loaded });
+
+        await service.ensureIds(['HR-A']);
+        loaded.delete('HR-A');
+        presentedFeatures.delete('HR-A');
+        await service.ensureIds(['HR-A']);
+
+        expect(fetchParcelsByIds).toHaveBeenCalledOnce();
+        expect(fetchParcelsByIds).toHaveBeenCalledWith(['HR-A'], expect.any(Object));
+        expect(ingestFeatures).toHaveBeenCalledTimes(2);
+        expect(loaded.has('HR-A')).toBe(true);
+    });
+
+    it('does not send already-materialized viewport ground through the renderer again', async () => {
+        const { service, ingestFeatures } = fixture();
+
+        await service.acceptFeatures([parcelFeature('HR-A')], { skipConversion: true });
+        await service.acceptFeatures([parcelFeature('HR-A', 1)], { skipConversion: true });
+
+        expect(ingestFeatures).toHaveBeenCalledOnce();
+        expect(service.snapshot().featureCount).toBe(1);
+    });
+
+    it('owns retained cadastral geometry independently of transport and map-layer mutations', async () => {
+        const loaded = new Set();
+        const first = parcelFeature('HR-A', 0);
+        const fetchParcelsByIds = vi.fn(async () => ({ ids: ['HR-A'], features: [first] }));
+        const { service, presentedFeatures, ingestFeatures } = fixture({ loaded, fetchParcelsByIds });
+
+        await service.ensureIds(['HR-A']);
+        first.geometry.coordinates[0][0][0] = 88;
+        presentedFeatures.get('HR-A').geometry.coordinates[0][0][0] = 99;
+        loaded.delete('HR-A');
+        presentedFeatures.delete('HR-A');
+        await service.ensureIds(['HR-A']);
+
+        const restored = ingestFeatures.mock.calls.at(-1)[0][0];
+        expect(restored.geometry.coordinates[0][0][0]).toBe(16);
         expect(fetchParcelsByIds).toHaveBeenCalledOnce();
     });
 
@@ -97,7 +180,7 @@ describe('CadastralGroundService', () => {
         const fetchParcelsByIds = vi.fn(ids => new Promise(resolve => {
             releases.push(() => {
                 ids.forEach(id => loaded.add(id));
-                resolve({ ids });
+                resolve(parcelResult(ids));
             });
         }));
         const { service } = fixture({ loaded, fetchParcelsByIds });
@@ -121,7 +204,7 @@ describe('CadastralGroundService', () => {
             .mockRejectedValueOnce(new Error('network down'))
             .mockImplementationOnce(async ids => {
                 ids.forEach(id => loaded.add(id));
-                return { ids };
+                return parcelResult(ids);
             });
         const { service } = fixture({ loaded, fetchParcelsByIds });
 
@@ -194,7 +277,7 @@ describe('CadastralGroundService', () => {
     });
 
     it('fetches incomplete formation ground once and then serves that footprint from cache', async () => {
-        const fetchParcelsUnderGeometry = vi.fn(async () => ({ ids: ['HR-C'], count: 1, queryMs: 2 }));
+        const fetchParcelsUnderGeometry = vi.fn(async () => parcelResult(['HR-C'], { count: 1, queryMs: 2 }));
         const { service } = fixture({ fetchParcelsUnderGeometry });
         const building = {
             proposalId: 'building-1',
@@ -206,6 +289,27 @@ describe('CadastralGroundService', () => {
         await service.ensureProposalGround([building]);
         await service.ensureProposalGround([building]);
 
+        expect(fetchParcelsUnderGeometry).toHaveBeenCalledOnce();
+    });
+
+    it('memoizes footprint metadata without retaining or exposing transport feature arrays', async () => {
+        const transportFeature = parcelFeature('HR-C');
+        const fetchParcelsUnderGeometry = vi.fn(async () => ({
+            ids: ['HR-C'],
+            features: [transportFeature],
+            count: 1,
+            coverage: 1
+        }));
+        const { service } = fixture({ fetchParcelsUnderGeometry });
+
+        const first = await service.ensureFootprint(polygon(0), { parcelsOnly: false });
+        const second = await service.ensureFootprint(polygon(0), { parcelsOnly: false });
+
+        expect(first.result).toEqual({ ids: ['HR-C'], count: 1, coverage: 1, queryMs: null });
+        expect(first.result).not.toHaveProperty('features');
+        expect(Object.isFrozen(first.result)).toBe(true);
+        expect(Object.isFrozen(first.result.ids)).toBe(true);
+        expect(second.result).toBe(first.result);
         expect(fetchParcelsUnderGeometry).toHaveBeenCalledOnce();
     });
 
@@ -225,7 +329,7 @@ describe('CadastralGroundService', () => {
     });
 
     it('coalesces identical footprints within one proposal batch', async () => {
-        const fetchParcelsUnderGeometry = vi.fn(async () => ({ ids: ['HR-A'], count: 1 }));
+        const fetchParcelsUnderGeometry = vi.fn(async () => parcelResult(['HR-A'], { count: 1 }));
         const { service } = fixture({ fetchParcelsUnderGeometry });
 
         const result = await service.ensureProposalGround([
@@ -244,10 +348,10 @@ describe('CadastralGroundService', () => {
         const fetchParcelsByIds = vi.fn(ids => new Promise(resolve => {
             release = () => {
                 ids.forEach(id => loaded.add(id));
-                resolve({ ids });
+                resolve(parcelResult(ids));
             };
         }));
-        const fetchParcelsUnderGeometry = vi.fn(async () => ({ ids: ['HR-A'], count: 1 }));
+        const fetchParcelsUnderGeometry = vi.fn(async () => parcelResult(['HR-A'], { count: 1 }));
         const { service } = fixture({
             loaded,
             fetchParcelsByIds,
@@ -273,10 +377,10 @@ describe('CadastralGroundService', () => {
         const fetchParcelsByIds = vi.fn(ids => new Promise(resolve => {
             release = () => {
                 ids.forEach(id => loaded.add(id));
-                resolve({ ids });
+                resolve(parcelResult(ids));
             };
         }));
-        const fetchParcelsUnderGeometry = vi.fn(async () => ({ ids: ['HR-A'], count: 1 }));
+        const fetchParcelsUnderGeometry = vi.fn(async () => parcelResult(['HR-A'], { count: 1 }));
         const { service } = fixture({
             loaded,
             fetchParcelsByIds,
@@ -305,7 +409,7 @@ describe('CadastralGroundService', () => {
         const fetchParcelsUnderGeometry = vi.fn(() => new Promise(resolve => {
             release = () => {
                 loaded.add('HR-A');
-                resolve({ ids: ['HR-A'], count: 1 });
+                resolve(parcelResult(['HR-A'], { count: 1 }));
             };
         }));
         const { service, fetchParcelsByIds } = fixture({ loaded, fetchParcelsUnderGeometry });
@@ -364,10 +468,31 @@ describe('the ground service is the only parcel transport consumer', () => {
     it('keeps the raw transport private and policy-free', () => {
         const source = readFileSync(join(frontendJsRoot, 'parcels/fetch.js'), 'utf8');
         const serviceSource = readFileSync(join(frontendJsRoot, 'parcels/ground-service.js'), 'utf8');
+        const idTransport = source.slice(
+            source.indexOf('async function fetchParcelsByIds'),
+            source.indexOf('async function fetchParcelFeaturesByIds')
+        );
+        const footprintTransport = source.slice(
+            source.indexOf('async function fetchParcelsUnderGeometry'),
+            source.indexOf('global.fetchParcelData = fetchParcelData')
+        );
         expect(source).toContain('global.__cadastralGroundTransport = Object.freeze({');
         expect(serviceSource).toContain('delete global.__cadastralGroundTransport');
         expect(source).not.toMatch(/global\.(?:fetchParcelsByIds|fetchParcelsUnderGeometry|fetchParcelFeaturesByIds)\s*=/);
         expect(source).not.toContain('options.forceRefresh');
+        expect(serviceSource).not.toContain('ParcelsState');
+        expect(serviceSource).not.toContain('parcelCache');
+        expect(serviceSource).not.toContain('layer.feature');
+        expect(serviceSource).not.toContain('__cadastreAncestry');
+        expect(idTransport).not.toContain('ingestParcelFeatures(');
+        expect(idTransport).not.toContain('resolveParcelLayerById');
+        expect(footprintTransport).not.toContain('ingestParcelFeatures(');
+        expect(footprintTransport).not.toContain('resolveParcelLayerById');
+        expect(idTransport).toContain('features: rawFeatures');
+        expect(footprintTransport).toContain('features,');
+        expect(source).toContain('await ground.acceptFeatures(allFeatures');
+        expect(source).toContain('cache.grid.set(cell, {');
+        expect(source).not.toContain("cache.grid.set(cell, { type: 'FeatureCollection'");
     });
 
     it('captures the private transport before any feature consumer loads', () => {
