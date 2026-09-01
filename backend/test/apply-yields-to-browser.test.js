@@ -114,7 +114,7 @@ describe('structure layers are drawn once per replay, not once per structure', (
 
     it('wraps the complete canonical replay', () => {
         expect(manager).toContain('window.withStructureLayersRefreshHeld');
-        expect(manager).toContain('holdStructures(runPasses)');
+        expect(manager).toContain('holdStructures(runReplay)');
     });
 
     it('actually coalesces repeated structure updates and releases after an error', async () => {

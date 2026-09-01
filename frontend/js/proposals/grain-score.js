@@ -547,12 +547,11 @@
         const resultingIds = (fabric.resulting || []).map(String);
         let rows = resultingIds.map(id => ({ id, feature: featureForParcel(id, proposals) }));
         const produced = new Set((fabric.produced || []).map(String));
-        const missingBase = rows
-            .filter(row => !row.feature && !looksDerivedParcelId(row.id, produced))
-            .map(row => row.id);
-        if (missingBase.length && typeof global.fetchParcelsByIds === 'function') {
-            try { await global.fetchParcelsByIds(missingBase); }
-            catch (error) { console.warn('[grain-score] could not fetch missing base parcels', error); }
+        const cadastralIds = resultingIds.filter(id => !looksDerivedParcelId(id, produced));
+        if (cadastralIds.length && global.CadastralGroundService
+            && typeof global.CadastralGroundService.ensureIds === 'function') {
+            try { await global.CadastralGroundService.ensureIds(cadastralIds); }
+            catch (error) { console.warn('[grain-score] could not load cadastral ground', error); }
             rows = resultingIds.map(id => ({ id, feature: featureForParcel(id, proposals) }));
         }
         return rows.map(row => {

@@ -15,6 +15,7 @@ import { fileURLToPath } from 'node:url';
 const read = rel => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8');
 const ui = read('../../frontend/js/ui-helpers.js');
 const manager = read('../../frontend/js/proposal-manager.js');
+const ground = read('../../frontend/js/parcels/ground-service.js');
 const css = read('../../frontend/css/utilities.css');
 const dictOf = locale => JSON.parse(read(`../../frontend/i18n/${locale}.json`));
 const locales = ['en', 'hr', 'sr', 'es'];
@@ -133,23 +134,40 @@ describe('the whole log, and somewhere to read it', () => {
 
 describe('the silence before the first proposal', () => {
     const loader = manager.slice(
-        manager.indexOf('    async _loadReplayGround(appliedList) {'),
-        manager.indexOf('    _replayGroundFetched: new Set(),')
+        manager.indexOf('    async _loadReplayGround(appliedList, options = {}) {'),
+        manager.indexOf('    _appliedCorridorTakes(appliedList)')
     );
 
     it('says what it is doing, and how long it took', () => {
-        expect(loader).toContain('_announceApply(`Loading ground for ${pendingMembers.length} proposal');
-        expect(loader).toContain('_announceApply(`Ground loaded for ${memoPending.length} proposal');
+        expect(loader).toContain('service.ensureProposalGround(members');
+        expect(loader).toContain('_announceApply(`Cadastral ground ready for ${members.length} proposal');
         expect(loader).toContain('(elapsed / 1000).toFixed(1)');
     });
 
-    it('counts only the members that still need fetching', () => {
-        // Ground already memoized or geometrically covered on the map is never re-fetched, so
-        // announcing the whole list would promise work that is not about to happen.
-        expect(loader).toContain('!this._replayGroundFetched.has(memo)');
-        expect(loader).toContain('if (!memoPending.length) return _now() - started;');
-        expect(loader).toContain("typeof ancestry.loadedCadastreCoverage !== 'function'");
-        expect(loader).toContain('if (!pendingMembers.length) {');
+    it('delegates every cache/fetch decision to the ground service', () => {
+        expect(loader).not.toMatch(/fetchParcels(?:ByIds|UnderGeometry|ForIds)/);
+        expect(loader).not.toContain('_replayGroundFetched');
+        expect(ground).toContain("phase: 'ground-check'");
+        expect(ground).toContain("phase: 'ground-load-footprints'");
+        expect(ground).toContain("phase: 'ground-ready'");
+    });
+
+    it.each(locales)('%s translates every shared-plan materialization phase', locale => {
+        const plan = dictOf(locale).modal.roadWidth.share.plan;
+        expect(plan.applyingNamed).toContain('{{done}}/{{total}}');
+        expect(plan.preparingNamed).toContain('{{done}}/{{total}}');
+        [
+            'groundCheck', 'groundIdCheck', 'groundIdLoad', 'groundIdLoadProgress',
+            'groundIdWait', 'groundFootprintWait', 'groundIdsMissing', 'groundIdsReady', 'groundFootprintLoad',
+            'groundFootprintProgress', 'groundReady', 'groundIncomplete', 'buildingGroundLoad',
+            'buildingGroundProgress', 'buildingGroundReady', 'rebuildReset', 'corridorStart', 'scopeReady',
+            'fabricScan', 'fabricArrange', 'mapUpdate', 'fabricReady', 'networkNoding',
+            'saving', 'corridorReady', 'rollback', 'presentation', 'corridorStrips', 'rebuildReady'
+        ].forEach(key => expect(plan.progress[key], `${locale} missing progress.${key}`).toBeTruthy());
+        ['one', 'few', 'other'].forEach(form => {
+            expect(plan.progress.roadCount[form], `${locale} missing roadCount.${form}`).toBeTruthy();
+            expect(plan.progress.trackCount[form], `${locale} missing trackCount.${form}`).toBeTruthy();
+        });
     });
 });
 
@@ -208,6 +226,21 @@ describe('a line about a proposal goes to that proposal', () => {
     });
 });
 
+describe('apply versus replay wording', () => {
+    it('calls a fresh local materialization Applied, not Re-derived', () => {
+        const summary = manager.slice(
+            manager.indexOf('async function _runProposalApplyWithSummary('),
+            manager.indexOf('async function _runProposalMutationBoundary(')
+        );
+        const fresh = manager.slice(
+            manager.indexOf('    async deriveForNewProposal('),
+            manager.indexOf('    async materializeCorridorBatch(', manager.indexOf('    async deriveForNewProposal('))
+        );
+        expect(summary).toContain("options.statusMode !== 'apply'");
+        expect(fresh).toContain("statusMode: 'apply'");
+    });
+});
+
 // A status LINE is superseded within a second on a busy reload, so by the time you look at the bar
 // there is nothing left saying the app is still working. The spinner is the part that persists.
 describe('the spinner', () => {
@@ -244,26 +277,19 @@ describe('the spinner', () => {
     });
 });
 
-// The replay used to ask for the ground one member at a time — 165 round trips, mostly re-fetching
-// each other's parcels, because adjacent proposals share ground while the memo is per PROPOSAL. One
-// MultiPolygon asks the same question once.
+// Flat records ask for their declared cadastral ids once. An unstamped legacy record or publish
+// check can still need spatial ground; those footprints are bounded and batched here rather than
+// becoming one server round trip per proposal.
 describe('the replay asks for its ground once', () => {
-    const loader = manager.slice(
-        manager.indexOf('    async _loadReplayGround(appliedList) {'),
-        manager.indexOf('    _replayGroundFetched: new Set(),')
-    );
+    const loader = ground.slice(ground.indexOf('async function ensureProposalGround('));
 
     function loadHelper() {
-        const start = manager.indexOf('function _multiPolygonOfFootprints(footprints) {');
-        expect(start, '_multiPolygonOfFootprints not found').toBeGreaterThan(-1);
-        const end = manager.indexOf('function _announceApply(', start);
-        // Matched on the NAME, not the full signature. Pinning `(message)` meant that adding a
-        // second parameter turned this indexOf into -1, the slice ran to the end of the file, and
-        // the eval below failed on an unrelated symbol several hundred lines later — a change in
-        // one function breaking a test about another, with a message naming neither.
-        expect(end, '_announceApply not found — the slice would run to EOF').toBeGreaterThan(start);
+        const start = ground.indexOf('function multiPolygonOfFootprints(footprints) {');
+        expect(start, 'multiPolygonOfFootprints not found').toBeGreaterThan(-1);
+        const end = ground.indexOf('function createCadastralGroundService(', start);
+        expect(end, 'createCadastralGroundService not found — the slice would run to EOF').toBeGreaterThan(start);
         // eslint-disable-next-line no-new-func
-        return new Function(`${manager.slice(start, end)} return _multiPolygonOfFootprints;`)();
+        return new Function(`${ground.slice(start, end)} return multiPolygonOfFootprints;`)();
     }
     const asMultiPolygon = loadHelper();
     const poly = n => ({ type: 'Polygon', coordinates: [[[n, 0], [n + 1, 0], [n + 1, 1], [n, 1], [n, 0]]] });
@@ -285,19 +311,22 @@ describe('the replay asks for its ground once', () => {
         expect(asMultiPolygon(null)).toBeNull();
     });
 
-    it('sends bounded batches, then falls back per member for whatever they could not carry', () => {
-        expect(loader).toContain('index += REPLAY_GROUND_BATCH_SIZE');
-        expect(loader).toContain('_multiPolygonOfFootprints(entries.map(entry => entry.footprint))');
+    it('sends bounded batches and splits a refused batch without a second consumer path', () => {
+        expect(loader).toContain('index += FOOTPRINT_BATCH_SIZE');
+        expect(loader).toContain('multiPolygonOfFootprints(entries.map(entry => entry.footprint))');
         // Over the cap or a transport failure: halve and retry, never lose the whole replay.
-        expect(loader).toContain('const mid = Math.ceil(entries.length / 2);');
-        expect(loader).toContain('const remaining = pendingMembers.filter(proposal => {');
-        expect(loader).toContain('while (next < remaining.length) await loadOne(remaining[next++]);');
+        expect(loader).toContain('const middle = Math.ceil(entries.length / 2);');
+        expect(loader).not.toContain('fetchParcelsForIds');
     });
 
     it('only remembers members the batch actually loaded', () => {
         // Memoising on a failed request would leave a formation permanently short of its ground.
-        const batch = loader.slice(loader.indexOf('const loadBatch = async entries => {'), loader.indexOf('await loadBatch(batchable);'));
-        expect(batch).toContain('if (!loaded) return;');
-        expect(batch.indexOf('this._replayGroundFetched.add(memo)')).toBeGreaterThan(batch.indexOf('if (!loaded) return;'));
+        const batch = loader.slice(
+            loader.indexOf('const loadBatch = async entries => {'),
+            loader.indexOf('const chunks = [];')
+        );
+        expect(batch).toContain('if (!loaded) {');
+        expect(batch.indexOf('successfulFootprints.add(entry.key)'))
+            .toBeGreaterThan(batch.indexOf('if (!loaded) {'));
     });
 });

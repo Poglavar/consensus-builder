@@ -103,8 +103,12 @@
         }
 
         // Ask for the ground first, exactly as publish does — otherwise this reports the viewport.
-        if (typeof fetchParcelsUnderGeometry === 'function') {
-            try { await fetchParcelsUnderGeometry(footprint); out.groundFetched = true; }
+        if (typeof CadastralGroundService !== 'undefined' && CadastralGroundService
+            && typeof CadastralGroundService.ensureProposalGround === 'function') {
+            try {
+                await CadastralGroundService.ensureProposalGround([record], { purpose: 'publish' });
+                out.groundFetched = true;
+            }
             catch (error) { out.groundFetched = false; out.groundError = error && error.message; }
         }
 

@@ -31,9 +31,12 @@ async function focusProposalDetails(proposalIdOrHash, options = {}) {
     const realCadastreIds = [...new Set(
         parcelIds.map(id => id?.toString()).filter(id => id && !synth(id))
     )];
-    if (realCadastreIds.length > 0 && typeof ensureParentParcelsLoaded === 'function') {
+    const ground = (typeof CadastralGroundService !== 'undefined' && CadastralGroundService)
+        ? CadastralGroundService
+        : ((typeof window !== 'undefined') ? window.CadastralGroundService : null);
+    if (realCadastreIds.length > 0 && ground && typeof ground.ensureIds === 'function') {
         Promise.resolve()
-            .then(() => ensureParentParcelsLoaded(realCadastreIds))
+            .then(() => ground.ensureIds(realCadastreIds))
             .catch(error => {
                 console.warn('[focusProposalDetails] background parcel hydration failed', error);
             });

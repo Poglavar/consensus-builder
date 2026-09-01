@@ -4,6 +4,14 @@ const serverSyncLifecycleOf = (typeof getLifecycleStatus === 'function')
     ? getLifecycleStatus
     : (typeof require === 'function' ? require('./status.js').getLifecycleStatus : null);
 
+function getServerSyncGroundService() {
+    if (typeof CadastralGroundService !== 'undefined' && CadastralGroundService) return CadastralGroundService;
+    const root = (typeof window !== 'undefined') ? window : globalThis;
+    if (root && root.CadastralGroundService) return root.CadastralGroundService;
+    if (typeof require === 'function') return require('../parcels/ground-service.js').CadastralGroundService;
+    return null;
+}
+
 function resolveCurrentCityCode() {
     try {
         const mgr = typeof window !== 'undefined' ? window.CityConfigManager : null;
@@ -359,14 +367,11 @@ function syncProposalWithServerId(proposal, serverProposalId) {
 // publish something whose ground could not be established.
 async function ensurePublishGroundLoaded(proposal) {
     try {
-        const planOrderApi = (typeof window !== 'undefined') ? window.__planOrder : null;
-        if (!planOrderApi || typeof planOrderApi.footprintOf !== 'function') return { ok: true };
-        if (typeof fetchParcelsUnderGeometry !== 'function') return { ok: true };
-        const footprint = planOrderApi.footprintOf(proposal);
-        if (!footprint || !footprint.geometry) return { ok: true };
-        // Ground only — the publish gate measures coverage against the live fabric it loads here,
-        // never against this response.
-        await fetchParcelsUnderGeometry(footprint, { parcelsOnly: true });
+        const ground = getServerSyncGroundService();
+        if (!ground || typeof ground.ensureProposalGround !== 'function') {
+            throw new Error('Cadastral ground service is unavailable.');
+        }
+        await ground.ensureProposalGround([proposal], { purpose: 'publish' });
         return { ok: true };
     } catch (error) {
         console.warn('[uploadProposalToServer] could not load the ground under this proposal', error);
@@ -430,8 +435,8 @@ async function uploadProposalToServer(proposal) {
     // Publish measures the footprint against the cadastre the browser has LOADED, and refuses below
     // 95%. That is the right question and the wrong source: pan away from a road and its parcels
     // are no longer on the map, so a perfectly publishable proposal was refused for having been
-    // scrolled past. Apply stopped depending on that when it started asking /parcels/under for the
-    // ground under a footprint; publish asks the same question here, before the gate runs.
+    // scrolled past. Apply stopped depending on that when it started asking CadastralGroundService
+    // for the ground under a footprint; publish asks the same service here before the gate runs.
     //
     // Ground that is genuinely absent — an existing street with no cadastral parcel under it — is
     // still absent after the fetch, and the gate still refuses it. That refusal is correct.
@@ -544,60 +549,6 @@ async function headProposalExists(proposalId, _city, proposalForSync) {
         console.warn('headProposalExists failed', error);
     }
     return false;
-}
-
-async function ensureParentParcelsLoaded(parcelIds, options = {}) {
-    if (!Array.isArray(parcelIds) || parcelIds.length === 0) return;
-    const missing = findMissingParentParcels(parcelIds);
-    if (!missing.length) {
-        if (options.preloadOwners) {
-            await preloadProposalParcelOwners(parcelIds, { forceRefresh: !!options.forceOwnerRefresh });
-        }
-        return;
-    }
-
-    // Single bulk fetch — no individual retries. If bulk didn't resolve them,
-    // they're either unreachable or in a different city and will load when
-    // the viewport moves there.
-    await fetchParcelsForIds(missing, {
-        forceRefresh: options.forceRefreshParcels,
-        onProgress: options.onProgress
-    });
-
-    const finalMissing = findMissingParentParcels(parcelIds);
-    if (finalMissing.length) {
-        console.debug(`[ensureParentParcelsLoaded] ${finalMissing.length}/${parcelIds.length} parcels still missing after bulk fetch`);
-    }
-    if (!finalMissing.length && options.preloadOwners) {
-        await preloadProposalParcelOwners(parcelIds, { forceRefresh: !!options.forceOwnerRefresh });
-    }
-}
-
-async function fetchParcelsForIds(parcelIds, options = {}) {
-    if (!Array.isArray(parcelIds) || parcelIds.length === 0) return;
-    const unique = Array.from(new Set(parcelIds.map(id => id && id.toString ? id.toString() : id).filter(Boolean)));
-    if (!unique.length) return;
-
-    if (typeof fetchParcelsByIds === 'function') {
-        await fetchParcelsByIds(unique, {
-            forceRefresh: !!options.forceRefresh,
-            onProgress: options.onProgress
-        });
-        return;
-    }
-
-    if (typeof fetchSingleParcelById === 'function') {
-        await Promise.allSettled(unique.map(id => fetchSingleParcelById(id)));
-        return;
-    }
-
-    if (typeof fetchParcelData === 'function') {
-        try {
-            await fetchParcelData();
-        } catch (error) {
-            console.warn('fetchParcelsForIds fallback fetchParcelData failed', error);
-        }
-    }
 }
 
 async function preloadProposalParcelOwners(parcelIds, options = {}) {
@@ -859,36 +810,6 @@ function prepareProposalForImport(sharedProposal) {
         throw new Error(`Cannot import non-conforming proposal; run migrate-tessellation.js first: ${detail}`);
     }
     return parkProposalForImport(stripped);
-}
-
-async function ensureParentParcelsFetched(sharedProposal, normalized) {
-    const parentIds = computeRequiredParentIdsForSharedProposal(sharedProposal);
-    if (parentIds.length === 0) {
-        return [];
-    }
-
-    // Check which parcels are missing and fetch them
-    const missingIds = [];
-    parentIds.forEach(id => {
-        const layer = (typeof multiParcelSelection !== 'undefined' && typeof multiParcelSelection.findParcelById === 'function')
-            ? multiParcelSelection.findParcelById(id)
-            : null;
-        if (!layer || !layer.feature) {
-            missingIds.push(id);
-        }
-    });
-
-    if (missingIds.length > 0) {
-        // Fetch missing parcels from server/local storage
-        try {
-            await fetchParcelsForIds(missingIds, { forceRefresh: false });
-        } catch (error) {
-            console.warn('Failed to fetch ancestor parcels for proposal', sharedProposal.proposalId, error);
-            throw error;
-        }
-    }
-
-    return parentIds;
 }
 
 if (typeof module !== 'undefined' && module.exports) {

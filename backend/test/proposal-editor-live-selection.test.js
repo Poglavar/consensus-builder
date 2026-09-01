@@ -68,7 +68,7 @@ describe('proposal editor selection follows the live fabric', () => {
         install('parcelLayer', { hasLayer: layer => visible.has(layer) });
         install('parcelLayerById', byId);
         install('resolveParcelLayerById', id => byId.get(String(id)) || null);
-        install('ensureParentParcelsLoaded', vi.fn(async () => {}));
+        install('CadastralGroundService', { ensureIds: vi.fn(async () => {}) });
         install('multiParcelSelection', {
             isActive: true,
             selectedParcels,

@@ -949,6 +949,71 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
     } catch (_) { }
 }
 
+function reconcileProposalMapActionButton(proposalId, fallbackHtml = '') {
+    const buttonId = `proposal-action-btn-${proposalId}`;
+    const button = document.getElementById(buttonId);
+    if (!button) return null;
+
+    const proposal = (typeof getProposalByIdOrHash === 'function')
+        ? getProposalByIdOrHash(proposalId)
+        : ((typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function')
+            ? proposalStorage.getProposal(proposalId)
+            : null);
+    if (!proposal) {
+        if (fallbackHtml) button.innerHTML = fallbackHtml;
+        button.disabled = false;
+        button.style.opacity = '';
+        button.style.cursor = '';
+        return button;
+    }
+
+    const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
+    const applied = (typeof isProposalApplied === 'function')
+        ? isProposalApplied(proposal)
+        : (typeof isApplied === 'function' ? isApplied(proposal) : proposal.applied === true);
+    const safeId = String(proposalId).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    button.disabled = false;
+    button.style.opacity = '';
+    button.style.cursor = '';
+    if (applied) {
+        const label = t ? t('panel.proposal.actions.remove', 'Unapply') : 'Unapply';
+        button.className = 'btn btn-warning';
+        button.innerHTML = `<i class="fas fa-eye-slash"></i> ${label}`;
+        button.setAttribute('onclick', `removeProposalFromMap('${safeId}')`);
+        button.removeAttribute('data-default-action');
+        button.removeAttribute('aria-keyshortcuts');
+    } else {
+        const label = t ? t('panel.proposal.actions.apply', 'Apply to map') : 'Apply to map';
+        button.className = 'btn btn-success proposal-action-default';
+        button.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${label}`;
+        button.setAttribute('onclick', `applyProposalToMap('${safeId}')`);
+        button.setAttribute('data-default-action', 'true');
+        button.setAttribute('aria-keyshortcuts', 'Enter');
+    }
+    return button;
+}
+
+function proposalUnapplyPhaseLabel(event, t) {
+    const phase = String(event?.phase || '');
+    if (phase === 'unapply-start' || phase.startsWith('ground-')) {
+        return t
+            ? t('panel.proposal.actions.checkingGround', 'Checking cadastral ground…')
+            : 'Checking cadastral ground…';
+    }
+    if (phase === 'unapply-remove-output') {
+        return t ? t('panel.proposal.actions.unapplying', 'Unapplying…') : 'Unapplying…';
+    }
+    if (phase === 'unapply-restore-ground' || phase.startsWith('fabric-')) {
+        return t
+            ? t('panel.proposal.actions.restoringGround', 'Restoring local terrain…')
+            : 'Restoring local terrain…';
+    }
+    if (phase === 'save') {
+        return t ? t('panel.proposal.actions.saving', 'Saving…') : 'Saving…';
+    }
+    return null;
+}
+
 async function removeProposalFromMap(proposalId, options = {}) {
     if (!proposalId || typeof ProposalManager === 'undefined' || typeof ProposalManager.unapplyProposal !== 'function') {
         return false;
@@ -970,12 +1035,17 @@ async function removeProposalFromMap(proposalId, options = {}) {
     const buttonId = `proposal-action-btn-${proposalId}`;
     const button = document.getElementById(buttonId);
     const original = button ? button.innerHTML : null;
+    const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
+    const proposalLabel = proposalSnapshot?.title || proposalSnapshot?.name || String(proposalId);
+    let succeeded = false;
 
     if (button) {
         button.disabled = true;
         button.style.opacity = '0.6';
         button.style.cursor = 'wait';
-        button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${options.removingLabel || 'Removing…'}`;
+        const initialLabel = options.removingLabel
+            || (t ? t('panel.proposal.actions.checkingGround', 'Checking cadastral ground…') : 'Checking cadastral ground…');
+        button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${initialLabel}`;
         // …and let the browser DRAW it. The spinner has been set here all along and was never seen:
         // unapply awaits a chain whose promises are usually already settled, so everything below runs
         // in microtasks, which complete before any frame is painted. Without a macrotask boundary the
@@ -987,22 +1057,36 @@ async function removeProposalFromMap(proposalId, options = {}) {
 
     try {
         // Unapply flips only the root record and invokes the same cadastre-first replay.
-        const unapplied = await ProposalManager.unapplyProposal(proposalId);
+        const unapplied = await ProposalManager.unapplyProposal(proposalId, {
+            onProgress: event => {
+                const phaseLabel = proposalUnapplyPhaseLabel(event, t);
+                if (!phaseLabel) return;
+                const liveButton = document.getElementById(buttonId);
+                if (liveButton) {
+                    liveButton.disabled = true;
+                    liveButton.style.opacity = '0.6';
+                    liveButton.style.cursor = 'wait';
+                    liveButton.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${phaseLabel}`;
+                }
+                try { if (typeof updateStatus === 'function') updateStatus(`${proposalLabel} — ${phaseLabel}`); } catch (_) { }
+            }
+        });
         if (unapplied === false) {
             return false;
         }
+        succeeded = true;
         return true;
     } finally {
-        if (button) {
-            const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
-            const label = t
-                ? t('panel.proposal.actions.remove', 'Remove from map')
-                : 'Remove from map';
-            button.disabled = false;
-            button.style.opacity = '';
-            button.style.cursor = '';
-            button.className = 'btn btn-warning';
-            button.innerHTML = original || `<i class="fas fa-eye-slash"></i> ${label}`;
+        // The manager may have re-rendered the details panel while the await was in flight, so the
+        // `button` captured above may now be detached. Resolve it again and render from the record's
+        // authoritative applied state. Restoring the old "Unapply" HTML after success made the next
+        // action look like a second unapply even though the proposal was already parked.
+        reconcileProposalMapActionButton(proposalId, original || '');
+        if (succeeded) {
+            const message = t
+                ? t('panel.proposal.actions.unappliedStatus', 'Unapplied “{{name}}”. The proposal remains in your proposals list.', { name: proposalLabel })
+                : `Unapplied “${proposalLabel}”. The proposal remains in your proposals list.`;
+            try { if (typeof updateStatus === 'function') updateStatus(message, { proposalId: String(proposalId) }); } catch (_) { }
         }
     }
 }

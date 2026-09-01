@@ -953,6 +953,11 @@
                 // caches. If a stale cache nevertheless exposes the taker's own old building,
                 // it is not an obstacle and must never recursively unapply itself.
                 if (options.proposalId && String(options.proposalId) === String(owner)) continue;
+                // Boot/recovery materializes the applied-set snapshot; it does not author a new
+                // choice between proposals. Any overlap was resolved by the explicit apply/edit
+                // transaction that produced that snapshot. A stale proposal-owned feature may be
+                // ignored here, but may never turn its record off and force a second boot pass.
+                if (options.preserveAppliedSet === true) continue;
                 try {
                     await global.ProposalManager?.unapplyProposal?.(owner, {
                         skipConfirm: true,

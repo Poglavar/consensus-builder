@@ -40,14 +40,10 @@ describe('map geometry is read at full precision', () => {
             // `.toGeoJSON()` with no argument takes Leaflet's 6-decimal default.
             const bare = source.match(/\.toGeoJSON\(\s*\)/g) || [];
             expect(bare, `${rel} has ${bare.length} rounded geometry read(s); pass false`).toEqual([]);
+            // Keep this file on the list only while it really is a geometry reader. That guards
+            // against deleting call sites without replacing the test's old magic global count.
+            expect(source, `${rel} no longer reads Leaflet geometry`).toContain('.toGeoJSON(false)');
         });
-    });
-
-    it('reads geometry through the full-precision form somewhere', () => {
-        // Guards against the suite passing because every call site was simply deleted.
-        const total = GEOMETRY_READERS.reduce(
-            (sum, rel) => sum + ((read(rel).match(/\.toGeoJSON\(false\)/g) || []).length), 0);
-        expect(total).toBeGreaterThanOrEqual(20);
     });
 
     it('states why the precision flag is load-bearing where the cut consumes it', () => {

@@ -3860,9 +3860,8 @@
             : [];
     }
 
-    // Resolve input parcels to map layers, fetching the ones the map does not currently hold —
-    // a plan's parents are routinely hidden under the applied plan, and a partial pool is worse
-    // than none: it makes a boundary that is missing whole parcels look authoritative.
+    // Declare the complete input set to the ground service before resolving layers. The service
+    // alone decides which are already present, in flight, absent, or need transport.
     async function resolveInputParcelLayers(parcelIds) {
         const ids = (parcelIds || []).map(String);
         const lookup = id => {
@@ -3872,15 +3871,15 @@
             }
             return (window.parcelLayerById instanceof Map) ? window.parcelLayerById.get(id) || null : null;
         };
-        let layers = ids.map(lookup);
-        if (layers.some(layer => !layer) && typeof window.fetchParcelsByIds === 'function') {
+        if (ids.length && window.CadastralGroundService
+            && typeof window.CadastralGroundService.ensureIds === 'function') {
             try {
-                await window.fetchParcelsByIds(ids);
-                layers = ids.map(lookup);
+                await window.CadastralGroundService.ensureIds(ids);
             } catch (error) {
-                console.warn('[reparcellization] fetching the plan\'s input parcels failed', error);
+                console.warn('[reparcellization] loading the plan\'s cadastral ground failed', error);
             }
         }
+        const layers = ids.map(lookup);
         const missing = ids.filter((id, index) => !layers[index]);
         return { layers: layers.filter(Boolean), missing };
     }

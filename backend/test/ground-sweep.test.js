@@ -142,37 +142,22 @@ describe('coordinated plots meeting road parcels', () => {
     });
 });
 
-// The sweep runs in the browser against Leaflet layers, so the wiring is read from source.
-describe('the sweep uses it', () => {
+// This helper used to be wired into boot replay as a second validity system. It parked any park on
+// a cadastral parcel divided by a road even when the canonical live-ground resolver could place it,
+// causing a full replay to restart and the shared-route loader to apply the same record again.
+describe('the retired boot sweep stays out of materialization', () => {
     const manager = require('node:fs').readFileSync(
         new URL('../../frontend/js/proposal-manager.js', import.meta.url), 'utf8');
-    const fn = manager.slice(
-        manager.indexOf('_parkRecordsInvalidatedByCorridors(parcelIds, candidateRecords) {'),
-        manager.indexOf('async _rebuildPass(appliedList, opts) {'));
 
-    it('judges parts, not the union', () => {
-        expect(fn).toContain('sweepApi.designParts(record, isBuildingDesign, footprint)');
-        expect(fn).toContain('sweepApi.inspectDesignAgainstPieces(parts, pieces');
-        expect(fn).toContain('if (!verdict.standsHere) continue;');
-        expect(fn).toContain('if (isBuildingDesign && !verdict.severed) continue;');
+    it('does not alter the applied set or trigger another pass', () => {
+        expect(manager).not.toContain('_parkRecordsInvalidatedByCorridors');
+        expect(manager).not.toContain('applied set changed during replay');
+        expect(manager).not.toContain('_replayInvalidated');
+        expect(manager).toContain('preserveAppliedSet: true');
     });
 
-    it('preserves a coordinated readjustment only while roads stay out of its plots', () => {
-        expect(fn).toContain("goalKey === 'reparcellization' && _coordinatedPlanIdOf(record)");
-        expect(fn).toContain('sweepApi.partsOverlapPieces(plots, corridorPieces, geometryOps)');
-    });
-
-    it('a missing module leaves the sweep silent rather than sweeping blind', () => {
-        expect(fn).toContain('if (!planOrderApi || !t || !sweepApi || !touched.size) return { unapplied };');
-    });
-
-    it('counts repeated titles instead of printing the same block four times', () => {
-        expect(fn).toContain('byTitle.set(entry.title');
-        expect(fn).toContain('`${title} ×${count}`');
-    });
-
-    it('is loaded by the page', () => {
+    it('is not loaded by the page', () => {
         expect(require('node:fs').readFileSync(new URL('../../frontend/index.html', import.meta.url), 'utf8'))
-            .toContain("'js/proposals/ground-sweep.js'");
+            .not.toContain("'js/proposals/ground-sweep.js'");
     });
 });

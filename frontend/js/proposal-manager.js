@@ -88,39 +88,21 @@ function _proposalApplyKind(proposalData) {
     return key || 'proposal';
 }
 
-// Many footprints as ONE geometry, without unioning them.
-//
-// The replay needs the ground under every member, and asking per member is 165 round trips that
-// mostly re-fetch each other's parcels — adjacent proposals share ground, and the client remembers
-// per PROPOSAL, not per parcel. One MultiPolygon asks the same question once.
-//
-// Deliberately not turf.union: a union of 165 scattered polygons is expensive, can fail on
-// self-touching input, and buys nothing. The server runs ST_MakeValid and ST_Subdivide over
-// whatever arrives, and DISTINCTs the parcels it finds, so overlapping parts are already handled —
-// and a MultiPolygon of disjoint pieces subdivides BETTER than one welded blob would.
-function _multiPolygonOfFootprints(footprints) {
-    const polygons = [];
-    (Array.isArray(footprints) ? footprints : []).forEach(entry => {
-        const geometry = entry && (entry.type === 'Feature' ? entry.geometry : entry);
-        if (!geometry || !Array.isArray(geometry.coordinates)) return;
-        if (geometry.type === 'Polygon') polygons.push(geometry.coordinates);
-        else if (geometry.type === 'MultiPolygon') geometry.coordinates.forEach(part => polygons.push(part));
-    });
-    return polygons.length ? { type: 'MultiPolygon', coordinates: polygons } : null;
+function _cadastralGroundService() {
+    if (typeof CadastralGroundService !== 'undefined' && CadastralGroundService) {
+        return CadastralGroundService;
+    }
+    const root = (typeof window !== 'undefined') ? window : globalThis;
+    if (root && root.CadastralGroundService) return root.CadastralGroundService;
+    if (typeof require === 'function') {
+        return require('./parcels/ground-service.js').CadastralGroundService;
+    }
+    return null;
 }
 
-// A replay-ground memo belongs to an authored footprint, not merely to a proposal id. An edit
-// keeps the id while moving the geometry; keying only by id made the edited proposal incorrectly
-// inherit the old location's "already loaded" result.
-function _geometryFingerprint(value) {
-    let json = '';
-    try { json = JSON.stringify(value || null); } catch (_) { json = ''; }
-    let hash = 2166136261;
-    for (let index = 0; index < json.length; index += 1) {
-        hash ^= json.charCodeAt(index);
-        hash = Math.imul(hash, 16777619);
-    }
-    return `${json.length}:${(hash >>> 0).toString(36)}`;
+function _emitProposalProgress(listener, event) {
+    if (typeof listener !== 'function') return;
+    try { listener(Object.freeze({ ...event })); } catch (_) { /* progress is observational */ }
 }
 
 // `proposalId` rides along as DATA rather than being parsed back out of the sentence later. A
@@ -129,24 +111,6 @@ function _geometryFingerprint(value) {
 function _announceApply(message, proposalId) {
     if (typeof updateStatus !== 'function') return;
     try { updateStatus(message, proposalId ? { proposalId } : undefined); } catch (_) { }
-}
-
-// The replay is the long half of opening a plan — one proposal at a time, minutes of it — and the
-// load overlay had no counter for it: it sat on the fetch phase's finished 299/299 while the work
-// went past in the console only. Same wording and key as the shared-plan queue, because to the
-// reader they are the same wait.
-function _reportApplyProgress(label, done, total) {
-    if (typeof updateProposalLoadOverlay !== 'function') return;
-    try {
-        // Same namespaced key the shared-plan queue uses (getShareI18nHelper prefixes it), so one
-        // translation serves both paths and neither can drift into a different wording.
-        const t = (typeof getShareI18nHelper === 'function') ? getShareI18nHelper() : null;
-        const fallback = `Applying ${label} (${done}/${total})…`;
-        const status = t
-            ? t('plan.applyingNamed', fallback, { label, done, total })
-            : fallback;
-        updateProposalLoadOverlay({ status, progress: { done, total } });
-    } catch (_) { /* progress must never break an apply */ }
 }
 
 // "112 roads", "3 tracks", "112 roads and 3 tracks" — a track is a road-track record with a flag,
@@ -174,7 +138,15 @@ function _corridorCountPhrase(takes) {
 async function _runProposalApplyWithSummary(proposalId, proposalData, runApply, options = {}) {
     const label = _getProposalApplyLabel(proposalId, proposalData);
     const kind = _proposalApplyKind(proposalData);
-    const replaying = !!(ProposalManager && ProposalManager._rebuildInProgress === true);
+    // `_rebuildInProgress` is also the recursion guard used by a small, local materialization.
+    // It does not by itself mean that the user is watching a boot replay. A freshly-created or
+    // explicitly-applied proposal goes through that same local engine, and calling it
+    // "Re-derived" made a successful create look like the old proposal had mysteriously returned.
+    // The initiating operation can therefore name the user-facing verb explicitly; true plan-wide
+    // replay keeps the default below.
+    const replaying = options.statusMode === 'rederive'
+        || (options.statusMode !== 'apply'
+            && !!(ProposalManager && ProposalManager._rebuildInProgress === true));
     const verb = replaying ? 'Re-derived' : 'Applied';
     const gerund = replaying ? 'Re-deriving' : 'Applying';
     const deferPresentation = options && options.deferPresentation === true;
@@ -473,18 +445,9 @@ function _assignSyntheticChildIdentitiesImpl(proposalId, childFeatures, options 
     });
 }
 
-// How many members of a replay may have their ground fetched at once. High enough that a plan of
-// twenty roads costs roughly one round-trip of wall clock instead of twenty; low enough not to trip
-// the API's rate limiter or open a connection per proposal.
-const REPLAY_GROUND_CONCURRENCY = 6;
-// How many member footprints ride in one /parcels/under request. Measured against the real API:
-// 20 footprints → one request, 0.61 s, 840 parcels, where the same 20 asked one at a time cost 20
-// requests and 5.7 s. Bounded rather than "all of them" because the endpoint refuses an over-cap
-// result only AFTER doing the work, so an oversized ask is paid for and thrown away.
-const REPLAY_GROUND_BATCH_SIZE = 20;
 // Same completeness bar as finishing a corridor. Below this, even a tiny unloaded edge
 // may contain a cadastral parcel that changes the cut, so replay still asks the backend.
-const REPLAY_GROUND_COMPLETE_COVERAGE = 0.999;
+const FLAT_GROUND_COMPLETE_COVERAGE = 0.999;
 
 const _now = () => ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now());
 
@@ -499,6 +462,7 @@ const ProposalManager = {
     _lastRebuildProfile: { members: 0, resetMs: 0, groundMs: 0, foldMs: 0, stripsMs: 0, passes: 0, slowest: null },
     _initialReapplyDone: false,
     _reapplyInFlight: false,
+    _reapplyProgressListeners: new Set(),
 
     _setLastApplyFailure(proposalId, failure) {
         try {
@@ -656,10 +620,12 @@ const ProposalManager = {
         return queued;
     },
 
-    reapplyAppliedProposals() {
+    reapplyAppliedProposals(options = {}) {
         if (this._initialReapplyDone) {
             return this._initialReapplyPromise || Promise.resolve(this._initialReapplyResult);
         }
+        if (!(this._reapplyProgressListeners instanceof Set)) this._reapplyProgressListeners = new Set();
+        if (typeof options.onProgress === 'function') this._reapplyProgressListeners.add(options.onProgress);
         // Single-flight barrier: every caller must await the SAME replay. Returning immediately
         // merely because one was in flight let the shared-link route inspect the interval after
         // `_rebuildPass` had marked every record unapplied but before the ordered prefix stood.
@@ -710,12 +676,18 @@ const ProposalManager = {
                 // implementation with different precedence and restore semantics; whichever happened
                 // to run first could establish a different fabric. Non-conforming stored records are
                 // handled by the explicit migration script, never by a live healing pass here.
-                const result = await this.rebuildAppliedFabric({ silent: true });
+                const result = await this.rebuildAppliedFabric({
+                    silent: true,
+                    onProgress: event => {
+                        this._reapplyProgressListeners.forEach(listener => _emitProposalProgress(listener, event));
+                    }
+                });
                 this._initialReapplyResult = result;
                 return result;
             } finally {
                 this._reapplyInFlight = false;
                 this._initialReapplyDone = true;
+                this._reapplyProgressListeners.clear();
             }
         })();
         this._initialReapplyPromise = replayPromise;
@@ -787,24 +759,19 @@ const ProposalManager = {
                 });
             };
 
+            // Boot/recovery is a materialization of ONE immutable applied-set snapshot. It must not
+            // discover a second record-state policy while rebuilding the map: explicit apply/edit
+            // transactions are the only writers of `applied`. The old corridor sweep parked records
+            // merely because a road divided their cadastral anchor, even when the canonical live-
+            // ground resolver could place them. That changed 298 -> 296 mid-pass, forced a complete
+            // second replay, and the shared-route loader then applied the same two records again.
+            const standing = appliedNow();
             let summary = { ok: true, applied: 0, failed: [] };
-            // A severance or demolition can park an earlier record while a pass is running.
-            // That invalidates the prefix already stamped on the map, so derive again from the
-            // cadastre with the now-smaller applied set. These changes are monotonic; at most one
-            // record can disappear per extra pass.
-            const maxPasses = Math.max(2, appliedNow().length + 1);
-            let passesRun = 0;
-            const runPasses = async () => {
-                for (let pass = 0; pass < maxPasses; pass += 1) {
-                    this._severedThisRebuild = [];
-                    this._replayInvalidated = false;
-                    passesRun += 1;
-                    summary = await this._rebuildPass(appliedNow(), opts);
-                    if (!this._severedThisRebuild.length && !this._replayInvalidated) break;
-                    console.info('[rebuildAppliedFabric] applied set changed during replay — deriving again', {
-                        severed: this._severedThisRebuild.slice()
-                    });
-                }
+            const runReplay = async () => {
+                summary = await this._rebuildPass(standing, {
+                    ...opts,
+                    preserveAppliedSet: true
+                });
             };
             // One redraw of the proposed buildings and each structure layer for the whole replay
             // instead of one per member. Surveyed-building outcomes are updated separately and
@@ -816,19 +783,20 @@ const ProposalManager = {
                 ? window.withStructureLayersRefreshHeld
                 : null;
             const runWithStructuresHeld = () => (typeof holdStructures === 'function')
-                ? holdStructures(runPasses)
-                : runPasses();
+                ? holdStructures(runReplay)
+                : runReplay();
             if (typeof holdBuildings === 'function') await holdBuildings(runWithStructuresHeld);
             else await runWithStructuresHeld();
 
             const stripsStarted = _now();
+            _emitProposalProgress(opts.onProgress, { phase: 'corridor-strips' });
             try { if (typeof refreshAppliedCorridorStrips === 'function') refreshAppliedCorridorStrips(); } catch (_) { }
             try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
             // Built by _rebuildPass; defaulted here so a caller that supplies its own pass (tests
             // do) is not broken by the reporting.
             const profile = this._lastRebuildProfile || { members: 0, resetMs: 0, groundMs: 0, foldMs: 0, failed: 0, slowest: null };
             profile.stripsMs = _now() - stripsStarted;
-            profile.passes = passesRun;
+            profile.passes = 1;
             this._lastRebuildProfile = profile;
             try {
                 const p = profile;
@@ -839,10 +807,17 @@ const ProposalManager = {
                     : '';
                 console.info(`[rebuildAppliedFabric] ${p.members} member(s), ${p.corridors || 0} corridor(s) in ${Math.round(total)} ms`
                     + ` — reset ${Math.round(p.resetMs)} · ground ${Math.round(p.groundMs)}`
-                    + ` (${REPLAY_GROUND_CONCURRENCY} at a time) · replay ${Math.round(p.foldMs)}`
+                    + ` · replay ${Math.round(p.foldMs)}`
                     + ` · strips ${Math.round(p.stripsMs)}${cut}${worst}`
                     + `${p.passes > 1 ? ` · ${p.passes} passes` : ''}${p.failed ? ` · ${p.failed} set aside` : ''}`);
             } catch (_) { }
+            _emitProposalProgress(opts.onProgress, {
+                phase: 'rebuild-ready',
+                members: profile.members,
+                corridors: profile.corridors || 0,
+                failed: profile.failed || 0,
+                elapsed: profile.resetMs + profile.groundMs + profile.foldMs + profile.stripsMs
+            });
             if (summary.failed.length && !(opts.silent === true)) {
                 const names = summary.failed
                     .map(f => (f.reason ? `${f.title} — ${f.reason}` : f.title))
@@ -856,8 +831,6 @@ const ProposalManager = {
             return summary;
         } finally {
             this._rebuildInProgress = false;
-            this._severedThisRebuild = [];
-            this._replayInvalidated = false;
             if (hasStorageBatch) proposalStorage.endBatch();
             // In `finally`, so a derivation that throws does not leave the bar spinning for ever.
             try { if (typeof spinnerHeld === 'function') spinnerHeld(); } catch (_) { }
@@ -915,7 +888,7 @@ const ProposalManager = {
             const geometryIds = Array.isArray(resolved && resolved.ids)
                 ? proposalClaims.baseParcelIdsOf({ cadastreParcelIds: resolved.ids })
                 : [];
-            complete = coverage > REPLAY_GROUND_COMPLETE_COVERAGE && geometryIds.length > 0;
+            complete = coverage > FLAT_GROUND_COMPLETE_COVERAGE && geometryIds.length > 0;
             if (complete) baseParcelIds = geometryIds;
         }
 
@@ -936,9 +909,15 @@ const ProposalManager = {
         return { baseParcelIds: flat, complete };
     },
 
-    async _flatScopeSeeds(records, extraBaseParcelIds = []) {
+    async _flatScopeSeeds(records, extraBaseParcelIds = [], options = {}) {
         const members = (Array.isArray(records) ? records : []).filter(Boolean);
-        if (members.length) await this._loadReplayGround(members);
+        if (members.length) {
+            const groundOptions = {};
+            if (typeof options.onProgress === 'function') groundOptions.onProgress = options.onProgress;
+            if (options.purpose && options.purpose !== 'application') groundOptions.purpose = options.purpose;
+            if (Object.keys(groundOptions).length) await this._loadReplayGround(members, groundOptions);
+            else await this._loadReplayGround(members);
+        }
         const ids = new Set(proposalClaims.baseParcelIdsOf({ cadastreParcelIds: extraBaseParcelIds }));
         let complete = true;
 
@@ -956,9 +935,15 @@ const ProposalManager = {
     // uncovered ribbon. Load the footprint, then scope the mutation to the union of its published
     // flat anchors and the current cadastral parcels the loaded geometry actually reaches. Coverage
     // is intentionally not a validity gate here.
-    async _corridorScopeSeeds(records, extraBaseParcelIds = []) {
+    async _corridorScopeSeeds(records, extraBaseParcelIds = [], options = {}) {
         const members = (Array.isArray(records) ? records : []).filter(Boolean);
-        if (members.length) await this._loadReplayGround(members);
+        if (members.length) {
+            const groundOptions = {};
+            if (typeof options.onProgress === 'function') groundOptions.onProgress = options.onProgress;
+            if (options.purpose && options.purpose !== 'application') groundOptions.purpose = options.purpose;
+            if (Object.keys(groundOptions).length) await this._loadReplayGround(members, groundOptions);
+            else await this._loadReplayGround(members);
+        }
         const ids = new Set(proposalClaims.baseParcelIdsOf({ cadastreParcelIds: extraBaseParcelIds }));
         const browserRoot = (typeof window !== 'undefined') ? window : globalThis;
         const ancestry = browserRoot.__cadastreAncestry;
@@ -991,7 +976,7 @@ const ProposalManager = {
             return { ok: false, reentered: true, failed: [] };
         }
         const seeds = (Array.isArray(seedRecords) ? seedRecords : [seedRecords]).filter(Boolean);
-        const seedResolution = await this._corridorScopeSeeds(seeds, opts.extraBaseParcelIds || []);
+        const seedResolution = await this._corridorScopeSeeds(seeds, opts.extraBaseParcelIds || [], opts);
         return this._rematerializeResolvedScope(seeds, seedResolution, opts);
     },
 
@@ -1015,7 +1000,7 @@ const ProposalManager = {
         }
 
         const seeds = (Array.isArray(seedRecords) ? seedRecords : [seedRecords]).filter(Boolean);
-        const seedResolution = await this._flatScopeSeeds(seeds, opts.extraBaseParcelIds || []);
+        const seedResolution = await this._flatScopeSeeds(seeds, opts.extraBaseParcelIds || [], opts);
         if (!seedResolution.complete) {
             console.warn('[flat-rematerialize] incomplete local cadastral coverage — mutation refused');
             return {
@@ -1046,6 +1031,11 @@ const ProposalManager = {
         if (hasStorageBatch) proposalStorage.beginBatch();
         try {
             const baseParcelIds = Array.from(new Set(seedResolution.baseParcelIds.map(String).filter(Boolean)));
+            _emitProposalProgress(opts.onProgress, {
+                phase: 'fabric-scope-ready',
+                parcels: baseParcelIds.length,
+                members: seeds.length
+            });
             const seedById = new Map();
             seeds.forEach(seed => {
                 const id = seed && seed.proposalId;
@@ -1087,7 +1077,8 @@ const ProposalManager = {
 
             const fabric = await this._deriveCorridorFabric({
                 parcelIds: baseParcelIds,
-                takes: this._appliedCorridorTakes()
+                takes: this._appliedCorridorTakes(),
+                onProgress: opts.onProgress
             });
             const failed = [];
             if (fabric && Array.isArray(fabric.failed)) {
@@ -1100,14 +1091,25 @@ const ProposalManager = {
 
             let appliedCount = 0;
             if (!failed.length) {
-                for (const record of orderedReplay) {
+                for (let replayIndex = 0; replayIndex < orderedReplay.length; replayIndex += 1) {
+                    const record = orderedReplay[replayIndex];
                     const id = String(record.proposalId || '');
+                    _emitProposalProgress(opts.onProgress, {
+                        phase: 'proposal-apply',
+                        label: _getProposalApplyLabel(id, record),
+                        done: replayIndex + 1,
+                        total: orderedReplay.length
+                    });
                     let stood = false;
                     try {
-                        stood = await this.applyProposal(id, {
+                        const replayOptions = {
                             replay: true,
                             deferPresentation: opts.silent === true
-                        });
+                        };
+                        if (opts.statusMode === 'apply' || opts.statusMode === 'rederive') {
+                            replayOptions.statusMode = opts.statusMode;
+                        }
+                        stood = await this.applyProposal(id, replayOptions);
                     } catch (error) {
                         failed.push({
                             proposalId: id,
@@ -1140,7 +1142,10 @@ const ProposalManager = {
             if (!failed.length) removedOutputs.forEach(output => this._commitRemovedProposalOutput(output));
             try { if (typeof scheduleCorridorStripRefresh === 'function') scheduleCorridorStripRefresh(); } catch (_) { }
             try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
-            try { if (typeof proposalStorage !== 'undefined' && proposalStorage.save) proposalStorage.save(); } catch (_) { }
+            if (opts.deferSave !== true) {
+                _emitProposalProgress(opts.onProgress, { phase: 'save' });
+                try { if (typeof proposalStorage !== 'undefined' && proposalStorage.save) proposalStorage.save(); } catch (_) { }
+            }
             return {
                 ok: failed.length === 0,
                 applied: appliedCount,
@@ -1151,34 +1156,22 @@ const ProposalManager = {
             };
         } finally {
             this._rebuildInProgress = false;
-            this._severedThisRebuild = [];
-            this._replayInvalidated = false;
             if (hasStorageBatch) proposalStorage.endBatch();
         }
     },
 
-    // The ground a whole replay stands on, fetched concurrently. Bounded: the API is rate-limited
-    // and a big plan fanning out unbounded is a self-inflicted burst. Returns the wall-clock cost so
-    // the caller can say where a slow rebuild went.
-    //
-    // The derive is geometric against LOADED fabric — coverage must not depend on where the viewport
-    // happens to be. So the database is asked for the ground each member covers, by its FOOTPRINT.
-    //
-    // That used to be two approximations and both failed on a long line: a list of declared ids,
-    // only as good as whatever the record happened to say, and then the footprint's BOUNDING BOX for
-    // anything the list missed. The imported 17 km track occupies 9.35 ha in a 56.6 km² box — 605× —
-    // so the box asked for 37,164 parcels to find the 661 actually under it, ingested ~98,000 layers,
-    // and the tab never came back. /parcels/under asks the real question and subdivides the geometry
-    // so the spatial index is not defeated by the same diagonal: 661 parcels, 618 ms.
+    // Fetching cadastral ground and demolition buildings are independent reads, so the latter runs
+    // alongside CadastralGroundService. The service is the only owner of ground cache/transport
+    // policy; this prefetch deals solely in building features that may need to be removed.
     // One request for every scanning member's demolition ground. Runs CONCURRENTLY with the
     // ground load — both are independent reads over the same member list — so its latency
-    // disappears behind the much larger /parcels/under fetch.
+    // usually disappears behind cadastral-ground preparation.
     //
     // Failure here is never an answer: on any error, unsupported city, or truncation the map keeps
     // only the keys a good response covered, and uncovered members fall back to their own
     // per-region fetch. The one outcome this must never produce is an empty list standing in for
     // "could not ask" — that is how a proposal gets stored as demolishing nothing.
-    async _prefetchDemolitionBuildings(appliedList) {
+    async _prefetchDemolitionBuildings(appliedList, options = {}) {
         const prefetched = new Map();
         const profile = { regions: 0, requests: 0, coveredRegions: 0, fallbackRegions: 0, elapsed: 0 };
         const started = _now();
@@ -1219,6 +1212,12 @@ const ProposalManager = {
 
         // Chunked to stay under the endpoint's 400-region cap; each chunk's answer stands alone.
         const PREFETCH_CHUNK = 200;
+        const batchCount = Math.ceil(regions.length / PREFETCH_CHUNK);
+        _emitProposalProgress(options.onProgress, {
+            phase: 'building-ground-load',
+            regions: regions.length,
+            batches: batchCount
+        });
         for (let index = 0; index < regions.length; index += PREFETCH_CHUNK) {
             const chunk = regions.slice(index, index + PREFETCH_CHUNK);
             try {
@@ -1239,240 +1238,55 @@ const ProposalManager = {
             } catch (error) {
                 console.warn('[replay] bulk building fetch failed — members fall back to their own', error);
             }
+            _emitProposalProgress(options.onProgress, {
+                phase: 'building-ground-progress',
+                done: Math.floor(index / PREFETCH_CHUNK) + 1,
+                total: batchCount,
+                regions: regions.length,
+                covered: prefetched.size
+            });
         }
         profile.coveredRegions = prefetched.size;
         profile.fallbackRegions = Math.max(0, regions.length - prefetched.size);
         profile.elapsed = _now() - started;
         this._lastDemolitionPrefetchProfile = profile;
+        _emitProposalProgress(options.onProgress, {
+            phase: 'building-ground-ready',
+            regions: regions.length,
+            covered: profile.coveredRegions,
+            fallback: profile.fallbackRegions
+        });
         return prefetched;
     },
 
-    async _loadReplayGround(appliedList) {
+    async _loadReplayGround(appliedList, options = {}) {
         const members = (Array.isArray(appliedList) ? appliedList : []).filter(Boolean);
         if (!members.length) return 0;
-        const started = _now();
-
-        const planOrderApi = (typeof window !== 'undefined') ? window.__planOrder : null;
-        const footprintOf = proposal => {
-            try {
-                return (planOrderApi && typeof planOrderApi.footprintOf === 'function')
-                    ? planOrderApi.footprintOf(proposal)
-                    : null;
-            } catch (_) { return null; }
-        };
-        const memoOf = proposal => {
-            const key = String(proposal.proposalId
-                || ((typeof getProposalKey === 'function' && getProposalKey(proposal)) || '') || '');
-            const footprint = footprintOf(proposal);
-            return footprint && footprint.geometry
-                ? `${key}@${_geometryFingerprint(footprint.geometry)}`
-                : key;
-        };
-
-        const loadOne = async proposal => {
-            const key = (typeof getProposalKey === 'function' && getProposalKey(proposal)) || proposal.proposalId;
-            // Ground already fetched stays on the map — a consumed parcel is hidden, never removed
-            // from the registry, and a reset puts it back. So the answer cannot change, and asking
-            // again is a round-trip per member per rebuild for nothing. Only a SUCCESSFUL fetch is
-            // remembered, so a network failure or a 429 retries on the next rebuild instead of
-            // leaving a formation permanently short of the ground it needs.
-            const memo = memoOf(proposal);
-            if (memo && this._replayGroundFetched.has(memo)) return;
-            try {
-                const footprint = footprintOf(proposal);
-                let loaded = null;
-                if (footprint && typeof fetchParcelsUnderGeometry === 'function') {
-                    // Ground only — the replay derives its own takes, so the endpoint's coverage
-                    // arithmetic would be paid for and thrown away.
-                    loaded = await fetchParcelsUnderGeometry(footprint, { parcelsOnly: true });
-                }
-                if (!loaded) {
-                    // No footprint to ask about, or the endpoint is unavailable: fall back to the
-                    // declared ids. Never to a bounding box.
-                    const fe = (typeof window !== 'undefined') ? window.__formationEdit : null;
-                    const groundIds = Array.from(new Set([
-                        ...(Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds : []),
-                        ...(Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [])
-                            .map(id => (fe && typeof fe.baseIdOf === 'function') ? fe.baseIdOf(String(id)) : String(id))
-                    ].map(String).filter(Boolean)));
-                    if (groundIds.length && typeof fetchParcelsForIds === 'function') {
-                        await fetchParcelsForIds(groundIds);
-                    }
-                }
-                if (memo) this._replayGroundFetched.add(memo);
-            } catch (fetchError) {
-                console.warn('[rebuildAppliedFabric] ground fetch failed for', key, fetchError);
-            }
-        };
-
-        // This used to be the longest silence in a reload: one /parcels/under round trip per member,
-        // six at a time. On a 165-proposal plan that was ~7 s — and mostly the SAME parcels over and
-        // over, because adjacent proposals share ground while the memo above is per proposal.
-        //
-        // So the whole replay asks once. Every pending member's footprint goes into one MultiPolygon
-        // and the server answers with the union of the parcels under all of them, DISTINCT. The
-        // per-member path stays as the fallback for anything the batch could not carry.
-        const memoPending = members.filter(proposal => {
-            const memo = memoOf(proposal);
-            return !memo || !this._replayGroundFetched.has(memo);
-        });
-        if (!memoPending.length) return _now() - started;
-
-        // The shared route has already fetched the union of declared base parcels. Ask that loaded
-        // registry before the database: in the 299-member Sibenik trace, the seven responses below
-        // added 3 parcels and skipped 1,531 that were already here. Geometry coverage, not declared
-        // ids, is the gate so a stale declaration cannot hide a genuinely missing edge parcel.
-        const ancestry = (typeof window !== 'undefined') ? window.__cadastreAncestry : null;
-        let coveredMembers = 0;
-        const pendingMembers = memoPending.filter(proposal => {
-            if (!ancestry || typeof ancestry.loadedCadastreCoverage !== 'function') return true;
-            let resolved = null;
-            try { resolved = ancestry.loadedCadastreCoverage(proposal); } catch (_) { resolved = null; }
-            if (!(Number(resolved?.coverage) > REPLAY_GROUND_COMPLETE_COVERAGE)) return true;
-            const memo = memoOf(proposal);
-            if (memo) this._replayGroundFetched.add(memo);
-            coveredMembers += 1;
-            return false;
-        });
-
-        const profile = {
-            members: memoPending.length,
-            coveredMembers,
-            fetchedMembers: pendingMembers.length,
-            requests: 0,
-            parcels: 0,
-            serverMs: 0,
-            slowestMs: 0,
-            slowest: null,
-            refused: [],
-            failed: 0,
-            fallbacks: 0
-        };
-        if (!pendingMembers.length) {
-            const elapsed = _now() - started;
-            this._lastReplayGroundProfile = { ...profile, elapsed };
-            console.info(`[replayGround] ${memoPending.length} member(s) in ${Math.round(elapsed)} ms`
-                + ` — ${coveredMembers} already covered, 0 request(s)`);
-            return elapsed;
-        }
-        _announceApply(`Loading ground for ${pendingMembers.length} proposal${pendingMembers.length === 1 ? '' : 's'}...`);
-
-        const batchable = [];
-        const rest = [];
-        pendingMembers.forEach(proposal => {
-            let footprint = null;
-            try {
-                footprint = footprintOf(proposal);
-            } catch (_) { footprint = null; }
-            if (footprint && footprint.geometry) batchable.push({ proposal, footprint });
-            else rest.push(proposal);
-        });
-
-        // Over the server's parcel cap, or a transport failure: halve and retry. A single member
-        // that still fails on its own is left to the per-member path, so one bad footprint can
-        // never cost the whole replay its ground.
-        // What the load actually did, printed once at the end. A reload that takes an unexpected
-        // number of seconds is otherwise unanswerable: the difference between "one slow request",
-        // "a hundred fast ones" and "a refusal that split and retried" is invisible from a duration.
-        const loadBatch = async entries => {
-            if (!entries.length) return;
-            const geometry = _multiPolygonOfFootprints(entries.map(entry => entry.footprint));
-            if (!geometry || typeof fetchParcelsUnderGeometry !== 'function') return;
-            const askStarted = _now();
-            try {
-                // Ground only: batched footprints are strangers to each other, so the full mode's
-                // taken/coverage numbers would describe their union — expensive and meaningless.
-                const loaded = await fetchParcelsUnderGeometry(geometry, { parcelsOnly: true });
-                const took = _now() - askStarted;
-                profile.requests += 1;
-                if (took > profile.slowestMs) { profile.slowestMs = took; profile.slowest = entries.length; }
-                if (!loaded) return;
-                profile.parcels += Number(loaded.count) || 0;
-                profile.serverMs += Number(loaded.queryMs) || 0;
-                entries.forEach(entry => {
-                    const memo = memoOf(entry.proposal);
-                    if (memo) this._replayGroundFetched.add(memo);
-                });
-            } catch (error) {
-                const took = _now() - askStarted;
-                profile.requests += 1;
-                if (took > profile.slowestMs) { profile.slowestMs = took; profile.slowest = entries.length; }
-                // A 413 is the endpoint saying the ask was too big — the one failure that a split
-                // actually fixes. Recorded distinctly, because "it split and retried" is a very
-                // different story from "the network dropped".
-                const overCap = /\b413\b/.test(String(error && error.message));
-                if (overCap) profile.refused.push(entries.length);
-                else profile.failed += 1;
-                if (entries.length > 1) {
-                    const mid = Math.ceil(entries.length / 2);
-                    await loadBatch(entries.slice(0, mid));
-                    await loadBatch(entries.slice(mid));
-                    return;
-                }
-                console.warn('[replayGround] batched ground fetch failed for',
-                    memoOf(entries[0].proposal), error);
-            }
-        };
-
-        // Chunked, NOT one request for the entire plan.
-        //
-        // /parcels/under refuses a result over its parcel cap — and it refuses AFTER running the
-        // whole query and building the whole response, so an over-cap attempt costs full price for
-        // nothing. One request carrying every footprint of a large plan is exactly that: it covers
-        // the whole city, blows the cap, and the halve-and-retry above then pays that price again
-        // for each half, sequentially. A plan that used to load in seconds appeared to hang.
-        //
-        // So the batch is bounded at a size measured to be comfortable (20 footprints ≈ 0.6 s,
-        // ~840 parcels), and the chunks run over the same lanes the per-member path used. 165
-        // members become ~9 requests instead of 165 — the win — with no attempt ever near the cap.
-        const chunks = [];
-        for (let index = 0; index < batchable.length; index += REPLAY_GROUND_BATCH_SIZE) {
-            chunks.push(batchable.slice(index, index + REPLAY_GROUND_BATCH_SIZE));
-        }
-        let chunkCursor = 0;
-        const chunkWorker = async () => {
-            while (chunkCursor < chunks.length) await loadBatch(chunks[chunkCursor++]);
-        };
-        if (chunks.length) {
-            const chunkLanes = Math.min(REPLAY_GROUND_CONCURRENCY, chunks.length);
-            await Promise.all(Array.from({ length: chunkLanes }, chunkWorker));
+        const purpose = String(options.purpose || 'application');
+        const service = _cadastralGroundService();
+        if (!service || typeof service.ensureProposalGround !== 'function') {
+            throw new Error('Cadastral ground service is unavailable.');
         }
 
-        // Whatever the batch did not cover — no readable footprint, or a member whose own request
-        // failed — goes through the original per-member path, unchanged.
-        const remaining = pendingMembers.filter(proposal => {
-            const memo = memoOf(proposal);
-            return !memo || !this._replayGroundFetched.has(memo);
+        const profile = await service.ensureProposalGround(members, {
+            purpose,
+            onProgress: options.onProgress
         });
-        let next = 0;
-        const worker = async () => {
-            while (next < remaining.length) await loadOne(remaining[next++]);
-        };
-        const lanes = Math.min(REPLAY_GROUND_CONCURRENCY, Math.max(1, remaining.length));
-        if (remaining.length) await Promise.all(Array.from({ length: lanes }, worker));
-        profile.fallbacks = remaining.length;
-
-        const elapsed = _now() - started;
-        this._lastReplayGroundProfile = { ...profile, elapsed };
+        const elapsed = Number(profile && profile.elapsed) || 0;
+        this._lastReplayGroundProfile = profile;
         try {
-            console.info(`[replayGround] ${memoPending.length} member(s) in ${Math.round(elapsed)} ms`
-                + ` — ${profile.coveredMembers} already covered, ${profile.fetchedMembers} fetched,`
-                + ` ${profile.requests} batched request(s), ${profile.parcels} parcel(s),`
-                + ` server ${Math.round(profile.serverMs)} ms, slowest ${Math.round(profile.slowestMs)} ms`
-                + ` (${profile.slowest} footprint(s))`
-                + (profile.refused.length ? ` · REFUSED over cap: ${profile.refused.join(', ')} footprint(s)` : '')
-                + (profile.failed ? ` · ${profile.failed} failed` : '')
-                + (remaining.length ? ` · ${remaining.length} fell back to per-member` : ''));
+            console.info(`[cadastralGround:${purpose}] ${members.length} member(s) in ${Math.round(elapsed)} ms`
+                + ` — ${Number(profile.coveredMembers) || 0} cached,`
+                + ` ${Number(profile.idRequests) || 0} id request(s),`
+                + ` ${Number(profile.footprintRequests) || 0} footprint request(s),`
+                + ` ${Number(profile.parcels) || 0} parcel(s)`
+                + (profile.missingIds?.length ? ` · ${profile.missingIds.length} declared id(s) absent` : '')
+                + (profile.failed ? ` · ${profile.failed} failed` : ''));
         } catch (_) { }
-        _announceApply(`Ground loaded for ${memoPending.length} proposal${memoPending.length === 1 ? '' : 's'}`
+        _announceApply(`Cadastral ground ready for ${members.length} proposal${members.length === 1 ? '' : 's'}`
             + ` (${(elapsed / 1000).toFixed(1)} s)`);
         return elapsed;
     },
-
-    // Formations whose ground has been fetched successfully in this session. Nothing has to clear
-    // it: the two ways the parcel fabric is torn down — switching city and wiping local data — both
-    // reload the page, which is also the only way the map forgets parcels it has ingested.
-    _replayGroundFetched: new Set(),
 
     // Every corridor standing on the map, as a take. Roads and tracks are the ONLY things that
     // divide a cadastral parcel — a building sits on a piece and a readjustment reforms whole
@@ -1681,6 +1495,11 @@ const ProposalManager = {
             : new Map();
         const candidates = ancestry.loadedCadastreParcels();
         const parcels = [];
+        _emitProposalProgress(options.onProgress, {
+            phase: 'fabric-scan',
+            done: 0,
+            total: candidates.length
+        });
         for (let i = 0; i < candidates.length; i += CHUNK) {
             for (const entry of candidates.slice(i, i + CHUNK)) {
                 if (scope) { if (scope.has(String(entry.id))) parcels.push(entry); continue; }
@@ -1691,12 +1510,25 @@ const ProposalManager = {
                     hitsById.set(String(entry.id), hits);
                 }
             }
+            _emitProposalProgress(options.onProgress, {
+                phase: 'fabric-scan',
+                done: Math.min(i + CHUNK, candidates.length),
+                total: candidates.length
+            });
             if (i + CHUNK < candidates.length) await breatheIfDue();
         }
-        if (!parcels.length) return { added: 0, removed: 0, unchanged: 0, parcels: 0, parcelIds: [], failed: [] };
+        if (!parcels.length) {
+            _emitProposalProgress(options.onProgress, { phase: 'fabric-ready', parcels: 0, added: 0, removed: 0 });
+            return { added: 0, removed: 0, unchanged: 0, parcels: 0, parcelIds: [], failed: [] };
+        }
 
         let pieces = [];
         const failed = [];
+        _emitProposalProgress(options.onProgress, {
+            phase: 'fabric-arrange',
+            done: 0,
+            total: parcels.length
+        });
         // The clip loop goes ONE PARCEL at a time so the clock can be consulted between clips —
         // fabricOver over a 40-parcel slice was itself an unbreakable 20-120 ms block, which is a
         // budget consulted every 40th step bounding nothing.
@@ -1704,6 +1536,13 @@ const ProposalManager = {
             const part = A.fabricOver(parcels.slice(i, i + 1), takes, hitsById);
             if (part && Array.isArray(part.pieces)) pieces.push(...part.pieces);
             if (part && Array.isArray(part.failed)) failed.push(...part.failed);
+            if ((i + 1) % 25 === 0 || i + 1 === parcels.length) {
+                _emitProposalProgress(options.onProgress, {
+                    phase: 'fabric-arrange',
+                    done: i + 1,
+                    total: parcels.length
+                });
+            }
             if (i + 1 < parcels.length) await breatheIfDue();
         }
         // A parcel whose arrangement could not be computed keeps whatever it already has. Treating
@@ -1740,6 +1579,12 @@ const ProposalManager = {
         });
 
         const diff = A.diffPieces(currentIds, derived);
+        _emitProposalProgress(options.onProgress, {
+            phase: 'map-update',
+            added: diff.added.length,
+            removed: diff.removed.length,
+            parcels: parcels.length
+        });
 
         diff.removed.forEach(id => {
             try { if (typeof browserRoot.removeParcelLayerById === 'function') browserRoot.removeParcelLayerById(id); } catch (_) { }
@@ -1770,6 +1615,13 @@ const ProposalManager = {
                 if (spokenFor) browserRoot.hideParcelLayerById?.(id);
                 else browserRoot.showParcelLayerById?.(id);
             } catch (_) { }
+        });
+
+        _emitProposalProgress(options.onProgress, {
+            phase: 'fabric-ready',
+            parcels: parcels.length,
+            added: features.length,
+            removed: diff.removed.length
         });
 
         return {
@@ -1924,12 +1776,24 @@ const ProposalManager = {
             return { ok: false, failed: [{ reason: 'cadastral ground is incomplete' }] };
         }
         const baseParcelIds = Array.from(new Set((resolved.baseParcelIds || []).map(String).filter(Boolean)));
+        _emitProposalProgress(options.onProgress, {
+            phase: 'unapply-remove-output',
+            members: 1,
+            parcels: baseParcelIds.length
+        });
         const removed = this._removeProposalOwnedOutput(record);
         let fabric = { added: 0, removed: 0, unchanged: 0, parcels: 0, parcelIds: [], failed: [] };
         if (baseParcelIds.length) {
+            _emitProposalProgress(options.onProgress, {
+                phase: 'unapply-restore-ground',
+                members: 1,
+                parcels: baseParcelIds.length,
+                removedOutput: removed.removedParcelIds.length
+            });
             fabric = await this._deriveCorridorFabric({
                 parcelIds: baseParcelIds,
-                takes: this._appliedCorridorTakes()
+                takes: this._appliedCorridorTakes(),
+                onProgress: options.onProgress
             });
         }
         if (fabric && Array.isArray(fabric.failed) && fabric.failed.length) {
@@ -1955,6 +1819,13 @@ const ProposalManager = {
         } else {
             commitOutput();
         }
+        _emitProposalProgress(options.onProgress, {
+            phase: 'unapply-ready',
+            members: 1,
+            parcels: baseParcelIds.length,
+            removedOutput: removed.removedParcelIds.length,
+            liveParcels: Number(fabric && fabric.parcels) || 0
+        });
         return { ok: true, baseParcelIds, removedParcelIds: removed.removedParcelIds, fabric };
     },
 
@@ -2022,7 +1893,12 @@ const ProposalManager = {
             : this.rematerializeFlatScope;
         const summary = await materialize.call(this, localSeeds, {
             _fabricQueue: true,
-            silent: options.silent === true
+            silent: options.silent === true,
+            purpose: 'apply',
+            // This may use the replay engine internally, but to the person who just created or
+            // explicitly applied the record it is an APPLY. Reserve "Re-derived" for recovery and
+            // replay of something that already stood on the map.
+            statusMode: 'apply'
         });
         const key = String(proposal.proposalId || '');
         const targetFailed = !summary || summary.ok !== true
@@ -2061,6 +1937,16 @@ const ProposalManager = {
             if (missingIds.length) {
                 return { ok: false, appliedIds: [], failedIds: ids, reason: `Missing corridor record(s): ${missingIds.join(', ')}` };
             }
+            const tracks = records.filter(record => !!(
+                record?.roadProposal?.definition?.metadata?.isTrack
+            )).length;
+            const roads = Math.max(0, records.length - tracks);
+            _emitProposalProgress(options.onProgress, {
+                phase: 'corridor-start',
+                members: records.length,
+                roads,
+                tracks
+            });
 
             const prior = new Map(records.map(record => [String(record.proposalId), {
                 applied: appliedOf(record),
@@ -2075,19 +1961,31 @@ const ProposalManager = {
                 });
                 const derived = await this.rematerializeCorridorScope(records, {
                     _fabricQueue: true,
-                    silent: options.deferPresentation === true
+                    silent: options.deferPresentation === true,
+                    deferSave: true,
+                    ...(typeof options.onProgress === 'function' ? { onProgress: options.onProgress } : {})
                 });
                 if (!derived || derived.ok !== true) {
                     throw new Error((derived && derived.failed && derived.failed[0] && derived.failed[0].reason)
                         || 'The corridor ground could not be derived locally.');
                 }
+                _emitProposalProgress(options.onProgress, { phase: 'network-noding', roads, tracks });
                 try {
                     const browserRoot = (typeof window !== 'undefined') ? window : globalThis;
                     browserRoot.CorridorNetworkNodes?.normalize?.();
                 } catch (error) {
                     console.error('[materializeCorridorBatch] network noding failed', error);
                 }
-                try { if (typeof proposalStorage !== 'undefined' && proposalStorage.save) proposalStorage.save(); } catch (_) { }
+                if (options.deferSave !== true) {
+                    _emitProposalProgress(options.onProgress, { phase: 'save' });
+                    try { if (typeof proposalStorage !== 'undefined' && proposalStorage.save) proposalStorage.save(); } catch (_) { }
+                }
+                _emitProposalProgress(options.onProgress, {
+                    phase: 'corridor-ready',
+                    members: records.length,
+                    roads,
+                    tracks
+                });
                 return {
                     ok: true,
                     appliedIds: records.map(record => String(record.proposalId)),
@@ -2095,6 +1993,7 @@ const ProposalManager = {
                     scope: derived
                 };
             } catch (error) {
+                _emitProposalProgress(options.onProgress, { phase: 'rollback', roads, tracks });
                 records.forEach(record => {
                     const snapshot = prior.get(String(record.proposalId));
                     if (!snapshot) return;
@@ -2112,7 +2011,9 @@ const ProposalManager = {
                 });
                 try { await this.rematerializeCorridorScope(records, { _fabricQueue: true, silent: true }); }
                 catch (rollbackError) { console.error('[materializeCorridorBatch] rollback failed', rollbackError); }
-                try { if (typeof proposalStorage !== 'undefined' && proposalStorage.save) proposalStorage.save(); } catch (_) { }
+                if (options.deferSave !== true) {
+                    try { if (typeof proposalStorage !== 'undefined' && proposalStorage.save) proposalStorage.save(); } catch (_) { }
+                }
                 return {
                     ok: false,
                     appliedIds: [],
@@ -2121,109 +2022,6 @@ const ProposalManager = {
                 };
             }
         });
-    },
-
-    // Decide which standing records a corridor cut invalidates during the canonical boot/recovery
-    // replay. This changes record state only. Presentation and parcel output were already cleared
-    // by that replay's complete reset, so its next pass simply omits these records; there is no
-    // nested unapply and no second materializer racing the replay.
-    _parkRecordsInvalidatedByCorridors(parcelIds, candidateRecords) {
-        const browserRoot = (typeof window !== 'undefined') ? window : globalThis;
-        const planOrderApi = browserRoot.__planOrder;
-        const t = browserRoot.turf;
-        const sweepApi = browserRoot.__groundSweep;
-        const touched = new Set((parcelIds || []).map(String));
-        const unapplied = [];
-        if (!planOrderApi || !t || !sweepApi || !touched.size) return { unapplied };
-
-        // The pieces those parcels are now made of.
-        const byId = (browserRoot.parcelLayerById instanceof Map) ? browserRoot.parcelLayerById : new Map();
-        const pieces = [];
-        byId.forEach((layer, id) => {
-            const key = String(id);
-            const root = key.split('#')[0];
-            if (key === root || !touched.has(root)) return;
-            try { pieces.push(layer.toGeoJSON(false)); } catch (_) { }
-        });
-        const geometryOps = {
-            intersectionArea: (a, b) => {
-                try { const hit = t.intersect(a, b); return hit ? (t.area(hit) || 0) : 0; } catch (_) { return 0; }
-            },
-            area: shape => { try { return t.area(shape) || 0; } catch (_) { return 0; } }
-        };
-        const corridorPieces = pieces.filter(piece => {
-            const props = (piece && piece.properties) || {};
-            return props.isCorridor === true || props.isTrack === true
-                || (Array.isArray(props.formedByProposalIds) && props.formedByProposalIds.length > 0);
-        });
-
-        const records = Array.isArray(candidateRecords)
-            ? candidateRecords.filter(Boolean)
-            : [];
-
-        for (const record of records) {
-            const goalKey = (applyRoute && typeof applyRoute.normalizeGoalKey === 'function')
-                ? applyRoute.normalizeGoalKey(record.goal)
-                : String(record.goal || '');
-            if (goalKey === 'road-track') continue;
-
-            // A coordinated plan's readjustment is authored around its own road bands. It remains
-            // valid when those roads fill the gaps: shared edges are not a cut through a plot. A
-            // road piece with measurable area inside any plot is a real conflict and falls through
-            // to the ordinary sweep below, which removes the readjustment and restores its ground.
-            if (goalKey === 'reparcellization' && _coordinatedPlanIdOf(record)
-                && record.reparcellization && Array.isArray(record.reparcellization.polygons)
-                && typeof sweepApi.partsOverlapPieces === 'function') {
-                const plots = record.reparcellization.polygons
-                    .map(slice => slice && slice.geometry
-                        ? { type: 'Feature', properties: {}, geometry: slice.geometry }
-                        : null)
-                    .filter(Boolean);
-                if (!sweepApi.partsOverlapPieces(plots, corridorPieces, geometryOps)) continue;
-            }
-
-            let footprint = null;
-            try { footprint = planOrderApi.footprintOf(record); } catch (_) { footprint = null; }
-            if (!footprint || !footprint.geometry) continue;
-
-            // Ask per BUILDING, not of the union. A block is one building per parcel, so the union
-            // of them cannot fit inside a single piece of a single parcel once the block spans more
-            // than one — which condemned whole blocks whenever a road divided any parcel they built
-            // on, with the cut nowhere near a building. A design falls only when the cut runs
-            // through one of its own parts.
-            const isBuildingDesign = goalKey === 'building'
-                || !!(applyRoute && applyRoute.isBuildingGoal && applyRoute.isBuildingGoal(goalKey));
-            const parts = sweepApi.designParts(record, isBuildingDesign, footprint);
-            const verdict = sweepApi.inspectDesignAgainstPieces(parts, pieces, geometryOps);
-            if (!verdict.standsHere) continue;
-            // A park, square or lake takes whole parcels by definition: divided ground is fatal to
-            // it whatever the geometry says. A building design survives an untouched cut.
-            if (isBuildingDesign && !verdict.severed) continue;
-
-            try { setProposalApplied(record, false, { stamp: false }); } catch (_) { record.applied = false; }
-            unapplied.push({ proposalId: String(record.proposalId), title: record.title || String(record.proposalId), goal: goalKey });
-        }
-
-        if (unapplied.length) {
-            this._severedThisRebuild = [
-                ...(Array.isArray(this._severedThisRebuild) ? this._severedThisRebuild : []),
-                ...unapplied.map(entry => entry.proposalId)
-            ];
-            this._replayInvalidated = true;
-            try {
-                // Blocks are named after a parcel, so several distinct records share a title and the
-                // list read as "Block X; Block X; Block X". Count the repeats instead of printing them.
-                const byTitle = new Map();
-                unapplied.forEach(entry => byTitle.set(entry.title, (byTitle.get(entry.title) || 0) + 1));
-                const names = [...byTitle.entries()]
-                    .map(([title, count]) => (count > 1 ? `${title} ×${count}` : title))
-                    .join('; ');
-                if (typeof showEphemeralMessage === 'function') {
-                    showEphemeralMessage(`${unapplied.length} proposal(s) removed — the road divided ground they needed whole: ${names}`, 10000, 'warning');
-                }
-            } catch (_) { }
-        }
-        return { unapplied };
     },
 
     async _rebuildPass(appliedList, opts) {
@@ -2235,6 +2033,10 @@ const ProposalManager = {
             recordsToClear: passOptions.recordsToClear
         });
         const resetMs = _now() - resetStarted;
+        _emitProposalProgress(passOptions.onProgress, {
+            phase: 'rebuild-reset',
+            members: (appliedList || []).length
+        });
         const failed = [];
         let appliedCount = 0;
         // A replay is an ordered fold. Clear the ENTIRE target set before the first member runs;
@@ -2258,8 +2060,8 @@ const ProposalManager = {
         // cost a full HTTP round-trip for every proposal already on the map — the cost that grew
         // with the plan, in series, before any geometry ran at all.
         const [groundMs, demolitionBuildings] = await Promise.all([
-            this._loadReplayGround(appliedList),
-            this._prefetchDemolitionBuildings(appliedList)
+            this._loadReplayGround(appliedList, { onProgress: passOptions.onProgress, purpose: 'replay' }),
+            this._prefetchDemolitionBuildings(appliedList, { onProgress: passOptions.onProgress })
         ]);
         // Establish the flat-record invariant on every successful replay, including boot. This is
         // deliberately in the canonical pass rather than in an editor/import special case: legacy
@@ -2282,18 +2084,28 @@ const ProposalManager = {
         // silence: there is no per-corridor apply to announce. The derivation announces itself
         // instead, and says what it covers — one pair of lines for the whole set, because that is
         // honestly what it is.
-        if (componentTakes.length) _announceApply(`Applying ${_corridorCountPhrase(componentTakes)}...`);
+        if (componentTakes.length) {
+            const tracks = componentTakes.filter(take => take && take.isTrack).length;
+            _emitProposalProgress(passOptions.onProgress, {
+                phase: 'corridor-start',
+                members: componentTakes.length,
+                roads: componentTakes.length - tracks,
+                tracks
+            });
+            _announceApply(`Applying ${_corridorCountPhrase(componentTakes)}...`);
+        }
         const fabric = await this._deriveCorridorFabric({
             appliedList,
             takes,
+            onProgress: passOptions.onProgress,
             ...(passOptions.baseParcelIds ? { parcelIds: passOptions.baseParcelIds } : {})
         });
         if (componentTakes.length) _announceApply(`Applied ${_corridorCountPhrase(componentTakes)}`);
         const corridorIds = new Set(componentTakes.map(take => take.id));
-        const invalidated = takes.length && typeof this._parkRecordsInvalidatedByCorridors === 'function'
-            ? this._parkRecordsInvalidatedByCorridors(fabric.parcelIds || [], appliedList)
-            : { unapplied: [] };
-        const invalidatedIds = new Set(invalidated.unapplied.map(entry => String(entry.proposalId)));
+        const replayMembersTotal = (appliedList || []).filter(proposal => {
+            const id = String(proposal && proposal.proposalId || '');
+            return id && !corridorIds.has(id);
+        }).length;
 
         // Which member cost the most. A replay of twenty proposals that takes three seconds is a
         // very different problem depending on whether that is twenty × 150 ms or one × 2,800 ms.
@@ -2318,9 +2130,6 @@ const ProposalManager = {
             const key = (typeof getProposalKey === 'function' && getProposalKey(proposal)) || proposal.proposalId;
             const memberStarted = _now();
             let ok = false;
-            // The corridor phase proved this record cannot stand on the newly divided ground. Its
-            // state remains parked and the next pass omits it from the component entirely.
-            if (invalidatedIds.has(String(proposal.proposalId))) continue;
             // A corridor's ground is already derived above; it stands by virtue of being a take.
             if (corridorIds.has(String(proposal.proposalId))) {
                 try { setProposalApplied(proposal, true, { stamp: false }); } catch (_) { proposal.applied = true; }
@@ -2335,9 +2144,17 @@ const ProposalManager = {
                 continue;
             }
             replayDone += 1;
-            _reportApplyProgress(_getProposalApplyLabel(key, proposal), replayDone, appliedList.length);
+            _emitProposalProgress(passOptions.onProgress, {
+                phase: 'proposal-apply',
+                label: _getProposalApplyLabel(key, proposal),
+                done: replayDone,
+                total: replayMembersTotal
+            });
             try {
-                const replayOptions = { replay: true };
+                const replayOptions = {
+                    replay: true,
+                    preserveAppliedSet: passOptions.preserveAppliedSet === true
+                };
                 if (demolitionBuildings && demolitionBuildings.has(String(key))) {
                     replayOptions.preloadedBuildings = demolitionBuildings.get(String(key));
                 }
@@ -2415,8 +2232,9 @@ const ProposalManager = {
             if (priorStamp.hadUpdatedAt) record.updatedAt = priorStamp.updatedAt;
             else delete record.updatedAt;
         });
+        _emitProposalProgress(passOptions.onProgress, { phase: 'save' });
         try { if (typeof proposalStorage.save === 'function') proposalStorage.save(); } catch (_) { }
-        return { ok: failed.length === 0, applied: appliedCount, failed, invalidated: invalidated.unapplied };
+        return { ok: failed.length === 0, applied: appliedCount, failed, invalidated: [] };
     },
 
     _clearDerivedRecordState(proposal) {
@@ -2865,9 +2683,6 @@ const ProposalManager = {
         if (typeof commitReplacementSupersession !== 'function') return null;
         const transaction = commitReplacementSupersession(proposalData, proposalId, id => _getProposalRecord(id));
         if (!transaction) return null;
-        // The source may already have stamped its prefix in the current pass. Its explicit
-        // replacement parks the record permanently, so derive once more without that source.
-        if (this._rebuildInProgress) this._replayInvalidated = true;
         if (typeof proposalStorage.save === 'function') proposalStorage.save();
         const source = transaction.source;
         const sourceName = source.title || source.name || source.proposalName || source.proposalId || 'the previous proposal';
@@ -3137,7 +2952,7 @@ const ProposalManager = {
             return await this._applyStructureProposal(safeId, proposalData, applyOptions);
         }, applyOptions);
 
-        if (result) {
+        if (result && applyOptions.preserveAppliedSet !== true) {
             this._commitReplacementSupersession(safeId, proposalData);
             try { this._clearLastApplyFailure(safeId); } catch (_) { }
         }
@@ -3167,13 +2982,34 @@ const ProposalManager = {
             return this._enqueueFabricChange(async () => {
                 const seed = _getProposalRecord(proposalId);
                 if (!seed) return false;
+                const startedAt = _now();
+                const label = _getProposalApplyLabel(proposalId, seed);
+                const kind = _proposalApplyKind(seed);
+                let releaseSummary = null;
+
+                _emitProposalProgress(options.onProgress, {
+                    phase: 'unapply-start',
+                    proposalId: String(proposalId),
+                    label,
+                    kind
+                });
 
                 // Ground discovery is the only read that may need the server, and it happens before
                 // any state or layer changes. In the normal case loadedCadastreCoverage proves the
                 // proposal's few anchors are already present and this resolves without a request.
-                const scope = await this._flatScopeSeeds([seed]);
+                const scope = await this._flatScopeSeeds([seed], [], {
+                    onProgress: options.onProgress,
+                    purpose: 'unapply'
+                });
                 if (!scope.complete) {
                     console.warn('[unapplyProposal] local cadastral ground is incomplete; leaving the proposal applied');
+                    _emitProposalProgress(options.onProgress, {
+                        phase: 'unapply-failed',
+                        proposalId: String(proposalId),
+                        label,
+                        kind,
+                        reason: 'cadastral ground is incomplete'
+                    });
                     return false;
                 }
                 const result = await _runProposalMutationBoundary(
@@ -3186,13 +3022,20 @@ const ProposalManager = {
                         if (changed !== true) return changed;
                         const released = await this._releaseProposalLocally(seed, {
                             scope,
+                            onProgress: options.onProgress,
                             _mutationTransaction: transaction
                         });
+                        releaseSummary = released;
                         return released && released.ok === true;
                     }
                 );
                 if (result === true) {
                     this._refreshUIAfterProposalChange(_getProposalRecord(proposalId));
+                    const elapsed = _now() - startedAt;
+                    console.info(`[unapplyProposal] Unapplied ${kind} ${label} — ${Math.round(elapsed)} ms`
+                        + ` · ${releaseSummary?.baseParcelIds?.length || 0} cadastral parcel(s)`
+                        + ` · removed ${releaseSummary?.removedParcelIds?.length || 0} generated parcel(s)`
+                        + ` · restored ${Number(releaseSummary?.fabric?.parcels) || 0} live parcel piece(s)`);
                 }
                 return result;
             });
@@ -3950,34 +3793,15 @@ const ProposalManager = {
         return Array.from(new Set(base.map(id => String(id)).filter(Boolean)));
     },
 
-    // Demolition is an apply-time derivation, never authored or imported state. The scanner can
-    // park an earlier proposed building; when that happens inside a replay, the already-stamped
-    // prefix is invalid and the outer rebuild performs one more cadastre-first pass.
+    // Demolition is an apply-time derivation, never authored or imported state. A boot replay passes
+    // `preserveAppliedSet`: it may rebuild demolition records, but it never turns another authored
+    // proposal on or off. State conflicts are settled by the explicit mutation that created them.
     async _deriveDemolishedBuildings(geometry, options = {}) {
         const browserRoot = typeof window !== 'undefined' ? window : globalThis;
         if (!geometry || !geometry.type || typeof browserRoot.demolishBuildingsUnderFootprint !== 'function') {
             return [];
         }
-        const appliedBefore = new Set();
-        if (this._rebuildInProgress && typeof proposalStorage !== 'undefined') {
-            try {
-                proposalStorage.getAllProposals().forEach(proposal => {
-                    if (proposal && isProposalCurrentlyApplied(proposal)) {
-                        appliedBefore.add(String(proposal.proposalId));
-                    }
-                });
-            } catch (_) { }
-        }
         const records = await browserRoot.demolishBuildingsUnderFootprint(geometry, options);
-        if (appliedBefore.size) {
-            for (const key of appliedBefore) {
-                const proposal = proposalStorage.getProposal(key);
-                if (proposal && !isProposalCurrentlyApplied(proposal)) {
-                    this._replayInvalidated = true;
-                    break;
-                }
-            }
-        }
         return Array.isArray(records) ? records : [];
     },
 

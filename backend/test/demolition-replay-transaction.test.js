@@ -88,4 +88,13 @@ describe('demolition during canonical replay', () => {
 
         expect(globalThis.ProposalManager.unapplyProposal).not.toHaveBeenCalled();
     });
+
+    it('does not change another proposal record while boot is materializing its applied-set snapshot', async () => {
+        await demolishBuildingsUnderFootprint(REGION, {
+            proposalId: 'later-square',
+            preserveAppliedSet: true
+        });
+
+        expect(globalThis.ProposalManager.unapplyProposal).not.toHaveBeenCalled();
+    });
 });

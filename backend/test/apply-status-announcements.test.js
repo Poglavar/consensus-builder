@@ -78,7 +78,12 @@ describe('two lines per proposal, whatever its type', () => {
     });
 
     it('distinguishes a replay from an apply, so a log of 299 lines says which happened', () => {
-        expect(summary).toContain("const replaying = !!(ProposalManager && ProposalManager._rebuildInProgress === true);");
+        // A local materialization also uses the rebuild recursion guard, so the initiator can
+        // explicitly say whether this is a fresh apply or a true replay. Without that override a
+        // newly-created park was announced as if the old, unapplied park had returned.
+        expect(summary).toContain("options.statusMode === 'rederive'");
+        expect(summary).toContain("options.statusMode !== 'apply'");
+        expect(summary).toContain('ProposalManager._rebuildInProgress === true');
         expect(summary).toMatch(/const verb = replaying \? 'Re-derived' : 'Applied';/);
         expect(summary).toMatch(/const gerund = replaying \? 'Re-deriving' : 'Applying';/);
     });

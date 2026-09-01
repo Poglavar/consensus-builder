@@ -4,7 +4,6 @@
     const Parcels = global.Parcels || {};
     const uiVisibility = Parcels.uiVisibility || {};
     const uiLabels = Parcels.uiLabels || {};
-    const fetchApi = Parcels.fetch || {};
     const selectionApi = Parcels.selection || {};
     const uiParcelPanel = Parcels.uiParcelPanel || global.ParcelsUIParcelPanel || {};
 
@@ -151,24 +150,11 @@
 
             const selectParcel = selectionApi.selectParcel || global.selectParcel;
 
-            // 1) Already loaded in the layer — select and centre on it directly.
-            const foundLayer = global.parcelLayer.getLayers().find(layer => {
-                const parcelId = resolveParcelId(layer.feature);
-                return parcelId && parcelId === value;
-            });
-            if (foundLayer) {
-                const parcelId = resolveParcelId(foundLayer.feature);
-                if (typeof selectParcel === 'function' && parcelId) {
-                    selectParcel(parcelId);
-                }
-                return;
-            }
-
-            // 2) Not in memory — fetch it from the backend by id, ingest it, then
-            //    select it. selectParcel centres the map (fitBounds), and that move
-            //    fires the map's moveend handler which loads the surrounding cell.
-            const fetchSingle = fetchApi.fetchSingleParcelById || global.fetchSingleParcelById;
-            if (typeof fetchSingle !== 'function') {
+            // Declare the id to the ground service. It decides whether this is a registry hit, an
+            // in-flight join, a known absence, or a server load; the locate UI only resolves the
+            // resulting layer. selectParcel centres the map and loads the surrounding viewport.
+            const ground = global.CadastralGroundService || Parcels.ground;
+            if (!ground || typeof ground.ensureIds !== 'function') {
                 locateError.textContent = t('locateNotFound', 'Parcel not found');
                 return;
             }
@@ -176,7 +162,10 @@
             locateError.textContent = t('locateSearching', 'Searching…');
             locateButton.disabled = true;
             try {
-                const layer = await fetchSingle(value);
+                await ground.ensureIds([value]);
+                const layer = typeof global.resolveParcelLayerById === 'function'
+                    ? global.resolveParcelLayerById(value)
+                    : global.parcelLayer.getLayers().find(candidate => resolveParcelId(candidate.feature) === value);
                 const foundId = layer && layer.feature ? (resolveParcelId(layer.feature) || value) : null;
                 if (foundId && typeof selectParcel === 'function') {
                     selectParcel(foundId);

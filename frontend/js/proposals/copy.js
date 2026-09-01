@@ -53,14 +53,20 @@ function resolveCopyParcelLayer(id) {
 // into another city). Pull them in before we decide whether the copy can proceed. Synthetic
 // descendant ids aren't fetchable from the parcel server, so they're skipped.
 async function hydrateParcelsForCopy(parcelIds) {
-    if (!parcelIds.length || typeof ensureParentParcelsLoaded !== 'function') return;
+    if (!parcelIds.length) return;
     const isSynthetic = (typeof ProposalManager !== 'undefined' && typeof ProposalManager.isSyntheticParcelId === 'function')
         ? ProposalManager.isSyntheticParcelId.bind(ProposalManager)
         : () => false;
     const real = [...new Set(parcelIds.filter(id => !isSynthetic(id)))];
     if (!real.length) return;
     try {
-        await ensureParentParcelsLoaded(real);
+        const ground = (typeof CadastralGroundService !== 'undefined' && CadastralGroundService)
+            ? CadastralGroundService
+            : ((typeof window !== 'undefined') ? window.CadastralGroundService : null);
+        if (!ground || typeof ground.ensureIds !== 'function') {
+            throw new Error('Cadastral ground service is unavailable.');
+        }
+        await ground.ensureIds(real);
     } catch (error) {
         console.warn('[copyProposal] parcel hydration failed', error);
     }

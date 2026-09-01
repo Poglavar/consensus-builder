@@ -930,39 +930,6 @@ function tryEnterThreeMode(options = {}) {
     return false;
 }
 
-async function stageSharedProposalDependencies(parcelIds, options = {}) {
-    const ids = ensureArrayOfStrings(parcelIds);
-    if (!ids.length) {
-        return;
-    }
-    const suppressStatus = options && options.suppressStatus === true;
-    const label = (options && options.label) ? options.label : 'shared proposal';
-    const updateStageStatus = (message) => {
-        if (options && typeof options.onStatusUpdate === 'function') {
-            options.onStatusUpdate(message);
-        } else if (!suppressStatus && typeof updateStatus === 'function' && message) {
-            updateStatus(message);
-        }
-    };
-
-    updateStageStatus(`Fetching parent parcels for ${label}…`);
-    await ensureParentParcelsLoaded(ids, {
-        preloadOwners: false,
-        forceRefreshParcels: !!(options && options.forceRefreshParcels),
-        onProgress: (current, total) => {
-            updateStageStatus(`Fetching parent parcels for ${label} (${current}/${total})…`);
-        }
-    });
-    await waitForParcelLayersReady(ids, {
-        timeoutMs: options && Number.isFinite(options.renderTimeoutMs) ? options.renderTimeoutMs : undefined
-    });
-
-    updateStageStatus(`Fetching parcel owners for ${label}…`);
-    await preloadProposalParcelOwners(ids, { forceRefresh: !!(options && options.forceOwnerRefresh) });
-
-    updateStageStatus(`Parents ready for ${label}.`);
-}
-
 function cleanSharedQuery(params) {
     try {
         const entries = params.toString();

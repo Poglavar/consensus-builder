@@ -7,13 +7,13 @@
 // answered "Select a parcel first" with a parcel selected and highlighted in front of you.
 //
 // These run the shipped function with its collaborators stubbed.
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const source = readFileSync(fileURLToPath(new URL('../../frontend/js/proposals/data.js', import.meta.url)), 'utf8');
 
-function loadFindParcelById(parcelLayer) {
+function loadFindParcelById(parcelLayer, options = {}) {
     const start = source.indexOf('    findParcelById(parcelId) {');
     expect(start, 'findParcelById not found').toBeGreaterThan(-1);
     const end = source.indexOf('\n    },', start);
@@ -29,11 +29,11 @@ function loadFindParcelById(parcelLayer) {
     return factory(
         parcelLayer,
         feature => feature?.properties?.parcelId ?? null,
-        undefined,
+        options.parcelCache,
         { warn() { }, error() { }, debug() { } },
         () => { },
         () => { },
-        undefined,
+        options.ProposalManager,
         {}
     );
 }
@@ -50,13 +50,13 @@ function mapOf(ids) {
     };
 }
 
-function stateFor() {
+function stateFor(options = {}) {
     return {
         syntheticParcelLayers: new Map(),
         parcelIdIndex: new Map(),
         parcelIdIndexSize: 0,
-        recoverParcelFromCache: () => null,
-        recoverParcelFromPersistentStorage: () => null
+        recoverParcelFromCache: options.recoverParcelFromCache || (() => null),
+        recoverParcelFromPersistentStorage: options.recoverParcelFromPersistentStorage || (() => null)
     };
 }
 
@@ -96,5 +96,25 @@ describe('the parcel id index and layers that change without changing count', ()
         expect(findParcelById.call(state, 'HR-9')).toBeNull();
         expect(findParcelById.call(state, 'HR-9')).toBeNull();
         expect(findParcelById.call(state, 'HR-2')).toBeTruthy();
+    });
+
+    it('never resurrects removed proposal output from source-ground caches', () => {
+        const parcelLayer = mapOf(['HR-1']);
+        const recoverParcelFromCache = vi.fn(() => layerFor('HR-1#old-park-1'));
+        const recoverParcelFromPersistentStorage = vi.fn(() => layerFor('HR-1#old-park-1'));
+        const ProposalManager = { isSyntheticParcelId: id => String(id).includes('#') };
+        const findParcelById = loadFindParcelById(parcelLayer, {
+            parcelCache: { grid: new Map() },
+            ProposalManager
+        });
+        const state = stateFor({ recoverParcelFromCache, recoverParcelFromPersistentStorage });
+
+        expect(findParcelById.call(state, 'HR-1#old-park-1')).toBeNull();
+        expect(recoverParcelFromCache).not.toHaveBeenCalled();
+        expect(recoverParcelFromPersistentStorage).not.toHaveBeenCalled();
+
+        // Original cadastre remains recoverable; only disposable generated output is barred.
+        findParcelById.call(state, 'HR-2');
+        expect(recoverParcelFromCache).toHaveBeenCalledWith('HR-2');
     });
 });

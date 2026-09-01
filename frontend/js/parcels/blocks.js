@@ -115,38 +115,21 @@
             console.warn('Failed to fetch parcels from API:', error);
         }
 
-        const missingSmpValues = apiSmpValues.filter(smpVal => {
-            let found = false;
-            global.parcelLayer.eachLayer(layer => {
-                if (layer.feature && layer.feature.properties) {
-                    const layerSmp = layer.feature.properties.smp || layer.feature.properties.SMP;
-                    if (layerSmp && String(layerSmp) === String(smpVal)) {
-                        found = true;
-                        return false;
-                    }
-                }
-            });
-            return !found;
-        });
-
-        const missingParcelIds = missingSmpValues;
-        if (missingParcelIds.length > 0) {
+        const blockParcelIds = Array.from(new Set(apiSmpValues.map(String).filter(Boolean)));
+        if (blockParcelIds.length > 0) {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus(`Fetching ${missingParcelIds.length} missing parcels...`);
+                global.updateStatus(`Preparing ${blockParcelIds.length} block parcels...`);
             }
             try {
-                const fetchedFeatures = await global.requestParcelBatchForCurrentCity(missingParcelIds);
-                if (fetchedFeatures && fetchedFeatures.length > 0) {
-                    if (typeof global.ingestParcelFeatures === 'function') {
-                        await global.ingestParcelFeatures(fetchedFeatures);
-                    }
+                const ground = global.CadastralGroundService;
+                if (!ground || typeof ground.ensureIds !== 'function') {
+                    throw new Error('Cadastral ground service is unavailable.');
                 }
+                await ground.ensureIds(blockParcelIds);
             } catch (error) {
-                console.warn('Failed to fetch missing parcels:', error);
+                console.warn('Failed to load block parcels:', error);
             }
         }
-
-        await new Promise(resolve => setTimeout(resolve, 100));
 
         const allBlockLayers = [];
         global.parcelLayer.eachLayer(layer => {
@@ -187,4 +170,3 @@
         window.selectBuenosAiresBlock = selectBuenosAiresBlock;
     }
 })(typeof window !== 'undefined' ? window : globalThis);
-

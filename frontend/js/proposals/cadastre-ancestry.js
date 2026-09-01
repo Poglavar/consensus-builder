@@ -146,8 +146,8 @@
     // How much of a proposal footprint is already backed by ORIGINAL cadastre in the registry.
     // Unlike resolveParentsByGeometry this deliberately includes hidden consumed originals: replay
     // needs source ground, not the visible partition currently standing above it. A parcel loaded
-    // once stays in this registry for the session, so complete coverage is a safe substitute for a
-    // second /parcels/under request.
+    // once stays in this registry for the session, so complete coverage lets the ground service
+    // answer without a second server request.
     function loadedCadastreCoverage(proposal) {
         const api = planOrder();
         const t = (typeof global.turf !== 'undefined' && global.turf) ? global.turf : null;

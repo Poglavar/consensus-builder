@@ -2180,26 +2180,20 @@ function showSharedPayloadInspector(payload) {
                 }
             } catch (_) { }
 
-            // Kick off parcel fetching for bbox only (no camera move); enable Apply once done
+            // Prepare the exact ground declared by the proposals. CadastralGroundService decides
+            // whether that means a cache hit, joining an in-flight request, or server transport.
             (async () => {
                 try {
                     try { window.suppressCameraMoves = true; } catch (_) { }
-                    if (typeof fetchParcelData === 'function') {
-                        const bounds = (function () {
-                            try {
-                                if (payload && payload.bbox && isFinite(payload.bbox.south) && isFinite(payload.bbox.north) && isFinite(payload.bbox.west) && isFinite(payload.bbox.east) && typeof L !== 'undefined') {
-                                    return L.latLngBounds([
-                                        [payload.bbox.south, payload.bbox.west],
-                                        [payload.bbox.north, payload.bbox.east]
-                                    ]);
-                                }
-                            } catch (_) { }
-                            return null;
-                        })();
-                        await fetchParcelData(bounds || undefined);
+                    const ground = (typeof CadastralGroundService !== 'undefined' && CadastralGroundService)
+                        ? CadastralGroundService
+                        : ((typeof window !== 'undefined') ? window.CadastralGroundService : null);
+                    if (!ground || typeof ground.ensureProposalGround !== 'function') {
+                        throw new Error('Cadastral ground service is unavailable.');
                     }
+                    await ground.ensureProposalGround(payload.proposals || [], { purpose: 'application' });
                 } catch (e) {
-                    console.warn('Prefetch parcels for shared payload failed (continuing):', e);
+                    console.warn('Preparing cadastral ground for shared payload failed (continuing):', e);
                 } finally {
                     try {
                         const applyBtn = modal && typeof modal.getActionButton === 'function' ? modal.getActionButton('apply') : null;

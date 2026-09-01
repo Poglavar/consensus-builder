@@ -165,18 +165,22 @@
         // parcel machinery, then fetch the parcel by id and select/centre it —
         // same path the sidebar "locate parcel" feature uses.
         const selectParcel = (global.Parcels && global.Parcels.selection && global.Parcels.selection.selectParcel) || global.selectParcel;
-        const fetchSingle = (global.Parcels && global.Parcels.fetch && global.Parcels.fetch.fetchSingleParcelById) || global.fetchSingleParcelById;
-        if (!global.parcelLayer || typeof fetchSingle !== 'function' || typeof selectParcel !== 'function') {
+        const ground = global.CadastralGroundService || (global.Parcels && global.Parcels.ground);
+        if (!global.parcelLayer || !ground || typeof ground.ensureIds !== 'function' || typeof selectParcel !== 'function') {
             if (attempt < 40) setTimeout(() => handleParcelRouteFromUrl(attempt + 1), 250);
             return;
         }
 
         try {
             console.log('[handleParcelRouteFromUrl] opening parcel', parcelId);
-            const layer = await fetchSingle(parcelId);
+            await ground.ensureIds([parcelId]);
+            const layer = typeof global.resolveParcelLayerById === 'function'
+                ? global.resolveParcelLayerById(parcelId)
+                : null;
             const resolvedId = (layer && layer.feature && typeof global.getParcelId === 'function')
                 ? (global.getParcelId(layer.feature) || parcelId)
                 : parcelId;
+            if (!layer) throw new Error('Parcel not found');
             // selectParcel centres + zooms (and now bumps zoom up for very large
             // parcels so the grid stays visible — see selection.js).
             selectParcel(resolvedId);

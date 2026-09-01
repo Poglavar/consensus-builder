@@ -296,83 +296,42 @@
         }
     }
 
-    function resolveParcelLayerById(parcelId) {
-        if (typeof global.resolveParcelLayerById === 'function' && global.resolveParcelLayerById !== resolveParcelLayerById) {
-            return global.resolveParcelLayerById(parcelId);
+    async function fetchParcelsByIds(parcelIds, options = {}) {
+        if (!Array.isArray(parcelIds) || parcelIds.length === 0) {
+            return { ids: [], layers: [] };
         }
-        return null;
-    }
-
-    async function fetchSingleParcelById(parcelId, options = {}) {
-        const normalizedId = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
-        if (!normalizedId) return null;
-
-        const forceRefresh = options.forceRefresh === true;
-        const existing = global.resolveParcelLayerById ? global.resolveParcelLayerById(normalizedId) : null;
-        if (existing && !forceRefresh) {
-            return existing;
-        }
-        if (forceRefresh && existing && typeof global.removeParcelLayerById === 'function') {
-            global.removeParcelLayerById(normalizedId);
+        const normalizedIds = Array.from(new Set(parcelIds
+            .map(value => value !== undefined && value !== null ? value.toString() : null)
+            .filter(Boolean)));
+        if (!normalizedIds.length) {
+            return { ids: [], layers: [] };
         }
 
+        // This is transport, not policy. CadastralGroundService has already removed loaded,
+        // in-flight, and known-missing ids; every id reaching here is intentionally requested.
         global.setParcelMergeInProgressState(true);
         try {
-            const rawFeatures = await fetchParcelFeaturesByIds([normalizedId]);
-            if (!rawFeatures.length) {
-                throw new Error(`Parcel ${normalizedId} could not be fetched from the upstream data source.`);
+            const rawFeatures = await fetchParcelFeaturesByIds(normalizedIds, {
+                onProgress: (current, total) => {
+                    if (options && typeof options.onProgress === 'function') {
+                        options.onProgress(current, total);
+                    }
+                }
+            });
+            if (rawFeatures.length) {
+                await ingestParcelFeatures(rawFeatures, { replaceExisting: true });
             }
-            await ingestParcelFeatures(rawFeatures, { replaceExisting: true });
-            return global.resolveParcelLayerById ? global.resolveParcelLayerById(normalizedId) : null;
         } finally {
             global.setParcelMergeInProgressState(false);
         }
-    }
 
-    async function fetchParcelsByIds(parcelIds, options = {}) {
-        if (!Array.isArray(parcelIds) || parcelIds.length === 0) {
-            return [];
-        }
-        const normalizedIds = parcelIds
-            .map(value => value !== undefined && value !== null ? value.toString() : null)
+        const layers = normalizedIds
+            .map(id => global.resolveParcelLayerById ? global.resolveParcelLayerById(id) : null)
             .filter(Boolean);
-        if (!normalizedIds.length) {
-            return [];
-        }
-
-        const forceRefresh = options.forceRefresh === true;
-        const missing = [];
-        normalizedIds.forEach(id => {
-            const existing = global.resolveParcelLayerById ? global.resolveParcelLayerById(id) : null;
-            if (!existing || forceRefresh) {
-                if (forceRefresh && existing && typeof global.removeParcelLayerById === 'function') {
-                    global.removeParcelLayerById(id);
-                }
-                if (!missing.includes(id)) {
-                    missing.push(id);
-                }
-            }
-        });
-
-        if (missing.length) {
-            global.setParcelMergeInProgressState(true);
-            try {
-                const rawFeatures = await fetchParcelFeaturesByIds(missing, {
-                    onProgress: (current, total) => {
-                        if (options && typeof options.onProgress === 'function') {
-                            options.onProgress(current, total);
-                        }
-                    }
-                });
-                if (rawFeatures.length) {
-                    await ingestParcelFeatures(rawFeatures, { replaceExisting: true });
-                }
-            } finally {
-                global.setParcelMergeInProgressState(false);
-            }
-        }
-
-        return normalizedIds.map(id => global.resolveParcelLayerById ? global.resolveParcelLayerById(id) : null).filter(Boolean);
+        return {
+            ids: layers.map(layer => normalizeFeatureParcelId(layer && (layer.feature || layer))).filter(Boolean),
+            layers
+        };
     }
 
     async function fetchParcelFeaturesByIds(parcelIds, options = {}) {
@@ -896,16 +855,13 @@
     }
 
     global.fetchParcelData = fetchParcelData;
-    global.fetchParcelsUnderGeometry = fetchParcelsUnderGeometry;
-    global.fetchSingleParcelById = fetchSingleParcelById;
-    global.fetchParcelsByIds = fetchParcelsByIds;
-    global.fetchParcelFeaturesByIds = fetchParcelFeaturesByIds;
-    global.requestParcelBatchForCurrentCity = requestParcelBatchForCurrentCity;
-    global.requestParcelBatchFromOss = requestParcelBatchFromOss;
-    global.requestParcelBatchFromLocalhost = requestParcelBatchFromLocalhost;
-    global.requestParcelBatchFromParcelBa = requestParcelBatchFromParcelBa;
-    global.requestParcelBatchFromParcelCo = requestParcelBatchFromParcelCo;
-    global.requestParcelBatchFromParcelLj = requestParcelBatchFromParcelLj;
+    // Private transport under CadastralGroundService. Feature code must never choose one of these
+    // operations directly: it asks the service for ids or a footprint, and the service owns cache,
+    // in-flight de-duplication, negative results, batching, and source selection.
+    global.__cadastralGroundTransport = Object.freeze({
+        fetchByIds: fetchParcelsByIds,
+        fetchUnderGeometry: fetchParcelsUnderGeometry
+    });
     global.buildParcelFilterXml = buildParcelFilterXml;
     global.escapeXmlValue = escapeXmlValue;
     global.ingestParcelFeatures = ingestParcelFeatures;

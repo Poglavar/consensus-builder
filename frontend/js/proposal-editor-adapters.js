@@ -513,7 +513,11 @@
         const ids = [...new Set((parcelIds || []).map(String).filter(Boolean))];
         if (!ids.length) return { ids: [], layers: [], substituted: false };
         try {
-            if (typeof global.ensureParentParcelsLoaded === 'function') await global.ensureParentParcelsLoaded(ids);
+            const ground = global.CadastralGroundService;
+            if (!ground || typeof ground.ensureIds !== 'function') {
+                throw new Error('Cadastral ground service is unavailable.');
+            }
+            await ground.ensureIds(ids);
         } catch (error) {
             console.warn('[ProposalEditorAdapters] Could not hydrate all draft parcels', error);
         }

@@ -16,11 +16,16 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
+const {
+    FOOTPRINT_BATCH_SIZE,
+    createCadastralGroundService
+} = require('../../frontend/js/parcels/ground-service.js');
 const planOrder = require('../../frontend/js/proposals/plan-order.js');
 const turf = require('@turf/turf');
 const { readFileSync } = require('node:fs');
 
 const managerSource = readFileSync(new URL('../../frontend/js/proposal-manager.js', import.meta.url), 'utf8');
+const groundSource = readFileSync(new URL('../../frontend/js/parcels/ground-service.js', import.meta.url), 'utf8');
 
 const saved = new Map();
 function installGlobal(name, value) {
@@ -78,12 +83,37 @@ async function drain(promise, state, members) {
 }
 
 function harness() {
-    installGlobal('window', { __planOrder: planOrder, __formationEdit: null });
+    const root = { __planOrder: planOrder, __formationEdit: null };
+    installGlobal('window', root);
     installGlobal('getProposalKey', proposal => proposal.proposalId);
     installGlobal('turf', turf);
-    // A fresh memo per harness: it is per-session state, and a shared one would let one test's
-    // fetches silently satisfy the next test's.
-    return { _loadReplayGround: ProposalManager._loadReplayGround, _replayGroundFetched: new Set() };
+    const service = createCadastralGroundService({
+        root,
+        transport: {
+            fetchUnderGeometry: (...args) => {
+                if (typeof globalThis.fetchParcelsUnderGeometry !== 'function') {
+                    throw new Error('footprint transport unavailable');
+                }
+                return globalThis.fetchParcelsUnderGeometry(...args);
+            },
+            fetchByIds: (...args) => {
+                if (typeof globalThis.fetchParcelsByIds !== 'function') {
+                    throw new Error('id transport unavailable');
+                }
+                return globalThis.fetchParcelsByIds(...args);
+            }
+        },
+        resolveParcelLayerById: id => {
+            if (typeof globalThis.resolveParcelLayerById === 'function') {
+                return globalThis.resolveParcelLayerById(id);
+            }
+            return null;
+        },
+        loadedCoverageOf: proposal => root.__cadastreAncestry?.loadedCadastreCoverage?.(proposal) || null
+    });
+    root.CadastralGroundService = service;
+    installGlobal('CadastralGroundService', service);
+    return { _loadReplayGround: ProposalManager._loadReplayGround };
 }
 
 describe('the ground for a whole replay is fetched in one request', () => {
@@ -106,8 +136,8 @@ describe('the ground for a whole replay is fetched in one request', () => {
     });
 
     it('never sends more footprints in one request than the measured-safe batch', () => {
-        expect(managerSource).toContain('const REPLAY_GROUND_BATCH_SIZE = 20;');
-        expect(managerSource).toContain('index += REPLAY_GROUND_BATCH_SIZE');
+        expect(FOOTPRINT_BATCH_SIZE).toBe(20);
+        expect(groundSource).toContain('index += FOOTPRINT_BATCH_SIZE');
     });
 
     it('carries each member\'s own footprint, not a box around them all', async () => {
@@ -145,18 +175,16 @@ describe('the ground for a whole replay is fetched in one request', () => {
         expect(sizes.slice(1)).toEqual([2, 2]);
     });
 
-    it('still fetches concurrently on the fallback path', async () => {
-        // Members with no readable footprint cannot be batched; they must not go back to a series.
+    it('loads an id-only group through one service request', async () => {
         const { state, fetcher } = gatedFetch();
-        installGlobal('fetchParcelsUnderGeometry', fetcher);
-        installGlobal('fetchParcelsForIds', fetcher);
+        installGlobal('fetchParcelsByIds', fetcher);
         const manager = harness();
         const idOnly = index => ({ proposalId: `plain-${index}`, cadastreParcelIds: [`HR-1-${index}`] });
 
         const pass = manager._loadReplayGround(Array.from({ length: 8 }, (_, i) => idOnly(i)));
         await new Promise(resolve => setImmediate(resolve));
-        expect(state.peak).toBeGreaterThan(1);
-        expect(state.peak).toBeLessThanOrEqual(8);
+        expect(state.calls).toBe(1);
+        expect(state.peak).toBe(1);
         await drain(pass, state, 8);
     });
 
@@ -268,7 +296,7 @@ describe('when the footprint question cannot be asked', () => {
     it('falls back to the declared ids, never to a bounding box', async () => {
         const asked = [];
         installGlobal('fetchParcelsUnderGeometry', async () => null);
-        installGlobal('fetchParcelsForIds', async ids => { asked.push(...ids); });
+        installGlobal('fetchParcelsByIds', async ids => { asked.push(...ids); return { ids }; });
         const manager = harness();
         await manager._loadReplayGround([{
             proposalId: 'no-geometry',
@@ -276,7 +304,7 @@ describe('when the footprint question cannot be asked', () => {
             parentParcelIds: ['HR-1-2#p-road-1']
         }]);
         expect(asked).toContain('HR-1-1');
-        expect(asked).toContain('HR-1-2#p-road-1');
+        expect(asked).toContain('HR-1-2');
     });
 
     it('one member whose fetch throws does not abandon the rest', async () => {
@@ -332,7 +360,8 @@ describe('a shared corridor package materialises as one cadastral mutation', () 
         expect(rematerialize).toHaveBeenCalledOnce();
         expect(rematerialize).toHaveBeenCalledWith([roadA, roadB], {
             _fabricQueue: true,
-            silent: false
+            silent: false,
+            deferSave: true
         });
     });
 
@@ -423,7 +452,8 @@ describe('the fold itself no longer fetches', () => {
 
     it('still applies members one at a time, in order', () => {
         const loop = pass.slice(pass.indexOf('for (const proposal of appliedList)'));
-        expect(loop).toMatch(/const replayOptions = \{ replay: true \}/);
+        expect(loop).toMatch(/replay: true/);
+        expect(loop).toMatch(/preserveAppliedSet: passOptions\.preserveAppliedSet === true/);
         expect(loop).toMatch(/await this\.applyProposal\(key, replayOptions\)/);
     });
 });

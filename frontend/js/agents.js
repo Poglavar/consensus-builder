@@ -2924,24 +2924,20 @@ async function ensureParcelLoaded(parcelId) {
     const targetId = parcelId && parcelId.toString();
     if (!targetId) return false;
 
-    const hasMultiSelection = typeof multiParcelSelection !== 'undefined' && multiParcelSelection && typeof multiParcelSelection.findParcelById === 'function';
-    if (hasMultiSelection) {
-        const existing = multiParcelSelection.findParcelById(targetId);
-        if (existing) return true;
-    }
-
-    if (typeof resolveParcelLayerById === 'function') {
-        const layer = resolveParcelLayerById(targetId);
-        if (layer) return true;
-    }
-
-    if (typeof fetchSingleParcelById === 'function') {
-        try {
-            const layer = await fetchSingleParcelById(targetId, { forceRefresh: false });
-            return !!layer;
-        } catch (error) {
-            console.warn('Failed to fetch parcel before focusing', targetId, error);
-        }
+    const ground = (typeof CadastralGroundService !== 'undefined' && CadastralGroundService)
+        ? CadastralGroundService
+        : ((typeof window !== 'undefined') ? window.CadastralGroundService : null);
+    if (!ground || typeof ground.ensureIds !== 'function') return false;
+    try {
+        await ground.ensureIds([targetId]);
+        const layer = (typeof resolveParcelLayerById === 'function')
+            ? resolveParcelLayerById(targetId)
+            : ((typeof multiParcelSelection !== 'undefined' && multiParcelSelection?.findParcelById)
+                ? multiParcelSelection.findParcelById(targetId)
+                : null);
+        return !!layer;
+    } catch (error) {
+        console.warn('Failed to load parcel before focusing', targetId, error);
     }
     return false;
 }

@@ -205,21 +205,13 @@
                     [point[0] - box, point[1] - box]
                 ]]
             };
-            const base = (typeof global.getBackendBase === 'function') ? global.getBackendBase() : '';
             try {
-                const response = await fetch(`${base}/parcels/under`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ geometry: probe })
-                });
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                // /parcels/under answers with a FeatureCollection; the id is on each feature's
-                // properties (verified against the running backend, not assumed).
-                const payload = await response.json();
-                const found = (payload && Array.isArray(payload.features)) ? payload.features : [];
-                out.backendParcels = found
-                    .map(feature => feature && feature.properties && feature.properties.parcelId)
-                    .filter(Boolean);
+                const ground = global.CadastralGroundService;
+                if (!ground || typeof ground.ensureFootprint !== 'function') {
+                    throw new Error('Cadastral ground service is unavailable');
+                }
+                const loaded = await ground.ensureFootprint(probe, { parcelsOnly: false });
+                out.backendParcels = Array.isArray(loaded?.result?.ids) ? loaded.result.ids : [];
                 out.verdict = out.backendParcels.length
                     ? `The cadastre HAS ${out.backendParcels.length} parcel(s) here (${out.backendParcels.join(', ')}) `
                         + 'but none reached the map — a loading gap. Pan away and back over this spot to fetch the cell.'

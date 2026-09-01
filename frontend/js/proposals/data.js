@@ -1476,6 +1476,14 @@ const multiParcelSelection = {
         if (parcelId === undefined || parcelId === null) return null;
         const targetId = parcelId.toString();
         if (!targetId) return null;
+        // Generated parcel ids name the CURRENT materialization only. If one is not in the live
+        // layer, it is gone; recovering yesterday's copy from a grid/persistence cache would turn
+        // disposable proposal output back into ground. That is how an unapplied park could appear
+        // selectable again and become the source geometry of the next park.
+        const isGeneratedId = (typeof isSyntheticParcelId === 'function' && isSyntheticParcelId(targetId))
+            || (typeof ProposalManager !== 'undefined'
+                && typeof ProposalManager.isSyntheticParcelId === 'function'
+                && ProposalManager.isSyntheticParcelId(targetId));
 
         if (this.syntheticParcelLayers.has(targetId)) {
             const syntheticLayer = this.syntheticParcelLayers.get(targetId);
@@ -1552,7 +1560,7 @@ const multiParcelSelection = {
         }
 
         // If not found in parcelLayer, try to recover from cache
-        if (!foundParcel && typeof parcelCache !== 'undefined') {
+        if (!foundParcel && !isGeneratedId && typeof parcelCache !== 'undefined') {
             foundParcel = this.recoverParcelFromCache(targetId);
             if (foundParcel) {
                 // Sync cache into the index for future lookups
@@ -1562,7 +1570,7 @@ const multiParcelSelection = {
         }
 
         // Final fallback: try PersistentStorage
-        if (!foundParcel) {
+        if (!foundParcel && !isGeneratedId) {
             foundParcel = this.recoverParcelFromPersistentStorage(targetId);
             if (foundParcel) {
                 // Sync cache into the index for future lookups
@@ -1573,9 +1581,10 @@ const multiParcelSelection = {
 
         if (!foundParcel) {
             // Only escalate when there is no known way to recover the parcel.
-            const hasFetchers = typeof fetchSingleParcelById === 'function' || typeof fetchParcelsForIds === 'function';
-            const isSynth = typeof ProposalManager !== 'undefined' && typeof ProposalManager.isSyntheticParcelId === 'function'
-                && ProposalManager.isSyntheticParcelId(parcelId);
+            const hasFetchers = typeof CadastralGroundService !== 'undefined'
+                && CadastralGroundService
+                && typeof CadastralGroundService.ensureIds === 'function';
+            const isSynth = isGeneratedId;
             if (!hasFetchers) {
                 console.error('findParcelById: Could not find parcel with ID:', parcelId, 'and no fetcher is available');
             } else if (!isSynth && typeof window !== 'undefined' && window.__DEBUG_PARCEL_HYDRATION__) {
@@ -1588,6 +1597,12 @@ const multiParcelSelection = {
 
     // Recover parcel from grid cache and instantiate as layer
     recoverParcelFromCache(parcelId) {
+        const id = parcelId === undefined || parcelId === null ? '' : String(parcelId);
+        const isGeneratedId = (typeof isSyntheticParcelId === 'function' && isSyntheticParcelId(id))
+            || (typeof ProposalManager !== 'undefined'
+                && typeof ProposalManager.isSyntheticParcelId === 'function'
+                && ProposalManager.isSyntheticParcelId(id));
+        if (isGeneratedId) return null;
         // Don't recover parcels that have been removed by a proposal (e.g., parent parcels replaced by children)
         if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(parcelId)) {
             return null;
@@ -1612,6 +1627,12 @@ const multiParcelSelection = {
 
     // Recover parcel from PersistentStorage and instantiate as layer
     recoverParcelFromPersistentStorage(parcelId) {
+        const id = parcelId === undefined || parcelId === null ? '' : String(parcelId);
+        const isGeneratedId = (typeof isSyntheticParcelId === 'function' && isSyntheticParcelId(id))
+            || (typeof ProposalManager !== 'undefined'
+                && typeof ProposalManager.isSyntheticParcelId === 'function'
+                && ProposalManager.isSyntheticParcelId(id));
+        if (isGeneratedId) return null;
         // Don't recover parcels that have been removed by a proposal (e.g., parent parcels replaced by children)
         if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(parcelId)) {
             return null;

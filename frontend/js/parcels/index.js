@@ -84,14 +84,9 @@
             ensureParcelLayerInitialized: global.ensureParcelLayerInitialized,
             addParcelLayerToMapIfAppropriate: global.addParcelLayerToMapIfAppropriate
         },
+        ground: global.CadastralGroundService,
         fetch: {
             fetchParcelData: global.fetchParcelData,
-            fetchSingleParcelById: global.fetchSingleParcelById,
-            fetchParcelsByIds: global.fetchParcelsByIds,
-            fetchParcelFeaturesByIds: global.fetchParcelFeaturesByIds,
-            requestParcelBatchForCurrentCity: global.requestParcelBatchForCurrentCity,
-            requestParcelBatchFromOss: global.requestParcelBatchFromOss,
-            requestParcelBatchFromParcelBa: global.requestParcelBatchFromParcelBa,
             ingestParcelFeatures: global.ingestParcelFeatures,
             refreshParcelDataWithBusyState: global.refreshParcelDataWithBusyState
         },
@@ -150,4 +145,3 @@
 
     global.Parcels = facade;
 })(typeof window !== 'undefined' ? window : globalThis);
-

@@ -555,6 +555,16 @@
                 bodyParcelIds,
                 remainderParcelIds: structureRemainderIds.slice()
             };
+            try {
+                const structureLabel = proposalData.title || proposalData.name || String(proposalId);
+                console.info(`[structureFormation] ${structureLabel}: ${takenIds.length} live parcel piece(s)`
+                    + ` over ${sp.formation.parcelIds.length} cadastral parcel(s)`
+                    + ` → ${bodyParcelIds.length} ${sp.kind} parcel(s)`
+                    + (structureRemainderIds.length
+                        ? ` + ${structureRemainderIds.length} terrain remainder(s)`
+                        : '')
+                    + (partialCuts?.length ? ` · replay cut ${partialCuts.length} changed edge(s)` : ''));
+            } catch (_) { }
             // §15b: the structure CONSUMED its source parcel(s), so amend every earlier applied
             // plan that still claims this ground. The taking is the WHOLE PARCELS taken, not the drawn footprint — a structure grabs
             // entire pieces its footprint merely touches (a 1 m² graze took a whole remainder,

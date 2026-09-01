@@ -154,10 +154,44 @@
     </script>
 
     <script type="text/javascript">
-        (function (c, l, a, r, i, t, y) {
+        // Analytics is optional and must never sit on the application's critical path. An async
+        // script inserted while the document is loading still delays window.load; proposal routes
+        // intentionally start from that event, so an unreachable clarity.ms used to leave a named
+        // plan on "loading" until the browser's network timeout. Insert it only after load has
+        // already fired, during idle time, and do not send development sessions to analytics.
+        (function (c, l, a, r, i) {
             c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
-            t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
-            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+
+            function isLocalHost() {
+                var host = c.location && c.location.hostname;
+                return host === 'localhost' || host === '127.0.0.1' || host === '::1';
+            }
+
+            function insertAnalytics() {
+                if (isLocalHost() || c.__clarityScriptRequested) return;
+                c.__clarityScriptRequested = true;
+                var script = l.createElement(r);
+                script.async = true;
+                script.src = "https://www.clarity.ms/tag/" + i;
+                var firstScript = l.getElementsByTagName(r)[0];
+                if (firstScript && firstScript.parentNode) {
+                    firstScript.parentNode.insertBefore(script, firstScript);
+                } else {
+                    l.head.appendChild(script);
+                }
+            }
+
+            function scheduleAnalytics() {
+                if (isLocalHost()) return;
+                if (typeof c.requestIdleCallback === 'function') {
+                    c.requestIdleCallback(insertAnalytics, { timeout: 4000 });
+                } else {
+                    c.setTimeout(insertAnalytics, 0);
+                }
+            }
+
+            if (l.readyState === 'complete') scheduleAnalytics();
+            else c.addEventListener('load', scheduleAnalytics, { once: true });
         })(window, document, "clarity", "script", "twc9cfoupb");
     </script>
 
@@ -1418,7 +1452,6 @@
             'js/proposals/status.js',
             'js/proposals/epoch.js',
             'js/proposals/counts.js',
-            'js/proposals/ground-sweep.js',
             'js/proposals/chain-status.js',
             'js/proposal-parcel-identity.js',
             'js/wallet-connection.js',
@@ -1476,6 +1509,7 @@
             'js/parcels/storage.js',
             'js/parcels/ingest.js',
             'js/parcels/fetch.js',
+            'js/parcels/ground-service.js',
             'js/parcels/blocks.js',
             'js/parcels/blockchain.js',
             'js/parcels/ownership-ui.js',

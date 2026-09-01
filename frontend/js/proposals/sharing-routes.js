@@ -5,6 +5,13 @@
 // globals; this file used to carry a duplicate set of them, which sharing.js (loaded later) shadowed
 // so they never actually ran.
 
+function getSharedGroundService() {
+    if (typeof CadastralGroundService !== 'undefined' && CadastralGroundService) {
+        return CadastralGroundService;
+    }
+    return (typeof window !== 'undefined') ? window.CadastralGroundService : null;
+}
+
 function focusMapOnSharedProposal(proposal, payload) {
     if (!proposal || typeof map === 'undefined' || !map) {
         return false;
@@ -545,6 +552,214 @@ function selectSharedPlanFocusId(appliedItems, skippedItems, alreadyAppliedPropo
     return selectedId;
 }
 
+function sharedCorridorCountPhrase(roads, tracks, tShare) {
+    const roadCount = Math.max(0, Number(roads) || 0);
+    const trackCount = Math.max(0, Number(tracks) || 0);
+    const parts = [];
+    if (roadCount) {
+        parts.push(tShare('plan.progress.roadCount',
+            roadCount === 1 ? '{{count}} road' : '{{count}} roads', { count: roadCount }));
+    }
+    if (trackCount) {
+        parts.push(tShare('plan.progress.trackCount',
+            trackCount === 1 ? '{{count}} track' : '{{count}} tracks', { count: trackCount }));
+    }
+    if (parts.length === 2) {
+        return tShare('plan.progress.corridorCounts', '{{roads}} and {{tracks}}', {
+            roads: parts[0],
+            tracks: parts[1]
+        });
+    }
+    return parts[0] || tShare('plan.progress.corridorCountNone', 'corridors');
+}
+
+// Structured materializer/service events become user-facing text only here. The ground service and
+// ProposalManager do not know about the overlay or translations; they report facts and this route
+// describes them.
+function sharedPlanProgressView(event, tShare) {
+    if (!event || typeof tShare !== 'function') return null;
+    const title = tShare('plan.applyingAllTitle', 'Applying the shared plan');
+    const count = () => sharedCorridorCountPhrase(event.roads, event.tracks, tShare);
+    switch (event.phase) {
+        case 'ground-check':
+            return {
+                title,
+                status: tShare('plan.progress.groundCheck',
+                    'Checking cadastral ground for {{count}} proposals…', { count: event.members })
+            };
+        case 'ground-check-ids':
+            return {
+                title,
+                status: tShare('plan.progress.groundIdCheck',
+                    'Checking {{count}} declared cadastral parcels…', { count: event.total })
+            };
+        case 'ground-load-ids':
+            return {
+                title,
+                status: tShare('plan.progress.groundIdLoad',
+                    'Loading {{requested}} missing cadastral parcels; {{cached}} already cached…', event),
+                progress: { done: event.cached || 0, total: event.total || 0 }
+            };
+        case 'ground-load-ids-progress':
+            return {
+                title,
+                status: tShare('plan.progress.groundIdLoadProgress',
+                    'Loading cadastral parcels ({{done}}/{{total}})…', event),
+                progress: { done: event.done || 0, total: event.total || 0 }
+            };
+        case 'ground-wait-ids':
+            return {
+                title,
+                status: tShare('plan.progress.groundIdWait',
+                    'Waiting for an existing cadastral-ground request…')
+            };
+        case 'ground-wait-footprints':
+            return {
+                title,
+                status: tShare('plan.progress.groundFootprintWait',
+                    'Waiting for an existing footprint-ground request…')
+            };
+        case 'ground-ids-ready':
+            return {
+                title,
+                status: event.missing
+                    ? tShare('plan.progress.groundIdsMissing',
+                        'Cadastral parcel check finished: {{missing}} unavailable.', event)
+                    : tShare('plan.progress.groundIdsReady',
+                        'Cadastral parcels ready: {{cached}} cached, {{loaded}} loaded.', event),
+                progress: { done: Math.max(0, (event.total || 0) - (event.missing || 0)), total: event.total || 0 }
+            };
+        case 'ground-load-footprints':
+            return {
+                title,
+                status: tShare('plan.progress.groundFootprintLoad',
+                    'Loading footprint ground for {{members}} proposals in {{batches}} batches…', event),
+                progress: { done: 0, total: event.batches || 0 }
+            };
+        case 'ground-load-footprints-progress':
+            return {
+                title,
+                status: tShare('plan.progress.groundFootprintProgress',
+                    'Loading footprint ground (batch {{done}}/{{total}}, {{parcels}} parcels)…', event),
+                progress: { done: event.done || 0, total: event.total || 0 }
+            };
+        case 'ground-ready':
+            return {
+                title,
+                status: event.unavailableMembers
+                    ? tShare('plan.progress.groundIncomplete',
+                        'Ground check finished: {{unavailableMembers}} proposals still have unavailable parcels.', event)
+                    : tShare('plan.progress.groundReady',
+                        'Cadastral ground ready: {{cachedMembers}} proposals reused loaded ground; {{loadedMembers}} needed loading.', event)
+            };
+        case 'building-ground-load':
+            return {
+                title,
+                status: tShare('plan.progress.buildingGroundLoad',
+                    'Loading buildings in {{regions}} affected areas ({{batches}} batches)…', event),
+                progress: { done: 0, total: event.batches || 0 }
+            };
+        case 'building-ground-progress':
+            return {
+                title,
+                status: tShare('plan.progress.buildingGroundProgress',
+                    'Loading affected buildings (batch {{done}}/{{total}}, {{covered}} areas covered)…', event),
+                progress: { done: event.done || 0, total: event.total || 0 }
+            };
+        case 'building-ground-ready':
+            return {
+                title,
+                status: tShare('plan.progress.buildingGroundReady',
+                    'Affected-building data ready: {{covered}} areas loaded; {{fallback}} will be checked individually.', event)
+            };
+        case 'rebuild-reset':
+            return {
+                title,
+                status: tShare('plan.progress.rebuildReset',
+                    'Clearing derived map output for {{members}} proposals…', event)
+            };
+        case 'corridor-start':
+            return {
+                title,
+                status: tShare('plan.progress.corridorStart', 'Preparing {{corridors}}…', { corridors: count() })
+            };
+        case 'fabric-scope-ready':
+            return {
+                title,
+                status: tShare('plan.progress.scopeReady',
+                    'Affected ground resolved: {{parcels}} cadastral parcels.', event)
+            };
+        case 'fabric-scan':
+            return {
+                title,
+                status: tShare('plan.progress.fabricScan',
+                    'Finding corridor intersections ({{done}}/{{total}} loaded parcels)…', event),
+                progress: { done: event.done || 0, total: event.total || 0 }
+            };
+        case 'fabric-arrange':
+            return {
+                title,
+                status: tShare('plan.progress.fabricArrange',
+                    'Cutting affected cadastral parcels ({{done}}/{{total}})…', event),
+                progress: { done: event.done || 0, total: event.total || 0 }
+            };
+        case 'map-update':
+            return {
+                title,
+                status: tShare('plan.progress.mapUpdate',
+                    'Updating the map: {{added}} parcel pieces added, {{removed}} removed…', event)
+            };
+        case 'fabric-ready':
+            return {
+                title,
+                status: tShare('plan.progress.fabricReady',
+                    'Parcel fabric ready across {{parcels}} cadastral parcels.', event)
+            };
+        case 'proposal-apply':
+            return {
+                title,
+                status: tShare('plan.applyingNamed',
+                    'Applying {{label}} ({{done}}/{{total}})…', event),
+                progress: { done: event.done || 0, total: event.total || 0 }
+            };
+        case 'network-noding':
+            return {
+                title,
+                status: tShare('plan.progress.networkNoding',
+                    'Connecting road and track intersections…')
+            };
+        case 'save':
+            return { title, status: tShare('plan.progress.saving', 'Saving applied proposals…') };
+        case 'corridor-ready':
+            return {
+                title,
+                status: tShare('plan.progress.corridorReady', 'Finished applying {{corridors}}.', { corridors: count() })
+            };
+        case 'rollback':
+            return { title, status: tShare('plan.progress.rollback', 'Restoring the parcel fabric after an error…') };
+        case 'presentation':
+            return { title, status: tShare('plan.progress.presentation', 'Refreshing the map and proposal list…') };
+        case 'corridor-strips':
+            return { title, status: tShare('plan.progress.corridorStrips', 'Refreshing road and track surfaces…') };
+        case 'rebuild-ready':
+            return {
+                title,
+                status: tShare('plan.progress.rebuildReady',
+                    'Rebuild finished: {{members}} proposals, {{corridors}} corridors, {{failed}} failures.', event)
+            };
+        default:
+            return null;
+    }
+}
+
+function reportSharedPlanProgress(event) {
+    if (typeof updateProposalLoadOverlay !== 'function') return;
+    try {
+        const view = sharedPlanProgressView(event, getShareI18nHelper());
+        if (view) updateProposalLoadOverlay(view);
+    } catch (_) { /* progress must never break an apply */ }
+}
+
 
 // Materialise only the records this shared link just imported.
 //
@@ -564,6 +779,21 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
     const failedIds = [];
     const now = () => ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now());
     const started = now();
+    // Cached proposal applies often resolve as one uninterrupted chain of microtasks. Updating the
+    // overlay inside that chain does not mean the browser paints it: without a real task boundary
+    // Šibenik visibly stayed on its first post-corridor member (132/298) until the whole plan was
+    // done. Yield on a small time budget rather than after every member, preserving throughput while
+    // keeping the counter and final phases honest.
+    const progressPaintIntervalMs = 80;
+    let lastProgressPaintAt = started;
+    let proposalProgressStarted = false;
+    const paintSharedPlanProgress = async (force = false) => {
+        if (typeof window === 'undefined' || typeof window.yieldToBrowser !== 'function') return;
+        const current = now();
+        if (!force && current - lastProgressPaintAt < progressPaintIntervalMs) return;
+        lastProgressPaintAt = current;
+        try { await window.yieldToBrowser(); } catch (_) { /* progress must never break an apply */ }
+    };
     let presentationMs = 0;
     let storageMs = 0;
     const batchStore = (typeof proposalStorage !== 'undefined') ? proposalStorage : null;
@@ -613,7 +843,9 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
     // batch, so this network wait runs behind their ground derivation and is normally finished by
     // the time the first building needs its exact slice.
     const demolitionPromise = (ProposalManager && typeof ProposalManager._prefetchDemolitionBuildings === 'function')
-        ? Promise.resolve(ProposalManager._prefetchDemolitionBuildings(orderedRecords))
+        ? Promise.resolve(ProposalManager._prefetchDemolitionBuildings(orderedRecords, {
+            onProgress: reportSharedPlanProgress
+        }))
             .catch(error => {
                 console.warn('[shared-apply] demolition prefetch failed; members fall back individually', error);
                 return new Map();
@@ -626,31 +858,21 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
             || !demolitionBuildings.has(String(id))) return { covered: false, features: undefined };
         return { covered: true, features: demolitionBuildings.get(String(id)) };
     };
-    // This loop is the tail of a plan open and it is minutes long. Without a per-item report the
-    // overlay held one "Applying shared plan…" for the whole of it — the phase the reader actually
-    // waits through, showing the least. Roads apply in consecutive runs, so `index` is a position
-    // in the ordered list rather than a count of completed applies; it is still what "how far
-    // along" means here.
+    // This loop is the tail of a plan open. Without phase reports the overlay held one "Applying
+    // shared plan…" across ground loading, parcel cutting, noding, and storage, and even named the
+    // first track while the whole corridor batch ran. Roads now report their batch phases; `index`
+    // remains the position used for ordinary per-proposal progress.
     const reportProgress = (record, id, done) => {
         if (typeof updateProposalLoadOverlay !== 'function') return;
-        try {
-            const tShare = getShareI18nHelper();
-            // The name alone. formatSharedProposalLabel appends "(#id)", which is what the
-            // failure summaries need to be unambiguous but is noise on a status line that
-            // changes every second — and the id is only a fallback when there is no name.
-            const title = (record && typeof record.title === 'string') ? record.title.trim() : '';
-            const label = title || formatSharedProposalLabel(record, id);
-            updateProposalLoadOverlay({
-                // The title carries the phase, because this is the SECOND count to the same total
-                // in one open: the fabric replay runs first and counts to its own end, then this
-                // starts again from one. Without the heading changing, that reset reads as the bar
-                // going backwards.
-                title: tShare('plan.applyingAllTitle', 'Applying the shared plan'),
-                status: tShare('plan.applyingNamed', 'Applying {{label}} ({{done}}/{{total}})…',
-                    { label, done, total: orderedIds.length }),
-                progress: { done, total: orderedIds.length }
-            });
-        } catch (_) { /* progress must never break an apply */ }
+        // The name alone. formatSharedProposalLabel appends "(#id)", which is useful in a failure
+        // report but noisy in a status line that changes every second.
+        const title = (record && typeof record.title === 'string') ? record.title.trim() : '';
+        reportSharedPlanProgress({
+            phase: 'proposal-apply',
+            label: title || formatSharedProposalLabel(record, id),
+            done,
+            total: orderedIds.length
+        });
     };
     if (storageBatched) batchStore.beginBatch();
     try {
@@ -658,7 +880,6 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
             const id = orderedIds[index];
             let record = null;
             try { record = proposalStorage.getProposal(id); } catch (_) { record = null; }
-            reportProgress(record, id, index + 1);
             const goal = (typeof applyRoute !== 'undefined' && applyRoute && typeof applyRoute.normalizeGoalKey === 'function')
                 ? applyRoute.normalizeGoalKey(record && record.goal)
                 : String((record && record.goal) || '');
@@ -681,7 +902,11 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
                     cursor += 1;
                 }
                 try {
-                    const batch = await ProposalManager.materializeCorridorBatch(roadIds, { deferPresentation: true });
+                    const batch = await ProposalManager.materializeCorridorBatch(roadIds, {
+                        deferPresentation: true,
+                        deferSave: true,
+                        onProgress: reportSharedPlanProgress
+                    });
                     appliedIds.push(...(Array.isArray(batch?.appliedIds) ? batch.appliedIds : []));
                     failedIds.push(...(Array.isArray(batch?.failedIds) ? batch.failedIds : (batch?.ok ? [] : roadIds)));
                 } catch (error) {
@@ -692,6 +917,11 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
                 continue;
             }
 
+            const proposalPosition = index + 1;
+            reportProgress(record, id, proposalPosition);
+            const firstProposalProgress = !proposalProgressStarted;
+            proposalProgressStarted = true;
+            await paintSharedPlanProgress(firstProposalProgress || proposalPosition === orderedIds.length);
             try {
                 // Refuse unrelated holders in memory, then use the direct one-boundary materializer for
                 // every shared member. The old non-coordinated path first marked state in one full-map
@@ -726,6 +956,8 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
         // Every handler has updated the canonical arrays and live parcel fabric, but deliberately
         // skipped list/style/layer presentation. Flush the complete view once, even after a failed
         // member, so partial-success plans never leave stale UI behind.
+        reportSharedPlanProgress({ phase: 'presentation' });
+        await paintSharedPlanProgress(true);
         const presentationStarted = now();
         try {
             if (ProposalManager && typeof ProposalManager._refreshUIAfterProposalChange === 'function') {
@@ -736,6 +968,8 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
         }
         presentationMs = now() - presentationStarted;
 
+        reportSharedPlanProgress({ phase: 'save' });
+        await paintSharedPlanProgress(true);
         const storageStarted = now();
         try {
             // Imports may have suppressed their own save. Ensure the outer batch has one pending
@@ -922,8 +1156,11 @@ async function loadSharedProposalFromLink(sharedProposal, payload) {
             throw new Error('Unable to normalise shared proposal data.');
         }
 
-        // Ensure parent parcels are fetched (this replaces the old stageSharedProposalDependencies logic)
-        await ensureParentParcelsFetched(sharedProposal, normalized);
+        const ground = getSharedGroundService();
+        if (!ground || typeof ground.ensureProposalGround !== 'function') {
+            throw new Error('Cadastral ground service is unavailable.');
+        }
+        await ground.ensureProposalGround([normalized], { purpose: 'application' });
 
         parkProposalForImport(normalized);
         normalized.acceptedParcelIds = [];
@@ -1099,26 +1336,19 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
         if (proposals.length === 0) return;
 
         if (typeof updateStatus === 'function') {
-            updateStatus(`Applying ${proposals.length} shared proposal${proposals.length === 1 ? '' : 's'}...`);
+            updateStatus(`Preparing ${proposals.length} shared proposal${proposals.length === 1 ? '' : 's'}...`);
         }
 
-        // Do not move camera; if bbox is provided, fetch parcels for that area explicitly
-        if (typeof fetchParcelData === 'function') {
-            const bounds = (function () {
-                try {
-                    if (payload && payload.bbox && isFinite(payload.bbox.south) && isFinite(payload.bbox.north) && isFinite(payload.bbox.west) && isFinite(payload.bbox.east) && typeof L !== 'undefined') {
-                        return L.latLngBounds([
-                            [payload.bbox.south, payload.bbox.west],
-                            [payload.bbox.north, payload.bbox.east]
-                        ]);
-                    }
-                } catch (_) { }
-                return null;
-            })();
-            await fetchParcelData(bounds || undefined);
+        // Declare the records themselves, not their bounding box. The service chooses registry,
+        // in-flight, negative-cache, id transport, or footprint transport for each one.
+        const normalizedForGround = proposals.map(proposal => {
+            try { return prepareProposalForImport(proposal); } catch (_) { return null; }
+        }).filter(Boolean);
+        const ground = getSharedGroundService();
+        if (!ground || typeof ground.ensureProposalGround !== 'function') {
+            throw new Error('Cadastral ground service is unavailable.');
         }
-
-        // No global ancestor pre-check; proceed proposal by proposal
+        await ground.ensureProposalGround(normalizedForGround, { purpose: 'application' });
 
         // Same single-flight restore barrier as handleSharedPlanRoute. Do not inspect applied
         // flags to decide whether to wait: ordered replay deliberately clears them mid-pass.
@@ -1158,18 +1388,25 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
         // ONE ordered pass (A6). Records are flat and the ground a formation consumes resolves
         // geometrically at apply time (§15a), so there is nothing a requeue lap could discover:
         // a member that cannot apply is a loud failure with its reason, never healed.
-        for (const proposal of sorted) {
+        for (let proposalIndex = 0; proposalIndex < sorted.length; proposalIndex += 1) {
+            const proposal = sorted[proposalIndex];
             try {
                 if (typeof updateStatus === 'function') {
                     const displayId = proposal.proposalId ? String(proposal.proposalId) : '?';
-                    updateStatus(t('status.messages.applying_specific_shared_proposal', `Applying shared proposal ${proposal.title || ''} #${displayId}...`, {
-                        title: proposal.title || '',
-                        id: displayId
-                    }));
+                    const label = proposal.title || `#${displayId}`;
+                    updateStatus(tShare('plan.preparingNamed',
+                        'Preparing {{label}} ({{done}}/{{total}})…', {
+                            label,
+                            done: proposalIndex + 1,
+                            total: sorted.length
+                        }));
                 }
             } catch (_) { }
 
-            const result = await importAndApplySharedProposal(proposal, { deferSave: true });
+            const result = await importAndApplySharedProposal(proposal, {
+                deferSave: true,
+                skipDependencyFetch: true
+            });
             const proposalId = (result && result.proposalId) || getProposalKey(proposal) || proposal.proposalId;
 
             if (result && result.skipped) {
@@ -1382,7 +1619,12 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
     let parentIds = [];
     if (!skipDependencyFetch) {
         try {
-            parentIds = await ensureParentParcelsFetched(sharedProposal, normalized);
+            parentIds = ensureArrayOfStrings(computeRequiredParentIdsForSharedProposal(sharedProposal));
+            const ground = getSharedGroundService();
+            if (!ground || typeof ground.ensureProposalGround !== 'function') {
+                throw new Error('Cadastral ground service is unavailable.');
+            }
+            await ground.ensureProposalGround([normalized], { purpose: 'application' });
         } catch (error) {
             console.warn('Failed to fetch parent parcels for shared proposal', sharedProposal.proposalId, error);
             return { applied: false, skipped: false, proposalId, reason: `Failed to fetch parent parcels: ${error && error.message ? error.message : 'unknown error'}` };
@@ -1663,8 +1905,10 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         const proposalTypeById = new Map();
         const basePrereqIdsById = new Map();
         const lastUnfetchedBasePrereqIdsById = new Map();
-        const fetchedBaseParcels = new Set();
-        const baseParcelFetchInFlight = new Map();
+        const groundService = getSharedGroundService();
+        if (!groundService || typeof groundService.ensureIds !== 'function') {
+            throw new Error('Cadastral ground service is unavailable.');
+        }
 
         // Wait for PersistentStorage to be ready before checking local proposals.
         if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.ensureReady === 'function') {
@@ -1682,7 +1926,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                 title: tShare('plan.rebuildingPlanTitle', 'Rebuilding applied plan'),
                 status: tShare('plan.rebuildingPlan', 'Replaying its formations from the cadastre…')
             });
-            await ProposalManager.reapplyAppliedProposals();
+            await ProposalManager.reapplyAppliedProposals({ onProgress: reportSharedPlanProgress });
         }
 
         const urlRequests3D = is3DModeRequestedFromUrl();
@@ -1963,91 +2207,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
             console.warn('[handleSharedPlanRoute] Record ordering failed; keeping link order', orderError);
         }
 
-        const startFetchBaseParcels = async (parcelIds, options = {}) => {
-            const ids = ensureArrayOfStrings(parcelIds);
-            if (!ids.length) return { attempted: [], missingAfter: [] };
-
-            const unique = Array.from(new Set(ids));
-            const toFetch = [];
-            unique.forEach(id => {
-                if (!id) return;
-                if (fetchedBaseParcels.has(id)) return;
-                if (baseParcelFetchInFlight.has(id)) return;
-                toFetch.push(id);
-            });
-
-            // If nothing new to fetch, optionally await any in-flight fetches for these ids.
-            if (!toFetch.length) {
-                if (options.await === true) {
-                    const inflight = unique.map(id => baseParcelFetchInFlight.get(id)).filter(Boolean);
-                    if (inflight.length) {
-                        await Promise.allSettled(inflight);
-                    }
-                }
-                const missingAfter = unique.filter(id => {
-                    if (typeof isParcelLayerReady === 'function' && isParcelLayerReady(id)) return false;
-                    return true;
-                });
-                return { attempted: [], missingAfter };
-            }
-
-            // Bulk fetch: one request chain for the full list. NOT forced — a
-            // parcel already live on the map (viewport grid, /parcels/under,
-            // or an earlier proposal in this plan) is this session's fresh
-            // server state; re-downloading it wastes the bytes and, worse,
-            // would overwrite ground an earlier apply in this plan already
-            // modified locally.
-            const batchPromise = (async () => {
-                try {
-                    if (typeof fetchParcelsForIds === 'function') {
-                        await fetchParcelsForIds(toFetch, { forceRefresh: false });
-                    } else if (typeof ensureParentParcelsLoaded === 'function') {
-                        await ensureParentParcelsLoaded(toFetch, { forceRefreshParcels: false });
-                    }
-                    if (typeof waitForParcelLayersReady === 'function') {
-                        // The fetch above has already resolved, so every parcel it returned is in the
-                        // immutable cadastral index and becomes ready within a poll or two.
-                        // The only ids that reach the timeout are PHANTOMS — a declared base/cadastre
-                        // parent the fetch never returned, which will never become ready no matter how
-                        // long we wait. 15 s of that froze the loader at "1 / 1"; 4 s covers real
-                        // render lag and stops burning time on ids that are not coming.
-                        await waitForParcelLayersReady(toFetch, { timeoutMs: 4000, pollIntervalMs: 150 });
-                    }
-                } catch (err) {
-                    console.warn('[handleSharedPlanRoute] Failed to bulk fetch base parcels for apply plan', { ids: toFetch, err });
-                } finally {
-                    toFetch.forEach(id => baseParcelFetchInFlight.delete(id));
-                }
-            })();
-
-            // Track per-id promise for this batch so later proposals can await without duplicating work.
-            toFetch.forEach(id => baseParcelFetchInFlight.set(id, batchPromise));
-
-            if (options.await === true) {
-                await Promise.allSettled([batchPromise]);
-            }
-
-            // Mark fetched ids that are now ready.
-            toFetch.forEach(id => {
-                try {
-                    if (typeof isParcelLayerReady === 'function' && isParcelLayerReady(id)) {
-                        fetchedBaseParcels.add(id);
-                    }
-                } catch (_) { }
-            });
-
-            const missingAfter = unique.filter(id => {
-                try {
-                    if (typeof isParcelLayerReady === 'function' && isParcelLayerReady(id)) return false;
-                    return true;
-                } catch (_) {
-                    return true;
-                }
-            });
-
-            return { attempted: toFetch, missingAfter };
-        };
-
         // One union prefetch for the whole plan: every preloaded proposal's
         // declared BASE prerequisites start downloading in one batched chain up
         // front, so the per-proposal awaits inside the loop find them fetched
@@ -2061,7 +2220,11 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                 if (!payload) continue;
                 unionBaseIds.push(...basePrerequisiteIds(getPrerequisiteParcelIdsForProposal(payload)));
             }
-            if (unionBaseIds.length > 0) startFetchBaseParcels(unionBaseIds, { await: false });
+            if (unionBaseIds.length > 0) {
+                groundService.ensureIds(unionBaseIds, { onProgress: reportSharedPlanProgress }).catch(err => {
+                    console.warn('[handleSharedPlanRoute] Union cadastral-ground load failed', err);
+                });
+            }
         } catch (err) {
             console.warn('[handleSharedPlanRoute] Union base-parcel prefetch failed; per-proposal fetches cover it', err);
         }
@@ -2176,10 +2339,10 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                 } catch (_) { }
 
                 if (baseIds.length > 0) {
-                    const fetchResult = await startFetchBaseParcels(baseIds, { await: true });
+                    const fetchResult = await groundService.ensureIds(baseIds, { onProgress: reportSharedPlanProgress });
                     try {
-                        lastUnfetchedBasePrereqIdsById.set(String(id), fetchResult.missingAfter);
-                        if (proposal && proposal.proposalId) lastUnfetchedBasePrereqIdsById.set(String(proposal.proposalId), fetchResult.missingAfter);
+                        lastUnfetchedBasePrereqIdsById.set(String(id), fetchResult.missingIds);
+                        if (proposal && proposal.proposalId) lastUnfetchedBasePrereqIdsById.set(String(proposal.proposalId), fetchResult.missingIds);
                     } catch (_) { }
                 }
 
@@ -2188,8 +2351,8 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                 applyDone += 1;
                 updateProposalLoadOverlay({
                     status: tShare(
-                        'plan.applyingNamed',
-                        'Applying {{label}} ({{done}}/{{total}})…',
+                        'plan.preparingNamed',
+                        'Preparing {{label}} ({{done}}/{{total}})…',
                         { label: formatSharedProposalLabel(proposal, id), done: applyDone, total: applyTotal }
                     ),
                     progress: { done: applyDone, total: applyTotal }
@@ -2280,7 +2443,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         // All imported members are now parked records. Materialise only that queue through the
         // direct replay materializer; startup already restored everything else on the map.
         if (applied.length > 0) {
-            updateProposalLoadOverlay({ status: tShare('plan.applyingAll', 'Applying shared plan…') });
+            updateProposalLoadOverlay({ status: tShare('plan.materializing', 'Starting proposal materialization…') });
             const sharedPlanMemberIds = new Set(uniqueIncomingIds);
             [...incomingAlreadyApplied, ...applied].forEach(entry => {
                 const record = entry && entry.id ? proposalStorage.getProposal(entry.id) : entry;

@@ -92,8 +92,8 @@ describe('the command that paints it', () => {
 
     it('asks for the ground first, exactly as publish does', () => {
         // Otherwise it reports the viewport and blames the cadastre for what was never fetched.
-        expect(src).toContain('await fetchParcelsUnderGeometry(footprint)');
-        expect(src.indexOf('await fetchParcelsUnderGeometry(footprint)'))
+        expect(src).toContain("await CadastralGroundService.ensureProposalGround([record], { purpose: 'publish' })");
+        expect(src.indexOf("await CadastralGroundService.ensureProposalGround([record], { purpose: 'publish' })"))
             .toBeLessThan(src.indexOf('const parcels = ancestry.loadedCadastreParcels();'));
     });
 

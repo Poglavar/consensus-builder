@@ -19,11 +19,57 @@ function loadSharedImportHelpers(overrides = {}) {
     };
     vm.createContext(context);
     vm.runInContext(
-        `${source}\nthis.sharedImportHelpersForTest = { importAndApplySharedProposal, materializeQueuedSharedProposals, fetchSharedProposalBatch, selectSharedPlanFocusId };`,
+        `${source}\nthis.sharedImportHelpersForTest = { importAndApplySharedProposal, materializeQueuedSharedProposals, fetchSharedProposalBatch, selectSharedPlanFocusId, sharedPlanProgressView, sharedCorridorCountPhrase };`,
         context
     );
     return context.sharedImportHelpersForTest;
 }
+
+describe('shared-plan progress labels', () => {
+    const t = (_key, fallback, params = {}) => String(fallback).replace(/\{\{(\w+)\}\}/g,
+        (_match, name) => Object.prototype.hasOwnProperty.call(params, name) ? params[name] : _match);
+
+    it('names the full corridor batch instead of the first track in it', () => {
+        const { sharedPlanProgressView } = loadSharedImportHelpers();
+        const view = sharedPlanProgressView({
+            phase: 'corridor-start',
+            roads: 130,
+            tracks: 1
+        }, t);
+
+        expect(view.status).toBe('Preparing 130 roads and 1 track…');
+        expect(view.status).not.toContain('Sibenik 4');
+    });
+
+    it('reports parcel cutting as its own measured phase', () => {
+        const { sharedPlanProgressView } = loadSharedImportHelpers();
+        const view = sharedPlanProgressView({ phase: 'fabric-arrange', done: 75, total: 131 }, t);
+
+        expect(view.status).toBe('Cutting affected cadastral parcels (75/131)…');
+        expect(view.progress).toEqual({ done: 75, total: 131 });
+    });
+
+    it('distinguishes waiting on an existing request from starting another fetch', () => {
+        const { sharedPlanProgressView } = loadSharedImportHelpers();
+        const view = sharedPlanProgressView({ phase: 'ground-wait-footprints' }, t);
+
+        expect(view.status).toBe('Waiting for an existing footprint-ground request…');
+    });
+
+    it('names building lookup and final map refresh as separate phases', () => {
+        const { sharedPlanProgressView } = loadSharedImportHelpers();
+        const buildings = sharedPlanProgressView({
+            phase: 'building-ground-progress',
+            done: 1,
+            total: 2,
+            covered: 17
+        }, t);
+        const strips = sharedPlanProgressView({ phase: 'corridor-strips' }, t);
+
+        expect(buildings.status).toBe('Loading affected buildings (batch 1/2, 17 areas covered)…');
+        expect(strips.status).toBe('Refreshing road and track surfaces…');
+    });
+});
 
 describe('shared-plan focus selection', () => {
     it('chooses only a final successful/present member, latest in link order', () => {
@@ -48,6 +94,92 @@ describe('shared-plan focus selection', () => {
 });
 
 describe('shared-plan import boundary', () => {
+    it('gives the browser frames for cached-member progress and the two final phases', async () => {
+        let clock = 0;
+        const actions = [];
+        const records = new Map([
+            ['a', { proposalId: 'a', title: 'Block A', goal: 'building', buildingProposal: {} }],
+            ['b', { proposalId: 'b', title: 'Block B', goal: 'building', buildingProposal: {} }]
+        ]);
+        const proposalStorage = {
+            getProposal: id => records.get(id) || null,
+            getAllProposals: () => [],
+            beginBatch: vi.fn(),
+            endBatch: vi.fn(),
+            save: vi.fn()
+        };
+        const ProposalManager = {
+            applyProposal: vi.fn(async id => {
+                actions.push(`apply:${id}`);
+                return true;
+            }),
+            _refreshUIAfterProposalChange: vi.fn(() => actions.push('refresh'))
+        };
+        const t = (_key, fallback, params = {}) => String(fallback).replace(/\{\{(\w+)\}\}/g,
+            (_match, name) => Object.prototype.hasOwnProperty.call(params, name) ? params[name] : _match);
+        const yieldToBrowser = vi.fn(async () => actions.push('paint'));
+        const updateProposalLoadOverlay = vi.fn(view => actions.push(`status:${view.status}`));
+        const { materializeQueuedSharedProposals } = loadSharedImportHelpers({
+            ProposalManager,
+            proposalStorage,
+            applyRoute: { normalizeGoalKey: goal => goal, isBuildingGoal: goal => goal === 'building' },
+            performance: { now: () => { clock += 100; return clock; } },
+            window: { yieldToBrowser },
+            getShareI18nHelper: () => t,
+            updateProposalLoadOverlay
+        });
+
+        await materializeQueuedSharedProposals(['a', 'b']);
+
+        expect(yieldToBrowser).toHaveBeenCalledTimes(4);
+        expect(actions).toEqual([
+            'status:Applying Block A (1/2)…',
+            'paint',
+            'apply:a',
+            'status:Applying Block B (2/2)…',
+            'paint',
+            'apply:b',
+            'status:Refreshing the map and proposal list…',
+            'paint',
+            'refresh',
+            'status:Saving applied proposals…',
+            'paint'
+        ]);
+    });
+
+    it('time-budgets intermediate paints instead of yielding after every fast member', async () => {
+        let clock = 0;
+        const records = new Map(['a', 'b', 'c', 'd'].map(id => [id, {
+            proposalId: id,
+            title: `Block ${id.toUpperCase()}`,
+            goal: 'building',
+            buildingProposal: {}
+        }]));
+        const paint = vi.fn(async () => {});
+        const ProposalManager = {
+            applyProposal: vi.fn(async id => {
+                clock += ({ a: 20, b: 70, c: 10, d: 10 })[id];
+                return true;
+            })
+        };
+        const { materializeQueuedSharedProposals } = loadSharedImportHelpers({
+            ProposalManager,
+            proposalStorage: {
+                getProposal: id => records.get(id) || null,
+                getAllProposals: () => [],
+                save: vi.fn()
+            },
+            applyRoute: { normalizeGoalKey: goal => goal, isBuildingGoal: goal => goal === 'building' },
+            performance: { now: () => clock },
+            window: { yieldToBrowser: paint }
+        });
+
+        await materializeQueuedSharedProposals(['a', 'b', 'c', 'd']);
+
+        // First member, the first member after the 80 ms budget, final member, presentation, save.
+        expect(paint).toHaveBeenCalledTimes(5);
+    });
+
     it('loads a whole proposal id set through one ordered batch response', async () => {
         const fetch = vi.fn(async () => ({
             ok: true,
@@ -206,7 +338,10 @@ describe('shared-plan import boundary', () => {
         await materializeQueuedSharedProposals(['building', 'park']);
 
         expect(prefetch).toHaveBeenCalledOnce();
-        expect(prefetch).toHaveBeenCalledWith([records.get('building'), records.get('park')]);
+        expect(prefetch).toHaveBeenCalledWith(
+            [records.get('building'), records.get('park')],
+            { onProgress: expect.any(Function) }
+        );
         expect(applyProposal.mock.calls).toEqual([
             ['building', { replay: true, silent: true, deferPresentation: true, preloadedBuildings: [] }],
             ['park', {
@@ -331,7 +466,11 @@ describe('shared-plan import boundary', () => {
 
         expect(materializeCorridorBatch).toHaveBeenCalledWith(
             ['road-a', 'road-b'],
-            { deferPresentation: true }
+            expect.objectContaining({
+                deferPresentation: true,
+                deferSave: true,
+                onProgress: expect.any(Function)
+            })
         );
         expect(applyProposal.mock.calls.map(call => call[0]))
             .toEqual(['plots', 'building-a', 'building-b', 'park']);
@@ -393,6 +532,6 @@ describe('shared-plan import boundary', () => {
             .not.toMatch(/coveredIncomingIds\.size > 0 && coveredIncomingIds\.size < totalProposals/);
         // The remaining "Rebuilding applied plan" is the boot replay awaiting reapplyAppliedProposals,
         // which is a different phase that happens to share the wording.
-        expect(source).toMatch(/await ProposalManager\.reapplyAppliedProposals\(\)/);
+        expect(source).toMatch(/await ProposalManager\.reapplyAppliedProposals\(\{ onProgress: reportSharedPlanProgress \}\)/);
     });
 });

@@ -364,7 +364,10 @@ describe('ProposalManager.rebuildAppliedFabric — immutable record precedence',
 
         const manager = {
             _rebuildInProgress: false,
-            _rebuildPass: vi.fn(async ordered => ({ ok: true, applied: ordered.length, failed: [] })),
+            _rebuildPass: vi.fn(async (ordered, options) => {
+                expect(options.preserveAppliedSet).toBe(true);
+                return { ok: true, applied: ordered.length, failed: [] };
+            }),
             rebuildAppliedFabric: ProposalManager.rebuildAppliedFabric
         };
 
@@ -373,6 +376,28 @@ describe('ProposalManager.rebuildAppliedFabric — immutable record precedence',
         expect(manager._rebuildPass).toHaveBeenCalledOnce();
         expect(manager._rebuildPass.mock.calls[0][0].map(p => p.proposalId))
             .toEqual(['old-road', 'new-subdivision']);
+    });
+
+    it('materializes one applied-set snapshot exactly once', async () => {
+        const proposal = { proposalId: 'standing', goal: 'single', applied: true, parentParcelIds: [] };
+        installGlobal('window', { CityConfigManager: null, __planOrder: planOrder });
+        installGlobal('proposalStorage', { getAllProposals: () => [proposal] });
+        installGlobal('isProposalCurrentlyApplied', record => record.applied === true);
+
+        const manager = {
+            _rebuildInProgress: false,
+            _rebuildPass: vi.fn(async records => {
+                expect(records).toEqual([proposal]);
+                return { ok: true, applied: 1, failed: [] };
+            }),
+            rebuildAppliedFabric: ProposalManager.rebuildAppliedFabric
+        };
+
+        await manager.rebuildAppliedFabric({ silent: true, _fabricQueue: true });
+
+        expect(manager._rebuildPass).toHaveBeenCalledOnce();
+        expect(proposal.applied).toBe(true);
+        expect(manager._lastRebuildProfile.passes).toBe(1);
     });
 
     it('puts an edit last because the edit is a fresh record', () => {

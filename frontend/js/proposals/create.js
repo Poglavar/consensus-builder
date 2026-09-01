@@ -1195,6 +1195,29 @@ async function createProposal() {
                     }
                 };
 
+                // Declare every cadastral parcel once. The ground service decides which ones are
+                // cached, already in flight, known absent, or need a server request.
+                // Generated live-fabric ids are local replay output and are never server keys.
+                const isSyntheticParcel = (typeof ProposalManager !== 'undefined'
+                    && typeof ProposalManager.isSyntheticParcelId === 'function')
+                    ? ProposalManager.isSyntheticParcelId.bind(ProposalManager)
+                    : id => String(id || '').includes('#');
+                const cadastralIds = Array.from(new Set(finalParcelIds
+                    .filter(parcelId => parcelId && !isSyntheticParcel(parcelId))));
+                if (cadastralIds.length) {
+                    const ground = (typeof CadastralGroundService !== 'undefined' && CadastralGroundService)
+                        ? CadastralGroundService
+                        : ((typeof window !== 'undefined') ? window.CadastralGroundService : null);
+                    try {
+                        if (!ground || typeof ground.ensureIds !== 'function') {
+                            throw new Error('Cadastral ground service is unavailable.');
+                        }
+                        await ground.ensureIds(cadastralIds);
+                    } catch (err) {
+                        console.warn('[proposal-mint] Unable to load proposal ground:', err);
+                    }
+                }
+
                 for (const parcelId of finalParcelIds) {
                     let parcelLayer = null;
                     if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.findParcelById) {
@@ -1202,14 +1225,6 @@ async function createProposal() {
                     }
                     if (!parcelLayer && typeof resolveParcelLayerById === 'function') {
                         parcelLayer = resolveParcelLayerById(parcelId);
-                    }
-                    // If still not resolved, fetch it to ensure geometry is available
-                    if (!parcelLayer && typeof fetchSingleParcelById === 'function') {
-                        try {
-                            parcelLayer = await fetchSingleParcelById(parcelId, { forceRefresh: false });
-                        } catch (err) {
-                            console.warn(`[proposal-mint] Unable to fetch parcel ${parcelId} for proposal minting:`, err);
-                        }
                     }
                     if (parcelLayer && parcelLayer.feature) {
                         const normalizedFeature = ensureParcelIdOnFeature(parcelLayer.feature);
