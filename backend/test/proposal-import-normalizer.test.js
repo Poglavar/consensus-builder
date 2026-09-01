@@ -85,6 +85,41 @@ describe('proposal import boundary', () => {
         expect(imported.roadProposal).not.toHaveProperty('status');
     });
 
+    it('preserves authored block membership and block-wide courtyard geometry', () => {
+        const blockMassing = {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+                type: 'Polygon',
+                coordinates: [
+                    [[15, 43], [15.01, 43], [15.01, 43.01], [15, 43.01], [15, 43]],
+                    [[15.002, 43.002], [15.008, 43.002], [15.008, 43.008], [15.002, 43.008], [15.002, 43.002]]
+                ]
+            }
+        };
+        const imported = prepareProposalForImport({
+            proposalId: 'shared-block',
+            goal: 'buildings',
+            typologyType: 'block',
+            parentParcelIds: ['HR-1', 'HR-2'],
+            geometry: { buildings: [blockMassing], blockMassing },
+            buildingProposal: {
+                typologyType: 'block',
+                parentParcelIds: ['HR-1', 'HR-2'],
+                blockParcelIds: ['HR-1', 'HR-2', 'HR-EDGE'],
+                blockName: 'Block 1',
+                ineligibleParcels: [{ parcelId: 'HR-EDGE', status: 'below-min-plot' }]
+            }
+        });
+
+        expect(imported.typologyType).toBe('block');
+        expect(imported.buildingProposal.blockParcelIds).toEqual(['HR-1', 'HR-2', 'HR-EDGE']);
+        expect(imported.buildingProposal.ineligibleParcels).toEqual([
+            { parcelId: 'HR-EDGE', status: 'below-min-plot' }
+        ]);
+        expect(imported.geometry.blockMassing.geometry.coordinates).toHaveLength(2);
+    });
+
     it('refuses derived parent declarations instead of healing them during import', () => {
         expect(() => prepareProposalForImport({
             proposalId: 'legacy-derived-parent',

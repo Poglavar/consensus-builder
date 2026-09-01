@@ -144,10 +144,14 @@ describe('carried into the applied plan', () => {
         expect(save).toContain('const ineligibleParcels = blockExcludedParcels.map(');
         expect(save).toContain('wouldBe: entry.wouldBe ?');
         expect(save).toContain('ineligibleParcels,');
+        expect(save).toContain('blockParcelIds: normalizedParcelIds.slice()');
+        expect(save).toContain('blockMassing');
     });
 
     it('serializes them onto the proposal record', () => {
         expect(adapters).toContain('ineligibleParcels: clone(context.ineligibleParcels || [])');
+        expect(adapters).toContain('blockParcelIds: clone(');
+        expect(adapters).toContain('output.geometry.blockMassing = blockMassing');
     });
 
     const collect = buildingBlocks.slice(
@@ -168,12 +172,14 @@ describe('carried into the applied plan', () => {
         expect(collect).toContain("kind: 'plot'");
         expect(collect).toContain("kind: 'massing'");
         expect(collect).toContain('.filter(id => !built.has(id))');
+        expect(collect).toContain('bp.blockParcelIds');
+        expect(collect).toContain('...Array.from(declared.keys())');
     });
 
     it('only derives it for rule-driven typologies', () => {
         // A freeform building over one of two selected parcels leaves the other alone on purpose.
         expect(collect).toContain("RULE_TYPOLOGIES = new Set(['block', 'row', 'parcelBased', 'parcelbased'])");
-        expect(collect).toContain('RULE_TYPOLOGIES.has(String(bp.typologyType || \'\'))');
+        expect(collect).toContain("RULE_TYPOLOGIES.has(String(bp.typologyType || record.typologyType || ''))");
     });
 
     it('draws them on the 2D map — hatched plot, dashed massing — even when the rule built nothing', () => {

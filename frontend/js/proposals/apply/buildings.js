@@ -38,6 +38,19 @@
 
         const step1Time = performance.now();
         const buildingProposal = proposalData.buildingProposal ? { ...proposalData.buildingProposal } : {};
+        const typology = String(proposalData.typologyType || buildingProposal.typologyType || '').toLowerCase();
+        if (typology === 'block') {
+            buildingProposal.blockParcelIds = [...new Set([
+                ...(Array.isArray(buildingProposal.blockParcelIds) ? buildingProposal.blockParcelIds : []),
+                ...(Array.isArray(buildingProposal.parentParcelIds) ? buildingProposal.parentParcelIds : []),
+                ...(Array.isArray(buildingProposal.buildings)
+                    ? buildingProposal.buildings.map(feature => feature?.properties?.parcelId)
+                    : []),
+                ...(Array.isArray(buildingProposal.ineligibleParcels)
+                    ? buildingProposal.ineligibleParcels.map(entry => entry?.parcelId)
+                    : [])
+            ].map(value => value == null ? '' : String(value)).filter(Boolean))];
+        }
         const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, 'building');
         if (!liveParents.ok) return false;
         const uniqueParentIds = liveParents.ids;

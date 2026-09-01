@@ -47,7 +47,7 @@ let blockMinHeightM = 0;
 let blockMinDepthM = 0;          // obvezni građevni pravac: compelled depth from the street
 let blockMinPlotAreaM2 = DEFAULT_BLOCK_MIN_PLOT_AREA_M2;
 let blockVariationSeed = (Math.floor(Math.random() * 0xffffffff) >>> 0);
-let blockMassingPieces = [];      // per-parcel permitted massing — what the proposal saves
+let blockMassingPieces = [];      // per-parcel economic pieces; the proposal also saves the full authored massing
 let blockBuildOut = [];           // one example built under it — presentation only
 let blockExcludedParcels = [];
 
@@ -1202,8 +1202,10 @@ function hydrateProposedBuildingsFromProposals() {
         if (!isApplied(p, p.buildingProposal)) return;
 
         if (cityId && isInCityFn) {
-            const cityIds = (Array.isArray(p.buildingProposal.parentParcelIds) && p.buildingProposal.parentParcelIds.length)
-                ? p.buildingProposal.parentParcelIds
+            const cityIds = (Array.isArray(p.buildingProposal.blockParcelIds) && p.buildingProposal.blockParcelIds.length)
+                ? p.buildingProposal.blockParcelIds
+                : (Array.isArray(p.buildingProposal.parentParcelIds) && p.buildingProposal.parentParcelIds.length)
+                    ? p.buildingProposal.parentParcelIds
                 : (Array.isArray(p.parcelIds) && p.parcelIds.length ? p.parcelIds
                     : (Array.isArray(p.parentParcelIds) ? p.parentParcelIds : []));
             if (cityIds.length && !cityIds.some(id => isInCityFn(id, cityId))) return;
@@ -1432,8 +1434,13 @@ function appliedIneligibleBlockParts(onlyProposalId) {
         const declared = new Map((Array.isArray(bp.ineligibleParcels) ? bp.ineligibleParcels : [])
             .filter(entry => entry && entry.parcelId)
             .map(entry => [String(entry.parcelId), entry]));
-        const leftOut = RULE_TYPOLOGIES.has(String(bp.typologyType || ''))
-            ? (Array.isArray(bp.parentParcelIds) ? bp.parentParcelIds : []).map(String).filter(id => !built.has(id))
+        const selectedBlockParcels = [...new Set([
+            ...(Array.isArray(bp.blockParcelIds) ? bp.blockParcelIds : []),
+            ...(Array.isArray(bp.parentParcelIds) ? bp.parentParcelIds : []),
+            ...Array.from(declared.keys())
+        ].map(String))];
+        const leftOut = RULE_TYPOLOGIES.has(String(bp.typologyType || record.typologyType || ''))
+            ? selectedBlockParcels.filter(id => !built.has(id))
             : Array.from(declared.keys());
 
         leftOut.forEach(parcelId => {
@@ -4318,9 +4325,10 @@ async function confirmBlockSizeIfOversized(block) {
 
 async function saveBlockifyDesignForProposal() {
     // Existing-buildings mode saves one feature per raised building; every other mode saves the
-    // block's massing already cut into one building per parcel. Both are just `buildings` arrays
-    // downstream, which is why the ring is not stored on its own — one feature covering four
-    // parcels would put all four parcels' gain on whichever one it happened to be keyed to.
+    // block's massing cut into one building per parcel. The cut pieces remain the economic and
+    // ownership units, while `blockMassing` below preserves the authored block-wide shape (including
+    // courtyard holes) as design geometry. Conflating those two shapes is what made both selected
+    // edge plots and the common courtyard disappear after apply/reload.
     const existingModeFeatures = blockifyMode === 'existing'
         ? ((Array.isArray(generatedBuildingFeatures) && generatedBuildingFeatures.length) ? generatedBuildingFeatures : null)
         : (blockMassingPieces.length ? blockMassingPieces : null);
@@ -4386,6 +4394,9 @@ async function saveBlockifyDesignForProposal() {
     // `buildings` (array) with `buildingFeature` as the single/primary fallback.
     const clonedBuildings = existingModeFeatures ? JSON.parse(JSON.stringify(existingModeFeatures)) : null;
     const clonedFeature = clonedBuildings ? clonedBuildings[0] : JSON.parse(JSON.stringify(generatedBuildingFeature));
+    const blockMassing = blockifyMode !== 'existing' && generatedBuildingFeature?.geometry
+        ? JSON.parse(JSON.stringify(generatedBuildingFeature))
+        : null;
 
     // Save enough to rebuild this exact design later (see applyBlockifySeedState). Width/height/
     // setback/chamfer/algorithm alone are lossy: a manual outline isn't slider-derived at all, and
@@ -4433,11 +4444,16 @@ async function saveBlockifyDesignForProposal() {
 
     const context = {
         parcelIds: normalizedParcelIds.slice(),
+        // Authored membership is not the same thing as the smaller set of parcels touched by the
+        // permitted massing. Keep it explicit so apply-time footprint resolution cannot shrink the
+        // block when the rule intentionally leaves a selected plot unbuilt.
+        blockParcelIds: normalizedParcelIds.slice(),
         parentDetails: parentDetails.slice(),
         blockName: getBlockifyDisplayName(),
         parameters,
         ineligibleParcels,
-        buildingFeature: clonedFeature
+        buildingFeature: clonedFeature,
+        ...(blockMassing ? { blockMassing } : {})
     };
     if (clonedBuildings) context.buildings = clonedBuildings;
 

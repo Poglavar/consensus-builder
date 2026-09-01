@@ -1015,6 +1015,11 @@ async function createProposal() {
 
             if (!proposal.geometry) proposal.geometry = {};
             proposal.geometry.buildings = buildingFeatures;
+            const blockMassing = resolvedTypology === 'block'
+                ? safeClone(pendingBuildingContext.blockMassing)
+                : null;
+            if (blockMassing?.geometry) proposal.geometry.blockMassing = blockMassing;
+            else delete proposal.geometry.blockMassing;
             // Freeform proposals may pave or green the parcel area around their buildings; no other
             // typology offers the choice, so its surround never travels with them.
             const groundSurface = selectedTool === 'single' ? safeClone(pendingBuildingContext.groundSurface) : null;
@@ -1023,12 +1028,19 @@ async function createProposal() {
 
             proposal.buildingProposal = {
                 parentParcelIds: normalizedParentParcelIds.slice(),
+                ...(resolvedTypology === 'block' ? {
+                    blockParcelIds: (pendingBuildingContext.blockParcelIds?.length
+                        ? pendingBuildingContext.blockParcelIds
+                        : normalizedParentParcelIds).map(String)
+                } : {}),
                 parentParcelNumbers: parentDetails,
+                typologyType: resolvedTypology,
                 createdFrom: resolvedTypology === 'row' ? 'rowHouse' : (resolvedTypology === 'parcelBased' ? 'parcelBased' : 'blockify'),
                 blockName: pendingBuildingContext.blockName || formatParcelSelectionLabel(normalizedParentParcelIds),
                 parameters: safeClone(pendingBuildingContext.parameters) || {},
                 buildingFeature: primaryBuildingFeature,
                 buildings: buildingFeatures,
+                ineligibleParcels: safeClone(pendingBuildingContext.ineligibleParcels) || [],
                 ancestorKey,
                 // §15a: how a FREEFORM building forms its parcel — footprint parcel by default,
                 // whole host parcels when the author chose so in the design modal.

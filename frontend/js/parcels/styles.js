@@ -245,8 +245,10 @@
                     const buildingProposal = proposal.buildingProposal || null;
                     if (buildingProposal) {
                         if (isApplied(proposal, buildingProposal)) {
-                            const ids = Array.isArray(buildingProposal.parentParcelIds) && buildingProposal.parentParcelIds.length > 0
-                                ? buildingProposal.parentParcelIds
+                            const ids = Array.isArray(buildingProposal.blockParcelIds) && buildingProposal.blockParcelIds.length > 0
+                                ? buildingProposal.blockParcelIds
+                                : Array.isArray(buildingProposal.parentParcelIds) && buildingProposal.parentParcelIds.length > 0
+                                    ? buildingProposal.parentParcelIds
                                 : (Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : []);
                             if (Array.isArray(ids)) parcelIds.push(...ids);
                         }

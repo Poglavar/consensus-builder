@@ -195,13 +195,25 @@
         if (!primary && proposal?.buildingGeometry) {
             primary = { type: 'Feature', geometry: clone(proposal.buildingGeometry), properties: clone(proposal.buildingProperties || {}) };
         }
+        const explicitBlockParcelIds = Array.isArray(bp.blockParcelIds) ? bp.blockParcelIds : [];
+        const legacyExcludedParcelIds = Array.isArray(bp.ineligibleParcels)
+            ? bp.ineligibleParcels.map(entry => entry?.parcelId).filter(Boolean)
+            : [];
+        const designParcelIds = [...new Set([
+            ...explicitBlockParcelIds,
+            ...sourceParcels(proposal),
+            ...legacyExcludedParcelIds
+        ].map(baseParcelId).filter(Boolean))];
         return {
-            parcelIds: sourceParcels(proposal),
+            parcelIds: designParcelIds,
+            blockParcelIds: clone(explicitBlockParcelIds.length ? explicitBlockParcelIds : designParcelIds),
             parentDetails: clone(bp.parentParcelNumbers || bp.parentDetails || null),
             blockName: bp.blockName || null,
             parameters: clone(bp.parameters || {}),
             buildingFeature: clone(primary),
             buildings: clone(buildings.length ? buildings : (primary ? [primary] : [])),
+            blockMassing: clone(proposal?.geometry?.blockMassing || null),
+            ineligibleParcels: clone(bp.ineligibleParcels || []),
             // Freeform proposals may pave or green the parcel area around their buildings.
             groundSurface: clone(proposal?.geometry?.groundSurface || null),
             // §15a: footprint parcel (default) vs taking the whole host parcels.
@@ -1028,6 +1040,11 @@
                 output.primaryType = 'Urban Rule';
                 output.typologyType = typology;
                 output.geometry = { ...(output.geometry || {}), buildings: clone(features) };
+                const blockMassing = typology === 'block' && featureGeometryValid(context.blockMassing)
+                    ? clone(context.blockMassing)
+                    : null;
+                if (blockMassing) output.geometry.blockMassing = blockMassing;
+                else delete output.geometry.blockMassing;
                 // Only the freeform editor offers a surroundings treatment; every other typology
                 // leaves the ground alone, so a stale surface must never survive a retypology.
                 const groundSurface = typology === 'single' ? clone(context.groundSurface || null) : null;
@@ -1040,6 +1057,11 @@
                     applied: false,
                     typologyType: typology,
                     parentParcelIds: clone(draft.fields?.parentParcelIds || []),
+                    ...(typology === 'block' ? {
+                        blockParcelIds: clone(context.blockParcelIds?.length
+                            ? context.blockParcelIds
+                            : (context.parcelIds?.length ? context.parcelIds : draft.fields?.parentParcelIds || []))
+                    } : {}),
                     ...(typology === 'single' && context.takeWholeParcels === true ? { takeWholeParcels: true } : {}),
                     parameters: clone(context.parameters || {}),
                     buildingFeature: clone(features[0] || null),

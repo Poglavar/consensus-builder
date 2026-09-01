@@ -346,8 +346,25 @@ function buildSharedProposalsPayload(appliedProposals) {
                 parentParcelNumbers: deepCloneArray(proposal.buildingProposal.parentParcelNumbers),
                 ancestorKey: proposal.buildingProposal.ancestorKey || parentIds.join('|'),
                 buildingFeature,
-                metadata: deepClone(proposal.buildingProposal.metadata)
+                metadata: deepClone(proposal.buildingProposal.metadata),
+                typologyType: proposal.buildingProposal.typologyType || proposal.typologyType || null,
+                blockName: proposal.buildingProposal.blockName || null,
+                createdFrom: proposal.buildingProposal.createdFrom || null,
+                blockParcelIds: ensureArrayOfStrings(proposal.buildingProposal.blockParcelIds),
+                ineligibleParcels: deepCloneArray(proposal.buildingProposal.ineligibleParcels)
             };
+            if (proposal.typologyType) sanitizedProposal.typologyType = proposal.typologyType;
+            const authoredBuildings = Array.isArray(proposal.geometry?.buildings)
+                ? deepCloneArray(proposal.geometry.buildings)
+                : [];
+            if (authoredBuildings.length || proposal.geometry?.blockMassing) {
+                sanitizedProposal.geometry = {};
+                if (authoredBuildings.length) sanitizedProposal.geometry.buildings = authoredBuildings;
+                if (proposal.geometry?.blockMassing) {
+                    sanitizedProposal.geometry.blockMassing = deepClone(proposal.geometry.blockMassing);
+                    featuresForBounds.push(deepClone(proposal.geometry.blockMassing));
+                }
+            }
         } else if (proposal.buildingGeometry) {
             const buildingFeature = {
                 type: 'Feature',

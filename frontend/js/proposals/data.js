@@ -1075,6 +1075,22 @@ const proposalStorage = {
             if (!bp.ancestorKey) {
                 bp.ancestorKey = (bp.parentParcelIds || []).join('|');
             }
+            const typology = String(proposal.typologyType || bp.typologyType || '').toLowerCase();
+            if (typology === 'block') {
+                const selected = [
+                    ...(Array.isArray(bp.blockParcelIds) ? bp.blockParcelIds : []),
+                    ...(Array.isArray(bp.parentParcelIds) ? bp.parentParcelIds : []),
+                    ...(Array.isArray(bp.buildings) ? bp.buildings.map(feature => feature?.properties?.parcelId) : []),
+                    ...(Array.isArray(proposal.geometry?.buildings)
+                        ? proposal.geometry.buildings.map(feature => feature?.properties?.parcelId)
+                        : []),
+                    ...(Array.isArray(bp.ineligibleParcels) ? bp.ineligibleParcels.map(entry => entry?.parcelId) : [])
+                ];
+                // Legacy records used parentParcelIds for both concepts, so an apply that touched
+                // fewer plots could erase block membership. Rebuild the authored membership once
+                // from every surviving authored clue; future records carry blockParcelIds directly.
+                bp.blockParcelIds = normalizeParcelIdList(selected);
+            }
             proposal.buildingProposal = bp;
         } else if (proposal.buildingGeometry || ['buildings', 'building(s)', 'single-building', 'parcelBased'].includes(normalizeProposalGoalKey(proposal.goal) || '')) {
             const parentIds = normalizeParcelIdList(proposal.parentParcelIds || []);

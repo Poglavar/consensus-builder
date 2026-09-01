@@ -668,6 +668,7 @@ function prepareProposalForImport(sharedProposal) {
         color: sharedProposal.color || null,
         parentParcelIds: parentIds
     };
+    if (sharedProposal.typologyType) base.typologyType = String(sharedProposal.typologyType);
     if (sharedProposal.coordinatedPlanId !== undefined && sharedProposal.coordinatedPlanId !== null
         && String(sharedProposal.coordinatedPlanId).trim()) {
         base.coordinatedPlanId = String(sharedProposal.coordinatedPlanId).trim();
@@ -734,7 +735,12 @@ function prepareProposalForImport(sharedProposal) {
             parameters: deepClone(bp.parameters) || {},
             parentParcelIds: ensureArrayOfStrings(bp.parentParcelIds),
             parentParcelNumbers: deepCloneArray(bp.parentParcelNumbers),
-            ancestorKey: bp.ancestorKey || ensureArrayOfStrings(bp.parentParcelIds).join('|')
+            ancestorKey: bp.ancestorKey || ensureArrayOfStrings(bp.parentParcelIds).join('|'),
+            typologyType: bp.typologyType || sharedProposal.typologyType || null,
+            blockName: bp.blockName || null,
+            createdFrom: bp.createdFrom || null,
+            blockParcelIds: ensureArrayOfStrings(bp.blockParcelIds),
+            ineligibleParcels: deepCloneArray(bp.ineligibleParcels)
         };
         if (base.buildingProposal.parentParcelIds.length === 0) {
             base.buildingProposal.parentParcelIds = base.parentParcelIds.slice();
@@ -742,6 +748,10 @@ function prepareProposalForImport(sharedProposal) {
         if (buildingFeatures.length) {
             base.geometry = base.geometry || {};
             base.geometry.buildings = deepCloneArray(buildingFeatures);
+        }
+        if (sharedProposal.geometry?.blockMassing) {
+            base.geometry = base.geometry || {};
+            base.geometry.blockMassing = deepClone(sharedProposal.geometry.blockMassing);
         }
     }
 

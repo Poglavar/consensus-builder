@@ -112,6 +112,27 @@ describe('_applyBuildingProposal (characterization)', () => {
         expect(globalThis.upsertProposedBuildingFeature.calls[0][0].properties.proposalState).toBe('executed');
     });
 
+    it('keeps authored block membership when its massing touches fewer parcels', async () => {
+        const data = buildingProposalData();
+        data.typologyType = 'block';
+        data.parentParcelIds = ['HR-1', 'HR-2', 'HR-EDGE'];
+        data.buildingProposal = {
+            typologyType: 'block',
+            parentParcelIds: ['HR-1', 'HR-2', 'HR-EDGE'],
+            blockParcelIds: ['HR-1', 'HR-2', 'HR-EDGE'],
+            ineligibleParcels: [{ parcelId: 'HR-EDGE', status: 'below-min-plot' }]
+        };
+
+        const result = await _applyBuildingProposal.call(makeManager(), 'p-b1', data, {});
+
+        expect(result).toBe(true);
+        // The footprint resolver owns actual ground, while the design record keeps the selected
+        // block. They are intentionally different facts.
+        expect(data.parentParcelIds).toEqual(['HR-1', 'HR-2']);
+        expect(data.buildingProposal.parentParcelIds).toEqual(['HR-1', 'HR-2']);
+        expect(data.buildingProposal.blockParcelIds).toEqual(['HR-1', 'HR-2', 'HR-EDGE']);
+    });
+
     it('updates canonical state but performs no presentation work when a plan defers it', async () => {
         const data = buildingProposalData();
 

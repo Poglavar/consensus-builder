@@ -199,12 +199,17 @@
             return {
                 typology: proposal?.typologyType || buildingProposal.typologyType || goal,
                 context: {
-                    parcelIds: cloneDraftValue(buildingProposal.parentParcelIds || proposal?.parentParcelIds || []),
+                    parcelIds: cloneDraftValue(buildingProposal.blockParcelIds?.length
+                        ? buildingProposal.blockParcelIds
+                        : (buildingProposal.parentParcelIds || proposal?.parentParcelIds || [])),
+                    blockParcelIds: cloneDraftValue(buildingProposal.blockParcelIds || []),
                     parentDetails: cloneDraftValue(buildingProposal.parentParcelNumbers || null),
                     blockName: buildingProposal.blockName || null,
                     parameters: cloneDraftValue(buildingProposal.parameters || {}),
                     buildingFeature: cloneDraftValue(buildingProposal.buildingFeature || buildings[0] || null),
-                    buildings: cloneDraftValue(buildings)
+                    buildings: cloneDraftValue(buildings),
+                    blockMassing: cloneDraftValue(proposal?.geometry?.blockMassing || null),
+                    ineligibleParcels: cloneDraftValue(buildingProposal.ineligibleParcels || [])
                 }
             };
         }
