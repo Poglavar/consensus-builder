@@ -23,6 +23,8 @@
 
     const adjacency = () => (global.__parcelAdjacency)
         || (typeof require === 'function' ? require('../parcels/parcel-adjacency.js') : null);
+    const blockTopology = () => (global.__parcelBlockTopology)
+        || (typeof require === 'function' ? require('../parcels/block-topology.js') : null);
 
     const DEFAULTS = {
         // How much of a block's outline must run along a road before it counts as enclosed. Not 1.0:
@@ -94,11 +96,24 @@
 
         const byId = new Map(list.map(entry => [String(entry.id), entry]));
         const isCorridor = id => !!(byId.get(String(id)) || {}).isCorridor;
+        const memberEntries = list.filter(entry => !entry.isCorridor);
+        const corridorEntries = list.filter(entry => entry.isCorridor);
 
-        const pairs = api.neighborPairs(
+        // Keep raw land↔corridor adjacency for the enclosure measurement, but use the shared block
+        // topology service for land↔land links. A cadastral land edge that lies under a live road
+        // still contributes to neither side's block; raw adjacency alone would merge the blocks.
+        const rawPairs = api.neighborPairs(
             list.map(entry => ({ id: String(entry.id), rings: entry.rings })),
             opts
         );
+        const topology = blockTopology();
+        const memberPairs = topology && typeof topology.neighborPairs === 'function'
+            ? topology.neighborPairs(
+                memberEntries.map(entry => ({ id: String(entry.id), rings: entry.rings })),
+                corridorEntries.map(entry => ({ id: String(entry.id), rings: entry.rings })),
+                opts
+            )
+            : rawPairs.filter(pair => !isCorridor(pair.a) && !isCorridor(pair.b));
 
         // Adjacency between members only — the flood fill must never cross a road, which is what
         // makes the component a block rather than the whole town.
@@ -109,23 +124,26 @@
             if (!memberLinks.has(a)) memberLinks.set(a, new Set());
             memberLinks.get(a).add(b);
         };
-        pairs.forEach(pair => {
+        rawPairs.forEach(pair => {
             const a = String(pair.a);
             const b = String(pair.b);
             const aRoad = isCorridor(a);
             const bRoad = isCorridor(b);
-            if (aRoad && bRoad) return;
             if (aRoad || bRoad) {
+                if (aRoad && bRoad) return;
                 const member = aRoad ? b : a;
                 corridorTouch.set(member, (corridorTouch.get(member) || 0) + pair.sharedM);
-                return;
             }
+        });
+        memberPairs.forEach(pair => {
+            const a = String(pair.a);
+            const b = String(pair.b);
             link(a, b);
             link(b, a);
             memberShared.set(`${a}~${b}`, pair.sharedM);
         });
 
-        const members = list.filter(entry => !entry.isCorridor).map(entry => String(entry.id));
+        const members = memberEntries.map(entry => String(entry.id));
         const blocks = [];
 
         floodComponents(members, id => memberLinks.get(id) || [], id => !isCorridor(id)).forEach(parcelIds => {

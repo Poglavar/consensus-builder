@@ -698,8 +698,9 @@
     function whyIsBlockUnfilled(parcelId) {
         const enumeration = global.__blockEnumeration;
         const adjacencyApi = global.__parcelAdjacency;
-        if (!enumeration || !adjacencyApi) {
-            console.error('[blockBatch] block enumeration or parcel adjacency is not loaded');
+        const topologyApi = global.__parcelBlockTopology;
+        if (!enumeration || !adjacencyApi || !topologyApi) {
+            console.error('[blockBatch] block enumeration or parcel topology is not loaded');
             return null;
         }
         const parcels = collectParcels();
@@ -724,7 +725,21 @@
         }
 
         const byId = new Map(parcels.map(entry => [entry.id, entry]));
-        const pairs = adjacencyApi.neighborPairs(parcels.map(entry => ({ id: entry.id, rings: entry.rings })));
+        const rawPairs = adjacencyApi.neighborPairs(parcels.map(entry => ({ id: entry.id, rings: entry.rings })));
+        const memberPairs = topologyApi.neighborPairs(
+            parcels.filter(entry => !entry.isCorridor).map(entry => ({ id: entry.id, rings: entry.rings })),
+            parcels.filter(entry => entry.isCorridor).map(entry => ({ id: entry.id, rings: entry.rings }))
+        );
+        // Diagnostics must spend the same graph the actual enumerator walks. Raw adjacency remains
+        // useful only for member↔road contact; member↔member links come from block topology so a
+        // road-covered cadastral edge is not reported as an escape route after it has been removed.
+        const pairs = rawPairs
+            .filter(pair => {
+                const a = byId.get(pair.a);
+                const b = byId.get(pair.b);
+                return !!((a && a.isCorridor) || (b && b.isCorridor));
+            })
+            .concat(memberPairs);
         const inBlock = new Set(block.parcelIds);
         const roadSet = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel : null;
         const occupied = occupancy();

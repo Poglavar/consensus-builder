@@ -61,6 +61,22 @@ describe('blocks are the ground enclosed by roads', () => {
         expect(blocks.map(block => block.parcelIds)).toEqual([['P-1', 'P-2'], ['Q-1']]);
     });
 
+    it('does not merge blocks through a land edge that lies underneath live road ground', () => {
+        // This is the real Sibenik failure in miniature: noisy/overlapping cut output left two land
+        // pieces sharing an edge, but Road 1008-1553 owns that same stretch. Raw parcel adjacency
+        // sees neighbours; street-block topology must see two sides of a road.
+        const parcels = [
+            parcel('NORTH', rect(0, 0, 50, 100)),
+            parcel('SOUTH', rect(50, 0, 100, 100)),
+            parcel('ROAD', rect(45, -10, 55, 110), { isCorridor: true })
+        ];
+
+        const { blocks } = enumerateBlocks(parcels);
+        expect(blocks).toHaveLength(2);
+        expect(blocks.map(block => block.parcelIds).sort())
+            .toEqual([['NORTH'], ['SOUTH']]);
+    });
+
     it('refuses a block whose outline is not accounted for by roads', () => {
         // Take the northern road away: a quarter of the outline now faces nothing.
         const withoutNorth = town().filter(entry => entry.id !== 'R-N');

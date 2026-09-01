@@ -400,6 +400,19 @@ function getVisibleNonCorridorParcels() {
     return nonCorridor;
 }
 
+function getVisibleCorridorParcels() {
+    if (!parcelLayer) return [];
+    const bounds = map.getBounds();
+    return parcelLayer.getLayers().filter(layer => {
+        if (!layer || typeof layer.getBounds !== 'function') return false;
+        try {
+            if (!bounds.intersects(layer.getBounds())) return false;
+        } catch (_) { return false; }
+        const pid = parcelIdFromLayer(layer);
+        return !!(pid && isCorridorParcel(pid, layer));
+    });
+}
+
 function buildNeighborMapFromEdges(parcels) {
     const idToLayer = new Map();
 
@@ -412,6 +425,9 @@ function buildNeighborMapFromEdges(parcels) {
     // of the block left out.
     const adjacency = (typeof window !== 'undefined' && window.__parcelAdjacency)
         ? window.__parcelAdjacency
+        : null;
+    const blockTopology = (typeof window !== 'undefined' && window.__parcelBlockTopology)
+        ? window.__parcelBlockTopology
         : null;
     const forAdjacency = [];
     parcels.forEach(layer => {
@@ -428,11 +444,21 @@ function buildNeighborMapFromEdges(parcels) {
         if (!neighborMap.has(id)) neighborMap.set(id, []);
         return neighborMap.get(id);
     }
-    if (!adjacency) {
-        console.error('[parcel-blocks] parcel-adjacency.js is not loaded; blocks cannot be detected');
+    if (!adjacency || !blockTopology) {
+        console.error('[parcel-blocks] parcel adjacency/topology service is not loaded; blocks cannot be detected');
         return { neighborMap, idToLayer };
     }
-    adjacency.neighborPairs(forAdjacency).forEach(pair => {
+
+    // A road is a topological barrier even when noisy/overlapping cadastral output makes two land
+    // outlines appear to share an edge underneath it. Use the LIVE corridor parcels from the same
+    // fabric — never proposal records or rendered strips — so block consumers see one current
+    // ground truth and do not care how that ground was produced.
+    const corridorBarriers = getVisibleCorridorParcels().map(layer => ({
+        id: parcelIdFromLayer(layer),
+        rings: htrsRingsOf(layer && layer.feature)
+    })).filter(entry => entry.id && entry.rings.length);
+
+    blockTopology.neighborPairs(forAdjacency, corridorBarriers).forEach(pair => {
         const la = idToLayer.get(pair.a);
         const lb = idToLayer.get(pair.b);
         if (!la || !lb) return;

@@ -97,10 +97,10 @@
      *        Every ring of every polygon, in metres — holes included. A parcel whose second polygon
      *        or hole is dropped loses the neighbours it has along it.
      * @param {object} [options] Overrides for DEFAULTS.
-     * @returns {Array<{a: string, b: string, sharedM: number}>} unordered pairs, longest shared
-     *          boundary first.
+     * @returns {Array<{a: string, b: string, sharedM: number, spans: Array<object>}>} unordered
+     *          pairs with their metric shared-boundary spans, longest shared boundary first.
      */
-    function neighborPairs(parcels, options) {
+    function sharedBoundarySpans(parcels, options) {
         const opts = { ...DEFAULTS, ...(options || {}) };
         const segments = segmentsOf(parcels, opts);
 
@@ -135,7 +135,25 @@
             if (counted.has(pairKey)) return;
             counted.add(pairKey);
             const key = s1.id < s2.id ? `${s1.id}~${s2.id}` : `${s2.id}~${s1.id}`;
-            shared.set(key, (shared.get(key) || 0) + overlap);
+            let record = shared.get(key);
+            if (!record) {
+                const [a, b] = s1.id < s2.id ? [s1.id, s2.id] : [s2.id, s1.id];
+                record = { a, b, sharedM: 0, spans: [] };
+                shared.set(key, record);
+            }
+            record.sharedM += overlap;
+            // Keep the actual shared stretch as well as its length. Parcel adjacency answers the
+            // geometric question "do these outlines run together?"; block topology has one extra
+            // question: "does that shared stretch run THROUGH live road ground?". Returning metric
+            // spans lets that higher layer answer without reimplementing this tolerant/T-junction-
+            // safe matching algorithm.
+            record.spans.push({
+                theta: s1.theta,
+                offset: (s1.offset + s2.offset) / 2,
+                lo: Math.max(s1.lo, s2.lo),
+                hi: Math.min(s1.hi, s2.hi),
+                lengthM: overlap
+            });
         };
 
         buckets.forEach((list, key) => {
@@ -157,16 +175,17 @@
             }
         });
 
-        return Array.from(shared.entries())
-            .filter(([, length]) => length >= opts.minSharedM)
-            .map(([key, length]) => {
-                const [a, b] = key.split('~');
-                return { a, b, sharedM: length };
-            })
+        return Array.from(shared.values())
+            .filter(record => record.sharedM >= opts.minSharedM)
             .sort((x, y) => (y.sharedM - x.sharedM) || x.a.localeCompare(y.a));
     }
 
-    const api = { DEFAULTS, neighborPairs, segmentsOf };
+    function neighborPairs(parcels, options) {
+        return sharedBoundarySpans(parcels, options)
+            .map(record => ({ a: record.a, b: record.b, sharedM: record.sharedM }));
+    }
+
+    const api = { DEFAULTS, neighborPairs, segmentsOf, sharedBoundarySpans };
 
     // Namespaced only — a bare global here could shadow a top-level function in the classic scripts
     // loaded alongside this file.
