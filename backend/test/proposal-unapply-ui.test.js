@@ -3,9 +3,12 @@
 // the captured pre-await HTML back made a successfully parked proposal still say "Unapply".
 
 import { describe, expect, it } from 'vitest';
+import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
+const require = createRequire(import.meta.url);
+const ProposalMapAction = require('../../frontend/js/proposals/map-action.js');
 const source = readFileSync(fileURLToPath(new URL('../../frontend/js/proposals/layer-render.js', import.meta.url)), 'utf8');
 const dictionary = locale => JSON.parse(readFileSync(
     fileURLToPath(new URL(`../../frontend/i18n/${locale}.json`, import.meta.url)),
@@ -20,7 +23,7 @@ function loadReconciler(document, proposal) {
     const body = source.slice(start, end);
     // eslint-disable-next-line no-new-func
     return new Function(
-        'document', 'getProposalByIdOrHash', 'proposalStorage', 'isProposalApplied', 'isApplied', 'getProposalI18nHelper',
+        'document', 'getProposalByIdOrHash', 'proposalStorage', 'isProposalApplied', 'isApplied', 'getProposalI18nHelper', 'ProposalMapAction',
         `${body}; return reconcileProposalMapActionButton;`
     )(
         document,
@@ -31,7 +34,8 @@ function loadReconciler(document, proposal) {
         () => (key, fallback) => ({
             'panel.proposal.actions.apply': 'Apply to map',
             'panel.proposal.actions.remove': 'Unapply'
-        }[key] || fallback)
+        }[key] || fallback),
+        ProposalMapAction
     );
 }
 
@@ -57,6 +61,7 @@ describe('proposal action after unapply', () => {
 
         reconcile('park');
         expect(current.className).toBe('btn btn-warning');
+        expect(current.innerHTML).toContain('fa-box-archive');
         expect(current.attributes.get('onclick')).toBe("removeProposalFromMap('park')");
 
         proposal.applied = false;
@@ -64,10 +69,24 @@ describe('proposal action after unapply', () => {
 
         expect(current.disabled).toBe(false);
         expect(current.className).toContain('btn-success');
+        expect(current.innerHTML).toContain('fa-check');
         expect(current.innerHTML).toContain('Apply to map');
         expect(current.attributes.get('onclick')).toBe("applyProposalToMap('park')");
         expect(current.attributes.get('data-default-action')).toBe('true');
         expect(current.attributes.get('aria-keyshortcuts')).toBe('Enter');
+    });
+
+    it('uses the same applied presentation before and after reconciliation', () => {
+        const initial = ProposalMapAction.presentation(true, (_key, fallback) => fallback);
+        const current = button();
+        const document = { getElementById: () => current };
+        const reconcile = loadReconciler(document, { proposalId: 'park', applied: true });
+
+        reconcile('park');
+
+        expect(current.className).toBe(initial.className);
+        expect(current.innerHTML).toContain(initial.iconClass);
+        expect(current.innerHTML).toContain(initial.label);
     });
 
     it('re-resolves the button after the awaited manager operation', () => {
@@ -82,7 +101,7 @@ describe('proposal action after unapply', () => {
 
     it.each(['en', 'hr', 'sr', 'es'])('%s names every visible unapply phase', locale => {
         const actions = dictionary(locale).panel.proposal.actions;
-        ['checkingGround', 'unapplying', 'restoringGround', 'saving', 'unappliedStatus']
+        ['unapplying', 'restoringGround', 'saving', 'unappliedStatus']
             .forEach(key => expect(actions[key], `${locale} missing ${key}`).toBeTruthy());
         expect(actions.unappliedStatus).toContain('{{name}}');
     });

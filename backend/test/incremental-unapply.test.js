@@ -274,7 +274,7 @@ describe('proposal-owned output release', () => {
         expect(removed).toHaveBeenCalledWith(park);
     });
 
-    it('routes a direct unapply through local release inside the mutation transaction', async () => {
+    it('commits unapply state before restoring its recorded cadastral scope', async () => {
         const park = {
             proposalId: 'park',
             applied: true,
@@ -292,14 +292,25 @@ describe('proposal-owned output release', () => {
             beginBatch: vi.fn(), endBatch: vi.fn(), save: vi.fn(), _indexProposal: vi.fn(),
             getProposal: id => records.get(String(id)) || null
         };
+        const startParcelWrites = vi.fn();
+        const flushParcelWrites = vi.fn();
+        const discardParcelWrites = vi.fn();
         install('proposalStorage', storage);
         install('setProposalApplied', setProposalApplied);
-        install('window', { parcelLayerById: new Map(), parks: [], squares: [], lakes: [], transitStations: [], proposedBuildings: [] });
+        install('window', {
+            parcelLayerById: new Map(), parks: [], squares: [], lakes: [], transitStations: [], proposedBuildings: [],
+            isParcelWriteBatchActive: () => false,
+            _startParcelWriteCache: startParcelWrites,
+            _flushParcelWriteCache: flushParcelWrites,
+            _discardParcelWriteCache: discardParcelWrites
+        });
 
         const manager = {
             _rebuildInProgress: false,
             _enqueueFabricChange: fn => fn(),
-            _flatScopeSeeds: vi.fn(async () => ({ complete: true, baseParcelIds: ['HR-A'] })),
+            _recordedCadastreScope: vi.fn(() => ({ complete: true, baseParcelIds: ['HR-A'] })),
+            _flatScopeSeeds: vi.fn(() => { throw new Error('unapply must not inspect map geometry'); }),
+            _loadReplayGround: vi.fn(async () => 0),
             _clearDerivedRecordState: ProposalManager._clearDerivedRecordState,
             _unapplyProposalTransactionBody: ProposalManager._unapplyProposalTransactionBody,
             _releaseProposalLocally: release,
@@ -313,8 +324,47 @@ describe('proposal-owned output release', () => {
         expect(release).toHaveBeenCalledOnce();
         expect(release.mock.calls[0][0]).toBe(park);
         expect(release.mock.calls[0][1].scope.baseParcelIds).toEqual(['HR-A']);
-        expect(storage.beginBatch).toHaveBeenCalledOnce();
-        expect(storage.endBatch).toHaveBeenCalledOnce();
+        expect(manager._flatScopeSeeds).not.toHaveBeenCalled();
+        expect(manager._loadReplayGround).toHaveBeenCalledWith([park], expect.objectContaining({ purpose: 'unapply' }));
+        expect(storage.beginBatch).toHaveBeenCalledTimes(2);
+        expect(storage.endBatch).toHaveBeenCalledTimes(2);
+        // Only the independent restoration transaction may touch map presentation. The state
+        // transaction must not snapshot or batch parcel layers merely to flip `applied` to false.
+        expect(startParcelWrites).toHaveBeenCalledOnce();
+        expect(flushParcelWrites).toHaveBeenCalledOnce();
+        expect(discardParcelWrites).not.toHaveBeenCalled();
+    });
+
+    it('keeps the proposal unapplied when local parcel restoration fails', async () => {
+        const building = {
+            proposalId: 'building', applied: true, cadastreParcelIds: ['HR-A'],
+            buildingProposal: { type: 'block' }
+        };
+        const records = new Map([['building', building]]);
+        const storage = {
+            proposals: records,
+            beginBatch: vi.fn(), endBatch: vi.fn(), save: vi.fn(), _indexProposal: vi.fn(),
+            getProposal: id => records.get(String(id)) || null
+        };
+        install('proposalStorage', storage);
+        install('setProposalApplied', setProposalApplied);
+        install('window', { parcelLayerById: new Map(), parks: [], squares: [], lakes: [], transitStations: [], proposedBuildings: [] });
+        const manager = {
+            _rebuildInProgress: false,
+            _enqueueFabricChange: fn => fn(),
+            _recordedCadastreScope: () => ({ complete: true, baseParcelIds: ['HR-A'] }),
+            _loadReplayGround: vi.fn(async () => 0),
+            _clearDerivedRecordState: ProposalManager._clearDerivedRecordState,
+            _unapplyProposalTransactionBody: ProposalManager._unapplyProposalTransactionBody,
+            _releaseProposalLocally: vi.fn(async () => ({ ok: false, failed: [{ reason: 'clip failed' }] })),
+            _refreshUIAfterProposalChange: vi.fn(),
+            unapplyProposal: ProposalManager.unapplyProposal
+        };
+
+        await expect(manager.unapplyProposal('building')).resolves.toBe(true);
+
+        expect(building.applied).toBe(false);
+        expect(manager._releaseProposalLocally).toHaveBeenCalledOnce();
     });
 
     it('reconstructs clickable corridor pieces under a removed park without touching remote output', async () => {
@@ -526,6 +576,8 @@ describe('unapply contract', () => {
         const end = source.indexOf('async _unapplyProposalTransactionBody', start);
         const unapply = source.slice(start, end);
         expect(unapply).toContain('_releaseProposalLocally');
+        expect(unapply).toContain('_recordedCadastreScope');
+        expect(unapply).not.toContain('_flatScopeSeeds');
         expect(unapply).not.toContain('rematerializeFlatScope');
         expect(unapply).not.toContain('rebuildAppliedFabric');
         expect(unapply).not.toContain('_rebuildPass');

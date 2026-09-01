@@ -181,13 +181,16 @@ async function _runProposalMutationBoundary(manager, kind, proposalId, options, 
         kind,
         proposalId: _normalizeProposalId(proposalId)
     }, async transaction => {
+        const mutatesMap = !options || options._mapMutation !== false;
         const store = typeof proposalStorage !== 'undefined' ? proposalStorage : null;
         const proposalSnapshot = store && store.proposals instanceof Map
             ? proposalMutationTransactions.snapshotRecordMap(store.proposals)
             : null;
         const nextProposalId = store ? store.nextProposalId : undefined;
         const browserRoot = typeof window !== 'undefined' ? window : null;
-        const presentationSnapshot = proposalMutationTransactions.snapshotParcelPresentation(browserRoot);
+        const presentationSnapshot = mutatesMap
+            ? proposalMutationTransactions.snapshotParcelPresentation(browserRoot)
+            : null;
 
         if (store && typeof store.beginBatch === 'function' && typeof store.endBatch === 'function') {
             store.beginBatch();
@@ -200,7 +203,9 @@ async function _runProposalMutationBoundary(manager, kind, proposalId, options, 
                 if (nextProposalId !== undefined) store.nextProposalId = nextProposalId;
                 if (typeof store.save === 'function') store.save();
             }
-            proposalMutationTransactions.restoreParcelPresentation(browserRoot, presentationSnapshot);
+            if (presentationSnapshot) {
+                proposalMutationTransactions.restoreParcelPresentation(browserRoot, presentationSnapshot);
+            }
             try {
                 if (manager && typeof manager._refreshUIAfterProposalChange === 'function') {
                     manager._refreshUIAfterProposalChange(store && typeof store.getProposal === 'function'
@@ -210,8 +215,8 @@ async function _runProposalMutationBoundary(manager, kind, proposalId, options, 
             } catch (_) { /* rollback must continue */ }
         });
 
-        const ownsParcelBatch = !!(
-            browserRoot
+        const ownsParcelBatch = !!(mutatesMap
+            && browserRoot
             && typeof browserRoot._startParcelWriteCache === 'function'
             && typeof browserRoot._flushParcelWriteCache === 'function'
             && typeof browserRoot._discardParcelWriteCache === 'function'
@@ -927,6 +932,18 @@ const ProposalManager = {
             if (!resolution.complete) complete = false;
         });
         return { baseParcelIds: Array.from(ids), complete };
+    },
+
+    // State removal never rediscovers a proposal's land relationship from today's map geometry.
+    // The immutable record already carries that relationship as flat original-cadastre ids; those
+    // ids are the complete mutation scope even when their layers are currently hidden or have not
+    // been materialized. Geometry coverage remains an apply/edit validation concern in _flatScopeSeeds.
+    _recordedCadastreScope(records, extraBaseParcelIds = []) {
+        const ids = new Set(proposalClaims.baseParcelIdsOf({ cadastreParcelIds: extraBaseParcelIds }));
+        (Array.isArray(records) ? records : []).filter(Boolean).forEach(record => {
+            proposalClaims.baseParcelIdsOf(record).forEach(id => ids.add(String(id)));
+        });
+        return { baseParcelIds: Array.from(ids), complete: true };
     },
 
     // Corridors are geometric takes over whatever current cadastral ground exists; they are not
@@ -1771,10 +1788,7 @@ const ProposalManager = {
     // continues through hundreds of parcels elsewhere.
     async _releaseProposalLocally(record, options = {}) {
         if (!record) return { ok: false, failed: [{ reason: 'missing proposal record' }] };
-        const resolved = options.scope || await this._flatScopeSeeds([record]);
-        if (!resolved || resolved.complete !== true) {
-            return { ok: false, failed: [{ reason: 'cadastral ground is incomplete' }] };
-        }
+        const resolved = options.scope || this._recordedCadastreScope([record]);
         const baseParcelIds = Array.from(new Set((resolved.baseParcelIds || []).map(String).filter(Boolean)));
         _emitProposalProgress(options.onProgress, {
             phase: 'unapply-remove-output',
@@ -2986,6 +3000,12 @@ const ProposalManager = {
                 const label = _getProposalApplyLabel(proposalId, seed);
                 const kind = _proposalApplyKind(seed);
                 let releaseSummary = null;
+                let restorationError = null;
+
+                // The record is the authority for WHAT changes. Unapply never asks current map
+                // geometry to prove that the proposal is allowed to stop standing; it captures the
+                // proposal's flat cadastral anchors before clearing disposable derived fields.
+                const scope = this._recordedCadastreScope([seed]);
 
                 _emitProposalProgress(options.onProgress, {
                     phase: 'unapply-start',
@@ -2994,53 +3014,84 @@ const ProposalManager = {
                     kind
                 });
 
-                // Ground discovery is the only read that may need the server, and it happens before
-                // any state or layer changes. In the normal case loadedCadastreCoverage proves the
-                // proposal's few anchors are already present and this resolves without a request.
-                const scope = await this._flatScopeSeeds([seed], [], {
-                    onProgress: options.onProgress,
-                    purpose: 'unapply'
-                });
-                if (!scope.complete) {
-                    console.warn('[unapplyProposal] local cadastral ground is incomplete; leaving the proposal applied');
+                // Phase one is only the authored proposal-state mutation. It commits independently
+                // of presentation/fabric repair, so a missing layer can never silently re-apply the
+                // proposal the user just unapplied.
+                const changed = await _runProposalMutationBoundary(
+                    this,
+                    'unapply-state',
+                    proposalId,
+                    { ...options, _mapMutation: false },
+                    (_transaction, transactionOptions) => this._unapplyProposalTransactionBody(proposalId, transactionOptions)
+                );
+                if (changed !== true) return changed;
+
+                // Phase two is the map/fabric system reacting to the state change. It asks the one
+                // cadastral-ground service to make the recorded ids available, then restores parcel
+                // borders on only that scope. Its transaction starts from the already-unapplied
+                // record, so rollback can repair a failed map mutation without undoing phase one.
+                if (scope.baseParcelIds.length) {
+                    try {
+                        await this._loadReplayGround([seed], {
+                            onProgress: options.onProgress,
+                            purpose: 'unapply'
+                        });
+                        const groundProfile = this._lastReplayGroundProfile;
+                        const unavailable = Number(groundProfile?.unavailableMembers) || 0;
+                        const missing = Array.isArray(groundProfile?.missingIds) ? groundProfile.missingIds.length : 0;
+                        if (unavailable || missing) {
+                            restorationError = new Error(`${Math.max(unavailable, missing)} cadastral parcel request(s) remain unavailable`);
+                        }
+                    } catch (error) {
+                        restorationError = error;
+                    }
+                }
+                try {
+                    const restored = await _runProposalMutationBoundary(
+                        this,
+                        'unapply-restore',
+                        proposalId,
+                        options,
+                        async transaction => {
+                            const released = await this._releaseProposalLocally(seed, {
+                                scope,
+                                onProgress: options.onProgress,
+                                _mutationTransaction: transaction
+                            });
+                            releaseSummary = released;
+                            return released && released.ok === true;
+                        }
+                    );
+                    if (restored !== true) restorationError = new Error('local parcel restoration returned false');
+                } catch (error) {
+                    restorationError = error;
+                }
+
+                if (restorationError) {
+                    console.warn(`[unapplyProposal] ${kind} ${label} is unapplied; local parcel restoration is pending`, restorationError);
                     _emitProposalProgress(options.onProgress, {
-                        phase: 'unapply-failed',
+                        phase: 'unapply-restoration-failed',
                         proposalId: String(proposalId),
                         label,
                         kind,
-                        reason: 'cadastral ground is incomplete'
+                        reason: String(restorationError.message || restorationError)
                     });
-                    return false;
                 }
-                const result = await _runProposalMutationBoundary(
-                    this,
-                    'unapply-local',
-                    proposalId,
-                    options,
-                    async (transaction, transactionOptions) => {
-                        const changed = await this._unapplyProposalTransactionBody(proposalId, transactionOptions);
-                        if (changed !== true) return changed;
-                        const released = await this._releaseProposalLocally(seed, {
-                            scope,
-                            onProgress: options.onProgress,
-                            _mutationTransaction: transaction
-                        });
-                        releaseSummary = released;
-                        return released && released.ok === true;
-                    }
-                );
-                if (result === true) {
-                    this._refreshUIAfterProposalChange(_getProposalRecord(proposalId));
-                    const elapsed = _now() - startedAt;
-                    console.info(`[unapplyProposal] Unapplied ${kind} ${label} — ${Math.round(elapsed)} ms`
-                        + ` · ${releaseSummary?.baseParcelIds?.length || 0} cadastral parcel(s)`
-                        + ` · removed ${releaseSummary?.removedParcelIds?.length || 0} generated parcel(s)`
-                        + ` · restored ${Number(releaseSummary?.fabric?.parcels) || 0} live parcel piece(s)`);
-                }
-                return result;
+
+                this._refreshUIAfterProposalChange(_getProposalRecord(proposalId));
+                const elapsed = _now() - startedAt;
+                console.info(`[unapplyProposal] Unapplied ${kind} ${label} — ${Math.round(elapsed)} ms`
+                    + ` · ${scope.baseParcelIds.length} cadastral parcel(s)`
+                    + ` · removed ${releaseSummary?.removedParcelIds?.length || 0} generated parcel(s)`
+                    + ` · restored ${Number(releaseSummary?.fabric?.parcels) || 0} live parcel piece(s)`
+                    + (restorationError ? ' · parcel restoration pending' : ''));
+                return true;
             });
         }
-        const result = await _runProposalMutationBoundary(this, 'unapply', proposalId, options, (_transaction, transactionOptions) => (
+        const result = await _runProposalMutationBoundary(this, 'unapply', proposalId, {
+            ...options,
+            _mapMutation: false
+        }, (_transaction, transactionOptions) => (
             this._unapplyProposalTransactionBody(proposalId, transactionOptions)
         ));
         if (result === true && !suppliedTransaction && !this._rebuildInProgress) {
@@ -3065,9 +3116,9 @@ const ProposalManager = {
         if (!supported) return false;
         if (!appliedOf(proposalData)) return true;
 
-        // The outer direct-unapply path removes this record's proposal-owned output and re-derives
-        // only these flat cadastral anchors. Nested/replay callers intentionally perform the state
-        // change alone because their enclosing materialization owns the map mutation.
+        // This transaction changes authored state only. A direct user action separately asks the
+        // local fabric restorer to remove proposal-owned output on the recorded cadastral anchors;
+        // nested/replay callers already have an enclosing materialization for that presentation work.
         this._clearDerivedRecordState(proposalData);
         setProposalApplied(proposalData, false, { stamp: false });
         proposalStorage._indexProposal?.(proposalData);
@@ -3080,27 +3131,49 @@ const ProposalManager = {
      * This is called after the record change and canonical replay.
      */
     _refreshUIAfterProposalChange(proposalData) {
+        const refreshAll = !proposalData;
+        let route = null;
+        let goalKey = '';
+        try {
+            const classified = proposalData ? applyRoute.classifyApplyRoute(proposalData) : null;
+            route = classified?.route || null;
+            goalKey = classified?.goalKey || '';
+        } catch (_) { }
+
         // Core proposal UI
-        // The corridor parcel a road proposal creates has just appeared or vanished; its cross-section
-        // has to follow. This is the one place both unapply paths meet — the direct one and the one
-        // that runs later, inside the descendants-confirmation modal's callback.
-        try { if (typeof scheduleCorridorStripRefresh === 'function') scheduleCorridorStripRefresh(); } catch (_) { }
+        // Corridors are expensive derived presentation. A building/park change cannot alter their
+        // cross-sections, so scheduling all strips after every unapply merely moves a global rebuild
+        // into the next event-loop turn — exactly the one the user's first pan then collides with.
+        if (refreshAll || route === 'road-track') {
+            try { if (typeof scheduleCorridorStripRefresh === 'function') scheduleCorridorStripRefresh(); } catch (_) { }
+        }
         try { if (typeof refreshParcelStylesForAppliedProposals === 'function') refreshParcelStylesForAppliedProposals(); } catch (_) { }
         try { if (typeof updateProposalLayer === 'function') updateProposalLayer(); } catch (_) { }
         try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
         try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
         try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
 
-        // Structure layers (parks, lakes, squares)
-        try { if (typeof updateParksLayer === 'function') updateParksLayer(); } catch (_) { }
-        try { if (typeof updateLakesLayer === 'function') updateLakesLayer(); } catch (_) { }
-        try { if (typeof updateSquaresLayer === 'function') updateSquaresLayer(); } catch (_) { }
+        // Refresh only the presentation cache owned by the changed proposal.
+        if (refreshAll || goalKey === 'park') {
+            try { if (typeof updateParksLayer === 'function') updateParksLayer(); } catch (_) { }
+        }
+        if (refreshAll || goalKey === 'lake') {
+            try { if (typeof updateLakesLayer === 'function') updateLakesLayer(); } catch (_) { }
+        }
+        if (refreshAll || goalKey === 'square') {
+            try { if (typeof updateSquaresLayer === 'function') updateSquaresLayer(); } catch (_) { }
+        }
+        if (refreshAll || goalKey === 'station') {
+            try { if (typeof updateTransitStationsLayer === 'function') updateTransitStationsLayer(); } catch (_) { }
+        }
 
-        // Building layers
-        try { if (typeof updateProposedBuildingsLayer === 'function') updateProposedBuildingsLayer(); } catch (_) { }
+        if (refreshAll || route === 'building') {
+            try { if (typeof updateProposedBuildingsLayer === 'function') updateProposedBuildingsLayer(); } catch (_) { }
+        }
 
-        // Reparcellization layers
-        try { if (typeof updateReparcellizationLayers === 'function') updateReparcellizationLayers(); } catch (_) { }
+        if (refreshAll || route === 'reparcellization') {
+            try { if (typeof updateReparcellizationLayers === 'function') updateReparcellizationLayers(); } catch (_) { }
+        }
 
         // Refresh the proposals modal if it's open
         try {
@@ -3159,9 +3232,8 @@ const ProposalManager = {
         const title = proposalData.title || proposalData.name || 'Proposal';
         const wasApplied = appliedOf(proposalData);
         const scope = wasApplied && !this._rebuildInProgress
-            ? await this._flatScopeSeeds([proposalData])
+            ? this._recordedCadastreScope([proposalData])
             : { complete: true, baseParcelIds: [] };
-        if (!scope.complete) return false;
 
         // Delete is the same local mutation as unapply, followed by removing the authored record.
         // Keep both inside one transaction so a failed local clip restores record, layers, caches,

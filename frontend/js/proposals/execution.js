@@ -665,17 +665,8 @@ async function applyProposalToMap(proposalIdOrHash, options = {}) {
     // The button will be updated to "Remove from map" by showProposalInfo below
     const currentButton = document.getElementById(buttonId);
     if (currentButton) {
-        currentButton.disabled = false;
-        currentButton.style.opacity = '';
-        currentButton.style.cursor = '';
-        // Temporarily show a success state, will be replaced by showProposalInfo
         const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
-        const appliedText = t
-            ? t('panel.proposal.actions.remove', 'Remove from map')
-            : 'Remove from map';
-        currentButton.innerHTML = `<i class="fas fa-eye-slash"></i> ${appliedText}`;
-        currentButton.className = 'btn btn-warning';
-        currentButton.setAttribute('onclick', `removeProposalFromMap('${safeId}')`);
+        ProposalMapAction.renderButton(currentButton, safeId, true, t);
     }
 
     const step6Time = performance.now();
@@ -723,15 +714,7 @@ async function applyProposalToMap(proposalIdOrHash, options = {}) {
         const fallbackButton = document.getElementById(buttonId);
         if (fallbackButton && (fallbackButton.innerHTML.includes('Applying') || fallbackButton.innerHTML.includes('metric-spinner'))) {
             const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
-            const appliedText = t
-                ? t('panel.proposal.actions.remove', 'Remove from map')
-                : 'Remove from map';
-            fallbackButton.innerHTML = `<i class="fas fa-eye-slash"></i> ${appliedText}`;
-            fallbackButton.className = 'btn btn-warning';
-            fallbackButton.disabled = false;
-            fallbackButton.style.opacity = '';
-            fallbackButton.style.cursor = '';
-            fallbackButton.setAttribute('onclick', `removeProposalFromMap('${safeId}')`);
+            ProposalMapAction.renderButton(fallbackButton, safeId, true, t);
         }
     }
 

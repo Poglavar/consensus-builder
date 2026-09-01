@@ -411,13 +411,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     let mapActionButtonHtml = '';
     if (canShowMapActions) {
         const isApplyAction = !appliedState;
-        const buttonLabel = appliedState
-            ? tProposal('panel.proposal.actions.remove', 'Stash')
-            : tProposal('panel.proposal.actions.apply', 'Apply to map');
-        const iconClass = appliedState ? 'fa-box-archive' : 'fa-check';
+        const actionView = ProposalMapAction.presentation(appliedState, tProposal);
+        const buttonLabel = actionView.label;
+        const iconClass = actionView.iconClass;
         const isDisabled = isApplyAction && applyDisabledForType;
         const buttonClass = appliedState
-            ? 'btn btn-warning'
+            ? actionView.className
             : (isDisabled ? 'btn btn-secondary disabled' : 'btn btn-success');
         const defaultActionClass = (isApplyAction && !isDisabled) ? ' proposal-action-default' : '';
         const defaultActionAttrs = (isApplyAction && !isDisabled)

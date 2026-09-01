@@ -971,34 +971,18 @@ function reconcileProposalMapActionButton(proposalId, fallbackHtml = '') {
     const applied = (typeof isProposalApplied === 'function')
         ? isProposalApplied(proposal)
         : (typeof isApplied === 'function' ? isApplied(proposal) : proposal.applied === true);
-    const safeId = String(proposalId).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-    button.disabled = false;
-    button.style.opacity = '';
-    button.style.cursor = '';
-    if (applied) {
-        const label = t ? t('panel.proposal.actions.remove', 'Unapply') : 'Unapply';
-        button.className = 'btn btn-warning';
-        button.innerHTML = `<i class="fas fa-eye-slash"></i> ${label}`;
-        button.setAttribute('onclick', `removeProposalFromMap('${safeId}')`);
-        button.removeAttribute('data-default-action');
-        button.removeAttribute('aria-keyshortcuts');
-    } else {
-        const label = t ? t('panel.proposal.actions.apply', 'Apply to map') : 'Apply to map';
-        button.className = 'btn btn-success proposal-action-default';
-        button.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${label}`;
-        button.setAttribute('onclick', `applyProposalToMap('${safeId}')`);
-        button.setAttribute('data-default-action', 'true');
-        button.setAttribute('aria-keyshortcuts', 'Enter');
-    }
-    return button;
+    return ProposalMapAction.renderButton(button, proposalId, applied, t);
 }
 
 function proposalUnapplyPhaseLabel(event, t) {
     const phase = String(event?.phase || '');
-    if (phase === 'unapply-start' || phase.startsWith('ground-')) {
+    if (phase === 'unapply-start') {
+        return t ? t('panel.proposal.actions.unapplying', 'Unapplying…') : 'Unapplying…';
+    }
+    if (phase.startsWith('ground-')) {
         return t
-            ? t('panel.proposal.actions.checkingGround', 'Checking cadastral ground…')
-            : 'Checking cadastral ground…';
+            ? t('panel.proposal.actions.restoringGround', 'Restoring local terrain…')
+            : 'Restoring local terrain…';
     }
     if (phase === 'unapply-remove-output') {
         return t ? t('panel.proposal.actions.unapplying', 'Unapplying…') : 'Unapplying…';
@@ -1044,7 +1028,7 @@ async function removeProposalFromMap(proposalId, options = {}) {
         button.style.opacity = '0.6';
         button.style.cursor = 'wait';
         const initialLabel = options.removingLabel
-            || (t ? t('panel.proposal.actions.checkingGround', 'Checking cadastral ground…') : 'Checking cadastral ground…');
+            || (t ? t('panel.proposal.actions.unapplying', 'Unapplying…') : 'Unapplying…');
         button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${initialLabel}`;
         // …and let the browser DRAW it. The spinner has been set here all along and was never seen:
         // unapply awaits a chain whose promises are usually already settled, so everything below runs
@@ -1056,7 +1040,8 @@ async function removeProposalFromMap(proposalId, options = {}) {
     }
 
     try {
-        // Unapply flips only the root record and invokes the same cadastre-first replay.
+        // Unapply commits authored state first; the local fabric system then restores this record's
+        // flat cadastral scope without making map geometry a precondition for the state change.
         const unapplied = await ProposalManager.unapplyProposal(proposalId, {
             onProgress: event => {
                 const phaseLabel = proposalUnapplyPhaseLabel(event, t);
