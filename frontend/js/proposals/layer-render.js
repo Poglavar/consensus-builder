@@ -294,19 +294,49 @@ function highlightFeaturesForHover(features, options = {}) {
     highlightFeatureGroupsForHover([{ ...options, features }]);
 }
 
-function getParcelFeatureForHighlight(parcelId, proposalContext = null, options = {}) {
+function getParcelFeaturesForHighlight(parcelId, proposalContext = null, options = {}) {
     const { skipRecovery = false } = options;
     const proposal = proposalContext && proposalContext.proposal ? proposalContext.proposal : proposalContext;
-    const cached = proposal ? getCachedParcelFeature(parcelId, proposal) : null;
-    if (cached) {
-        return cached;
-    }
-
-    if (!parcelId || typeof multiParcelSelection === 'undefined' || !multiParcelSelection.findParcelById) {
-        return null;
-    }
+    if (!parcelId) return [];
 
     try {
+        // Ordinary map interaction is a view of the LIVE parcel tessellation. A proposal's durable
+        // parent id is an original cadastral anchor, so it may now name several remnants separated
+        // by a road. Resolve it through the shared live-layer service before consulting any feature
+        // cache; cached original geometry is ancestry data and may legitimately cross that road.
+        if (!skipRecovery && typeof window !== 'undefined'
+            && typeof window.resolveLiveParcelLayers === 'function') {
+            let bounds = null;
+            try {
+                bounds = window.map?.getBounds?.() || null;
+                if (bounds && typeof bounds.pad === 'function') bounds = bounds.pad(0.1);
+            } catch (_) { bounds = null; }
+            const layers = window.resolveLiveParcelLayers([String(parcelId)], {
+                bounds,
+                includeCorridors: options.includeCorridors === true
+            }) || [];
+            const features = [];
+            layers.forEach(layer => {
+                if (!layer || typeof layer.toGeoJSON !== 'function') return;
+                try {
+                    const value = layer.toGeoJSON(false);
+                    if (value?.type === 'Feature' && value.geometry) features.push(value);
+                    else if (value?.type === 'FeatureCollection') {
+                        (value.features || []).forEach(feature => {
+                            if (feature?.geometry) features.push(feature);
+                        });
+                    }
+                } catch (_) { }
+            });
+            // The resolver is authoritative even when it returns nothing: an unapplied/deleted
+            // generated parcel must not be resurrected from proposalFeatureCache.
+            return features;
+        }
+
+        if (typeof multiParcelSelection === 'undefined' || !multiParcelSelection.findParcelById) {
+            return [];
+        }
+
         // Draft highlights inspect only the current layer index; they must not materialize a
         // hidden parcel from a cache while the replay owns the live fabric.
         const layer = skipRecovery
@@ -322,19 +352,36 @@ function getParcelFeatureForHighlight(parcelId, proposalContext = null, options 
                     } catch (_) { }
                 }
             }
-            return feature;
+            return [feature];
         }
     } catch (error) {
         console.warn('getParcelFeatureForHighlight: unable to locate parcel', parcelId, error);
     }
-    return null;
+    return [];
+}
+
+function getParcelFeatureForHighlight(parcelId, proposalContext = null, options = {}) {
+    return getParcelFeaturesForHighlight(parcelId, proposalContext, options)[0] || null;
 }
 
 function collectProposalHighlightFeatures(proposal, { includeParents = false, includeChildren = true } = {}) {
     const features = [];
+    const seenParcelIds = new Set();
     if (!proposal) return features;
 
-    const cache = buildProposalFeatureCache(proposal) || {};
+    const appendResolved = parcelId => {
+        getParcelFeaturesForHighlight(parcelId, proposal).forEach(feature => {
+            if (!feature || !feature.geometry) return;
+            const props = feature.properties || {};
+            const featureId = (typeof getParcelIdFromFeature === 'function')
+                ? getParcelIdFromFeature(feature)
+                : (props.parcelId ?? props.parcel_id ?? props.id ?? null);
+            const key = featureId !== undefined && featureId !== null ? String(featureId) : null;
+            if (key && seenParcelIds.has(key)) return;
+            if (key) seenParcelIds.add(key);
+            features.push(feature);
+        });
+    };
 
     const isRoadProposal = resolveProposalGoalKey(proposal, null) === 'road-track' && proposal.roadProposal;
 
@@ -344,10 +391,7 @@ function collectProposalHighlightFeatures(proposal, { includeParents = false, in
             : [];
         const uniqueChildIds = Array.from(new Set(childIds.map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
         uniqueChildIds.forEach(childId => {
-            const feature = getParcelFeatureForHighlight(childId, proposal);
-            if (feature && feature.geometry) {
-                features.push(feature);
-            }
+            appendResolved(childId);
         });
     }
 
@@ -359,19 +403,13 @@ function collectProposalHighlightFeatures(proposal, { includeParents = false, in
         if (Array.isArray(proposal.parentParcelIds)) parentIds.push(...proposal.parentParcelIds);
         const uniqueParentIds = Array.from(new Set(parentIds.map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
         uniqueParentIds.forEach(parentId => {
-            const feature = getParcelFeatureForHighlight(parentId, proposal);
-            if (feature && feature.geometry) {
-                features.push(feature);
-            }
+            appendResolved(parentId);
         });
     }
 
     if ((!isRoadProposal || features.length === 0) && Array.isArray(proposal.parentParcelIds)) {
         proposal.parentParcelIds.forEach(parcelId => {
-            const feature = getParcelFeatureForHighlight(parcelId, proposal);
-            if (feature) {
-                features.push(feature);
-            }
+            appendResolved(parcelId);
         });
     }
 
@@ -380,9 +418,9 @@ function collectProposalHighlightFeatures(proposal, { includeParents = false, in
 
 function highlightParcelHover(parcelId, options = {}) {
     const proposal = options.proposal || null;
-    const feature = getParcelFeatureForHighlight(parcelId, proposal);
-    if (feature) {
-        highlightFeaturesForHover([feature], {
+    const features = getParcelFeaturesForHighlight(parcelId, proposal, options);
+    if (features.length) {
+        highlightFeaturesForHover(features, {
             color: '#FFEB3B',
             weight: 6,
             dashArray: '10 8',

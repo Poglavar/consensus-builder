@@ -103,7 +103,19 @@ function forEachProposalParcelInViewport(proposalIdSet, callback) {
     if (!bounds) return 0;
 
     let layers = [];
-    if (typeof window.getParcelLayersWithinBounds === 'function') {
+    if (typeof window.resolveLiveParcelLayers === 'function') {
+        try {
+            // Proposal records keep original cadastral ids. Resolve those ids through the live
+            // tessellation so an applied/unapplied proposal highlights the parcel remnants beside
+            // roads, never the hidden full cadastral polygon beneath them.
+            layers = window.resolveLiveParcelLayers(proposalIdSet, {
+                bounds,
+                includeCorridors: false
+            }) || [];
+        } catch (_) {
+            layers = [];
+        }
+    } else if (typeof window.getParcelLayersWithinBounds === 'function') {
         try {
             layers = window.getParcelLayersWithinBounds(bounds) || [];
         } catch (_) {
@@ -121,7 +133,10 @@ function forEachProposalParcelInViewport(proposalIdSet, callback) {
             : (layer.feature.properties && (layer.feature.properties.parcelId || layer.feature.properties.parcel_id || layer.feature.properties.id));
         if (idValue == null) continue;
         const idStr = String(idValue);
-        if (!proposalIdSet.has(idStr) || seen.has(idStr)) continue;
+        // resolveLiveParcelLayers already matched durable base ids to their current pieces. The
+        // legacy fallback above still needs the old exact-id filter.
+        if (typeof window.resolveLiveParcelLayers !== 'function' && !proposalIdSet.has(idStr)) continue;
+        if (seen.has(idStr)) continue;
         seen.add(idStr);
         try {
             callback(layer, idStr);

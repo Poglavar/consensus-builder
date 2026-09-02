@@ -7,6 +7,7 @@ const source = readFileSync(new URL('../../frontend/js/proposals/geometry.js', i
 function loadGeometry(deriveCorridor) {
     const context = {
         console,
+        Set,
         buildProposalFeatureCache: vi.fn(() => ({})),
         resolveProposalGoalKey: vi.fn(() => 'road-track'),
         corridorIsTrack: vi.fn(() => false),
@@ -49,5 +50,29 @@ describe('road proposal highlight geometry', () => {
         expect(derive).toHaveBeenCalledOnce();
         expect(result.primaryFeatures).toHaveLength(1);
         expect(result.primaryFeatures[0].geometry.type).toBe('MultiPolygon');
+    });
+});
+
+describe('proposal parcel outlines', () => {
+    it('styles the live road-cut pieces returned for a durable cadastral anchor', () => {
+        const bounds = { pad: vi.fn(function () { return this; }) };
+        const left = { feature: { properties: { parcelId: 'HR-A#left' } } };
+        const right = { feature: { properties: { parcelId: 'HR-A#right' } } };
+        const geometry = loadGeometry();
+        geometry.map = { getBounds: () => bounds };
+        geometry.resolveLiveParcelLayers = vi.fn(() => [left, right]);
+        const visited = [];
+
+        const count = geometry.forEachProposalParcelInViewport(
+            new Set(['HR-A']),
+            (_layer, id) => visited.push(id)
+        );
+
+        expect(count).toBe(2);
+        expect(visited).toEqual(['HR-A#left', 'HR-A#right']);
+        expect(geometry.resolveLiveParcelLayers).toHaveBeenCalledWith(
+            new Set(['HR-A']),
+            { bounds, includeCorridors: false }
+        );
     });
 });

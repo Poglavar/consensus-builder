@@ -9,7 +9,7 @@
 //
 // layer-render.js is a classic browser script with no exports, so it is evaluated in THIS realm
 // behind Leaflet/map stubs, the same way executed-buildings-hydration.test.js does it.
-import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -60,10 +60,18 @@ beforeAll(() => {
     global.window = {};
     global.getParcelDisplayNumberFromFeature = feature => feature?.properties?.id || null;
     global.getFeatureCentroid = () => ({ lat: 45.787, lng: 16.015 });
+    global.resolveProposalGoalKey = () => 'park';
 
     const scriptPath = join(dirname(fileURLToPath(import.meta.url)), '../../frontend/js/proposals/layer-render.js');
     const src = readFileSync(scriptPath, 'utf8') + `
-        globalThis.__cap = { highlightFeatureGroupsForHover, highlightFeaturesForHover, clearProposalHoverLayers };`;
+        globalThis.__cap = {
+            highlightFeatureGroupsForHover,
+            highlightFeaturesForHover,
+            clearProposalHoverLayers,
+            getParcelFeaturesForHighlight,
+            collectProposalHighlightFeatures,
+            highlightParcelHover
+        };`;
     // eslint-disable-next-line no-eval
     (0, eval)(src);
     cap = globalThis.__cap;
@@ -155,5 +163,37 @@ describe('highlightFeaturesForHover', () => {
 
         expect(drawn()).toHaveLength(0);
         expect(hoverGroup().clears).toBe(2);
+    });
+});
+
+describe('live parcel geometry for interaction', () => {
+    it('draws every current road-cut remnant instead of a cached full cadastral polygon', () => {
+        const left = featureAt(15.0, 45.0, 'HR-A#left');
+        const right = featureAt(15.002, 45.0, 'HR-A#right');
+        const staleBase = featureAt(15.0, 45.0, 'HR-A');
+        const cache = vi.fn(() => ({ parcelsById: new Map([['HR-A', staleBase]]) }));
+        global.buildProposalFeatureCache = cache;
+        global.window.resolveLiveParcelLayers = vi.fn(() => [
+            { toGeoJSON: () => left },
+            { toGeoJSON: () => right }
+        ]);
+
+        const proposal = { proposalId: 'park', parentParcelIds: ['HR-A'] };
+        expect(cap.getParcelFeaturesForHighlight('HR-A', proposal)).toEqual([left, right]);
+        expect(cap.collectProposalHighlightFeatures(proposal)).toEqual([left, right]);
+        expect(cache).not.toHaveBeenCalled();
+
+        cap.highlightParcelHover('HR-A', { proposal });
+        expect(hoverGroup().layers.map(entry => entry.__feature)).toEqual([left, right]);
+    });
+
+    it('does not resurrect a removed generated child from the proposal cache', () => {
+        global.buildProposalFeatureCache = vi.fn(() => ({
+            parcelsById: new Map([['HR-A#old-park-1', parcelFeature]])
+        }));
+        global.window.resolveLiveParcelLayers = vi.fn(() => []);
+
+        expect(cap.getParcelFeaturesForHighlight('HR-A#old-park-1', { proposalId: 'park' })).toEqual([]);
+        expect(global.buildProposalFeatureCache).not.toHaveBeenCalled();
     });
 });

@@ -246,8 +246,22 @@ describe('proposal-owned output release', () => {
         const rebuildPass = vi.fn();
         const appliedTakes = vi.fn(() => [{ id: 'track', geometry: { type: 'Polygon', coordinates: [] } }]);
         const removed = vi.fn(() => ({ proposalId: 'park', removedParcelIds: ['park-child'], ownership: new Map() }));
+        const hideParcelInfoPanel = vi.fn();
+        const updateSelectionUI = vi.fn();
 
-        install('window', { showParcelLayerById: vi.fn(), hideParcelLayerById: vi.fn() });
+        install('window', {
+            showParcelLayerById: vi.fn(),
+            hideParcelLayerById: vi.fn(),
+            selectedParcelId: 'park-child',
+            currentParcel: { id: 'park-child' },
+            selectedParcelInProposal: 'park-child',
+            multiParcelSelection: {
+                selectedParcels: new Set(['park-child', 'still-live']),
+                lastSelectedParcelId: 'park-child',
+                updateUI: updateSelectionUI
+            },
+            hideParcelInfoPanel
+        });
         install('proposalStorage', { getAllProposals: () => [track, ...remoteBuildings] });
         const manager = {
             _flatScopeSeeds: vi.fn(),
@@ -272,6 +286,13 @@ describe('proposal-owned output release', () => {
         expect(appliedTakes).toHaveBeenCalledOnce();
         expect(rebuildPass).not.toHaveBeenCalled();
         expect(removed).toHaveBeenCalledWith(park);
+        expect(globalThis.window.selectedParcelId).toBeNull();
+        expect(globalThis.window.currentParcel).toBeNull();
+        expect(globalThis.window.selectedParcelInProposal).toBeNull();
+        expect([...globalThis.window.multiParcelSelection.selectedParcels]).toEqual(['still-live']);
+        expect(globalThis.window.multiParcelSelection.lastSelectedParcelId).toBe('still-live');
+        expect(updateSelectionUI).toHaveBeenCalledOnce();
+        expect(hideParcelInfoPanel).toHaveBeenCalledOnce();
     });
 
     it('commits unapply state before restoring its recorded cadastral scope', async () => {
@@ -434,6 +455,20 @@ describe('proposal-owned output release', () => {
         expect(localPieces.length).toBeGreaterThan(0);
         expect(localPieces.every(id => visible.has(byId.get(id)))).toBe(true);
         expect(visible.has(baseLayer)).toBe(false);
+        const roadPieces = localPieces
+            .map(id => byId.get(id).feature)
+            .filter(value => value.properties.isCorridor === true);
+        const landPieces = localPieces
+            .map(id => byId.get(id).feature)
+            .filter(value => value.properties.isCorridor !== true);
+        expect(roadPieces.length).toBeGreaterThan(0);
+        expect(landPieces.length).toBeGreaterThan(0);
+        for (const roadPiece of roadPieces) {
+            for (const landPiece of landPieces) {
+                const overlap = turf.intersect(roadPiece, landPiece);
+                expect(overlap ? turf.area(overlap) : 0).toBeLessThan(0.05);
+            }
+        }
         expect(byId.get('HR-B#remote-1')).toBe(remoteLayer);
         expect(visible.has(remoteLayer)).toBe(true);
     });

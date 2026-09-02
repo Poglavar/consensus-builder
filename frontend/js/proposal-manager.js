@@ -105,6 +105,56 @@ function _emitProposalProgress(listener, event) {
     try { listener(Object.freeze({ ...event })); } catch (_) { /* progress is observational */ }
 }
 
+// A generated parcel is disposable presentation. If unapply removes the one the pointer/UI still
+// holds, clear that interaction state immediately; otherwise the parcel panel keeps advertising a
+// dead child while the map underneath has already returned to road-cut live pieces. Proposal
+// selection is independent and stays open.
+function _clearRemovedParcelInteractionState(parcelIds) {
+    const root = (typeof window !== 'undefined') ? window : null;
+    if (!root) return;
+    const removed = new Set(Array.from(parcelIds || []).map(String).filter(Boolean));
+    if (!removed.size) return;
+
+    const selectedId = root.selectedParcelId !== undefined && root.selectedParcelId !== null
+        ? String(root.selectedParcelId)
+        : null;
+    const currentId = root.currentParcel?.id !== undefined && root.currentParcel?.id !== null
+        ? String(root.currentParcel.id)
+        : null;
+    const selectedProposalParcel = root.selectedParcelInProposal !== undefined
+        && root.selectedParcelInProposal !== null
+        ? String(root.selectedParcelInProposal)
+        : null;
+
+    if (selectedProposalParcel && removed.has(selectedProposalParcel)) {
+        root.selectedParcelInProposal = null;
+    }
+
+    const multi = root.multiParcelSelection;
+    let multiChanged = false;
+    if (multi?.selectedParcels && typeof multi.selectedParcels.delete === 'function') {
+        removed.forEach(id => { if (multi.selectedParcels.delete(id)) multiChanged = true; });
+        if (multi.lastSelectedParcelId && removed.has(String(multi.lastSelectedParcelId))) {
+            multi.lastSelectedParcelId = multi.selectedParcels.size
+                ? Array.from(multi.selectedParcels).slice(-1)[0]
+                : null;
+        }
+    }
+
+    if ((selectedId && removed.has(selectedId)) || (currentId && removed.has(currentId))) {
+        root.selectedParcelId = null;
+        root.currentParcel = null;
+        root.currentParcelCoordinates = null;
+        try {
+            if (typeof root.hideParcelInfoPanel === 'function') root.hideParcelInfoPanel();
+            else root.document?.getElementById('parcel-info-panel')?.classList.remove('visible');
+        } catch (_) { }
+    }
+    if (multiChanged) {
+        try { multi.updateUI?.(); } catch (_) { }
+    }
+}
+
 // `proposalId` rides along as DATA rather than being parsed back out of the sentence later. A
 // status line reads "Applied block Block 1108-0116", and recovering the proposal from that would
 // mean matching titles — which are not unique, are translated, and are chosen by users.
@@ -2070,11 +2120,14 @@ const ProposalManager = {
         });
 
         const commitOutput = () => this._commitRemovedProposalOutput(removed);
+        const commitInteraction = () => _clearRemovedParcelInteractionState(removed.removedParcelIds);
         const transaction = options._mutationTransaction;
         if (proposalMutationTransactions.isActiveTransaction(transaction)) {
             transaction.deferCommit(`remove output for ${removed.proposalId}`, commitOutput);
+            transaction.deferCommit(`clear removed parcel selection for ${removed.proposalId}`, commitInteraction);
         } else {
             commitOutput();
+            commitInteraction();
         }
         _emitProposalProgress(options.onProgress, {
             phase: 'unapply-ready',

@@ -274,6 +274,125 @@
         return Array.from(layersSet);
     }
 
+    // Resolve durable cadastral parcel ids through the CURRENT visible tessellation.
+    //
+    // A proposal stores flat cadastral anchors (HR-…-123), while roads, structures and
+    // readjustments replace the visible shape above that anchor with disposable pieces. UI code
+    // must never answer a hover/selection by drawing the hidden cadastral source: that outline can
+    // cross a road even though the live ground is correctly cut around it. Cadastre view is the one
+    // explicit exception and builds its own layer from the hidden originals.
+    //
+    // Exact generated ids resolve only themselves. Original ids expand to every visible,
+    // non-corridor piece stamped with that base id. The scan is over parcelLayer (or its spatial
+    // index), so registry/cache-only layers cannot leak into ordinary map interaction.
+    function resolveLiveParcelLayers(parcelIds, options = {}) {
+        const requested = new Set(Array.from(parcelIds || [])
+            .map(value => value !== undefined && value !== null ? String(value) : '')
+            .filter(Boolean));
+        if (!requested.size || !global.parcelLayer) return [];
+
+        const rootOf = value => {
+            const text = value !== undefined && value !== null ? String(value) : '';
+            if (!text) return '';
+            try {
+                const api = global.__planOrder;
+                if (api && typeof api.cadastreRootId === 'function') {
+                    const root = api.cadastreRootId(text);
+                    if (root) return String(root);
+                }
+            } catch (_) { }
+            return text.split('#')[0];
+        };
+        const baseRequests = new Set(Array.from(requested).filter(id => rootOf(id) === id));
+        const includeCorridors = options.includeCorridors === true;
+        const bounds = options.bounds || null;
+        const isLive = layer => {
+            if (!layer) return false;
+            if (typeof global.parcelLayer.hasLayer === 'function') {
+                try { if (!global.parcelLayer.hasLayer(layer)) return false; } catch (_) { return false; }
+            }
+            if (bounds && typeof bounds.intersects === 'function') {
+                try { if (!layer.getBounds || !bounds.intersects(layer.getBounds())) return false; }
+                catch (_) { return false; }
+            }
+            return true;
+        };
+
+        const matches = [];
+        const seen = new Set();
+        const byId = global.parcelLayerById instanceof Map ? global.parcelLayerById : null;
+        // Generated ids are exact live identities, so the id index answers them in O(1). This is
+        // important for corridor proposals, which can list hundreds of generated road pieces.
+        requested.forEach(id => {
+            if (baseRequests.has(id) || !byId) return;
+            const layer = byId.get(id);
+            if (!isLive(layer) || seen.has(layer)) return;
+            seen.add(layer);
+            matches.push({ layer, layerId: id });
+        });
+
+        let candidates = [];
+        if (baseRequests.size || matches.length < requested.size) {
+            if (bounds && typeof getParcelLayersWithinBounds === 'function') {
+                candidates = getParcelLayersWithinBounds(bounds) || [];
+            }
+            if (!candidates.length && typeof global.parcelLayer.getLayers === 'function') {
+                candidates = global.parcelLayer.getLayers().filter(isLive);
+            }
+        }
+
+        const layerRoots = (layer, layerId) => {
+            const props = layer?.feature?.properties || {};
+            const raw = Array.isArray(props.baseParcelIds) && props.baseParcelIds.length
+                ? props.baseParcelIds
+                : [props.rootParcelId, props.parentParcelId, layerId];
+            return new Set(raw.map(rootOf).filter(Boolean));
+        };
+        const isCorridor = (layer, layerId) => {
+            const props = layer?.feature?.properties || {};
+            try {
+                const api = global.__corridorIdentity;
+                if (api && typeof api.isCorridorGround === 'function') {
+                    return api.isCorridorGround({
+                        parcelId: layerId,
+                        properties: props,
+                        isRoadInSet: typeof global.isRoad === 'function'
+                            ? id => global.isRoad(id)
+                            : null
+                    });
+                }
+            } catch (_) { }
+            return props.isRoad === true || props.isTrack === true || props.isCorridor === true;
+        };
+
+        const basesWithVisibleDerivedLayers = new Set();
+        candidates.forEach(layer => {
+            if (!layer || !layer.feature) return;
+            if (!isLive(layer)) return;
+            const rawId = getLayerParcelId(layer);
+            const layerId = rawId !== undefined && rawId !== null ? String(rawId) : '';
+            if (!layerId) return;
+            const roots = layerRoots(layer, layerId);
+            roots.forEach(root => {
+                if (baseRequests.has(root) && layerId !== root) basesWithVisibleDerivedLayers.add(root);
+            });
+
+            const exact = requested.has(layerId);
+            const throughBase = !exact && Array.from(roots).some(root => baseRequests.has(root));
+            if (!exact && !throughBase) return;
+            // Asking for an exact road-piece id means the road itself. Expanding an original
+            // cadastral id means the land left around roads, never the road pieces inside it.
+            if (!exact && !includeCorridors && isCorridor(layer, layerId)) return;
+            if (seen.has(layer)) return;
+            seen.add(layer);
+            matches.push({ layer, layerId });
+        });
+
+        return matches
+            .filter(({ layerId }) => !(baseRequests.has(layerId) && basesWithVisibleDerivedLayers.has(layerId)))
+            .map(({ layer }) => layer);
+    }
+
     function resolveParcelLayerById(parcelId) {
         const normalizedId = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
         if (!normalizedId) return null;
@@ -516,6 +635,7 @@
     global.unindexParcelLayer = unindexParcelLayer;
     global.clearParcelLayerIndex = clearParcelLayerIndex;
     global.getParcelLayersWithinBounds = getParcelLayersWithinBounds;
+    global.resolveLiveParcelLayers = resolveLiveParcelLayers;
     global.resolveParcelLayerById = resolveParcelLayerById;
     global.fastRemoveParcelLayersByIds = fastRemoveParcelLayersByIds;
     // Debug function to check for duplicate parcels
