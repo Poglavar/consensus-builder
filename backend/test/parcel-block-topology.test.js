@@ -30,7 +30,21 @@ describe('live corridor ground is a street-block barrier', () => {
         const pairs = neighborPairs(land, crossing);
 
         expect(keys(pairs)).toEqual(['A~B']);
-        expect(pairs[0].sharedM).toBeCloseTo(6, 1);
+        // Four metres of road plus the half-metre topology clearance on either side leaves five
+        // metres of genuine land connection.
+        expect(pairs[0].sharedM).toBeCloseTo(5, 1);
+    });
+
+    it('does not squeeze through a sub-half-metre clipping seam beside live road ground', () => {
+        const land = [
+            parcel('A', ring(0, 0, 10, 10)),
+            parcel('B', ring(10, 0, 20, 10))
+        ];
+        // The clipper left the road 40 cm short of the apparent shared boundary. That is numerical
+        // clearance, not a real pedestrian-scale land connection between two street blocks.
+        const road = [parcel('ROAD', ring(8, -1, 9.6, 11))];
+
+        expect(neighborPairs(land, road)).toEqual([]);
     });
 
     it('does not confuse a nearby road with a barrier on the shared boundary', () => {
@@ -55,5 +69,27 @@ describe('live corridor ground is a street-block barrier', () => {
         expect(barrierContains(barrier, 2, 2)).toBe(true);
         expect(barrierContains(barrier, 10, 10)).toBe(false);
         expect(barrierContains(barrier, 35, 35)).toBe(true);
+    });
+});
+
+describe('block connectivity comes only from shared boundaries', () => {
+    it('does not invent a connection because one overlapping parcel contains another', () => {
+        const land = [
+            parcel('OUTER', ring(0, 0, 20, 20)),
+            parcel('INNER', ring(8, 8, 12, 12))
+        ];
+
+        expect(neighborPairs(land, [])).toEqual([]);
+    });
+
+    it('still connects a genuine enclave along the enclosing parcel hole boundary', () => {
+        const enclaveBoundary = ring(8, 8, 12, 12);
+        const land = [
+            parcel('OUTER', ring(0, 0, 20, 20), enclaveBoundary),
+            parcel('INNER', enclaveBoundary)
+        ];
+
+        expect(keys(neighborPairs(land, []))).toEqual(['INNER~OUTER']);
+        expect(neighborPairs(land, [])[0].sharedM).toBeCloseTo(16, 6);
     });
 });

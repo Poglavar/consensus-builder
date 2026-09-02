@@ -12,6 +12,7 @@ const {
     insertCorridorCrossingNodes,
     splitCorridorSelfJunctions,
     normalizeCorridorGraph,
+    normalizeCorridorNetwork,
     normalizeCorridorDefinitionTopology,
     insertCorridorNode,
     removeCorridorEdge,
@@ -261,6 +262,56 @@ describe('normalizeCorridorGraph', () => {
         expect(definition.points.every(segment => !polylineHasSelfIntersection(segment))).toBe(true);
         expect(definition.polygon).toBe(polygon);
         expect(normalizeCorridorDefinitionTopology(definition)).toBe(false); // convergent migration
+    });
+});
+
+describe('normalizeCorridorNetwork junction identity', () => {
+    it('canonicalizes sub-millimetre copies of one junction across coordinate-key buckets', () => {
+        const established = P(43, 15.000000049);
+        const drifting = P(43, 15.000000051);
+        const entries = [
+            {
+                segments: [[P(43, 14.999), established, P(43, 15.001)]],
+                segmentIds: ['through'],
+                segmentProfiles: {}
+            },
+            {
+                segments: [[drifting, P(43.001, 15)]],
+                segmentIds: ['branch'],
+                segmentProfiles: {}
+            }
+        ];
+
+        normalizeCorridorNetwork(entries);
+
+        const junctions = entries.flatMap(entry => entry.segments)
+            .flatMap(segment => [segment[0], segment[segment.length - 1]])
+            .filter(point => Math.abs(point.lng - established.lng) < 1e-8 && Math.abs(point.lat - 43) < 1e-8);
+        expect(junctions.length).toBeGreaterThanOrEqual(3);
+        expect(new Set(junctions.map(point => `${point.lat},${point.lng}`)).size).toBe(1);
+    });
+
+    it('projects a centimetre near-miss endpoint onto the road it was meant to join', () => {
+        const entries = [
+            {
+                segments: [[P(43, 15), P(43, 15.001)]],
+                segmentIds: ['through'],
+                segmentProfiles: {}
+            },
+            {
+                segments: [[P(43.001, 15.0005), P(43.0000001, 15.0005)]],
+                segmentIds: ['branch'],
+                segmentProfiles: {}
+            }
+        ];
+
+        normalizeCorridorNetwork(entries);
+
+        const shared = entries.flatMap(entry => entry.segments)
+            .flatMap(segment => [segment[0], segment[segment.length - 1]])
+            .filter(point => Math.abs(point.lat - 43) < 1e-12 && Math.abs(point.lng - 15.0005) < 1e-12);
+        expect(shared.length).toBeGreaterThanOrEqual(3);
+        expect(entries[1].segments.some(segment => segment.some(point => point.lat === 43))).toBe(true);
     });
 });
 

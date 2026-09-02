@@ -466,72 +466,9 @@ function buildNeighborMapFromEdges(parcels) {
         ensureList(pair.b).push(la);
     });
 
-    // Handle containment: connect parcels fully inside another (assuming both are non-road).
-    // First, a targeted pass for isolated (degree 0) parcels to keep it fast.
-    const ids = Array.from(idToLayer.keys());
-    // Precompute bounds to prune
-    const idToBounds = new Map();
-    ids.forEach(id => {
-        const layer = idToLayer.get(id);
-        let b = null;
-        try { b = layer && typeof layer.getBounds === 'function' ? layer.getBounds() : null; } catch (_) { }
-        idToBounds.set(id, b);
-    });
-
-    function layerContains(outerLayer, innerLayer) {
-        try {
-            const outer = outerLayer.feature;
-            const inner = innerLayer.feature;
-            if (!outer || !inner) return false;
-            return turf.booleanContains(outer, inner);
-        } catch (_) { return false; }
-    }
-
-    // Pass 1: isolated only (existing behavior)
-    ids.forEach(idA => {
-        const degA = (neighborMap.get(idA) || []).length;
-        if (degA > 0) return; // only isolated parcels
-        const layerA = idToLayer.get(idA);
-        const boundsA = idToBounds.get(idA);
-        if (!layerA || !boundsA || !boundsA.isValid || !boundsA.isValid()) return;
-        for (let i = 0; i < ids.length; i++) {
-            const idB = ids[i];
-            if (idB === idA) continue;
-            const layerB = idToLayer.get(idB);
-            const boundsB = idToBounds.get(idB);
-            if (!layerB || !boundsB || !boundsB.isValid || !boundsB.isValid()) continue;
-            if (!(boundsB.contains && boundsB.contains(boundsA))) continue;
-            if (layerContains(layerB, layerA)) {
-                ensureList(idA).push(layerB);
-                ensureList(idB).push(layerA);
-                break;
-            }
-        }
-    });
-
-    // Pass 2: robust containment linking for non-isolated islands entirely inside another parcel
-    // This prevents 1-parcel islands from forming standalone blocks when they are inside non-road parcels.
-    ids.forEach(idA => {
-        const layerA = idToLayer.get(idA);
-        const boundsA = idToBounds.get(idA);
-        if (!layerA || !boundsA || !boundsA.isValid || !boundsA.isValid()) return;
-        for (let i = 0; i < ids.length; i++) {
-            const idB = ids[i];
-            if (idB === idA) continue;
-            const layerB = idToLayer.get(idB);
-            const boundsB = idToBounds.get(idB);
-            if (!layerB || !boundsB || !boundsB.isValid || !boundsB.isValid()) continue;
-            if (!(boundsB.contains && boundsB.contains(boundsA))) continue;
-            if (layerContains(layerB, layerA)) {
-                // Link both ways if not already linked
-                const listA = ensureList(idA);
-                const listB = ensureList(idB);
-                if (!listA.includes(layerB)) listA.push(layerB);
-                if (!listB.includes(layerA)) listB.push(layerA);
-                break;
-            }
-        }
-    });
+    // This is the complete block graph. Geometric containment or overlap is not adjacency and must
+    // never invent another edge after road-aware topology has made its decision. A genuine enclave
+    // still connects through its shared hole boundary, which parcel-adjacency handles directly.
 
     return { neighborMap, idToLayer };
 }

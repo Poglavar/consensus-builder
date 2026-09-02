@@ -120,6 +120,8 @@
         const memberLinks = new Map();
         const corridorTouch = new Map();
         const memberShared = new Map();
+        const rawMemberShared = new Map();
+        const pairKey = (a, b) => a < b ? `${a}~${b}` : `${b}~${a}`;
         const link = (a, b) => {
             if (!memberLinks.has(a)) memberLinks.set(a, new Set());
             memberLinks.get(a).add(b);
@@ -133,6 +135,8 @@
                 if (aRoad && bRoad) return;
                 const member = aRoad ? b : a;
                 corridorTouch.set(member, (corridorTouch.get(member) || 0) + pair.sharedM);
+            } else {
+                rawMemberShared.set(pairKey(a, b), pair.sharedM);
             }
         });
         memberPairs.forEach(pair => {
@@ -140,7 +144,11 @@
             const b = String(pair.b);
             link(a, b);
             link(b, a);
-            memberShared.set(`${a}~${b}`, pair.sharedM);
+            // Block topology may trim a little shared length beside a road when deciding whether
+            // this pair still CONNECTS. Once it does connect, perimeter arithmetic must cancel the
+            // full cadastral edge; otherwise every road corner adds the clearance twice to the
+            // block outline and makes enclosure depend on a topology tolerance.
+            memberShared.set(pairKey(a, b), rawMemberShared.get(pairKey(a, b)) ?? pair.sharedM);
         });
 
         const members = memberEntries.map(entry => String(entry.id));

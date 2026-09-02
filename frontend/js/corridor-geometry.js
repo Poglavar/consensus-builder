@@ -233,6 +233,289 @@
             && Math.abs(a.lng - b.lng) < CORRIDOR_NODE_EPS;
     }
 
+    // Two coordinates that describe one physical junction must become the SAME coordinate before
+    // any key-based graph work begins. A rounded coordinate key cannot establish that invariant:
+    // two points 0.2 mm apart can fall on opposite sides of a rounding bucket, while two points in
+    // one bucket can be farther apart than the intended tolerance. This pass works in metres,
+    // chooses a deterministic representative for close vertices, and projects a dangling endpoint
+    // onto a centreline it almost touches. It is intentionally strict (2 cm by default): ordinary
+    // nearby roads are never joined automatically, but floating-point and projection noise cannot
+    // manufacture a false dead end.
+    const CORRIDOR_CANONICAL_JUNCTION_METERS = 0.02;
+    const EARTH_RADIUS_METERS = 6371008.8;
+
+    function corridorPointLevel(point) {
+        return point && typeof point.level === 'number' && Number.isFinite(point.level)
+            ? point.level
+            : 0;
+    }
+
+    function corridorFlatEdgeLevel(a, b) {
+        const from = corridorPointLevel(a);
+        const to = corridorPointLevel(b);
+        return from === to ? from : null;
+    }
+
+    function corridorDistanceMeters(a, b) {
+        if (!a || !b) return Infinity;
+        const lat1 = Number(a.lat) * Math.PI / 180;
+        const lat2 = Number(b.lat) * Math.PI / 180;
+        const dLat = lat2 - lat1;
+        const dLng = (Number(b.lng) - Number(a.lng)) * Math.PI / 180;
+        if (![lat1, lat2, dLat, dLng].every(Number.isFinite)) return Infinity;
+        const h = Math.sin(dLat / 2) ** 2
+            + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+        return 2 * EARTH_RADIUS_METERS * Math.asin(Math.min(1, Math.sqrt(Math.max(0, h))));
+    }
+
+    function projectCorridorPointToEdge(point, from, to) {
+        if (!point || !from || !to) return null;
+        const refLat = ((Number(point.lat) + Number(from.lat) + Number(to.lat)) / 3) * Math.PI / 180;
+        const metresPerLatDegree = Math.PI * EARTH_RADIUS_METERS / 180;
+        const metresPerLngDegree = metresPerLatDegree * Math.cos(refLat);
+        if (!Number.isFinite(metresPerLngDegree) || Math.abs(metresPerLngDegree) < 1e-9) return null;
+        const ax = Number(from.lng) * metresPerLngDegree;
+        const ay = Number(from.lat) * metresPerLatDegree;
+        const bx = Number(to.lng) * metresPerLngDegree;
+        const by = Number(to.lat) * metresPerLatDegree;
+        const px = Number(point.lng) * metresPerLngDegree;
+        const py = Number(point.lat) * metresPerLatDegree;
+        if (![ax, ay, bx, by, px, py].every(Number.isFinite)) return null;
+        const dx = bx - ax;
+        const dy = by - ay;
+        const lengthSq = dx * dx + dy * dy;
+        if (lengthSq < 1e-12) return null;
+        const t = ((px - ax) * dx + (py - ay) * dy) / lengthSq;
+        const clamped = Math.max(0, Math.min(1, t));
+        const x = ax + clamped * dx;
+        const y = ay + clamped * dy;
+        return {
+            t: clamped,
+            distance: Math.hypot(px - x, py - y),
+            point: {
+                lat: Number(from.lat) + clamped * (Number(to.lat) - Number(from.lat)),
+                lng: Number(from.lng) + clamped * (Number(to.lng) - Number(from.lng))
+            }
+        };
+    }
+
+    function corridorEntryEdgeProtected(entry, from, to) {
+        const keys = entry && entry.protectedEdgeKeys;
+        const edgeKey = (global && typeof global.corridorTunnelEdgeKey === 'function')
+            ? global.corridorTunnelEdgeKey(from, to)
+            : null;
+        return !!(edgeKey && keys && typeof keys.has === 'function' && keys.has(edgeKey));
+    }
+
+    function validCorridorEntries(entries) {
+        return (Array.isArray(entries) ? entries : []).filter(
+            entry => entry && Array.isArray(entry.segments)
+        );
+    }
+
+    function corridorPointOccurrences(entries) {
+        const occurrences = [];
+        entries.forEach((entry, entryIndex) => {
+            entry.segments.forEach((segment, segmentIndex) => {
+                if (!Array.isArray(segment)) return;
+                segment.forEach((point, pointIndex) => {
+                    if (!point || !Number.isFinite(Number(point.lat)) || !Number.isFinite(Number(point.lng))) return;
+                    occurrences.push({ entry, entryIndex, segment, segmentIndex, point, pointIndex });
+                });
+            });
+        });
+        return occurrences;
+    }
+
+    function canonicalizeCloseCorridorVertices(entries, toleranceMeters) {
+        const occurrences = corridorPointOccurrences(entries);
+        if (occurrences.length < 2 || !(toleranceMeters > 0)) return 0;
+        const parent = occurrences.map((_, index) => index);
+        const find = index => {
+            let root = index;
+            while (parent[root] !== root) root = parent[root];
+            while (parent[index] !== index) {
+                const next = parent[index];
+                parent[index] = root;
+                index = next;
+            }
+            return root;
+        };
+        const join = (a, b) => {
+            const rootA = find(a);
+            const rootB = find(b);
+            if (rootA !== rootB) parent[rootB] = rootA;
+        };
+
+        // A city plan has only a few thousand vertices, but use metre buckets anyway: this stays
+        // linear-ish when normalization is run over a much larger imported network.
+        const referenceLat = occurrences.reduce((sum, item) => sum + Number(item.point.lat), 0) / occurrences.length;
+        const metresPerDegree = Math.PI * EARTH_RADIUS_METERS / 180;
+        const metresPerLngDegree = metresPerDegree * Math.cos(referenceLat * Math.PI / 180);
+        const buckets = new Map();
+        const bucketOf = point => [
+            Math.floor(Number(point.lng) * metresPerLngDegree / toleranceMeters),
+            Math.floor(Number(point.lat) * metresPerDegree / toleranceMeters),
+            corridorPointLevel(point)
+        ];
+        occurrences.forEach((item, index) => {
+            const [x, y, level] = bucketOf(item.point);
+            for (let dx = -1; dx <= 1; dx += 1) {
+                for (let dy = -1; dy <= 1; dy += 1) {
+                    const candidates = buckets.get(`${x + dx},${y + dy},${level}`) || [];
+                    candidates.forEach(other => {
+                        if (corridorDistanceMeters(item.point, occurrences[other].point) <= toleranceMeters) {
+                            join(index, other);
+                        }
+                    });
+                }
+            }
+            const key = `${x},${y},${level}`;
+            if (!buckets.has(key)) buckets.set(key, []);
+            buckets.get(key).push(index);
+        });
+
+        const clusters = new Map();
+        occurrences.forEach((item, index) => {
+            const root = find(index);
+            if (!clusters.has(root)) clusters.set(root, []);
+            clusters.get(root).push(item);
+        });
+        let changed = 0;
+        clusters.forEach(cluster => {
+            if (cluster.length < 2) return;
+            // Prefer the coordinate already used most often, then a stable lexical minimum. Thus a
+            // lone drifting arm moves onto an established junction instead of moving the junction.
+            const coordinateCounts = new Map();
+            cluster.forEach(item => {
+                const key = `${Number(item.point.lat)},${Number(item.point.lng)}`;
+                if (!coordinateCounts.has(key)) coordinateCounts.set(key, { point: item.point, count: 0, key });
+                coordinateCounts.get(key).count += 1;
+            });
+            const representative = [...coordinateCounts.values()].sort((a, b) =>
+                (b.count - a.count) || a.key.localeCompare(b.key)
+            )[0].point;
+            cluster.forEach(item => {
+                if (item.point.lat === representative.lat && item.point.lng === representative.lng) return;
+                item.point.lat = Number(representative.lat);
+                item.point.lng = Number(representative.lng);
+                changed += 1;
+            });
+        });
+        return changed;
+    }
+
+    function dedupeCorridorPoints(entries, toleranceMeters = 0.001) {
+        let removed = 0;
+        entries.forEach(entry => {
+            const keptSegments = [];
+            const keptIds = [];
+            (entry.segments || []).forEach((segment, index) => {
+                const points = [];
+                (Array.isArray(segment) ? segment : []).forEach(point => {
+                    if (!points.length || corridorDistanceMeters(points[points.length - 1], point) > toleranceMeters) {
+                        points.push(point);
+                    } else {
+                        removed += 1;
+                    }
+                });
+                if (points.length < 2) return;
+                keptSegments.push(points);
+                keptIds.push(Array.isArray(entry.segmentIds) ? (entry.segmentIds[index] ?? null) : null);
+            });
+            entry.segments.splice(0, entry.segments.length, ...keptSegments);
+            if (Array.isArray(entry.segmentIds)) entry.segmentIds.splice(0, entry.segmentIds.length, ...keptIds);
+            pruneCorridorEditProfiles(entry.segmentIds || keptIds, entry.segmentProfiles || null);
+        });
+        return removed;
+    }
+
+    function corridorGraphDegree(entries) {
+        const degree = new Map();
+        entries.forEach(entry => (entry.segments || []).forEach(segment => {
+            if (!Array.isArray(segment)) return;
+            for (let index = 0; index < segment.length - 1; index += 1) {
+                if (corridorDistanceMeters(segment[index], segment[index + 1]) <= 0.001) continue;
+                const from = corridorNodeKey(segment[index]);
+                const to = corridorNodeKey(segment[index + 1]);
+                if (!from || !to || from === to) continue;
+                degree.set(from, (degree.get(from) || 0) + 1);
+                degree.set(to, (degree.get(to) || 0) + 1);
+            }
+        }));
+        return degree;
+    }
+
+    function snapDanglingCorridorEndpoints(entries, toleranceMeters) {
+        let snapped = 0;
+        // Apply one closest snap at a time because inserting into an edge changes later indexes.
+        for (let pass = 0; pass < 1000; pass += 1) {
+            const degree = corridorGraphDegree(entries);
+            const edges = [];
+            entries.forEach(entry => (entry.segments || []).forEach((segment, segmentIndex) => {
+                if (!Array.isArray(segment)) return;
+                for (let edgeIndex = 0; edgeIndex < segment.length - 1; edgeIndex += 1) {
+                    edges.push({ entry, segment, segmentIndex, edgeIndex, from: segment[edgeIndex], to: segment[edgeIndex + 1] });
+                }
+            }));
+            let best = null;
+            entries.forEach(entry => (entry.segments || []).forEach((segment, segmentIndex) => {
+                if (!Array.isArray(segment) || segment.length < 2) return;
+                [0, segment.length - 1].forEach(pointIndex => {
+                    const point = segment[pointIndex];
+                    if ((degree.get(corridorNodeKey(point)) || 0) !== 1) return;
+                    const ownEdgeIndex = pointIndex === 0 ? 0 : segment.length - 2;
+                    if (corridorEntryEdgeProtected(entry, segment[ownEdgeIndex], segment[ownEdgeIndex + 1])) return;
+                    edges.forEach(edge => {
+                        if (edge.entry === entry && edge.segmentIndex === segmentIndex && edge.edgeIndex === ownEdgeIndex) return;
+                        const level = corridorFlatEdgeLevel(edge.from, edge.to);
+                        if (level === null || level !== corridorPointLevel(point)) return;
+                        if (corridorEntryEdgeProtected(edge.entry, edge.from, edge.to)) return;
+                        const projected = projectCorridorPointToEdge(point, edge.from, edge.to);
+                        if (!projected || projected.t <= 1e-9 || projected.t >= 1 - 1e-9) return;
+                        if (projected.distance > toleranceMeters) return;
+                        if (best && projected.distance >= best.distance) return;
+                        best = {
+                            sourceEntry: entry,
+                            sourceSegment: segment,
+                            sourcePointIndex: pointIndex,
+                            targetEdge: edge,
+                            distance: projected.distance,
+                            projectedPoint: projected.point
+                        };
+                    });
+                });
+            }));
+            if (!best) break;
+            const target = best.targetEdge.from.level !== undefined || best.targetEdge.to.level !== undefined
+                ? { ...best.projectedPoint, level: corridorPointLevel(best.targetEdge.from) }
+                : { ...best.projectedPoint };
+            const source = best.sourceSegment[best.sourcePointIndex];
+            source.lat = target.lat;
+            source.lng = target.lng;
+            best.targetEdge.segment.splice(best.targetEdge.edgeIndex + 1, 0, target);
+            snapped += 1;
+            canonicalizeCloseCorridorVertices(entries, toleranceMeters);
+            dedupeCorridorPoints(entries);
+        }
+        return snapped;
+    }
+
+    function canonicalizeCorridorNetworkJunctions(entries, options = {}) {
+        const list = validCorridorEntries(entries);
+        const toleranceMeters = Number.isFinite(Number(options.toleranceMeters))
+            ? Math.max(0, Number(options.toleranceMeters))
+            : CORRIDOR_CANONICAL_JUNCTION_METERS;
+        const report = { canonicalizedVertices: 0, snappedEndpoints: 0, removedDegeneratePoints: 0 };
+        if (!list.length || !(toleranceMeters > 0)) return report;
+        report.canonicalizedVertices += canonicalizeCloseCorridorVertices(list, toleranceMeters);
+        report.removedDegeneratePoints += dedupeCorridorPoints(list);
+        report.snappedEndpoints += snapDanglingCorridorEndpoints(list, toleranceMeters);
+        report.canonicalizedVertices += canonicalizeCloseCorridorVertices(list, toleranceMeters);
+        report.removedDegeneratePoints += dedupeCorridorPoints(list);
+        return report;
+    }
+
     function corridorPieceHasLength(points) {
         if (!Array.isArray(points) || points.length < 2) return false;
         return points.slice(1).some(point => !corridorPointsNear(point, points[0]));
@@ -354,7 +637,7 @@
             // old near-equal vertices (within the same 1e-7 tolerance every consumer already uses).
             const normalized = base.map(point => {
                 const representative = representatives.get(corridorNodeKey(point)) || point;
-                const healed = { lat: representative.lat, lng: representative.lng };
+                const healed = { ...point, lat: representative.lat, lng: representative.lng };
                 // The vertical profile rides on the point (corridor-elevation.md), and the
                 // representative is only a canonical POSITION. Rebuilding a bare {lat,lng} here
                 // returned an underground stretch to the surface — and a surfaced tunnel starts
@@ -406,6 +689,12 @@
     // The one canonical topology boundary for a corridor centerline. Geometry enters as user/import
     // strokes and leaves as a graph suitable for node editing, junction detection, and 3D meshing.
     function normalizeCorridorGraph(segments, segmentIds, protectedEdgeKeys = null, segmentProfiles = null) {
+        canonicalizeCorridorNetworkJunctions([{
+            segments,
+            segmentIds,
+            segmentProfiles,
+            protectedEdgeKeys
+        }]);
         insertCorridorCrossingNodes(segments, segmentIds, protectedEdgeKeys);
         return splitCorridorSelfJunctions(segments, segmentIds, segmentProfiles);
     }
@@ -426,7 +715,7 @@
     // junction: the other road ends up with a vertex on a line that has no vertex back.
     //
     // Returns one `{ changed }` per entry, in order. Convergent: a second run changes nothing.
-    function normalizeCorridorNetwork(entries) {
+    function normalizeCorridorNetwork(entries, options = {}) {
         const list = (Array.isArray(entries) ? entries : []).filter(
             entry => entry && Array.isArray(entry.segments) && entry.segments.length
         );
@@ -441,6 +730,8 @@
         };
         const before = list.map(signatureOf);
         if (!list.length) return [];
+
+        canonicalizeCorridorNetworkJunctions(list, options);
 
         // One flat view over every corridor's polylines. The arrays ARE the owners' arrays, so the
         // crossing-node splices land in the right record without any mapping back.
@@ -1169,6 +1460,9 @@
         normalizeCorridorGraph,
         normalizeCorridorNetwork,
         normalizeCorridorDefinitionTopology,
+        corridorDistanceMeters,
+        projectCorridorPointToEdge,
+        canonicalizeCorridorNetworkJunctions,
         insertCorridorNode,
         removeCorridorEdge,
         removeCorridorNodes,
@@ -1188,6 +1482,7 @@
         window.normalizeCorridorGraph = normalizeCorridorGraph;
         window.normalizeCorridorNetwork = normalizeCorridorNetwork;
         window.normalizeCorridorDefinitionTopology = normalizeCorridorDefinitionTopology;
+        window.canonicalizeCorridorNetworkJunctions = canonicalizeCorridorNetworkJunctions;
         window.segmentsIntersect = segmentsIntersect;
         window.polylineHasSelfIntersection = polylineHasSelfIntersection;
         window.convertRoadPolygonToLatLngPairs = convertRoadPolygonToLatLngPairs;

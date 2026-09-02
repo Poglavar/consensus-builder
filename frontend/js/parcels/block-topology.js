@@ -3,8 +3,7 @@
 // Parcel adjacency and block adjacency are deliberately not the same question. Two cadastral
 // outlines can appear to share a boundary because of survey tolerance or overlapping cut output,
 // while that very stretch is owned by a live road parcel. Treating that pair as connected lets a
-// flood fill jump across the street and merge two blocks — exactly what happened in Sibenik where
-// parcels 92 and 95/3 shared 5.24 m underneath Road 1008-1553.
+// flood fill jump across the street and merge two blocks.
 //
 // This module is the one topology boundary for every block consumer. It starts with the tolerant,
 // T-junction-safe adjacency service and removes only the part of a shared boundary that lies in
@@ -22,6 +21,11 @@
         // part of a long cadastral boundary; the uncovered remainder still connects the parcels.
         // Half-metre samples match adjacency's own minimum meaningful shared length.
         barrierSampleM: 0.5,
+        // Boolean clipping can leave two land remainders with a sub-metre seam immediately beside
+        // the road that cut them. Exact point-in-polygon containment would let a block flood-fill
+        // squeeze through that numerical seam. Treat half a metre around live corridor ground as
+        // part of the barrier; a real land connection must have at least that much clearance.
+        barrierClearanceM: 0.5,
         barrierIndexCellM: 50
     };
 
@@ -66,6 +70,32 @@
         return inside;
     }
 
+    function pointSegmentDistance(x, y, a, b) {
+        if (!Array.isArray(a) || !Array.isArray(b)) return Infinity;
+        const dx = b[0] - a[0];
+        const dy = b[1] - a[1];
+        const lengthSquared = (dx * dx) + (dy * dy);
+        if (!(lengthSquared > 0)) return Math.hypot(x - a[0], y - a[1]);
+        const projection = Math.max(0, Math.min(1,
+            (((x - a[0]) * dx) + ((y - a[1]) * dy)) / lengthSquared));
+        return Math.hypot(
+            x - (a[0] + (projection * dx)),
+            y - (a[1] + (projection * dy))
+        );
+    }
+
+    function barrierBoundaryDistance(barrier, x, y) {
+        let nearest = Infinity;
+        for (const ring of (barrier && Array.isArray(barrier.rings) ? barrier.rings : [])) {
+            if (!Array.isArray(ring) || ring.length < 2) continue;
+            for (let index = 0; index < ring.length; index += 1) {
+                const next = (index + 1) % ring.length;
+                nearest = Math.min(nearest, pointSegmentDistance(x, y, ring[index], ring[next]));
+            }
+        }
+        return nearest;
+    }
+
     function boundsOfRings(rings) {
         let minX = Infinity;
         let minY = Infinity;
@@ -86,6 +116,10 @@
     function createBarrierIndex(barriers, options) {
         const opts = { ...DEFAULTS, ...(options || {}) };
         const cellM = Math.max(1, Number(opts.barrierIndexCellM) || DEFAULTS.barrierIndexCellM);
+        const requestedClearance = Number(opts.barrierClearanceM);
+        const clearanceM = Number.isFinite(requestedClearance)
+            ? Math.max(0, requestedClearance)
+            : DEFAULTS.barrierClearanceM;
         const cells = new Map();
         const records = [];
         const file = (key, index) => {
@@ -100,10 +134,10 @@
             if (!bounds) return;
             const index = records.length;
             records.push({ ...barrier, rings, bounds });
-            const x0 = Math.floor(bounds[0] / cellM);
-            const y0 = Math.floor(bounds[1] / cellM);
-            const x1 = Math.floor(bounds[2] / cellM);
-            const y1 = Math.floor(bounds[3] / cellM);
+            const x0 = Math.floor((bounds[0] - clearanceM) / cellM);
+            const y0 = Math.floor((bounds[1] - clearanceM) / cellM);
+            const x1 = Math.floor((bounds[2] + clearanceM) / cellM);
+            const y1 = Math.floor((bounds[3] + clearanceM) / cellM);
             for (let x = x0; x <= x1; x += 1) {
                 for (let y = y0; y <= y1; y += 1) file(`${x}|${y}`, index);
             }
@@ -114,13 +148,15 @@
             for (const index of candidates) {
                 const barrier = records[index];
                 const b = barrier.bounds;
-                if (x < b[0] || x > b[2] || y < b[1] || y > b[3]) continue;
+                if (x < b[0] - clearanceM || x > b[2] + clearanceM
+                    || y < b[1] - clearanceM || y > b[3] + clearanceM) continue;
                 if (barrierContains(barrier, x, y)) return true;
+                if (clearanceM > 0 && barrierBoundaryDistance(barrier, x, y) <= clearanceM) return true;
             }
             return false;
         }
 
-        return { contains, size: records.length };
+        return { contains, size: records.length, clearanceM };
     }
 
     function openLengthOfSpan(span, barriers, options) {
@@ -162,6 +198,7 @@
 
     const api = {
         DEFAULTS,
+        barrierBoundaryDistance,
         barrierContains,
         createBarrierIndex,
         neighborPairs,
