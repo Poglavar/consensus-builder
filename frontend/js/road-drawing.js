@@ -670,18 +670,8 @@ function stripRoadDerivedFields(record) {
 // proposal is genuinely immutable, so once an edit changes this record's shape it has stopped being
 // the thing published under those ids and must stop saying it is. The enclosing record snapshot
 // restores these fields if the edit transaction fails.
-const PUBLISHED_IDENTITY_KEYS = ['serverProposalId', 'chainProposalId', 'tokenId', 'onchain', 'nft', 'isMinted', 'hash'];
-
 function detachPublishedIdentity(record) {
-    const removed = {};
-    if (!record) return removed;
-    PUBLISHED_IDENTITY_KEYS.forEach(key => {
-        if (Object.prototype.hasOwnProperty.call(record, key)) {
-            removed[key] = record[key];
-            delete record[key];
-        }
-    });
-    return removed;
+    return window.CorridorAuthoring.detachPublishedIdentity(record);
 }
 
 function makeFreshRoadSnapshot(sourceProposal, definition, options = {}) {
@@ -1113,15 +1103,17 @@ let roadSnapMarker = null;
 
 // Nearest snap candidate to `latlng`, or null. Vertices win over edges: a click near a corner should
 // join that corner rather than plant a second node a few centimetres along one of its edges.
-// Applied corridors are snap targets too, so a new formation can share an exact geometric junction
-// without rewriting the existing formation.
+// Applied corridors of the same kind are snap targets too. The click records the exact shared
+// coordinate; Finish atomically inserts that node into the touched existing record as well.
 function appliedCorridorSnapSegments() {
     const entries = [];
+    const isTrack = corridorDrawingIsTrack();
     try {
         (proposalStorage?.getAllProposals?.() || []).forEach(proposal => {
             const definition = proposal?.roadProposal?.definition;
             if (!definition) return;
             if (!isApplied(proposal, proposal.roadProposal)) return;
+            if (typeof corridorIsTrack === 'function' && corridorIsTrack(definition) !== isTrack) return;
             const proposalId = (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId;
             (corridorCenterlineOf(definition) || []).forEach(segment => {
                 if (Array.isArray(segment) && segment.length >= 2) entries.push({ segment, proposalId });
@@ -4661,7 +4653,7 @@ async function cancelRoadOrTrackDrawing() {
 // F is an idempotent "pen up" action. The gate is acquired before any asynchronous work begins, so
 // key repeat, a double-click on Finish, Escape and panel close all share one finalization run.
 //
-// Finishing is not instant — a graph normalization, a parcel query and a full fabric replay run
+// Finishing runs graph normalization, one cached-ground lookup and a local fabric derivation
 // between the keypress and the finished object — and it used to happen with no sign at all that
 // anything was under way. The same ref-counted spinner an applied-corridor edit uses covers the
 // whole run, and the pointer goes busy with it.
@@ -4687,8 +4679,8 @@ function finishRoadDrawing() {
 }
 
 // Where the seconds between F and a finished road go. Kept in the code rather than reached for with
-// a profiler after the fact: the expensive phase is the whole-plan replay inside the create, and
-// without the split it is impossible to tell that from the geometry work in front of it.
+// a profiler after the fact: the transaction reports topology, record and local-fabric time, while
+// this outer profile separates those from the geometry and draft work in front of it.
 const nowMs = () => ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now());
 let corridorFinishProfile = null;
 
@@ -4853,9 +4845,6 @@ async function finishRoadDrawingOnce() {
     const isTrack = corridorDrawingIsTrack();
     const corridorKind = isTrack ? 'track' : 'road';
 
-    const defaultAuthor = (typeof getCurrentUsername === 'function' && getCurrentUsername()) || '';
-    const defaultName = isTrack ? generateRandomTrackName() : generateRandomRoadName();
-    const defaultOffer = isTrack ? generateRandomRoadOffer(5000, 200000) : generateRandomRoadOffer();
     const ownershipAndAcquisitionStats = collectOwnershipAndAcquisitionStats();
 
     const parentParcelIds = affectedParcels
@@ -4944,41 +4933,32 @@ async function finishRoadDrawingOnce() {
         window.pendingRoadDrawingProposal = roadDrawingContext;
     }
 
-    // When this drawing began as a copy of an existing road, the new proposal has to record where it
-    // came from. The drawing tool is the long way round to the create dialog, but the lineage travels
-    // the same route as it does for every other copied goal.
-    const copySource = (typeof window !== 'undefined') ? window.pendingRoadCopySource : null;
-    if (typeof window !== 'undefined') window.pendingRoadCopySource = null;
-    const copyPrefill = (copySource && copySource.prefill) ? copySource.prefill : {};
-
     // SimCity lifecycle: finishing the drawing IS the creation. The draft becomes an applied
     // object immediately (auto-named, overlaps auto-parked); click the object to edit it or add
     // proposal terms later. Drafts are created lazily on autosave — force one now if missing.
     if (!window.activeProposalDesignDraftId) saveCurrentCorridorDrawingDraft(corridorKind);
     const designDraftId = window.activeProposalDesignDraftId;
     if (designDraftId && window.proposalDraftStore?.getDraft?.(designDraftId)) {
+        // saveCurrentCorridorDrawingDraft copied this into the draft; the live drawing session no
+        // longer owns the source pointer once its final snapshot exists.
+        window.pendingRoadCopySource = null;
         window.syncActiveProposalDraftFromEditor?.('corridor', {
             ...roadDrawingContext,
             kind: corridorKind
         }, { parentParcelIds, coalesceKey: 'corridor-finalize' });
-        // Hold the drawing on the map across the teardown and the replay; the object that replaces
+        // Hold the drawing on the map across teardown and local fabric derivation; the object that replaces
         // it only exists once instantCreateProposalFromDraft resolves.
         markCorridorFinishPhase('draft');
         const dismissGhost = detachDrawnCorridorAsGhost();
         exitRoadDrawingMode();
         try {
-            // One drawing session, one proposal. Snapping onto an existing corridor donates an exact
-            // shared node, so the network really is connected — but the older record is left alone.
-            //
-            // NOT because absorbing it would mutate something already accepted or minted: every edit
-            // in this app saves as a NEW derived record, so that could never happen. The reasons are
-            // that each stretch carries its own offer and consent and is accepted or refused on its
-            // own, and that since the fabric became a function of the takes over a parcel
-            // (proposals/parcel-arrangement.js) shared identity buys connectivity nothing — a
-            // junction is already just two takers on the same ground. Merging stretches into one
-            // record remains an open option, not something ruled out.
-            const createdId = await window.instantCreateProposalFromDraft?.(designDraftId);
-            markCorridorFinishPhase('create+replay');
+            // One drawing session, one new proposal; proposal identity and terms remain separate.
+            // Finish nevertheless owns the WHOLE junction mutation: it inserts the shared node into
+            // every touched existing road and commits those edits atomically with this new record.
+            const createdId = await window.instantCreateProposalFromDraft?.(designDraftId, {
+                atomicCorridorAuthoring: true
+            });
+            markCorridorFinishPhase('atomic-create');
             if (createdId && typeof updateStatus === 'function') {
                 const builtKey = isTrack ? 'panel.road.builtStatusTrack' : 'panel.road.builtStatus';
                 const builtFallback = isTrack ? 'Track built — click it to edit or propose.' : 'Road built — click it to edit or propose.';
@@ -4991,62 +4971,13 @@ async function finishRoadDrawingOnce() {
         return;
     }
 
-    // Legacy path (drawing started without a design draft): the classic create dialog.
-    // Seed multi-parcel selection with the affected parcels so the generalized modal can open.
-    // ONLY the legacy dialog reads it; the instant-create path above never opened a modal, so
-    // seeding there just left multi-select stuck ON — the next map clicks then entered add-mode.
-    try {
-        if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection) {
-            if (!multiParcelSelection.isActive && typeof multiParcelSelection.toggle === 'function') {
-                multiParcelSelection.toggle({ preserveSelectedParcel: false, restoreSingleSelection: false });
-            }
-            if (typeof multiParcelSelection.clearSelection === 'function') {
-                multiParcelSelection.clearSelection();
-            }
-            parentParcelIds.forEach(id => {
-                if (!id) return;
-                const layer = affectedParcels.find(p => getParcelIdFromAny(p) === id)?.layer
-                    || (typeof multiParcelSelection.findParcelById === 'function' ? multiParcelSelection.findParcelById(id) : null);
-                multiParcelSelection.selectedParcels.add(id);
-                if (layer && typeof multiParcelSelection.addParcelHighlight === 'function') {
-                    multiParcelSelection.addParcelHighlight(layer);
-                }
-            });
-            if (typeof multiParcelSelection.updateUI === 'function') {
-                multiParcelSelection.updateUI();
-            }
-        }
-    } catch (selectionError) {
-        console.warn('Failed to seed multi-parcel selection for road proposal', selectionError);
-    }
-
-    showProposalDialog({
-        goal: 'road-track',
-        lockGoal: true,
-        acquisitionMode: 'partial-preferred',
-        lockAcquisition: true,
-        geometryPreset: {
-            statusText: copySource
-                ? `Geometry copied from "${copySource.name}" and edited by drawing`
-                : 'Geometry created by drawing',
-            submitted: true,
-            selectedAction: 'upload',
-            disableButtons: true
-        },
-        prefill: {
-            ...copyPrefill,
-            author: defaultAuthor,
-            name: copyPrefill.name || defaultName,
-            description: copyPrefill.description || defaultName,
-            offer: Number.isFinite(copyPrefill.offer) ? copyPrefill.offer : defaultOffer
-        },
-        summaryStats: ownershipAndAcquisitionStats,
-        copySource: copySource ? { proposalId: copySource.proposalId, name: copySource.name } : null
-    });
-    exitRoadDrawingMode();
-    if (typeof updateStatus === 'function') {
-        updateStatus('Road geometry captured.');
-    }
+    // There is deliberately no second, non-atomic creation path. If the draft hand-off is
+    // unavailable, keep the drawing live; opening the old dialog would store one record first and
+    // leave the other half of every junction for a later repair pass.
+    const draftError = 'Could not prepare the corridor transaction. The drawing is still open.';
+    if (typeof showRoadAlert === 'function') showRoadAlert('corridor_transaction_unavailable', draftError);
+    if (typeof updateStatus === 'function') updateStatus(draftError);
+    return false;
 }
 
 // Closing the drawing tool — the X button, or R again. Anything drawable is ASKED about; an empty

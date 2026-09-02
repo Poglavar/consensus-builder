@@ -46,6 +46,16 @@ describe('road drawing finalization contract', () => {
         expect(finish).not.toContain('showStyledChoice(');
     });
 
+    it('commits cross-record junction topology inside the Finish transaction', () => {
+        const finish = sourceSection(
+            drawingSource,
+            'async function finishRoadDrawingOnce()',
+            '// Closing the drawing tool'
+        );
+        expect(finish).toContain('atomicCorridorAuthoring: true');
+        expect(finish).not.toContain('the older record is left alone');
+    });
+
     it('commits changed-width authored tunnels without running demolition scans', () => {
         const validation = sourceSection(
             drawingSource,

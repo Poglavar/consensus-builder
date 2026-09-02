@@ -739,12 +739,6 @@ function sharedPlanProgressView(event, tShare) {
                     'Applying {{label}} ({{done}}/{{total}})…', event),
                 progress: { done: event.done || 0, total: event.total || 0 }
             };
-        case 'network-noding':
-            return {
-                title,
-                status: tShare('plan.progress.networkNoding',
-                    'Connecting road and track intersections…')
-            };
         case 'save':
             return { title, status: tShare('plan.progress.saving', 'Saving applied proposals…') };
         case 'corridor-ready':

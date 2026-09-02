@@ -752,7 +752,7 @@ const proposalStorage = {
         return results;
     },
 
-    addProposal(proposal) {
+    addProposal(proposal, options = {}) {
         if (!proposal || typeof proposal !== 'object') return null;
 
         if (typeof this._ensureIndexes === 'function') {
@@ -794,7 +794,7 @@ const proposalStorage = {
         this._indexProposal(normalized);
         this.save();
         try {
-            if (typeof document !== 'undefined' && typeof CustomEvent === 'function') {
+            if (options.emitEvent !== false && typeof document !== 'undefined' && typeof CustomEvent === 'function') {
                 document.dispatchEvent(new CustomEvent('proposalCreated', {
                     detail: { proposalId: normalized.proposalId }
                 }));

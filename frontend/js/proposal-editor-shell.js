@@ -1256,7 +1256,7 @@
         };
     }
 
-    async function instantCreateProposalFromDraft(draftId) {
+    async function instantCreateProposalFromDraft(draftId, options = {}) {
         const store = global.proposalDraftStore;
         let draft = store?.getDraft(draftId);
         if (!draft) return null;
@@ -1267,14 +1267,14 @@
         const profile = createPhaseReporter(draft.proposalType || draft.adapterKey || draft.goal || 'proposal');
         try { global.beginApplyIndicator?.(); } catch (_) { }
         try {
-            return await instantCreateProposalFromDraftInner(draftId, store, draft, profile);
+            return await instantCreateProposalFromDraftInner(draftId, store, draft, profile, options);
         } finally {
             try { global.endApplyIndicator?.(); } catch (_) { }
             profile.report();
         }
     }
 
-    async function instantCreateProposalFromDraftInner(draftId, store, draft, profile) {
+    async function instantCreateProposalFromDraftInner(draftId, store, draft, profile, options = {}) {
 
         const currentName = String(draft.fields?.name || '').trim();
         const typeLabel = draft.proposalType || proposalLabel(draft.adapterKey || draft.goal);
@@ -1335,43 +1335,71 @@
             try { proposal.author = global.getCurrentUserAgent?.()?.name || undefined; } catch (_) { }
         }
 
-        const proposalId = global.proposalStorage?.addProposal?.(proposal);
-        if (!proposalId) {
-            if (typeof global.showStyledAlert === 'function') {
-                global.showStyledAlert(tDraft('proposalDrafts.errors.instantCreateFailed', 'Could not save the new object.'));
+        // Every corridor draft uses the same atomic authoring boundary, whichever UI committed it.
+        // The drawing tool passes atomicCorridorAuthoring explicitly as a source-level contract;
+        // callers cannot accidentally opt a road into the generic store-then-derive path.
+        const atomicCorridorAuthoring = !!proposal.roadProposal?.definition;
+        let proposalId = null;
+        if (atomicCorridorAuthoring) {
+            // Finish owns the complete road mutation. The manager first plans every junction edit,
+            // then commits the new record, touched existing records, parcel fabric, and persistence
+            // under one rollback boundary. A failed derivation leaves no parked half-road behind.
+            profile.mark('build');
+            let created = null;
+            try {
+                created = await global.ProposalManager?.createCorridorProposalAtomically?.(proposal);
+            } catch (error) {
+                return keepAsDraft(String(error && error.message || error || 'Could not finish the corridor.'));
             }
-            return keepAsDraft();
-        }
-        profile.mark('build');
-        store.consumeAfterPublish(draftId, proposalId);
-        // Drop any comparison overlay the drawing/sync path may have painted for this draft.
-        clearProposalDraftComparison();
-        // A create/edit changes records, then the one canonical replay materializes the result.
-        // For an edit the old snapshot stays in storage but leaves the applied set; no source is
-        // mutated, absorbed, deleted or restored later.
-        try {
-            const stored = global.proposalStorage?.getProposal?.(proposalId) || proposal;
-            const supersededIds = [stored.sourceProposalId, stored.replacementOfProposalId]
-                .filter(Boolean).map(String);
-            global.ProposalManager?._commitReplacementSupersession?.(proposalId, stored);
-            global.proposalStorage?.save?.();
-            profile.mark('record');
-
-            // NOTHING re-applies the whole plan. Only the ground whose take set actually changed is
-            // re-derived — the parcels under a corridor, the parcels a readjustment takes, and on an
-            // edit the parcels the superseded record has just released. Anything that merely stands
-            // on the fabric changes no parcel at all, so only it is applied.
-            const derived = await global.ProposalManager?.deriveForNewProposal?.(stored, { supersededIds });
-            profile.mark('derive');
-            if (!derived) {
-                // The derivation refused. The record stays unapplied rather than being forced onto
-                // the map; the caller sees a parked object and the reason on _lastApplyFailure.
-                console.warn('[ProposalEditor] the new object could not be derived; it stays parked', proposalId);
+            if (!created?.ok || !created.proposalId) {
+                return keepAsDraft(created?.reason || 'Could not finish the corridor transaction.');
             }
+            proposalId = String(created.proposalId);
+            // Topology, records and local fabric committed inside one manager transaction; marking
+            // them as separate zero-length phases here falsely suggested a second derivation.
+            profile.mark('transaction');
+            store.consumeAfterPublish(draftId, proposalId);
+            clearProposalDraftComparison();
             try { global.ProposalManager?._refreshUIAfterProposalChange?.(global.proposalStorage?.getProposal?.(proposalId)); } catch (_) { }
             profile.mark('ui');
-        } catch (error) {
-            console.warn('[ProposalEditor] Replay after instant create failed; object stays parked', error);
+        } else {
+            proposalId = global.proposalStorage?.addProposal?.(proposal);
+            if (!proposalId) {
+                if (typeof global.showStyledAlert === 'function') {
+                    global.showStyledAlert(tDraft('proposalDrafts.errors.instantCreateFailed', 'Could not save the new object.'));
+                }
+                return keepAsDraft();
+            }
+            profile.mark('build');
+            store.consumeAfterPublish(draftId, proposalId);
+            // Drop any comparison overlay the drawing/sync path may have painted for this draft.
+            clearProposalDraftComparison();
+            // Non-corridor objects keep the ordinary create/apply lifecycle. Corridors take the
+            // atomic path above because their junction can also mutate existing authored records.
+            try {
+                const stored = global.proposalStorage?.getProposal?.(proposalId) || proposal;
+                const supersededIds = [stored.sourceProposalId, stored.replacementOfProposalId]
+                    .filter(Boolean).map(String);
+                global.ProposalManager?._commitReplacementSupersession?.(proposalId, stored);
+                global.proposalStorage?.save?.();
+                profile.mark('record');
+
+                // NOTHING re-applies the whole plan. Only the ground whose take set actually changed is
+                // re-derived — the parcels under a corridor, the parcels a readjustment takes, and on an
+                // edit the parcels the superseded record has just released. Anything that merely stands
+                // on the fabric changes no parcel at all, so only it is applied.
+                const derived = await global.ProposalManager?.deriveForNewProposal?.(stored, { supersededIds });
+                profile.mark('derive');
+                if (!derived) {
+                    // The derivation refused. The record stays unapplied rather than being forced onto
+                    // the map; the caller sees a parked object and the reason on _lastApplyFailure.
+                    console.warn('[ProposalEditor] the new object could not be derived; it stays parked', proposalId);
+                }
+                try { global.ProposalManager?._refreshUIAfterProposalChange?.(global.proposalStorage?.getProposal?.(proposalId)); } catch (_) { }
+                profile.mark('ui');
+            } catch (error) {
+                console.warn('[ProposalEditor] Replay after instant create failed; object stays parked', error);
+            }
         }
         if ((proposal.sourceProposalId || proposal.replacementOfProposalId)
             && typeof global.showEphemeralMessage === 'function') {

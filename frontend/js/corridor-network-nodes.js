@@ -1,8 +1,6 @@
-// Purpose: make junctions BETWEEN road/track proposals real. normalizeCorridorGraph only ever saw
-// one record's own strokes, so two roads drawn as two proposals could cross with no shared node —
-// the crossing existed only as a rendering treatment, and the node editor (which reads one record)
-// could drag one road's leg out of the junction and leave the other behind. This runs the same
-// topology boundary across every applied corridor and writes the result back.
+// Explicit migration utility for records authored before Finish committed both sides of a junction.
+// Normal application/replay must never call this: current drawings persist complete topology in
+// their creation transaction, and replay is a pure reader of that authored state.
 //
 // It does NOT ask whether a corridor was minted or uploaded. The editor works on local records only
 // — everything in it is already a local derivation, and every edit saves as a new derived record —

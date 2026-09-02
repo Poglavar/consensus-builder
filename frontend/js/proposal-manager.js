@@ -625,6 +625,249 @@ const ProposalManager = {
         return queued;
     },
 
+    // Finish a newly drawn corridor as one authored transaction. A T/X junction changes both the
+    // new definition and the already-applied road it meets; those records, the applied-state flip,
+    // persistence, and the local parcel derivation either all commit or all roll back.
+    async createCorridorProposalAtomically(proposal, options = {}) {
+        const opts = options || {};
+        const requestedAt = _now();
+        const browserRoot = (typeof window !== 'undefined') ? window : globalThis;
+        const authoring = browserRoot && browserRoot.CorridorAuthoring;
+        if (!proposal?.roadProposal?.definition) {
+            return { ok: false, proposalId: null, reason: 'The new corridor has no authored definition.' };
+        }
+        if (!authoring || typeof authoring.planCorridorAuthoring !== 'function') {
+            return { ok: false, proposalId: null, reason: 'The corridor topology engine is unavailable.' };
+        }
+        if (typeof proposalStorage === 'undefined' || typeof proposalStorage.addProposal !== 'function') {
+            return { ok: false, proposalId: null, reason: 'Proposal storage is unavailable.' };
+        }
+
+        // All proposal mutations acquire these in the same order: root transaction, then fabric
+        // queue. Taking the fabric queue first can deadlock against a replay that already owns the
+        // transaction and is waiting to derive fabric.
+        const suppliedTransaction = proposalMutationTransactions.isActiveTransaction(opts._mutationTransaction);
+        if (suppliedTransaction) {
+            if (opts._fabricQueue === true) {
+                return this._createCorridorProposalTransactionBody(proposal, opts);
+            }
+            return this._enqueueFabricChange(() => this._createCorridorProposalTransactionBody(proposal, {
+                ...opts,
+                _fabricQueue: true
+            }));
+        }
+
+        let result = null;
+        try {
+            result = await _runProposalMutationBoundary(
+                this,
+                'corridor-create',
+                null,
+                opts,
+                (_transaction, transactionOptions) => this._enqueueFabricChange(
+                    () => this._createCorridorProposalTransactionBody(proposal, {
+                        ...transactionOptions,
+                        _fabricQueue: true
+                    })
+                )
+            );
+        } catch (error) {
+            const reason = String(error && error.message || error || 'Could not finish the corridor transaction.');
+            console.warn('[createCorridorProposalAtomically] transaction rolled back', reason);
+            return {
+                ok: false,
+                proposalId: null,
+                reason
+            };
+        }
+
+        if (result?.ok) {
+            result.timings = {
+                ...(result.timings || {}),
+                totalMs: _now() - requestedAt,
+                queueAndCommitMs: Math.max(0, (_now() - requestedAt) - Number(result.timings?.bodyMs || 0))
+            };
+            console.info(
+                `[corridor-authoring] ${result.proposalId} committed in ${Math.round(result.timings.totalMs)} ms`
+                + ` — topology ${Math.round(result.timings.topologyMs || 0)}`
+                + ` · records ${Math.round(result.timings.recordsMs || 0)}`
+                + ` · local fabric ${Math.round(result.timings.fabricMs || 0)}`
+                + ` · queue/commit ${Math.round(result.timings.queueAndCommitMs || 0)}`
+                + ` · ${result.topology.changedProposalIds.length} existing corridor record(s) changed`
+            );
+            try {
+                if (typeof document !== 'undefined' && typeof CustomEvent === 'function') {
+                    document.dispatchEvent(new CustomEvent('proposalCreated', {
+                        detail: { proposalId: result.proposalId }
+                    }));
+                }
+            } catch (_) { }
+            result.topology.changedProposalIds.forEach(id => {
+                try { this._refreshUIAfterProposalChange?.(_getProposalRecord(id)); } catch (_) { }
+            });
+            try { this._refreshUIAfterProposalChange?.(_getProposalRecord(result.proposalId)); } catch (_) { }
+            try { browserRoot.refreshRoadNodeHandles?.(); } catch (_) { }
+            if (result.supersession && typeof showEphemeralMessage === 'function') {
+                showEphemeralMessage(
+                    `Applied the replacement and removed “${result.supersession.sourceName}” from the map.`,
+                    5000,
+                    'success'
+                );
+            }
+        }
+        return result;
+    },
+
+    async _createCorridorProposalTransactionBody(proposal, options = {}) {
+        const startedAt = _now();
+        const fail = message => {
+            const error = new Error(String(message || 'Could not finish the corridor transaction.'));
+            error.code = 'corridor-authoring-failed';
+            throw error;
+        };
+        const browserRoot = (typeof window !== 'undefined') ? window : globalThis;
+        const authoring = browserRoot.CorridorAuthoring;
+        const excludedIds = Array.from(new Set(
+            [proposal.sourceProposalId, proposal.replacementOfProposalId]
+                .filter(value => value !== undefined && value !== null && String(value))
+                .map(String)
+        ));
+        const allRecords = typeof proposalStorage.getAllProposals === 'function'
+            ? proposalStorage.getAllProposals()
+            : Array.from(proposalStorage.proposals?.values?.() || []);
+
+        _announceApply('Planning the new corridor junctions…');
+        const topologyStarted = _now();
+        let plan = null;
+        try {
+            plan = authoring.planCorridorAuthoring(proposal, allRecords, {
+                geometry: browserRoot.CorridorGeometry,
+                centerlineOf: browserRoot.corridorCenterlineOf,
+                isTrack: browserRoot.corridorIsTrack,
+                isApplied: appliedOf,
+                protectedEdgeKeysOf: definition => (
+                    typeof browserRoot.corridorProtectedEdgeKeySet === 'function'
+                        ? browserRoot.corridorProtectedEdgeKeySet(
+                            definition?.tunnels,
+                            definition?.gradeSeparations
+                        )
+                        : null
+                ),
+                excludeProposalIds: excludedIds
+            });
+        } catch (error) {
+            fail(error && error.message || error || 'Could not build corridor topology.');
+        }
+        const topologyMs = _now() - topologyStarted;
+        const topologyCount = plan.existingChanges.length;
+        _announceApply(topologyCount
+            ? `Saving the new corridor and ${topologyCount} connected corridor${topologyCount === 1 ? '' : 's'}…`
+            : 'Saving the new corridor…');
+
+        const recordsStarted = _now();
+        const changedRecords = [];
+        const changedAt = new Date().toISOString();
+        for (const change of plan.existingChanges) {
+            const target = _getProposalRecord(change.proposalId);
+            if (!target?.roadProposal?.definition) {
+                fail(`A road needed by this junction disappeared (${change.proposalId}).`);
+            }
+            authoring.writeDefinition(target, change.definition);
+            authoring.detachPublishedIdentity(target);
+            target.updatedAt = changedAt;
+            proposalStorage._indexProposal?.(target);
+            changedRecords.push(target);
+        }
+
+        const proposalId = proposalStorage.addProposal(plan.proposal, { emitEvent: false });
+        if (!proposalId) fail('Could not save the new corridor.');
+        const stored = _getProposalRecord(proposalId);
+        if (!stored) fail('The new corridor was not available after it was saved.');
+
+        // A replacement and the source it parks belong to this same transaction. Use the
+        // state-only primitive here; its success toast is emitted only after commit above.
+        const supersededRecords = excludedIds
+            .map(id => _getProposalRecord(id))
+            .filter(Boolean);
+        const supersession = (typeof commitReplacementSupersession === 'function')
+            ? commitReplacementSupersession(stored, proposalId, id => _getProposalRecord(id))
+            : null;
+
+        try { setProposalApplied(stored, true); } catch (_) { stored.applied = true; }
+        proposalStorage._indexProposal?.(stored);
+        const recordsMs = _now() - recordsStarted;
+
+        const label = stored.title || stored.name || (plan.isTrack ? 'the new track' : 'the new road');
+        _announceApply(`Checking cadastral ground for ${label}…`, proposalId);
+        const announceFabricProgress = event => {
+            try { options.onProgress?.(event); } catch (_) { }
+            const phase = event && event.phase;
+            if (phase === 'ground-load-ids' || phase === 'ground-load-footprints') {
+                _announceApply(`Loading missing cadastral ground for ${label}…`, proposalId);
+            } else if (phase === 'ground-wait-ids' || phase === 'ground-wait-footprints') {
+                _announceApply(`Waiting for cadastral ground already being loaded for ${label}…`, proposalId);
+            } else if (phase === 'ground-ready' || phase === 'ground-ids-ready') {
+                _announceApply(`Cadastral ground ready for ${label}…`, proposalId);
+            } else if (phase === 'fabric-scope-ready') {
+                const parcels = Number(event.parcels) || 0;
+                _announceApply(`Preparing ${parcels} cadastral parcel${parcels === 1 ? '' : 's'} under ${label}…`, proposalId);
+            } else if (phase === 'fabric-arrange') {
+                const done = Number(event.done) || 0;
+                const total = Number(event.total) || 0;
+                _announceApply(total
+                    ? `Cutting cadastral parcels for ${label}: ${done}/${total}…`
+                    : `Cutting cadastral parcels for ${label}…`, proposalId);
+            } else if (phase === 'map-update') {
+                _announceApply(`Updating the map for ${label}…`, proposalId);
+            } else if (phase === 'proposal-apply') {
+                _announceApply(`Restoring affected proposal ${event.done || 0}/${event.total || 0}: ${event.label || ''}…`, proposalId);
+            } else if (phase === 'fabric-ready') {
+                _announceApply(`Cadastral parcel borders ready for ${label}…`, proposalId);
+            }
+        };
+        const fabricStarted = _now();
+        const derived = await this.rematerializeCorridorScope(
+            [stored, ...supersededRecords],
+            {
+                _fabricQueue: true,
+                _mutationTransaction: options._mutationTransaction,
+                deferSave: true,
+                purpose: 'apply',
+                statusMode: 'apply',
+                onProgress: announceFabricProgress
+            }
+        );
+        const fabricMs = _now() - fabricStarted;
+        if (!derived || derived.ok !== true) {
+            fail((derived?.failed?.[0]?.reason) || 'The corridor ground could not be derived locally.');
+        }
+
+        _announceApply(`Saving the completed corridor ${label}…`, proposalId);
+        proposalStorage.save?.();
+        this._clearLastApplyFailure?.(proposalId);
+        return {
+            ok: true,
+            proposalId: String(proposalId),
+            applied: true,
+            topology: {
+                junctionRecords: plan.junctionRecords,
+                changedProposalIds: changedRecords.map(record => String(record.proposalId))
+            },
+            supersession: supersession ? {
+                sourceId: supersession.sourceId,
+                sourceName: supersession.source?.title
+                    || supersession.source?.name
+                    || supersession.sourceId
+            } : null,
+            timings: {
+                topologyMs,
+                recordsMs,
+                fabricMs,
+                bodyMs: _now() - startedAt
+            }
+        };
+    },
+
     reapplyAppliedProposals(options = {}) {
         if (this._initialReapplyDone) {
             return this._initialReapplyPromise || Promise.resolve(this._initialReapplyResult);
@@ -1982,13 +2225,6 @@ const ProposalManager = {
                 if (!derived || derived.ok !== true) {
                     throw new Error((derived && derived.failed && derived.failed[0] && derived.failed[0].reason)
                         || 'The corridor ground could not be derived locally.');
-                }
-                _emitProposalProgress(options.onProgress, { phase: 'network-noding', roads, tracks });
-                try {
-                    const browserRoot = (typeof window !== 'undefined') ? window : globalThis;
-                    browserRoot.CorridorNetworkNodes?.normalize?.();
-                } catch (error) {
-                    console.error('[materializeCorridorBatch] network noding failed', error);
                 }
                 if (options.deferSave !== true) {
                     _emitProposalProgress(options.onProgress, { phase: 'save' });
