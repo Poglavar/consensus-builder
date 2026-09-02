@@ -75,4 +75,50 @@ describe('proposal parcel outlines', () => {
             { bounds, includeCorridors: false }
         );
     });
+
+    it('does not select cadastral inputs when a building proposal has its own geometry', () => {
+        const geometry = loadGeometry();
+        const ids = geometry.collectProposalSelectionParcelIds(
+            {
+                proposalId: 'block',
+                parentParcelIds: ['HR-A', 'HR-B'],
+                buildingProposal: { parentParcelIds: ['HR-A', 'HR-B'] }
+            },
+            [{ type: 'Feature', properties: {}, geometry: multiPolygon }]
+        );
+
+        expect(Array.from(ids)).toEqual([]);
+    });
+
+    it('uses live output parcels, never inputs, when a geometry-less proposal formed parcels', () => {
+        const geometry = loadGeometry();
+        const ids = geometry.collectProposalSelectionParcelIds({
+            proposalId: 'formation',
+            parentParcelIds: ['HR-A'],
+            childParcelIds: ['HR-A#formation-1', 'HR-A#formation-2']
+        });
+
+        expect(Array.from(ids)).toEqual(['HR-A#formation-1', 'HR-A#formation-2']);
+    });
+
+    it('uses current subject parcels only for a parcel proposal with no body or outputs', () => {
+        const geometry = loadGeometry();
+        const ids = geometry.collectProposalSelectionParcelIds({
+            proposalId: 'ownership-change',
+            parentParcelIds: ['HR-A', 'HR-A', 'HR-B']
+        });
+
+        expect(Array.from(ids)).toEqual(['HR-A', 'HR-B']);
+    });
+
+    it('does not disguise a malformed body proposal as its source cadastre', () => {
+        const geometry = loadGeometry();
+        const ids = geometry.collectProposalSelectionParcelIds({
+            proposalId: 'broken-block',
+            parentParcelIds: ['HR-A'],
+            buildingProposal: {}
+        });
+
+        expect(Array.from(ids)).toEqual([]);
+    });
 });

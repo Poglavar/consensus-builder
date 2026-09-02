@@ -134,6 +134,28 @@
             global.multiParcelSelection.clearSelection();
         }
 
+        // Resolve the vertical click stack BEFORE selecting the parcel layer. When a building,
+        // structure or corridor proposal is on top, that proposal is the click target; selecting
+        // the cadastral/live ground underneath as well creates a second blue selection with a
+        // different meaning. The drill panel still exposes the formed and cadastral levels when
+        // the user explicitly wants one of them.
+        let drillResult = null;
+        try {
+            if (global.__drillUi && e && e.latlng) {
+                drillResult = global.__drillUi.handleParcelClick(e.latlng, parcelId);
+            }
+        } catch (_) { drillResult = null; }
+        const drillHandled = !!(drillResult && (drillResult.handled === true || drillResult === true));
+        if (drillResult && drillResult.selectedKind === 'proposal') {
+            if (typeof global.multiParcelSelection !== 'undefined'
+                && typeof global.multiParcelSelection.clearSingleParcelSelection === 'function') {
+                global.multiParcelSelection.clearSingleParcelSelection();
+            }
+            if (e) L.DomEvent.stopPropagation(e);
+            try { if (typeof global.updateBlockButtonStates === 'function') global.updateBlockButtonStates(); } catch (_) { }
+            return;
+        }
+
         if (global.splitLayer && global.map.hasLayer(global.splitLayer)) {
             global.map.removeLayer(global.splitLayer);
             global.splitLayer = null;
@@ -237,16 +259,6 @@
 
         global.document.getElementById('parcel-info-panel').classList.add('visible');
 
-        // The drill decides what the click means: it computes the full vertical stack at the
-        // point (content proposals → slices → formation → base parcels), selects the topmost
-        // proposal above this parcel — roads included — and shows the chain as a button column.
-        let drillHandled = false;
-        try {
-            if (global.__drillUi && e && e.latlng) {
-                drillHandled = global.__drillUi.handleParcelClick(e.latlng, parcelId) === true;
-            }
-        } catch (_) { }
-
         // Any parcel carrying an applied proposal doubles as that proposal's surface: opening the
         // parcel also opens the proposal's action buttons, referring to the applied one. Other
         // proposals on the parcel stay reachable through the panel's Proposals list.
@@ -277,6 +289,10 @@
                 || feature.properties.proposalId;
             global.__openProposalDetailsCollapsed = true;
             global.selectAndHighlightProposal(proposalKey, parcelId, false, true);
+            if (typeof global.multiParcelSelection !== 'undefined'
+                && typeof global.multiParcelSelection.clearSingleParcelSelection === 'function') {
+                global.multiParcelSelection.clearSingleParcelSelection();
+            }
         }
         L.DomEvent.stopPropagation(e);
 

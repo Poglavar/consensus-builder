@@ -146,6 +146,51 @@ function forEachProposalParcelInViewport(proposalIdSet, callback) {
     return matched;
 }
 
+// A proposal selection names the proposal's result, never the cadastral inputs from which it was
+// made. Most proposal kinds have their own body geometry (building footprints, a park polygon, a
+// corridor surface, reparcellization slices), so they need no parcel-layer styling at all. A
+// geometry-less parcel operation may still need a map shape: prefer the live parcels it produced,
+// and use its current live subject parcels only when it produced neither geometry nor parcels.
+//
+// Keeping this decision separate from the renderer prevents parentParcelIds from quietly becoming
+// a visual selection again. Those ids are durable cadastral anchors, provenance rather than the
+// selected object.
+function collectProposalSelectionParcelIds(proposal, primaryFeatures = []) {
+    const hasPrimaryGeometry = Array.isArray(primaryFeatures)
+        && primaryFeatures.some(feature => feature && feature.geometry);
+    if (hasPrimaryGeometry || !proposal) return new Set();
+
+    const outputIds = new Set();
+    const add = values => {
+        if (!Array.isArray(values)) return;
+        values.forEach(value => {
+            if (value === undefined || value === null) return;
+            const id = String(value);
+            if (id) outputIds.add(id);
+        });
+    };
+    add(proposal.childParcelIds);
+    add(proposal.roadProposal?.childParcelIds);
+    add(proposal.buildingProposal?.childParcelIds);
+    add(proposal.structureProposal?.childParcelIds);
+    add(proposal.reparcellization?.childParcelIds);
+    add(proposal.decideLaterProposal?.childParcelIds);
+    if (outputIds.size > 0) return outputIds;
+
+    // A body-owning proposal with missing geometry is malformed. Painting its source cadastre as
+    // a substitute would lie about what was selected, so fail visually empty instead.
+    const ownsBody = !!(
+        proposal.roadProposal
+        || proposal.buildingProposal
+        || proposal.structureProposal
+        || proposal.reparcellization
+    );
+    if (ownsBody) return outputIds;
+
+    add(proposal.parentParcelIds);
+    return outputIds;
+}
+
 function collectProposalFeatureSets(proposal, options = {}) {
     const includeBuildingGeometry = options && Object.prototype.hasOwnProperty.call(options, 'includeBuildingGeometry')
         ? !!options.includeBuildingGeometry

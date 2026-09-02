@@ -447,26 +447,6 @@ function highlightProposalHoverById(proposalId, options = {}) {
     }
 }
 
-function collectProposalHighlightParcelIdSet(proposal) {
-    const ids = new Set();
-    if (!proposal) return ids;
-    const push = (arr) => {
-        if (!Array.isArray(arr)) return;
-        for (const id of arr) {
-            if (id == null) continue;
-            const s = String(id);
-            if (s) ids.add(s);
-        }
-    };
-    push(proposal.parentParcelIds);
-    if (resolveProposalGoalKey(proposal, null) === 'road-track' && proposal.roadProposal) {
-        push(proposal.roadProposal.childParcelIds);
-    }
-    if (proposal.decideLaterProposal) push(proposal.decideLaterProposal.childParcelIds);
-    if (proposal.reparcellization) push(proposal.reparcellization.childParcelIds);
-    return ids;
-}
-
 function applyBlinkToLayerGroup(layerGroup, className) {
     if (!layerGroup || !className) return;
     if (typeof layerGroup.eachLayer !== 'function') return;
@@ -555,7 +535,7 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
     // Building geometry is part of the selection: without it, selecting a building proposal
     // highlighted only its parcels, and on ground shared by several buildings there was no way
     // to see WHICH building was selected.
-    const { parcelFeatures, primaryFeatures, parcelIds } = collectProposalFeatureSets(proposal, { includeBuildingGeometry: true });
+    const { primaryFeatures } = collectProposalFeatureSets(proposal, { includeBuildingGeometry: true });
     const _tCollect1 = performance.now();
 
     // A corridor proposal (road or track — the same object) styles its geometry differently from a
@@ -574,8 +554,9 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
     // road already spoke.
     const standsOnMap = isApplied(proposal);
 
-    // Parcels are highlighted with blue fill like other proposals (parks, squares, etc.) while the
-    // proposal stands; dashed and unfilled once it does not.
+    // Only geometry-less parcel operations use a live parcel as their selection shape. Proposals
+    // with a body are drawn from that body below; their cadastral source parcels are provenance,
+    // not part of the visual selection.
     const parcelStyle = {
         color: '#2563EB',
         fillColor: '#2563EB',
@@ -585,6 +566,7 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
         fillOpacity: standsOnMap ? 0.2 : 0,
         className: 'proposal-parcel-outline'
     };
+    const activeParcelIds = new Set();
 
     if (isRoadProposal && standsOnMap) {
         // A selected applied corridor gets ONE crisp selection outline around its footprint — the
@@ -622,17 +604,10 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
             className: 'proposal-primary-outline'
         };
 
-        // Parcel outlines: in-place style override (see note in track branch above). Reparcellization
-        // children carry a per-slice colour (per owner) — use it so a subdivision reads as distinct
-        // plots, not one uniform blue blob. Everything else keeps the shared blue.
-        const isReparcellization = !!(proposal && proposal.reparcellization);
-        const parcelIdSet = collectProposalHighlightParcelIdSet(proposal);
-        forEachProposalParcelInViewport(parcelIdSet, (layer) => {
-            const sliceColor = isReparcellization ? (layer && layer.feature && layer.feature.properties && layer.feature.properties.color) : null;
-            const style = sliceColor
-                ? { ...parcelStyle, color: sliceColor, fillColor: sliceColor }
-                : parcelStyle;
-            proposalHighlightStyleOverride.apply(layer, style);
+        const parcelIdSet = collectProposalSelectionParcelIds(proposal, primaryFeatures);
+        forEachProposalParcelInViewport(parcelIdSet, (layer, liveParcelId) => {
+            proposalHighlightStyleOverride.apply(layer, parcelStyle);
+            if (liveParcelId) activeParcelIds.add(String(liveParcelId));
         });
 
         // Always show primary features for applied proposals at all zoom levels
@@ -646,7 +621,7 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
     }
 
     return {
-        activeIds: new Set(parcelIds),
+        activeIds: activeParcelIds,
         primaryFeatures
     };
 }

@@ -510,11 +510,12 @@
 
     // ── click entry points ───────────────────────────────────────────────────────────────────
 
-    // From onParcelClick: the parcel itself is already selected; the drill decides which
-    // proposal (if any) stands on top of it and shows the whole chain.
+    // From onParcelClick: decide the topmost object before the parcel click commits a parcel
+    // selection. Returning the selected kind lets the parcel surface stop immediately when a
+    // proposal won, so the cadastral layer underneath never flashes or remains selected too.
     function handleParcelClick(latlng, parcelId) {
         const stack = stackAt(latlng);
-        if (!stack.length) { hidePanel(); return false; }
+        if (!stack.length) { hidePanel(); return null; }
         const top = stack[0];
         let selectedRef = null;
         if (top.kind === 'proposal') {
@@ -524,7 +525,11 @@
             selectedRef = `c:${parcelId}`;
         }
         renderPanel(stack, selectedRef);
-        return true;
+        return {
+            handled: true,
+            selectedKind: top.kind,
+            selectedRef
+        };
     }
 
     // From structure fills and corridor hit targets: nothing is selected yet; the drill both
