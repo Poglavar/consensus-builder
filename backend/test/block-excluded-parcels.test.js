@@ -12,13 +12,14 @@
 // from the BUILDING geometry, so a parcel with no massing on it is not a participant — correct, and
 // invisible until now.
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const turf = require('@turf/turf');
+const { collectAppliedIneligibleBlockParts } = require('../../frontend/js/ineligible-block-parts.js');
 const variation = require('../../frontend/js/urban-rule-variation.js');
 const read = rel => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8');
 const buildingBlocks = read('../../frontend/js/building-blocks.js');
@@ -154,32 +155,91 @@ describe('carried into the applied plan', () => {
         expect(adapters).toContain('output.geometry.blockMassing = blockMassing');
     });
 
-    const collect = buildingBlocks.slice(
+    const collectAdapter = buildingBlocks.slice(
         buildingBlocks.indexOf('function appliedIneligibleBlockParts('),
         buildingBlocks.indexOf("// One proposal's buildings, in their own sub-layer.")
     );
 
-    it('collects them from applied records, in one place both views read', () => {
-        expect(collect).toContain('bp.ineligibleParcels');
-        expect(collect).toContain('if (!record || !standing(record)) return;');
-        expect(collect).toContain('window.appliedIneligibleBlockParts = appliedIneligibleBlockParts');
+    it('collects them from authoritative applied records, in one place both views read', () => {
+        expect(collectAdapter).toContain('window.IneligibleBlockParts');
+        expect(collectAdapter).toContain('collectAppliedIneligibleBlockParts');
+        expect(collectAdapter).toContain('window.appliedIneligibleBlockParts = appliedIneligibleBlockParts');
     });
 
     it('marks the PLOT as well as the building it would carry', () => {
-        // The plot outline is what stops a left-out parcel reading as empty ground, and it is
-        // derivable — parents minus the parcels that got a piece — so a block applied before any of
-        // this was recorded still shows its left-out plots.
-        expect(collect).toContain("kind: 'plot'");
-        expect(collect).toContain("kind: 'massing'");
-        expect(collect).toContain('.filter(id => !built.has(id))');
-        expect(collect).toContain('bp.blockParcelIds');
-        expect(collect).toContain('...Array.from(declared.keys())');
+        const plot = rect(0, 0, 10, 10);
+        const wouldBe = rect(1, 1, 8, 8).geometry;
+        const parts = collectAppliedIneligibleBlockParts({
+            records: [{
+                proposalId: 'block-1',
+                applied: true,
+                buildingProposal: {
+                    ineligibleParcels: [{
+                        parcelId: 'HR-EDGE',
+                        status: 'below-min-plot',
+                        height: 12,
+                        wouldBe
+                    }]
+                }
+            }],
+            resolveParcelFeatures: parcelId => [{
+                ...plot,
+                properties: { parcelId: `${parcelId}#live-1` }
+            }]
+        });
+
+        expect(parts.map(part => part.properties.kind)).toEqual(['plot', 'massing']);
+        expect(parts[0].properties).toMatchObject({
+            parcelId: 'HR-EDGE#live-1',
+            sourceParcelId: 'HR-EDGE',
+            exclusionStatus: 'below-min-plot',
+            proposalId: 'block-1'
+        });
+        expect(parts[1].properties.height).toBe(12);
     });
 
-    it('only derives it for rule-driven typologies', () => {
-        // A freeform building over one of two selected parcels leaves the other alone on purpose.
-        expect(collect).toContain("RULE_TYPOLOGIES = new Set(['block', 'row', 'parcelBased', 'parcelbased'])");
-        expect(collect).toContain("RULE_TYPOLOGIES.has(String(bp.typologyType || record.typologyType || ''))");
+    it('does not invent exclusions from block membership or absent building data', () => {
+        const resolveParcelFeatures = vi.fn(() => [rect(0, 0, 10, 10)]);
+        const records = ['one', 'two', 'three'].map(proposalId => ({
+            proposalId,
+            applied: true,
+            typologyType: 'block',
+            geometry: { buildings: [] },
+            buildingProposal: {
+                blockParcelIds: ['HR-330264-628'],
+                parentParcelIds: ['HR-330264-628'],
+                ineligibleParcels: []
+            }
+        }));
+
+        expect(collectAppliedIneligibleBlockParts({ records, resolveParcelFeatures })).toEqual([]);
+        expect(resolveParcelFeatures).not.toHaveBeenCalled();
+    });
+
+    it('gets plot geometry only from the live-tessellation resolver', () => {
+        expect(collectAdapter).toContain('window.resolveLiveParcelLayers');
+        expect(collectAdapter).toContain('{ includeCorridors: false }');
+        expect(collectAdapter).not.toContain('window.parcelLayerById');
+    });
+
+    it('deduplicates repeated live features within one declared exclusion', () => {
+        const feature = { ...rect(0, 0, 10, 10), properties: { parcelId: 'HR-EDGE#live-1' } };
+        const parts = collectAppliedIneligibleBlockParts({
+            records: [{
+                proposalId: 'block-1',
+                applied: true,
+                buildingProposal: {
+                    ineligibleParcels: [
+                        { parcelId: 'HR-EDGE', status: 'below-min-plot' },
+                        { parcelId: 'HR-EDGE', status: 'below-min-plot' }
+                    ]
+                }
+            }],
+            resolveParcelFeatures: () => [feature, JSON.parse(JSON.stringify(feature))]
+        });
+
+        expect(parts).toHaveLength(1);
+        expect(parts[0].properties.kind).toBe('plot');
     });
 
     it('draws them on the 2D map — hatched plot, dashed massing — even when the rule built nothing', () => {
@@ -199,8 +259,24 @@ describe('carried into the applied plan', () => {
     });
 
     it('restricts the walk to one record when only one proposal is being drawn', () => {
-        // Without this, drawing one proposal still costs every applied proposal on the map.
-        expect(collect).toContain("if (wanted !== null && String(record.proposalId ?? '') !== wanted) return;");
+        const records = ['wanted', 'other'].map(proposalId => ({
+            proposalId,
+            applied: true,
+            buildingProposal: {
+                ineligibleParcels: [{ parcelId: `HR-${proposalId}` }]
+            }
+        }));
+        const parts = collectAppliedIneligibleBlockParts({
+            records,
+            onlyProposalId: 'wanted',
+            resolveParcelFeatures: parcelId => [{
+                ...rect(0, 0, 10, 10),
+                properties: { parcelId }
+            }]
+        });
+
+        expect(parts).toHaveLength(1);
+        expect(parts[0].properties.proposalId).toBe('wanted');
     });
 
     it('raises only the massing in 3D, never the plot outline', () => {

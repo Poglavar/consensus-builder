@@ -1384,100 +1384,45 @@ if (typeof PersistentStorage !== 'undefined' && typeof PersistentStorage.ensureR
 }
 
 // Add this function to update the proposed buildings layer
-// The parts of an APPLIED urban rule that pass over plots it left out, as plain features.
-//
-// A block excludes a plot when it is under the minimum plot size, when only a splinter of the block
-// falls on it, or when the massing never reaches it (that last one has no shape — nothing would be
-// built there). What remains is what the plot WOULD carry, and it is what lets a gap in an applied
-// block say "this plot is part of the block and cannot take a building as it stands" instead of
-// saying nothing. One collector, read by both the 2D layer and the 3D view, so the two can never
-// disagree about which plots those are.
-// `onlyProposalId` restricts the walk to one record, so drawing a single proposal does not pay for
-// every applied proposal on the map.
+// The explicitly recorded parts of an APPLIED urban rule that it left out, as plain features.
+// One collector is read by both the 2D layer and the 3D view, so they cannot disagree. Ground
+// identity remains flat: the proposal records the excluded live parcel id, and this presentation
+// adapter asks the live-tessellation resolver for that parcel. It never reaches into the retained
+// cadastral registry, whose hidden source polygons may span several road-cut blocks.
 function appliedIneligibleBlockParts(onlyProposalId) {
     const store = (typeof window !== 'undefined') ? window.proposalStorage : null;
     if (!store || typeof store.getAllProposals !== 'function') return [];
+    const collector = (typeof window !== 'undefined' && window.IneligibleBlockParts)
+        ? window.IneligibleBlockParts.collectAppliedIneligibleBlockParts
+        : null;
+    if (typeof collector !== 'function') return [];
     const standing = record => (typeof window.isProposalApplied === 'function')
         ? window.isProposalApplied(record)
         : !!(record && record.applied === true);
-    // A rule-driven typology gives every parcel of its block a piece, so a parcel with none was
-    // left out — derivable from the record itself, which is what lets a block applied BEFORE any of
-    // this was recorded still show its left-out plots. A freeform building over one of two selected
-    // parcels is not the same thing and must not be marked, hence the typology gate.
-    const RULE_TYPOLOGIES = new Set(['block', 'row', 'parcelBased', 'parcelbased']);
-    const parcelGeometry = (parcelId) => {
-        const byId = (typeof window !== 'undefined' && window.parcelLayerById instanceof Map)
-            ? window.parcelLayerById : null;
-        const layer = byId ? byId.get(String(parcelId)) : null;
-        if (!layer || typeof layer.toGeoJSON !== 'function') return null;
+    const resolveParcelFeatures = parcelId => {
+        const resolve = (typeof window !== 'undefined') ? window.resolveLiveParcelLayers : null;
+        if (typeof resolve !== 'function') return [];
+        let layers = [];
         try {
-            const gj = layer.toGeoJSON(false);
-            const feature = (gj && gj.type === 'FeatureCollection') ? gj.features[0] : gj;
-            return (feature && feature.geometry) ? feature.geometry : null;
-        } catch (_) { return null; }
+            layers = resolve([String(parcelId)], { includeCorridors: false }) || [];
+        } catch (_) { return []; }
+        return layers.flatMap(layer => {
+            if (!layer || typeof layer.toGeoJSON !== 'function') return [];
+            try {
+                const value = layer.toGeoJSON(false);
+                return value && value.type === 'FeatureCollection'
+                    ? (Array.isArray(value.features) ? value.features : [])
+                    : (value ? [value] : []);
+            } catch (_) { return []; }
+        });
     };
 
-    const parts = [];
-    const wanted = (onlyProposalId === undefined || onlyProposalId === null) ? null : String(onlyProposalId);
-    store.getAllProposals().forEach(record => {
-        if (!record || !standing(record)) return;
-        if (wanted !== null && String(record.proposalId ?? '') !== wanted) return;
-        const bp = record.buildingProposal;
-        if (!bp) return;
-        const proposalId = record.proposalId || null;
-
-        // The plot itself, marked — this is what says "not empty, just not buildable as it stands".
-        const built = new Set((Array.isArray(bp.buildings) ? bp.buildings : [])
-            .map(feature => feature && feature.properties && feature.properties.parcelId)
-            .filter(Boolean)
-            .map(String));
-        const declared = new Map((Array.isArray(bp.ineligibleParcels) ? bp.ineligibleParcels : [])
-            .filter(entry => entry && entry.parcelId)
-            .map(entry => [String(entry.parcelId), entry]));
-        const selectedBlockParcels = [...new Set([
-            ...(Array.isArray(bp.blockParcelIds) ? bp.blockParcelIds : []),
-            ...(Array.isArray(bp.parentParcelIds) ? bp.parentParcelIds : []),
-            ...Array.from(declared.keys())
-        ].map(String))];
-        const leftOut = RULE_TYPOLOGIES.has(String(bp.typologyType || record.typologyType || ''))
-            ? selectedBlockParcels.filter(id => !built.has(id))
-            : Array.from(declared.keys());
-
-        leftOut.forEach(parcelId => {
-            const geometry = parcelGeometry(parcelId);
-            if (!geometry) return;
-            const entry = declared.get(parcelId);
-            parts.push({
-                type: 'Feature',
-                properties: {
-                    ineligible: true,
-                    kind: 'plot',
-                    parcelId,
-                    exclusionStatus: entry ? (entry.status || null) : null,
-                    proposalId
-                },
-                geometry
-            });
-        });
-
-        // ...and the building it would carry, where the editor recorded one.
-        declared.forEach((entry, parcelId) => {
-            if (!entry.wouldBe) return;
-            parts.push({
-                type: 'Feature',
-                properties: {
-                    ineligible: true,
-                    kind: 'massing',
-                    parcelId,
-                    exclusionStatus: entry.status || null,
-                    height: entry.height || null,
-                    proposalId
-                },
-                geometry: entry.wouldBe
-            });
-        });
+    return collector({
+        records: store.getAllProposals(),
+        isApplied: standing,
+        resolveParcelFeatures,
+        onlyProposalId
     });
-    return parts;
 }
 if (typeof window !== 'undefined') window.appliedIneligibleBlockParts = appliedIneligibleBlockParts;
 // NOT `window.withProposedBuildingsRefreshHeld = run => withProposedBuildingsRefreshHeld(run)`.
