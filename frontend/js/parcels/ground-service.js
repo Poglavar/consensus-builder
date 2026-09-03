@@ -68,6 +68,15 @@
         return JSON.parse(JSON.stringify(value));
     }
 
+    // Retained facts are immutable for the session; freezing them makes that a runtime guarantee
+    // and lets peekMany hand out the stored objects without cloning.
+    function deepFreeze(value, seen = new WeakSet()) {
+        if (!value || typeof value !== 'object' || seen.has(value) || Object.isFrozen(value)) return value;
+        seen.add(value);
+        Object.getOwnPropertyNames(value).forEach(key => deepFreeze(value[key], seen));
+        return Object.freeze(value);
+    }
+
     function now() {
         return typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now();
     }
@@ -216,7 +225,7 @@
                 }
                 staged.set(id, feature);
             }
-            staged.forEach((feature, id) => store.set(id, feature));
+            staged.forEach((feature, id) => store.set(id, deepFreeze(feature)));
             staged.forEach((_feature, id) => absent.delete(id));
             return Array.from(new Set(features.map(featureId)));
         }
@@ -737,6 +746,14 @@
             return assertCadastralIds(ids).map(id => featureStore(city).get(id)).filter(Boolean).map(clone);
         }
 
+        // Read-only access to the retained facts themselves. They are deep-frozen when accepted, so
+        // handing them out cannot corrupt the repository, and it skips the per-feature clone that
+        // `getMany`/`list` pay; geometry-only consumers (coverage, ownership flow) use this.
+        function peekMany(ids, options = {}) {
+            const city = normalizeId(options.city) || cityKey();
+            return assertCadastralIds(ids).map(id => featureStore(city).get(id)).filter(Boolean);
+        }
+
         function list(options = {}) {
             const city = normalizeId(options.city) || cityKey();
             return Array.from(featureStore(city).values(), clone);
@@ -840,6 +857,7 @@
             ensureBounds,
             get,
             getMany,
+            peekMany,
             list,
             coverageOf,
             roadClassificationAvailable,

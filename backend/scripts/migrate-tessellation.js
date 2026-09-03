@@ -447,6 +447,39 @@ function linkedReferenceConflict(record, cadastreIds) {
     return null;
 }
 
+// Drop acceptance, accepted-id and ownership-flow entries that name land outside the flat
+// declaration. Returns the pruned counts (or null) and logs one line per record so a dry run
+// shows exactly which stale references the apply would remove.
+export function pruneReferencesOutsideScope(record, scopeIds, options = {}) {
+    const scopeSet = new Set((scopeIds || []).map(String));
+    if (!scopeSet.size || !record || typeof record !== 'object') return null;
+    // A generated piece id in a reference is consent given for one browser's materialization;
+    // it is neither pruned nor relabelled here, it stays a conflict for a person to resolve.
+    const stale = id => !scopeSet.has(String(id)) && !authoredRecord.isDerivedParcelId(id);
+    const pruned = {};
+    if (Array.isArray(record.acceptedParcelIds)) {
+        const kept = record.acceptedParcelIds.filter(id => !stale(id));
+        if (kept.length !== record.acceptedParcelIds.length) pruned.acceptedParcelIds = record.acceptedParcelIds.length - kept.length;
+        record.acceptedParcelIds = kept;
+    }
+    if (record.ownerAcceptances && typeof record.ownerAcceptances === 'object' && !Array.isArray(record.ownerAcceptances)) {
+        const staleKeys = Object.keys(record.ownerAcceptances).filter(stale);
+        staleKeys.forEach(id => { delete record.ownerAcceptances[id]; });
+        if (staleKeys.length) pruned.ownerAcceptances = staleKeys.length;
+    }
+    if (Array.isArray(record.ownershipFlow)) {
+        const kept = record.ownershipFlow.filter(entry => entry && !stale(entry.parcelId));
+        if (kept.length !== record.ownershipFlow.length) pruned.ownershipFlow = record.ownershipFlow.length - kept.length;
+        record.ownershipFlow = kept;
+    }
+    const keys = Object.keys(pruned);
+    if (!keys.length) return null;
+    if (!options.quiet) {
+        console.log(`  prune ${record.proposalId || record.id || '?'}: ${keys.map(key => `${key} −${pruned[key]}`).join(', ')} outside cadastreParcelIds`);
+    }
+    return pruned;
+}
+
 export function normalizeStoredProposal(input, options = {}) {
     if (!input || typeof input !== 'object' || Array.isArray(input)) {
         return { changed: false, value: input };
@@ -457,11 +490,17 @@ export function normalizeStoredProposal(input, options = {}) {
     if (!resolution.ok) {
         return { changed: false, value: clone(input), invalid: resolution.conflict };
     }
-    const referenceConflict = linkedReferenceConflict(input, resolution.ids);
+    const output = clone(input);
+    // Acceptances, accepted ids and ownership flow name land the proposal declares. A reference
+    // outside the flat stamp is left over from an earlier, wider declaration (a re-routed road
+    // keeps the acceptances it collected before the edit); the serializer refuses such rows and
+    // the API refuses to write them, so the migration prunes them here and says so. Only what
+    // survives pruning can still conflict.
+    pruneReferencesOutsideScope(output, resolution.ids);
+    const referenceConflict = linkedReferenceConflict(output, resolution.ids);
     if (referenceConflict) {
         return { changed: false, value: clone(input), invalid: referenceConflict };
     }
-    const output = clone(input);
     normalizeRoadGeometry(output);
     const governmentPlan = isGovernmentPlan(output);
     const cadastralScope = resolution.ids;
@@ -608,19 +647,28 @@ function normalizeResolvedProposalRow(row, resolution) {
     if (!equal(cadastre, row.cadastre_parcel_ids || [])) {
         updates.cadastre_parcel_ids = cadastre.length ? cadastre : null;
     }
-    const acceptedParcelIds = Array.isArray(row.accepted_parcel_ids)
-        ? row.accepted_parcel_ids.map(value => String(value).trim()).filter(Boolean)
-        : [];
+    // The linked columns are pruned against the flat stamp exactly like proposal_data is inside
+    // normalizeStoredProposal; the serializer refuses a row whose columns name land outside it.
+    const linked = {
+        proposalId: row.proposal_id || row.id,
+        acceptedParcelIds: Array.isArray(row.accepted_parcel_ids)
+            ? row.accepted_parcel_ids.map(value => String(value).trim()).filter(Boolean)
+            : [],
+        ownerAcceptances: normalizeOwnerAcceptances(row.owner_acceptances),
+        ownershipFlow: normalizeOwnershipFlow(row.ownership_flow)
+    };
+    pruneReferencesOutsideScope(linked, cadastre);
+    const acceptedParcelIds = linked.acceptedParcelIds;
     if (!equal(acceptedParcelIds, row.accepted_parcel_ids || [])) {
         updates.accepted_parcel_ids = acceptedParcelIds.length ? acceptedParcelIds : null;
     }
-    const ownerAcceptances = normalizeOwnerAcceptances(row.owner_acceptances);
+    const ownerAcceptances = linked.ownerAcceptances;
     if (!equal(ownerAcceptances, row.owner_acceptances)) {
         updates.owner_acceptances = ownerAcceptances && Object.keys(ownerAcceptances).length
             ? ownerAcceptances
             : null;
     }
-    const ownershipFlow = normalizeOwnershipFlow(row.ownership_flow);
+    const ownershipFlow = linked.ownershipFlow;
     if (!equal(ownershipFlow, row.ownership_flow)) {
         updates.ownership_flow = Array.isArray(ownershipFlow) && ownershipFlow.length
             ? ownershipFlow
@@ -699,7 +747,12 @@ export function analyzeProposalRow(row) {
         reparcellization: row?.reparcellization
             || row?.proposal_data?.reparcellization
     };
-    const linkedConflict = linkedReferenceConflict(linkedRecord, resolution.ids);
+    // Stale references outside the flat stamp are pruned by the migration, so only what survives
+    // pruning can make the row invalid. Work on a copy: the row itself is compared later to
+    // decide whether an update is needed.
+    const prunedLinked = clone(linkedRecord);
+    pruneReferencesOutsideScope(prunedLinked, resolution.ids, { quiet: true });
+    const linkedConflict = linkedReferenceConflict(prunedLinked, resolution.ids);
     if (linkedConflict) {
         return {
             status: 'invalid',
@@ -1040,13 +1093,13 @@ export async function run(argv = process.argv.slice(2)) {
         console.log('declaration report:');
         console.log(JSON.stringify(declarationReport, null, 2));
         if (args.apply && declarationReport.invalid.length) {
-            stats.invalid = declarationReport.invalid.length;
+            // An invalid row needs a person; it must not hold every valid row hostage. The loop
+            // below skips it and leaves it untouched, the valid rows are written, and the exit
+            // code still says the run is not clean.
             declarationReport.invalid.forEach(entry => {
                 console.error(`#${entry.rowId} ${entry.proposalId || ''} — INVALID ${entry.conflict.code}: ${entry.conflict.message}`);
             });
-            console.error(`${stats.invalid} invalid proposal record(s); no records were changed.`);
-            await db.query('ROLLBACK');
-            return 2;
+            console.error(`${declarationReport.invalid.length} invalid proposal record(s) will be skipped and left unchanged.`);
         }
         const analyses = new Map(rows.map(row => [row.id, analyzeProposalRow(row)]));
 
@@ -1194,18 +1247,22 @@ export async function run(argv = process.argv.slice(2)) {
         if (args.apply) {
             // A scoped repair cannot prove the rest of the table. The complete migration installs
             // the same invariant as a fresh schema only after every row has passed validation.
-            if (!args.ids?.length) await enforceProposalRecordConstraints(db);
-            await db.query(
-                `INSERT INTO proposal_migration_state (migration_id, checksum, report)
-                 VALUES ($1, $2, $3::jsonb)`,
-                [migrationId, MIGRATION_CHECKSUM, JSON.stringify(finalReport)]
-            );
-        }
-        if (args.apply) {
+            // Rows that fail validation are skipped and reported; the rows that were repaired
+            // still commit, so one bad fixture cannot roll back the whole table and the run can
+            // be repeated once the bad row is fixed.
+            if (!args.ids?.length && !stats.invalid) await enforceProposalRecordConstraints(db);
+            if (!stats.invalid) {
+                await db.query(
+                    `INSERT INTO proposal_migration_state (migration_id, checksum, report)
+                     VALUES ($1, $2, $3::jsonb)`,
+                    [migrationId, MIGRATION_CHECKSUM, JSON.stringify(finalReport)]
+                );
+            }
             await db.query('COMMIT');
         }
         if (stats.invalid) {
-            console.error(`${stats.invalid} invalid proposal record(s) were left unchanged.`);
+            console.error(`${stats.invalid} invalid proposal record(s) were left unchanged`
+                + (args.apply ? `; ${stats.written} repaired row(s) were committed, the record constraint and the migration marker were not installed. Fix the invalid row(s) and run again.` : '.'));
             return 2;
         }
         if (!args.apply && stats.changed) console.log('Re-run with --apply to write.');

@@ -14,6 +14,38 @@ const PROPOSALS_STATE_VERSION = 2;
 // opens one database per city.
 const PROPOSALS_RECOVERY_KEY = 'cadastre_proposals_recovery';
 
+// Copy-on-read view of the authored log for one mutation. Untouched records stay shared with the
+// store (no clone); a record is cloned the first time the mutation reads it; only touched ids are
+// published, persisted and restorable. Profiled on the Šibenik plan, cloning and re-serializing
+// all 294 records on each of 294 mutations was 46% of a 43 s apply.
+class DraftRecordMap extends Map {
+    constructor(base) {
+        super();
+        this.touched = new Set();
+        if (base) base.forEach((record, id) => Map.prototype.set.call(this, id, record));
+    }
+    static cloneRecord(record) {
+        return record && typeof record === 'object' ? JSON.parse(JSON.stringify(record)) : record;
+    }
+    get(id) {
+        const value = super.get(id);
+        if (value === undefined || this.touched.has(id)) return value;
+        const copy = DraftRecordMap.cloneRecord(value);
+        this.touched.add(id);
+        super.set(id, copy);
+        return copy;
+    }
+    set(id, value) { this.touched.add(id); return super.set(id, value); }
+    delete(id) { if (super.has(id)) this.touched.add(id); return super.delete(id); }
+    clear() { for (const id of super.keys()) this.touched.add(id); return super.clear(); }
+    forEach(callback, thisArg) { for (const id of Array.from(super.keys())) callback.call(thisArg, this.get(id), id, this); }
+    *values() { for (const id of Array.from(super.keys())) yield this.get(id); }
+    *entries() { for (const id of Array.from(super.keys())) yield [id, this.get(id)]; }
+    [Symbol.iterator]() { return this.entries(); }
+    // Raw entries without cloning: for the coordinator's publish and serialize steps only.
+    rawEntries() { return Map.prototype.entries.call(this); }
+}
+
 function proposalStateEnvelope(nextProposalId, records) {
     return {
         version: PROPOSALS_STATE_VERSION,
@@ -178,16 +210,21 @@ const proposalStorage = {
     // methods, but its save hooks are inert; serialization and publication are explicit steps at
     // the coordinator boundary.
     snapshotForMutation() {
+        // Shallow: the draft never mutates a shared record object (it clones on first read), and
+        // publish records the pre-image of every record it replaces, so restore is O(touched).
         return {
-            records: new Map(Array.from(this.proposals, ([id, record]) => [id, JSON.parse(JSON.stringify(record))])),
+            records: new Map(this.proposals),
             nextProposalId: this.nextProposalId,
-            blockedWriteCount: this._blockedWriteCount
+            blockedWriteCount: this._blockedWriteCount,
+            rollback: null
         };
     },
 
     createMutationDraft(snapshot) {
         const draft = Object.create(this);
-        draft.proposals = new Map(Array.from(snapshot.records || [], ([id, record]) => [id, JSON.parse(JSON.stringify(record))]));
+        draft.proposals = new DraftRecordMap(snapshot.records);
+        draft._snapshot = snapshot;
+        draft._fragments = new Map();
         draft.nextProposalId = snapshot.nextProposalId;
         draft._suspendSaveCount = 0;
         draft._hasPendingSave = false;
@@ -198,35 +235,91 @@ const proposalStorage = {
         return draft;
     },
 
+    // The durable envelope is one blob, so every write serializes every record. Untouched records
+    // reuse their cached persistence fragment; only records this mutation touched are projected
+    // again. The cache is dropped on every out-of-protocol write (_persist, _indexProposal).
     serializeMutationDraft(draft) {
-        const serialisable = Array.from(draft.proposals.values()).map(proposalRecordForPersistence);
-        const state = proposalStateEnvelope(draft.nextProposalId, serialisable);
-        return { key: PROPOSALS_STORAGE_KEY, value: JSON.stringify(state) };
+        const cache = this._persistFragments || (this._persistFragments = new Map());
+        const touched = draft.proposals instanceof DraftRecordMap ? draft.proposals.touched : null;
+        const entries = draft.proposals instanceof DraftRecordMap ? draft.proposals.rawEntries() : draft.proposals.entries();
+        const fragments = [];
+        for (const [id, record] of entries) {
+            let fragment = touched && !touched.has(id) ? cache.get(id) : undefined;
+            if (fragment === undefined) {
+                fragment = JSON.stringify(proposalRecordForPersistence(record));
+                if (draft._fragments) draft._fragments.set(id, fragment);
+            }
+            fragments.push(fragment);
+        }
+        const envelope = JSON.stringify(proposalStateEnvelope(draft.nextProposalId, []));
+        const value = envelope.slice(0, envelope.lastIndexOf('[]}')) + '[' + fragments.join(',') + ']}';
+        return { key: PROPOSALS_STORAGE_KEY, value };
     },
 
     publishMutationDraft(draft) {
         const next = draft.proposals;
+        const isDraft = next instanceof DraftRecordMap;
+        const snapshot = draft._snapshot || null;
+        const rollback = snapshot
+            ? (snapshot.rollback = snapshot.rollback || { replaced: new Map(), added: [], removed: new Map() })
+            : null;
+        const cache = this._persistFragments || (this._persistFragments = new Map());
+        const rawEntries = Array.from(isDraft ? next.rawEntries() : next.entries());
+        const nextIds = new Set(rawEntries.map(([id]) => id));
         for (const id of Array.from(this.proposals.keys())) {
-            if (!next.has(id)) this.proposals.delete(id);
+            if (nextIds.has(id)) continue;
+            if (rollback) rollback.removed.set(id, this.proposals.get(id));
+            this.proposals.delete(id);
+            cache.delete(id);
         }
-        next.forEach((record, id) => {
+        rawEntries.forEach(([id, record]) => {
+            if (isDraft && !next.touched.has(id)) return;
             const current = this.proposals.get(id);
+            if (current === record) return;
             if (current && typeof current === 'object' && !Array.isArray(current)) {
+                // Preserve object identity: UI and journal references keep pointing at the record.
+                if (rollback) rollback.replaced.set(id, JSON.parse(JSON.stringify(current)));
                 Object.keys(current).forEach(key => { delete current[key]; });
-                Object.assign(current, JSON.parse(JSON.stringify(record)));
+                Object.assign(current, isDraft ? record : JSON.parse(JSON.stringify(record)));
             } else {
-                this.proposals.set(id, JSON.parse(JSON.stringify(record)));
+                if (rollback) rollback.added.push(id);
+                this.proposals.set(id, isDraft ? record : JSON.parse(JSON.stringify(record)));
             }
+            const fragment = draft._fragments ? draft._fragments.get(id) : undefined;
+            if (fragment !== undefined) cache.set(id, fragment);
+            else cache.delete(id);
         });
         this.nextProposalId = draft.nextProposalId;
         this._hasPendingSave = false;
     },
 
     restoreMutationSnapshot(snapshot) {
-        this.publishMutationDraft({
-            proposals: snapshot.records,
-            nextProposalId: snapshot.nextProposalId
-        });
+        if (!snapshot) return;
+        const rollback = snapshot.rollback;
+        if (rollback) {
+            // Undo exactly what publish did, in place, so held references stay valid.
+            rollback.added.forEach(id => { this.proposals.delete(id); this._persistFragments?.delete(id); });
+            rollback.replaced.forEach((previous, id) => {
+                const current = this.proposals.get(id);
+                if (current && typeof current === 'object' && !Array.isArray(current)) {
+                    Object.keys(current).forEach(key => { delete current[key]; });
+                    Object.assign(current, previous);
+                } else {
+                    this.proposals.set(id, previous);
+                }
+                this._persistFragments?.delete(id);
+            });
+            rollback.removed.forEach((record, id) => { this.proposals.set(id, record); this._persistFragments?.delete(id); });
+            snapshot.rollback = null;
+        } else if (snapshot.records instanceof Map) {
+            // Publish never ran: the draft cloned on read, so the store's records are untouched;
+            // only membership and the counter can differ.
+            for (const id of Array.from(this.proposals.keys())) {
+                if (!snapshot.records.has(id)) { this.proposals.delete(id); this._persistFragments?.delete(id); }
+            }
+            snapshot.records.forEach((record, id) => { if (!this.proposals.has(id)) this.proposals.set(id, record); });
+        }
+        this.nextProposalId = snapshot.nextProposalId;
         this._blockedWriteCount = snapshot.blockedWriteCount;
     },
 
@@ -282,6 +375,8 @@ const proposalStorage = {
             || proposal.tokenId
         );
         if (!id) return null;
+        // Any re-index is a content change: its cached persistence fragment is no longer valid.
+        this._persistFragments?.delete(id);
         this.proposals.set(id, proposal);
         return id;
     },
@@ -753,6 +848,9 @@ const proposalStorage = {
     },
 
     _persist() {
+        // A whole-store write outside the mutation protocol may follow in-place edits anywhere;
+        // forget every cached fragment so the next mutation re-projects from the live records.
+        if (this._persistFragments) this._persistFragments.clear();
         if (typeof PersistentStorage === 'undefined') return;
         // Secondary tab (app already open elsewhere): skip writes so we don't clobber the primary
         // tab's data. All tabs share one blob with no cross-tab merge — see multi-tab-guard.js.

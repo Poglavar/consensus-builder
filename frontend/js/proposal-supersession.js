@@ -125,7 +125,11 @@
             const candidateId = proposalRecordId(candidate);
             if (!candidateId || candidateId === targetId || !proposalIsAppliedForReplacement(candidate)) return false;
             if (familyIds.has(candidateId)) return true;
-            if (!isBuildingContentProposal(candidate)) return false;
+            // A standing park, square or lake holds its ground as exclusively as a building does:
+            // a plan member whose footprint lies inside an applied park must be refused, not
+            // stacked on top of it (Šibenik, 2026-09-03: a plan re-applied two buildings inside
+            // freshly created structures because only buildings counted as rivals).
+            if (!isBuildingContentProposal(candidate) && !candidate.structureProposal) return false;
             // No measurable footprint on either side means no demonstrable overlap, and ground that
             // cannot be shown to be taken is left free: refusing here would block on a suspicion.
             if (!targetFootprint || !planOrder || typeof planOrder.footprintOf !== 'function'

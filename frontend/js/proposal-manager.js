@@ -270,6 +270,12 @@ function _proposalStore(options) {
         || (typeof proposalStorage !== 'undefined' ? proposalStorage : null);
 }
 
+// The committed live fabric (read-only view outside a mutation).
+function _committedFabric() {
+    const root = (typeof window !== 'undefined') ? window : globalThis;
+    return root && root.LiveParcelFabric ? root.LiveParcelFabric : null;
+}
+
 function _fabricDraft(options) {
     return options?._parcelMutation?.fabric || null;
 }
@@ -604,7 +610,7 @@ const ProposalManager = {
         const selectedParcelIds = Array.from(new Set((Array.isArray(input.parcelIds)
             ? input.parcelIds.map(String).filter(Boolean)
             : [])));
-        const fabric = _liveFabric();
+        const fabric = _committedFabric();
         if (!fabric || typeof fabric.cadastreIdsForParcelIds !== 'function') {
             throw new Error('Live parcel fabric provenance is unavailable while creating the corridor.');
         }
@@ -1225,6 +1231,23 @@ const ProposalManager = {
                 return goalKey !== 'road-track' && (appliedOf(record) || seedIds.has(String(record.proposalId || '')));
             })
             : seeds.slice();
+        // A formation whose output CONSUMES ground (a readjustment, a merge-take that mints one
+        // parcel over several) binds every anchor it spans: the fabric refuses a replacement scope
+        // that cuts through such a piece, so those anchors must join. A formation that only adopts
+        // ground parcel by parcel is replayed when it touches the scope but does not widen it:
+        // its pieces elsewhere are re-minted unchanged. Widening through every shared anchor made
+        // one building's unapply replay all 167 formations of the Šibenik plan (5 s against 75 ms).
+        const fabric = _fabricDraft(options) || _committedFabric();
+        const spansSeveralParcels = record => {
+            const id = String(record?.proposalId || '');
+            const route = applyRoute?.classifyApplyRoute?.(record)?.route || '';
+            if (route === 'reparcellization' || route === 'decide-later' || record?.reparcellization || record?.decideLaterProposal) return true;
+            if (seedIds.has(id)) return true;
+            if (!fabric || typeof fabric.producedBy !== 'function') return true;
+            try {
+                return fabric.producedBy(id).some(piece => fabric.explicitCadastreIds(piece).length > 1);
+            } catch (_) { return true; }
+        };
         const included = new Map();
         let changed = true;
         while (changed) {
@@ -1235,6 +1258,7 @@ const ProposalManager = {
                 const anchors = proposalClaims.cadastreParcelIdsOf(record).map(String);
                 if (!seedIds.has(id) && !anchors.some(anchor => cadastreIds.has(anchor))) return;
                 included.set(id, record);
+                if (!spansSeveralParcels(record)) return;
                 anchors.forEach(anchor => {
                     if (!cadastreIds.has(anchor)) {
                         cadastreIds.add(anchor);
@@ -1415,7 +1439,10 @@ const ProposalManager = {
                         const replayOptions = {
                             replay: true,
                             forceMaterialize: true,
-                            deferPresentation: opts.silent === true,
+                            // Closure members are internal replays: the outer mutation refreshes
+                            // the UI once after commit. Refreshing per member restyled every
+                            // presented layer 167 times for one building unapply.
+                            deferPresentation: true,
                             _parcelMutation: opts._parcelMutation
                         };
                         if (opts.statusMode === 'apply' || opts.statusMode === 'rederive') {
@@ -1622,11 +1649,15 @@ const ProposalManager = {
         const planOrderApi = (typeof window !== 'undefined') ? window.__planOrder : null;
         if (!planOrderApi || typeof planOrderApi.footprintOf !== 'function') return [];
         const route = applyRoute;
-        const source = Array.isArray(appliedList)
+        // A take is a STANDING corridor. Callers hand in whole store listings (the rematerializer
+        // passes the draft's every record), so the applied filter lives here, not with them: an
+        // unapplied road treated as a take kept its pieces cut into the fabric after unapply.
+        const listing = Array.isArray(appliedList)
             ? appliedList
             : ((typeof proposalStorage !== 'undefined' && proposalStorage.getAllProposals)
-                ? proposalStorage.getAllProposals().filter(record => appliedOf(record))
+                ? proposalStorage.getAllProposals()
                 : []);
+        const source = listing.filter(record => record && appliedOf(record));
         const takes = [];
         source.forEach(record => {
             if (!record) return;
@@ -2967,7 +2998,21 @@ const ProposalManager = {
         if (refreshAll || route === 'road-track') {
             try { if (typeof scheduleCorridorStripRefresh === 'function') scheduleCorridorStripRefresh(); } catch (_) { }
         }
-        try { if (typeof refreshParcelStylesForAppliedProposals === 'function') refreshParcelStylesForAppliedProposals(); } catch (_) { }
+        try {
+            if (typeof refreshParcelStylesForAppliedProposals === 'function') {
+                // One proposal changed: restyle the live pieces under its cadastre, not the map.
+                let parcelIds = null;
+                if (!refreshAll) {
+                    const fabric = _committedFabric();
+                    const cadastreIds = proposalClaims.cadastreParcelIdsOf(proposalData);
+                    if (fabric && typeof fabric.entriesForCadastre === 'function' && cadastreIds.length) {
+                        parcelIds = fabric.entriesForCadastre(cadastreIds, { includeCorridors: true })
+                            .map(feature => fabric.featureId(feature)).filter(Boolean);
+                    }
+                }
+                refreshParcelStylesForAppliedProposals(parcelIds ? { parcelIds } : {});
+            }
+        } catch (_) { }
         try { if (typeof updateProposalLayer === 'function') updateProposalLayer(); } catch (_) { }
         try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
         try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
@@ -3141,7 +3186,8 @@ const ProposalManager = {
     },
 
     _getProposalChildParcels(proposalId, options = {}) {
-        const fabric = _liveFabric();
+        const browserRoot = typeof window !== 'undefined' ? window : globalThis;
+        const fabric = browserRoot.LiveParcelFabric;
         if (!fabric || typeof fabric.producedBy !== 'function' || typeof fabric.featureId !== 'function') return [];
         const reader = _fabricDraft(options) || fabric;
         return reader.producedBy(proposalId)

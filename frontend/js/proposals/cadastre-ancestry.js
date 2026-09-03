@@ -141,7 +141,15 @@
             : (typeof require === 'function' ? require('./ownership-flow.js') : null);
         if (!flowApi || !proposal) return [];
         try {
-            return flowApi.computeOwnershipFlow(proposal, loadedCadastreParcels());
+            // The flat stamp is the proposal's land: the flow is measured over those parcels only.
+            // Reading the whole repository here cloned every cadastral polygon per proposal and was
+            // 16% of a shared-plan apply.
+            const repository = global.CadastralParcelRepository;
+            const declared = Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
+            const parcels = declared.length && repository && typeof repository.peekMany === 'function'
+                ? repository.peekMany(declared).map(feature => ({ id: String(feature.properties.parcelId), feature }))
+                : loadedCadastreParcels();
+            return flowApi.computeOwnershipFlow(proposal, parcels);
         } catch (error) {
             console.warn('[cadastre-ancestry] ownership flow unavailable', error);
             return [];

@@ -1515,28 +1515,34 @@ async function fetchSharedProposalBatch(ids, backendBase) {
         .map(id => String(id || '').trim()).filter(Boolean)));
     const records = new Map();
     const missing = new Set();
-    if (!requested.length) return { records, missing, supported: true, requests: 0 };
+    // A row the server refuses to serialize comes back with its reason; that reason belongs in
+    // the plan result, not a generic "not found".
+    const errors = new Map();
+    if (!requested.length) return { records, missing, errors, supported: true, requests: 0 };
     try {
         const response = await fetch(`${backendBase}/proposals/batch`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
             body: JSON.stringify({ ids: requested })
         });
-        if (!response.ok) return { records, missing, supported: false, requests: 1 };
+        if (!response.ok) return { records, missing, errors, supported: false, requests: 1 };
         const payload = await response.json();
-        if (!payload || !Array.isArray(payload.items)) return { records, missing, supported: false, requests: 1 };
+        if (!payload || !Array.isArray(payload.items)) return { records, missing, errors, supported: false, requests: 1 };
         const seen = new Set();
         payload.items.forEach(item => {
             const id = item && item.id !== undefined && item.id !== null ? String(item.id) : '';
             if (!id) return;
             seen.add(id);
             if (item.proposal) records.set(id, item.proposal);
-            else missing.add(id);
+            else {
+                missing.add(id);
+                if (item.error) errors.set(id, String(item.error));
+            }
         });
-        return { records, missing, supported: requested.every(id => seen.has(id)), requests: 1 };
+        return { records, missing, errors, supported: requested.every(id => seen.has(id)), requests: 1 };
     } catch (error) {
         console.warn('[shared-plan] batch proposal fetch unavailable; falling back', error);
-        return { records, missing, supported: false, requests: 1 };
+        return { records, missing, errors, supported: false, requests: 1 };
     }
 }
 
@@ -2080,7 +2086,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                         failed.push({
                             id,
                             label: formatSharedProposalLabel(null, id),
-                            reason: tShare('plan.notFoundOnServer', 'Not found on server')
+                            reason: batchRecords.errors?.get(id) || tShare('plan.notFoundOnServer', 'Not found on server')
                         });
                         markFetchProgress(id);
                         continue;
@@ -2101,7 +2107,10 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                         if (response.status === 404) {
                             reason = tShare('plan.notFoundOnServer', 'Not found on server');
                         } else {
-                            reason = `HTTP ${response.status}${response.statusText ? ` ${response.statusText}` : ''}`.trim();
+                            let serverMessage = '';
+                            try { serverMessage = String((await response.json())?.error || ''); } catch (_) { serverMessage = ''; }
+                            reason = serverMessage
+                                || `HTTP ${response.status}${response.statusText ? ` ${response.statusText}` : ''}`.trim();
                         }
                         failed.push({ id, label: formatSharedProposalLabel(null, id), reason });
                         markFetchProgress(id);

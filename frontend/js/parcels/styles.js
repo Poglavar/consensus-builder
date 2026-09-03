@@ -119,9 +119,13 @@
         }
         const { isRoad: isRoadOverride, isTrack: isTrackOverride } = options || {};
         const idStr = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
+        // Style decisions only read properties, so use the fabric's non-cloning read: a full
+        // restyle touches every presented layer and `get` would deep-clone each polygon.
+        const fabric = global.LiveParcelFabric;
+        const readFabric = fabric ? (fabric.peek || fabric.get) : null;
         const feature = options?.feature?.type === 'Feature'
             ? options.feature
-            : (idStr ? global.LiveParcelFabric?.get?.(idStr) || null : null);
+            : (idStr && readFabric ? readFabric.call(fabric, idStr) || null : null);
         const properties = feature?.properties || {};
 
         // Check track first - tracks have isCorridor=true and isTrack=true but isRoad=false
@@ -275,8 +279,14 @@
         return result;
     }
 
-    function refreshParcelStylesForAppliedProposals() {
-        recomputeParcelsWithAppliedSpatialProposals();
+    // With no options every presented layer is restyled (a mode change: ownership highlight,
+    // block selection). After one proposal changes, pass `parcelIds` — the live pieces under
+    // that proposal — and only those, the parcels whose applied-proposal membership changed and
+    // the selection are touched. Profiled on a 7,000-layer Šibenik view, the full pass was 30%
+    // of every single apply or unapply.
+    function refreshParcelStylesForAppliedProposals(options = {}) {
+        const membershipBefore = parcelsWithAppliedSpatialProposals;
+        const membershipAfter = recomputeParcelsWithAppliedSpatialProposals();
         if (!global.LiveParcelFabric || !global.ParcelPresenter) return;
 
         const mapBounds = (global.map && typeof global.map.getBounds === 'function') ? global.map.getBounds() : null;
@@ -308,7 +318,8 @@
             const parcelId = global.ParcelPresenter?.getIdForLayer?.(layer);
             if (parcelId === undefined || parcelId === null) return;
             const idStr = parcelId.toString();
-            const feature = global.LiveParcelFabric?.get?.(idStr);
+            const fabric = global.LiveParcelFabric;
+            const feature = fabric ? (fabric.peek ? fabric.peek(idStr) : fabric.get(idStr)) : null;
             if (!feature) return;
 
             // For ownership highlighting, skip parcels not in view (if we have that info)
@@ -378,8 +389,19 @@
             layer.setStyle(getParcelBaseStyle(idStr, layer));
         };
 
-        // Process all layers (we still need to touch all for proper state management)
-        const fabricIds = global.LiveParcelFabric?.list?.().map(feature => global.LiveParcelFabric.featureId(feature)).filter(Boolean) || [];
+        // Process all layers (we still need to touch all for proper state management). Ids come
+        // from the snapshot: `list()` deep-clones every polygon in the fabric, and profiled on a
+        // 7,000-parcel Šibenik view that one call was 70% of a corridor apply.
+        let fabricIds;
+        if (options && options.parcelIds) {
+            const targeted = new Set(Array.from(options.parcelIds, id => String(id)));
+            membershipBefore.forEach(id => { if (!membershipAfter.has(id)) targeted.add(id); });
+            membershipAfter.forEach(id => { if (!membershipBefore.has(id)) targeted.add(id); });
+            if (selectedId) targeted.add(selectedId);
+            fabricIds = Array.from(targeted);
+        } else {
+            fabricIds = global.LiveParcelFabric?.snapshot?.().parcelIds || [];
+        }
         global.ParcelPresenter?.getLayers?.(fabricIds).forEach(processLayer);
 
         if (hasMultiSelection && typeof global.multiParcelSelection?.reapplyMultiParcelHighlights === 'function') {

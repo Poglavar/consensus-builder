@@ -11,6 +11,15 @@
     'use strict';
 
     const GEOMETRY_EPSILON_M2 = 0.01;
+    // Area accounting compares the sum of a parcel's pieces with the parcel itself. The arrangement
+    // drops pieces under parcel-arrangement.js MIN_PIECE_M2 (0.25 m²) as clipper artifacts, so a
+    // parcel may legitimately come back a few slivers short; one square metre is that budget, two
+    // orders of magnitude under any hole a user could see and four under the incident that
+    // motivated the invariant. One part per million covers planar-versus-geodesic rounding.
+    const COVERAGE_TOLERANCE_M2 = 1;
+    const RELATIVE_AREA_TOLERANCE = 1e-6;
+    // A replacement vertex this close to its parcel's boundary is on the boundary.
+    const VERTEX_TOLERANCE_M = 0.02;
     const CADASTRE_RELEASE_KINDS = new Set([
         'cadastral-ground-release',
         'repository-reset',
@@ -136,7 +145,7 @@
         const trusted = new WeakSet();
         const subscribers = new Set();
         const participants = new Set();
-        const metrics = { normalized: 0, indexUpdates: 0 };
+        const metrics = { normalized: 0, indexUpdates: 0, coverageChecks: 0, worstCoverageDeltaM2: 0 };
         let active = null;
         let committed = {
             revision: 0,
@@ -202,7 +211,16 @@
                 ? geometryValue.coordinates.filter(Array.isArray)
                 : null;
             if (!components) return [normalizeFeature(input, config)];
-            if (!config.cadastreSeed) return [normalizeFeature(input, config)];
+            // A replacement that IS an original cadastral parcel (an untouched parcel handed back
+            // whole by the corridor arrangement) splits exactly like a seed. Refusing it as a
+            // disconnected generated piece rejected a 2,071-parcel ground arrival because one
+            // cadastral parcel in it had two parts (HR-329924-1177/2).
+            const wholeCadastralParcel = !config.cadastreSeed && (() => {
+                const id = featureId(input);
+                const provenance = explicitCadastreIds(input);
+                return !!id && !producerId(input) && (provenance.length === 0 || (provenance.length === 1 && provenance[0] === id));
+            })();
+            if (!config.cadastreSeed && !wholeCadastralParcel) return [normalizeFeature(input, config)];
 
             const cadastralId = featureId(input);
             if (!cadastralId) return [normalizeFeature(input, config)];
@@ -324,28 +342,77 @@
             return true;
         }
 
-        function unionAll(features) {
-            if (!geometry?.union || !geometry?.area || !geometry?.difference || !geometry?.intersect) {
-                const error = new Error('Geometry operations are required to validate a cadastral replacement.');
-                error.code = 'live-fabric-geometry-unavailable';
-                throw error;
-            }
-            let merged = null;
-            for (const feature of features) merged = merged ? geometry.union(merged, feature) : feature;
-            return merged;
-        }
-
         function measuredArea(feature) {
             return feature ? Math.max(0, Number(geometry.area(feature)) || 0) : 0;
         }
 
-        function differenceArea(left, right) {
-            if (!left) return 0;
-            if (!right) return measuredArea(left);
-            return measuredArea(geometry.difference(left, right));
+        // The coverage invariant deliberately avoids polygon boolean operations. Unioning a
+        // corridor scope of several hundred adjacent parcels, or intersecting every pair of
+        // pieces, drove turf's clipper into "Unable to find segment in SweepLine tree" and stack
+        // overflows on real Šibenik ground. Every check below is per parcel (or per group of
+        // parcels joined by a merged piece), uses areas and point-in-polygon only, and is linear
+        // in the number of vertices.
+        function ringsOf(feature) {
+            const g = feature && feature.geometry;
+            if (!g) return [];
+            if (g.type === 'Polygon') return Array.isArray(g.coordinates) ? g.coordinates : [];
+            if (g.type === 'MultiPolygon') return Array.isArray(g.coordinates) ? g.coordinates.flat() : [];
+            return [];
+        }
+
+        function verticesOf(feature) {
+            const out = [];
+            ringsOf(feature).forEach(ring => {
+                const n = Array.isArray(ring) ? ring.length : 0;
+                for (let i = 0; i < n - 1; i += 1) out.push(ring[i]);
+            });
+            return out;
+        }
+
+        function boundaryLinesOf(fact, cache) {
+            if (cache.has(fact)) return cache.get(fact);
+            let lines = [];
+            if (typeof geometry.polygonToLine === 'function' && typeof geometry.pointToLineDistance === 'function') {
+                try {
+                    const converted = geometry.polygonToLine(fact);
+                    const features = converted && converted.type === 'FeatureCollection' ? converted.features : [converted];
+                    features.forEach(line => {
+                        const lg = line && line.geometry;
+                        if (!lg) return;
+                        if (lg.type === 'LineString') lines.push(line);
+                        else if (lg.type === 'MultiLineString') lg.coordinates.forEach(coords => lines.push({ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: coords } }));
+                    });
+                } catch (_) { lines = []; }
+            }
+            cache.set(fact, lines);
+            return lines;
+        }
+
+        function vertexInsideFact(vertex, fact, cache) {
+            try {
+                if (geometry.booleanPointInPolygon(vertex, fact)) return true;
+            } catch (_) { /* fall through to the distance check */ }
+            const lines = boundaryLinesOf(fact, cache);
+            if (!lines.length) {
+                // Without a distance primitive, accept a vertex within the parcel's bounding box.
+                const box = bboxOf(fact);
+                return !!box && vertex[0] >= box[0] - 1e-9 && vertex[0] <= box[2] + 1e-9
+                    && vertex[1] >= box[1] - 1e-9 && vertex[1] <= box[3] + 1e-9;
+            }
+            for (const line of lines) {
+                try {
+                    if (geometry.pointToLineDistance(vertex, line, { units: 'meters' }) <= VERTEX_TOLERANCE_M) return true;
+                } catch (_) { /* try the next ring */ }
+            }
+            return false;
         }
 
         function validateReplacement(draft, scope, replacements) {
+            if (!geometry?.area || !geometry?.booleanPointInPolygon) {
+                const error = new Error('Geometry operations are required to validate a cadastral replacement.');
+                error.code = 'live-fabric-geometry-unavailable';
+                throw error;
+            }
             if (!scope.size) {
                 const error = new Error('Cadastral replacement scope cannot be empty.');
                 error.code = 'live-fabric-scope-empty';
@@ -373,55 +440,91 @@
                     throw error;
                 }
             });
-            for (let left = 0; left < replacements.length; left += 1) {
-                for (let right = left + 1; right < replacements.length; right += 1) {
-                    if (!intersects(bboxOf(replacements[left]), bboxOf(replacements[right]))) continue;
-                    const overlap = geometry.intersect(replacements[left], replacements[right]);
-                    const overlapM2 = measuredArea(overlap);
-                    if (overlapM2 > GEOMETRY_EPSILON_M2) {
-                        const error = new Error(`Replacement parcels overlap by ${overlapM2.toFixed(3)} m².`);
-                        error.code = 'live-fabric-replacement-overlap';
-                        error.overlapM2 = overlapM2;
-                        throw error;
-                    }
-                }
-            }
-            const facts = Array.from(scope, id => draft.data.cadastreFacts.get(id));
-            const missing = Array.from(scope).filter((_id, index) => !facts[index]);
+            const scopeIds = Array.from(scope);
+            const facts = new Map(scopeIds.map(id => [id, draft.data.cadastreFacts.get(id)]));
+            const missing = scopeIds.filter(id => !facts.get(id));
             if (missing.length) {
                 const error = new Error(`Immutable cadastral ground is missing for: ${missing.join(', ')}.`);
                 error.code = 'live-fabric-cadastre-facts-missing';
                 error.missingIds = missing;
                 throw error;
             }
-            const cadastralUnion = unionAll(facts);
-            const replacementUnion = unionAll(replacements);
-            const outsideM2 = differenceArea(replacementUnion, cadastralUnion);
-            const missingM2 = differenceArea(cadastralUnion, replacementUnion);
-            const symmetricDifferenceM2 = outsideM2 + missingM2;
-            if (outsideM2 > GEOMETRY_EPSILON_M2) {
-                const error = new Error(`Replacement lies ${outsideM2.toFixed(3)} m² outside immutable cadastral ground.`);
-                error.code = 'live-fabric-replacement-outside';
-                error.outsideM2 = outsideM2;
-                throw error;
-            }
-            if (missingM2 > GEOMETRY_EPSILON_M2) {
-                const error = new Error(`Replacement leaves ${missingM2.toFixed(3)} m² of cadastral ground uncovered.`);
-                error.code = 'live-fabric-replacement-hole';
-                error.missingM2 = missingM2;
-                throw error;
-            }
-            if (symmetricDifferenceM2 > GEOMETRY_EPSILON_M2) {
-                const error = new Error(`Replacement symmetric difference is ${symmetricDifferenceM2.toFixed(3)} m².`);
-                error.code = 'live-fabric-replacement-mismatch';
-                error.symmetricDifferenceM2 = symmetricDifferenceM2;
-                throw error;
-            }
+
+            // Group scope parcels joined by a piece that declares several of them (a merge), so
+            // area accounting compares like with like. Corridor and split pieces declare one
+            // parcel each and form singleton groups.
+            const parent = new Map(scopeIds.map(id => [id, id]));
+            const find = id => { let cursor = id; while (parent.get(cursor) !== cursor) cursor = parent.get(cursor); parent.set(id, cursor); return cursor; };
+            replacements.forEach(feature => {
+                const provenance = explicitCadastreIds(feature);
+                for (let i = 1; i < provenance.length; i += 1) {
+                    const a = find(provenance[0]);
+                    const b = find(provenance[i]);
+                    if (a !== b) parent.set(b, a);
+                }
+            });
+
+            const boundaryCache = new Map();
+            const factAreaByGroup = new Map();
+            const pieceAreaByGroup = new Map();
+            scopeIds.forEach(id => {
+                const group = find(id);
+                factAreaByGroup.set(group, (factAreaByGroup.get(group) || 0) + measuredArea(facts.get(id)));
+            });
+            replacements.forEach(feature => {
+                const provenance = explicitCadastreIds(feature);
+                const group = find(provenance[0]);
+                const areaM2 = measuredArea(feature);
+                pieceAreaByGroup.set(group, (pieceAreaByGroup.get(group) || 0) + areaM2);
+                // A vertex beyond every declared parcel's boundary is ground the replacement does
+                // not own. Shared edges and clipper drift sit within VERTEX_TOLERANCE_M.
+                const hosts = provenance.map(id => facts.get(id));
+                for (const vertex of verticesOf(feature)) {
+                    if (hosts.some(fact => vertexInsideFact(vertex, fact, boundaryCache))) continue;
+                    const error = new Error(`Replacement parcel ${featureId(feature)} lies outside immutable cadastral ground at [${vertex[0]}, ${vertex[1]}].`);
+                    error.code = 'live-fabric-replacement-outside';
+                    error.parcelId = featureId(feature);
+                    error.vertex = vertex.slice(0, 2);
+                    throw error;
+                }
+            });
+
+            factAreaByGroup.forEach((factM2, group) => {
+                const pieceM2 = pieceAreaByGroup.get(group) || 0;
+                const toleranceM2 = COVERAGE_TOLERANCE_M2 + factM2 * RELATIVE_AREA_TOLERANCE;
+                const deltaM2 = pieceM2 - factM2;
+                metrics.coverageChecks += 1;
+                if (Math.abs(deltaM2) > metrics.worstCoverageDeltaM2) metrics.worstCoverageDeltaM2 = Math.abs(deltaM2);
+                const members = scopeIds.filter(id => find(id) === group);
+                if (deltaM2 > toleranceM2) {
+                    // Nothing lies outside (checked per vertex above), so excess area is overlap.
+                    const error = new Error(`Replacement parcels overlap by ${deltaM2.toFixed(3)} m² over ${members.join(', ')}.`);
+                    error.code = 'live-fabric-replacement-overlap';
+                    error.overlapM2 = deltaM2;
+                    error.cadastreParcelIds = members;
+                    throw error;
+                }
+                if (-deltaM2 > toleranceM2) {
+                    const error = new Error(`Replacement leaves ${(-deltaM2).toFixed(3)} m² of cadastral ground uncovered over ${members.join(', ')}.`);
+                    error.code = 'live-fabric-replacement-hole';
+                    error.missingM2 = -deltaM2;
+                    error.cadastreParcelIds = members;
+                    throw error;
+                }
+            });
         }
 
         function readFrom(data, id) {
             const feature = data.byId.get(normalizeId(id));
             return feature ? clone(feature) : null;
+        }
+
+        // Read-only access to the committed record itself. Every stored feature is deep-frozen at
+        // ingress, so handing it out cannot corrupt the fabric, and it skips the structuredClone
+        // that `get` pays. Style and hit-test code that only inspects properties must use this:
+        // profiled on a 661-parcel corridor apply, cloning on `get` was 63% of a 47 s apply.
+        function peekFrom(data, id) {
+            return data.byId.get(normalizeId(id)) || null;
         }
 
         function getManyFrom(data, ids, query = {}) {
@@ -713,6 +816,7 @@
         }
 
         function get(id) { return readFrom(committed, id); }
+        function peek(id) { return peekFrom(committed, id); }
         function getMany(ids, query) { return getManyFrom(committed, ids, query); }
         function list() { return Array.from(committed.byId.values(), clone); }
         function entriesForCadastre(ids, query) { return entriesForCadastreFrom(committed, ids, query); }
@@ -755,6 +859,7 @@
         return Object.freeze({
             beginMutation,
             get,
+            peek,
             getMany,
             list,
             entriesForCadastre,

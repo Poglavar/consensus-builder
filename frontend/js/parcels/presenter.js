@@ -168,15 +168,32 @@
             && left[1] <= right[3] && left[3] >= right[1];
     }
 
+    // Preparation runs before the fabric publishes, while every reader still sees the previous
+    // revision, so it may yield. Building a thousand Leaflet layers for one ground arrival in a
+    // single task was the 500-800 ms frame on every pan into new cadastre; slicing it on the
+    // clock keeps the swap itself synchronous and atomic.
+    const PREPARE_SLICE_MS = 12;
+    const clock = () => (typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now());
+    function yieldToBrowser() {
+        if (typeof global.yieldToBrowser === 'function') return global.yieldToBrowser();
+        if (typeof setTimeout !== 'function') return Promise.resolve();
+        return new Promise(resolve => setTimeout(resolve, 0));
+    }
+
     async function prepare(change, draftView) {
         ensureGroup();
         const replacements = new Map();
         const replacementIds = [...(change.addedIds || []), ...(change.updatedIds || [])];
+        let sliceStarted = clock();
         for (const requestedId of replacementIds) {
             const feature = draftView?.get?.(requestedId);
             if (!feature) throw new Error(`Fabric draft has no feature for presenter replacement ${requestedId}.`);
             const id = featureId(feature);
             replacements.set(id, buildLayer(feature));
+            if (clock() - sliceStarted >= PREPARE_SLICE_MS) {
+                await yieldToBrowser();
+                sliceStarted = clock();
+            }
         }
         const touched = new Set([
             ...(change.removedIds || []).map(String),

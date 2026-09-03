@@ -12,6 +12,7 @@ import {
     serializeProposalRow,
     stripLocalProposalState
 } from '../proposals/serializer.js';
+import { isInvalidRecordError } from '../proposals/serializer.js';
 import { recomputeCorridorStats } from './road-corridor.js';
 import { validateReparcellizationShares } from './reparcellization.js';
 
@@ -840,12 +841,20 @@ export function setupProposalsRoute(app, pool) {
             });
 
             const result = await pool.query(sql, params);
+            const invalid = [];
             const proposals = result.rows.map(row => {
-                const proposal = serializeProposalRow({
-                    ...row,
-                    name: row.display_name || row.display_title || null,
-                    title: row.display_title || row.display_name || null
-                });
+                let proposal;
+                try {
+                    proposal = serializeProposalRow({
+                        ...row,
+                        name: row.display_name || row.display_title || null,
+                        title: row.display_title || row.display_name || null
+                    });
+                } catch (err) {
+                    if (!isInvalidRecordError(err)) throw err;
+                    invalid.push({ id: row.id, proposalId: row.proposal_id, error: err.message });
+                    return null;
+                }
                 return {
                     id: proposal.id,
                     proposalId: proposal.proposalId,
@@ -861,7 +870,8 @@ export function setupProposalsRoute(app, pool) {
                     screenshotUrl: proposal.screenshotUrl || null,
                     epochYear: proposal.epochYear ?? null
                 };
-            });
+            }).filter(Boolean);
+            if (invalid.length) console.warn(`GET /proposals/summary: skipped ${invalid.length} non-canonical record(s)`, invalid.map(entry => entry.id));
 
             const totalCount = result.rows.length > 0 && result.rows[0].total_count !== undefined
                 ? parseInt(result.rows[0].total_count, 10)
@@ -871,7 +881,8 @@ export function setupProposalsRoute(app, pool) {
                 proposals,
                 count: totalCount,
                 limit: filters.limit,
-                offset: filters.offset
+                offset: filters.offset,
+                ...(invalid.length ? { invalid } : {})
             });
         } catch (err) {
             console.error('Error in GET /proposals/summary:', err);
@@ -987,7 +998,14 @@ export function setupProposalsRoute(app, pool) {
             }
             const items = ids.map(id => {
                 const row = byProposalId.get(id) || byDatabaseId.get(id) || null;
-                return { id, proposal: row ? serializeProposalRow(row) : null };
+                if (!row) return { id, proposal: null };
+                try {
+                    return { id, proposal: serializeProposalRow(row) };
+                } catch (err) {
+                    if (!isInvalidRecordError(err)) throw err;
+                    console.warn(`POST /proposals/batch: ${id}: ${err.message}`);
+                    return { id, proposal: null, error: err.message, code: err.code };
+                }
             });
             res.json({ items, count: items.filter(item => item.proposal).length });
         } catch (err) {
@@ -1016,6 +1034,10 @@ export function setupProposalsRoute(app, pool) {
 
             res.json(serializeProposalRow(result.rows[0]));
         } catch (err) {
+            if (isInvalidRecordError(err)) {
+                console.warn(`GET /proposals/${req.params.id}: ${err.message}`);
+                return res.status(422).json({ error: err.message, code: err.code });
+            }
             console.error('Error in GET /proposals/:id:', err);
             res.status(500).json({ error: 'Internal server error' });
         }
@@ -1067,9 +1089,19 @@ export function setupProposalsRoute(app, pool) {
             params.push(limit, offset);
             const result = await pool.query(sql, params);
 
-            const proposals = result.rows.map(row => serializeProposalRow(row));
+            const invalid = [];
+            const proposals = result.rows.map(row => {
+                try {
+                    return serializeProposalRow(row);
+                } catch (err) {
+                    if (!isInvalidRecordError(err)) throw err;
+                    invalid.push({ id: row.id, proposalId: row.proposal_id, error: err.message });
+                    return null;
+                }
+            }).filter(Boolean);
+            if (invalid.length) console.warn(`GET /proposals?parcel_id: skipped ${invalid.length} non-canonical record(s)`, invalid.map(entry => entry.id));
 
-            res.json({ proposals, count: proposals.length, limit, offset, parcelId });
+            res.json({ proposals, count: proposals.length, limit, offset, parcelId, ...(invalid.length ? { invalid } : {}) });
         } catch (err) {
             console.error('Error in GET /proposals?parcel_id:', err);
             res.status(500).json({ error: 'Internal server error' });

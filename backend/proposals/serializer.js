@@ -41,22 +41,38 @@ function sameIdSet(left, right) {
     return right.every(id => expected.has(String(id)));
 }
 
+// A stored row that violates the flat-record contract is a data error, not a server fault. Routes
+// map this code to 422 with the reason, and list routes skip the row and report it, so one
+// unmigrated record never turns a whole plan or city list into "HTTP 500".
+export const PROPOSAL_RECORD_INVALID = 'proposal-record-invalid';
+
+function invalidRecord(message) {
+    const error = new Error(message);
+    error.code = PROPOSAL_RECORD_INVALID;
+    error.status = 422;
+    return error;
+}
+
+export function isInvalidRecordError(error) {
+    return !!error && error.code === PROPOSAL_RECORD_INVALID;
+}
+
 export function assertCanonicalProposalRow(row) {
     // Summary projections do not contain the full record. Full-row serializers do, and reject a
     // broken durable record instead of quietly manufacturing a usable proposal from it.
     if (!owns(row, 'cadastre_parcel_ids')) return;
     const ids = row.cadastre_parcel_ids;
     if (!Array.isArray(ids) || !ids.length) {
-        throw new Error('Invalid proposal record: cadastre_parcel_ids is required.');
+        throw invalidRecord('Invalid proposal record: cadastre_parcel_ids is required.');
     }
     const normalizedIds = ids.map(value => typeof value === 'string' ? value : '');
     if (normalizedIds.some((id, index) => !id || id !== id.trim() || id !== ids[index])
         || new Set(normalizedIds).size !== normalizedIds.length) {
-        throw new Error('Invalid proposal record: cadastre_parcel_ids must contain unique non-empty strings.');
+        throw invalidRecord('Invalid proposal record: cadastre_parcel_ids must contain unique non-empty strings.');
     }
     const generated = ids.find(isDerivedParcelDeclaration);
     if (generated) {
-        throw new Error(`Invalid proposal record: cadastre_parcel_ids contains generated id ${generated}.`);
+        throw invalidRecord(`Invalid proposal record: cadastre_parcel_ids contains generated id ${generated}.`);
     }
     const raw = row.proposal_data && typeof row.proposal_data === 'object'
         ? row.proposal_data
@@ -74,15 +90,15 @@ export function assertCanonicalProposalRow(row) {
     };
     const legacy = findLegacyCadastreDeclaration(candidate);
     if (legacy) {
-        throw new Error(`Invalid proposal record: ${legacy.path} is a retired parcel declaration.`);
+        throw invalidRecord(`Invalid proposal record: ${legacy.path} is a retired parcel declaration.`);
     }
     if (owns(raw, 'cadastreParcelIds')
         && (!Array.isArray(raw.cadastreParcelIds) || !sameIdSet(ids, raw.cadastreParcelIds))) {
-        throw new Error('Invalid proposal record: proposal_data.cadastreParcelIds conflicts with cadastre_parcel_ids.');
+        throw invalidRecord('Invalid proposal record: proposal_data.cadastreParcelIds conflicts with cadastre_parcel_ids.');
     }
     const reference = findNonCadastralParentDeclaration(candidate);
     if (reference) {
-        throw new Error(`Invalid proposal record: ${reference.path} lies outside cadastreParcelIds.`);
+        throw invalidRecord(`Invalid proposal record: ${reference.path} lies outside cadastreParcelIds.`);
     }
 }
 

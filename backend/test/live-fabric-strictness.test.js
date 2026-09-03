@@ -155,3 +155,78 @@ describe('fabric deltas and live provenance', () => {
         expect(live.properties.formedByProposalIds).toEqual(['corridor-2', 'corridor-1']);
     });
 });
+
+// The coverage invariant must not depend on polygon boolean operations: unioning a corridor scope
+// of hundreds of adjacent parcels crashed turf's clipper on real ground ("Unable to find segment in
+// SweepLine tree") and pairwise intersects overflowed the stack. Area accounting per parcel plus a
+// per-vertex boundary test gives the same verdicts without the clipper.
+describe('coverage validation without polygon boolean operations', () => {
+    const turf = require('@turf/turf');
+    const throwing = () => { throw new Error('polygon clipper must not be called by the coverage invariant'); };
+    const geometry = { ...turf, union: throwing, intersect: throwing, difference: throwing };
+
+    it('accepts an exact partition while union, intersect and difference throw', async () => {
+        const fabric = createLiveParcelFabric({ geometry });
+        await commit(fabric, mutation => mutation.seedCadastre([box('HR-A', 15, 45, 15.001, 45.001)]), { kind: 'ground-load' });
+
+        await expect(commit(fabric, mutation => mutation.replaceCadastreScope(['HR-A'], [
+            generated('HR-A#left', 15, 45, 15.0005, 45.001),
+            generated('HR-A#right', 15.0005, 45, 15.001, 45.001)
+        ]), { kind: 'proposal-apply' })).resolves.toEqual(expect.any(Array));
+    });
+
+    it('still refuses holes, overlaps and outside pieces while the clipper throws', async () => {
+        const cases = [
+            [[generated('HR-A#half', 15, 45, 15.0005, 45.001)], 'live-fabric-replacement-hole'],
+            [[generated('HR-A#outside', 15, 45, 15.0012, 45.001)], 'live-fabric-replacement-outside'],
+            [[generated('HR-A#left', 15, 45, 15.0006, 45.001), generated('HR-A#right', 15.0005, 45, 15.001, 45.001)], 'live-fabric-replacement-overlap']
+        ];
+        for (const [replacements, code] of cases) {
+            const fabric = createLiveParcelFabric({ geometry });
+            await commit(fabric, mutation => mutation.seedCadastre([box('HR-A', 15, 45, 15.001, 45.001)]), { kind: 'ground-load' });
+            await expect(commit(fabric, mutation => {
+                mutation.replaceCadastreScope(['HR-A'], replacements);
+            }, { kind: 'proposal-apply' })).rejects.toMatchObject({ code });
+        }
+    });
+
+    it('validates a 300-parcel corridor scope split into two pieces each in well under a second', async () => {
+        const fabric = createLiveParcelFabric({ geometry });
+        const ids = Array.from({ length: 300 }, (_, i) => `HR-S-${i}`);
+        await commit(fabric, mutation => mutation.seedCadastre(
+            ids.map((id, i) => box(id, 15 + i * 0.001, 45, 15 + (i + 1) * 0.001, 45.001))
+        ), { kind: 'ground-load' });
+        const pieces = ids.flatMap((id, i) => [
+            box(`${id}#a`, 15 + i * 0.001, 45, 15 + i * 0.001 + 0.0004, 45.001, { cadastreParcelIds: [id], producedByProposalId: 'road' }),
+            box(`${id}#b`, 15 + i * 0.001 + 0.0004, 45, 15 + (i + 1) * 0.001, 45.001, { cadastreParcelIds: [id], producedByProposalId: 'road' })
+        ]);
+        const started = performance.now();
+        await expect(commit(fabric, mutation => mutation.replaceCadastreScope(ids, pieces), { kind: 'proposal-apply' }))
+            .resolves.toEqual(expect.any(Array));
+        expect(performance.now() - started).toBeLessThan(1500);
+        expect(fabric.snapshot().featureCount).toBe(600);
+    });
+});
+
+// An untouched cadastral parcel that the corridor arrangement hands back whole may have several
+// parts. Replacing a scope with it must split it like a seed, not refuse the whole replacement.
+describe('replacement with a whole multipart cadastral parcel', () => {
+    it('splits the original parcel into cadastral parts instead of refusing the scope', async () => {
+        const fabric = createLiveParcelFabric();
+        const twoParts = {
+            type: 'Feature',
+            properties: { parcelId: 'HR-M' },
+            geometry: { type: 'MultiPolygon', coordinates: [
+                box('x', 15, 45, 15.001, 45.001).geometry.coordinates,
+                box('x', 15.002, 45, 15.003, 45.001).geometry.coordinates
+            ] }
+        };
+        await commit(fabric, mutation => mutation.seedCadastre([twoParts]), { kind: 'ground-load' });
+        expect(fabric.snapshot().parcelIds.sort()).toEqual(['HR-M#cadastre-1', 'HR-M#cadastre-2']);
+
+        await expect(commit(fabric, mutation => mutation.replaceCadastreScope(['HR-M'], [
+            { ...twoParts, properties: { parcelId: 'HR-M', cadastreParcelIds: ['HR-M'] } }
+        ]), { kind: 'proposal-apply' })).resolves.toEqual(expect.any(Array));
+        expect(fabric.snapshot().parcelIds.sort()).toEqual(['HR-M#cadastre-1', 'HR-M#cadastre-2']);
+    });
+});
