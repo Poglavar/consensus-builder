@@ -169,6 +169,10 @@ function _clearNonLiveParcelInteractionState(parcelIds) {
             else root.document?.getElementById('parcel-info-panel')?.classList.remove('visible');
         } catch (_) { }
     }
+    // showOwnParcelInfoForProposal does not make the generated parcel a direct map selection: its
+    // collapsed panel is secondary to the proposal card. Close that separately when its live output
+    // disappears, without using hideParcelInfoPanel (which would also clear the proposal highlight).
+    try { root.clearProposalOwnParcelInfo?.(removed); } catch (_) { }
     if (multiChanged) {
         try { multi.updateUI?.(); } catch (_) { }
     }
@@ -2115,8 +2119,20 @@ const ProposalManager = {
     async deriveForNewProposal(proposal, options = {}) {
         if (!proposal) return null;
         if (!options._parcelMutation) {
-            return _runProposalMutationBoundary(this, 'proposal-derive', proposal.proposalId, options,
-                (_context, transactionOptions) => this.deriveForNewProposal(proposal, transactionOptions));
+            const result = await _runProposalMutationBoundary(this, 'proposal-derive', proposal.proposalId, options,
+                (_context, transactionOptions) => {
+                    // Never hand the caller's committed record into the mutation body. The body
+                    // tentatively changes applied state, and a refusal must be able to discard that
+                    // change with the rest of the private draft.
+                    const draftProposal = _getProposalRecord(proposal.proposalId, transactionOptions);
+                    return draftProposal
+                        ? this.deriveForNewProposal(draftProposal, transactionOptions)
+                        : false;
+                });
+            // `false` is the coordinator's rollback signal; the public API has historically exposed
+            // an unplaced new proposal as null. Keep that contract without committing the draft in
+            // which the record was tentatively marked applied.
+            return result === false ? null : result;
         }
         const goalKey = (applyRoute && typeof applyRoute.normalizeGoalKey === 'function')
             ? applyRoute.normalizeGoalKey(proposal.goal)
@@ -2165,7 +2181,10 @@ const ProposalManager = {
         const key = String(proposal.proposalId || '');
         const targetFailed = !summary || summary.ok !== true
             || (Array.isArray(summary.failed) && summary.failed.some(entry => String(entry.proposalId) === key));
-        if (targetFailed) return null;
+        // Refusal is a transaction failure, not a successful mutation with a null result. Returning
+        // false makes ParcelMutation discard the tentative applied flag, collection changes,
+        // ownership writes and fabric edits together.
+        if (targetFailed) return false;
         return { applied: true, goalKey, ...summary };
     },
 
@@ -2706,6 +2725,13 @@ const ProposalManager = {
     async applyProposal(proposalId, options = {}) {
         const applyOptions = options || {};
         if (!applyOptions._parcelMutation) {
+            // Ownership-only proposals have no map payload. Keep their authored `applied: false`
+            // state and avoid publishing an empty fabric/presenter revision merely because the
+            // generic create flow asks every new record to apply itself.
+            const committedProposal = _getProposalRecord(proposalId, applyOptions);
+            if (committedProposal && applyRoute?.classifyApplyRoute?.(committedProposal)?.route === 'noop') {
+                return true;
+            }
             return _runProposalMutationBoundary(
                 this,
                 applyOptions.replay === true ? 'replay-apply' : 'apply',
@@ -3085,6 +3111,53 @@ const ProposalManager = {
 
     async deleteProposal(proposalId) {
         return this._deleteProposalConfirmed(proposalId);
+    },
+
+    // Clear is one mutation, not N independent deletes and never a raw storage wipe. All standing
+    // proposals are first taken off their complete recorded cadastral scope, so generated parcels,
+    // ownership, collections, authored records and restored ground publish together.
+    async clearAllProposals(options = {}) {
+        if (!options._parcelMutation) {
+            return _runProposalMutationBoundary(this, 'clear-local-proposals', null, options,
+                (_context, transactionOptions) => this.clearAllProposals(transactionOptions));
+        }
+        const store = _proposalStore(options);
+        if (!store || typeof store.getAllProposals !== 'function') return false;
+        const records = store.getAllProposals().filter(Boolean);
+        if (!records.length) return { ok: true, count: 0 };
+
+        const appliedRecords = records.filter(appliedOf);
+        if (appliedRecords.length) {
+            const scope = this._recordedCadastreScope(appliedRecords);
+            // An applied record without authored cadastral anchors cannot be removed safely: there
+            // is no authoritative ground scope to restore. Refuse the entire clear instead of
+            // deleting its record and stranding anonymous live output.
+            if (!scope.cadastreParcelIds.length) return false;
+            await this._loadReplayGround(appliedRecords, {
+                purpose: 'delete',
+                _parcelMutation: options._parcelMutation
+            });
+            appliedRecords.forEach(record => setProposalApplied(record, false, { stamp: false }));
+            const restored = await this._rematerializeResolvedScope(appliedRecords, scope, {
+                ...options,
+                purpose: 'delete',
+                statusMode: 'rederive'
+            });
+            if (!restored || restored.ok !== true) return false;
+        }
+
+        for (const record of records) {
+            if (!store.removeProposal(record.proposalId)) return false;
+        }
+        store.save?.();
+        options._parcelMutation.afterCommit(() => {
+            try { window.ProposalSelection?.clear?.(); } catch (_) { }
+            try { if (typeof clearProposalHighlights === 'function') clearProposalHighlights(); } catch (_) { }
+            try { if (typeof hideProposalDetailsPanel === 'function') hideProposalDetailsPanel(); } catch (_) { }
+            try { if (typeof clearProposalOwnParcelInfo === 'function') clearProposalOwnParcelInfo(); } catch (_) { }
+            this._refreshUIAfterProposalChange(null);
+        });
+        return { ok: true, count: records.length };
     },
 
     async _deleteProposalConfirmed(proposalId, options = {}) {

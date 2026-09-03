@@ -162,7 +162,11 @@
             if (!entry || !entry.feature || !entry.id) return;
             if (outsideBox(entry.feature)) return;
             const area = intersectionArea(footprint, entry.feature);
-            if (area >= minArea) hits.push({ id: String(entry.id), area: Math.round(area) });
+            // Keep the measured area. Rounding here is not presentation-only: repository coverage
+            // sums these values and divides by the exact footprint area. A perfectly covered small
+            // building of 11.27 m² therefore used to look only 97.6% covered (11 / 11.27) and was
+            // refused before materialization. Callers that display an area can round at the edge.
+            if (area >= minArea) hits.push({ id: String(entry.id), area });
         });
         hits.sort((a, b) => b.area - a.area || String(a.id).localeCompare(String(b.id)));
         return hits;

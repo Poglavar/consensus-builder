@@ -970,6 +970,10 @@
     }
 
     function hideParcelInfoPanel() {
+        // The panel may have been opened as the secondary surface for a proposal-owned parcel.
+        // A direct dismissal transfers no ownership, so discard that one-shot association too.
+        global.__proposalOwnParcelPanelId = null;
+        global.__openParcelInfoCollapsed = false;
         const parcelInfoPanel = global.document.getElementById('parcel-info-panel');
         if (parcelInfoPanel) parcelInfoPanel.classList.remove('visible');
         if (typeof global.clearRoadVisualization === 'function') {

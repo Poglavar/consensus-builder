@@ -632,26 +632,74 @@ function reapplyProposalHighlights() {
     }
 }
 
-// A proposal that BECOMES a parcel (a road is one corridor parcel however many it crosses; a merge
-// is one merged parcel) shows that parcel's info alongside the proposal card, collapsed to its
-// header so the proposal stays the primary surface. Proposals that create no parcel of their own
-// (parks, squares, lakes) and those that create many (reparcellization) open nothing here.
+// Close only the secondary parcel panel opened for a proposal-owned live feature. This deliberately
+// does not call hideParcelInfoPanel(): that general dismissal also clears the proposal selection,
+// while an apply/unapply refresh must keep the proposal card and its highlight selected.
+function clearProposalOwnParcelInfo(expectedParcelIds = null) {
+    const trackedId = window.__proposalOwnParcelPanelId != null
+        ? String(window.__proposalOwnParcelPanelId)
+        : null;
+    if (!trackedId) return false;
+
+    if (expectedParcelIds != null) {
+        const expected = new Set(Array.from(expectedParcelIds || []).map(String));
+        if (!expected.has(trackedId)) return false;
+    }
+
+    window.__proposalOwnParcelPanelId = null;
+    window.__openParcelInfoCollapsed = false;
+
+    const selectedId = window.selectedParcelId != null ? String(window.selectedParcelId) : null;
+    const currentId = window.currentParcel?.id != null ? String(window.currentParcel.id) : null;
+    // A direct map click may have reused the same panel for a different parcel since the proposal
+    // opened it. In that case the direct selection owns the panel now, so only forget our marker.
+    if ((selectedId && selectedId !== trackedId) || (currentId && currentId !== trackedId)) {
+        return false;
+    }
+
+    if (selectedId === trackedId) window.selectedParcelId = null;
+    if (currentId === trackedId) {
+        window.currentParcel = null;
+        window.currentParcelCoordinates = null;
+    }
+    document.getElementById('parcel-info-panel')?.classList.remove('visible');
+    try { window.__drillUi?.hideIfNothingSelected?.(); } catch (_) { }
+    return true;
+}
+
+// A proposal that produces exactly one live parcel shows that parcel's info alongside the proposal
+// card, collapsed to its header so the proposal stays the primary surface. Proposals that currently
+// produce no parcel and those that create many (reparcellization) open nothing here.
 function showOwnParcelInfoForProposal(proposal) {
     const resolver = window.ProposalOwnParcel;
     const showPanel = window.Parcels?.uiParcelPanel?.showParcelInfoPanel || window.showParcelInfoPanel;
-    if (!resolver || typeof showPanel !== 'function') return;
+    if (!resolver || typeof showPanel !== 'function') {
+        clearProposalOwnParcelInfo();
+        return;
+    }
     const fabric = window.LiveParcelFabric;
-    if (!fabric || typeof fabric.get !== 'function' || typeof fabric.producedBy !== 'function') return;
+    if (!fabric || typeof fabric.get !== 'function' || typeof fabric.producedBy !== 'function') {
+        clearProposalOwnParcelInfo();
+        return;
+    }
     const lookup = id => fabric.get(String(id));
     let ownId = null;
     try { ownId = resolver.ownParcelId(proposal, fabric.producedBy(proposal.proposalId)); } catch (error) {
         console.error('[selectAndHighlightProposal] own-parcel lookup failed', error);
+        clearProposalOwnParcelInfo();
         return;
     }
     const feature = ownId ? lookup(ownId) : null;
-    if (!feature) return;
+    if (!feature) {
+        clearProposalOwnParcelInfo();
+        return;
+    }
+    clearProposalOwnParcelInfo();
     window.__openParcelInfoCollapsed = true;
-    try { showPanel(feature); } catch (error) {
+    try {
+        showPanel(feature);
+        window.__proposalOwnParcelPanelId = String(ownId);
+    } catch (error) {
         console.error('[selectAndHighlightProposal] could not open the proposal own parcel', ownId, error);
         window.__openParcelInfoCollapsed = false;
     }

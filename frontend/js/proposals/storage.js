@@ -333,13 +333,21 @@ function deleteProposal(proposalId) {
     }
 }
 
-function clearLocalProposalData() {
+async function clearLocalProposalData() {
     try {
         // Get count of proposals before clearing
         const proposalCount = proposalStorage.getAllProposals().length;
 
-        // Clear all proposals from storage
-        proposalStorage.clear();
+        // Records, generated parcels, restored cadastral ground, ownership and presentation are one
+        // authoritative change. A raw storage clear strands live output with no record that can ever
+        // unapply it.
+        if (typeof ProposalManager === 'undefined' || typeof ProposalManager.clearAllProposals !== 'function') {
+            throw new Error('Proposal mutation manager is unavailable.');
+        }
+        const cleared = await ProposalManager.clearAllProposals();
+        if (!cleared || cleared.ok !== true) {
+            throw new Error('The proposal set could not be removed safely.');
+        }
 
         // Clear any proposal highlights
         clearProposalHighlights();

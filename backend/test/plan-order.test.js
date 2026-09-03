@@ -105,6 +105,32 @@ describe('base-parcel ancestry', () => {
             globalThis.turf = realTurf;
         }
     });
+
+    it('keeps exact intersection area so small fully-covered footprints remain fully covered', () => {
+        const footprint = turf.polygon([[
+            [15.88960, 43.73501],
+            [15.88964, 43.73501],
+            [15.88964, 43.73504],
+            [15.88960, 43.73504],
+            [15.88960, 43.73501]
+        ]]);
+        const host = turf.polygon([[
+            [15.88955, 43.73496],
+            [15.88969, 43.73496],
+            [15.88969, 43.73509],
+            [15.88955, 43.73509],
+            [15.88955, 43.73496]
+        ]]);
+
+        const hits = planOrder.computeBaseAncestry(footprint, [{ id: 'small-host', feature: host }]);
+        const footprintArea = turf.area(footprint);
+
+        expect(footprintArea).toBeGreaterThan(10);
+        expect(footprintArea).toBeLessThan(12);
+        expect(hits).toHaveLength(1);
+        expect(hits[0].area).toBeCloseTo(footprintArea, 6);
+        expect(hits[0].area / footprintArea).toBeGreaterThan(0.999);
+    });
 });
 
 // The ancestry floor separates a REAL take from coordinate-rounding noise, and it belongs at the
