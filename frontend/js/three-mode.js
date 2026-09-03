@@ -4589,7 +4589,10 @@
             cx = xy[0]; cy = xy[1];
         } catch (_) { return; }
 
-        const url = feat.properties.modelUrl;
+        // A stored model reference is a served path; the backend this page talks to serves it.
+        const url = (typeof resolveBackendAssetUrl === 'function')
+            ? (resolveBackendAssetUrl(feat.properties.modelUrl) || feat.properties.modelUrl)
+            : feat.properties.modelUrl;
         const gen = buildingsRenderGeneration;
         const buildingOpacity = buildingOpacityOf(buildingMaterial);
         const stale = () => !isActive || gen !== buildingsRenderGeneration || targetGroup !== buildingGroup;

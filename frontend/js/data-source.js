@@ -390,7 +390,27 @@
 
     document.addEventListener('DOMContentLoaded', initDataSourceUI);
 
+    // Files the backend stores (proposal thumbnails, uploaded images, models, metadata) are served
+    // at PATHS: the API returns `/uploads/images/<file>` unless a public origin is pinned on the
+    // server. Resolve a path against the backend this page talks to — the `?backend=` override
+    // included — and leave absolute, data:, blob: and ipfs: references alone. Rows used to carry
+    // whichever localhost port the day's backend ran on, and every one of them went dead.
+    function resolveBackendAssetUrl(url) {
+        if (url === undefined || url === null) return null;
+        const value = String(url).trim();
+        if (!value) return null;
+        // A local record may still carry the origin of the dev backend that stored it (a plan
+        // applied before the rows were repaired copied those values into local storage). Only the
+        // path is stable: re-anchor a localhost origin onto the backend this page talks to.
+        const staleLocal = value.match(/^https?:\/\/(?:localhost|127\.0\.0\.1|\[::1\])(?::\d+)?(\/(?:uploads|images)\/.*)$/i);
+        if (staleLocal) return `${getBackendBase().replace(/\/+$/, '')}${staleLocal[1]}`;
+        if (/^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(value)) return value;
+        const base = getBackendBase().replace(/\/+$/, '');
+        return `${base}${value.startsWith('/') ? '' : '/'}${value}`;
+    }
+
     // Expose builder to other modules
+    window.resolveBackendAssetUrl = resolveBackendAssetUrl;
     window.buildParcelRequestParams = buildParcelRequestParams;
     window.buildBuildingRequestParams = buildBuildingRequestParams;
     window.buildPlannedRoadRequestParams = buildPlannedRoadRequestParams;

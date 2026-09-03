@@ -4,6 +4,7 @@
 
 import { createJsonBodyValidator, validators } from '../utils/request-validation.js';
 import { generateAndStoreProposalThumbnail } from '../thumbnails/proposal-thumbnail.js';
+import { publicApiBaseUrl } from '../utils/public-base-url.js';
 import { canonicalizeLifecycleStatus, resolveIncomingLifecycleStatus } from '../proposals/lifecycle.js';
 import {
     findLegacyCadastreDeclaration,
@@ -54,12 +55,11 @@ export function normalizeCityCode(code) {
 }
 
 // The stored thumbnail URL has to be absolute. In production the API sits behind a proxy on a fixed
-// origin (PUBLIC_API_BASE_URL); otherwise fall back to the origin the request came in on.
-function resolveThumbnailBaseUrl(req) {
-    if (process.env.PUBLIC_API_BASE_URL) {
-        return process.env.PUBLIC_API_BASE_URL.replace(/\/$/, '');
-    }
-    return `${req.protocol}://${req.get('host')}`;
+// origin (PUBLIC_API_BASE_URL); otherwise the served path alone, never the request's origin.
+function resolveThumbnailBaseUrl() {
+    // Never the request's Host: unset means the row keeps the served path and the client resolves
+    // it against the backend it is talking to (see utils/public-base-url.js).
+    return publicApiBaseUrl();
 }
 
 async function generateProposalThumbnailForRequest(pool, proposal, { city, proposalId, req }) {

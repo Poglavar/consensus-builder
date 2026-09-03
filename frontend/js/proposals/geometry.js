@@ -1207,7 +1207,9 @@ function buildProposalThumbHtml(proposal) {
     const safeProposalId = escapeHtml(String(proposalId));
 
     if (url) {
-        const safeUrl = escapeHtml(url);
+        // A stored thumbnail is a served path; the backend this page talks to serves it.
+        const resolvedUrl = (typeof resolveBackendAssetUrl === 'function') ? (resolveBackendAssetUrl(url) || url) : url;
+        const safeUrl = escapeHtml(resolvedUrl);
         return `
             <div class="proposal-thumb proposal-thumb-has-image" data-proposal-id="${safeProposalId}">
                 <img class="proposal-thumb-img" src="${safeUrl}" alt="" loading="lazy">

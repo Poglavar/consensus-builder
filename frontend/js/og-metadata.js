@@ -79,6 +79,12 @@
             return `${aggregator}/v1/blobs/${blobId}`;
         }
 
+        // Files the API stores are served by the BACKEND, whose origin differs from the page's on
+        // prod (api.urbangametheory.xyz vs urbangametheory.xyz) and on a dev machine (4582 vs 5582).
+        if (/^\/(?:uploads|images)\//.test(imageUrl) && typeof globalScope.resolveBackendAssetUrl === 'function') {
+            return globalScope.resolveBackendAssetUrl(imageUrl);
+        }
+
         // Relative URL - make absolute
         const baseUrl = getFrontendBaseUrl();
         const cleanPath = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;

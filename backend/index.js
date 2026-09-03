@@ -4,6 +4,7 @@ dotenv.config({ quiet: true });
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import { embeddableStatic } from './utils/embeddable-static.js';
 import rateLimit from 'express-rate-limit';
 import pkg from 'pg';
 import path from 'path';
@@ -341,10 +342,12 @@ export function createApp({
         }
         next();
     });
+    // Served files are embedded by other origins (the frontend host, dev ports, crawlers); helmet's
+    // same-origin resource policy blocked every cross-origin <img> of them. See utils/embeddable-static.js.
     const uploadsRoot = path.resolve('uploads');
-    app.use('/uploads', express.static(uploadsRoot));
-    app.use('/metadata', express.static(path.join(uploadsRoot, 'metadata')));
-    app.use('/images', express.static(path.join(uploadsRoot, 'images')));
+    app.use('/uploads', embeddableStatic, express.static(uploadsRoot));
+    app.use('/metadata', embeddableStatic, express.static(path.join(uploadsRoot, 'metadata')));
+    app.use('/images', embeddableStatic, express.static(path.join(uploadsRoot, 'images')));
 
     app.use((req, res, next) => {
         if (!isDevEnv || req.method !== 'GET') {

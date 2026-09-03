@@ -108,7 +108,8 @@ describe('POST /images', () => {
 
         expect(res.status).toBe(200);
         expect(res.body.fileName).toBe('test-image.png');
-        expect(res.body.imageUrl).toBe('http://example.test/images/test-image.png');
+        // No public base is pinned in tests: the served path alone, never the request's Host.
+        expect(res.body.imageUrl).toBe('/images/test-image.png');
         expect(res.body.contentType).toBe('image/png');
 
         expect(writeFileSpy).toHaveBeenCalledTimes(1);
@@ -127,11 +128,11 @@ describe('POST /images', () => {
         expect(res.status).toBe(200);
         expect(res.body.fileName).toMatch(/^image-.*\.svg$/);
         expect(res.body.contentType).toBe('image/svg+xml');
-        expect(res.body.imageUrl).toMatch(/^http:\/\/example\.test\/images\/image-.*\.svg$/);
+        expect(res.body.imageUrl).toMatch(/^\/images\/image-.*\.svg$/);
         expect(writeFileSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('defaults unknown content subtypes to png and respects forwarded https protocol', async () => {
+    it('defaults unknown content subtypes to png and ignores the request origin entirely', async () => {
         app.enable('trust proxy');
 
         const res = await request(app)
@@ -145,8 +146,25 @@ describe('POST /images', () => {
 
         expect(res.status).toBe(200);
         expect(res.body.fileName).toBe('road-snapshot.png');
-        expect(res.body.imageUrl).toBe('https://example.test/images/road-snapshot.png');
+        // Host and forwarded protocol are client-controlled and were once baked into stored rows.
+        expect(res.body.imageUrl).toBe('/images/road-snapshot.png');
         expect(res.body.contentType).toBe('image');
+    });
+
+    it('bakes in the pinned public base when one is configured', async () => {
+        const previous = process.env.PUBLIC_API_BASE_URL;
+        process.env.PUBLIC_API_BASE_URL = 'https://api.example.test/';
+        try {
+            const res = await request(app)
+                .post('/images')
+                .set('host', 'attacker.test')
+                .send({ fileName: 'Pinned', imageData: 'data:image/png;base64,aGVsbG8=' });
+            expect(res.status).toBe(200);
+            expect(res.body.imageUrl).toBe('https://api.example.test/images/pinned.png');
+        } finally {
+            if (previous === undefined) delete process.env.PUBLIC_API_BASE_URL;
+            else process.env.PUBLIC_API_BASE_URL = previous;
+        }
     });
 });
 
@@ -226,7 +244,7 @@ describe('POST /metadata', () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.body.metadataUrl).toBe('http://example.test/metadata/road-meta.json');
+        expect(res.body.metadataUrl).toBe('/metadata/road-meta.json');
         expect(writeFileSpy).toHaveBeenCalledTimes(1);
         expect(writeFileSpy.mock.calls[0][1]).toContain('"title": "Road Proposal"');
     });
@@ -259,7 +277,7 @@ describe('POST /metadata', () => {
         expect(res.status).toBe(200);
         expect(res.body).toEqual({
             fileName: 'road-meta.json',
-            metadataUrl: 'http://example.test/metadata/road-meta.json'
+            metadataUrl: '/metadata/road-meta.json'
         });
 
         expect(writeFileSpy).toHaveBeenCalledTimes(1);
@@ -278,7 +296,7 @@ describe('POST /metadata', () => {
 
         expect(res.status).toBe(200);
         expect(res.body.fileName).toMatch(/^metadata-.*\.json$/);
-        expect(res.body.metadataUrl).toMatch(/^http:\/\/example\.test\/metadata\/metadata-.*\.json$/);
+        expect(res.body.metadataUrl).toMatch(/^\/metadata\/metadata-.*\.json$/);
         expect(writeFileSpy).toHaveBeenCalledTimes(1);
     });
 });
@@ -339,7 +357,7 @@ describe('POST /models', () => {
 
         expect(res.status).toBe(200);
         expect(res.body.fileName).toMatch(/^test-building-glb-[0-9a-f]{8}\.glb$/);
-        expect(res.body.modelUrl).toMatch(/^http:\/\/example\.test\/uploads\/models\/test-building-glb-[0-9a-f]{8}\.glb$/);
+        expect(res.body.modelUrl).toMatch(/^\/uploads\/models\/test-building-glb-[0-9a-f]{8}\.glb$/);
         expect(res.body.contentType).toBe('model/gltf-binary');
 
         expect(writeFileSpy).toHaveBeenCalledTimes(1);

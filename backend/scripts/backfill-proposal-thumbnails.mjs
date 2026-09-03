@@ -35,9 +35,10 @@ Usage:
 
 Options:
   --apply                 Actually write (DB + image files). Without it the script is a DRY RUN.
-  --base-url <url>        Origin the stored images are served from. REQUIRED with --apply (or set
-                          PUBLIC_API_BASE_URL) — it is baked into every row and served to browsers,
-                          so it is never guessed on a write. A dry run defaults to localhost.
+  --base-url <url>        Origin to bake into the stored URLs (or set PUBLIC_API_BASE_URL, as prod's
+                          ecosystem file does). Without one the rows get the served PATH alone
+                          (/uploads/images/<file>), which any backend serves and the client resolves
+                          against the backend it is talking to. An origin is never guessed.
   --city <id>             Only proposals of this city (e.g. zagreb, new_york).
   --id <n[,n...]>         Only these proposal table ids.
   --limit <n>             Process at most n proposals.
@@ -273,27 +274,14 @@ async function main() {
         process.exit(0);
     }
 
-    // The base URL is BAKED INTO EVERY ROW this script writes, and it is served to browsers. Getting
-    // it wrong does not fail loudly — it silently fills the database with dead links.
-    //
-    // The live upload path has no such hazard: it derives the origin from the incoming request. A
-    // script has no request, so on a WRITE the origin must be stated, never guessed. Defaulting to
-    // localhost here would have written 53 `http://localhost:3000/...` thumbnails into production.
-    // A dry run may still default — it writes nothing, and seeing the URL it *would* use is the point.
-    const explicitBaseUrl = args.baseUrl || process.env.PUBLIC_API_BASE_URL || null;
-    if (args.apply && !explicitBaseUrl) {
-        console.error(
-            '\nRefusing to --apply without an image base URL.\n\n'
-            + 'Every row written gets this origin baked into its screenshot_url, and it is served to\n'
-            + 'browsers — a wrong one is a dead link in the database, not an error you would notice.\n\n'
-            + 'Pass it explicitly:\n'
-            + '  --base-url https://api.urbangametheory.xyz     (production)\n'
-            + '  --base-url http://localhost:3000               (local dev)\n\n'
-            + 'or set PUBLIC_API_BASE_URL in the environment.\n'
-        );
-        process.exit(1);
-    }
-    args.baseUrl = explicitBaseUrl || 'http://localhost:3000';
+    // An origin is BAKED INTO EVERY ROW this script writes with one, and it is served to browsers.
+    // Getting it wrong does not fail loudly — it silently fills the database with dead links, which
+    // is why an origin is never guessed: stated (--base-url or prod's pinned PUBLIC_API_BASE_URL)
+    // or absent. Absent means the rows get the served PATH alone (`/uploads/images/<file>`), the
+    // same thing the live upload path stores when nothing is pinned; every backend serves it and
+    // the client resolves it against the backend it is talking to. Defaulting to localhost here
+    // once came within one command of writing 53 dead `http://localhost:3000/...` rows into prod.
+    args.baseUrl = (args.baseUrl || process.env.PUBLIC_API_BASE_URL || '').replace(/\/+$/, '');
 
     // Even when stated, a loopback origin is only ever right for a local database. Writing one
     // against a remote DB is always a mistake.

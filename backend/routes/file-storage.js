@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { randomUUID } from 'crypto';
 import { createJsonBodyValidator, isPlainObject, validators } from '../utils/request-validation.js';
+import { publicFileUrl } from '../utils/public-base-url.js';
 
 const UPLOAD_ROOT = path.resolve('uploads');
 const IMAGE_DIR = path.join(UPLOAD_ROOT, 'images');
@@ -27,12 +28,6 @@ function sanitizeFileName(raw, fallbackPrefix) {
         .replace(/^-|-$/g, '');
     if (safe) return safe;
     return `${fallbackPrefix}-${Date.now()}-${randomUUID()}`;
-}
-
-function buildBaseUrl(req) {
-    const protocol = req.protocol;
-    const host = req.get('host');
-    return `${protocol}://${host}`;
 }
 
 const imageUploadBodyValidator = createJsonBodyValidator({
@@ -139,8 +134,9 @@ export function setupFileStorageRoutes(app) {
             const finalFileName = `${safeName}-${randomUUID().slice(0, 8)}.${requestedExt}`;
             fs.writeFileSync(path.join(MODEL_DIR, finalFileName), buffer);
 
-            const baseUrl = buildBaseUrl(req);
-            const modelUrl = `${baseUrl}/uploads/models/${finalFileName}`;
+            // The pinned public base when there is one, the served path alone otherwise — never
+            // the request's Host, which is whatever port today's dev backend happens to use.
+            const modelUrl = publicFileUrl(`/uploads/models/${finalFileName}`);
 
             res.json({ fileName: finalFileName, modelUrl, contentType });
         } catch (error) {
@@ -173,8 +169,7 @@ export function setupFileStorageRoutes(app) {
             const finalFileName = `${fallbackName}.${extension}`;
             fs.writeFileSync(path.join(IMAGE_DIR, finalFileName), buffer);
 
-            const baseUrl = buildBaseUrl(req);
-            const imageUrl = `${baseUrl}/images/${finalFileName}`;
+            const imageUrl = publicFileUrl(`/images/${finalFileName}`);
 
             res.json({
                 fileName: finalFileName,
@@ -198,8 +193,7 @@ export function setupFileStorageRoutes(app) {
                 'utf8'
             );
 
-            const baseUrl = buildBaseUrl(req);
-            const metadataUrl = `${baseUrl}/metadata/${finalFileName}`;
+            const metadataUrl = publicFileUrl(`/metadata/${finalFileName}`);
 
             res.json({
                 fileName: finalFileName,
