@@ -11,6 +11,11 @@
     'use strict';
 
     const GEOMETRY_EPSILON_M2 = 0.01;
+    const CADASTRE_RELEASE_KINDS = new Set([
+        'cadastral-ground-release',
+        'repository-reset',
+        'repository-unload'
+    ]);
 
     function clone(value) {
         if (value === undefined || value === null) return value;
@@ -185,7 +190,7 @@
             const components = geometryValue?.type === 'MultiPolygon' && Array.isArray(geometryValue.coordinates)
                 ? geometryValue.coordinates.filter(Array.isArray)
                 : null;
-            if (!components || components.length <= 1) return [normalizeFeature(input, config)];
+            if (!components) return [normalizeFeature(input, config)];
             if (!config.cadastreSeed) return [normalizeFeature(input, config)];
 
             const cadastralId = featureId(input);
@@ -204,10 +209,12 @@
                 ...input,
                 properties: {
                     ...(input.properties || {}),
-                    parcelId: `${cadastralId}#cadastre-${index + 1}`,
-                    id: `${cadastralId}#cadastre-${index + 1}`,
-                    cadastralPart: true,
-                    cadastralPartIndex: index + 1
+                    parcelId: components.length > 1 ? `${cadastralId}#cadastre-${index + 1}` : cadastralId,
+                    id: components.length > 1 ? `${cadastralId}#cadastre-${index + 1}` : cadastralId,
+                    ...(components.length > 1 ? {
+                        cadastralPart: true,
+                        cadastralPartIndex: index + 1
+                    } : {})
                 },
                 geometry: { type: 'Polygon', coordinates: component.coordinates }
             }, { cadastreSeed: true, cadastreId: cadastralId }));
@@ -230,7 +237,15 @@
             props.parcelId = id;
             props.id = id;
             props.cadastreParcelIds = [id];
-            return deepFreeze(fact);
+            delete props.proposalId;
+            delete props.baseParcelIds;
+            delete props.parentParcelIds;
+            delete props.parentParcelId;
+            delete props.ancestorProposal;
+            metrics.normalized += 1;
+            deepFreeze(fact);
+            trusted.add(fact);
+            return fact;
         }
 
         function assertActive(draft) {
@@ -539,7 +554,10 @@
                         }
                         if (!existingFact) draft.data.cadastreFacts.set(cadastralId, fact);
                         if (draft.data.byCadastreId.get(cadastralId)?.size) continue;
-                        connectedFeatures(raw, { cadastreSeed: true }).forEach(feature => putOne(draft, feature));
+                        // Polygon facts are already normalized, frozen, and trusted, so the live
+                        // entry reuses that exact object. MultiPolygons retain one immutable union
+                        // fact and derive one normalized live object per connected component.
+                        connectedFeatures(fact, { cadastreSeed: true }).forEach(feature => putOne(draft, feature));
                     }
                     return Array.from(draft.changedIds);
                 },
@@ -591,6 +609,11 @@
                     if (!scope.size || !normalizeId(reason)) {
                         const error = new Error('Releasing cadastral scope requires IDs and an explicit repository reset/unload reason.');
                         error.code = 'live-fabric-release-reason-required';
+                        throw error;
+                    }
+                    if (!CADASTRE_RELEASE_KINDS.has(normalizeId(draft.meta.kind))) {
+                        const error = new Error('Cadastral scope release is reserved for repository reset or unload mutations.');
+                        error.code = 'live-fabric-release-forbidden';
                         throw error;
                     }
                     Array.from(draft.data.byId.entries()).forEach(([id, feature]) => {
