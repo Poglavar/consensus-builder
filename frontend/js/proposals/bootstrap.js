@@ -197,14 +197,15 @@ if (typeof window !== 'undefined') {
         scheduleHighlightRefresh('parcels-loaded');
         if (typeof updateProposalLayer === 'function') updateProposalLayer();
 
-        if (!window.selectedParcelId || !window.LiveParcelFabric?.get?.(window.selectedParcelId)) return;
-        const layer = window.ParcelPresenter?.getLayer?.(window.selectedParcelId) || null;
+        const selectedId = window.selectedParcelId;
+        if (!selectedId || !window.LiveParcelFabric?.get?.(selectedId)) return;
+        const layer = window.ParcelPresenter?.getLayer?.(selectedId) || null;
         if (!layer) return;
 
-        const isTrackSelected = global.LiveParcelFabric?.get?.(selectedId)?.properties?.isTrack === true || Boolean(layer?._trackStyle);
+        const isTrackSelected = window.LiveParcelFabric.get(selectedId)?.properties?.isTrack === true || Boolean(layer?._trackStyle);
         if (isTrackSelected) {
             const styleFn = typeof getParcelStyle === 'function' ? getParcelStyle : getParcelBaseStyle;
-            const style = styleFn ? styleFn(window.selectedParcelId, layer, { isTrack: true }) : {};
+            const style = styleFn ? styleFn(selectedId, layer, { isTrack: true }) : {};
             layer.setStyle({ ...style, weight: 4 });
         } else if (typeof selectedParcelStyle !== 'undefined') {
             layer.setStyle(selectedParcelStyle);
