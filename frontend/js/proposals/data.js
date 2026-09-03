@@ -72,6 +72,21 @@ function declaredCadastreAnchors(parcelIds) {
     return output;
 }
 
+function requireExactCadastreAnchors(record, action) {
+    const values = record?.cadastreParcelIds;
+    if (!Array.isArray(values) || !values.length) {
+        throw new Error(`Cannot ${action} proposal: cadastreParcelIds is required.`);
+    }
+    const ids = values.map(value => typeof value === 'string' ? value : '');
+    if (ids.some((id, index) => !id || id !== id.trim() || id !== values[index])) {
+        throw new Error(`Cannot ${action} proposal: cadastreParcelIds must contain non-empty strings.`);
+    }
+    if (new Set(ids).size !== ids.length) {
+        throw new Error(`Cannot ${action} proposal: cadastreParcelIds must not contain duplicates.`);
+    }
+    return ids;
+}
+
 function explicitCadastreAnchors(parcelIds) {
     const root = typeof window !== 'undefined' ? window : globalThis;
     const fabric = root && root.LiveParcelFabric;
@@ -162,6 +177,7 @@ function proposalRecordForPersistence(record) {
     if (!depthApi || typeof depthApi.stripDerivedRecordData !== 'function') {
         throw new Error('Cannot persist proposal: the authored-record projection is unavailable.');
     }
+    requireExactCadastreAnchors(record, 'persist');
     // Inspect the record as supplied before compatibility aliases are synchronized.  Syncing first
     // would hide the exact malformed declaration this boundary exists to reject.
     const invalid = typeof depthApi.findNonCadastralReference === 'function'
@@ -185,7 +201,6 @@ function proposalRecordForPersistence(record) {
 const proposalStorage = {
     proposals: new Map(),
     nextProposalId: 0,
-    quarantinedRecords: [],
     // Save-batching, same shape as agentStorage. Code paths that mutate proposals
     // call save() freely; if a batch is open save() just flags a pending write
     // and the actual JSON.stringify + IndexedDB write happens once at endBatch().
@@ -202,7 +217,6 @@ const proposalStorage = {
         return {
             records: new Map(Array.from(this.proposals, ([id, record]) => [id, JSON.parse(JSON.stringify(record))])),
             nextProposalId: this.nextProposalId,
-            quarantinedRecords: JSON.parse(JSON.stringify(this.quarantinedRecords || [])),
             blockedWriteCount: this._blockedWriteCount
         };
     },
@@ -211,7 +225,6 @@ const proposalStorage = {
         const draft = Object.create(this);
         draft.proposals = new Map(Array.from(snapshot.records || [], ([id, record]) => [id, JSON.parse(JSON.stringify(record))]));
         draft.nextProposalId = snapshot.nextProposalId;
-        draft.quarantinedRecords = JSON.parse(JSON.stringify(snapshot.quarantinedRecords || []));
         draft._suspendSaveCount = 0;
         draft._hasPendingSave = false;
         draft.save = () => { draft._hasPendingSave = true; };
@@ -224,7 +237,6 @@ const proposalStorage = {
     serializeMutationDraft(draft) {
         const serialisable = Array.from(draft.proposals.values()).map(proposalRecordForPersistence);
         const state = proposalStateEnvelope(draft.nextProposalId, serialisable);
-        state.quarantine = JSON.parse(JSON.stringify(draft.quarantinedRecords || []));
         return { key: PROPOSALS_STORAGE_KEY, value: JSON.stringify(state) };
     },
 
@@ -243,15 +255,13 @@ const proposalStorage = {
             }
         });
         this.nextProposalId = draft.nextProposalId;
-        this.quarantinedRecords = JSON.parse(JSON.stringify(draft.quarantinedRecords || []));
         this._hasPendingSave = false;
     },
 
     restoreMutationSnapshot(snapshot) {
         this.publishMutationDraft({
             proposals: snapshot.records,
-            nextProposalId: snapshot.nextProposalId,
-            quarantinedRecords: snapshot.quarantinedRecords || []
+            nextProposalId: snapshot.nextProposalId
         });
         this._blockedWriteCount = snapshot.blockedWriteCount;
     },
@@ -370,12 +380,31 @@ const proposalStorage = {
         if (!raw) return null;
 
         const metaProps = raw.metadata && raw.metadata.properties ? raw.metadata.properties : {};
+        const owns = (value, key) => value && typeof value === 'object'
+            && Object.prototype.hasOwnProperty.call(value, key);
+        if (owns(raw, 'parentParcelIds') || owns(metaProps, 'parcelIds')) {
+            throw new Error('Cannot import chain proposal: cadastreParcelIds is the only parcel declaration.');
+        }
+        const declaredCadastreIds = owns(raw, 'cadastreParcelIds')
+            ? raw.cadastreParcelIds
+            : metaProps.cadastreParcelIds;
+        if (!Array.isArray(declaredCadastreIds) || !declaredCadastreIds.length) {
+            throw new Error('Cannot import chain proposal: cadastreParcelIds is required.');
+        }
         const chainTokenId = raw.proposalId ?? raw.tokenId ?? (raw.onchain && raw.onchain.proposalId) ?? metaProps.tokenId ?? null;
         const rawProposalId = chainTokenId !== undefined && chainTokenId !== null ? String(chainTokenId) : null;
         const metaProposalId = metaProps.proposalId || metaProps.id || null;
         const cadastreParcelIds = normalizeParcelIdList(
-            raw.cadastreParcelIds || metaProps.cadastreParcelIds || []
+            declaredCadastreIds
         );
+        const authoredApi = (typeof window !== 'undefined' ? window : globalThis).ProposalAuthoredRecord;
+        if (!authoredApi || typeof authoredApi.isDerivedParcelId !== 'function') {
+            throw new Error('Cannot import chain proposal: authored proposal validation is unavailable.');
+        }
+        const generatedId = cadastreParcelIds.find(id => authoredApi.isDerivedParcelId(id));
+        if (generatedId) {
+            throw new Error(`Cannot import chain proposal: ${generatedId} is a generated parcel id.`);
+        }
         const normalizedChainId = typeof normalizeChainId === 'function'
             ? normalizeChainId(raw.chainId || (raw.onchain && raw.onchain.chainId))
             : (raw.chainId || (raw.onchain && raw.onchain.chainId) || null);
@@ -738,8 +767,7 @@ const proposalStorage = {
                 } catch (error) {
                     const identity = entry.proposalId || entry.serverProposalId || entry.id || `record ${index + 1}`;
                     // One malformed authored record cannot erase every other local proposal. It is
-                    // rejected at the record boundary and remains in the durable envelope until a
-                    // later successful save replaces that envelope with the valid in-memory set.
+                    // rejected at the record boundary and never enters replay or the proposal UI.
                     console.error(`[proposalStorage] Ignoring invalid stored proposal ${identity}`, error);
                 }
             });
@@ -1164,6 +1192,7 @@ const proposalStorage = {
         if (!depthApi || typeof depthApi.stripDerivedRecordData !== 'function') {
             throw new Error('Cannot normalize proposal: the authored-record projection is unavailable.');
         }
+        requireExactCadastreAnchors(proposal, 'load');
         // Remote, stored and newly authored records all enter the same strict representation.
         // Local live selection is a separate addProposal option and has already been projected.
         // This function never interprets an alias or asks the live fabric to explain record data.

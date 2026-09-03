@@ -249,7 +249,7 @@ function buildSharedProposalsPayload(appliedProposals) {
     }
     const ancestryApi = (typeof window !== 'undefined') ? window.__cadastreAncestry : null;
     const depthApi = (typeof window !== 'undefined') ? window.__formationDepth : null;
-    if (!ancestryApi || typeof ancestryApi.computeCadastreParcelIds !== 'function'
+    if (!ancestryApi || typeof ancestryApi.validateCadastreParcelIds !== 'function'
         || !depthApi || typeof depthApi.preparePublishRecord !== 'function') {
         throw new Error('Cannot share: the cadastral publish gate is unavailable.');
     }
@@ -267,7 +267,7 @@ function buildSharedProposalsPayload(appliedProposals) {
         // parcel parents or children from runtime output; those pieces belong to LiveParcelFabric.
         const candidate = deepClone(proposal);
         candidate.goal = resolveProposalGoalKey(proposal) || proposal.goal || null;
-        candidate.cadastreParcelIds = ancestryApi.computeCadastreParcelIds(proposal);
+        candidate.cadastreParcelIds = ancestryApi.validateCadastreParcelIds(proposal);
         candidate.ownershipFlow = typeof ancestryApi.computeOwnershipFlow === 'function'
             ? ancestryApi.computeOwnershipFlow(proposal)
             : (Array.isArray(proposal.ownershipFlow) ? deepCloneArray(proposal.ownershipFlow) : []);

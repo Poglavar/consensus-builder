@@ -80,7 +80,7 @@
     // parcel ids to this flat set once, when the proposal is created. Publishing must preserve that
     // exact scope (including selected block parcels without a generated building), never silently
     // replace it with whichever parcels happen to intersect the output geometry today.
-    function computeCadastreParcelIds(proposal, options) {
+    function validateCadastreParcelIds(proposal, options) {
         const api = planOrder();
         const t = (typeof global.turf !== 'undefined' && global.turf) ? global.turf : null;
         if (!api || !t || !proposal) {
@@ -133,7 +133,7 @@
     }
 
     // The ownership flow of a proposal's formation against the live cadastre (see ownership-flow.js).
-    // Same contract as computeCadastreParcelIds: additive bookkeeping, so a failure costs the field,
+    // Same contract as validateCadastreParcelIds: additive bookkeeping, so a failure costs the field,
     // never the proposal.
     function computeOwnershipFlow(proposal) {
         const flowApi = (global && global.__ownershipFlow)
@@ -152,7 +152,7 @@
         MIN_CADASTRE_COVERAGE,
         loadedCadastreParcels,
         loadedCadastreCoverage,
-        computeCadastreParcelIds,
+        validateCadastreParcelIds,
         computeOwnershipFlow
     };
 

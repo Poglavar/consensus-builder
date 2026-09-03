@@ -1,7 +1,9 @@
 // One-time migration to the canonical ground model.
 //
 // It makes stored rows conform before the app sees them:
-//   - every legacy land declaration is folded once into root cadastreParcelIds;
+//   - valid canonical declarations are preserved exactly; legacy declarations are promoted only
+//     when every non-empty declaration already names the same original-cadastre set;
+//   - missing, conflicting, malformed and generated-id declarations are rejected unchanged;
 //   - derived children, formations, proposal ancestry and demolition scans are removed;
 //   - government-plan child parcel pieces collapse into one authored definition.polygon and are
 //     then removed; runtime partitions never survive as proposal content;
@@ -30,6 +32,7 @@ import 'dotenv/config';
 import { pathToFileURL } from 'node:url';
 import { createRequire } from 'node:module';
 import { isDeepStrictEqual } from 'node:util';
+import { createHash } from 'node:crypto';
 
 // The corridor contiguity test lives in the frontend engine (classic script with a CJS tail).
 const requireCjs = createRequire(import.meta.url);
@@ -38,6 +41,17 @@ const authoredRecord = requireCjs('../../frontend/js/proposals/authored-record.j
 
 const { Pool } = pkg;
 const CRUMB_DEG2 = 1.2e-10;
+export const MIGRATION_ID = 'authoritative-parcel-records-v3';
+const MIGRATION_POLICY = Object.freeze({
+    canonicalField: 'cadastreParcelIds',
+    conflictPolicy: 'reject',
+    derivedIdPolicy: 'reject',
+    aliasPolicy: 'all-non-empty-sets-must-agree',
+    geometryBackfill: false
+});
+export const MIGRATION_CHECKSUM = createHash('sha256')
+    .update(JSON.stringify(MIGRATION_POLICY))
+    .digest('hex');
 const SUB_KEYS = Object.freeze([
     'roadProposal',
     'buildingProposal',
@@ -81,75 +95,10 @@ function canonicalLifecycle(value) {
     }
 }
 
-export function baseParcelIds(list) {
-    return Array.from(new Set((Array.isArray(list) ? list : [])
-        .map(value => {
-            const modernBase = String(value ?? '').split('#')[0];
-            const legacy = modernBase.match(/^(HR-\d+-.+?)_[a-z0-9]+_\d+$/i);
-            return legacy ? legacy[1] : modernBase;
-        })
-        .filter(Boolean)));
-}
-
-function baseParcelId(value) {
-    return baseParcelIds([value])[0] || '';
-}
-
-function flattenOwnerKey(value, sourceParcelId = '') {
-    let key = String(value ?? '');
-    const source = String(sourceParcelId || '');
-    if (source && key.includes(source)) key = key.split(source).join(baseParcelId(source));
-    return key.replace(/HR-\d+-[^:]+(?=:owner)/gi, match => baseParcelId(match));
-}
-
-function mergeUnique(left, right) {
-    return Array.from(new Set([...(Array.isArray(left) ? left : []), ...(Array.isArray(right) ? right : [])]
-        .map(value => String(value || '')).filter(Boolean)));
-}
-
 export function normalizeOwnerAcceptances(value) {
-    if (!value || typeof value !== 'object' || Array.isArray(value)) return value;
-    const output = {};
-    Object.entries(value).forEach(([sourceParcelId, rawEntry]) => {
-        const parcelId = baseParcelId(sourceParcelId);
-        if (!parcelId) return;
-        const entry = rawEntry && typeof rawEntry === 'object' && !Array.isArray(rawEntry) ? rawEntry : {};
-        const existing = output[parcelId] || { owners: {}, ownerOrder: [], acceptedOwnerKeys: [], acceptedBy: {} };
-        const owners = { ...(existing.owners || {}) };
-        Object.entries(entry.owners || {}).forEach(([rawKey, rawOwner]) => {
-            const key = flattenOwnerKey(rawKey, sourceParcelId);
-            if (!key) return;
-            owners[key] = {
-                ...(owners[key] || {}),
-                ...(rawOwner && typeof rawOwner === 'object' ? clone(rawOwner) : {}),
-                key
-            };
-        });
-        const acceptedBy = { ...(existing.acceptedBy || {}) };
-        Object.entries(entry.acceptedBy || {}).forEach(([rawKey, acceptance]) => {
-            const key = flattenOwnerKey(rawKey, sourceParcelId);
-            if (key) acceptedBy[key] = clone(acceptance);
-        });
-        const ownerOrder = mergeUnique(
-            existing.ownerOrder,
-            (Array.isArray(entry.ownerOrder) ? entry.ownerOrder : Object.keys(entry.owners || {}))
-                .map(key => flattenOwnerKey(key, sourceParcelId))
-        );
-        const acceptedOwnerKeys = mergeUnique(
-            existing.acceptedOwnerKeys,
-            (Array.isArray(entry.acceptedOwnerKeys) ? entry.acceptedOwnerKeys : [])
-                .map(key => flattenOwnerKey(key, sourceParcelId))
-        );
-        output[parcelId] = {
-            ...existing,
-            ...clone(entry),
-            owners,
-            ownerOrder: mergeUnique(ownerOrder, [...Object.keys(owners), ...acceptedOwnerKeys]),
-            acceptedOwnerKeys,
-            acceptedBy
-        };
-    });
-    return output;
+    // Parcel identities are not recoverable from generated-id spelling. Records containing those
+    // identities are rejected by resolveCadastreDeclarations before this projection is reached.
+    return value && typeof value === 'object' && !Array.isArray(value) ? clone(value) : value;
 }
 
 export function normalizeOwnershipFlow(value) {
@@ -157,7 +106,7 @@ export function normalizeOwnershipFlow(value) {
     const byParcelAndDestination = new Map();
     value.forEach(entry => {
         if (!entry || typeof entry !== 'object' || !entry.parcelId) return;
-        const parcelId = baseParcelId(entry.parcelId);
+        const parcelId = String(entry.parcelId).trim();
         if (!parcelId) return;
         const destination = String(entry.destination || '');
         const key = `${parcelId}\u0000${destination}`;
@@ -347,51 +296,175 @@ function legacyBuildingFeatures(record) {
     return [];
 }
 
-function legacyCadastreCandidates(record) {
-    if (!record || typeof record !== 'object' || Array.isArray(record)) return [];
+function declaration(path, value, canonical = false) {
+    if (value === undefined || value === null) return null;
+    if (!Array.isArray(value)) {
+        return { path, canonical, ids: [], invalid: 'declaration is not an array' };
+    }
     const ids = [];
-    const add = values => {
-        if (Array.isArray(values)) ids.push(...values);
-    };
-    add(record.cadastreParcelIds);
-    add(record.parentParcelIds);
-    add(record.parcelIds);
-    SUB_KEYS.forEach(key => add(record[key]?.parentParcelIds));
-    add(record.reparcellization?.parcelIds);
-    if (Array.isArray(record.reparcellization?.ownerShares)) {
-        record.reparcellization.ownerShares.forEach(entry => add(entry?.parcelIds));
-    }
-
-    const building = record.buildingProposal;
-    if (building && typeof building === 'object' && !Array.isArray(building)) {
-        add(building.blockParcelIds);
-        if (Array.isArray(building.parentParcelNumbers)) {
-            ids.push(...building.parentParcelNumbers.map(entry => entry?.id));
+    const seen = new Set();
+    for (const raw of value) {
+        if (raw === undefined || raw === null || (typeof raw !== 'string' && typeof raw !== 'number')) {
+            return { path, canonical, ids, invalid: 'declaration contains a non-scalar value' };
         }
-        if (Array.isArray(building.ineligibleParcels)) {
-            ids.push(...building.ineligibleParcels.map(entry => entry?.parcelId));
+        const source = String(raw);
+        const id = source.trim();
+        if (!id || id !== source) {
+            return { path, canonical, ids, invalid: 'declaration contains an empty or padded value' };
         }
-        if (Array.isArray(building.buildings)) {
-            ids.push(...building.buildings.map(entry => (
-                entry?.properties?.parcelId || entry?.feature?.properties?.parcelId
-            )));
+        if (seen.has(id)) {
+            return { path, canonical, ids, invalid: `declaration contains duplicate id ${id}` };
         }
-        ids.push(building.buildingFeature?.properties?.parcelId);
+        seen.add(id);
+        ids.push(id);
     }
-    if (Array.isArray(record.geometry?.buildings)) {
-        ids.push(...record.geometry.buildings.map(feature => feature?.properties?.parcelId));
-    }
-    return baseParcelIds(ids.filter(Boolean));
+    return { path, canonical, ids };
 }
 
-export function normalizeStoredProposal(input) {
+function proposalCadastreDeclarations(record, prefix = '') {
+    if (!record || typeof record !== 'object' || Array.isArray(record)) return [];
+    const found = [];
+    const add = (path, value, canonical = false) => {
+        const item = declaration(prefix ? `${prefix}.${path}` : path, value, canonical);
+        if (item) found.push(item);
+    };
+    add('cadastreParcelIds', record.cadastreParcelIds, true);
+    add('parentParcelIds', record.parentParcelIds);
+    add('parcelIds', record.parcelIds);
+    SUB_KEYS.forEach(key => add(`${key}.parentParcelIds`, record[key]?.parentParcelIds));
+    add('reparcellization.parcelIds', record.reparcellization?.parcelIds);
+    add('buildingProposal.blockParcelIds', record.buildingProposal?.blockParcelIds);
+    return found;
+}
+
+function stableDeclarations(declarations) {
+    return declarations.slice().sort((left, right) => left.path.localeCompare(right.path));
+}
+
+function sameIdSet(left, right) {
+    if (left.length !== right.length) return false;
+    const expected = new Set(left);
+    return right.every(id => expected.has(id));
+}
+
+function conflict(code, message, declarations, extra = {}) {
+    return {
+        code,
+        message,
+        declarations: stableDeclarations(declarations).map(item => ({
+            path: item.path,
+            ids: item.ids.slice(),
+            canonical: item.canonical === true,
+            ...(item.invalid ? { invalid: item.invalid } : {})
+        })),
+        ...extra
+    };
+}
+
+export function resolveCadastreDeclarations(input, options = {}) {
+    const declarations = Array.isArray(options.declarations)
+        ? options.declarations.filter(Boolean)
+        : proposalCadastreDeclarations(input);
+    const malformed = declarations.filter(item => item.invalid);
+    if (malformed.length) {
+        return { ok: false, conflict: conflict(
+            'malformed-cadastral-declaration',
+            'A cadastral declaration is malformed.',
+            declarations,
+            { fields: malformed.map(item => item.path).sort() }
+        ) };
+    }
+    const nonEmpty = declarations.filter(item => item.ids.length);
+    if (!nonEmpty.length) {
+        if (options.allowMissing === true) return { ok: true, ids: [], source: null, declarations };
+        return { ok: false, conflict: conflict(
+            'missing-cadastral-declaration',
+            'No exact cadastral parcel selection is declared.',
+            declarations
+        ) };
+    }
+    const derived = nonEmpty.filter(item => item.ids.some(id => authoredRecord.isDerivedParcelId(id)));
+    if (derived.length) {
+        return { ok: false, conflict: conflict(
+            'derived-cadastral-declaration',
+            'A declaration contains generated parcel identities that cannot be migrated safely.',
+            declarations,
+            { fields: derived.map(item => item.path).sort() }
+        ) };
+    }
+    const reference = nonEmpty.find(item => item.canonical) || nonEmpty[0];
+    const disagreeing = nonEmpty.filter(item => !sameIdSet(reference.ids, item.ids));
+    if (disagreeing.length) {
+        return { ok: false, conflict: conflict(
+            'conflicting-cadastral-declarations',
+            'Non-empty cadastral declarations do not resolve to one exact set.',
+            declarations,
+            { fields: [reference, ...disagreeing].map(item => item.path).sort() }
+        ) };
+    }
+    // A valid canonical declaration is already the authority and is retained in its authored
+    // order. Otherwise the first deterministic legacy declaration becomes the one canonical list.
+    const source = nonEmpty.find(item => item.canonical)
+        || stableDeclarations(nonEmpty)[0];
+    return { ok: true, ids: source.ids.slice(), source: source.path, declarations };
+}
+
+function linkedCadastreReferences(record) {
+    const refs = [];
+    const add = (path, value) => {
+        if (value === undefined || value === null || value === '') return;
+        refs.push({ path, id: String(value).trim() });
+    };
+    (Array.isArray(record?.acceptedParcelIds) ? record.acceptedParcelIds : [])
+        .forEach((id, index) => add(`acceptedParcelIds[${index}]`, id));
+    Object.keys(record?.ownerAcceptances || {})
+        .forEach(id => add(`ownerAcceptances.${id}`, id));
+    (Array.isArray(record?.ownershipFlow) ? record.ownershipFlow : [])
+        .forEach((entry, index) => add(`ownershipFlow[${index}].parcelId`, entry?.parcelId));
+    (Array.isArray(record?.reparcellization?.ownerShares) ? record.reparcellization.ownerShares : [])
+        .forEach((entry, index) => (Array.isArray(entry?.parcelIds) ? entry.parcelIds : [])
+            .forEach((id, parcelIndex) => add(
+                `reparcellization.ownerShares[${index}].parcelIds[${parcelIndex}]`, id
+            )));
+    return refs.sort((left, right) => left.path.localeCompare(right.path));
+}
+
+function linkedReferenceConflict(record, cadastreIds) {
+    const anchors = new Set(cadastreIds);
+    const refs = linkedCadastreReferences(record);
+    const derived = refs.filter(ref => authoredRecord.isDerivedParcelId(ref.id));
+    if (derived.length) {
+        return conflict('derived-cadastral-reference',
+            'A linked ownership/acceptance record contains a generated parcel identity.', [],
+            { references: derived });
+    }
+    const outside = refs.filter(ref => !anchors.has(ref.id));
+    if (outside.length) {
+        return conflict('cadastral-reference-outside-selection',
+            'A linked ownership/acceptance record lies outside the exact cadastral selection.', [],
+            { references: outside });
+    }
+    return null;
+}
+
+export function normalizeStoredProposal(input, options = {}) {
     if (!input || typeof input !== 'object' || Array.isArray(input)) {
         return { changed: false, value: input };
+    }
+    const resolution = options.cadastreResolution || resolveCadastreDeclarations(input, {
+        allowMissing: options.allowMissing === true
+    });
+    if (!resolution.ok) {
+        return { changed: false, value: clone(input), invalid: resolution.conflict };
+    }
+    const referenceConflict = linkedReferenceConflict(input, resolution.ids);
+    if (referenceConflict) {
+        return { changed: false, value: clone(input), invalid: referenceConflict };
     }
     const output = clone(input);
     normalizeRoadGeometry(output);
     const governmentPlan = isGovernmentPlan(output);
-    const cadastralScope = legacyCadastreCandidates(input);
+    const cadastralScope = resolution.ids;
     const buildings = legacyBuildingFeatures(output);
     if (buildings.length) {
         output.geometry = output.geometry && typeof output.geometry === 'object' && !Array.isArray(output.geometry)
@@ -428,7 +501,7 @@ export function normalizeStoredProposal(input) {
     if (cadastralScope.length) output.cadastreParcelIds = cadastralScope;
     else delete output.cadastreParcelIds;
     if (Array.isArray(output.acceptedParcelIds)) {
-        output.acceptedParcelIds = baseParcelIds(output.acceptedParcelIds);
+        output.acceptedParcelIds = output.acceptedParcelIds.map(String);
     }
     if (output.ownerAcceptances && typeof output.ownerAcceptances === 'object') {
         output.ownerAcceptances = normalizeOwnerAcceptances(output.ownerAcceptances);
@@ -456,7 +529,6 @@ export function normalizeStoredProposal(input) {
         delete sub.demolitionScanned;
         delete sub.childFeatures;
         if (key === 'reparcellization') {
-            if (Array.isArray(sub.parcelIds)) sub.parcelIds = baseParcelIds(sub.parcelIds);
             sub = normalizePlan(sub).value;
             output[key] = sub;
         }
@@ -478,27 +550,55 @@ function normalizeSubColumn(value, key, cadastreParcelIds, governmentRecord, chi
         childFeatures: clone(childFeatures),
         [key]: clone(value)
     };
-    return normalizeStoredProposal(wrapper).value[key];
+    return normalizeStoredProposal(wrapper, {
+        cadastreResolution: { ok: true, ids: clone(cadastreParcelIds), source: 'row.cadastre_parcel_ids' }
+    }).value[key];
 }
 
-export function normalizeProposalRow(row) {
-    const updates = {};
-    const rowRecord = {
-        cadastreParcelIds: row.cadastre_parcel_ids,
-        parentParcelIds: row.ancestor_parcel_ids,
-        roadProposal: row.road_proposal,
-        buildingProposal: row.building_proposal,
-        structureProposal: row.structure_proposal,
-        reparcellization: row.reparcellization
+function rowCadastreDeclarations(row) {
+    const found = [];
+    const add = (path, value, canonical = false) => {
+        const item = declaration(path, value, canonical);
+        if (item) found.push(item);
     };
-    const cadastre = baseParcelIds([
-        ...legacyCadastreCandidates(row.proposal_data),
-        ...legacyCadastreCandidates(rowRecord)
-    ]);
+    add('cadastre_parcel_ids', row?.cadastre_parcel_ids, true);
+    add('ancestor_parcel_ids', row?.ancestor_parcel_ids);
+    found.push(...proposalCadastreDeclarations(row?.proposal_data, 'proposal_data'));
+    for (const [column, key] of [
+        ['road_proposal', 'roadProposal'],
+        ['building_proposal', 'buildingProposal'],
+        ['structure_proposal', 'structureProposal'],
+        ['reparcellization', 'reparcellization']
+    ]) {
+        const value = row?.[column];
+        if (!value || typeof value !== 'object' || Array.isArray(value)) continue;
+        add(`${column}.parentParcelIds`, value.parentParcelIds);
+        if (key === 'reparcellization') add(`${column}.parcelIds`, value.parcelIds);
+        if (key === 'buildingProposal') add(`${column}.blockParcelIds`, value.blockParcelIds);
+    }
+    return found;
+}
+
+function stableValue(value) {
+    if (Array.isArray(value)) return value.map(stableValue);
+    if (value instanceof Date) return value.toISOString();
+    if (!value || typeof value !== 'object') return value;
+    return Object.fromEntries(Object.keys(value).sort().map(key => [key, stableValue(value[key])]));
+}
+
+export function migrationRecordChecksum(value) {
+    return createHash('sha256').update(JSON.stringify(stableValue(value))).digest('hex');
+}
+
+function normalizeResolvedProposalRow(row, resolution) {
+    const updates = {};
+    const cadastre = resolution.ids.slice();
     const proposalDataInput = row.proposal_data && typeof row.proposal_data === 'object'
         ? { ...clone(row.proposal_data), cadastreParcelIds: cadastre }
-        : null;
-    const proposalDataResult = normalizeStoredProposal(proposalDataInput);
+        : { cadastreParcelIds: cadastre };
+    const proposalDataResult = normalizeStoredProposal(proposalDataInput, {
+        cadastreResolution: { ok: true, ids: cadastre, source: resolution.source }
+    });
     const proposalData = proposalDataResult.value && typeof proposalDataResult.value === 'object'
         ? proposalDataResult.value
         : {};
@@ -508,7 +608,9 @@ export function normalizeProposalRow(row) {
     if (!equal(cadastre, row.cadastre_parcel_ids || [])) {
         updates.cadastre_parcel_ids = cadastre.length ? cadastre : null;
     }
-    const acceptedParcelIds = baseParcelIds(row.accepted_parcel_ids || []);
+    const acceptedParcelIds = Array.isArray(row.accepted_parcel_ids)
+        ? row.accepted_parcel_ids.map(value => String(value).trim()).filter(Boolean)
+        : [];
     if (!equal(acceptedParcelIds, row.accepted_parcel_ids || [])) {
         updates.accepted_parcel_ids = acceptedParcelIds.length ? acceptedParcelIds : null;
     }
@@ -567,6 +669,59 @@ export function normalizeProposalRow(row) {
         if (!equal(normalized, row[column])) updates[column] = normalized;
     }
     return updates;
+}
+
+export class MigrationValidationError extends Error {
+    constructor(conflictValue) {
+        super(conflictValue?.message || 'Proposal record requires explicit migration.');
+        this.name = 'MigrationValidationError';
+        this.code = conflictValue?.code || 'invalid-proposal-record';
+        this.conflict = clone(conflictValue);
+    }
+}
+
+export function analyzeProposalRow(row) {
+    const declarations = rowCadastreDeclarations(row || {});
+    const resolution = resolveCadastreDeclarations(null, { declarations });
+    if (!resolution.ok) {
+        return {
+            status: 'invalid',
+            checksum: migrationRecordChecksum(row),
+            conflict: resolution.conflict,
+            updates: {}
+        };
+    }
+    const linkedRecord = {
+        ...(row?.proposal_data && typeof row.proposal_data === 'object' ? row.proposal_data : {}),
+        acceptedParcelIds: row?.accepted_parcel_ids ?? row?.proposal_data?.acceptedParcelIds,
+        ownerAcceptances: row?.owner_acceptances ?? row?.proposal_data?.ownerAcceptances,
+        ownershipFlow: row?.ownership_flow ?? row?.proposal_data?.ownershipFlow,
+        reparcellization: row?.reparcellization
+            || row?.proposal_data?.reparcellization
+    };
+    const linkedConflict = linkedReferenceConflict(linkedRecord, resolution.ids);
+    if (linkedConflict) {
+        return {
+            status: 'invalid',
+            checksum: migrationRecordChecksum(row),
+            conflict: linkedConflict,
+            updates: {}
+        };
+    }
+    const updates = normalizeResolvedProposalRow(row, resolution);
+    return {
+        status: Object.keys(updates).length ? 'migrate' : 'unchanged',
+        checksum: migrationRecordChecksum(row),
+        source: resolution.source,
+        cadastreParcelIds: resolution.ids.slice(),
+        updates
+    };
+}
+
+export function normalizeProposalRow(row) {
+    const analysis = analyzeProposalRow(row);
+    if (analysis.status === 'invalid') throw new MigrationValidationError(analysis.conflict);
+    return analysis.updates;
 }
 
 // ---- 2026-08-07 contiguity rulings ---------------------------------------------------------
@@ -761,6 +916,81 @@ export function parseArgs(argv) {
     return parsed;
 }
 
+function scopedMigrationId(args) {
+    if (!args.ids?.length) return MIGRATION_ID;
+    return `${MIGRATION_ID}:ids:${Array.from(new Set(args.ids)).sort((a, b) => a - b).join(',')}`;
+}
+
+export function buildDryRunReport(rows, options = {}) {
+    const migrationId = options.migrationId || MIGRATION_ID;
+    const entries = (Array.isArray(rows) ? rows : [])
+        .slice()
+        .sort((left, right) => Number(left?.id || 0) - Number(right?.id || 0))
+        .map(row => {
+            const analysis = analyzeProposalRow(row);
+            return {
+                rowId: row?.id ?? null,
+                proposalId: row?.proposal_id == null ? null : String(row.proposal_id),
+                checksum: analysis.checksum,
+                status: analysis.status,
+                ...(analysis.status === 'invalid'
+                    ? { conflict: analysis.conflict }
+                    : {
+                        cadastreParcelIds: analysis.cadastreParcelIds,
+                        source: analysis.source,
+                        columns: Object.keys(analysis.updates).sort()
+                    })
+            };
+        });
+    return {
+        migrationId,
+        migrationChecksum: MIGRATION_CHECKSUM,
+        total: entries.length,
+        migrate: entries.filter(entry => entry.status === 'migrate'),
+        unchanged: entries.filter(entry => entry.status === 'unchanged'),
+        invalid: entries.filter(entry => entry.status === 'invalid')
+    };
+}
+
+async function ensureMigrationTables(db) {
+    await db.query(`CREATE TABLE IF NOT EXISTS proposal_migration_state (
+        migration_id text PRIMARY KEY,
+        checksum text NOT NULL,
+        report jsonb NOT NULL,
+        applied_at timestamptz NOT NULL DEFAULT now()
+    )`);
+}
+
+async function enforceProposalRecordConstraints(db) {
+    await db.query('ALTER TABLE proposal ALTER COLUMN cadastre_parcel_ids SET NOT NULL');
+    await db.query(`DO $migration$
+        BEGIN
+            IF NOT EXISTS (
+                SELECT 1 FROM pg_constraint
+                WHERE conname = 'proposal_cadastre_parcel_ids_nonempty'
+                    AND conrelid = 'proposal'::regclass
+            ) THEN
+                ALTER TABLE proposal ADD CONSTRAINT proposal_cadastre_parcel_ids_nonempty CHECK (
+                    CASE WHEN jsonb_typeof(cadastre_parcel_ids) = 'array'
+                        THEN jsonb_array_length(cadastre_parcel_ids) > 0
+                        ELSE FALSE
+                    END
+                );
+            END IF;
+            IF NOT EXISTS (
+                SELECT 1 FROM pg_constraint
+                WHERE conname = 'proposal_cadastre_declaration_matches_record'
+                    AND conrelid = 'proposal'::regclass
+            ) THEN
+                ALTER TABLE proposal ADD CONSTRAINT proposal_cadastre_declaration_matches_record CHECK (
+                    proposal_data ? 'cadastreParcelIds'
+                    AND proposal_data->'cadastreParcelIds' = cadastre_parcel_ids
+                );
+            END IF;
+        END
+    $migration$`);
+}
+
 export async function run(argv = process.argv.slice(2)) {
     const args = parseArgs(argv);
     if (args.help) {
@@ -773,28 +1003,52 @@ export async function run(argv = process.argv.slice(2)) {
     }
 
     const pool = new Pool();
+    const client = args.apply ? await pool.connect() : null;
+    const db = client || pool;
+    const migrationId = scopedMigrationId(args);
     const stats = {
         total: 0, changed: 0, written: 0,
-        roadsSplit: 0, poolsDiscontiguous: 0, partialInputs: 0, structuresOverRoads: 0
+        invalid: 0, roadsSplit: 0, poolsDiscontiguous: 0,
+        partialInputs: 0, structuresOverRoads: 0
     };
     let tableColumns = null;
     try {
+        if (args.apply) {
+            await db.query('BEGIN');
+            await ensureMigrationTables(db);
+            const { rows: markers } = await db.query(
+                'SELECT checksum, report FROM proposal_migration_state WHERE migration_id = $1',
+                [migrationId]
+            );
+            if (markers.length) {
+                if (markers[0].checksum !== MIGRATION_CHECKSUM) {
+                    throw new Error(`Migration marker ${migrationId} has checksum ${markers[0].checksum}; expected ${MIGRATION_CHECKSUM}.`);
+                }
+                console.log(`migration ${migrationId} already applied with checksum ${MIGRATION_CHECKSUM}`);
+                console.log(JSON.stringify(markers[0].report, null, 2));
+                await db.query('COMMIT');
+                return 0;
+            }
+        }
         const params = args.ids?.length ? [args.ids] : [];
         const where = params.length ? 'WHERE id = ANY($1::int[])' : '';
-        const sql = [
-            'SELECT id, proposal_id, title,',
-            'ancestor_parcel_ids, cadastre_parcel_ids, descendant_parcel_ids,',
-            'accepted_parcel_ids, owner_acceptances, ownership_flow,',
-            'parent_features, child_features,',
-            'parent_proposal_ids, child_proposal_ids,',
-            'road_proposal, building_proposal, structure_proposal,',
-            'reparcellization, proposal_data',
-            'FROM proposal ' + where + ' ORDER BY id'
-        ].join(' ');
-        const { rows } = await pool.query(sql, params);
+        const { rows } = await db.query('SELECT * FROM proposal ' + where + ' ORDER BY id', params);
         stats.total = rows.length;
         console.log('database: ' + process.env.PGDATABASE + '   mode: ' + (args.apply ? 'APPLY' : 'DRY RUN'));
         console.log(rows.length + ' row(s) to consider');
+        const declarationReport = buildDryRunReport(rows, { migrationId });
+        console.log('declaration report:');
+        console.log(JSON.stringify(declarationReport, null, 2));
+        if (args.apply && declarationReport.invalid.length) {
+            stats.invalid = declarationReport.invalid.length;
+            declarationReport.invalid.forEach(entry => {
+                console.error(`#${entry.rowId} ${entry.proposalId || ''} — INVALID ${entry.conflict.code}: ${entry.conflict.message}`);
+            });
+            console.error(`${stats.invalid} invalid proposal record(s); no records were changed.`);
+            await db.query('ROLLBACK');
+            return 2;
+        }
+        const analyses = new Map(rows.map(row => [row.id, analyzeProposalRow(row)]));
 
         let turfRef = null;
         try { turfRef = requireCjs('@turf/turf'); } catch (_) {
@@ -811,7 +1065,14 @@ export async function run(argv = process.argv.slice(2)) {
             .filter(entry => entry.definition);
 
         for (const row of rows) {
-            const updates = normalizeProposalRow(row);
+            const analysis = analyses.get(row.id);
+            if (analysis.status === 'invalid') {
+                stats.invalid += 1;
+                console.log('#' + row.id + ' ' + row.proposal_id + ' — INVALID '
+                    + analysis.conflict.code + ': ' + analysis.conflict.message);
+                continue;
+            }
+            const updates = analysis.updates;
             const columns = Object.keys(updates);
             if (columns.length) {
                 stats.changed += 1;
@@ -829,7 +1090,7 @@ export async function run(argv = process.argv.slice(2)) {
                         sets.push(column + ' = $' + values.length + '::jsonb');
                     });
                     values.push(row.id);
-                    await pool.query(
+                    await db.query(
                         'UPDATE proposal SET ' + sets.join(', ')
                             + ', updated_at = now() WHERE id = $' + values.length,
                         values
@@ -854,7 +1115,7 @@ export async function run(argv = process.argv.slice(2)) {
                     console.log('    note: tunnels/grade-separations copied to every stretch; the next edit prunes dead edges');
                 }
                 if (args.apply) {
-                    if (!tableColumns) tableColumns = await proposalColumns(pool);
+                    if (!tableColumns) tableColumns = await proposalColumns(db);
                     const baseRoad = clone((updates.road_proposal ?? row.road_proposal) || {});
                     const baseData = clone(rowData);
                     const baseTitle = row.title || baseData.title || baseData.name || 'Road';
@@ -867,7 +1128,7 @@ export async function run(argv = process.argv.slice(2)) {
                         siblingData.title = siblingTitle;
                         if (siblingData.name) siblingData.name = siblingTitle;
                         siblingData.roadProposal = { ...(siblingData.roadProposal || {}), definition: clone(parts[k]) };
-                        await insertSplitSibling(pool, row, tableColumns, {
+                        await insertSplitSibling(db, row, tableColumns, {
                             proposal_id: siblingId,
                             title: siblingTitle,
                             name: siblingTitle,
@@ -878,7 +1139,7 @@ export async function run(argv = process.argv.slice(2)) {
                     const keepRoad = { ...clone(baseRoad), definition: clone(parts[0]) };
                     const keepData = clone(baseData);
                     keepData.roadProposal = { ...(keepData.roadProposal || {}), definition: clone(parts[0]) };
-                    await pool.query(
+                    await db.query(
                         'UPDATE proposal SET road_proposal = $1::jsonb, proposal_data = $2::jsonb, updated_at = now() WHERE id = $3',
                         [JSON.stringify(keepRoad), JSON.stringify(keepData), row.id]
                     );
@@ -914,7 +1175,7 @@ export async function run(argv = process.argv.slice(2)) {
                         + poolParts + ' pieces) — needs its author, not a script');
                 }
                 try {
-                    const partials = await readjustmentPartialInputs(pool, {
+                    const partials = await readjustmentPartialInputs(db, {
                         ...rowData,
                         reparcellization: planValue
                     });
@@ -928,10 +1189,34 @@ export async function run(argv = process.argv.slice(2)) {
                 }
             }
         }
-        console.log(JSON.stringify(stats, null, 2));
+        const finalReport = { ...declarationReport, stats };
+        console.log(JSON.stringify(finalReport, null, 2));
+        if (args.apply) {
+            // A scoped repair cannot prove the rest of the table. The complete migration installs
+            // the same invariant as a fresh schema only after every row has passed validation.
+            if (!args.ids?.length) await enforceProposalRecordConstraints(db);
+            await db.query(
+                `INSERT INTO proposal_migration_state (migration_id, checksum, report)
+                 VALUES ($1, $2, $3::jsonb)`,
+                [migrationId, MIGRATION_CHECKSUM, JSON.stringify(finalReport)]
+            );
+        }
+        if (args.apply) {
+            await db.query('COMMIT');
+        }
+        if (stats.invalid) {
+            console.error(`${stats.invalid} invalid proposal record(s) were left unchanged.`);
+            return 2;
+        }
         if (!args.apply && stats.changed) console.log('Re-run with --apply to write.');
         return 0;
+    } catch (error) {
+        if (args.apply) {
+            try { await db.query('ROLLBACK'); } catch (_) { /* preserve primary failure */ }
+        }
+        throw error;
     } finally {
+        client?.release?.();
         await pool.end();
     }
 }

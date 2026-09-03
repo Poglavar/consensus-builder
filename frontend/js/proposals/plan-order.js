@@ -85,9 +85,9 @@
         return acc;
     }
 
-    // The cadastral ancestry to store on a proposal is what its geometry actually covers. Declared
-    // ids are hints for loading only; including them here made stale parents into false ground claims.
-    function computeCadastreParcelIds(proposal, baseParcels, options) {
+    // Geometry-only coverage inspection for explicit repair/audit tools. This result is diagnostic;
+    // authored proposal identity always comes from proposal.cadastreParcelIds.
+    function cadastreCoverageIdsForGeometry(proposal, baseParcels, options) {
         const footprint = footprintOf(proposal);
         if (!footprint) return [];
         return computeBaseAncestry(footprint, baseParcels, options).map(hit => hit.id);
@@ -202,7 +202,7 @@
         MIN_INTERSECTION_M2,
         intersectionArea,
         footprintOf,
-        computeCadastreParcelIds,
+        cadastreCoverageIdsForGeometry,
         computeBaseAncestry,
         compareFormationOrder,
         orderFormations

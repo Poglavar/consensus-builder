@@ -32,4 +32,13 @@ describe('proposal schema contract', () => {
         const statuses = [...check.matchAll(/'([^']+)'/g)].map(match => match[1]);
         expect(statuses).toEqual(LIFECYCLE_STATUSES);
     });
+
+    it('requires one non-empty cadastral declaration and no ancestry column', () => {
+        expect(tableDefinition).not.toMatch(/^\s*ancestor_parcel_ids\b/im);
+        expect(tableDefinition).toMatch(/^\s*cadastre_parcel_ids\s+JSONB\s+NOT NULL/im);
+        expect(tableDefinition).toMatch(/proposal_cadastre_parcel_ids_nonempty/i);
+        expect(tableDefinition).toMatch(/jsonb_array_length\(cadastre_parcel_ids\)\s*>\s*0/i);
+        expect(tableDefinition).toMatch(/proposal_cadastre_declaration_matches_record/i);
+        expect(tableDefinition).toMatch(/proposal_data->'cadastreParcelIds'\s*=\s*cadastre_parcel_ids/i);
+    });
 });

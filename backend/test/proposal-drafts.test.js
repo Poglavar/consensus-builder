@@ -6,7 +6,6 @@ const require = createRequire(import.meta.url);
 const {
     PROPOSAL_DRAFT_SCHEMA_VERSION,
     PROPOSAL_DRAFT_STORAGE_KEY,
-    LEGACY_CORRIDOR_DRAFT_KEY,
     createProposalDraftStore
 } = require('../../frontend/js/proposal-drafts.js');
 
@@ -91,9 +90,10 @@ describe('ProposalDraftStore', () => {
         expect(store.listDrafts()).toHaveLength(1);
     });
 
-    it('migrates the old active corridor record exactly once', () => {
+    it('does not load a retired corridor draft record', () => {
+        const retiredKey = 'consensus-builder.active-corridor-draft.v1';
         const storage = memoryStorage({
-            [LEGACY_CORRIDOR_DRAFT_KEY]: JSON.stringify({
+            [retiredKey]: JSON.stringify({
                 kind: 'road',
                 cityId: 'nyc',
                 dirty: true,
@@ -109,27 +109,19 @@ describe('ProposalDraftStore', () => {
             })
         });
 
-        const first = harness({ storage });
-        const draft = first.store.listDrafts()[0];
-        expect(draft).toMatchObject({
-            goal: 'road-track',
-            cityId: 'nyc',
-            sourceProposalId: 'road-source',
-            fields: { name: 'Broadway', description: 'Extend it' },
-            editorPayload: { kind: 'road', definition: { width: 14, segmentIds: ['segment-1'] } }
-        });
-        expect(storage.getItem(LEGACY_CORRIDOR_DRAFT_KEY)).toBeNull();
+        const { store } = harness({ storage });
 
-        const second = createProposalDraftStore({ storage });
-        expect(second.listDrafts()).toHaveLength(1);
+        expect(store.listDrafts()).toEqual([]);
+        expect(storage.getItem(retiredKey)).not.toBeNull();
     });
 
-    it('quarantines corrupt storage and starts with an empty usable store', () => {
+    it('discards invalid storage and starts with an empty usable store', () => {
         const storage = memoryStorage({ [PROPOSAL_DRAFT_STORAGE_KEY]: '{not-json' });
         const { store } = harness({ storage });
 
         expect(store.listDrafts()).toEqual([]);
-        expect(storage.keys().some(key => key.startsWith(`${PROPOSAL_DRAFT_STORAGE_KEY}.corrupt.`))).toBe(true);
+        expect(storage.getItem(PROPOSAL_DRAFT_STORAGE_KEY)).toBeNull();
+        expect(storage.keys().some(key => key.startsWith(`${PROPOSAL_DRAFT_STORAGE_KEY}.corrupt.`))).toBe(false);
         expect(() => store.createDraft({ cityId: 'zagreb', goal: 'park', fields: { name: 'Recovered' } })).not.toThrow();
         expect(store.listDrafts()).toHaveLength(1);
     });

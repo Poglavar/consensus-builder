@@ -38,9 +38,8 @@ CREATE TABLE IF NOT EXISTS proposal (
     is_conditional BOOLEAN DEFAULT FALSE,
     disbursement_mode VARCHAR(50) DEFAULT 'partial', -- 'conditional' or 'partial'
     
-    -- Flat cadastral declarations and consent
-    ancestor_parcel_ids JSONB, -- Base cadastral parent IDs; never live/derived parcel IDs
-    cadastre_parcel_ids JSONB, -- Geometry-authoritative base cadastral IDs
+    -- Exact authored cadastral selection and consent
+    cadastre_parcel_ids JSONB NOT NULL,
     accepted_parcel_ids JSONB, -- Array of parcel IDs that have accepted the proposal
     owner_acceptances JSONB, -- Object mapping owner addresses to acceptance status
     ownership_flow JSONB, -- Per crossed base cadastral parcel: ceded m2 + where the ownership goes, stamped at publish
@@ -48,8 +47,8 @@ CREATE TABLE IF NOT EXISTS proposal (
 
     -- Proposal-specific data (stored as JSONB for flexibility)
     -- For road proposals: authored definition (points, cross-sections, metadata)
-    -- For building proposals: buildingGeometry, parameters, parentParcelIds
-    -- For structure proposals: kind, geometry, parentParcelIds, blockName
+    -- For building proposals: authored geometry and parameters
+    -- For structure proposals: kind, geometry, and blockName
     -- For reparcellization: polygons with ownerKey, displayName, color, percent
     road_proposal JSONB,
     building_proposal JSONB,
@@ -73,7 +72,17 @@ CREATE TABLE IF NOT EXISTS proposal (
     proposal_data JSONB NOT NULL,
     
     -- Indexes for common queries
-    CONSTRAINT proposal_proposal_id_key UNIQUE (proposal_id)
+    CONSTRAINT proposal_proposal_id_key UNIQUE (proposal_id),
+    CONSTRAINT proposal_cadastre_parcel_ids_nonempty CHECK (
+        CASE WHEN jsonb_typeof(cadastre_parcel_ids) = 'array'
+            THEN jsonb_array_length(cadastre_parcel_ids) > 0
+            ELSE FALSE
+        END
+    ),
+    CONSTRAINT proposal_cadastre_declaration_matches_record CHECK (
+        proposal_data ? 'cadastreParcelIds'
+        AND proposal_data->'cadastreParcelIds' = cadastre_parcel_ids
+    )
 );
 
 -- Indexes for performance
@@ -83,15 +92,13 @@ CREATE INDEX IF NOT EXISTS idx_proposal_lifecycle_status ON proposal(lifecycle_s
 CREATE INDEX IF NOT EXISTS idx_proposal_author ON proposal(author);
 CREATE INDEX IF NOT EXISTS idx_proposal_created_at ON proposal(created_at);
 CREATE INDEX IF NOT EXISTS idx_proposal_expires_at ON proposal(expires_at);
-CREATE INDEX IF NOT EXISTS idx_proposal_ancestor_parcel_ids ON proposal USING GIN(ancestor_parcel_ids);
 CREATE INDEX IF NOT EXISTS idx_proposal_cadastre_parcel_ids ON proposal USING GIN(cadastre_parcel_ids);
 CREATE INDEX IF NOT EXISTS idx_proposal_proposal_data ON proposal USING GIN(proposal_data);
 
 -- Comments for documentation
 COMMENT ON TABLE proposal IS 'Stores proposal definitions and shared lifecycle state';
 COMMENT ON COLUMN proposal.proposal_id IS 'Unique identifier for the proposal (can be onchain ID or local ID)';
-COMMENT ON COLUMN proposal.ancestor_parcel_ids IS 'Flat base cadastral parent declaration; live/derived parcel IDs never travel.';
-COMMENT ON COLUMN proposal.cadastre_parcel_ids IS 'Geometry-authoritative base cadastral parcel IDs the proposal covers.';
+COMMENT ON COLUMN proposal.cadastre_parcel_ids IS 'Exact authored selection of immutable cadastral parcel IDs.';
 COMMENT ON COLUMN proposal.ownership_flow IS 'Per crossed base cadastral parcel: ceded area (m2) and ownership destination (public/proposer/mapping/undecided), stamped at publish. See rethink-proposals.md §9/§12.';
 COMMENT ON COLUMN proposal.cadastre_frame IS 'Which cadastre frame the publish-time stamps were computed against ({ capturedAt }). See rethink-proposals.md D5/§11.';
 COMMENT ON COLUMN proposal.proposal_data IS 'Complete proposal definition used for reconstruction';

@@ -170,13 +170,13 @@ describe('apply order', () => {
     });
 });
 
-describe('cadastre ancestry', () => {
-    it('uses geometry only and ignores an unrelated declared parent', () => {
+describe('diagnostic cadastre coverage', () => {
+    it('reports geometry coverage without treating declarations as identity', () => {
         // #104 declares four derived parents whose roots are 6804/1, 6804/5 and 6804/9. Geometry
         // finds only 6804/1 and 6804/9. The third is a stale declaration and must not become a
         // false ground claim.
         const p = fixture.proposals.find(x => x.id === 104);
-        const ids = planOrder.computeCadastreParcelIds(
+        const ids = planOrder.cadastreCoverageIdsForGeometry(
             { parentParcelIds: p.declared, geometry: p.footprint },
             baseParcels()
         );
@@ -187,7 +187,7 @@ describe('cadastre ancestry', () => {
     });
 
     it('refuses to infer cadastral ancestry when geometry is unavailable', () => {
-        const ids = planOrder.computeCadastreParcelIds(
+        const ids = planOrder.cadastreCoverageIdsForGeometry(
             { parentParcelIds: ['HR-339270-823/1#p-a-1'], geometry: null }, baseParcels());
         expect(ids).toEqual([]);
     });

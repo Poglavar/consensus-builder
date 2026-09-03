@@ -4,7 +4,6 @@
 
     const PROPOSAL_DRAFT_SCHEMA_VERSION = 1;
     const PROPOSAL_DRAFT_STORAGE_KEY = 'consensus-builder.proposal-drafts.v1';
-    const LEGACY_CORRIDOR_DRAFT_KEY = 'consensus-builder.active-corridor-draft.v1';
     const DEFAULT_HISTORY_LIMIT = 100;
     const DEFAULT_PERSISTED_HISTORY_LIMIT = 12;
     const DEFAULT_COALESCE_MS = 800;
@@ -349,8 +348,7 @@
             schemaVersion: PROPOSAL_DRAFT_SCHEMA_VERSION,
             drafts: uniqueDrafts,
             activeDraftId: raw?.activeDraftId && ids.has(String(raw.activeDraftId)) ? String(raw.activeDraftId) : null,
-            publishReceipts: Array.isArray(raw?.publishReceipts) ? cloneDraftValue(raw.publishReceipts).slice(-50) : [],
-            migrations: isPlainObject(raw?.migrations) ? cloneDraftValue(raw.migrations) : {}
+            publishReceipts: Array.isArray(raw?.publishReceipts) ? cloneDraftValue(raw.publishReceipts).slice(-50) : []
         };
     }
 
@@ -376,7 +374,6 @@
     function createProposalDraftStore(options = {}) {
         const storage = options.storage || global.localStorage || null;
         const storageKey = options.storageKey || PROPOSAL_DRAFT_STORAGE_KEY;
-        const legacyCorridorKey = options.legacyCorridorKey || LEGACY_CORRIDOR_DRAFT_KEY;
         const now = options.now || (() => new Date());
         const idFactory = options.idFactory || defaultDraftId;
         const historyLimit = Number.isFinite(Number(options.historyLimit)) ? Math.max(1, Number(options.historyLimit)) : DEFAULT_HISTORY_LIMIT;
@@ -386,7 +383,6 @@
         const coalesceMs = Number.isFinite(Number(options.coalesceMs)) ? Math.max(0, Number(options.coalesceMs)) : DEFAULT_COALESCE_MS;
         const subscribers = new Set();
         let envelope = normalizeStoredEnvelope(null, now);
-        let lastLoadWasCorrupt = false;
         const persistenceTiers = [null]; // null = full in-memory history
         if (persistedHistoryLimit < historyLimit) persistenceTiers.push(persistedHistoryLimit);
         if (persistenceTiers[persistenceTiers.length - 1] !== 0) persistenceTiers.push(0);
@@ -398,15 +394,10 @@
             const stored = storage.getItem(storageKey);
             if (!stored) return normalizeStoredEnvelope(null, now);
             try {
-                lastLoadWasCorrupt = false;
                 return normalizeStoredEnvelope(JSON.parse(stored), now);
             } catch (error) {
-                lastLoadWasCorrupt = true;
-                try {
-                    const corruptKey = `${storageKey}.corrupt.${Date.now()}`;
-                    if (typeof storage.setItem === 'function') storage.setItem(corruptKey, stored);
-                } catch (_) { }
-                console.warn('[ProposalDraftStore] Ignoring corrupt draft storage', error);
+                try { storage.removeItem?.(storageKey); } catch (_) { }
+                console.warn('[ProposalDraftStore] Discarding invalid draft storage', error);
                 return normalizeStoredEnvelope(null, now);
             }
         }
@@ -418,7 +409,7 @@
                 // not resurrect the storage key. A normal "last draft deleted" still writes, because
                 // the key exists and the deletion has to be recorded.
                 const isEmpty = !envelope.drafts.length && !envelope.activeDraftId
-                    && !envelope.publishReceipts.length && !Object.keys(envelope.migrations || {}).length;
+                    && !envelope.publishReceipts.length;
                 if (isEmpty && typeof storage.getItem === 'function' && storage.getItem(storageKey) === null) {
                     return true;
                 }
@@ -457,7 +448,6 @@
             try {
                 if (storage && typeof storage.removeItem === 'function') {
                     storage.removeItem(storageKey);
-                    storage.removeItem(legacyCorridorKey);
                 }
             } catch (_) { }
             notify('wipe', null);
@@ -499,76 +489,8 @@
             }
         }
 
-        function migrateLegacyCorridorDraft() {
-            if (envelope.migrations.legacyCorridorV1) return null;
-            if (!storage || typeof storage.getItem !== 'function') {
-                envelope.migrations.legacyCorridorV1 = true;
-                return null;
-            }
-            let legacy = null;
-            try { legacy = JSON.parse(storage.getItem(legacyCorridorKey) || 'null'); } catch (_) { legacy = null; }
-            if (!legacy || !legacy.kind || !legacy.seed || legacy.dirty !== true) {
-                envelope.migrations.legacyCorridorV1 = true;
-                persist();
-                return null;
-            }
-
-            const sourceProposalId = legacy.sourceProposalId || legacy.copySource?.proposalId || null;
-            const prefill = legacy.copySource?.prefill || {};
-            const createdAt = legacy.createdAt || legacy.updatedAt || isoNow(now);
-            const definition = {
-                points: cloneDraftValue(legacy.seed.centerline || []),
-                segments: cloneDraftValue(legacy.seed.centerline || []),
-                segmentIds: cloneDraftValue(legacy.seed.segmentIds || []),
-                profile: cloneDraftValue(legacy.seed.profile || null),
-                width: legacy.seed.width,
-                sidewalkWidth: legacy.seed.sidewalkWidth,
-                tunnels: cloneDraftValue(legacy.seed.tunnels || []),
-                gradeSeparations: cloneDraftValue(legacy.seed.gradeSeparations || []),
-                metadata: {
-                    isTrack: legacy.kind === 'track',
-                    isRoad: legacy.kind !== 'track',
-                    isCorridor: true,
-                    trackSpeed: legacy.seed.trackSpeed,
-                    trackMinRadius: legacy.seed.trackMinRadius
-                }
-            };
-            const migrated = normalizeDraftRecord({
-                id: idFactory(),
-                cityId: legacy.cityId || null,
-                goal: 'road-track',
-                proposalType: legacy.kind === 'track' ? 'Track' : 'Road',
-                adapterKey: 'road-track',
-                createdAt,
-                updatedAt: legacy.updatedAt || createdAt,
-                sourceProposalId,
-                sourceSnapshot: null,
-                fields: {
-                    name: prefill.name || legacy.copySource?.name || '',
-                    description: prefill.description || '',
-                    parentParcelIds: cloneDraftValue(legacy.parentParcelIds || []),
-                    offer: Number(prefill.offer) || 0,
-                    offerCurrency: prefill.offerCurrency || 'USDT',
-                    isConditional: prefill.isConditional === true
-                },
-                editorPayload: { kind: legacy.kind, definition },
-                previewGeometry: cloneDraftValue(definition.polygon || null),
-                dirty: true,
-                revision: 0,
-                state: 'editing'
-            }, now);
-            envelope.drafts.push(migrated);
-            envelope.activeDraftId = migrated.id;
-            envelope.migrations.legacyCorridorV1 = true;
-            persist();
-            try { if (typeof storage.removeItem === 'function') storage.removeItem(legacyCorridorKey); } catch (_) { }
-            return cloneDraftValue(migrated);
-        }
-
         function initialize() {
             envelope = readStoredEnvelope();
-            const migrated = migrateLegacyCorridorDraft();
-            if (!migrated && lastLoadWasCorrupt) persist();
         }
 
         function listDrafts(filters = {}) {
@@ -1002,8 +924,7 @@
             flush: persist,
             reload,
             subscribe,
-            inspectEnvelope,
-            migrateLegacyCorridorDraft
+            inspectEnvelope
         };
     }
 
@@ -1031,7 +952,6 @@
         module.exports = {
             PROPOSAL_DRAFT_SCHEMA_VERSION,
             PROPOSAL_DRAFT_STORAGE_KEY,
-            LEGACY_CORRIDOR_DRAFT_KEY,
             createProposalDraftStore,
             cloneDraftValue,
             normalizeGoalKey,

@@ -77,13 +77,13 @@ describe('loaded cadastral coverage', () => {
     });
 });
 
-describe('computeCadastreParcelIds', () => {
+describe('validateCadastreParcelIds', () => {
     it('preserves and validates the authored cadastral declaration', () => {
         const proposal = {
             cadastreParcelIds: ['HR-1-1'],
             structureProposal: { geometry: A.geometry }
         };
-        expect(ancestry.computeCadastreParcelIds(proposal)).toEqual(['HR-1-1']);
+        expect(ancestry.validateCadastreParcelIds(proposal)).toEqual(['HR-1-1']);
     });
 
     it('refuses when retained cadastre covers less than 95% of the footprint', async () => {
@@ -94,16 +94,16 @@ describe('computeCadastreParcelIds', () => {
             cadastreParcelIds: ['HR-1-1'],
             structureProposal: { geometry: square('footprint', 16.000, 46.000, 16.002, 46.001).geometry }
         };
-        expect(() => ancestry.computeCadastreParcelIds(proposal)).toThrow(/cover only 50%/);
+        expect(() => ancestry.validateCadastreParcelIds(proposal)).toThrow(/cover only 50%/);
     });
 
     it('refuses records without authored geometry instead of trusting the declaration alone', () => {
-        expect(() => ancestry.computeCadastreParcelIds({ cadastreParcelIds: ['HR-1-1'] }))
+        expect(() => ancestry.validateCadastreParcelIds({ cadastreParcelIds: ['HR-1-1'] }))
             .toThrow(/no usable authored footprint/);
     });
 
     it('refuses records without an explicit cadastral declaration instead of deriving one', () => {
-        expect(() => ancestry.computeCadastreParcelIds({ structureProposal: { geometry: A.geometry } }))
+        expect(() => ancestry.validateCadastreParcelIds({ structureProposal: { geometry: A.geometry } }))
             .toThrow(/no explicit cadastral parcel declaration/);
     });
 });

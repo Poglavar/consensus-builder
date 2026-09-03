@@ -348,7 +348,7 @@ export function setupProposalsRoute(app, pool) {
         decay_enabled, decay_percent, decay_duration_ms,
         deposit_enabled, deposit_percent,
         is_conditional, disbursement_mode,
-        ancestor_parcel_ids, cadastre_parcel_ids, ownership_flow, cadastre_frame,
+        cadastre_parcel_ids, ownership_flow, cadastre_frame,
         accepted_parcel_ids, owner_acceptances,
         road_proposal, building_proposal, structure_proposal, reparcellization,
         lens, bounds, onchain_data, screenshot_url, epoch_year, proposal_data`;
@@ -515,6 +515,17 @@ export function setupProposalsRoute(app, pool) {
                     error: 'cadastreParcelIds must contain the proposal\'s cadastral land.'
                 });
             }
+            const rawCadastreParcelIds = req.body.cadastreParcelIds;
+            if (rawCadastreParcelIds.some((id, index) => id !== cadastreParcelIds[index])) {
+                return res.status(400).json({
+                    error: 'cadastreParcelIds must contain exact, unpadded strings.'
+                });
+            }
+            if (new Set(cadastreParcelIds).size !== cadastreParcelIds.length) {
+                return res.status(400).json({
+                    error: 'cadastreParcelIds must not contain duplicates.'
+                });
+            }
             const generatedAnchor = cadastreParcelIds.find(isDerivedParcelDeclaration);
             if (generatedAnchor) {
                 return res.status(400).json({
@@ -584,7 +595,7 @@ export function setupProposalsRoute(app, pool) {
                     decay_enabled, decay_percent, decay_duration_ms,
                     deposit_enabled, deposit_percent,
                     is_conditional, disbursement_mode,
-                    ancestor_parcel_ids, cadastre_parcel_ids, accepted_parcel_ids, owner_acceptances,
+                    cadastre_parcel_ids, accepted_parcel_ids, owner_acceptances,
                     road_proposal, building_proposal, structure_proposal, reparcellization,
                     lens, bounds, onchain_data, screenshot_url, proposal_data,
                     ownership_flow, cadastre_frame, epoch_year
@@ -596,10 +607,10 @@ export function setupProposalsRoute(app, pool) {
                     $15, $16, $17,
                     $18, $19,
                     $20, $21,
-                    $22, $23, $24, $25,
-                    $26, $27, $28, $29,
-                    $30, $31, $32, $33, $34,
-                    $35, $36, $37
+                    $22, $23, $24,
+                    $25, $26, $27, $28,
+                    $29, $30, $31, $32, $33,
+                    $34, $35, $36
                 )
                 RETURNING id, proposal_id, created_at
             `;
@@ -612,7 +623,6 @@ export function setupProposalsRoute(app, pool) {
                 decayEnabled, decayPercent, decayDurationMs,
                 depositEnabled, depositPercent,
                 isConditional, disbursementMode,
-                null,
                 cadastreParcelIds.length ? JSON.stringify(cadastreParcelIds) : null,
                 acceptedParcelIds.length ? JSON.stringify(acceptedParcelIds) : null,
                 Object.keys(ownerAcceptances).length ? JSON.stringify(ownerAcceptances) : null,
@@ -1046,7 +1056,7 @@ export function setupProposalsRoute(app, pool) {
                     lifecycle_status, ${EFFECTIVE_STATUS_SQL} AS effective_status,
                     offer, offer_currency, budget, budget_currency,
                     created_at, expires_at, updated_at,
-                    ancestor_parcel_ids, cadastre_parcel_ids, ownership_flow,
+                    cadastre_parcel_ids, ownership_flow,
                     onchain_data, screenshot_url, epoch_year, proposal_data
                 FROM proposal
                 WHERE ${clauses.join(' AND ')}

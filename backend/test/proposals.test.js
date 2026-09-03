@@ -262,11 +262,10 @@ describe('POST /proposals', () => {
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[0]).toBe('from-proposal-id-field');
-        expect(insertParams[21]).toBeNull();
-        expect(insertParams[22]).toBe(JSON.stringify(['HR-1']));
+        expect(insertParams[21]).toBe(JSON.stringify(['HR-1']));
+        expect(insertParams[22]).toBeNull();
         expect(insertParams[23]).toBeNull();
         expect(insertParams[24]).toBeNull();
-        expect(insertParams[25]).toBeNull();
     });
 
     it('falls back to a generated local proposal id when no id field is supplied', async () => {
@@ -358,10 +357,10 @@ describe('POST /proposals', () => {
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[7]).toBe('Active');
-        expect(insertParams).toHaveLength(37); // main's 36 + epoch_year
+        expect(insertParams).toHaveLength(36);
         expect(pool.getCalls()[0].sql).not.toMatch(/\bapplied\b/);
-        expect(JSON.parse(insertParams[25])).toEqual({ width: 6 });
-        expect(JSON.parse(insertParams[33])).not.toHaveProperty('applied');
+        expect(JSON.parse(insertParams[24])).toEqual({ width: 6 });
+        expect(JSON.parse(insertParams[32])).not.toHaveProperty('applied');
     });
 
     it('derives Active lifecycle for an older client that sends a legacy application status', async () => {
@@ -397,8 +396,7 @@ describe('POST /proposals', () => {
 
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
-        expect(insertParams[21]).toBeNull();
-        expect(insertParams[22]).toBe(JSON.stringify(['HR-339270-823/1', 'HR-339270-823/2']));
+        expect(insertParams[21]).toBe(JSON.stringify(['HR-339270-823/1', 'HR-339270-823/2']));
     });
 
     it('rejects generated parcel ids instead of flattening them live', async () => {
@@ -436,6 +434,21 @@ describe('POST /proposals', () => {
         expect(pool.getCalls()).toHaveLength(0);
     });
 
+    it('rejects padded or duplicate cadastral ids', async () => {
+        const padded = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ cadastreParcelIds: [' HR-1'] }));
+        expect(padded.status).toBe(400);
+        expect(padded.body.error).toMatch(/exact, unpadded strings/);
+
+        const duplicate = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ cadastreParcelIds: ['HR-1', 'HR-1'] }));
+        expect(duplicate.status).toBe(400);
+        expect(duplicate.body.error).toMatch(/duplicates/);
+        expect(pool.getCalls()).toHaveLength(0);
+    });
+
     it('persists the ownership flow and cadastre frame stamps', async () => {
         // §9/§12 step 2: per crossed base parcel, ceded area + destination, plus the frame the
         // stamps were measured against. Appended as the last two insert params.
@@ -455,11 +468,11 @@ describe('POST /proposals', () => {
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
         // cededM2 is normalized to whole m² by the validator.
-        expect(JSON.parse(insertParams[34])).toEqual([
+        expect(JSON.parse(insertParams[33])).toEqual([
             { parcelId: 'HR-339270-823/1', cededM2: 1700, destination: 'public' },
             { parcelId: 'HR-339270-823/2', cededM2: 15, destination: 'public' }
         ]);
-        expect(JSON.parse(insertParams[35])).toEqual({ capturedAt: '2026-08-02T10:00:00.000Z' });
+        expect(JSON.parse(insertParams[34])).toEqual({ capturedAt: '2026-08-02T10:00:00.000Z' });
     });
 
     it('rejects an ownership flow with an unknown destination', async () => {
@@ -493,17 +506,16 @@ describe('POST /proposals', () => {
         expect(res.status).toBe(201);
 
         const insertParams = pool.getCalls()[0].params;
-        expect(insertParams[21]).toBeNull();
-        expect(insertParams[22]).toBe(JSON.stringify(['HR-1234-5678', 'HR-1234-5679']));
-        expect(insertParams[23]).toBe(JSON.stringify(['HR-1234-5678']));
-        expect(insertParams[24]).toBe(JSON.stringify({ 'HR-1234-5678': 'accepted' }));
-        expect(insertParams[25]).toBe(JSON.stringify({ width: 5, type: 'primary' }));
-        expect(insertParams[26]).toBe(JSON.stringify({ height: 12 }));
-        expect(insertParams[27]).toBe(JSON.stringify({ floors: 3 }));
-        expect(insertParams[28]).toBe(JSON.stringify({ merge: true }));
-        expect(insertParams[29]).toBe(JSON.stringify(['planning', 'traffic']));
-        expect(insertParams[30]).toBe(JSON.stringify([1, 2, 3, 4]));
-        expect(insertParams[31]).toBe(JSON.stringify({ txHash: '0x1' }));
+        expect(insertParams[21]).toBe(JSON.stringify(['HR-1234-5678', 'HR-1234-5679']));
+        expect(insertParams[22]).toBe(JSON.stringify(['HR-1234-5678']));
+        expect(insertParams[23]).toBe(JSON.stringify({ 'HR-1234-5678': 'accepted' }));
+        expect(insertParams[24]).toBe(JSON.stringify({ width: 5, type: 'primary' }));
+        expect(insertParams[25]).toBe(JSON.stringify({ height: 12 }));
+        expect(insertParams[26]).toBe(JSON.stringify({ floors: 3 }));
+        expect(insertParams[27]).toBe(JSON.stringify({ merge: true }));
+        expect(insertParams[28]).toBe(JSON.stringify(['planning', 'traffic']));
+        expect(insertParams[29]).toBe(JSON.stringify([1, 2, 3, 4]));
+        expect(insertParams[30]).toBe(JSON.stringify({ txHash: '0x1' }));
         expect(pool.getCalls()[0].sql).not.toMatch(/descendant_parcel_ids|parent_features|child_features|parent_proposal_ids|child_proposal_ids/);
     });
 
@@ -659,7 +671,7 @@ describe('POST /proposals', () => {
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[0]).toBe('17');
-        expect(insertParams[31]).toBe(JSON.stringify({ contract: '0xdef' }));
+        expect(insertParams[30]).toBe(JSON.stringify({ contract: '0xdef' }));
     });
 });
 
@@ -880,8 +892,7 @@ describe('GET /proposals/:id', () => {
                 created_at: null,
                 expires_at: null,
                 updated_at: null,
-                ancestor_parcel_ids: null,
-                cadastre_parcel_ids: null,
+                cadastre_parcel_ids: ['PARENT'],
                 descendant_parcel_ids: null,
                 accepted_parcel_ids: null,
                 owner_acceptances: null,
@@ -910,8 +921,8 @@ describe('GET /proposals/:id', () => {
                     updatedAt: '2026-01-15T00:00:00.000Z',
                     cadastreParcelIds: ['PARENT'],
                     childParcelIds: ['CHILD'],
-                    acceptedParcelIds: ['ACCEPTED'],
-                    ownerAcceptances: { alice: true },
+                    acceptedParcelIds: ['PARENT'],
+                    ownerAcceptances: { PARENT: true },
                     roadProposal: { width: 4 },
                     buildingProposal: { height: 8 },
                     structureProposal: { floors: 2 },
@@ -945,8 +956,8 @@ describe('GET /proposals/:id', () => {
             expiresAt: '2026-02-01T00:00:00.000Z',
             updatedAt: '2026-01-15T00:00:00.000Z',
             cadastreParcelIds: ['PARENT'],
-            acceptedParcelIds: ['ACCEPTED'],
-            ownerAcceptances: { alice: true },
+            acceptedParcelIds: ['PARENT'],
+            ownerAcceptances: { PARENT: true },
             roadProposal: { width: 4 },
             buildingProposal: { height: 8 },
             structureProposal: { floors: 2 },
@@ -1564,11 +1575,11 @@ describe('GET /proposals?parcel_id=', () => {
                     proposal_data: {
                         offer: 99,
                         budget: 88,
-                        cadastreParcelIds: ['fallback-parent'],
+                        cadastreParcelIds: ['HR-1234-5678'],
                         childParcelIds: ['fallback-child']
                     }
                 }),
-                cadastre_parcel_ids: [],
+                cadastre_parcel_ids: ['HR-1234-5678'],
                 descendant_parcel_ids: []
             }]
         });
@@ -1580,7 +1591,7 @@ describe('GET /proposals?parcel_id=', () => {
             proposalId: 'zero-values',
             offer: 0,
             budget: 0,
-            cadastreParcelIds: []
+            cadastreParcelIds: ['HR-1234-5678']
         });
         expect(res.body.proposals[0].childParcelIds).toBeUndefined();
     });

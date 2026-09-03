@@ -106,6 +106,23 @@
         return `${chain}-${address}-${token}`;
     }
 
+    function canonicalCadastreParcelIds(values) {
+        if (!Array.isArray(values) || !values.length) {
+            throw new Error('Chain proposal has no cadastreParcelIds.');
+        }
+        const ids = values.map(value => String(value == null ? '' : value).trim());
+        if (ids.some(id => !id) || new Set(ids).size !== ids.length) {
+            throw new Error('Chain proposal has an invalid cadastreParcelIds declaration.');
+        }
+        const isDerived = global.ProposalAuthoredRecord?.isDerivedParcelId;
+        if (typeof isDerived !== 'function') {
+            throw new Error('Authored proposal validation is unavailable.');
+        }
+        const generatedId = ids.find(id => isDerived(id));
+        if (generatedId) throw new Error(`Chain proposal names generated parcel ${generatedId}.`);
+        return ids;
+    }
+
     /**
      * Find local proposal by parent parcel IDs
      */
@@ -120,7 +137,7 @@
         }
 
         const allProposals = global.proposalStorage.getAllProposals();
-        const normalizedSearchIds = parcelIds.map(id =>
+        const normalizedSearchIds = canonicalCadastreParcelIds(parcelIds).map(id =>
             typeof global.normalizeParcelId === 'function'
                 ? global.normalizeParcelId(id)
                 : id.toString()
@@ -164,10 +181,11 @@
 
         const proposalId = buildChainProposalId(chainId, contractAddress, tokenId);
         const statusStr = parseContractStatus(status);
+        const cadastreParcelIds = canonicalCadastreParcelIds(parcelIds);
 
         return {
             proposalId,
-            cadastreParcelIds: Array.isArray(parcelIds) ? parcelIds : [],
+            cadastreParcelIds,
             name: `Proposal #${tokenId}`,
             description: `Minted proposal from blockchain`,
             author: owner || 'Unknown',
@@ -205,6 +223,14 @@
                ethBalance, tokenBalance, acceptanceCount, expiryTimestamp, expiringPercentage] = onchainData;
 
         const statusStr = parseContractStatus(status);
+        const chainCadastreIds = canonicalCadastreParcelIds(parcelIds);
+        const localCadastreIds = Array.isArray(proposal.cadastreParcelIds)
+            ? proposal.cadastreParcelIds.map(String)
+            : [];
+        if (chainCadastreIds.length !== localCadastreIds.length
+            || chainCadastreIds.some(id => !localCadastreIds.includes(id))) {
+            throw new Error('Chain proposal cadastral selection does not match the local proposal.');
+        }
 
         // Update minting status
         proposal.isMinted = true;

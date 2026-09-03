@@ -13,6 +13,8 @@ const LOCAL_STATE_SUB_KEYS = Object.freeze([
 ]);
 
 const present = value => value !== undefined && value !== null;
+const owns = (value, key) => value && typeof value === 'object'
+    && Object.prototype.hasOwnProperty.call(value, key);
 const choose = (databaseValue, fallbackValue) => present(databaseValue) ? databaseValue : fallbackValue;
 const iso = (value, fallback) => present(value)
     ? (value instanceof Date ? value.toISOString() : new Date(value).toISOString())
@@ -31,6 +33,57 @@ export function findLegacyCadastreDeclaration(proposal) {
         ? authoredRecord.legacyCadastreDeclarations(proposal)
         : [];
     return declarations[0] || null;
+}
+
+function sameIdSet(left, right) {
+    if (left.length !== right.length) return false;
+    const expected = new Set(left.map(String));
+    return right.every(id => expected.has(String(id)));
+}
+
+export function assertCanonicalProposalRow(row) {
+    // Summary projections do not contain the full record. Full-row serializers do, and reject a
+    // broken durable record instead of quietly manufacturing a usable proposal from it.
+    if (!owns(row, 'cadastre_parcel_ids')) return;
+    const ids = row.cadastre_parcel_ids;
+    if (!Array.isArray(ids) || !ids.length) {
+        throw new Error('Invalid proposal record: cadastre_parcel_ids is required.');
+    }
+    const normalizedIds = ids.map(value => typeof value === 'string' ? value : '');
+    if (normalizedIds.some((id, index) => !id || id !== id.trim() || id !== ids[index])
+        || new Set(normalizedIds).size !== normalizedIds.length) {
+        throw new Error('Invalid proposal record: cadastre_parcel_ids must contain unique non-empty strings.');
+    }
+    const generated = ids.find(isDerivedParcelDeclaration);
+    if (generated) {
+        throw new Error(`Invalid proposal record: cadastre_parcel_ids contains generated id ${generated}.`);
+    }
+    const raw = row.proposal_data && typeof row.proposal_data === 'object'
+        ? row.proposal_data
+        : {};
+    const candidate = {
+        ...raw,
+        cadastreParcelIds: ids,
+        acceptedParcelIds: row.accepted_parcel_ids ?? raw.acceptedParcelIds,
+        ownerAcceptances: row.owner_acceptances ?? raw.ownerAcceptances,
+        ownershipFlow: row.ownership_flow ?? raw.ownershipFlow,
+        roadProposal: row.road_proposal ?? raw.roadProposal,
+        buildingProposal: row.building_proposal ?? raw.buildingProposal,
+        structureProposal: row.structure_proposal ?? raw.structureProposal,
+        reparcellization: row.reparcellization ?? raw.reparcellization
+    };
+    const legacy = findLegacyCadastreDeclaration(candidate);
+    if (legacy) {
+        throw new Error(`Invalid proposal record: ${legacy.path} is a retired parcel declaration.`);
+    }
+    if (owns(raw, 'cadastreParcelIds')
+        && (!Array.isArray(raw.cadastreParcelIds) || !sameIdSet(ids, raw.cadastreParcelIds))) {
+        throw new Error('Invalid proposal record: proposal_data.cadastreParcelIds conflicts with cadastre_parcel_ids.');
+    }
+    const reference = findNonCadastralParentDeclaration(candidate);
+    if (reference) {
+        throw new Error(`Invalid proposal record: ${reference.path} lies outside cadastreParcelIds.`);
+    }
 }
 
 const clearRoadDemolition = definition => {
@@ -86,6 +139,7 @@ export function stripLocalProposalState(proposal) {
 }
 
 export function serializeProposalRow(row, options = {}) {
+    assertCanonicalProposalRow(row);
     const proposal = stripLocalProposalState(row?.proposal_data ? { ...row.proposal_data } : {});
     if (!row) return proposal;
 
@@ -114,8 +168,7 @@ export function serializeProposalRow(row, options = {}) {
     proposal.depositPercent = choose(row.deposit_percent, proposal.depositPercent);
     proposal.isConditional = choose(row.is_conditional, proposal.isConditional);
     proposal.disbursementMode = choose(row.disbursement_mode, proposal.disbursementMode);
-    // One durable land relationship. `ancestor_parcel_ids` is a retired migration source and must
-    // never be reintroduced into the public proposal shape.
+    // One durable land relationship: the exact authored cadastral selection.
     proposal.cadastreParcelIds = choose(row.cadastre_parcel_ids, proposal.cadastreParcelIds ?? null);
     // Publish-time stamps of the formation's ownership flow and the cadastre frame it was measured
     // against (rethink-proposals.md §9/§12 step 2, D5).

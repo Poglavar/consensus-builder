@@ -207,7 +207,7 @@ async function cadastralEffect(client, proposal) {
         id: row.parcel_id,
         feature: globalThis.turf.feature(row.geometry)
     }));
-    const parentIds = planOrder.computeCadastreParcelIds(proposal, candidates);
+    const parentIds = planOrder.cadastreCoverageIdsForGeometry(proposal, candidates);
     const ownershipFlow = ownershipFlowApi.computeOwnershipFlow(proposal, candidates);
     return { parentIds, ownershipFlow };
 }

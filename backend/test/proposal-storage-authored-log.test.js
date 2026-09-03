@@ -34,6 +34,12 @@ function bootStore() {
     install('__cbSecondaryTab', false);
     install('__formationDepth', formationDepth);
     install('__planOrder', planOrder);
+    install('normalizeParcelIdList', values => Array.from(new Set((values || []).map(String))));
+    install('normalizeOwnerAcceptances', value => value || {});
+    install('normalizeLensEntries', value => value || []);
+    install('normalizeProposalStatusAxes', proposal => proposal);
+    install('normalizeProposalGoalKey', value => String(value || '').trim().toLowerCase());
+    install('isLocalProposalId', value => /^local-/.test(String(value || '')));
     install('PersistentStorage', {
         getItem: key => persisted.get(key) || null,
         setItem: (key, value) => persisted.set(key, String(value)),
@@ -172,5 +178,29 @@ describe('proposalStorage authored-log persistence', () => {
         expect(normalized).not.toHaveProperty('parentParcelIds');
         expect(normalized.buildingProposal).not.toHaveProperty('blockParcelIds');
         expect(cadastreIdsForParcelIds).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not load an invalid authored record', () => {
+        const { storage, persisted } = bootStore();
+        persisted.set('cadastre_proposals_cutover_v2', '1');
+        persisted.set('cadastre_proposals', JSON.stringify({
+            version: 2,
+            nextProposalId: 4,
+            records: [
+                { proposalId: 'valid-1', cadastreParcelIds: ['HR-1'] },
+                { proposalId: 'invalid-1', cadastreParcelIds: ['HR-1#generated-piece'] }
+            ]
+        }));
+        const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+        storage.load();
+
+        expect(storage.getAllProposals().map(proposal => proposal.proposalId)).toEqual(['valid-1']);
+        expect(storage.getProposal('invalid-1')).toBeNull();
+        expect(consoleError).toHaveBeenCalledWith(
+            expect.stringContaining('Ignoring invalid stored proposal invalid-1'),
+            expect.any(Error)
+        );
+        consoleError.mockRestore();
     });
 });

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+    assertCanonicalProposalRow,
     findLegacyCadastreDeclaration,
     findNonCadastralParentDeclaration,
     serializeProposalRow,
@@ -71,6 +72,19 @@ describe('proposal API serializer', () => {
             path: 'ownershipFlow[0].parcelId',
             id: 'HR-2'
         });
+    });
+
+    it('rejects full database rows with missing, conflicting, or generated cadastral identity', () => {
+        expect(() => assertCanonicalProposalRow({ cadastre_parcel_ids: null }))
+            .toThrow(/cadastre_parcel_ids is required/);
+        expect(() => assertCanonicalProposalRow({
+            cadastre_parcel_ids: ['HR-1'],
+            proposal_data: { cadastreParcelIds: ['HR-2'] }
+        })).toThrow(/conflicts/);
+        expect(() => assertCanonicalProposalRow({
+            cadastre_parcel_ids: ['HR-1#piece'],
+            proposal_data: { cadastreParcelIds: ['HR-1#piece'] }
+        })).toThrow(/generated id/);
     });
 
     it('serves one clean authored building geometry', () => {

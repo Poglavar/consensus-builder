@@ -1895,10 +1895,10 @@ function buildUploadReadyProposal(proposal) {
     // current immutable geometry coverage but never re-enumerates it from output geometry: a block
     // may intentionally include parcels on which no building could be generated.
     if (!window.__cadastreAncestry
-        || typeof window.__cadastreAncestry.computeCadastreParcelIds !== 'function') {
+        || typeof window.__cadastreAncestry.validateCadastreParcelIds !== 'function') {
         throw new Error('Cannot publish: cadastral geometry resolution is unavailable.');
     }
-    uploadProposal.cadastreParcelIds = window.__cadastreAncestry.computeCadastreParcelIds(uploadProposal);
+    uploadProposal.cadastreParcelIds = window.__cadastreAncestry.validateCadastreParcelIds(uploadProposal);
 
     // The ownership flow (§9/§12 step 2) and the frame it was measured against (D5), stamped at the
     // same moment and for the same reason as cadastreParcelIds. The effect hash is derived from the
