@@ -95,7 +95,7 @@
         }
         return repository.acceptFeatures(Array.isArray(rawFeatures) ? rawFeatures : [], {
             ...(options.city ? { city: options.city } : {}),
-            ...(options.transaction ? { transaction: options.transaction } : {}),
+            ...(options.mutation ? { mutation: options.mutation } : {}),
             skipConversion: options.skipConversion === true
         });
     }

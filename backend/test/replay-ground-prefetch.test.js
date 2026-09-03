@@ -2,7 +2,7 @@
 //
 // Cache, request coalescing, batching and retry policy belong to CadastralParcelRepository and are
 // tested exhaustively in proposal-ground-service.test.js. ProposalManager makes one repository
-// request for the complete replay and passes its explicit fabric transaction through unchanged; it
+// request for the complete replay and passes its explicit fabric mutation through unchanged; it
 // never implements a second cache/fetch path of its own.
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -43,8 +43,8 @@ const member = index => ({
 });
 
 describe('ProposalManager replay-ground boundary', () => {
-    it('asks the repository once for the whole replay and passes the active draft token', async () => {
-        const transaction = Object.freeze({ id: 'fabric-1' });
+    it('asks the repository once for the whole replay and passes the active fabric draft', async () => {
+        const mutation = Object.freeze({ id: 'fabric-1' });
         const onProgress = vi.fn();
         const ensureProposalGround = vi.fn(async records => ({
             members: records.length,
@@ -66,14 +66,14 @@ describe('ProposalManager replay-ground boundary', () => {
         await expect(manager._loadReplayGround(records, {
             purpose: 'replay',
             onProgress,
-            _fabricTransaction: transaction
+            _parcelMutation: { fabric: mutation }
         })).resolves.toBe(4);
 
         expect(ensureProposalGround).toHaveBeenCalledOnce();
         expect(ensureProposalGround).toHaveBeenCalledWith(records, {
             purpose: 'replay',
             onProgress,
-            transaction
+            mutation
         });
         expect(manager._lastReplayGroundProfile.members).toBe(3);
     });
@@ -130,12 +130,18 @@ describe('a shared corridor package materialises as one cadastral mutation', () 
         }));
         const manager = {
             materializeCorridorBatch: ProposalManager.materializeCorridorBatch,
-            _enqueueFabricChange: operation => operation(),
             rematerializeCorridorScope: rematerialize,
             _setLastApplyFailure: vi.fn()
         };
+        const context = {
+            proposals: globalThis.proposalStorage,
+            afterCommit: callback => callback()
+        };
 
-        const result = await manager.materializeCorridorBatch([roadA.proposalId, roadB.proposalId]);
+        const result = await manager.materializeCorridorBatch(
+            [roadA.proposalId, roadB.proposalId],
+            { _parcelMutation: context }
+        );
 
         expect(result.ok, result.reason).toBe(true);
         expect(result.appliedIds).toEqual([roadA.proposalId, roadB.proposalId]);
@@ -144,7 +150,7 @@ describe('a shared corridor package materialises as one cadastral mutation', () 
         expect(rematerialize).toHaveBeenCalledOnce();
         expect(rematerialize.mock.calls[0][0]).toEqual([roadA, roadB]);
         expect(rematerialize.mock.calls[0][1]).toEqual(expect.objectContaining({
-            _fabricQueue: true,
+            _parcelMutation: context,
             silent: false,
             deferSave: true
         }));
@@ -182,11 +188,17 @@ describe('a shared corridor package materialises as one cadastral mutation', () 
             _corridorScopeSeeds: ProposalManager._corridorScopeSeeds,
             _loadReplayGround: vi.fn(async () => 0),
             _rematerializeResolvedScope: localMaterialize,
-            _enqueueFabricChange: operation => operation(),
             _setLastApplyFailure: vi.fn()
         };
+        const context = {
+            proposals: globalThis.proposalStorage,
+            afterCommit: callback => callback()
+        };
 
-        const result = await manager.materializeCorridorBatch(records.map(record => record.proposalId));
+        const result = await manager.materializeCorridorBatch(
+            records.map(record => record.proposalId),
+            { _parcelMutation: context }
+        );
 
         expect(result.ok, result.reason).toBe(true);
         const resolution = localMaterialize.mock.calls[0][1];

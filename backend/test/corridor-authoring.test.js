@@ -60,13 +60,13 @@ afterEach(() => {
 
 function managerHarness(existing, derive) {
     const records = new Map(existing.map(record => [String(record.proposalId), record]));
-    const addProposal = vi.fn((proposal, options = {}) => {
+    const addProposal = vi.fn(function addProposalToDraft(proposal, options = {}) {
         const stored = clone(proposal);
         stored.proposalId = 'new-road';
         stored.roadProposal.id = 'new-road';
         stored.roadProposal.proposalId = 'new-road';
-        records.set('new-road', stored);
-        storage.save();
+        this.proposals.set('new-road', stored);
+        this.save();
         return 'new-road';
     });
     const storage = {
@@ -77,10 +77,33 @@ function managerHarness(existing, derive) {
         beginBatch() { this._suspendSaveCount += 1; },
         endBatch() { this._suspendSaveCount -= 1; },
         save: vi.fn(),
-        getAllProposals: () => [...records.values()],
-        getProposal: id => records.get(String(id)) || null,
+        getAllProposals() { return [...this.proposals.values()]; },
+        getProposal(id) { return this.proposals.get(String(id)) || null; },
         addProposal,
-        _indexProposal: vi.fn(record => records.set(String(record.proposalId), record))
+        _indexProposal: vi.fn(function indexProposal(record) {
+            this.proposals.set(String(record.proposalId), record);
+        }),
+        snapshotForMutation() {
+            return { records: new Map([...this.proposals].map(([id, record]) => [id, clone(record)])), nextProposalId: this.nextProposalId };
+        },
+        createMutationDraft(snapshot) {
+            const draft = Object.create(this);
+            draft.proposals = new Map([...snapshot.records].map(([id, record]) => [id, clone(record)]));
+            draft.nextProposalId = snapshot.nextProposalId;
+            draft.save = vi.fn();
+            return draft;
+        },
+        serializeMutationDraft: () => null,
+        publishMutationDraft(draft) {
+            for (const id of [...this.proposals.keys()]) if (!draft.proposals.has(id)) this.proposals.delete(id);
+            draft.proposals.forEach((record, id) => {
+                const current = this.proposals.get(id);
+                if (current) {
+                    Object.keys(current).forEach(key => delete current[key]);
+                    Object.assign(current, clone(record));
+                } else this.proposals.set(id, clone(record));
+            });
+        }
     };
     const browserRoot = {
         CorridorAuthoring: authoring,
@@ -241,10 +264,13 @@ describe('corridor authoring commit boundary', () => {
             identity: { serverProposalId: 77 }
         });
         const branch = corridor(null, [[P(5, 5), P(0, 5)]]);
-        const derive = vi.fn(async records => {
+        const derive = vi.fn(async (records, options) => {
             expect(records[0].proposalId).toBe('new-road');
             expect(records[0].roadProposal.definition.points).toHaveLength(1);
-            expect(through.roadProposal.definition.points).toHaveLength(2);
+            expect(options._parcelMutation.proposals.getProposal('through')
+                .roadProposal.definition.points).toHaveLength(2);
+            // The committed record stays visible and unchanged until durable publication.
+            expect(through.roadProposal.definition.points).toHaveLength(1);
             return { ok: true, failed: [] };
         });
         const { manager, records, addProposal } = managerHarness([through], derive);

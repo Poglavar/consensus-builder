@@ -17,32 +17,45 @@ function polygon(id, west = 0, properties = {}) {
     };
 }
 
+async function mutate(fabric, operation, meta = {}) {
+    const mutation = fabric.beginMutation(meta);
+    try {
+        const result = await operation(mutation);
+        if (result === false) { mutation.rollback(); return false; }
+        await mutation.prepare();
+        mutation.publish();
+        return result;
+    } catch (error) {
+        mutation.rollback();
+        throw error;
+    }
+}
+
 describe('live parcel fabric', () => {
     it('keeps a mutation draft invisible to ordinary readers until commit', async () => {
         const fabric = createLiveParcelFabric();
-        await fabric.transact({ kind: 'seed' }, token => {
-            fabric.seedCadastre([polygon('HR-A')], { transaction: token });
-        });
+        await mutate(fabric, mutation => mutation.seedCadastre([polygon('HR-A')]), { kind: 'seed' });
 
-        const token = fabric.beginTransaction({ kind: 'replace' });
-        fabric.replaceCadastreScope(['HR-A'], [polygon('HR-A#park-1', 0, {
+        const mutation = fabric.beginMutation({ kind: 'replace' });
+        mutation.replaceCadastreScope(['HR-A'], [polygon('HR-A#park-1', 0, {
             cadastreParcelIds: ['HR-A'],
             producedByProposalId: 'park'
-        })], { transaction: token });
+        })]);
 
         expect(fabric.get('HR-A')).not.toBeNull();
         expect(fabric.get('HR-A#park-1')).toBeNull();
-        expect(fabric.get('HR-A', { transaction: token })).toBeNull();
-        expect(fabric.get('HR-A#park-1', { transaction: token })).not.toBeNull();
+        expect(mutation.get('HR-A')).toBeNull();
+        expect(mutation.get('HR-A#park-1')).not.toBeNull();
 
-        await fabric.commit(token);
+        await mutation.prepare();
+        mutation.publish();
         expect(fabric.get('HR-A')).toBeNull();
         expect(fabric.get('HR-A#park-1')).not.toBeNull();
     });
 
     it('returns defensive copies instead of mutable fabric records', async () => {
         const fabric = createLiveParcelFabric();
-        await fabric.transact({}, token => fabric.seedCadastre([polygon('HR-A')], { transaction: token }));
+        await mutate(fabric, mutation => mutation.seedCadastre([polygon('HR-A')]));
 
         const read = fabric.get('HR-A');
         read.properties.parcelId = 'CORRUPTED';
@@ -60,7 +73,7 @@ describe('live parcel fabric', () => {
             coordinates: [polygon('unused', 10).geometry.coordinates, polygon('unused', 0).geometry.coordinates]
         };
 
-        await fabric.transact({}, token => fabric.seedCadastre([raw], { transaction: token }));
+        await mutate(fabric, mutation => mutation.seedCadastre([raw]));
 
         expect(fabric.snapshot().parcelIds).toEqual(['HR-A#cadastre-1', 'HR-A#cadastre-2']);
         expect(fabric.get('HR-A#cadastre-1').geometry.coordinates[0][0][0]).toBe(0);
@@ -79,31 +92,31 @@ describe('live parcel fabric', () => {
             coordinates: [polygon('unused', 0).geometry.coordinates, polygon('unused', 2).geometry.coordinates]
         };
 
-        await expect(fabric.transact({}, token => {
-            fabric.upsertFeatures([disconnected], { transaction: token });
+        await expect(mutate(fabric, mutation => {
+            mutation.upsertFeatures([disconnected]);
         })).rejects.toMatchObject({ code: 'live-parcel-disconnected' });
 
-        await expect(fabric.transact({}, token => {
-            fabric.upsertFeatures([polygon('HR-A#proposal-2')], { transaction: token });
+        await expect(mutate(fabric, mutation => {
+            mutation.upsertFeatures([polygon('HR-A#proposal-2')]);
         })).rejects.toMatchObject({ code: 'live-parcel-provenance-missing' });
     });
 
     it('refuses a replacement scope that cuts through one connected live parcel', async () => {
         const fabric = createLiveParcelFabric();
-        await fabric.transact({}, token => {
-            fabric.seedCadastre([polygon('HR-A'), polygon('HR-B', 1)], { transaction: token });
+        await mutate(fabric, mutation => {
+            mutation.seedCadastre([polygon('HR-A'), polygon('HR-B', 1)]);
         });
-        await fabric.transact({}, token => {
+        await mutate(fabric, mutation => {
             const merged = polygon('HR-AB#merge-1', 0, {
                 cadastreParcelIds: ['HR-A', 'HR-B'],
                 producedByProposalId: 'merge'
             });
             merged.geometry.coordinates = [[[0, 0], [2, 0], [2, 1], [0, 1], [0, 0]]];
-            fabric.replaceCadastreScope(['HR-A', 'HR-B'], [merged], { transaction: token });
+            mutation.replaceCadastreScope(['HR-A', 'HR-B'], [merged]);
         });
 
-        await expect(fabric.transact({}, token => {
-            fabric.replaceCadastreScope(['HR-A'], [polygon('HR-A')], { transaction: token });
+        await expect(mutate(fabric, mutation => {
+            mutation.replaceCadastreScope(['HR-A'], [polygon('HR-A')]);
         })).rejects.toMatchObject({
             code: 'live-fabric-scope-not-closed',
             requiredCadastreIds: ['HR-A', 'HR-B']
@@ -113,7 +126,7 @@ describe('live parcel fabric', () => {
 
     it('rolls fabric and prepared participants back when a commit participant fails', async () => {
         const fabric = createLiveParcelFabric();
-        await fabric.transact({}, token => fabric.seedCadastre([polygon('HR-A')], { transaction: token }));
+        await mutate(fabric, mutation => mutation.seedCadastre([polygon('HR-A')]));
         const events = [];
         const subscriber = vi.fn();
         fabric.addCommitParticipant({
@@ -128,10 +141,10 @@ describe('live parcel fabric', () => {
         });
         fabric.subscribe(subscriber);
 
-        await expect(fabric.transact({}, token => {
-            fabric.replaceCadastreScope(['HR-A'], [polygon('HR-A#park-1', 0, {
+        await expect(mutate(fabric, mutation => {
+            mutation.replaceCadastreScope(['HR-A'], [polygon('HR-A#park-1', 0, {
                 cadastreParcelIds: ['HR-A'], producedByProposalId: 'park'
-            })], { transaction: token });
+            })]);
         })).rejects.toThrow('projection failed');
 
         expect(events).toEqual([
@@ -156,7 +169,7 @@ describe('live parcel fabric', () => {
         });
         fabric.subscribe(() => events.push('subscriber'));
 
-        await fabric.transact({}, token => fabric.seedCadastre([polygon('HR-A')], { transaction: token }));
+        await mutate(fabric, mutation => mutation.seedCadastre([polygon('HR-A')]));
         expect(events).toEqual(['participant', 'subscriber']);
     });
 });

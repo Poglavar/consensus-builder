@@ -682,21 +682,16 @@
             return Object.freeze(mutation);
         }
 
-        function queriedData(query) {
-            if (query?.transaction && legacyToken && query.transaction === legacyToken && active) return active.data;
-            return committed;
+        function get(id) { return readFrom(committed, id); }
+        function getMany(ids, query) { return getManyFrom(committed, ids, query); }
+        function list() { return Array.from(committed.byId.values(), clone); }
+        function entriesForCadastre(ids, query) { return entriesForCadastreFrom(committed, ids, query); }
+        function producedBy(proposalId) {
+            const ids = committed.byProducerId.get(normalizeId(proposalId));
+            return ids ? Array.from(ids, id => clone(committed.byId.get(id))) : [];
         }
-        function get(id, query) { return readFrom(queriedData(query), id); }
-        function getMany(ids, query) { return getManyFrom(queriedData(query), ids, query); }
-        function list(query) { return Array.from(queriedData(query).byId.values(), clone); }
-        function entriesForCadastre(ids, query) { return entriesForCadastreFrom(queriedData(query), ids, query); }
-        function producedBy(proposalId, query) {
-            const data = queriedData(query);
-            const ids = data.byProducerId.get(normalizeId(proposalId));
-            return ids ? Array.from(ids, id => clone(data.byId.get(id))) : [];
-        }
-        function queryBounds(bounds, query) { return queryBoundsFrom(queriedData(query), bounds, query); }
-        function cadastreIdsForParcelIds(ids, query) { return cadastreIdsForParcelIdsFrom(queriedData(query), ids, query); }
+        function queryBounds(bounds, query) { return queryBoundsFrom(committed, bounds, query); }
+        function cadastreIdsForParcelIds(ids, query) { return cadastreIdsForParcelIdsFrom(committed, ids, query); }
         function claimedCadastreIds() {
             const claimed = new Set();
             committed.byId.forEach(feature => {
@@ -722,80 +717,13 @@
             return {
                 revision: committed.revision,
                 featureCount: committed.byId.size,
-                parcelIds: Array.from(committed.byId.keys()),
-                transactionActive: !!active
+                parcelIds: Array.from(committed.byId.keys())
             };
         }
         function diagnostics() { return { ...metrics }; }
 
-        // Phase-two compatibility adapter. The next migration phase removes these token-shaped
-        // methods after all production paths use beginMutation()'s scoped object.
-        let legacyMutation = null;
-        let legacyToken = null;
-        function beginTransaction(meta) {
-            legacyMutation = beginMutation(meta);
-            legacyToken = Object.freeze({ id: normalizeId(meta?.id) || `legacy-${committed.revision + 1}` });
-            return legacyToken;
-        }
-        function requireLegacy(config = {}) {
-            if (!legacyMutation || config.transaction !== legacyToken) {
-                const error = new Error('Live parcel fabric mutation requires its active transaction token.');
-                error.code = 'live-fabric-transaction-mismatch';
-                throw error;
-            }
-            return legacyMutation;
-        }
-        function upsertFeatures(features, config) { return requireLegacy(config).upsertFeatures(features, config); }
-        function removeIds(ids, config) { return requireLegacy(config).removeIds(ids); }
-        function replaceCadastreScope(ids, features, config) { return requireLegacy(config).replaceCadastreScope(ids, features); }
-        function seedCadastre(features, config) { return requireLegacy(config).seedCadastre(features); }
-        function replaceAll(features, config) {
-            const mutation = requireLegacy(config);
-            const scope = Array.from(mutation.list().flatMap(explicitCadastreIds));
-            if (scope.length) mutation.releaseCadastreScope(scope, 'legacy replace-all');
-            if (Array.isArray(features) && features.length) mutation.upsertFeatures(features);
-            return mutation.snapshot().parcelIds;
-        }
-        async function commit(token) {
-            const mutation = requireLegacy({ transaction: token });
-            await mutation.prepare();
-            const change = mutation.publish();
-            legacyMutation = null;
-            legacyToken = null;
-            return change;
-        }
-        function rollback(token) {
-            const mutation = requireLegacy({ transaction: token });
-            const result = mutation.rollback();
-            legacyMutation = null;
-            legacyToken = null;
-            return result;
-        }
-        async function transact(meta, operation) {
-            const token = beginTransaction(meta);
-            try {
-                const result = await operation(token);
-                if (result === false) { rollback(token); return false; }
-                await commit(token);
-                return result;
-            } catch (error) {
-                if (legacyToken === token) rollback(token);
-                throw error;
-            }
-        }
-        function currentTransaction() { return legacyToken; }
-
         return Object.freeze({
             beginMutation,
-            beginTransaction,
-            upsertFeatures,
-            removeIds,
-            replaceCadastreScope,
-            replaceAll,
-            seedCadastre,
-            commit,
-            rollback,
-            transact,
             get,
             getMany,
             list,
@@ -808,7 +736,6 @@
             addCommitParticipant,
             snapshot,
             diagnostics,
-            currentTransaction,
             featureId,
             explicitCadastreIds
         });

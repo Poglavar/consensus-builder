@@ -41,7 +41,32 @@ describe('ProposalManager mutation boundary', () => {
             endBatch() { this.batchDepth -= 1; },
             save() { this.saves += 1; },
             getProposal(id) { return this.proposals.get(String(id)); },
-            getAllProposals() { return [...this.proposals.values()]; }
+            getAllProposals() { return [...this.proposals.values()]; },
+            _indexProposal(record) { this.proposals.set(String(record.proposalId), record); },
+            snapshotForMutation() {
+                return {
+                    records: new Map([...this.proposals].map(([id, record]) => [id, structuredClone(record)])),
+                    nextProposalId: this.nextProposalId
+                };
+            },
+            createMutationDraft(snapshot) {
+                const draft = Object.create(this);
+                draft.proposals = new Map([...snapshot.records].map(([id, record]) => [id, structuredClone(record)]));
+                draft.nextProposalId = snapshot.nextProposalId;
+                draft.save = () => {};
+                return draft;
+            },
+            serializeMutationDraft: () => null,
+            publishMutationDraft(draft) {
+                for (const id of [...this.proposals.keys()]) if (!draft.proposals.has(id)) this.proposals.delete(id);
+                draft.proposals.forEach((record, id) => {
+                    const current = this.proposals.get(id);
+                    if (current) {
+                        Object.keys(current).forEach(key => delete current[key]);
+                        Object.assign(current, structuredClone(record));
+                    } else this.proposals.set(id, structuredClone(record));
+                });
+            }
         };
         globalThis.proposalStorage = store;
         globalThis.setProposalApplied = setProposalApplied;
@@ -66,21 +91,22 @@ describe('ProposalManager mutation boundary', () => {
         const targetIdentity = store.proposals.get('target');
         const conflictIdentity = store.proposals.get('conflict');
 
-        ProposalManager._unapplyProposalTransactionBody = async (proposalId) => {
-            const proposal = store.getProposal(proposalId);
+        ProposalManager._unapplyProposalTransactionBody = async (proposalId, options) => {
+            const proposal = options._parcelMutation.proposals.getProposal(proposalId);
             proposal.applied = false;
             proposal.value = 'parked';
             return true;
         };
         ProposalManager._applyProposalTransactionBody = async function (proposalId, options) {
-            const proposal = store.getProposal(proposalId);
+            const draftStore = options._parcelMutation.proposals;
+            const proposal = draftStore.getProposal(proposalId);
             proposal.applied = true;
             proposal.value = 'partially-applied';
-            store.proposals.set('created-during-apply', { proposalId: 'created-during-apply' });
+            draftStore.proposals.set('created-during-apply', { proposalId: 'created-during-apply' });
             await this.unapplyProposal('conflict', {
                 skipConfirm: true,
                 skipRebuild: true,
-                _mutationTransaction: options._mutationTransaction
+                _parcelMutation: options._parcelMutation
             });
             return false;
         };
@@ -96,8 +122,8 @@ describe('ProposalManager mutation boundary', () => {
 
     it('restores state and rethrows the original error', async () => {
         const cause = new Error('geometry exploded');
-        ProposalManager._applyProposalTransactionBody = async proposalId => {
-            store.getProposal(proposalId).value = 'mutated';
+        ProposalManager._applyProposalTransactionBody = async (proposalId, options) => {
+            options._parcelMutation.proposals.getProposal(proposalId).value = 'mutated';
             throw cause;
         };
 
@@ -107,7 +133,9 @@ describe('ProposalManager mutation boundary', () => {
     });
 
     it('makes the explicitly applied alternative the only standing member', async () => {
-        ProposalManager._collectAppliedAlternativesForExplicitApply = () => [store.getProposal('conflict')];
+        ProposalManager._collectAppliedAlternativesForExplicitApply = (_proposal, _records, options) => (
+            [options._parcelMutation.proposals.getProposal('conflict')]
+        );
         ProposalManager.deriveForNewProposal = async () => ({ ok: true });
 
         await expect(ProposalManager.applyProposal('target')).resolves.toBe(true);
@@ -119,10 +147,12 @@ describe('ProposalManager mutation boundary', () => {
     it('restores the previous alternative when the derivation removes the chosen proposal', async () => {
         let targetDerivations = 0;
         let componentRestores = 0;
-        ProposalManager._collectAppliedAlternativesForExplicitApply = () => [store.getProposal('conflict')];
-        ProposalManager.deriveForNewProposal = async () => {
+        ProposalManager._collectAppliedAlternativesForExplicitApply = (_proposal, _records, options) => (
+            [options._parcelMutation.proposals.getProposal('conflict')]
+        );
+        ProposalManager.deriveForNewProposal = async proposal => {
             targetDerivations += 1;
-            setProposalApplied(store.getProposal('target'), false, { stamp: false });
+            setProposalApplied(proposal, false, { stamp: false });
             return { ok: true };
         };
         ProposalManager.rematerializeFlatScope = async () => {

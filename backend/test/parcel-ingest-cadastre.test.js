@@ -26,13 +26,14 @@ function makeContext() {
         root: context,
         convertFeatures: value => value,
         onFeatures: async (features, options = {}) => {
-            if (options.transaction) {
-                fabric.seedCadastre(features, { transaction: options.transaction });
+            if (options.mutation) {
+                options.mutation.seedCadastre(features);
                 return;
             }
-            await fabric.transact({ kind: 'test-cadastral-arrival' }, token => {
-                fabric.seedCadastre(features, { transaction: token });
-            });
+            const mutation = fabric.beginMutation({ kind: 'test-cadastral-arrival' });
+            mutation.seedCadastre(features);
+            await mutation.prepare();
+            mutation.publish();
         }
     });
     context.window = context;
@@ -55,11 +56,12 @@ function parcel(id, properties = {}) {
 describe('cadastral ingest under a standing formation', () => {
     it('indexes claimed cadastral ground but keeps it hidden from the live partition', async () => {
         const { context, fabric } = makeContext();
-        await fabric.transact({}, token => fabric.upsertFeatures([
+        const mutation = fabric.beginMutation({});
+        mutation.upsertFeatures([
             parcel('HR-1#park-1', { cadastreParcelIds: ['HR-1'], producedByProposalId: 'park' })
-        ], {
-            transaction: token
-        }));
+        ]);
+        await mutation.prepare();
+        mutation.publish();
 
         await context.ingestCadastralParcelFeatures([parcel('HR-1')], { skipConversion: true });
 

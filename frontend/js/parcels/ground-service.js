@@ -24,11 +24,11 @@
                 : [],
             onFeatures: async (features, context = {}) => {
                 if (!fabric || !features.length) return;
-                // A repository consumer may write only to the fabric draft whose token it was
+                // A repository consumer may write only to the fabric draft it was
                 // explicitly given. An unrelated viewport request must never leak into whichever
                 // proposal happens to be applying at the time.
-                if (context.transaction) {
-                    fabric.seedCadastre(features, { transaction: context.transaction });
+                if (context.mutation) {
+                    context.mutation.seedCadastre(features);
                     return;
                 }
 
@@ -46,11 +46,7 @@
                     if (!integrated || integrated.ok !== true) {
                         throw new Error('Cadastral ground could not be integrated into the live parcel fabric.');
                     }
-                } else {
-                    await fabric.transact({ kind: 'cadastral-ground-arrived' }, token => {
-                        fabric.seedCadastre(unpublished, { transaction: token });
-                    });
-                }
+                } else throw new Error('ParcelMutation is unavailable for cadastral integration.');
             }
         });
         try { delete global.__cadastralGroundTransport; } catch (_) { global.__cadastralGroundTransport = undefined; }
@@ -194,7 +190,7 @@
             if (!list.length || typeof dependencies.onFeatures !== 'function') return;
             await dependencies.onFeatures(list, {
                 city: normalizeId(options.city) || cityKey(),
-                transaction: options.transaction || null
+                mutation: options.mutation || null
             });
         }
 
@@ -226,7 +222,7 @@
             // refuses them. A subsequent consumer receives the same facts from this repository
             // and provisioning is attempted again; transport is never repeated as a repair step.
             if (options.provide !== false) {
-                await provideFeatures(features, { city, transaction: options.transaction || null });
+                await provideFeatures(features, { city, mutation: options.mutation || null });
             }
             return Array.from(new Set(features.map(featureId)));
         }
@@ -289,7 +285,7 @@
 
         async function ensureIds(parcelIds, options = {}) {
             const started = now();
-            const city = cityKey();
+            const city = normalizeId(options.city) || cityKey();
             const ids = assertCadastralIds(parcelIds);
             const store = featureStore(city);
             const absent = absentStore(city);
@@ -319,7 +315,8 @@
 
             let ownRequest = null;
             if (requestedIds.length) {
-                const fetchByIds = transport() && transport().fetchByIds;
+                const requestTransport = transport();
+                const fetchByIds = requestTransport && requestTransport.fetchByIds;
                 if (typeof fetchByIds !== 'function') throw new Error('Cadastral id transport is unavailable.');
                 emit(options.onProgress, { phase: 'ground-load-ids', done: 0, total: requestedIds.length });
                 ownRequest = Promise.resolve()
@@ -335,7 +332,7 @@
                         city,
                         requestedIds,
                         skipConversion: result && result.returnsWGS84 === true,
-                        transaction: options.transaction || null
+                        mutation: options.mutation || null
                     }))
                     .finally(() => {
                         requestedIds.forEach(id => {
@@ -365,7 +362,7 @@
                 total: ids.length
             });
             const features = foundIds.map(id => clone(store.get(id)));
-            await provideFeatures(features, { city, transaction: options.transaction || null });
+            await provideFeatures(features, { city, mutation: options.mutation || null });
             return {
                 status: absentIds.length ? 'partial' : 'ready',
                 ids,
@@ -465,23 +462,24 @@
 
         async function ensureFootprint(geometry, options = {}) {
             const started = now();
-            const city = cityKey();
+            const city = normalizeId(options.city) || cityKey();
             const geom = geometry && geometry.type === 'Feature' ? geometry.geometry : geometry;
             const fingerprint = geometryFingerprint(geom);
             if (!fingerprint) throw new Error('Cannot request cadastral ground without a polygon footprint.');
             const key = scoped(city, fingerprint);
             if (footprintResults.has(key)) {
                 const result = clone(footprintResults.get(key));
-                await provideFeatures(result.features, { city, transaction: options.transaction || null });
+                await provideFeatures(result.features, { city, mutation: options.mutation || null });
                 return { members: 1, coveredMembers: 1, requests: 0, result, elapsed: now() - started };
             }
             const pending = footprintInFlight.get(key);
             if (pending) {
                 const shared = clone(await pending);
-                await provideFeatures(shared.result?.features, { city, transaction: options.transaction || null });
+                await provideFeatures(shared.result?.features, { city, mutation: options.mutation || null });
                 return shared;
             }
-            const fetchUnderGeometry = transport() && transport().fetchUnderGeometry;
+            const requestTransport = transport();
+            const fetchUnderGeometry = requestTransport && requestTransport.fetchUnderGeometry;
             const task = Promise.resolve()
                 .then(async () => {
                     const idWaits = pendingForCity(idInFlight, city);
@@ -521,12 +519,13 @@
                 .finally(() => { if (footprintInFlight.get(key) === task) footprintInFlight.delete(key); });
             footprintInFlight.set(key, task);
             const result = clone(await task);
-            await provideFeatures(result.result?.features, { city, transaction: options.transaction || null });
+            await provideFeatures(result.result?.features, { city, mutation: options.mutation || null });
             return result;
         }
 
         async function ensureProposalGround(records, options = {}) {
             const started = now();
+            const city = normalizeId(options.city) || cityKey();
             const members = (Array.isArray(records) ? records : []).filter(Boolean);
             const purpose = String(options.purpose || 'application');
             const declared = new Map(members.map(record => [record, cadastreIdsOf(record)]));
@@ -535,8 +534,9 @@
             emit(options.onProgress, { phase: 'ground-check', members: members.length, parcelIds: allIds.length, purpose });
 
             const idResult = allIds.length ? await ensureIds(allIds, {
+                city,
                 onProgress: options.onProgress,
-                transaction: options.transaction || null
+                mutation: options.mutation || null
             }) : {
                 cachedIds: [], requestedIds: [], waitingIds: [], missingIds: [], requestCount: 0, features: []
             };
@@ -581,7 +581,7 @@
                     error.code = 'proposal-cadastral-ground-unspecified';
                     throw error;
                 }
-                const key = scoped(cityKey(), fingerprint);
+                const key = scoped(city, fingerprint);
                 if (footprintResults.has(key)) {
                     profile.cachedMembers += 1;
                     const cachedResult = footprintResults.get(key);
@@ -599,8 +599,8 @@
             // involved.
             if (cachedFootprintFeatures.length) {
                 await provideFeatures(cachedFootprintFeatures, {
-                    city: cityKey(),
-                    transaction: options.transaction || null
+                    city,
+                    mutation: options.mutation || null
                 });
             }
 
@@ -623,8 +623,9 @@
                     const geometry = multiPolygonOfFootprints(chunk.map(entry => entry.footprint));
                     const requestStarted = now();
                     const result = await ensureFootprint(geometry, {
+                        city,
                         parcelsOnly: true,
-                        transaction: options.transaction || null
+                        mutation: options.mutation || null
                     });
                     const elapsed = now() - requestStarted;
                     profile.footprintRequests += result.requests || 0;
@@ -634,7 +635,7 @@
                     profile.slowestMs = Math.max(profile.slowestMs, elapsed);
                     let chunkMembers = 0;
                     chunk.forEach(entry => {
-                        const summary = footprintSummary(entry.footprint, cityKey(), result.result);
+                        const summary = footprintSummary(entry.footprint, city, result.result);
                         footprintResults.set(entry.key, clone(summary));
                         summary.ids.forEach(id => resolvedIds.add(String(id)));
                         chunkMembers += entry.records.length;
@@ -664,12 +665,12 @@
                 footprintRequests: profile.footprintRequests, missingIds: profile.missingIds.length, elapsed
             });
             profile.featureIds = Array.from(resolvedIds);
-            profile.features = profile.featureIds.map(id => featureStore(cityKey()).get(id)).filter(Boolean).map(clone);
+            profile.features = profile.featureIds.map(id => featureStore(city).get(id)).filter(Boolean).map(clone);
             return { ...profile, elapsed };
         }
 
         async function ensureBounds(bounds, options = {}) {
-            const city = cityKey();
+            const city = normalizeId(options.city) || cityKey();
             const rawKeys = typeof dependencies.boundsKeysOf === 'function'
                 ? dependencies.boundsKeysOf(bounds)
                 : [];
@@ -690,7 +691,7 @@
                     features: Array.from(cachedIds, id => featureStore(city).get(id)).filter(Boolean).map(clone),
                     requestCount: 0
                 };
-                await provideFeatures(result.features, { city, transaction: options.transaction || null });
+                await provideFeatures(result.features, { city, mutation: options.mutation || null });
                 return result;
             }
 
@@ -703,7 +704,8 @@
             });
             let own = null;
             if (ownKeys.length) {
-                const fetchBounds = transport() && transport().fetchBounds;
+                const requestTransport = transport();
+                const fetchBounds = requestTransport && requestTransport.fetchBounds;
                 if (typeof fetchBounds !== 'function') throw new Error('Cadastral bounds transport is unavailable.');
                 own = Promise.resolve()
                     .then(() => fetchBounds(bounds, { city, keys: ownKeys, onProgress: options.onProgress }))
@@ -730,7 +732,7 @@
                 features: Array.from(resolvedIds, id => featureStore(city).get(id)).filter(Boolean).map(clone),
                 requestCount: own ? 1 : 0
             };
-            await provideFeatures(result.features, { city, transaction: options.transaction || null });
+            await provideFeatures(result.features, { city, mutation: options.mutation || null });
             return result;
         }
 

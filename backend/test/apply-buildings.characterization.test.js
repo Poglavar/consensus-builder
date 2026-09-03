@@ -81,12 +81,24 @@ function buildingProposalData() {
     };
 }
 
+function mutationOptions(extra = {}) {
+    return {
+        ...extra,
+        _parcelMutation: {
+            proposals: globalThis.proposalStorage,
+            collections: { proposedBuildings: [] },
+            afterCommit: callback => callback()
+        }
+    };
+}
+
 describe('_applyBuildingProposal (characterization)', () => {
     it('applies: renders the building, flips applied flags and persists one flat record', async () => {
         const mgr = makeManager();
         const data = buildingProposalData();
 
-        const result = await _applyBuildingProposal.call(mgr, 'p-b1', data, {});
+        const options = mutationOptions();
+        const result = await _applyBuildingProposal.call(mgr, 'p-b1', data, options);
 
         expect(result).toBe(true);
         // Map visibility has one authoritative root carrier.
@@ -95,8 +107,8 @@ describe('_applyBuildingProposal (characterization)', () => {
         expect(data.buildingProposal.applied).toBeUndefined();
         expect(data.buildingProposal.appliedAt).toBeUndefined();
         // Rendered the feature with the applied state + proposal id stamped on.
-        expect(globalThis.upsertProposedBuildingFeature.calls.length).toBe(1);
-        const rendered = globalThis.upsertProposedBuildingFeature.calls[0][0];
+        expect(globalThis.upsertProposedBuildingFeature.calls.length).toBe(0);
+        const rendered = options._parcelMutation.collections.proposedBuildings[0];
         expect(rendered.properties.proposalId).toBe('p-b1');
         expect(rendered.properties.proposalState).toBe('applied');
         // Persisted with flat cadastral anchors; no ancestry graph is written.
@@ -109,8 +121,9 @@ describe('_applyBuildingProposal (characterization)', () => {
     it('marks proposalState "executed" when the lifecycle is Executed', async () => {
         const data = buildingProposalData();
         data.lifecycleStatus = 'Executed';
-        await _applyBuildingProposal.call(makeManager(), 'p-b1', data, {});
-        expect(globalThis.upsertProposedBuildingFeature.calls[0][0].properties.proposalState).toBe('executed');
+        const options = mutationOptions();
+        await _applyBuildingProposal.call(makeManager(), 'p-b1', data, options);
+        expect(options._parcelMutation.collections.proposedBuildings[0].properties.proposalState).toBe('executed');
     });
 
     it('keeps authored block membership when its massing touches fewer parcels', async () => {
@@ -122,7 +135,7 @@ describe('_applyBuildingProposal (characterization)', () => {
             ineligibleParcels: [{ status: 'below-min-plot' }]
         };
 
-        const result = await _applyBuildingProposal.call(makeManager(), 'p-b1', data, {});
+        const result = await _applyBuildingProposal.call(makeManager(), 'p-b1', data, mutationOptions());
 
         expect(result).toBe(true);
         // Applying may resolve fewer current live pieces than the authored block contains. It may
@@ -136,13 +149,14 @@ describe('_applyBuildingProposal (characterization)', () => {
     it('updates canonical state but performs no presentation work when a plan defers it', async () => {
         const data = buildingProposalData();
 
-        const result = await _applyBuildingProposal.call(makeManager(), 'p-b1', data, {
+        const options = mutationOptions({
             deferPresentation: true,
             preloadedBuildings: []
         });
+        const result = await _applyBuildingProposal.call(makeManager(), 'p-b1', data, options);
 
         expect(result).toBe(true);
-        expect(globalThis.upsertProposedBuildingFeature.calls).toHaveLength(1);
+        expect(options._parcelMutation.collections.proposedBuildings).toHaveLength(1);
         expect(store.saved).toBeGreaterThan(0);
         expect(globalThis.updateProposedBuildingsLayer.calls).toHaveLength(0);
         expect(globalThis.updateShowProposalsButton.calls).toHaveLength(0);

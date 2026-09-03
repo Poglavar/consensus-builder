@@ -50,7 +50,6 @@ afterEach(() => {
 });
 
 function resolve() {
-    const token = Object.freeze({ id: 'formation-test' });
     features.forEach((feature, index) => {
         feature.properties.parcelId = `live-${index}`;
         feature.properties.cadastreParcelIds = [`HR-${index}`];
@@ -60,9 +59,8 @@ function resolve() {
             ? feature.geometry.coordinates
             : [feature.geometry.coordinates]
     )));
-    window.LiveParcelFabric = {
+    const fabricDraft = {
         entriesForCadastre: () => features,
-        featureId: feature => feature.properties.parcelId,
         getMany: ids => ({
             features: features.filter(feature => ids.includes(feature.properties.parcelId)),
             missingIds: []
@@ -80,7 +78,7 @@ function resolve() {
     return ProposalManager._resolveLiveFormationParents.call(harness, {
         proposalId: 'x',
         cadastreParcelIds: features.map((_, index) => `HR-${index}`)
-    }, 'x', 'road', { _fabricTransaction: token });
+    }, 'x', 'road', { _parcelMutation: { fabric: fabricDraft } });
 }
 
 describe('a corrupted partition is still refused', () => {

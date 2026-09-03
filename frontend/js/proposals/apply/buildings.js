@@ -159,48 +159,40 @@
             }
         }
 
+        const proposedCollection = options?._parcelMutation?.collections?.proposedBuildings;
+        if (!Array.isArray(proposedCollection)) {
+            throw new Error('Building application requires a proposal-collection mutation draft.');
+        }
         preparedFeatures.forEach(feature => {
-            if (typeof upsertProposedBuildingFeature === 'function') {
-                upsertProposedBuildingFeature(feature, { updateLayer: false });
-            } else {
-                if (typeof proposedBuildings === 'undefined') {
-                    if (typeof window !== 'undefined') window.proposedBuildings = [];
-                }
-                if (typeof proposedBuildings !== 'undefined') {
-                    if (!Array.isArray(proposedBuildings)) proposedBuildings = [];
-                    const existingIndex = proposedBuildings.findIndex(b => b && b.properties && b.properties.proposalId === proposalId && b.properties.buildingIndex === feature.properties.buildingIndex);
-                    if (existingIndex > -1) {
-                        proposedBuildings[existingIndex] = feature;
-                    } else {
-                        proposedBuildings.push(feature);
-                    }
-                }
-            }
+            const existingIndex = proposedCollection.findIndex(b => b?.properties
+                && String(b.properties.proposalId || '') === String(proposalId)
+                && b.properties.buildingIndex === feature.properties.buildingIndex);
+            if (existingIndex > -1) proposedCollection[existingIndex] = feature;
+            else proposedCollection.push(feature);
         });
 
         // THIS proposal's buildings, not every proposal's. The full rebuild is for removals and
         // boot; an apply has one proposal to draw and should cost one proposal.
-        if (options.deferPresentation !== true) {
+        if (options.deferPresentation !== true) options._parcelMutation.afterCommit(() => {
             if (typeof drawProposedBuildingsForProposal === 'function') {
                 drawProposedBuildingsForProposal(proposalId);
             } else if (typeof updateProposedBuildingsLayer === 'function') {
                 updateProposedBuildingsLayer();
             }
-        }
-
-        const showBuildingsCheckbox = document.getElementById('showProposedBuildings');
-        if (showBuildingsCheckbox && !showBuildingsCheckbox.checked) {
-            showBuildingsCheckbox.checked = true;
-        }
+            const showBuildingsCheckbox = typeof document !== 'undefined'
+                ? document.getElementById('showProposedBuildings')
+                : null;
+            if (showBuildingsCheckbox && !showBuildingsCheckbox.checked) showBuildingsCheckbox.checked = true;
+        });
 
         // `preparedFeatures` belong to the live rendering registry.  The authored record remains
         // untouched: its GeoJSON does not acquire proposal ids, live parcel ids, or replay state.
-        persistAppliedProposal(proposalData, proposalId);
+        persistAppliedProposal(proposalData, proposalId, options);
 
         traceApply(`Formed from ${workingParentIds.length} live parcel(s)`);
 
         // The status line is written once, for every type, by _runProposalApplyWithSummary.
-        if (options.deferPresentation !== true) refreshProposalUIAfterApply();
+        if (options.deferPresentation !== true) refreshProposalUIAfterApply(null, options);
 
         const totalTime = performance.now() - startTime;
         traceApply(`✓ Building proposal application completed in ${totalTime.toFixed(2)}ms`);
@@ -242,7 +234,7 @@
             ? resolvedParentFeatures
             : (this._resolveParcelFeaturesByIds(candidateIds, {
                 allowMissing: true,
-                _fabricTransaction: options._fabricTransaction
+                _parcelMutation: options._parcelMutation
             }) || []);
         const candidates = candidateFeatures
             .map(feature => ({ id: _getParcelIdFromFeature(feature), feature }))
@@ -250,21 +242,27 @@
 
         const proposerName = proposalData.author || 'Proposer';
         const proposerOwnership = { owners: [{ name: proposerName, ownerLabel: proposerName, percentageShare: 100, actualShareText: '100%' }] };
-        const proposerAgentId = (typeof getOrCreateAgentForRecipient === 'function') ? getOrCreateAgentForRecipient(proposerName) : null;
+        const ownershipContext = {
+            storage: options?._parcelMutation?.storage,
+            agentStore: options?._parcelMutation?.agents
+        };
+        const proposerAgentId = (typeof getOrCreateAgentForRecipient === 'function')
+            ? getOrCreateAgentForRecipient(proposerName, ownershipContext)
+            : null;
 
         const finishOwnership = (ownedIds) => {
             if (proposerAgentId && typeof transferParcelOwnership === 'function') {
                 ownedIds.forEach(pid => {
-                    try { transferParcelOwnership(String(pid), null, proposerAgentId, { skipAgentSync: true }); } catch (_) { }
+                    transferParcelOwnership(String(pid), null, proposerAgentId, {
+                        ...ownershipContext,
+                        skipAgentSync: true
+                    });
                 });
-                if (typeof buildAgentOwnedParcelIndex === 'function' && typeof agentStorage !== 'undefined') {
-                    try {
-                        agentStorage.beginBatch();
-                        const ownerIndex = buildAgentOwnedParcelIndex();
-                        agentStorage.updateAgent(proposerAgentId, { ownedParcels: ownerIndex.get(proposerAgentId) || [] });
-                    } finally {
-                        agentStorage.endBatch();
-                    }
+                if (typeof buildAgentOwnedParcelIndex === 'function' && ownershipContext.agentStore) {
+                    const ownerIndex = buildAgentOwnedParcelIndex({ storage: ownershipContext.storage });
+                    ownershipContext.agentStore.updateAgent(proposerAgentId, {
+                        ownedParcels: ownerIndex.get(proposerAgentId) || []
+                    });
                 }
             }
         };
@@ -304,7 +302,7 @@
             // can reach far past the drawn footprint, so this tests the ground actually taken.
             {
                 const roadHit = (typeof this._appliedRoadOverlappedByTaking === 'function')
-                    ? this._appliedRoadOverlappedByTaking(unionFeature.geometry, idLabel) : null;
+                    ? this._appliedRoadOverlappedByTaking(unionFeature.geometry, idLabel, options) : null;
                 if (roadHit) {
                     const road = roadHit.proposal;
                     const roadName = road.title || road.name || road.proposalId;
@@ -507,7 +505,7 @@
         // computation on clones).
         {
             const roadHit = (typeof this._appliedRoadOverlappedByTaking === 'function')
-                ? this._appliedRoadOverlappedByTaking(footprintGeometry, idLabel) : null;
+                ? this._appliedRoadOverlappedByTaking(footprintGeometry, idLabel, options) : null;
             if (roadHit) {
                 const road = roadHit.proposal;
                 const roadName = road.title || road.name || road.proposalId;

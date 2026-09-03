@@ -72,7 +72,7 @@
     //
     // Roads still take from everything else; this is the one direction that is closed. Returns
     // { proposal, overlapM2 } for the first applied road the taking would stand on, else null.
-    _appliedRoadOverlappedByTaking(takenGeometry, excludeProposalId) {
+    _appliedRoadOverlappedByTaking(takenGeometry, excludeProposalId, options = {}) {
         try {
             const turfRef = (typeof turf !== 'undefined') ? turf : null;
             if (!turfRef || !takenGeometry) return null;
@@ -82,9 +82,10 @@
             if (!taken.geometry) return null;
             const excludeKey = excludeProposalId === undefined || excludeProposalId === null
                 ? '' : String(excludeProposalId);
-            const all = (typeof proposalStorage !== 'undefined' && proposalStorage
-                && typeof proposalStorage.getAllProposals === 'function')
-                ? proposalStorage.getAllProposals() : [];
+            const store = options?._parcelMutation?.proposals
+                || (typeof proposalStorage !== 'undefined' ? proposalStorage : null);
+            const all = store && typeof store.getAllProposals === 'function'
+                ? store.getAllProposals() : [];
             for (const p of all) {
                 if (!p) continue;
                 if (excludeKey && String(p.proposalId) === excludeKey) continue;

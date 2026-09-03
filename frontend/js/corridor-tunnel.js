@@ -958,17 +958,15 @@
                 // transaction that produced that snapshot. A stale proposal-owned feature may be
                 // ignored here, but may never turn its record off and force a second boot pass.
                 if (options.preserveAppliedSet === true) continue;
-                try {
-                    await global.ProposalManager?.unapplyProposal?.(owner, {
-                        skipConfirm: true,
-                        skipRebuild: true,
-                        // This scan runs inside the taker's apply transaction. Enqueuing a second
-                        // root mutation behind that transaction while the taker awaits it is a
-                        // promise cycle (the Ctrl+R deadlock). Nested parking belongs to the root.
-                        _mutationTransaction: options._mutationTransaction
-                    });
-                } catch (error) {
-                    console.error('[corridor-tunnel] could not unapply building proposal under structure', owner, error);
+                const parked = await global.ProposalManager?.unapplyProposal?.(owner, {
+                    skipConfirm: true,
+                    skipRebuild: true,
+                    // This scan runs inside the taker's mutation. Parking the intersecting
+                    // building is part of that same proposal/fabric draft.
+                    _parcelMutation: options._parcelMutation
+                });
+                if (parked !== true) {
+                    throw new Error(`Could not park building proposal ${owner} under the new formation.`);
                 }
                 continue;
             }

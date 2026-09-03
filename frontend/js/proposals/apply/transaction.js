@@ -94,9 +94,8 @@
         const before = {};
         const draft = {};
         COLLECTION_NAMES.forEach(name => {
-            if (!Array.isArray(runtime && runtime[name])) return;
-            before[name] = runtime[name];
-            draft[name] = runtime[name].slice();
+            before[name] = runtime ? runtime[name] : undefined;
+            draft[name] = Array.isArray(runtime && runtime[name]) ? runtime[name].slice() : [];
         });
         return { before, draft };
     }
@@ -109,7 +108,8 @@
 
     function restoreCollections(runtime, collections) {
         Object.entries(collections.before).forEach(([name, entries]) => {
-            runtime[name] = entries;
+            if (entries === undefined) delete runtime[name];
+            else runtime[name] = entries;
         });
     }
 
@@ -183,12 +183,13 @@
 
     function resolveDependencies(overrides = {}) {
         const runtime = overrides.runtime || root;
+        const own = key => Object.prototype.hasOwnProperty.call(overrides, key);
         return {
             runtime,
-            storage: overrides.storage || runtime?.PersistentStorage || null,
-            proposalStore: overrides.proposalStore || runtime?.proposalStorage || null,
-            agentStore: overrides.agentStore || runtime?.agentStorage || null,
-            fabric: overrides.fabric || runtime?.LiveParcelFabric || null
+            storage: own('storage') ? overrides.storage : (runtime?.PersistentStorage || null),
+            proposalStore: own('proposalStore') ? overrides.proposalStore : (runtime?.proposalStorage || null),
+            agentStore: own('agentStore') ? overrides.agentStore : (runtime?.agentStorage || null),
+            fabric: own('fabric') ? overrides.fabric : (runtime?.LiveParcelFabric || null)
         };
     }
 
@@ -302,81 +303,5 @@
         }
     });
 
-    // Transitional adapter kept only until every caller is moved in the following phase. It uses
-    // its own journal shape but delegates serialization to the same root promise chain.
-    class MutationTransaction {
-        constructor(meta = {}) {
-            this.meta = { ...meta };
-            this.state = 'active';
-            this.rollbackErrors = [];
-            this._rollback = [];
-            this._commit = [];
-            this._finally = [];
-        }
-        deferRollback(label, action) { this._rollback.push({ label, action }); }
-        deferCommit(label, action) { this._commit.push({ label, action }); }
-        deferFinally(label, action) { this._finally.push({ label, action }); }
-        async commit() {
-            this.state = 'committing';
-            for (const entry of this._commit) await entry.action();
-            this.state = 'committed';
-            this._rollback.length = 0;
-        }
-        async rollback(cause) {
-            if (this.state === 'committed' || this.state === 'rolled-back') return;
-            for (let index = this._rollback.length - 1; index >= 0; index -= 1) {
-                const entry = this._rollback[index];
-                try { await entry.action(cause); }
-                catch (error) { this.rollbackErrors.push({ label: entry.label, error }); }
-            }
-            this.state = 'rolled-back';
-        }
-        async finalize() {
-            for (let index = this._finally.length - 1; index >= 0; index -= 1) {
-                await this._finally[index].action();
-            }
-        }
-    }
-    function isActiveTransaction(value) {
-        return value instanceof MutationTransaction && value.state === 'active';
-    }
-    function snapshotRecordMap(records) { return cloneMap(records); }
-    function restoreRecordMap(records, snapshot) {
-        if (!(records instanceof Map) || !(snapshot instanceof Map)) return false;
-        for (const key of Array.from(records.keys())) if (!snapshot.has(key)) records.delete(key);
-        snapshot.forEach((saved, key) => {
-            const current = records.get(key);
-            if (current && typeof current === 'object' && !Array.isArray(current)) {
-                Object.keys(current).forEach(name => { delete current[name]; });
-                Object.assign(current, clone(saved));
-            } else records.set(key, clone(saved));
-        });
-        return true;
-    }
-    function enqueue(meta, operation) {
-        const transaction = new MutationTransaction(meta);
-        return ParcelMutation.run({ kind: 'legacy-journal' }, async () => {
-            try {
-                const result = await operation(transaction);
-                if (result === false) { await transaction.rollback(new Error('Mutation returned false.')); return false; }
-                await transaction.commit();
-                return result;
-            } catch (error) {
-                await transaction.rollback(error);
-                if (transaction.rollbackErrors.length) error.rollbackErrors = transaction.rollbackErrors.slice();
-                throw error;
-            } finally {
-                await transaction.finalize();
-            }
-        }, { runtime: {}, storage: null, proposalStore: null, agentStore: null, fabric: null });
-    }
-
-    return Object.freeze({
-        ParcelMutation,
-        MutationTransaction,
-        enqueue,
-        isActiveTransaction,
-        snapshotRecordMap,
-        restoreRecordMap
-    });
+    return Object.freeze({ ParcelMutation });
 });

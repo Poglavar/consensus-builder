@@ -63,11 +63,11 @@ describe('demolition during canonical replay', () => {
     });
 
     it('parks an earlier building inside the active root transaction', async () => {
-        const transaction = { id: 17 };
+        const mutation = { id: 17 };
 
         await demolishBuildingsUnderFootprint(REGION, {
             proposalId: 'later-square',
-            _mutationTransaction: transaction
+            _parcelMutation: mutation
         });
 
         expect(globalThis.ProposalManager.unapplyProposal).toHaveBeenCalledWith(
@@ -75,7 +75,7 @@ describe('demolition during canonical replay', () => {
             expect.objectContaining({
                 skipConfirm: true,
                 skipRebuild: true,
-                _mutationTransaction: transaction
+                _parcelMutation: mutation
             })
         );
     });
@@ -83,7 +83,7 @@ describe('demolition during canonical replay', () => {
     it('does not treat a stale copy of the taker as its own obstacle', async () => {
         await demolishBuildingsUnderFootprint(REGION, {
             proposalId: 'earlier-building',
-            _mutationTransaction: { id: 18 }
+            _parcelMutation: { id: 18 }
         });
 
         expect(globalThis.ProposalManager.unapplyProposal).not.toHaveBeenCalled();

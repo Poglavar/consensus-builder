@@ -23,6 +23,39 @@ function installGlobal(name, value) {
     globalThis[name] = value;
 }
 
+function makeMutationStore(records) {
+    const proposals = records instanceof Map ? records : new Map(records.map(record => [String(record.proposalId), record]));
+    return {
+        proposals,
+        nextProposalId: 1,
+        save: vi.fn(),
+        getProposal(id) { return this.proposals.get(String(id)); },
+        getAllProposals() { return [...this.proposals.values()]; },
+        _indexProposal(record) { this.proposals.set(String(record.proposalId), record); },
+        snapshotForMutation() {
+            return { records: new Map([...this.proposals].map(([id, record]) => [id, structuredClone(record)])), nextProposalId: this.nextProposalId };
+        },
+        createMutationDraft(snapshot) {
+            const draft = Object.create(this);
+            draft.proposals = new Map([...snapshot.records].map(([id, record]) => [id, structuredClone(record)]));
+            draft.nextProposalId = snapshot.nextProposalId;
+            draft.save = () => {};
+            return draft;
+        },
+        serializeMutationDraft: () => null,
+        publishMutationDraft(draft) {
+            for (const id of [...this.proposals.keys()]) if (!draft.proposals.has(id)) this.proposals.delete(id);
+            draft.proposals.forEach((record, id) => {
+                const current = this.proposals.get(id);
+                if (current) {
+                    Object.keys(current).forEach(key => delete current[key]);
+                    Object.assign(current, structuredClone(record));
+                } else this.proposals.set(id, structuredClone(record));
+            });
+        }
+    };
+}
+
 afterEach(() => {
     for (const [name, prior] of saved) {
         if (prior.existed) globalThis[name] = prior.value;
@@ -219,25 +252,18 @@ describe('ProposalManager.applyProposal — canonical external mutation', () => 
     it('only flips the record, then delegates all map work to a queued scoped derivation', async () => {
         const proposal = { proposalId: 'new-road', goal: 'road-track', applied: false };
         const proposals = new Map([[proposal.proposalId, proposal]]);
-        const store = {
-            proposals,
-            beginBatch: vi.fn(),
-            endBatch: vi.fn(),
-            save: vi.fn(),
-            getProposal: id => proposals.get(String(id)),
-            _indexProposal: vi.fn()
-        };
+        const store = makeMutationStore(proposals);
         installGlobal('proposalStorage', store);
         installGlobal('setProposalApplied', setProposalApplied);
         installGlobal('isProposalCurrentlyApplied', item => isApplied(item));
 
         const manager = {
-            _enqueueFabricChange: ProposalManager._enqueueFabricChange,
             deriveForNewProposal: vi.fn(async (record, options) => {
-                expect(record).toBe(proposal);
-                // Already inside the queue slot: enqueueing again would wait on itself.
-                expect(options._fabricQueue).toBe(true);
-                expect(proposal.applied).toBe(true);
+                expect(record.proposalId).toBe(proposal.proposalId);
+                expect(options._parcelMutation).toBeTruthy();
+                expect(record.applied).toBe(true);
+                // Committed readers retain the previous revision until publication.
+                expect(proposal.applied).toBe(false);
                 return { ok: true, applied: true, goalKey: 'road-track' };
             }),
             _refreshUIAfterProposalChange: vi.fn(),
@@ -254,14 +280,7 @@ describe('ProposalManager.applyProposal — canonical external mutation', () => 
         const first = { proposalId: 'first', applied: false };
         const second = { proposalId: 'second', applied: false };
         const proposals = new Map([[first.proposalId, first], [second.proposalId, second]]);
-        const store = {
-            proposals,
-            beginBatch() {},
-            endBatch() {},
-            save() {},
-            getProposal: id => proposals.get(String(id)),
-            _indexProposal() {}
-        };
+        const store = makeMutationStore(proposals);
         installGlobal('proposalStorage', store);
         installGlobal('setProposalApplied', setProposalApplied);
         installGlobal('isProposalCurrentlyApplied', item => isApplied(item));
@@ -270,9 +289,12 @@ describe('ProposalManager.applyProposal — canonical external mutation', () => 
         const firstGate = new Promise(resolve => { releaseFirst = resolve; });
         const snapshots = [];
         const manager = {
-            _enqueueFabricChange: ProposalManager._enqueueFabricChange,
-            deriveForNewProposal: vi.fn(async () => {
-                snapshots.push([first.applied, second.applied]);
+            deriveForNewProposal: vi.fn(async (_record, options) => {
+                const draftStore = options._parcelMutation.proposals;
+                snapshots.push([
+                    draftStore.getProposal('first').applied,
+                    draftStore.getProposal('second').applied
+                ]);
                 if (snapshots.length === 1) await firstGate;
                 return { ok: true, applied: true };
             }),
@@ -295,20 +317,12 @@ describe('ProposalManager.applyProposal — canonical external mutation', () => 
     it('parks only the newly requested record when its derivation fails, then restores the prior set', async () => {
         const proposal = { proposalId: 'invalid-new-road', applied: false };
         const proposals = new Map([[proposal.proposalId, proposal]]);
-        const store = {
-            proposals,
-            beginBatch() {},
-            endBatch() {},
-            save: vi.fn(),
-            getProposal: id => proposals.get(String(id)),
-            _indexProposal: vi.fn()
-        };
+        const store = makeMutationStore(proposals);
         installGlobal('proposalStorage', store);
         installGlobal('setProposalApplied', setProposalApplied);
         installGlobal('isProposalCurrentlyApplied', item => isApplied(item));
 
         const manager = {
-            _enqueueFabricChange: ProposalManager._enqueueFabricChange,
             deriveForNewProposal: vi.fn(async () => null),
             _refreshUIAfterProposalChange: vi.fn(),
             _collectAppliedAlternativesForExplicitApply: ProposalManager._collectAppliedAlternativesForExplicitApply,
@@ -353,7 +367,10 @@ describe('ProposalManager.rebuildAppliedFabric — immutable record precedence',
             rebuildAppliedFabric: ProposalManager.rebuildAppliedFabric
         };
 
-        await manager.rebuildAppliedFabric({ silent: true, _fabricQueue: true });
+        await manager.rebuildAppliedFabric({
+            silent: true,
+            _parcelMutation: { proposals: globalThis.proposalStorage, afterCommit: callback => callback() }
+        });
 
         expect(manager._rebuildPass).toHaveBeenCalledOnce();
         expect(manager._rebuildPass.mock.calls[0][0].map(p => p.proposalId))
@@ -375,7 +392,10 @@ describe('ProposalManager.rebuildAppliedFabric — immutable record precedence',
             rebuildAppliedFabric: ProposalManager.rebuildAppliedFabric
         };
 
-        await manager.rebuildAppliedFabric({ silent: true, _fabricQueue: true });
+        await manager.rebuildAppliedFabric({
+            silent: true,
+            _parcelMutation: { proposals: globalThis.proposalStorage, afterCommit: callback => callback() }
+        });
 
         expect(manager._rebuildPass).toHaveBeenCalledOnce();
         expect(proposal.applied).toBe(true);
@@ -409,10 +429,11 @@ describe('ProposalManager._resetDerivedFabric — pristine registry', () => {
             geometry: { type: 'Polygon', coordinates: polygon }
         };
         const fabric = createLiveParcelFabric();
-        await fabric.transact({ id: 'seed-derived' }, transaction => {
-            fabric.upsertFeatures([derived], { transaction });
-        });
-        const transaction = fabric.beginTransaction({ id: 'reset' });
+        const seedMutation = fabric.beginMutation({ id: 'seed-derived' });
+        seedMutation.upsertFeatures([derived]);
+        await seedMutation.prepare();
+        seedMutation.publish();
+        const mutation = fabric.beginMutation({ id: 'reset' });
         const repository = {
             list: vi.fn(() => [cadastral]),
             getMany: vi.fn(ids => ids.includes('HR-A') ? [cadastral] : [])
@@ -427,13 +448,20 @@ describe('ProposalManager._resetDerivedFabric — pristine registry', () => {
 
         expect(ProposalManager._resetDerivedFabric.call(manager, [], {
             cadastreParcelIds: ['HR-A'],
-            _fabricTransaction: transaction
+            _parcelMutation: {
+                fabric: mutation,
+                collections: {
+                    parks: [], squares: [], lakes: [], transitStations: [], proposedBuildings: []
+                },
+                afterCommit: callback => callback()
+            }
         })).toEqual({ parcels: 1 });
 
-        expect(fabric.get('HR-A#proposal-1', { transaction })).toBeNull();
-        expect(fabric.get('HR-A', { transaction })).toEqual(cadastral);
+        expect(mutation.get('HR-A#proposal-1')).toBeNull();
+        expect(mutation.get('HR-A')).toEqual(cadastral);
         expect(fabric.get('HR-A')).toBeNull();
-        await fabric.commit(transaction);
+        await mutation.prepare();
+        mutation.publish();
         expect(fabric.get('HR-A')).toEqual(cadastral);
     });
 });

@@ -11,30 +11,36 @@ const setAppliedRoot = (typeof setProposalApplied === 'function')
     ? setProposalApplied
     : require('../status.js').setProposalApplied;
 
-function persistAppliedProposal(proposalData, proposalId) {
+function persistAppliedProposal(proposalData, proposalId, options = {}) {
     if (!proposalData) return;
     setAppliedRoot(proposalData, true);
     proposalData.updatedAt = new Date().toISOString();
     proposalData.proposalId = proposalData.proposalId || proposalId;
-    if (typeof proposalStorage !== 'undefined' && proposalStorage) {
-        if (typeof proposalStorage._indexProposal === 'function') {
-            proposalStorage._indexProposal(proposalData);
-        } else if (proposalStorage.proposals && typeof proposalStorage.proposals.set === 'function') {
-            proposalStorage.proposals.set(proposalData.proposalId, proposalData);
+    const store = options?._parcelMutation?.proposals
+        || (typeof proposalStorage !== 'undefined' ? proposalStorage : null);
+    if (store) {
+        if (typeof store._indexProposal === 'function') {
+            store._indexProposal(proposalData);
+        } else if (store.proposals && typeof store.proposals.set === 'function') {
+            store.proposals.set(proposalData.proposalId, proposalData);
         }
-        if (typeof proposalStorage.save === 'function') proposalStorage.save();
+        if (typeof store.save === 'function') store.save();
     }
 }
 
 // Refresh the proposal-affected UI after an apply. Every call is guarded because these are optional
 // globals in some load orders; a missing one must never abort the apply.
-function refreshProposalUIAfterApply(statusMessage) {
-    try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
-    try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
-    try { if (typeof refreshParcelStylesForAppliedProposals === 'function') refreshParcelStylesForAppliedProposals(); } catch (_) { }
-    if (statusMessage && typeof updateStatus === 'function') {
-        try { updateStatus(statusMessage); } catch (_) { }
-    }
+function refreshProposalUIAfterApply(statusMessage, options = {}) {
+    const refresh = () => {
+        try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
+        try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
+        try { if (typeof refreshParcelStylesForAppliedProposals === 'function') refreshParcelStylesForAppliedProposals(); } catch (_) { }
+        if (statusMessage && typeof updateStatus === 'function') {
+            try { updateStatus(statusMessage); } catch (_) { }
+        }
+    };
+    if (options?._parcelMutation) options._parcelMutation.afterCommit(refresh);
+    else refresh();
 }
 
 if (typeof module !== 'undefined' && module.exports) {

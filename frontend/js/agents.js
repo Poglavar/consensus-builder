@@ -268,13 +268,14 @@ function getAvatarImagePath(avatarIndex) {
  * @param {string} agentId - The agent ID
  * @returns {Array} - Array of parcel IDs owned by the agent
  */
-function forEachPersistentParcelOwnership(iterator) {
+function forEachPersistentParcelOwnership(iterator, options = {}) {
     if (typeof iterator !== 'function') return;
+    const storage = options.storage || PersistentStorage;
     // PersistentStorage.key(i) materialises Array.from(cache.keys()) on every call. Walking N
     // entries through that API is therefore O(N²) and made a two-parcel readjustment pause for
     // about two seconds in a mature plan. The storage already exposes its cache's linear walk.
-    if (PersistentStorage && typeof PersistentStorage.forEach === 'function') {
-        PersistentStorage.forEach((ownerId, key) => {
+    if (storage && typeof storage.forEach === 'function') {
+        storage.forEach((ownerId, key) => {
             if (key && key.startsWith('parcel_') && key.endsWith('_owner')) {
                 iterator(String(ownerId), key.slice(7, -6));
             }
@@ -282,21 +283,21 @@ function forEachPersistentParcelOwnership(iterator) {
         return;
     }
     // Compatibility for older embedded storage adapters.
-    for (let i = 0; i < PersistentStorage.length; i += 1) {
-        const key = PersistentStorage.key(i);
+    for (let i = 0; i < storage.length; i += 1) {
+        const key = storage.key(i);
         if (key && key.startsWith('parcel_') && key.endsWith('_owner')) {
-            iterator(String(PersistentStorage.getItem(key)), key.slice(7, -6));
+            iterator(String(storage.getItem(key)), key.slice(7, -6));
         }
     }
 }
 
-function getAgentOwnedParcels(agentId, { includePersistent = true, includeTransient = true } = {}) {
+function getAgentOwnedParcels(agentId, { includePersistent = true, includeTransient = true, storage = null } = {}) {
     const parcels = [];
 
     if (includePersistent) {
         forEachPersistentParcelOwnership((ownerId, parcelId) => {
             if (ownerId === agentId) parcels.push(parcelId);
-        });
+        }, { storage: storage || PersistentStorage });
     }
 
     if (includeTransient) {
@@ -311,7 +312,7 @@ function getAgentOwnedParcels(agentId, { includePersistent = true, includeTransi
     return Array.from(new Set(parcels));
 }
 
-function buildAgentOwnedParcelIndex({ includePersistent = true, includeTransient = true } = {}) {
+function buildAgentOwnedParcelIndex({ includePersistent = true, includeTransient = true, storage = null } = {}) {
     const ownerToParcels = new Map();
 
     const addOwnership = (ownerId, parcelId) => {
@@ -325,7 +326,7 @@ function buildAgentOwnedParcelIndex({ includePersistent = true, includeTransient
     };
 
     if (includePersistent) {
-        forEachPersistentParcelOwnership(addOwnership);
+        forEachPersistentParcelOwnership(addOwnership, { storage: storage || PersistentStorage });
     }
 
     if (includeTransient) {
@@ -352,9 +353,10 @@ function buildAgentOwnedParcelIndex({ includePersistent = true, includeTransient
  * Update agent's owned parcels list
  * @param {string} agentId - The agent ID
  */
-function updateAgentOwnedParcels(agentId) {
-    const ownedParcels = getAgentOwnedParcels(agentId);
-    agentStorage.updateAgent(agentId, { ownedParcels });
+function updateAgentOwnedParcels(agentId, options = {}) {
+    const store = options.agentStore || agentStorage;
+    const ownedParcels = getAgentOwnedParcels(agentId, { storage: options.storage || null });
+    store.updateAgent(agentId, { ownedParcels });
 }
 
 /**
@@ -364,18 +366,20 @@ function updateAgentOwnedParcels(agentId) {
  * @param {string} toAgentId - New owner agent ID
  */
 function transferParcelOwnership(parcelId, fromAgentId, toAgentId, options = {}) {
+    const storage = options.storage || PersistentStorage;
+    const store = options.agentStore || agentStorage;
     // Update PersistentStorage
-    PersistentStorage.setItem(`parcel_${parcelId}_owner`, toAgentId);
+    storage.setItem(`parcel_${parcelId}_owner`, toAgentId);
 
     // Update both agents' owned parcels lists. skipAgentSync lets a bulk caller (e.g. a reparcellization
     // applying dozens of children) defer this to one keyspace pass afterwards — each updateAgentOwnedParcels
     // scans the whole keyspace, so doing it per parcel is O(n²).
     if (!options.skipAgentSync) {
         if (fromAgentId) {
-            updateAgentOwnedParcels(fromAgentId);
+            updateAgentOwnedParcels(fromAgentId, { storage, agentStore: store });
         }
         if (toAgentId) {
-            updateAgentOwnedParcels(toAgentId);
+            updateAgentOwnedParcels(toAgentId, { storage, agentStore: store });
         }
     }
 
@@ -390,9 +394,10 @@ function transferParcelOwnership(parcelId, fromAgentId, toAgentId, options = {})
 // (city ownership previously existed only as a display label).
 const CITY_AGENT_ID = 'agent_city';
 
-function getOrCreateCityAgent() {
-    if (!agentStorage.getAgent(CITY_AGENT_ID)) {
-        agentStorage.addAgent({
+function getOrCreateCityAgent(options = {}) {
+    const store = options.agentStore || agentStorage;
+    if (!store.getAgent(CITY_AGENT_ID)) {
+        store.addAgent({
             id: CITY_AGENT_ID, name: 'City', avatarIndex: 0, isCity: true,
             ethBalance: 0, walletAddresses: [], ownedParcels: [],
             proposalsCreated: [], proposalsAccepted: [], proposalsExecuted: [],
@@ -403,11 +408,12 @@ function getOrCreateCityAgent() {
     return CITY_AGENT_ID;
 }
 
-function findAgentByName(name) {
+function findAgentByName(name, options = {}) {
     if (!name) return null;
     const target = String(name).trim().toLowerCase();
     if (!target) return null;
-    const match = agentStorage.getAllAgents().find(a => (a.name || '').trim().toLowerCase() === target);
+    const store = options.agentStore || agentStorage;
+    const match = store.getAllAgents().find(a => (a.name || '').trim().toLowerCase() === target);
     return match ? match.id : null;
 }
 
@@ -418,17 +424,18 @@ function _recipientHash(s) {
 }
 
 // Find-or-create a lightweight agent for a third-party recipient (a name or 0x address).
-function getOrCreateAgentForRecipient(label) {
+function getOrCreateAgentForRecipient(label, options = {}) {
     if (!label) return null;
     const trimmed = String(label).trim();
     if (!trimmed) return null;
-    const existing = agentStorage.getAllAgents().find(a =>
+    const store = options.agentStore || agentStorage;
+    const existing = store.getAllAgents().find(a =>
         (a.name || '').trim().toLowerCase() === trimmed.toLowerCase()
         || (Array.isArray(a.walletAddresses) && a.walletAddresses.some(w => (w || '').toLowerCase() === trimmed.toLowerCase())));
     if (existing) return existing.id;
     const id = 'agent_recipient_' + _recipientHash(trimmed.toLowerCase());
-    if (!agentStorage.getAgent(id)) {
-        agentStorage.addAgent({
+    if (!store.getAgent(id)) {
+        store.addAgent({
             id, name: trimmed, avatarIndex: 0, external: true,
             ethBalance: 0, walletAddresses: trimmed.startsWith('0x') ? [trimmed] : [],
             ownedParcels: [], proposalsCreated: [], proposalsAccepted: [], proposalsExecuted: [],
@@ -441,23 +448,23 @@ function getOrCreateAgentForRecipient(label) {
 
 // Resolve the agent id that should RECEIVE the parcels for a proposal's ownership facet.
 // Returns null for no-transfer / open-sale (no fixed recipient yet).
-function resolveProposalRecipientAgentId(proposal) {
+function resolveProposalRecipientAgentId(proposal, options = {}) {
     if (!proposal) return null;
     const otp = proposal.ownershipTransferProposal || {};
     const facets = proposal.facets || {};
     const recipient = otp.recipient || facets.ownership || null;
     switch (recipient) {
         case 'to-me': {
-            const byAuthor = findAgentByName(proposal.author);
+            const byAuthor = findAgentByName(proposal.author, options);
             if (byAuthor) return byAuthor;
             const cur = (typeof getCurrentUserAgent === 'function') ? getCurrentUserAgent() : null;
             return cur ? cur.id : null;
         }
         case 'to-city':
-            return getOrCreateCityAgent();
+            return getOrCreateCityAgent(options);
         case 'third-party':
             if (otp.recipientScope === 'any') return null; // open sale: buyer unknown until claimed
-            return getOrCreateAgentForRecipient(otp.recipientAddress || facets.recipientAddress);
+            return getOrCreateAgentForRecipient(otp.recipientAddress || facets.recipientAddress, options);
         default:
             return null; // no-change / unknown
     }

@@ -754,96 +754,64 @@ function rebuildRoadDefinitionFootprint(definition) {
 async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition, options = {}) {
     beginApplyIndicator();
     try {
-        // The record flip and its replay are ONE queued fabric mutation. Previously the editor
-        // parked/inserted records before joining the queue, so a concurrent reload/apply could fold
-        // a half-written replacement into the map.
-        return await ProposalManager._enqueueFabricChange(async () => {
-            const canBatch = typeof proposalStorage !== 'undefined'
-                && typeof proposalStorage.beginBatch === 'function'
-                && typeof proposalStorage.endBatch === 'function';
-            if (canBatch) proposalStorage.beginBatch();
-            try {
-                return await runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition, {
-                    ...options,
-                    _fabricQueue: true
-                });
-            } finally {
-                if (canBatch) proposalStorage.endBatch();
+        // Node dragging may paint through the committed record for immediate feedback. Restore the
+        // captured pre-drag definition before ParcelMutation snapshots global state; the desired
+        // geometry is rebuilt by mutateDefinition inside its private proposal draft.
+        if (options.preEditSnapshot) {
+            const live = (typeof getProposalByIdOrHash === 'function')
+                ? getProposalByIdOrHash(proposalIdOrHash)
+                : null;
+            if (live?.roadProposal?.definition) {
+                writeRoadDefinition(live, cloneRoadValue(options.preEditSnapshot));
+                proposalStorage?._indexProposal?.(live);
             }
-        });
+        }
+        return await ProposalManager.runParcelMutation(
+            'corridor-edit',
+            proposalIdOrHash,
+            transactionOptions => runLocalCorridorGeometryUpdate(
+                proposalIdOrHash,
+                mutateDefinition,
+                { ...options, ...transactionOptions }
+            )
+        );
+    } catch (error) {
+        console.warn('[updateLocalCorridorGeometry] road edit failed', error);
+        if (typeof updateStatus === 'function') {
+            updateStatus(translateRoadText(
+                'panel.road.editRevertedStatus',
+                'Could not complete that road change — reverted.'
+            ));
+        }
+        return false;
     } finally {
         endApplyIndicator();
     }
 }
 
 async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition, options = {}) {
-    const sourceProposal = (typeof getProposalByIdOrHash === 'function')
-        ? getProposalByIdOrHash(proposalIdOrHash)
-        : null;
-    if (!sourceProposal?.roadProposal?.definition || typeof proposalStorage === 'undefined') return false;
+    const mutation = options._parcelMutation;
+    const store = mutation?.proposals;
+    const sourceProposal = store?.findProposalByIdOrHash?.(proposalIdOrHash)
+        || store?.getProposal?.(String(proposalIdOrHash));
+    if (!sourceProposal?.roadProposal?.definition || !store) return false;
 
     const sourceKey = String(
         (typeof getProposalKey === 'function' ? getProposalKey(sourceProposal) : null)
         || sourceProposal.proposalId
         || proposalIdOrHash
     );
-    const originalDefinition = cloneRoadValue(
-        options.preEditSnapshot || sourceProposal.roadProposal.definition
-    );
+    const originalDefinition = cloneRoadValue(sourceProposal.roadProposal.definition);
     const workingDefinition = cloneRoadValue(sourceProposal.roadProposal.definition);
     if (typeof mutateDefinition === 'function') mutateDefinition(workingDefinition);
-
-    // Node dragging paints through the stored object for live feedback. Put the immutable source
-    // back before any persistence or replay.
-    writeRoadDefinition(sourceProposal, originalDefinition);
-    try { proposalStorage._indexProposal?.(sourceProposal); } catch (_) { }
-
     const sourceBefore = cloneRoadValue(sourceProposal);
     const extraStretchIds = [];
-    const transactionApi = (typeof window !== 'undefined') ? window.ProposalMutationTransactions : null;
-    const recordSnapshot = proposalStorage.proposals instanceof Map
-        && transactionApi && typeof transactionApi.snapshotRecordMap === 'function'
-        ? transactionApi.snapshotRecordMap(proposalStorage.proposals)
-        : null;
-    const nextProposalIdBefore = proposalStorage.nextProposalId;
-    const restoreRecordSnapshot = () => {
-        if (recordSnapshot && proposalStorage.proposals instanceof Map
-            && typeof transactionApi.restoreRecordMap === 'function') {
-            transactionApi.restoreRecordMap(proposalStorage.proposals, recordSnapshot);
-            if (nextProposalIdBefore !== undefined) proposalStorage.nextProposalId = nextProposalIdBefore;
-            return proposalStorage.getProposal(sourceKey) || sourceProposal;
-        }
-        Object.keys(sourceProposal).forEach(key => { delete sourceProposal[key]; });
-        Object.assign(sourceProposal, cloneRoadValue(sourceBefore));
-        extraStretchIds.forEach(id => {
-            try { proposalStorage.removeProposal(id); } catch (_) { }
-        });
-        return sourceProposal;
-    };
-    const rollbackRecordAndFabric = async attemptedSeeds => {
-        const restored = restoreRecordSnapshot();
-        proposalStorage.save?.();
-        try {
-            const rollback = await ProposalManager.rematerializeCorridorScope?.([
-                ...(Array.isArray(attemptedSeeds) ? attemptedSeeds : []),
-                sourceBefore,
-                restored
-            ], {
-                _fabricQueue: options._fabricQueue === true,
-                silent: true
-            });
-            if (!rollback || rollback.ok !== true) {
-                throw new Error('The pre-edit corridor scope could not be restored.');
-            }
-        } catch (restoreError) {
-            console.error('[updateLocalCorridorGeometry] could not restore the pre-edit fabric', restoreError);
-        }
-        return restored;
-    };
 
     try {
         if (JSON.stringify(workingDefinition) === JSON.stringify(originalDefinition)) {
-            ProposalManager._refreshUIAfterProposalChange?.(sourceProposal);
+            mutation.afterCommit(() => ProposalManager._refreshUIAfterProposalChange?.(
+                typeof proposalStorage !== 'undefined' ? proposalStorage.getProposal?.(sourceKey) : null
+            ));
             return true;
         }
     } catch (_) { }
@@ -867,29 +835,26 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
     let normalizedIds = normalizedEntries.map(entry => entry.id);
 
     if (!normalizedSegments.length) {
-        try {
-            if (typeof setProposalApplied === 'function') {
-                setProposalApplied(sourceProposal, false, { stamp: false });
-            } else {
-                sourceProposal.applied = false;
-            }
-            proposalStorage.save?.();
-            if (sourceWasApplied) {
-                const derived = await ProposalManager.rematerializeCorridorScope?.([sourceBefore, sourceProposal], {
-                    _fabricQueue: options._fabricQueue === true
-                });
-                if (!derived || derived.ok !== true) throw new Error('The erased road scope could not be rematerialised.');
-            }
+        if (typeof setProposalApplied === 'function') {
+            setProposalApplied(sourceProposal, false, { stamp: false });
+        } else {
+            sourceProposal.applied = false;
+        }
+        store._indexProposal?.(sourceProposal);
+        store.save?.();
+        if (sourceWasApplied) {
+            const derived = await ProposalManager.rematerializeCorridorScope?.(
+                [sourceBefore, sourceProposal],
+                { _parcelMutation: mutation }
+            );
+            if (!derived || derived.ok !== true) throw new Error('The erased road scope could not be rematerialised.');
+        }
+        mutation.afterCommit(() => {
             try { window.ProposalSelection?.clear?.(); } catch (_) { }
             try { if (typeof hideProposalDetailsPanel === 'function') hideProposalDetailsPanel(); } catch (_) { }
             ProposalManager._refreshUIAfterProposalChange?.(null);
-            return true;
-        } catch (error) {
-            console.warn('[updateLocalCorridorGeometry] erasing road failed', error);
-            const restored = await rollbackRecordAndFabric([sourceBefore]);
-            ProposalManager._refreshUIAfterProposalChange?.(restored);
-            return false;
-        }
+        });
+        return true;
     }
 
     workingDefinition.tunnels = rekeyMovedTunnelRecords(
@@ -981,48 +946,51 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
     detachPublishedIdentity(sourceProposal);
     const wasSelected = typeof window.ProposalSelection?.is === 'function'
         && window.ProposalSelection.is(sourceKey);
-    try {
-        writeRoadDefinition(sourceProposal, componentDefinitions[0]);
-        try { proposalStorage._indexProposal?.(sourceProposal); } catch (_) { }
+    writeRoadDefinition(sourceProposal, componentDefinitions[0]);
+    store._indexProposal?.(sourceProposal);
 
-        // A disconnected remainder is a different road, not a different version of this one, so it
-        // is the one thing here that really does become a new record.
-        componentDefinitions.slice(1).forEach((definition, index) => {
-            const stretch = makeFreshRoadSnapshot(sourceProposal, definition, {
-                sourceProposalId: sourceKey
-            });
-            const baseTitle = stretch.title || stretch.name || 'Road';
-            stretch.title = `${baseTitle} (${index + 2})`;
-            if (stretch.name) stretch.name = stretch.title;
-            const id = proposalStorage.addProposal(stretch);
-            if (!id) throw new Error('Could not persist the split-off road stretch.');
-            extraStretchIds.push(String(id));
-            const stored = proposalStorage.getProposal(id) || stretch;
-            if (typeof setProposalApplied === 'function') {
-                setProposalApplied(stored, sourceWasApplied, { stamp: sourceWasApplied });
-            } else {
-                stored.applied = sourceWasApplied;
-            }
+    // A disconnected remainder is a different road, not a different version of this one, so it
+    // is the one thing here that really does become a new record.
+    componentDefinitions.slice(1).forEach((definition, index) => {
+        const stretch = makeFreshRoadSnapshot(sourceProposal, definition, {
+            sourceProposalId: sourceKey
         });
-        proposalStorage.save?.();
-
-        // Old and new footprints provide the exact local corridor scope. Only the edited road's
-        // output is discarded; corridor arrangement is recomputed there and nowhere else.
-        if (sourceWasApplied) {
-            const editedRecords = [sourceKey, ...extraStretchIds]
-                .map(id => proposalStorage.getProposal(id))
-                .filter(Boolean);
-            const derived = await ProposalManager.rematerializeCorridorScope?.([sourceBefore, ...editedRecords], {
-                _fabricQueue: options._fabricQueue === true
-            });
-            if (!derived || derived.ok !== true) {
-                throw new Error('The edited road scope could not be rematerialised from the cadastre.');
-            }
+        const baseTitle = stretch.title || stretch.name || 'Road';
+        stretch.title = `${baseTitle} (${index + 2})`;
+        if (stretch.name) stretch.name = stretch.title;
+        const id = store.addProposal(stretch);
+        if (!id) throw new Error('Could not persist the split-off road stretch.');
+        extraStretchIds.push(String(id));
+        const stored = store.getProposal(id) || stretch;
+        if (typeof setProposalApplied === 'function') {
+            setProposalApplied(stored, sourceWasApplied, { stamp: sourceWasApplied });
+        } else {
+            stored.applied = sourceWasApplied;
         }
+        store._indexProposal?.(stored);
+    });
+    store.save?.();
 
-        const primaryId = sourceKey;
-        const storedReplacement = proposalStorage.getProposal(primaryId) || sourceProposal;
-        const componentCount = componentDefinitions.length;
+    // Old and new footprints provide the exact local corridor scope. Only the edited road's
+    // output is discarded; corridor arrangement is recomputed there and nowhere else.
+    if (sourceWasApplied) {
+        const editedRecords = [sourceKey, ...extraStretchIds]
+            .map(id => store.getProposal(id))
+            .filter(Boolean);
+        const derived = await ProposalManager.rematerializeCorridorScope?.(
+            [sourceBefore, ...editedRecords],
+            { _parcelMutation: mutation }
+        );
+        if (!derived || derived.ok !== true) {
+            throw new Error('The edited road scope could not be rematerialised from the cadastre.');
+        }
+    }
+
+    const primaryId = sourceKey;
+    mutation.afterCommit(() => {
+        const storedReplacement = typeof proposalStorage !== 'undefined'
+            ? (proposalStorage.getProposal(primaryId) || sourceProposal)
+            : sourceProposal;
         if (componentDefinitions.length > 1 && typeof updateStatus === 'function') {
             updateStatus(translateRoadText(
                 'panel.road.splitIntoStretches',
@@ -1036,25 +1004,8 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
             window.__openProposalDetailsCollapsed = true;
             selectAndHighlightProposal(primaryId, null, false, true);
         }
-        return String(primaryId);
-    } catch (error) {
-        console.warn('[updateLocalCorridorGeometry] road edit failed', error);
-        // Restore authored state first, then derive it. New-position output is included as a seed so
-        // a partial failed replay cannot leave generated parcels outside the old footprint behind.
-        const attemptedSeeds = [sourceProposal, ...extraStretchIds
-            .map(id => proposalStorage.getProposal(id))
-            .filter(Boolean)]
-            .map(cloneRoadValue);
-        const restored = await rollbackRecordAndFabric(attemptedSeeds);
-        ProposalManager._refreshUIAfterProposalChange?.(restored);
-        if (typeof updateStatus === 'function') {
-            updateStatus(translateRoadText(
-                'panel.road.editRevertedStatus',
-                'Could not complete that road change — reverted.'
-            ));
-        }
-        return false;
-    }
+    });
+    return String(primaryId);
 }
 
 // ---------------------------------------------------------------------------

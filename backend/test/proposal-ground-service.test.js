@@ -140,17 +140,17 @@ describe('CadastralParcelRepository', () => {
         expect(fetchParcelsByIds).toHaveBeenCalledOnce();
     });
 
-    it('provisions one retained fact into each explicit fabric transaction without refetching', async () => {
+    it('provisions one retained fact into each explicit fabric mutation without refetching', async () => {
         const { service, onFeatures, fetchParcelsByIds } = fixture();
         const firstTransaction = { id: 'fabric-one' };
         const secondTransaction = { id: 'fabric-two' };
 
-        await service.ensureIds(['HR-A'], { transaction: firstTransaction });
-        await service.ensureIds(['HR-A'], { transaction: secondTransaction });
+        await service.ensureIds(['HR-A'], { mutation: firstTransaction });
+        await service.ensureIds(['HR-A'], { mutation: secondTransaction });
 
         expect(fetchParcelsByIds).toHaveBeenCalledOnce();
         expect(onFeatures).toHaveBeenCalledTimes(2);
-        expect(onFeatures.mock.calls.map(call => call[1].transaction)).toEqual([
+        expect(onFeatures.mock.calls.map(call => call[1].mutation)).toEqual([
             firstTransaction,
             secondTransaction
         ]);
@@ -165,15 +165,15 @@ describe('CadastralParcelRepository', () => {
         const firstTransaction = { id: 'fabric-one' };
         const secondTransaction = { id: 'fabric-two' };
 
-        const first = service.ensureIds(['HR-A'], { transaction: firstTransaction });
-        const second = service.ensureIds(['HR-A'], { transaction: secondTransaction });
+        const first = service.ensureIds(['HR-A'], { mutation: firstTransaction });
+        const second = service.ensureIds(['HR-A'], { mutation: secondTransaction });
         await Promise.resolve();
         release();
         await Promise.all([first, second]);
 
         expect(fetchParcelsByIds).toHaveBeenCalledOnce();
         expect(onFeatures).toHaveBeenCalledTimes(2);
-        expect(new Set(onFeatures.mock.calls.map(call => call[1].transaction))).toEqual(
+        expect(new Set(onFeatures.mock.calls.map(call => call[1].mutation))).toEqual(
             new Set([firstTransaction, secondTransaction])
         );
     });
@@ -184,9 +184,9 @@ describe('CadastralParcelRepository', () => {
             .mockResolvedValueOnce(undefined);
         const { service, fetchParcelsByIds } = fixture({ onFeatures });
 
-        await expect(service.ensureIds(['HR-A'], { transaction: { id: 'failed' } }))
+        await expect(service.ensureIds(['HR-A'], { mutation: { id: 'failed' } }))
             .rejects.toThrow('fabric transaction rolled back');
-        await expect(service.ensureIds(['HR-A'], { transaction: { id: 'retry' } }))
+        await expect(service.ensureIds(['HR-A'], { mutation: { id: 'retry' } }))
             .resolves.toMatchObject({ foundIds: ['HR-A'], requestedIds: [] });
 
         expect(fetchParcelsByIds).toHaveBeenCalledOnce();

@@ -69,7 +69,7 @@
                         : (props.producedByProposalId ? [String(props.producedByProposalId)] : []);
                     takers.forEach(ownerId => {
                         if (!ownerId) return;
-                        const record = (typeof _getProposalRecord === 'function') ? _getProposalRecord(ownerId) : null;
+                        const record = options?._parcelMutation?.proposals?.getProposal?.(ownerId) || null;
                         coverers.set(ownerId, (record && (record.title || record.name)) || ownerId);
                     });
                 });
@@ -314,6 +314,10 @@
 
         const childParcelIds = [];
         const touchedAgentIds = new Set();
+        const ownershipContext = {
+            storage: options?._parcelMutation?.storage,
+            agentStore: options?._parcelMutation?.agents
+        };
         childFeatures.forEach(feature => {
             const parcelId = _getParcelIdFromFeature(feature);
             _ensureParcelIdOnProperties(feature.properties, parcelId);
@@ -342,14 +346,19 @@
                     const displayName = feature.properties.displayName;
                     let agentId = null;
                     if (ownerKey === 'public-land') {
-                        agentId = (typeof getOrCreateCityAgent === 'function') ? getOrCreateCityAgent() : null;
-                    } else if (ownerKey && typeof agentStorage !== 'undefined' && agentStorage.getAgent(ownerKey)) {
+                        agentId = (typeof getOrCreateCityAgent === 'function')
+                            ? getOrCreateCityAgent(ownershipContext)
+                            : null;
+                    } else if (ownerKey && ownershipContext.agentStore?.getAgent?.(ownerKey)) {
                         agentId = ownerKey;
                     } else if (ownerKey && displayName && displayName !== 'Unassigned' && typeof getOrCreateAgentForRecipient === 'function') {
-                        agentId = getOrCreateAgentForRecipient(displayName);
+                        agentId = getOrCreateAgentForRecipient(displayName, ownershipContext);
                     }
                     if (agentId) {
-                        transferParcelOwnership(String(parcelId), null, agentId, { skipAgentSync: true });
+                        transferParcelOwnership(String(parcelId), null, agentId, {
+                            ...ownershipContext,
+                            skipAgentSync: true
+                        });
                         touchedAgentIds.add(agentId);
                     }
                 }
@@ -358,14 +367,11 @@
 
         // Rebuild the touched agents' owned-parcel lists in ONE keyspace pass (buildAgentOwnedParcelIndex),
         // batching the agent save to once — instead of a full scan + full re-serialize per child above.
-        if (touchedAgentIds.size && typeof buildAgentOwnedParcelIndex === 'function' && typeof agentStorage !== 'undefined') {
-            try {
-                agentStorage.beginBatch();
-                const ownerIndex = buildAgentOwnedParcelIndex();
-                touchedAgentIds.forEach(id => agentStorage.updateAgent(id, { ownedParcels: ownerIndex.get(id) || [] }));
-            } finally {
-                agentStorage.endBatch();
-            }
+        if (touchedAgentIds.size && typeof buildAgentOwnedParcelIndex === 'function' && ownershipContext.agentStore) {
+            const ownerIndex = buildAgentOwnedParcelIndex({ storage: ownershipContext.storage });
+            touchedAgentIds.forEach(id => ownershipContext.agentStore.updateAgent(id, {
+                ownedParcels: ownerIndex.get(id) || []
+            }));
         }
 
         // The record keeps only flat cadastral ground actually consumed. Live generated ids are
@@ -386,8 +392,9 @@
                     const retained = parentFeatures.find(feature => (
                         String(_getParcelIdFromFeature(feature) || '') === String(id)
                     ));
-                    const fabric = (typeof window !== 'undefined' ? window : globalThis).LiveParcelFabric;
-                    const cadastreIds = fabric?.explicitCadastreIds?.(retained) || [];
+                    const cadastreIds = Array.isArray(retained?.properties?.cadastreParcelIds)
+                        ? retained.properties.cadastreParcelIds.map(String)
+                        : [];
                     cadastreIds.forEach(baseId => carriedBaseAnchors.add(String(baseId)));
                     return false;
                 }
@@ -402,23 +409,19 @@
         this._consumeFeaturesFromLiveFabric(parentFeatures.filter(f => {
             try { return !mintedIdSet.has(String(_getParcelIdFromFeature(f))); } catch (_) { return true; }
         }), options);
-        const fabric = (typeof window !== 'undefined' ? window : globalThis).LiveParcelFabric;
-        const parentCadastreIds = parentFeatures.flatMap(feature => (
-            fabric?.explicitCadastreIds?.(feature) || []
-        )).map(String).filter(Boolean);
         const flatParentIds = Array.from(new Set(
-            Array.isArray(proposalData.cadastreParcelIds) && proposalData.cadastreParcelIds.length
-                ? proposalData.cadastreParcelIds.map(String)
-                : parentCadastreIds
+            Array.isArray(proposalData.cadastreParcelIds)
+                ? proposalData.cadastreParcelIds.map(String).filter(Boolean)
+                : []
         ));
         if (!flatParentIds.length) {
             const error = new Error('Cannot apply reparcellization without explicit cadastral provenance.');
             error.code = 'reparcellization-cadastre-provenance-missing';
             throw error;
         }
-        persistAppliedProposal(proposalData, proposalId);
+        persistAppliedProposal(proposalData, proposalId, options);
         // The status line is written once, for every type, by _runProposalApplyWithSummary.
-        if (options.deferPresentation !== true) refreshProposalUIAfterApply();
+        if (options.deferPresentation !== true) refreshProposalUIAfterApply(null, options);
 
         // §15b: this plan's authored polygons are the ground it took — amend every other
         // applied plan that still claims any of it (one partition, latest wins).
@@ -506,12 +509,19 @@
         // (to-me / to-city / third-party) when the proposal carries one; otherwise it stays
         // with the author label assigned above.
         if (typeof resolveProposalRecipientAgentId === 'function' && typeof transferParcelOwnership === 'function') {
-            const recipientAgentId = resolveProposalRecipientAgentId(proposalData);
-            if (recipientAgentId) transferParcelOwnership(childParcelId, null, recipientAgentId);
+            const ownershipContext = {
+                storage: options?._parcelMutation?.storage,
+                agentStore: options?._parcelMutation?.agents
+            };
+            const recipientAgentId = resolveProposalRecipientAgentId(proposalData, ownershipContext);
+            if (recipientAgentId) {
+                transferParcelOwnership(childParcelId, null, recipientAgentId, ownershipContext);
+            }
         }
 
         // Parent parcels will be filtered out by isParcelReplacedByChildren in ingest.js
 
+        options._parcelMutation.afterCommit(() => {
         if (typeof window !== 'undefined') {
             if (window.multiParcelSelection && window.multiParcelSelection.selectedParcels) {
                 parentIds.forEach(parcelId => {
@@ -534,6 +544,7 @@
                 window.selectedParcelId = null;
             }
         }
+        });
 
         await this._addFeaturesToMap([childFeature], true, proposalData, options);
         this._markParcelProducedByProposal(childParcelId, proposalId, options);
@@ -541,8 +552,8 @@
 
         this._consumeFeaturesFromLiveFabric(parentFeatures, options);
 
-        persistAppliedProposal(proposalData, proposalId);
-        if (options.deferPresentation !== true) refreshProposalUIAfterApply();
+        persistAppliedProposal(proposalData, proposalId, options);
+        if (options.deferPresentation !== true) refreshProposalUIAfterApply(null, options);
 
         console.debug(`[_applyDecideLaterProposal] ✓ Completed application in ${(performance.now() - startTime).toFixed(2)}ms`);
         return true;

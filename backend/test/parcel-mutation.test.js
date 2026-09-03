@@ -124,7 +124,8 @@ describe('ParcelMutation', () => {
         expect(proposals.proposals.get('p').applied).toBe(false);
         expect(agents.agents.get('a').balance).toBe(10);
         expect(runtime.parks).toEqual([]);
-        expect(fabric.snapshot()).toMatchObject({ revision: 1, parcelIds: ['HR-A'], transactionActive: false });
+        expect(fabric.snapshot()).toMatchObject({ revision: 1, parcelIds: ['HR-A'] });
+        expect(fabric.snapshot()).not.toHaveProperty('transactionActive');
     });
 
     it('compensates durable state if publication fails and does not roll back after-commit errors', async () => {

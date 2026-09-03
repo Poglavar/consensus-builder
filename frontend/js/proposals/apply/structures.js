@@ -116,11 +116,13 @@
             }
             traceApply(`Step 1: Initialized structure proposal (${(performance.now() - step1Time).toFixed(2)}ms) - kind: ${kind}`);
 
-            const collection = kind === 'park'
-                ? window.parks
-                : (kind === 'lake'
-                    ? window.lakes
-                    : (kind === 'station' ? window.transitStations : window.squares));
+            const collectionName = kind === 'park'
+                ? 'parks'
+                : (kind === 'lake' ? 'lakes' : (kind === 'station' ? 'transitStations' : 'squares'));
+            const collection = options?._parcelMutation?.collections?.[collectionName];
+            if (!Array.isArray(collection)) {
+                throw new Error('Structure application requires a proposal-collection mutation draft.');
+            }
             const alreadyInLayer = Array.isArray(collection)
                 ? collection.some(feature => feature && feature.properties && feature.properties.proposalId === proposalId)
                 : false;
@@ -186,13 +188,11 @@
                 },
                 geometry: JSON.parse(JSON.stringify(geometry))
             };
+            const replaceOwnFeature = () => {
+                const retained = collection.filter(candidate => String(candidate?.properties?.proposalId || '') !== String(proposalId));
+                collection.splice(0, collection.length, ...retained, feature);
+            };
             if (kind === 'park') {
-                if (!Array.isArray(window.parks)) window.parks = [];
-                // Only remove if it's the same proposal (to avoid duplicates when re-applying)
-                window.parks = window.parks.filter(f => {
-                    if (!f || !f.properties) return true;
-                    return f.properties.proposalId !== proposalId;
-                });
                 try {
                     if (typeof ensureParkDecorations === 'function') {
                         ensureParkDecorations(feature);
@@ -203,30 +203,13 @@
                 if (feature.properties?.decorations) {
                     sp.decorations = JSON.parse(JSON.stringify(feature.properties.decorations));
                 }
-                window.parks.push(feature);
+                replaceOwnFeature();
             } else if (kind === 'lake') {
-                if (!Array.isArray(window.lakes)) window.lakes = [];
-                // Only remove if it's the same proposal (to avoid duplicates when re-applying)
-                window.lakes = window.lakes.filter(f => {
-                    if (!f || !f.properties) return true;
-                    return f.properties.proposalId !== proposalId;
-                });
                 try { if (typeof ensureLakeGraphics === 'function') ensureLakeGraphics(feature); } catch (_) { }
-                window.lakes.push(feature);
+                replaceOwnFeature();
             } else if (kind === 'station') {
-                if (!Array.isArray(window.transitStations)) window.transitStations = [];
-                window.transitStations = window.transitStations.filter(f => {
-                    if (!f || !f.properties) return true;
-                    return String(f.properties.proposalId || '') !== String(proposalId);
-                });
-                window.transitStations.push(feature);
+                replaceOwnFeature();
             } else {
-                if (!Array.isArray(window.squares)) window.squares = [];
-                // Only remove if it's the same proposal (to avoid duplicates when re-applying)
-                window.squares = window.squares.filter(f => {
-                    if (!f || !f.properties) return true;
-                    return f.properties.proposalId !== proposalId;
-                });
                 try {
                     if (typeof ensureSquareDecorations === 'function') {
                         ensureSquareDecorations(feature);
@@ -235,7 +218,7 @@
                 if (feature.properties?.decorations) {
                     sp.decorations = JSON.parse(JSON.stringify(feature.properties.decorations));
                 }
-                window.squares.push(feature);
+                replaceOwnFeature();
             }
             traceApply(`Step 4: Prepared ${kind} layer data and storage (${(performance.now() - step4Time).toFixed(2)}ms)`);
 
@@ -249,14 +232,17 @@
             // application axis; the lifecycle (Active/Executed) is left as-is. Persist the model
             // BEFORE refreshing its views: both 2D and 3D building filters read the canonical
             // application flag when the structure-layer update event fires.
-            persistAppliedProposal(proposalData, proposalId);
+            proposalData.structureProposal = sp;
+            persistAppliedProposal(proposalData, proposalId, options);
             if (options.deferPresentation !== true) {
-                try { refreshStructureLayer(); } catch (error) {
-                    console.error(`[_applyStructureProposal] Failed to refresh ${kind} presentation`, error);
-                }
+                options._parcelMutation.afterCommit(() => {
+                    try { refreshStructureLayer(); } catch (error) {
+                        console.error(`[_applyStructureProposal] Failed to refresh ${kind} presentation`, error);
+                    }
+                });
             }
             // The status line is written once, for every type, by _runProposalApplyWithSummary.
-            if (options.deferPresentation !== true) refreshProposalUIAfterApply();
+            if (options.deferPresentation !== true) refreshProposalUIAfterApply(null, options);
 
             const totalTime = performance.now() - startTime;
             traceApply(`✓ Structure proposal application completed in ${totalTime.toFixed(2)}ms`);
@@ -305,7 +291,7 @@
             ? resolvedParentFeatures
             : (this._resolveParcelFeaturesByIds(candidateIds, {
                 allowMissing: true,
-                _fabricTransaction: options._fabricTransaction
+                _parcelMutation: options._parcelMutation
             }) || []);
         const candidates = candidateFeatures
             .map(feature => ({ id: _getParcelIdFromFeature(feature), feature }))
@@ -414,7 +400,7 @@
                         coordinates: severTestPolys.flatMap(g => g.type === 'MultiPolygon' ? g.coordinates : [g.coordinates])
                     }));
             const roadHit = (typeof this._appliedRoadOverlappedByTaking === 'function')
-                ? this._appliedRoadOverlappedByTaking(severTestGround, idLabel) : null;
+                ? this._appliedRoadOverlappedByTaking(severTestGround, idLabel, options) : null;
             if (roadHit) {
                 const road = roadHit.proposal;
                 const roadName = road.title || road.name || road.proposalId;
@@ -434,7 +420,13 @@
         } catch (severError) {
             console.warn('[_formStructureParcel] road-overlap pre-check failed', severError);
         }
-        const cityAgentId = (typeof getOrCreateCityAgent === 'function') ? getOrCreateCityAgent() : null;
+        const ownershipContext = {
+            storage: options?._parcelMutation?.storage,
+            agentStore: options?._parcelMutation?.agents
+        };
+        const cityAgentId = (typeof getOrCreateCityAgent === 'function')
+            ? getOrCreateCityAgent(ownershipContext)
+            : null;
         const cityOwnership = { owners: [{ name: 'City', ownerLabel: 'City', percentageShare: 100, actualShareText: '100%' }] };
 
         // An adopt is still a stamp: mint the structure parcel and hide the matching live parcel.
@@ -601,16 +593,16 @@
             } catch (_) { }
         if (cityAgentId && typeof transferParcelOwnership === 'function') {
             bodyParcelIds.forEach(pid => {
-                try { transferParcelOwnership(String(pid), null, cityAgentId, { skipAgentSync: true }); } catch (_) { }
+                transferParcelOwnership(String(pid), null, cityAgentId, {
+                    ...ownershipContext,
+                    skipAgentSync: true
+                });
             });
-            if (typeof buildAgentOwnedParcelIndex === 'function' && typeof agentStorage !== 'undefined') {
-                try {
-                    agentStorage.beginBatch();
-                    const ownerIndex = buildAgentOwnedParcelIndex();
-                    agentStorage.updateAgent(cityAgentId, { ownedParcels: ownerIndex.get(cityAgentId) || [] });
-                } finally {
-                    agentStorage.endBatch();
-                }
+            if (typeof buildAgentOwnedParcelIndex === 'function' && ownershipContext.agentStore) {
+                const ownerIndex = buildAgentOwnedParcelIndex({ storage: ownershipContext.storage });
+                ownershipContext.agentStore.updateAgent(cityAgentId, {
+                    ownedParcels: ownerIndex.get(cityAgentId) || []
+                });
             }
         }
 

@@ -15,6 +15,18 @@ const polygon = (id, x0, x1, properties = {}) => ({
     geometry: { type: 'Polygon', coordinates: [[[x0, 0], [x1, 0], [x1, 1], [x0, 1], [x0, 0]]] }
 });
 
+async function mutate(fabric, operation) {
+    const mutation = fabric.beginMutation({});
+    try {
+        await operation(mutation);
+        await mutation.prepare();
+        mutation.publish();
+    } catch (error) {
+        mutation.rollback();
+        throw error;
+    }
+}
+
 function environment() {
     const fabric = createLiveParcelFabric();
     const members = new Set();
@@ -50,13 +62,13 @@ function environment() {
 describe('ParcelPresenter.resolveLiveLayers', () => {
     it('expands a cadastral anchor to live land pieces and excludes its corridor piece', async () => {
         const { fabric, presenter } = environment();
-        await fabric.transact({}, token => {
-            fabric.seedCadastre([polygon('HR-A', 0, 3)], { transaction: token });
-            fabric.replaceCadastreScope(['HR-A'], [
+        await mutate(fabric, mutation => {
+            mutation.seedCadastre([polygon('HR-A', 0, 3)]);
+            mutation.replaceCadastreScope(['HR-A'], [
                 polygon('HR-A#left', 0, 1, { cadastreParcelIds: ['HR-A'] }),
                 polygon('HR-A#road', 1, 2, { cadastreParcelIds: ['HR-A'], isCorridor: true, isRoad: true }),
                 polygon('HR-A#right', 2, 3, { cadastreParcelIds: ['HR-A'] })
-            ], { transaction: token });
+            ]);
         });
 
         expect(presenter.resolveLiveLayers(['HR-A']).map(layer => layer.feature.properties.parcelId))
@@ -66,9 +78,9 @@ describe('ParcelPresenter.resolveLiveLayers', () => {
 
     it('returns a generated corridor only when that exact live id is requested', async () => {
         const { fabric, presenter } = environment();
-        await fabric.transact({}, token => fabric.upsertFeatures([
+        await mutate(fabric, mutation => mutation.upsertFeatures([
             polygon('HR-A#road', 0, 1, { cadastreParcelIds: ['HR-A'], isCorridor: true, isRoad: true })
-        ], { transaction: token }));
+        ]));
 
         expect(presenter.resolveLiveLayers(['HR-A'])).toEqual([]);
         expect(presenter.resolveLiveLayers(['HR-A#road']).map(layer => layer.feature.properties.parcelId))
@@ -77,7 +89,7 @@ describe('ParcelPresenter.resolveLiveLayers', () => {
 
     it('returns the original cadastral parcel while it is the live partition', async () => {
         const { fabric, presenter } = environment();
-        await fabric.transact({}, token => fabric.seedCadastre([polygon('HR-A', 0, 1)], { transaction: token }));
+        await mutate(fabric, mutation => mutation.seedCadastre([polygon('HR-A', 0, 1)]));
 
         expect(presenter.resolveLiveLayers(['HR-A']).map(layer => layer.feature.properties.parcelId))
             .toEqual(['HR-A']);

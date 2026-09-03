@@ -112,7 +112,7 @@ describe('the per-type tails no longer duplicate it', () => {
 
     it('still refreshes the UI after applying', () => {
         ['buildings.js', 'structures.js', 'parcels.js'].forEach(file => {
-            expect(read(`../../frontend/js/proposals/apply/${file}`)).toContain('refreshProposalUIAfterApply()');
+            expect(read(`../../frontend/js/proposals/apply/${file}`)).toContain('refreshProposalUIAfterApply(null, options)');
         });
     });
 });

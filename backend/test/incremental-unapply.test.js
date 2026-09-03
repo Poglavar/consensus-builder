@@ -33,21 +33,14 @@ afterEach(() => {
 function fabricHarness() {
     let active = null;
     const fabric = {
-        beginTransaction: vi.fn(() => {
+        beginMutation: vi.fn(() => {
             if (active) throw new Error('nested fabric transaction');
-            active = Object.freeze({ id: 'fabric-test' });
+            active = {
+                prepare: vi.fn(async () => {}),
+                publish: vi.fn(() => { active = null; return { revision: 1 }; }),
+                rollback: vi.fn(() => { active = null; return true; })
+            };
             return active;
-        }),
-        currentTransaction: vi.fn(() => active),
-        commit: vi.fn(token => {
-            if (token !== active) throw new Error('wrong fabric token');
-            active = null;
-            return { toRevision: 1 };
-        }),
-        rollback: vi.fn(token => {
-            if (token !== active) throw new Error('wrong fabric token');
-            active = null;
-            return true;
         })
     };
     return fabric;
@@ -58,12 +51,32 @@ function storageFor(records) {
     return {
         proposals,
         nextProposalId: 10,
-        getProposal: id => proposals.get(String(id)) || null,
-        getAllProposals: () => Array.from(proposals.values()),
+        getProposal(id) { return this.proposals.get(String(id)) || null; },
+        getAllProposals() { return Array.from(this.proposals.values()); },
         beginBatch: vi.fn(),
         endBatch: vi.fn(),
         save: vi.fn(),
-        _indexProposal: vi.fn()
+        _indexProposal: vi.fn(function indexProposal(record) {
+            this.proposals.set(String(record.proposalId), record);
+        }),
+        snapshotForMutation() {
+            return { records: new Map([...this.proposals].map(([id, value]) => [id, structuredClone(value)])), nextProposalId: this.nextProposalId };
+        },
+        createMutationDraft(snapshot) {
+            const draft = Object.create(this);
+            draft.proposals = new Map([...snapshot.records].map(([id, value]) => [id, structuredClone(value)]));
+            draft.nextProposalId = snapshot.nextProposalId;
+            draft.save = () => {};
+            return draft;
+        },
+        serializeMutationDraft: () => null,
+        publishMutationDraft(draft) {
+            draft.proposals.forEach((value, id) => {
+                const current = this.proposals.get(id);
+                Object.keys(current).forEach(key => delete current[key]);
+                Object.assign(current, structuredClone(value));
+            });
+        }
     };
 }
 
@@ -86,7 +99,6 @@ function managerFor(record, overrides = {}) {
     });
     const manager = {
         _rebuildInProgress: false,
-        _enqueueFabricChange: operation => operation(),
         _recordedCadastreScope: ProposalManager._recordedCadastreScope,
         _clearDerivedRecordState: ProposalManager._clearDerivedRecordState,
         _unapplyProposalTransactionBody: ProposalManager._unapplyProposalTransactionBody,
@@ -168,17 +180,14 @@ describe('atomic local unapply', () => {
         expect(restore.mock.calls[0][1]).toEqual({ cadastreParcelIds: ['HR-A', 'HR-B'], complete: true });
         expect(restore.mock.calls[0][2]).toEqual(expect.objectContaining({
             purpose: 'unapply',
-            _fabricQueue: true,
-            _fabricTransaction: expect.any(Object),
-            _mutationTransaction: expect.any(Object)
+            _parcelMutation: expect.any(Object)
         }));
         expect(flatResolver).not.toHaveBeenCalled();
         expect(corridorResolver).not.toHaveBeenCalled();
-        expect(fabric.beginTransaction).toHaveBeenCalledOnce();
-        expect(fabric.commit).toHaveBeenCalledOnce();
-        expect(fabric.rollback).not.toHaveBeenCalled();
-        expect(storage.beginBatch).toHaveBeenCalledOnce();
-        expect(storage.endBatch).toHaveBeenCalledOnce();
+        expect(fabric.beginMutation).toHaveBeenCalledOnce();
+        const mutation = fabric.beginMutation.mock.results[0].value;
+        expect(mutation.publish).toHaveBeenCalledOnce();
+        expect(mutation.rollback).not.toHaveBeenCalled();
     });
 
     it('restores the authored record and discards the fabric draft when local restoration fails', async () => {
@@ -198,8 +207,9 @@ describe('atomic local unapply', () => {
         expect(record.applied).toBe(true);
         expect(record.appliedAt).toBe('2026-01-01T00:00:00.000Z');
         expect(record.childParcelIds).toEqual(['HR-A#building-1']);
-        expect(fabric.commit).not.toHaveBeenCalled();
-        expect(fabric.rollback).toHaveBeenCalledOnce();
+        const mutation = fabric.beginMutation.mock.results[0].value;
+        expect(mutation.publish).not.toHaveBeenCalled();
+        expect(mutation.rollback).toHaveBeenCalledOnce();
     });
 
     it('does not change either side when cadastral ground is unavailable', async () => {
@@ -217,7 +227,8 @@ describe('atomic local unapply', () => {
         expect(record.applied).toBe(true);
         expect(record.childParcelIds).toEqual(['HR-A#park-1']);
         expect(restore).not.toHaveBeenCalled();
-        expect(fabric.rollback).toHaveBeenCalledOnce();
+        const mutation = fabric.beginMutation.mock.results[0].value;
+        expect(mutation.rollback).toHaveBeenCalledOnce();
     });
 });
 

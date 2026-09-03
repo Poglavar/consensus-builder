@@ -50,17 +50,18 @@ describe('parcel ingest boundary', () => {
         expect(calls[0][2]).toEqual({ skipConversion: true });
     });
 
-    it('hands an enclosing mutation token to repository provisioning', async () => {
+    it('hands an enclosing mutation draft to repository provisioning', async () => {
         const { context, repository } = loadIngest();
+        const mutation = { id: 'outer-draft' };
         await context.ingestCadastralParcelFeatures([parcel('opaque')], {
             skipConversion: true,
-            transaction: 'outer-token',
+            mutation,
             city: 'sibenik'
         });
 
         expect(repository.acceptFeatures.mock.calls[0][1]).toEqual({
             city: 'sibenik',
-            transaction: 'outer-token',
+            mutation,
             skipConversion: true
         });
     });

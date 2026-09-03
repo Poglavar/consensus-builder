@@ -142,7 +142,7 @@ describe('the scan uses what was fetched for it', () => {
         }];
         const unapplied = [];
         globalThis.ProposalManager = {
-            unapplyProposal: async id => { unapplied.push(id); }
+            unapplyProposal: async id => { unapplied.push(id); return true; }
         };
 
         const records = await tunnel.demolishBuildingsUnderFootprint(region, {

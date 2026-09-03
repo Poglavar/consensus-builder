@@ -45,23 +45,15 @@
                 count++;
             }
         }
-        keysToDelete.forEach(key => {
-            PersistentStorage.removeItem(key);
-        });
-
-
         // Final message shown after clearing
         const clearedMessage = `Cleared ${count} parcel-related items from local storage`;
 
-        const fabric = global.LiveParcelFabric;
-        if (fabric && typeof fabric.transact === 'function' && typeof fabric.replaceAll === 'function') {
-            await fabric.transact({ kind: 'clear-local-parcel-data' }, transaction => {
-                fabric.replaceAll([], { transaction });
-            });
+        if (!global.ProposalManager || typeof global.ProposalManager.releaseCadastralGround !== 'function') {
+            throw new Error('ParcelMutation is unavailable for clearing cadastral ground.');
         }
-        if (global.CadastralParcelRepository && typeof global.CadastralParcelRepository.reset === 'function') {
-            global.CadastralParcelRepository.reset();
-        }
+        await global.ProposalManager.releaseCadastralGround('local parcel data reset', {
+            storageKeys: keysToDelete
+        });
         if (typeof blockStorage !== 'undefined' && typeof blockStorage.clear === 'function') blockStorage.clear();
         const clearLabels = uiLabels.clearParcelNumberLabels || global.clearParcelNumberLabels;
         if (typeof clearLabels === 'function') {

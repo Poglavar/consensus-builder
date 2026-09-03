@@ -17,6 +17,18 @@ function polygon(id, properties = {}) {
     };
 }
 
+async function mutate(fabric, operation) {
+    const mutation = fabric.beginMutation({});
+    try {
+        await operation(mutation);
+        await mutation.prepare();
+        mutation.publish();
+    } catch (error) {
+        mutation.rollback();
+        throw error;
+    }
+}
+
 function environment() {
     const fabric = createLiveParcelFabric();
     const members = new Set();
@@ -70,7 +82,7 @@ function environment() {
 describe('parcel presenter atomic projection', () => {
     it('projects exactly one layer for each committed live feature', async () => {
         const { fabric, presenter, members } = environment();
-        await fabric.transact({}, token => fabric.seedCadastre([polygon('HR-A')], { transaction: token }));
+        await mutate(fabric, mutation => mutation.seedCadastre([polygon('HR-A')]));
 
         expect(presenter.snapshot()).toEqual({ revision: 1, layerCount: 1, parcelIds: ['HR-A'] });
         expect(members.size).toBe(1);
@@ -80,14 +92,14 @@ describe('parcel presenter atomic projection', () => {
 
     it('restores the complete previous projection after a mid-swap Leaflet failure', async () => {
         const { fabric, presenter, members, failAddFor } = environment();
-        await fabric.transact({}, token => fabric.seedCadastre([polygon('HR-A')], { transaction: token }));
+        await mutate(fabric, mutation => mutation.seedCadastre([polygon('HR-A')]));
         const originalLayer = presenter.getLayer('HR-A');
         failAddFor('HR-A#park-1');
 
-        await expect(fabric.transact({}, token => {
-            fabric.replaceCadastreScope(['HR-A'], [polygon('HR-A#park-1', {
+        await expect(mutate(fabric, mutation => {
+            mutation.replaceCadastreScope(['HR-A'], [polygon('HR-A#park-1', {
                 cadastreParcelIds: ['HR-A'], producedByProposalId: 'park'
-            })], { transaction: token });
+            })]);
         })).rejects.toThrow('Leaflet add failed');
 
         expect(fabric.get('HR-A')).not.toBeNull();

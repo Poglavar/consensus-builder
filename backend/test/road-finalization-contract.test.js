@@ -89,7 +89,7 @@ describe('road drawing finalization contract', () => {
         expect(edit).not.toContain('makeFreshRoadSnapshot(sourceProposal, componentDefinitions[0]');
         // Old and new positions seed one local corridor derivation. A road need not be a fully
         // parcel-hosted formation, so it never enters the strict flat-ground resolver.
-        expect(edit).toContain('ProposalManager.rematerializeCorridorScope?.([sourceBefore, ...editedRecords]');
+        expect(edit).toContain('ProposalManager.rematerializeCorridorScope?.(');
         expect(edit).not.toContain('ProposalManager.rematerializeFlatScope');
         expect(edit).not.toContain('_undoProposalPayload');
         expect(edit).not.toContain('_releaseUnappliedRecord');
@@ -108,7 +108,7 @@ describe('road drawing finalization contract', () => {
         expect(edit).not.toContain('resolveBuildingObstacles(');
     });
 
-    it('serializes the record flip with replay and undoes a failed edit completely', () => {
+    it('serializes the record flip and rematerialization in one parcel mutation', () => {
         const wrapper = sourceSection(
             drawingSource,
             'async function updateLocalCorridorGeometry',
@@ -120,17 +120,21 @@ describe('road drawing finalization contract', () => {
             '// ---------------------------------------------------------------------------\n// Snapping'
         );
 
-        expect(wrapper).toContain('ProposalManager._enqueueFabricChange');
-        expect(wrapper).toContain('proposalStorage.beginBatch()');
-        expect(wrapper).toContain('proposalStorage.endBatch()');
-        // A failed edit restores the complete authored-record map, then replays both attempted and
-        // original footprints so partial output at the new position is also discarded.
-        expect(edit).toContain('transactionApi.snapshotRecordMap(proposalStorage.proposals)');
-        expect(edit).toContain('transactionApi.restoreRecordMap(proposalStorage.proposals, recordSnapshot)');
-        expect(edit).toContain('rollbackRecordAndFabric(attemptedSeeds)');
-        expect(edit).toContain('ProposalManager.rematerializeCorridorScope?.([');
+        expect(wrapper).toContain('ProposalManager.runParcelMutation(');
+        expect(wrapper).toContain('preEditSnapshot');
+        expect(wrapper).not.toContain('proposalStorage.beginBatch()');
+        expect(wrapper).not.toContain('proposalStorage.endBatch()');
+        // Both the authored definitions and their replacement fabric are private drafts. A failed
+        // rematerialization throws through the coordinator, which discards the drafts together.
+        expect(edit).toContain('const store = mutation?.proposals');
+        expect(edit).toContain('const sourceBefore = cloneRoadValue(sourceProposal)');
+        expect(edit).toContain('ProposalManager.rematerializeCorridorScope?.(');
+        expect(edit).toContain('{ _parcelMutation: mutation }');
+        expect(edit).toContain("throw new Error('The edited road scope could not be rematerialised from the cadastre.')");
         expect(edit).not.toContain('ProposalManager.rebuildAppliedFabric');
-        expect(edit).toContain('_fabricQueue: options._fabricQueue === true');
+        expect(edit).not.toContain('rollbackRecordAndFabric');
+        expect(edit).not.toContain('_fabricQueue');
+        expect(edit).not.toContain('_fabricTransaction');
     });
 
     it('never strips click handlers from the live parcel tessellation while drawing', () => {
