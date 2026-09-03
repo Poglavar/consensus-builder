@@ -96,6 +96,22 @@ describe('strict cadastral scope replacement', () => {
         }, { kind: 'proposal-apply' })).rejects.toMatchObject({ code: 'live-fabric-scope-violation' });
     });
 
+    it.each(['parentParcelIds', 'ancestorProposal', 'proposalId'])(
+        'rejects retired %s provenance instead of cleaning it up',
+        async field => {
+            const fabric = await oneParcelFabric();
+            await expect(commit(fabric, mutation => {
+                mutation.replaceCadastreScope(['HR-A'], [generated(
+                    'HR-A#wrong-shape', 15, 45, 15.001, 45.001,
+                    { [field]: field === 'parentParcelIds' ? ['HR-A'] : 'proposal-old' }
+                )]);
+            }, { kind: 'proposal-apply' })).rejects.toMatchObject({
+                code: 'live-parcel-retired-provenance',
+                field
+            });
+        }
+    );
+
     it('reserves intentional ground removal for repository reset/unload mutations', async () => {
         const fabric = await oneParcelFabric();
 
@@ -116,7 +132,6 @@ describe('fabric deltas and live provenance', () => {
         const deltas = [];
         fabric.subscribe(delta => deltas.push(delta));
         const replacement = generated('HR-A#formed', 15, 45, 15.001, 45.001, {
-            proposalId: 'legacy-owner',
             formedByProposalIds: ['corridor-2', 'corridor-1', 'corridor-2']
         });
 
@@ -138,6 +153,5 @@ describe('fabric deltas and live provenance', () => {
         const live = fabric.get('HR-A#formed');
         expect(live.properties.producedByProposalId).toBe('proposal-1');
         expect(live.properties.formedByProposalIds).toEqual(['corridor-2', 'corridor-1']);
-        expect(live.properties).not.toHaveProperty('proposalId');
     });
 });

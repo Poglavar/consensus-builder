@@ -29,7 +29,7 @@ function loadInstantCreate({ lands }) {
             name: 'Park whole block',
             description: 'Park whole block',
             offer: 100,
-            parentParcelIds: ['HR-330264-574', 'HR-330264-576', 'HR-330264-575', 'HR-330264-5940']
+            selectedParcelIds: ['HR-330264-574', 'HR-330264-576', 'HR-330264-575', 'HR-330264-5940']
         },
         validation: { valid: true, errors: [] }
     };
@@ -37,7 +37,7 @@ function loadInstantCreate({ lands }) {
         proposalId: 'local-park',
         goal: 'park',
         title: draft.fields.name,
-        parentParcelIds: draft.fields.parentParcelIds.slice(),
+        cadastreParcelIds: draft.fields.selectedParcelIds.slice(),
         applied: false
     };
     const selectAndHighlightProposal = vi.fn();
@@ -114,11 +114,11 @@ describe('one-click structure creation focus', () => {
 
         expect(createDraft).toHaveBeenCalledOnce();
         const authored = createDraft.mock.calls[0][0];
-        expect(authored.fields.parentParcelIds).toEqual([
+        expect(authored.fields.selectedParcelIds).toEqual([
             'HR-330264-574#live-a',
             'HR-330264-574#live-b'
         ]);
-        expect(authored.editorPayload.structureProposal.parentParcelIds).toEqual(authored.fields.parentParcelIds);
+        expect(authored.editorPayload.structureProposal).not.toHaveProperty('selectedParcelIds');
     });
 
     it('refuses a disconnected live selection before building a proposal', async () => {

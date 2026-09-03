@@ -59,7 +59,7 @@ describe('ProposalDraftStore', () => {
             cityId: 'zagreb',
             goal: 'park',
             sourceProposalId: 'proposal-7',
-            fields: { name: 'Pocket park', parentParcelIds: ['a', 'b'] },
+            fields: { name: 'Pocket park', selectedParcelIds: ['a', 'b'] },
             sourceSnapshot: { title: 'Pocket park' }
         });
     });
@@ -126,6 +126,22 @@ describe('ProposalDraftStore', () => {
         expect(store.listDrafts()).toHaveLength(1);
     });
 
+    it('does not load a draft envelope from another schema', () => {
+        const storage = memoryStorage({
+            [PROPOSAL_DRAFT_STORAGE_KEY]: JSON.stringify({
+                schemaVersion: PROPOSAL_DRAFT_SCHEMA_VERSION - 1,
+                drafts: [{ id: 'old-draft', fields: { parentParcelIds: ['HR-1'] } }]
+            })
+        });
+        const warning = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+        const { store } = harness({ storage });
+
+        expect(store.listDrafts()).toEqual([]);
+        expect(storage.getItem(PROPOSAL_DRAFT_STORAGE_KEY)).toBeNull();
+        warning.mockRestore();
+    });
+
     it('coalesces rapid editor changes into one undo step and supports redo', () => {
         const { store, advance } = harness();
         const draft = store.createDraft({ cityId: 'zagreb', goal: 'buildings', fields: { name: 'Block' }, editorPayload: { height: 3 } });
@@ -159,7 +175,7 @@ describe('ProposalDraftStore', () => {
         const draft = store.createDraft({
             cityId: 'zagreb',
             goal: 'park',
-            fields: { name: 'Reviewable park', parentParcelIds: ['1'] }
+            fields: { name: 'Reviewable park', selectedParcelIds: ['1'] }
         });
 
         store.setDraftState(draft.id, 'review');
@@ -250,7 +266,7 @@ describe('ProposalDraftStore', () => {
 
     it('keeps failed publishing recoverable and reuses the idempotency operation on retry', () => {
         const { store } = harness();
-        const draft = store.createDraft({ cityId: 'zagreb', goal: 'park', fields: { name: 'Park', parentParcelIds: ['1'] } });
+        const draft = store.createDraft({ cityId: 'zagreb', goal: 'park', fields: { name: 'Park', selectedParcelIds: ['1'] } });
 
         const publishing = store.markPublishing(draft.id);
         const failed = store.markPublishFailed(draft.id, Object.assign(new Error('Wallet rejected'), { code: 4001 }));
@@ -271,7 +287,7 @@ describe('ProposalDraftStore', () => {
     it('does not throw when the storage write fails (e.g. quota exceeded)', () => {
         const quotaStorage = memoryStorage();
         quotaStorage.setItem = () => {
-            const err = new Error("Setting the value of 'consensus-builder.proposal-drafts.v1' exceeded the quota.");
+            const err = new Error("Setting the value of 'consensus-builder.proposal-drafts.v2' exceeded the quota.");
             err.name = 'QuotaExceededError';
             throw err;
         };
@@ -304,7 +320,7 @@ describe('ProposalDraftStore', () => {
         const draft = store.createDraft({
             cityId: 'zagreb',
             goal: 'buildings',
-            fields: { name: 'Large recoverable block', parentParcelIds: ['parcel-1'] },
+            fields: { name: 'Large recoverable block', selectedParcelIds: ['parcel-1'] },
             editorPayload: { giantGeometry: 'x'.repeat(1800), step: 0 }
         });
 

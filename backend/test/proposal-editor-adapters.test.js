@@ -59,7 +59,7 @@ describe('editor cadastral scope boundary', () => {
             cadastreParcelIds: ['cadastre-old']
         };
         const draft = draftFor(adapter, source);
-        draft.fields.parentParcelIds = ['live-new'];
+        draft.fields.selectedParcelIds = ['live-new'];
         const previousFabric = globalThis.LiveParcelFabric;
         globalThis.LiveParcelFabric = {
             cadastreIdsForParcelIds: ids => ids.map(id => id === 'live-new' ? 'cadastre-new' : id)
@@ -170,7 +170,7 @@ describe('transit station proposal adapter', () => {
     it('rejects a missing station placement frame', () => {
         const adapter = registry.get('station');
         const draft = {
-            fields: { parentParcelIds: ['p1'] },
+            fields: { selectedParcelIds: ['p1'] },
             editorPayload: {
                 structureProposal: { kind: 'station', stationType: 'tram', geometry }
             }
@@ -236,10 +236,10 @@ describe('corridor proposal adapter', () => {
         expect(replacement.proposalId).toBeUndefined();
     });
 
-    it('reports a precise read-only reason for legacy corridors without centerlines', () => {
+    it('reports a precise read-only reason for invalid corridors without centerlines', () => {
         expect(corridorAdapter.canEdit({ roadProposal: { definition: { width: 9 } } })).toEqual({
             editable: false,
-            reason: 'This legacy corridor does not contain a recoverable centerline.'
+            reason: 'This corridor does not contain a valid centerline.'
         });
     });
 
@@ -371,11 +371,11 @@ describe('building proposal adapters', () => {
         });
     });
 
-    it('classifies invalid legacy building data as read-only', () => {
+    it('classifies invalid building data as read-only', () => {
         const adapter = buildBuildingAdapter('single');
         expect(adapter.canEdit({ goal: 'single', buildingProposal: { parameters: { height: 10 } } })).toEqual({
             editable: false,
-            reason: 'This legacy building proposal does not contain recoverable footprint geometry.'
+            reason: 'This building proposal does not contain valid footprint geometry.'
         });
     });
 });

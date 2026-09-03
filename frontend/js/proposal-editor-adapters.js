@@ -108,7 +108,7 @@
         return {
             name: sourceName(proposal),
             description: proposal?.description || '',
-            parentParcelIds: sourceParcels(proposal),
+            selectedParcelIds: sourceParcels(proposal),
             // Keep the authored land declaration separate from the live parcel selection. An
             // untouched edit must preserve this immutable scope; only a changed/new selection is
             // projected through LiveParcelFabric at serialization time.
@@ -141,8 +141,8 @@
         if (!draft?.fields?.name || !String(draft.fields.name).trim()) {
             errors.push(issue('missing-name', 'Add a proposal name.', 'fields.name'));
         }
-        if (!Array.isArray(draft?.fields?.parentParcelIds) || draft.fields.parentParcelIds.length === 0) {
-            errors.push(issue('missing-parcels', 'Select at least one parcel.', 'fields.parentParcelIds'));
+        if (!Array.isArray(draft?.fields?.selectedParcelIds) || draft.fields.selectedParcelIds.length === 0) {
+            errors.push(issue('missing-parcels', 'Select at least one parcel.', 'fields.selectedParcelIds'));
         }
         if (!draft?.fields?.description || !String(draft.fields.description).trim()) {
             warnings.push(issue('missing-description', 'A description will help others understand the replacement.', 'fields.description'));
@@ -381,13 +381,13 @@
 
     function applyFieldsToProposal(output, draft) {
         const fields = draft.fields || {};
-        const selectedParcelIds = [...new Set((fields.parentParcelIds || [])
+        const selectedParcelIds = [...new Set((fields.selectedParcelIds || [])
             .map(normalizeParcelId).filter(Boolean))];
         const authoredCadastreParcelIds = [...new Set((fields.cadastreParcelIds || [])
             .map(normalizeParcelId).filter(Boolean))];
-        const sourceParcelIds = sourceParcels(draft.sourceSnapshot || {});
-        const selectionUnchanged = selectedParcelIds.length === sourceParcelIds.length
-            && selectedParcelIds.every(id => sourceParcelIds.includes(id));
+        const sourceSelectionIds = sourceParcels(draft.sourceSnapshot || {});
+        const selectionUnchanged = selectedParcelIds.length === sourceSelectionIds.length
+            && selectedParcelIds.every(id => sourceSelectionIds.includes(id));
         const cadastreParcelIds = authoredCadastreParcelIds.length && selectionUnchanged
             ? authoredCadastreParcelIds
             : cadastreIdsForLiveSelection(selectedParcelIds);
@@ -467,8 +467,8 @@
             before: clone(before[key]),
             after: clone(after[key])
         }));
-        const beforeParcels = new Set(before.parentParcelIds || []);
-        const afterParcels = new Set(after.parentParcelIds || []);
+        const beforeParcels = new Set(before.selectedParcelIds || []);
+        const afterParcels = new Set(after.selectedParcelIds || []);
         return {
             sourceProposalId: draft.sourceProposalId || sourceId(source),
             draftId: draft.id,
@@ -663,7 +663,7 @@
     async function prepareProposalDraftParcelSelection(draftOrParcelIds) {
         if (Array.isArray(draftOrParcelIds)) return prepareParcelSelection(draftOrParcelIds);
         const draft = draftOrParcelIds || {};
-        const originalIds = (draft.fields?.parentParcelIds || []).map(String);
+        const originalIds = (draft.fields?.selectedParcelIds || []).map(String);
         const footprint = draft.editorPayload?.structureProposal?.geometry
             || draft.editorPayload?.definition?.polygon
             || draft.editorPayload?.plan?.poolGeometry
@@ -712,7 +712,7 @@
                 return { valid: errors.length === 0, errors, warnings };
             },
             renderPreview(draft, viewMode) {
-                return { kind: 'parcel-highlight', viewMode: viewMode || '2d', parcelIds: clone(draft.fields?.parentParcelIds || []), geometry: clone(draft.editorPayload?.geometry || null) };
+                return { kind: 'parcel-highlight', viewMode: viewMode || '2d', parcelIds: clone(draft.fields?.selectedParcelIds || []), geometry: clone(draft.editorPayload?.geometry || null) };
             },
             openDesignEditor() { return false; },
             serializeProposal(draft) {
@@ -784,7 +784,7 @@
                 kind: 'structure',
                 structureKind: key,
                 viewMode: viewMode || '2d',
-                parcelIds: clone(draft?.fields?.parentParcelIds || []),
+                parcelIds: clone(draft?.fields?.selectedParcelIds || []),
                 geometry: clone(structureProposal.geometry || draft?.editorPayload?.geometry || null),
                 decorations: clone(structureProposal.decorations || null)
             };
@@ -798,7 +798,7 @@
             const structureProposal = clone(draft?.editorPayload?.structureProposal || {});
             structureProposal.kind = key;
             structureProposal.geometry = clone(structureProposal.geometry || draft?.editorPayload?.geometry || null);
-            delete structureProposal.parentParcelIds;
+            delete structureProposal.selectedParcelIds;
             output.structureProposal = structureProposal;
             output.geometry = clone(draft?.editorPayload?.geometry || structureProposal.geometry);
             return finalizeAuthoredProposal(output);
@@ -863,7 +863,7 @@
                 bearing: Number.isFinite(Number(station.bearing)) ? Number(station.bearing) : 0,
                 platformHeightM: Number.isFinite(Number(station.platformHeightM)) ? Number(station.platformHeightM) : null,
                 viewMode: viewMode || '2d',
-                parcelIds: clone(draft?.fields?.parentParcelIds || []),
+                parcelIds: clone(draft?.fields?.selectedParcelIds || []),
                 geometry: clone(station.geometry || draft?.editorPayload?.geometry || null)
             };
         };
@@ -876,7 +876,7 @@
             const station = clone(draft?.editorPayload?.structureProposal || {});
             station.kind = 'station';
             station.geometry = clone(station.geometry || draft?.editorPayload?.geometry || null);
-            delete station.parentParcelIds;
+            delete station.selectedParcelIds;
             output.goal = 'station';
             output.primaryType = proposalTypeLabel('station');
             output.type = 'structure';
@@ -896,7 +896,7 @@
             const definition = corridorDefinition(proposal);
             const segments = corridorSegments(definition);
             if (!definition || !segments.length || segments.some(segment => !Array.isArray(segment) || segment.length < 2 || segment.some(point => !validLngLatPoint(point)))) {
-                return { editable: false, reason: 'This legacy corridor does not contain a recoverable centerline.' };
+                return { editable: false, reason: 'This corridor does not contain a valid centerline.' };
             }
             return true;
         },
@@ -1005,7 +1005,7 @@
                 const context = proposalBuildingContext(proposal);
                 const features = context.buildings?.length ? context.buildings : (context.buildingFeature ? [context.buildingFeature] : []);
                 if (!features.length || features.some(feature => !featureGeometryValid(feature))) {
-                    return { editable: false, reason: 'This legacy building proposal does not contain recoverable footprint geometry.' };
+                    return { editable: false, reason: 'This building proposal does not contain valid footprint geometry.' };
                 }
                 return true;
             },
@@ -1041,7 +1041,7 @@
             async openDesignEditor(draft) {
                 const context = clone(draft.editorPayload?.context || {});
                 const selection = await prepareProposalDraftParcelSelection(draft);
-                if (!selection.layers.length) throw new Error('The source parcels are not available in this city view.');
+                if (!selection.ids.length) throw new Error('The source parcels are not available in this city view.');
                 context.parcelIds = selection.ids;
                 global.pendingBuildingProposalContext = context;
                 if (typeof global.setPendingBuildingProposalContext === 'function') global.setPendingBuildingProposalContext(context, { fromDraft: true });
@@ -1050,7 +1050,7 @@
                 if (typology === 'single' && typeof global.openSingleBuildingForParcels === 'function') {
                     global.openSingleBuildingForParcels({
                         blockName: context.blockName,
-                        parcels: selection.layers,
+                        parcelIds: selection.ids,
                         initialBuildings: features,
                         initialGroundTreatment: context.groundSurface?.treatment || null,
                         initialTakeWholeParcels: context.takeWholeParcels === true
@@ -1060,20 +1060,19 @@
                 if (typology === 'row' && typeof global.openRowHouseForParcels === 'function') {
                     global.openRowHouseForParcels({
                         blockName: context.blockName,
-                        parcels: selection.layers,
+                        parcelIds: selection.ids,
                         initialParameters: context.parameters || null,
                         initialFeature: features[0] || null
                     });
                     return true;
                 }
                 if (typology === 'parcelBased' && typeof global.openParcelBasedForParcels === 'function') {
-                    global.openParcelBasedForParcels({ blockName: context.blockName, parcels: selection.layers, initialParameters: context.parameters || null });
+                    global.openParcelBasedForParcels({ blockName: context.blockName, parcelIds: selection.ids, initialParameters: context.parameters || null });
                     return true;
                 }
-                const opener = global.openUrbanRuleForParcels || global.openBlockifyForParcels;
-                if (typeof opener === 'function') {
+                if (typeof global.openUrbanRuleForParcels === 'function') {
                     const seed = typeof global.buildBlockifySeed === 'function' ? global.buildBlockifySeed(context) : context.parameters;
-                    opener({ blockName: context.blockName, parcels: selection.layers, initialState: seed || null });
+                    global.openUrbanRuleForParcels({ blockName: context.blockName, parcelIds: selection.ids, initialState: seed || null });
                     return true;
                 }
                 return false;
@@ -1149,7 +1148,7 @@
         canEdit(proposal) {
             const plan = proposal?.reparcellization;
             if (!plan || !Array.isArray(plan.polygons) || !plan.polygons.length) {
-                return { editable: false, reason: 'This legacy reparcellization proposal does not contain saved replacement polygons.' };
+                return { editable: false, reason: 'This reparcellization proposal does not contain valid replacement polygons.' };
             }
             return true;
         },
@@ -1180,7 +1179,7 @@
             const selection = await prepareProposalDraftParcelSelection(draft);
             // Input land belongs to the draft fields and ultimately the proposal's single root
             // cadastre declaration. The reparcellization payload contains only its authored output.
-            plan.parcelIds = (draft.fields?.parentParcelIds || selection.ids).filter(Boolean).map(String);
+            plan.parcelIds = (draft.fields?.selectedParcelIds || selection.ids).filter(Boolean).map(String);
             // A saved plan can be reopened without its parents on the map: the editor fetches them
             // by id. Only a plan with nothing to reopen on genuinely needs a live selection.
             if (!selection.layers.length && !(Array.isArray(plan.polygons) && plan.polygons.length)) {
@@ -1202,7 +1201,6 @@
             const output = commonProposalFromDraft(draft);
             const plan = clone(draft.editorPayload?.plan || {});
             delete plan.parcelIds;
-            delete plan.parentParcelIds;
             output.goal = 'reparcellization';
             output.primaryType = 'Reparcellization';
             output.reparcellization = plan;
@@ -1248,7 +1246,7 @@
         function get(keyOrProposal) {
             const rawKey = typeof keyOrProposal === 'object' ? sourceGoal(keyOrProposal) : normalizeGoal(keyOrProposal);
             // A direct adapter key always wins; aliases only catch names no adapter owns.
-            // (The legacy 'building(s)' label normalizes to 'single' — an alias registered under
+            // (The generic 'building(s)' label normalizes to 'single' — an alias registered under
             // that name would shadow the Detached adapter and open the wrong design editor.)
             const key = adapters.has(rawKey) ? rawKey : (aliases.get(rawKey) || rawKey);
             if (adapters.has(key)) return adapters.get(key);

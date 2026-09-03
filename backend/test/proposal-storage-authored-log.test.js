@@ -182,7 +182,6 @@ describe('proposalStorage authored-log persistence', () => {
 
     it('does not load an invalid authored record', () => {
         const { storage, persisted } = bootStore();
-        persisted.set('cadastre_proposals_cutover_v2', '1');
         persisted.set('cadastre_proposals', JSON.stringify({
             version: 2,
             nextProposalId: 4,
@@ -198,7 +197,28 @@ describe('proposalStorage authored-log persistence', () => {
         expect(storage.getAllProposals().map(proposal => proposal.proposalId)).toEqual(['valid-1']);
         expect(storage.getProposal('invalid-1')).toBeNull();
         expect(consoleError).toHaveBeenCalledWith(
-            expect.stringContaining('Ignoring invalid stored proposal invalid-1'),
+            expect.stringContaining('Rejected invalid stored proposal invalid-1'),
+            expect.any(Error)
+        );
+
+        storage._persist();
+        expect(JSON.parse(persisted.get('cadastre_proposals')).records.map(record => record.proposalId))
+            .toEqual(['valid-1']);
+        consoleError.mockRestore();
+    });
+
+    it('does not convert an old proposal array at runtime', () => {
+        const { storage, persisted } = bootStore();
+        persisted.set('cadastre_proposals', JSON.stringify([
+            { proposalId: 'old-shape', cadastreParcelIds: ['HR-1'] }
+        ]));
+        const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+        storage.load();
+
+        expect(storage.getAllProposals()).toEqual([]);
+        expect(consoleError).toHaveBeenCalledWith(
+            'proposalStorage.load: Failed to read the proposal-state envelope',
             expect.any(Error)
         );
         consoleError.mockRestore();

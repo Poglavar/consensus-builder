@@ -9,141 +9,142 @@ land they affect by pointing at parcels that only exist in one browser's memory.
 
 ---
 
-## 0. Current architecture: one source, one fabric, one presenter
+## 0. Current architecture: two durable facts, one mutation path
 
-Implemented 2026-08-27 and made authoritative 2026-09-02. Durable land state has only two kinds of
-entity:
+Implemented 2026-08-27 and made authoritative 2026-09-03. Durable land state contains only:
 
-1. immutable original cadastral parcels;
-2. authored proposal records, each related directly to those originals by `cadastreParcelIds`.
+1. immutable cadastral parcels supplied by `CadastralParcelRepository`;
+2. authored proposals containing geometry and one exact, flat `cadastreParcelIds` selection.
 
-Generated parcel IDs, child lists, formation receipts, parent-feature snapshots, demolition scans,
-and Leaflet layers are disposable materialization. They are never proposal prerequisites. Legacy
-payloads must be flattened at an explicit migration or publishing boundary. Runtime import rejects
-records whose `cadastreParcelIds` stamp is missing or conflicts with compatibility aliases; it never
-guesses provenance from a generated ID or current geometry. Persistence writes only
-`cadastreParcelIds`. A transient compatibility spelling is not a second relationship and must never
-be used to construct ancestry.
+An editor may temporarily hold `selectedParcelIds`. Publication resolves that selection once through
+the live fabric and writes only `cadastreParcelIds`. Generated parcel IDs, generated geometry,
+formation receipts, demolition scans, and Leaflet layers are runtime output, never durable ancestry.
 
-### 0.1 Ownership boundaries
+A proposal record is admitted only when its canonical declaration is present, non-empty, and contains
+original cadastral IDs. A record with a missing, conflicting, aliased, or generated declaration is
+rejected: it is not added to the proposal store, cannot execute or replay, and is absent from the next
+normal save. Runtime code never repairs it or guesses its ground from geometry or an ID prefix.
+
+### 0.1 Authority boundaries
 
 ```mermaid
 flowchart LR
-    API["Cadastral API"] --> Transport["Private transport adapter"]
-    Transport --> Repository["CadastralParcelRepository<br/>immutable facts + single-flight cache"]
-    Repository -->|"features, regardless of cache/server"| Mutation["Proposal mutation"]
-    Log["Authored proposal log<br/>flat cadastreParcelIds"] --> Mutation
-    Mutation -->|"private transaction draft"| Fabric["LiveParcelFabric<br/>committed parcel partition"]
-    Fabric -->|"prepared change set"| Presenter["ParcelPresenter<br/>sole Leaflet geometry writer"]
-    Presenter --> Map["Leaflet parcel layer"]
-    Fabric --> Selection["Selection, topology, claims"]
+    API["Cadastral API"] --> Transport["Private transport"]
+    Transport --> Repository["CadastralParcelRepository<br/>immutable parcels by city"]
+    Repository --> Mutation["ParcelMutation.run"]
+    Proposals["ProposalStore<br/>geometry + cadastreParcelIds"] --> Mutation
+    Mutation --> Fabric["LiveParcelFabric<br/>one committed revision"]
+    Fabric --> Domain["Selection, topology, ownership"]
+    Fabric --> Presenter["ParcelPresenter"]
+    Presenter --> Leaflet["Leaflet parcel layers"]
 
     classDef durable fill:#dcfce7,stroke:#15803d
     classDef derived fill:#f3f4f6,stroke:#6b7280,stroke-dasharray: 5 5
-    class Repository,Log durable
-    class Fabric,Presenter,Map derived
+    class Repository,Proposals durable
+    class Fabric,Presenter,Leaflet derived
 ```
 
-Each box has one job:
+- `CadastralParcelRepository` alone knows transport URLs and caches. It captures the city at request
+  start, deduplicates concurrent loads, returns defensive copies, and rejects conflicting geometry.
+- `LiveParcelFabric` alone answers what parcels exist now. Each feature is normalized, cloned, and
+  frozen once. Incremental indexes and deltas change only affected IDs.
+- `ParcelPresenter` alone creates or replaces cadastral Leaflet geometry. Domain code asks the fabric
+  for features and the presenter only for display layers, styling, or framing.
+- City-sensitive caches include both city and fabric revision in their key. A commit makes old block,
+  drill, selection, presenter, and live-geometry entries unreachable without an eager full clear.
+- Presenter startup reconciles its adopted layer group so its revision and parcel IDs exactly equal
+  the fabric before it begins serving layers.
 
-- `CadastralParcelRepository` is the only consumer of cadastral transport. Callers ask it for IDs,
-  a footprint, or bounds; they cannot request “cache” or “server”. It deduplicates concurrent loads,
-  keeps facts per city, returns defensive copies, distinguishes confirmed absence from failure, and
-  rejects conflicting geometry for an ID.
-- `LiveParcelFabric` is the only authority for the current parcel partition. Readers see a complete
-  committed revision. Writers need the exact private transaction token. Every live parcel has one
-  ID, one connected polygon, and explicit flat `cadastreParcelIds`; generated-ID parsing is forbidden.
-- `ParcelPresenter` is the only code that adds, replaces, or removes parcel geometry in Leaflet. It
-  prepares every replacement layer before commit, swaps the projection synchronously with the fabric
-  revision, and restores the old projection if the swap fails. The map is a view, never a geometry
-  database.
-- Selection, block topology, proposal claims, bounds, and apply/unapply logic read the fabric or the
-  repository. They may ask the presenter for a layer only to style, frame, or display an already
-  identified live feature.
+### 0.2 The atomic mutation boundary
 
-### 0.2 Mutation boundary
-
-Every apply, unapply, delete, corridor edit, and ground arrival is serialized through one proposal
-mutation transaction. Authored records and a private fabric draft change together; the presenter is
-a fabric commit participant.
+Apply, unapply, deletion, cadastral integration or release, corridor creation or editing,
+reparcellization, and boot replay all enter through `ParcelMutation.run(meta, operation)`. It is the
+only serializer. An operation receives private proposal, agent, ownership, collection, and fabric
+drafts; committed readers continue to see the previous revision while work is prepared.
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor User
-    participant Manager as ProposalManager
-    participant Repository as CadastralParcelRepository
+    participant Caller
+    participant Mutation as ParcelMutation
     participant Fabric as LiveParcelFabric
     participant Presenter as ParcelPresenter
+    participant Storage as PersistentStorage
 
-    User->>Manager: apply / unapply / edit
-    Manager->>Fabric: begin private draft
-    Manager->>Repository: ensure required cadastral ground
-    Repository-->>Manager: immutable facts
-    Manager->>Fabric: replace closed cadastral scope
-    Manager->>Manager: update authored record
-    Manager->>Presenter: prepare complete layer change
-    alt all preparation succeeds
-        Manager->>Fabric: publish one revision
-        Presenter->>Presenter: swap Leaflet projection synchronously
-        Manager-->>User: committed result
-    else any step fails
-        Manager->>Fabric: discard draft
-        Manager->>Manager: restore authored snapshot
-        Presenter->>Presenter: retain or restore old projection
-        Manager-->>User: unchanged state + explicit failure
+    Caller->>Mutation: run(meta, operation)
+    Mutation->>Mutation: clone private state drafts
+    Mutation->>Fabric: mutate and validate draft
+    Fabric->>Presenter: prepare display delta
+    Presenter-->>Fabric: ready
+    Mutation->>Storage: atomicWrite(proposals, agents, owner keys)
+    Storage-->>Mutation: IndexedDB transaction complete
+    alt publication succeeds
+        Mutation->>Mutation: publish stores and collections
+        Mutation->>Fabric: publish one revision
+        Fabric->>Presenter: publish the same revision
+        Mutation-->>Caller: committed result
+    else preparation or durable write fails
+        Mutation-->>Caller: discard drafts; committed state is unchanged
+    else in-memory publication fails
+        Mutation->>Mutation: restore captured in-memory state
+        Mutation->>Storage: compensate from durable preimage
+        Mutation-->>Caller: unchanged state and explicit failure
     end
 ```
 
-Ordinary unapply is local. It loads the changed proposal's recorded original anchors once, removes
-output stamped with that proposal's `producedByProposalId`, and rematerializes the smallest closed
-cadastral scope containing formations that share those anchors. A corridor crossing one affected
-parcel is consulted as a take on that parcel; its hundreds of other anchors do not join the mutation.
-No path may silently escalate an unapply into a whole-plan replay.
+`PersistentStorage.atomicWrite({ puts, deletes })` uses one IndexedDB transaction and resolves only
+after transaction completion. Database opening has one shared in-flight promise. Persistence happens
+after presenter preparation and before publication. UI notices and cosmetic redraws run after commit;
+subscriber failures are logged and cannot roll back authoritative state.
 
-Corridors use a distinct scope rule because a ribbon is a take, not content requiring a complete
-parcel host. Bridges, shorelines, and cadastral gaps may leave part of a ribbon outside current
-cadastre. Each corridor take nevertheless carries its flat published `cadastreParcelIds` declaration.
-Materialization indexes takes by those declared anchors and clips only inside them; it never scans
-the repository or map for geometrically nearby parcels. Ground-hosted buildings, parks, and
-readjustments retain the strict complete-host proof.
+There is no public fabric token and no ambient “current transaction”. Only the context passed to the
+active `ParcelMutation.run` operation can mutate its fabric draft.
 
-The full replay exists only for boot/recovery. It folds all standing authored records into one private
-fabric draft without temporarily changing their applied flags, then publishes one revision. A shared
-plan waits for that single-flight barrier and applies only records not already standing.
+### 0.3 Closed cadastral scopes
 
-### 0.3 Forbidden recovery paths
+A scope replacement is accepted only if all of these statements are true within the shared
+`0.01 m²` geometry epsilon:
 
-The following mechanisms were removed and must not return:
+- at least one replacement exists;
+- every replacement is one connected polygon with non-empty provenance contained in the scope;
+- replacements do not overlap;
+- no replacement lies outside the immutable repository union;
+- the repository union minus the replacements is at most the epsilon;
+- the symmetric difference between both unions is at most the epsilon.
 
-- fetching cadastral geometry anywhere outside `CadastralParcelRepository`;
-- treating a Leaflet layer, visibility flag, parcel index, IndexedDB geometry, or generated ID string
-  as cadastral truth;
-- restoring hidden “historical” parcel layers after unapply;
-- scanning the map to rebuild a parcel index or recover a proposal's ground;
-- borrowing whichever fabric transaction happens to be active;
-- writing parcel geometry outside `ParcelPresenter`;
-- using click-time intersection as a fallback for missing proposal provenance;
-- persisting generated child geometry as a prerequisite for future replay.
+An empty replacement is never proposal application. `releaseCadastreScope(reason)` is a separate
+operation restricted to repository reset or unload.
 
-Runtime output may carry `producedByProposalId` for one-hop ownership and click routing. It is not an
-ancestry edge. New output deletes `ancestorProposal`, `baseParcelIds`, `parentParcelId`, and
-`parentParcelIds` from live parcel properties.
+Live provenance has two meanings only:
 
-The contract is enforced in:
+- `producedByProposalId` names the single proposal that owns generated output;
+- `formedByProposalIds` lists corridors that influenced a remainder and never implies ownership.
 
-- `frontend/js/parcels/ground-service.js` — immutable cadastral repository and request deduplication;
-- `frontend/js/parcels/live-fabric.js` — isolated revisions, closed-scope replacement, contiguity and
-  provenance invariants;
-- `frontend/js/parcels/presenter.js` — atomic Leaflet projection;
-- `frontend/js/proposals/apply/transaction.js` — authored-record/fabric mutation journal;
-- `frontend/js/proposal-manager.js` — local scope resolution and materialization;
-- `frontend/js/proposals/claims.js` — flat proposal-to-cadastre projection;
-- `frontend/js/proposals/data.js` — authored-log persistence projection;
-- `backend/test/proposal-ground-service.test.js`, `live-parcel-fabric.test.js`,
-  `parcel-presenter-atomic.test.js`, `parcel-identity-opacity.test.js`,
-  `incremental-unapply.test.js`, `live-block-selection-authority.test.js`, and
-  `parcel-selection-contiguity.test.js` — architectural regression gates.
+Ordinary unapply rematerializes only the closed cadastral scope it affects. Shared-plan “Unapply
+applied” performs one local transaction over the union of affected scopes and rematerializes only
+intersecting standing proposals. Whole-plan replay is reserved for boot and explicit recovery.
+
+### 0.4 Migration policy
+
+Migration is an explicit offline operation, never a runtime fallback. It preserves a valid canonical
+declaration exactly. A legacy row is convertible only when every non-empty declaration identifies the
+same set of original cadastral parcels. Missing declarations, conflicts, and generated IDs are reported
+and left unchanged. Dry runs are deterministic; a marker plus checksum makes repeated runs idempotent.
+Running the migration against production requires separate authorization and a backup.
+
+The following mechanisms must not return:
+
+- direct cadastral fetches outside the ground service;
+- extra live-fabric instances;
+- ambient fabric transaction discovery or secondary mutation queues;
+- proposal ancestry aliases or generated-ID parsing in runtime code;
+- domain geometry reads from Leaflet parcel layers;
+- whole-plan replay as ordinary repair;
+- partial or unawaited proposal persistence.
+
+The source-contract gates are in `backend/test/authoritative-parcel-architecture.test.js`; behavioral
+coverage remains in the focused ground, mutation, fabric, presenter, migration, unapply, and cache
+test suites listed beside the relevant modules.
 
 ## 1. Historical model (retired)
 

@@ -28,12 +28,12 @@ describe('proposalContentFingerprint (v2, upload identity)', () => {
         expect(sharing.proposalContentFingerprint(base())).toBe(a);
     });
 
-    it('ignores retired parent-list noise when computing content identity', () => {
+    it('does not silently normalize a retired nested parcel declaration', () => {
         const reference = sharing.proposalContentFingerprint(base());
         const churned = base();
         churned.parentParcelIds = ['HR-1-824#c-newgen-1', 'HR-1-823/1'];
         churned.roadProposal.parentParcelIds = ['HR-1-824#c-newgen-1'];
-        expect(sharing.proposalContentFingerprint(churned)).toBe(reference);
+        expect(sharing.proposalContentFingerprint(churned)).not.toBe(reference);
     });
 
     it('moves when the content actually changes', () => {

@@ -7,48 +7,12 @@
 // replaces the old array in place instead of leaving two stores that can disagree.
 const PROPOSALS_STORAGE_KEY = 'cadastre_proposals';
 const PROPOSALS_STATE_VERSION = 2;
-const PROPOSALS_CUTOVER_KEY = 'cadastre_proposals_cutover_v2';
-
-// Kept as names only so the one-time cutover can remove the split counter and parked legacy copy.
-// Normal proposal writes never touch either key.
-const PROPOSALS_NEXT_ID_KEY = 'cadastre_proposals_nextId';
 
 // Where a READ-ONLY (secondary) tab parks work it is not allowed to write to the shared key above.
 // Separate key on purpose: the primary tab's blob stays untouched, so nothing can be clobbered, and
 // the work survives the reload that used to destroy it. Per-city already, since PersistentStorage
 // opens one database per city.
 const PROPOSALS_RECOVERY_KEY = 'cadastre_proposals_recovery';
-
-// These are disposable materializations/registries from the pre-fabric runtime. Do not use a
-// store-wide clear here: ownership, language, chain and server/shared records live beside these
-// keys and must survive the local geometry cutover.
-const LEGACY_DERIVED_PARCEL_KEYS = Object.freeze([
-    'cadastre_blocks',
-    'roadParcels',
-    'cb_parks',
-    'cb_squares',
-    'cb_lakes',
-    'cb_transit_stations'
-]);
-
-function isServerOrSharedProposal(record) {
-    if (!record || typeof record !== 'object') return false;
-    return record.serverProposalId !== undefined && record.serverProposalId !== null
-        || record.source === 'server'
-        || record.source === 'shared'
-        || record.isShared === true
-        || record.shared === true
-        || record.isMinted === true;
-}
-
-function isLegacyDerivedParcelKey(key) {
-    const value = String(key || '');
-    if (LEGACY_DERIVED_PARCEL_KEYS.includes(value)) return true;
-    if (['parcel_nft_address', 'parcelNFTAddress', 'parcelNftAddress'].includes(value)) return false;
-    // parcel_<id> stores local geometry; parcel_<id>_owner is ownership state and is deliberately
-    // outside this cutover's authority.
-    return /^parcel_.+/.test(value) && !/_owner$/.test(value);
-}
 
 function proposalStateEnvelope(nextProposalId, records) {
     return {
@@ -733,26 +697,22 @@ const proposalStorage = {
         if (typeof PersistentStorage === 'undefined') return;
         let parsed = null;
         let hasValidEnvelope = false;
-        let cutoverNeeded = false;
         try {
             const raw = PersistentStorage.getItem(PROPOSALS_STORAGE_KEY);
-            parsed = raw ? JSON.parse(raw) : null;
+            if (!raw) {
+                this.proposals.clear();
+                this.nextProposalId = 0;
+                return;
+            }
+            parsed = JSON.parse(raw);
             hasValidEnvelope = !!(parsed && !Array.isArray(parsed)
                 && parsed.version === PROPOSALS_STATE_VERSION
                 && Array.isArray(parsed.records));
-            cutoverNeeded = PersistentStorage.getItem(PROPOSALS_CUTOVER_KEY) !== '1';
+            if (!hasValidEnvelope) {
+                throw new Error(`Unsupported proposal state; expected envelope version ${PROPOSALS_STATE_VERSION}.`);
+            }
             this.proposals.clear();
-            // An old array is intentionally not treated as authoritative local replay state. Keep
-            // only records that are explicitly server/shared or minted; stale local materialization
-            // is exactly what this cutover removes. Shared links are re-imported through their
-            // normal server/shared path when no provenance is present in an old blob.
-            const legacyRecords = Array.isArray(parsed)
-                ? parsed
-                : (Array.isArray(parsed?.records) ? parsed.records : []);
-            const records = hasValidEnvelope
-                ? parsed.records
-                : (cutoverNeeded ? legacyRecords.filter(isServerOrSharedProposal) : []);
-            records.forEach((entry, index) => {
+            parsed.records.forEach((entry, index) => {
                 if (!entry) return;
                 try {
                     const normalized = this._normalizeProposal({ ...entry });
@@ -768,67 +728,19 @@ const proposalStorage = {
                     const identity = entry.proposalId || entry.serverProposalId || entry.id || `record ${index + 1}`;
                     // One malformed authored record cannot erase every other local proposal. It is
                     // rejected at the record boundary and never enters replay or the proposal UI.
-                    console.error(`[proposalStorage] Ignoring invalid stored proposal ${identity}`, error);
+                    console.error(`[proposalStorage] Rejected invalid stored proposal ${identity}`, error);
                 }
             });
 
-            if (hasValidEnvelope) {
-                const storedNext = Number(parsed.nextProposalId);
-                this.nextProposalId = Number.isFinite(storedNext) && storedNext >= 0
-                    ? Math.floor(storedNext)
-                    : 0;
-            } else {
-                const maxLocalId = Math.max(0, ...Array.from(this.proposals.keys()).map(id => {
-                    const match = String(id).match(/local-(\d+)/);
-                    if (match && match[1]) return parseInt(match[1], 10) || 0;
-                    const asNum = parseInt(id, 10);
-                    return Number.isFinite(asNum) ? asNum : 0;
-                }));
-                this.nextProposalId = maxLocalId + 1;
-            }
-
-            if (cutoverNeeded && !(typeof window !== 'undefined' && window.__cbSecondaryTab)) {
-                this._runFreshLocalCutover();
-                this._persist();
-            }
+            const storedNext = Number(parsed.nextProposalId);
+            this.nextProposalId = Number.isFinite(storedNext) && storedNext >= 0
+                ? Math.floor(storedNext)
+                : 0;
         } catch (error) {
             console.error('proposalStorage.load: Failed to read the proposal-state envelope', error);
             this._ensureIndexes();
             this.proposals.clear();
             this.nextProposalId = 0;
-            if (!(typeof window !== 'undefined' && window.__cbSecondaryTab)) {
-                this._runFreshLocalCutover();
-                this._persist();
-            }
-        }
-    },
-
-    _runFreshLocalCutover() {
-        if (typeof PersistentStorage === 'undefined') return false;
-        if (typeof window !== 'undefined' && window.__cbSecondaryTab) return false;
-        try {
-            // Never call PersistentStorage.clear(): server/shared proposal data, ownership, chain,
-            // language and other city-scoped state live in the same key/value store.
-            PersistentStorage.removeItem(PROPOSALS_NEXT_ID_KEY);
-            PersistentStorage.removeItem(PROPOSALS_RECOVERY_KEY);
-            const derivedKeys = [];
-            if (typeof PersistentStorage.forEach === 'function') {
-                PersistentStorage.forEach((_value, key) => {
-                    if (isLegacyDerivedParcelKey(key)) derivedKeys.push(String(key));
-                });
-            } else if (typeof PersistentStorage.length === 'number'
-                && typeof PersistentStorage.key === 'function') {
-                for (let index = 0; index < PersistentStorage.length; index += 1) {
-                    const key = PersistentStorage.key(index);
-                    if (isLegacyDerivedParcelKey(key)) derivedKeys.push(String(key));
-                }
-            }
-            derivedKeys.forEach(key => PersistentStorage.removeItem(key));
-            PersistentStorage.setItem(PROPOSALS_CUTOVER_KEY, '1');
-            return true;
-        } catch (error) {
-            console.warn('[proposalStorage] fresh local cutover failed', error);
-            return false;
         }
     },
 
@@ -1130,8 +1042,6 @@ const proposalStorage = {
         this.proposals.clear();
         if (typeof PersistentStorage !== 'undefined') {
             PersistentStorage.removeItem(PROPOSALS_STORAGE_KEY);
-            PersistentStorage.removeItem(PROPOSALS_NEXT_ID_KEY);
-            PersistentStorage.removeItem(PROPOSALS_CUTOVER_KEY);
             PersistentStorage.removeItem(PROPOSALS_RECOVERY_KEY);
         }
     },
@@ -1201,14 +1111,14 @@ const proposalStorage = {
             ? depthApi.findNonCadastralReference(candidate)
             : null;
         if (invalid) {
-            throw new Error(`Cannot load proposal: ${invalid.path} contains live parcel id ${invalid.id}; migrate the record first.`);
+            throw new Error(`Cannot load proposal: ${invalid.path} contains live parcel id ${invalid.id}.`);
         }
         const verdict = typeof depthApi.conformanceOf === 'function'
             ? depthApi.conformanceOf(candidate)
             : { flat: true };
         if (!verdict.flat) {
             const conflict = verdict.violations?.[0];
-            throw new Error(`Cannot load proposal: ${conflict?.field || conflict?.code || 'cadastral declaration'} conflicts with cadastreParcelIds; migrate the record first.`);
+            throw new Error(`Cannot load proposal: ${conflict?.field || conflict?.code || 'cadastral declaration'} conflicts with cadastreParcelIds.`);
         }
         proposal = canonicalizeProposalCadastreAnchors(candidate);
         proposal = depthApi.stripDerivedRecordData(proposal);

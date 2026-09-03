@@ -1,8 +1,7 @@
 (function attachParcelIngest(global) {
     'use strict';
 
-    // Rendering infrastructure shared by every ParcelPresenter layer. Geometry ingestion below
-    // is domain-only and never edits Leaflet, caches, or persistent records.
+    // Rendering infrastructure shared by every ParcelPresenter layer.
     let parcelCanvas = null;
     function parcelCanvasRenderer() {
         if (parcelCanvas) return parcelCanvas;

@@ -250,6 +250,14 @@
         return translateRowHouseText('rowHouses.modal.messages.multiParcelLabel', '{{count}} Parcels', { count: ids.length });
     }
 
+    function rowHouseParcelsForIds(parcelIds) {
+        const ids = Array.from(new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean)));
+        return ids.map(id => {
+            const feature = window.LiveParcelFabric?.get?.(id) || null;
+            return feature ? { id, feature } : null;
+        }).filter(Boolean);
+    }
+
     // --- Geometry utilities ---
 
     // Sanitize and convert polygon to single largest polygon
@@ -2233,9 +2241,9 @@
     // Entry point for opening row house modal from parcels
     // Saved parameters keep the sliders meaningful; `initialFeature` preserves arbitrary edits or
     // an uploaded polygon instead of regenerating a rectangle when the proposal is reopened.
-    function openRowHouseForParcels({ blockName, parcels, initialParameters = null, initialFeature = null }) {
-        const rawParcels = Array.isArray(parcels) ? parcels.filter(Boolean) : [];
-        if (!rawParcels.length) {
+    function openRowHouseForParcels({ blockName, parcelIds, initialParameters = null, initialFeature = null }) {
+        const ids = Array.from(new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean)));
+        if (!ids.length) {
             if (typeof updateStatus === 'function') {
                 updateStatus('Select parcels before launching the row house tool.');
             }
@@ -2244,37 +2252,21 @@
         rowHouseSeedParameters = initialParameters || null;
         rowHouseSeedFeature = initialFeature?.geometry ? cloneRowHouseFeature(initialFeature) : null;
 
-        const seenIds = new Set();
-        const normalizedParcels = [];
-        rawParcels.forEach(layer => {
-            try {
-                const props = layer?.feature?.properties;
-                const parcelId = typeof ensureParcelId === 'function'
-                    ? ensureParcelId(layer?.feature)
-                    : (props?.parcelId ?? props?.parcel_id ?? props?.id);
-                if (!parcelId) return;
-                const idStr = parcelId.toString();
-                if (seenIds.has(idStr)) return;
-                seenIds.add(idStr);
-                normalizedParcels.push(layer);
-            } catch (_) { }
-        });
-
-        if (!normalizedParcels.length) {
+        const liveParcels = rowHouseParcelsForIds(ids);
+        if (liveParcels.length !== ids.length) {
             if (typeof updateStatus === 'function') {
                 updateStatus('Could not resolve parcel data for the selected parcels.');
             }
             return;
         }
 
-        const parcelIds = Array.from(seenIds);
         rowHouseBlock = {
-            parcels: normalizedParcels,
-            parcelIds,
+            parcels: liveParcels,
+            parcelIds: ids,
             valid: true,
             polygon: null
         };
-        rowHouseBlockNameOverride = blockName || describeRowHouseParcelSelection(parcelIds);
+        rowHouseBlockNameOverride = blockName || describeRowHouseParcelSelection(ids);
         showRowHouseModal();
     }
 

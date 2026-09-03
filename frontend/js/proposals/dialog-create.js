@@ -404,7 +404,7 @@ function openRoadDesignationModal() {
             mode: 'full',
             type: 'road',
             width: DEFAULT_CORRIDOR_WIDTHS.road,
-            parentParcelIds: parcelIds.slice(),
+            parcelIds: parcelIds.slice(),
             superGeometry: superGeometry,
             polygon: superGeometry,
             centerline: []

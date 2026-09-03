@@ -1338,8 +1338,8 @@
         } else {
             push(descriptor?.geometry);
         }
-        if (!features.length && draft?.fields?.parentParcelIds?.length) {
-            draft.fields.parentParcelIds.map(String).forEach(id => {
+        if (!features.length && draft?.fields?.selectedParcelIds?.length) {
+            draft.fields.selectedParcelIds.map(String).forEach(id => {
                 push(window.LiveParcelFabric?.get?.(id));
             });
         }

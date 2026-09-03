@@ -493,23 +493,22 @@ function setProposalMainType(type, options = {}) {
 
 async function launchUrbanRuleToolForSelection() {
     const selection = getCurrentParcelSelectionContext();
-    if (!selection.layers.length) {
+    if (!selection.ids.length) {
         updateStatus('Select parcels before launching the urban rule tool.');
         return false;
     }
     if (typeof shouldStopFreshProposalForWholeBlock === 'function'
         && await shouldStopFreshProposalForWholeBlock('urban-rule', selection)) return false;
-    if (typeof openUrbanRuleForParcels !== 'function' && typeof openBlockifyForParcels !== 'function') {
+    if (typeof openUrbanRuleForParcels !== 'function') {
         updateStatus('Urban rule generator is unavailable.');
         return false;
     }
-    const opener = (typeof openUrbanRuleForParcels === 'function') ? openUrbanRuleForParcels : openBlockifyForParcels;
     // Reopen on the existing design (a copied proposal, or your own in-progress edits) rather than
     // resetting to the defaults. The saved parameters carry mode/gaps/wings/manual outline too.
     const seed = (typeof getPendingBuildingSeedFor === 'function') ? getPendingBuildingSeedFor(selection.ids) : null;
-    opener({
+    openUrbanRuleForParcels({
         blockName: formatParcelSelectionLabel(selection.ids),
-        parcels: selection.layers,
+        parcelIds: selection.ids,
         initialState: (seed && typeof buildBlockifySeed === 'function') ? buildBlockifySeed(seed) : null
     });
     return true;

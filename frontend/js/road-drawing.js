@@ -1297,7 +1297,7 @@ function saveCurrentCorridorDrawingDraft(kind = corridorDrawingKind()) {
     } catch (_) { }
 
     const copySource = window.pendingRoadCopySource || null;
-    const parentParcelIds = (Array.isArray(roadAffectedParcels) ? roadAffectedParcels : [])
+    const selectedParcelIds = (Array.isArray(roadAffectedParcels) ? roadAffectedParcels : [])
         .map(parcel => getParcelIdFromAny(parcel))
         .filter(Boolean)
         .map(String);
@@ -1307,7 +1307,7 @@ function saveCurrentCorridorDrawingDraft(kind = corridorDrawingKind()) {
         cityId: currentCorridorDraftCityId(),
         seed,
         copySource,
-        parentParcelIds,
+        parcelIds: selectedParcelIds,
         sourceProposalId: copySource && copySource.proposalId ? String(copySource.proposalId) : null
     });
     // A fresh drawing creates its draft at finish time — adopt it into the design session so
@@ -4683,7 +4683,7 @@ async function finishRoadDrawingOnce() {
 
     const ownershipAndAcquisitionStats = collectOwnershipAndAcquisitionStats();
 
-    const parentParcelIds = affectedParcels
+    const selectedParcelIds = affectedParcels
         .map(p => getParcelIdFromAny(p))
         .filter(Boolean)
         .map(id => id.toString());
@@ -4725,7 +4725,7 @@ async function finishRoadDrawingOnce() {
     }
 
     const roadDrawingContext = {
-        parentParcelIds: parentParcelIds.slice(),
+        parcelIds: selectedParcelIds.slice(),
         centerline: centerlineSegments,
         segmentIds: centerlineSegmentIds,
         profile: roadProfile ? { strips: roadProfile.strips.map(strip => ({ ...strip })) } : null,
@@ -4781,7 +4781,7 @@ async function finishRoadDrawingOnce() {
         window.syncActiveProposalDraftFromEditor?.('corridor', {
             ...roadDrawingContext,
             kind: corridorKind
-        }, { parentParcelIds, coalesceKey: 'corridor-finalize' });
+        }, { parcelIds: selectedParcelIds, coalesceKey: 'corridor-finalize' });
         // Hold the drawing on the map across teardown and local fabric derivation; the object that replaces
         // it only exists once instantCreateProposalFromDraft resolves.
         markCorridorFinishPhase('draft');
@@ -5262,7 +5262,7 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
                             sidewalkWidth: roadSidewalkWidth,
                             metadata: proposalMetadata
                         },
-                        parentParcelIds: selectedParcelIds,
+                        parcelIds: selectedParcelIds,
                         author: authorValue,
                         description: descriptionValue,
                         offer: offerValue,

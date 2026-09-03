@@ -16,6 +16,9 @@
         'repository-reset',
         'repository-unload'
     ]);
+    const RETIRED_PROVENANCE_FIELDS = Object.freeze([
+        'baseParcelIds', 'parentParcelId', 'parentParcelIds', 'ancestorProposal', 'proposalId'
+    ]);
 
     function clone(value) {
         if (value === undefined || value === null) return value;
@@ -57,6 +60,18 @@
             ? feature.properties.formedByProposalIds
             : [];
         return Array.from(new Set(raw.map(normalizeId).filter(Boolean)));
+    }
+
+    function assertNoRetiredProvenance(properties, parcelId) {
+        const retired = RETIRED_PROVENANCE_FIELDS.find(field => (
+            Object.prototype.hasOwnProperty.call(properties || {}, field)
+        ));
+        if (!retired) return;
+        const error = new TypeError(`Live parcel ${parcelId} uses retired provenance field ${retired}.`);
+        error.code = 'live-parcel-retired-provenance';
+        error.parcelId = parcelId;
+        error.field = retired;
+        throw error;
     }
 
     function bboxOf(feature) {
@@ -162,6 +177,7 @@
                 feature.geometry = { type: 'Polygon', coordinates: components[0] };
             }
             const props = feature.properties || (feature.properties = {});
+            assertNoRetiredProvenance(props, sourceId);
             const cadastreIds = config.cadastreSeed ? [normalizeId(config.cadastreId || sourceId)] : explicitCadastreIds(feature);
             if (!cadastreIds.length) {
                 const error = new TypeError(`Generated live parcel ${sourceId} has no explicit cadastral provenance.`);
@@ -174,11 +190,6 @@
             props.cadastreParcelIds = cadastreIds;
             if (formedByIds(feature).length) props.formedByProposalIds = formedByIds(feature);
             else delete props.formedByProposalIds;
-            delete props.proposalId;
-            delete props.baseParcelIds;
-            delete props.parentParcelIds;
-            delete props.parentParcelId;
-            delete props.ancestorProposal;
             metrics.normalized += 1;
             deepFreeze(feature);
             trusted.add(feature);
@@ -234,14 +245,10 @@
             }
             const fact = clone(input);
             const props = fact.properties || (fact.properties = {});
+            assertNoRetiredProvenance(props, id);
             props.parcelId = id;
             props.id = id;
             props.cadastreParcelIds = [id];
-            delete props.proposalId;
-            delete props.baseParcelIds;
-            delete props.parentParcelIds;
-            delete props.parentParcelId;
-            delete props.ancestorProposal;
             metrics.normalized += 1;
             deepFreeze(fact);
             trusted.add(fact);

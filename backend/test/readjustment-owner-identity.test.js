@@ -42,17 +42,20 @@ function loadEditorOwnerIdentity() {
     const factory = new Function(
         't', 'resolveOwnerDisplayName', 'window', 'computeFeatureArea', 'getParcelLandValue',
         'ensureParcelOwnerSlots', 'normalizeOwnerSlots', 'state', 'pickOwnerColor',
+        'liveSelectionFeatures',
         `${body} return { ownerIdentityForSlot, buildOwnerShares };`
     );
 
     // A test states its cadastre inline rather than going through the live ownership cache.
     const slotsById = new Map();
+    const featuresById = new Map();
     const ensureParcelOwnerSlots = async (parcelId) => slotsById.get(String(parcelId)) || [];
 
     const editorWindow = {
         __readjustmentContributions: contributions,
         LiveParcelFabric: {
-            cadastreIdsForParcelIds: ids => ids.map(String)
+            cadastreIdsForParcelIds: ids => ids.map(String),
+            get: id => featuresById.get(String(id)) || null
         }
     };
     const api = factory(
@@ -64,20 +67,25 @@ function loadEditorOwnerIdentity() {
         ensureParcelOwnerSlots,
         normalizeOwnerSlots,
         state,
-        (ownerKey, index) => `color:${ownerKey || index}`
+        (ownerKey, index) => `color:${ownerKey || index}`,
+        selection => (selection?.ids || [])
+            .map(id => editorWindow.LiveParcelFabric.get(id))
+            .filter(Boolean)
     );
-    return { ...api, state, slotsById };
+    return { ...api, state, slotsById, featuresById };
 }
 
-// A parcel as the editor sees it: a Leaflet layer wrapping a GeoJSON feature.
+// The editor reads authoritative GeoJSON features from LiveParcelFabric by parcel ID.
 function parcel(parcelId, areaM2, extraProps = {}) {
     return {
-        feature: {
-            type: 'Feature',
-            properties: { parcelId, calculatedArea: areaM2, BROJ_CESTICE: `${parcelId}-cc`, ...extraProps },
-            geometry: { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]] }
-        }
+        type: 'Feature',
+        properties: { parcelId, calculatedArea: areaM2, BROJ_CESTICE: `${parcelId}-cc`, ...extraProps },
+        geometry: { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]] }
     };
+}
+
+function setParcels(editor, ...features) {
+    features.forEach(feature => editor.featuresById.set(feature.properties.parcelId, feature));
 }
 
 const realSlot = (name, shareText = '1/1', extra = {}) => ({
@@ -148,10 +156,13 @@ describe('pooling the same owner across parcels', () => {
         editor.slotsById.set('HR-1-100', [realSlot('GRAD ŠIBENIK')]);
         editor.slotsById.set('HR-1-101', [realSlot('GRAD ŠIBENIK')]);
         editor.slotsById.set('HR-1-102', [realSlot('JAVNO DOBRO')]);
+        setParcels(editor,
+            parcel('HR-1-100', 600),
+            parcel('HR-1-101', 400),
+            parcel('HR-1-102', 1000));
 
         const shares = await editor.buildOwnerShares({
-            ids: ['HR-1-100', 'HR-1-101', 'HR-1-102'],
-            layers: [parcel('HR-1-100', 600), parcel('HR-1-101', 400), parcel('HR-1-102', 1000)]
+            ids: ['HR-1-100', 'HR-1-101', 'HR-1-102']
         });
 
         expect(shares).toHaveLength(2);
@@ -168,10 +179,10 @@ describe('pooling the same owner across parcels', () => {
         // Ana holds half of one parcel and all of another; Boris holds the other half of the first.
         editor.slotsById.set('HR-1-100', [realSlot('Ana', '1/2'), realSlot('Boris', '1/2')]);
         editor.slotsById.set('HR-1-101', [realSlot('Ana')]);
+        setParcels(editor, parcel('HR-1-100', 800), parcel('HR-1-101', 200));
 
         const shares = await editor.buildOwnerShares({
-            ids: ['HR-1-100', 'HR-1-101'],
-            layers: [parcel('HR-1-100', 800), parcel('HR-1-101', 200)]
+            ids: ['HR-1-100', 'HR-1-101']
         });
 
         expect(shares).toHaveLength(2);
@@ -184,10 +195,10 @@ describe('pooling the same owner across parcels', () => {
         const placeholder = { key: 'parcel:x:owner', displayName: 'Single owner', shareText: '100%', placeholder: true };
         editor.slotsById.set('HR-1-100', [placeholder]);
         editor.slotsById.set('HR-1-101', [placeholder]);
+        setParcels(editor, parcel('HR-1-100', 500), parcel('HR-1-101', 500));
 
         const shares = await editor.buildOwnerShares({
-            ids: ['HR-1-100', 'HR-1-101'],
-            layers: [parcel('HR-1-100', 500), parcel('HR-1-101', 500)]
+            ids: ['HR-1-100', 'HR-1-101']
         });
 
         expect(shares).toHaveLength(2);

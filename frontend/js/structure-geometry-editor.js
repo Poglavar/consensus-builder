@@ -591,7 +591,6 @@
         const current = clone(draft.editorPayload?.structureProposal || {});
         current.kind = state.kind;
         current.geometry = clone(state.boundary.geometry);
-        current.parentParcelIds = clone(draft.fields?.parentParcelIds || current.parentParcelIds || []);
         current.decorations = clone(state.decorations);
         global.syncActiveProposalDraftFromEditor?.('structure', { structureProposal: current }, { coalesceKey: 'editor:structure' });
         closeEditor(true);

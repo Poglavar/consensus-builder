@@ -167,7 +167,7 @@
     }
 
     function renderParcels(draft) {
-        const ids = Array.isArray(draft.fields?.parentParcelIds) ? draft.fields.parentParcelIds : [];
+        const ids = Array.isArray(draft.fields?.selectedParcelIds) ? draft.fields.selectedParcelIds : [];
         const chips = ids.map(id => `<span class="proposal-editor-parcel-chip" title="${escapeHtml(id)}">${escapeHtml(id)}</span>`).join('');
         return `
             <section class="proposal-editor-section" data-editor-section="parcels">
@@ -176,7 +176,7 @@
                 <div class="proposal-editor-parcels">${chips || escapeHtml(tDraft('proposalDrafts.noParcels', 'No parcels selected'))}</div>
                 <label class="proposal-editor-field">
                     <span>${escapeHtml(tDraft('proposalDrafts.fields.parcelIds', 'Parcel IDs'))}</span>
-                    <textarea data-draft-path="fields.parentParcelIds" data-draft-array="true">${escapeHtml(ids.join('\n'))}</textarea>
+                    <textarea data-draft-path="fields.selectedParcelIds" data-draft-array="true">${escapeHtml(ids.join('\n'))}</textarea>
                 </label>
                 <button type="button" class="proposal-editor-secondary" data-editor-action="use-map-selection">${escapeHtml(tDraft('proposalDrafts.actions.useMapSelection', 'Use map selection'))}</button>
             </section>`;
@@ -294,7 +294,7 @@
                 : '';
             return `${type} · ${bearing}°${height}`;
         }
-        return tDraft('proposalDrafts.design.parcelSummary', '{{count}} affected parcel(s)', { count: draft.fields?.parentParcelIds?.length || 0 });
+        return tDraft('proposalDrafts.design.parcelSummary', '{{count}} affected parcel(s)', { count: draft.fields?.selectedParcelIds?.length || 0 });
     }
 
     function renderDesign(draft, adapter) {
@@ -587,7 +587,7 @@
             const context = typeof global.getCurrentParcelSelectionContext === 'function'
                 ? global.getCurrentParcelSelectionContext()
                 : { ids: [] };
-            store.updateDraft(draftId, { fields: { parentParcelIds: (context.ids || []).map(String) } });
+            store.updateDraft(draftId, { fields: { selectedParcelIds: (context.ids || []).map(String) } });
             store.validateDraft(draftId);
             renderShell();
         } else if (action === 'focus-issue') {
@@ -607,9 +607,9 @@
                 if (bounds?.isValid?.()) global.map.fitBounds(bounds, { padding: [40, 40], maxZoom: 20 });
                 return true;
             }
-            if (validationIssue.path === 'fields.parentParcelIds') {
+            if (validationIssue.path === 'fields.selectedParcelIds') {
                 const draft = global.proposalDraftStore?.getDraft(editorState.draftId);
-                const first = draft?.fields?.parentParcelIds?.[0];
+                const first = draft?.fields?.selectedParcelIds?.[0];
                 if (first && typeof global.focusParcelInMap === 'function') return global.focusParcelInMap(first);
             }
         } catch (_) { }
@@ -634,7 +634,7 @@
         const path = String(validationIssue.path || '');
         let section = null;
         if (path === 'fields.name' || path === 'fields.description') section = 'details';
-        else if (path === 'fields.parentParcelIds') section = 'parcels';
+        else if (path === 'fields.selectedParcelIds') section = 'parcels';
         else if (path.startsWith('fields.ownership') || path.startsWith('fields.recipient')) section = 'ownership';
         else if (path.startsWith('fields.')) section = 'terms';
         if (section && editorState.tab !== section) {
@@ -778,7 +778,7 @@
             fields: {
                 name: options.name || '',
                 description: options.description || '',
-                parentParcelIds: (options.parentParcelIds || context.ids || []).map(String),
+                selectedParcelIds: (options.parcelIds || context.ids || []).map(String),
                 offer: Number(options.offer) || 0,
                 offerCurrency: options.offerCurrency || 'USDT'
             },
@@ -882,7 +882,7 @@
             goal: adapterKey,
             proposalType: proposalLabel(adapterKey),
             adapterKey,
-            fields: { name: '', description: '', parentParcelIds: ids, offer: 0, offerCurrency: 'USDT' },
+            fields: { name: '', description: '', selectedParcelIds: ids, offer: 0, offerCurrency: 'USDT' },
             editorPayload: {},
             previewGeometry: null
         });
@@ -986,13 +986,12 @@
             goal: kind,
             proposalType: STRUCTURE_KIND_LABELS[kind],
             adapterKey: kind,
-            fields: { name: '', description: '', parentParcelIds: liveIds, offer: 0, offerCurrency: 'USDT' },
+            fields: { name: '', description: '', selectedParcelIds: liveIds, offer: 0, offerCurrency: 'USDT' },
             editorPayload: {
                 structureProposal: {
                     kind,
                     applied: false,
                     geometry: structureGeometry,
-                    parentParcelIds: liveIds.slice(),
                     blockName: null,
                     lakeGraphics: lakeGraphics || null
                 }
@@ -1120,7 +1119,7 @@
                 tunnels: JSON.parse(JSON.stringify(definition.tunnels || [])),
                 polygon: JSON.parse(JSON.stringify(definition.polygon || null)),
                 metadata: JSON.parse(JSON.stringify(definition.metadata || {})),
-                parentParcelIds: (draft.fields?.parentParcelIds || []).slice()
+                parcelIds: (draft.fields?.selectedParcelIds || []).slice()
             };
             return true;
         }
@@ -1187,7 +1186,7 @@
             return false;
         }
         if ((selection.usesSourceChildren || selection.substituted) && selection.ids?.length) {
-            store.updateDraft(draftId, { fields: { parentParcelIds: selection.ids.map(String) } }, {
+            store.updateDraft(draftId, { fields: { selectedParcelIds: selection.ids.map(String) } }, {
                 coalesceKey: 'applied-source-descendants'
             });
             draft = store.validateDraft(draftId);
@@ -1494,7 +1493,7 @@
                 ? adapter.payloadFromDrawingSeed(payload, draft.editorPayload?.definition)
                 : { kind: payload.kind || draft.editorPayload?.kind, definition: payload.definition || payload };
             patch = { editorPayload: converted, previewGeometry: converted.definition?.polygon || null };
-            if (Array.isArray(options.parentParcelIds)) fields.parentParcelIds = options.parentParcelIds.map(String);
+            if (Array.isArray(options.parcelIds)) fields.selectedParcelIds = options.parcelIds.map(String);
         } else if (kind === 'building') {
             if (!['buildings', 'row', 'parcelBased', 'single'].includes(draft.adapterKey || draft.goal)) return null;
             const typology = payload.parameters?.typology || draft.editorPayload?.typology || draft.adapterKey;
@@ -1502,11 +1501,11 @@
                 editorPayload: { typology, context: JSON.parse(JSON.stringify(payload)) },
                 previewGeometry: JSON.parse(JSON.stringify(payload.buildings?.length ? payload.buildings : [payload.buildingFeature].filter(Boolean)))
             };
-            if (Array.isArray(payload.parcelIds)) fields.parentParcelIds = payload.parcelIds.map(String);
+            if (Array.isArray(payload.parcelIds)) fields.selectedParcelIds = payload.parcelIds.map(String);
         } else if (kind === 'reparcellization') {
             if (draft.goal !== 'reparcellization') return null;
             patch = { editorPayload: { plan: JSON.parse(JSON.stringify(payload)) }, previewGeometry: JSON.parse(JSON.stringify(payload.polygons || [])) };
-            if (Array.isArray(payload.parcelIds)) fields.parentParcelIds = payload.parcelIds.map(String);
+            if (Array.isArray(payload.parcelIds)) fields.selectedParcelIds = payload.parcelIds.map(String);
         } else if (kind === 'structure') {
             if (!['park', 'square'].includes(draft.adapterKey || draft.goal)) return null;
             const structureProposal = JSON.parse(JSON.stringify(payload.structureProposal || payload));
@@ -1515,9 +1514,6 @@
                 editorPayload: { ...draft.editorPayload, geometry, structureProposal },
                 previewGeometry: JSON.parse(JSON.stringify(geometry))
             };
-            if (Array.isArray(structureProposal.parentParcelIds)) {
-                fields.parentParcelIds = structureProposal.parentParcelIds.map(String);
-            }
         } else if (kind === 'station') {
             if ((draft.adapterKey || draft.goal) !== 'station') return null;
             const structureProposal = JSON.parse(JSON.stringify(payload.structureProposal || payload));
@@ -1526,8 +1522,8 @@
                 editorPayload: { ...draft.editorPayload, geometry, structureProposal },
                 previewGeometry: JSON.parse(JSON.stringify(geometry))
             };
-            if (Array.isArray(structureProposal.parentParcelIds)) {
-                fields.parentParcelIds = structureProposal.parentParcelIds.map(String);
+            if (Array.isArray(structureProposal.selectedParcelIds)) {
+                fields.selectedParcelIds = structureProposal.selectedParcelIds.map(String);
             }
         } else {
             return null;

@@ -603,7 +603,7 @@ async function handleGeometryAction(actionKey) {
                 const selection = (typeof getCurrentParcelSelectionContext === 'function')
                     ? getCurrentParcelSelectionContext()
                     : { layers: [], ids: [] };
-                if (!selection.layers || !selection.layers.length) {
+                if (!selection.ids || !selection.ids.length) {
                     if (typeof updateStatus === 'function') updateStatus('Select parcels before uploading a building.');
                     break;
                 }
@@ -611,7 +611,7 @@ async function handleGeometryAction(actionKey) {
                     && await shouldStopFreshProposalForWholeBlock('single', selection)) break;
                 window.BuildingUpload.open(
                     {
-                        parcels: selection.layers,
+                        parcelIds: selection.ids,
                         blockName: (typeof formatParcelSelectionLabel === 'function')
                             ? formatParcelSelectionLabel(selection.ids)
                             : null

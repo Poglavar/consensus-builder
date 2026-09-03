@@ -180,9 +180,10 @@ describe('live parcel geometry for interaction', () => {
         };
         global.window.ParcelPresenter = {
             resolveLiveLayers: vi.fn(() => [
-                { feature: left },
-                { feature: right }
-            ])
+                { liveParcelId: 'HR-A#left' },
+                { liveParcelId: 'HR-A#right' }
+            ]),
+            getIdForLayer: layer => layer?.liveParcelId || null
         };
 
         const proposal = { proposalId: 'park', cadastreParcelIds: ['HR-A'] };
@@ -202,7 +203,10 @@ describe('live parcel geometry for interaction', () => {
             featureId: feature => feature?.properties?.id || null,
             get: () => null
         };
-        global.window.ParcelPresenter = { resolveLiveLayers: vi.fn(() => []) };
+        global.window.ParcelPresenter = {
+            resolveLiveLayers: vi.fn(() => []),
+            getIdForLayer: layer => layer?.liveParcelId || null
+        };
 
         expect(cap.getParcelFeaturesForHighlight('HR-A#old-park-1', { proposalId: 'park' })).toEqual([]);
         expect(global.buildProposalFeatureCache).not.toHaveBeenCalled();

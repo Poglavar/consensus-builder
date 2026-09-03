@@ -544,7 +544,7 @@ describe('a piece as a map feature', () => {
         const feature = arrangement.featureForPiece(road, base);
         expect(feature.properties.isCorridor).toBe(true);
         expect(feature.properties.formedByProposalIds).toEqual(['road-a', 'road-b']);
-        expect(feature.properties.proposalId).toBe('road-a');
+        expect(feature.properties.producedByProposalId).toBe('road-a');
     });
 
     it('marks a track as a track and not as a road', () => {
@@ -568,7 +568,7 @@ describe('a piece as a map feature', () => {
         const remainder = pieces().find(p => p.kind === 'remainder');
         const feature = arrangement.featureForPiece(remainder, base);
         expect(feature.properties.formedByProposalIds).toEqual([]);
-        expect(feature.properties.proposalId).toBeUndefined();
+        expect(feature.properties.producedByProposalId).toBeUndefined();
     });
 
     it('does not mutate the parcel it was cloned from', () => {

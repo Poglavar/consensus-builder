@@ -588,10 +588,10 @@
         const geometry = createStationFootprint(center, bearing, type, api);
         // Off-alignment cursor movement is the common case. Do not run parcel intersection
         // checks until there is a compatible snap candidate.
-        const parentParcelIds = geometry && aligned
-            ? findStationParentParcelIds(geometry, api, options.parcelEntries)
+        const parcelIds = geometry && aligned
+            ? findStationParcelIds(geometry, api, options.parcelEntries)
             : [];
-        const valid = aligned && parentParcelIds.length > 0;
+        const valid = aligned && parcelIds.length > 0;
         return {
             cursor: cursor.slice(),
             center,
@@ -599,10 +599,10 @@
             platformHeightM: update?.platformHeightM ?? options.currentPlatformHeightM,
             alignment: update?.alignment || null,
             geometry,
-            parentParcelIds,
+            parcelIds,
             aligned,
             valid,
-            reason: !aligned ? 'no-alignment' : (parentParcelIds.length ? null : 'no-loaded-parcel')
+            reason: !aligned ? 'no-alignment' : (parcelIds.length ? null : 'no-loaded-parcel')
         };
     }
 
@@ -639,7 +639,7 @@
             : true;
     }
 
-    function findStationParentParcelIds(geometry, turfApi, entries) {
+    function findStationParcelIds(geometry, turfApi, entries) {
         const api = turfApi || global.turf;
         if (!api || !geometry) return [];
         const footprint = geometry.type === 'Feature' ? geometry : api.feature(geometry);
@@ -711,8 +711,8 @@
         } else {
             delete next.platformHeightM;
         }
-        const parentParcelIds = findStationParentParcelIds(geometry, turfApi, parcelEntries);
-        if (parentParcelIds.length) next.parentParcelIds = parentParcelIds;
+        const selectedParcelIds = findStationParcelIds(geometry, turfApi, parcelEntries);
+        if (selectedParcelIds.length) next.selectedParcelIds = selectedParcelIds;
         return next;
     }
 
@@ -809,7 +809,7 @@
         const updated = typeof global.syncActiveProposalDraftFromEditor === 'function'
             ? global.syncActiveProposalDraftFromEditor('station', { structureProposal: next }, { coalesceKey: 'editor:station' })
             : global.proposalDraftStore.updateDraft(draft.id, {
-                fields: { parentParcelIds: clone(next.parentParcelIds || draft.fields?.parentParcelIds || []) },
+                fields: { selectedParcelIds: clone(next.selectedParcelIds || draft.fields?.selectedParcelIds || []) },
                 editorPayload: { ...draft.editorPayload, geometry: clone(next.geometry), structureProposal: next },
                 previewGeometry: clone(next.geometry)
             }, { coalesceKey: 'editor:station' });
@@ -1063,7 +1063,7 @@
         placement.platformHeightM = state.platformHeightM;
         placement.alignment = state.alignment;
         placement.previewGeometry = state.geometry;
-        placement.parentParcelIds = state.parentParcelIds;
+        placement.parcelIds = state.parcelIds;
         placement.aligned = state.aligned;
         placement.valid = state.valid;
         placement.reason = state.reason;
@@ -1111,11 +1111,11 @@
         if (!active?.valid || !active.center || !active.alignment) return null;
         const geometry = active.previewGeometry
             || createStationFootprint(active.center, active.bearing, active.type);
-        const parentParcelIds = findStationParentParcelIds(geometry);
-        if (!parentParcelIds.length) {
+        const selectedParcelIds = findStationParcelIds(geometry);
+        if (!selectedParcelIds.length) {
             active.valid = false;
             active.reason = 'no-loaded-parcel';
-            active.parentParcelIds = [];
+            active.parcelIds = [];
             renderPlacementPreview();
             updatePlacementStatus('Place the station over loaded parcel geometry.');
             return null;
@@ -1136,7 +1136,7 @@
             fields: {
                 name: '',
                 description: '',
-                parentParcelIds,
+                selectedParcelIds,
                 offer: 0,
                 offerCurrency: 'USDT'
             },
@@ -1151,7 +1151,6 @@
                     attachment: active.alignment ? clone(active.alignment) : null,
                     modelVersion: models()?.MODEL_VERSION || 1,
                     geometry: clone(geometry),
-                    parentParcelIds: parentParcelIds.slice(),
                     blockName: null
                 }
             },
@@ -1190,7 +1189,7 @@
             platformHeightM: type === 'elevated' ? normalizePlatformHeight(undefined, type) : undefined,
             alignment: null,
             previewGeometry: null,
-            parentParcelIds: [],
+            parcelIds: [],
             aligned: false,
             valid: false,
             reason: 'no-alignment',
@@ -1344,7 +1343,7 @@
         nearestCorridorAlignment,
         placementUpdateFromAlignment,
         resolvePlacementPreview,
-        findStationParentParcelIds,
+        findStationParcelIds,
         upsertStation,
         removeStationByProposalId,
         updateTransitStationsLayer,

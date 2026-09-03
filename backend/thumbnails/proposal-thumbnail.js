@@ -163,47 +163,47 @@ function ringsToPolygonGeometries(rings) {
     return rings.map(coords => ({ type: 'Polygon', coordinates: coords }));
 }
 
-export function getProposalParentParcelIds(proposal) {
+export function getProposalCadastreParcelIds(proposal) {
     const ids = Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
     return ids.map(id => (id === null || id === undefined ? null : String(id))).filter(Boolean);
 }
 
 /**
- * Assemble everything the renderer needs for one proposal: the highlighted polygon, the parent
+ * Assemble everything the renderer needs for one proposal: the highlighted polygon, the cadastral
  * parcel outlines (which expand the frame for building proposals) and the goal badge.
  * @returns {Promise<Object|null>} renderer options, or null when the proposal has no usable geometry
  */
 export async function buildThumbnailRenderOptions(pool, proposal, city) {
     if (!proposal || shouldSkipProposalThumbnail(proposal)) return null;
 
-    const parentParcelIds = getProposalParentParcelIds(proposal);
-    const parentPolygons = parentParcelIds.length
-        ? await fetchParcelPolygonsByIds(pool, city, parentParcelIds)
+    const cadastreParcelIds = getProposalCadastreParcelIds(proposal);
+    const cadastrePolygons = cadastreParcelIds.length
+        ? await fetchParcelPolygonsByIds(pool, city, cadastreParcelIds)
         : [];
 
     let { polygon, polygonOrder, fitToPolygonOnly } = resolveProposalPolygon(proposal);
 
     // Parcel-only proposals (merge / decide-later) have no geometry of their own: the picture is the
-    // union of the parent parcels.
-    if (!polygon && parentPolygons.length) {
-        if (parentPolygons.length === 1) {
-            polygon = parentPolygons[0];
+    // union of the cadastral parcels.
+    if (!polygon && cadastrePolygons.length) {
+        if (cadastrePolygons.length === 1) {
+            polygon = cadastrePolygons[0];
             polygonOrder = 'lnglat';
         } else {
-            const merged = unionGeometries(ringsToPolygonGeometries(parentPolygons));
+            const merged = unionGeometries(ringsToPolygonGeometries(cadastrePolygons));
             const resolved = merged ? fromGeometry(merged) : null;
-            polygon = resolved ? resolved.polygon : parentPolygons[0];
+            polygon = resolved ? resolved.polygon : cadastrePolygons[0];
             polygonOrder = 'lnglat';
         }
     }
 
     if (!polygon) return null;
 
-    // Building proposals frame the parent parcel too (the building sits inside it, and the dashed
-    // outline is what shows that); for other goals the parents either already ARE the polygon
+    // Building proposals frame the cadastral parcel too (the building sits inside it, and the dashed
+    // outline is what shows that); for other goals those parcels either already ARE the polygon
     // (merge) or are irrelevant to the picture (a road corridor cuts across many of them).
     const isBuildingProposal = !!(proposal.buildingGeometry || proposal.buildingProposal);
-    const parcelPolygons = isBuildingProposal ? parentPolygons : [];
+    const parcelPolygons = isBuildingProposal ? cadastrePolygons : [];
 
     // Older road proposals have no goal key at all, so fall back to the road badge for them.
     const badge = goalBadge(resolveProposalGoalKey(proposal))

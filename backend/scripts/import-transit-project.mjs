@@ -304,14 +304,10 @@ export function buildProposal({ project, track, trackIndex, spans, centreline, f
         lifecycleStatus: 'Active',
         createdAt: now,
         updatedAt: now,
-        parentParcelIds: parcelIds,
         cadastreParcelIds: parcelIds,
-        parcelIds,
         acceptedParcelIds: [],
         roadProposal: {
             definition,
-            parentParcelIds: parcelIds.slice(),
-            childParcelIds: [],
             mode: 'import',
             isCorridor: true
         },
@@ -345,7 +341,7 @@ async function upsertProposal(pool, proposal) {
          RETURNING id, proposal_id`,
         [proposal.proposalId, proposal.city, proposal.name, proposal.title, proposal.description,
             proposal.author, proposal.type, proposal.lifecycleStatus, proposal.createdAt,
-            JSON.stringify(proposal.parentParcelIds), JSON.stringify(proposal.cadastreParcelIds),
+            null, JSON.stringify(proposal.cadastreParcelIds),
             JSON.stringify(proposal.roadProposal), JSON.stringify(proposal)]);
     return rows[0];
 }

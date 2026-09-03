@@ -316,7 +316,7 @@
 
         const created = window.createSingleBuildingFromUpload({
             blockName: currentContext.blockName,
-            parcels: currentContext.parcels,
+            parcelIds: currentContext.parcelIds,
             width: loadedDims.width,
             length: loadedDims.length,
             height: loadedDims.height,
@@ -355,7 +355,7 @@
         loadedFile = null;
     }
 
-    // context: { parcels: <leaflet layers[]>, blockName: string }
+    // context: { parcelIds: string[], blockName: string }
     function open(context, options = {}) {
         if (modalEl) close();
         currentContext = context || {};

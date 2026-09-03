@@ -1554,16 +1554,9 @@
                 newProperties.cadastreParcelIds = originalCadastreIds.slice();
                 newProperties.rootParcelNumber = rootInfo.rootNumber;
                 newProperties.rootParcelId = rootInfo.rootParcelId;
-                newProperties.proposalId = proposalId;
                 newProperties.producedByProposalId = proposalId;
                 newProperties.proposalSource = 'government_plan';
                 newProperties.isRoad = parentIsRoad;
-                delete newProperties.parentParcelId;
-                delete newProperties.parentParcelIds;
-                delete newProperties.parentParcelNumber;
-                delete newProperties.parentParcelNumbers;
-                delete newProperties.baseParcelIds;
-                delete newProperties.ancestorProposal;
                 delete newProperties.roadName;
                 delete newProperties.roadId;
 
@@ -1922,16 +1915,9 @@
                 newProperties.cadastreParcelIds = originalCadastreIds.slice();
                 newProperties.rootParcelNumber = rootInfo.rootNumber;
                 newProperties.rootParcelId = rootInfo.rootParcelId;
-                newProperties.proposalId = proposalId;
                 newProperties.producedByProposalId = proposalId;
                 newProperties.proposalSource = 'government_plan';
                 newProperties.isRoad = parentIsRoad;
-                delete newProperties.parentParcelId;
-                delete newProperties.parentParcelIds;
-                delete newProperties.parentParcelNumber;
-                delete newProperties.parentParcelNumbers;
-                delete newProperties.baseParcelIds;
-                delete newProperties.ancestorProposal;
                 delete newProperties.roadName;
                 delete newProperties.roadId;
 

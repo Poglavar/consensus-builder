@@ -620,10 +620,9 @@
      * from a parcel — the KO, the parcel number, ownership, road-parcel status — travels into every
      * piece cut from it. Only what the cut changes is overwritten.
      *
-     * `proposalId` is the first taker rather than "the proposal that made this", because under this
-     * model no single proposal made it: a remainder between two roads is formed by both. The full
-     * set travels as `formedByProposalIds` for anything that needs to be exact, and the legacy field
-     * keeps the existing click/style routing working.
+     * `producedByProposalId` identifies the one proposal that owns corridor output.
+     * `formedByProposalIds` records every corridor that influenced a piece; on a remainder it never
+     * implies ownership.
      */
     function featureForPiece(piece, baseFeature, options = {}) {
         if (!piece || !baseFeature) return null;
@@ -639,25 +638,23 @@
         props.rootParcelNumber = baseProps.BROJ_CESTICE !== undefined ? baseProps.BROJ_CESTICE : null;
         props.cadastreParcelIds = [piece.parcelId];
         props.liveParcelDerivation = LIVE_DERIVATION;
-        delete props.baseParcelIds;
-        delete props.parentParcelIds;
-        delete props.parentParcelId;
-        delete props.parentParcelNumber;
         props.formedByProposalIds = (piece.takers || []).slice();
-        if (primary) props.proposalId = primary;
-        else delete props.proposalId;
+        delete props.proposalId;
 
         if (piece.kind === 'road') {
             props.isCorridor = true;
             props.isTrack = !!options.isTrack;
             props.isRoad = !options.isTrack;
             props.isProposed = true;
+            if (primary) props.producedByProposalId = primary;
+            else delete props.producedByProposalId;
             if (options.roadName) props.roadName = options.roadName;
         } else {
             // A remainder is ordinary ground again. Corridor flags from the clone would paint it as
             // road surface and route its clicks into the corridor panel.
             delete props.isCorridor;
             delete props.isTrack;
+            delete props.producedByProposalId;
             props.isProposed = true;
             // A remainder of a parcel that WAS a road parcel stays one — legacy road parcels carry
             // their status in the road set rather than on the feature, so the clone's flag is kept

@@ -183,8 +183,7 @@
                     platformHeightM: Number.isFinite(Number(sp.platformHeightM)) ? Number(sp.platformHeightM) : undefined,
                     attachment: sp.attachment ? JSON.parse(JSON.stringify(sp.attachment)) : undefined,
                     modelVersion: sp.modelVersion || undefined,
-                    name: proposalData.title || proposalData.name || undefined,
-                    parentParcelIds: flatParentIds.slice()
+                    name: proposalData.title || proposalData.name || undefined
                 },
                 geometry: JSON.parse(JSON.stringify(geometry))
             };

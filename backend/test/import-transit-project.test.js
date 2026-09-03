@@ -163,11 +163,12 @@ describe('buildProposal', () => {
         expect(proposal.city).toBe('sibenik');
     });
 
-    it('claims every parcel under the footprint as a parent', () => {
+    it('declares every cadastral parcel under the footprint exactly once', () => {
         const proposal = build();
-        expect(proposal.parentParcelIds).toEqual(['HR-330264-3279/3', 'HR-330264-3279/4']);
-        expect(proposal.cadastreParcelIds).toEqual(proposal.parentParcelIds);
-        expect(proposal.roadProposal.parentParcelIds).toEqual(proposal.parentParcelIds);
+        expect(proposal.cadastreParcelIds).toEqual(['HR-330264-3279/3', 'HR-330264-3279/4']);
+        expect(proposal).not.toHaveProperty('parentParcelIds');
+        expect(proposal).not.toHaveProperty('parcelIds');
+        expect(proposal.roadProposal).not.toHaveProperty('parentParcelIds');
     });
 
     it('records where it came from, and that it is a snapshot rather than a live view', () => {

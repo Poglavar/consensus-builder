@@ -381,14 +381,24 @@
         if (typeof selectedBlockName === 'undefined' || !selectedBlockName) return null;
         if (typeof blockStorage === 'undefined' || !blockStorage || !blockStorage.blocks || !blockStorage.blocks.has(selectedBlockName)) return null;
         const blk = blockStorage.blocks.get(selectedBlockName);
-        if (!blk || !Array.isArray(blk.parcels) || blk.parcels.length === 0) return null;
-        return { blockName: selectedBlockName, parcels: blk.parcels };
+        const parcelIds = Array.from(new Set((blk?.parcelIds || []).map(String).filter(Boolean)));
+        const parcels = singleBuildingParcelsForIds(parcelIds);
+        if (!parcelIds.length || parcels.length !== parcelIds.length) return null;
+        return { blockName: selectedBlockName, parcels, parcelIds };
     }
 
     function describeSingleBuildingSelection(ids = []) {
         if (!ids || ids.length === 0) return 'Selected Parcels';
         if (ids.length === 1) return `Parcel ${ids[0]}`;
         return `${ids.length} Parcels`;
+    }
+
+    function singleBuildingParcelsForIds(parcelIds) {
+        const ids = Array.from(new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean)));
+        return ids.map(id => {
+            const feature = window.LiveParcelFabric?.get?.(id) || null;
+            return feature ? { id, feature } : null;
+        }).filter(Boolean);
     }
 
     function getSelectedBlockFeature() {
@@ -2326,27 +2336,24 @@
     // `initialBuildings` (optional) reopens the editor on previously-saved building features
     // instead of one default building — used by "Copy into new proposal".
     // `initialGroundTreatment` restores the proposal's surroundings choice the same way.
-    function openSingleBuildingForParcels({ blockName, parcels, initialBuildings = null, initialGroundTreatment = null, initialTakeWholeParcels = null }) {
-        const rawParcels = Array.isArray(parcels) ? parcels.filter(Boolean) : [];
-        if (!rawParcels.length) {
+    function openSingleBuildingForParcels({ blockName, parcelIds, initialBuildings = null, initialGroundTreatment = null, initialTakeWholeParcels = null }) {
+        const ids = Array.from(new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean)));
+        if (!ids.length) {
             setSingleBuildingStatus('select_parcels_before_launching_the_single_building_tool', 'Select parcels before launching the single building tool.');
             return;
         }
         singleBuildingSeedBuildings = (Array.isArray(initialBuildings) && initialBuildings.length) ? initialBuildings : null;
         singleBuildingSeedGroundTreatment = initialGroundTreatment;
         singleBuildingSeedTakeWholeParcels = initialTakeWholeParcels;
-        const ids = rawParcels.map(layer => {
-            try {
-                return resolveParcelId(layer?.feature);
-            } catch (_) { return null; }
-        }).filter(Boolean);
-        if (!ids.length) {
+        const liveParcels = singleBuildingParcelsForIds(ids);
+        if (liveParcels.length !== ids.length) {
             setSingleBuildingStatus('could_not_resolve_parcel_data_for_the_single_building_tool', 'Could not resolve parcel data for the single building tool.');
             return;
         }
         singleBuildingOverrideContext = {
             blockName: blockName || describeSingleBuildingSelection(ids),
-            parcels: rawParcels
+            parcels: liveParcels,
+            parcelIds: ids
         };
         showSingleBuildingModal();
     }
@@ -2371,19 +2378,19 @@
     // footprint + height into a single-building proposal without opening the placement modal.
     // The model mesh itself is previewed in the upload modal; the proposal stores the standard
     // footprint box (auto-fit to the block) so it flows through the existing building pipeline.
-    function createSingleBuildingFromUpload({ blockName, parcels, width, length, height, modelName, modelUrl } = {}) {
-        const rawParcels = Array.isArray(parcels) ? parcels.filter(Boolean) : [];
-        if (!rawParcels.length) {
+    function createSingleBuildingFromUpload({ blockName, parcelIds, width, length, height, modelName, modelUrl } = {}) {
+        const ids = Array.from(new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean)));
+        if (!ids.length) {
             setSingleBuildingStatus('select_parcels_before_launching_the_single_building_tool', 'Select parcels before uploading a building.');
             return false;
         }
-        const ids = rawParcels.map(layer => { try { return resolveParcelId(layer?.feature); } catch (_) { return null; } }).filter(Boolean);
-        if (!ids.length) {
+        const liveParcels = singleBuildingParcelsForIds(ids);
+        if (liveParcels.length !== ids.length) {
             setSingleBuildingStatus('could_not_resolve_parcel_data_for_the_single_building_tool', 'Could not resolve parcel data for the uploaded building.');
             return false;
         }
 
-        singleBuildingOverrideContext = { blockName: blockName || describeSingleBuildingSelection(ids), parcels: rawParcels };
+        singleBuildingOverrideContext = { blockName: blockName || describeSingleBuildingSelection(ids), parcels: liveParcels, parcelIds: ids };
         singleBlockFeature = getSelectedBlockFeature();
         if (!singleBlockFeature) {
             setSingleBuildingStatus('select_a_block_first', 'Could not build a block from the selected parcels.');

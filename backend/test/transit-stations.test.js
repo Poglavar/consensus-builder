@@ -244,7 +244,7 @@ describe('station placement alignment', () => {
             aligned: true,
             valid: true,
             reason: null,
-            parentParcelIds: ['track-parcel']
+            parcelIds: ['track-parcel']
         });
         expect(snapped.center[1]).toBeCloseTo(45.81, 6);
 
@@ -307,7 +307,7 @@ describe('station geometry editing', () => {
             geometry: stations.createStationFootprint(center, 0, 'elevated', turf),
             demolishedBuildings: [{ id: 'old-impact' }],
             demolitionScanned: true,
-            parentParcelIds: ['original-parent']
+            selectedParcelIds: ['original-parent']
         };
         const edited = stations.buildEditedStationStructure(original, {
             bearing: 90,
@@ -320,7 +320,7 @@ describe('station geometry editing', () => {
         expect(edited.geometry).not.toEqual(original.geometry);
         expect(edited.demolishedBuildings).toBeUndefined();
         expect(edited.demolitionScanned).toBeUndefined();
-        expect(edited.parentParcelIds).toEqual(['original-parent']);
+        expect(edited.selectedParcelIds).toEqual(['original-parent']);
         expect(original.bearing).toBe(0);
     });
 
@@ -470,7 +470,6 @@ describe('applied station selection hit targets', () => {
                 stationType: 'tram',
                 center: [15.98, 45.81],
                 bearing: 90,
-                parentParcelIds: ['parcel-7']
             },
             geometry: stations.createStationFootprint([15.98, 45.81], 90, 'tram', turf)
         }];
@@ -680,7 +679,7 @@ describe('station parcel ancestry', () => {
             { id: 'far', feature: rectangle(15.99, 45.82, 15.991, 45.821, 'far') }
         ];
 
-        expect(stations.findStationParentParcelIds(geometry, turf, entries).sort()).toEqual(['east', 'west']);
+        expect(stations.findStationParcelIds(geometry, turf, entries).sort()).toEqual(['east', 'west']);
     });
 });
 

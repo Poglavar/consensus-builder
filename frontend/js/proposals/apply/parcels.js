@@ -330,7 +330,6 @@
                 return;
             }
             feature.properties.producedByProposalId = proposalId;
-            delete feature.properties.ancestorProposal;
             this._markParcelProducedByProposal(parcelId, proposalId, options);
             if (parcelId !== undefined && parcelId !== null) {
                 childParcelIds.push(String(parcelId));

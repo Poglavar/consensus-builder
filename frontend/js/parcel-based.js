@@ -158,6 +158,14 @@
         return translateParcelBasedText('parcelBased.modal.messages.multiParcelLabel', '{{count}} Parcels', { count: ids.length });
     }
 
+    function parcelBasedParcelsForIds(parcelIds) {
+        const ids = Array.from(new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean)));
+        return ids.map(id => {
+            const feature = window.LiveParcelFabric?.get?.(id) || null;
+            return feature ? { id, feature } : null;
+        }).filter(Boolean);
+    }
+
     // A parcel keeps its shade whatever order the parcels arrive in. An index-based colour
     // recoloured the whole street the moment one parcel joined or left the selection.
     function colorForParcel(parcelId, index = 0) {
@@ -1251,47 +1259,31 @@
 
     // Entry point for opening parcel-based modal from parcels. `initialParameters` (optional)
     // reopens the editor on a previously-saved design — used by "Copy into new proposal".
-    function openParcelBasedForParcels({ blockName, parcels, initialParameters = null }) {
+    function openParcelBasedForParcels({ blockName, parcelIds, initialParameters = null }) {
         parcelBasedSeedParameters = initialParameters || null;
-        const rawParcels = Array.isArray(parcels) ? parcels.filter(Boolean) : [];
-        if (!rawParcels.length) {
+        const ids = Array.from(new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean)));
+        if (!ids.length) {
             if (typeof updateStatus === 'function') {
                 updateStatus('Select parcels before launching the parcel-based tool.');
             }
             return;
         }
 
-        const seenIds = new Set();
-        const normalizedParcels = [];
-        rawParcels.forEach(layer => {
-            try {
-                const props = layer?.feature?.properties;
-                const parcelId = typeof ensureParcelId === 'function'
-                    ? ensureParcelId(layer?.feature)
-                    : (props?.parcelId ?? props?.parcel_id ?? props?.id);
-                if (!parcelId) return;
-                const idStr = parcelId.toString();
-                if (seenIds.has(idStr)) return;
-                seenIds.add(idStr);
-                normalizedParcels.push(layer);
-            } catch (_) { }
-        });
-
-        if (!normalizedParcels.length) {
+        const liveParcels = parcelBasedParcelsForIds(ids);
+        if (liveParcels.length !== ids.length) {
             if (typeof updateStatus === 'function') {
                 updateStatus('Could not resolve parcel data for the selected parcels.');
             }
             return;
         }
 
-        const parcelIds = Array.from(seenIds);
         parcelBasedBlock = {
-            parcels: normalizedParcels,
-            parcelIds,
+            parcels: liveParcels,
+            parcelIds: ids,
             valid: true,
             polygon: null
         };
-        parcelBasedBlockNameOverride = blockName || describeParcelBasedParcelSelection(parcelIds);
+        parcelBasedBlockNameOverride = blockName || describeParcelBasedParcelSelection(ids);
         showParcelBasedModal();
     }
 

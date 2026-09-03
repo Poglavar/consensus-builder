@@ -115,7 +115,6 @@ function proposalContentPayload(proposal, includeCadastre = false) {
         const copy = { ...payload };
         ['applied', 'appliedAt', 'childParcelIds', 'childFeatures', 'parentFeatures', 'hash']
             .forEach(key => { delete copy[key]; });
-        delete copy.parentParcelIds;
         return copy;
     };
     const goal = (typeof resolveProposalGoalKey === 'function')

@@ -27,56 +27,57 @@ function loadAuthoringTest() {
     const end = reparcellization.indexOf('            if (takenInputs.length) {', start);
     const body = reparcellization.slice(start, end);
     // eslint-disable-next-line no-new-func
-    return new Function('selection', `${body} return takenInputs;`);
+    const evaluate = new Function('selection', 'liveSelectionFeatures', `${body} return takenInputs;`);
+    return selection => evaluate(selection, value => value?.features || []);
 }
 
-const layer = properties => ({ feature: { properties } });
+const feature = properties => ({ type: 'Feature', properties, geometry: null });
+const selection = (...features) => ({
+    ids: features.map(entry => String(entry.properties.parcelId)),
+    features
+});
 
 describe('what authoring refuses', () => {
     const takenInputs = loadAuthoringTest();
 
     it('allows a remainder a road left behind — the block workflow', () => {
-        const selection = {
-            layers: [
-                layer({ parcelId: 'HR-1-100#p1a2b3c', formedByProposalIds: [] }),
-                layer({ parcelId: 'HR-1-101#p9z8y7x', formedByProposalIds: [] })
-            ]
-        };
-        expect(takenInputs(selection)).toEqual([]);
+        const input = selection(
+            feature({ parcelId: 'HR-1-100#p1a2b3c', formedByProposalIds: [] }),
+            feature({ parcelId: 'HR-1-101#p9z8y7x', formedByProposalIds: [] })
+        );
+        expect(takenInputs(input)).toEqual([]);
     });
 
     it('allows a plain cadastral parcel', () => {
-        expect(takenInputs({ layers: [layer({ parcelId: 'HR-1-100' })] })).toEqual([]);
+        expect(takenInputs(selection(feature({ parcelId: 'HR-1-100' })))).toEqual([]);
     });
 
     it('refuses a corridor piece — that ground belongs to the road', () => {
-        const selection = { layers: [layer({ parcelId: 'HR-1-100#r4d5e6f', isCorridor: true, formedByProposalIds: ['p-road'] })] };
-        expect(takenInputs(selection)).toEqual(['HR-1-100#r4d5e6f']);
+        const input = selection(feature({ parcelId: 'HR-1-100#r4d5e6f', isCorridor: true, formedByProposalIds: ['p-road'] }));
+        expect(takenInputs(input)).toEqual(['HR-1-100#r4d5e6f']);
     });
 
     it('refuses a track piece too', () => {
-        const selection = { layers: [layer({ parcelId: 'HR-1-100#r1', isTrack: true })] };
-        expect(takenInputs(selection)).toHaveLength(1);
+        const input = selection(feature({ parcelId: 'HR-1-100#r1', isTrack: true }));
+        expect(takenInputs(input)).toHaveLength(1);
     });
 
     it('refuses anything with a taker, flagged or not', () => {
-        const selection = { layers: [layer({ parcelId: 'HR-1-100#r2', formedByProposalIds: ['p-road'] })] };
-        expect(takenInputs(selection)).toHaveLength(1);
+        const input = selection(feature({ parcelId: 'HR-1-100#r2', formedByProposalIds: ['p-road'] }));
+        expect(takenInputs(input)).toHaveLength(1);
     });
 
     it('reports only the offending pieces, not the whole selection', () => {
-        const selection = {
-            layers: [
-                layer({ parcelId: 'HR-1-100#pfree', formedByProposalIds: [] }),
-                layer({ parcelId: 'HR-1-100#rtaken', isCorridor: true }),
-                layer({ parcelId: 'HR-1-101' })
-            ]
-        };
-        expect(takenInputs(selection)).toEqual(['HR-1-100#rtaken']);
+        const input = selection(
+            feature({ parcelId: 'HR-1-100#pfree', formedByProposalIds: [] }),
+            feature({ parcelId: 'HR-1-100#rtaken', isCorridor: true }),
+            feature({ parcelId: 'HR-1-101' })
+        );
+        expect(takenInputs(input)).toEqual(['HR-1-100#rtaken']);
     });
 
     it('says nothing about an empty selection', () => {
-        expect(takenInputs({ layers: [] })).toEqual([]);
+        expect(takenInputs({ ids: [], features: [] })).toEqual([]);
         expect(takenInputs({})).toEqual([]);
     });
 });

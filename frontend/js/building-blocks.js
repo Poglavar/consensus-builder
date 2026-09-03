@@ -16,8 +16,6 @@ let selectedBlockName = window.selectedBlockName;
 function blockifyParcelId(parcel) {
     if (parcel === undefined || parcel === null) return null;
     if (typeof parcel === 'string' || typeof parcel === 'number') return String(parcel);
-    const presentedId = window.ParcelPresenter?.getIdForLayer?.(parcel);
-    if (presentedId) return String(presentedId);
     if (parcel.type === 'Feature') {
         const id = typeof ensureParcelId === 'function'
             ? ensureParcelId(parcel)
@@ -230,7 +228,11 @@ function getActiveBlockifyBlock() {
         return blockifyBlock;
     }
     if (typeof selectedBlockName !== 'undefined' && selectedBlockName && blockStorage.blocks.has(selectedBlockName)) {
-        return blockStorage.blocks.get(selectedBlockName);
+        const stored = blockStorage.blocks.get(selectedBlockName);
+        const parcelIds = Array.from(new Set((stored?.parcelIds || []).map(String).filter(Boolean)));
+        const features = parcelIds.map(id => window.LiveParcelFabric?.get?.(id)).filter(Boolean);
+        if (!parcelIds.length || features.length !== parcelIds.length) return null;
+        return { ...stored, parcels: parcelIds, parcelIds, polygon: null };
     }
     return null;
 }
@@ -4188,49 +4190,30 @@ function blockifySelectedBlock() {
 
 // `initialState` (optional) restores a previously-saved design instead of the defaults — see
 // applyBlockifySeedState. Used by "Copy into new proposal" to reopen a fork's original building.
-function openUrbanRuleForParcels({ blockName, parcels, initialState = null }) {
-    const rawParcels = Array.isArray(parcels) ? parcels.filter(Boolean) : [];
-    if (!rawParcels.length) {
+function openUrbanRuleForParcels({ blockName, parcelIds, initialState = null }) {
+    const ids = Array.from(new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean)));
+    if (!ids.length) {
         updateStatus('Select parcels before launching the buildings tool.');
         return;
     }
     blockifySeedState = initialState || null;
-
-    const seenIds = new Set();
-    const normalizedParcels = [];
-    rawParcels.forEach(layer => {
-        try {
-            const parcelId = blockifyParcelId(layer);
-            if (!parcelId) return;
-            const idStr = parcelId.toString();
-            if (seenIds.has(idStr)) return;
-            seenIds.add(idStr);
-            normalizedParcels.push(layer);
-        } catch (_) { }
-    });
-
-    if (!normalizedParcels.length) {
+    const features = ids.map(id => window.LiveParcelFabric?.get?.(id)).filter(Boolean);
+    if (features.length !== ids.length) {
         updateStatus('Could not resolve parcel data for the selected parcels.');
         return;
     }
 
-    const parcelIds = Array.from(seenIds);
     blockifyBlock = {
-        parcels: normalizedParcels,
-        parcelIds,
+        parcels: ids,
+        parcelIds: ids,
         valid: true,
         polygon: null
     };
-    blockifyBlockNameOverride = blockName || describeParcelSelection(parcelIds);
+    blockifyBlockNameOverride = blockName || describeParcelSelection(ids);
     showBlockifyModal();
-}
-// Backward compatibility
-function openBlockifyForParcels(opts) {
-    return openUrbanRuleForParcels(opts);
 }
 
 window.openUrbanRuleForParcels = openUrbanRuleForParcels;
-window.openBlockifyForParcels = openBlockifyForParcels;
 
 // Function to capture current blockify configuration for later proposal creation
 // Measure the block footprint and, if it's larger than the recommended size, ask the user to confirm.

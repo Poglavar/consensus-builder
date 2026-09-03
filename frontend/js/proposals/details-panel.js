@@ -97,7 +97,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
     // The proposal has one durable land declaration. Typology-specific parent arrays are not
     // alternate sources of truth and generated output ids never appear in this ancestor list.
-    const parentParcelIds = Array.isArray(fullProposal.cadastreParcelIds)
+    const cadastreParcelIds = Array.isArray(fullProposal.cadastreParcelIds)
         ? fullProposal.cadastreParcelIds.map(String)
         : [];
 
@@ -140,8 +140,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const perfStartParcelFeatures = performance.now();
     // Resolve only the first batch synchronously. Remaining rows resolve via setupLazyList
     // (string ids → buildAncestorRow on render) so initial open cost is bounded by MAX_LIST_INITIAL,
-    // not by parentParcelIds.length.
-    const parentParcels = parentParcelIds.slice(0, MAX_LIST_INITIAL).map(buildAncestorRow).filter(Boolean);
+    // not by cadastreParcelIds.length.
+    const parentParcels = cadastreParcelIds.slice(0, MAX_LIST_INITIAL).map(buildAncestorRow).filter(Boolean);
     const perfEndParcelFeatures = performance.now();
 
     // Total area: sum across whatever we have resolved so far. As parcelDataLoaded fires and
@@ -221,7 +221,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // First batch is already resolved objects; remainder is just IDs which buildAncestorRow
     // will resolve lazily as setupLazyList streams them in on scroll.
     const parentParcelItemsInitial = parentParcels.map(renderAncestorParcelItem).join('');
-    const parentParcelItemsRemaining = parentParcelIds.slice(MAX_LIST_INITIAL);
+    const parentParcelItemsRemaining = cadastreParcelIds.slice(MAX_LIST_INITIAL);
 
     const renderDescendantItem = (descendant) => {
         const descendantKey = (descendant !== undefined && descendant !== null) ? String(descendant) : '';
@@ -768,10 +768,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <span class="metric-label">${tProposal('panel.proposal.metrics.created', 'Created:')}</span> <span class="metric-value">${createdAtLabel}</span>
             </div>
             <hr style="border: 0; height: 1px; background-color: #ddd; margin: 10px 0;">
-            ${parentParcelIds.length > 0 ? `
+            ${cadastreParcelIds.length > 0 ? `
             <div class="metric-group">
                 <div class="metric-label-count-container">
-                    <span class="metric-label">${tProposal('panel.proposal.sections.cadastralParcels', 'Cadastral parcels:')}</span> <span class="metric-value">${parentParcelIds.length}</span>
+                    <span class="metric-label">${tProposal('panel.proposal.sections.cadastralParcels', 'Cadastral parcels:')}</span> <span class="metric-value">${cadastreParcelIds.length}</span>
                 </div>
                 <div class="proposal-parcels-list" id="proposal-parent-parcels-list" style="max-height: 420px; overflow-y: auto;">
                     ${parentParcelItemsInitial}

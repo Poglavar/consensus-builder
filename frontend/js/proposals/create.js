@@ -619,7 +619,7 @@ async function createProposal() {
                 fields: {
                     name: proposalName || proposalType,
                     description,
-                    parentParcelIds: selectedLiveParcelIds,
+                    selectedParcelIds: selectedLiveParcelIds,
                     offer,
                     offerCurrency,
                     acquisitionMode,
@@ -773,7 +773,7 @@ async function createProposal() {
 
             if (roadDrawingContext) {
                 const isTrackContext = roadDrawingContext?.metadata?.isTrack === true;
-                const selectedRoadParcelIds = (Array.isArray(roadDrawingContext.parentParcelIds) ? roadDrawingContext.parentParcelIds : selectedLiveParcelIds)
+                const selectedRoadParcelIds = (Array.isArray(roadDrawingContext.parcelIds) ? roadDrawingContext.parcelIds : selectedLiveParcelIds)
                     .map(id => id && id.toString ? id.toString() : String(id))
                     .filter(Boolean);
                 const roadCadastreParcelIds = liveFabric.cadastreIdsForParcelIds(selectedRoadParcelIds);
@@ -853,7 +853,7 @@ async function createProposal() {
                     return;
                 }
 
-                const selectedCorridorParcelIds = (Array.isArray(corridor.parentParcelIds) ? corridor.parentParcelIds : selectedLiveParcelIds)
+                const selectedCorridorParcelIds = (Array.isArray(corridor.parcelIds) ? corridor.parcelIds : selectedLiveParcelIds)
                     .map(id => id && id.toString ? id.toString() : String(id))
                     .filter(Boolean);
                 const corridorCadastreParcelIds = liveFabric.cadastreIdsForParcelIds(selectedCorridorParcelIds);
@@ -951,7 +951,6 @@ async function createProposal() {
             proposal.goal = 'reparcellization';
             proposal.reparcellization = JSON.parse(JSON.stringify(pendingReparcelPlan));
             delete proposal.reparcellization.parcelIds;
-            delete proposal.reparcellization.parentParcelIds;
         }
 
         // Building/urban-rule proposals: consume pendingBuildingProposalContext

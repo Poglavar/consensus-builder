@@ -2,8 +2,8 @@
 (function attachProposalDraftStore(global) {
     'use strict';
 
-    const PROPOSAL_DRAFT_SCHEMA_VERSION = 1;
-    const PROPOSAL_DRAFT_STORAGE_KEY = 'consensus-builder.proposal-drafts.v1';
+    const PROPOSAL_DRAFT_SCHEMA_VERSION = 2;
+    const PROPOSAL_DRAFT_STORAGE_KEY = 'consensus-builder.proposal-drafts.v2';
     const DEFAULT_HISTORY_LIMIT = 100;
     const DEFAULT_PERSISTED_HISTORY_LIMIT = 12;
     const DEFAULT_COALESCE_MS = 800;
@@ -173,7 +173,7 @@
             description: proposal?.description || '',
             // Draft selection is transient editor state. Keep the immutable authored declaration
             // separately so an untouched edit does not need the live map to rediscover it.
-            parentParcelIds: cadastreParcelIds.slice(),
+            selectedParcelIds: cadastreParcelIds.slice(),
             cadastreParcelIds: cadastreParcelIds.slice(),
             ownership: cloneDraftValue(proposal?.ownership || proposal?.proposalFacets?.ownership || proposal?.facets?.ownership || null),
             recipientScope: proposal?.recipientScope || proposal?.proposalFacets?.recipientScope || proposal?.facets?.recipientScope || null,
@@ -394,7 +394,11 @@
             const stored = storage.getItem(storageKey);
             if (!stored) return normalizeStoredEnvelope(null, now);
             try {
-                return normalizeStoredEnvelope(JSON.parse(stored), now);
+                const parsed = JSON.parse(stored);
+                if (!parsed || parsed.schemaVersion !== PROPOSAL_DRAFT_SCHEMA_VERSION || !Array.isArray(parsed.drafts)) {
+                    throw new Error(`Unsupported proposal draft schema; expected ${PROPOSAL_DRAFT_SCHEMA_VERSION}.`);
+                }
+                return normalizeStoredEnvelope(parsed, now);
             } catch (error) {
                 try { storage.removeItem?.(storageKey); } catch (_) { }
                 console.warn('[ProposalDraftStore] Discarding invalid draft storage', error);
@@ -586,7 +590,7 @@
             const editable = compatibility === true || compatibility?.editable === true;
             const incompatibilityReason = editable
                 ? null
-                : (typeof compatibility === 'string' ? compatibility : compatibility?.reason || 'This legacy proposal cannot be edited safely.');
+                : (typeof compatibility === 'string' ? compatibility : compatibility?.reason || 'This proposal is not editable.');
 
             const draft = createDraft({
                 cityId,
@@ -724,8 +728,8 @@
                     const errors = [];
                     if (!draft.goal) errors.push({ code: 'missing-goal', message: 'Choose a proposal type.', path: 'goal' });
                     if (!draft.fields?.name?.trim()) errors.push({ code: 'missing-name', message: 'Add a proposal name.', path: 'fields.name' });
-                    if (!Array.isArray(draft.fields?.parentParcelIds) || draft.fields.parentParcelIds.length === 0) {
-                        errors.push({ code: 'missing-parcels', message: 'Select at least one parcel.', path: 'fields.parentParcelIds' });
+                    if (!Array.isArray(draft.fields?.selectedParcelIds) || draft.fields.selectedParcelIds.length === 0) {
+                        errors.push({ code: 'missing-parcels', message: 'Select at least one parcel.', path: 'fields.selectedParcelIds' });
                     }
                     result = { valid: errors.length === 0, errors, warnings: [] };
                 }
@@ -756,7 +760,7 @@
             if (!proposal) {
                 proposal = mergeDraftValues(draft.sourceSnapshot || {}, draft.fields || {});
                 proposal.goal = draft.goal;
-                const selected = cloneDraftValue(draft.fields?.parentParcelIds || []);
+                const selected = cloneDraftValue(draft.fields?.selectedParcelIds || []);
                 const authored = Array.isArray(draft.sourceSnapshot?.cadastreParcelIds)
                     ? [...new Set(draft.sourceSnapshot.cadastreParcelIds.map(String).filter(Boolean))]
                     : [];

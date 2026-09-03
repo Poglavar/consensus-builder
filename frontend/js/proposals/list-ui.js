@@ -267,7 +267,7 @@ function formatParcelSelectionLabel(parcelIds = []) {
 
 async function launchStructureToolForSelection(kind) {
     const selection = getCurrentParcelSelectionContext();
-    if (!selection.layers.length) {
+    if (!selection.ids.length) {
         updateStatus('Select parcels before launching the structure tool.');
         return false;
     }
@@ -313,7 +313,7 @@ async function launchStructureToolForSelection(kind) {
 
 async function launchSingleBuildingToolForSelection() {
     const selection = getCurrentParcelSelectionContext();
-    if (!selection.layers.length) {
+    if (!selection.ids.length) {
         updateStatus('Select parcels before launching the single building tool.');
         return false;
     }
@@ -327,7 +327,7 @@ async function launchSingleBuildingToolForSelection() {
     const seed = (typeof getPendingBuildingSeedFor === 'function') ? getPendingBuildingSeedFor(selection.ids) : null;
     openSingleBuildingForParcels({
         blockName: formatParcelSelectionLabel(selection.ids),
-        parcels: selection.layers,
+        parcelIds: selection.ids,
         initialBuildings: seed ? pendingBuildingSeedFeatures(seed) : null,
         initialGroundTreatment: seed?.groundSurface?.treatment || null
     });
@@ -336,7 +336,7 @@ async function launchSingleBuildingToolForSelection() {
 
 async function launchRowHouseToolForSelection() {
     const selection = getCurrentParcelSelectionContext();
-    if (!selection.layers.length) {
+    if (!selection.ids.length) {
         updateStatus('Select parcels before launching the row house tool.');
         return false;
     }
@@ -348,7 +348,7 @@ async function launchRowHouseToolForSelection() {
     const seed = (typeof getPendingBuildingSeedFor === 'function') ? getPendingBuildingSeedFor(selection.ids) : null;
     openRowHouseForParcels({
         blockName: formatParcelSelectionLabel(selection.ids),
-        parcels: selection.layers,
+        parcelIds: selection.ids,
         initialParameters: seed ? seed.parameters : null
     });
     return true;
@@ -356,7 +356,7 @@ async function launchRowHouseToolForSelection() {
 
 async function launchParcelBasedToolForSelection() {
     const selection = getCurrentParcelSelectionContext();
-    if (!selection.layers.length) {
+    if (!selection.ids.length) {
         updateStatus('Select parcels before launching the parcel-based tool.');
         return false;
     }
@@ -370,7 +370,7 @@ async function launchParcelBasedToolForSelection() {
     const seed = (typeof getPendingBuildingSeedFor === 'function') ? getPendingBuildingSeedFor(selection.ids) : null;
     openParcelBasedForParcels({
         blockName: formatParcelSelectionLabel(selection.ids),
-        parcels: selection.layers,
+        parcelIds: selection.ids,
         initialParameters: seed ? seed.parameters : null
     });
     return true;

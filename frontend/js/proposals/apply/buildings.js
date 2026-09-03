@@ -80,8 +80,6 @@
                     ...(cloned.properties || {}),
                     proposalId,
                     proposalState,
-                    parentParcelIds: flatParentIds,
-                    parentParcelNumbers: flatParentIds.map(id => ({ id, number: id })),
                     title: proposalData.title || null,
                     author: proposalData.author || null,
                     buildingIndex: index
@@ -155,7 +153,6 @@
                     uniqueParentIds, idLabel, liveParents.features, options);
                 if (!formation.ok) return false;
                 workingParentIds = formation.parentIds;
-                preparedFeatures[0].properties.parentParcelIds = flatParentIds.slice();
             }
         }
 

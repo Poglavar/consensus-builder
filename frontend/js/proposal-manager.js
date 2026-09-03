@@ -464,9 +464,6 @@ function _assignSyntheticChildIdentitiesImpl(proposalId, childFeatures, options 
         // Immediate live ids are useful while this apply is cutting them, but they are not durable
         // lineage and must not become the next operation's parent chain.
         props.cadastreParcelIds = flatBaseIds.slice();
-        delete props.baseParcelIds;
-        delete props.parentParcelIds;
-        delete props.parentParcelId;
         const outputProducer = props.producedByProposalId !== undefined
             && props.producedByProposalId !== null
             ? props.producedByProposalId
@@ -475,7 +472,6 @@ function _assignSyntheticChildIdentitiesImpl(proposalId, childFeatures, options 
             props.producedByProposalId = String(outputProducer);
         }
         delete props.proposalId;
-        delete props.ancestorProposal;
 
         const carried = props.__carryIdentity;
         if (carried !== undefined) delete props.__carryIdentity;
@@ -605,8 +601,8 @@ const ProposalManager = {
         const normalizedDescription = (input.description && String(input.description).trim()) || `Road: ${name}`;
         const offerValue = Number.isFinite(Number(input.offer)) ? Number(input.offer) : null;
         const budgetValue = Number.isFinite(Number(input.budget)) ? Number(input.budget) : offerValue;
-        const selectedParcelIds = Array.from(new Set((Array.isArray(input.parentParcelIds)
-            ? input.parentParcelIds.map(String).filter(Boolean)
+        const selectedParcelIds = Array.from(new Set((Array.isArray(input.parcelIds)
+            ? input.parcelIds.map(String).filter(Boolean)
             : [])));
         const fabric = _liveFabric();
         if (!fabric || typeof fabric.cadastreIdsForParcelIds !== 'function') {
@@ -3141,7 +3137,6 @@ const ProposalManager = {
         const normalized = String(proposalId);
         this._upsertParcelProperties(parcelId, props => {
             props.producedByProposalId = normalized;
-            delete props.ancestorProposal;
         }, { ...options, persistIfMissing: true });
     },
 

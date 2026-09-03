@@ -13,7 +13,7 @@ import {
     resolveProposalPolygon,
     shouldSkipProposalThumbnail,
     normalizeGoalKey,
-    getProposalParentParcelIds
+    getProposalCadastreParcelIds
 } from '../thumbnails/proposal-thumbnail.js';
 
 // A small square in Zagreb (~40m across), in GeoJSON [lng, lat] order.
@@ -248,8 +248,8 @@ describe('goal handling', () => {
     });
 
     it('reads the proposal\'s single cadastral declaration', () => {
-        expect(getProposalParentParcelIds({ cadastreParcelIds: ['HR-1-2', 'HR-1-3'] })).toEqual(['HR-1-2', 'HR-1-3']);
-        expect(getProposalParentParcelIds({ cadastreParcelIds: [42], roadProposal: {} })).toEqual(['42']);
-        expect(getProposalParentParcelIds({})).toEqual([]);
+        expect(getProposalCadastreParcelIds({ cadastreParcelIds: ['HR-1-2', 'HR-1-3'] })).toEqual(['HR-1-2', 'HR-1-3']);
+        expect(getProposalCadastreParcelIds({ cadastreParcelIds: [42], roadProposal: {} })).toEqual(['42']);
+        expect(getProposalCadastreParcelIds({})).toEqual([]);
     });
 });

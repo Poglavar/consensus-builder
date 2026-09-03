@@ -159,8 +159,8 @@ function _assignOwnershipDetails(targetFeature, options = {}) {
             const parentProps = parentFeature.properties || parentFeature;
             ownersSource = _extractOwnersFromProperties(parentProps);
             if (!ownersSource || ownersSource.length === 0) {
-                const parentParcelId = _getParcelIdFromFeature(parentFeature) || _getParcelIdFromProperties(parentProps);
-                ownersSource = _readOwnersFromCache(parentParcelId);
+                const inputParcelId = _getParcelIdFromFeature(parentFeature) || _getParcelIdFromProperties(parentProps);
+                ownersSource = _readOwnersFromCache(inputParcelId);
             }
         }
     }

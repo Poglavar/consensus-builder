@@ -1,5 +1,5 @@
 // proposals/core.js — shared low-level helpers used across the proposals subsystem:
-// cloning, escaping, formatting, color, URL/base helpers, parcel-feature cache, small predicates.
+// cloning, escaping, formatting, color, URL/base helpers, and small predicates.
 // Extracted from proposals.js (pure relocation).
 
 function isLocalProposalId(value) {

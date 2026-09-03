@@ -179,8 +179,8 @@ function buildProposalScreenshotContext(parcelLayers = [], options = {}) {
 
     // If the road/track flow did not seed parcel outlines, explicitly expand its cadastral anchors
     // through the committed live fabric. Leaflet remains a screenshot renderer, never a data source.
-    if (goalKey === 'road-track' && roadContext && parcelPolygons.length === 0 && Array.isArray(roadContext.parentParcelIds) && roadContext.parentParcelIds.length) {
-        const ids = roadContext.parentParcelIds
+    if (goalKey === 'road-track' && roadContext && parcelPolygons.length === 0 && Array.isArray(roadContext.parcelIds) && roadContext.parcelIds.length) {
+        const ids = roadContext.parcelIds
             .map(id => (id ? id.toString() : null))
             .filter(Boolean);
 

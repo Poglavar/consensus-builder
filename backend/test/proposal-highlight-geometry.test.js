@@ -17,6 +17,10 @@ function loadGeometry(deriveCorridor, producedFeatures = []) {
         producedBy: () => producedFeatures,
         featureId: feature => feature?.properties?.parcelId || null
     };
+    context.ParcelPresenter = {
+        resolveLiveLayers: vi.fn(() => []),
+        getIdForLayer: layer => layer?.liveParcelId || null
+    };
     context.window = context;
     vm.runInNewContext(source, context);
     return context;
@@ -60,11 +64,11 @@ describe('road proposal highlight geometry', () => {
 describe('proposal parcel outlines', () => {
     it('styles the live road-cut pieces returned for a durable cadastral anchor', () => {
         const bounds = { pad: vi.fn(function () { return this; }) };
-        const left = { feature: { properties: { parcelId: 'HR-A#left' } } };
-        const right = { feature: { properties: { parcelId: 'HR-A#right' } } };
+        const left = { liveParcelId: 'HR-A#left' };
+        const right = { liveParcelId: 'HR-A#right' };
         const geometry = loadGeometry();
         geometry.map = { getBounds: () => bounds };
-        geometry.resolveLiveParcelLayers = vi.fn(() => [left, right]);
+        geometry.ParcelPresenter.resolveLiveLayers.mockReturnValue([left, right]);
         const visited = [];
 
         const count = geometry.forEachProposalParcelInViewport(
@@ -74,7 +78,7 @@ describe('proposal parcel outlines', () => {
 
         expect(count).toBe(2);
         expect(visited).toEqual(['HR-A#left', 'HR-A#right']);
-        expect(geometry.resolveLiveParcelLayers).toHaveBeenCalledWith(
+        expect(geometry.ParcelPresenter.resolveLiveLayers).toHaveBeenCalledWith(
             new Set(['HR-A']),
             { bounds, includeCorridors: false }
         );

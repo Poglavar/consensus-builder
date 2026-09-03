@@ -1,7 +1,6 @@
 // Purpose: derive an editable road-drawing seed from an immutable corridor proposal definition.
 (function attachCorridorDraft(global) {
-    const LEGACY_ACTIVE_DRAFT_KEY = 'consensus-builder.active-corridor-draft.v1';
-    const ACTIVE_DRAFT_KEY = global.PROPOSAL_DRAFT_STORAGE_KEY || 'consensus-builder.proposal-drafts.v1';
+    const ACTIVE_DRAFT_KEY = global.PROPOSAL_DRAFT_STORAGE_KEY || 'consensus-builder.proposal-drafts.v2';
     const injectedStores = typeof WeakMap !== 'undefined' ? new WeakMap() : null;
 
     let createStore = global.createProposalDraftStore || null;
@@ -76,7 +75,7 @@
         };
     }
 
-    function legacyCorridorShape(draft) {
+    function corridorDrawingDraft(draft) {
         if (!draft || draft.goal !== 'road-track') return null;
         const definition = draft.editorPayload?.definition || {};
         const kind = draft.editorPayload?.kind || (global.corridorIsTrack(definition) ? 'track' : 'road');
@@ -123,7 +122,7 @@
                 cityId: draft.cityId || existing.cityId,
                 fields: {
                     ...(cloneDraftValue(draft.copySource?.prefill || {})),
-                    parentParcelIds: cloneDraftValue(draft.parentParcelIds || existing.fields?.parentParcelIds || [])
+                    selectedParcelIds: cloneDraftValue(draft.parcelIds || existing.fields?.selectedParcelIds || [])
                 },
                 editorPayload: { kind: draft.kind, definition },
                 previewGeometry: cloneDraftValue(definition.polygon || null)
@@ -139,7 +138,7 @@
                 fields: {
                     name: draft.copySource?.prefill?.name || draft.copySource?.name || '',
                     description: draft.copySource?.prefill?.description || '',
-                    parentParcelIds: cloneDraftValue(draft.parentParcelIds || []),
+                    selectedParcelIds: cloneDraftValue(draft.parcelIds || []),
                     offer: Number(draft.copySource?.prefill?.offer) || 0,
                     offerCurrency: draft.copySource?.prefill?.offerCurrency || 'USDT'
                 },
@@ -148,12 +147,12 @@
                 dirty: true
             });
         }
-        return legacyCorridorShape(saved);
+        return corridorDrawingDraft(saved);
     }
 
     function getActiveCorridorDraft(storage) {
         const store = resolveDraftStore(storage);
-        return legacyCorridorShape(store?.getActiveDraft());
+        return corridorDrawingDraft(store?.getActiveDraft());
     }
 
     function clearActiveCorridorDraft(storage) {
@@ -177,7 +176,6 @@
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = {
             ACTIVE_DRAFT_KEY,
-            LEGACY_ACTIVE_DRAFT_KEY,
             buildCorridorDrawingSeed,
             resolveCorridorScreenshotGeometry,
             saveActiveCorridorDraft,

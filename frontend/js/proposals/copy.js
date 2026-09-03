@@ -175,7 +175,7 @@ function seedPendingGeometryFromProposal(source, goalKey, selectedLiveParcelIds 
             sidewalkWidth: definition.sidewalkWidth,
             polygon: copyDeepClone(definition.polygon),
             metadata: copyDeepClone(definition.metadata) || {},
-            parentParcelIds: selectionIds.slice()
+            parcelIds: selectionIds.slice()
         };
         return true;
     }

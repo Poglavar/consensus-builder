@@ -142,7 +142,7 @@ function proposalDraftGeometryFeatures(descriptor, draft) {
     }
 
     if (!features.length) {
-        (descriptor?.parcelIds || draft?.fields?.parentParcelIds || []).forEach(parcelId => {
+        (descriptor?.parcelIds || draft?.fields?.selectedParcelIds || []).forEach(parcelId => {
             const feature = getParcelFeatureForHighlight(parcelId, draft?.sourceSnapshot || null, { skipRecovery: true });
             if (feature) features.push(feature);
         });
