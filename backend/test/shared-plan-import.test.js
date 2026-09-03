@@ -503,6 +503,57 @@ describe('shared-plan import boundary', () => {
         });
     });
 
+    it('keeps one externally-held road out of the corridor batch without failing clear roads', async () => {
+        const applyProposal = vi.fn(async () => true);
+        const materializeCorridorBatch = vi.fn(async ids => ({
+            ok: true,
+            appliedIds: ids,
+            failedIds: []
+        }));
+        const outside = { proposalId: 'outside', goal: 'building', applied: true };
+        const records = new Map([
+            ['road-clear-a', { proposalId: 'road-clear-a', goal: 'road-track' }],
+            ['road-held', { proposalId: 'road-held', goal: 'road-track' }],
+            ['road-clear-b', { proposalId: 'road-clear-b', goal: 'road-track' }],
+            ['building', { proposalId: 'building', goal: 'single', buildingProposal: {} }],
+            ['outside', outside]
+        ]);
+        const validateSharedProposalGround = vi.fn(id => ({
+            ok: id !== 'road-held',
+            blockers: id === 'road-held' ? [outside] : []
+        }));
+        const { materializeQueuedSharedProposals } = loadSharedImportHelpers({
+            ProposalManager: { applyProposal, materializeCorridorBatch, validateSharedProposalGround },
+            proposalStorage: {
+                getProposal: id => records.get(id) || null,
+                getAllProposals: () => [...records.values()]
+            },
+            applyRoute: { normalizeGoalKey: goal => goal }
+        });
+
+        const result = await materializeQueuedSharedProposals([
+            'road-clear-a', 'road-held', 'road-clear-b', 'building'
+        ]);
+
+        expect(materializeCorridorBatch).toHaveBeenCalledOnce();
+        expect(materializeCorridorBatch).toHaveBeenCalledWith(
+            ['road-clear-a', 'road-clear-b'],
+            expect.objectContaining({ deferPresentation: true, deferSave: true })
+        );
+        expect(validateSharedProposalGround.mock.calls.map(call => call[0]))
+            .toEqual(['road-clear-a', 'road-held', 'road-clear-b', 'building']);
+        expect(validateSharedProposalGround.mock.calls[0][2]).toEqual([outside]);
+        expect(applyProposal).toHaveBeenCalledWith('building', {
+            replay: true,
+            silent: true,
+            deferPresentation: true
+        });
+        expect(result).toEqual({
+            appliedIds: ['road-clear-a', 'road-clear-b', 'building'],
+            failedIds: ['road-held']
+        });
+    });
+
     it('materialises a coordinated readjustment before its reserved road bands', async () => {
         const events = [];
         const applyProposal = vi.fn(async id => { events.push(id); return true; });

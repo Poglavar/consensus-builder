@@ -749,17 +749,44 @@ async function materializeQueuedSharedProposals(proposalIds, options = {}) {
                     roadIds.push(roadId);
                     cursor += 1;
                 }
+                // A corridor network is published atomically, but an unrelated proposal may hold
+                // only a few of the incoming roads. Validate those members before forming the
+                // batch: feeding one refused road into the network transaction rolls back every
+                // otherwise-clear road beside it and turns one local conflict into a plan-wide
+                // corridor failure.
+                const clearRoadIds = [];
+                for (const roadId of roadIds) {
+                    let roadRecord = null;
+                    try { roadRecord = proposalStorage.getProposal(roadId); } catch (_) { roadRecord = null; }
+                    if (!coordinatedPlanIdOfSharedRecord(roadRecord)
+                        && typeof ProposalManager.validateSharedProposalGround === 'function') {
+                        const validation = ProposalManager.validateSharedProposalGround(
+                            roadId,
+                            planMemberIds,
+                            preexistingAppliedRecords
+                        );
+                        if (!validation || validation.ok !== true) {
+                            failedIds.push(roadId);
+                            continue;
+                        }
+                    }
+                    clearRoadIds.push(roadId);
+                }
+                if (!clearRoadIds.length) {
+                    index = cursor;
+                    continue;
+                }
                 try {
-                    const batch = await ProposalManager.materializeCorridorBatch(roadIds, {
+                    const batch = await ProposalManager.materializeCorridorBatch(clearRoadIds, {
                         deferPresentation: true,
                         deferSave: true,
                         onProgress: reportSharedPlanProgress
                     });
                     appliedIds.push(...(Array.isArray(batch?.appliedIds) ? batch.appliedIds : []));
-                    failedIds.push(...(Array.isArray(batch?.failedIds) ? batch.failedIds : (batch?.ok ? [] : roadIds)));
+                    failedIds.push(...(Array.isArray(batch?.failedIds) ? batch.failedIds : (batch?.ok ? [] : clearRoadIds)));
                 } catch (error) {
                     console.error('[shared-apply] corridor batch failed', error);
-                    failedIds.push(...roadIds);
+                    failedIds.push(...clearRoadIds);
                 }
                 index = cursor;
                 continue;
