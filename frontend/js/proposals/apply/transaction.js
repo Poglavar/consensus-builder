@@ -1,17 +1,20 @@
-// Transaction coordinator for authored proposal and live-fabric mutations. Leaflet is a commit
-// participant of LiveParcelFabric, so it is deliberately absent from this journal: presentation
-// can neither be snapshotted as domain state nor restored independently of a fabric revision.
-(function attachProposalMutationTransactions(root, factory) {
-    const api = factory();
+// One serialized, durable mutation boundary for authored proposal state and the live parcel
+// fabric. Operation bodies receive private drafts; ordinary application readers continue to see
+// the previous committed revision until persistence and every publication participant succeed.
+(function attachParcelMutation(root, factory) {
+    const api = factory(root || globalThis);
     if (typeof module === 'object' && module.exports) module.exports = api;
-    if (root) root.ProposalMutationTransactions = api;
-})(typeof window !== 'undefined' ? window : globalThis, function proposalMutationTransactionsFactory() {
+    if (root) root.ParcelMutation = api.ParcelMutation;
+})(typeof window !== 'undefined' ? window : globalThis, function parcelMutationFactory(root) {
     'use strict';
 
-    let nextTransactionId = 1;
-    let rootQueue = Promise.resolve();
+    const COLLECTION_NAMES = Object.freeze([
+        'parks', 'squares', 'lakes', 'transitStations', 'proposedBuildings'
+    ]);
+    let mutationSequence = 1;
+    let mutationTail = Promise.resolve();
 
-    function cloneValue(value) {
+    function clone(value) {
         if (value === undefined || value === null) return value;
         if (typeof structuredClone === 'function') {
             try { return structuredClone(value); } catch (_) { /* JSON fallback */ }
@@ -19,39 +22,290 @@
         return JSON.parse(JSON.stringify(value));
     }
 
-    function replaceObjectContents(target, source) {
-        if (!target || typeof target !== 'object' || Array.isArray(target)) return cloneValue(source);
-        Object.keys(target).forEach(key => { delete target[key]; });
-        Object.assign(target, cloneValue(source));
-        return target;
+    function cloneMap(source) {
+        return source instanceof Map
+            ? new Map(Array.from(source, ([key, value]) => [key, clone(value)]))
+            : new Map();
     }
 
-    function snapshotRecordMap(recordMap) {
-        if (!(recordMap instanceof Map)) return null;
-        return Array.from(recordMap.entries(), ([key, value]) => [key, cloneValue(value)]);
+    function replaceMap(target, source) {
+        if (!(target instanceof Map) || !(source instanceof Map)) return;
+        target.clear();
+        source.forEach((value, key) => target.set(key, clone(value)));
     }
 
-    function restoreRecordMap(recordMap, snapshot) {
-        if (!(recordMap instanceof Map) || !Array.isArray(snapshot)) return false;
-        const wanted = new Map(snapshot);
-        for (const key of Array.from(recordMap.keys())) {
-            if (!wanted.has(key)) recordMap.delete(key);
+    function defaultStoreSnapshot(store, mapKey) {
+        if (!store || !(store[mapKey] instanceof Map)) return null;
+        return {
+            records: cloneMap(store[mapKey]),
+            nextProposalId: store.nextProposalId,
+            blockedWriteCount: store._blockedWriteCount
+        };
+    }
+
+    function snapshotStore(store, mapKey) {
+        if (!store) return null;
+        if (typeof store.snapshotForMutation === 'function') return store.snapshotForMutation();
+        return defaultStoreSnapshot(store, mapKey);
+    }
+
+    function draftStore(store, mapKey, snapshot) {
+        if (!store || !snapshot) return null;
+        if (typeof store.createMutationDraft === 'function') return store.createMutationDraft(snapshot);
+        const draft = Object.create(store);
+        draft[mapKey] = cloneMap(snapshot.records);
+        if (snapshot.nextProposalId !== undefined) draft.nextProposalId = snapshot.nextProposalId;
+        draft._suspendSaveCount = 0;
+        draft._hasPendingSave = false;
+        draft.save = () => { draft._hasPendingSave = true; };
+        draft._persist = draft.save;
+        draft.beginBatch = () => {};
+        draft.endBatch = () => {};
+        return draft;
+    }
+
+    function serializeStore(store, draft) {
+        if (!store || !draft || typeof store.serializeMutationDraft !== 'function') return null;
+        return store.serializeMutationDraft(draft);
+    }
+
+    function publishStore(store, mapKey, draft) {
+        if (!store || !draft) return;
+        if (typeof store.publishMutationDraft === 'function') {
+            store.publishMutationDraft(draft);
+            return;
         }
-        for (const [key, saved] of snapshot) {
-            const current = recordMap.get(key);
-            if (current && typeof current === 'object' && !Array.isArray(current)) {
-                replaceObjectContents(current, saved);
-                recordMap.set(key, current);
-            } else {
-                recordMap.set(key, cloneValue(saved));
+        replaceMap(store[mapKey], draft[mapKey]);
+        if (draft.nextProposalId !== undefined) store.nextProposalId = draft.nextProposalId;
+    }
+
+    function restoreStore(store, mapKey, snapshot) {
+        if (!store || !snapshot) return;
+        if (typeof store.restoreMutationSnapshot === 'function') {
+            store.restoreMutationSnapshot(snapshot);
+            return;
+        }
+        replaceMap(store[mapKey], snapshot.records);
+        if (snapshot.nextProposalId !== undefined) store.nextProposalId = snapshot.nextProposalId;
+        if (snapshot.blockedWriteCount !== undefined) store._blockedWriteCount = snapshot.blockedWriteCount;
+    }
+
+    function createCollectionDraft(runtime) {
+        const before = {};
+        const draft = {};
+        COLLECTION_NAMES.forEach(name => {
+            if (!Array.isArray(runtime && runtime[name])) return;
+            before[name] = runtime[name];
+            draft[name] = runtime[name].slice();
+        });
+        return { before, draft };
+    }
+
+    function publishCollections(runtime, collections) {
+        Object.entries(collections.draft).forEach(([name, entries]) => {
+            runtime[name] = entries.slice();
+        });
+    }
+
+    function restoreCollections(runtime, collections) {
+        Object.entries(collections.before).forEach(([name, entries]) => {
+            runtime[name] = entries;
+        });
+    }
+
+    function createStorageDraft(storage) {
+        const puts = new Map();
+        const deletes = new Set();
+        const touchedPreimage = new Map();
+
+        const remember = key => {
+            if (!touchedPreimage.has(key)) touchedPreimage.set(key, storage?.getItem?.(key));
+        };
+        const getItem = rawKey => {
+            const key = String(rawKey == null ? '' : rawKey);
+            if (deletes.has(key)) return null;
+            if (puts.has(key)) return puts.get(key);
+            return storage?.getItem?.(key) ?? null;
+        };
+        const setItem = (rawKey, rawValue) => {
+            const key = String(rawKey == null ? '' : rawKey);
+            if (!key) throw new TypeError('Mutation storage key cannot be empty.');
+            remember(key);
+            deletes.delete(key);
+            puts.set(key, String(rawValue == null ? '' : rawValue));
+        };
+        const removeItem = rawKey => {
+            const key = String(rawKey == null ? '' : rawKey);
+            if (!key) throw new TypeError('Mutation storage key cannot be empty.');
+            remember(key);
+            puts.delete(key);
+            deletes.add(key);
+        };
+        const entries = () => {
+            const result = new Map();
+            storage?.forEach?.((value, key) => result.set(String(key), value));
+            deletes.forEach(key => result.delete(key));
+            puts.forEach((value, key) => result.set(key, value));
+            return result;
+        };
+
+        return Object.freeze({
+            getItem,
+            setItem,
+            removeItem,
+            forEach(iterator) { entries().forEach((value, key) => iterator(value, key)); },
+            key(index) { return Array.from(entries().keys())[Number(index)] ?? null; },
+            get length() { return entries().size; },
+            _change: { puts, deletes },
+            _preimage: touchedPreimage
+        });
+    }
+
+    function addSerializedChange(serialized, storageDraft) {
+        if (!serialized) return;
+        const entries = Array.isArray(serialized) ? serialized : [serialized];
+        entries.forEach(entry => {
+            if (!entry || !entry.key) return;
+            if (entry.delete === true) storageDraft.removeItem(entry.key);
+            else storageDraft.setItem(entry.key, entry.value);
+        });
+    }
+
+    function compensationFor(storageDraft) {
+        const puts = new Map();
+        const deletes = [];
+        storageDraft._preimage.forEach((value, key) => {
+            if (value === null || value === undefined) deletes.push(key);
+            else puts.set(key, value);
+        });
+        return { puts, deletes };
+    }
+
+    function resolveDependencies(overrides = {}) {
+        const runtime = overrides.runtime || root;
+        return {
+            runtime,
+            storage: overrides.storage || runtime?.PersistentStorage || null,
+            proposalStore: overrides.proposalStore || runtime?.proposalStorage || null,
+            agentStore: overrides.agentStore || runtime?.agentStorage || null,
+            fabric: overrides.fabric || runtime?.LiveParcelFabric || null
+        };
+    }
+
+    async function execute(meta, operation, overrides) {
+        const dependencies = resolveDependencies(overrides);
+        const proposalBefore = snapshotStore(dependencies.proposalStore, 'proposals');
+        const agentBefore = snapshotStore(dependencies.agentStore, 'agents');
+        const proposalDraft = draftStore(dependencies.proposalStore, 'proposals', proposalBefore);
+        const agentDraft = draftStore(dependencies.agentStore, 'agents', agentBefore);
+        const collectionDraft = createCollectionDraft(dependencies.runtime);
+        const storageDraft = createStorageDraft(dependencies.storage);
+        const fabricMutation = dependencies.fabric?.beginMutation?.({
+            ...meta,
+            id: `parcel-mutation-${mutationSequence++}`
+        }) || null;
+        const afterCommitCallbacks = [];
+        let preparedFabric = false;
+        let durableCommitted = false;
+        let published = false;
+
+        const context = Object.freeze({
+            meta: Object.freeze({ ...(meta || {}) }),
+            proposals: proposalDraft,
+            agents: agentDraft,
+            fabric: fabricMutation,
+            storage: storageDraft,
+            collections: collectionDraft.draft,
+            afterCommit(callback) {
+                if (typeof callback !== 'function') throw new TypeError('afterCommit requires a function.');
+                afterCommitCallbacks.push(callback);
+            }
+        });
+
+        try {
+            const result = await operation(context);
+            if (result === false) {
+                fabricMutation?.rollback?.();
+                return false;
+            }
+
+            if (fabricMutation) {
+                await fabricMutation.prepare();
+                preparedFabric = true;
+            }
+
+            addSerializedChange(serializeStore(dependencies.proposalStore, proposalDraft), storageDraft);
+            addSerializedChange(serializeStore(dependencies.agentStore, agentDraft), storageDraft);
+            const durableChange = {
+                puts: storageDraft._change.puts,
+                deletes: Array.from(storageDraft._change.deletes)
+            };
+            if (durableChange.puts.size || durableChange.deletes.length) {
+                if (!dependencies.storage || typeof dependencies.storage.atomicWrite !== 'function') {
+                    const error = new Error('PersistentStorage.atomicWrite is required for parcel mutations.');
+                    error.code = 'parcel-mutation-atomic-storage-unavailable';
+                    throw error;
+                }
+                await dependencies.storage.atomicWrite(durableChange);
+                durableCommitted = true;
+            }
+
+            try {
+                publishStore(dependencies.proposalStore, 'proposals', proposalDraft);
+                publishStore(dependencies.agentStore, 'agents', agentDraft);
+                publishCollections(dependencies.runtime, collectionDraft);
+                fabricMutation?.publish();
+                published = true;
+            } catch (publicationError) {
+                restoreStore(dependencies.proposalStore, 'proposals', proposalBefore);
+                restoreStore(dependencies.agentStore, 'agents', agentBefore);
+                restoreCollections(dependencies.runtime, collectionDraft);
+                try { fabricMutation?.rollback?.(); } catch (_) { /* preserve publication failure */ }
+                if (durableCommitted) {
+                    try {
+                        await dependencies.storage.atomicWrite(compensationFor(storageDraft));
+                    } catch (compensationError) {
+                        publicationError.compensationError = compensationError;
+                    }
+                }
+                throw publicationError;
+            }
+
+            for (const callback of afterCommitCallbacks) {
+                try { await callback(result); }
+                catch (error) { console.error('[ParcelMutation] after-commit callback failed', error); }
+            }
+            return result;
+        } catch (error) {
+            if (!published) {
+                try { fabricMutation?.rollback?.(); } catch (_) { /* preserve primary failure */ }
+            }
+            throw error;
+        } finally {
+            if (preparedFabric && !published) {
+                try { fabricMutation?.rollback?.(); } catch (_) { }
             }
         }
-        return true;
     }
 
+    const ParcelMutation = Object.freeze({
+        run(meta, operation, overrides) {
+            if (typeof operation !== 'function') {
+                return Promise.reject(new TypeError('ParcelMutation.run requires an operation function.'));
+            }
+            const queued = mutationTail.then(
+                () => execute(meta || {}, operation, overrides),
+                () => execute(meta || {}, operation, overrides)
+            );
+            mutationTail = queued.catch(() => undefined);
+            return queued;
+        }
+    });
+
+    // Transitional adapter kept only until every caller is moved in the following phase. It uses
+    // its own journal shape but delegates serialization to the same root promise chain.
     class MutationTransaction {
         constructor(meta = {}) {
-            this.id = nextTransactionId++;
             this.meta = { ...meta };
             this.state = 'active';
             this.rollbackErrors = [];
@@ -59,132 +313,70 @@
             this._commit = [];
             this._finally = [];
         }
-
-        deferRollback(label, action) {
-            if (typeof label === 'function') {
-                action = label;
-                label = `rollback-${this._rollback.length + 1}`;
-            }
-            if (this.state !== 'active' || typeof action !== 'function') {
-                throw new Error('Cannot register rollback work on an inactive transaction.');
-            }
-            this._rollback.push({ label: String(label || 'rollback'), action });
-        }
-
-        deferCommit(label, action) {
-            if (typeof label === 'function') {
-                action = label;
-                label = `commit-${this._commit.length + 1}`;
-            }
-            if (this.state !== 'active' || typeof action !== 'function') {
-                throw new Error('Cannot register commit work on an inactive transaction.');
-            }
-            this._commit.push({ label: String(label || 'commit'), action });
-        }
-
-        deferFinally(label, action) {
-            if (typeof label === 'function') {
-                action = label;
-                label = `finally-${this._finally.length + 1}`;
-            }
-            if (this.state !== 'active' || typeof action !== 'function') {
-                throw new Error('Cannot register final work on an inactive transaction.');
-            }
-            this._finally.push({ label: String(label || 'finally'), action });
-        }
-
+        deferRollback(label, action) { this._rollback.push({ label, action }); }
+        deferCommit(label, action) { this._commit.push({ label, action }); }
+        deferFinally(label, action) { this._finally.push({ label, action }); }
         async commit() {
-            if (this.state !== 'active') return;
             this.state = 'committing';
             for (const entry of this._commit) await entry.action();
-            this._rollback.length = 0;
             this.state = 'committed';
-        }
-
-        async rollback(cause) {
-            if (this.state === 'rolled-back' || this.state === 'committed') return;
-            this.state = 'rolling-back';
-            for (let i = this._rollback.length - 1; i >= 0; i -= 1) {
-                const entry = this._rollback[i];
-                try {
-                    await entry.action(cause);
-                } catch (error) {
-                    this.rollbackErrors.push({ label: entry.label, error });
-                }
-            }
             this._rollback.length = 0;
+        }
+        async rollback(cause) {
+            if (this.state === 'committed' || this.state === 'rolled-back') return;
+            for (let index = this._rollback.length - 1; index >= 0; index -= 1) {
+                const entry = this._rollback[index];
+                try { await entry.action(cause); }
+                catch (error) { this.rollbackErrors.push({ label: entry.label, error }); }
+            }
             this.state = 'rolled-back';
         }
-
         async finalize() {
-            const errors = [];
-            for (let i = this._finally.length - 1; i >= 0; i -= 1) {
-                const entry = this._finally[i];
-                try {
-                    await entry.action();
-                } catch (error) {
-                    errors.push({ label: entry.label, error });
-                }
-            }
-            this._finally.length = 0;
-            if (errors.length) {
-                const error = new Error(`Proposal mutation finalization failed: ${errors.map(item => item.label).join(', ')}`);
-                error.finalizationErrors = errors;
-                throw error;
+            for (let index = this._finally.length - 1; index >= 0; index -= 1) {
+                await this._finally[index].action();
             }
         }
     }
-
     function isActiveTransaction(value) {
         return value instanceof MutationTransaction && value.state === 'active';
     }
-
-    async function executeRoot(meta, operation) {
-        const transaction = new MutationTransaction(meta);
-        let primaryError = null;
-        try {
-            const result = await operation(transaction);
-            if (result === false) {
-                await transaction.rollback(new Error('Proposal mutation returned false.'));
-                return false;
-            }
-            await transaction.commit();
-            return result;
-        } catch (error) {
-            primaryError = error;
-            await transaction.rollback(error);
-            if (transaction.rollbackErrors.length) error.rollbackErrors = transaction.rollbackErrors.slice();
-            throw error;
-        } finally {
-            try {
-                await transaction.finalize();
-            } catch (finalizationError) {
-                if (primaryError) {
-                    primaryError.finalizationErrors = finalizationError.finalizationErrors || [finalizationError];
-                } else {
-                    throw finalizationError;
-                }
-            }
-        }
+    function snapshotRecordMap(records) { return cloneMap(records); }
+    function restoreRecordMap(records, snapshot) {
+        if (!(records instanceof Map) || !(snapshot instanceof Map)) return false;
+        for (const key of Array.from(records.keys())) if (!snapshot.has(key)) records.delete(key);
+        snapshot.forEach((saved, key) => {
+            const current = records.get(key);
+            if (current && typeof current === 'object' && !Array.isArray(current)) {
+                Object.keys(current).forEach(name => { delete current[name]; });
+                Object.assign(current, clone(saved));
+            } else records.set(key, clone(saved));
+        });
+        return true;
     }
-
     function enqueue(meta, operation) {
-        if (typeof operation !== 'function') {
-            return Promise.reject(new TypeError('Proposal mutation requires an operation function.'));
-        }
-        const queued = rootQueue.then(
-            () => executeRoot(meta, operation),
-            () => executeRoot(meta, operation)
-        );
-        rootQueue = queued.catch(() => undefined);
-        return queued;
+        const transaction = new MutationTransaction(meta);
+        return ParcelMutation.run({ kind: 'legacy-journal' }, async () => {
+            try {
+                const result = await operation(transaction);
+                if (result === false) { await transaction.rollback(new Error('Mutation returned false.')); return false; }
+                await transaction.commit();
+                return result;
+            } catch (error) {
+                await transaction.rollback(error);
+                if (transaction.rollbackErrors.length) error.rollbackErrors = transaction.rollbackErrors.slice();
+                throw error;
+            } finally {
+                await transaction.finalize();
+            }
+        }, { runtime: {}, storage: null, proposalStore: null, agentStore: null, fabric: null });
     }
 
-    return {
+    return Object.freeze({
+        ParcelMutation,
         MutationTransaction,
         enqueue,
         isActiveTransaction,
         snapshotRecordMap,
         restoreRecordMap
-    };
+    });
 });

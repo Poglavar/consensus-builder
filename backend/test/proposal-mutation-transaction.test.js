@@ -90,6 +90,7 @@ describe('transaction snapshots', () => {
     it('does not expose Leaflet or parcel-cache snapshot APIs', () => {
         expect(Object.keys(transactions).sort()).toEqual([
             'MutationTransaction',
+            'ParcelMutation',
             'enqueue',
             'isActiveTransaction',
             'restoreRecordMap',

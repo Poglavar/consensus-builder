@@ -22,6 +22,7 @@
 
     const cache = new Map();
     let dbInstance = null;
+    let dbOpenPromise = null;
     let dbName = null;           // resolved by setScope(), or lazily to the legacy name
     let loadStarted = false;
     let readyResolve;
@@ -56,7 +57,18 @@
         if (dbInstance) {
             return Promise.resolve(dbInstance);
         }
-        return new Promise((resolve, reject) => {
+        // IndexedDB open requests are stateful and relatively expensive. More importantly, two
+        // callers opening the same database during boot can observe different upgrade/error
+        // events. Keep exactly one in-flight request and make every caller share its outcome.
+        if (dbOpenPromise) return dbOpenPromise;
+        dbOpenPromise = new Promise((resolve, reject) => {
+            let settled = false;
+            const fail = error => {
+                if (settled) return;
+                settled = true;
+                dbOpenPromise = null;
+                reject(error);
+            };
             const request = globalScope.indexedDB.open(resolveDbName(), DB_VERSION);
             request.onupgradeneeded = event => {
                 const db = event.target.result;
@@ -65,19 +77,101 @@
                 }
             };
             request.onsuccess = () => {
+                if (settled) {
+                    try { request.result.close(); } catch (_) { }
+                    return;
+                }
+                settled = true;
                 dbInstance = request.result;
                 dbInstance.onversionchange = () => {
                     try { dbInstance.close(); } catch (_) { }
                     dbInstance = null;
+                    dbOpenPromise = null;
                 };
+                dbOpenPromise = null;
                 resolve(dbInstance);
             };
             request.onerror = () => {
-                reject(request.error || new Error('IndexedDB open failed'));
+                fail(request.error || new Error('IndexedDB open failed'));
             };
             request.onblocked = () => {
-                console.warn('IndexedDB upgrade blocked for consensus-builder storage');
+                const error = new Error('IndexedDB open was blocked by another connection');
+                error.code = 'indexeddb-open-blocked';
+                fail(error);
             };
+        });
+        return dbOpenPromise;
+    }
+
+    function normalizedAtomicPuts(puts) {
+        if (puts instanceof Map) return Array.from(puts.entries());
+        if (Array.isArray(puts)) return puts.map(entry => Array.isArray(entry)
+            ? entry
+            : [entry && entry.key, entry && entry.value]);
+        if (!puts || typeof puts !== 'object') return [];
+        return Object.entries(puts);
+    }
+
+    // The authoritative mutation path uses this API exclusively. Cache publication happens only
+    // after the IndexedDB transaction completes, so synchronous readers never observe a value that
+    // failed to reach durable storage. Preference writes may continue to use setItem/removeItem.
+    async function atomicWrite(change = {}) {
+        const puts = normalizedAtomicPuts(change.puts).map(([key, value]) => [
+            key != null ? String(key) : '',
+            value != null ? String(value) : ''
+        ]);
+        const deletes = Array.from(change.deletes || [], key => key != null ? String(key) : '');
+        const invalidKey = puts.some(([key]) => !key) || deletes.some(key => !key);
+        if (invalidKey) throw new TypeError('PersistentStorage.atomicWrite requires non-empty string keys.');
+        if (!puts.length && !deletes.length) return;
+
+        // Mutations are not allowed to guess a city before city-config binds the store. Await the
+        // same readiness barrier used by all proposal boot code.
+        await ready;
+
+        if (!hasIndexedDB) {
+            deletes.forEach(key => cache.delete(key));
+            puts.forEach(([key, value]) => cache.set(key, value));
+            return;
+        }
+
+        const db = await openDb();
+        await new Promise((resolve, reject) => {
+            let transaction;
+            let failure = null;
+            let settled = false;
+            const fail = error => {
+                if (settled) return;
+                settled = true;
+                reject(error || failure || new Error('IndexedDB atomic write failed'));
+            };
+            try {
+                transaction = db.transaction(STORE_NAME, 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                const watch = request => {
+                    request.onerror = () => {
+                        failure = request.error || new Error('IndexedDB atomic write request failed');
+                        try { transaction.abort(); } catch (_) { fail(failure); }
+                    };
+                };
+                deletes.forEach(key => watch(store.delete(key)));
+                puts.forEach(([key, value]) => watch(store.put({ key, value })));
+                transaction.oncomplete = () => {
+                    if (settled) return;
+                    settled = true;
+                    deletes.forEach(key => cache.delete(key));
+                    puts.forEach(([key, value]) => cache.set(key, value));
+                    resolve();
+                };
+                transaction.onerror = () => {
+                    failure = transaction.error || failure || new Error('IndexedDB atomic write transaction failed');
+                };
+                transaction.onabort = () => fail(
+                    transaction.error || failure || new Error('IndexedDB atomic write transaction aborted')
+                );
+            } catch (error) {
+                fail(error);
+            }
         });
     }
 
@@ -324,6 +418,7 @@
             });
         },
         ensureReady,
+        atomicWrite,
 
         // Bind this browser session to one city's database. Called once by city-config, before
         // anything reads. Migrates the pre-city-scope database on first run.

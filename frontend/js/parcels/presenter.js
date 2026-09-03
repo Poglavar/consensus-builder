@@ -14,6 +14,7 @@
     const layersById = new Map();
     const boxesById = new Map();
     let group = null;
+    let revision = null;
 
     function featureId(feature) {
         if (global.LiveParcelFabric && typeof global.LiveParcelFabric.featureId === 'function') {
@@ -155,22 +156,25 @@
             && left[1] <= right[3] && left[3] >= right[1];
     }
 
-    async function prepare(change) {
+    async function prepare(change, draftView) {
         ensureGroup();
         const replacements = new Map();
-        for (const feature of [...(change.added || []), ...(change.updated || [])]) {
+        const replacementIds = [...(change.addedIds || []), ...(change.updatedIds || [])];
+        for (const requestedId of replacementIds) {
+            const feature = draftView?.get?.(requestedId);
+            if (!feature) throw new Error(`Fabric draft has no feature for presenter replacement ${requestedId}.`);
             const id = featureId(feature);
             replacements.set(id, buildLayer(feature));
         }
         const touched = new Set([
-            ...(change.removed || []).map(String),
+            ...(change.removedIds || []).map(String),
             ...Array.from(replacements.keys())
         ]);
         const previous = new Map();
         touched.forEach(id => {
             if (layersById.has(id)) previous.set(id, layersById.get(id));
         });
-        return { change, replacements, previous, committed: false };
+        return { change, replacements, previous, previousRevision: revision, committed: false };
     }
 
     function removePresented(id) {
@@ -204,12 +208,13 @@
         // complete projection is restored instead of leaving a half-painted revision behind.
         prepared.committed = true;
         try {
-            for (const id of prepared.change.removed || []) removePresented(id);
-            for (const feature of prepared.change.updated || []) removePresented(featureId(feature));
+            for (const id of prepared.change.removedIds || []) removePresented(id);
+            for (const id of prepared.change.updatedIds || []) removePresented(id);
             prepared.replacements.forEach((layer, id) => addPresented(id, layer));
         } finally {
             if (canHold) renderer.releaseRedraws();
         }
+        revision = prepared.change.revision;
         addGroupToMapIfAppropriate();
         restoreSelectionStyles();
     }
@@ -218,6 +223,7 @@
         if (!prepared || !prepared.committed) return;
         prepared.replacements.forEach((_layer, id) => removePresented(id));
         prepared.previous.forEach((layer, id) => addPresented(id, layer));
+        revision = prepared.previousRevision;
         restoreSelectionStyles();
     }
 
@@ -226,20 +232,21 @@
             if (typeof global.dispatchEvent === 'function' && typeof global.CustomEvent === 'function') {
                 global.dispatchEvent(new global.CustomEvent('parcelFabricCommitted', { detail: change }));
                 const parcelIds = [
-                    ...(change.added || []).map(featureId),
-                    ...(change.updated || []).map(featureId),
-                    ...(change.removed || []).map(String)
+                    ...(change.addedIds || []).map(String),
+                    ...(change.updatedIds || []).map(String),
+                    ...(change.removedIds || []).map(String)
                 ].filter(Boolean);
                 global.dispatchEvent(new global.CustomEvent('parcelDataLoaded', {
-                    detail: { source: 'live-fabric', revision: change.toRevision, parcelIds }
+                    detail: { source: 'live-fabric', revision: change.revision, parcelIds }
                 }));
                 global.dispatchEvent(new global.CustomEvent('parcelCoverageUpdated', {
-                    detail: { source: 'live-fabric', revision: change.toRevision, timestamp: Date.now() }
+                    detail: { source: 'live-fabric', revision: change.revision, timestamp: Date.now() }
                 }));
             }
         } catch (_) { /* presentation notifications are non-authoritative */ }
         try { global.refreshParcelNumberLabelsIfVisible?.(); } catch (_) { }
         try { global.updateVisibleParcelsCount?.(); } catch (_) { }
+        try { global.multiParcelSelection?.reconcileWithFabric?.(); } catch (_) { }
     }
 
     function restoreSelectionStyles() {
@@ -307,6 +314,32 @@
         });
     }
 
+    // The parcel group may predate this module (or survive a hot reload). Adopt it only after
+    // reconciling its complete membership to the current fabric revision; a partial or stale group
+    // must never become the presenter's starting point.
+    function reconcileWithFabric() {
+        const fabric = global.LiveParcelFabric;
+        const parcelGroup = ensureGroup();
+        if (!fabric || !parcelGroup) return false;
+        const features = fabric.list();
+        const replacements = new Map(features.map(feature => [featureId(feature), buildLayer(feature)]));
+        const existing = typeof parcelGroup.getLayers === 'function'
+            ? parcelGroup.getLayers().slice()
+            : Array.from(layersById.values());
+        existing.forEach(layer => {
+            if (typeof parcelGroup.hasLayer !== 'function' || parcelGroup.hasLayer(layer)) {
+                parcelGroup.removeLayer(layer);
+            }
+        });
+        layersById.clear();
+        boxesById.clear();
+        replacements.forEach((layer, id) => addPresented(id, layer));
+        revision = fabric.snapshot().revision;
+        addGroupToMapIfAppropriate();
+        restoreSelectionStyles();
+        return true;
+    }
+
     const presenter = Object.freeze({
         prepare,
         commit,
@@ -317,8 +350,9 @@
         getLayers,
         getLayersWithinBounds,
         resolveLiveLayers,
+        reconcileWithFabric,
         restoreSelectionStyles,
-        snapshot: () => ({ layerCount: layersById.size, parcelIds: Array.from(layersById.keys()) })
+        snapshot: () => ({ revision, layerCount: layersById.size, parcelIds: Array.from(layersById.keys()) })
     });
 
     if (global.LiveParcelFabric && typeof global.LiveParcelFabric.addCommitParticipant === 'function') {
@@ -328,5 +362,6 @@
         global.LiveParcelFabric.subscribe(change => notifyPresentationChanged(change));
     }
     ensureGroup();
+    reconcileWithFabric();
     return { presenter };
 });

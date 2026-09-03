@@ -24,6 +24,39 @@ const agentStorage = {
     _suspendSaveCount: 0,
     _hasPendingSave: false,
 
+    snapshotForMutation() {
+        return {
+            records: new Map(Array.from(this.agents, ([id, agent]) => [id, JSON.parse(JSON.stringify(agent))]))
+        };
+    },
+
+    createMutationDraft(snapshot) {
+        const draft = Object.create(this);
+        draft.agents = new Map(Array.from(snapshot.records || [], ([id, agent]) => [id, JSON.parse(JSON.stringify(agent))]));
+        draft._suspendSaveCount = 0;
+        draft._hasPendingSave = false;
+        draft.save = () => { draft._hasPendingSave = true; };
+        draft._saveOrDefer = draft.save;
+        draft.beginBatch = () => {};
+        draft.endBatch = () => {};
+        return draft;
+    },
+
+    serializeMutationDraft(draft) {
+        const data = Array.from(draft.agents.entries()).map(([id, agent]) => ({ id, ...agent }));
+        return { key: 'consensus_agents', value: JSON.stringify(data) };
+    },
+
+    publishMutationDraft(draft) {
+        this.agents.clear();
+        draft.agents.forEach((agent, id) => this.agents.set(id, JSON.parse(JSON.stringify(agent))));
+        this._hasPendingSave = false;
+    },
+
+    restoreMutationSnapshot(snapshot) {
+        this.publishMutationDraft({ agents: snapshot.records });
+    },
+
     // Save agents to PersistentStorage
     save() {
         const data = Array.from(this.agents.entries()).map(([id, agent]) => ({

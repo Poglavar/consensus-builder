@@ -2579,6 +2579,10 @@ const ProposalManager = {
             error.parcelIds = missing;
             throw error;
         }
+        // Register the repository facts in this same draft before asking the fabric to prove that
+        // the replacement is an exact partition. Existing derived occupants prevent seedCadastre
+        // from adding duplicate live parcels; it still records their immutable source geometry.
+        fabric.seedCadastre(canonical, { transaction: fabricTransaction });
         fabric.replaceCadastreScope(ids, canonical, { transaction: fabricTransaction });
 
         const proposalIds = new Set((Array.isArray(options.proposalIds)

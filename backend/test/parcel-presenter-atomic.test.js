@@ -72,7 +72,7 @@ describe('parcel presenter atomic projection', () => {
         const { fabric, presenter, members } = environment();
         await fabric.transact({}, token => fabric.seedCadastre([polygon('HR-A')], { transaction: token }));
 
-        expect(presenter.snapshot()).toEqual({ layerCount: 1, parcelIds: ['HR-A'] });
+        expect(presenter.snapshot()).toEqual({ revision: 1, layerCount: 1, parcelIds: ['HR-A'] });
         expect(members.size).toBe(1);
         expect(presenter.getLayer('HR-A').feature.properties.parcelId).toBe('HR-A');
         expect(presenter.layerMap).toBeUndefined();

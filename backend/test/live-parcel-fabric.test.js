@@ -94,10 +94,12 @@ describe('live parcel fabric', () => {
             fabric.seedCadastre([polygon('HR-A'), polygon('HR-B', 1)], { transaction: token });
         });
         await fabric.transact({}, token => {
-            fabric.replaceCadastreScope(['HR-A', 'HR-B'], [polygon('HR-AB#merge-1', 0, {
+            const merged = polygon('HR-AB#merge-1', 0, {
                 cadastreParcelIds: ['HR-A', 'HR-B'],
                 producedByProposalId: 'merge'
-            })], { transaction: token });
+            });
+            merged.geometry.coordinates = [[[0, 0], [2, 0], [2, 1], [0, 1], [0, 0]]];
+            fabric.replaceCadastreScope(['HR-A', 'HR-B'], [merged], { transaction: token });
         });
 
         await expect(fabric.transact({}, token => {

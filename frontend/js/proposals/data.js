@@ -185,6 +185,7 @@ function proposalRecordForPersistence(record) {
 const proposalStorage = {
     proposals: new Map(),
     nextProposalId: 0,
+    quarantinedRecords: [],
     // Save-batching, same shape as agentStorage. Code paths that mutate proposals
     // call save() freely; if a batch is open save() just flags a pending write
     // and the actual JSON.stringify + IndexedDB write happens once at endBatch().
@@ -193,6 +194,67 @@ const proposalStorage = {
     // is the bulk of the per-turn cost and the source of the flyTo choppiness.
     _suspendSaveCount: 0,
     _hasPendingSave: false,
+
+    // Pure transaction protocol used by ParcelMutation. A draft inherits all normal store
+    // methods, but its save hooks are inert; serialization and publication are explicit steps at
+    // the coordinator boundary.
+    snapshotForMutation() {
+        return {
+            records: new Map(Array.from(this.proposals, ([id, record]) => [id, JSON.parse(JSON.stringify(record))])),
+            nextProposalId: this.nextProposalId,
+            quarantinedRecords: JSON.parse(JSON.stringify(this.quarantinedRecords || [])),
+            blockedWriteCount: this._blockedWriteCount
+        };
+    },
+
+    createMutationDraft(snapshot) {
+        const draft = Object.create(this);
+        draft.proposals = new Map(Array.from(snapshot.records || [], ([id, record]) => [id, JSON.parse(JSON.stringify(record))]));
+        draft.nextProposalId = snapshot.nextProposalId;
+        draft.quarantinedRecords = JSON.parse(JSON.stringify(snapshot.quarantinedRecords || []));
+        draft._suspendSaveCount = 0;
+        draft._hasPendingSave = false;
+        draft.save = () => { draft._hasPendingSave = true; };
+        draft._persist = draft.save;
+        draft.beginBatch = () => {};
+        draft.endBatch = () => {};
+        return draft;
+    },
+
+    serializeMutationDraft(draft) {
+        const serialisable = Array.from(draft.proposals.values()).map(proposalRecordForPersistence);
+        const state = proposalStateEnvelope(draft.nextProposalId, serialisable);
+        state.quarantine = JSON.parse(JSON.stringify(draft.quarantinedRecords || []));
+        return { key: PROPOSALS_STORAGE_KEY, value: JSON.stringify(state) };
+    },
+
+    publishMutationDraft(draft) {
+        const next = draft.proposals;
+        for (const id of Array.from(this.proposals.keys())) {
+            if (!next.has(id)) this.proposals.delete(id);
+        }
+        next.forEach((record, id) => {
+            const current = this.proposals.get(id);
+            if (current && typeof current === 'object' && !Array.isArray(current)) {
+                Object.keys(current).forEach(key => { delete current[key]; });
+                Object.assign(current, JSON.parse(JSON.stringify(record)));
+            } else {
+                this.proposals.set(id, JSON.parse(JSON.stringify(record)));
+            }
+        });
+        this.nextProposalId = draft.nextProposalId;
+        this.quarantinedRecords = JSON.parse(JSON.stringify(draft.quarantinedRecords || []));
+        this._hasPendingSave = false;
+    },
+
+    restoreMutationSnapshot(snapshot) {
+        this.publishMutationDraft({
+            proposals: snapshot.records,
+            nextProposalId: snapshot.nextProposalId,
+            quarantinedRecords: snapshot.quarantinedRecords || []
+        });
+        this._blockedWriteCount = snapshot.blockedWriteCount;
+    },
 
     beginBatch() {
         this._suspendSaveCount += 1;

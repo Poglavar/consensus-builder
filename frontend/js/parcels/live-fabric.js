@@ -1,18 +1,16 @@
-// Authoritative in-memory parcel fabric.
-//
-// This module deliberately knows nothing about Leaflet, IndexedDB, proposal UI, or the
-// cadastral transport.  It owns exactly one thing: the current, committed partition of live
-// parcel features.  Every mutation is prepared in a private draft and becomes visible in one
-// revision.  Renderers subscribe to committed revisions; they never participate in domain reads.
+// Authoritative in-memory parcel fabric. Cadastral facts stay immutable; authored materialization
+// exists only in a private mutation draft and is published as one revision.
 (function attachLiveParcelFabric(root, factory) {
-    const api = factory();
+    const api = factory(root || globalThis);
     if (typeof module === 'object' && module.exports) module.exports = api;
     if (root) {
         root.createLiveParcelFabric = api.createLiveParcelFabric;
         root.LiveParcelFabric = api.createLiveParcelFabric();
     }
-})(typeof window !== 'undefined' ? window : globalThis, function liveParcelFabricFactory() {
+})(typeof window !== 'undefined' ? window : globalThis, function liveParcelFabricFactory(root) {
     'use strict';
+
+    const GEOMETRY_EPSILON_M2 = 0.01;
 
     function clone(value) {
         if (value === undefined || value === null) return value;
@@ -22,9 +20,15 @@
         return JSON.parse(JSON.stringify(value));
     }
 
+    function deepFreeze(value, seen = new WeakSet()) {
+        if (!value || typeof value !== 'object' || seen.has(value)) return value;
+        seen.add(value);
+        Object.getOwnPropertyNames(value).forEach(key => deepFreeze(value[key], seen));
+        return Object.freeze(value);
+    }
+
     function normalizeId(value) {
-        if (value === undefined || value === null) return '';
-        return String(value).trim();
+        return value === undefined || value === null ? '' : String(value).trim();
     }
 
     function featureId(feature) {
@@ -33,18 +37,25 @@
     }
 
     function explicitCadastreIds(feature) {
-        const props = feature && feature.properties || {};
-        const raw = Array.isArray(props.cadastreParcelIds) ? props.cadastreParcelIds : [];
+        const raw = Array.isArray(feature?.properties?.cadastreParcelIds)
+            ? feature.properties.cadastreParcelIds
+            : [];
         return Array.from(new Set(raw.map(normalizeId).filter(Boolean)));
     }
 
     function producerId(feature) {
-        const props = feature && feature.properties || {};
-        return normalizeId(props.producedByProposalId || '');
+        return normalizeId(feature?.properties?.producedByProposalId);
+    }
+
+    function formedByIds(feature) {
+        const raw = Array.isArray(feature?.properties?.formedByProposalIds)
+            ? feature.properties.formedByProposalIds
+            : [];
+        return Array.from(new Set(raw.map(normalizeId).filter(Boolean)));
     }
 
     function bboxOf(feature) {
-        const coordinates = feature && feature.geometry && feature.geometry.coordinates;
+        const coordinates = feature?.geometry?.coordinates;
         if (!Array.isArray(coordinates)) return null;
         let west = Infinity;
         let south = Infinity;
@@ -56,149 +67,15 @@
                 const x = Number(value[0]);
                 const y = Number(value[1]);
                 west = Math.min(west, x);
-                east = Math.max(east, x);
                 south = Math.min(south, y);
+                east = Math.max(east, x);
                 north = Math.max(north, y);
                 return;
             }
             value.forEach(visit);
         };
         visit(coordinates);
-        return Number.isFinite(west) ? [west, south, east, north] : null;
-    }
-
-    function normalizedFeature(input) {
-        if (!input || input.type !== 'Feature' || !input.geometry || !/Polygon$/.test(String(input.geometry.type || ''))) {
-            const error = new TypeError('Live parcel fabric accepts polygon GeoJSON Features only.');
-            error.code = 'invalid-live-parcel-feature';
-            throw error;
-        }
-        const feature = clone(input);
-        if (feature.geometry.type === 'MultiPolygon') {
-            const components = Array.isArray(feature.geometry.coordinates)
-                ? feature.geometry.coordinates.filter(Array.isArray)
-                : [];
-            if (components.length !== 1) {
-                const disconnected = new TypeError('One live parcel must be one connected polygon.');
-                disconnected.code = 'live-parcel-disconnected';
-                disconnected.parcelId = featureId(feature) || null;
-                disconnected.components = components.length;
-                throw disconnected;
-            }
-            feature.geometry = { type: 'Polygon', coordinates: components[0] };
-        }
-        const id = featureId(feature);
-        if (!id) {
-            const error = new TypeError('Live parcel feature has no parcelId.');
-            error.code = 'live-parcel-id-missing';
-            throw error;
-        }
-        const cadastreIds = explicitCadastreIds(feature);
-        if (!cadastreIds.length) {
-            const error = new TypeError(`Generated live parcel ${id} has no explicit cadastral provenance.`);
-            error.code = 'live-parcel-provenance-missing';
-            error.parcelId = id;
-            throw error;
-        }
-        const props = feature.properties || (feature.properties = {});
-        props.parcelId = id;
-        props.id = id;
-        props.cadastreParcelIds = cadastreIds.slice();
-        // Authored/content features use `proposalId`; a live parcel instead has one explicit
-        // materialization owner. Keeping both recreated the retired ancestry model.
-        delete props.proposalId;
-        delete props.baseParcelIds;
-        delete props.parentParcelIds;
-        delete props.parentParcelId;
-        delete props.ancestorProposal;
-        return feature;
-    }
-
-    function connectedFeatures(input, options = {}) {
-        let source = input;
-        if (options.cadastreSeed === true) {
-            source = clone(input);
-            const sourceId = featureId(source);
-            if (!sourceId) {
-                const error = new Error('Cadastral seed has no parcelId.');
-                error.code = 'cadastral-seed-id-missing';
-                throw error;
-            }
-            const props = source.properties || (source.properties = {});
-            props.parcelId = sourceId;
-            props.id = sourceId;
-            props.cadastreParcelIds = [sourceId];
-        }
-        const geometry = source && source.geometry;
-        const components = geometry?.type === 'MultiPolygon' && Array.isArray(geometry.coordinates)
-            ? geometry.coordinates.filter(Array.isArray)
-            : null;
-        if (!components || components.length <= 1) return [normalizedFeature(source)];
-
-        if (options.cadastreSeed !== true) return [normalizedFeature(source)];
-        const sourceId = featureId(source);
-
-        const ordered = components.map(coordinates => ({
-            coordinates,
-            box: bboxOf({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates } })
-        })).sort((left, right) => {
-            for (let index = 0; index < 4; index += 1) {
-                const delta = Number(left.box?.[index]) - Number(right.box?.[index]);
-                if (Number.isFinite(delta) && delta !== 0) return delta;
-            }
-            return JSON.stringify(left.coordinates).localeCompare(JSON.stringify(right.coordinates));
-        });
-
-        return ordered.map((component, index) => {
-            const feature = clone(source);
-            const id = `${sourceId}#cadastre-${index + 1}`;
-            feature.geometry = { type: 'Polygon', coordinates: component.coordinates };
-            feature.properties = {
-                ...(feature.properties || {}),
-                parcelId: id,
-                id,
-                cadastreParcelIds: [sourceId],
-                cadastralPart: true,
-                cadastralPartIndex: index + 1
-            };
-            return normalizedFeature(feature);
-        });
-    }
-
-    function stateFrom(features, revision) {
-        const byId = new Map();
-        const bboxById = new Map();
-        const byCadastreId = new Map();
-        const byProducerId = new Map();
-        for (const raw of features || []) {
-            const feature = normalizedFeature(raw);
-            const id = featureId(feature);
-            if (byId.has(id)) {
-                const error = new Error(`Live parcel fabric contains duplicate id ${id}.`);
-                error.code = 'duplicate-live-parcel-id';
-                throw error;
-            }
-            byId.set(id, feature);
-            bboxById.set(id, bboxOf(feature));
-            explicitCadastreIds(feature).forEach(cadastralId => {
-                let ids = byCadastreId.get(cadastralId);
-                if (!ids) {
-                    ids = new Set();
-                    byCadastreId.set(cadastralId, ids);
-                }
-                ids.add(id);
-            });
-            const producer = producerId(feature);
-            if (producer) {
-                let ids = byProducerId.get(producer);
-                if (!ids) {
-                    ids = new Set();
-                    byProducerId.set(producer, ids);
-                }
-                ids.add(id);
-            }
-        }
-        return { revision, byId, bboxById, byCadastreId, byProducerId };
+        return Number.isFinite(west) ? Object.freeze([west, south, east, north]) : null;
     }
 
     function boundsArray(bounds) {
@@ -215,363 +92,376 @@
             && left[1] <= right[3] && left[3] >= right[1];
     }
 
+    function isCorridor(feature) {
+        const props = feature?.properties || {};
+        return props.isCorridor === true || props.isRoad === true || props.isTrack === true;
+    }
+
+    function resolveGeometryApi(options) {
+        if (options.geometry) return options.geometry;
+        if (root?.turf) return root.turf;
+        if (typeof require === 'function') {
+            try { return require('@turf/turf'); } catch (_) {
+                // Unit tests load this browser module from the repository root while Turf belongs
+                // to the backend package. Production always takes the root.turf branch above.
+                try { return require('../../../backend/node_modules/@turf/turf'); }
+                catch (_) { /* caller receives explicit error */ }
+            }
+        }
+        return null;
+    }
+
     function createLiveParcelFabric(options = {}) {
-        let committed = stateFrom([], 0);
-        let active = null;
+        const geometry = resolveGeometryApi(options);
+        const trusted = new WeakSet();
         const subscribers = new Set();
         const participants = new Set();
-
-        // Ordinary readers see only the committed revision. Domain code participating in a
-        // mutation may opt into that mutation's private draft with its exact transaction token.
-        // This is the isolation boundary that keeps clicks and pans on the old complete fabric
-        // until the new complete fabric and its presentation commit together.
-        const readable = options => {
-            const token = options && options.transaction;
-            if (!token) return committed;
-            assertTransaction(token);
-            return active.state;
+        const metrics = { normalized: 0, indexUpdates: 0 };
+        let active = null;
+        let committed = {
+            revision: 0,
+            byId: new Map(),
+            bboxById: new Map(),
+            byCadastreId: new Map(),
+            byProducerId: new Map(),
+            cadastreFacts: new Map()
         };
 
-        function beginTransaction(meta = {}) {
-            if (active) {
-                const error = new Error('A live parcel fabric transaction is already active.');
-                error.code = 'live-fabric-transaction-active';
+        function normalizeFeature(input, config = {}) {
+            if (trusted.has(input)) return input;
+            if (!input || input.type !== 'Feature' || !input.geometry || !/Polygon$/.test(String(input.geometry.type || ''))) {
+                const error = new TypeError('Live parcel fabric accepts polygon GeoJSON Features only.');
+                error.code = 'invalid-live-parcel-feature';
                 throw error;
             }
-            const token = Object.freeze({
-                id: normalizeId(meta.id) || `fabric-${committed.revision + 1}`,
-                baseRevision: committed.revision
-            });
-            active = {
-                token,
-                state: stateFrom(Array.from(committed.byId.values()), committed.revision),
-                changedIds: new Set()
-            };
-            return token;
+            const feature = clone(input);
+            const sourceId = featureId(feature);
+            if (!sourceId) {
+                const error = new TypeError(config.cadastreSeed
+                    ? 'Cadastral seed has no parcelId.'
+                    : 'Live parcel feature has no parcelId.');
+                error.code = config.cadastreSeed ? 'cadastral-seed-id-missing' : 'live-parcel-id-missing';
+                throw error;
+            }
+            if (feature.geometry.type === 'MultiPolygon') {
+                const components = Array.isArray(feature.geometry.coordinates)
+                    ? feature.geometry.coordinates.filter(Array.isArray)
+                    : [];
+                if (components.length !== 1) {
+                    const error = new TypeError('One live parcel must be one connected polygon.');
+                    error.code = 'live-parcel-disconnected';
+                    error.parcelId = sourceId;
+                    error.components = components.length;
+                    throw error;
+                }
+                feature.geometry = { type: 'Polygon', coordinates: components[0] };
+            }
+            const props = feature.properties || (feature.properties = {});
+            const cadastreIds = config.cadastreSeed ? [normalizeId(config.cadastreId || sourceId)] : explicitCadastreIds(feature);
+            if (!cadastreIds.length) {
+                const error = new TypeError(`Generated live parcel ${sourceId} has no explicit cadastral provenance.`);
+                error.code = 'live-parcel-provenance-missing';
+                error.parcelId = sourceId;
+                throw error;
+            }
+            props.parcelId = sourceId;
+            props.id = sourceId;
+            props.cadastreParcelIds = cadastreIds;
+            if (formedByIds(feature).length) props.formedByProposalIds = formedByIds(feature);
+            else delete props.formedByProposalIds;
+            delete props.proposalId;
+            delete props.baseParcelIds;
+            delete props.parentParcelIds;
+            delete props.parentParcelId;
+            delete props.ancestorProposal;
+            metrics.normalized += 1;
+            deepFreeze(feature);
+            trusted.add(feature);
+            return feature;
         }
 
-        function assertTransaction(token) {
-            if (!active || active.token !== token) {
-                const error = new Error('Live parcel fabric mutation requires its active transaction token.');
-                error.code = 'live-fabric-transaction-mismatch';
+        function connectedFeatures(input, config = {}) {
+            const geometryValue = input?.geometry;
+            const components = geometryValue?.type === 'MultiPolygon' && Array.isArray(geometryValue.coordinates)
+                ? geometryValue.coordinates.filter(Array.isArray)
+                : null;
+            if (!components || components.length <= 1) return [normalizeFeature(input, config)];
+            if (!config.cadastreSeed) return [normalizeFeature(input, config)];
+
+            const cadastralId = featureId(input);
+            if (!cadastralId) return [normalizeFeature(input, config)];
+            const ordered = components.map(coordinates => ({
+                coordinates,
+                box: bboxOf({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates } })
+            })).sort((left, right) => {
+                for (let index = 0; index < 4; index += 1) {
+                    const delta = Number(left.box?.[index]) - Number(right.box?.[index]);
+                    if (Number.isFinite(delta) && delta !== 0) return delta;
+                }
+                return JSON.stringify(left.coordinates).localeCompare(JSON.stringify(right.coordinates));
+            });
+            return ordered.map((component, index) => normalizeFeature({
+                ...input,
+                properties: {
+                    ...(input.properties || {}),
+                    parcelId: `${cadastralId}#cadastre-${index + 1}`,
+                    id: `${cadastralId}#cadastre-${index + 1}`,
+                    cadastralPart: true,
+                    cadastralPartIndex: index + 1
+                },
+                geometry: { type: 'Polygon', coordinates: component.coordinates }
+            }, { cadastreSeed: true, cadastreId: cadastralId }));
+        }
+
+        function normalizeCadastreFact(input) {
+            if (!input || input.type !== 'Feature' || !input.geometry || !/Polygon$/.test(String(input.geometry.type || ''))) {
+                const error = new TypeError('Cadastral repository supplied an invalid polygon feature.');
+                error.code = 'invalid-cadastral-feature';
+                throw error;
+            }
+            const id = featureId(input);
+            if (!id) {
+                const error = new Error('Repository seed has no cadastral parcel id.');
+                error.code = 'cadastral-seed-id-missing';
+                throw error;
+            }
+            const fact = clone(input);
+            const props = fact.properties || (fact.properties = {});
+            props.parcelId = id;
+            props.id = id;
+            props.cadastreParcelIds = [id];
+            return deepFreeze(fact);
+        }
+
+        function assertActive(draft) {
+            if (!active || active !== draft || draft.state !== 'active') {
+                const error = new Error('Live parcel fabric mutation is no longer active.');
+                error.code = 'live-fabric-mutation-inactive';
                 throw error;
             }
         }
 
-        function rebuildDraft(features) {
-            active.state = stateFrom(features, committed.revision);
-        }
-
-        function upsertFeatures(features, mutation = {}) {
-            const token = mutation.transaction;
-            assertTransaction(token);
-            const next = new Map(active.state.byId);
-            for (const raw of Array.isArray(features) ? features : []) {
-                for (const feature of connectedFeatures(raw)) {
-                    const id = featureId(feature);
-                    if (mutation.replaceExisting === false && next.has(id)) continue;
-                    next.set(id, feature);
-                    active.changedIds.add(id);
-                }
+        function mutableIndexSet(draft, indexName, key) {
+            const index = draft.data[indexName];
+            let values = index.get(key);
+            if (!values) {
+                values = new Set();
+                index.set(key, values);
+            } else if (values === committed[indexName].get(key)) {
+                values = new Set(values);
+                index.set(key, values);
             }
-            rebuildDraft(Array.from(next.values()));
-            return Array.from(active.changedIds);
+            return values;
         }
 
-        function removeIds(ids, mutation = {}) {
-            const token = mutation.transaction;
-            assertTransaction(token);
-            const next = new Map(active.state.byId);
-            const removed = [];
-            for (const raw of ids || []) {
-                const id = normalizeId(raw);
-                if (!id || !next.delete(id)) continue;
-                active.changedIds.add(id);
-                removed.push(id);
-            }
-            rebuildDraft(Array.from(next.values()));
-            return removed;
+        function removeFromIndex(draft, indexName, key, id) {
+            const values = draft.data[indexName].get(key);
+            if (!values || !values.has(id)) return;
+            const mutable = mutableIndexSet(draft, indexName, key);
+            mutable.delete(id);
+            if (!mutable.size) draft.data[indexName].delete(key);
+            metrics.indexUpdates += 1;
         }
 
-        function replaceCadastreScope(cadastreIds, features, mutation = {}) {
-            const token = mutation.transaction;
-            assertTransaction(token);
-            const scope = new Set(Array.from(cadastreIds || []).map(normalizeId).filter(Boolean));
-            const next = [];
-            active.state.byId.forEach(feature => {
-                const occupiedCadastreIds = explicitCadastreIds(feature);
-                const occupiesScope = occupiedCadastreIds.some(id => scope.has(id));
-                const escapesScope = occupiesScope && occupiedCadastreIds.some(id => !scope.has(id));
-                if (escapesScope) {
-                    const error = new Error(
-                        `Cadastral replacement scope is not closed: ${featureId(feature)} also occupies `
-                        + occupiedCadastreIds.filter(id => !scope.has(id)).join(', ')
-                    );
-                    error.code = 'live-fabric-scope-not-closed';
-                    error.parcelId = featureId(feature);
-                    error.requestedCadastreIds = Array.from(scope);
-                    error.requiredCadastreIds = occupiedCadastreIds.slice();
-                    throw error;
-                }
-                if (!occupiesScope) next.push(feature);
-                else active.changedIds.add(featureId(feature));
-            });
-            for (const raw of Array.isArray(features) ? features : []) {
-              for (const feature of connectedFeatures(raw)) {
-                const bases = explicitCadastreIds(feature);
-                if (!bases.every(id => scope.has(id))) {
-                    const error = new Error(`Replacement parcel ${featureId(feature)} lies outside the requested cadastral scope.`);
-                    error.code = 'live-fabric-scope-violation';
-                    throw error;
-                }
-                next.push(feature);
-                active.changedIds.add(featureId(feature));
-              }
-            }
-            rebuildDraft(next);
-            return Array.from(active.changedIds);
+        function addToIndex(draft, indexName, key, id) {
+            const values = mutableIndexSet(draft, indexName, key);
+            if (values.has(id)) return;
+            values.add(id);
+            metrics.indexUpdates += 1;
         }
 
-        function replaceAll(features, mutation = {}) {
-            const token = mutation.transaction;
-            assertTransaction(token);
-            active.state.byId.forEach((_feature, id) => active.changedIds.add(id));
-            const normalized = (Array.isArray(features) ? features : []).flatMap(connectedFeatures);
-            normalized.forEach(feature => active.changedIds.add(featureId(feature)));
-            rebuildDraft(normalized);
-            return Array.from(active.changedIds);
+        function noteCadastre(draft, feature) {
+            explicitCadastreIds(feature).forEach(id => draft.changedCadastreIds.add(id));
         }
 
-        function seedCadastre(features, mutation = {}) {
-            const token = mutation.transaction;
-            assertTransaction(token);
-            const next = new Map(active.state.byId);
-            for (const raw of Array.isArray(features) ? features : []) {
-                const sourceId = featureId(raw);
-                if (!sourceId) {
-                    const error = new Error('Repository seed has no cadastral parcel id.');
-                    error.code = 'cadastral-seed-id-missing';
-                    throw error;
-                }
-                const currentlyOccupied = active.state.byCadastreId.get(sourceId);
-                if (currentlyOccupied && currentlyOccupied.size) continue;
-                for (const feature of connectedFeatures(raw, { cadastreSeed: true })) {
-                    const id = featureId(feature);
-                    next.set(id, feature);
-                    active.changedIds.add(id);
-                }
-            }
-            rebuildDraft(Array.from(next.values()));
-            return Array.from(active.changedIds);
+        function removeOne(draft, id) {
+            const before = draft.data.byId.get(id);
+            if (!before) return null;
+            draft.data.byId.delete(id);
+            draft.data.bboxById.delete(id);
+            explicitCadastreIds(before).forEach(key => removeFromIndex(draft, 'byCadastreId', key, id));
+            const producer = producerId(before);
+            if (producer) removeFromIndex(draft, 'byProducerId', producer, id);
+            draft.changedIds.add(id);
+            noteCadastre(draft, before);
+            return before;
         }
 
-        function changeSet(nextState, changedIds) {
-            const added = [];
-            const removed = [];
-            const updated = [];
-            const ids = new Set(changedIds || []);
-            committed.byId.forEach((_feature, id) => {
-                if (!nextState.byId.has(id)) ids.add(id);
-            });
-            nextState.byId.forEach((_feature, id) => {
-                if (!committed.byId.has(id)) ids.add(id);
-            });
-            ids.forEach(id => {
-                const before = committed.byId.get(id) || null;
-                const after = nextState.byId.get(id) || null;
-                if (!before && after) added.push(clone(after));
-                else if (before && !after) removed.push(id);
-                else if (before && after && JSON.stringify(before) !== JSON.stringify(after)) updated.push(clone(after));
-            });
-            return Object.freeze({
-                fromRevision: committed.revision,
-                toRevision: committed.revision + 1,
-                added: Object.freeze(added),
-                updated: Object.freeze(updated),
-                removed: Object.freeze(removed),
-                features: Object.freeze(Array.from(nextState.byId.values(), clone))
-            });
-        }
-
-        async function commit(token) {
-            assertTransaction(token);
-            const draft = active;
-            const nextState = stateFrom(Array.from(draft.state.byId.values()), committed.revision + 1);
-            const change = changeSet(nextState, draft.changedIds);
-            const prepared = [];
-            const previousState = committed;
-            try {
-                for (const participant of participants) {
-                    const value = typeof participant.prepare === 'function'
-                        ? await participant.prepare(change)
-                        : change;
-                    prepared.push({ participant, value });
-                }
-                // Preparation may be asynchronous while every reader still sees the old revision.
-                // Publication and projection swap are then one synchronous critical section: event
-                // handlers invoked by a presenter commit already read the new committed fabric.
-                committed = nextState;
-                active = null;
-                for (const entry of prepared) {
-                    if (typeof entry.participant.commit === 'function') {
-                        const result = entry.participant.commit(entry.value, change);
-                        if (result && typeof result.then === 'function') {
-                            committed = previousState;
-                            throw new Error('Live-fabric participant commit must be synchronous after prepare.');
-                        }
-                    }
-                }
-            } catch (error) {
-                // `committed` may already have been published for the synchronous swap. Restore the
-                // previous immutable state before rolling presentation participants back.
-                if (committed === nextState) committed = previousState;
-                for (let index = prepared.length - 1; index >= 0; index -= 1) {
-                    const entry = prepared[index];
-                    try {
-                        if (typeof entry.participant.rollback === 'function') {
-                            const result = entry.participant.rollback(entry.value, change);
-                            if (result && typeof result.then === 'function') {
-                                throw new Error('Live-fabric participant rollback must be synchronous.');
-                            }
-                        }
-                    } catch (_) { /* preserve primary failure */ }
-                }
-                active = null;
-                throw error;
-            }
-            subscribers.forEach(listener => {
-                try { listener(change); } catch (error) { console.error('[LiveParcelFabric] subscriber failed', error); }
-            });
-            return change;
-        }
-
-        function rollback(token) {
-            assertTransaction(token);
-            active = null;
+        function putOne(draft, feature, replaceExisting = true) {
+            const id = featureId(feature);
+            const before = draft.data.byId.get(id);
+            if (before && !replaceExisting) return false;
+            if (before) removeOne(draft, id);
+            draft.data.byId.set(id, feature);
+            draft.data.bboxById.set(id, bboxOf(feature));
+            explicitCadastreIds(feature).forEach(key => addToIndex(draft, 'byCadastreId', key, id));
+            const producer = producerId(feature);
+            if (producer) addToIndex(draft, 'byProducerId', producer, id);
+            draft.changedIds.add(id);
+            noteCadastre(draft, feature);
             return true;
         }
 
-        async function transact(meta, operation) {
-            const token = beginTransaction(meta);
-            try {
-                const result = await operation(token);
-                if (result === false) {
-                    rollback(token);
-                    return false;
+        function unionAll(features) {
+            if (!geometry?.union || !geometry?.area || !geometry?.difference || !geometry?.intersect) {
+                const error = new Error('Geometry operations are required to validate a cadastral replacement.');
+                error.code = 'live-fabric-geometry-unavailable';
+                throw error;
+            }
+            let merged = null;
+            for (const feature of features) merged = merged ? geometry.union(merged, feature) : feature;
+            return merged;
+        }
+
+        function measuredArea(feature) {
+            return feature ? Math.max(0, Number(geometry.area(feature)) || 0) : 0;
+        }
+
+        function differenceArea(left, right) {
+            if (!left) return 0;
+            if (!right) return measuredArea(left);
+            return measuredArea(geometry.difference(left, right));
+        }
+
+        function validateReplacement(draft, scope, replacements) {
+            if (!scope.size) {
+                const error = new Error('Cadastral replacement scope cannot be empty.');
+                error.code = 'live-fabric-scope-empty';
+                throw error;
+            }
+            if (!replacements.length) {
+                const error = new Error('A cadastral replacement must contain at least one live parcel.');
+                error.code = 'live-fabric-empty-replacement';
+                throw error;
+            }
+            const replacementIds = new Set();
+            replacements.forEach(feature => {
+                const id = featureId(feature);
+                if (replacementIds.has(id)) {
+                    const error = new Error(`Cadastral replacement contains duplicate id ${id}.`);
+                    error.code = 'duplicate-live-parcel-id';
+                    throw error;
                 }
-                await commit(token);
-                return result;
-            } catch (error) {
-                if (active && active.token === token) rollback(token);
+                replacementIds.add(id);
+                const provenance = explicitCadastreIds(feature);
+                if (!provenance.length || !provenance.every(value => scope.has(value))) {
+                    const error = new Error(`Replacement parcel ${id} has provenance outside the requested cadastral scope.`);
+                    error.code = 'live-fabric-scope-violation';
+                    error.parcelId = id;
+                    throw error;
+                }
+            });
+            for (let left = 0; left < replacements.length; left += 1) {
+                for (let right = left + 1; right < replacements.length; right += 1) {
+                    if (!intersects(bboxOf(replacements[left]), bboxOf(replacements[right]))) continue;
+                    const overlap = geometry.intersect(replacements[left], replacements[right]);
+                    const overlapM2 = measuredArea(overlap);
+                    if (overlapM2 > GEOMETRY_EPSILON_M2) {
+                        const error = new Error(`Replacement parcels overlap by ${overlapM2.toFixed(3)} m².`);
+                        error.code = 'live-fabric-replacement-overlap';
+                        error.overlapM2 = overlapM2;
+                        throw error;
+                    }
+                }
+            }
+            const facts = Array.from(scope, id => draft.data.cadastreFacts.get(id));
+            const missing = Array.from(scope).filter((_id, index) => !facts[index]);
+            if (missing.length) {
+                const error = new Error(`Immutable cadastral ground is missing for: ${missing.join(', ')}.`);
+                error.code = 'live-fabric-cadastre-facts-missing';
+                error.missingIds = missing;
+                throw error;
+            }
+            const cadastralUnion = unionAll(facts);
+            const replacementUnion = unionAll(replacements);
+            const outsideM2 = differenceArea(replacementUnion, cadastralUnion);
+            const missingM2 = differenceArea(cadastralUnion, replacementUnion);
+            const symmetricDifferenceM2 = outsideM2 + missingM2;
+            if (outsideM2 > GEOMETRY_EPSILON_M2) {
+                const error = new Error(`Replacement lies ${outsideM2.toFixed(3)} m² outside immutable cadastral ground.`);
+                error.code = 'live-fabric-replacement-outside';
+                error.outsideM2 = outsideM2;
+                throw error;
+            }
+            if (missingM2 > GEOMETRY_EPSILON_M2) {
+                const error = new Error(`Replacement leaves ${missingM2.toFixed(3)} m² of cadastral ground uncovered.`);
+                error.code = 'live-fabric-replacement-hole';
+                error.missingM2 = missingM2;
+                throw error;
+            }
+            if (symmetricDifferenceM2 > GEOMETRY_EPSILON_M2) {
+                const error = new Error(`Replacement symmetric difference is ${symmetricDifferenceM2.toFixed(3)} m².`);
+                error.code = 'live-fabric-replacement-mismatch';
+                error.symmetricDifferenceM2 = symmetricDifferenceM2;
                 throw error;
             }
         }
 
-        function get(id, options = {}) {
-            const feature = readable(options).byId.get(normalizeId(id));
+        function readFrom(data, id) {
+            const feature = data.byId.get(normalizeId(id));
             return feature ? clone(feature) : null;
         }
 
-        function getMany(ids, options = {}) {
-            const found = [];
+        function getManyFrom(data, ids, query = {}) {
+            const features = [];
             const missingIds = [];
             const seen = new Set();
-            for (const raw of ids || []) {
+            Array.from(ids || []).forEach(raw => {
                 const id = normalizeId(raw);
-                if (!id || seen.has(id)) continue;
+                if (!id || seen.has(id)) return;
                 seen.add(id);
-                const feature = readable(options).byId.get(id);
-                if (feature) found.push(clone(feature));
+                const feature = data.byId.get(id);
+                if (feature) features.push(clone(feature));
                 else missingIds.push(id);
-            }
-            if (missingIds.length && options.allowMissing !== true) {
+            });
+            if (missingIds.length && query.allowMissing !== true) {
                 const error = new Error(`Live parcel fabric is missing: ${missingIds.join(', ')}`);
                 error.code = 'live-parcel-missing';
                 error.missingIds = missingIds;
                 throw error;
             }
-            return { features: found, missingIds };
+            return { features, missingIds };
         }
 
-        function list(options = {}) {
-            return Array.from(readable(options).byId.values(), clone);
-        }
-
-        function entriesForCadastre(ids, options = {}) {
-            const state = readable(options);
-            const wanted = new Set(Array.from(ids || []).map(normalizeId).filter(Boolean));
+        function entriesForCadastreFrom(data, ids, query = {}) {
             const parcelIds = new Set();
-            wanted.forEach(id => {
-                const members = state.byCadastreId.get(id);
-                if (members) members.forEach(parcelId => parcelIds.add(parcelId));
+            Array.from(ids || []).map(normalizeId).filter(Boolean).forEach(id => {
+                data.byCadastreId.get(id)?.forEach(parcelId => parcelIds.add(parcelId));
             });
             return Array.from(parcelIds)
-                .map(id => state.byId.get(id))
-                .filter(feature => options.includeCorridors === true || !isCorridor(feature))
+                .map(id => data.byId.get(id))
+                .filter(feature => query.includeCorridors === true || !isCorridor(feature))
                 .map(clone);
         }
 
-        function isCorridor(feature) {
-            const props = feature && feature.properties || {};
-            return props.isCorridor === true || props.isRoad === true || props.isTrack === true;
-        }
-
-        function producedBy(proposalId, options = {}) {
-            const state = readable(options);
-            const ids = state.byProducerId.get(normalizeId(proposalId));
-            return ids ? Array.from(ids, id => clone(state.byId.get(id))) : [];
-        }
-
-        function queryBounds(bounds, options = {}) {
+        function queryBoundsFrom(data, bounds, query = {}) {
             const box = boundsArray(bounds);
             if (!box) return [];
             const result = [];
-            const state = readable(options);
-            state.byId.forEach((feature, id) => {
-                if (!intersects(box, state.bboxById.get(id))) return;
-                if (options.includeCorridors !== true && isCorridor(feature)) return;
+            data.byId.forEach((feature, id) => {
+                if (!intersects(box, data.bboxById.get(id))) return;
+                if (query.includeCorridors !== true && isCorridor(feature)) return;
                 result.push(clone(feature));
             });
             return result;
         }
 
-        function claimedCadastreIds(options = {}) {
-            const claimed = new Set();
-            const state = readable(options);
-            state.byId.forEach(feature => {
-                const id = featureId(feature);
-                const bases = explicitCadastreIds(feature);
-                const props = feature && feature.properties || {};
-                const isProduced = !!producerId(feature) || props.cadastralPart === true
-                    || bases.length !== 1 || bases[0] !== id;
-                if (isProduced) bases.forEach(base => claimed.add(base));
-            });
-            return claimed;
-        }
-
-        function cadastreIdsForParcelIds(ids, options = {}) {
-            const state = readable(options);
+        function cadastreIdsForParcelIdsFrom(data, ids, query = {}) {
             const result = [];
             const seen = new Set();
-            const append = value => {
-                const id = normalizeId(value);
+            const append = raw => {
+                const id = normalizeId(raw);
                 if (!id || seen.has(id)) return;
                 seen.add(id);
                 result.push(id);
             };
-            Array.from(ids || []).forEach(value => {
-                const id = normalizeId(value);
+            Array.from(ids || []).forEach(raw => {
+                const id = normalizeId(raw);
                 if (!id) return;
-                const feature = state.byId.get(id);
-                if (feature) {
-                    explicitCadastreIds(feature).forEach(append);
-                    return;
-                }
-                if (state.byCadastreId.has(id)) {
-                    append(id);
-                    return;
-                }
-                if (options.allowMissing === true) return;
+                const feature = data.byId.get(id);
+                if (feature) return explicitCadastreIds(feature).forEach(append);
+                if (data.byCadastreId.has(id) || data.cadastreFacts.has(id)) return append(id);
+                if (query.allowMissing === true) return;
                 const error = new Error(`Live parcel fabric cannot resolve cadastral provenance for ${id}.`);
                 error.code = 'live-parcel-provenance-unavailable';
                 error.parcelId = id;
@@ -580,33 +470,323 @@
             return result;
         }
 
+        function deltaFor(draft) {
+            const addedIds = [];
+            const updatedIds = [];
+            const removedIds = [];
+            draft.changedIds.forEach(id => {
+                const before = committed.byId.get(id);
+                const after = draft.data.byId.get(id);
+                if (!before && after) addedIds.push(id);
+                else if (before && !after) removedIds.push(id);
+                else if (before !== after) updatedIds.push(id);
+            });
+            const sort = values => Object.freeze(values.sort((a, b) => a.localeCompare(b, undefined, { numeric: true })));
+            return Object.freeze({
+                revision: committed.revision + 1,
+                fromRevision: committed.revision,
+                addedIds: sort(addedIds),
+                updatedIds: sort(updatedIds),
+                removedIds: sort(removedIds),
+                changedCadastreIds: sort(Array.from(draft.changedCadastreIds))
+            });
+        }
+
+        function participantView(draft) {
+            return Object.freeze({
+                get: id => readFrom(draft.data, id),
+                getMany: (ids, query) => getManyFrom(draft.data, ids, query),
+                list: () => Array.from(draft.data.byId.values(), clone),
+                snapshot: () => ({ revision: committed.revision + 1, parcelIds: Array.from(draft.data.byId.keys()) })
+            });
+        }
+
+        function beginMutation(meta = {}) {
+            if (active) {
+                const error = new Error('A live parcel fabric mutation is already active.');
+                error.code = 'live-fabric-transaction-active';
+                throw error;
+            }
+            const draft = {
+                meta: Object.freeze({ ...meta }),
+                state: 'active',
+                data: {
+                    revision: committed.revision,
+                    byId: new Map(committed.byId),
+                    bboxById: new Map(committed.bboxById),
+                    byCadastreId: new Map(committed.byCadastreId),
+                    byProducerId: new Map(committed.byProducerId),
+                    cadastreFacts: new Map(committed.cadastreFacts)
+                },
+                changedIds: new Set(),
+                changedCadastreIds: new Set(),
+                prepared: [],
+                delta: null
+            };
+            active = draft;
+
+            const mutation = {
+                seedCadastre(features) {
+                    assertActive(draft);
+                    for (const raw of Array.isArray(features) ? features : []) {
+                        const fact = normalizeCadastreFact(raw);
+                        const cadastralId = featureId(fact);
+                        const existingFact = draft.data.cadastreFacts.get(cadastralId);
+                        if (existingFact && JSON.stringify(existingFact.geometry) !== JSON.stringify(fact.geometry)) {
+                            const error = new Error(`Conflicting immutable cadastral geometry for ${cadastralId}.`);
+                            error.code = 'cadastral-geometry-conflict';
+                            throw error;
+                        }
+                        if (!existingFact) draft.data.cadastreFacts.set(cadastralId, fact);
+                        if (draft.data.byCadastreId.get(cadastralId)?.size) continue;
+                        connectedFeatures(raw, { cadastreSeed: true }).forEach(feature => putOne(draft, feature));
+                    }
+                    return Array.from(draft.changedIds);
+                },
+                upsertFeatures(features, config = {}) {
+                    assertActive(draft);
+                    for (const raw of Array.isArray(features) ? features : []) {
+                        connectedFeatures(raw).forEach(feature => putOne(draft, feature, config.replaceExisting !== false));
+                    }
+                    return Array.from(draft.changedIds);
+                },
+                removeIds(ids) {
+                    assertActive(draft);
+                    return Array.from(ids || []).map(normalizeId).filter(id => !!removeOne(draft, id));
+                },
+                replaceCadastreScope(cadastreIds, features) {
+                    assertActive(draft);
+                    const scope = new Set(Array.from(cadastreIds || []).map(normalizeId).filter(Boolean));
+                    draft.data.byId.forEach(feature => {
+                        const occupied = explicitCadastreIds(feature);
+                        if (!occupied.some(id => scope.has(id))) return;
+                        const escaped = occupied.filter(id => !scope.has(id));
+                        if (!escaped.length) return;
+                        const error = new Error(`Cadastral replacement scope is not closed: ${featureId(feature)} also occupies ${escaped.join(', ')}`);
+                        error.code = 'live-fabric-scope-not-closed';
+                        error.parcelId = featureId(feature);
+                        error.requestedCadastreIds = Array.from(scope);
+                        error.requiredCadastreIds = occupied;
+                        throw error;
+                    });
+                    const replacements = (Array.isArray(features) ? features : []).flatMap(raw => connectedFeatures(raw));
+                    validateReplacement(draft, scope, replacements);
+                    Array.from(draft.data.byId.entries()).forEach(([id, feature]) => {
+                        if (explicitCadastreIds(feature).some(value => scope.has(value))) removeOne(draft, id);
+                    });
+                    replacements.forEach(feature => {
+                        const existing = draft.data.byId.get(featureId(feature));
+                        if (existing) {
+                            const error = new Error(`Replacement id ${featureId(feature)} already exists outside its cadastral scope.`);
+                            error.code = 'duplicate-live-parcel-id';
+                            throw error;
+                        }
+                        putOne(draft, feature);
+                    });
+                    return Array.from(draft.changedIds);
+                },
+                releaseCadastreScope(cadastreIds, reason, config = {}) {
+                    assertActive(draft);
+                    const scope = new Set(Array.from(cadastreIds || []).map(normalizeId).filter(Boolean));
+                    if (!scope.size || !normalizeId(reason)) {
+                        const error = new Error('Releasing cadastral scope requires IDs and an explicit repository reset/unload reason.');
+                        error.code = 'live-fabric-release-reason-required';
+                        throw error;
+                    }
+                    Array.from(draft.data.byId.entries()).forEach(([id, feature]) => {
+                        if (explicitCadastreIds(feature).some(value => scope.has(value))) removeOne(draft, id);
+                    });
+                    if (config.unloadFacts === true) scope.forEach(id => draft.data.cadastreFacts.delete(id));
+                    scope.forEach(id => draft.changedCadastreIds.add(id));
+                    return Array.from(draft.changedIds);
+                },
+                get: id => (assertActive(draft), readFrom(draft.data, id)),
+                getMany: (ids, query) => (assertActive(draft), getManyFrom(draft.data, ids, query)),
+                list: () => (assertActive(draft), Array.from(draft.data.byId.values(), clone)),
+                entriesForCadastre: (ids, query) => (assertActive(draft), entriesForCadastreFrom(draft.data, ids, query)),
+                producedBy(proposalId) {
+                    assertActive(draft);
+                    const ids = draft.data.byProducerId.get(normalizeId(proposalId));
+                    return ids ? Array.from(ids, id => clone(draft.data.byId.get(id))) : [];
+                },
+                queryBounds: (bounds, query) => (assertActive(draft), queryBoundsFrom(draft.data, bounds, query)),
+                cadastreIdsForParcelIds: (ids, query) => (assertActive(draft), cadastreIdsForParcelIdsFrom(draft.data, ids, query)),
+                snapshot: () => (assertActive(draft), {
+                    revision: draft.data.revision,
+                    featureCount: draft.data.byId.size,
+                    parcelIds: Array.from(draft.data.byId.keys())
+                }),
+                async prepare() {
+                    assertActive(draft);
+                    draft.delta = deltaFor(draft);
+                    const view = participantView(draft);
+                    try {
+                        for (const participant of participants) {
+                            const value = typeof participant.prepare === 'function'
+                                ? await participant.prepare(draft.delta, view)
+                                : draft.delta;
+                            draft.prepared.push({ participant, value });
+                        }
+                        draft.state = 'prepared';
+                        return draft.delta;
+                    } catch (error) {
+                        throw error;
+                    }
+                },
+                publish() {
+                    if (!active || active !== draft || draft.state !== 'prepared') {
+                        const error = new Error('Live parcel fabric mutation must be prepared before publication.');
+                        error.code = 'live-fabric-mutation-not-prepared';
+                        throw error;
+                    }
+                    const previous = committed;
+                    const next = { ...draft.data, revision: draft.delta.revision };
+                    committed = next;
+                    try {
+                        for (const entry of draft.prepared) {
+                            if (typeof entry.participant.commit !== 'function') continue;
+                            const result = entry.participant.commit(entry.value, draft.delta);
+                            if (result && typeof result.then === 'function') {
+                                throw new Error('Live-fabric participant publication must be synchronous.');
+                            }
+                        }
+                    } catch (error) {
+                        committed = previous;
+                        for (let index = draft.prepared.length - 1; index >= 0; index -= 1) {
+                            try { draft.prepared[index].participant.rollback?.(draft.prepared[index].value, draft.delta); }
+                            catch (_) { /* preserve primary failure */ }
+                        }
+                        active = null;
+                        draft.state = 'rolled-back';
+                        throw error;
+                    }
+                    active = null;
+                    draft.state = 'published';
+                    subscribers.forEach(listener => {
+                        try { listener(draft.delta); }
+                        catch (error) { console.error('[LiveParcelFabric] subscriber failed', error); }
+                    });
+                    return draft.delta;
+                },
+                rollback() {
+                    if (draft.state === 'published' || draft.state === 'rolled-back') return false;
+                    if (active === draft) active = null;
+                    for (let index = draft.prepared.length - 1; index >= 0; index -= 1) {
+                        try { draft.prepared[index].participant.rollback?.(draft.prepared[index].value, draft.delta); }
+                        catch (_) { }
+                    }
+                    draft.state = 'rolled-back';
+                    return true;
+                }
+            };
+            return Object.freeze(mutation);
+        }
+
+        function queriedData(query) {
+            if (query?.transaction && legacyToken && query.transaction === legacyToken && active) return active.data;
+            return committed;
+        }
+        function get(id, query) { return readFrom(queriedData(query), id); }
+        function getMany(ids, query) { return getManyFrom(queriedData(query), ids, query); }
+        function list(query) { return Array.from(queriedData(query).byId.values(), clone); }
+        function entriesForCadastre(ids, query) { return entriesForCadastreFrom(queriedData(query), ids, query); }
+        function producedBy(proposalId, query) {
+            const data = queriedData(query);
+            const ids = data.byProducerId.get(normalizeId(proposalId));
+            return ids ? Array.from(ids, id => clone(data.byId.get(id))) : [];
+        }
+        function queryBounds(bounds, query) { return queryBoundsFrom(queriedData(query), bounds, query); }
+        function cadastreIdsForParcelIds(ids, query) { return cadastreIdsForParcelIdsFrom(queriedData(query), ids, query); }
+        function claimedCadastreIds() {
+            const claimed = new Set();
+            committed.byId.forEach(feature => {
+                const id = featureId(feature);
+                const bases = explicitCadastreIds(feature);
+                const produced = !!producerId(feature) || feature.properties?.cadastralPart === true
+                    || bases.length !== 1 || bases[0] !== id;
+                if (produced) bases.forEach(base => claimed.add(base));
+            });
+            return claimed;
+        }
         function subscribe(listener) {
             if (typeof listener !== 'function') return () => {};
             subscribers.add(listener);
             return () => subscribers.delete(listener);
         }
-
         function addCommitParticipant(participant) {
             if (!participant || typeof participant !== 'object') throw new TypeError('Commit participant must be an object.');
             participants.add(participant);
             return () => participants.delete(participant);
         }
-
-        function snapshot(options = {}) {
-            const state = readable(options);
+        function snapshot() {
             return {
-                revision: state.revision,
-                featureCount: state.byId.size,
-                parcelIds: Array.from(state.byId.keys()),
+                revision: committed.revision,
+                featureCount: committed.byId.size,
+                parcelIds: Array.from(committed.byId.keys()),
                 transactionActive: !!active
             };
         }
+        function diagnostics() { return { ...metrics }; }
 
-        function currentTransaction() {
-            return active ? active.token : null;
+        // Phase-two compatibility adapter. The next migration phase removes these token-shaped
+        // methods after all production paths use beginMutation()'s scoped object.
+        let legacyMutation = null;
+        let legacyToken = null;
+        function beginTransaction(meta) {
+            legacyMutation = beginMutation(meta);
+            legacyToken = Object.freeze({ id: normalizeId(meta?.id) || `legacy-${committed.revision + 1}` });
+            return legacyToken;
         }
+        function requireLegacy(config = {}) {
+            if (!legacyMutation || config.transaction !== legacyToken) {
+                const error = new Error('Live parcel fabric mutation requires its active transaction token.');
+                error.code = 'live-fabric-transaction-mismatch';
+                throw error;
+            }
+            return legacyMutation;
+        }
+        function upsertFeatures(features, config) { return requireLegacy(config).upsertFeatures(features, config); }
+        function removeIds(ids, config) { return requireLegacy(config).removeIds(ids); }
+        function replaceCadastreScope(ids, features, config) { return requireLegacy(config).replaceCadastreScope(ids, features); }
+        function seedCadastre(features, config) { return requireLegacy(config).seedCadastre(features); }
+        function replaceAll(features, config) {
+            const mutation = requireLegacy(config);
+            const scope = Array.from(mutation.list().flatMap(explicitCadastreIds));
+            if (scope.length) mutation.releaseCadastreScope(scope, 'legacy replace-all');
+            if (Array.isArray(features) && features.length) mutation.upsertFeatures(features);
+            return mutation.snapshot().parcelIds;
+        }
+        async function commit(token) {
+            const mutation = requireLegacy({ transaction: token });
+            await mutation.prepare();
+            const change = mutation.publish();
+            legacyMutation = null;
+            legacyToken = null;
+            return change;
+        }
+        function rollback(token) {
+            const mutation = requireLegacy({ transaction: token });
+            const result = mutation.rollback();
+            legacyMutation = null;
+            legacyToken = null;
+            return result;
+        }
+        async function transact(meta, operation) {
+            const token = beginTransaction(meta);
+            try {
+                const result = await operation(token);
+                if (result === false) { rollback(token); return false; }
+                await commit(token);
+                return result;
+            } catch (error) {
+                if (legacyToken === token) rollback(token);
+                throw error;
+            }
+        }
+        function currentTransaction() { return legacyToken; }
 
         return Object.freeze({
+            beginMutation,
             beginTransaction,
             upsertFeatures,
             removeIds,
@@ -627,11 +807,12 @@
             subscribe,
             addCommitParticipant,
             snapshot,
+            diagnostics,
             currentTransaction,
             featureId,
             explicitCadastreIds
         });
     }
 
-    return { createLiveParcelFabric, featureId, explicitCadastreIds };
+    return Object.freeze({ createLiveParcelFabric, featureId, explicitCadastreIds, GEOMETRY_EPSILON_M2 });
 });
