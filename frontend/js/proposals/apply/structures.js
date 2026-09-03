@@ -146,13 +146,13 @@
             const blockName = sp.blockName || null;
 
             let parentIds = [];
-            let flatParentIds = [];
             let liveParentFeatures = [];
-            const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, kind, options);
-            if (!liveParents.ok) return false;
-            parentIds = liveParents.ids;
-            flatParentIds = liveParents.cadastreIds.slice();
-            liveParentFeatures = liveParents.features;
+            if (structureNeedsGroundFormation(kind)) {
+                const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, kind, options);
+                if (!liveParents.ok) return false;
+                parentIds = liveParents.ids;
+                liveParentFeatures = liveParents.features;
+            }
             traceApply(`Step 2: Resolved ${parentIds.length} parent parcel reference(s) (${(performance.now() - step2Time).toFixed(2)}ms)`);
 
             // §15a structure formation (decision 2026-08-05): a park/square/lake TAKES its
@@ -160,7 +160,7 @@
             // one minted parcel — with ownership → City at apply. Partial coverage of any parcel
             // refuses with the offenders named. A station stays content on its corridor and
             // forms nothing.
-            if (structureNeedsGroundFormation(kind, sp)) {
+            if (structureNeedsGroundFormation(kind)) {
                 const formation = await this._formStructureParcel(
                     proposalId, proposalData, sp, geometry, parentIds, idLabel, liveParentFeatures, options);
                 if (!formation.ok) return false;

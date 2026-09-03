@@ -681,6 +681,46 @@ describe('station parcel ancestry', () => {
 
         expect(stations.findStationParcelIds(geometry, turf, entries).sort()).toEqual(['east', 'west']);
     });
+
+    it('loads the complete immutable cadastral scope before authoring a station', async () => {
+        const geometry = rectangle(15.9798, 45.8098, 15.9802, 45.8102, 'footprint').geometry;
+        const ensureFootprint = vi.fn().mockResolvedValue({
+            result: {
+                ids: ['cadastre-west', 'cadastre-east', 'cadastre-east'],
+                coverage: 0.999999
+            }
+        });
+
+        await expect(stations.resolveStationCadastreScope(geometry, {
+            repository: { ensureFootprint },
+            city: 'sibenik'
+        })).resolves.toEqual({
+            ids: ['cadastre-west', 'cadastre-east'],
+            coverage: 0.999999,
+            complete: true
+        });
+        expect(ensureFootprint).toHaveBeenCalledWith(geometry, {
+            city: 'sibenik',
+            parcelsOnly: true
+        });
+    });
+
+    it('refuses an incomplete cadastral footprint instead of using the currently loaded live piece', async () => {
+        const geometry = rectangle(15.9798, 45.8098, 15.9802, 45.8102, 'footprint').geometry;
+        const scope = await stations.resolveStationCadastreScope(geometry, {
+            repository: {
+                ensureFootprint: vi.fn().mockResolvedValue({
+                    result: { ids: ['only-visible-piece'], coverage: 0.45 }
+                })
+            }
+        });
+
+        expect(scope).toEqual({
+            ids: ['only-visible-piece'],
+            coverage: 0.45,
+            complete: false
+        });
+    });
 });
 
 describe('underground station surface cut-outs', () => {

@@ -13,6 +13,7 @@
     const ICON_PANE = 'transitStationIconsPane';
     const ALIGNMENT_PANE = 'transitStationAlignmentsPane';
     const SNAP_RADIUS_M = 24;
+    const COMPLETE_CADASTRAL_COVERAGE = 0.999;
     const VALID_PREVIEW_COLOR = '#16a34a';
     const INVALID_PREVIEW_COLOR = '#dc2626';
     const COLORS = Object.freeze({
@@ -656,6 +657,27 @@
         }).map(entry => String(entry.id));
     }
 
+    async function resolveStationCadastreScope(geometry, options = {}) {
+        const repository = options.repository || global.CadastralParcelRepository;
+        if (!repository || typeof repository.ensureFootprint !== 'function') {
+            throw new Error('Cadastral ground service is unavailable.');
+        }
+        const response = await repository.ensureFootprint(geometry, {
+            city: options.city || undefined,
+            parcelsOnly: true
+        });
+        const result = response?.result || {};
+        const ids = Array.from(new Set((result.ids || []).map(String).filter(Boolean)));
+        const coverage = Number(result.coverage);
+        return {
+            ids,
+            coverage: Number.isFinite(coverage) ? coverage : 0,
+            complete: ids.length > 0
+                && Number.isFinite(coverage)
+                && coverage >= COMPLETE_CADASTRAL_COVERAGE
+        };
+    }
+
     const STATION_EDITOR_PANE = 'transitStationEditorPane';
 
     function stationEditorText(key, fallback, params = {}) {
@@ -1108,16 +1130,31 @@
 
     async function commitPlacement() {
         const active = placement;
-        if (!active?.valid || !active.center || !active.alignment) return null;
+        if (!active?.valid || !active.center || !active.alignment || active.committing) return null;
+        active.committing = true;
         const geometry = active.previewGeometry
             || createStationFootprint(active.center, active.bearing, active.type);
-        const selectedParcelIds = findStationParcelIds(geometry);
-        if (!selectedParcelIds.length) {
+        updatePlacementStatus('Checking cadastral ground for the complete station footprint…');
+        let scope = null;
+        try {
+            scope = await resolveStationCadastreScope(geometry, {
+                city: global.CityConfigManager?.getCurrentCityId?.() || global.currentCityId || null
+            });
+        } catch (error) {
+            active.committing = false;
+            updatePlacementStatus('Could not load cadastral ground for the station footprint.');
+            console.error('[transit-stations] station ground lookup failed', error);
+            return null;
+        }
+        if (placement !== active) return null;
+        const selectedParcelIds = scope.ids;
+        if (!scope.complete) {
+            active.committing = false;
             active.valid = false;
             active.reason = 'no-loaded-parcel';
             active.parcelIds = [];
             renderPlacementPreview();
-            updatePlacementStatus('Place the station over loaded parcel geometry.');
+            updatePlacementStatus('The complete station footprint must lie on cadastral ground.');
             return null;
         }
         const type = active.type;
@@ -1129,7 +1166,7 @@
             ? normalizePlatformHeight(active.platformHeightM, type)
             : undefined;
         const draft = global.proposalDraftStore?.createDraft?.({
-            cityId: global.cityConfigManager?.getCurrentCityId?.() || global.currentCityId || null,
+            cityId: global.CityConfigManager?.getCurrentCityId?.() || global.currentCityId || null,
             goal: 'station',
             proposalType: spec?.label || 'Transit station',
             adapterKey: 'station',
@@ -1344,6 +1381,7 @@
         placementUpdateFromAlignment,
         resolvePlacementPreview,
         findStationParcelIds,
+        resolveStationCadastreScope,
         upsertStation,
         removeStationByProposalId,
         updateTransitStationsLayer,
