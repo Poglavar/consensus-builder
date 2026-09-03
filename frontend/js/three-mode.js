@@ -476,16 +476,7 @@
     }
 
     function getParcelFeatureById(parcelId) {
-        if (typeof parcelLayer === 'undefined' || !parcelLayer) return null;
-        let found = null;
-        try {
-            parcelLayer.getLayers().forEach(l => {
-                const f = l && l.feature;
-                if (found || !f || !f.properties) return;
-                if (f.properties.parcelId != null && String(f.properties.parcelId) === parcelId) found = f;
-            });
-        } catch (_) { }
-        return found;
+        return window.LiveParcelFabric?.get?.(String(parcelId)) || null;
     }
 
     // Ground-plane footprint polygon (lng/lat) of a nearby 3D building, from the convex hull of all
@@ -1347,12 +1338,9 @@
         } else {
             push(descriptor?.geometry);
         }
-        if (!features.length && draft?.fields?.parentParcelIds?.length && typeof parcelLayer !== 'undefined' && parcelLayer) {
-            const ids = new Set(draft.fields.parentParcelIds.map(String));
-            parcelLayer.getLayers().forEach(layer => {
-                const feature = layer?.feature;
-                const id = feature?.properties?.parcelId || feature?.properties?.parcel_id || feature?.properties?.id;
-                if (id !== undefined && ids.has(String(id))) push(feature);
+        if (!features.length && draft?.fields?.parentParcelIds?.length) {
+            draft.fields.parentParcelIds.map(String).forEach(id => {
+                push(window.LiveParcelFabric?.get?.(id));
             });
         }
         return features;
@@ -2153,7 +2141,7 @@
     // used to live here with a NUMBER-only height check that dropped string heights to the default.
 
     // Reparcellization plans that have NOT been applied to the map. An applied plan has already
-    // replaced its parent parcels inside parcelLayer, so buildParcels3D draws the new parcels and
+    // replaced its parent parcels inside the live fabric, so buildParcels3D draws the new parcels and
     // there is nothing to add here. An unapplied one exists only on the proposal — without this the
     // 3D view showed the untouched original parcel and the proposed subdivision was invisible.
     function getPlannedReparcellizationProposals() {
@@ -2291,11 +2279,11 @@
     }
 
     function buildParcels3D(targetGroup) {
-        if (typeof parcelLayer === 'undefined' || !parcelLayer) return;
+        const fabric = window.LiveParcelFabric;
+        if (!fabric || typeof fabric.list !== 'function') return;
         const groundCutFeatures = groundCutFootprintFeatures();
         // parcels at z=0
-        parcelLayer.getLayers().forEach(l => {
-            const f = l.feature;
+        fabric.list().forEach(f => {
             if (!f || !f.geometry) return;
             const props = f.properties || {};
             let isRoadParcel = props.isRoad === true;
@@ -2335,7 +2323,7 @@
 
     // Set of parcel IDs that exist *only* because of an applied/executed proposal.
     // Built mode hides them so the 3D view reflects the pre-proposal cadastre.
-    // (The corresponding ancestor parcels were removed from parcelLayer at apply
+    // (The corresponding ancestor parcels were removed from the live fabric at apply
     // time; restoring them would need to redraw from each proposal's
     // parentFeatures and is out of scope for this gate — Built mode currently
     // shows holes where proposals replaced the originals.)
@@ -4732,7 +4720,7 @@
     }
 
     function createBuildingSlices(buildingFeature, height, material, targetGroup) {
-        if (!buildingFeature || !buildingFeature.geometry || typeof parcelLayer === 'undefined' || !parcelLayer) {
+        if (!buildingFeature || !buildingFeature.geometry || !window.LiveParcelFabric) {
             const meshes = polygonFeatureToMeshes(buildingFeature, material, 0, height);
             meshes.forEach(m => targetGroup.add(m));
             return;
@@ -4741,8 +4729,8 @@
         const candidateParcels = [];
         try {
             const bBbox = turf.bbox(buildingFeature);
-            parcelLayer.getLayers().forEach(l => {
-                const pf = l && l.feature;
+            const fabric = window.LiveParcelFabric;
+            (fabric?.queryBounds?.(bBbox, { includeCorridors: true }) || []).forEach(pf => {
                 if (!pf || !pf.geometry) return;
                 try {
                     const pBbox = turf.bbox(pf);
@@ -4897,7 +4885,7 @@
     function getBuildingParcelIntersectionPoints(buildingFeature) {
         const intersectionPoints = [];
         if (!buildingFeature || !buildingFeature.geometry) return intersectionPoints;
-        if (typeof parcelLayer === 'undefined' || !parcelLayer) return intersectionPoints;
+        if (!window.LiveParcelFabric) return intersectionPoints;
 
         let buildingLine = null;
         try {
@@ -4911,8 +4899,9 @@
 
         if (!buildingLine) return intersectionPoints;
 
-        parcelLayer.getLayers().forEach(l => {
-            const pf = l && l.feature;
+        const fabric = window.LiveParcelFabric;
+        const buildingBbox = turf.bbox(buildingFeature);
+        (fabric?.queryBounds?.(buildingBbox, { includeCorridors: true }) || []).forEach(pf => {
             if (!pf || !pf.geometry) return;
 
             // Bbox pre-filter for performance
@@ -5257,14 +5246,10 @@
         }
 
         // Fallback: use the current 2D viewport so switching to 3D preserves what the user
-        // is actually looking at. The parcelLayer can span the whole dataset and
-        // would force the camera to pull back far beyond the visible 2D area.
+        // is actually looking at.
         let bounds = null;
         if (typeof map !== 'undefined' && map) {
             try { bounds = map.getBounds(); } catch (_) { bounds = null; }
-        }
-        if (!bounds && typeof parcelLayer !== 'undefined' && parcelLayer && parcelLayer.getBounds) {
-            try { bounds = parcelLayer.getBounds(); } catch (_) { bounds = null; }
         }
         if (!bounds) return { width: 100, height: 100 };
         const sw = bounds.getSouthWest();

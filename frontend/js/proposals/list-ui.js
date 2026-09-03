@@ -272,7 +272,7 @@ async function launchStructureToolForSelection(kind) {
         return false;
     }
     if (await shouldStopFreshProposalForWholeBlock(kind, selection)) return false;
-    const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selection.layers) : { contiguous: true };
+    const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selection.ids) : { contiguous: true };
     if (!contiguity.contiguous) {
         if (typeof showProposalAlertMessage === 'function') {
             showProposalAlertMessage('parcels_not_contiguous', 'Parcels not contiguous');
@@ -281,7 +281,7 @@ async function launchStructureToolForSelection(kind) {
         }
         return false;
     }
-    const geometry = buildGeometryFromParcels(selection.layers);
+    const geometry = buildGeometryFromParcels(selection.ids);
     if (!geometry) {
         updateStatus('Could not build geometry for the selected parcels.');
         return false;

@@ -806,14 +806,13 @@ function computeOwnershipStatsFromSelection(selection) {
         ownerCount: 0,
         mode: 'multiple'
     };
-    const layers = selection && Array.isArray(selection.layers) ? selection.layers : [];
+    const parcelIds = selection && Array.isArray(selection.ids) ? selection.ids.map(String).filter(Boolean) : [];
 
-    if (!layers.length) {
+    if (!parcelIds.length) {
         return result;
     }
 
-    layers.forEach((parcel, index) => {
-        const parcelId = getParcelIdFromFeature(parcel?.feature);
+    parcelIds.forEach((parcelId, index) => {
         let addedOwnerForParcel = false;
 
         if (parcelId && typeof getParcelOwnerSlots === 'function') {

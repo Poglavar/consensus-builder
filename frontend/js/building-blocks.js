@@ -12,6 +12,34 @@
 // Building blocks functionality
 window.selectedBlockName = null;
 let selectedBlockName = window.selectedBlockName;
+
+function blockifyParcelId(parcel) {
+    if (parcel === undefined || parcel === null) return null;
+    if (typeof parcel === 'string' || typeof parcel === 'number') return String(parcel);
+    const presentedId = window.ParcelPresenter?.getIdForLayer?.(parcel);
+    if (presentedId) return String(presentedId);
+    if (parcel.type === 'Feature') {
+        const id = typeof ensureParcelId === 'function'
+            ? ensureParcelId(parcel)
+            : (parcel.properties?.parcelId ?? parcel.properties?.parcel_id ?? parcel.properties?.id);
+        return id === undefined || id === null ? null : String(id);
+    }
+    const id = parcel.id ?? parcel.parcelId;
+    return id === undefined || id === null ? null : String(id);
+}
+
+function blockifyFeatureForParcel(parcel) {
+    const id = blockifyParcelId(parcel);
+    return id ? window.LiveParcelFabric?.get?.(id) || null : null;
+}
+
+function blockifyFeaturesForBlock(block) {
+    const inputs = Array.isArray(block?.parcelIds) && block.parcelIds.length
+        ? block.parcelIds
+        : (Array.isArray(block?.parcels) ? block.parcels : []);
+    const features = inputs.map(blockifyFeatureForParcel).filter(Boolean);
+    return features.length === inputs.length ? features : [];
+}
 // Add blockify modal variables
 let blockifyMap = null;
 // Whether the map has been framed on its block yet. The framing retries until it lands (see
@@ -235,8 +263,8 @@ function loadBlockifyContextBuildings(buildingFeature, anchor) {
     let queryGeom = buildingFeature.geometry;
     // Prefer the active block's parcels as a stable, bigger query area when available.
     try {
-        const parcels = (typeof getActiveBlockifyBlock === 'function') ? (getActiveBlockifyBlock()?.parcels || []) : [];
-        const fc = turf.featureCollection(parcels.map(p => p && p.feature).filter(Boolean));
+        const block = (typeof getActiveBlockifyBlock === 'function') ? getActiveBlockifyBlock() : null;
+        const fc = turf.featureCollection(blockifyFeaturesForBlock(block));
         if (fc.features.length > 0) {
             const bbox = turf.bbox(fc);
             if (bbox && bbox.every(v => isFinite(v))) {
@@ -752,8 +780,8 @@ function drawParcelsIn3D(parcelGroup, block) {
         const roadFillMat = new THREE.MeshLambertMaterial({ color: 0xb0b0b0, transparent: true, opacity: 0.35, depthWrite: false });
         const roadLineMat = new THREE.LineBasicMaterial({ color: 0x666666, linewidth: 1 });
 
-        block.parcels.forEach(p => {
-            const geom = p?.feature?.geometry;
+        blockifyFeaturesForBlock(block).forEach(feature => {
+            const geom = feature.geometry;
             if (!geom || !Array.isArray(geom.coordinates)) return;
 
             const rings = (geom.type === 'Polygon') ? geom.coordinates : ((geom.type === 'MultiPolygon') ? geom.coordinates[0] : []);
@@ -761,8 +789,8 @@ function drawParcelsIn3D(parcelGroup, block) {
 
             if (!Array.isArray(outerRing) || outerRing.length < 3) return;
 
-            const props = p?.feature?.properties || {};
-            const parcelId = typeof ensureParcelId === 'function' ? ensureParcelId(p?.feature) : (props.parcelId ?? props.parcel_id ?? props.id);
+            const props = feature.properties || {};
+            const parcelId = typeof ensureParcelId === 'function' ? ensureParcelId(feature) : (props.parcelId ?? props.parcel_id ?? props.id);
             let isRoadParcel = props.isRoad === true;
             try {
                 if (!isRoadParcel && parcelId && typeof window.isRoadParcel === 'function') {
@@ -1000,7 +1028,7 @@ function updateBlockify3DScene(buildingFeatureOrFeatures) {
     let anchor = blockify3D.anchorLngLat;
     try {
         const activeBlock = getActiveBlockifyBlock();
-        const coords = activeBlock?.parcels?.flatMap(p => p?.feature?.geometry?.coordinates || []) || [];
+        const coords = blockifyFeaturesForBlock(activeBlock).flatMap(feature => feature.geometry?.coordinates || []);
         let sx = 0, sy = 0, c = 0;
         const pushCoord = (pair) => {
             if (!Array.isArray(pair)) return;
@@ -1133,10 +1161,10 @@ function updateBlockify3DScene(buildingFeatureOrFeatures) {
             if (ch.geometry) ch.geometry.dispose();
             linesGroup.remove(ch);
         }
-        const parcels = getActiveBlockifyBlock()?.parcels || [];
+        const parcels = blockifyFeaturesForBlock(getActiveBlockifyBlock());
         const lineMat = new THREE.LineBasicMaterial({ color: 0x555555, linewidth: 1, depthTest: true });
-        parcels.forEach(p => {
-            const geom = p?.feature?.geometry;
+        parcels.forEach(feature => {
+            const geom = feature.geometry;
             if (!geom) return;
             const addRing = (coords) => {
                 const pts = coords
@@ -2417,7 +2445,7 @@ function displayBlockOnMap(block) {
     // frames both. Drawing and framing the rest is strictly better — the editor stays usable and the
     // offender is named instead of being a mystery.
     const fitApi = (typeof window !== 'undefined') ? window.__blockifyMapFit : null;
-    const rawFeatures = block.parcels.map(parcel => parcel && parcel.feature).filter(Boolean);
+    const rawFeatures = blockifyFeaturesForBlock(block);
     const split = fitApi ? fitApi.usableBlockFeatures(rawFeatures) : { usable: rawFeatures, rejected: [] };
     if (split.rejected.length) {
         console.error('[Blockify] leaving parcels out of the map — their geometry is not usable', split.rejected);
@@ -2781,7 +2809,7 @@ function generateBuildingInModal() {
         }
         // Create a superparcel by merging all parcels in the block (robust)
         console.log(`Creating superparcel from ${block.parcels.length} parcels`);
-        const parcelFeatures = block.parcels.map(p => p.feature);
+        const parcelFeatures = blockifyFeaturesForBlock(block);
         let superparcel = robustUnion(parcelFeatures);
 
         if (!superparcel) {
@@ -3269,10 +3297,9 @@ function autosaveBlockifyDraft(featuresOverride = null) {
     const parcelIds = [];
     const parentDetails = [];
     block.parcels.forEach(parcel => {
-        const props = parcel?.feature?.properties;
-        const parcelId = typeof ensureParcelId === 'function'
-            ? ensureParcelId(parcel?.feature)
-            : (props?.parcelId ?? props?.parcel_id ?? props?.id);
+        const feature = blockifyFeatureForParcel(parcel);
+        const props = feature?.properties;
+        const parcelId = blockifyParcelId(parcel);
         if (!parcelId) return;
         const id = String(parcelId);
         parcelIds.push(id);
@@ -3333,11 +3360,9 @@ function blockParcelsForSplit() {
     const block = getActiveBlockifyBlock();
     if (!block || !Array.isArray(block.parcels)) return [];
     return block.parcels.map((parcel, index) => {
-        const props = parcel?.feature?.properties;
-        const parcelId = typeof ensureParcelId === 'function'
-            ? ensureParcelId(parcel?.feature)
-            : (props?.parcelId ?? props?.parcel_id ?? props?.id ?? `parcel-${index}`);
-        return { feature: parcel?.feature, parcelId };
+        const feature = blockifyFeatureForParcel(parcel);
+        const parcelId = blockifyParcelId(parcel) || `parcel-${index}`;
+        return { feature, parcelId };
     }).filter(entry => entry.feature && entry.feature.geometry);
 }
 
@@ -3707,7 +3732,7 @@ function getBlockQueryGeometry() {
     const block = getActiveBlockifyBlock();
     if (!block || !Array.isArray(block.parcels) || !block.parcels.length) return null;
     try {
-        const union = robustUnion(block.parcels.map(p => p && p.feature).filter(Boolean));
+        const union = robustUnion(blockifyFeaturesForBlock(block));
         return union && union.geometry ? union.geometry : null;
     } catch (_) { return null; }
 }
@@ -4175,10 +4200,7 @@ function openUrbanRuleForParcels({ blockName, parcels, initialState = null }) {
     const normalizedParcels = [];
     rawParcels.forEach(layer => {
         try {
-            const props = layer?.feature?.properties;
-            const parcelId = typeof ensureParcelId === 'function'
-                ? ensureParcelId(layer?.feature)
-                : (props?.parcelId ?? props?.parcel_id ?? props?.id);
+            const parcelId = blockifyParcelId(layer);
             if (!parcelId) return;
             const idStr = parcelId.toString();
             if (seenIds.has(idStr)) return;
@@ -4219,7 +4241,7 @@ async function confirmBlockSizeIfOversized(block) {
         if (typeof ProposalWarnings === 'undefined' || typeof turf === 'undefined') return true;
         let outline = (lastSuperparcel && lastSuperparcel.geometry) ? lastSuperparcel : null;
         if (!outline && block && Array.isArray(block.parcels)) {
-            outline = robustUnion(block.parcels.map(p => p && p.feature).filter(Boolean));
+            outline = robustUnion(blockifyFeaturesForBlock(block));
         }
         if (!outline || !outline.geometry) return true;
         const perimeterM = turf.length(outline, { units: 'kilometers' }) * 1000;
@@ -4278,16 +4300,15 @@ async function saveBlockifyDesignForProposal() {
     }
 
     block.parcels.forEach(parcel => {
-        const props = parcel?.feature?.properties;
-        const parcelId = typeof ensureParcelId === 'function'
-            ? ensureParcelId(parcel?.feature)
-            : (props?.parcelId ?? props?.parcel_id ?? props?.id);
+        const feature = blockifyFeatureForParcel(parcel);
+        const props = feature?.properties;
+        const parcelId = blockifyParcelId(parcel);
         if (!parcelId) return;
         const idStr = parcelId.toString();
         let number = idStr;
         try {
-            if (parcel.feature?.properties?.BROJ_CESTICE) {
-                number = String(parcel.feature.properties.BROJ_CESTICE);
+            if (props?.BROJ_CESTICE) {
+                number = String(props.BROJ_CESTICE);
             }
         } catch (_) { }
         normalizedParcelIds.push(idStr);

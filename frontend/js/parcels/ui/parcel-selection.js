@@ -3,14 +3,6 @@
 
     const uiParcelPanel = (global.Parcels && global.Parcels.uiParcelPanel) ? global.Parcels.uiParcelPanel : (global.ParcelsUIParcelPanel || {});
 
-    const resolveParcelId = (feature) => {
-        const props = feature?.properties || {};
-        const id = typeof ensureParcelId === 'function'
-            ? ensureParcelId(feature)
-            : (props.parcelId ?? props.parcel_id ?? props.id);
-        return id !== undefined && id !== null ? id.toString() : null;
-    };
-
     function onParcelClick(e) {
         if (global.measureMode) return;
         if (typeof global.isParcelDrawingModeActive === 'function' && global.isParcelDrawingModeActive()) {
@@ -24,8 +16,7 @@
         }
         if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) return;
         const targetLayer = e && e.target ? e.target : null;
-        if (!targetLayer || !targetLayer.feature) return;
-        const parcelId = resolveParcelId(targetLayer.feature);
+        const parcelId = global.ParcelPresenter?.getIdForLayer?.(targetLayer) || null;
         if (!parcelId) return;
         const feature = global.LiveParcelFabric?.get?.(parcelId) || null;
         const presentedLayer = global.ParcelPresenter?.getLayer?.(parcelId) || null;

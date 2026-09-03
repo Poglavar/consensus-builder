@@ -44,6 +44,8 @@ function fixture(options = {}) {
     const fetchParcelsUnderGeometry = options.fetchParcelsUnderGeometry || vi.fn(async () => ({
         status: 'ready', features: [], absentIds: [], count: 0, queryMs: 1
     }));
+    const fetchRoadIds = options.fetchRoadIds || vi.fn(async () => ({ status: 'ready', ids: ['HR-ROAD'] }));
+    const supportsRoadIds = options.supportsRoadIds || vi.fn(() => false);
     const acceptedFeatures = [];
     const onFeatures = options.onFeatures || vi.fn(async features => {
         acceptedFeatures.push(...features);
@@ -54,30 +56,38 @@ function fixture(options = {}) {
         convertFeatures: featureCollection => featureCollection,
         transport: {
             fetchByIds: fetchParcelsByIds,
-            fetchUnderGeometry: fetchParcelsUnderGeometry
+            fetchUnderGeometry: fetchParcelsUnderGeometry,
+            fetchRoadIds,
+            supportsRoadIds
         },
         footprintOf: record => record.footprint || null,
         cadastreParcelIdsOf: record => record.cadastreParcelIds || [],
         coverageOf: options.coverageOf || (() => ({ ids: [], coverage: 0 }))
     });
-    return { service, acceptedFeatures, onFeatures, fetchParcelsByIds, fetchParcelsUnderGeometry };
+    return {
+        service,
+        acceptedFeatures,
+        onFeatures,
+        fetchParcelsByIds,
+        fetchParcelsUnderGeometry,
+        fetchRoadIds,
+        supportsRoadIds
+    };
 }
 
 describe('CadastralParcelRepository', () => {
     it('serves loaded and known-missing ids from its cache after one transport request', async () => {
         const fetchParcelsByIds = vi.fn(async ids => {
-            const found = ids.filter(id => id === 'HR-B');
+            const found = ids.filter(id => id === 'HR-A' || id === 'HR-B');
             return parcelResult(found, { absentIds: ['HR-MISSING'] });
         });
-        const { service, onFeatures } = fixture({ fetchParcelsByIds });
-        await service.acceptFeatures([parcelFeature('HR-A')], { skipConversion: true });
-        onFeatures.mockClear();
+        const { service } = fixture({ fetchParcelsByIds });
 
         const first = await service.ensureIds(['HR-A', 'HR-B', 'HR-MISSING']);
         const second = await service.ensureIds(['HR-A', 'HR-B', 'HR-MISSING']);
 
         expect(fetchParcelsByIds).toHaveBeenCalledOnce();
-        expect(fetchParcelsByIds.mock.calls[0][0]).toEqual(['HR-B', 'HR-MISSING']);
+        expect(fetchParcelsByIds.mock.calls[0][0]).toEqual(['HR-A', 'HR-B', 'HR-MISSING']);
         expect(first.missingIds).toEqual(['HR-MISSING']);
         expect(second.requestedIds).toEqual([]);
         expect(second.missingIds).toEqual(['HR-MISSING']);
@@ -113,16 +123,25 @@ describe('CadastralParcelRepository', () => {
         expect(service.get('HR-A')).toMatchObject({ properties: { parcelId: 'HR-A' } });
     });
 
-    it('accepts identical facts idempotently, reprovisions them, and rejects conflicting geometry', async () => {
-        const { service, onFeatures } = fixture();
+    it('deduplicates identical transport facts and rejects conflicting geometry atomically', async () => {
+        const identical = parcelFeature('HR-A');
+        const validFetch = vi.fn(async () => parcelResult(['HR-A'], {
+            features: [identical, structuredClone(identical)]
+        }));
+        const { service, onFeatures } = fixture({ fetchParcelsByIds: validFetch });
 
-        await service.acceptFeatures([parcelFeature('HR-A')], { skipConversion: true });
-        await service.acceptFeatures([parcelFeature('HR-A')], { skipConversion: true });
+        await service.ensureIds(['HR-A']);
 
-        expect(onFeatures).toHaveBeenCalledTimes(2);
+        expect(onFeatures).toHaveBeenCalledOnce();
         expect(service.snapshot().featureCount).toBe(1);
-        await expect(service.acceptFeatures([parcelFeature('HR-A', 1)], { skipConversion: true }))
+
+        const conflictingFetch = vi.fn(async () => parcelResult(['HR-B'], {
+            features: [parcelFeature('HR-B'), parcelFeature('HR-B', 1)]
+        }));
+        const { service: conflicting } = fixture({ fetchParcelsByIds: conflictingFetch });
+        await expect(conflicting.ensureIds(['HR-B']))
             .rejects.toMatchObject({ code: 'cadastral-feature-conflict' });
+        expect(conflicting.snapshot().featureCount).toBe(0);
     });
 
     it('owns retained cadastral geometry independently of transport and returned clones', async () => {
@@ -253,6 +272,33 @@ describe('CadastralParcelRepository', () => {
         await service.ensureIds(['same-local-id']);
 
         expect(fetchParcelsByIds).toHaveBeenCalledTimes(2);
+    });
+
+    it('owns road-classification transport, request sharing, and city-scoped caching', async () => {
+        let city = 'city-a';
+        const root = { CityConfigManager: { getCurrentCityId: () => city } };
+        const supportsRoadIds = vi.fn(() => true);
+        const fetchRoadIds = vi.fn(async (_bounds, options) => ({
+            status: 'ready',
+            ids: [`${options.city}-road`]
+        }));
+        const { service } = fixture({ root, supportsRoadIds, fetchRoadIds });
+        const bounds = [15, 45, 16, 46];
+
+        const [first, joined] = await Promise.all([
+            service.ensureRoadIds(bounds),
+            service.ensureRoadIds(bounds)
+        ]);
+        const cached = await service.ensureRoadIds(bounds);
+        city = 'city-b';
+        const otherCity = await service.ensureRoadIds(bounds);
+
+        expect(first.ids).toEqual(['city-a-road']);
+        expect(joined.ids).toEqual(['city-a-road']);
+        expect(cached).toMatchObject({ ids: ['city-a-road'], cached: true, requestCount: 0 });
+        expect(otherCity.ids).toEqual(['city-b-road']);
+        expect(fetchRoadIds).toHaveBeenCalledTimes(2);
+        expect(fetchRoadIds.mock.calls.map(call => call[1].city)).toEqual(['city-a', 'city-b']);
     });
 
     it('uses a corridor\'s flat cadastral ids without a second footprint fetch', async () => {
@@ -474,13 +520,15 @@ describe('the ground service is the only parcel transport consumer', () => {
     const consumerFiles = walk(frontendJsRoot)
         .filter(path => path.endsWith('.js'))
         .filter(path => !excluded.has(relative(frontendJsRoot, path)));
-    const rawTransportReference = /\b(?:__cadastralGroundTransport|fetchSingleParcelById|fetchParcelsByIds|fetchParcelsUnderGeometry|fetchParcelsForIds|fetchParcelFeaturesByIds|requestParcelBatchForCurrentCity|requestParcelBatchFrom[A-Za-z]+|ensureParentParcelsLoaded|ensureParentParcelsFetched)/;
+    const rawTransportReference = /\b(?:__cadastralGroundTransport|fetchSingleParcelById|fetchParcelsByIds|fetchParcelsUnderGeometry|fetchParcelsForIds|fetchParcelFeaturesByIds|fetchRoadIds|requestParcelBatchForCurrentCity|requestParcelBatchFrom[A-Za-z]+|ensureParentParcelsLoaded|ensureParentParcelsFetched)/;
     const directFootprintEndpoint = /fetch\s*\(\s*`[^`]*\/parcels\/under/;
+    const directRoadEndpoint = /fetch\s*\(\s*`[^`]*\/road-parcels/;
 
     it.each(consumerFiles)('%s requests ground through CadastralParcelRepository', absolutePath => {
         const source = readFileSync(absolutePath, 'utf8');
         expect(source).not.toMatch(rawTransportReference);
         expect(source).not.toMatch(directFootprintEndpoint);
+        expect(source).not.toMatch(directRoadEndpoint);
     });
 
     it('keeps the raw transport private and policy-free', () => {

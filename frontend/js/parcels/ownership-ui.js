@@ -910,7 +910,8 @@
                 suppressOwnerAcceptanceRefresh = true;
                 const showParcelInfoPanel = uiParcelPanel.showParcelInfoPanel || global.showParcelInfoPanel;
                 if (typeof showParcelInfoPanel === 'function') {
-                    showParcelInfoPanel(activeParcel.layer.feature);
+                    const feature = global.LiveParcelFabric?.get?.(String(activeParcel.id));
+                    if (feature) showParcelInfoPanel(feature);
                 }
             } catch (error) {
                 console.warn('refreshParcelOwnerAcceptanceUI: failed to refresh panel', error);

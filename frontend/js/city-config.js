@@ -663,12 +663,15 @@
         return CITY_CONFIGS[currentCityId] || CITY_CONFIGS[DEFAULT_CITY_ID];
     }
 
-    function getProjectionConfig() {
-        return getCurrentCityConfig().projection || null;
+    function getProjectionConfig(cityId = null) {
+        const config = cityId && CITY_CONFIGS[cityId]
+            ? CITY_CONFIGS[cityId]
+            : getCurrentCityConfig();
+        return config.projection || null;
     }
 
-    function datasetToLatLng(easting, northing) {
-        const projection = getProjectionConfig();
+    function datasetToLatLng(easting, northing, cityId = null) {
+        const projection = getProjectionConfig(cityId);
         if (!projection) {
             return [northing, easting];
         }

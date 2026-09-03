@@ -3,6 +3,32 @@
 
     let lastHoverLayer = null;
     let lastHoverParcelId = null;
+    let lastHoverScope = null;
+
+    function currentPresentationScope() {
+        const city = global.CityConfigManager?.getCurrentCityId?.() || 'default';
+        const revision = global.LiveParcelFabric?.snapshot?.().revision ?? 'none';
+        return `${city}|${revision}`;
+    }
+
+    function parcelIdForLayer(layer) {
+        const id = global.ParcelPresenter?.getIdForLayer?.(layer);
+        return id === undefined || id === null ? null : String(id);
+    }
+
+    function liveFeatureForLayer(layer) {
+        const id = parcelIdForLayer(layer);
+        return id ? global.LiveParcelFabric?.get?.(id) || null : null;
+    }
+
+    function discardStaleHover() {
+        const scope = currentPresentationScope();
+        if (lastHoverScope !== null && lastHoverScope !== scope) {
+            lastHoverLayer = null;
+            lastHoverParcelId = null;
+        }
+        lastHoverScope = scope;
+    }
 
     function isStationPlacementMapInteractionActive() {
         return global.transitStationPlacementMode === true
@@ -10,15 +36,8 @@
                 && global.isTransitStationPlacementActive());
     }
 
-    function getParcelIdFromFeature(feature) {
-        if (!feature) return null;
-        const props = feature.properties || {};
-        return (typeof global.getParcelId === 'function'
-            ? global.getParcelId(feature)
-            : (props.parcelId))?.toString?.() || null;
-    }
-
     function clearPreviousHover(currentLayer) {
+        discardStaleHover();
         if (!lastHoverLayer || lastHoverLayer === currentLayer) {
             return;
         }
@@ -49,7 +68,7 @@
         if (typeof global.isStructureGeometryEditorActive === 'function' && global.isStructureGeometryEditorActive()) return;
         if (typeof global.isTransitStationGeometryEditorActive === 'function' && global.isTransitStationGeometryEditorActive()) return;
         const layer = e.target;
-        const parcelId = getParcelIdFromFeature(layer.feature);
+        const parcelId = parcelIdForLayer(layer);
         if (!parcelId) return;
 
         clearPreviousHover(layer);
@@ -129,14 +148,16 @@
         });
         lastHoverLayer = layer;
         lastHoverParcelId = parcelId;
+        lastHoverScope = currentPresentationScope();
         if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
             layer.bringToFront();
         }
     }
 
     function restoreParcelLayerStyle(layer) {
-        const parcelId = getParcelIdFromFeature(layer?.feature);
+        const parcelId = parcelIdForLayer(layer);
         if (!parcelId) return;
+        const liveFeature = liveFeatureForLayer(layer);
 
         // If a proposal highlight is active on this layer, restore it rather than falling back
         // to the base parcel style. The proposal highlight stays until clearProposalHighlights().
@@ -152,7 +173,7 @@
             const currentSelectedBlockName = (typeof global.selectedBlockName !== 'undefined' && global.selectedBlockName)
                 ? global.selectedBlockName
                 : (typeof global !== 'undefined' ? global.selectedBlockName : null);
-            const layerBlockName = layer?.feature?.properties?.block;
+            const layerBlockName = global.parcelBlockNameForId?.(parcelId) || null;
             if (blocksShown && currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
                 const parcelHighlightStyle = {
                     fillColor: '#3388ff',
@@ -166,8 +187,8 @@
         } catch (_) { }
 
         // Track parcels: restore stored track style or default track style
-        const isTrackParcel = layer?.feature?.properties?.isTrack === true;
-        const storedTrackStyle = (layer && (layer._trackStyle || (layer.feature && layer.feature._trackStyle))) || null;
+        const isTrackParcel = liveFeature?.properties?.isTrack === true;
+        const storedTrackStyle = layer?._trackStyle || null;
         const defaultTrackStyle = {
             color: '#000000',
             weight: 2,
@@ -219,7 +240,7 @@
             const currentSelectedBlockName = (typeof global.selectedBlockName !== 'undefined' && global.selectedBlockName)
                 ? global.selectedBlockName
                 : (typeof global !== 'undefined' ? global.selectedBlockName : null);
-            const layerBlockName = layer?.feature?.properties?.block;
+            const layerBlockName = global.parcelBlockNameForId?.(parcelId) || null;
             const blocksShown = document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked;
             if (blocksShown && currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
                 layer.setStyle({ fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2 });
@@ -241,7 +262,7 @@
         // clearing — a mouseout here would wipe the drill's outline from the shared hover group.
         if (global.__drillUi && typeof global.__drillUi.ownsHover === 'function' && global.__drillUi.ownsHover()) return;
         const layer = e.target;
-        const parcelId = getParcelIdFromFeature(layer.feature);
+        const parcelId = parcelIdForLayer(layer);
         if (!parcelId) return;
         if (lastHoverLayer === layer || lastHoverParcelId === parcelId) {
             lastHoverLayer = null;
@@ -274,6 +295,7 @@
         const previousLayer = lastHoverLayer;
         lastHoverLayer = null;
         lastHoverParcelId = null;
+        lastHoverScope = currentPresentationScope();
         if (previousLayer) {
             try { restoreParcelLayerStyle(previousLayer); } catch (_) { }
         }
@@ -311,9 +333,9 @@
 
     function selectParcel(parcelOrId, showPanel = true) {
         if (isStationPlacementMapInteractionActive()) return;
-        const parcelId = parcelOrId && parcelOrId.feature
-            ? getParcelIdFromFeature(parcelOrId.feature)
-            : parcelOrId;
+        const parcelId = typeof parcelOrId === 'string' || typeof parcelOrId === 'number'
+            ? parcelOrId
+            : parcelIdForLayer(parcelOrId);
         if (!parcelId) return;
         const nextSelectedId = parcelId.toString();
         const fabric = global.LiveParcelFabric;
@@ -359,10 +381,11 @@
             if (Array.isArray(layersToProcess) && layersToProcess.length > 0) {
                 // Use viewport-filtered layers
                 layersToProcess.forEach(layer => {
-                    if (layer && layer.feature && layer.feature.properties) {
-                        const layerParcelId = getParcelIdFromFeature(layer.feature);
+                    const layerParcelId = parcelIdForLayer(layer);
+                    const feature = layerParcelId ? fabric.get(layerParcelId) : null;
+                    if (layer && layerParcelId && feature) {
                         const isRoad = (layerParcelId && typeof global.isRoadParcel === 'function') ? global.isRoadParcel(layerParcelId) : false;
-                        const isTrack = (layer.feature.properties.isTrack === true) || Boolean(layer._trackStyle);
+                        const isTrack = feature.properties?.isTrack === true || Boolean(layer._trackStyle);
                         if (layerParcelId !== parcelId.toString()) {
                             // Check if this parcel is part of multi-selection before resetting style
                             const isMultiSelected = typeof global.multiParcelSelection !== 'undefined' &&
@@ -377,7 +400,8 @@
                     }
                 });
             }
-            const isTrackSelected = (selectedLayer?.feature?.properties?.isTrack === true) || Boolean(selectedLayer?._trackStyle);
+            const selectedFeature = fabric.get(nextSelectedId);
+            const isTrackSelected = selectedFeature?.properties?.isTrack === true || Boolean(selectedLayer?._trackStyle);
             if (isTrackSelected) {
                 const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
                 // Keep track fill; optionally bump stroke weight for selection
@@ -398,7 +422,7 @@
                 ? global.Parcels.uiParcelPanel.showParcelInfoPanel
                 : global.showParcelInfoPanel;
             if (showPanel && typeof showParcelInfoPanel === 'function') {
-                showParcelInfoPanel(selectedLayer.feature);
+                showParcelInfoPanel(selectedFeature);
                 const parcelInfoPanel = document.getElementById('parcel-info-panel');
                 if (parcelInfoPanel) {
                     parcelInfoPanel.classList.add('visible');
@@ -418,7 +442,7 @@
                 }
             }
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus(`Selected parcel ${selectedLayer.feature.properties.BROJ_CESTICE}`);
+                global.updateStatus(`Selected parcel ${selectedFeature?.properties?.BROJ_CESTICE || nextSelectedId}`);
             }
         }
     }

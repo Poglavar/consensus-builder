@@ -38,6 +38,12 @@ const CORRIDOR_EDITOR_MAX_WIDTH = 80; // the widest drawing preset (Boulevard)
 const CORRIDOR_CLEARANCE_MAX = 100;
 const CORRIDOR_CLEARANCE_DISPLAY_CAP = 30;
 
+function corridorEditorFabricScope() {
+    const city = window.CityConfigManager?.getCurrentCityId?.() || 'default';
+    const revision = window.LiveParcelFabric?.snapshot?.().revision ?? 'none';
+    return `${city}|${revision}`;
+}
+
 function corridorEditorI18n(key, fallback, params = {}) {
     try {
         if (window.i18n && typeof window.i18n.t === 'function') {
@@ -512,7 +518,7 @@ function corridorEditorCurrentEdgeFeatures() {
 function corridorEditorEnsureClearance() {
     const state = corridorEditorState;
     if (!state || state.mode !== 'proposal' || !corridorEditorClearanceReady()) return null;
-    const key = [state.scope, state.segmentId || '', state.clearanceMode,
+    const key = [corridorEditorFabricScope(), state.scope, state.segmentId || '', state.clearanceMode,
         corridorEditorBuildingSurveyKey(), state.geometryVersion || 0].join('|');
     if (state.clearanceCache && state.clearanceCache.key === key) return state.clearanceCache;
 
@@ -896,7 +902,7 @@ function corridorEditorFillParcels() {
     const bounds = corridorEditorRoadBounds();
     if (!bounds) return parcels;
     // Both sides of every segment ask for the same list; only the geometry can change it.
-    const cacheKey = `${state.geometryVersion || 0}|${corridorEditorBuildingSurveyKey()}`;
+    const cacheKey = `${corridorEditorFabricScope()}|${state.geometryVersion || 0}|${corridorEditorBuildingSurveyKey()}`;
     if (state.fillParcelsCache && state.fillParcelsCache.key === cacheKey) return state.fillParcelsCache.value;
     const padded = bounds.pad ? bounds.pad(0.4) : bounds;
     const withinReach = feature => {
@@ -1023,7 +1029,7 @@ function corridorEditorEdgeFillCuts(side, segment, planar, config, maxOffset) {
 // depends on rather than recomputed per render.
 function corridorEditorHeldEndpointsFor(planar) {
     const state = corridorEditorState;
-    const key = `${state.scope}|${state.segmentId || ''}|${state.geometryVersion || 0}`;
+    const key = `${corridorEditorFabricScope()}|${state.scope}|${state.segmentId || ''}|${state.geometryVersion || 0}`;
     if (!state.otherCenterlinesCache || state.otherCenterlinesCache.key !== key) {
         state.otherCenterlinesCache = { key, value: corridorEditorOtherCenterlinesPlanar() };
     }
@@ -1047,7 +1053,7 @@ function corridorEditorEdgeFillRegions() {
     // The preview must show what will actually be drawn, so it reads the ROAD's stored fill choice,
     // not the clearance tab's measurement mode. Keyed on the same value it passes below.
     const edgeFillLimit = (state.definition && state.definition.edgeFill && state.definition.edgeFill.limit) || 'none';
-    const cacheKey = [state.scope, state.segmentId || '', edgeFillLimit,
+    const cacheKey = [corridorEditorFabricScope(), state.scope, state.segmentId || '', edgeFillLimit,
         corridorEditorBuildingSurveyKey(), state.geometryVersion || 0, JSON.stringify(state.profile)].join('|');
     if (state.edgeFillCache && state.edgeFillCache.key === cacheKey) return state.edgeFillCache.regions;
 

@@ -12,9 +12,21 @@
     'use strict';
 
     const layersById = new Map();
+    const idsByLayer = new WeakMap();
     const boxesById = new Map();
     let group = null;
+    let city = null;
     let revision = null;
+
+    function currentCity() {
+        try {
+            return String(global.CityConfigManager?.getCurrentCityId?.()
+                || global.getCurrentCityId?.()
+                || 'default');
+        } catch (_) {
+            return 'default';
+        }
+    }
 
     function featureId(feature) {
         if (global.LiveParcelFabric && typeof global.LiveParcelFabric.featureId === 'function') {
@@ -78,9 +90,9 @@
         }
         const id = featureId(feature);
         const style = typeof global.getParcelStyle === 'function'
-            ? global.getParcelStyle(id, { feature }, {})
+            ? global.getParcelStyle(id, null, { feature })
             : (typeof global.getParcelBaseStyle === 'function'
-                ? global.getParcelBaseStyle(id, { feature }, {})
+                ? global.getParcelBaseStyle(id, { feature })
                 : global.normalStyle);
         return style || { color: '#666', weight: 1, fillOpacity: 0.08 };
     }
@@ -174,7 +186,7 @@
         touched.forEach(id => {
             if (layersById.has(id)) previous.set(id, layersById.get(id));
         });
-        return { change, replacements, previous, previousRevision: revision, committed: false };
+        return { change, replacements, previous, previousCity: city, previousRevision: revision, committed: false };
     }
 
     function removePresented(id) {
@@ -184,6 +196,7 @@
         if (parcelGroup && typeof parcelGroup.hasLayer === 'function' && parcelGroup.hasLayer(layer)) {
             parcelGroup.removeLayer(layer);
         }
+        idsByLayer.delete(layer);
         layersById.delete(String(id));
         boxesById.delete(String(id));
     }
@@ -194,6 +207,7 @@
         if (layersById.has(id)) removePresented(id);
         parcelGroup.addLayer(layer);
         layersById.set(id, layer);
+        idsByLayer.set(layer, id);
         boxesById.set(id, boxForLayer(layer));
     }
 
@@ -214,6 +228,7 @@
         } finally {
             if (canHold) renderer.releaseRedraws();
         }
+        city = currentCity();
         revision = prepared.change.revision;
         addGroupToMapIfAppropriate();
         restoreSelectionStyles();
@@ -223,6 +238,7 @@
         if (!prepared || !prepared.committed) return;
         prepared.replacements.forEach((_layer, id) => removePresented(id));
         prepared.previous.forEach((layer, id) => addPresented(id, layer));
+        city = prepared.previousCity;
         revision = prepared.previousRevision;
         restoreSelectionStyles();
     }
@@ -278,6 +294,11 @@
         return Array.from(ids || [], id => getLayer(id)).filter(Boolean);
     }
 
+    function getIdForLayer(layer) {
+        const id = layer ? idsByLayer.get(layer) : null;
+        return id && layersById.get(id) === layer ? id : null;
+    }
+
     function getLayersWithinBounds(bounds) {
         const box = boundsArray(bounds);
         if (!box) return [];
@@ -309,7 +330,7 @@
             return true;
         }).map(getLayer).filter(layer => {
             if (!layer || !options.bounds) return !!layer;
-            const id = featureId(layer.feature);
+            const id = getIdForLayer(layer);
             return intersects(boundsArray(options.bounds), boxesById.get(id));
         });
     }
@@ -334,6 +355,7 @@
         layersById.clear();
         boxesById.clear();
         replacements.forEach((layer, id) => addPresented(id, layer));
+        city = currentCity();
         revision = fabric.snapshot().revision;
         addGroupToMapIfAppropriate();
         restoreSelectionStyles();
@@ -348,11 +370,12 @@
         addGroupToMapIfAppropriate,
         getLayer,
         getLayers,
+        getIdForLayer,
         getLayersWithinBounds,
         resolveLiveLayers,
         reconcileWithFabric,
         restoreSelectionStyles,
-        snapshot: () => ({ revision, layerCount: layersById.size, parcelIds: Array.from(layersById.keys()) })
+        snapshot: () => ({ city, revision, layerCount: layersById.size, parcelIds: Array.from(layersById.keys()) })
     });
 
     if (global.LiveParcelFabric && typeof global.LiveParcelFabric.addCommitParticipant === 'function') {

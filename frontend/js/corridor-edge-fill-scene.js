@@ -8,7 +8,7 @@
 // asks again. What IS stored on the proposal is the CHOICE (`definition.edgeFill.limit`), because
 // which limit the author worked to is not something a viewer should re-decide.
 //
-// Browser-only: it reads the map's parcel layer and the building pool. The geometry underneath it
+// Browser-only: it reads the live parcel fabric and the building pool. The geometry underneath it
 // (corridor-edge-fill.js) is pure and unit-tested; this file is the wiring.
 (function (global) {
     'use strict';
@@ -58,8 +58,8 @@
     function sceneParcels(centrelines, surveys) {
         const turf = turfApi();
         const parcels = [];
-        const layer = global.parcelLayer;
-        if (!turf || !layer || typeof layer.eachLayer !== 'function' || !centrelines.length) return parcels;
+        const fabric = global.LiveParcelFabric;
+        if (!turf || !fabric?.queryBounds || !centrelines.length) return parcels;
 
         const bounds = global.L.latLngBounds([]);
         centrelines.forEach(line => line.forEach(point => bounds.extend(point)));
@@ -73,12 +73,10 @@
             } catch (_) { return false; }
         };
 
-        layer.eachLayer(child => {
-            const feature = child && child.feature;
+        fabric.queryBounds(padded, { includeCorridors: true }).forEach(feature => {
             if (!feature || !feature.geometry || !withinReach(feature)) return;
             const props = feature.properties || {};
-            const parcelId = (props.parcelId !== undefined && props.parcelId !== null) ? String(props.parcelId)
-                : (props.id !== undefined && props.id !== null ? String(props.id) : null);
+            const parcelId = fabric.featureId?.(feature) || null;
             const isRoad = props.isRoad === true || props.isRoad === 'true'
                 || (parcelId && typeof global.isRoadParcel === 'function' && global.isRoadParcel(parcelId));
             parcels.push({ id: parcelId, isRoad, feature, mainBuilding: null, mainArea: 0 });

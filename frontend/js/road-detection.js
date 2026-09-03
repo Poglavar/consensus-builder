@@ -1294,45 +1294,32 @@ function clearDetectedRoads() {
 // auto-runs in the background after every parcel ingest so roads appear without the sidebar.
 // ---------------------------------------------------------------------------
 
-let curatedRoadFetchInFlight = false;
 let curatedRoadFetchTimer = null;
 
-function curatedRoadsConfig() {
-    try { return window.CityConfigManager?.getCuratedRoadsConfig?.() || null; } catch (_) { return null; }
+function curatedRoadsAvailable() {
+    try { return window.CadastralParcelRepository?.roadClassificationAvailable?.() === true; }
+    catch (_) { return false; }
 }
 
 async function fetchCuratedRoadParcels() {
-    const config = curatedRoadsConfig();
-    if (!config?.url || typeof map === 'undefined' || !map) return 0;
-    if (curatedRoadFetchInFlight) return 0;
-    curatedRoadFetchInFlight = true;
-    try {
-        const bounds = map.getBounds();
-        const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()].join(',');
-        const base = (typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
-        const response = await fetch(`${base}${config.url}?bbox=${encodeURIComponent(bbox)}`);
-        if (!response.ok) throw new Error(`curated road source responded ${response.status}`);
-        const collection = await response.json();
-        let added = 0;
-        (collection.features || []).forEach(feature => {
-            const parcelId = feature?.properties?.parcelId;
-            if (!parcelId) return;
-            if (!isRoadParcel(parcelId)) {
-                addRoadParcel(String(parcelId));
-                added += 1;
-            }
-        });
-        if (added > 0) updateParcelStyles();
-        console.log(`[${new Date().toISOString()}] [curated-roads] ${collection.features?.length || 0} road parcels in view, ${added} newly marked`);
-        return added;
-    } finally {
-        curatedRoadFetchInFlight = false;
-    }
+    const ground = window.CadastralParcelRepository;
+    if (!ground?.ensureRoadIds || !curatedRoadsAvailable() || typeof map === 'undefined' || !map) return 0;
+    const result = await ground.ensureRoadIds(map.getBounds());
+    let added = 0;
+    result.ids.forEach(parcelId => {
+        if (!isRoadParcel(parcelId)) {
+            addRoadParcel(String(parcelId));
+            added += 1;
+        }
+    });
+    if (added > 0) updateParcelStyles();
+    console.log(`[${new Date().toISOString()}] [curated-roads] ${result.ids.length} road parcels in view, ${added} newly marked`);
+    return added;
 }
 
 // Auto-run: parcels land in bursts per moveend, so debounce like the buildings viewport fetch.
 function scheduleCuratedRoadRefresh() {
-    if (!curatedRoadsConfig()) return;
+    if (!curatedRoadsAvailable()) return;
     if (curatedRoadFetchTimer) clearTimeout(curatedRoadFetchTimer);
     curatedRoadFetchTimer = setTimeout(() => {
         curatedRoadFetchTimer = null;
@@ -1359,7 +1346,7 @@ async function detectExistingRoads() {
 
     try {
         // A curated source is authoritative: use it INSTEAD of the three client-side detectors.
-        if (curatedRoadsConfig()?.url) {
+        if (curatedRoadsAvailable()) {
             updateStatus('Loading existing roads from the curated source...');
             const added = await fetchCuratedRoadParcels();
             updateStatus(`Existing roads loaded — ${added} parcels newly marked as roads.`);

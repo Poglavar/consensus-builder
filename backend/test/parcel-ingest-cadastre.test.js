@@ -1,12 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import vm from 'node:vm';
 
 const require = createRequire(import.meta.url);
 const { createLiveParcelFabric } = require('../../frontend/js/parcels/live-fabric.js');
 const { createCadastralParcelRepository } = require('../../frontend/js/parcels/ground-service.js');
-const source = readFileSync(new URL('../../frontend/js/parcels/ingest.js', import.meta.url), 'utf8');
 
 function makeContext() {
     const fabric = createLiveParcelFabric();
@@ -22,9 +19,15 @@ function makeContext() {
         convertGeoJSON: value => value,
         LiveParcelFabric: fabric
     };
-    context.CadastralParcelRepository = createCadastralParcelRepository({
+    const repository = createCadastralParcelRepository({
         root: context,
         convertFeatures: value => value,
+        transport: {
+            fetchByIds: async ids => ({
+                status: 'ready', complete: true, absentIds: [], returnsWGS84: true,
+                features: ids.map(id => parcel(id))
+            })
+        },
         onFeatures: async (features, options = {}) => {
             if (options.mutation) {
                 options.mutation.seedCadastre(features);
@@ -36,10 +39,10 @@ function makeContext() {
             mutation.publish();
         }
     });
+    context.CadastralParcelRepository = repository;
     context.window = context;
     context.globalThis = context;
-    vm.runInNewContext(source, context);
-    return { context, fabric };
+    return { context, fabric, repository };
 }
 
 function parcel(id, properties = {}) {
@@ -55,7 +58,7 @@ function parcel(id, properties = {}) {
 
 describe('cadastral ingest under a standing formation', () => {
     it('indexes claimed cadastral ground but keeps it hidden from the live partition', async () => {
-        const { context, fabric } = makeContext();
+        const { fabric, repository } = makeContext();
         const mutation = fabric.beginMutation({});
         mutation.upsertFeatures([
             parcel('HR-1#park-1', { cadastreParcelIds: ['HR-1'], producedByProposalId: 'park' })
@@ -63,16 +66,16 @@ describe('cadastral ingest under a standing formation', () => {
         await mutation.prepare();
         mutation.publish();
 
-        await context.ingestCadastralParcelFeatures([parcel('HR-1')], { skipConversion: true });
+        await repository.ensureIds(['HR-1']);
 
         expect(fabric.get('HR-1')).toBeNull();
         expect(fabric.get('HR-1#park-1')).not.toBeNull();
     });
 
     it('shows unclaimed cadastral ground', async () => {
-        const { context, fabric } = makeContext();
+        const { fabric, repository } = makeContext();
 
-        await context.ingestCadastralParcelFeatures([parcel('HR-2')], { skipConversion: true });
+        await repository.ensureIds(['HR-2']);
 
         expect(fabric.get('HR-2')).not.toBeNull();
     });

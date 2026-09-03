@@ -219,7 +219,7 @@ function getFirstSelectableParcel(proposal) {
         : [];
     if (!anchors.length) return null;
     const layer = window.ParcelPresenter?.resolveLiveLayers?.(anchors, { includeCorridors: true })?.[0] || null;
-    return layer ? window.LiveParcelFabric?.featureId?.(layer.feature) : anchors[0];
+    return layer ? window.ParcelPresenter?.getIdForLayer?.(layer) : anchors[0];
 }
 
 function refreshProposalData() {

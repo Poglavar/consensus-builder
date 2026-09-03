@@ -46,7 +46,9 @@
                 : null;
             const showParcelInfoPanel = uiParcelPanel.showParcelInfoPanel || global.showParcelInfoPanel;
             if (parcel && typeof showParcelInfoPanel === 'function') {
-                showParcelInfoPanel(parcel.feature);
+                const parcelId = global.ParcelPresenter?.getIdForLayer?.(parcel);
+                const feature = parcelId ? global.LiveParcelFabric?.get?.(parcelId) : null;
+                if (feature) showParcelInfoPanel(feature);
             }
         };
         // Use rAF to wait for any UI updates instead of arbitrary timeouts.

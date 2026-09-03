@@ -724,24 +724,11 @@ function updateBlockButtonStates() {
         try {
             const hasSelectedBlock = typeof selectedBlockName !== 'undefined' && selectedBlockName;
             if (hasSelectedBlock) {
-                // Prefer live parcelLayer scan (parcels tagged with block), fallback to blockStorage
-                if (typeof parcelLayer !== 'undefined' && parcelLayer) {
-                    let count = 0;
-                    parcelLayer.getLayers().forEach(l => {
-                        try {
-                            const props = l && l.feature && l.feature.properties;
-                            if (!props) return;
-                            if (props.block === selectedBlockName) {
-                                if (typeof isRoadFn === 'function' && isRoadFn(props.parcelId)) return;
-                                count++;
-                            }
-                        } catch (_) { }
-                    });
-                    enablePark = count > 0;
-                }
-                if (!enablePark && typeof blockStorage !== 'undefined' && blockStorage && blockStorage.blocks && blockStorage.blocks.has(selectedBlockName)) {
+                if (typeof blockStorage !== 'undefined' && blockStorage && blockStorage.blocks && blockStorage.blocks.has(selectedBlockName)) {
                     const blk = blockStorage.blocks.get(selectedBlockName);
-                    enablePark = !!(blk && Array.isArray(blk.parcels) && blk.parcels.length > 0);
+                    const ids = Array.isArray(blk?.parcelIds) ? blk.parcelIds : [];
+                    enablePark = ids.some(id => window.LiveParcelFabric?.get?.(String(id))
+                        && !(typeof isRoadFn === 'function' && isRoadFn(String(id))));
                 }
             }
         } catch (_) { enablePark = false; }
@@ -758,23 +745,11 @@ function updateBlockButtonStates() {
         try {
             const hasSelectedBlock = typeof selectedBlockName !== 'undefined' && selectedBlockName;
             if (hasSelectedBlock) {
-                if (typeof parcelLayer !== 'undefined' && parcelLayer) {
-                    let count = 0;
-                    parcelLayer.getLayers().forEach(l => {
-                        try {
-                            const props = l && l.feature && l.feature.properties;
-                            if (!props) return;
-                            if (props.block === selectedBlockName) {
-                                if (typeof isRoadFn === 'function' && isRoadFn(props.parcelId)) return;
-                                count++;
-                            }
-                        } catch (_) { }
-                    });
-                    enableSquare = count > 0;
-                }
-                if (!enableSquare && typeof blockStorage !== 'undefined' && blockStorage && blockStorage.blocks && blockStorage.blocks.has(selectedBlockName)) {
+                if (typeof blockStorage !== 'undefined' && blockStorage && blockStorage.blocks && blockStorage.blocks.has(selectedBlockName)) {
                     const blk = blockStorage.blocks.get(selectedBlockName);
-                    enableSquare = !!(blk && Array.isArray(blk.parcels) && blk.parcels.length > 0);
+                    const ids = Array.isArray(blk?.parcelIds) ? blk.parcelIds : [];
+                    enableSquare = ids.some(id => window.LiveParcelFabric?.get?.(String(id))
+                        && !(typeof isRoadFn === 'function' && isRoadFn(String(id))));
                 }
             }
         } catch (_) { enableSquare = false; }

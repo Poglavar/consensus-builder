@@ -109,31 +109,25 @@
     }
 
     function getParcelBaseStyle(parcelId, optionsOrLayer = {}, maybeOptions = {}) {
-        // Handle case where second arg is a layer (for compatibility with getParcelStyle signature)
         let options = optionsOrLayer;
         let layer = null;
-        if (optionsOrLayer && typeof optionsOrLayer === 'object' && optionsOrLayer.feature) {
+        if (global.ParcelPresenter?.getIdForLayer?.(optionsOrLayer)) {
             layer = optionsOrLayer;
+            options = maybeOptions || {};
+        } else if (optionsOrLayer === null || optionsOrLayer === undefined) {
             options = maybeOptions || {};
         }
         const { isRoad: isRoadOverride, isTrack: isTrackOverride } = options || {};
         const idStr = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
-
-        // Corridor/track detection needs the layer's feature flags. Callers that only have an id
-        // would otherwise drop a corridor slice into the generic dark road style — resolve the
-        // layer ourselves so the quiet corridor footprint survives every restyle path.
-        if (!layer && idStr && global.LiveParcelFabric?.get?.(idStr)) {
-            layer = global.ParcelPresenter?.getLayer?.(idStr) || null;
-        }
+        const feature = options?.feature?.type === 'Feature'
+            ? options.feature
+            : (idStr ? global.LiveParcelFabric?.get?.(idStr) || null : null);
+        const properties = feature?.properties || {};
 
         // Check track first - tracks have isCorridor=true and isTrack=true but isRoad=false
         let trackFlag = typeof isTrackOverride === 'boolean' ? isTrackOverride : false;
-        if (!trackFlag && layer) {
-            if (layer.feature && layer.feature.properties && layer.feature.properties.isTrack === true) {
-                trackFlag = true;
-            } else if (layer._trackStyle) {
-                trackFlag = true;
-            }
+        if (!trackFlag) {
+            trackFlag = properties.isTrack === true || Boolean(layer?._trackStyle);
         }
         if (trackFlag) {
             if (layer && layer._trackStyle) {
@@ -142,9 +136,7 @@
             return { ...trackStyle };
         }
 
-        const corridorRoadFlag = !!(layer && layer.feature && layer.feature.properties
-            && layer.feature.properties.isCorridor === true
-            && layer.feature.properties.isRoad === true);
+        const corridorRoadFlag = properties.isCorridor === true && properties.isRoad === true;
         if (corridorRoadFlag) {
             return { ...corridorParcelStyle };
         }
@@ -152,8 +144,7 @@
         // Check for road (tracks have isRoad=false, so no conflict). Both sources count: the
         // feature's own isRoad flag (child slices carry it before addRoadParcel registers them)
         // and the persisted road-parcel set (legacy/curated parcels carry no flag at all).
-        const propsRoadFlag = !!(layer && layer.feature && layer.feature.properties
-            && (layer.feature.properties.isRoad === true || layer.feature.properties.isRoad === 'true'));
+        const propsRoadFlag = properties.isRoad === true || properties.isRoad === 'true';
         const roadFlag = typeof isRoadOverride === 'boolean'
             ? isRoadOverride
             : (propsRoadFlag || (idStr ? (typeof global.isRoad === 'function' ? global.isRoad(idStr) : false) : false));
@@ -186,11 +177,11 @@
 
         // Get base style first - pass layer so track detection works
         const baseStyle = getParcelBaseStyle(parcelId, layer, options);
+        const properties = global.LiveParcelFabric?.get?.(idStr)?.properties || options?.feature?.properties || {};
 
         // Roads, tracks, and ad parcels use their specific styles, don't apply ownership highlighting
         const { isRoad: isRoadOverride } = options || {};
-        const propsRoadFlag = !!(layer && layer.feature && layer.feature.properties
-            && (layer.feature.properties.isRoad === true || layer.feature.properties.isRoad === 'true'));
+        const propsRoadFlag = properties.isRoad === true || properties.isRoad === 'true';
         const roadFlag = typeof isRoadOverride === 'boolean'
             ? isRoadOverride
             : (propsRoadFlag || (idStr ? (typeof global.isRoad === 'function' ? global.isRoad(idStr) : false) : false));
@@ -198,7 +189,7 @@
 
         // Check if this is a track parcel (via layer or by searching parcelLayer)
         let isTrackParcelFlag = false;
-        if (layer && layer.feature && layer.feature.properties && layer.feature.properties.isTrack === true) {
+        if (properties.isTrack === true) {
             isTrackParcelFlag = true;
         } else if (layer && layer._trackStyle) {
             isTrackParcelFlag = true;
@@ -217,7 +208,7 @@
                 // property, and its type lives in the id-keyed cache until something re-stamps it.
                 const ownershipType = (typeof ownershipHighlight.typeFor === 'function')
                     ? ownershipHighlight.typeFor(layer)
-                    : (layer && layer.feature && layer.feature.properties ? layer.feature.properties.ownershipType : null);
+                    : properties.ownershipType;
 
                 if (ownershipType && selectedTypes.has(ownershipType)) {
                     const highlightStyle = typeof ownershipHighlight.styleFor === 'function'
@@ -286,7 +277,7 @@
 
     function refreshParcelStylesForAppliedProposals() {
         recomputeParcelsWithAppliedSpatialProposals();
-        if (!global.parcelLayer) return;
+        if (!global.LiveParcelFabric || !global.ParcelPresenter) return;
 
         const mapBounds = (global.map && typeof global.map.getBounds === 'function') ? global.map.getBounds() : null;
 
@@ -307,23 +298,24 @@
         if (ownershipTypesActive && typeof global.getParcelsInBounds === 'function' && mapBounds) {
             // Get only visible parcels for the expensive ownership highlighting
             parcelsToProcess = global.getParcelsInBounds(mapBounds);
-            visibleParcelIds = new Set(parcelsToProcess.map(layer => {
-                const pid = layer?.feature?.properties?.parcelId;
-                return pid !== undefined && pid !== null ? pid.toString() : null;
-            }).filter(Boolean));
+            visibleParcelIds = new Set(parcelsToProcess
+                .map(layer => global.ParcelPresenter?.getIdForLayer?.(layer))
+                .filter(Boolean).map(String));
         }
 
         // Process layers - use optimized path when available
         const processLayer = (layer) => {
-            const parcelId = layer?.feature?.properties?.parcelId;
+            const parcelId = global.ParcelPresenter?.getIdForLayer?.(layer);
             if (parcelId === undefined || parcelId === null) return;
             const idStr = parcelId.toString();
+            const feature = global.LiveParcelFabric?.get?.(idStr);
+            if (!feature) return;
 
             // For ownership highlighting, skip parcels not in view (if we have that info)
             const isInVisibleSet = visibleParcelIds ? visibleParcelIds.has(idStr) : true;
 
             if (selectedId && idStr === selectedId) {
-                const isTrackSelected = (layer?.feature?.properties?.isTrack === true) || Boolean(layer?._trackStyle);
+                const isTrackSelected = feature.properties?.isTrack === true || Boolean(layer?._trackStyle);
                 if (isTrackSelected) {
                     const trackStyle = getParcelBaseStyle(idStr, layer, { isTrack: true });
                     layer.setStyle({ ...trackStyle, weight: 4 });
@@ -348,7 +340,7 @@
             const currentSelectedBlockName = (typeof global.selectedBlockName !== 'undefined' && global.selectedBlockName)
                 ? global.selectedBlockName
                 : (typeof global !== 'undefined' ? global.selectedBlockName : null);
-            const layerBlockName = layer?.feature?.properties?.block;
+            const layerBlockName = global.parcelBlockNameForId?.(idStr) || null;
             if (blocksShown && currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
                 layer.setStyle({ fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2 });
                 return;
@@ -365,7 +357,7 @@
                 const selectedTypes = ownershipHighlight.getSelectedOwnershipTypes();
                 const ownershipType = (typeof ownershipHighlight.typeFor === 'function')
                     ? ownershipHighlight.typeFor(layer)
-                    : layer?.feature?.properties?.ownershipType;
+                    : feature.properties?.ownershipType;
                 if (ownershipType && selectedTypes.has(ownershipType)) {
                     const highlightStyle = typeof ownershipHighlight.styleFor === 'function'
                         ? ownershipHighlight.styleFor(ownershipType)
@@ -387,7 +379,8 @@
         };
 
         // Process all layers (we still need to touch all for proper state management)
-        global.parcelLayer.eachLayer(processLayer);
+        const fabricIds = global.LiveParcelFabric?.list?.().map(feature => global.LiveParcelFabric.featureId(feature)).filter(Boolean) || [];
+        global.ParcelPresenter?.getLayers?.(fabricIds).forEach(processLayer);
 
         if (hasMultiSelection && typeof global.multiParcelSelection?.reapplyMultiParcelHighlights === 'function') {
             global.multiParcelSelection.reapplyMultiParcelHighlights();
@@ -402,7 +395,7 @@
                 ? global.ParcelPresenter?.getLayer?.(selectedId)
                 : null;
             if (selectedLayer) {
-                const isTrackSelected = (selectedLayer?.feature?.properties?.isTrack === true) || Boolean(selectedLayer?._trackStyle);
+                const isTrackSelected = global.LiveParcelFabric?.get?.(selectedId)?.properties?.isTrack === true || Boolean(selectedLayer?._trackStyle);
                 if (isTrackSelected) {
                     const trackStyle = getParcelBaseStyle(selectedId, selectedLayer, { isTrack: true });
                     selectedLayer.setStyle({ ...trackStyle, weight: 4 });

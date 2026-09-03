@@ -1,26 +1,38 @@
-// Ownership highlighting is painted from `feature.properties.ownershipType`, but that property is
-// minted per ingest and dies with the feature — while the type itself lives in an id-keyed cache.
-// Panning re-ingests the ground under the map, so every parcel came back plain: the cache still
-// knew the answer and nothing asked it. These tests pin the two halves of the fix.
+// Ownership classification is derived from authoritative fabric features and cached only for the
+// current city + fabric revision. Leaflet features are presentation data and are never stamped.
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 
 const SAVED = {};
-const KEYS = ['ParcelsOwnershipHighlight', 'parcelLayer', 'refreshParcelStylesForAppliedProposals', 'getOwnershipType', 'map'];
+const KEYS = ['ParcelsOwnershipHighlight', 'LiveParcelFabric', 'ParcelPresenter', 'CityConfigManager', 'refreshParcelStylesForAppliedProposals', 'getOwnershipType', 'map'];
 
 function layerFor(parcelId, properties = {}) {
     return { feature: { type: 'Feature', properties: { parcelId, ...properties }, geometry: null } };
 }
 
 let refreshes;
+let revision;
+let layers;
 
 beforeEach(() => {
     KEYS.forEach(key => { SAVED[key] = globalThis[key]; });
     refreshes = 0;
+    revision = 1;
+    layers = [];
     globalThis.refreshParcelStylesForAppliedProposals = () => { refreshes += 1; };
     globalThis.getOwnershipType = label => (String(label).includes('GRAD') ? 'government' : 'private individual');
+    globalThis.CityConfigManager = { getCurrentCityId: () => 'sibenik' };
+    globalThis.LiveParcelFabric = {
+        snapshot: () => ({ revision }),
+        featureId: feature => feature?.properties?.parcelId || null,
+        list: () => layers.map(layer => layer.feature),
+        get: id => layers.find(layer => layer.feature.properties.parcelId === String(id))?.feature || null
+    };
+    globalThis.ParcelPresenter = {
+        getIdForLayer: candidate => layers.includes(candidate) ? candidate.feature.properties.parcelId : null
+    };
     globalThis.map = null;
     delete globalThis.ParcelsOwnershipHighlight;
     // Fresh module state per test: the cache is the thing under test.
@@ -34,54 +46,53 @@ afterEach(() => {
     });
 });
 
-function setLayers(layers) {
-    globalThis.parcelLayer = { eachLayer: callback => layers.forEach(callback) };
+function setFabricLayers(nextLayers) {
+    layers = nextLayers;
 }
 
-describe('ownership type survives a re-ingest', () => {
-    it('answers from the cache when the fresh feature has lost the property', async () => {
+describe('ownership type follows the live fabric revision', () => {
+    it('answers a presentation-layer query from the authoritative feature', async () => {
         const api = globalThis.ParcelsOwnershipHighlight;
         const classified = layerFor('HR-1', { ownershipType: 'government' });
-        setLayers([classified]);
+        setFabricLayers([classified]);
         await api.calculateOwnershipTypesForAllParcels();
 
-        // The pan replaced the layer: same ground, same id, a feature that never heard of ownership.
-        const reingested = layerFor('HR-1');
-        expect(reingested.feature.properties.ownershipType).toBeUndefined();
-        expect(api.typeFor(reingested)).toBe('government');
-        // And it re-stamps, so the next read is direct.
-        expect(reingested.feature.properties.ownershipType).toBe('government');
+        expect(api.typeFor(classified)).toBe('government');
     });
 
-    it('re-stamps every known parcel on the next classification pass', async () => {
+    it('does not return a classification cached for an older fabric revision', async () => {
         const api = globalThis.ParcelsOwnershipHighlight;
-        setLayers([layerFor('HR-1', { ownershipType: 'company' })]);
+        setFabricLayers([layerFor('HR-1', { ownershipType: 'company' })]);
         await api.calculateOwnershipTypesForAllParcels();
 
-        const reingested = layerFor('HR-1');
-        setLayers([reingested]);
+        const replacement = layerFor('HR-1', { ownershipList: [{ ownerLabel: 'GRAD ŠIBENIK' }] });
+        revision = 2;
+        setFabricLayers([replacement]);
         await api.calculateOwnershipTypesForAllParcels();
-        expect(reingested.feature.properties.ownershipType).toBe('company');
+        expect(api.typeFor(replacement)).toBe('government');
     });
 
-    it('classifies ground that arrives unknown', async () => {
+    it('classifies ground without mutating its feature', async () => {
         const api = globalThis.ParcelsOwnershipHighlight;
         const fresh = layerFor('HR-2', { ownershipList: [{ ownerLabel: 'GRAD ŠIBENIK' }] });
-        setLayers([fresh]);
+        setFabricLayers([fresh]);
         await api.calculateOwnershipTypesForAllParcels();
-        expect(fresh.feature.properties.ownershipType).toBe('government');
+        expect(fresh.feature.properties.ownershipType).toBeUndefined();
         expect(api.typeFor(fresh)).toBe('government');
     });
 
     it('repaints after every pass, so a classified parcel shows up without another event', async () => {
         const api = globalThis.ParcelsOwnershipHighlight;
-        setLayers([layerFor('HR-1', { ownershipType: 'government' })]);
+        setFabricLayers([layerFor('HR-1', { ownershipType: 'government' })]);
         await api.calculateOwnershipTypesForAllParcels();
         expect(refreshes).toBeGreaterThan(0);
     });
 
     it('has no answer for ground it has never seen', () => {
-        expect(globalThis.ParcelsOwnershipHighlight.typeFor(layerFor('HR-999'))).toBeNull();
+        const unknown = layerFor('HR-999');
+        setFabricLayers([unknown]);
+        setFabricLayers([]);
+        expect(globalThis.ParcelsOwnershipHighlight.typeFor(unknown)).toBeNull();
     });
 });
 

@@ -73,14 +73,19 @@ describe('cadastral arrival publication', () => {
         const onFeatures = vi.fn()
             .mockRejectedValueOnce(new Error('fabric commit failed'))
             .mockResolvedValueOnce(undefined);
-        const ground = repository({ onFeatures });
+        const fetchByIds = vi.fn(async ids => ({
+            status: 'ready', complete: true, absentIds: [], returnsWGS84: true,
+            features: ids.map(parcel)
+        }));
+        const ground = repository({ onFeatures, transport: { fetchByIds } });
 
-        await expect(ground.acceptFeatures([parcel('HR-A')], { skipConversion: true }))
+        await expect(ground.ensureIds(['HR-A']))
             .rejects.toThrow('fabric commit failed');
         expect(ground.get('HR-A')).not.toBeNull();
 
-        await ground.acceptFeatures([parcel('HR-A')], { skipConversion: true });
+        await ground.ensureIds(['HR-A']);
         expect(ground.get('HR-A')).not.toBeNull();
         expect(onFeatures).toHaveBeenCalledTimes(2);
+        expect(fetchByIds).toHaveBeenCalledOnce();
     });
 });

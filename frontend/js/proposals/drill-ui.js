@@ -24,6 +24,22 @@
     // proposal is edited or re-applied, so a mutated road
     // definition cannot serve a stale corridor polygon.
     const footprintCache = new Map();
+    let footprintCacheScope = null;
+
+    function currentFabricScope() {
+        const city = global.CityConfigManager?.getCurrentCityId?.() || 'default';
+        const revision = global.LiveParcelFabric?.snapshot?.().revision ?? 'none';
+        return `${city}|${revision}`;
+    }
+
+    function scopedFootprintKey(key) {
+        const scope = currentFabricScope();
+        if (scope !== footprintCacheScope) {
+            footprintCache.clear();
+            footprintCacheScope = scope;
+        }
+        return `${scope}\u0000${key}`;
+    }
 
     function stampOf(proposal) {
         return `${proposal.updatedAt || ''}|${proposal.appliedAt || ''}`;
@@ -33,7 +49,8 @@
         const planOrder = global.__planOrder;
         if (!planOrder || typeof planOrder.footprintOf !== 'function') return null;
         const stamp = stampOf(proposal);
-        const cached = footprintCache.get(key);
+        const cacheKey = scopedFootprintKey(key);
+        const cached = footprintCache.get(cacheKey);
         if (cached && cached.stamp === stamp) return cached;
         let footprint = null;
         let bbox = null;
@@ -44,7 +61,7 @@
             }
         } catch (_) { footprint = null; }
         const entry = { stamp, footprint, bbox };
-        footprintCache.set(key, entry);
+        footprintCache.set(cacheKey, entry);
         return entry;
     }
 
@@ -112,7 +129,7 @@
         try {
             let feature = null;
             if (entry.kind === 'proposal') {
-                const cached = footprintCache.get(entry.key);
+                const cached = footprintFor(entry.proposal, entry.key);
                 feature = cached ? cached.footprint : null;
             } else {
                 feature = entry.feature;
@@ -410,7 +427,7 @@
     function hoverOutlineFor(entry) {
         if (!entry) return null;
         if (entry.kind === 'proposal') {
-            const cached = footprintCache.get(entry.key);
+            const cached = footprintFor(entry.proposal, entry.key);
             return cached ? cached.footprint : null;
         }
         return entry.feature || null;

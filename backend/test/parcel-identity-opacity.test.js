@@ -20,15 +20,14 @@ describe('parcel identity opacity boundary', () => {
         expect(source, relative(frontendJsRoot, absolutePath)).not.toMatch(retiredParserNames);
     });
 
-    it('keeps cadastral import as an explicitly declared repository boundary', () => {
-        const source = readFileSync(join(frontendJsRoot, 'parcels/ingest.js'), 'utf8');
-        expect(source).toContain('async function ingestCadastralParcelFeatures');
-        expect(source).toContain('CadastralParcelRepository');
-        expect(source).toContain('.acceptFeatures(');
-        expect(source).not.toContain('ingestParcelFeatures');
-        expect(source).not.toContain('LiveParcelFabric');
-        expect(source).not.toContain('seedCadastre');
-        expect(source).not.toContain('upsertFeatures');
+    it('keeps cadastral transport ingestion private to the ground service', () => {
+        const renderer = readFileSync(join(frontendJsRoot, 'parcels/ingest.js'), 'utf8');
+        const repository = readFileSync(join(frontendJsRoot, 'parcels/ground-service.js'), 'utf8');
+        expect(renderer).not.toContain('ingestCadastralParcelFeatures');
+        expect(renderer).not.toContain('CadastralParcelRepository');
+        expect(repository).toContain('function retainTransportFeatures');
+        expect(repository).not.toContain('acceptFeatures,');
+        expect(repository).not.toContain('global.acceptFeatures');
     });
 
     it('uses explicit provenance when identifying revision-local corridor arrangement', () => {

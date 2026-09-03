@@ -3035,10 +3035,7 @@ const ProposalManager = {
                 const affectedCadastreIds = new Set(proposalClaims.cadastreParcelIdsOf(proposalData));
                 if (selectedCadastreIds.some(id => affectedCadastreIds.has(String(id)))) {
                     if (typeof showParcelInfoPanel === 'function') {
-                        const parcelLayer = window.ParcelPresenter?.getLayer?.(window.selectedParcelId);
-                        if (parcelLayer) {
-                            showParcelInfoPanel(parcelLayer.feature);
-                        }
+                        showParcelInfoPanel(selectedFeature);
                     }
                 }
             }

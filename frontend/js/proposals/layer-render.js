@@ -313,7 +313,7 @@ function getParcelFeaturesForHighlight(parcelId, proposalContext = null, options
                 includeCorridors: options.includeCorridors === true
             }) || [];
             return layers
-                .map(layer => window.LiveParcelFabric.get(window.LiveParcelFabric.featureId(layer.feature)))
+                .map(layer => window.LiveParcelFabric.get(window.ParcelPresenter.getIdForLayer(layer)))
                 .filter(feature => feature?.geometry);
         }
         void skipRecovery;
@@ -786,56 +786,6 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
         }
 
         if (bounds && bounds.isValid()) {
-            // Suppress parcel fetching when showing proposal contours
-            try { window.suppressCameraMoves = true; } catch (_) { }
-
-            // Hide parcel layer if zoomed out too far (to prevent showing all parcels in memory)
-            const parcelLayer = (typeof window !== 'undefined' && window.parcelLayer) ? window.parcelLayer : null;
-            const wasParcelLayerVisible = parcelLayer && map.hasLayer(parcelLayer);
-            if (parcelLayer && wasParcelLayerVisible) {
-                // Hide parcel layer temporarily - it will be restored if zoom is appropriate
-                try { map.removeLayer(parcelLayer); } catch (_) { }
-            }
-
-            // Listen for moveend event to know when centering is complete
-            const onMoveEnd = () => {
-                map.off('moveend', onMoveEnd); // Remove listener
-                window.isApplyingProposalHighlights = false;
-
-                // Check if zoom is appropriate for showing parcels
-                const finalZoom = map.getZoom();
-                const isZoomAppropriate = typeof isZoomWithinParcelRange === 'function'
-                    ? isZoomWithinParcelRange()
-                    : finalZoom >= 15; // Default threshold
-
-                // Re-enable parcel fetching after centering is complete
-                try { window.suppressCameraMoves = false; } catch (_) { }
-
-                // Ensure parcel layer visibility matches zoom appropriateness
-                if (parcelLayer) {
-                    if (isZoomAppropriate && wasParcelLayerVisible) {
-                        // Restore parcel layer only if zoom is appropriate and it was visible before
-                        try {
-                            if (!map.hasLayer(parcelLayer)) {
-                                parcelLayer.addTo(map);
-                            }
-                        } catch (_) { }
-                    } else {
-                        // Remove parcel layer if zoom is not appropriate (even if it was added elsewhere)
-                        try {
-                            if (map.hasLayer(parcelLayer)) {
-                                map.removeLayer(parcelLayer);
-                            }
-                        } catch (_) { }
-                    }
-                }
-
-                // Apply overlays after centering is complete
-                applyProposalHighlights();
-            };
-
-            map.on('moveend', onMoveEnd);
-
             // Frame the proposal in the VISIBLE map, clear of whichever proposal panel is covering it
             // (the details panel that opens on select, or the list panel when browsing). Asymmetric
             // padding shifts the fit into the visible area, instead of the old symmetric bounds.pad()
@@ -845,7 +795,14 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
                 : { paddingTopLeft: [50, 50], paddingBottomRight: [50, 50] };
             // animate:false — instant framing, and it avoids requestAnimationFrame (throttled to a
             // standstill when the tab isn't actively rendering, which silently no-ops an animated fit).
-            map.fitBounds(bounds, { paddingTopLeft, paddingBottomRight, maxZoom: 19, animate: false });
+            try {
+                window.suppressCameraMoves = true;
+                map.fitBounds(bounds, { paddingTopLeft, paddingBottomRight, maxZoom: 19, animate: false });
+            } finally {
+                window.suppressCameraMoves = false;
+                window.isApplyingProposalHighlights = false;
+            }
+            applyProposalHighlights();
         } else {
             // No bounds from road definition or parcel layers
             window.isApplyingProposalHighlights = false;

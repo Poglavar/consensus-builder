@@ -93,7 +93,12 @@ async function handleReparcellizationAlgorithmClick(algorithmKey = 'sweep-line')
 function areParcelsContiguous(parcels = [], options = {}) {
     const bufferMeters = typeof options.bufferMeters === 'number' ? Math.max(0, options.bufferMeters) : 0.5;
     const sourceFeatures = parcels
-        .map(p => (p && p.feature) ? p.feature : p)
+        .map(parcel => {
+            if (typeof parcel === 'string' || typeof parcel === 'number') {
+                return globalThis.LiveParcelFabric?.get?.(String(parcel)) || null;
+            }
+            return parcel?.type === 'Feature' ? parcel : null;
+        })
         .filter(f => f && f.geometry && f.geometry.coordinates);
     // Connectivity is about pieces of ground, not array entries. A single GeoJSON MultiPolygon
     // can contain several islands, so treating "one feature" as automatically contiguous allowed

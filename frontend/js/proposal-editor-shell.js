@@ -943,7 +943,7 @@
             return null;
         }
         const contiguity = typeof global.areParcelsContiguous === 'function'
-            ? global.areParcelsContiguous(selection.layers)
+            ? global.areParcelsContiguous(selection.ids)
             : { contiguous: true };
         if (!contiguity.contiguous) {
             reportDisconnectedStructureSelection();
@@ -956,7 +956,7 @@
             ? selection.ids.map(String)
             : ids;
         const geometry = typeof global.buildGeometryFromParcels === 'function'
-            ? global.buildGeometryFromParcels(selection.layers)
+            ? global.buildGeometryFromParcels(liveIds)
             : null;
         if (!geometry || !geometry.type) {
             console.warn('[ProposalEditor] Could not build structure geometry from the selection', ids);

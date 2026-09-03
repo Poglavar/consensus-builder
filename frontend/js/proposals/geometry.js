@@ -102,46 +102,25 @@ function forEachProposalParcelInViewport(proposalIdSet, callback) {
     }
     if (!bounds) return 0;
 
-    let layers = [];
-    if (typeof window.resolveLiveParcelLayers === 'function') {
-        try {
-            // Proposal records keep original cadastral ids. Resolve those ids through the live
-            // tessellation so an applied/unapplied proposal highlights the parcel remnants beside
-            // roads, never the hidden full cadastral polygon beneath them.
-            layers = window.resolveLiveParcelLayers(proposalIdSet, {
-                bounds,
-                includeCorridors: false
-            }) || [];
-        } catch (_) {
-            layers = [];
-        }
-    } else if (typeof window.getParcelLayersWithinBounds === 'function') {
-        try {
-            layers = window.getParcelLayersWithinBounds(bounds) || [];
-        } catch (_) {
-            layers = [];
-        }
-    }
+    // Proposal records keep original cadastral ids. Resolve those ids through the live
+    // tessellation so an applied/unapplied proposal highlights the parcel remnants beside roads,
+    // never the hidden full cadastral polygon beneath them.
+    const layers = window.ParcelPresenter?.resolveLiveLayers?.(proposalIdSet, {
+        bounds,
+        includeCorridors: false
+    }) || [];
     if (!layers.length) return 0;
 
     let matched = 0;
     const seen = new Set();
     for (const layer of layers) {
-        if (!layer || !layer.feature) continue;
-        const idValue = (typeof getParcelIdFromFeature === 'function')
-            ? getParcelIdFromFeature(layer.feature)
-            : (layer.feature.properties && (layer.feature.properties.parcelId || layer.feature.properties.parcel_id || layer.feature.properties.id));
+        const idValue = window.ParcelPresenter?.getIdForLayer?.(layer);
         if (idValue == null) continue;
         const idStr = String(idValue);
-        // resolveLiveParcelLayers already matched durable base ids to their current pieces. The
-        // legacy fallback above still needs the old exact-id filter.
-        if (typeof window.resolveLiveParcelLayers !== 'function' && !proposalIdSet.has(idStr)) continue;
         if (seen.has(idStr)) continue;
         seen.add(idStr);
-        try {
-            callback(layer, idStr);
-            matched++;
-        } catch (_) { /* keep going */ }
+        callback(layer, idStr);
+        matched++;
     }
     return matched;
 }
@@ -675,12 +654,15 @@ function relocateProposalGeometryGroup(goalKey) {
     }
 }
 
-function buildGeometryFromParcels(parcelLayers = []) {
-    if (!parcelLayers.length) return null;
+function buildGeometryFromParcels(parcelInputs = []) {
+    if (!parcelInputs.length) return null;
 
-    const parcelFeatures = parcelLayers
-        .map(layer => {
-            const feature = layer?.feature;
+    const fabric = typeof window !== 'undefined' ? window.LiveParcelFabric : null;
+    const parcelFeatures = parcelInputs
+        .map(input => {
+            const feature = (typeof input === 'string' || typeof input === 'number')
+                ? fabric?.get?.(String(input))
+                : (input?.type === 'Feature' ? input : null);
             if (!feature || !feature.geometry) return null;
             try {
                 return JSON.parse(JSON.stringify(feature));
@@ -809,8 +791,8 @@ function buildGeometryFromParcels(parcelLayers = []) {
     }
 
     const multiCoords = [];
-    parcelLayers.forEach(layer => {
-        const geom = layer?.feature?.geometry;
+    parcelFeatures.forEach(feature => {
+        const geom = feature.geometry;
         if (!geom || !geom.coordinates) return;
         if (geom.type === 'Polygon') {
             multiCoords.push(geom.coordinates);
@@ -1085,8 +1067,8 @@ function calculateProposalBounds(parcelIds, options = {}) {
             if (!bounds || !bounds.isValid?.()) return;
             const center = bounds.getCenter?.();
             if (center && Number.isFinite(center.lat) && Number.isFinite(center.lng)) positions.push(center);
-            const feature = layer.feature;
-            const id = window.LiveParcelFabric?.featureId?.(feature);
+            const id = presenter?.getIdForLayer?.(layer);
+            const feature = id ? window.LiveParcelFabric?.get?.(id) : null;
             if (id) resolvedAnchors.add(id);
             window.LiveParcelFabric?.explicitCadastreIds?.(feature)?.forEach(anchor => resolvedAnchors.add(String(anchor)));
         } catch (_) { }

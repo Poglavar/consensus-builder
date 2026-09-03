@@ -50,9 +50,13 @@ function applyBlockTranslations(root) {
 
 function parcelIdFromLayer(layer) {
     if (!layer) return null;
-    const feature = layer.feature || layer;
-    const props = feature.properties || {};
-    const id = props.parcelId ?? props.parcel_id ?? props.id ?? feature.id;
+    const presenterId = (typeof window !== 'undefined')
+        ? window.ParcelPresenter?.getIdForLayer?.(layer)
+        : null;
+    if (presenterId) return String(presenterId);
+    if (layer.type !== 'Feature') return null;
+    const props = layer.properties || {};
+    const id = props.parcelId ?? props.parcel_id ?? props.id ?? layer.id;
     return id !== undefined && id !== null ? id.toString() : null;
 }
 
@@ -96,7 +100,7 @@ function liveBlockLayerForId(parcelId) {
     // is the only authority allowed to provide a layer for UI/geometry operations.
     if (!services.fabric.get(id)) return null;
     const layer = services.presenter.getLayer(id);
-    if (!layer || parcelIdFromLayer(layer) !== id) return null;
+    if (!layer || services.presenter.getIdForLayer?.(layer) !== id) return null;
     return layer;
 }
 
@@ -143,7 +147,7 @@ function visibleLiveBlockLayers(includeCorridors = true) {
         if (!id || seen.has(id)) return null;
         seen.add(id);
         const layer = services.presenter.getLayer(id);
-        if (!layer || parcelIdFromLayer(layer) !== id) return null;
+        if (!layer || services.presenter.getIdForLayer?.(layer) !== id) return null;
         return layer;
     }).filter(layer => layer && (includeCorridors || !isCorridorParcel(parcelIdFromLayer(layer))));
 }
@@ -2508,6 +2512,22 @@ window.blockPolygonsLayer = null;
 
 // Cache for pre-computed block polygons to avoid expensive turf.union operations
 let blockPolygonCache = new Map(); // blockName -> unioned polygon feature
+let blockPolygonCacheScope = null;
+
+function currentBlockPolygonScope() {
+    const city = window.CityConfigManager?.getCurrentCityId?.() || 'default';
+    const revision = window.LiveParcelFabric?.snapshot?.().revision ?? 'none';
+    return `${city}|${revision}`;
+}
+
+function ensureBlockPolygonCacheScope() {
+    const scope = currentBlockPolygonScope();
+    if (scope === blockPolygonCacheScope) return scope;
+    blockPolygonCache.clear();
+    blockPolygonCacheScope = scope;
+    blockStorage.load();
+    return scope;
+}
 
 // Keep track of currently highlighted block parcel layers to restore styles later
 let highlightedBlockParcels = [];
@@ -2573,6 +2593,7 @@ function rehighlightSelectedBlockParcels() {
 
 // Helpers reused by stats rendering
 function getUnionedPolygonForBlock(blockName, block) {
+    ensureBlockPolygonCacheScope();
     // Prefer persisted polygon if available
     try {
         const stored = blockStorage.blocks.get(blockName);
@@ -2627,6 +2648,7 @@ function perimeterOfRingMeters(ring) {
 
 // Pre-compute and cache block polygons
 function precomputeBlockPolygons() {
+    ensureBlockPolygonCacheScope();
     blockPolygonCache.clear();
 
     blockStorage.blocks.forEach((block, blockName) => {
@@ -2650,6 +2672,7 @@ function precomputeBlockPolygons() {
 
 // Replace updateBlockLayer with new logic for unioned block polygons
 function updateBlockLayer() {
+    ensureBlockPolygonCacheScope();
     // console.log('updateBlockLayer called', new Error().stack);
     // const showBlocks = document.getElementById('showBlocks').checked; // REMOVED - state is now managed by parcelBlocksCheckbox via toggleAccordion
 
@@ -2738,6 +2761,7 @@ function toggleBlockNameLabels() {
 
 // Add block name labels to existing block polygons
 function addBlockNameLabels() {
+    ensureBlockPolygonCacheScope();
     // Only add labels if they don't already exist
     if (blockNameLabels.length > 0) {
         return; // Labels already exist

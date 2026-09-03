@@ -747,13 +747,8 @@ async function createProposal() {
             let structureGeometry = null;
             try {
                 if (typeof buildGeometryFromParcels === 'function') {
-                    const fabric = window.LiveParcelFabric;
-                    const layers = finalParcelIds
-                        .map(id => fabric?.get?.(id) || null)
-                        .filter(Boolean)
-                        .map(feature => ({ feature }));
-                    if (layers.length) {
-                        structureGeometry = buildGeometryFromParcels(layers);
+                    if (finalParcelIds.length) {
+                        structureGeometry = buildGeometryFromParcels(finalParcelIds);
                     }
                 }
             } catch (_) { /* geometry rebuild best-effort */ }

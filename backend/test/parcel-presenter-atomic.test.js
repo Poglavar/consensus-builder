@@ -29,9 +29,9 @@ async function mutate(fabric, operation) {
     }
 }
 
-function environment() {
+function environment(options = {}) {
     const fabric = createLiveParcelFabric();
-    const members = new Set();
+    const members = new Set(options.initialLayers || []);
     let failNextAddFor = null;
     const group = {
         addLayer(layer) {
@@ -42,7 +42,8 @@ function environment() {
             members.add(layer);
         },
         removeLayer: layer => members.delete(layer),
-        hasLayer: layer => members.has(layer)
+        hasLayer: layer => members.has(layer),
+        getLayers: () => Array.from(members)
     };
     const context = {
         console,
@@ -80,13 +81,23 @@ function environment() {
 }
 
 describe('parcel presenter atomic projection', () => {
+    it('removes stale layers when adopting an existing group at startup', () => {
+        const stale = { feature: polygon('HR-STALE') };
+        const { presenter, members } = environment({ initialLayers: [stale] });
+
+        expect(members.size).toBe(0);
+        expect(presenter.getIdForLayer(stale)).toBeNull();
+        expect(presenter.snapshot()).toEqual({ city: 'default', revision: 0, layerCount: 0, parcelIds: [] });
+    });
+
     it('projects exactly one layer for each committed live feature', async () => {
         const { fabric, presenter, members } = environment();
         await mutate(fabric, mutation => mutation.seedCadastre([polygon('HR-A')]));
 
-        expect(presenter.snapshot()).toEqual({ revision: 1, layerCount: 1, parcelIds: ['HR-A'] });
+        expect(presenter.snapshot()).toEqual({ city: 'default', revision: 1, layerCount: 1, parcelIds: ['HR-A'] });
         expect(members.size).toBe(1);
         expect(presenter.getLayer('HR-A').feature.properties.parcelId).toBe('HR-A');
+        expect(presenter.getIdForLayer(presenter.getLayer('HR-A'))).toBe('HR-A');
         expect(presenter.layerMap).toBeUndefined();
     });
 
@@ -105,6 +116,7 @@ describe('parcel presenter atomic projection', () => {
         expect(fabric.get('HR-A')).not.toBeNull();
         expect(fabric.get('HR-A#park-1')).toBeNull();
         expect(presenter.getLayer('HR-A')).toBe(originalLayer);
+        expect(presenter.getIdForLayer(originalLayer)).toBe('HR-A');
         expect(presenter.getLayer('HR-A#park-1')).toBeNull();
         expect(members).toEqual(new Set([originalLayer]));
     });

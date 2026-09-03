@@ -11,7 +11,7 @@ function handleUrbanRuleMainTypeClick() {
 
 function applyContiguityConstraints() {
     const selection = getCurrentParcelSelectionContext();
-    const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selection.layers) : { contiguous: true };
+    const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selection.ids) : { contiguous: true };
     const isContiguous = contiguity.contiguous;
 
     const disabledMessage = (typeof t === 'function')
@@ -312,7 +312,7 @@ function selectLandUse(key, { skipChecks = false } = {}) {
     }
     if (!skipChecks && ['park', 'square', 'lake'].includes(key)) {
         const selection = getCurrentParcelSelectionContext();
-        const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selection.layers) : { contiguous: true };
+        const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selection.ids) : { contiguous: true };
         if (!contiguity.contiguous) {
             if (typeof showProposalAlertMessage === 'function') showProposalAlertMessage('parcels_not_contiguous', 'Parcels not contiguous');
             return;

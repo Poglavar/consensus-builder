@@ -1384,7 +1384,9 @@
                 if (cached && cached.geometry) return cached;
             }
 
-            const features = block.parcels.map(p => p.feature).filter(f => f && f.geometry);
+            const features = typeof liveBlockFeatures === 'function'
+                ? liveBlockFeatures(block)
+                : [];
 
             // 2) Simple sequential union (no shape change intent)
             try {
@@ -1436,44 +1438,20 @@
     function collectBlockParcelIdsAndGeometry(blockName) {
         const parcelIds = [];
         const multiCoords = [];
-        if (typeof parcelLayer !== 'undefined' && parcelLayer) {
-            try {
-                parcelLayer.getLayers().forEach(layer => {
-                    try {
-                        const f = layer && layer.feature;
-                        const props = f && f.properties;
-                        if (!f || !f.geometry || !props) return;
-                        if (props.block !== blockName) return;
-                        const parcelId = typeof ensureParcelId === 'function'
-                            ? ensureParcelId(f)
-                            : (props.parcelId ?? props.parcel_id ?? props.id);
-                        if (!parcelId) return;
-                        try { if (typeof isRoad === 'function' && isRoad(parcelId)) return; } catch (_) { }
-                        parcelIds.push(String(parcelId));
-                        const geom = f.geometry;
-                        if (geom.type === 'Polygon') multiCoords.push(geom.coordinates);
-                        else if (geom.type === 'MultiPolygon') geom.coordinates.forEach(rings => multiCoords.push(rings));
-                    } catch (_) { }
-                });
-            } catch (_) { }
-        }
-        if (multiCoords.length === 0) {
-            const block = window.blockStorage?.blocks?.get?.(blockName);
-            if (block && Array.isArray(block.parcels) && block.parcels.length > 0) {
-                for (const layer of block.parcels) {
-                    const geom = layer?.feature?.geometry;
-                    const props = layer?.feature?.properties;
-                    if (!geom || !geom.type || !geom.coordinates || !props) continue;
-                    const parcelId = typeof ensureParcelId === 'function'
-                        ? ensureParcelId({ properties: props })
-                        : (props.parcelId ?? props.parcel_id ?? props.id);
-                    if (!parcelId) continue;
-                    try { if (typeof isRoad === 'function' && isRoad(parcelId)) continue; } catch (_) { }
-                    parcelIds.push(String(parcelId));
-                    if (geom.type === 'Polygon') multiCoords.push(geom.coordinates);
-                    else if (geom.type === 'MultiPolygon') for (const rings of geom.coordinates) multiCoords.push(rings);
-                }
-            }
+        const block = window.blockStorage?.blocks?.get?.(blockName);
+        const features = typeof liveBlockFeatures === 'function' ? liveBlockFeatures(block) : [];
+        for (const feature of features) {
+            const geom = feature?.geometry;
+            const props = feature?.properties;
+            if (!geom || !geom.type || !geom.coordinates || !props) continue;
+            const parcelId = typeof ensureParcelId === 'function'
+                ? ensureParcelId(feature)
+                : (props.parcelId ?? props.parcel_id ?? props.id);
+            if (!parcelId) continue;
+            try { if (typeof isRoad === 'function' && isRoad(parcelId)) continue; } catch (_) { }
+            parcelIds.push(String(parcelId));
+            if (geom.type === 'Polygon') multiCoords.push(geom.coordinates);
+            else if (geom.type === 'MultiPolygon') for (const rings of geom.coordinates) multiCoords.push(rings);
         }
         return { parcelIds: Array.from(new Set(parcelIds)), geometry: multiCoords.length ? { type: 'MultiPolygon', coordinates: multiCoords } : null };
     }

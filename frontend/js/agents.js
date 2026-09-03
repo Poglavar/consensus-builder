@@ -525,7 +525,7 @@ function buildAgentNeighborMap(parcels) {
 
     for (const parcel of parcels) {
         if (typeof getHtrsCoordinates !== 'function') break;
-        const ring = getHtrsCoordinates(parcel.layer.feature);
+        const ring = getHtrsCoordinates(parcel.feature);
         if (!Array.isArray(ring) || ring.length < 2) continue;
         const n = ring.length - 1; // skip duplicate closing vertex
         for (let i = 0; i < n; i++) {
@@ -616,19 +616,19 @@ function findContiguousParcels(allParcels, targetSize, neighborMap) {
  *    misses them; cadastre data also frequently leaves road parcels without
  *    any explicit road designation, so we lean on the geometry directly.
  */
-function isRoadLikeParcel(layer) {
-    if (!layer || !layer.feature) return false;
+function isRoadLikeParcel(feature) {
+    if (!feature || !feature.geometry) return false;
 
-    const parcelId = (typeof ensureParcelId === 'function') ? ensureParcelId(layer.feature) : (layer.feature.properties?.parcelId || layer.feature.properties?.parcel_id || layer.feature.properties?.id);
+    const parcelId = (typeof ensureParcelId === 'function') ? ensureParcelId(feature) : (feature.properties?.parcelId || feature.properties?.parcel_id || feature.properties?.id);
 
-    const props = layer.feature.properties || {};
+    const props = feature.properties || {};
     const explicitRoad = (parcelId && typeof window.isRoadParcel === 'function' && window.isRoadParcel(parcelId))
         || props.isRoad === true
         || props.isCorridor === true
         || props.isTrack === true;
     if (explicitRoad) return true;
 
-    const coords = getHtrsCoordinates(layer.feature);
+    const coords = getHtrsCoordinates(feature);
     if (coords.length < 4) return false;
 
     let minX = coords[0][0], maxX = coords[0][0];
@@ -660,10 +660,8 @@ function isRoadLikeParcel(layer) {
  * — they represent public open space and should never be the subject of new
  * agent proposals.
  */
-function isStructureDescendantParcel(layer) {
-    const producerId = layer && layer.feature && layer.feature.properties
-        ? layer.feature.properties.producedByProposalId
-        : null;
+function isStructureDescendantParcel(feature) {
+    const producerId = feature?.properties?.producedByProposalId || null;
     if (!producerId) return false;
     if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getProposal !== 'function') return false;
     const proposal = proposalStorage.getProposal(producerId);
@@ -673,13 +671,13 @@ function isStructureDescendantParcel(layer) {
 }
 
 function buildTurnParcelPool() {
-    if (typeof parcelLayer === 'undefined' || !parcelLayer) {
+    const fabric = typeof window !== 'undefined' ? window.LiveParcelFabric : null;
+    if (!fabric || typeof fabric.list !== 'function') {
         return [];
     }
 
     // Confine the agent's universe to the city the user is actually viewing.
-    // parcelLayer can briefly hold cross-city geometry (cached entries,
-    // server fetches that finish after a city switch, etc.); without this filter
+    // A stale request can finish while navigation is underway; without this filter
     // agents can author proposals for parcels in another city, which then
     // render as bubbles/shapes far from the current map view.
     const cityId = (typeof window !== 'undefined' && window.CityConfigManager
@@ -693,22 +691,21 @@ function buildTurnParcelPool() {
     // is why almost every proposal collapsed to a single parcel — a parcel's
     // neighbours were usually not in the random sample.
     const parcels = [];
-    parcelLayer.eachLayer(layer => {
-        if (!layer || !layer.feature || !layer.feature.properties) return;
-
+    fabric.list().forEach(feature => {
+        if (!feature?.properties) return;
         const parcelId = (typeof ensureParcelId === 'function')
-            ? ensureParcelId(layer.feature)
-            : (layer.feature.properties.parcelId || layer.feature.properties.parcel_id || layer.feature.properties.id);
+            ? ensureParcelId(feature)
+            : (feature.properties.parcelId || feature.properties.parcel_id || feature.properties.id);
         if (!parcelId) return;
 
         if (cityId && inCityFn && !inCityFn(parcelId, cityId)) return;
-        if (isRoadLikeParcel(layer)) return;
-        if (isStructureDescendantParcel(layer)) return;
+        if (isRoadLikeParcel(feature)) return;
+        if (isStructureDescendantParcel(feature)) return;
 
-        const area = layer.feature.properties.calculatedArea || 0;
+        const area = feature.properties.calculatedArea || 0;
         if (area > 15000) return;
 
-        parcels.push({ id: parcelId, layer });
+        parcels.push({ id: parcelId, feature });
     });
 
     return parcels;
@@ -801,8 +798,8 @@ function agentDecideAction(agent, turnContext = null) {
             // Create a proposal for 1-8 contiguous parcels from any available parcels
             // Must include at least one parcel not owned by the agent
 
-            // Get all available parcels from parcelLayer
-            if (typeof parcelLayer === 'undefined' || !parcelLayer) {
+            // Get all available parcels from the committed fabric.
+            if (!window.LiveParcelFabric) {
                 return { type: 'nothing' };
             }
 
@@ -840,7 +837,7 @@ function agentDecideAction(agent, turnContext = null) {
             const proposalTypes = ['park', 'square', 'lake'];
             const randomType = proposalTypes[Math.floor(Math.random() * proposalTypes.length)];
             const structureGeometry = (typeof buildGeometryFromParcels === 'function')
-                ? buildGeometryFromParcels(proposalParcels.map(parcel => parcel.layer))
+                ? buildGeometryFromParcels(proposalParcels.map(parcel => parcel.feature))
                 : null;
             if (!structureGeometry || !structureGeometry.type) {
                 return { type: 'nothing' };
@@ -948,10 +945,8 @@ function executeAgentAction(agent, action) {
                 // Look up parcel number (BROJ_CESTICE)
                 let parcelNumber = action.parcelId;
                 if (typeof multiParcelSelection !== 'undefined' && typeof multiParcelSelection.findParcelById === 'function') {
-                    const parcelLayer = multiParcelSelection.findParcelById(action.parcelId);
-                    if (parcelLayer && parcelLayer.feature && parcelLayer.feature.properties && parcelLayer.feature.properties.BROJ_CESTICE) {
-                        parcelNumber = parcelLayer.feature.properties.BROJ_CESTICE;
-                    }
+                    const feature = window.LiveParcelFabric?.get?.(String(action.parcelId));
+                    if (feature?.properties?.BROJ_CESTICE) parcelNumber = feature.properties.BROJ_CESTICE;
                 }
 
                 // Show agent bubble for this interaction
@@ -2994,7 +2989,7 @@ async function ensureParcelLoaded(parcelId) {
     try {
         await ground.ensureIds([targetId]);
         const layer = presenter?.resolveLiveLayers?.([targetId], { includeCorridors: false })?.[0] || null;
-        return layer ? fabric?.featureId?.(layer.feature) || null : null;
+        return layer ? presenter?.getIdForLayer?.(layer) || null : null;
     } catch (error) {
         console.warn('Failed to load parcel before focusing', targetId, error);
     }
@@ -3152,12 +3147,10 @@ function getAgentParcelDetails(agentId) {
     const parcelDetails = ownedParcels.map(parcelId => {
         const proposalCount = getParcelProposalCount(parcelId);
 
-        // Try to get parcel number from the parcel layer
+        // Read parcel metadata from the committed fabric.
         let parcelNumber = parcelId;
-        const parcel = multiParcelSelection.findParcelById(parcelId);
-        if (parcel && parcel.feature && parcel.feature.properties && parcel.feature.properties.BROJ_CESTICE) {
-            parcelNumber = parcel.feature.properties.BROJ_CESTICE;
-        }
+        const feature = window.LiveParcelFabric?.get?.(String(parcelId));
+        if (feature?.properties?.BROJ_CESTICE) parcelNumber = feature.properties.BROJ_CESTICE;
 
         return {
             id: parcelId,

@@ -25,7 +25,8 @@
         button.disabled = true;
 
         try {
-            const feature = global.currentParcel.layer.feature;
+            const feature = global.LiveParcelFabric?.get?.(String(global.currentParcel.id));
+            if (!feature?.geometry?.coordinates) throw new Error('Selected parcel is no longer live.');
             const metrics = global.calculateRoadMetrics(feature.geometry.coordinates);
 
             const formattedLength = metrics ? Number(metrics.length).toLocaleString('hr-HR', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) : 'N/A';
@@ -81,4 +82,3 @@
 
     global.measureAsRoad = measureAsRoad;
 })(typeof window !== 'undefined' ? window : globalThis);
-

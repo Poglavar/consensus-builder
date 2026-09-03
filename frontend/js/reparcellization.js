@@ -15,6 +15,22 @@
         plotIsAssigned
     } = reparcellizationUiState;
 
+    function liveReparcellizationFeature(parcelOrId) {
+        let id = null;
+        if (typeof parcelOrId === 'string' || typeof parcelOrId === 'number') {
+            id = String(parcelOrId);
+        } else if (parcelOrId) {
+            id = window.ParcelPresenter?.getIdForLayer?.(parcelOrId) || null;
+        }
+        return id ? window.LiveParcelFabric?.get?.(String(id)) || null : null;
+    }
+
+    function liveSelectionFeatures(selection) {
+        const ids = Array.isArray(selection?.ids) ? selection.ids.map(String).filter(Boolean) : [];
+        const features = ids.map(liveReparcellizationFeature).filter(Boolean);
+        return features.length === ids.length ? features : [];
+    }
+
     const COLOR_PALETTE = [
         '#2E86AB', '#F18F01', '#C73E1D', '#137547', '#7A1CAC',
         '#CC3363', '#3D5A80', '#EE6C4D', '#5C946E', '#8A508F',
@@ -297,10 +313,8 @@
     function layoutSignature() {
         try {
             return JSON.stringify({
-                // Slices carry `geometry` directly (hydrateSlicesFromPolygons / createUnassignedPlot);
-                // the `.feature` form only shows up on the draw path.
                 slices: (state.slices || []).map(s => ({
-                    g: s ? (s.geometry || (s.feature && s.feature.geometry) || null) : null,
+                    g: s?.geometry || null,
                     o: s ? (s.ownerKey ?? null) : null,
                     w: s && Array.isArray(s.owners) ? s.owners.map(o => `${o.ownerKey}:${o.share || 0}`).join('|') : ''
                 })),
@@ -963,10 +977,7 @@
     // parcels being replaced are what you actually see.
 
     function inputParcelFeatures() {
-        const layers = (state.selection && Array.isArray(state.selection.layers)) ? state.selection.layers : [];
-        return layers
-            .map(layer => (layer && layer.feature && layer.feature.geometry) ? layer.feature : null)
-            .filter(Boolean);
+        return liveSelectionFeatures(state.selection);
     }
 
     function inputParcelLabel(feature) {
@@ -2480,8 +2491,7 @@
         if (!Array.isArray(geometries) || !state.previewLayer) return;
         const layers = state.previewLayer.getLayers ? state.previewLayer.getLayers() : [];
         layers.forEach(layer => {
-            const idx = layer.feature && layer.feature.properties
-                ? layer.feature.properties.sliceIndex : null;
+            const idx = layer.__reparcelSliceIndex;
             const geometry = (typeof idx === 'number') ? geometries[idx] : null;
             if (!geometry || typeof layer.setLatLngs !== 'function') return;
             try {
@@ -2998,13 +3008,6 @@
                         ? slice.owners.map(o => o.displayName).join(', ')
                         : slice.displayName;
                     layer.bindTooltip(ownerNames, { sticky: true, className: 'reparcel-slice-tooltip' });
-                    // Update feature properties for consistency
-                    if (layer.feature && layer.feature.properties) {
-                        layer.feature.properties.color = slice.color;
-                        layer.feature.properties.displayName = slice.displayName;
-                        layer.feature.properties.ownerNames = ownerNames;
-                        layer.feature.properties.isMultiOwner = isMulti;
-                    }
                 }
                 layerIndex++;
             });
@@ -3122,14 +3125,10 @@
     }
 
     function buildBeforeFeatureCollection() {
-        const layers = (state.selection && state.selection.layers) || [];
-        const features = [];
-        layers.forEach(layer => {
-            const f = layer && layer.feature;
-            if (!f || !f.geometry) return;
+        const features = liveSelectionFeatures(state.selection).map(f => {
             const props = f.properties || {};
             const pid = props.parcelId || props.parcel_id || props.id;
-            features.push({ type: 'Feature', properties: { color: parcelColorForBefore(pid) }, geometry: f.geometry });
+            return { type: 'Feature', properties: { color: parcelColorForBefore(pid) }, geometry: f.geometry };
         });
         return { type: 'FeatureCollection', features };
     }
@@ -3401,6 +3400,7 @@
                 onEachFeature: (feature, layer) => {
                     const idx = feature.properties?.sliceIndex;
                     if (typeof idx === 'number') {
+                        layer.__reparcelSliceIndex = idx;
                         const owners = feature.properties.ownerNames || feature.properties.displayName;
                         layer.bindTooltip(owners, { sticky: true, className: 'reparcel-slice-tooltip' });
                         layer.on('click', (e) => {
@@ -3605,12 +3605,11 @@
 
     async function buildOwnerShares(selection) {
         const result = new Map();
-        const parcelLayers = selection.layers || [];
+        const parcelFeatures = liveSelectionFeatures(selection);
         let totalArea = 0;
         let totalValue = 0;
 
-        for (const layer of parcelLayers) {
-            const feature = layer?.feature;
+        for (const feature of parcelFeatures) {
             if (!feature || !feature.properties) continue;
             const parcelId = feature.properties.parcelId;
             const cadastralIdentity = cadastralIdentityForLiveParcel(parcelId);
@@ -3818,7 +3817,8 @@
     }
 
     function validateSelection(selection) {
-        if (!selection || !Array.isArray(selection.layers) || !selection.layers.length) {
+        if (!selection || !Array.isArray(selection.ids) || !selection.ids.length
+            || liveSelectionFeatures(selection).length !== selection.ids.length) {
             return false;
         }
         return true;
@@ -3828,7 +3828,7 @@
         if (typeof buildGeometryFromParcels !== 'function') {
             return null;
         }
-        const geometry = buildGeometryFromParcels(selection.layers);
+        const geometry = buildGeometryFromParcels(selection.ids);
         if (!geometry) return null;
         return {
             type: 'Feature',
@@ -3983,9 +3983,9 @@
         // the apply gate exactly — authoring must refuse what apply would refuse, and nothing more,
         // or the tool blocks work the model allows.
         if (!planPool) {
-            const takenInputs = ((selection && Array.isArray(selection.layers)) ? selection.layers : [])
-                .map(layer => {
-                    const props = (layer && layer.feature && layer.feature.properties) || {};
+            const takenInputs = liveSelectionFeatures(selection)
+                .map(feature => {
+                    const props = feature.properties || {};
                     const takers = Array.isArray(props.formedByProposalIds) ? props.formedByProposalIds : [];
                     if (!(props.isCorridor === true || props.isTrack === true || takers.length > 0)) return null;
                     const id = props.parcelId || props.PARCEL_ID || props.id;

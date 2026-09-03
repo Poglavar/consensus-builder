@@ -116,6 +116,8 @@
         const footprintResults = new Map();
         const boundsInFlight = new Map();
         const loadedBounds = new Map();
+        const roadIdsInFlight = new Map();
+        const roadIdsByBounds = new Map();
 
         const cityKey = () => {
             try {
@@ -194,9 +196,7 @@
             });
         }
 
-        async function acceptFeatures(input, options = {}) {
-            const city = normalizeId(options.city) || cityKey();
-            const features = normalizeFeatures(input, options);
+        function retainTransportFeatures(features, city) {
             const store = featureStore(city);
             const absent = absentStore(city);
             const staged = new Map();
@@ -218,12 +218,6 @@
             }
             staged.forEach((feature, id) => store.set(id, feature));
             staged.forEach((_feature, id) => absent.delete(id));
-            // Immutable facts stay retained even if their requested fabric transaction later
-            // refuses them. A subsequent consumer receives the same facts from this repository
-            // and provisioning is attempted again; transport is never repeated as a repair step.
-            if (options.provide !== false) {
-                await provideFeatures(features, { city, mutation: options.mutation || null });
-            }
             return Array.from(new Set(features.map(featureId)));
         }
 
@@ -272,12 +266,8 @@
                     throw error;
                 }
             }
-            const ids = await acceptFeatures(normalized, {
-                city: options.city,
-                skipConversion: true,
-                provide: false
-            });
             const city = normalizeId(options.city) || cityKey();
+            const ids = retainTransportFeatures(normalized, city);
             const absent = absentStore(city);
             result.absentIds.forEach(id => absent.add(id));
             return { ...result, ids };
@@ -759,6 +749,64 @@
             return clone(retainedCoverageOf(geometry, city, { ids: options.ids }));
         }
 
+        function boundsArray(bounds) {
+            if (Array.isArray(bounds) && bounds.length >= 4) return bounds.slice(0, 4).map(Number);
+            if (!bounds || typeof bounds.getWest !== 'function') return null;
+            return [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()].map(Number);
+        }
+
+        function roadClassificationAvailable(options = {}) {
+            const city = normalizeId(options.city) || cityKey();
+            const requestTransport = transport();
+            return Boolean(requestTransport && typeof requestTransport.supportsRoadIds === 'function'
+                && requestTransport.supportsRoadIds({ city }));
+        }
+
+        async function ensureRoadIds(bounds, options = {}) {
+            const city = normalizeId(options.city) || cityKey();
+            const box = boundsArray(bounds);
+            if (!box || box.some(value => !Number.isFinite(value))) {
+                throw new TypeError('Road classification bounds are invalid.');
+            }
+            const requestTransport = transport();
+            if (!requestTransport || typeof requestTransport.supportsRoadIds !== 'function'
+                || !requestTransport.supportsRoadIds({ city })) {
+                return { status: 'unsupported', city, ids: [], cached: false, requestCount: 0 };
+            }
+            if (typeof requestTransport.fetchRoadIds !== 'function') {
+                throw new Error('Road classification transport is unavailable.');
+            }
+            const key = scoped(city, box.map(value => Number(value).toFixed(7)).join(','));
+            const cached = roadIdsByBounds.get(key);
+            if (cached) {
+                return { status: 'ready', city, ids: cached.slice(), cached: true, requestCount: 0 };
+            }
+            let task = roadIdsInFlight.get(key);
+            let requested = false;
+            if (!task) {
+                requested = true;
+                task = Promise.resolve()
+                    .then(() => requestTransport.fetchRoadIds(box, {
+                        city,
+                        onProgress: progress => emit(options.onProgress, progress)
+                    }))
+                    .then(result => {
+                        if (!result || result.status !== 'ready' || !Array.isArray(result.ids)) {
+                            throw new Error('Road classification transport returned an invalid result.');
+                        }
+                        const ids = Array.from(new Set(result.ids.map(normalizeId).filter(Boolean)));
+                        roadIdsByBounds.set(key, ids);
+                        return ids;
+                    })
+                    .finally(() => {
+                        if (roadIdsInFlight.get(key) === task) roadIdsInFlight.delete(key);
+                    });
+                roadIdsInFlight.set(key, task);
+            }
+            const ids = await task;
+            return { status: 'ready', city, ids: ids.slice(), cached: !requested, requestCount: requested ? 1 : 0 };
+        }
+
         function reset() {
             featureStores.clear();
             absentStores.clear();
@@ -767,6 +815,8 @@
             footprintResults.clear();
             boundsInFlight.clear();
             loadedBounds.clear();
+            roadIdsInFlight.clear();
+            roadIdsByBounds.clear();
         }
 
         function snapshot() {
@@ -778,7 +828,8 @@
                 absentIds: new Set(absentStore(city)),
                 footprintCount: Array.from(footprintResults.keys()).filter(key => key.startsWith(`${city}\u0000`)).length,
                 boundsCount: (loadedBounds.get(city) || new Map()).size,
-                boundsKeys: Array.from((loadedBounds.get(city) || new Map()).keys())
+                boundsKeys: Array.from((loadedBounds.get(city) || new Map()).keys()),
+                roadBoundsCount: Array.from(roadIdsByBounds.keys()).filter(key => key.startsWith(`${city}\u0000`)).length
             };
         }
 
@@ -787,11 +838,12 @@
             ensureProposalGround,
             ensureFootprint,
             ensureBounds,
-            acceptFeatures,
             get,
             getMany,
             list,
             coverageOf,
+            roadClassificationAvailable,
+            ensureRoadIds,
             reset,
             snapshot
         });

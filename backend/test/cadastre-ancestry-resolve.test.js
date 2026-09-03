@@ -17,6 +17,23 @@ const square = (id, w, s, e, n, properties = {}) => ({
 const A = square('HR-1-1', 16.000, 46.000, 16.001, 46.001);
 const B = square('HR-1-2', 16.001, 46.000, 16.002, 46.001);
 
+function repositoryWith(features) {
+    const byId = new Map(features.map(feature => [feature.properties.parcelId, feature]));
+    return createCadastralParcelRepository({
+        root: globalThis,
+        convertFeatures: collection => collection,
+        transport: {
+            fetchByIds: async ids => ({
+                status: 'ready',
+                complete: true,
+                returnsWGS84: true,
+                features: ids.map(id => byId.get(id)).filter(Boolean),
+                absentIds: ids.filter(id => !byId.has(id))
+            })
+        }
+    });
+}
+
 let ancestry;
 let repository;
 
@@ -27,12 +44,9 @@ beforeAll(() => {
 });
 
 beforeEach(async () => {
-    repository = createCadastralParcelRepository({
-        root: globalThis,
-        convertFeatures: collection => collection
-    });
+    repository = repositoryWith([A, B]);
     globalThis.CadastralParcelRepository = repository;
-    await repository.acceptFeatures([A, B], { skipConversion: true });
+    await repository.ensureIds(['HR-1-1', 'HR-1-2']);
 });
 
 describe('authoritative cadastral enumeration', () => {
@@ -61,11 +75,9 @@ describe('loaded cadastral coverage', () => {
 
     it('reports actual retained coverage rather than trusting declared ids', () => {
         const footprint = square('footprint', 16.000, 46.000, 16.002, 46.001);
-        const oneParcelRepository = createCadastralParcelRepository({
-            root: globalThis, convertFeatures: collection => collection
-        });
+        const oneParcelRepository = repositoryWith([A]);
         globalThis.CadastralParcelRepository = oneParcelRepository;
-        return oneParcelRepository.acceptFeatures([A], { skipConversion: true }).then(() => {
+        return oneParcelRepository.ensureIds(['HR-1-1']).then(() => {
             const result = ancestry.loadedCadastreCoverage({
                 cadastreParcelIds: ['HR-1-1', 'HR-not-loaded'],
                 structureProposal: { geometry: footprint.geometry }
@@ -87,9 +99,9 @@ describe('validateCadastreParcelIds', () => {
     });
 
     it('refuses when retained cadastre covers less than 95% of the footprint', async () => {
-        repository = createCadastralParcelRepository({ root: globalThis, convertFeatures: value => value });
+        repository = repositoryWith([A]);
         globalThis.CadastralParcelRepository = repository;
-        await repository.acceptFeatures([A], { skipConversion: true });
+        await repository.ensureIds(['HR-1-1']);
         const proposal = {
             cadastreParcelIds: ['HR-1-1'],
             structureProposal: { geometry: square('footprint', 16.000, 46.000, 16.002, 46.001).geometry }

@@ -52,7 +52,7 @@
 
         let roadCount = 0;
         global.parcelLayer.eachLayer(layer => {
-            const parcelId = layer.feature.properties.parcelId;
+            const parcelId = global.ParcelPresenter?.getIdForLayer?.(layer) || null;
             const isRoad = (parcelId && typeof global.isRoadParcel === 'function') ? global.isRoadParcel(parcelId) : false;
             if (isRoad) {
                 // Add road parcels directly to map (parcelLayer is not on map, so no double rendering)
@@ -149,4 +149,3 @@
         updateVisibleParcelsCount
     };
 })(typeof window !== 'undefined' ? window : globalThis);
-

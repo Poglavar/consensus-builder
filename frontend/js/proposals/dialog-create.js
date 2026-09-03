@@ -185,78 +185,27 @@ function previewProposalOnMap(proposalIdOrHash, { center = true, blink = true } 
     }
 
     if (bounds && bounds.isValid && bounds.isValid()) {
-        // Suppress parcel fetching when showing proposal contours
-        try { window.suppressCameraMoves = true; } catch (_) { }
-
-        // Hide parcel layer if zoomed out too far (to prevent showing all parcels in memory)
-        const parcelLayer = (typeof window !== 'undefined' && window.parcelLayer) ? window.parcelLayer : null;
-        const wasParcelLayerVisible = parcelLayer && map.hasLayer(parcelLayer);
-        if (parcelLayer && wasParcelLayerVisible) {
-            try { map.removeLayer(parcelLayer); } catch (_) { }
-        }
-
         // Frame the preview in the VISIBLE map, clear of the open list panel (pad its footprint out).
         // animate:false — instant, and avoids requestAnimationFrame, which is throttled to a standstill
         // when the tab isn't actively rendering (an animated fit would then silently no-op).
         const previewPadding = (typeof getProposalPanelFitPadding === 'function')
             ? getProposalPanelFitPadding(40)
             : { paddingTopLeft: [40, 40], paddingBottomRight: [40, 40] };
-        map.fitBounds(bounds, { ...previewPadding, maxZoom: 19, animate: false });
-
-        // Re-enable after map movement completes
-        const onMoveEnd = () => {
-            map.off('moveend', onMoveEnd);
-            try { window.suppressCameraMoves = false; } catch (_) { }
-
-            // Restore parcel layer only if zoom is appropriate
-            const finalZoom = map.getZoom();
-            const isZoomAppropriate = typeof isZoomWithinParcelRange === 'function'
-                ? isZoomWithinParcelRange()
-                : finalZoom >= 15; // Default threshold
-
-            if (parcelLayer && wasParcelLayerVisible && isZoomAppropriate) {
-                try {
-                    if (!map.hasLayer(parcelLayer)) {
-                        parcelLayer.addTo(map);
-                    }
-                } catch (_) { }
-            }
-        };
-        map.on('moveend', onMoveEnd);
+        try {
+            window.suppressCameraMoves = true;
+            map.fitBounds(bounds, { ...previewPadding, maxZoom: 19, animate: false });
+        } finally {
+            window.suppressCameraMoves = false;
+        }
     } else if (proposal.bounds && proposal.bounds.center) {
         const { lat, lng } = proposal.bounds.center;
         if (Number.isFinite(lat) && Number.isFinite(lng)) {
-            // Suppress parcel fetching when showing proposal contours
-            try { window.suppressCameraMoves = true; } catch (_) { }
-
-            // Hide parcel layer if zoomed out too far
-            const parcelLayer = (typeof window !== 'undefined' && window.parcelLayer) ? window.parcelLayer : null;
-            const wasParcelLayerVisible = parcelLayer && map.hasLayer(parcelLayer);
-            if (parcelLayer && wasParcelLayerVisible) {
-                try { map.removeLayer(parcelLayer); } catch (_) { }
+            try {
+                window.suppressCameraMoves = true;
+                map.setView([lat, lng], map.getZoom(), { animate: false });
+            } finally {
+                window.suppressCameraMoves = false;
             }
-
-            map.setView([lat, lng], map.getZoom());
-
-            const onMoveEnd = () => {
-                map.off('moveend', onMoveEnd);
-                try { window.suppressCameraMoves = false; } catch (_) { }
-
-                // Restore parcel layer only if zoom is appropriate
-                const finalZoom = map.getZoom();
-                const isZoomAppropriate = typeof isZoomWithinParcelRange === 'function'
-                    ? isZoomWithinParcelRange()
-                    : finalZoom >= 15;
-
-                if (parcelLayer && wasParcelLayerVisible && isZoomAppropriate) {
-                    try {
-                        if (!map.hasLayer(parcelLayer)) {
-                            parcelLayer.addTo(map);
-                        }
-                    } catch (_) { }
-                }
-            };
-            map.on('moveend', onMoveEnd);
         }
     }
 }
@@ -303,7 +252,7 @@ function openRoadDesignationModal() {
 
     // The designation becomes ONE parcel, so the land it names has to be one piece.
     const contiguity = (typeof areParcelsContiguous === 'function')
-        ? areParcelsContiguous(parcels)
+        ? areParcelsContiguous(parcelIds)
         : { contiguous: true };
 
     if (!contiguity.contiguous) {
@@ -319,7 +268,7 @@ function openRoadDesignationModal() {
     }
 
     const superGeometry = (typeof buildGeometryFromParcels === 'function')
-        ? buildGeometryFromParcels(parcels)
+        ? buildGeometryFromParcels(parcelIds)
         : null;
 
     if (!superGeometry) {
@@ -343,11 +292,11 @@ function openRoadDesignationModal() {
 
     const superFeature = { type: 'Feature', properties: {}, geometry: superGeometry };
 
-    // Clone parcel features so the preview cannot mutate the live map layers.
-    const parcelFeatures = parcels
-        .map(layer => {
-            const feature = layer?.feature;
-            if (!feature || !feature.geometry) return null;
+    // Clone committed parcel features so the preview cannot mutate the live fabric.
+    const parcelFeatures = parcelIds
+        .map(id => window.LiveParcelFabric?.get?.(String(id)))
+        .map(feature => {
+            if (!feature?.geometry) return null;
             try { return JSON.parse(JSON.stringify(feature)); } catch (_) { return null; }
         })
         .filter(Boolean);
@@ -661,6 +610,7 @@ function showProposalDialog(overrides = null) {
     const selection = getCurrentParcelSelectionContext();
     const selectedParcels = selection.layers;
     const parcelIds = selection.ids;
+    const selectedFeatures = parcelIds.map(id => window.LiveParcelFabric?.get?.(String(id))).filter(Boolean);
     const isSingleParcelSelection = selectedParcels.length === 1;
     const roadScreenshotContext = ((typeof window !== 'undefined' && window.pendingRoadDrawingProposal)
         ? window.pendingRoadDrawingProposal
@@ -688,13 +638,13 @@ function showProposalDialog(overrides = null) {
 
     currentProposalTool = null;
 
-    if (!selectedParcels.length) {
+    if (!selectedParcels.length || selectedFeatures.length !== parcelIds.length) {
         updateStatus(noParcelsMessage);
         return;
     }
 
-    const totalArea = selectedParcels.reduce((sum, parcel) => {
-        const area = parcel.feature?.properties?.calculatedArea || 0;
+    const totalArea = selectedFeatures.reduce((sum, feature) => {
+        const area = feature.properties?.calculatedArea || 0;
         return sum + area;
     }, 0);
 
@@ -703,9 +653,9 @@ function showProposalDialog(overrides = null) {
     const ownershipMode = ownershipStats.mode;
     currentOwnershipMode = ownershipMode;
     // Create parcel list HTML with error handling
-    const parcelListHTML = selectedParcels.map(parcel => {
-        const parcelId = getParcelIdFromFeature(parcel?.feature);
-        const parcelNumber = getParcelDisplayNumberFromProperties(parcel?.feature?.properties, parcelId || unknownParcelLabel) || unknownParcelLabel;
+    const parcelListHTML = selectedFeatures.map(feature => {
+        const parcelId = getParcelIdFromFeature(feature);
+        const parcelNumber = getParcelDisplayNumberFromProperties(feature.properties, parcelId || unknownParcelLabel) || unknownParcelLabel;
 
         // Get parcel owner information
         let ownerAvatarHtml = '';
@@ -1612,12 +1562,13 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
     const unknownParcelLabel = t('modal.createProposal.unknownParcel', 'Unknown');
     const validKind = (kind === 'park' || kind === 'square' || kind === 'lake') ? kind : 'square';
     const selectedParcels = (parcelIds || []).map(id => multiParcelSelection.findParcelById(id)).filter(Boolean);
-    if (selectedParcels.length === 0) {
+    const selectedFeatures = (parcelIds || []).map(id => window.LiveParcelFabric?.get?.(String(id))).filter(Boolean);
+    if (selectedParcels.length === 0 || selectedFeatures.length !== (parcelIds || []).length) {
         updateStatus(parcelLookupError);
         return;
     }
 
-    const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selectedParcels) : { contiguous: true };
+    const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(parcelIds) : { contiguous: true };
     const oneArea = (typeof window === 'undefined' || !window.__parcelContiguity?.isContiguous)
         ? geometry?.type === 'Polygon' || (geometry?.type === 'MultiPolygon' && geometry.coordinates?.length === 1)
         : window.__parcelContiguity.isContiguous(geometry);
@@ -1630,11 +1581,11 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
         return;
     }
 
-    const totalArea = selectedParcels.reduce((sum, layer) => sum + (layer?.feature?.properties?.calculatedArea || 0), 0);
+    const totalArea = selectedFeatures.reduce((sum, feature) => sum + (feature.properties?.calculatedArea || 0), 0);
     const parcelLabel = t('modal.roadWidth.proposalList.typeLabels.parcel', 'Parcel');
-    const parcelListHTML = selectedParcels.map(parcel => {
-        const number = getParcelDisplayNumberFromProperties(parcel?.feature?.properties, unknownParcelLabel) || unknownParcelLabel;
-        const area = Math.round(parcel.feature?.properties?.calculatedArea || 0).toLocaleString('hr-HR');
+    const parcelListHTML = selectedFeatures.map(feature => {
+        const number = getParcelDisplayNumberFromProperties(feature.properties, unknownParcelLabel) || unknownParcelLabel;
+        const area = Math.round(feature.properties?.calculatedArea || 0).toLocaleString('hr-HR');
         return `<div class="proposal-parcel-item"><span class="parcel-number">${parcelLabel} ${number}</span> <span class="parcel-area">(${area} m²)</span></div>`;
     }).join('');
 

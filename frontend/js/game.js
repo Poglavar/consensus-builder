@@ -207,15 +207,14 @@ function initializeGame() {
 
     // Assign each parcel a random owner
     let assignedParcels = 0;
-    if (typeof parcelLayer !== 'undefined' && parcelLayer) {
-        parcelLayer.eachLayer(layer => {
-            if (layer.feature && layer.feature.properties && layer.feature.properties.parcelId) {
-                const parcelId = layer.feature.properties.parcelId.toString();
-                const randomAgent = agents[Math.floor(Math.random() * agents.length)];
-
-                PersistentStorage.setItem(`parcel_${parcelId}_owner`, randomAgent.id);
-                assignedParcels++;
-            }
+    const fabric = (typeof window !== 'undefined') ? window.LiveParcelFabric : null;
+    if (fabric && typeof fabric.list === 'function' && typeof fabric.featureId === 'function') {
+        fabric.list().forEach(feature => {
+            const parcelId = fabric.featureId(feature);
+            if (!parcelId) return;
+            const randomAgent = agents[Math.floor(Math.random() * agents.length)];
+            PersistentStorage.setItem(`parcel_${parcelId}_owner`, randomAgent.id);
+            assignedParcels++;
         });
     }
 

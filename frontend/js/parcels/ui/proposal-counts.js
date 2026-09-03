@@ -31,6 +31,9 @@
         return id !== undefined && id !== null ? id.toString() : null;
     };
 
+    const parcelIdForLayer = layer => global.ParcelPresenter?.getIdForLayer?.(layer) || null;
+    const parcelFeature = parcelId => parcelId && global.LiveParcelFabric?.get?.(parcelId) || null;
+
     // Per-parcel counts from the server (GET /proposals/counts) — shared across all users, unlike the
     // browser-local proposalStorage. Mirrors the CantonCounts pattern: fetch for the visible parcels,
     // cache, redraw on update. A parcel present in this map has an authoritative server count; absent
@@ -158,8 +161,9 @@
         // Process only visible parcels
         const visibleIds = [];
         for (let i = 0; i < parcelsToProcess.length; i++) {
-            processLayerForCount(parcelsToProcess[i], bounds);
-            const pid = resolveParcelId(parcelsToProcess[i].feature);
+            const layer = parcelsToProcess[i];
+            processLayerForCount(layer, bounds);
+            const pid = parcelIdForLayer(layer);
             if (pid) visibleIds.push(pid);
         }
         // Fetch shared server counts for the visible parcels (redraws on update).
@@ -167,13 +171,14 @@
     }
 
     function processLayerForCount(layer, bounds) {
-        if (!layer?.feature?.properties) return;
-        const parcelId = resolveParcelId(layer.feature);
+        const parcelId = parcelIdForLayer(layer);
+        const feature = parcelFeature(parcelId);
+        if (!feature) return;
         if (proposalCountLabelFilter && parcelId && !proposalCountLabelFilter.has(parcelId)) {
             return;
         }
 
-        const proposalCount = getProposalCountFromFeature(layer.feature);
+        const proposalCount = getProposalCountFromFeature(feature);
         // Canton proposals are private — we only know a public count (existence
         // signal), not terms. Shown as a separate, distinctly-styled badge.
         const cantonCount = (global.CantonCounts && parcelId) ? global.CantonCounts.getCount(parcelId) : 0;
@@ -182,7 +187,7 @@
         if (proposalCount === 0 && cantonCount === 0) return;
 
         let labelLatLng = null;
-        const geometry = layer.feature.geometry;
+        const geometry = feature.geometry;
 
         if (geometry && typeof turf !== 'undefined' && typeof turf.centerOfMass === 'function') {
             try {

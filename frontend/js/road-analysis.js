@@ -1132,16 +1132,18 @@ function showRoadAnalysisPanel() {
     // console.log("Road Analysis: Starting analysis for parcel", currentParcel);
 
     // Make sure we have a current parcel selected
-    if (!currentParcel || !currentParcel.layer || !currentParcel.layer.feature) {
+    const selectedId = currentParcel?.id
+        ?? window.selectedParcelId
+        ?? window.ParcelPresenter?.getIdForLayer?.(currentParcel?.layer)
+        ?? null;
+    const feature = selectedId && window.LiveParcelFabric?.get?.(String(selectedId));
+    if (!feature) {
         showRoadAnalysisAlert('please_select_a_parcel_first', 'Please select a parcel first');
         return;
     }
 
     // Do NOT mark as a road or change its state here
     // (Removed code that checked the road checkbox, set isRoad, set style, or updated PersistentStorage)
-
-    const feature = currentParcel.layer.feature;
-    // console.log("Road Analysis: Parcel feature", feature);
 
     // Validate feature geometry (supports Polygon and MultiPolygon)
     if (!feature.geometry || !feature.geometry.coordinates) {
@@ -1859,7 +1861,9 @@ if (typeof window !== 'undefined') {
 
 // Analyze all visible road parcels in the current map view and classify by width
 async function analyzeAllRoadsInView() {
-    if (!parcelLayer) {
+    const fabric = window.LiveParcelFabric;
+    const presenter = window.ParcelPresenter;
+    if (!fabric?.queryBounds || !presenter?.getLayer) {
         // Ensure status element exists and is updated correctly
         const status = document.getElementById('status');
         if (status) {
@@ -1869,16 +1873,12 @@ async function analyzeAllRoadsInView() {
     }
     const bounds = map.getBounds();
     const visibleRoads = [];
-    parcelLayer.eachLayer(layer => {
-        if (!layer || !layer.feature || !layer.feature.properties) return;
-        const parcelId = typeof ensureParcelId === 'function' ? ensureParcelId(layer.feature) : layer.feature.properties?.parcelId;
+    fabric.queryBounds(bounds, { includeCorridors: true }).forEach(feature => {
+        const parcelId = fabric.featureId?.(feature);
         const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
         if (!isRoad) return;
-        // Only consider parcels in view
-        try {
-            if (!bounds.intersects(layer.getBounds())) return;
-        } catch { }
-        visibleRoads.push(layer);
+        const layer = presenter.getLayer(parcelId);
+        if (layer) visibleRoads.push({ feature, layer });
     });
     if (visibleRoads.length === 0) {
         const status = document.getElementById('status');
@@ -1903,10 +1903,10 @@ async function analyzeAllRoadsInView() {
         { min: getLegendValue('legend-min-5', 12), max: Infinity, color: 'black', label: '>12m' }
     ];
     const classCounts = [0, 0, 0, 0, 0, 0];
-    visibleRoads.forEach(layer => {
+    visibleRoads.forEach(({ feature, layer }) => {
         let avgWidth = 0;
         try {
-            const metrics = calculateRoadMetrics(layer.feature.geometry.coordinates);
+            const metrics = calculateRoadMetrics(feature.geometry.coordinates);
             avgWidth = metrics.widths && isFinite(metrics.widths.average) ? metrics.widths.average : 0;
         } catch { avgWidth = 0; }
         // Classify
@@ -2130,7 +2130,8 @@ async function analyzeAllOSMRoadSegmentsInView() {
     const button = document.getElementById('analyzeAllRoadsButton');
 
     const runAnalysis = async () => {
-        if (!parcelLayer) {
+        const fabric = window.LiveParcelFabric;
+        if (!fabric?.queryBounds) {
             updateStatus('No parcels loaded.');
             return;
         }
@@ -2367,9 +2368,9 @@ async function analyzeAllOSMRoadSegmentsInView() {
                             ]);
                             let maxWidth = 0;
                             try {
-                                parcelLayer.eachLayer(parcelLayerRef => {
+                                fabric.queryBounds(turf.bbox(probe), { includeCorridors: true }).forEach(feature => {
                                     try {
-                                        const geom = parcelLayerRef?.feature?.geometry;
+                                        const geom = feature?.geometry;
                                         if (!geom) return;
                                         let boundary;
                                         if (geom.type === 'Polygon') {

@@ -72,7 +72,7 @@ function reselectParcelsForCopy(parcelIds) {
 
     const layers = resolveCopyParcelLayers(parcelIds);
     layers.forEach(layer => {
-        const id = window.LiveParcelFabric?.featureId?.(layer.feature);
+        const id = window.ParcelPresenter?.getIdForLayer?.(layer);
         if (!id || multiParcelSelection.selectedParcels.has(id)) return;
         multiParcelSelection.selectedParcels.add(id);
         try {
@@ -415,7 +415,7 @@ async function copyProposalIntoNewProposal(proposalIdOrHash) {
             : cadastreParcelIds.filter(id => fabric.entriesForCadastre([id], { includeCorridors: false }).length === 0);
         const layers = resolveCopyParcelLayers(cadastreParcelIds);
         parcelIds = layers
-            .map(layer => window.LiveParcelFabric?.featureId?.(layer.feature))
+            .map(layer => window.ParcelPresenter?.getIdForLayer?.(layer))
             .filter(Boolean);
         if (missingCadastreIds.length || !parcelIds.length) {
             console.warn('[copyProposal] current live fabric does not cover the proposal cadastral scope', {

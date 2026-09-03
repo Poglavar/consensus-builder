@@ -1591,7 +1591,7 @@ const multiParcelSelection = {
     toggleParcel(parcel) {
         if (!this.isActive) return false;
 
-        const parcelId = getParcelIdFromFeature(parcel.feature)?.toString();
+        const parcelId = window.ParcelPresenter?.getIdForLayer?.(parcel)?.toString();
         if (!parcelId) return false;
 
         if (this.selectedParcels.has(parcelId)) {
@@ -1712,7 +1712,7 @@ const multiParcelSelection = {
 
     // Remove highlight from parcel
     removeParcelHighlight(parcel) {
-        const parcelId = getParcelIdFromFeature(parcel?.feature);
+        const parcelId = window.ParcelPresenter?.getIdForLayer?.(parcel) || null;
         const baseStyle = (typeof getParcelBaseStyle === 'function')
             ? getParcelBaseStyle(parcelId)
             : (() => {
@@ -1761,12 +1761,16 @@ const multiParcelSelection = {
                     if (infoContent) infoContent.innerHTML = '';
                     if (proposalsContent) proposalsContent.innerHTML = '';
 
-                    showParcelInfoPanel(parcel.feature);
-                    document.getElementById('parcel-info-panel').classList.add('visible');
-                    setParcelInfoPanelTitle(
-                        window.i18n ? window.i18n.t('panel.parcel.multiSelectionTitle', {}) : 'Multiparcel selection',
-                        { i18nKey: 'panel.parcel.multiSelectionTitle' }
-                    );
+                    const parcelId = window.ParcelPresenter?.getIdForLayer?.(parcel);
+                    const feature = parcelId ? window.LiveParcelFabric?.get?.(parcelId) : null;
+                    if (feature) {
+                        showParcelInfoPanel(feature);
+                        document.getElementById('parcel-info-panel').classList.add('visible');
+                        setParcelInfoPanelTitle(
+                            window.i18n ? window.i18n.t('panel.parcel.multiSelectionTitle', {}) : 'Multiparcel selection',
+                            { i18nKey: 'panel.parcel.multiSelectionTitle' }
+                        );
+                    }
                 }
             }
         } else if (count === 0 && this.isActive) {
@@ -1804,7 +1808,9 @@ const multiParcelSelection = {
         const avgSqmPrice = (typeof SQM_AVG_PRICE !== 'undefined' ? SQM_AVG_PRICE : 133);
 
         const parcelSummaries = parcels.map(parcel => {
-            const props = parcel?.feature?.properties || {};
+            const parcelId = window.ParcelPresenter?.getIdForLayer?.(parcel) || null;
+            const feature = parcelId ? window.LiveParcelFabric?.get?.(String(parcelId)) : null;
+            const props = feature?.properties || {};
             const areaSource = props.calculatedArea
                 || props.area
                 || props.parcelArea
@@ -1813,8 +1819,8 @@ const multiParcelSelection = {
             const explicitPrice = Number(props.estimatedMarketPrice);
             const price = Number.isFinite(explicitPrice) ? explicitPrice : (area ? area * avgSqmPrice : 0);
             const currency = props.estimatedMarketPriceCurrency || props.currency || 'EUR';
-            return { parcel, area, price, currency };
-        });
+            return { parcel, parcelId, feature, area, price, currency };
+        }).filter(summary => summary.feature);
 
         const totalArea = parcelSummaries.reduce((sum, p) => sum + (p.area || 0), 0);
         const totalEstimatedPrice = parcelSummaries.reduce((sum, p) => sum + (p.price || 0), 0);
@@ -1824,7 +1830,7 @@ const multiParcelSelection = {
         const ownerKeys = new Set();
         if (typeof getParcelOwnerSlots === 'function') {
             for (const parcel of parcels) {
-                const parcelId = getParcelIdFromFeature(parcel?.feature);
+                const parcelId = window.ParcelPresenter?.getIdForLayer?.(parcel) || null;
                 if (parcelId) {
                     try {
                         const slots = getParcelOwnerSlots(parcelId.toString());
@@ -1905,10 +1911,9 @@ const multiParcelSelection = {
             <div class="selected-parcels-section">
                 <div class="metric-label" data-i18n-key="panel.parcel.multi.selectedParcelsHeading">${tParcelMulti('panel.parcel.multi.selectedParcelsHeading', {}, 'Selected Parcels:')}</div>
                 <div class="selected-parcels-list">
-                        ${parcelSummaries.map(({ parcel, area, price, currency }) => {
-            const parcelId = getParcelIdFromFeature(parcel?.feature);
+                        ${parcelSummaries.map(({ parcelId, feature, area, price, currency }) => {
             const isRoad = parcelId && typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
-            const parcelNumberDisplay = getParcelDisplayNumberFromProperties(parcel?.feature?.properties, parcelId);
+            const parcelNumberDisplay = getParcelDisplayNumberFromProperties(feature.properties, parcelId);
             const parcelLabel = tParcelMulti('panel.parcel.multi.parcelLabel', { number: parcelNumberDisplay || parcelId }, `Parcel ${parcelNumberDisplay || parcelId}`);
             const roadLabel = tParcelMulti('panel.parcel.multi.roadTag', {}, 'Road');
             const currencyLabel = currency === 'EUR' ? '€' : currency || '';
@@ -2020,13 +2025,11 @@ const multiParcelSelection = {
 
         // Add all block layers to selection
         blockLayers.forEach(layer => {
-            if (layer && layer.feature && layer.feature.properties) {
-                const parcelId = getParcelIdFromFeature(layer.feature);
-                if (parcelId) {
-                    const parcelIdStr = parcelId.toString();
-                    this.selectedParcels.add(parcelIdStr);
-                    this.addParcelHighlight(layer);
-                }
+            const parcelId = window.ParcelPresenter?.getIdForLayer?.(layer);
+            if (parcelId && window.LiveParcelFabric?.get?.(String(parcelId))) {
+                const parcelIdStr = parcelId.toString();
+                this.selectedParcels.add(parcelIdStr);
+                this.addParcelHighlight(layer);
             }
         });
 

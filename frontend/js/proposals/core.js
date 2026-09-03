@@ -171,7 +171,7 @@ function isCameraMovementSuppressed() {
 function resolveProposalParcelsInViewport(proposalIdSet /* , proposal */) {
     const out = [];
     forEachProposalParcelInViewport(proposalIdSet, (layer) => {
-        const parcelId = layer?.feature ? getParcelIdFromFeature(layer.feature) : null;
+        const parcelId = window.ParcelPresenter?.getIdForLayer?.(layer) || null;
         if (!parcelId) return;
         const feature = window.LiveParcelFabric?.get?.(parcelId) || null;
         if (feature) out.push(feature);

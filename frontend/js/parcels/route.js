@@ -180,9 +180,7 @@
             const layer = presenter.getLayer(parcelId)
                 || presenter.resolveLiveLayers([parcelId], { includeCorridors: true })[0]
                 || null;
-            const resolvedId = (layer && layer.feature && typeof global.getParcelId === 'function')
-                ? (global.getParcelId(layer.feature) || parcelId)
-                : parcelId;
+            const resolvedId = presenter.getIdForLayer?.(layer) || parcelId;
             if (!layer) throw new Error('Parcel not found');
             // selectParcel centres + zooms (and now bumps zoom up for very large
             // parcels so the grid stays visible — see selection.js).

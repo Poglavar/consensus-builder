@@ -62,17 +62,31 @@ function normalizeParcelIdList(list) {
 // original cadastral parcels come from the repository. Leaflet and legacy local records are never
 // geometry lookup fallbacks.
 const _parcelAreaById = new Map();
+let _parcelAreaScope = null;
+
+function parcelAreaScope(root) {
+    let city = 'default';
+    try { city = String(root.CityConfigManager?.getCurrentCityId?.() || 'default'); } catch (_) { }
+    const revision = root.LiveParcelFabric?.snapshot?.().revision ?? 'none';
+    return `${city}|${revision}`;
+}
 
 function getParcelAreaById(parcelId) {
     if (parcelId === undefined || parcelId === null) return 0;
-    const key = parcelId.toString();
+    const root = typeof window !== 'undefined' ? window : globalThis;
+    const scope = parcelAreaScope(root);
+    if (_parcelAreaScope !== scope) {
+        _parcelAreaById.clear();
+        _parcelAreaScope = scope;
+    }
+    const id = parcelId.toString();
+    const key = `${scope}\u0000${id}`;
     const remembered = _parcelAreaById.get(key);
     if (remembered !== undefined) return remembered;
 
     let area = 0;
-    const root = typeof window !== 'undefined' ? window : globalThis;
-    const feature = root.LiveParcelFabric?.get?.(key)
-        || root.CadastralParcelRepository?.get?.(key)
+    const feature = root.LiveParcelFabric?.get?.(id)
+        || root.CadastralParcelRepository?.get?.(id)
         || null;
     const calculated = feature?.properties?.calculatedArea;
     if (Number.isFinite(calculated)) area = Number(calculated) || 0;

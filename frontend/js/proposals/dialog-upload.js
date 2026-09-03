@@ -53,7 +53,11 @@ function buildProposalScreenshotContext(parcelLayers = [], options = {}) {
     }
     const goalKey = (typeof normalizeGoalKey === 'function') ? normalizeGoalKey(options.goal) : (options.goal || '');
     const roadContext = options.roadContext || null;
-    const hasParcels = Array.isArray(parcelLayers) && parcelLayers.length > 0;
+    const parcelIds = Array.isArray(parcelLayers)
+        ? parcelLayers.map(layer => window.ParcelPresenter?.getIdForLayer?.(layer)).filter(Boolean).map(String)
+        : [];
+    const parcelFeatures = parcelIds.map(id => window.LiveParcelFabric?.get?.(id)).filter(Boolean);
+    const hasParcels = parcelIds.length > 0 && parcelFeatures.length === parcelIds.length;
     if (!hasParcels && !roadContext) {
         return null;
     }
@@ -62,8 +66,8 @@ function buildProposalScreenshotContext(parcelLayers = [], options = {}) {
     let polygonOrder = 'auto';
     let parcelPolygonOrder = 'auto';
     if (hasParcels) {
-        parcelLayers.forEach(layer => {
-            const geom = layer?.feature?.geometry;
+        parcelFeatures.forEach(feature => {
+            const geom = feature.geometry;
             if (!geom || !geom.coordinates) return;
             if (geom.type === 'Polygon' && Array.isArray(geom.coordinates)) {
                 parcelPolygons.push(geom.coordinates);
@@ -78,7 +82,7 @@ function buildProposalScreenshotContext(parcelLayers = [], options = {}) {
     }
 
     let polygon = null;
-    const geometry = hasParcels ? buildGeometryFromParcels(parcelLayers) : null;
+    const geometry = hasParcels ? buildGeometryFromParcels(parcelIds) : null;
     if (geometry && Array.isArray(geometry.coordinates) && geometry.coordinates.length) {
         polygon = geometry.coordinates;
     } else if (parcelPolygons.length) {
@@ -183,7 +187,7 @@ function buildProposalScreenshotContext(parcelLayers = [], options = {}) {
         const layers = window.ParcelPresenter?.resolveLiveLayers?.(ids, { includeCorridors: true }) || [];
         layers.forEach(layer => {
             try {
-                const liveId = window.LiveParcelFabric?.featureId?.(layer.feature);
+                const liveId = window.ParcelPresenter?.getIdForLayer?.(layer);
                 const geom = liveId ? window.LiveParcelFabric?.get?.(liveId)?.geometry : null;
                 if (geom?.type === 'Polygon' && Array.isArray(geom.coordinates)) {
                     parcelPolygons.push(geom.coordinates);
@@ -245,11 +249,7 @@ function buildProposalScreenshotContext(parcelLayers = [], options = {}) {
     // Compute neighbour polygons from the committed live fabric.
     let neighbours = [];
     if (hasParcels && typeof window.findNeighbourPolygonsFromLiveFabric === 'function') {
-        const selectedIds = new Set();
-        parcelLayers.forEach(layer => {
-            const id = getParcelIdFromFeature(layer?.feature);
-            if (id) selectedIds.add(id.toString());
-        });
+        const selectedIds = new Set(parcelIds);
         selectedIds.forEach(parcelId => {
             const found = window.findNeighbourPolygonsFromLiveFabric(parcelId);
             if (Array.isArray(found)) {

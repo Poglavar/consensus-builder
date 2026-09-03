@@ -24,6 +24,9 @@
         return id !== undefined && id !== null ? id.toString() : null;
     };
 
+    const parcelIdForLayer = layer => global.ParcelPresenter?.getIdForLayer?.(layer) || null;
+    const parcelFeature = parcelId => parcelId && global.LiveParcelFabric?.get?.(parcelId) || null;
+
     function getOwnerCountFromFeature(feature) {
         if (!feature || !feature.properties) return null;
 
@@ -75,17 +78,18 @@
             : null;
 
         global.parcelLayer.eachLayer(layer => {
-            if (!layer?.feature?.properties) return;
-            const parcelId = resolveParcelId(layer.feature);
+            const parcelId = parcelIdForLayer(layer);
+            const feature = parcelFeature(parcelId);
+            if (!feature) return;
             if (ownerCountLabelFilter && parcelId && !ownerCountLabelFilter.has(parcelId)) {
                 return;
             }
 
-            const ownerCount = getOwnerCountFromFeature(layer.feature);
+            const ownerCount = getOwnerCountFromFeature(feature);
             if (ownerCount === null) return;
 
             let labelLatLng = null;
-            const geometry = layer.feature.geometry;
+            const geometry = feature.geometry;
 
             if (geometry && typeof turf !== 'undefined' && typeof turf.centerOfMass === 'function') {
                 try {
@@ -210,4 +214,3 @@
         attachOwnerCountHotkey();
     }
 })(typeof window !== 'undefined' ? window : globalThis);
-

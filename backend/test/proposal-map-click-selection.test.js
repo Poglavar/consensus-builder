@@ -50,7 +50,8 @@ function loadParcelSelection(drillResult) {
                 get: id => String(id) === String(layer.feature.properties.parcelId) ? layer.feature : null
             };
             context.ParcelPresenter = {
-                getLayer: id => String(id) === String(layer.feature.properties.parcelId) ? layer : null
+                getLayer: id => String(id) === String(layer.feature.properties.parcelId) ? layer : null,
+                getIdForLayer: candidate => candidate === layer ? String(layer.feature.properties.parcelId) : null
             };
         },
         clearSingleParcelSelection,

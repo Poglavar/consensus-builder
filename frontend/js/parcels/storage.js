@@ -77,6 +77,22 @@
         return value && typeof value.getLayer === 'function' ? value.getLayer(parcelId) : null;
     }
 
+    function getPresentedParcelId(layer) {
+        const value = presenter();
+        return value && typeof value.getIdForLayer === 'function'
+            ? value.getIdForLayer(layer)
+            : null;
+    }
+
+    function getLiveParcelFeature(layerOrId) {
+        const id = typeof layerOrId === 'string' || typeof layerOrId === 'number'
+            ? String(layerOrId)
+            : getPresentedParcelId(layerOrId);
+        return id && global.LiveParcelFabric && typeof global.LiveParcelFabric.get === 'function'
+            ? global.LiveParcelFabric.get(id)
+            : null;
+    }
+
     function resolveLiveParcelLayers(parcelIds, options = {}) {
         const value = presenter();
         return value && typeof value.resolveLiveLayers === 'function'
@@ -161,6 +177,8 @@
     global.getRequiredGridCells = getRequiredGridCells;
     global.computeGridKeysForBounds = computeGridKeysForBounds;
     global.resolveLiveParcelLayers = resolveLiveParcelLayers;
+    global.getPresentedParcelId = getPresentedParcelId;
+    global.getLiveParcelFeature = getLiveParcelFeature;
     global.getParcelLayersWithinBounds = getParcelLayersWithinBounds;
     global.getParcelsInBounds = getParcelsInBounds;
     global.eachVisibleParcel = eachVisibleParcel;

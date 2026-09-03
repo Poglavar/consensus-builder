@@ -49,9 +49,12 @@ function loadBoundsHarness(proposal, findParcelById = () => null, producedFeatur
         corridorSurfaceFootprintForDefinition: vi.fn(() => null)
     };
     context.window = context;
+    const featuresById = new Map();
+    const idsByLayer = new WeakMap();
     context.LiveParcelFabric = {
         featureId: feature => feature?.properties?.parcelId || null,
         explicitCadastreIds: feature => feature?.properties?.cadastreParcelIds || [],
+        get: id => featuresById.get(String(id)) || null,
         producedBy: proposalId => proposalId === String(proposal?.proposalId)
             ? producedFeatures
             : []
@@ -60,15 +63,15 @@ function loadBoundsHarness(proposal, findParcelById = () => null, producedFeatur
         resolveLiveLayers: ids => ids.map(id => {
             const layer = find(id);
             if (!layer) return null;
-            if (!layer.feature) {
-                layer.feature = {
-                    type: 'Feature',
-                    properties: { parcelId: String(id), cadastreParcelIds: [String(id)] },
-                    geometry: { type: 'Polygon', coordinates: [] }
-                };
-            }
+            idsByLayer.set(layer, String(id));
+            featuresById.set(String(id), {
+                type: 'Feature',
+                properties: { parcelId: String(id), cadastreParcelIds: [String(id)] },
+                geometry: { type: 'Polygon', coordinates: [] }
+            });
             return layer;
-        }).filter(Boolean)
+        }).filter(Boolean),
+        getIdForLayer: layer => idsByLayer.get(layer) || null
     };
     vm.runInNewContext(geometrySource, context);
     return { context, geometryBounds, parcelBounds, find, warn };

@@ -116,7 +116,12 @@
         const startIndex = isFinite(Number(options.startIndex)) && Number(options.startIndex) > 0
             ? String(Number(options.startIndex))
             : undefined;
-        const cityParcelsConfig = CityConfigManager ? CityConfigManager.getCurrentCityConfig()?.parcels : null;
+        const requestedCity = options.city ? String(options.city) : null;
+        const requestedConfig = requestedCity && CityConfigManager
+            ? (CityConfigManager.getAvailableCities?.() || []).find(config => String(config?.id || '') === requestedCity)
+            : null;
+        const cityParcelsConfig = requestedConfig?.parcels
+            || (CityConfigManager ? CityConfigManager.getCurrentCityConfig()?.parcels : null);
 
         // Force backend when on production host to avoid OSS fetches and ExceptionReports
         const forcedBackend = isProdHost();

@@ -1,87 +1,33 @@
-// Parcel ingestion is a domain write, not a Leaflet operation. The presenter owns redraw
-// coalescing when the resulting fabric revision commits.
+// The renderer module has no cadastral write API. The presenter owns redraw coalescing when a
+// ground-service-backed fabric revision commits.
 
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 
 const source = readFileSync(new URL('../../frontend/js/parcels/ingest.js', import.meta.url), 'utf8');
 
-const parcel = (id, properties = {}) => ({
-    type: 'Feature',
-    properties: { parcelId: id, ...properties },
-    geometry: { type: 'Polygon', coordinates: [[[15.9, 45.8], [15.91, 45.8], [15.91, 45.81], [15.9, 45.8]]] }
-});
-
 function loadIngest(overrides = {}) {
-    const calls = [];
-    const repository = {
-        acceptFeatures: vi.fn(async (features, options) => {
-            calls.push(['accept', features, options]);
-            return features.map(feature => feature.properties.parcelId);
-        })
-    };
     const context = {
         console,
         performance,
         Map,
         Set,
         Promise,
-        CadastralParcelRepository: repository,
-        convertGeoJSON: vi.fn(collection => collection),
         ...overrides
     };
     context.window = context;
     context.globalThis = context;
     vm.runInNewContext(source, context);
-    return { context, repository, calls };
+    return { context };
 }
 
-describe('parcel ingest boundary', () => {
-    it('delegates a declared cadastral batch to the authoritative repository', async () => {
-        const { context, repository, calls } = loadIngest();
-        const features = [parcel('opaque-one'), parcel('opaque-two')];
-        const result = await context.ingestCadastralParcelFeatures(features, { skipConversion: true });
-
-        expect(Array.from(result)).toEqual(['opaque-one', 'opaque-two']);
-        expect(repository.acceptFeatures).toHaveBeenCalledOnce();
-        expect(calls[0][0]).toBe('accept');
-        expect(calls[0][1]).toBe(features);
-        expect(calls[0][2]).toEqual({ skipConversion: true });
-    });
-
-    it('hands an enclosing mutation draft to repository provisioning', async () => {
-        const { context, repository } = loadIngest();
-        const mutation = { id: 'outer-draft' };
-        await context.ingestCadastralParcelFeatures([parcel('opaque')], {
-            skipConversion: true,
-            mutation,
-            city: 'sibenik'
-        });
-
-        expect(repository.acceptFeatures.mock.calls[0][1]).toEqual({
-            city: 'sibenik',
-            mutation,
-            skipConversion: true
-        });
-    });
-
-    it('does not convert, classify or otherwise interpret repository input itself', async () => {
-        const convertGeoJSON = vi.fn();
-        const feature = parcel('opaque#still-cadastral');
-        const { context, repository } = loadIngest({ convertGeoJSON });
-
-        await context.ingestCadastralParcelFeatures([feature]);
-
-        expect(convertGeoJSON).not.toHaveBeenCalled();
-        expect(repository.acceptFeatures.mock.calls[0][0][0]).toBe(feature);
-        expect(repository.acceptFeatures.mock.calls[0][1]).toEqual({ skipConversion: false });
-    });
-
-    it('fails closed when the authoritative repository is unavailable', async () => {
-        const { context } = loadIngest({ CadastralParcelRepository: null });
-        await expect(context.ingestCadastralParcelFeatures([parcel('HR-A')], { skipConversion: true }))
-            .rejects.toThrow('Cadastral parcel repository is unavailable');
+describe('parcel renderer boundary', () => {
+    it('does not expose a second cadastral ingestion path', () => {
+        const { context } = loadIngest();
+        expect(context.ingestCadastralParcelFeatures).toBeUndefined();
+        expect(context.normalizeFeatureParcelId).toBeUndefined();
+        expect(source).not.toContain('CadastralParcelRepository');
     });
 });
 

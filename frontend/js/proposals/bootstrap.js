@@ -201,7 +201,7 @@ if (typeof window !== 'undefined') {
         const layer = window.ParcelPresenter?.getLayer?.(window.selectedParcelId) || null;
         if (!layer) return;
 
-        const isTrackSelected = layer?.feature?.properties?.isTrack === true || Boolean(layer?._trackStyle);
+        const isTrackSelected = global.LiveParcelFabric?.get?.(selectedId)?.properties?.isTrack === true || Boolean(layer?._trackStyle);
         if (isTrackSelected) {
             const styleFn = typeof getParcelStyle === 'function' ? getParcelStyle : getParcelBaseStyle;
             const style = styleFn ? styleFn(window.selectedParcelId, layer, { isTrack: true }) : {};

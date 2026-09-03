@@ -143,7 +143,7 @@
                 const layer = global.LiveParcelFabric.get(value)
                     ? global.ParcelPresenter.getLayer(value)
                     : null;
-                const foundId = layer && layer.feature ? (resolveParcelId(layer.feature) || value) : null;
+                const foundId = layer ? (global.ParcelPresenter.getIdForLayer?.(layer) || value) : null;
                 if (foundId && typeof selectParcel === 'function') {
                     selectParcel(foundId);
                     locateError.textContent = '';

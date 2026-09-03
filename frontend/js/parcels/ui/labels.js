@@ -5,13 +5,8 @@
     let parcelNumberLabelFilter = null;
     let parcelNumberMapListenersAttached = false;
 
-    const resolveParcelId = (feature) => {
-        const props = feature?.properties || {};
-        const id = typeof ensureParcelId === 'function'
-            ? ensureParcelId(feature)
-            : (props.parcelId ?? props.parcel_id ?? props.id);
-        return id !== undefined && id !== null ? id.toString() : null;
-    };
+    const parcelIdForLayer = layer => global.ParcelPresenter?.getIdForLayer?.(layer) || null;
+    const parcelFeature = parcelId => parcelId && global.LiveParcelFabric?.get?.(parcelId) || null;
 
     function toggleParcelNumbers() {
         const checkbox = document.getElementById('showParcelNumbers');
@@ -40,16 +35,17 @@
                 : 'BROJ_CESTICE';
 
         global.parcelLayer.eachLayer(layer => {
-            if (!layer?.feature?.properties) return;
-            const parcelNumber = layer.feature.properties[parcelNumberProperty];
+            const parcelId = parcelIdForLayer(layer);
+            const feature = parcelFeature(parcelId);
+            if (!feature) return;
+            const parcelNumber = feature.properties?.[parcelNumberProperty];
             if (!parcelNumber) return;
-            const parcelId = resolveParcelId(layer.feature);
             if (parcelNumberLabelFilter && parcelId && !parcelNumberLabelFilter.has(parcelId)) {
                 return;
             }
 
             let labelLatLng = null;
-            const geometry = layer.feature.geometry;
+            const geometry = feature.geometry;
 
             if (geometry && typeof turf !== 'undefined' && typeof turf.centerOfMass === 'function') {
                 try {
@@ -145,4 +141,3 @@
     global.refreshParcelNumberLabelsIfVisible = refreshParcelNumberLabelsIfVisible;
     global.setParcelNumberLabelFilter = setParcelNumberLabelFilter;
 })(typeof window !== 'undefined' ? window : globalThis);
-

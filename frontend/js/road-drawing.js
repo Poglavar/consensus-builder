@@ -1635,18 +1635,22 @@ function roadDrawingParcelEntry(feature) {
         number: properties.BROJ_CESTICE,
         area: Number(properties.calculatedArea) || 0,
         estimatedMarketPrice: properties.estimatedMarketPrice,
-        feature,
         layer: getRoadDrawingPresenterLayer(id)
     };
 }
 
 function getParcelIdFromAny(parcel) {
     if (!parcel) return null;
-    const fromFeature = parcel.feature ? getRoadDrawingParcelIdFromFeature(parcel.feature) : null;
+    const fromFeature = parcel.type === 'Feature' ? getRoadDrawingParcelIdFromFeature(parcel) : null;
     const fromProps = parcel.properties ? ensureParcelId(parcel.properties) : null;
     const raw = parcel.id ?? parcel.parcelId;
     const candidate = fromFeature || fromProps || getParcelId(raw);
     return candidate ? candidate.toString() : null;
+}
+
+function getRoadDrawingParcelProperties(parcel) {
+    const id = getParcelIdFromAny(parcel);
+    return id ? getRoadDrawingLiveFeature(id)?.properties || {} : {};
 }
 
 function setRoadParcelStats(countValue, areaText = '—') {
@@ -1742,8 +1746,7 @@ function getMarketPrice(parcelId, currency) {
     // Check for precalculated estimatedMarketPrice first
     if (parcel) {
         const estimatedPrice = parcel.estimatedMarketPrice ||
-            parcel.properties?.estimatedMarketPrice ||
-            parcel.feature?.properties?.estimatedMarketPrice;
+            getRoadDrawingParcelProperties(parcel).estimatedMarketPrice;
         if (Number.isFinite(estimatedPrice) && estimatedPrice > 0) {
             return estimatedPrice;
         }
@@ -1778,8 +1781,7 @@ function updateRoadMarketPrice(parcels) {
     const totalPrice = parcelsList.reduce((sum, parcel) => {
         // Check for precalculated estimatedMarketPrice first
         const estimatedPrice = parcel?.estimatedMarketPrice ||
-            parcel?.properties?.estimatedMarketPrice ||
-            parcel?.feature?.properties?.estimatedMarketPrice;
+            getRoadDrawingParcelProperties(parcel).estimatedMarketPrice;
         if (Number.isFinite(estimatedPrice) && estimatedPrice > 0) {
             return sum + estimatedPrice;
         }
@@ -1825,8 +1827,7 @@ async function updateRoadAcquiringDifficulty(parcels) {
         // Get market price - check for precalculated estimatedMarketPrice first
         let marketPrice = 0;
         const estimatedPrice = parcel?.estimatedMarketPrice ||
-            parcel?.properties?.estimatedMarketPrice ||
-            parcel?.feature?.properties?.estimatedMarketPrice;
+            getRoadDrawingParcelProperties(parcel).estimatedMarketPrice;
         if (Number.isFinite(estimatedPrice) && estimatedPrice > 0) {
             marketPrice = estimatedPrice;
         } else if (parcel && Number.isFinite(parcel.area)) {
@@ -1838,7 +1839,7 @@ async function updateRoadAcquiringDifficulty(parcels) {
 
         // Get ownership type from parcel feature properties (from GET /parcels/)
         let ownershipType = 'individual'; // default
-        const featureProps = parcel.feature?.properties || parcel.properties || {};
+        const featureProps = getRoadDrawingParcelProperties(parcel);
         const ownershipList = featureProps.ownershipList || [];
         const ownershipTypeFromProps = featureProps.ownershipType;
 
@@ -1961,7 +1962,7 @@ async function updateRoadOwnershipCounts(parcels) {
         if (!parcelId) return { type: null, individualOwnerCount: 0 };
 
         // Get ownership data from parcel feature properties (from GET /parcels/)
-        const featureProps = parcel.feature?.properties || parcel.properties || {};
+        const featureProps = getRoadDrawingParcelProperties(parcel);
         const ownershipList = featureProps.ownershipList || [];
         const ownershipType = featureProps.ownershipType;
 
@@ -3651,7 +3652,7 @@ function buildParcelPolygonLatLngs(parcels) {
     const results = [];
     if (!Array.isArray(parcels)) return results;
     parcels.forEach(parcel => {
-        const feature = parcel.feature || getRoadDrawingLiveFeature(getParcelIdFromAny(parcel));
+        const feature = getRoadDrawingLiveFeature(getParcelIdFromAny(parcel));
         const rings = getParcelOuterRingsLngLat(feature);
         if (Array.isArray(rings) && rings.length > 0) {
             rings.forEach(ring => {
@@ -3774,7 +3775,7 @@ function findNewAffectedParcelsForSegment(segmentPolygon) {
 
 // Get ownership type from parcel's feature properties
 function getOwnershipTypeFromParcel(parcel) {
-    const featureProps = parcel.feature?.properties || parcel.properties || {};
+    const featureProps = getRoadDrawingParcelProperties(parcel);
     const ownershipTypeFromProps = featureProps.ownershipType;
 
     if (ownershipTypeFromProps) {
@@ -3875,7 +3876,7 @@ function lockParcelsFromSegment(segmentPolygon) {
             segmentStats.marketPrice += price;
 
             // Count individual owners from ownership list
-            const featureProps = parcel.feature?.properties || {};
+            const featureProps = getRoadDrawingParcelProperties(parcel);
             const ownershipList = featureProps.ownershipList || [];
             if (Array.isArray(ownershipList) && ownershipList.length > 0) {
                 for (const owner of ownershipList) {
@@ -3937,9 +3938,9 @@ function formatCurrency(value) {
     return new Intl.NumberFormat('hr-HR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value);
 }
 
-// Find parcels affected by the road (LEGACY - still used for full recalculation if needed)
+// Find parcels affected by the road.
 function findAffectedParcels(roadPolygon) {
-    if (!roadPolygon || !parcelLayer) return;
+    if (!roadPolygon || !getRoadDrawingFabric()) return;
 
     // Define the green highlight style for committed road parcels
     const committedRoadStyle = {
@@ -3949,8 +3950,7 @@ function findAffectedParcels(roadPolygon) {
         weight: 3
     };
 
-    // Use shared function to find and highlight affected parcels
-    // Skip bounds filter to include all parcels in the parcel layer
+    // Use the shared fabric query to find and highlight affected parcels.
     roadAffectedParcels = findAndHighlightAffectedParcels(
         roadPolygon,
         roadAffectedParcels,
@@ -5804,7 +5804,7 @@ function findPreviewAffectedParcels(previewPolygon) {
         }
 
         // Count individual owners from parcel properties
-        const featureProps = parcel.feature?.properties || {};
+        const featureProps = getRoadDrawingParcelProperties(parcel);
         const ownershipList = featureProps.ownershipList || [];
         if (Array.isArray(ownershipList)) {
             for (const owner of ownershipList) {

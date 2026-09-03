@@ -70,37 +70,5 @@
         return parcelCanvas;
     }
 
-    function normalizeFeatureParcelId(feature) {
-        if (!feature || typeof feature !== 'object') return null;
-        const props = feature.properties || (feature.properties = {});
-        let id = props.parcelId ?? props.parcel_id ?? props.PARCEL_ID ?? props.id;
-        if ((id === undefined || id === null || id === '')
-            && props.maticni_broj_ko !== undefined && props.broj_cestice !== undefined) {
-            id = `HR-${props.maticni_broj_ko}-${props.broj_cestice}`;
-        }
-        if (id === undefined || id === null || String(id).trim() === '') return null;
-        props.parcelId = String(id).trim();
-        props.id = props.parcelId;
-        return props.parcelId;
-    }
-
-    // Explicit cadastral boundary used by deterministic fixtures and import tools. It deliberately
-    // delegates conversion, identity validation, deduplication, caching and live-fabric provisioning
-    // to the repository. There is no generic "parcel ingest": generated live parcels may only be
-    // committed by a ProposalManager mutation, while cadastral facts may only enter here.
-    async function ingestCadastralParcelFeatures(rawFeatures, options = {}) {
-        const repository = global.CadastralParcelRepository;
-        if (!repository || typeof repository.acceptFeatures !== 'function') {
-            throw new Error('Cadastral parcel repository is unavailable.');
-        }
-        return repository.acceptFeatures(Array.isArray(rawFeatures) ? rawFeatures : [], {
-            ...(options.city ? { city: options.city } : {}),
-            ...(options.mutation ? { mutation: options.mutation } : {}),
-            skipConversion: options.skipConversion === true
-        });
-    }
-
     global.parcelCanvasRenderer = parcelCanvasRenderer;
-    global.normalizeFeatureParcelId = normalizeFeatureParcelId;
-    global.ingestCadastralParcelFeatures = ingestCadastralParcelFeatures;
 })(typeof window !== 'undefined' ? window : globalThis);
