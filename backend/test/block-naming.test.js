@@ -135,24 +135,22 @@ const lonLatRect = (lon0, lat0, lon1, lat1) => ({
 
 function stubMap(parcels) {
     globalThis.wgs84ToHTRS96 = (lat, lng) => [lng * 100000, lat * 100000];
-    globalThis.getParcelIdFromFeature = feature => feature.properties.parcelId;
-    globalThis.isCorridorParcel = () => false;
-    globalThis.parcelLayer = {
-        eachLayer(fn) {
-            parcels.forEach(([id, feature]) => {
-                const clone = JSON.parse(JSON.stringify(feature));
-                clone.properties.parcelId = id;
-                fn({ feature: clone });
-            });
-        }
+    const features = parcels.map(([id, feature]) => {
+        const clone = JSON.parse(JSON.stringify(feature));
+        clone.properties.parcelId = id;
+        clone.properties.cadastreParcelIds = ['HR-330264-628'];
+        return clone;
+    });
+    globalThis.LiveParcelFabric = {
+        list: () => features,
+        featureId: feature => feature.properties.parcelId,
+        explicitCadastreIds: feature => feature.properties.cadastreParcelIds
     };
 }
 
 function clearMap() {
     delete globalThis.wgs84ToHTRS96;
-    delete globalThis.getParcelIdFromFeature;
-    delete globalThis.isCorridorParcel;
-    delete globalThis.parcelLayer;
+    delete globalThis.LiveParcelFabric;
 }
 
 describe('a name left over from the parcel-id era', () => {
@@ -175,24 +173,24 @@ describe('a name left over from the parcel-id era', () => {
     });
 
     it('finds the block a proposal sits on wherever the record keeps it', () => {
-        expect(batch.blockParcelIdsOf({ parentParcelIds: ['A', 'B'] }).sort()).toEqual(['A', 'B']);
-        expect(batch.blockParcelIdsOf({ buildingProposal: { parentParcelIds: ['C'] } })).toEqual(['C']);
+        expect(batch.blockParcelIdsOf({ cadastreParcelIds: ['A', 'B'] }).sort()).toEqual(['A', 'B']);
         // Declared twice is still one parcel.
-        expect(batch.blockParcelIdsOf({ parentParcelIds: ['A'], parcelIds: ['A'] })).toEqual(['A']);
+        expect(batch.blockParcelIdsOf({ cadastreParcelIds: ['A', 'A'] })).toEqual(['A']);
+        expect(batch.blockParcelIdsOf({ buildingProposal: { parentParcelIds: ['C'] } })).toEqual([]);
         expect(batch.blockParcelIdsOf({})).toEqual([]);
         expect(batch.blockParcelIdsOf(null)).toEqual([]);
     });
 
     it('plans the same name a fresh batch would mint for that block', () => {
         stubMap([
-            ['HR-330264-628#prqroga', lonLatRect(15.8850, 43.7350, 15.8860, 43.7360)],
-            ['HR-330264-628#p1wwh16v', lonLatRect(15.8860, 43.7350, 15.8870, 43.7360)]
+            ['HR-330264-628', lonLatRect(15.8850, 43.7350, 15.8860, 43.7360)],
+            ['HR-330264-629', lonLatRect(15.8860, 43.7350, 15.8870, 43.7360)]
         ]);
         globalThis.proposalStorage = {
             getAllProposals: () => [{
                 proposalId: 'c2-1ffqanv1ljpso7',
                 title: 'Block HR-330264-628#prqroga',
-                parentParcelIds: ['HR-330264-628#prqroga', 'HR-330264-628#p1wwh16v']
+                cadastreParcelIds: ['HR-330264-628', 'HR-330264-629']
             }]
         };
 
@@ -210,12 +208,12 @@ describe('a name left over from the parcel-id era', () => {
     it('refuses, with a reason, when the block is not all on the map', () => {
         // Renaming from a subset would fingerprint a DIFFERENT outline, and mint a name for a
         // block that does not exist.
-        stubMap([['HR-330264-628#prqroga', lonLatRect(15.8850, 43.7350, 15.8860, 43.7360)]]);
+        stubMap([['HR-330264-628', lonLatRect(15.8850, 43.7350, 15.8860, 43.7360)]]);
         globalThis.proposalStorage = {
             getAllProposals: () => [{
                 proposalId: 'c2-1ffqanv1ljpso7',
                 title: 'Block HR-330264-628#prqroga',
-                parentParcelIds: ['HR-330264-628#prqroga', 'HR-330264-628#not-loaded']
+                cadastreParcelIds: ['HR-330264-628', 'HR-330264-629']
             }]
         };
 
@@ -227,11 +225,11 @@ describe('a name left over from the parcel-id era', () => {
     });
 
     it('leaves proposals whose names are already current alone', () => {
-        stubMap([['HR-330264-628#prqroga', lonLatRect(15.8850, 43.7350, 15.8860, 43.7360)]]);
+        stubMap([['HR-330264-628', lonLatRect(15.8850, 43.7350, 15.8860, 43.7360)]]);
         globalThis.proposalStorage = {
             getAllProposals: () => [
-                { proposalId: 'a', title: 'Block 1108-1514', parentParcelIds: ['HR-330264-628#prqroga'] },
-                { proposalId: 'b', title: 'Block 5000-K7QM', parentParcelIds: ['HR-330264-628#prqroga'] }
+                { proposalId: 'a', title: 'Block 1108-1514', cadastreParcelIds: ['HR-330264-628'] },
+                { proposalId: 'b', title: 'Block 5000-K7QM', cadastreParcelIds: ['HR-330264-628'] }
             ]
         };
 

@@ -63,7 +63,7 @@ describe('the duplicate detector judges by registration, not by property shape',
 
     it('a layer counts only if the parcel system registered it', () => {
         expect(census).toContain('global.parcelLayer.hasLayer(layer)');
-        expect(census).toContain('global.parcelLayerById.get(key) === layer');
+        expect(census).toContain('global.ParcelPresenter?.getLayer?.(key) === layer');
         expect(census).toContain('if (!inGroup && !indexed) return;');
     });
 

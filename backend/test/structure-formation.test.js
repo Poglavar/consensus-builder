@@ -6,7 +6,11 @@ import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
 
 const require = createRequire(import.meta.url);
-const { structureNeedsGroundFormation, structureTakeContext } = require('../../frontend/js/proposals/apply/structures.js');
+const {
+    structureNeedsGroundFormation,
+    structureTakeContext,
+    structureGeometryIsContiguous
+} = require('../../frontend/js/proposals/apply/structures.js');
 const formationEdit = require('../../frontend/js/proposals/formation-edit.js');
 const parcelArrangement = require('../../frontend/js/proposals/parcel-arrangement.js');
 
@@ -30,6 +34,23 @@ describe('structure ground formation', () => {
 
     it('keeps stations content-only on their corridor', () => {
         expect(structureNeedsGroundFormation('station')).toBe(false);
+    });
+
+    it('requires parks, squares and lakes to occupy exactly one connected polygon', () => {
+        const polygon = box(15.87, 43.74, 15.88, 43.75).geometry;
+        const onePart = { type: 'MultiPolygon', coordinates: [polygon.coordinates] };
+        const twoParts = {
+            type: 'MultiPolygon',
+            coordinates: [
+                polygon.coordinates,
+                box(15.89, 43.76, 15.90, 43.77).geometry.coordinates
+            ]
+        };
+
+        expect(structureGeometryIsContiguous('park', polygon)).toBe(true);
+        expect(structureGeometryIsContiguous('square', onePart)).toBe(true);
+        expect(structureGeometryIsContiguous('lake', twoParts)).toBe(false);
+        expect(structureGeometryIsContiguous('station', twoParts)).toBe(true);
     });
 
     it('measures a whole Sibenik block with the hardened fabric clipper', () => {

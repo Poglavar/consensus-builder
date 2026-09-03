@@ -75,8 +75,8 @@ function buildingProposalData() {
         proposalId: 'p-b1',
         goal: 'buildings',
         title: 'Test building',
-        parentParcelIds: ['HR-1', 'HR-2'],
-        buildingProposal: { parentParcelIds: ['HR-1', 'HR-2'] },
+        cadastreParcelIds: ['HR-1', 'HR-2'],
+        buildingProposal: {},
         geometry: { buildings: [{ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[[15.97, 45.81], [15.98, 45.81], [15.98, 45.82], [15.97, 45.81]]] } }] }
     };
 }
@@ -101,8 +101,9 @@ describe('_applyBuildingProposal (characterization)', () => {
         expect(rendered.properties.proposalState).toBe('applied');
         // Persisted with flat cadastral anchors; no ancestry graph is written.
         expect(store.saved).toBeGreaterThan(0);
-        expect(data.parentParcelIds).toEqual(['HR-1', 'HR-2']);
-        expect(data.buildingProposal.parentParcelIds).toEqual(['HR-1', 'HR-2']);
+        expect(data.cadastreParcelIds).toEqual(['HR-1', 'HR-2']);
+        expect(data).not.toHaveProperty('parentParcelIds');
+        expect(data.buildingProposal).not.toHaveProperty('parentParcelIds');
     });
 
     it('marks proposalState "executed" when the lifecycle is Executed', async () => {
@@ -115,22 +116,21 @@ describe('_applyBuildingProposal (characterization)', () => {
     it('keeps authored block membership when its massing touches fewer parcels', async () => {
         const data = buildingProposalData();
         data.typologyType = 'block';
-        data.parentParcelIds = ['HR-1', 'HR-2', 'HR-EDGE'];
+        data.cadastreParcelIds = ['HR-1', 'HR-2', 'HR-EDGE'];
         data.buildingProposal = {
             typologyType: 'block',
-            parentParcelIds: ['HR-1', 'HR-2', 'HR-EDGE'],
-            blockParcelIds: ['HR-1', 'HR-2', 'HR-EDGE'],
-            ineligibleParcels: [{ parcelId: 'HR-EDGE', status: 'below-min-plot' }]
+            ineligibleParcels: [{ status: 'below-min-plot' }]
         };
 
         const result = await _applyBuildingProposal.call(makeManager(), 'p-b1', data, {});
 
         expect(result).toBe(true);
-        // The footprint resolver owns actual ground, while the design record keeps the selected
-        // block. They are intentionally different facts.
-        expect(data.parentParcelIds).toEqual(['HR-1', 'HR-2']);
-        expect(data.buildingProposal.parentParcelIds).toEqual(['HR-1', 'HR-2']);
-        expect(data.buildingProposal.blockParcelIds).toEqual(['HR-1', 'HR-2', 'HR-EDGE']);
+        // Applying may resolve fewer current live pieces than the authored block contains. It may
+        // not rewrite the durable cadastral declaration to match today's materialization.
+        expect(data.cadastreParcelIds).toEqual(['HR-1', 'HR-2', 'HR-EDGE']);
+        expect(data).not.toHaveProperty('parentParcelIds');
+        expect(data.buildingProposal).not.toHaveProperty('parentParcelIds');
+        expect(data.buildingProposal).not.toHaveProperty('blockParcelIds');
     });
 
     it('updates canonical state but performs no presentation work when a plan defers it', async () => {

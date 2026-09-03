@@ -25,8 +25,8 @@ test.describe('Mega proposal loading @features', () => {
     const result = await page.evaluate(async (count: number) => {
       const w = window as any;
 
-      if (typeof w.ingestParcelFeatures !== 'function') {
-        return { error: 'ingestParcelFeatures missing' };
+      if (typeof w.ingestCadastralParcelFeatures !== 'function') {
+        return { error: 'ingestCadastralParcelFeatures missing' };
       }
       if (typeof w.openProposalFromList !== 'function') {
         return { error: 'openProposalFromList missing' };
@@ -69,7 +69,7 @@ test.describe('Mega proposal loading @features', () => {
         });
       }
 
-      await w.ingestParcelFeatures(features, { replaceExisting: false });
+      await w.ingestCadastralParcelFeatures(features);
 
       const proposalSeed = {
         proposalId: 'e2e-mega-proposal-load',

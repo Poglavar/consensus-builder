@@ -1,120 +1,64 @@
-// findParcelById keeps an id → layer index, and decided it was stale by comparing LAYER COUNT.
-//
-// A count is not a fingerprint. Deriving a parcel's pieces removes layers and adds layers, so the
-// total comes back identical while the ids under it have changed completely — and the index then
-// answers for a map that no longer exists. A parcel plainly visible on screen could not be found,
-// and callers that resolve a selection through it concluded nothing was selected: block detection
-// answered "Select a parcel first" with a parcel selected and highlighted in front of you.
-//
-// These run the shipped function with its collaborators stubbed.
-import { describe, it, expect, vi } from 'vitest';
+// A singular parcel lookup is a join between the committed fabric and its presenter projection.
+// It never rebuilds an id index by scanning Leaflet and never resurrects source/cache records.
+import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const source = readFileSync(fileURLToPath(new URL('../../frontend/js/proposals/data.js', import.meta.url)), 'utf8');
 
-function loadFindParcelById(parcelLayer, options = {}) {
+function loadFindParcelById(fabric, presenter) {
     const start = source.indexOf('    findParcelById(parcelId) {');
     expect(start, 'findParcelById not found').toBeGreaterThan(-1);
     const end = source.indexOf('\n    },', start);
     expect(end, 'end of findParcelById not found').toBeGreaterThan(start);
     const body = source.slice(start + 4, end + 6);
-
     // eslint-disable-next-line no-new-func
-    const factory = new Function(
-        'parcelLayer', 'getParcelIdFromFeature', 'parcelCache', 'console',
-        'fetchSingleParcelById', 'fetchParcelsForIds', 'ProposalManager', 'window',
-        `return function ${body}`
-    );
-    return factory(
-        parcelLayer,
-        feature => feature?.properties?.parcelId ?? null,
-        options.parcelCache,
-        { warn() { }, error() { }, debug() { } },
-        () => { },
-        () => { },
-        options.ProposalManager,
-        {}
+    return new Function('globalThis', 'window', `return function ${body}`)(
+        { LiveParcelFabric: fabric, ParcelPresenter: presenter },
+        { LiveParcelFabric: fabric, ParcelPresenter: presenter }
     );
 }
 
-const layerFor = id => ({ feature: { properties: { parcelId: id } } });
+describe('proposalStorage.findParcelById authority', () => {
+    it('returns an exact layer only while the exact feature is committed', () => {
+        const layer = { feature: { properties: { parcelId: 'HR-A#piece' } } };
+        const fabric = { get: vi.fn(id => id === 'HR-A#piece' ? layer.feature : null) };
+        const presenter = { getLayer: vi.fn(() => layer), resolveLiveLayers: vi.fn(() => []) };
+        const find = loadFindParcelById(fabric, presenter);
 
-function mapOf(ids) {
-    let layers = ids.map(layerFor);
-    return {
-        getLayers: () => layers,
-        eachLayer: fn => layers.forEach(fn),
-        hasLayer: layer => layers.includes(layer),
-        replaceWith: nextIds => { layers = nextIds.map(layerFor); }
-    };
-}
-
-function stateFor(options = {}) {
-    return {
-        syntheticParcelLayers: new Map(),
-        parcelIdIndex: new Map(),
-        parcelIdIndexSize: 0,
-        recoverParcelFromCache: options.recoverParcelFromCache || (() => null),
-        recoverParcelFromPersistentStorage: options.recoverParcelFromPersistentStorage || (() => null)
-    };
-}
-
-describe('the parcel id index and layers that change without changing count', () => {
-    it('finds a parcel whose layer replaced another one — same count, different ids', () => {
-        const parcelLayer = mapOf(['HR-1', 'HR-2', 'HR-3']);
-        const findParcelById = loadFindParcelById(parcelLayer);
-        const state = stateFor();
-
-        // Warm the index against the map as it was.
-        expect(findParcelById.call(state, 'HR-1')).toBeTruthy();
-
-        // A derivation swaps a cadastral parcel for a piece: one layer out, one in, count unchanged.
-        parcelLayer.replaceWith(['HR-1#p7a2', 'HR-2', 'HR-3']);
-
-        expect(findParcelById.call(state, 'HR-1#p7a2')).toBeTruthy();
+        expect(find('HR-A#piece')).toBe(layer);
+        expect(presenter.getLayer).toHaveBeenCalledWith('HR-A#piece');
     });
 
-    it('stops answering for a layer that is no longer on the map', () => {
-        const parcelLayer = mapOf(['HR-1', 'HR-2', 'HR-3']);
-        const findParcelById = loadFindParcelById(parcelLayer);
-        const state = stateFor();
+    it('returns no stale presenter layer once the fabric no longer contains that id', () => {
+        const stale = { feature: { properties: { parcelId: 'HR-A#old' } } };
+        const fabric = { get: () => null };
+        const presenter = { getLayer: () => stale, resolveLiveLayers: () => [] };
+        const find = loadFindParcelById(fabric, presenter);
 
-        expect(findParcelById.call(state, 'HR-1')).toBeTruthy();
-        parcelLayer.replaceWith(['HR-1#p7a2', 'HR-2', 'HR-3']);
-
-        // The cadastral parcel was replaced by its piece; handing back the old layer would put a
-        // shape on screen that the map has already taken off.
-        expect(findParcelById.call(state, 'HR-1')).toBeNull();
+        expect(find('HR-A#old')).toBeNull();
     });
 
-    it('returns null for an id that was never there, without rebuilding forever', () => {
-        const parcelLayer = mapOf(['HR-1', 'HR-2']);
-        const findParcelById = loadFindParcelById(parcelLayer);
-        const state = stateFor();
+    it('does not implicitly expand a cadastral anchor, even when it currently has one live piece', () => {
+        const left = { feature: { properties: { parcelId: 'HR-A#left' } } };
+        const right = { feature: { properties: { parcelId: 'HR-A#right' } } };
+        const fabric = { get: () => null };
+        const presenter = { getLayer: () => null, resolveLiveLayers: vi.fn(() => [left]) };
+        const find = loadFindParcelById(fabric, presenter);
 
-        expect(findParcelById.call(state, 'HR-9')).toBeNull();
-        expect(findParcelById.call(state, 'HR-9')).toBeNull();
-        expect(findParcelById.call(state, 'HR-2')).toBeTruthy();
+        expect(find('HR-A')).toBeNull();
+        presenter.resolveLiveLayers.mockReturnValue([left, right]);
+        expect(find('HR-A')).toBeNull();
+        expect(presenter.resolveLiveLayers).not.toHaveBeenCalled();
     });
 
-    it('never resurrects removed proposal output from source-ground caches', () => {
-        const parcelLayer = mapOf(['HR-1']);
-        const recoverParcelFromCache = vi.fn(() => layerFor('HR-1#old-park-1'));
-        const recoverParcelFromPersistentStorage = vi.fn(() => layerFor('HR-1#old-park-1'));
-        const ProposalManager = { isSyntheticParcelId: id => String(id).includes('#') };
-        const findParcelById = loadFindParcelById(parcelLayer, {
-            parcelCache: { grid: new Map() },
-            ProposalManager
-        });
-        const state = stateFor({ recoverParcelFromCache, recoverParcelFromPersistentStorage });
-
-        expect(findParcelById.call(state, 'HR-1#old-park-1')).toBeNull();
-        expect(recoverParcelFromCache).not.toHaveBeenCalled();
-        expect(recoverParcelFromPersistentStorage).not.toHaveBeenCalled();
-
-        // Original cadastre remains recoverable; only disposable generated output is barred.
-        findParcelById.call(state, 'HR-2');
-        expect(recoverParcelFromCache).toHaveBeenCalledWith('HR-2');
+    it('contains no cache, persistence, registry-map, or Leaflet-scan recovery path', () => {
+        const start = source.indexOf('    findParcelById(parcelId) {');
+        const end = source.indexOf('\n    },', start);
+        const implementation = source.slice(start, end);
+        expect(implementation).not.toMatch(/parcelCache|PersistentStorage|parcelLayerById/);
+        expect(implementation).not.toMatch(/parcelLayer\.(eachLayer|getLayers)/);
+        expect(implementation).toContain('LiveParcelFabric');
+        expect(implementation).toContain('ParcelPresenter');
     });
 });

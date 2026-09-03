@@ -3,6 +3,8 @@ import {
     baseParcelIds,
     centerlineSegmentsOf,
     meaningfulPartCount,
+    normalizeOwnerAcceptances,
+    normalizeOwnershipFlow,
     normalizeProposalRow,
     normalizePolygonGeometry,
     normalizeStoredProposal,
@@ -22,6 +24,51 @@ const square = (x, y, size = 0.001) => [[
 describe('ground-model migration', () => {
     it('flattens legacy underscore-derived parcel ids', () => {
         expect(baseParcelIds(['HR-339270-824_proposal_9'])).toEqual(['HR-339270-824']);
+    });
+
+    it('moves parcel consent from generated pieces to the cadastral parcel', () => {
+        const migrated = normalizeOwnerAcceptances({
+            'HR-1#piece-a': {
+                owners: {
+                    'parcel:HR-1#piece-a:owner:alice': {
+                        key: 'parcel:HR-1#piece-a:owner:alice',
+                        displayName: 'Alice'
+                    }
+                },
+                ownerOrder: ['parcel:HR-1#piece-a:owner:alice'],
+                acceptedOwnerKeys: ['parcel:HR-1#piece-a:owner:alice'],
+                acceptedBy: { 'parcel:HR-1#piece-a:owner:alice': { agentId: 'a' } }
+            },
+            'HR-1#piece-b': {
+                owners: {
+                    'parcel:HR-1#piece-b:owner:bob': {
+                        key: 'parcel:HR-1#piece-b:owner:bob',
+                        displayName: 'Bob'
+                    }
+                },
+                ownerOrder: ['parcel:HR-1#piece-b:owner:bob'],
+                acceptedOwnerKeys: []
+            }
+        });
+
+        expect(Object.keys(migrated)).toEqual(['HR-1']);
+        expect(Object.keys(migrated['HR-1'].owners)).toEqual([
+            'parcel:HR-1:owner:alice',
+            'parcel:HR-1:owner:bob'
+        ]);
+        expect(migrated['HR-1'].acceptedOwnerKeys).toEqual(['parcel:HR-1:owner:alice']);
+        expect(migrated['HR-1'].acceptedBy).toHaveProperty('parcel:HR-1:owner:alice');
+    });
+
+    it('aggregates ownership-flow pieces by cadastral parcel and destination', () => {
+        expect(normalizeOwnershipFlow([
+            { parcelId: 'HR-1#piece-a', cededM2: 12, destination: 'public' },
+            { parcelId: 'HR-1#piece-b', cededM2: 8, destination: 'public' },
+            { parcelId: 'HR-2', cededM2: 5, destination: 'proposer' }
+        ])).toEqual([
+            { parcelId: 'HR-1', cededM2: 20, destination: 'public' },
+            { parcelId: 'HR-2', cededM2: 5, destination: 'proposer' }
+        ]);
     });
 
     it('repairs a legacy road Polygon whose ring is one level too shallow', () => {
@@ -100,10 +147,11 @@ describe('ground-model migration', () => {
 
         const result = normalizeStoredProposal(source);
         expect(result.changed).toBe(true);
-        expect(result.value.parentParcelIds).toEqual(['HR-1']);
-        expect(result.value.roadProposal.parentParcelIds).toEqual(['HR-1']);
-        expect(result.value.reparcellization.parentParcelIds).toEqual(['HR-2']);
-        expect(result.value.reparcellization.parcelIds).toEqual(['HR-2']);
+        expect(result.value.cadastreParcelIds).toEqual(['HR-1', 'HR-2']);
+        expect(result.value).not.toHaveProperty('parentParcelIds');
+        expect(result.value.roadProposal).not.toHaveProperty('parentParcelIds');
+        expect(result.value.reparcellization).not.toHaveProperty('parentParcelIds');
+        expect(result.value.reparcellization).not.toHaveProperty('parcelIds');
         expect(result.value.reparcellization.polygons).toHaveLength(2);
         expect(result.value).not.toHaveProperty('childParcelIds');
         expect(result.value).not.toHaveProperty('childProposalIds');
@@ -113,26 +161,66 @@ describe('ground-model migration', () => {
         expect(result.value.reparcellization).not.toHaveProperty('formation');
     });
 
+    it('flattens legacy block membership metadata without deriving it at runtime', () => {
+        const result = normalizeStoredProposal({
+            cadastreParcelIds: ['HR-330264-502'],
+            parentParcelIds: ['HR-330264-502#old-parent'],
+            buildingProposal: {
+                parentParcelIds: ['HR-330264-502#old-parent'],
+                blockParcelIds: [
+                    'HR-330264-502#p173qvvu',
+                    'HR-330264-504#phb1r45',
+                    'HR-330264-502#another-piece'
+                ],
+                parentParcelNumbers: [
+                    { id: 'HR-330264-502#p173qvvu', number: '502' },
+                    { id: 'HR-330264-504#phb1r45', number: 'HR-330264-504#phb1r45' }
+                ],
+                ineligibleParcels: [
+                    { parcelId: 'HR-330264-502#p173qvvu', status: 'narrow' },
+                    { parcelId: 'HR-330264-504#phb1r45', status: 'small' }
+                ],
+                ancestorKey: 'HR-330264-502#old-parent'
+            }
+        });
+
+        expect(result.value.cadastreParcelIds).toEqual(['HR-330264-502', 'HR-330264-504']);
+        expect(result.value.buildingProposal.ineligibleParcels).toEqual([
+            { status: 'narrow' },
+            { status: 'small' }
+        ]);
+        expect(result.value.buildingProposal).not.toHaveProperty('parentParcelIds');
+        expect(result.value.buildingProposal).not.toHaveProperty('blockParcelIds');
+        expect(result.value.buildingProposal).not.toHaveProperty('parentParcelNumbers');
+        expect(result.value.buildingProposal).not.toHaveProperty('ancestorKey');
+    });
+
     it('converts legacy lifecycle state once instead of leaving a live fallback', () => {
         const result = normalizeStoredProposal({ status: 'Executed', applied: true });
         expect(result.value).toEqual({ lifecycleStatus: 'Executed' });
     });
 
-    it('keeps government-plan authored child features', () => {
+    it('collapses government-plan child pieces to authored geometry and removes the pieces', () => {
+        const geometry = { type: 'Polygon', coordinates: square(15, 45) };
         const result = normalizeStoredProposal({
             tags: { governmentPlan: true },
-            childFeatures: [{ type: 'Feature', properties: { road: true } }],
+            childFeatures: [{ type: 'Feature', properties: { isRoad: true }, geometry }],
             roadProposal: {
-                childFeatures: [{ type: 'Feature', properties: { road: true } }],
+                childFeatures: [{ type: 'Feature', properties: { isRoad: true }, geometry }],
                 definition: { kind: 'government_plan' }
             }
         });
-        expect(result.value.childFeatures).toHaveLength(1);
-        expect(result.value.roadProposal.childFeatures).toHaveLength(1);
+        expect(result.value).not.toHaveProperty('childFeatures');
+        expect(result.value.roadProposal).not.toHaveProperty('childFeatures');
+        expect(result.value.roadProposal.definition.polygon).toEqual(geometry);
     });
 
     it('recognizes a government plan stored only in the road column', () => {
-        const child = { type: 'Feature', properties: { authoredRoad: true } };
+        const child = {
+            type: 'Feature',
+            properties: { isRoad: true },
+            geometry: { type: 'Polygon', coordinates: square(15, 45) }
+        };
         const row = {
             ancestor_parcel_ids: ['HR-1'],
             cadastre_parcel_ids: null,
@@ -148,8 +236,9 @@ describe('ground-model migration', () => {
             proposal_data: null
         };
         const updates = normalizeProposalRow(row);
-        expect(updates.child_features).toBeUndefined();
-        expect(updates.road_proposal.childFeatures).toEqual([child]);
+        expect(updates.child_features).toBeNull();
+        expect(updates.road_proposal).not.toHaveProperty('childFeatures');
+        expect(updates.road_proposal.definition.polygon).toEqual(child.geometry);
     });
 
     it('backfills cadastre ids from the best flat declaration', () => {
@@ -168,8 +257,10 @@ describe('ground-model migration', () => {
             proposal_data: { parentParcelIds: ['HR-7#old-2', 'HR-8'] }
         };
         const updates = normalizeProposalRow(row);
-        expect(updates.ancestor_parcel_ids).toEqual(['HR-7', 'HR-8']);
+        expect(updates.ancestor_parcel_ids).toBeUndefined();
         expect(updates.cadastre_parcel_ids).toEqual(['HR-7', 'HR-8']);
+        expect(updates.proposal_data.cadastreParcelIds).toEqual(['HR-7', 'HR-8']);
+        expect(updates.proposal_data).not.toHaveProperty('parentParcelIds');
     });
 
     it('nulls legacy row columns and is idempotent', () => {
@@ -211,9 +302,12 @@ describe('ground-model migration', () => {
         expect(updates.child_features).toBeNull();
         expect(updates.parent_proposal_ids).toBeNull();
         expect(updates.child_proposal_ids).toBeNull();
-        expect(updates.road_proposal.parentParcelIds).toEqual(['HR-1']);
+        expect(updates.ancestor_parcel_ids).toBeNull();
+        expect(updates.cadastre_parcel_ids).toBeUndefined();
+        expect(updates.road_proposal).not.toHaveProperty('parentParcelIds');
         expect(updates.road_proposal.definition).not.toHaveProperty('surfaceFootprint');
-        expect(updates.proposal_data.parentParcelIds).toEqual(['HR-1']);
+        expect(updates.proposal_data.cadastreParcelIds).toEqual(['HR-1']);
+        expect(updates.proposal_data).not.toHaveProperty('parentParcelIds');
 
         const migrated = { ...row, ...updates };
         expect(normalizeProposalRow(migrated)).toEqual({});

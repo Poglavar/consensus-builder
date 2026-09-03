@@ -49,10 +49,16 @@ function loadEditorOwnerIdentity() {
     const slotsById = new Map();
     const ensureParcelOwnerSlots = async (parcelId) => slotsById.get(String(parcelId)) || [];
 
+    const editorWindow = {
+        __readjustmentContributions: contributions,
+        LiveParcelFabric: {
+            cadastreIdsForParcelIds: ids => ids.map(String)
+        }
+    };
     const api = factory(
         t,
         resolveOwnerDisplayName,
-        { __readjustmentContributions: contributions },
+        editorWindow,
         feature => Number(feature?.properties?.calculatedArea) || 0,
         (feature, area) => Number(feature?.properties?.estimatedMarketPrice) || (Number(area) || 0) * 100,
         ensureParcelOwnerSlots,

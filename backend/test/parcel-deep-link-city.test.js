@@ -9,7 +9,7 @@
 // These tests drive the REAL city configs, not a restatement of them, so a new Croatian city is
 // covered the moment it is added to city-config.js.
 
-import { describe, it, expect, beforeAll, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeAll, beforeEach, afterEach } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 
@@ -96,27 +96,22 @@ describe('findNearestCity with a filter', () => {
 });
 
 describe('resolveCroatianCityId — placing an HR parcel from its coordinates', () => {
-    const originalFetch = globalThis.fetch;
-    let requestedUrls;
+    let ensureIds;
 
     beforeEach(() => {
-        requestedUrls = [];
-        globalThis.getBackendBase = () => 'http://backend.test';
+        ensureIds = vi.fn();
+        globalThis.CadastralParcelRepository = { ensureIds };
     });
 
     afterEach(() => {
-        globalThis.fetch = originalFetch;
-        delete globalThis.getBackendBase;
+        delete globalThis.CadastralParcelRepository;
     });
 
     function stubParcelAt(lng, lat) {
-        globalThis.fetch = async (url) => {
-            requestedUrls.push(url);
-            return {
-                ok: true,
-                json: async () => ({ features: [{ geometry: { coordinates: [[[lng, lat]]] } }] })
-            };
-        };
+        ensureIds.mockResolvedValue({
+            status: 'ready',
+            features: [{ geometry: { coordinates: [[[lng, lat]]] } }]
+        });
     }
 
     it('resolves a Šibenik parcel to sibenik, not zagreb', async () => {
@@ -134,39 +129,32 @@ describe('resolveCroatianCityId — placing an HR parcel from its coordinates', 
         await expect(route.resolveCroatianCityId('HR-335550-1')).resolves.toBe('zagreb');
     });
 
-    it('asks the countrywide parcels route, url-encoding the slash in a parcel number', async () => {
+    it('asks the one cadastral repository for the exact id', async () => {
         stubParcelAt(15.889585, 43.735019);
         await route.resolveCroatianCityId('HR-330264-4975/4');
-        expect(requestedUrls).toHaveLength(1);
-        expect(requestedUrls[0]).toBe('http://backend.test/parcels?parcel_id=HR-330264-4975%2F4');
+        expect(ensureIds).toHaveBeenCalledTimes(1);
+        expect(ensureIds).toHaveBeenCalledWith(['HR-330264-4975/4']);
     });
 
     it('falls back to zagreb when the lookup fails, rather than leaving the user nowhere', async () => {
-        globalThis.fetch = async () => ({ ok: false, status: 502, json: async () => ({}) });
+        ensureIds.mockRejectedValueOnce(new Error('HTTP 502'));
         await expect(route.resolveCroatianCityId('HR-330264-4975/4')).resolves.toBe('zagreb');
 
-        globalThis.fetch = async () => { throw new Error('offline'); };
+        ensureIds.mockRejectedValueOnce(new Error('offline'));
         await expect(route.resolveCroatianCityId('HR-330264-4975/4')).resolves.toBe('zagreb');
     });
 
     it('falls back when the parcel exists but carries no usable geometry', async () => {
-        globalThis.fetch = async () => ({ ok: true, json: async () => ({ features: [] }) });
+        ensureIds.mockResolvedValue({ status: 'ready', features: [] });
         await expect(route.resolveCroatianCityId('HR-330264-4975/4')).resolves.toBe('zagreb');
     });
 
-    it('passes an abort signal so a wedged backend cannot stall the deep-link boot', async () => {
+    it('bounds the repository wait so a wedged transport cannot stall deep-link boot', async () => {
         globalThis.__CB_CITY_LOOKUP_TIMEOUT_MS__ = 50; // real deadline is 6 s; don't idle for it here
-        let sawSignal = false;
-        globalThis.fetch = async (_url, init) => {
-            sawSignal = Boolean(init && init.signal);
-            // A backend that never answers: this settles only when the deadline aborts us.
-            return new Promise((_resolve, reject) => {
-                init.signal.addEventListener('abort', () => reject(new Error('aborted')));
-            });
-        };
+        ensureIds.mockReturnValue(new Promise(() => {}));
         try {
             await expect(route.resolveCroatianCityId('HR-330264-4975/4')).resolves.toBe('zagreb');
-            expect(sawSignal).toBe(true);
+            expect(ensureIds).toHaveBeenCalledTimes(1);
         } finally {
             delete globalThis.__CB_CITY_LOOKUP_TIMEOUT_MS__;
         }

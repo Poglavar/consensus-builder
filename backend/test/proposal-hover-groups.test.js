@@ -173,12 +173,19 @@ describe('live parcel geometry for interaction', () => {
         const staleBase = featureAt(15.0, 45.0, 'HR-A');
         const cache = vi.fn(() => ({ parcelsById: new Map([['HR-A', staleBase]]) }));
         global.buildProposalFeatureCache = cache;
-        global.window.resolveLiveParcelLayers = vi.fn(() => [
-            { toGeoJSON: () => left },
-            { toGeoJSON: () => right }
-        ]);
+        const features = new Map([['HR-A#left', left], ['HR-A#right', right]]);
+        global.window.LiveParcelFabric = {
+            featureId: feature => feature?.properties?.id || null,
+            get: id => features.get(String(id)) || null
+        };
+        global.window.ParcelPresenter = {
+            resolveLiveLayers: vi.fn(() => [
+                { feature: left },
+                { feature: right }
+            ])
+        };
 
-        const proposal = { proposalId: 'park', parentParcelIds: ['HR-A'] };
+        const proposal = { proposalId: 'park', cadastreParcelIds: ['HR-A'] };
         expect(cap.getParcelFeaturesForHighlight('HR-A', proposal)).toEqual([left, right]);
         expect(cap.collectProposalHighlightFeatures(proposal)).toEqual([left, right]);
         expect(cache).not.toHaveBeenCalled();
@@ -191,7 +198,11 @@ describe('live parcel geometry for interaction', () => {
         global.buildProposalFeatureCache = vi.fn(() => ({
             parcelsById: new Map([['HR-A#old-park-1', parcelFeature]])
         }));
-        global.window.resolveLiveParcelLayers = vi.fn(() => []);
+        global.window.LiveParcelFabric = {
+            featureId: feature => feature?.properties?.id || null,
+            get: () => null
+        };
+        global.window.ParcelPresenter = { resolveLiveLayers: vi.fn(() => []) };
 
         expect(cap.getParcelFeaturesForHighlight('HR-A#old-park-1', { proposalId: 'park' })).toEqual([]);
         expect(global.buildProposalFeatureCache).not.toHaveBeenCalled();

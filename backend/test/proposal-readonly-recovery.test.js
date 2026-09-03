@@ -19,6 +19,9 @@ const dataSrc = readFileSync(new URL('../../frontend/js/proposals/data.js', impo
 function bootStore({ secondaryTab }) {
     const store = new Map();
     globalThis.window = globalThis;
+    globalThis.__formationDepth = {
+        stripDerivedRecordData: record => structuredClone(record)
+    };
     globalThis.__cbSecondaryTab = secondaryTab;
     globalThis.PersistentStorage = {
         getItem: key => (store.has(key) ? store.get(key) : null),
@@ -31,7 +34,12 @@ function bootStore({ secondaryTab }) {
     return { proposalStorage, store };
 }
 
-const ROAD = { proposalId: 'p-road-1', title: 'Road 0208-1547', roadProposal: { definition: { segments: [] } } };
+const ROAD = {
+    proposalId: 'p-road-1',
+    title: 'Road 0208-1547',
+    cadastreParcelIds: ['HR-ROAD-1'],
+    roadProposal: { definition: { segments: [] } }
+};
 
 // addProposal() pulls in the whole normalisation chain from other frontend files, which is not what
 // is under test here — put the proposal straight into the store's map and drive persistence.
@@ -56,7 +64,7 @@ describe('read-only tab keeps work instead of dropping it', () => {
         ctx.proposalStorage._persist();
         const parked = ctx.store.get('cadastre_proposals_recovery');
         expect(parked, 'a read-only tab must not silently destroy the proposal').toBeTruthy();
-        expect(JSON.parse(parked).proposals.map(p => p.proposalId)).toContain('p-road-1');
+        expect(JSON.parse(parked).records.map(p => p.proposalId)).toContain('p-road-1');
     });
 
     it('offers the parked work back to a primary tab, and restoring consumes the slot', () => {

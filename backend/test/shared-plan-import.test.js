@@ -233,7 +233,8 @@ describe('shared-plan import boundary', () => {
         const result = await importProposal({
             proposalId: 'shared-building',
             goal: 'building',
-            buildingProposal: { parentParcelIds: ['HR-1'] }
+            cadastreParcelIds: ['HR-1'],
+            buildingProposal: {}
         }, { skipDependencyFetch: true });
 
         expect(result).toEqual({
@@ -246,10 +247,34 @@ describe('shared-plan import boundary', () => {
         expect(imported[0].applied).toBe(false);
         expect(proposalStorage.importProposal).toHaveBeenCalledWith(
             expect.objectContaining({ proposalId: 'shared-building' }),
-            { overwrite: true }
+            { overwrite: true, deferSave: true }
         );
         expect(proposalStorage._indexProposal).toHaveBeenCalledWith(imported[0]);
         expect(proposalStorage.save).toHaveBeenCalledOnce();
+    });
+
+    it('defers every plan-member write to the outer materialization commit', async () => {
+        const proposalStorage = {
+            getProposal: vi.fn(() => null),
+            importProposal: vi.fn(proposal => structuredClone(proposal)),
+            _indexProposal: vi.fn(),
+            save: vi.fn()
+        };
+        const { importAndApplySharedProposal: importProposal } = loadSharedImportHelpers({ proposalStorage });
+
+        const result = await importProposal({
+            proposalId: 'shared-building',
+            goal: 'building',
+            cadastreParcelIds: ['HR-1'],
+            buildingProposal: {}
+        }, { skipDependencyFetch: true, deferSave: true });
+
+        expect(result.queued).toBe(true);
+        expect(proposalStorage.importProposal).toHaveBeenCalledWith(
+            expect.objectContaining({ proposalId: 'shared-building' }),
+            { overwrite: true, deferSave: true }
+        );
+        expect(proposalStorage.save).not.toHaveBeenCalled();
     });
 
     it('replaces a stale parked copy with the current server definition', async () => {
@@ -257,7 +282,8 @@ describe('shared-plan import boundary', () => {
             proposalId: 'shared-road',
             goal: 'road-track',
             applied: false,
-            roadProposal: { definition: { width: 30 }, parentParcelIds: ['OLD'] }
+            cadastreParcelIds: ['OLD'],
+            roadProposal: { definition: { width: 30 } }
         };
         const proposalStorage = {
             getProposal: vi.fn(() => stale),
@@ -265,16 +291,13 @@ describe('shared-plan import boundary', () => {
             _indexProposal: vi.fn(),
             save: vi.fn()
         };
-        const ensureRoadParentParcelIds = vi.fn(() => true);
-        const { importAndApplySharedProposal: importProposal } = loadSharedImportHelpers({
-            proposalStorage,
-            ensureRoadParentParcelIds
-        });
+        const { importAndApplySharedProposal: importProposal } = loadSharedImportHelpers({ proposalStorage });
 
         const result = await importProposal({
             proposalId: 'shared-road',
             goal: 'road-track',
-            roadProposal: { definition: { width: 12 }, parentParcelIds: ['HR-1'] }
+            cadastreParcelIds: ['HR-1'],
+            roadProposal: { definition: { width: 12 } }
         }, { skipDependencyFetch: true });
 
         expect(result.queued).toBe(true);
@@ -283,7 +306,7 @@ describe('shared-plan import boundary', () => {
                 proposalId: 'shared-road',
                 roadProposal: expect.objectContaining({ definition: { width: 12 } })
             }),
-            { overwrite: true }
+            { overwrite: true, deferSave: true }
         );
     });
 

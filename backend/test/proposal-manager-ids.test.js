@@ -19,12 +19,11 @@ const {
 } = require('../../frontend/js/proposal-parcel-identity.js');
 
 describe('synthetic descendant id composition', () => {
-    it('strips an inherited synthetic suffix so ids never nest', () => {
-        // A re-split of an already-split parcel must key off the CADASTRAL root, not the slice id.
-        expect(_composeSyntheticParcelId('HR-335649-371/1#p-1ov46hnuoy5-10', 'p-21bi0202nac', 1))
-            .toBe('HR-335649-371/1#p-21bi0202nac-1');
-        expect(_composeSyntheticParcelNumber('371#p-1ov46hnuoy5-10', 'p-21bi0202nac', 1))
-            .toBe('371#p-21bi0202nac-1');
+    it('treats the explicitly supplied root as opaque', () => {
+        expect(_composeSyntheticParcelId('cadastre#official', 'p-21bi0202nac', 1))
+            .toBe('cadastre#official#p-21bi0202nac-1');
+        expect(_composeSyntheticParcelNumber('371/A', 'p-21bi0202nac', 1))
+            .toBe('371/A#p-21bi0202nac-1');
     });
 
     it('composes straight from a clean root', () => {
@@ -55,7 +54,9 @@ describe('ProposalManager._assignSyntheticChildIdentities', () => {
         geometry: { type: 'Polygon', coordinates: [[[0, 0], [0, 1], [1, 1], [0, 0]]] },
         properties: {
             parentParcelId: 'HR-335649-371/1#p-1ov46hnuoy5-10',
-            parentParcelNumber: '371#p-1ov46hnuoy5-10'
+            parentParcelNumber: '371#p-1ov46hnuoy5-10',
+            rootParcelNumber: '371',
+            cadastreParcelIds: ['HR-335649-371/1']
         }
     });
 
@@ -87,7 +88,10 @@ describe('ProposalManager._assignSyntheticChildIdentities', () => {
                 type: 'Polygon',
                 coordinates: [[[x, 0], [x, 1], [x + 0.5, 1], [x, 0]]]
             },
-            properties: { rootParcelId: 'HR-1', rootParcelNumber: '1' }
+            properties: {
+                rootParcelId: 'HR-1', rootParcelNumber: '1',
+                cadastreParcelIds: ['HR-1']
+            }
         });
         const firstRun = [piece(10), piece(0)];
         const secondRun = [piece(0), piece(10)];
@@ -110,7 +114,10 @@ describe('ProposalManager._assignSyntheticChildIdentities', () => {
         const of = (rootId, rootNumber) => ({
             type: 'Feature',
             geometry: { type: 'Polygon', coordinates: [[[0, 0], [0, 1], [1, 1], [0, 0]]] },
-            properties: { rootParcelId: rootId, rootParcelNumber: rootNumber }
+            properties: {
+                rootParcelId: rootId, rootParcelNumber: rootNumber,
+                cadastreParcelIds: [rootId]
+            }
         });
         const features = [of('HR-1', '1'), of('HR-2', '2'), of('HR-1', '1')];
         ProposalManager._assignSyntheticChildIdentities('p-tok', features);
@@ -224,12 +231,16 @@ describe('identity carry-over through _assignSyntheticChildIdentities (formation
         properties: {
             rootParcelId: rootId,
             rootParcelNumber: rootNumber,
+            cadastreParcelIds: [rootId],
             ...(carried ? { __carryIdentity: carried } : {})
         }
     });
 
     it('keeps a carried identity verbatim and consumes the stamp', () => {
-        const feature = pieceOf('HR-1', '1', { parcelId: 'HR-1#p-tok-2', parcelNumber: '1#p-tok-2' });
+        const feature = pieceOf('HR-1', '1', {
+            parcelId: 'HR-1#p-tok-2', parcelNumber: '1#p-tok-2',
+            syntheticToken: 'p-tok', syntheticIndex: 2
+        });
         ProposalManager._assignSyntheticChildIdentities('p-tok', [feature]);
 
         expect(feature.properties.parcelId).toBe('HR-1#p-tok-2');
@@ -237,12 +248,16 @@ describe('identity carry-over through _assignSyntheticChildIdentities (formation
         expect(feature.properties.syntheticToken).toBe('p-tok');
         expect(feature.properties.syntheticIndex).toBe(2);
         expect(feature.properties.rootParcelId).toBe('HR-1');
-        expect(feature.properties.baseParcelIds).toEqual(['HR-1']);
+        expect(feature.properties.cadastreParcelIds).toEqual(['HR-1']);
+        expect(feature.properties).not.toHaveProperty('baseParcelIds');
         expect(feature.properties.__carryIdentity).toBeUndefined();
     });
 
     it('mints fresh siblings past the seeded prior indices, so a freed id never comes back', () => {
-        const carried = pieceOf('HR-1', '1', { parcelId: 'HR-1#p-tok-2', parcelNumber: '1#p-tok-2' });
+        const carried = pieceOf('HR-1', '1', {
+            parcelId: 'HR-1#p-tok-2', parcelNumber: '1#p-tok-2',
+            syntheticToken: 'p-tok', syntheticIndex: 2
+        });
         const fresh = pieceOf('HR-1', '1', null);
         ProposalManager._assignSyntheticChildIdentities('p-tok', [carried, fresh], {
             startIndexByRootId: { 'HR-1': 3 }
@@ -250,11 +265,14 @@ describe('identity carry-over through _assignSyntheticChildIdentities (formation
 
         expect(carried.properties.parcelId).toBe('HR-1#p-tok-2');
         expect(fresh.properties.parcelId).toBe('HR-1#p-tok-3');
-        expect(fresh.properties.baseParcelIds).toEqual(['HR-1']);
+        expect(fresh.properties.cadastreParcelIds).toEqual(['HR-1']);
     });
 
     it('carries an old-token identity from before a proposal was forked or absorbed', () => {
-        const feature = pieceOf('HR-1', '1', { parcelId: 'HR-1#p-old-5', parcelNumber: '1#p-old-5' });
+        const feature = pieceOf('HR-1', '1', {
+            parcelId: 'HR-1#p-old-5', parcelNumber: '1#p-old-5',
+            syntheticToken: 'p-old', syntheticIndex: 5
+        });
         ProposalManager._assignSyntheticChildIdentities('p-new', [feature]);
 
         expect(feature.properties.parcelId).toBe('HR-1#p-old-5');
@@ -263,7 +281,10 @@ describe('identity carry-over through _assignSyntheticChildIdentities (formation
     });
 
     it('gives a duplicated stamp (contiguity clone) the id once — the clone falls back to minting', () => {
-        const stamp = { parcelId: 'HR-1#p-tok-2', parcelNumber: '1#p-tok-2' };
+        const stamp = {
+            parcelId: 'HR-1#p-tok-2', parcelNumber: '1#p-tok-2',
+            syntheticToken: 'p-tok', syntheticIndex: 2
+        };
         const first = pieceOf('HR-1', '1', { ...stamp });
         const clone = pieceOf('HR-1', '1', { ...stamp });
         ProposalManager._assignSyntheticChildIdentities('p-tok', [first, clone], {
@@ -276,18 +297,19 @@ describe('identity carry-over through _assignSyntheticChildIdentities (formation
 
     it('preserves a richer multi-root anchor already stamped (the corridor)', () => {
         const feature = pieceOf('HR-1', '1', null);
-        feature.properties.baseParcelIds = ['HR-1', 'HR-2'];
+        feature.properties.cadastreParcelIds = ['HR-1', 'HR-2'];
         ProposalManager._assignSyntheticChildIdentities('p-tok', [feature]);
 
-        expect(feature.properties.baseParcelIds).toEqual(['HR-1', 'HR-2']);
+        expect(feature.properties.cadastreParcelIds).toEqual(['HR-1', 'HR-2']);
     });
 
-    it('falls back to plain minting when the formation-edit module is unavailable', () => {
+    it('fails closed when a requested identity carry cannot be interpreted explicitly', () => {
         delete globalThis.window;
-        const feature = pieceOf('HR-1', '1', { parcelId: 'HR-1#p-tok-9', parcelNumber: '1#p-tok-9' });
-        ProposalManager._assignSyntheticChildIdentities('p-tok', [feature]);
-
-        expect(feature.properties.parcelId).toBe('HR-1#p-tok-1');
-        expect(feature.properties.__carryIdentity).toBeUndefined();
+        const feature = pieceOf('HR-1', '1', {
+            parcelId: 'HR-1#p-tok-9', parcelNumber: '1#p-tok-9',
+            syntheticToken: 'p-tok', syntheticIndex: 9
+        });
+        expect(() => ProposalManager._assignSyntheticChildIdentities('p-tok', [feature]))
+            .toThrow(/carry-over service is unavailable/);
     });
 });

@@ -11,42 +11,33 @@
 // new vertices where the cutter crosses a parcel edge, and those points have no twin vertex on the
 // other polygon to round with, so rounding drifts them off the shared line.
 //
-// This suite fails on any bare `.toGeoJSON()` in the files that feed geometry, so the rounding
-// cannot creep back in one call site at a time.
+// Geometry-producing code now reads domain GeoJSON directly from LiveParcelFabric or the
+// cadastral repository. Leaflet is a write-only projection, so any `.toGeoJSON()` in these files
+// is an architectural regression rather than merely a precision bug.
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 
-// Every file that reads geometry off a Leaflet layer. Adding a new one is fine — adding a bare
-// toGeoJSON() to it is not.
-const GEOMETRY_READERS = [
-    'frontend/js/proposals/cadastre-ancestry.js',
+const DOMAIN_GEOMETRY_READERS = [
+    'frontend/js/road-detection.js',
+    'frontend/js/parcel-blocks.js',
+    'frontend/js/proposals/core.js',
+    'frontend/js/government-roads.js',
+    'frontend/js/parcels/ui/claim.js',
     'frontend/js/proposals/layer-render.js',
     'frontend/js/proposals/plan-stats.js',
+    'frontend/js/proposals/cadastre-ancestry.js',
     'frontend/js/proposals/claims-ui.js',
-    'frontend/js/proposals/core.js',
-    'frontend/js/proposal-manager.js',
-    'frontend/js/road-detection.js',
-    'frontend/js/government-roads.js',
-    'frontend/js/parcel-blocks.js',
-    'frontend/js/parcels/ui/claim.js'
+    'frontend/js/proposal-manager.js'
 ];
 
 const read = rel => readFileSync(new URL('../../' + rel, import.meta.url), 'utf8');
 
 describe('map geometry is read at full precision', () => {
-    GEOMETRY_READERS.forEach(rel => {
-        it(`${rel} never reads a layer with Leaflet's default rounding`, () => {
+    DOMAIN_GEOMETRY_READERS.forEach(rel => {
+        it(`${rel} reads domain GeoJSON rather than serialising Leaflet`, () => {
             const source = read(rel);
-            // `.toGeoJSON()` with no argument takes Leaflet's 6-decimal default.
-            const bare = source.match(/\.toGeoJSON\(\s*\)/g) || [];
-            expect(bare, `${rel} has ${bare.length} rounded geometry read(s); pass false`).toEqual([]);
-            // Keep this file on the list only while it really is a geometry reader. That guards
-            // against deleting call sites without replacing the test's old magic global count.
-            expect(source, `${rel} no longer reads Leaflet geometry`).toContain('.toGeoJSON(false)');
+            expect(source).not.toContain('.toGeoJSON(');
+            expect(source).toMatch(/LiveParcelFabric|CadastralParcelRepository/);
         });
-    });
-
-    it('states why the precision flag is load-bearing where the cut consumes it', () => {
-        expect(read('frontend/js/proposals/cadastre-ancestry.js')).toContain('toGeoJSON(false)');
     });
 });

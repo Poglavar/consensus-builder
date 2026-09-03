@@ -91,12 +91,14 @@ afterEach(() => {
 });
 
 describe('one-click structure creation focus', () => {
-    it('authors the structure against the live ids resolved from a stale selection', async () => {
+    it('authors the structure against the exact live ids returned by selection preparation', async () => {
         const createDraft = vi.fn(() => null);
         install('prepareProposalDraftParcelSelection', vi.fn(async () => ({
             ids: ['HR-330264-574#live-a', 'HR-330264-574#live-b'],
-            layers: [{ feature: {} }, { feature: {} }]
+            layers: [{ feature: {} }, { feature: {} }],
+            complete: true
         })));
+        install('areParcelsContiguous', vi.fn(() => ({ contiguous: true })));
         install('buildGeometryFromParcels', vi.fn(() => ({
             type: 'Polygon',
             coordinates: [[[15.9, 43.7], [15.91, 43.7], [15.91, 43.71], [15.9, 43.7]]]
@@ -105,7 +107,10 @@ describe('one-click structure creation focus', () => {
 
         delete require.cache[shellPath];
         require(shellPath);
-        await globalThis.instantCreateStructureFromSelection('park', ['HR-330264-574']);
+        await globalThis.instantCreateStructureFromSelection('park', [
+            'HR-330264-574#live-a',
+            'HR-330264-574#live-b'
+        ]);
 
         expect(createDraft).toHaveBeenCalledOnce();
         const authored = createDraft.mock.calls[0][0];
@@ -114,6 +119,61 @@ describe('one-click structure creation focus', () => {
             'HR-330264-574#live-b'
         ]);
         expect(authored.editorPayload.structureProposal.parentParcelIds).toEqual(authored.fields.parentParcelIds);
+    });
+
+    it('refuses a disconnected live selection before building a proposal', async () => {
+        const createDraft = vi.fn();
+        const buildGeometryFromParcels = vi.fn();
+        const showStyledAlert = vi.fn();
+        install('prepareProposalDraftParcelSelection', vi.fn(async () => ({
+            ids: ['west', 'east'],
+            layers: [{ feature: { geometry: {} } }, { feature: { geometry: {} } }],
+            complete: true
+        })));
+        install('areParcelsContiguous', vi.fn(() => ({ contiguous: false, components: 2 })));
+        install('buildGeometryFromParcels', buildGeometryFromParcels);
+        install('showStyledAlert', showStyledAlert);
+        install('proposalDraftStore', { createDraft });
+
+        delete require.cache[shellPath];
+        require(shellPath);
+        const result = await globalThis.instantCreateStructureFromSelection('square', ['west', 'east']);
+
+        expect(result).toBeNull();
+        expect(showStyledAlert).toHaveBeenCalledWith('The selected parcels must form one connected area.');
+        expect(buildGeometryFromParcels).not.toHaveBeenCalled();
+        expect(createDraft).not.toHaveBeenCalled();
+    });
+
+    it('refuses a union that still contains two polygon parts', async () => {
+        const createDraft = vi.fn();
+        const showStyledAlert = vi.fn();
+        install('prepareProposalDraftParcelSelection', vi.fn(async () => ({
+            ids: ['almost-touching-a', 'almost-touching-b'],
+            layers: [{ feature: {} }, { feature: {} }],
+            complete: true
+        })));
+        install('areParcelsContiguous', vi.fn(() => ({ contiguous: true, components: 2 })));
+        install('buildGeometryFromParcels', vi.fn(() => ({
+            type: 'MultiPolygon',
+            coordinates: [
+                [[[15.9, 43.7], [15.91, 43.7], [15.9, 43.7]]],
+                [[[15.92, 43.7], [15.93, 43.7], [15.92, 43.7]]]
+            ]
+        })));
+        install('showStyledAlert', showStyledAlert);
+        install('proposalDraftStore', { createDraft });
+
+        delete require.cache[shellPath];
+        require(shellPath);
+        const result = await globalThis.instantCreateStructureFromSelection('park', [
+            'almost-touching-a',
+            'almost-touching-b'
+        ]);
+
+        expect(result).toBeNull();
+        expect(showStyledAlert).toHaveBeenCalledOnce();
+        expect(createDraft).not.toHaveBeenCalled();
     });
 
     it('preserves the whole-block selection when placement is refused', async () => {
@@ -133,7 +193,7 @@ describe('one-click structure creation focus', () => {
         expect(showStyledAlert).not.toHaveBeenCalled();
         expect(selectAndHighlightProposal).toHaveBeenCalledWith(
             proposal.proposalId,
-            'HR-330264-574',
+            null,
             false,
             true
         );

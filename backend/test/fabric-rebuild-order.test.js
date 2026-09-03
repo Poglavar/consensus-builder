@@ -1,13 +1,13 @@
-// A fabric rebuild is a replay, not a simultaneous re-apply. Before the first member runs,
-// every target record must be locally unapplied; after each member succeeds, only that prefix of
-// the ordered list may stand. Otherwise the first taker can amend records that have not replayed
-// yet, reversing "each cuts what stands" and making a remote edit disturb old ground.
+// A fabric rebuild is an ordered fold into a private live-fabric transaction. Authored proposal
+// status remains stable while disposable parcel output is rebuilt; no UI reader can observe a
+// temporary all-unapplied plan or a half-replayed prefix.
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
 const { isApplied, setProposalApplied } = require('../../frontend/js/proposals/status.js');
+const { createLiveParcelFabric } = require('../../frontend/js/parcels/live-fabric.js');
 const planOrder = require('../../frontend/js/proposals/plan-order.js');
 const turf = require('@turf/turf');
 
@@ -32,8 +32,8 @@ afterEach(() => {
     vi.restoreAllMocks();
 });
 
-describe('ProposalManager._rebuildPass — ordered standing prefix', () => {
-    it('unapplies the whole replay set first, then exposes only successfully replayed predecessors', async () => {
+describe('ProposalManager._rebuildPass — stable authored state', () => {
+    it('keeps the complete standing set visible while deriving an ordered private draft', async () => {
         const proposals = ['a', 'b', 'c'].map((proposalId, index) => ({
             proposalId,
             title: proposalId.toUpperCase(),
@@ -41,7 +41,7 @@ describe('ProposalManager._rebuildPass — ordered standing prefix', () => {
             applied: true,
             appliedAt: `2026-08-01T00:00:0${index}.000Z`,
             updatedAt: `2026-08-02T00:00:0${index}.000Z`,
-            parentParcelIds: []
+            cadastreParcelIds: []
         }));
         const byId = new Map(proposals.map(proposal => [proposal.proposalId, proposal]));
         const originalStamps = new Map(proposals.map(proposal => [proposal.proposalId, {
@@ -65,27 +65,20 @@ describe('ProposalManager._rebuildPass — ordered standing prefix', () => {
                 proposal.updatedAt = 'replay-must-not-become-an-edit';
                 return true;
             }),
-            _loadReplayGround: ProposalManager._loadReplayGround,
-            // The bulk demolition prefetch runs beside the ground load. Real method, like the
-            // others: with no fetch and no __demolitionPrefetch in this harness it collects
-            // nothing and returns — the fold under test is untouched.
-            _prefetchDemolitionBuildings: ProposalManager._prefetchDemolitionBuildings,
-            _replayGroundFetched: new Set(),
-            // The corridor half of the derivation. These proposals carry no road geometry, so
-            // there are no takes and the fabric step is a no-op — the fold is what is under test.
+            _loadReplayGround: vi.fn(async () => 0),
+            _prefetchDemolitionBuildings: vi.fn(async () => new Map()),
             _appliedCorridorTakes: ProposalManager._appliedCorridorTakes,
-            _deriveCorridorFabric: ProposalManager._deriveCorridorFabric,
-        _deriveCorridorFabricBody: ProposalManager._deriveCorridorFabricBody,
+            _deriveCorridorFabric: vi.fn(async () => ({ added: 0, removed: 0, unchanged: 0, parcels: 0, failed: [] })),
             _rebuildPass: ProposalManager._rebuildPass
         };
 
-        const result = await manager._rebuildPass(proposals, new Map(), { silent: true });
+        const result = await manager._rebuildPass(proposals, { silent: true });
 
         expect(result).toEqual({ ok: true, applied: 3, failed: [], invalidated: [] });
         expect(stateBeforeEachApply).toEqual([
-            [false, false, false],
-            [true, false, false],
-            [true, true, false]
+            [true, true, true],
+            [true, true, true],
+            [true, true, true]
         ]);
         proposals.forEach(proposal => {
             expect(proposal.applied).toBe(true);
@@ -96,8 +89,8 @@ describe('ProposalManager._rebuildPass — ordered standing prefix', () => {
 
     it('does not turn a standing record off merely because one replay attempt fails', async () => {
         const proposals = [
-            { proposalId: 'failed', title: 'Failed', applied: true, appliedAt: 'before-a', parentParcelIds: [] },
-            { proposalId: 'later', title: 'Later', applied: true, appliedAt: 'before-b', parentParcelIds: [] }
+            { proposalId: 'failed', title: 'Failed', applied: true, appliedAt: 'before-a', cadastreParcelIds: [] },
+            { proposalId: 'later', title: 'Later', applied: true, appliedAt: 'before-b', cadastreParcelIds: [] }
         ];
         const byId = new Map(proposals.map(item => [item.proposalId, item]));
         installGlobal('window', { __formationEdit: null, __planOrder: null });
@@ -118,24 +111,17 @@ describe('ProposalManager._rebuildPass — ordered standing prefix', () => {
                 setProposalApplied(byId.get(proposalId), true);
                 return true;
             }),
-            _loadReplayGround: ProposalManager._loadReplayGround,
-            // The bulk demolition prefetch runs beside the ground load. Real method, like the
-            // others: with no fetch and no __demolitionPrefetch in this harness it collects
-            // nothing and returns — the fold under test is untouched.
-            _prefetchDemolitionBuildings: ProposalManager._prefetchDemolitionBuildings,
-            _replayGroundFetched: new Set(),
-            // The corridor half of the derivation. These proposals carry no road geometry, so
-            // there are no takes and the fabric step is a no-op — the fold is what is under test.
+            _loadReplayGround: vi.fn(async () => 0),
+            _prefetchDemolitionBuildings: vi.fn(async () => new Map()),
             _appliedCorridorTakes: ProposalManager._appliedCorridorTakes,
-            _deriveCorridorFabric: ProposalManager._deriveCorridorFabric,
-        _deriveCorridorFabricBody: ProposalManager._deriveCorridorFabricBody,
+            _deriveCorridorFabric: vi.fn(async () => ({ added: 0, removed: 0, unchanged: 0, parcels: 0, failed: [] })),
             _rebuildPass: ProposalManager._rebuildPass
         };
 
         const result = await manager._rebuildPass(proposals, { silent: true });
 
         expect(result.failed.map(item => item.proposalId)).toEqual(['failed']);
-        expect(beforeLater).toEqual([[false, false]]);
+        expect(beforeLater).toEqual([[true, true]]);
         expect(proposals.map(item => item.applied)).toEqual([true, true]);
         expect(proposals.map(item => item.appliedAt)).toEqual(['before-a', 'before-b']);
     });
@@ -147,15 +133,15 @@ describe('coordinated corridor ground', () => {
         const coordinated = {
             proposalId: 'plots',
             goal: 'reparcellization',
-            applied: false, // replay temporarily clears this before it derives corridors
+            applied: true,
             coordinatedPlanId: 'plan-a',
-            cadastreParcelIds: ['HR-A#legacy-piece', 'HR-B'],
+            cadastreParcelIds: ['HR-A', 'HR-B'],
             reparcellization: { polygons: [{ geometry: plot.geometry }] }
         };
         const unrelated = {
             proposalId: 'other-plots',
             goal: 'reparcellization',
-            applied: false,
+            applied: true,
             coordinatedPlanId: 'plan-b',
             cadastreParcelIds: ['HR-C'],
             reparcellization: { polygons: [{ geometry: plot.geometry }] }
@@ -184,7 +170,7 @@ describe('ProposalManager.reapplyAppliedProposals — reload barrier', () => {
         const proposal = {
             proposalId: 'standing-plan',
             applied: true,
-            parentParcelIds: []
+            cadastreParcelIds: []
         };
         let releaseReplay;
         const replayGate = new Promise(resolve => { releaseReplay = resolve; });
@@ -252,7 +238,7 @@ describe('ProposalManager.applyProposal — canonical external mutation', () => 
                 // Already inside the queue slot: enqueueing again would wait on itself.
                 expect(options._fabricQueue).toBe(true);
                 expect(proposal.applied).toBe(true);
-                return { applied: true, goalKey: 'road-track' };
+                return { ok: true, applied: true, goalKey: 'road-track' };
             }),
             _refreshUIAfterProposalChange: vi.fn(),
             _collectAppliedAlternativesForExplicitApply: ProposalManager._collectAppliedAlternativesForExplicitApply,
@@ -288,7 +274,7 @@ describe('ProposalManager.applyProposal — canonical external mutation', () => 
             deriveForNewProposal: vi.fn(async () => {
                 snapshots.push([first.applied, second.applied]);
                 if (snapshots.length === 1) await firstGate;
-                return { applied: true };
+                return { ok: true, applied: true };
             }),
             _refreshUIAfterProposalChange() {},
             _collectAppliedAlternativesForExplicitApply: ProposalManager._collectAppliedAlternativesForExplicitApply,
@@ -324,8 +310,6 @@ describe('ProposalManager.applyProposal — canonical external mutation', () => 
         const manager = {
             _enqueueFabricChange: ProposalManager._enqueueFabricChange,
             deriveForNewProposal: vi.fn(async () => null),
-            rematerializeFlatScope: vi.fn(async () => ({ ok: true, failed: [] })),
-            _restoreAfterFailedApply: ProposalManager._restoreAfterFailedApply,
             _refreshUIAfterProposalChange: vi.fn(),
             _collectAppliedAlternativesForExplicitApply: ProposalManager._collectAppliedAlternativesForExplicitApply,
             applyProposal: ProposalManager.applyProposal
@@ -334,8 +318,6 @@ describe('ProposalManager.applyProposal — canonical external mutation', () => 
         await expect(manager.applyProposal(proposal.proposalId)).resolves.toBe(false);
         expect(proposal.applied).toBe(false);
         expect(manager.deriveForNewProposal).toHaveBeenCalledOnce();
-        expect(manager.rematerializeFlatScope).toHaveBeenCalledOnce();
-        expect(manager.rematerializeFlatScope.mock.calls[0][0][0]).toBe(proposal);
     });
 });
 
@@ -347,13 +329,13 @@ describe('ProposalManager.rebuildAppliedFabric — immutable record precedence',
             createdAt: '2026-01-01T00:00:00.000Z',
             localEditAt: '2026-08-06T13:30:00.000Z',
             geometry: footprint.geometry,
-            parentParcelIds: []
+            cadastreParcelIds: []
         };
         const subdivision = {
             proposalId: 'new-subdivision', goal: 'reparcellization', applied: true,
             createdAt: '2026-02-01T00:00:00.000Z',
             geometry: footprint.geometry,
-            parentParcelIds: []
+            cadastreParcelIds: []
         };
         const proposals = [road, subdivision];
 
@@ -379,7 +361,7 @@ describe('ProposalManager.rebuildAppliedFabric — immutable record precedence',
     });
 
     it('materializes one applied-set snapshot exactly once', async () => {
-        const proposal = { proposalId: 'standing', goal: 'single', applied: true, parentParcelIds: [] };
+        const proposal = { proposalId: 'standing', goal: 'single', applied: true, cadastreParcelIds: [] };
         installGlobal('window', { CityConfigManager: null, __planOrder: planOrder });
         installGlobal('proposalStorage', { getAllProposals: () => [proposal] });
         installGlobal('isProposalCurrentlyApplied', record => record.applied === true);
@@ -410,45 +392,48 @@ describe('ProposalManager.rebuildAppliedFabric — immutable record precedence',
 });
 
 describe('ProposalManager._resetDerivedFabric — pristine registry', () => {
-    it('purges every derived layer/cache/persisted record before replay and keeps the cadastral base', () => {
-        const baseLayer = { feature: { properties: { parcelId: 'HR-A' } } };
-        const firstDerived = { feature: { properties: { parcelId: 'HR-A#p-road-1' } } };
-        const staleDerived = { feature: { properties: { parcelId: 'HR-A#old-token-9' } } };
-        const legacyDerived = { feature: { properties: {
-            parcelId: 'HR-339270-824_proposal_9',
-            ancestorProposal: 'proposal'
-        } } };
-        const live = new Set([baseLayer, firstDerived, staleDerived, legacyDerived]);
-        const byId = new Map([
-            ['HR-A', baseLayer],
-            ['HR-A#p-road-1', firstDerived],
-            ['HR-A#old-token-9', staleDerived],
-            ['HR-339270-824_proposal_9', legacyDerived]
-        ]);
-        const cacheById = new Map(byId);
-        const cleared = vi.fn();
-        const shown = vi.fn(id => live.add(byId.get(String(id))));
-
-        installGlobal('window', {
-            parcelLayerById: byId,
-            parcelLayer: { hasLayer: layer => live.has(layer) },
-            ParcelsState: { getParcelCache: () => ({ byId: cacheById }) },
-            removeParcelLayerById: id => live.delete(byId.get(String(id))),
-            showParcelLayerById: shown,
-            __formationEdit: null
+    it('replaces a closed cadastral scope inside the explicit live-fabric transaction', async () => {
+        const polygon = [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]];
+        const cadastral = {
+            type: 'Feature',
+            properties: { parcelId: 'HR-A', id: 'HR-A', cadastreParcelIds: ['HR-A'] },
+            geometry: { type: 'Polygon', coordinates: polygon }
+        };
+        const derived = {
+            type: 'Feature',
+            properties: {
+                parcelId: 'HR-A#proposal-1',
+                cadastreParcelIds: ['HR-A'],
+                producedByProposalId: 'proposal'
+            },
+            geometry: { type: 'Polygon', coordinates: polygon }
+        };
+        const fabric = createLiveParcelFabric();
+        await fabric.transact({ id: 'seed-derived' }, transaction => {
+            fabric.upsertFeatures([derived], { transaction });
         });
-        installGlobal('clearPersistedParcelRecord', cleared);
+        const transaction = fabric.beginTransaction({ id: 'reset' });
+        const repository = {
+            list: vi.fn(() => [cadastral]),
+            getMany: vi.fn(ids => ids.includes('HR-A') ? [cadastral] : [])
+        };
+        installGlobal('window', {
+            LiveParcelFabric: fabric,
+            CadastralParcelRepository: repository
+        });
+        const manager = {
+            _clearDerivedRecordState: ProposalManager._clearDerivedRecordState
+        };
 
-        ProposalManager._resetDerivedFabric([]);
+        expect(ProposalManager._resetDerivedFabric.call(manager, [], {
+            cadastreParcelIds: ['HR-A'],
+            _fabricTransaction: transaction
+        })).toEqual({ parcels: 1 });
 
-        expect(Array.from(byId.keys())).toEqual(['HR-A']);
-        expect(Array.from(cacheById.keys())).toEqual(['HR-A']);
-        expect(live).toEqual(new Set([baseLayer]));
-        expect(cleared.mock.calls.map(call => call[0]).sort()).toEqual([
-            'HR-339270-824_proposal_9',
-            'HR-A#old-token-9',
-            'HR-A#p-road-1'
-        ]);
-        expect(shown).toHaveBeenCalledWith('HR-A');
+        expect(fabric.get('HR-A#proposal-1', { transaction })).toBeNull();
+        expect(fabric.get('HR-A', { transaction })).toEqual(cadastral);
+        expect(fabric.get('HR-A')).toBeNull();
+        await fabric.commit(transaction);
+        expect(fabric.get('HR-A')).toEqual(cadastral);
     });
 });

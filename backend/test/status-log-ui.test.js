@@ -277,56 +277,35 @@ describe('the spinner', () => {
     });
 });
 
-// Flat records ask for their declared cadastral ids once. An unstamped legacy record or publish
-// check can still need spatial ground; those footprints are bounded and batched here rather than
-// becoming one server round trip per proposal.
+// Flat records ask the repository for their declared cadastral ids once. A record whose authored
+// footprint must be resolved spatially takes the same repository path; batching is an internal
+// repository concern and never a second consumer-side fetch path.
 describe('the replay asks for its ground once', () => {
     const loader = ground.slice(ground.indexOf('async function ensureProposalGround('));
 
-    function loadHelper() {
-        const start = ground.indexOf('function multiPolygonOfFootprints(footprints) {');
-        expect(start, 'multiPolygonOfFootprints not found').toBeGreaterThan(-1);
-        const end = ground.indexOf('function createCadastralGroundService(', start);
-        expect(end, 'createCadastralGroundService not found — the slice would run to EOF').toBeGreaterThan(start);
-        // eslint-disable-next-line no-new-func
-        return new Function(`${ground.slice(start, end)} return multiPolygonOfFootprints;`)();
-    }
-    const asMultiPolygon = loadHelper();
-    const poly = n => ({ type: 'Polygon', coordinates: [[[n, 0], [n + 1, 0], [n + 1, 1], [n, 1], [n, 0]]] });
-
-    it('gathers many footprints into one geometry', () => {
-        const out = asMultiPolygon([poly(0), { type: 'Feature', geometry: poly(10) }]);
-        expect(out.type).toBe('MultiPolygon');
-        expect(out.coordinates).toHaveLength(2);
-    });
-
-    it('flattens a MultiPolygon footprint rather than nesting it', () => {
-        const multi = { type: 'MultiPolygon', coordinates: [poly(0).coordinates, poly(5).coordinates] };
-        expect(asMultiPolygon([multi, poly(20)]).coordinates).toHaveLength(3);
-    });
-
-    it('is nothing when there is nothing to ask about', () => {
-        expect(asMultiPolygon([])).toBeNull();
-        expect(asMultiPolygon([null, { type: 'Point', coordinates: [1, 2] }])).toBeNull();
-        expect(asMultiPolygon(null)).toBeNull();
-    });
-
-    it('sends bounded batches and splits a refused batch without a second consumer path', () => {
-        expect(loader).toContain('index += FOOTPRINT_BATCH_SIZE');
-        expect(loader).toContain('multiPolygonOfFootprints(entries.map(entry => entry.footprint))');
-        // Over the cap or a transport failure: halve and retry, never lose the whole replay.
-        expect(loader).toContain('const middle = Math.ceil(entries.length / 2);');
-        expect(loader).not.toContain('fetchParcelsForIds');
-    });
-
-    it('only remembers members the batch actually loaded', () => {
-        // Memoising on a failed request would leave a formation permanently short of its ground.
-        const batch = loader.slice(
-            loader.indexOf('const loadBatch = async entries => {'),
-            loader.indexOf('const chunks = [];')
+    it('combines Polygon and MultiPolygon footprints without nesting them', () => {
+        const helper = ground.slice(
+            ground.indexOf('function multiPolygonOfFootprints(footprints) {'),
+            ground.indexOf('function createCadastralParcelRepository(', ground.indexOf('function multiPolygonOfFootprints(footprints) {'))
         );
-        expect(batch).toContain('if (!loaded) {');
-        expect(batch.indexOf('successfulFootprints.add(entry.key)'))
-            .toBeGreaterThan(batch.indexOf('if (!loaded) {'));
+        expect(helper).toContain("if (geom.type === 'Polygon') polygons.push");
+        expect(helper).toContain("else if (geom.type === 'MultiPolygon')");
+        expect(helper).toContain('if (!polygons.length) return null;');
+    });
+
+    it('sends bounded footprint batches through the repository', () => {
+        expect(loader).toContain('i += FOOTPRINT_BATCH_SIZE');
+        expect(loader).toContain('footprintEntries.slice(i, i + FOOTPRINT_BATCH_SIZE)');
+        expect(loader).toContain('multiPolygonOfFootprints(chunk.map(entry => entry.footprint))');
+        expect(loader).toContain('await ensureFootprint(geometry');
+        expect(loader).not.toMatch(/fetchParcels(?:ByIds|UnderGeometry|ForIds)/);
+    });
+
+    it('coalesces identical footprints and caches only successful repository results', () => {
+        expect(loader).toContain('const footprintGroups = new Map();');
+        expect(loader).toContain('footprintGroups.get(key).records.push(record);');
+        const request = loader.slice(loader.indexOf('const worker = async () => {'));
+        expect(request.indexOf('const result = await ensureFootprint(geometry'))
+            .toBeLessThan(request.indexOf('footprintResults.set(entry.key, clone(summary))'));
     });
 });

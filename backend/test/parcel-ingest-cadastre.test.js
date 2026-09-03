@@ -1,13 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import vm from 'node:vm';
 
+const require = createRequire(import.meta.url);
+const { createLiveParcelFabric } = require('../../frontend/js/parcels/live-fabric.js');
+const { createCadastralParcelRepository } = require('../../frontend/js/parcels/ground-service.js');
 const source = readFileSync(new URL('../../frontend/js/parcels/ingest.js', import.meta.url), 'utf8');
 
-function makeContext({ replaced }) {
-    const members = new Set();
-    const byId = new Map();
-    const cache = { byId: new Map() };
+function makeContext() {
+    const fabric = createLiveParcelFabric();
     const context = {
         console,
         performance,
@@ -18,49 +20,31 @@ function makeContext({ replaced }) {
         CustomEvent: class CustomEvent { constructor(type, init) { this.type = type; this.detail = init?.detail; } },
         dispatchEvent() {},
         convertGeoJSON: value => value,
-        ensureParcelLayerInitialized() {},
-        addParcelLayerToMapIfAppropriate() {},
-        getParcelStyle: () => ({}),
-        isParcelReplacedByChildren: () => replaced,
-        parcelLayerById: byId,
-        ParcelsState: {
-            getParcelCache: () => cache,
-            bumpParcelCoverageVersion() {}
-        },
-        parcelLayer: {
-            addLayer(layer) { members.add(layer); },
-            removeLayer(layer) { members.delete(layer); },
-            hasLayer(layer) { return members.has(layer); }
-        },
-        setParcelLayerById(id, layer) { byId.set(String(id), layer); },
-        hideParcelLayerById(id) {
-            const layer = byId.get(String(id));
-            if (!layer) return false;
-            members.delete(layer);
-            return true;
-        },
-        indexParcelLayer() {},
-        L: {
-            geoJSON(collection, options) {
-                const layers = collection.features.map(feature => {
-                    const layer = { feature, options: {}, on() {} };
-                    options.onEachFeature(feature, layer);
-                    return layer;
-                });
-                return { eachLayer(callback) { layers.forEach(callback); } };
-            }
-        }
+        LiveParcelFabric: fabric
     };
+    context.CadastralParcelRepository = createCadastralParcelRepository({
+        root: context,
+        convertFeatures: value => value,
+        onFeatures: async (features, options = {}) => {
+            if (options.transaction) {
+                fabric.seedCadastre(features, { transaction: options.transaction });
+                return;
+            }
+            await fabric.transact({ kind: 'test-cadastral-arrival' }, token => {
+                fabric.seedCadastre(features, { transaction: token });
+            });
+        }
+    });
     context.window = context;
     context.globalThis = context;
     vm.runInNewContext(source, context);
-    return { context, byId, cache, members };
+    return { context, fabric };
 }
 
-function parcel(id) {
+function parcel(id, properties = {}) {
     return {
         type: 'Feature',
-        properties: { parcelId: id },
+        properties: { parcelId: id, ...properties },
         geometry: {
             type: 'Polygon',
             coordinates: [[[15.9, 45.8], [15.91, 45.8], [15.91, 45.81], [15.9, 45.8]]]
@@ -70,20 +54,24 @@ function parcel(id) {
 
 describe('cadastral ingest under a standing formation', () => {
     it('indexes claimed cadastral ground but keeps it hidden from the live partition', async () => {
-        const { context, byId, cache, members } = makeContext({ replaced: true });
+        const { context, fabric } = makeContext();
+        await fabric.transact({}, token => fabric.upsertFeatures([
+            parcel('HR-1#park-1', { cadastreParcelIds: ['HR-1'], producedByProposalId: 'park' })
+        ], {
+            transaction: token
+        }));
 
-        await context.ingestParcelFeatures([parcel('HR-1')], { skipConversion: true });
+        await context.ingestCadastralParcelFeatures([parcel('HR-1')], { skipConversion: true });
 
-        expect(byId.has('HR-1')).toBe(true);
-        expect(cache.byId.has('HR-1')).toBe(true);
-        expect(members.has(byId.get('HR-1'))).toBe(false);
+        expect(fabric.get('HR-1')).toBeNull();
+        expect(fabric.get('HR-1#park-1')).not.toBeNull();
     });
 
     it('shows unclaimed cadastral ground', async () => {
-        const { context, byId, members } = makeContext({ replaced: false });
+        const { context, fabric } = makeContext();
 
-        await context.ingestParcelFeatures([parcel('HR-2')], { skipConversion: true });
+        await context.ingestCadastralParcelFeatures([parcel('HR-2')], { skipConversion: true });
 
-        expect(members.has(byId.get('HR-2'))).toBe(true);
+        expect(fabric.get('HR-2')).not.toBeNull();
     });
 });

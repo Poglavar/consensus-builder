@@ -79,6 +79,7 @@ describe('ProposalManager mutation boundary', () => {
             store.proposals.set('created-during-apply', { proposalId: 'created-during-apply' });
             await this.unapplyProposal('conflict', {
                 skipConfirm: true,
+                skipRebuild: true,
                 _mutationTransaction: options._mutationTransaction
             });
             return false;
@@ -107,7 +108,7 @@ describe('ProposalManager mutation boundary', () => {
 
     it('makes the explicitly applied alternative the only standing member', async () => {
         ProposalManager._collectAppliedAlternativesForExplicitApply = () => [store.getProposal('conflict')];
-        ProposalManager.deriveForNewProposal = async () => ({ applied: true });
+        ProposalManager.deriveForNewProposal = async () => ({ ok: true });
 
         await expect(ProposalManager.applyProposal('target')).resolves.toBe(true);
 
@@ -122,7 +123,7 @@ describe('ProposalManager mutation boundary', () => {
         ProposalManager.deriveForNewProposal = async () => {
             targetDerivations += 1;
             setProposalApplied(store.getProposal('target'), false, { stamp: false });
-            return { applied: true };
+            return { ok: true };
         };
         ProposalManager.rematerializeFlatScope = async () => {
             componentRestores += 1;
@@ -131,10 +132,10 @@ describe('ProposalManager mutation boundary', () => {
 
         await expect(ProposalManager.applyProposal('target')).resolves.toBe(false);
 
-        // One attempted target derivation, then one local old/new-ground derivation after the
-        // authored record map is restored.
+        // The authored record map and private fabric draft roll back together. There is no second
+        // repair derivation after a failed transaction.
         expect(targetDerivations).toBe(1);
-        expect(componentRestores).toBe(1);
+        expect(componentRestores).toBe(0);
         expect(store.getProposal('target')).toEqual({ proposalId: 'target', applied: false, value: 'before' });
         expect(store.getProposal('conflict')).toEqual({ proposalId: 'conflict', applied: true, value: 'before' });
     });

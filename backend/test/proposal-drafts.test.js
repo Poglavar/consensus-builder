@@ -47,7 +47,7 @@ describe('ProposalDraftStore', () => {
             goal: 'park',
             title: 'Pocket park',
             description: 'Original',
-            parentParcelIds: ['a', 'b'],
+            cadastreParcelIds: ['a', 'b'],
             geometry: { type: 'Polygon', coordinates: [] }
         };
 
@@ -80,7 +80,7 @@ describe('ProposalDraftStore', () => {
 
     it('resumes the existing draft for a source instead of duplicating it', () => {
         const { store } = harness();
-        const source = { proposalId: 'p1', city: 'zagreb', goal: 'park', title: 'A', parentParcelIds: ['1'] };
+        const source = { proposalId: 'p1', city: 'zagreb', goal: 'park', title: 'A', cadastreParcelIds: ['1'] };
         const first = store.createDraftFromProposal(source);
         store.updateDraft(first.id, { fields: { name: 'Edited' } });
 
@@ -193,12 +193,12 @@ describe('ProposalDraftStore', () => {
                 goal: draft.goal,
                 title: draft.fields.name,
                 geometry: draft.editorPayload.geometry,
-                parentParcelIds: draft.fields.parentParcelIds
+                cadastreParcelIds: draft.fields.cadastreParcelIds
             })
         };
         const { store } = harness({ adapterRegistry: { get: key => key === 'park' ? adapter : null } });
         const draft = store.createDraftFromProposal({
-            proposalId: 'source-park', city: 'zagreb', goal: 'park', title: 'Park', parentParcelIds: ['1'], geometry: { type: 'Polygon' }
+            proposalId: 'source-park', city: 'zagreb', goal: 'park', title: 'Park', cadastreParcelIds: ['1'], geometry: { type: 'Polygon' }
         });
 
         const proposal = store.buildProposalFromDraft(draft.id);
@@ -218,7 +218,7 @@ describe('ProposalDraftStore', () => {
         const { store } = harness({ adapterRegistry: { get: () => null } });
         const draft = store.createDraftFromProposal({
             proposalId: 'source-x', serverProposalId: 95, city: 'zagreb', goal: 'park',
-            title: 'Park', parentParcelIds: ['1'], geometry: { type: 'Polygon' }
+            title: 'Park', cadastreParcelIds: ['1'], geometry: { type: 'Polygon' }
         });
         const proposal = store.buildProposalFromDraft(draft.id, { allowInvalid: true });
         expect(proposal).toBeTruthy();

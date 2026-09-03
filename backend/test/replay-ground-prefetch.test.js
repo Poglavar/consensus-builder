@@ -1,31 +1,19 @@
-// A replay loads its ground in ONE request, then folds in order.
+// Replay-ground integration contract.
 //
-// The fold has to stay ordered — each member cuts what the one before it left — but the fetches that
-// put the ground on the map are independent reads. They used to sit INSIDE the fold, one await per
-// member, so finishing a single road cost a round trip for every proposal already applied. Pulling
-// them out and running them concurrently fixed the series; it did not fix the COUNT, and on a
-// 165-member plan 165 concurrent-ish trips were still ~7 s of silence — mostly re-fetching each
-// other's parcels, since adjacent proposals share ground and the memo is per PROPOSAL.
-//
-// Now every pending member's footprint goes into one MultiPolygon and the server answers once, with
-// the parcels under all of them, DISTINCT. The per-member path stays as the fallback, so a footprint
-// the batch cannot carry still gets its ground — and that path is still concurrent.
+// Cache, request coalescing, batching and retry policy belong to CadastralParcelRepository and are
+// tested exhaustively in proposal-ground-service.test.js. ProposalManager makes one repository
+// request for the complete replay and passes its explicit fabric transaction through unchanged; it
+// never implements a second cache/fetch path of its own.
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
 
 const require = createRequire(import.meta.url);
 const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
-const {
-    FOOTPRINT_BATCH_SIZE,
-    createCadastralGroundService
-} = require('../../frontend/js/parcels/ground-service.js');
 const planOrder = require('../../frontend/js/proposals/plan-order.js');
-const turf = require('@turf/turf');
-const { readFileSync } = require('node:fs');
 
 const managerSource = readFileSync(new URL('../../frontend/js/proposal-manager.js', import.meta.url), 'utf8');
-const groundSource = readFileSync(new URL('../../frontend/js/parcels/ground-service.js', import.meta.url), 'utf8');
 
 const saved = new Map();
 function installGlobal(name, value) {
@@ -47,281 +35,78 @@ afterEach(() => {
     vi.restoreAllMocks();
 });
 
-const square = (w, s, e, n) => turf.polygon([[[w, s], [e, s], [e, n], [w, n], [w, s]]]);
-
 const member = index => ({
     proposalId: `road-${index}`,
     goal: 'road-track',
-    roadProposal: {
-        definition: { polygon: square(16 + index / 1000, 46, 16.0005 + index / 1000, 46.001).geometry }
-    }
+    cadastreParcelIds: [`HR-ROAD-${index}`],
+    roadProposal: { definition: { polygon: { type: 'Polygon', coordinates: [] } } }
 });
 
-// A fetch that never resolves on its own, so the number of lanes open at once is observable.
-function gatedFetch() {
-    const state = { inFlight: 0, peak: 0, calls: 0, pending: [] };
-    const fetcher = () => {
-        state.inFlight += 1;
-        state.calls += 1;
-        state.peak = Math.max(state.peak, state.inFlight);
-        return new Promise(resolve => {
-            state.pending.push(() => { state.inFlight -= 1; resolve({ ids: [], count: 0 }); });
+describe('ProposalManager replay-ground boundary', () => {
+    it('asks the repository once for the whole replay and passes the active draft token', async () => {
+        const transaction = Object.freeze({ id: 'fabric-1' });
+        const onProgress = vi.fn();
+        const ensureProposalGround = vi.fn(async records => ({
+            members: records.length,
+            cachedMembers: records.length,
+            loadedMembers: 0,
+            idRequests: 0,
+            footprintRequests: 0,
+            parcels: records.length,
+            missingIds: [],
+            elapsed: 4
+        }));
+        installGlobal('CadastralParcelRepository', { ensureProposalGround });
+        const manager = {
+            _lastReplayGroundProfile: null,
+            _loadReplayGround: ProposalManager._loadReplayGround
+        };
+        const records = [member(0), member(1), member(2)];
+
+        await expect(manager._loadReplayGround(records, {
+            purpose: 'replay',
+            onProgress,
+            _fabricTransaction: transaction
+        })).resolves.toBe(4);
+
+        expect(ensureProposalGround).toHaveBeenCalledOnce();
+        expect(ensureProposalGround).toHaveBeenCalledWith(records, {
+            purpose: 'replay',
+            onProgress,
+            transaction
         });
-    };
-    return { state, fetcher };
-}
-
-// Release everything currently waiting, repeatedly, until the pass finishes.
-async function drain(promise, state, members) {
-    let settled = false;
-    promise.then(() => { settled = true; }, () => { settled = true; });
-    for (let round = 0; round < members + 5 && !settled; round += 1) {
-        while (state.pending.length) state.pending.shift()();
-        await new Promise(resolve => setImmediate(resolve));
-    }
-    return promise;
-}
-
-function harness() {
-    const root = { __planOrder: planOrder, __formationEdit: null };
-    const materialized = new Map();
-    installGlobal('window', root);
-    installGlobal('getProposalKey', proposal => proposal.proposalId);
-    installGlobal('turf', turf);
-    const service = createCadastralGroundService({
-        root,
-        transport: {
-            fetchUnderGeometry: (...args) => {
-                if (typeof globalThis.fetchParcelsUnderGeometry !== 'function') {
-                    throw new Error('footprint transport unavailable');
-                }
-                return globalThis.fetchParcelsUnderGeometry(...args);
-            },
-            fetchByIds: (...args) => {
-                if (typeof globalThis.fetchParcelsByIds !== 'function') {
-                    throw new Error('id transport unavailable');
-                }
-                return globalThis.fetchParcelsByIds(...args);
-            }
-        },
-        resolveParcelLayerById: id => materialized.get(String(id)) || null,
-        ingestFeatures: async features => features.map(feature => {
-            const id = String(feature?.properties?.parcelId || '');
-            const layer = { feature };
-            if (id) materialized.set(id, layer);
-            return layer;
-        }),
-        convertFeatures: featureCollection => featureCollection
-    });
-    root.CadastralGroundService = service;
-    installGlobal('CadastralGroundService', service);
-    return {
-        _loadReplayGround: ProposalManager._loadReplayGround,
-        groundService: service
-    };
-}
-
-describe('the ground for a whole replay is fetched in one request', () => {
-    it('asks in bounded batches, not once per member and not all at once', async () => {
-        const seen = [];
-        installGlobal('fetchParcelsUnderGeometry', async geometry => { seen.push(geometry); return { ids: [] }; });
-        const manager = harness();
-
-        await manager._loadReplayGround(Array.from({ length: 40 }, (_, i) => member(i)));
-
-        // 40 members, 20 per request: two requests, not forty — and not one giant ask, which is how
-        // a real plan blew the endpoint's parcel cap and paid 17 s for a 413.
-        expect(seen).toHaveLength(2);
-        seen.forEach(geometry => {
-            expect(geometry.type).toBe('MultiPolygon');
-            expect(geometry.coordinates.length).toBeLessThanOrEqual(20);
-        });
-        // Every member's footprint is in one of them — the answer must cover all their ground.
-        expect(seen.reduce((sum, geometry) => sum + geometry.coordinates.length, 0)).toBe(40);
+        expect(manager._lastReplayGroundProfile.members).toBe(3);
     });
 
-    it('never sends more footprints in one request than the measured-safe batch', () => {
-        expect(FOOTPRINT_BATCH_SIZE).toBe(20);
-        expect(groundSource).toContain('index += FOOTPRINT_BATCH_SIZE');
-    });
+    it('does no repository work for an empty replay', async () => {
+        const ensureProposalGround = vi.fn();
+        installGlobal('CadastralParcelRepository', { ensureProposalGround });
+        const manager = { _loadReplayGround: ProposalManager._loadReplayGround };
 
-    it('carries each member\'s own footprint, not a box around them all', async () => {
-        const seen = [];
-        installGlobal('fetchParcelsUnderGeometry', async geometry => { seen.push(geometry); return { ids: [] }; });
-        const manager = harness();
-        await manager._loadReplayGround([member(0), member(1), member(2)]);
-
-        // The asked-for area is the SUM of the three footprints, to the square metre. A bounding box
-        // around them — the approximation this endpoint exists to avoid — could only ever be larger.
-        const asked = turf.area({ type: 'Feature', properties: {}, geometry: seen[0] });
-        const parts = [0, 1, 2].reduce((sum, i) => sum + turf.area({
-            type: 'Feature', properties: {}, geometry: member(i).roadProposal.definition.polygon
-        }), 0);
-        expect(asked).toBeCloseTo(parts, 0);
-        const box = turf.area(turf.bboxPolygon(turf.bbox({ type: 'Feature', properties: {}, geometry: seen[0] })));
-        expect(asked).toBeLessThan(box);
-    });
-
-    it('halves and retries when the server refuses the batch, rather than losing the replay', async () => {
-        // Over the parcel cap (413), or a dropped connection. Splitting keeps the win for the half
-        // that fits instead of falling all the way back to one request per member.
-        const sizes = [];
-        installGlobal('fetchParcelsUnderGeometry', async geometry => {
-            sizes.push(geometry.coordinates.length);
-            if (geometry.coordinates.length > 2) throw new Error('413');
-            return { ids: [] };
-        });
-        vi.spyOn(console, 'warn').mockImplementation(() => { });
-        const manager = harness();
-
-        await manager._loadReplayGround(Array.from({ length: 4 }, (_, i) => member(i)));
-
-        expect(sizes[0]).toBe(4);          // the whole plan first
-        expect(sizes.slice(1)).toEqual([2, 2]);
-    });
-
-    it('loads an id-only group through one service request', async () => {
-        const { state, fetcher } = gatedFetch();
-        installGlobal('fetchParcelsByIds', fetcher);
-        const manager = harness();
-        const idOnly = index => ({ proposalId: `plain-${index}`, cadastreParcelIds: [`HR-1-${index}`] });
-
-        const pass = manager._loadReplayGround(Array.from({ length: 8 }, (_, i) => idOnly(i)));
-        await new Promise(resolve => setImmediate(resolve));
-        expect(state.calls).toBe(1);
-        expect(state.peak).toBe(1);
-        await drain(pass, state, 8);
-    });
-
-    it('reports what it cost, so a slow rebuild can say which half was slow', async () => {
-        installGlobal('fetchParcelsUnderGeometry', async () => ({ ids: [] }));
-        const manager = harness();
-        const ms = await manager._loadReplayGround([member(0)]);
-        expect(typeof ms).toBe('number');
-        expect(ms).toBeGreaterThanOrEqual(0);
-    });
-
-    it('costs nothing when there is nothing applied', async () => {
-        const manager = harness();
         await expect(manager._loadReplayGround([])).resolves.toBe(0);
         await expect(manager._loadReplayGround(null)).resolves.toBe(0);
+        expect(ensureProposalGround).not.toHaveBeenCalled();
     });
-});
 
-describe('ground retained by the service is not fetched again', () => {
-    it('makes no request when retained cadastre already covers every footprint', async () => {
-        let calls = 0;
-        installGlobal('fetchParcelsUnderGeometry', async () => { calls += 1; return { ids: [] }; });
-        const manager = harness();
-        await manager.groundService.acceptFeatures([{
-            ...square(15.99, 45.99, 16.01, 46.01),
-            properties: { parcelId: 'HR-1-1' }
-        }], { skipConversion: true });
+    it('fails the transaction when the repository explicitly reports absent cadastre', async () => {
+        installGlobal('CadastralParcelRepository', {
+            ensureProposalGround: vi.fn(async () => ({ missingIds: ['HR-MISSING'], elapsed: 1 }))
+        });
+        const manager = { _loadReplayGround: ProposalManager._loadReplayGround };
 
-        await manager._loadReplayGround([member(0), member(1), member(2)]);
-
-        expect(calls).toBe(0);
-        expect(manager._lastReplayGroundProfile).toMatchObject({
-            coveredMembers: 3,
-            fetchedMembers: 0,
-            requests: 0
+        await expect(manager._loadReplayGround([member(0)])).rejects.toMatchObject({
+            code: 'cadastral-ground-absent',
+            parcelIds: ['HR-MISSING']
         });
     });
 
-    it('batches only members whose loaded coverage is incomplete', async () => {
-        const seen = [];
-        installGlobal('fetchParcelsUnderGeometry', async geometry => {
-            seen.push(geometry);
-            return { ids: [], count: 0 };
-        });
-        const manager = harness();
-        await manager.groundService.acceptFeatures([
-            { ...square(16, 46, 16.0005, 46.001), properties: { parcelId: 'HR-1-0' } },
-            { ...square(16.002, 46, 16.0025, 46.001), properties: { parcelId: 'HR-1-2' } }
-        ], { skipConversion: true });
-
-        await manager._loadReplayGround([member(0), member(1), member(2)]);
-
-        expect(seen).toHaveLength(1);
-        expect(seen[0].coordinates).toHaveLength(1);
-        expect(manager._lastReplayGroundProfile).toMatchObject({
-            coveredMembers: 2,
-            fetchedMembers: 1,
-            requests: 1
-        });
-    });
-
-    it('asks once per formation, however many rebuilds follow', async () => {
-        // This is the cost that scaled with the plan: N members × one round-trip, on EVERY finish.
-        let calls = 0;
-        installGlobal('fetchParcelsUnderGeometry', async () => { calls += 1; return { ids: [] }; });
-        const manager = harness();
-        const members = [member(0), member(1), member(2)];
-
-        await manager._loadReplayGround(members);
-        expect(calls).toBe(1);              // one request for all three
-        await manager._loadReplayGround(members);
-        await manager._loadReplayGround(members);
-        expect(calls).toBe(1);
-    });
-
-    it('still fetches a formation joining an already-loaded plan', async () => {
-        let calls = 0;
-        installGlobal('fetchParcelsUnderGeometry', async () => { calls += 1; return { ids: [] }; });
-        const manager = harness();
-
-        await manager._loadReplayGround([member(0), member(1)]);
-        await manager._loadReplayGround([member(0), member(1), member(2)]);
-        // One request for the first pair, one for the newcomer alone.
-        expect(calls).toBe(2);
-    });
-
-    it('retries one whose fetch failed rather than leaving it short of ground', async () => {
-        // A 429 or a dropped connection must not be remembered as "loaded" — that would strand the
-        // formation below the coverage gate for the rest of the session.
-        let attempts = 0;
-        installGlobal('fetchParcelsUnderGeometry', async () => {
-            attempts += 1;
-            if (attempts === 1) throw new Error('429');
-            return { ids: [] };
-        });
-        vi.spyOn(console, 'warn').mockImplementation(() => { });
-        const manager = harness();
-
-        await manager._loadReplayGround([member(0)]);
-        await manager._loadReplayGround([member(0)]);
-        expect(attempts).toBe(2);
-        await manager._loadReplayGround([member(0)]);
-        expect(attempts).toBe(2);
-    });
-});
-
-describe('when the footprint question cannot be asked', () => {
-    it('falls back to the declared ids, never to a bounding box', async () => {
-        const asked = [];
-        installGlobal('fetchParcelsUnderGeometry', async () => null);
-        installGlobal('fetchParcelsByIds', async ids => { asked.push(...ids); return { ids }; });
-        const manager = harness();
-        await manager._loadReplayGround([{
-            proposalId: 'no-geometry',
-            cadastreParcelIds: ['HR-1-1'],
-            parentParcelIds: ['HR-1-2#p-road-1']
-        }]);
-        expect(asked).toContain('HR-1-1');
-        expect(asked).toContain('HR-1-2');
-    });
-
-    it('one member whose fetch throws does not abandon the rest', async () => {
-        const done = [];
-        installGlobal('fetchParcelsUnderGeometry', async footprint => {
-            if (turf.area(footprint) > 0 && done.length === 0) { done.push('threw'); throw new Error('network'); }
-            done.push('ok');
-            return { ids: [] };
-        });
-        vi.spyOn(console, 'warn').mockImplementation(() => { });
-        const manager = harness();
-        await manager._loadReplayGround([member(0), member(1), member(2)]);
-        expect(done).toEqual(['threw', 'ok', 'ok']);
+    it('contains no direct cadastral transport or renderer lookup', () => {
+        const start = managerSource.indexOf('async _loadReplayGround(');
+        const body = managerSource.slice(start, managerSource.indexOf('\n    },', start));
+        expect(body).toContain('ensureProposalGround');
+        expect(body).not.toMatch(/fetch\s*\(/);
+        expect(body).not.toContain('parcelLayer');
+        expect(body).not.toContain('PersistentStorage');
     });
 });
 
@@ -329,25 +114,20 @@ describe('a shared corridor package materialises as one cadastral mutation', () 
     it('marks every road first and rematerialises their combined corridor scope once', async () => {
         const roadA = member(0);
         const roadB = member(1);
-        installGlobal('turf', turf);
         const records = new Map([[roadA.proposalId, roadA], [roadB.proposalId, roadB]]);
         installGlobal('proposalStorage', {
             getProposal: id => records.get(String(id)) || null,
             save: vi.fn()
         });
         installGlobal('setProposalApplied', (record, applied) => { record.applied = applied === true; });
-        installGlobal('window', {
-            __planOrder: planOrder,
-            __parcelArrangement: {
-                takeHitsOn: () => [{ take: {}, hit: square(16, 46, 16.0001, 46.0001) }]
-            },
-            __cadastreAncestry: {
-                loadedCadastreParcels: () => [{ id: 'HR-1-1', feature: square(15.9, 45.9, 16.2, 46.2) }]
-            },
-            CorridorNetworkNodes: { normalize: vi.fn() }
-        });
+        installGlobal('window', { __planOrder: planOrder, CorridorNetworkNodes: { normalize: vi.fn() } });
 
-        const rematerialize = vi.fn(async () => ({ ok: true, applied: 2, failed: [], baseParcelIds: ['HR-1-1'] }));
+        const rematerialize = vi.fn(async () => ({
+            ok: true,
+            applied: 2,
+            failed: [],
+            cadastreParcelIds: ['HR-ROAD-0', 'HR-ROAD-1']
+        }));
         const manager = {
             materializeCorridorBatch: ProposalManager.materializeCorridorBatch,
             _enqueueFabricChange: operation => operation(),
@@ -362,28 +142,22 @@ describe('a shared corridor package materialises as one cadastral mutation', () 
         expect(roadA.applied).toBe(true);
         expect(roadB.applied).toBe(true);
         expect(rematerialize).toHaveBeenCalledOnce();
-        expect(rematerialize).toHaveBeenCalledWith([roadA, roadB], {
+        expect(rematerialize.mock.calls[0][0]).toEqual([roadA, roadB]);
+        expect(rematerialize.mock.calls[0][1]).toEqual(expect.objectContaining({
             _fabricQueue: true,
             silent: false,
             deferSave: true
-        });
+        }));
     });
 
-    it('does not reject a 131-road batch because its track has only 97.8% cadastral coverage', async () => {
-        const ordinaryRoads = Array.from({ length: 130 }, (_, index) => {
-            const road = member(index);
-            road.cadastreParcelIds = [`HR-ROAD-${index}`];
-            return road;
-        });
-        const publishedTrackIds = Array.from({ length: 661 }, (_, index) => `HR-TRACK-${index}`);
-        const currentTrackIds = publishedTrackIds.slice(0, 649);
-        const track = member(130);
-        track.cadastreParcelIds = publishedTrackIds;
-        const corridorRecords = [...ordinaryRoads, track];
-
-        const records = new Map(corridorRecords.map(record => [record.proposalId, record]));
+    it('does not reject a corridor package because part of a ribbon has no parcel host', async () => {
+        const roads = Array.from({ length: 3 }, (_, index) => member(index));
+        const track = member(3);
+        track.cadastreParcelIds = ['HR-TRACK-A', 'HR-TRACK-B'];
+        const records = [...roads, track];
+        const byId = new Map(records.map(record => [record.proposalId, record]));
         installGlobal('proposalStorage', {
-            getProposal: id => records.get(String(id)) || null,
+            getProposal: id => byId.get(String(id)) || null,
             save: vi.fn()
         });
         installGlobal('setProposalApplied', (record, applied) => { record.applied = applied === true; });
@@ -391,16 +165,16 @@ describe('a shared corridor package materialises as one cadastral mutation', () 
             __planOrder: planOrder,
             __cadastreAncestry: {
                 loadedCadastreCoverage: record => record === track
-                    ? { ids: currentTrackIds, coverage: 0.9777625757001458 }
+                    ? { ids: ['HR-TRACK-A'], coverage: 0.5 }
                     : { ids: record.cadastreParcelIds, coverage: 1 }
             },
             CorridorNetworkNodes: { normalize: vi.fn() }
         });
 
-        const localMaterialize = vi.fn(async (_records, resolution) => ({
-            ok: resolution?.complete === true,
+        const localMaterialize = vi.fn(async (_seed, resolution) => ({
+            ok: resolution.complete,
             failed: [],
-            baseParcelIds: resolution?.baseParcelIds || []
+            cadastreParcelIds: resolution.cadastreParcelIds
         }));
         const manager = {
             materializeCorridorBatch: ProposalManager.materializeCorridorBatch,
@@ -412,21 +186,17 @@ describe('a shared corridor package materialises as one cadastral mutation', () 
             _setLastApplyFailure: vi.fn()
         };
 
-        const corridorIds = corridorRecords.map(record => record.proposalId);
-        const result = await manager.materializeCorridorBatch(corridorIds);
+        const result = await manager.materializeCorridorBatch(records.map(record => record.proposalId));
 
         expect(result.ok, result.reason).toBe(true);
-        expect(result.appliedIds).toEqual(corridorIds);
-        expect(manager._loadReplayGround).toHaveBeenCalledWith(corridorRecords);
-        expect(localMaterialize).toHaveBeenCalledOnce();
         const resolution = localMaterialize.mock.calls[0][1];
         expect(resolution.complete).toBe(true);
-        expect(resolution.baseParcelIds).toHaveLength(791);
-        expect(resolution.baseParcelIds).toContain('HR-ROAD-129');
-        expect(resolution.baseParcelIds).toContain('HR-TRACK-660');
+        expect(resolution.cadastreParcelIds).toEqual(expect.arrayContaining([
+            'HR-ROAD-0', 'HR-ROAD-1', 'HR-ROAD-2', 'HR-TRACK-A', 'HR-TRACK-B'
+        ]));
     });
 
-    it('never routes a corridor batch through the strict host-ground resolver', () => {
+    it('never routes a corridor batch through strict formation-ground resolution', () => {
         const batchStart = managerSource.indexOf('async materializeCorridorBatch(');
         const batch = managerSource.slice(batchStart, managerSource.indexOf('\n    },', batchStart));
         const scopeStart = managerSource.indexOf('async rematerializeCorridorScope(');
@@ -438,26 +208,16 @@ describe('a shared corridor package materialises as one cadastral mutation', () 
     });
 });
 
-describe('the fold itself no longer fetches', () => {
-    const pass = (() => {
-        const start = managerSource.indexOf('async _rebuildPass(');
-        return managerSource.slice(start, managerSource.indexOf('\n    },', start));
-    })();
+describe('the replay fold itself never fetches', () => {
+    const start = managerSource.indexOf('async _rebuildPass(');
+    const pass = managerSource.slice(start, managerSource.indexOf('\n    },', start));
 
-    it('loads the ground before the ordered loop', () => {
+    it('loads all ground before the ordered member loop', () => {
         expect(pass.indexOf('_loadReplayGround')).toBeLessThan(pass.indexOf('for (const proposal of appliedList)'));
     });
 
-    it('has no per-member fetch inside the loop', () => {
+    it('contains no per-member cadastral transport', () => {
         const loop = pass.slice(pass.indexOf('for (const proposal of appliedList)'));
-        expect(loop).not.toMatch(/fetchParcelsUnderGeometry/);
-        expect(loop).not.toMatch(/fetchParcelsForIds/);
-    });
-
-    it('still applies members one at a time, in order', () => {
-        const loop = pass.slice(pass.indexOf('for (const proposal of appliedList)'));
-        expect(loop).toMatch(/replay: true/);
-        expect(loop).toMatch(/preserveAppliedSet: passOptions\.preserveAppliedSet === true/);
-        expect(loop).toMatch(/await this\.applyProposal\(key, replayOptions\)/);
+        expect(loop).not.toMatch(/fetchParcels|ensureIds|ensureFootprint|ensureBounds/);
     });
 });

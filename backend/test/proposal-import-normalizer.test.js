@@ -50,11 +50,10 @@ describe('proposal import boundary', () => {
             applied: true,
             goal: 'buildings',
             coordinatedPlanId: 'district-plan',
-            parentParcelIds: [10],
+            cadastreParcelIds: ['10'],
             buildingProposal: {
                 applied: true,
                 status: 'executed',
-                parentParcelIds: [10],
                 parameters: { floors: 4 }
             }
         });
@@ -64,7 +63,8 @@ describe('proposal import boundary', () => {
         expect(imported).not.toHaveProperty('status');
         expect(imported.buildingProposal).not.toHaveProperty('applied');
         expect(imported.buildingProposal).not.toHaveProperty('status');
-        expect(imported.parentParcelIds).toEqual(['10']);
+        expect(imported.cadastreParcelIds).toEqual(['10']);
+        expect(imported).not.toHaveProperty('parentParcelIds');
         expect(imported.coordinatedPlanId).toBe('district-plan');
     });
 
@@ -72,10 +72,11 @@ describe('proposal import boundary', () => {
         const imported = prepareProposalForImport({
             proposalId: 'legacy-road',
             status: 'applied',
+            cadastreParcelIds: ['p-1'],
             roadProposal: {
                 applied: true,
                 status: 'applied',
-                parentParcelIds: ['p-1']
+                definition: { width: 8, points: [] }
             }
         });
 
@@ -101,22 +102,24 @@ describe('proposal import boundary', () => {
             proposalId: 'shared-block',
             goal: 'buildings',
             typologyType: 'block',
-            parentParcelIds: ['HR-1', 'HR-2'],
+            cadastreParcelIds: ['HR-1', 'HR-2'],
             geometry: { buildings: [blockMassing], blockMassing },
             buildingProposal: {
                 typologyType: 'block',
-                parentParcelIds: ['HR-1', 'HR-2'],
-                blockParcelIds: ['HR-1', 'HR-2', 'HR-EDGE'],
                 blockName: 'Block 1',
-                ineligibleParcels: [{ parcelId: 'HR-EDGE', status: 'below-min-plot' }]
+                ineligibleParcels: [{
+                    status: 'below-min-plot',
+                    geometry: blockMassing.geometry,
+                    wouldBe: blockMassing
+                }]
             }
         });
 
         expect(imported.typologyType).toBe('block');
-        expect(imported.buildingProposal.blockParcelIds).toEqual(['HR-1', 'HR-2', 'HR-EDGE']);
         expect(imported.buildingProposal.ineligibleParcels).toEqual([
-            { parcelId: 'HR-EDGE', status: 'below-min-plot' }
+            { status: 'below-min-plot', geometry: blockMassing.geometry, wouldBe: blockMassing }
         ]);
+        expect(imported.buildingProposal).not.toHaveProperty('blockParcelIds');
         expect(imported.geometry.blockMassing.geometry.coordinates).toHaveLength(2);
     });
 
@@ -130,6 +133,16 @@ describe('proposal import boundary', () => {
                 definition: { width: 10, points: [] }
             }
         })).toThrow(/run migrate-tessellation\.js first/);
+    });
+
+    it('refuses a compatibility alias even when it duplicates canonical ground', () => {
+        expect(() => prepareProposalForImport({
+            proposalId: 'legacy-duplicate',
+            goal: 'park',
+            cadastreParcelIds: ['HR-1'],
+            parentParcelIds: ['HR-1'],
+            structureProposal: { kind: 'park', geometry: { type: 'Polygon', coordinates: [] } }
+        })).toThrow(/legacy-cadastral-declaration/);
     });
 
     it('keeps server summaries lifecycle-only', () => {

@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import express from 'express';
 import request from 'supertest';
-import { createApp, startServer, WRITE_RATE_LIMIT } from '../index.js';
+import { createApp, startServer } from '../index.js';
 import { createMockPool } from './helpers/mock-pool.js';
 
 describe('createApp', () => {
@@ -463,19 +463,21 @@ describe('createApp', () => {
     });
 
     it('applies the write rate limiter to patch requests', async () => {
+        const writeRateLimit = 3;
         const { app } = createApp({
             env: {
                 USE_CORS_ALLOWLIST: 'false',
                 ALLOWED_ORIGINS: 'https://editor.example'
             },
-            pool: createMockPool()
+            pool: createMockPool(),
+            writeRateLimit
         });
 
         app.patch('/_test/rate-limited', (_req, res) => {
             res.status(200).json({ ok: true });
         });
 
-        for (let attempt = 0; attempt < WRITE_RATE_LIMIT; attempt += 1) {
+        for (let attempt = 0; attempt < writeRateLimit; attempt += 1) {
             const allowed = await request(app)
                 .patch('/_test/rate-limited')
                 .set('Origin', 'https://editor.example')

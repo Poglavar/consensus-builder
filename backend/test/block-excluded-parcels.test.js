@@ -145,13 +145,13 @@ describe('carried into the applied plan', () => {
         expect(save).toContain('const ineligibleParcels = blockExcludedParcels.map(');
         expect(save).toContain('wouldBe: entry.wouldBe ?');
         expect(save).toContain('ineligibleParcels,');
-        expect(save).toContain('blockParcelIds: normalizedParcelIds.slice()');
+        expect(save).not.toContain('blockParcelIds: normalizedParcelIds.slice()');
         expect(save).toContain('blockMassing');
     });
 
     it('serializes them onto the proposal record', () => {
         expect(adapters).toContain('ineligibleParcels: clone(context.ineligibleParcels || [])');
-        expect(adapters).toContain('blockParcelIds: clone(');
+        expect(adapters).not.toContain('blockParcelIds: clone(');
         expect(adapters).toContain('output.geometry.blockMassing = blockMassing');
     });
 
@@ -175,23 +175,18 @@ describe('carried into the applied plan', () => {
                 applied: true,
                 buildingProposal: {
                     ineligibleParcels: [{
-                        parcelId: 'HR-EDGE',
                         status: 'below-min-plot',
                         height: 12,
+                        geometry: plot.geometry,
                         wouldBe
                     }]
                 }
-            }],
-            resolveParcelFeatures: parcelId => [{
-                ...plot,
-                properties: { parcelId: `${parcelId}#live-1` }
             }]
         });
 
         expect(parts.map(part => part.properties.kind)).toEqual(['plot', 'massing']);
         expect(parts[0].properties).toMatchObject({
-            parcelId: 'HR-EDGE#live-1',
-            sourceParcelId: 'HR-EDGE',
+            parcelId: 'block-1:ineligible:0',
             exclusionStatus: 'below-min-plot',
             proposalId: 'block-1'
         });
@@ -199,43 +194,37 @@ describe('carried into the applied plan', () => {
     });
 
     it('does not invent exclusions from block membership or absent building data', () => {
-        const resolveParcelFeatures = vi.fn(() => [rect(0, 0, 10, 10)]);
         const records = ['one', 'two', 'three'].map(proposalId => ({
             proposalId,
             applied: true,
             typologyType: 'block',
             geometry: { buildings: [] },
             buildingProposal: {
-                blockParcelIds: ['HR-330264-628'],
-                parentParcelIds: ['HR-330264-628'],
                 ineligibleParcels: []
             }
         }));
 
-        expect(collectAppliedIneligibleBlockParts({ records, resolveParcelFeatures })).toEqual([]);
-        expect(resolveParcelFeatures).not.toHaveBeenCalled();
+        expect(collectAppliedIneligibleBlockParts({ records })).toEqual([]);
     });
 
-    it('gets plot geometry only from the live-tessellation resolver', () => {
-        expect(collectAdapter).toContain('window.resolveLiveParcelLayers');
-        expect(collectAdapter).toContain('{ includeCorridors: false }');
-        expect(collectAdapter).not.toContain('window.parcelLayerById');
+    it('gets plot geometry directly from the authored exclusion', () => {
+        expect(collectAdapter).not.toContain('window.resolveLiveParcelLayers');
+        expect(collectAdapter).not.toContain('resolveParcelFeatures');
     });
 
-    it('deduplicates repeated live features within one declared exclusion', () => {
-        const feature = { ...rect(0, 0, 10, 10), properties: { parcelId: 'HR-EDGE#live-1' } };
+    it('deduplicates repeated authored geometries', () => {
+        const geometry = rect(0, 0, 10, 10).geometry;
         const parts = collectAppliedIneligibleBlockParts({
             records: [{
                 proposalId: 'block-1',
                 applied: true,
                 buildingProposal: {
                     ineligibleParcels: [
-                        { parcelId: 'HR-EDGE', status: 'below-min-plot' },
-                        { parcelId: 'HR-EDGE', status: 'below-min-plot' }
+                        { geometry, status: 'below-min-plot' },
+                        { geometry, status: 'below-min-plot' }
                     ]
                 }
-            }],
-            resolveParcelFeatures: () => [feature, JSON.parse(JSON.stringify(feature))]
+            }]
         });
 
         expect(parts).toHaveLength(1);
@@ -263,16 +252,12 @@ describe('carried into the applied plan', () => {
             proposalId,
             applied: true,
             buildingProposal: {
-                ineligibleParcels: [{ parcelId: `HR-${proposalId}` }]
+                ineligibleParcels: [{ geometry: rect(0, 0, 10, 10).geometry }]
             }
         }));
         const parts = collectAppliedIneligibleBlockParts({
             records,
-            onlyProposalId: 'wanted',
-            resolveParcelFeatures: parcelId => [{
-                ...rect(0, 0, 10, 10),
-                properties: { parcelId }
-            }]
+            onlyProposalId: 'wanted'
         });
 
         expect(parts).toHaveLength(1);

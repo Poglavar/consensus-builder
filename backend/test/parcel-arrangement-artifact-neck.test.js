@@ -48,9 +48,11 @@ describe('a corridor that crosses a parcel splits it in two', () => {
 
     // The lobes are the point: two ids, so a building on one is not a building on the other.
     it('gives each lobe its own id', () => {
-        const ids = arrange().pieces.filter(p => p.kind === 'remainder').map(p => p.id);
+        const pieces = arrange().pieces.filter(p => p.kind === 'remainder');
+        const ids = pieces.map(p => p.id);
         expect(new Set(ids).size).toBe(2);
-        ids.forEach(id => expect(arrangement.isPieceId(id)).toBe(true));
+        pieces.forEach(piece => expect(arrangement.isArrangementFeature(
+            arrangement.featureForPiece(piece, parcelFeature()))).toBe(true));
     });
 
     // No ground may be invented or lost by the normalisation: pieces still tile the parcel.

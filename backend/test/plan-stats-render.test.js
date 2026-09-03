@@ -132,8 +132,8 @@ function block(epochYear) {
     return {
         applied: true,
         epochYear,
+        cadastreParcelIds: ['HR-330264-628'],
         buildingProposal: {
-            parentParcelIds: ['HR-330264-628'],
             parameters: { rule: { minHeightM: 17.5, maxHeightM: 17.5, floorHeightM: 3.5 } },
             buildings: [{
                 type: 'Feature',

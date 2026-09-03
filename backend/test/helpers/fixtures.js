@@ -12,8 +12,7 @@ export function validProposalBody(overrides = {}) {
         status: 'unapplied',
         offer: 1.5,
         offerCurrency: 'ETH',
-        parentParcelIds: ['HR-1234-5678', 'HR-1234-5679'],
-        childParcelIds: [],
+        cadastreParcelIds: ['HR-1234-5678', 'HR-1234-5679'],
         ...overrides,
     };
 }
@@ -59,7 +58,8 @@ export function proposalDbRow(overrides = {}) {
         deposit_percent: null,
         is_conditional: false,
         disbursement_mode: null,
-        ancestor_parcel_ids: ['HR-1234-5678', 'HR-1234-5679'],
+        ancestor_parcel_ids: null,
+        cadastre_parcel_ids: ['HR-1234-5678', 'HR-1234-5679'],
         descendant_parcel_ids: null,
         accepted_parcel_ids: null,
         owner_acceptances: null,

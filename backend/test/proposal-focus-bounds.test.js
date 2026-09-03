@@ -6,11 +6,6 @@ const geometrySource = readFileSync(
     new URL('../../frontend/js/proposals/geometry.js', import.meta.url),
     'utf8'
 );
-const serverSyncSource = readFileSync(
-    new URL('../../frontend/js/proposals/server-sync.js', import.meta.url),
-    'utf8'
-);
-
 function validBounds(label, center = { lat: 43.75, lng: 15.86 }) {
     return {
         label,
@@ -35,7 +30,7 @@ function buildingFeature() {
     };
 }
 
-function loadBoundsHarness(proposal, findParcelById = () => null) {
+function loadBoundsHarness(proposal, findParcelById = () => null, producedFeatures = []) {
     const geometryBounds = validBounds('geometry');
     const parcelBounds = validBounds('parcel-result');
     const warn = vi.fn();
@@ -45,8 +40,6 @@ function loadBoundsHarness(proposal, findParcelById = () => null) {
         proposalStorage: {},
         getProposalByIdOrHash: vi.fn(() => proposal),
         ensureArrayOfStrings: value => Array.isArray(value) ? value.map(String) : [],
-        buildProposalFeatureCache: vi.fn(() => ({ parcelsById: new Map() })),
-        multiParcelSelection: { findParcelById: find },
         L: {
             geoJSON: vi.fn(() => ({ getBounds: () => geometryBounds })),
             latLngBounds: vi.fn(() => parcelBounds)
@@ -56,6 +49,27 @@ function loadBoundsHarness(proposal, findParcelById = () => null) {
         corridorSurfaceFootprintForDefinition: vi.fn(() => null)
     };
     context.window = context;
+    context.LiveParcelFabric = {
+        featureId: feature => feature?.properties?.parcelId || null,
+        explicitCadastreIds: feature => feature?.properties?.cadastreParcelIds || [],
+        producedBy: proposalId => proposalId === String(proposal?.proposalId)
+            ? producedFeatures
+            : []
+    };
+    context.ParcelPresenter = {
+        resolveLiveLayers: ids => ids.map(id => {
+            const layer = find(id);
+            if (!layer) return null;
+            if (!layer.feature) {
+                layer.feature = {
+                    type: 'Feature',
+                    properties: { parcelId: String(id), cadastreParcelIds: [String(id)] },
+                    geometry: { type: 'Polygon', coordinates: [] }
+                };
+            }
+            return layer;
+        }).filter(Boolean)
+    };
     vm.runInNewContext(geometrySource, context);
     return { context, geometryBounds, parcelBounds, find, warn };
 }
@@ -64,8 +78,7 @@ describe('last-applied proposal focus bounds', () => {
     it('uses authored building geometry before retired parents when there are no children', () => {
         const proposal = {
             proposalId: 'block',
-            childParcelIds: [],
-            parentParcelIds: ['retired-a', 'retired-b'],
+            cadastreParcelIds: ['retired-a', 'retired-b'],
             geometry: { buildings: [buildingFeature()] }
         };
         const { context, geometryBounds, find, warn } = loadBoundsHarness(proposal);
@@ -80,11 +93,15 @@ describe('last-applied proposal focus bounds', () => {
     it('silently falls back to stored geometry when current child layers are unavailable', () => {
         const proposal = {
             proposalId: 'formation',
-            childParcelIds: ['derived-child'],
-            parentParcelIds: ['retired-parent'],
+            cadastreParcelIds: ['retired-parent'],
             geometry: { buildings: [buildingFeature()] }
         };
-        const { context, geometryBounds, find, warn } = loadBoundsHarness(proposal);
+        const produced = [{
+            type: 'Feature',
+            properties: { parcelId: 'derived-child', cadastreParcelIds: ['retired-parent'] },
+            geometry: { type: 'Polygon', coordinates: [] }
+        }];
+        const { context, geometryBounds, find, warn } = loadBoundsHarness(proposal, () => null, produced);
 
         const result = context.calculateBoundsForLastAppliedProposal('formation');
 
@@ -97,7 +114,7 @@ describe('last-applied proposal focus bounds', () => {
         const liveLayerBounds = validBounds('live-parent');
         const proposal = {
             proposalId: 'metadata-only',
-            parentParcelIds: ['live-parent']
+            cadastreParcelIds: ['live-parent']
         };
         const { context, parcelBounds, find, warn } = loadBoundsHarness(
             proposal,
@@ -114,52 +131,12 @@ describe('last-applied proposal focus bounds', () => {
     it('warns once only after live parcels and stored geometry all fail', () => {
         const proposal = {
             proposalId: 'unframeable',
-            parentParcelIds: ['missing-parent']
+            cadastreParcelIds: ['missing-parent']
         };
         const { context, warn } = loadBoundsHarness(proposal);
 
         expect(context.calculateBoundsForLastAppliedProposal('unframeable')).toBeNull();
         expect(warn).toHaveBeenCalledOnce();
         expect(warn.mock.calls[0][0]).toContain('no live parcels or stored geometry');
-    });
-});
-
-describe('parent parcel hydration', () => {
-    it('does not refetch cadastral parents intentionally replaced by standing children', () => {
-        const findParcelById = vi.fn(id => id === 'loaded' ? { feature: {} } : null);
-        const isParcelReplacedByChildren = vi.fn(id => id === 'replaced');
-        const context = {
-            console,
-            parcelLayer: { eachLayer: vi.fn() },
-            multiParcelSelection: { findParcelById },
-            ProposalManager: { isSyntheticParcelId: id => String(id).includes('#') },
-            isParcelReplacedByChildren
-        };
-        context.window = context;
-        vm.runInNewContext(serverSyncSource, context);
-
-        const missing = context.findMissingParentParcels([
-            'replaced',
-            'ordinary-missing',
-            'loaded',
-            'derived#child'
-        ]);
-
-        expect([...missing]).toEqual(['ordinary-missing']);
-        expect(findParcelById).not.toHaveBeenCalledWith('replaced');
-        expect(isParcelReplacedByChildren).toHaveBeenCalledWith('replaced');
-    });
-
-    it('also filters replaced parents before the parcel layer is ready', () => {
-        const context = {
-            console,
-            ProposalManager: { isSyntheticParcelId: () => false },
-            isParcelReplacedByChildren: id => id === 'replaced'
-        };
-        context.window = context;
-        vm.runInNewContext(serverSyncSource, context);
-
-        expect([...context.findMissingParentParcels(['replaced', 'ordinary-missing'])])
-            .toEqual(['ordinary-missing']);
     });
 });

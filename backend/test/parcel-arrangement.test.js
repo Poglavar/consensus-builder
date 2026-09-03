@@ -529,8 +529,9 @@ describe('a piece as a map feature', () => {
     it('roots every piece at the cadastral parcel, not at another piece', () => {
         const feature = arrangement.featureForPiece(pieces()[0], base);
         expect(feature.properties.rootParcelId).toBe(PARCEL_ID);
-        expect(feature.properties.parentParcelId).toBe(PARCEL_ID);
-        expect(feature.properties.baseParcelIds).toEqual([PARCEL_ID]);
+        expect(feature.properties.cadastreParcelIds).toEqual([PARCEL_ID]);
+        expect(feature.properties.parentParcelId).toBeUndefined();
+        expect(feature.properties.baseParcelIds).toBeUndefined();
     });
 
     it('reports its own area, not the parcel it came from', () => {
@@ -576,10 +577,10 @@ describe('a piece as a map feature', () => {
         expect(JSON.stringify(base)).toBe(before);
     });
 
-    it('is an id a synthetic-id check recognises, so it routes as derived ground', () => {
+    it('marks its derivation explicitly instead of relying on id syntax', () => {
         const feature = arrangement.featureForPiece(pieces()[0], base);
-        expect(String(feature.properties.parcelId)).toContain('#');
-        expect(String(feature.properties.parcelId).split('#')[0]).toBe(PARCEL_ID);
+        expect(feature.properties.liveParcelDerivation).toBe('corridor-arrangement');
+        expect(arrangement.isArrangementFeature(feature)).toBe(true);
     });
 });
 
@@ -653,19 +654,21 @@ describe('refusals', () => {
 // moment a road was drawn across the same ground. So the arrangement has to be able to recognise
 // its own work.
 describe('recognising the arrangement\'s own pieces', () => {
-    it('recognises an id it minted itself, road or remainder', () => {
+    it('recognises every feature it minted, road or remainder', () => {
         const { pieces } = arrangement.arrangementOf(PARCEL, PARCEL_ID, [EAST_WEST]);
         expect(pieces.length).toBeGreaterThan(1);
-        pieces.forEach(piece => expect(arrangement.isPieceId(piece.id)).toBe(true));
+        pieces.forEach(piece => {
+            expect(arrangement.isArrangementFeature(arrangement.featureForPiece(piece, PARCEL))).toBe(true);
+        });
     });
 
-    it('does not claim a plot, a legacy child or a cadastral parcel', () => {
-        expect(arrangement.isPieceId('HR-1-100')).toBe(false);            // the cadastre itself
-        expect(arrangement.isPieceId('HR-1-100#5-2')).toBe(false);        // a readjustment plot
-        expect(arrangement.isPieceId('HR-1-100#c-proposal-7')).toBe(false); // a carved host
-        expect(arrangement.isPieceId('HR-339270-824_proposal_9')).toBe(false);
-        expect(arrangement.isPieceId(null)).toBe(false);
-        expect(arrangement.isPieceId('')).toBe(false);
+    it('does not classify opaque ids; only explicit feature provenance grants ownership', () => {
+        expect(arrangement.isArrangementFeature(PARCEL)).toBe(false);
+        expect(arrangement.isArrangementFeature({
+            ...PARCEL,
+            properties: { ...PARCEL.properties, parcelId: 'anything-at-all' }
+        })).toBe(false);
+        expect(arrangement.isArrangementFeature(null)).toBe(false);
     });
 });
 

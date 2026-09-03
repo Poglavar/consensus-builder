@@ -17,7 +17,7 @@ const {
     buildingFeaturesOf,
     planYield,
     rederive,
-    parcelIdsOf,
+    cadastreIdsOf,
     resultingParcels
 } = require('../../frontend/js/proposals/plan-yield.js');
 
@@ -255,60 +255,71 @@ describe('changing an assumption re-derives without re-measuring', () => {
 });
 
 describe('the parcels a plan leaves standing', () => {
-    // A road cuts 101 into three pieces; an urban rule then builds on two of them without
-    // changing any boundary. Four parcels went in as one; three stand.
+    // Proposal records say only that both proposals affect cadastre 101. A separate committed
+    // fabric snapshot says which disposable live pieces currently stand there.
     const road = {
         applied: true,
-        roadProposal: { parentParcelIds: ['101'], childParcelIds: ['101#c-1-0', '101#c-1-1', '101#c-1-2'] }
+        cadastreParcelIds: ['101'],
+        roadProposal: { definition: { width: 8, points: [] } }
     };
     const rule = {
         applied: true,
-        buildingProposal: { parentParcelIds: ['101#c-1-0', '101#c-1-2'] }
+        cadastreParcelIds: ['101'],
+        buildingProposal: { parameters: { floors: 4 } }
     };
+    const piece = (parcelId, producer = 'road-1') => ({
+        type: 'Feature',
+        properties: {
+            parcelId,
+            cadastreParcelIds: ['101'],
+            ...(producer ? { producedByProposalId: producer } : {})
+        },
+        geometry: { type: 'Polygon', coordinates: [] }
+    });
+    const roadFabric = [piece('live-0'), piece('live-1'), piece('live-2')];
 
-    it('counts what the plan produced, not what the map happens to have loaded', () => {
-        const { resulting } = resultingParcels([road, rule]);
-        expect(resulting.sort()).toEqual(['101#c-1-0', '101#c-1-1', '101#c-1-2']);
+    it('uses an explicit fabric snapshot instead of child IDs stored on proposals', () => {
+        const result = resultingParcels([road, rule], { materializedFeatures: roadFabric });
+        expect(result.resulting.sort()).toEqual(['live-0', 'live-1', 'live-2']);
+        expect(result.produced.sort()).toEqual(['live-0', 'live-1', 'live-2']);
+        expect(result.materialized).toBe(true);
     });
 
-    it('drops a parcel that was consumed, whichever order the proposals are read in', () => {
-        const forwards = resultingParcels([road, rule]).resulting.sort();
-        const backwards = resultingParcels([rule, road]).resulting.sort();
+    it('is independent of proposal order because the snapshot is authoritative', () => {
+        const forwards = resultingParcels([road, rule], { materializedFeatures: roadFabric }).resulting.sort();
+        const backwards = resultingParcels([rule, road], { materializedFeatures: roadFabric }).resulting.sort();
         expect(backwards).toEqual(forwards);
         expect(forwards).not.toContain('101');
     });
 
-    it('drops a parcel a LATER proposal consumed, even though an earlier one produced it', () => {
+    it('does not reconstruct a chain when a later proposal changes the same cadastral ground', () => {
         const second = {
             applied: true,
-            roadProposal: { parentParcelIds: ['101#c-1-1'], childParcelIds: ['101#c-1-1#c-2-0'] }
+            cadastreParcelIds: ['101'],
+            roadProposal: { definition: { width: 6, points: [] } }
         };
-        const { resulting } = resultingParcels([road, second]);
-        expect(resulting).not.toContain('101#c-1-1');
-        expect(resulting).toContain('101#c-1-1#c-2-0');
+        const finalFabric = [piece('final-a', 'road-2'), piece('final-b', 'road-2')];
+        const { resulting } = resultingParcels([road, second], { materializedFeatures: finalFabric });
+        expect(resulting.sort()).toEqual(['final-a', 'final-b']);
     });
 
-    it('keeps a parcel that is only built on', () => {
-        const { resulting, builtOn, produced } = resultingParcels([rule]);
-        expect(resulting.sort()).toEqual(['101#c-1-0', '101#c-1-2']);
-        expect(builtOn).toHaveLength(2);
+    it('keeps original cadastral ground when a building only overlays it', () => {
+        const original = piece('101', null);
+        const { resulting, builtOn, produced } = resultingParcels([rule], { materializedFeatures: [original] });
+        expect(resulting).toEqual(['101']);
+        expect(builtOn).toEqual(['101']);
         expect(produced).toHaveLength(0);
     });
 
-    it('reads ids from a server row as well as a client object', () => {
-        const row = {
-            applied: true,
-            ancestor_parcel_ids: ['A', 'B'],
-            descendant_parcel_ids: ['A#c-9-0']
-        };
-        const { parents, children } = parcelIdsOf(row);
-        expect(parents.sort()).toEqual(['A', 'B']);
-        expect(children).toEqual(['A#c-9-0']);
-        expect(resultingParcels([row]).resulting).toEqual(['A#c-9-0']);
+    it('reads only the canonical public proposal shape', () => {
+        const row = { applied: true, cadastreParcelIds: ['A', 'B'] };
+        expect(cadastreIdsOf(row)).toEqual(['A', 'B']);
+        expect(cadastreIdsOf({ ancestor_parcel_ids: ['A'] })).toEqual([]);
+        expect(resultingParcels([row]).resulting).toEqual(['A', 'B']);
     });
 
     it('honours appliedOnly', () => {
-        const draft = { applied: false, buildingProposal: { parentParcelIds: ['999'] } };
+        const draft = { applied: false, cadastreParcelIds: ['999'], buildingProposal: {} };
         expect(resultingParcels([rule, draft], { appliedOnly: true }).resulting).not.toContain('999');
         expect(resultingParcels([rule, draft]).resulting).toContain('999');
     });
@@ -316,7 +327,7 @@ describe('the parcels a plan leaves standing', () => {
     it('is empty for an empty plan rather than throwing', () => {
         expect(resultingParcels([]).resulting).toEqual([]);
         expect(resultingParcels(null).resulting).toEqual([]);
-        expect(parcelIdsOf(null)).toEqual({ parents: [], children: [] });
+        expect(cadastreIdsOf(null)).toEqual([]);
     });
 });
 

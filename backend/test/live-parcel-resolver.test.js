@@ -1,81 +1,85 @@
-// Map interaction must resolve durable cadastral ids through the current visible tessellation.
-// Hidden cadastral source geometry is ancestry, not something hover/click is allowed to draw: once
-// a road has cut that source, drawing it would put a convincing parcel border straight across the
-// road even though the live ground itself is correct.
-
+// Cadastral anchors resolve through the committed fabric and presenter, never through hidden
+// source layers. A source replaced by a road cut cannot be returned by hover/click.
 import { describe, expect, it } from 'vitest';
+import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 
-const source = readFileSync(new URL('../../frontend/js/parcels/storage.js', import.meta.url), 'utf8');
+const require = createRequire(import.meta.url);
+const { createLiveParcelFabric } = require('../../frontend/js/parcels/live-fabric.js');
+const presenterSource = readFileSync(new URL('../../frontend/js/parcels/presenter.js', import.meta.url), 'utf8');
 
-function layer(parcelId, properties = {}) {
-    const feature = {
-        type: 'Feature',
-        properties: { parcelId, ...properties },
-        geometry: {
-            type: 'Polygon',
-            coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]]
-        }
-    };
-    return {
-        feature,
-        toGeoJSON: () => feature
-    };
-}
+const polygon = (id, x0, x1, properties = {}) => ({
+    type: 'Feature',
+    properties: { parcelId: id, ...properties },
+    geometry: { type: 'Polygon', coordinates: [[[x0, 0], [x1, 0], [x1, 1], [x0, 1], [x0, 0]]] }
+});
 
-function loadResolver(liveLayers, indexedLayers = liveLayers) {
-    const live = new Set(liveLayers);
+function environment() {
+    const fabric = createLiveParcelFabric();
+    const members = new Set();
     const context = {
-        console,
-        window: {
-            parcelLayer: {
-                getLayers: () => [...live],
-                hasLayer: candidate => live.has(candidate)
-            },
-            parcelLayerById: new Map(indexedLayers.map(candidate => [
-                String(candidate.feature.properties.parcelId),
-                candidate
-            ])),
-            isRoad: () => false
+        console, Map, Set, Promise, structuredClone, LiveParcelFabric: fabric,
+        parcelLayer: {
+            addLayer: layer => members.add(layer),
+            removeLayer: layer => members.delete(layer),
+            hasLayer: layer => members.has(layer)
+        },
+        L: {
+            geoJSON(feature) {
+                const layer = {
+                    feature, options: {}, on() {}, setStyle() {},
+                    getBounds() {
+                        const xs = feature.geometry.coordinates[0].map(point => point[0]);
+                        return {
+                            getWest: () => Math.min(...xs), getSouth: () => 0,
+                            getEast: () => Math.max(...xs), getNorth: () => 1
+                        };
+                    }
+                };
+                return { getLayers: () => [layer] };
+            }
         }
     };
-    vm.runInNewContext(source, context);
-    return context.window.resolveLiveParcelLayers;
+    context.window = context;
+    context.globalThis = context;
+    vm.runInNewContext(presenterSource, context);
+    return { fabric, presenter: context.ParcelPresenter };
 }
 
-describe('resolveLiveParcelLayers', () => {
-    it('expands one cadastral anchor to its visible land pieces and leaves road pieces out', () => {
-        const base = layer('HR-A');
-        const left = layer('HR-A#left', { baseParcelIds: ['HR-A'] });
-        const road = layer('HR-A#road', { baseParcelIds: ['HR-A'], isCorridor: true, isRoad: true });
-        const right = layer('HR-A#right', { baseParcelIds: ['HR-A'] });
-        const resolve = loadResolver([left, road, right], [base, left, road, right]);
+describe('ParcelPresenter.resolveLiveLayers', () => {
+    it('expands a cadastral anchor to live land pieces and excludes its corridor piece', async () => {
+        const { fabric, presenter } = environment();
+        await fabric.transact({}, token => {
+            fabric.seedCadastre([polygon('HR-A', 0, 3)], { transaction: token });
+            fabric.replaceCadastreScope(['HR-A'], [
+                polygon('HR-A#left', 0, 1, { cadastreParcelIds: ['HR-A'] }),
+                polygon('HR-A#road', 1, 2, { cadastreParcelIds: ['HR-A'], isCorridor: true, isRoad: true }),
+                polygon('HR-A#right', 2, 3, { cadastreParcelIds: ['HR-A'] })
+            ], { transaction: token });
+        });
 
-        expect(resolve(['HR-A'])).toEqual([left, right]);
+        expect(presenter.resolveLiveLayers(['HR-A']).map(layer => layer.feature.properties.parcelId))
+            .toEqual(['HR-A#left', 'HR-A#right']);
+        expect(fabric.get('HR-A')).toBeNull();
     });
 
-    it('does not expose a full cadastral source if it accidentally coexists with derived pieces', () => {
-        const base = layer('HR-A');
-        const left = layer('HR-A#left', { baseParcelIds: ['HR-A'] });
-        const right = layer('HR-A#right', { baseParcelIds: ['HR-A'] });
-        const resolve = loadResolver([base, left, right]);
+    it('returns a generated corridor only when that exact live id is requested', async () => {
+        const { fabric, presenter } = environment();
+        await fabric.transact({}, token => fabric.upsertFeatures([
+            polygon('HR-A#road', 0, 1, { cadastreParcelIds: ['HR-A'], isCorridor: true, isRoad: true })
+        ], { transaction: token }));
 
-        expect(resolve(['HR-A'])).toEqual([left, right]);
+        expect(presenter.resolveLiveLayers(['HR-A'])).toEqual([]);
+        expect(presenter.resolveLiveLayers(['HR-A#road']).map(layer => layer.feature.properties.parcelId))
+            .toEqual(['HR-A#road']);
     });
 
-    it('returns a generated road piece only when that exact live id was requested', () => {
-        const road = layer('HR-A#road', { baseParcelIds: ['HR-A'], isCorridor: true, isRoad: true });
-        const resolve = loadResolver([road]);
+    it('returns the original cadastral parcel while it is the live partition', async () => {
+        const { fabric, presenter } = environment();
+        await fabric.transact({}, token => fabric.seedCadastre([polygon('HR-A', 0, 1)], { transaction: token }));
 
-        expect(resolve(['HR-A'])).toEqual([]);
-        expect(resolve(['HR-A#road'])).toEqual([road]);
-    });
-
-    it('returns the original cadastral layer when no derived tessellation replaced it', () => {
-        const base = layer('HR-A');
-        const resolve = loadResolver([base]);
-
-        expect(resolve(['HR-A'])).toEqual([base]);
+        expect(presenter.resolveLiveLayers(['HR-A']).map(layer => layer.feature.properties.parcelId))
+            .toEqual(['HR-A']);
     });
 });

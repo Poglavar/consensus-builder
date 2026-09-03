@@ -1,8 +1,8 @@
 // What counts as "this ground is already built on".
 //
-// Applying a building proposal rewrites its parentParcelIds to the CADASTRAL BASE ids, so a design
-// on one piece of a cut parcel comes back recorded against the whole parcel. Deciding occupancy by
-// widening a candidate's id to its parent then makes the first block to claim any piece of a parcel
+// A building proposal declares CADASTRAL BASE ids, while its geometry may occupy only one live
+// piece of a cut parcel. Deciding occupancy by widening a candidate's id to its root makes the first
+// block to claim any piece of a parcel
 // disqualify every other block that parcel reaches into — which is how a batch of 41 blocks created
 // 15 and skipped 26 as "already built on".
 //
@@ -23,10 +23,8 @@ const BUILDING_ON_A = box(15.8803, 43.7303, 15.8807, 43.7307);
 function appliedBlockOnPieceA() {
     return {
         applied: true,
-        // Exactly what apply/buildings.js leaves behind: the piece id it was authored on is gone,
-        // replaced by the cadastral base id.
-        parentParcelIds: ['HR-101'],
-        buildingProposal: { parentParcelIds: ['HR-101'] },
+        cadastreParcelIds: ['HR-101'],
+        buildingProposal: {},
         geometry: { buildings: [BUILDING_ON_A] }
     };
 }
@@ -63,21 +61,19 @@ describe('a block knows it is empty even when its cadastral parent is built on',
         expect(batch.isPopulated(PIECE_B, 'HR-101#b', occupied)).toBe(false);
     });
 
-    it('still recognises a design recorded against the parcel it actually names', () => {
-        // An uncut parcel: the base id IS the parcel's id, so the exact-id path carries it even
-        // before any footprint is consulted.
+    it('does not mark land occupied when the proposal has no building geometry', () => {
         globalThis.proposalStorage = {
             getAllProposals: () => [{
                 applied: true,
-                parentParcelIds: ['HR-102'],
-                buildingProposal: { parentParcelIds: ['HR-102'] },
+                cadastreParcelIds: ['HR-102'],
+                buildingProposal: {},
                 geometry: { buildings: [] }
             }]
         };
 
         const occupied = batch.occupancy();
 
-        expect(batch.isPopulated(box(15.9, 43.7, 15.901, 43.701), 'HR-102', occupied)).toBe(true);
+        expect(batch.isPopulated(box(15.9, 43.7, 15.901, 43.701), 'HR-102', occupied)).toBe(false);
     });
 
     it('says WHOSE building stands there, so a false positive can be spotted', () => {
@@ -114,8 +110,8 @@ describe('a block knows it is empty even when its cadastral parent is built on',
         globalThis.proposalStorage = {
             getAllProposals: () => [{
                 applied: true,
-                parentParcelIds: ['HR-101'],
-                buildingProposal: { parentParcelIds: ['HR-101'] },
+                cadastreParcelIds: ['HR-101'],
+                buildingProposal: {},
                 geometry: { buildings: [courtyard] }
             }]
         };

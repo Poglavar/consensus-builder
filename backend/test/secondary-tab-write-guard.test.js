@@ -31,7 +31,12 @@ beforeAll(() => {
         removeItem: noop
     };
     global.document = { getElementById: () => null, createElement: () => ({ style: {}, classList: { add: noop, remove: noop }, addEventListener: noop, setAttribute: noop, appendChild: noop }), addEventListener: noop, querySelector: () => null, querySelectorAll: () => [] };
-    global.window = { document: global.document, addEventListener: noop, __cbSecondaryTab: false };
+    global.window = {
+        document: global.document,
+        addEventListener: noop,
+        __cbSecondaryTab: false,
+        __formationDepth: { stripDerivedRecordData: record => structuredClone(record) }
+    };
     global.L = undefined;
     global.turf = undefined;
 
@@ -61,7 +66,9 @@ describe('proposalStorage._persist in a read-only tab', () => {
     it('never writes the shared key when the app is open in another tab', () => {
         const errors = vi.spyOn(console, 'error').mockImplementation(() => { });
         global.window.__cbSecondaryTab = true;
-        storage.proposals.set('p-1', { proposalId: 'p-1', title: 'parked' });
+        storage.proposals.set('p-1', {
+            proposalId: 'p-1', title: 'parked', cadastreParcelIds: ['HR-PARKED-1']
+        });
         storage._persist();
         // Scoped to the SHARED key on purpose: a bare `written === []` passed only because the store
         // happened to be empty, and would have quietly forbidden the recovery write that now keeps

@@ -228,7 +228,7 @@ describe('resolveProposalPolygon', () => {
     });
 
     it('returns no polygon for a parcel-only proposal (the caller unions the parents instead)', () => {
-        const resolved = resolveProposalPolygon({ goal: 'decide-later', parentParcelIds: ['HR-1-2'] });
+        const resolved = resolveProposalPolygon({ goal: 'decide-later', cadastreParcelIds: ['HR-1-2'] });
         expect(resolved.polygon).toBeNull();
     });
 });
@@ -247,9 +247,9 @@ describe('goal handling', () => {
         expect(shouldSkipProposalThumbnail({ goal: 'road-track' })).toBe(false);
     });
 
-    it('reads parent parcel ids from the proposal or its road proposal', () => {
-        expect(getProposalParentParcelIds({ parentParcelIds: ['HR-1-2', 'HR-1-3'] })).toEqual(['HR-1-2', 'HR-1-3']);
-        expect(getProposalParentParcelIds({ roadProposal: { parentParcelIds: [42] } })).toEqual(['42']);
+    it('reads the proposal\'s single cadastral declaration', () => {
+        expect(getProposalParentParcelIds({ cadastreParcelIds: ['HR-1-2', 'HR-1-3'] })).toEqual(['HR-1-2', 'HR-1-3']);
+        expect(getProposalParentParcelIds({ cadastreParcelIds: [42], roadProposal: {} })).toEqual(['42']);
         expect(getProposalParentParcelIds({})).toEqual([]);
     });
 });

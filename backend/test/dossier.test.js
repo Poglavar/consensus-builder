@@ -56,12 +56,12 @@ function makePlan() {
         {
             proposalId: 'rule-1', title: 'Height rule', goal: 'urban-rule',
             createdAt: '2026-01-04T00:00:00Z',
-            parentParcelIds: [ROOT]
+            cadastreParcelIds: [ROOT]
         },
         {
             proposalId: 'offer-1', title: 'Purchase offer', goal: 'as-is',
             createdAt: '2026-01-05T00:00:00Z',
-            parentParcelIds: [ROOT]
+            cadastreParcelIds: [ROOT]
         }
     ];
 }
@@ -116,11 +116,11 @@ describe('buildDossier — the worked §10 example', () => {
             ['acceptance', 'acceptance', 'offer', 'vote', 'disclosure']);
     });
 
-    it('membership follows base ancestry even for derived declared parents', () => {
+    it('membership follows the proposal\'s explicit flat cadastral provenance', () => {
         const plan = makePlan();
         plan.push({
             proposalId: 'derived-1', title: 'On a slice', goal: 'as-is',
-            parentParcelIds: [`${ROOT}#p-road-2`]
+            cadastreParcelIds: [ROOT]
         });
         const result = dossier.buildDossier(ROOT, plan, { baseParcels: BASE_PARCELS, parcelFeature: PARCEL });
         expect(result.entries.some(e => e.proposalId === 'derived-1')).toBe(true);

@@ -20,19 +20,58 @@ const {
 } = require('../../frontend/js/proposal-editor-adapters.js');
 
 function draftFor(adapter, proposal, overrides = {}) {
-    const seeded = adapter.draftFromProposal(proposal);
+    // Editor inputs are authored records. Keep fixtures on the same side of the persistence
+    // boundary as production: an immutable flat cadastral declaration is always present.
+    if (!Array.isArray(proposal.cadastreParcelIds)) {
+        throw new Error('Test proposal must declare cadastreParcelIds.');
+    }
+    const source = proposal;
+    const seeded = adapter.draftFromProposal(source);
     return {
         id: 'draft-1',
-        cityId: proposal.city || 'zagreb',
-        goal: seeded.adapterKey || proposal.goal,
+        cityId: source.city || 'zagreb',
+        goal: seeded.adapterKey || source.goal,
         adapterKey: seeded.adapterKey,
-        sourceProposalId: proposal.proposalId,
-        sourceSnapshot: proposal,
+        sourceProposalId: source.proposalId,
+        sourceSnapshot: source,
         fields: seeded.fields,
         editorPayload: seeded.editorPayload,
         ...overrides
     };
 }
+
+describe('editor cadastral scope boundary', () => {
+    it('preserves an untouched authored scope without consulting the live map', () => {
+        const adapter = registry.get('as-is');
+        const source = {
+            proposalId: 'scope-1', goal: 'as-is', title: 'Keep scope',
+            cadastreParcelIds: ['HR-1-100']
+        };
+        const replacement = adapter.serializeProposal(draftFor(adapter, source));
+
+        expect(replacement.cadastreParcelIds).toEqual(['HR-1-100']);
+    });
+
+    it('projects only a changed selection through LiveParcelFabric', () => {
+        const adapter = registry.get('as-is');
+        const source = {
+            proposalId: 'scope-2', goal: 'as-is', title: 'Move scope',
+            cadastreParcelIds: ['cadastre-old']
+        };
+        const draft = draftFor(adapter, source);
+        draft.fields.parentParcelIds = ['live-new'];
+        const previousFabric = globalThis.LiveParcelFabric;
+        globalThis.LiveParcelFabric = {
+            cadastreIdsForParcelIds: ids => ids.map(id => id === 'live-new' ? 'cadastre-new' : id)
+        };
+        try {
+            expect(adapter.serializeProposal(draft).cadastreParcelIds).toEqual(['cadastre-new']);
+        } finally {
+            if (previousFabric === undefined) delete globalThis.LiveParcelFabric;
+            else globalThis.LiveParcelFabric = previousFabric;
+        }
+    });
+});
 
 describe('proposal editor adapter registry', () => {
     it('registers every creatable proposal goal', () => {
@@ -71,8 +110,8 @@ describe('structure proposal adapters', () => {
             city: 'zagreb',
             goal: kind,
             title: `Test ${kind}`,
-            parentParcelIds: ['p1'],
-            structureProposal: { kind, geometry, decorations, demolishedBuildings, parentParcelIds: ['p1'] }
+            cadastreParcelIds: ['p1'],
+            structureProposal: { kind, geometry, decorations, demolishedBuildings }
         };
         const draft = draftFor(adapter, proposal);
         const replacement = adapter.serializeProposal(draft);
@@ -80,7 +119,7 @@ describe('structure proposal adapters', () => {
         expect(adapter.sections).toContain('design');
         expect(replacement.structureProposal.geometry).toEqual(geometry);
         expect(replacement.structureProposal.decorations).toEqual(decorations);
-        expect(replacement.structureProposal.demolishedBuildings).toEqual(demolishedBuildings);
+        expect(replacement.structureProposal.demolishedBuildings).toBeUndefined();
         expect(adapter.validate(draft).valid).toBe(true);
     });
 });
@@ -98,15 +137,14 @@ describe('transit station proposal adapter', () => {
             city: 'zagreb',
             goal: 'station',
             title: 'Central metro',
-            parentParcelIds: ['p1', 'p2'],
+            cadastreParcelIds: ['p1', 'p2'],
             structureProposal: {
                 kind: 'station',
                 stationType: 'underground',
                 center: [15.9001, 45.80025],
                 bearing: 72,
                 modelVersion: 1,
-                geometry,
-                parentParcelIds: ['p1', 'p2']
+                geometry
             }
         };
 
@@ -122,9 +160,10 @@ describe('transit station proposal adapter', () => {
             stationType: 'underground',
             center: [15.9001, 45.80025],
             bearing: 72,
-            modelVersion: 1,
-            parentParcelIds: ['p1', 'p2']
+            modelVersion: 1
         });
+        expect(replacement.cadastreParcelIds).toEqual(['p1', 'p2']);
+        expect(replacement.structureProposal.parentParcelIds).toBeUndefined();
         expect(replacement.geometry.stationGraphics).toEqual(geometry);
     });
 
@@ -147,7 +186,7 @@ describe('transit station proposal adapter', () => {
         const adapter = registry.get('station');
         const bus = draftFor(adapter, {
             proposalId: 'bus-1', city: 'zagreb', goal: 'station', title: 'Roadside stop',
-            parentParcelIds: ['p1'],
+            cadastreParcelIds: ['p1'],
             structureProposal: {
                 kind: 'station', stationType: 'bus', center: [15.9, 45.8], bearing: 0, geometry
             }
@@ -172,7 +211,7 @@ describe('corridor proposal adapter', () => {
         primaryType: 'Road',
         title: 'Green street',
         description: 'A calmer street',
-        parentParcelIds: ['1', '2'],
+        cadastreParcelIds: ['1', '2'],
         roadProposal: {
             definition: {
                 points: [[{ lat: 45.8, lng: 15.9 }, { lat: 45.81, lng: 15.91 }]],
@@ -228,10 +267,9 @@ describe('building proposal adapters', () => {
         goal: 'buildings',
         typologyType: 'block',
         title: 'Courtyard block',
-        parentParcelIds: ['p1'],
+        cadastreParcelIds: ['p1'],
         geometry: { buildings: [feature] },
         buildingProposal: {
-            parentParcelIds: ['p1'],
             blockName: 'Block A',
             parameters: {
                 mode: 'manual',
@@ -240,9 +278,7 @@ describe('building proposal adapters', () => {
                 wings: [{ edge: 2, depth: 8 }],
                 setback: 4,
                 height: 18
-            },
-            buildingFeature: feature,
-            buildings: [feature]
+            }
         }
     };
 
@@ -253,7 +289,8 @@ describe('building proposal adapters', () => {
 
         expect(replacement.geometry.buildings).toEqual([feature]);
         expect(replacement.buildingProposal.parameters).toEqual(proposal.buildingProposal.parameters);
-        expect(replacement.buildingProposal.buildingFeature.geometry.coordinates[0]).toEqual(manualRing);
+        expect(replacement.buildingProposal.buildingFeature).toBeUndefined();
+        expect(replacement.buildingProposal.buildings).toBeUndefined();
     });
 
     it.each([
@@ -269,9 +306,7 @@ describe('building proposal adapters', () => {
             buildingProposal: {
                 ...proposal.buildingProposal,
                 typologyType: typology,
-                parameters,
-                buildings: [feature],
-                buildingFeature: feature
+                parameters
             }
         };
         const adapter = buildBuildingAdapter(typology);
@@ -280,7 +315,8 @@ describe('building proposal adapters', () => {
 
         expect(draft.adapterKey).toBe(typology);
         expect(replacement.buildingProposal.parameters).toEqual(parameters);
-        expect(replacement.buildingProposal.buildings).toEqual([feature]);
+        expect(replacement.geometry.buildings).toEqual([feature]);
+        expect(replacement.buildingProposal.buildings).toBeUndefined();
         expect(replacement.typologyType).toBe(typology);
     });
 
@@ -360,9 +396,8 @@ describe('reparcellization adapter', () => {
         city: 'zagreb',
         goal: 'reparcellization',
         title: 'Readjust block',
-        parentParcelIds: ['p1', 'p2'],
+        cadastreParcelIds: ['p1', 'p2'],
         reparcellization: {
-            parcelIds: ['p1', 'p2'],
             algorithm: 'manual',
             ownershipMode: 'multiple',
             polygons
@@ -413,19 +448,16 @@ describe('reparcellization adapter', () => {
         });
     });
 
-    it('rejects gaps in required parent coverage and missing parent relationships', () => {
+    it('rejects gaps in required cadastral coverage without a second parent list', () => {
         const draft = draftFor(reparcellizationAdapter, proposal);
         draft.editorPayload.plan.totalArea = 100;
         draft.editorPayload.plan.polygons = [
             { ...polygons[0], area: 40 }
         ];
-        draft.editorPayload.plan.parcelIds = ['p1'];
-
         expect(reparcellizationAdapter.validate(draft)).toMatchObject({
             valid: false,
             errors: expect.arrayContaining([
-                expect.objectContaining({ code: 'coverage-gap' }),
-                expect.objectContaining({ code: 'missing-parent-coverage' })
+                expect.objectContaining({ code: 'coverage-gap' })
             ])
         });
     });
@@ -445,9 +477,8 @@ describe('reparcellization inputs survive the trip into the design editor', () =
             proposalId: 'p-plan',
             city: 'zagreb',
             goal: 'reparcellization',
-            parentParcelIds: POOLED.slice(),
+            cadastreParcelIds: POOLED.slice(),
             reparcellization: {
-                parcelIds: POOLED.slice(),
                 totalArea: 1000,
                 polygons: [
                     { ownerKey: 'a', geometry: { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]] } }

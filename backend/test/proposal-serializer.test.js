@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+    findLegacyCadastreDeclaration,
     findNonCadastralParentDeclaration,
     serializeProposalRow,
     stripLocalProposalState
@@ -46,12 +47,48 @@ describe('proposal API serializer', () => {
         expect(proposal).not.toHaveProperty('applied');
     });
 
-    it('does not heal non-cadastral parent declarations while serializing', () => {
+    it('strips retired land aliases and reports them before serialization', () => {
         const record = { parentParcelIds: ['HR-1#c-old-1'] };
-        expect(stripLocalProposalState(record).parentParcelIds).toEqual(['HR-1#c-old-1']);
-        expect(findNonCadastralParentDeclaration(record)).toEqual({
+        expect(stripLocalProposalState(record)).not.toHaveProperty('parentParcelIds');
+        expect(findLegacyCadastreDeclaration(record)).toEqual({
             path: 'parentParcelIds',
-            id: 'HR-1#c-old-1'
+            value: ['HR-1#c-old-1']
         });
+    });
+
+    it('distinguishes retired aliases from current cadastral state references', () => {
+        expect(findLegacyCadastreDeclaration({
+            cadastreParcelIds: ['HR-1'],
+            buildingProposal: { blockParcelIds: ['HR-1#piece'] }
+        })).toEqual({
+            path: 'buildingProposal.blockParcelIds',
+            value: ['HR-1#piece']
+        });
+        expect(findNonCadastralParentDeclaration({
+            cadastreParcelIds: ['HR-1'],
+            ownershipFlow: [{ parcelId: 'HR-2', destination: 'public' }]
+        })).toEqual({
+            path: 'ownershipFlow[0].parcelId',
+            id: 'HR-2'
+        });
+    });
+
+    it('serves one clean authored building geometry', () => {
+        const feature = {
+            type: 'Feature',
+            geometry: { type: 'Polygon', coordinates: [] },
+            properties: { floors: 4, parcelId: 'HR-1#piece', proposalId: 'p-1' }
+        };
+        const value = stripLocalProposalState({
+            geometry: { buildings: [feature] },
+            buildingGeometry: feature.geometry,
+            buildingProperties: feature.properties,
+            buildingProposal: { buildingFeature: feature, buildings: [feature] }
+        });
+        expect(value.geometry.buildings[0].properties).toEqual({ floors: 4 });
+        expect(value).not.toHaveProperty('buildingGeometry');
+        expect(value).not.toHaveProperty('buildingProperties');
+        expect(value.buildingProposal).not.toHaveProperty('buildingFeature');
+        expect(value.buildingProposal).not.toHaveProperty('buildings');
     });
 });

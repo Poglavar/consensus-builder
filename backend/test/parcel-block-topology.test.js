@@ -73,6 +73,17 @@ describe('live corridor ground is a street-block barrier', () => {
 });
 
 describe('block connectivity comes only from shared boundaries', () => {
+    it('keeps the circled northwest Sibenik parcel in parcel 616\'s road-bounded block', () => {
+        const sharedVertex = [449438.50003761967, 4846084.400017597];
+        const land = [
+            parcel('P-616', [[449425.58001269406, 4846067.289978717], sharedVertex]),
+            parcel('P-603', [[449426.53440963506, 4846068.553886445], sharedVertex])
+        ];
+
+        expect(keys(neighborPairs(land, []))).toEqual(['P-603~P-616']);
+        expect(neighborPairs(land, [])[0].sharedM).toBeCloseTo(19.856, 2);
+    });
+
     it('does not invent a connection because one overlapping parcel contains another', () => {
         const land = [
             parcel('OUTER', ring(0, 0, 20, 20)),

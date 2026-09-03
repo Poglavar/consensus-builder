@@ -232,7 +232,11 @@ describe('POST /proposals', () => {
 
         await request(app)
             .post('/proposals')
-            .send({ id: 'from-id-field', type: 'parcel' });
+            .send({
+                id: 'from-id-field',
+                type: 'parcel',
+                cadastreParcelIds: ['HR-1']
+            });
 
         const insertParams = pool.getCalls()[0].params;
         // proposalId is the 1st param ($1)
@@ -250,8 +254,7 @@ describe('POST /proposals', () => {
             .send({
                 proposal_id: 'from-proposal-id-field',
                 type: 'parcel',
-                parentParcelIds: null,
-                childParcelIds: null,
+                cadastreParcelIds: ['HR-1'],
                 acceptedParcelIds: null,
                 ownerAcceptances: null
             });
@@ -260,6 +263,7 @@ describe('POST /proposals', () => {
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[0]).toBe('from-proposal-id-field');
         expect(insertParams[21]).toBeNull();
+        expect(insertParams[22]).toBe(JSON.stringify(['HR-1']));
         expect(insertParams[23]).toBeNull();
         expect(insertParams[24]).toBeNull();
         expect(insertParams[25]).toBeNull();
@@ -276,7 +280,7 @@ describe('POST /proposals', () => {
         try {
             const res = await request(app)
                 .post('/proposals')
-                .send({ type: 'parcel' });
+                .send({ type: 'parcel', cadastreParcelIds: ['HR-1'] });
 
             expect(res.status).toBe(201);
             expect(pool.getCalls()[0].params[0]).toBe('local-1700000000000');
@@ -300,7 +304,7 @@ describe('POST /proposals', () => {
 
         const res = await request(app)
             .post('/proposals')
-            .send({ type: 'parcel' });
+            .send({ type: 'parcel', cadastreParcelIds: ['HR-1'] });
 
         expect(res.status).toBe(409);
         expect(res.body).toMatchObject({
@@ -382,32 +386,30 @@ describe('POST /proposals', () => {
         expect(pool.getCalls()).toHaveLength(0);
     });
 
-    it('persists flat cadastral parent declarations unchanged', async () => {
+    it('persists the one flat cadastral land declaration unchanged', async () => {
         pool.setResults([insertResult(), updateResult()]);
 
         const res = await request(app)
             .post('/proposals')
             .send(validProposalBody({
-                parentParcelIds: ['HR-339270-823/1'],
                 cadastreParcelIds: ['HR-339270-823/1', 'HR-339270-823/2']
             }));
 
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
-        expect(insertParams[21]).toBe(JSON.stringify(['HR-339270-823/1']));
+        expect(insertParams[21]).toBeNull();
         expect(insertParams[22]).toBe(JSON.stringify(['HR-339270-823/1', 'HR-339270-823/2']));
     });
 
-    it('rejects derived parent declarations instead of flattening them live', async () => {
+    it('rejects generated parcel ids instead of flattening them live', async () => {
         const res = await request(app)
             .post('/proposals')
             .send(validProposalBody({
-                parentParcelIds: ['HR-339270-823/1#p-road-2'],
-                cadastreParcelIds: ['HR-339270-823/1']
+                cadastreParcelIds: ['HR-339270-823/1#p-road-2']
             }));
 
         expect(res.status).toBe(400);
-        expect(res.body.error).toMatch(/only base cadastral ids/);
+        expect(res.body.error).toMatch(/original cadastral ids/);
         expect(pool.getCalls()).toHaveLength(0);
     });
 
@@ -415,7 +417,6 @@ describe('POST /proposals', () => {
         const nested = await request(app)
             .post('/proposals')
             .send(validProposalBody({
-                parentParcelIds: ['HR-339270-823/1'],
                 roadProposal: { parentParcelIds: ['HR-339270-823/1#c-road-1'] }
             }));
         expect(nested.status).toBe(400);
@@ -443,6 +444,7 @@ describe('POST /proposals', () => {
         const res = await request(app)
             .post('/proposals')
             .send(validProposalBody({
+                cadastreParcelIds: ['HR-339270-823/1', 'HR-339270-823/2'],
                 ownershipFlow: [
                     { parcelId: 'HR-339270-823/1', cededM2: 1700.4, destination: 'public' },
                     { parcelId: 'HR-339270-823/2', cededM2: 15, destination: 'public' }
@@ -477,16 +479,12 @@ describe('POST /proposals', () => {
         const res = await request(app)
             .post('/proposals')
             .send(validProposalBody({
-                parentParcelIds: [],
-                childParcelIds: ['HR-child-1'],
-                acceptedParcelIds: ['HR-accepted-1'],
-                ownerAcceptances: { alice: 'accepted' },
+                acceptedParcelIds: ['HR-1234-5678'],
+                ownerAcceptances: { 'HR-1234-5678': 'accepted' },
                 roadProposal: { width: 5, type: 'primary' },
                 buildingProposal: { height: 12 },
                 structureProposal: { floors: 3 },
                 reparcellization: { merge: true },
-                parentProposals: ['parent-1'],
-                childProposals: [],
                 lens: ['planning', 'traffic'],
                 bounds: [1, 2, 3, 4],
                 onchain: { txHash: '0x1' }
@@ -496,9 +494,9 @@ describe('POST /proposals', () => {
 
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[21]).toBeNull();
-        expect(insertParams[22]).toBeNull(); // cadastre_parcel_ids — absent from this payload
-        expect(insertParams[23]).toBe(JSON.stringify(['HR-accepted-1']));
-        expect(insertParams[24]).toBe(JSON.stringify({ alice: 'accepted' }));
+        expect(insertParams[22]).toBe(JSON.stringify(['HR-1234-5678', 'HR-1234-5679']));
+        expect(insertParams[23]).toBe(JSON.stringify(['HR-1234-5678']));
+        expect(insertParams[24]).toBe(JSON.stringify({ 'HR-1234-5678': 'accepted' }));
         expect(insertParams[25]).toBe(JSON.stringify({ width: 5, type: 'primary' }));
         expect(insertParams[26]).toBe(JSON.stringify({ height: 12 }));
         expect(insertParams[27]).toBe(JSON.stringify({ floors: 3 }));
@@ -603,10 +601,10 @@ describe('POST /proposals', () => {
 
         const invalidArrayEntry = await request(app)
             .post('/proposals')
-            .send(validProposalBody({ parentParcelIds: ['HR-1', ''] }));
+            .send(validProposalBody({ cadastreParcelIds: ['HR-1', ''] }));
 
         expect(invalidArrayEntry.status).toBe(400);
-        expect(invalidArrayEntry.body).toEqual({ error: 'parentParcelIds must not contain empty values.' });
+        expect(invalidArrayEntry.body).toEqual({ error: 'cadastreParcelIds must not contain empty values.' });
 
         const invalidControlChars = await request(app)
             .post('/proposals')
@@ -653,6 +651,7 @@ describe('POST /proposals', () => {
             .send({
                 id: 17,
                 type: 'parcel',
+                cadastreParcelIds: ['HR-1'],
                 onchainData: { contract: '0xabc' },
                 onchain: { contract: '0xdef' }
             });
@@ -803,17 +802,15 @@ describe('GET /proposals/:id', () => {
         const row = proposalDbRow({
             city: 'zagreb',
             type: 'road-track',
-            ancestor_parcel_ids: splitParcelIds,
+            cadastre_parcel_ids: splitParcelIds,
             descendant_parcel_ids: splitChildIds,
             road_proposal: {
                 definition: roadDefinition,
-                parentParcelIds: splitParcelIds,
                 childParcelIds: splitChildIds,
                 status: 'applied',
             },
             proposal_data: {
                 goal: 'road-track',
-                parentParcelIds: splitParcelIds,
                 childParcelIds: splitChildIds,
             }
         });
@@ -828,7 +825,8 @@ describe('GET /proposals/:id', () => {
         expect(res.body.roadProposal.definition.polygon.type).toBe('Polygon');
         expect(res.body.roadProposal.definition.points).toHaveLength(3);
         expect(res.body.roadProposal.childParcelIds).toBeUndefined();
-        expect(res.body.parentParcelIds).toEqual(splitParcelIds);
+        expect(res.body.cadastreParcelIds).toEqual(splitParcelIds);
+        expect(res.body.parentParcelIds).toBeUndefined();
         expect(res.body.childParcelIds).toBeUndefined();
     });
 
@@ -837,7 +835,7 @@ describe('GET /proposals/:id', () => {
             rows: [proposalDbRow({
                 proposal_data: null,
                 road_proposal: { width: 5 },
-                ancestor_parcel_ids: ['HR-1'],
+                cadastre_parcel_ids: ['HR-1'],
                 descendant_parcel_ids: ['HR-2'],
                 parent_proposal_ids: ['parent-1'],
                 child_proposal_ids: ['child-1'],
@@ -855,7 +853,7 @@ describe('GET /proposals/:id', () => {
             id: 1,
             proposalId: 'test-proposal-001',
             roadProposal: { width: 5 },
-            parentParcelIds: ['HR-1'],
+            cadastreParcelIds: ['HR-1'],
             lens: ['planning'],
             bounds: [1, 2, 3, 4],
             onchain: { txHash: '0x1' },
@@ -883,6 +881,7 @@ describe('GET /proposals/:id', () => {
                 expires_at: null,
                 updated_at: null,
                 ancestor_parcel_ids: null,
+                cadastre_parcel_ids: null,
                 descendant_parcel_ids: null,
                 accepted_parcel_ids: null,
                 owner_acceptances: null,
@@ -909,7 +908,7 @@ describe('GET /proposals/:id', () => {
                     createdAt: '2026-01-01T00:00:00.000Z',
                     expiresAt: '2026-02-01T00:00:00.000Z',
                     updatedAt: '2026-01-15T00:00:00.000Z',
-                    parentParcelIds: ['PARENT'],
+                    cadastreParcelIds: ['PARENT'],
                     childParcelIds: ['CHILD'],
                     acceptedParcelIds: ['ACCEPTED'],
                     ownerAcceptances: { alice: true },
@@ -945,7 +944,7 @@ describe('GET /proposals/:id', () => {
             createdAt: '2026-01-01T00:00:00.000Z',
             expiresAt: '2026-02-01T00:00:00.000Z',
             updatedAt: '2026-01-15T00:00:00.000Z',
-            parentParcelIds: ['PARENT'],
+            cadastreParcelIds: ['PARENT'],
             acceptedParcelIds: ['ACCEPTED'],
             ownerAcceptances: { alice: true },
             roadProposal: { width: 4 },
@@ -1164,7 +1163,7 @@ describe('GET /proposals/counts', () => {
         expect(res.status).toBe(200);
         expect(res.body.counts).toEqual({ 'HR-1-100': 2, 'HR-1-101': 1 }); // 102 absent → 0
         const call = pool.getCalls()[0];
-        expect(call.sql).toMatch(/ancestor_parcel_ids \?\| \$1/);
+        expect(call.sql).toMatch(/cadastre_parcel_ids \?\| \$1/);
         expect(call.sql).not.toContain('descendant_parcel_ids');
         expect(call.params[0]).toEqual(['HR-1-100', 'HR-1-101', 'HR-1-102']);
         expect(call.params).toContain('zagreb'); // normalized city
@@ -1433,7 +1432,7 @@ describe('GET /proposals?parcel_id=', () => {
             rows: [{
                 ...proposalDbRow({ proposal_id: 'city-filtered', proposal_data: { custom: true } }),
                 descendant_parcel_ids: ['HR-1234-9999'],
-                ancestor_parcel_ids: ['HR-1234-5678']
+                cadastre_parcel_ids: ['HR-1234-5678']
             }]
         });
 
@@ -1446,7 +1445,8 @@ describe('GET /proposals?parcel_id=', () => {
         expect(res.body.proposals[0].city).toBe('zagreb');
         expect(res.body.proposals[0].offer).toBe(1.5);
         expect(res.body.proposals[0].offerCurrency).toBe('ETH');
-        expect(res.body.proposals[0].parentParcelIds).toEqual(['HR-1234-5678']);
+        expect(res.body.proposals[0].cadastreParcelIds).toEqual(['HR-1234-5678']);
+        expect(res.body.proposals[0].parentParcelIds).toBeUndefined();
         expect(res.body.proposals[0].childParcelIds).toBeUndefined();
         expect(pool.getCalls()[0].params[0]).toBe('buenos_aires');
     });
@@ -1459,7 +1459,7 @@ describe('GET /proposals?parcel_id=', () => {
                     proposal_id: 'db-only-id',
                     proposal_data: { title: 'Stored title only' }
                 }),
-                ancestor_parcel_ids: ['HR-1234-5678'],
+                cadastre_parcel_ids: ['HR-1234-5678'],
                 descendant_parcel_ids: null
             }]
         });
@@ -1472,7 +1472,7 @@ describe('GET /proposals?parcel_id=', () => {
             proposalId: 'db-only-id',
             city: 'zagreb',
             title: 'Test Proposal Title',
-            parentParcelIds: ['HR-1234-5678']
+            cadastreParcelIds: ['HR-1234-5678']
         });
         expect(res.body.proposals[0].childParcelIds).toBeUndefined();
     });
@@ -1489,7 +1489,7 @@ describe('GET /proposals?parcel_id=', () => {
         expect(res.body.proposals).toHaveLength(1);
 
         const call = pool.getCalls()[0];
-        expect(call.sql).toContain('ancestor_parcel_ids @>');
+        expect(call.sql).toContain('cadastre_parcel_ids @>');
         expect(call.sql).not.toContain('descendant_parcel_ids @>');
         expect(call.params).toContain(JSON.stringify(['HR-1234-5678']));
     });
@@ -1521,7 +1521,7 @@ describe('GET /proposals?parcel_id=', () => {
                     proposal_data: null,
                     title: 'Row title only'
                 }),
-                ancestor_parcel_ids: ['HR-1234-5678'],
+                cadastre_parcel_ids: ['HR-1234-5678'],
                 descendant_parcel_ids: ['HR-9999-0001']
             }]
         });
@@ -1533,7 +1533,7 @@ describe('GET /proposals?parcel_id=', () => {
             id: 77,
             proposalId: 'row-only',
             title: 'Row title only',
-            parentParcelIds: ['HR-1234-5678']
+            cadastreParcelIds: ['HR-1234-5678']
         });
         expect(res.body.proposals[0].childParcelIds).toBeUndefined();
     });
@@ -1564,11 +1564,11 @@ describe('GET /proposals?parcel_id=', () => {
                     proposal_data: {
                         offer: 99,
                         budget: 88,
-                        parentParcelIds: ['fallback-parent'],
+                        cadastreParcelIds: ['fallback-parent'],
                         childParcelIds: ['fallback-child']
                     }
                 }),
-                ancestor_parcel_ids: [],
+                cadastre_parcel_ids: [],
                 descendant_parcel_ids: []
             }]
         });
@@ -1580,7 +1580,7 @@ describe('GET /proposals?parcel_id=', () => {
             proposalId: 'zero-values',
             offer: 0,
             budget: 0,
-            parentParcelIds: []
+            cadastreParcelIds: []
         });
         expect(res.body.proposals[0].childParcelIds).toBeUndefined();
     });

@@ -499,7 +499,7 @@ describe('applied station selection hit targets', () => {
                 stopImmediatePropagation: vi.fn()
             };
             hitTarget.handlers.get('click')({ originalEvent: footprintDomEvent, latlng: { lat: 45.81, lng: 15.98 } });
-            expect(select).toHaveBeenLastCalledWith('station-123', 'parcel-7', false, true);
+            expect(select).toHaveBeenLastCalledWith('station-123', null, false, true);
             expect(hideParcel).toHaveBeenCalledTimes(1);
             expect(footprintDomEvent.stopImmediatePropagation).toHaveBeenCalledTimes(1);
 
@@ -512,7 +512,7 @@ describe('applied station selection hit targets', () => {
             });
             markers[0].handlers.get('click')({ originalEvent: { stopPropagation() {}, preventDefault() {} } });
             expect(select).toHaveBeenCalledTimes(2);
-            expect(select).toHaveBeenLastCalledWith('station-123', 'parcel-7', false, true);
+            expect(select).toHaveBeenLastCalledWith('station-123', null, false, true);
             expect(stop).toHaveBeenCalledTimes(2);
             expect(stopPropagation).toHaveBeenCalledTimes(2);
 

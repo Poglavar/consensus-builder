@@ -29,23 +29,27 @@ const LON = 15.96, LAT = 45.80;
 // ~78 m × ~111 m block
 const block = (dx0, dy0, dx1, dy1) => rect(LON + dx0 * 1e-3, LAT + dy0 * 1e-3, LON + dx1 * 1e-3, LAT + dy1 * 1e-3);
 
-describe('baseIdOf', () => {
-    it('strips derivation suffixes to the cadastral root, however deep', () => {
-        expect(fe.baseIdOf('HR-339270-823/1')).toBe('HR-339270-823/1');
-        expect(fe.baseIdOf('HR-339270-823/1#c-road-2')).toBe('HR-339270-823/1');
-        expect(fe.baseIdOf('HR-339270-823/1#a-1#b-2')).toBe('HR-339270-823/1');
-        expect(fe.baseIdOf(null)).toBe('');
+describe('cadastreIdsOfFeature', () => {
+    it('reads only explicit, unique cadastral provenance and treats ids as opaque', () => {
+        expect(fe.cadastreIdsOfFeature({
+            properties: { parcelId: 'generated-anything', cadastreParcelIds: ['cadastre#official', 'cadastre#official'] }
+        })).toEqual(['cadastre#official']);
+        expect(fe.cadastreIdsOfFeature({ properties: { parcelId: 'looks#generated-2' } })).toEqual([]);
+        expect(fe.cadastreIdsOfFeature(null)).toEqual([]);
     });
 });
 
 describe('applyCarriedIdentity', () => {
-    it('writes id, number and parsed synthetic fields, once per id', () => {
+    it('writes id, number and explicit synthetic fields, once per id', () => {
         const used = new Set();
         const props = {};
-        const carried = { parcelId: 'HR-339270-823/1#c-abc-7', parcelNumber: '823/1#c-abc-7' };
+        const carried = {
+            parcelId: 'opaque-live-id', parcelNumber: 'parcel seven',
+            syntheticToken: 'c-abc', syntheticIndex: 7
+        };
         expect(fe.applyCarriedIdentity(props, carried, used)).toBe(true);
-        expect(props.parcelId).toBe('HR-339270-823/1#c-abc-7');
-        expect(props.BROJ_CESTICE).toBe('823/1#c-abc-7');
+        expect(props.parcelId).toBe('opaque-live-id');
+        expect(props.BROJ_CESTICE).toBe('parcel seven');
         expect(props.syntheticToken).toBe('c-abc');
         expect(props.syntheticIndex).toBe(7);
         // A contiguity split cloned the stamp onto a second part — it must not get the same id.
@@ -55,27 +59,31 @@ describe('applyCarriedIdentity', () => {
     it('rejects empty identities', () => {
         expect(fe.applyCarriedIdentity({}, null, new Set())).toBe(false);
         expect(fe.applyCarriedIdentity({}, {}, new Set())).toBe(false);
+        expect(fe.applyCarriedIdentity({}, { parcelId: 'opaque' }, new Set())).toBe(false);
     });
 });
 
 describe('baseIdsOfFeatures', () => {
-    it('collects unique base ids from rootParcelId or the id itself, skipping placeholders', () => {
+    it('collects unique explicit cadastral ids', () => {
         const ids = fe.baseIdsOfFeatures([
-            { properties: { rootParcelId: 'HR-1' } },
-            { properties: { parcelId: 'HR-2#c-road-3' } },
-            { properties: { rootParcelId: 'HR-1' } },
-            { properties: { rootParcelId: 'parcel' } },
+            { properties: { parcelId: 'HR-1', cadastreParcelIds: ['HR-1'] } },
+            { properties: { parcelId: 'HR-2#c-road-3', cadastreParcelIds: ['HR-2'] } },
+            { properties: { parcelId: 'HR-1#other', cadastreParcelIds: ['HR-1'] } },
             null
         ]);
         expect(ids).toEqual(['HR-1', 'HR-2']);
+    });
+
+    it('rejects a feature without explicit cadastral provenance', () => {
+        expect(() => fe.baseIdsOfFeatures([{ properties: { parcelId: 'HR-1' } }]))
+            .toThrow(/no explicit cadastral provenance/);
     });
 
     it('keeps every flat anchor of a synthetic parcel spanning several bases', () => {
         expect(fe.baseIdsOfFeatures([{
             properties: {
                 parcelId: 'HR-1#c-plan-1',
-                rootParcelId: 'HR-1',
-                baseParcelIds: ['HR-1', 'HR-2#old-7']
+                cadastreParcelIds: ['HR-1', 'HR-2']
             }
         }])).toEqual(['HR-1', 'HR-2']);
     });
@@ -282,22 +290,26 @@ describe('trimCenterlineByTaking (§15b: roads as victims)', () => {
     });
 });
 
-describe('derivedIdParts', () => {
-    it('parses a derived id into base, token and index', () => {
-        expect(fe.derivedIdParts('HR-339270-824#c-942ac24kurky-1'))
-            .toEqual({ base: 'HR-339270-824', token: 'c-942ac24kurky', index: 1 });
+describe('formationIdentityOf', () => {
+    it('reads identity and ancestry from explicit fields without decoding the id', () => {
+        expect(fe.formationIdentityOf({ properties: {
+            parcelId: 'opaque live id',
+            BROJ_CESTICE: 'display value',
+            syntheticToken: 'formation-token',
+            syntheticIndex: 3,
+            cadastreParcelIds: ['cadastre#official']
+        } })).toEqual({
+            parcelId: 'opaque live id',
+            parcelNumber: 'display value',
+            token: 'formation-token',
+            index: 3,
+            cadastreParcelIds: ['cadastre#official']
+        });
     });
 
-    it('returns null for base ids and empty input', () => {
-        expect(fe.derivedIdParts('HR-339270-824')).toBeNull();
-        expect(fe.derivedIdParts('823/1')).toBeNull();
-        expect(fe.derivedIdParts(null)).toBeNull();
-        expect(fe.derivedIdParts('')).toBeNull();
-    });
-
-    it('keeps deeper derivation in the base (flatten separately via baseIdOf)', () => {
-        expect(fe.derivedIdParts('x#c-a-1#c-b-2')).toEqual({ base: 'x#c-a-1', token: 'c-b', index: 2 });
-        expect(fe.baseIdOf('x#c-a-1#c-b-2')).toBe('x');
+    it('refuses incomplete explicit provenance even when the id resembles an old generated id', () => {
+        expect(fe.formationIdentityOf({ properties: { parcelId: 'x#c-a-1' } })).toBeNull();
+        expect(fe.formationIdentityOf(null)).toBeNull();
     });
 });
 

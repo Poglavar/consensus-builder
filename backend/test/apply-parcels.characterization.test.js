@@ -14,7 +14,7 @@ const formationEdit = require('../../frontend/js/proposals/formation-edit.js');
 const GLOBAL_KEYS = [
     '_normalizeProposalId', 'updateStatus', 'turf', 'window',
     '_resolveRootParcelIdFromProperties', '_resolveRootParcelNumberFromProperties',
-    '_extractRootParcelNumber', '_calculateGeoJsonArea',
+    '_calculateGeoJsonArea',
     'persistAppliedProposal', 'refreshProposalUIAfterApply'
 ];
 const saved = {};
@@ -44,10 +44,10 @@ beforeEach(() => {
     globalThis.updateStatus = spy();
     globalThis.turf = turf;
     globalThis.window = { __formationEdit: formationEdit };
-    globalThis._resolveRootParcelIdFromProperties = (props, fallback) =>
-        (props && props.rootParcelId) || (fallback ? String(fallback).split('#')[0] : null);
+    globalThis._resolveRootParcelIdFromProperties = (props, explicit) =>
+        (props && props.cadastreParcelIds && props.cadastreParcelIds[0])
+        || (props && props.rootParcelId) || explicit || null;
     globalThis._resolveRootParcelNumberFromProperties = (props) => (props && props.rootParcelNumber) || null;
-    globalThis._extractRootParcelNumber = n => String(n).split('#')[0];
     globalThis._calculateGeoJsonArea = geometry => {
         try { return turf.area({ type: 'Feature', properties: {}, geometry }); } catch (_) { return 0; }
     };
@@ -66,7 +66,13 @@ function parentFeature(id, number, dx0, dx1) {
     return {
         type: 'Feature',
         geometry: rect(dx0, 0, dx1, 2),
-        properties: { parcelId: id, BROJ_CESTICE: number, rootParcelId: id, rootParcelNumber: number }
+        properties: {
+            parcelId: id,
+            BROJ_CESTICE: number,
+            rootParcelId: id,
+            rootParcelNumber: number,
+            cadastreParcelIds: [id]
+        }
     };
 }
 
@@ -76,7 +82,6 @@ function makeManager() {
         parents,
         hidden: [],
         added: [],
-        persisted: [],
         _setLastApplyFailure: spy(),
         _resolveLiveFormationParents: () => ({
             ok: true,
@@ -86,7 +91,6 @@ function makeManager() {
         }),
         _assignSyntheticChildIdentities(...args) { return ProposalManager._assignSyntheticChildIdentities(...args); },
         _addFeaturesToMap(features) { this.added.push(...features); },
-        _persistParcelFeature(feature) { this.persisted.push(feature); },
         _markParcelProducedByProposal: spy(),
         _setDescendantProposalOnParcels: spy(),
         _linkProposalToAncestors: spy(),
@@ -108,42 +112,47 @@ function planPolygons() {
 
 function proposalData(priorless) {
     return {
-        parentParcelIds: ['HR-A', 'HR-B'],
+        cadastreParcelIds: ['HR-A', 'HR-B'],
         reparcellization: { polygons: planPolygons() },
         ...(priorless ? {} : {})
     };
 }
 
 describe('_applyReparcellizationProposal — flat anchors', () => {
-    it('stamps per-plot baseParcelIds from the ground actually under each plot, and the flat declaration', async () => {
+    it('stamps per-plot cadastral provenance from the ground actually under each plot', async () => {
         const manager = makeManager();
         const data = proposalData();
         const ok = await manager._applyReparcellizationProposal('p-rep', data, {});
         expect(ok).toBe(true);
 
         const [plot1, plot2] = manager.added;
-        expect(plot1.properties.baseParcelIds).toEqual(['HR-A']);
-        expect(plot2.properties.baseParcelIds).toEqual(['HR-A', 'HR-B']);
+        expect(plot1.properties.cadastreParcelIds).toEqual(['HR-A']);
+        expect(plot2.properties.cadastreParcelIds).toEqual(['HR-A', 'HR-B']);
         expect(data.cadastreParcelIds).toEqual(['HR-A', 'HR-B']);
-        // Fresh apply mints 1..n against the primary root.
-        expect(data.childParcelIds).toEqual(['HR-A#p-rep-1', 'HR-A#p-rep-2']);
+        // Fresh apply mints 1..n in the disposable fabric, never on the authored record.
+        expect(manager.added.map(feature => feature.properties.parcelId))
+            .toEqual(['HR-A#p-rep-1', 'HR-A#p-rep-2']);
+        expect(data).not.toHaveProperty('childParcelIds');
+        expect(data.reparcellization).not.toHaveProperty('childParcelIds');
     });
 });
 
 describe('_applyReparcellizationProposal — deterministic derivation', () => {
-    it('ignores stored derived children and stamps the same ids on every replay', async () => {
+    it('derives the same disposable ids on every replay without storing them', async () => {
         const firstManager = makeManager();
         const first = proposalData();
-        first.childParcelIds = ['stale#child-99'];
-        first.reparcellization.childParcelIds = ['stale#child-99'];
         await firstManager._applyReparcellizationProposal('p-rep', first, {});
 
         const secondManager = makeManager();
         const second = proposalData();
         await secondManager._applyReparcellizationProposal('p-rep', second, {});
 
-        expect(first.childParcelIds).toEqual(['HR-A#p-rep-1', 'HR-A#p-rep-2']);
-        expect(second.childParcelIds).toEqual(first.childParcelIds);
+        expect(firstManager.added.map(feature => feature.properties.parcelId))
+            .toEqual(['HR-A#p-rep-1', 'HR-A#p-rep-2']);
+        expect(secondManager.added.map(feature => feature.properties.parcelId))
+            .toEqual(firstManager.added.map(feature => feature.properties.parcelId));
+        expect(first).not.toHaveProperty('childParcelIds');
+        expect(second).not.toHaveProperty('childParcelIds');
         expect(secondManager.added.map(feature => feature.geometry))
             .toEqual(firstManager.added.map(feature => feature.geometry));
     });

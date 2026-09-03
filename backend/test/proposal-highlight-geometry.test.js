@@ -4,7 +4,7 @@ import vm from 'node:vm';
 
 const source = readFileSync(new URL('../../frontend/js/proposals/geometry.js', import.meta.url), 'utf8');
 
-function loadGeometry(deriveCorridor) {
+function loadGeometry(deriveCorridor, producedFeatures = []) {
     const context = {
         console,
         Set,
@@ -12,6 +12,10 @@ function loadGeometry(deriveCorridor) {
         resolveProposalGoalKey: vi.fn(() => 'road-track'),
         corridorIsTrack: vi.fn(() => false),
         corridorSurfaceFootprintForDefinition: deriveCorridor
+    };
+    context.LiveParcelFabric = {
+        producedBy: () => producedFeatures,
+        featureId: feature => feature?.properties?.parcelId || null
     };
     context.window = context;
     vm.runInNewContext(source, context);
@@ -81,8 +85,8 @@ describe('proposal parcel outlines', () => {
         const ids = geometry.collectProposalSelectionParcelIds(
             {
                 proposalId: 'block',
-                parentParcelIds: ['HR-A', 'HR-B'],
-                buildingProposal: { parentParcelIds: ['HR-A', 'HR-B'] }
+                cadastreParcelIds: ['HR-A', 'HR-B'],
+                buildingProposal: {}
             },
             [{ type: 'Feature', properties: {}, geometry: multiPolygon }]
         );
@@ -91,11 +95,14 @@ describe('proposal parcel outlines', () => {
     });
 
     it('uses live output parcels, never inputs, when a geometry-less proposal formed parcels', () => {
-        const geometry = loadGeometry();
+        const produced = [
+            { type: 'Feature', properties: { parcelId: 'HR-A#formation-1' }, geometry: multiPolygon },
+            { type: 'Feature', properties: { parcelId: 'HR-A#formation-2' }, geometry: multiPolygon }
+        ];
+        const geometry = loadGeometry(undefined, produced);
         const ids = geometry.collectProposalSelectionParcelIds({
             proposalId: 'formation',
-            parentParcelIds: ['HR-A'],
-            childParcelIds: ['HR-A#formation-1', 'HR-A#formation-2']
+            cadastreParcelIds: ['HR-A']
         });
 
         expect(Array.from(ids)).toEqual(['HR-A#formation-1', 'HR-A#formation-2']);
@@ -105,7 +112,7 @@ describe('proposal parcel outlines', () => {
         const geometry = loadGeometry();
         const ids = geometry.collectProposalSelectionParcelIds({
             proposalId: 'ownership-change',
-            parentParcelIds: ['HR-A', 'HR-A', 'HR-B']
+            cadastreParcelIds: ['HR-A', 'HR-A', 'HR-B']
         });
 
         expect(Array.from(ids)).toEqual(['HR-A', 'HR-B']);
@@ -115,7 +122,7 @@ describe('proposal parcel outlines', () => {
         const geometry = loadGeometry();
         const ids = geometry.collectProposalSelectionParcelIds({
             proposalId: 'broken-block',
-            parentParcelIds: ['HR-A'],
+            cadastreParcelIds: ['HR-A'],
             buildingProposal: {}
         });
 

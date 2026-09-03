@@ -57,6 +57,25 @@ describe('parcels that share a boundary', () => {
         ]);
         expect(keys(pairs)).toEqual(['A~B']);
     });
+
+    it('is translation invariant for the real Sibenik seam beside parcel 616', () => {
+        // These are the two stored edges either side of the circled northwest patch. They meet at
+        // exactly the same HTRS vertex and differ in angle by only 0.0000066 degrees. Comparing
+        // each edge's independently rotated normal offset made that microscopic angle accumulate
+        // against the 4.8-million-metre northing and falsely put the lines 48 cm apart.
+        const sharedVertex = [449438.50003761967, 4846084.400017597];
+        const original = [
+            parcel('P-616', [[449425.58001269406, 4846067.289978717], sharedVertex]),
+            parcel('P-603', [[449426.53440963506, 4846068.553886445], sharedVertex])
+        ];
+        const translated = original.map(entry => parcel(entry.id,
+            entry.rings[0].map(([x, y]) => [x - 449000, y - 4846000])));
+
+        expect(keys(neighborPairs(original))).toEqual(['P-603~P-616']);
+        expect(keys(neighborPairs(translated))).toEqual(['P-603~P-616']);
+        expect(neighborPairs(original)[0].sharedM).toBeCloseTo(19.856, 2);
+        expect(neighborPairs(translated)[0].sharedM).toBeCloseTo(19.856, 2);
+    });
 });
 
 describe('parcels that do not', () => {

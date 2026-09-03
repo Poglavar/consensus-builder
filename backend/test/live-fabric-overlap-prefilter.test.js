@@ -38,13 +38,7 @@ let features;
 
 beforeEach(() => {
     install('turf', turf);
-    install('window', {
-        __cadastreAncestry: {
-            resolveParentsByGeometry: () => ({ ids: features.map((_, i) => 'p' + i), coverage: 1 })
-        },
-        // The last gate after the overlap check: resolved ground must carry cadastral anchors.
-        __formationEdit: { baseIdsOfFeatures: fs => fs.map((_, i) => 'HR-330337-' + i) }
-    });
+    install('window', { turf });
     install('updateStatus', () => {});
 });
 
@@ -56,10 +50,37 @@ afterEach(() => {
 });
 
 function resolve() {
+    const token = Object.freeze({ id: 'formation-test' });
+    features.forEach((feature, index) => {
+        feature.properties.parcelId = `live-${index}`;
+        feature.properties.cadastreParcelIds = [`HR-${index}`];
+    });
+    const footprint = turf.multiPolygon(features.flatMap(feature => (
+        feature.geometry.type === 'MultiPolygon'
+            ? feature.geometry.coordinates
+            : [feature.geometry.coordinates]
+    )));
+    window.LiveParcelFabric = {
+        entriesForCadastre: () => features,
+        featureId: feature => feature.properties.parcelId,
+        getMany: ids => ({
+            features: features.filter(feature => ids.includes(feature.properties.parcelId)),
+            missingIds: []
+        })
+    };
+    window.__planOrder = {
+        footprintOf: () => footprint,
+        computeBaseAncestry: (_shape, entries) => entries.map(entry => ({
+            id: entry.id,
+            area: turf.area(entry.feature)
+        }))
+    };
     const harness = Object.create(ProposalManager);
-    harness._resolveParcelFeaturesByIds = () => features;
     harness._setLastApplyFailure = () => {};
-    return ProposalManager._resolveLiveFormationParents.call(harness, { proposalId: 'x' }, 'x', 'road');
+    return ProposalManager._resolveLiveFormationParents.call(harness, {
+        proposalId: 'x',
+        cadastreParcelIds: features.map((_, index) => `HR-${index}`)
+    }, 'x', 'road', { _fabricTransaction: token });
 }
 
 describe('a corrupted partition is still refused', () => {
@@ -113,6 +134,7 @@ describe('an honest partition still passes', () => {
             }
         };
         globalThis.turf = fragileTurf;
+        window.turf = fragileTurf;
         window.__parcelArrangement = {
             clip: vi.fn((operation, left, right) => arrangement.clip(operation, left, right))
         };

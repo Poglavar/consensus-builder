@@ -9,8 +9,8 @@ test.describe('Proposal details panel @features', () => {
 
     const setup = await page.evaluate(async () => {
       const w = window as any;
-      if (typeof w.ingestParcelFeatures !== 'function') {
-        return { error: 'ingestParcelFeatures missing' };
+      if (typeof w.ingestCadastralParcelFeatures !== 'function') {
+        return { error: 'ingestCadastralParcelFeatures missing' };
       }
       if (!w.proposalStorage || typeof w.proposalStorage.addProposal !== 'function') {
         return { error: 'proposalStorage.addProposal missing' };
@@ -20,7 +20,7 @@ test.describe('Proposal details panel @features', () => {
       }
 
       const parcelId = 'HR-335754-MIN-0001';
-      await w.ingestParcelFeatures([{
+      await w.ingestCadastralParcelFeatures([{
         type: 'Feature',
         properties: {
           parcelId,
@@ -40,7 +40,7 @@ test.describe('Proposal details panel @features', () => {
             [15.9819, 45.8000],
           ]],
         },
-      }], { replaceExisting: false });
+      }]);
 
       const proposalSeed = {
         proposalId: 'e2e-proposal-minimize',

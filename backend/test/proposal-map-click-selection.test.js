@@ -45,6 +45,14 @@ function loadParcelSelection(drillResult) {
     vm.runInNewContext(parcelSelectionSource, context);
     return {
         context,
+        bindLiveLayer(layer) {
+            context.LiveParcelFabric = {
+                get: id => String(id) === String(layer.feature.properties.parcelId) ? layer.feature : null
+            };
+            context.ParcelPresenter = {
+                getLayer: id => String(id) === String(layer.feature.properties.parcelId) ? layer : null
+            };
+        },
         clearSingleParcelSelection,
         clearSelection,
         showParcelInfoPanel,
@@ -73,6 +81,7 @@ describe('map click selection ownership', () => {
             latlng: { lat: 43.7, lng: 15.8 },
             originalEvent: { shiftKey: false }
         };
+        harness.bindLiveLayer(targetLayer);
 
         harness.context.onParcelClick(event);
 

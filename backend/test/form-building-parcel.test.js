@@ -29,7 +29,13 @@ const rect = (dx0, dy0, dx1, dy1) => ({
 });
 const parcelOf = (id, dx0, dx1) => ({
     type: 'Feature',
-    properties: { parcelId: id, rootParcelId: id, BROJ_CESTICE: id.replace('HR-', ''), ownershipDetails: { owners: [{ name: 'Owner ' + id, percentageShare: 100 }] } },
+    properties: {
+        parcelId: id,
+        cadastreParcelIds: [id],
+        rootParcelId: id,
+        BROJ_CESTICE: id.replace('HR-', ''),
+        ownershipDetails: { owners: [{ name: 'Owner ' + id, percentageShare: 100 }] }
+    },
     geometry: rect(dx0, 0, dx1, 2)
 });
 
@@ -62,7 +68,6 @@ function makeManager(parcels) {
         _assignSyntheticChildIdentities(...args) { return ProposalManager._assignSyntheticChildIdentities(...args); },
         _addFeaturesToMap(features) { this.added.push(...features); },
         _consumeFeaturesFromLiveFabric(features) { this.hidden.push(...features); },
-        _persistParcelFeature: vi.fn(),
         _markParcelProducedByProposal: vi.fn(),
         _addChildParcels: vi.fn(),
         _setLastApplyFailure: vi.fn(),
@@ -90,20 +95,19 @@ describe('_formBuildingParcel — footprint mode (default)', () => {
     it('mints the building parcel from the footprint and cuts host remainders back to their owners', async () => {
         const parcels = [parcelOf('HR-A', 0, 2), parcelOf('HR-B', 2, 4)];
         const manager = makeManager(parcels);
-        const proposalData = { author: 'Ana', parentParcelIds: [] };
+        const proposalData = { author: 'Ana', cadastreParcelIds: [] };
         const bp = {};
         // Building straddles both parcels: x 1..3, y 0.5..1.5.
         const result = await manager._formBuildingParcel('p-bld', proposalData, bp, rect(1, 0.5, 3, 1.5), [], 'p-bld');
 
         expect(result.ok).toBe(true);
         expect(result.parentIds).toEqual(['HR-A', 'HR-B']);
-        expect(bp.formation.mode).toBe('footprint');
+        expect(bp).not.toHaveProperty('formation');
 
         const buildingParcel = manager.added.find(f => f.properties.buildingParcel === true);
         expect(buildingParcel).toBeTruthy();
-        expect(buildingParcel.properties.baseParcelIds).toEqual(['HR-A', 'HR-B']);
+        expect(buildingParcel.properties.cadastreParcelIds).toEqual(['HR-A', 'HR-B']);
         expect(buildingParcel.properties.ownershipDetails.owners[0].name).toBe('Ana');
-        expect(bp.formation.buildingParcelIds).toEqual([buildingParcel.properties.parcelId]);
 
         // Each host leaves a remainder that KEEPS its owner (§14.2). The u-shaped remainders are
         // split into contiguous pieces by the identity funnel.
@@ -117,7 +121,7 @@ describe('_formBuildingParcel — footprint mode (default)', () => {
         manager.added.forEach(child => {
             expect(String(child.properties.parcelId)).toMatch(/^HR-[AB]#p-bld-\d+$/);
         });
-        expect(bp.childParcelIds).toEqual(manager.added.map(f => String(f.properties.parcelId)));
+        expect(bp).not.toHaveProperty('childParcelIds');
     });
 
     it('refuses a footprint hanging off the live fabric', async () => {
@@ -146,15 +150,16 @@ describe('_formBuildingParcel — footprint mode (default)', () => {
         expect(manager._setLastApplyFailure.mock.calls[0][1].code).toBe('building-cut-failed');
     });
 
-    it('rebuilds from live ground and ignores a stale derived formation cache', async () => {
+    it('rebuilds from live ground without recording a formation cache', async () => {
         const manager = makeManager([parcelOf('HR-A', 0, 2)]);
-        const bp = { formation: { mode: 'footprint', parcelIds: ['HR-A'], childParcelIds: ['HR-A#p-bld-1'] } };
+        const bp = {};
         const result = await manager._formBuildingParcel('p-bld', {}, bp, rect(0, 0, 2, 2), [], 'p-bld');
         expect(result.ok).toBe(true);
         expect(result.parentIds).toEqual(['HR-A']);
         expect(manager.added).toHaveLength(1);
         expect(manager.added[0].properties.buildingParcel).toBe(true);
-        expect(bp.formation.childParcelIds).toEqual([manager.added[0].properties.parcelId]);
+        expect(bp).not.toHaveProperty('formation');
+        expect(bp).not.toHaveProperty('childParcelIds');
     });
 });
 
@@ -167,9 +172,8 @@ describe('_formBuildingParcel — whole-parcel option', () => {
         const result = await manager._formBuildingParcel('p-bld', { author: 'Ana' }, bp, rect(0, 0, 2, 2), [], 'p-bld');
 
         expect(result.ok).toBe(true);
-        expect(bp.formation.mode).toBe('adopt');
+        expect(bp).not.toHaveProperty('formation');
         expect(host.properties.ownershipDetails.owners[0].name).toBe('Owner HR-A');
-        expect(bp.formation.prior).toBeUndefined();
         expect(manager.added).toHaveLength(1);
         expect(manager.added[0].properties.ownershipDetails.owners[0].name).toBe('Ana');
         expect(manager.hidden).toEqual([host]);

@@ -5,6 +5,8 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
+const authoredRecord = require('../../frontend/js/proposals/authored-record.js');
+const formationDepth = require('../../frontend/js/proposals/formation-depth.js');
 const { loadChainProposalFromRef, resolveMetadataUrl } = require('../../frontend/js/proposals/chain-proposal-loader.js');
 
 const EVM_REF = { chainType: 'evm', chainId: '84532', contract: '0xC', tokenId: '5' };
@@ -14,7 +16,18 @@ afterEach(() => {
     delete global.proposalStorage;
     delete global.fetch;
     delete global.resolveResourceUrl;
+    delete global.ProposalAuthoredRecord;
+    delete global.__formationDepth;
+    delete global.solanaWeb3;
+    delete global.SolanaChainDataLoader;
+    delete global.CantonMode;
+    delete global.getBackendBase;
 });
+
+function installAuthoredBoundary() {
+    global.ProposalAuthoredRecord = authoredRecord;
+    global.__formationDepth = formationDepth;
+}
 
 describe('resolveMetadataUrl', () => {
     it('maps ipfs:// to a gateway and passes through http', () => {
@@ -26,11 +39,12 @@ describe('resolveMetadataUrl', () => {
 
 describe('loadChainProposalFromRef (EVM)', () => {
     it('reads the token, pulls its metadata, and imports the reconstructed proposal', async () => {
+        installAuthoredBoundary();
         const calls = {};
         global.ChainDataLoader = {
             getProposalsByIds: async (chainId, contract, ids) => {
                 calls.read = { chainId, contract, ids };
-                return [{ proposalId: '5', imageURI: 'ipfs://meta', lens: ['0xL'], parentParcelIds: ['HR-1'] }];
+                return [{ proposalId: '5', imageURI: 'ipfs://meta', lens: ['0xL'], cadastreParcelIds: ['HR-1'] }];
             }
         };
         global.fetch = async (url) => {
@@ -86,11 +100,12 @@ describe('loadChainProposalFromRef (Solana)', () => {
     const SOL_REF = { chainType: 'solana', chainId: 'devnet', contract: 'PROG', tokenId: 'ACCT' };
 
     it('reads the account, pulls metadata, and imports the reconstructed proposal', async () => {
+        installAuthoredBoundary();
         const calls = {};
         global.solanaWeb3 = { PublicKey: function (a) { this.a = a; } };
         global.SolanaChainDataLoader = {
             getConnection: () => ({ getAccountInfo: async (pk) => { calls.addr = pk.a; return { data: new Uint8Array(32) }; } }),
-            parseProposalAccount: (data, address) => ({ proposalId: address, parentParcelIds: ['HR-9'], metadataUri: 'ipfs://m', lens: [] })
+            parseProposalAccount: (data, address) => ({ proposalId: address, cadastreParcelIds: ['HR-9'], metadataUri: 'ipfs://m', lens: [] })
         };
         global.fetch = async (url) => { calls.fetched = url; return { ok: true, json: async () => ({ properties: {} }) }; };
         global.proposalStorage = { importOnChainProposal: (arg) => { calls.imported = arg; return { proposalId: 'ACCT' }; } };
@@ -130,13 +145,14 @@ describe('loadChainProposalFromRef (Canton)', () => {
     });
 
     it('reconstructs when the identity IS a party (contractId matches)', async () => {
+        installAuthoredBoundary();
         const calls = {};
         global.CantonMode = { getParty: () => 'party::abc' };
         global.getBackendBase = () => 'http://api';
         global.fetch = async (url) => {
             if (String(url).includes('/canton/proposals')) {
                 calls.read = url;
-                return { ok: true, json: async () => ({ proposals: [{ contractId: 'CID123', parcelId: 'HR-7', price: '100', imageUri: 'ipfs://m' }] }) };
+                return { ok: true, json: async () => ({ proposals: [{ contractId: 'CID123', cadastreParcelIds: ['HR-7'], price: '100', imageUri: 'ipfs://m' }] }) };
             }
             return { ok: true, json: async () => ({ properties: {} }) };
         };
@@ -146,7 +162,7 @@ describe('loadChainProposalFromRef (Canton)', () => {
         expect(result.ok).toBe(true);
         expect(String(calls.read)).toContain('/canton/proposals?party=party%3A%3Aabc');
         expect(calls.imported.onchain.chainType).toBe('canton');
-        expect(calls.imported.parentParcelIds).toEqual(['HR-7']);
+        expect(calls.imported.cadastreParcelIds).toEqual(['HR-7']);
         delete global.CantonMode; delete global.getBackendBase;
     });
 });

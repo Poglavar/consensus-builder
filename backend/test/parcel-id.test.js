@@ -62,4 +62,10 @@ describe('getParcelId', () => {
         expect(getParcelId(null)).toBeNull();
         expect(getParcelId(undefined)).toBeNull();
     });
+
+    it('is a pure reader and never canonicalises the object it inspects', () => {
+        const props = { parcel_id: '  HR-335754-5678 ' };
+        expect(getParcelId({ properties: props })).toBe('HR-335754-5678');
+        expect(props).toEqual({ parcel_id: '  HR-335754-5678 ' });
+    });
 });

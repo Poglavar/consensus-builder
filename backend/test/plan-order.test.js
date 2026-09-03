@@ -171,22 +171,6 @@ describe('apply order', () => {
 });
 
 describe('cadastre ancestry', () => {
-    it('strips a derived suffix back to the cadastral parcel', () => {
-        expect(planOrder.cadastreRootId('HR-339270-823/1#p-2g0teu3onpu-2')).toBe('HR-339270-823/1');
-        expect(planOrder.cadastreRootId('HR-339270-823/1')).toBe('HR-339270-823/1');
-    });
-
-    it('unwraps nested derived ids — a re-split of an already-split parcel', () => {
-        expect(planOrder.cadastreRootId('HR-335649-371/1#p-a-10#p-b-3')).toBe('HR-335649-371/1');
-        expect(planOrder.cadastreRootId('HR-339270-824_proposal_9')).toBe('HR-339270-824');
-    });
-
-    it('dedupes the roots of a declared parent list', () => {
-        expect(planOrder.cadastreIdsFromDeclared([
-            'HR-339270-823/1#p-a-1', 'HR-339270-823/1#p-a-2', 'HR-339270-824', null, ''
-        ])).toEqual(['HR-339270-823/1', 'HR-339270-824']);
-    });
-
     it('uses geometry only and ignores an unrelated declared parent', () => {
         // #104 declares four derived parents whose roots are 6804/1, 6804/5 and 6804/9. Geometry
         // finds only 6804/1 and 6804/9. The third is a stale declaration and must not become a

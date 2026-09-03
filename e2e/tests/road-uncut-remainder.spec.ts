@@ -69,10 +69,10 @@ test.describe('Road uncut-remainder guard @features', () => {
         ]],
       };
 
-      if (typeof w.ingestParcelFeatures !== 'function') {
-        return { error: 'ingestParcelFeatures missing' };
+      if (typeof w.ingestCadastralParcelFeatures !== 'function') {
+        return { error: 'ingestCadastralParcelFeatures missing' };
       }
-      await w.ingestParcelFeatures([intersectedParent, untouchedParent], { replaceExisting: true });
+      await w.ingestCadastralParcelFeatures([intersectedParent, untouchedParent]);
 
       const proposalSeed = {
         proposalId: 'e2e-road-uncut-remainder',

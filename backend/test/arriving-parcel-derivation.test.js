@@ -1,127 +1,86 @@
-// A cadastral parcel that arrives AFTER the corridors were applied.
-//
-// Pieces were materialised when a road was applied, over whatever cadastre happened to be loaded at
-// that moment, and tile arrivals were presentation-only ("The canonical rebuild owns fabric
-// materialization"). So panning a parcel into view afterwards left it whole underneath a road that
-// plainly crossed it — silently, with nothing to say it had been missed. These tests drive the real
-// arrangement engine over a parcel that shows up late.
-import { afterEach, describe, expect, it, vi } from 'vitest';
+// Late cadastral arrivals enter through one repository acceptance path. The repository owns
+// request/cache deduplication. Every consumer separately asks it to provision the immutable fact
+// into that consumer's transaction; transport is still performed only once.
+import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
-const arrangement = require('../../frontend/js/proposals/parcel-arrangement.js');
-const planOrder = require('../../frontend/js/proposals/plan-order.js');
-const applyRoute = require('../../frontend/js/proposals/apply/route.js');
-const turf = require('@turf/turf');
+const { createCadastralParcelRepository } = require('../../frontend/js/parcels/ground-service.js');
 
-const saved = new Map();
-function installGlobal(name, value) {
-    if (!saved.has(name)) {
-        saved.set(name, { existed: Object.prototype.hasOwnProperty.call(globalThis, name), value: globalThis[name] });
-    }
-    globalThis[name] = value;
-}
-afterEach(() => {
-    for (const [name, prior] of saved) {
-        if (prior.existed) globalThis[name] = prior.value;
-        else delete globalThis[name];
-    }
-    saved.clear();
-    vi.restoreAllMocks();
+const parcel = id => ({
+    type: 'Feature',
+    properties: { parcelId: id },
+    geometry: { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]] }
 });
 
-// ~111 m square of cadastre, and a ribbon crossing it end to end.
-const PARCEL = turf.polygon([[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]], {
-    parcelId: 'HR-A', PARCEL_ID: 'HR-A', BROJ_CESTICE: '1234/5'
-});
-// Well clear of the ribbon — a pan across open country.
-const FAR_PARCEL = turf.polygon([[[1, 1], [1.001, 1], [1.001, 1.001], [1, 1.001], [1, 1]]], {
-    parcelId: 'HR-B', PARCEL_ID: 'HR-B', BROJ_CESTICE: '9999/1'
-});
-const RIBBON = turf.polygon([[[0.0004, -0.0002], [0.0006, -0.0002], [0.0006, 0.0012], [0.0004, 0.0012], [0.0004, -0.0002]]]);
-
-const layerFor = feature => ({ feature, toGeoJSON: () => JSON.parse(JSON.stringify(feature)) });
-
-function buildWorld(loadedParcels) {
-    const byId = new Map(loadedParcels.map(feature => [String(feature.properties.parcelId), layerFor(feature)]));
-    const road = {
-        proposalId: 'road-1',
-        goal: 'road-track',
-        applied: true,
-        roadProposal: { definition: { polygon: RIBBON } }
-    };
-
-    const win = {
-        parcelLayerById: byId,
-        __parcelArrangement: arrangement,
-        __planOrder: planOrder,
-        __cadastreAncestry: {
-            loadedCadastreParcels: () => Array.from(byId.entries())
-                .filter(([id]) => String(id).indexOf('#') === -1)
-                .map(([id, layer]) => ({ id, feature: layer.feature }))
-        },
-        removeParcelLayerById: id => byId.delete(String(id)),
-        showParcelLayerById: () => { },
-        hideParcelLayerById: () => { }
-    };
-
-    installGlobal('window', win);
-    installGlobal('turf', turf);
-    installGlobal('applyRoute', applyRoute);
-    installGlobal('appliedOf', proposal => proposal?.applied === true);
-    installGlobal('proposalStorage', {
-        save: vi.fn(),
-        getAllProposals: () => [road],
-        getProposal: id => (String(id) === 'road-1' ? road : null)
+function repository({ onFeatures = vi.fn(), transport } = {}) {
+    return createCadastralParcelRepository({
+        root: {},
+        convertFeatures: collection => collection,
+        onFeatures,
+        transport
     });
-
-    const manager = {
-        _addFeaturesToMap: features => features.forEach(feature => {
-            byId.set(String(feature.properties.parcelId), layerFor(feature));
-        }),
-        _rebuildInProgress: false,
-        _appliedCorridorTakes: ProposalManager._appliedCorridorTakes,
-        _deriveCorridorFabric: ProposalManager._deriveCorridorFabric,
-        _deriveCorridorFabricBody: ProposalManager._deriveCorridorFabricBody,
-        _parcelsClaimedByDerivedGround: ProposalManager._parcelsClaimedByDerivedGround,
-        deriveArrivingParcels: ProposalManager.deriveArrivingParcels
-    };
-    return { byId, manager };
 }
 
-const pieceIds = byId => Array.from(byId.keys()).filter(id => id.indexOf('#') !== -1);
+describe('cadastral arrival publication', () => {
+    it('joins concurrent consumers onto one transport and provisions each consumer', async () => {
+        const onFeatures = vi.fn();
+        const fetchByIds = vi.fn(async ids => ({
+            status: 'ready', complete: true, absentIds: [], returnsWGS84: true,
+            features: ids.map(parcel)
+        }));
+        const ground = repository({ onFeatures, transport: { fetchByIds } });
 
-describe('a parcel that arrives after the road did', () => {
-    it('cuts it against the standing road instead of leaving it whole', async () => {
-        const { byId, manager } = buildWorld([PARCEL]);
-        // It came in from a tile fetch, so nothing has derived it yet.
-        expect(pieceIds(byId)).toEqual([]);
+        const [first, second] = await Promise.all([
+            ground.ensureIds(['HR-A']),
+            ground.ensureIds(['HR-A'])
+        ]);
 
-        const fabric = await manager.deriveArrivingParcels(['HR-A']);
-
-        expect(fabric).toBeTruthy();
-        // The strip the road takes, plus the two remainders either side of it.
-        expect(pieceIds(byId).length).toBe(3);
+        expect(first.features.map(f => f.properties.parcelId)).toEqual(['HR-A']);
+        expect(second.features.map(f => f.properties.parcelId)).toEqual(['HR-A']);
+        expect(fetchByIds).toHaveBeenCalledTimes(1);
+        expect(onFeatures).toHaveBeenCalledTimes(2);
     });
 
-    it('leaves an arrival no road reaches alone', async () => {
-        const { byId, manager } = buildWorld([FAR_PARCEL]);
+    it('serves subsequent consumers from retained facts and provisions each consumer without refetching', async () => {
+        const onFeatures = vi.fn();
+        const fetchByIds = vi.fn(async () => ({
+            status: 'ready', complete: true, absentIds: [], returnsWGS84: true,
+            features: [parcel('HR-A')]
+        }));
+        const ground = repository({ onFeatures, transport: { fetchByIds } });
 
-        expect(await manager.deriveArrivingParcels(['HR-B'])).toBeNull();
-        expect(pieceIds(byId)).toEqual([]);
+        await ground.ensureIds(['HR-A']);
+        await ground.ensureIds(['HR-A']);
+
+        expect(fetchByIds).toHaveBeenCalledTimes(1);
+        expect(onFeatures).toHaveBeenCalledTimes(2);
     });
 
-    it('ignores piece ids — only cadastral parcels are derived', async () => {
-        const { manager } = buildWorld([PARCEL]);
-        expect(await manager.deriveArrivingParcels(['HR-A#1', 'HR-A#2'])).toBeNull();
+    it('treats parcel ids as opaque and asks the cadastral transport for the exact id', async () => {
+        const fetchByIds = vi.fn(async ids => ({
+            status: 'ready', complete: true, absentIds: [], returnsWGS84: true,
+            features: ids.map(parcel)
+        }));
+        const ground = repository({ transport: { fetchByIds } });
+
+        await expect(ground.ensureIds(['HR-A#piece']))
+            .resolves.toMatchObject({ foundIds: ['HR-A#piece'] });
+        expect(fetchByIds).toHaveBeenCalledWith(['HR-A#piece'], expect.any(Object));
     });
 
-    it('stays out of the way of a whole-plan rebuild', async () => {
-        const { byId, manager } = buildWorld([PARCEL]);
-        manager._rebuildInProgress = true;
+    it('retains an immutable fact when live-fabric provisioning fails, then retries provisioning without transport', async () => {
+        const onFeatures = vi.fn()
+            .mockRejectedValueOnce(new Error('fabric commit failed'))
+            .mockResolvedValueOnce(undefined);
+        const ground = repository({ onFeatures });
 
-        expect(await manager.deriveArrivingParcels(['HR-A'])).toBeNull();
-        expect(pieceIds(byId)).toEqual([]);
+        await expect(ground.acceptFeatures([parcel('HR-A')], { skipConversion: true }))
+            .rejects.toThrow('fabric commit failed');
+        expect(ground.get('HR-A')).not.toBeNull();
+
+        await ground.acceptFeatures([parcel('HR-A')], { skipConversion: true });
+        expect(ground.get('HR-A')).not.toBeNull();
+        expect(onFeatures).toHaveBeenCalledTimes(2);
     });
 });

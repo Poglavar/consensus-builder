@@ -1,288 +1,222 @@
-// formation-depth.js — the flat-record invariant: a published record is at most
-// base cadastral parcel → one formation → content. Every published record declares only
-// base cadastral parents; derived parcel ids belong exclusively to replay output.
+// The authored-record boundary has one land declaration: explicit cadastral IDs. Parcel IDs are
+// opaque runtime identities; generated output is never interpreted as an ancestry tree.
 
-import { describe, it, expect, beforeAll } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-
-let fd;
+let records;
 
 beforeAll(() => {
-    fd = require('../../frontend/js/proposals/formation-depth.js');
+    records = require('../../frontend/js/proposals/formation-depth.js');
 });
 
 const BASE = 'HR-335550-1791/25';
-const SLICE = `${BASE}#p-upu-borovje-parcelacija-1`;
-const NESTED = `${SLICE}#c-road-2`;
-const LEGACY = `${BASE}_proposal_9`;
+const OTHER = 'HR-335550-1804/1';
 
-describe('id depth', () => {
-    it('counts generations and finds the base', () => {
-        expect(fd.parcelIdDepth(BASE)).toBe(0);
-        expect(fd.parcelIdDepth(SLICE)).toBe(1);
-        expect(fd.parcelIdDepth(NESTED)).toBe(2);
-        expect(fd.isBaseParcelId(BASE)).toBe(true);
-        expect(fd.isBaseParcelId(SLICE)).toBe(false);
-        expect(fd.baseParcelIdOf(NESTED)).toBe(BASE);
-        expect(fd.baseParcelIdOf(BASE)).toBe(BASE);
-        expect(fd.parcelIdDepth(LEGACY)).toBe(1);
-        expect(fd.baseParcelIdOf(LEGACY)).toBe(BASE);
+describe('proposal role reporting', () => {
+    it('reports authored intent without observing materialized output', () => {
+        expect(records.roleOf({ goal: 'single', childParcelIds: ['opaque-output'] }))
+            .toBe('potential-formation');
+        expect(records.roleOf({ goal: 'road-track' })).toBe('potential-formation');
+        expect(records.roleOf({ goal: 'urban-rule' })).toBe('content');
+    });
+
+    it('can report a completed materialization only from explicit runtime context', () => {
+        expect(records.conformanceOf({ goal: 'park', cadastreParcelIds: [BASE] }, { mintsGround: true }).role)
+            .toBe('formation');
     });
 });
 
-describe('role', () => {
-    it('is formation when the record actually minted ground', () => {
-        expect(fd.roleOf({ goal: 'single', childParcelIds: [`${BASE}#c-x-1`] })).toBe('formation');
-    });
-
-    it('is content when a forming goal minted nothing (it fits a plot someone else formed)', () => {
-        expect(fd.roleOf({ goal: 'single', parentParcelIds: [SLICE], childParcelIds: [] })).toBe('potential-formation');
-        expect(fd.roleOf({ goal: 'urban-rule', parentParcelIds: [SLICE] })).toBe('content');
-    });
-
-    it('reads children from typology sub-objects too', () => {
-        expect(fd.roleOf({ goal: 'road-track', roadProposal: { childParcelIds: [`${BASE}#c-r-1`] } })).toBe('formation');
-    });
-});
-
-describe('conformance', () => {
-    it('accepts a formation standing on base ground', () => {
-        const verdict = fd.conformanceOf({
-            goal: 'road-track',
-            parentParcelIds: [BASE],
-            roadProposal: { parentParcelIds: [BASE], childParcelIds: [`${BASE}#c-road-1`] }
-        });
+describe('explicit cadastral conformance', () => {
+    it('accepts one authoritative flat declaration', () => {
+        const verdict = records.conformanceOf({ goal: 'road-track', cadastreParcelIds: [BASE] });
         expect(verdict.flat).toBe(true);
-        expect(verdict.role).toBe('formation');
+        expect(verdict.cadastreParcelIds).toEqual([BASE]);
+        expect(verdict.role).toBe('potential-formation');
     });
 
-    it('rejects a derived parent even for content', () => {
-        const verdict = fd.conformanceOf({ goal: 'urban-rule', parentParcelIds: [SLICE] });
+    it('rejects a record whose only land field is a retired alias', () => {
+        const verdict = records.conformanceOf({ parentParcelIds: [BASE] });
         expect(verdict.flat).toBe(false);
-        expect(verdict.maxParentDepth).toBe(1);
-        expect(verdict.violations.map(v => v.code)).toContain('non-cadastral-parent');
+        expect(verdict.violations.map(item => item.code)).toEqual(expect.arrayContaining([
+            'missing-cadastral-provenance',
+            'legacy-cadastral-declaration'
+        ]));
     });
 
-    it('rejects a derived parent for a formation', () => {
-        const verdict = fd.conformanceOf({
-            goal: 'road-track',
-            parentParcelIds: [SLICE],
-            roadProposal: { parentParcelIds: [SLICE], childParcelIds: [`${BASE}#c-road-1`] }
+    it('rejects every alias even when it duplicates the authoritative declaration', () => {
+        const verdict = records.conformanceOf({
+            cadastreParcelIds: [BASE],
+            parentParcelIds: [BASE],
+            structureProposal: { parentParcelIds: [BASE] }
         });
         expect(verdict.flat).toBe(false);
-        expect(verdict.violations.map(v => v.code)).toContain('non-cadastral-parent');
+        expect(verdict.violations).toEqual(expect.arrayContaining([
+            { code: 'legacy-cadastral-declaration', field: 'parentParcelIds' },
+            { code: 'legacy-cadastral-declaration', field: 'structureProposal.parentParcelIds' }
+        ]));
     });
 
-    it('rejects a nested parcel id outright', () => {
-        const verdict = fd.conformanceOf({ goal: 'road-track', roadProposal: { childParcelIds: [NESTED] } });
-        expect(verdict.violations.map(v => v.code)).toContain('parcel-id-too-deep');
-    });
-
-    it('rejects derived structure parents even when the structure mints nothing', () => {
-        const record = { goal: 'park', parentParcelIds: [SLICE], structureProposal: { parentParcelIds: [SLICE] } };
-        expect(fd.conformanceOf(record).flat).toBe(false);
-    });
-
-    it('does not let a minting prediction change parent conformance', () => {
-        const record = { goal: 'park', parentParcelIds: [SLICE], structureProposal: { parentParcelIds: [SLICE] } };
-        expect(fd.conformanceOf(record, { mintsGround: true }).flat).toBe(false);
-        const minted = { goal: 'park', parentParcelIds: [SLICE], structureProposal: { childParcelIds: [`${BASE}#c-p-1`] } };
-        expect(fd.conformanceOf(minted, { mintsGround: false }).flat).toBe(false);
+    it('rejects generated live-piece IDs in the authoritative field', () => {
+        const verdict = records.conformanceOf({ cadastreParcelIds: [`${BASE}#piece-1`] });
+        expect(verdict.flat).toBe(false);
+        expect(verdict.violations).toContainEqual(expect.objectContaining({
+            code: 'generated-cadastral-anchor',
+            field: 'cadastreParcelIds[0]'
+        }));
+        expect(records.parcelIdDepth).toBeUndefined();
+        expect(records.isBaseParcelId).toBeUndefined();
     });
 });
 
-describe('flattening for publish', () => {
-    it('does not infer cadastral coverage by parsing derived ids', () => {
-        const flat = fd.flattenedParentsFor({
-            goal: 'road-track',
-            parentParcelIds: [SLICE, `${BASE}#p-upu-borovje-parcelacija-19`, 'HR-335550-1804/1'],
-            roadProposal: { childParcelIds: [`${BASE}#c-road-1`] }
+describe('publish projection', () => {
+    it('keeps the canonical declaration and emits no compatibility copies', () => {
+        const gate = records.preparePublishRecord({
+            goal: 'reparcellization',
+            cadastreParcelIds: [BASE, OTHER, BASE],
+            reparcellization: { polygons: [] }
         });
-        expect(flat).toBe(null);
+
+        expect(gate.verdict.flat).toBe(true);
+        expect(gate.proposal.cadastreParcelIds).toEqual([BASE, OTHER]);
+        expect(gate.proposal).not.toHaveProperty('parentParcelIds');
+        expect(gate.proposal).not.toHaveProperty('parcelIds');
+        expect(gate.proposal.reparcellization).not.toHaveProperty('parentParcelIds');
+        expect(gate.proposal.reparcellization).not.toHaveProperty('parcelIds');
     });
 
-    it('requires geometric coverage for content parents too', () => {
-        expect(fd.flattenedParentsFor({ goal: 'urban-rule', parentParcelIds: [SLICE] })).toBe(null);
-    });
-
-    it('treats legacy parcel aliases and cadastral stamps as parent declarations', () => {
-        const verdict = fd.conformanceOf({
-            parcelIds: [SLICE],
-            cadastreParcelIds: [SLICE],
-            reparcellization: { parcelIds: [SLICE] }
+    it('never invents cadastral ground from geometry or aliases', () => {
+        const gate = records.preparePublishRecord({ parentParcelIds: ['opaque-live-id'] }, {
+            geometricBaseIds: [BASE]
         });
-        expect(verdict.flat).toBe(false);
-        expect(verdict.violations.map(item => item.code)).toEqual(['non-cadastral-parent']);
+        expect(gate.verdict.flat).toBe(false);
+        expect(gate.verdict.violations.map(item => item.code)).toEqual(expect.arrayContaining([
+            'missing-cadastral-provenance',
+            'legacy-cadastral-declaration',
+            'geometric-parent-resolution-required'
+        ]));
+        expect(gate.proposal).not.toHaveProperty('parentParcelIds');
+        expect(gate.proposal).not.toHaveProperty('cadastreParcelIds');
     });
 
-    it('prefers geometric base ids over id parsing — a comasation mints every slice against one root', () => {
-        const flat = fd.flattenedParentsFor({
-            goal: 'road-track',
-            parentParcelIds: [SLICE],
-            roadProposal: { childParcelIds: [`${BASE}#c-road-1`] }
-        }, { geometricBaseIds: ['HR-335550-1813/3', 'HR-335550-1908/1', 'HR-335550-1813/3'] });
-        expect(flat).toEqual(['HR-335550-1813/3', 'HR-335550-1908/1']);
-    });
-
-    it('returns null when a formation already declares base ground', () => {
-        expect(fd.flattenedParentsFor({
-            goal: 'road-track', parentParcelIds: [BASE], roadProposal: { childParcelIds: [`${BASE}#c-r-1`] }
-        })).toBe(null);
-    });
-});
-
-describe('scanRecords', () => {
-    it('summarises offenders by code and leaves conformant records out', () => {
-        const scan = fd.scanRecords([
-            { proposalId: 'ok-road', goal: 'road-track', parentParcelIds: [BASE], roadProposal: { childParcelIds: [`${BASE}#c-a-1`] } },
-            { proposalId: 'bad-road', goal: 'road-track', parentParcelIds: [SLICE], roadProposal: { childParcelIds: [`${BASE}#c-b-1`] } },
-            { proposalId: 'deep', goal: 'park', structureProposal: { childParcelIds: [NESTED] } }
+    it('summarises missing, legacy and generated declarations', () => {
+        const scan = records.scanRecords([
+            { proposalId: 'ok', cadastreParcelIds: [BASE] },
+            { proposalId: 'missing', parentParcelIds: [BASE] },
+            { proposalId: 'generated', cadastreParcelIds: [`${OTHER}#piece`] }
         ]);
         expect(scan.total).toBe(3);
         expect(scan.offending).toBe(2);
-        expect(scan.byCode['non-cadastral-parent']).toBe(1);
-        expect(scan.byCode['parcel-id-too-deep']).toBe(1);
-        expect(scan.records.map(r => r.proposalId)).toEqual(['bad-road', 'deep']);
-    });
-});
-
-describe('preparePublishRecord (the §15a publish gate)', () => {
-    const BASE = 'HR-339270-823/1';
-    const SLICE = `${BASE}#p-road-2`;
-
-    it('flattens a formation onto its base ids and passes the gate', () => {
-        const gate = fd.preparePublishRecord({
-            goal: 'road-track',
-            parentParcelIds: [SLICE, 'HR-339270-824'],
-            roadProposal: { parentParcelIds: [SLICE], childParcelIds: [`${BASE}#c-me-1`] }
-        }, { geometricBaseIds: [BASE, 'HR-339270-824'] });
-
-        expect(gate.verdict.flat).toBe(true);
-        expect(gate.proposal.parentParcelIds).toEqual([BASE, 'HR-339270-824']);
-        expect(gate.proposal.roadProposal.parentParcelIds).toEqual([BASE, 'HR-339270-824']);
-    });
-
-    it('refuses content publication without geometric parent resolution', () => {
-        const record = {
-            goal: 'park',
-            parentParcelIds: [SLICE],
-            structureProposal: { parentParcelIds: [SLICE] }
-        };
-        const gate = fd.preparePublishRecord(record, {});
-        expect(gate.verdict.flat).toBe(false);
-        expect(gate.verdict.violations.map(item => item.code)).toContain('geometric-parent-resolution-required');
-        expect(gate.proposal.parentParcelIds).toEqual([SLICE]);
-    });
-
-    it('flattens every parent alias in a shared record', () => {
-        const gate = fd.preparePublishRecord({
-            goal: 'reparcellization',
-            parentParcelIds: [SLICE],
-            parcelIds: [SLICE],
-            cadastreParcelIds: [SLICE],
-            reparcellization: { parentParcelIds: [SLICE], parcelIds: [SLICE], polygons: [] }
-        }, { geometricBaseIds: [BASE] });
-        expect(gate.verdict.flat).toBe(true);
-        expect(gate.proposal.parentParcelIds).toEqual([BASE]);
-        expect(gate.proposal.parcelIds).toEqual([BASE]);
-        expect(gate.proposal.cadastreParcelIds).toEqual([BASE]);
-        expect(gate.proposal.reparcellization.parentParcelIds).toEqual([BASE]);
-        expect(gate.proposal.reparcellization.parcelIds).toEqual([BASE]);
-    });
-
-    it('refuses a record that cannot be made flat, loudly not silently', () => {
-        const nested = `${BASE}#a-1#b-2`;
-        const gate = fd.preparePublishRecord({
-            goal: 'road-track',
-            parentParcelIds: [nested],
-            roadProposal: { childParcelIds: [nested] }
-        }, {});
-        expect(gate.verdict.flat).toBe(false);
-        expect(gate.verdict.violations.some(v => v.code === 'parcel-id-too-deep')).toBe(true);
-    });
-
-    it('is idempotent — a flat record passes unchanged', () => {
-        const record = { goal: 'road-track', parentParcelIds: [BASE], roadProposal: { childParcelIds: [`${BASE}#c-me-1`] } };
-        const gate = fd.preparePublishRecord(record, { geometricBaseIds: [BASE] });
-        expect(gate.verdict.flat).toBe(true);
-        expect(gate.proposal.parentParcelIds).toEqual([BASE]);
+        expect(scan.byCode['missing-cadastral-provenance']).toBe(1);
+        expect(scan.byCode['legacy-cadastral-declaration']).toBe(1);
+        expect(scan.byCode['generated-cadastral-anchor']).toBe(1);
     });
 });
 
 describe('stripDerivedRecordData', () => {
-    it('strips children, formations and scan results; keeps definitions and consent', () => {
+    it('strips materialization, formation receipts, aliases and scans without mutating authored content', () => {
         const record = {
             proposalId: 'c-x', goal: 'park',
-            localEditAt: '2026-08-06T13:30:00.000Z',
-            parentParcelIds: ['HR-1', 'HR-2'],
             cadastreParcelIds: ['HR-1', 'HR-2'],
-            childParcelIds: ['HR-1#c-x-1'],
-            descendantParcelIds: ['HR-1#c-x-1'],
+            parentParcelIds: ['HR-1', 'HR-2'],
+            childParcelIds: ['opaque-child'],
+            descendantParcelIds: ['opaque-child'],
+            localEditAt: '2026-08-06T13:30:00.000Z',
             ownerAcceptances: { 'HR-1': { accepted: true } },
             structureProposal: {
                 kind: 'park', geometry: { type: 'Polygon', coordinates: [] },
                 parentParcelIds: ['HR-1'],
-                formation: { mode: 'merge', parcelIds: ['HR-1'], childParcelIds: ['HR-1#c-x-1'] },
+                formation: { mode: 'merge', parcelIds: ['HR-1'], childParcelIds: ['opaque-child'] },
                 demolishedBuildings: [{ id: 1 }], demolitionScanned: true
             },
             roadProposal: {
                 definition: {
-                    width: 10,
-                    points: [],
+                    width: 10, points: [],
                     surfaceFootprint: { type: 'Polygon', coordinates: [] },
                     demolishedBuildings: [{ id: 2 }]
                 },
-                parentParcelIds: ['HR-2'], childParcelIds: ['HR-2#c-x-1'], childFeatures: [{}],
+                parentParcelIds: ['HR-2'], childParcelIds: ['opaque-road'], childFeatures: [{}],
                 parentsToRemove: ['HR-2']
             }
         };
-        const out = fd.stripDerivedRecordData(record);
+        const out = records.stripDerivedRecordData(record);
         expect(out.childParcelIds).toBeUndefined();
-        expect(out.localEditAt).toBeUndefined();
         expect(out.descendantParcelIds).toBeUndefined();
+        expect(out.localEditAt).toBeUndefined();
         expect(out.structureProposal.formation).toBeUndefined();
         expect(out.structureProposal.demolishedBuildings).toBeUndefined();
-        expect(out.structureProposal.demolitionScanned).toBeUndefined();
         expect(out.roadProposal.childParcelIds).toBeUndefined();
         expect(out.roadProposal.childFeatures).toBeUndefined();
         expect(out.roadProposal.parentsToRemove).toBeUndefined();
-        // Authored content and consent survive.
-        expect(out.parentParcelIds).toEqual(['HR-1', 'HR-2']);
-        expect(out.cadastreParcelIds).toEqual(['HR-1', 'HR-2']);
-        expect(out.ownerAcceptances).toEqual({ 'HR-1': { accepted: true } });
-        expect(out.structureProposal.geometry).toBeTruthy();
         expect(out.roadProposal.definition.surfaceFootprint).toBeUndefined();
-        expect(out.roadProposal.definition.demolishedBuildings).toBeUndefined();
-        // The input record is untouched (publish must not mutate the local copy).
-        expect(record.childParcelIds).toEqual(['HR-1#c-x-1']);
+        expect(out.cadastreParcelIds).toEqual(['HR-1', 'HR-2']);
+        expect(out).not.toHaveProperty('parentParcelIds');
+        expect(out.structureProposal).not.toHaveProperty('parentParcelIds');
+        expect(out.ownerAcceptances).toEqual({ 'HR-1': { accepted: true } });
+        expect(record.childParcelIds).toEqual(['opaque-child']);
         expect(record.structureProposal.formation).toBeTruthy();
     });
 
-    it("keeps a government-plan road's child features — they ARE the authored plan", () => {
-        const record = {
+    it('removes government-plan child pieces; authored geometry belongs in definition.features', () => {
+        const out = records.stripDerivedRecordData({
+            cadastreParcelIds: [BASE],
+            childFeatures: [{ id: 'root-output' }],
             roadProposal: {
-                definition: { kind: 'government_plan' },
-                childFeatures: [{ id: 'f1' }], childParcelIds: ['HR-1#gov-1']
+                definition: {
+                    kind: 'government_plan',
+                    features: [{ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [] } }]
+                },
+                childFeatures: [{ id: 'runtime-output' }]
             }
-        };
-        const out = fd.stripDerivedRecordData(record);
-        expect(out.roadProposal.childFeatures).toEqual([{ id: 'f1' }]);
-        expect(out.roadProposal.childParcelIds).toBeUndefined();
+        });
+        expect(out).not.toHaveProperty('childFeatures');
+        expect(out.roadProposal).not.toHaveProperty('childFeatures');
+        expect(out.roadProposal.definition.features).toHaveLength(1);
     });
 
-    it('publish gate applies the strip after verifying', () => {
-        const gate = fd.preparePublishRecord({
-            goal: 'park', parentParcelIds: ['HR-1'],
-            createdAt: '2026-01-01T00:00:00.000Z',
-            localEditAt: '2026-08-06T13:30:00.000Z',
-            childParcelIds: ['HR-1#c-x-1'],
-            structureProposal: { kind: 'park', parentParcelIds: ['HR-1'], formation: { mode: 'adopt', parcelIds: ['HR-1'] } }
-        }, {});
-        expect(gate.proposal.childParcelIds).toBeUndefined();
-        expect(gate.proposal.structureProposal.formation).toBeUndefined();
-        expect(gate.proposal.localEditAt).toBeUndefined();
-        expect(gate.proposal.createdAt).toBe('2026-01-01T00:00:00.000Z');
+    it('keeps authored building geometry but removes browser-fabric annotations and mirrors', () => {
+        const feature = {
+            type: 'Feature',
+            geometry: { type: 'Polygon', coordinates: [] },
+            properties: {
+                height: 15,
+                color: '#fff',
+                parcelId: 'HR-1#piece',
+                proposalId: 'p-1',
+                proposalState: 'applied',
+                parentParcelIds: ['HR-1'],
+                buildingIndex: 4
+            }
+        };
+        const out = records.stripDerivedRecordData({
+            proposalId: 'p-1',
+            cadastreParcelIds: ['HR-1'],
+            similarityHash: 'HR-1',
+            geometry: { buildings: [feature] },
+            buildingGeometry: feature.geometry,
+            buildingProperties: feature.properties,
+            properties: feature.properties,
+            buildingProposal: {
+                buildingFeature: feature,
+                buildings: [feature],
+                parentParcelNumbers: [{ id: 'HR-1#piece', number: '1' }],
+                ancestorKey: 'HR-1#piece'
+            }
+        });
+
+        expect(out.geometry.buildings).toEqual([{
+            type: 'Feature',
+            geometry: feature.geometry,
+            properties: { height: 15, color: '#fff' }
+        }]);
+        expect(out).not.toHaveProperty('buildingGeometry');
+        expect(out).not.toHaveProperty('buildingProperties');
+        expect(out).not.toHaveProperty('properties');
+        expect(out).not.toHaveProperty('similarityHash');
+        expect(out.buildingProposal).not.toHaveProperty('buildingFeature');
+        expect(out.buildingProposal).not.toHaveProperty('buildings');
+        expect(out.buildingProposal).not.toHaveProperty('parentParcelNumbers');
+        expect(out.buildingProposal).not.toHaveProperty('ancestorKey');
     });
 });

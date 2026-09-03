@@ -136,12 +136,15 @@ describe('whole-block fresh-proposal suggestion', () => {
     it('runs the same preflight when Detached is launched from the classic proposal dialog', async () => {
         const maybeSuggestWholeBlockForFreshProposal = vi.fn(async () => true);
         const openParcelBasedForParcels = vi.fn();
+        const layer = { feature: {} };
         const context = {
             console,
             window: null,
             document: {},
             selectedParcelId: 'parcel-1',
-            currentParcel: { layer: { feature: {} } },
+            currentParcel: { layer },
+            LiveParcelFabric: { get: vi.fn(() => layer.feature) },
+            ParcelPresenter: { getLayer: vi.fn(() => layer) },
             maybeSuggestWholeBlockForFreshProposal,
             openParcelBasedForParcels,
             updateStatus: vi.fn()
@@ -185,12 +188,15 @@ describe('whole-block fresh-proposal suggestion', () => {
         const openSingleBuildingForParcels = vi.fn();
         const openRowHouseForParcels = vi.fn();
         const showStructureProposalDialog = vi.fn();
+        const layer = { feature: {} };
         const context = {
             console,
             window: null,
             document: {},
             selectedParcelId: 'parcel-1',
-            currentParcel: { layer: { feature: {} } },
+            currentParcel: { layer },
+            LiveParcelFabric: { get: vi.fn(() => layer.feature) },
+            ParcelPresenter: { getLayer: vi.fn(() => layer) },
             maybeSuggestWholeBlockForFreshProposal,
             openSingleBuildingForParcels,
             openRowHouseForParcels,
@@ -212,6 +218,32 @@ describe('whole-block fresh-proposal suggestion', () => {
         expect(openSingleBuildingForParcels).not.toHaveBeenCalled();
         expect(openRowHouseForParcels).not.toHaveBeenCalled();
         expect(showStructureProposalDialog).not.toHaveBeenCalled();
+    });
+
+    it('refuses a disconnected square in the classic structure launcher', async () => {
+        const showProposalAlertMessage = vi.fn();
+        const buildGeometryFromParcels = vi.fn();
+        const context = {
+            console,
+            window: null,
+            document: {},
+            multiParcelSelection: {
+                selectedParcels: new Set(['west', 'east']),
+                getSelectedParcels: vi.fn(() => [{ feature: {} }, { feature: {} }])
+            },
+            ParcelPresenter: { getLayers: vi.fn(() => [{ feature: {} }, { feature: {} }]) },
+            areParcelsContiguous: vi.fn(() => ({ contiguous: false, components: 2 })),
+            showProposalAlertMessage,
+            buildGeometryFromParcels,
+            updateStatus: vi.fn()
+        };
+        context.window = context;
+        vm.runInNewContext(listUiSource, context);
+
+        await expect(context.launchStructureToolForSelection('square')).resolves.toBe(false);
+
+        expect(showProposalAlertMessage).toHaveBeenCalledWith('parcels_not_contiguous', 'Parcels not contiguous');
+        expect(buildGeometryFromParcels).not.toHaveBeenCalled();
     });
 
     it('covers the classic Block editor and no-editor public-space choice', async () => {

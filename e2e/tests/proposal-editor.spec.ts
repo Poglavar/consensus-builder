@@ -17,7 +17,7 @@ async function addEditableSquare(page: Page, suffix: string): Promise<{ proposal
       [15.9819, 45.8005],
       [15.9819, 45.8000],
     ];
-    await w.ingestParcelFeatures([{
+    await w.ingestCadastralParcelFeatures([{
       type: 'Feature',
       properties: {
         parcelId,
@@ -28,7 +28,7 @@ async function addEditableSquare(page: Page, suffix: string): Promise<{ proposal
         MATICNI_BROJ_KO: '335754',
       },
       geometry: { type: 'Polygon', coordinates: [ring] },
-    }], { replaceExisting: false });
+    }]);
 
     w.proposalStorage.addProposal({
       proposalId,
@@ -282,11 +282,11 @@ test.describe('SimCity proposal lifecycle @core', () => {
       const ring = [
         [15.9819, 45.8000], [15.9825, 45.8000], [15.9825, 45.8005], [15.9819, 45.8005], [15.9819, 45.8000],
       ];
-      await w.ingestParcelFeatures([{
+      await w.ingestCadastralParcelFeatures([{
         type: 'Feature',
         properties: { parcelId, parcel_id: parcelId, id: parcelId, BROJ_CESTICE: 'EDIT-instant', maticni_broj_ko: '335754' },
         geometry: { type: 'Polygon', coordinates: [ring] },
-      }], { replaceExisting: false });
+      }]);
       w.requirePersonalizedUser = () => false;
 
       const segment = [{ lat: 45.8001, lng: 15.9820 }, { lat: 45.8004, lng: 15.9823 }];
