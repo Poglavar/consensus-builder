@@ -30,14 +30,38 @@
             : 'Unknown';
     }
 
+    function cadastreIdsFromChainData(onchainData) {
+        const metadataProps = onchainData?.metadata?.properties || {};
+        const own = (value, key) => value && typeof value === 'object'
+            && Object.prototype.hasOwnProperty.call(value, key);
+        if (own(onchainData, 'parentParcelIds') || own(metadataProps, 'parcelIds')) {
+            throw new Error('Solana proposal uses a retired parcel declaration; republish it with cadastreParcelIds.');
+        }
+        const source = onchainData?.cadastreParcelIds
+            || metadataProps.cadastreParcelIds
+            || [];
+        const ids = Array.from(new Set((Array.isArray(source) ? source : [])
+            .map(value => String(value == null ? '' : value).trim())
+            .filter(Boolean)));
+        const isDerived = g.ProposalAuthoredRecord?.isDerivedParcelId;
+        if (typeof isDerived !== 'function') {
+            throw new Error('Authored proposal boundary is unavailable.');
+        }
+        const invalid = ids.find(id => isDerived(id));
+        if (invalid) {
+            throw new Error(`Solana proposal names generated parcel ${invalid}; republish it against cadastral parcels.`);
+        }
+        return ids;
+    }
+
     function findLocalProposalByParcels(parcelIds) {
         if (!Array.isArray(parcelIds) || parcelIds.length === 0) return null;
         if (!g.proposalStorage || typeof g.proposalStorage.getAllProposals !== 'function') return null;
 
         const normalizedSearchIds = parcelIds.map(id => String(id)).sort();
         return g.proposalStorage.getAllProposals().find(proposal => {
-            const proposalParcelIds = Array.isArray(proposal?.parentParcelIds)
-                ? proposal.parentParcelIds.map(id => String(id)).sort()
+            const proposalParcelIds = Array.isArray(proposal?.cadastreParcelIds)
+                ? proposal.cadastreParcelIds.map(id => String(id)).sort()
                 : [];
             if (proposalParcelIds.length !== normalizedSearchIds.length) return false;
             return normalizedSearchIds.every((id, index) => proposalParcelIds[index] === id);
@@ -50,8 +74,7 @@
 
         return {
             proposalId,
-            parentParcelIds: onchainData.parentParcelIds || [],
-            childParcelIds: [],
+            cadastreParcelIds: cadastreIdsFromChainData(onchainData),
             name: `Proposal ${proposalAddress.slice(0, 8)}...`,
             description: 'Minted proposal from Solana',
             author: onchainData.owner || 'Unknown',
@@ -100,13 +123,13 @@
                 localProposal = g.proposalStorage.getProposal(chainProposalId);
             }
             if (!localProposal) {
-                localProposal = findLocalProposalByParcels(onchainData.parentParcelIds || []);
+                localProposal = findLocalProposalByParcels(cadastreIdsFromChainData(onchainData));
             }
 
             if (localProposal && g.proposalStorage && typeof g.proposalStorage.importOnChainProposal === 'function') {
                 g.proposalStorage.importOnChainProposal({
                     proposalId: proposalAddress,
-                    parentParcelIds: onchainData.parentParcelIds || [],
+                    cadastreParcelIds: cadastreIdsFromChainData(onchainData),
                     isConditional: onchainData.isConditional === true,
                     imageURI: onchainData.imageURI || '',
                     acceptancePossible: onchainData.acceptancePossible !== false,

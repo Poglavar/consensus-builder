@@ -33,8 +33,8 @@
         try { if (global.parcelLayer && global.parcelLayer.hasLayer(layer)) parts.push('parcelLayer'); } catch (_) { }
         try { if (global.proposedBuildingLayer && global.proposedBuildingLayer.hasLayer(layer)) parts.push('proposedBuildingLayer'); } catch (_) { }
         try {
-            const indexed = (global.parcelLayerById instanceof Map) ? global.parcelLayerById.get(String(
-                (layer.feature && layer.feature.properties && (layer.feature.properties.parcelId ?? layer.feature.properties.id)) || '')) : null;
+            const indexed = global.ParcelPresenter?.getLayer?.(String(
+                (layer.feature && layer.feature.properties && (layer.feature.properties.parcelId ?? layer.feature.properties.id)) || '')) || null;
             if (indexed) parts.push(indexed === layer ? 'indexed(this one)' : 'indexed(the OTHER one)');
         } catch (_) { }
         try { if (layer.options && layer.options.pane) parts.push('pane:' + layer.options.pane); } catch (_) { }
@@ -95,8 +95,7 @@
                         // the parcel id of the ground it stands on; only a second REGISTERED layer
                         // is a copy of the parcel.
                         const inGroup = !!(global.parcelLayer && global.parcelLayer.hasLayer(layer));
-                        const indexed = (global.parcelLayerById instanceof Map)
-                            && global.parcelLayerById.get(key) === layer;
+                        const indexed = global.ParcelPresenter?.getLayer?.(key) === layer;
                         if (!inGroup && !indexed) return;
                         ids.set(key, (ids.get(key) || 0) + 1);
                         if (!homes.has(key)) homes.set(key, []);

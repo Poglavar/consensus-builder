@@ -317,9 +317,9 @@ const userNotifications = {
         if (!userAgent) return;
 
         const userParcelIds = getAgentOwnedParcels(userAgent.id);
-        const proposalParcels = Array.isArray(proposal.parentParcelIds)
-            ? proposal.parentParcelIds
-            : (Array.isArray(proposal.childParcelIds) ? proposal.childParcelIds : []);
+        const proposalParcels = Array.isArray(proposal.cadastreParcelIds)
+            ? proposal.cadastreParcelIds
+            : [];
         const hasUserParcel = proposalParcels.some(parcelId =>
             userParcelIds.includes(parcelId)
         );

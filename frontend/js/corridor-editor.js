@@ -455,14 +455,13 @@ function corridorEditorConstraintFeatures() {
         });
     }
 
-    if (state.clearanceMode === 'parcels' && typeof parcelLayer !== 'undefined' && parcelLayer
-        && typeof parcelLayer.eachLayer === 'function') {
+    if (state.clearanceMode === 'parcels' && window.LiveParcelFabric
+        && typeof window.LiveParcelFabric.queryBounds === 'function') {
         const edgeFeatures = corridorEditorCurrentEdgeFeatures();
         const crossed = feature => edgeFeatures.some(edge => {
             try { return window.turf && window.turf.booleanDisjoint(edge, feature) === false; } catch (_) { return false; }
         });
-        parcelLayer.eachLayer(layer => {
-            const feature = layer && layer.feature;
+        window.LiveParcelFabric.queryBounds([west, south, east, north], { includeCorridors: true }).forEach(feature => {
             if (!feature || !feature.geometry || !nearRoad(feature.geometry)) return;
             const props = feature.properties || {};
             const parcelId = (props.parcelId !== undefined && props.parcelId !== null) ? String(props.parcelId)
@@ -890,7 +889,8 @@ function corridorEditorClearEdgeFillPreview() {
 function corridorEditorFillParcels() {
     const parcels = [];
     const state = corridorEditorState;
-    if (typeof parcelLayer === 'undefined' || !parcelLayer || typeof parcelLayer.eachLayer !== 'function') return parcels;
+    const fabric = window.LiveParcelFabric;
+    if (!fabric || typeof fabric.queryBounds !== 'function') return parcels;
     const turf = window.turf;
     if (!turf || !state) return parcels;
     const bounds = corridorEditorRoadBounds();
@@ -909,9 +909,9 @@ function corridorEditorFillParcels() {
 
     let layers = 0;
     let withFeature = 0;
-    parcelLayer.eachLayer(layer => {
+    const candidates = fabric.queryBounds(padded, { includeCorridors: true });
+    candidates.forEach(feature => {
         layers += 1;
-        const feature = layer && layer.feature;
         if (feature && feature.geometry) withFeature += 1;
         if (!feature || !feature.geometry || !withinReach(feature)) return;
         const props = feature.properties || {};

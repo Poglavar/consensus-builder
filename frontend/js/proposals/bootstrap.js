@@ -1,16 +1,6 @@
 /* proposals/bootstrap.js — final browser wiring for the proposal subsystem. */
 
-// Parcel-record batch primitives used by the canonical replay apply handlers.
 if (typeof window !== 'undefined') {
-    window.readPersistedParcelRecord = readPersistedParcelRecord;
-    window.writePersistedParcelRecord = writePersistedParcelRecord;
-    window.clearPersistedParcelRecord = clearPersistedParcelRecord;
-    window._startParcelWriteCache = _startParcelWriteCache;
-    window._flushParcelWriteCache = _flushParcelWriteCache;
-    window._discardParcelWriteCache = _discardParcelWriteCache;
-    window.withParcelWriteBatch = withParcelWriteBatch;
-    window.isParcelWriteBatchActive = isParcelWriteBatchActive;
-
     window.claimSaleOffer = claimSaleOffer;
     window.recordRecipientConsent = recordRecipientConsent;
     window.isProposalOpenSaleOffer = isProposalOpenSaleOffer;
@@ -189,6 +179,9 @@ if (typeof document !== 'undefined') {
 if (typeof window !== 'undefined') {
     window.proposalStorage = proposalStorage;
     window.multiParcelSelection = multiParcelSelection;
+    window.addEventListener('parcelFabricCommitted', () => {
+        multiParcelSelection.reconcileWithFabric();
+    });
     window.getProposalOwnerAcceptanceState = getProposalOwnerAcceptanceState;
     window.buildOwnerAcceptanceSectionHtml = buildOwnerAcceptanceSectionHtml;
     window.handleUserRejectProposal = handleUserRejectProposal;
@@ -197,42 +190,15 @@ if (typeof window !== 'undefined') {
     window.submitProposalBoost = submitProposalBoost;
     window.closeProposalBoostDialog = closeProposalBoostDialog;
 
-    // Tile arrivals used to update presentation ONLY, which left a parcel that streamed in after a
-    // road was applied sitting whole underneath it. An arrival is now derived against the standing
-    // takes like any other parcel. Arrivals come in bursts of dozens of tiles, so the ids are
-    // collected and derived once rather than once per tile.
-    let arrivingParcelIds = new Set();
-    let arrivalDerivationHandle = null;
-    const deriveArrivingParcelsSoon = (ids) => {
-        (ids || []).forEach(id => { if (id) arrivingParcelIds.add(String(id)); });
-        if (!arrivingParcelIds.size || arrivalDerivationHandle) return;
-        arrivalDerivationHandle = setTimeout(() => {
-            arrivalDerivationHandle = null;
-            const batch = Array.from(arrivingParcelIds);
-            arrivingParcelIds = new Set();
-            // deriveArrivingParcels is async now (it cuts the ground in chunks so a pan stays
-            // responsive), so a throw arrives as a rejection rather than here — catch both, or a
-            // failure to cut newly-arrived ground becomes an unhandled rejection and nothing says
-            // which parcels were left uncut.
-            try {
-                const derived = ProposalManager.deriveArrivingParcels?.(batch);
-                if (derived && typeof derived.catch === 'function') {
-                    derived.catch(error => console.error('[proposals] could not derive newly loaded parcels', error));
-                }
-            } catch (error) { console.error('[proposals] could not derive newly loaded parcels', error); }
-        }, 0);
-    };
-
     window.addEventListener('parcelDataLoaded', (event) => {
-        deriveArrivingParcelsSoon(event?.detail?.parcelIds);
+        // Cadastral arrivals are already integrated — including road cuts — before this committed
+        // presentation event fires. This listener refreshes proposal UI only; it never starts a
+        // second derivation over the same ground.
         scheduleHighlightRefresh('parcels-loaded');
         if (typeof updateProposalLayer === 'function') updateProposalLayer();
 
-        if (!window.selectedParcelId || typeof parcelLayer === 'undefined' || !parcelLayer) return;
-        const layer = parcelLayer.getLayers().find(candidate => {
-            const id = getParcelIdFromFeature(candidate?.feature);
-            return id && id.toString() === window.selectedParcelId.toString();
-        });
+        if (!window.selectedParcelId || !window.LiveParcelFabric?.get?.(window.selectedParcelId)) return;
+        const layer = window.ParcelPresenter?.getLayer?.(window.selectedParcelId) || null;
         if (!layer) return;
 
         const isTrackSelected = layer?.feature?.properties?.isTrack === true || Boolean(layer?._trackStyle);

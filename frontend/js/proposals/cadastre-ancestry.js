@@ -1,15 +1,6 @@
-// The BASE cadastral parcels a proposal's geometry covers. This is the only map-facing part of the
-// base-ancestry work — the logic lives in the pure plan-order.js; this file just reads the live
-// parcel index and hands it over.
-//
-// Every read here is `toGeoJSON(false)`, and the `false` is load-bearing: Leaflet rounds coordinates
-// to 6 decimals by default, which is ~8 cm of longitude and ~11 cm of latitude at Zagreb's latitude.
-// Cutting itself is exact — turf reuses the shared vertices, so difference() then intersect() against
-// the cutter measures 0 — but difference() also INTERPOLATES new vertices where the cutter crosses a
-// parcel edge, and those points have no twin on the other polygon to round with. Rounding drifts them
-// off the shared line, which is what left 0.3-1.8 m2 slivers between a corridor and the remainders it
-// cut (measured: 0 m2 unrounded vs 2.478 m2 rounded, on the same cut). Round for transport or display
-// if you must; never in the geometry pipeline.
+// The BASE cadastral parcels a proposal's geometry covers. The pure plan-order logic receives
+// immutable GeoJSON from CadastralParcelRepository. Leaflet is never a geometry source, so
+// rendering precision, visibility, and layer lifetime cannot change an answer.
 //
 // A formation stores only flat cadastral anchors. Geometry resolves the current live pieces at
 // replay time; derived ids are local tessellation output and never become prerequisites.
@@ -27,153 +18,68 @@
         ? global.__planOrder
         : (typeof require === 'function' ? require('./plan-order.js') : null);
 
-    // Skip a layer without serialising it.
-    //
-    // These collectors call toGeoJSON on EVERY parcel on the map, and the callers then intersect a
-    // proposal's footprint against all of them. Both costs scale with how much ground is loaded
-    // rather than with the proposal — 13,000 parcels loaded meant 13,000 serialisations and 13,000
-    // polygon intersections to resolve the parents of one building, once per proposal. Leaflet
-    // already knows each layer's bounds and hands them over without building any GeoJSON, so a
-    // caller that knows where it is looking pays only for the parcels that could possibly answer.
-    //
-    // `box` is a turf bbox, [west, south, east, north]. Omitted, nothing is skipped.
-    function layerOutsideBox(layer, box) {
-        if (!box || !layer || typeof layer.getBounds !== 'function') return false;
-        let bounds = null;
-        try { bounds = layer.getBounds(); } catch (_) { return false; }
-        if (!bounds || typeof bounds.isValid !== 'function' || !bounds.isValid()) return false;
-        return bounds.getWest() > box[2] || bounds.getEast() < box[0]
-            || bounds.getSouth() > box[3] || bounds.getNorth() < box[1];
+    function geometryBox(feature) {
+        const coordinates = feature?.geometry?.coordinates;
+        if (!Array.isArray(coordinates)) return null;
+        let west = Infinity;
+        let south = Infinity;
+        let east = -Infinity;
+        let north = -Infinity;
+        const visit = value => {
+            if (!Array.isArray(value)) return;
+            if (value.length >= 2 && Number.isFinite(Number(value[0])) && Number.isFinite(Number(value[1]))) {
+                const x = Number(value[0]);
+                const y = Number(value[1]);
+                west = Math.min(west, x); east = Math.max(east, x);
+                south = Math.min(south, y); north = Math.max(north, y);
+                return;
+            }
+            value.forEach(visit);
+        };
+        visit(coordinates);
+        return Number.isFinite(west) ? [west, south, east, north] : null;
     }
 
-    // Every ORIGINAL parcel currently known to the map, derived ones excluded. A cadastral parcel
-    // that a road or reparcellization has consumed is hidden rather than removed (hideParcelLayerById
-    // keeps it in parcelLayerById precisely so descendants can still resolve it), so the originals are
-    // still here to intersect against even once the fabric above them has been re-cut.
+    function intersectsBox(feature, box) {
+        if (!box) return true;
+        const candidate = geometryBox(feature);
+        return !!candidate && candidate[0] <= box[2] && candidate[2] >= box[0]
+            && candidate[1] <= box[3] && candidate[3] >= box[1];
+    }
+
+    // Every immutable source parcel retained by the repository, including source ground currently
+    // replaced in the live partition.
     function loadedCadastreParcels(box) {
-        const out = [];
-        try {
-            const byId = (typeof global.getParcelLayerIdMap === 'function') ? global.getParcelLayerIdMap() : null;
-            if (!byId || typeof byId.forEach !== 'function') return out;
-            byId.forEach((layer, id) => {
-                const key = id === undefined || id === null ? '' : String(id);
-                if (!key || (typeof global.isSyntheticParcelId === 'function' && global.isSyntheticParcelId(key))) return;
-                if (!layer || typeof layer.toGeoJSON !== 'function') return;
-                if (layerOutsideBox(layer, box)) return;
-                try {
-                    const gj = layer.toGeoJSON(false);
-                    const feature = gj && gj.type === 'FeatureCollection' ? gj.features[0] : gj;
-                    if (feature && feature.geometry && /Polygon/.test(feature.geometry.type || '')) {
-                        out.push({ id: key, feature });
-                    }
-                } catch (_) { /* a layer that cannot serialise is simply not a candidate */ }
-            });
-        } catch (error) {
-            console.warn('[cadastre-ancestry] could not read the parcel index', error);
-        }
-        return out;
+        const repository = global.CadastralParcelRepository;
+        if (!repository || typeof repository.list !== 'function') return [];
+        return repository.list()
+            .filter(feature => intersectsBox(feature, box))
+            .map(feature => ({ id: String(feature.properties.parcelId), feature }));
     }
 
-    // Every parcel currently LIVE in the sole visible parcel layer. Hidden registry entries are
-    // ancestry/cache only and never participate in a cut.
-    function loadedLiveParcels(box) {
-        const out = [];
-        try {
-            const byId = (typeof global.getParcelLayerIdMap === 'function') ? global.getParcelLayerIdMap() : null;
-            if (!byId || typeof byId.forEach !== 'function') return out;
-            const parcelLayerGroup = (global.parcelLayer && typeof global.parcelLayer.hasLayer === 'function')
-                ? global.parcelLayer
-                : null;
-
-            byId.forEach((layer, id) => {
-                const key = id === undefined || id === null ? '' : String(id);
-                if (!key) return;
-                if (parcelLayerGroup) {
-                    try { if (!parcelLayerGroup.hasLayer(layer)) return; } catch (_) { return; }
-                }
-                if (!layer || typeof layer.toGeoJSON !== 'function') return;
-                if (layerOutsideBox(layer, box)) return;
-                try {
-                    const gj = layer.toGeoJSON(false);
-                    const feature = gj && gj.type === 'FeatureCollection' ? gj.features[0] : gj;
-                    if (feature && feature.geometry && /Polygon/.test(feature.geometry.type || '')) {
-                        out.push({ id: key, feature });
-                    }
-                } catch (_) { /* a layer that cannot serialise is simply not a candidate */ }
-            });
-        } catch (error) {
-            console.warn('[cadastre-ancestry] could not read the parcel index', error);
-        }
-        return out;
-    }
-
-    // Resolve a proposal's parents from its GEOMETRY against the live fabric, for payloads whose
-    // declared parents are ghosts (§3.1 of rethink-proposals.md). Returns { ids, coverage } where
-    // coverage is the share of the footprint the resolved parcels actually cover — callers must
-    // treat low coverage as "the land is genuinely absent", not as a rename to paper over.
-    //
-    // Only formations that stand ON the ground ask this. Corridors do not: they are takes, and the
-    // parcels under them are re-derived from the cadastre (proposals/parcel-arrangement.js). The
-    // junction exception this used to carry — discounting ground a standing formation had already
-    // consumed — existed solely because corridors cut each other's leftovers, and went with it.
-    function resolveParentsByGeometry(proposal) {
-        const api = planOrder();
-        const t = (typeof global.turf !== 'undefined' && global.turf) ? global.turf : null;
-        if (!api || !t || !proposal) return { ids: [], coverage: 0 };
-        try {
-            const footprint = api.footprintOf(proposal);
-            if (!footprint) return { ids: [], coverage: 0 };
-            const footprintM2 = t.area(footprint);
-            if (!(footprintM2 > 0)) return { ids: [], coverage: 0 };
-            // Only the parcels the footprint could possibly touch are serialised, let alone clipped.
-            let box = null;
-            try { box = t.bbox(footprint); } catch (_) { box = null; }
-            const hits = api.computeBaseAncestry(footprint, loadedLiveParcels(box));
-            const coveredM2 = hits.reduce((sum, hit) => sum + (hit.area || 0), 0);
-
-            // Live parcels tessellate (consumed parents are excluded), so the hits partition the
-            // footprint and the ratio cannot meaningfully exceed 1; clamp for rounding noise.
-            return {
-                ids: hits.map(hit => hit.id),
-                coverage: Math.min(1, coveredM2 / footprintM2)
-            };
-        } catch (error) {
-            console.warn('[cadastre-ancestry] live geometry resolution failed', error);
-            return { ids: [], coverage: 0 };
-        }
-    }
-
-    // How much of a proposal footprint is already backed by ORIGINAL cadastre in the registry.
-    // Unlike resolveParentsByGeometry this deliberately includes hidden consumed originals: replay
-    // needs source ground, not the visible partition currently standing above it. A parcel loaded
-    // once stays in this registry for the session, so complete coverage lets the ground service
-    // answer without a second server request.
+    // How much of a proposal footprint is backed by ORIGINAL cadastre. The repository owns both
+    // retrieval and retained coverage; this module only supplies the proposal footprint and applies
+    // the publish rule. There is no second cache scan and no renderer-aware fallback.
     function loadedCadastreCoverage(proposal) {
         const api = planOrder();
-        const t = (typeof global.turf !== 'undefined' && global.turf) ? global.turf : null;
-        if (!api || !t || !proposal) return { ids: [], coverage: 0 };
+        const repository = global.CadastralParcelRepository;
+        if (!api || !proposal || !repository || typeof repository.coverageOf !== 'function') {
+            return { ids: [], coverage: 0 };
+        }
         try {
             const footprint = api.footprintOf(proposal);
             if (!footprint) return { ids: [], coverage: 0 };
-            const footprintM2 = t.area(footprint);
-            if (!(footprintM2 > 0)) return { ids: [], coverage: 0 };
-            let box = null;
-            try { box = t.bbox(footprint); } catch (_) { box = null; }
-            const hits = api.computeBaseAncestry(footprint, loadedCadastreParcels(box));
-            const coveredM2 = hits.reduce((sum, hit) => sum + (Number(hit.area) || 0), 0);
-            return {
-                ids: hits.map(hit => String(hit.id)),
-                coverage: Math.min(1, coveredM2 / footprintM2)
-            };
+            return repository.coverageOf(footprint);
         } catch (error) {
-            console.warn('[cadastre-ancestry] loaded cadastre coverage failed', error);
+            console.warn('[cadastre-ancestry] cadastral repository coverage failed', error);
             return { ids: [], coverage: 0 };
         }
     }
 
-    // Resolve the publish-time cadastral declaration from geometry alone. A partial viewport must
-    // refuse publication; falling back to stale declared ids is exactly how unrelated parcels became
-    // occupied after reload. The caller may load more ground and try again.
+    // Validate the proposal's already-authored cadastral declaration. Selection projects live
+    // parcel ids to this flat set once, when the proposal is created. Publishing must preserve that
+    // exact scope (including selected block parcels without a generated building), never silently
+    // replace it with whichever parcels happen to intersect the output geometry today.
     function computeCadastreParcelIds(proposal, options) {
         const api = planOrder();
         const t = (typeof global.turf !== 'undefined' && global.turf) ? global.turf : null;
@@ -188,23 +94,42 @@
             error.code = 'proposal-footprint-missing';
             throw error;
         }
-        const resolved = loadedCadastreCoverage(proposal);
-        const hits = resolved.ids;
+        const declared = Array.from(new Set((Array.isArray(proposal.cadastreParcelIds)
+            ? proposal.cadastreParcelIds
+            : [])
+            .map(value => String(value || '').trim())
+            .filter(Boolean)));
+        if (!declared.length) {
+            const error = new Error('Cannot publish: the proposal has no explicit cadastral parcel declaration.');
+            error.code = 'cadastre-declaration-missing';
+            throw error;
+        }
+        const repository = global.CadastralParcelRepository;
+        const loaded = typeof repository?.getMany === 'function'
+            ? repository.getMany(declared)
+            : [];
+        const loadedIds = new Set(loaded.map(feature => String(feature?.properties?.parcelId || '')));
+        const missing = declared.filter(id => !loadedIds.has(id));
+        if (missing.length) {
+            const error = new Error(`Cannot publish: ${missing.length} declared cadastral parcel(s) are not loaded.`);
+            error.code = 'cadastre-declaration-not-loaded';
+            error.missingIds = missing;
+            throw error;
+        }
+        const resolved = repository.coverageOf(footprint, { ids: declared });
         const coverage = resolved.coverage;
         const minimum = Number.isFinite(Number(options?.minCoverage))
             ? Number(options.minCoverage)
             : MIN_CADASTRE_COVERAGE;
-        if (!hits.length || coverage < minimum) {
+        if (!resolved.ids.length || coverage < minimum) {
             const error = new Error(`Cannot publish: loaded cadastral parcels cover only ${Math.round(coverage * 100)}% of the proposal footprint (95% required).`);
             error.code = 'cadastre-coverage-insufficient';
             error.coverage = coverage;
             throw error;
         }
-        const ids = hits.slice();
-        const declared = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds.length : 0;
-        console.debug(`[cadastre-ancestry] ${ids.length} cadastral parcel(s) for `
-            + `${proposal.proposalId || proposal.title || 'proposal'} (declared ${declared} parent(s))`, ids);
-        return ids;
+        console.debug(`[cadastre-ancestry] validated ${declared.length} declared cadastral parcel(s) for `
+            + `${proposal.proposalId || proposal.title || 'proposal'}`, declared);
+        return declared;
     }
 
     // The ownership flow of a proposal's formation against the live cadastre (see ownership-flow.js).
@@ -226,11 +151,9 @@
     const api = {
         MIN_CADASTRE_COVERAGE,
         loadedCadastreParcels,
-        loadedLiveParcels,
         loadedCadastreCoverage,
         computeCadastreParcelIds,
-        computeOwnershipFlow,
-        resolveParentsByGeometry
+        computeOwnershipFlow
     };
 
     if (typeof window !== 'undefined') window.__cadastreAncestry = api;

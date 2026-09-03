@@ -3489,7 +3489,6 @@
                     displayName: entry.displayName,
                     percent: entry.percent,
                     color: entry.color,
-                    parcelIds: entry.parcelIds.slice(),
                     contributedArea: entry.area,
                     contributedValue: entry.value,
                     entitledValue: ledger.entitled,
@@ -3589,6 +3588,21 @@
         return { ownerKey: key || `parcel:${parcelId}:owner`, displayName };
     }
 
+    function cadastralIdentityForLiveParcel(parcelId) {
+        const fabric = (typeof window !== 'undefined') ? window.LiveParcelFabric : null;
+        if (!fabric || typeof fabric.cadastreIdsForParcelIds !== 'function') {
+            throw new Error('Live parcel fabric provenance is unavailable while assigning readjustment owners.');
+        }
+        const ids = fabric.cadastreIdsForParcelIds([parcelId])
+            .map(String)
+            .filter(Boolean)
+            .sort();
+        if (!ids.length) {
+            throw new Error(`Live parcel ${parcelId} has no cadastral provenance.`);
+        }
+        return ids.join('+');
+    }
+
     async function buildOwnerShares(selection) {
         const result = new Map();
         const parcelLayers = selection.layers || [];
@@ -3599,6 +3613,7 @@
             const feature = layer?.feature;
             if (!feature || !feature.properties) continue;
             const parcelId = feature.properties.parcelId;
+            const cadastralIdentity = cadastralIdentityForLiveParcel(parcelId);
             const area = Number(feature.properties.calculatedArea) || computeFeatureArea(feature);
             if (!area || !Number.isFinite(area)) continue;
 
@@ -3616,11 +3631,11 @@
             }
             if (!Array.isArray(slots) || !slots.length) {
                 slots = [{
-                    key: `parcel:${parcelId}:synthetic-owner`,
+                    key: `parcel:${cadastralIdentity}:synthetic-owner`,
                     displayName: t(
                         'reparcellization.modal.syntheticOwner',
                         'Owner of {{parcel}}',
-                        { parcel: feature.properties.BROJ_CESTICE || parcelId }
+                        { parcel: feature.properties.BROJ_CESTICE || cadastralIdentity }
                     ),
                     shareText: '1/1'
                 }];
@@ -3628,7 +3643,7 @@
 
             const normalizedSlots = normalizeOwnerSlots(slots);
             normalizedSlots.forEach(({ slot, fraction }) => {
-                const parcelLabel = feature.properties.BROJ_CESTICE || parcelId;
+                const parcelLabel = feature.properties.BROJ_CESTICE || cadastralIdentity;
                 // “Unassigned” describes a PLOT with no owner. If an ownership source uses that
                 // same placeholder for a contributor, give the contributor a stable parcel-based
                 // name so a complete plan cannot still show an unassigned state.
@@ -3637,7 +3652,7 @@
                     'Owner of {{parcel}}',
                     { parcel: parcelLabel }
                 );
-                const { ownerKey, displayName } = ownerIdentityForSlot(slot, parcelId, fallbackOwnerName);
+                const { ownerKey, displayName } = ownerIdentityForSlot(slot, cadastralIdentity, fallbackOwnerName);
                 const existing = result.get(ownerKey) || {
                     ownerKey,
                     displayName,
@@ -3864,17 +3879,13 @@
     // alone decides which are already present, in flight, absent, or need transport.
     async function resolveInputParcelLayers(parcelIds) {
         const ids = (parcelIds || []).map(String);
-        const lookup = id => {
-            if (typeof window.resolveParcelLayerById === 'function') {
-                const hit = window.resolveParcelLayerById(id);
-                if (hit) return hit;
-            }
-            return (window.parcelLayerById instanceof Map) ? window.parcelLayerById.get(id) || null : null;
-        };
-        if (ids.length && window.CadastralGroundService
-            && typeof window.CadastralGroundService.ensureIds === 'function') {
+        const lookup = id => window.LiveParcelFabric?.get?.(id)
+            ? (window.ParcelPresenter?.getLayer?.(id) || null)
+            : null;
+        if (ids.length && window.CadastralParcelRepository
+            && typeof window.CadastralParcelRepository.ensureIds === 'function') {
             try {
-                await window.CadastralGroundService.ensureIds(ids);
+                await window.CadastralParcelRepository.ensureIds(ids);
             } catch (error) {
                 console.warn('[reparcellization] loading the plan\'s cadastral ground failed', error);
             }

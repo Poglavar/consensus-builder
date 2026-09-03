@@ -115,10 +115,12 @@
             return null;
         }
         const [gridEasting, gridNorthing] = parts;
-        if (!Number.isFinite(gridEasting) || !Number.isFinite(gridNorthing) || typeof parcelCache === 'undefined') {
+        if (!Number.isFinite(gridEasting) || !Number.isFinite(gridNorthing)) {
             return null;
         }
-        const cellSize = parcelCache && parcelCache.gridSize ? parcelCache.gridSize : 500;
+        const cellSize = Number(window.ParcelsState?.getParcelGridSize?.()
+            ?? window.CityConfigManager?.getParcelGridSize?.()
+            ?? 500);
         const swEasting = gridEasting * cellSize;
         const swNorthing = gridNorthing * cellSize;
         const neEasting = (gridEasting + 1) * cellSize;
@@ -160,17 +162,20 @@
             cellAreaSqm: 0
         };
 
-        if (typeof parcelCache === 'undefined' || !parcelCache || !parcelCache.grid) {
+        const repository = window.CadastralParcelRepository;
+        if (!repository || typeof repository.snapshot !== 'function') {
             return result;
         }
-        const gridSize = parcelCache.gridSize || 500;
+        const gridSize = Number(window.ParcelsState?.getParcelGridSize?.()
+            ?? window.CityConfigManager?.getParcelGridSize?.()
+            ?? 500);
         result.cellAreaSqm = gridSize * gridSize;
 
         const mainMapBounds = (typeof map !== 'undefined' && map && typeof map.getBounds === 'function') ? map.getBounds() : null;
 
         let aggregateBounds = null;
 
-        for (const key of parcelCache.grid.keys()) {
+        for (const key of repository.snapshot().boundsKeys || []) {
             const bounds = gridKeyToBounds(key);
             if (!bounds) {
                 continue;

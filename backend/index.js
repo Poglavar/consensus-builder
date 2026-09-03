@@ -189,7 +189,11 @@ function attachSqlLogging(pool, runQueryWithLogging) {
 // what the largest plan here costs to publish in one go.
 export const WRITE_RATE_LIMIT = 600;
 
-export function createApp({ env = process.env, pool: providedPool } = {}) {
+export function createApp({
+    env = process.env,
+    pool: providedPool,
+    writeRateLimit = WRITE_RATE_LIMIT
+} = {}) {
     const app = express();
     const requestContext = new AsyncLocalStorage();
     const isDevEnv = (env.ENVIRONMENT || '').toLowerCase() === 'dev';
@@ -302,7 +306,7 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
     // Rate limit POST/PUT/PATCH routes — protects against abuse on write endpoints
     const writeRateLimiter = rateLimit({
         windowMs: 15 * 60 * 1000, // 15 minutes
-        max: WRITE_RATE_LIMIT,     // per IP
+        max: writeRateLimit,       // per IP
         standardHeaders: true,
         legacyHeaders: false,
         message: { error: 'Too many requests, please try again later.' }

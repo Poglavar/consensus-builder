@@ -367,7 +367,7 @@
                     } catch (_) { /* ignore */ }
                     return {
                         proposalId: tokenId.toString(),
-                        parentParcelIds: parcelIdsArray[index],
+                        cadastreParcelIds: parcelIdsArray[index],
                         isConditional: isConditionalArray[index],
                         imageURI: imageURIArray[index],
                         acceptancePossible: acceptancePossibleArray[index],
@@ -416,7 +416,7 @@
 
                             return {
                                 proposalId: tokenId.toString(),
-                                parentParcelIds: parcelIds,
+                                cadastreParcelIds: parcelIds,
                                 isConditional,
                                 imageURI,
                                 acceptancePossible,
@@ -527,7 +527,7 @@
             slice.forEach((pid, index) => {
                 results.push({
                     proposalId: pid.toString(),
-                    parentParcelIds: parcelIdsArray[index],
+                    cadastreParcelIds: parcelIdsArray[index],
                     isConditional: isConditionalArray[index],
                     imageURI: imageURIArray[index],
                     acceptancePossible: acceptancePossibleArray[index],
@@ -579,7 +579,7 @@
         const acceptanceByProposal = {};
 
         for (const proposal of proposals) {
-            const intersection = (proposal.parentParcelIds || []).filter(pid => ownedSet.has(pid));
+            const intersection = (proposal.cadastreParcelIds || []).filter(pid => ownedSet.has(pid));
             if (!intersection.length) continue;
 
             // For any of the user's parcels, check acceptance on-chain
@@ -597,7 +597,7 @@
             const hasAccepted = acceptanceChecks.some(Boolean);
             const acceptedParcels = intersection.filter((_, idx) => acceptanceChecks[idx]);
             acceptanceByProposal[proposal.proposalId] = {
-                parentParcelIds: proposal.parentParcelIds || [],
+                cadastreParcelIds: proposal.cadastreParcelIds || [],
                 acceptedParcels
             };
 
@@ -763,7 +763,7 @@
 
                 return {
                     proposalId: proposalId,
-                    parentParcelIds: parcelIdsArray[index],
+                    cadastreParcelIds: parcelIdsArray[index],
                     isConditional: isConditionalArray[index],
                     imageURI: imageURIArray[index],
                     acceptancePossible: acceptancePossibleArray[index],

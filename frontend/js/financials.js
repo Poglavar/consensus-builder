@@ -70,9 +70,9 @@ async function ensureParcelsAvailable(parcelIds, options = {}) {
     if (!unique.length) return;
 
     try {
-        const ground = (typeof CadastralGroundService !== 'undefined' && CadastralGroundService)
-            ? CadastralGroundService
-            : ((typeof window !== 'undefined') ? window.CadastralGroundService : null);
+        const ground = (typeof CadastralParcelRepository !== 'undefined' && CadastralParcelRepository)
+            ? CadastralParcelRepository
+            : ((typeof window !== 'undefined') ? window.CadastralParcelRepository : null);
         if (!ground || typeof ground.ensureIds !== 'function') {
             throw new Error('Cadastral ground service is unavailable.');
         }

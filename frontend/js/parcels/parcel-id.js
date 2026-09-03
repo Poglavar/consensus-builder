@@ -28,11 +28,10 @@
     }
 
     function getParcelId(input) {
-        if (input && typeof input === 'object' && 'properties' in input) {
-            return ensureParcelId(input);
-        }
         if (input && typeof input === 'object') {
-            return ensureParcelId({ properties: input });
+            const props = 'properties' in input ? input.properties : input;
+            if (!props || typeof props !== 'object') return null;
+            return coerceId(props.parcelId ?? props.parcel_id ?? props.id);
         }
         return coerceId(input);
     }

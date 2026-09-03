@@ -1,8 +1,6 @@
-// Transaction coordinator for proposal map mutations. Apply/unapply touches three state surfaces:
-// the proposal store, parcel records, and Leaflet presentation. This module supplies one serialized
-// root boundary, a rollback journal, and dependency-light snapshot helpers. Nested proposal
-// operations receive the root transaction explicitly through their options, so they either all
-// commit or all roll back together.
+// Transaction coordinator for authored proposal and live-fabric mutations. Leaflet is a commit
+// participant of LiveParcelFabric, so it is deliberately absent from this journal: presentation
+// can neither be snapshotted as domain state nor restored independently of a fabric revision.
 (function attachProposalMutationTransactions(root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -47,88 +45,6 @@
             } else {
                 recordMap.set(key, cloneValue(saved));
             }
-        }
-        return true;
-    }
-
-    function layerList(group) {
-        if (!group) return [];
-        if (typeof group.getLayers === 'function') {
-            try { return group.getLayers().slice(); } catch (_) { return []; }
-        }
-        if (typeof group.eachLayer === 'function') {
-            const layers = [];
-            try { group.eachLayer(layer => layers.push(layer)); } catch (_) { return []; }
-            return layers;
-        }
-        return [];
-    }
-
-    function snapshotParcelPresentation(browserRoot) {
-        if (!browserRoot || typeof browserRoot !== 'object') return null;
-        const index = browserRoot.parcelLayerById instanceof Map
-            ? Array.from(browserRoot.parcelLayerById.entries())
-            : null;
-        const group = browserRoot.parcelLayer || null;
-        const collections = {};
-        ['parks', 'squares', 'lakes', 'transitStations', 'proposedBuildings'].forEach(name => {
-            if (Array.isArray(browserRoot[name])) collections[name] = browserRoot[name].slice();
-        });
-        let parcelCacheIndex = null;
-        try {
-            const cache = browserRoot.ParcelsState
-                && typeof browserRoot.ParcelsState.getParcelCache === 'function'
-                ? browserRoot.ParcelsState.getParcelCache()
-                : browserRoot.parcelCache;
-            if (cache && cache.byId instanceof Map) parcelCacheIndex = Array.from(cache.byId.entries());
-        } catch (_) { /* presentation rollback remains best effort */ }
-        return {
-            index,
-            group,
-            visibleLayers: layerList(group),
-            collections,
-            parcelCacheIndex
-        };
-    }
-
-    function restoreParcelPresentation(browserRoot, snapshot) {
-        if (!browserRoot || !snapshot) return false;
-        const group = snapshot.group;
-        if (group) {
-            const wanted = new Set(snapshot.visibleLayers || []);
-            for (const layer of layerList(group)) {
-                if (!wanted.has(layer) && typeof group.removeLayer === 'function') {
-                    try { group.removeLayer(layer); } catch (_) { /* best effort */ }
-                }
-            }
-            for (const layer of wanted) {
-                const present = typeof group.hasLayer === 'function'
-                    ? group.hasLayer(layer)
-                    : layerList(group).includes(layer);
-                if (!present && typeof group.addLayer === 'function') {
-                    try { group.addLayer(layer); } catch (_) { /* best effort */ }
-                }
-            }
-        }
-
-        if (Array.isArray(snapshot.index) && browserRoot.parcelLayerById instanceof Map) {
-            browserRoot.parcelLayerById.clear();
-            snapshot.index.forEach(([key, layer]) => browserRoot.parcelLayerById.set(key, layer));
-        }
-        Object.entries(snapshot.collections || {}).forEach(([name, entries]) => {
-            browserRoot[name] = Array.isArray(entries) ? entries.slice() : [];
-        });
-        if (Array.isArray(snapshot.parcelCacheIndex)) {
-            try {
-                const cache = browserRoot.ParcelsState
-                    && typeof browserRoot.ParcelsState.getParcelCache === 'function'
-                    ? browserRoot.ParcelsState.getParcelCache()
-                    : browserRoot.parcelCache;
-                if (cache && cache.byId instanceof Map) {
-                    cache.byId.clear();
-                    snapshot.parcelCacheIndex.forEach(([key, value]) => cache.byId.set(key, value));
-                }
-            } catch (_) { /* presentation rollback remains best effort */ }
         }
         return true;
     }
@@ -269,8 +185,6 @@
         enqueue,
         isActiveTransaction,
         snapshotRecordMap,
-        restoreRecordMap,
-        snapshotParcelPresentation,
-        restoreParcelPresentation
+        restoreRecordMap
     };
 });

@@ -25,6 +25,33 @@
         try { return JSON.parse(JSON.stringify(value)); } catch (_) { return value; }
     }
 
+    function finalizeAuthoredProposal(proposal) {
+        let boundary = global.__formationDepth;
+        if ((!boundary || typeof boundary.stripDerivedRecordData !== 'function')
+            && typeof require === 'function') {
+            if (!global.ProposalAuthoredRecord) {
+                global.ProposalAuthoredRecord = require('./proposals/authored-record.js');
+            }
+            boundary = require('./proposals/formation-depth.js');
+        }
+        if (!boundary || typeof boundary.stripDerivedRecordData !== 'function') {
+            throw new Error('Cannot serialize proposal: the authored-record boundary is unavailable.');
+        }
+        const output = boundary.stripDerivedRecordData(proposal);
+        const verdict = typeof boundary.conformanceOf === 'function'
+            ? boundary.conformanceOf(output)
+            : { flat: false, violations: [{ code: 'authored-boundary-unavailable' }] };
+        if (!verdict.flat) {
+            const violation = verdict.violations?.[0];
+            throw new Error(`Cannot serialize proposal: ${violation?.field || violation?.code || 'cadastral scope is invalid'}.`);
+        }
+        return output;
+    }
+
+    function normalizeParcelId(value) {
+        return value === undefined || value === null ? '' : String(value).trim();
+    }
+
     function normalizeGoal(rawGoal) {
         if (rawGoal === undefined || rawGoal === null) return '';
         try {
@@ -68,21 +95,24 @@
     }
 
     function sourceParcels(proposal) {
-        const values = (Array.isArray(proposal?.cadastreParcelIds) && proposal.cadastreParcelIds.length
+        const values = Array.isArray(proposal?.cadastreParcelIds)
             ? proposal.cadastreParcelIds
-            : proposal?.parentParcelIds)
-            || proposal?.buildingProposal?.parentParcelIds
-            || proposal?.roadProposal?.parentParcelIds
-            || proposal?.reparcellization?.parcelIds
-            || [];
-        return Array.isArray(values) ? [...new Set(values.map(baseParcelId).filter(Boolean))] : [];
+            : [];
+        return Array.isArray(values) ? [...new Set(values.map(normalizeParcelId).filter(Boolean))] : [];
     }
 
     function sourceFields(proposal) {
+        const authoredCadastreParcelIds = Array.isArray(proposal?.cadastreParcelIds)
+            ? [...new Set(proposal.cadastreParcelIds.map(normalizeParcelId).filter(Boolean))]
+            : [];
         return {
             name: sourceName(proposal),
             description: proposal?.description || '',
             parentParcelIds: sourceParcels(proposal),
+            // Keep the authored land declaration separate from the live parcel selection. An
+            // untouched edit must preserve this immutable scope; only a changed/new selection is
+            // projected through LiveParcelFabric at serialization time.
+            cadastreParcelIds: authoredCadastreParcelIds,
             offer: Number.isFinite(Number(proposal?.offer)) ? Number(proposal.offer) : 0,
             offerCurrency: proposal?.offerCurrency || proposal?.budgetCurrency || 'USDT',
             acquisitionMode: proposal?.acquisitionMode || null,
@@ -188,26 +218,16 @@
 
     function proposalBuildingContext(proposal) {
         const bp = proposal?.buildingProposal || {};
-        const buildings = Array.isArray(bp.buildings) && bp.buildings.length
-            ? bp.buildings
-            : (Array.isArray(proposal?.geometry?.buildings) ? proposal.geometry.buildings : []);
-        let primary = bp.buildingFeature || buildings[0] || null;
+        const buildings = Array.isArray(proposal?.geometry?.buildings)
+            ? proposal.geometry.buildings
+            : [];
+        let primary = buildings[0] || null;
         if (!primary && proposal?.buildingGeometry) {
             primary = { type: 'Feature', geometry: clone(proposal.buildingGeometry), properties: clone(proposal.buildingProperties || {}) };
         }
-        const explicitBlockParcelIds = Array.isArray(bp.blockParcelIds) ? bp.blockParcelIds : [];
-        const legacyExcludedParcelIds = Array.isArray(bp.ineligibleParcels)
-            ? bp.ineligibleParcels.map(entry => entry?.parcelId).filter(Boolean)
-            : [];
-        const designParcelIds = [...new Set([
-            ...explicitBlockParcelIds,
-            ...sourceParcels(proposal),
-            ...legacyExcludedParcelIds
-        ].map(baseParcelId).filter(Boolean))];
+        const designParcelIds = sourceParcels(proposal);
         return {
             parcelIds: designParcelIds,
-            blockParcelIds: clone(explicitBlockParcelIds.length ? explicitBlockParcelIds : designParcelIds),
-            parentDetails: clone(bp.parentParcelNumbers || bp.parentDetails || null),
             blockName: bp.blockName || null,
             parameters: clone(bp.parameters || {}),
             buildingFeature: clone(primary),
@@ -361,11 +381,21 @@
 
     function applyFieldsToProposal(output, draft) {
         const fields = draft.fields || {};
+        const selectedParcelIds = [...new Set((fields.parentParcelIds || [])
+            .map(normalizeParcelId).filter(Boolean))];
+        const authoredCadastreParcelIds = [...new Set((fields.cadastreParcelIds || [])
+            .map(normalizeParcelId).filter(Boolean))];
+        const sourceParcelIds = sourceParcels(draft.sourceSnapshot || {});
+        const selectionUnchanged = selectedParcelIds.length === sourceParcelIds.length
+            && selectedParcelIds.every(id => sourceParcelIds.includes(id));
+        const cadastreParcelIds = authoredCadastreParcelIds.length && selectionUnchanged
+            ? authoredCadastreParcelIds
+            : cadastreIdsForLiveSelection(selectedParcelIds);
         output.title = fields.name || output.title || output.name || '';
         output.name = output.title;
         output.proposalName = output.title;
         output.description = fields.description || '';
-        output.parentParcelIds = clone(fields.parentParcelIds || []);
+        output.cadastreParcelIds = cadastreParcelIds.slice();
         output.offer = Number(fields.offer) || 0;
         output.budget = output.offer;
         output.offerCurrency = fields.offerCurrency || 'USDT';
@@ -455,58 +485,43 @@
         };
     }
 
-    function parcelLayerIsLive(layer) {
-        if (!layer) return false;
-        const live = global.parcelLayer;
-        // Node/unit callers and early boot can legitimately have no layer group yet. Once the
-        // group exists, however, membership is the definition of live: parcelLayerById also holds
-        // consumed parents on purpose, and those must never be turned back into authored ground.
-        if (!live || typeof live.hasLayer !== 'function') return true;
-        try { return live.hasLayer(layer); } catch (_) { return false; }
-    }
-
     function resolveParcelLayer(id) {
         try {
-            if (global.multiParcelSelection && typeof global.multiParcelSelection.findParcelById === 'function') {
-                const value = global.multiParcelSelection.findParcelById(id);
-                if (parcelLayerIsLive(value)) return value;
-            }
-            if (typeof global.resolveParcelLayerById === 'function') {
-                const value = global.resolveParcelLayerById(id);
-                if (parcelLayerIsLive(value)) return value;
+            // Domain membership comes from the committed fabric; the presenter is the sole source
+            // of its Leaflet projection. Missing services are a hard "not selectable yet", never
+            // permission to consult a stale layer registry.
+            const fabric = global.LiveParcelFabric;
+            const presenter = global.ParcelPresenter;
+            if (fabric && typeof fabric.get === 'function'
+                && presenter && typeof presenter.getLayer === 'function') {
+                const key = String(id || '');
+                if (!key || !fabric.get(key)) return null;
+                return presenter.getLayer(key) || null;
             }
         } catch (_) { }
         return null;
     }
 
-    function baseParcelId(value) {
-        const id = value === undefined || value === null ? '' : String(value).trim();
-        if (!id) return '';
-        try {
-            if (global.__formationEdit && typeof global.__formationEdit.baseIdOf === 'function') {
-                return String(global.__formationEdit.baseIdOf(id) || '');
-            }
-        } catch (_) { }
-        let current = id;
-        let previous = '';
-        while (current && current !== previous) {
-            previous = current;
-            current = current.replace(/#[A-Za-z0-9_-]+-\d+$/i, '');
+    function liveParcelFeature(id, layer = null) {
+        const fabric = global.LiveParcelFabric;
+        void layer;
+        if (fabric && typeof fabric.get === 'function') return fabric.get(String(id || ''));
+        return null;
+    }
+
+    function cadastreIdsForLiveSelection(values) {
+        const fabric = global.LiveParcelFabric;
+        if (!fabric || typeof fabric.cadastreIdsForParcelIds !== 'function') {
+            const error = new Error('Live parcel fabric is required to resolve selected cadastral ground.');
+            error.code = 'live-parcel-fabric-unavailable';
+            throw error;
         }
-        return current.split('#')[0];
+        return fabric.cadastreIdsForParcelIds(values);
     }
 
-    function liveLayerBaseIds(id, layer) {
-        const props = layer?.feature?.properties || {};
-        const anchors = Array.isArray(props.baseParcelIds) && props.baseParcelIds.length
-            ? props.baseParcelIds
-            : [props.rootParcelId, id];
-        return [...new Set(anchors.map(baseParcelId).filter(Boolean))];
-    }
-
-    function layerOverlapsFootprint(layer, footprint) {
+    function featureOverlapsFootprint(domainFeature, footprint) {
         if (!footprint) return true;
-        const feature = layer?.feature || null;
+        const feature = domainFeature || null;
         if (!feature?.geometry) return false;
         try {
             const order = global.__planOrder;
@@ -523,9 +538,14 @@
 
     async function prepareParcelSelection(parcelIds, footprint = null) {
         const ids = [...new Set((parcelIds || []).map(String).filter(Boolean))];
-        if (!ids.length) return { ids: [], layers: [], substituted: false };
-        try {
-            const ground = global.CadastralGroundService;
+        if (!ids.length) {
+            return { ids: [], layers: [], substituted: false, complete: true, unresolvedIds: [] };
+        }
+        // With no footprint the ids are exact live selection ids. With a footprint they are the
+        // record's explicit cadastral anchors, which the repository may need to provision before
+        // the fabric can project the current pieces occupying that authored area.
+        if (footprint) try {
+            const ground = global.CadastralParcelRepository;
             if (!ground || typeof ground.ensureIds !== 'function') {
                 throw new Error('Cadastral ground service is unavailable.');
             }
@@ -533,16 +553,18 @@
         } catch (error) {
             console.warn('[ProposalEditorAdapters] Could not hydrate all draft parcels', error);
         }
-        // Authored selection is flat: requested ids identify original cadastral ground. Resolve
-        // that ground to whatever live, non-corridor parcel pieces occupy it now. No generated
-        // parent/child link is followed, so deleting and replaying disposable output cannot change
-        // how the editor finds the land.
+        // A fresh selection names exact LIVE parcels. Never turn one stale id into every current
+        // remnant of its cadastral root: a road may have separated those remnants by hundreds of
+        // metres, and silently selecting all of them authors an impossible multi-place parcel.
+        //
+        // Existing authored records are different. They deliberately persist flat cadastral
+        // anchors plus an immutable footprint; when reopening one, that footprint may rebase the
+        // anchor onto only the live pieces that still occupy the authored area. The footprint is
+        // therefore the authority to substitute descendants — without it, there is no guess.
         const resolved = [];
         const resolvedIds = new Set();
+        const unresolvedIds = [];
         let substituted = false;
-        const layerIndex = global.parcelLayerById instanceof Map
-            ? global.parcelLayerById
-            : (typeof global.getParcelLayerIdMap === 'function' ? global.getParcelLayerIdMap() : null);
         const addResolved = (id, layer) => {
             const key = String(id || '');
             if (!key || !layer || resolvedIds.has(key)) return;
@@ -551,27 +573,49 @@
         };
         ids.forEach(id => {
             const direct = resolveParcelLayer(id);
-            if (direct && layerOverlapsFootprint(direct, footprint)) {
+            if (direct && featureOverlapsFootprint(liveParcelFeature(id, direct), footprint)) {
                 addResolved(id, direct);
                 return;
             }
-            if (layerIndex && typeof layerIndex.forEach === 'function') {
-                const requestedBase = baseParcelId(id);
-                layerIndex.forEach((layer, key) => {
-                    const childId = key === undefined || key === null ? '' : String(key);
-                    if (!childId || !layer || !parcelLayerIsLive(layer)) return;
-                    const props = layer.feature?.properties || {};
-                    if (!liveLayerBaseIds(childId, layer).includes(requestedBase)) return;
-                    // The corridor slice that caused the split belongs to the road, not to this
-                    // proposal's land — only the remainder slices substitute the parent.
+            if (!footprint) {
+                unresolvedIds.push(id);
+                return;
+            }
+            let matched = false;
+            const fabric = global.LiveParcelFabric;
+            const presenter = global.ParcelPresenter;
+            if (fabric && typeof fabric.entriesForCadastre === 'function'
+                && presenter && typeof presenter.getLayer === 'function') {
+                const candidates = fabric.entriesForCadastre([id], { includeCorridors: true });
+                (Array.isArray(candidates) ? candidates : []).forEach(feature => {
+                    const childId = typeof fabric.featureId === 'function'
+                        ? fabric.featureId(feature)
+                        : '';
+                    if (!childId || !feature || !liveParcelFeature(childId, null)) return;
+                    const layer = presenter.getLayer(childId);
+                    if (!layer) return;
+                    const props = feature.properties || {};
                     if (props.isCorridor === true) return;
-                    if (!layerOverlapsFootprint(layer, footprint)) return;
+                    if (!featureOverlapsFootprint(feature, footprint)) return;
+                    matched = true;
                     addResolved(childId, layer);
                     substituted = true;
                 });
             }
+            if (!matched) unresolvedIds.push(id);
         });
-        if (!resolved.length) return { ids: [], layers: [], substituted: false };
+        // Selection is atomic. Dropping one stale member and proceeding with the remainder is just
+        // as dangerous as expanding it: the authored park/block would no longer match what the
+        // person selected.
+        if (unresolvedIds.length || !resolved.length) {
+            return {
+                ids: [],
+                layers: [],
+                substituted: false,
+                complete: false,
+                unresolvedIds
+            };
+        }
         // Only seed the multi-parcel selection once we know the parcels exist — a failed stage
         // must not leave the checkbox flipped with nothing selected.
         const selection = global.multiParcelSelection;
@@ -589,7 +633,13 @@
             selection.lastSelectedParcelId = resolved[resolved.length - 1].id;
             try { if (typeof selection.updateUI === 'function') selection.updateUI(); } catch (_) { }
         }
-        return { ids: resolved.map(entry => entry.id), layers: resolved.map(entry => entry.layer), substituted };
+        return {
+            ids: resolved.map(entry => entry.id),
+            layers: resolved.map(entry => entry.layer),
+            substituted,
+            complete: true,
+            unresolvedIds: []
+        };
     }
 
     // Exit a multi-parcel selection that an editor flow seeded (never one the user built by hand).
@@ -669,7 +719,7 @@
                 const output = commonProposalFromDraft(draft);
                 if (draft.editorPayload?.geometry) output.geometry = clone(draft.editorPayload.geometry);
                 if (draft.editorPayload?.structureProposal) output.structureProposal = clone(draft.editorPayload.structureProposal);
-                return output;
+                return finalizeAuthoredProposal(output);
             },
             summarizeChanges(source, draft) {
                 const summary = summarizeCommonChanges(source, draft);
@@ -704,8 +754,7 @@
             const structureProposal = clone(proposal?.structureProposal || {
                 kind: key,
                 applied: false,
-                geometry,
-                parentParcelIds: sourceParcels(proposal)
+                geometry
             });
             structureProposal.kind = key;
             structureProposal.geometry = clone(geometry);
@@ -749,10 +798,10 @@
             const structureProposal = clone(draft?.editorPayload?.structureProposal || {});
             structureProposal.kind = key;
             structureProposal.geometry = clone(structureProposal.geometry || draft?.editorPayload?.geometry || null);
-            structureProposal.parentParcelIds = clone(draft?.fields?.parentParcelIds || []);
+            delete structureProposal.parentParcelIds;
             output.structureProposal = structureProposal;
             output.geometry = clone(draft?.editorPayload?.geometry || structureProposal.geometry);
-            return output;
+            return finalizeAuthoredProposal(output);
         };
         return adapter;
     }
@@ -827,13 +876,13 @@
             const station = clone(draft?.editorPayload?.structureProposal || {});
             station.kind = 'station';
             station.geometry = clone(station.geometry || draft?.editorPayload?.geometry || null);
-            station.parentParcelIds = clone(draft?.fields?.parentParcelIds || []);
+            delete station.parentParcelIds;
             output.goal = 'station';
             output.primaryType = proposalTypeLabel('station');
             output.type = 'structure';
             output.structureProposal = station;
             output.geometry = { stationGraphics: clone(station.geometry) };
-            return output;
+            return finalizeAuthoredProposal(output);
         };
         return adapter;
     }
@@ -907,12 +956,10 @@
             output.roadProposal = {
                 ...(clone(output.roadProposal || {})),
                 definition: clone(definition),
-                parentParcelIds: clone(draft.fields?.parentParcelIds || []),
-                childParcelIds: [],
                 applied: false,
                 isCorridor: true
             };
-            return output;
+            return finalizeAuthoredProposal(output);
         },
         summarizeChanges(source, draft) {
             const summary = summarizeCommonChanges(source, draft);
@@ -1050,29 +1097,19 @@
                 const groundSurface = typology === 'single' ? clone(context.groundSurface || null) : null;
                 if (groundSurface) output.geometry.groundSurface = groundSurface;
                 else delete output.geometry.groundSurface;
-                output.buildingGeometry = clone(features[0]?.geometry || null);
-                output.buildingProperties = clone(features[0]?.properties || {});
                 output.buildingProposal = {
                     ...(clone(output.buildingProposal || {})),
                     applied: false,
                     typologyType: typology,
-                    parentParcelIds: clone(draft.fields?.parentParcelIds || []),
-                    ...(typology === 'block' ? {
-                        blockParcelIds: clone(context.blockParcelIds?.length
-                            ? context.blockParcelIds
-                            : (context.parcelIds?.length ? context.parcelIds : draft.fields?.parentParcelIds || []))
-                    } : {}),
                     ...(typology === 'single' && context.takeWholeParcels === true ? { takeWholeParcels: true } : {}),
                     parameters: clone(context.parameters || {}),
-                    buildingFeature: clone(features[0] || null),
-                    buildings: clone(features),
                     // Plots the rule left out, with the building each would carry. Not buildings and
                     // never applied — the 3D view draws them see-through so a gap in an applied block
                     // says "this plot cannot take one as it stands" instead of nothing at all.
                     ineligibleParcels: clone(context.ineligibleParcels || []),
                     blockName: context.blockName || null
                 };
-                return output;
+                return finalizeAuthoredProposal(output);
             },
             summarizeChanges(source, draft) {
                 const summary = summarizeCommonChanges(source, draft);
@@ -1129,16 +1166,6 @@
         validate(draft) {
             const common = commonValidation(draft);
             const topology = reparcellizationTopologyValidation(draft.editorPayload?.plan);
-            const requiredParents = new Set((draft.fields?.parentParcelIds || []).map(String));
-            const planParents = new Set((draft.editorPayload?.plan?.parcelIds || []).map(String));
-            const missingParents = [...requiredParents].filter(id => !planParents.has(id));
-            if (missingParents.length) {
-                topology.errors.push(issue(
-                    'missing-parent-coverage',
-                    `The plan is missing ${missingParents.length} required parent parcel(s).`,
-                    'editorPayload.plan.parcelIds'
-                ));
-            }
             return {
                 valid: common.errors.length + topology.errors.length === 0,
                 errors: [...common.errors, ...topology.errors],
@@ -1151,19 +1178,9 @@
         async openDesignEditor(draft) {
             const plan = clone(draft.editorPayload?.plan || {});
             const selection = await prepareProposalDraftParcelSelection(draft);
-            // The plan's OWN parcelIds are the record of what was pooled, and they are not
-            // negotiable. Overwriting them with whatever the map resolves handed the editor the
-            // plan's own CHILD parcels as if they were its inputs — the pool then became the
-            // outline of the outputs, which is circular: a plot dragged outside the plan simply
-            // enlarged the boundary that was supposed to contain it. Only a plan that has no
-            // record of its inputs (a brand-new one) takes them from the selection.
-            const declared = Array.isArray(plan.parcelIds) ? plan.parcelIds.filter(Boolean).map(String) : [];
-            if (!declared.length) {
-                const fromProposal = (draft.fields?.parentParcelIds || []).filter(Boolean).map(String);
-                plan.parcelIds = fromProposal.length ? fromProposal : selection.ids;
-            } else {
-                plan.parcelIds = declared;
-            }
+            // Input land belongs to the draft fields and ultimately the proposal's single root
+            // cadastre declaration. The reparcellization payload contains only its authored output.
+            plan.parcelIds = (draft.fields?.parentParcelIds || selection.ids).filter(Boolean).map(String);
             // A saved plan can be reopened without its parents on the map: the editor fetches them
             // by id. Only a plan with nothing to reopen on genuinely needs a live selection.
             if (!selection.layers.length && !(Array.isArray(plan.polygons) && plan.polygons.length)) {
@@ -1184,11 +1201,12 @@
         serializeProposal(draft) {
             const output = commonProposalFromDraft(draft);
             const plan = clone(draft.editorPayload?.plan || {});
-            plan.parcelIds = clone(draft.fields?.parentParcelIds || []);
+            delete plan.parcelIds;
+            delete plan.parentParcelIds;
             output.goal = 'reparcellization';
             output.primaryType = 'Reparcellization';
             output.reparcellization = plan;
-            return output;
+            return finalizeAuthoredProposal(output);
         },
         summarizeChanges(source, draft) {
             const summary = summarizeCommonChanges(source, draft);

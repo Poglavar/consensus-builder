@@ -173,34 +173,18 @@ function buildProposalScreenshotContext(parcelLayers = [], options = {}) {
         }
     }
 
-    // Fallback: if the road/track flow did not seed parcel selection, derive parcel outlines from the parent parcel ids
+    // If the road/track flow did not seed parcel outlines, explicitly expand its cadastral anchors
+    // through the committed live fabric. Leaflet remains a screenshot renderer, never a data source.
     if (goalKey === 'road-track' && roadContext && parcelPolygons.length === 0 && Array.isArray(roadContext.parentParcelIds) && roadContext.parentParcelIds.length) {
         const ids = roadContext.parentParcelIds
             .map(id => (id ? id.toString() : null))
             .filter(Boolean);
 
-        const findLayerById = (parcelId) => {
-            if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection && typeof multiParcelSelection.findParcelById === 'function') {
-                const layer = multiParcelSelection.findParcelById(parcelId);
-                if (layer) return layer;
-            }
-            if (typeof parcelLayer !== 'undefined' && parcelLayer && typeof parcelLayer.getLayers === 'function') {
-                const layers = parcelLayer.getLayers();
-                for (const layer of layers) {
-                    const id = getParcelIdFromFeature(layer?.feature);
-                    if (id && id.toString() === parcelId) {
-                        return layer;
-                    }
-                }
-            }
-            return null;
-        };
-
-        ids.forEach(id => {
-            const layer = findLayerById(id);
-            if (!layer) return;
+        const layers = window.ParcelPresenter?.resolveLiveLayers?.(ids, { includeCorridors: true }) || [];
+        layers.forEach(layer => {
             try {
-                const geom = layer?.feature?.geometry;
+                const liveId = window.LiveParcelFabric?.featureId?.(layer.feature);
+                const geom = liveId ? window.LiveParcelFabric?.get?.(liveId)?.geometry : null;
                 if (geom?.type === 'Polygon' && Array.isArray(geom.coordinates)) {
                     parcelPolygons.push(geom.coordinates);
                 } else if (geom?.type === 'MultiPolygon' && Array.isArray(geom.coordinates)) {
@@ -232,17 +216,13 @@ function buildProposalScreenshotContext(parcelLayers = [], options = {}) {
         });
     }
 
-    const appendParcelsFromLayer = (target = [], targetBounds = null, limit = 150) => {
-        const parcelLayer = (typeof window !== 'undefined' && window.parcelLayer)
-            || (typeof window !== 'undefined' && window.parcelState && typeof window.parcelState.getParcelLayer === 'function' && window.parcelState.getParcelLayer())
-            || null;
-        if (!parcelLayer || !targetBounds || typeof targetBounds.intersects !== 'function' || typeof parcelLayer.getLayers !== 'function') return target;
-        const layers = parcelLayer.getLayers();
-        for (const layer of layers) {
+    const appendParcelsFromFabric = (target = [], targetBounds = null, limit = 150) => {
+        const fabric = window.LiveParcelFabric;
+        if (!fabric || !targetBounds || typeof fabric.queryBounds !== 'function') return target;
+        const features = fabric.queryBounds(targetBounds, { includeCorridors: true });
+        for (const feature of features) {
             if (target.length >= limit) break;
-            const lb = (layer && typeof layer.getBounds === 'function') ? layer.getBounds() : null;
-            if (!lb || !targetBounds.intersects(lb)) continue;
-            const geom = layer?.feature?.geometry;
+            const geom = feature?.geometry;
             if (!geom || !geom.coordinates) continue;
             if (geom.type === 'Polygon' && Array.isArray(geom.coordinates)) {
                 target.push(geom.coordinates);
@@ -257,21 +237,21 @@ function buildProposalScreenshotContext(parcelLayers = [], options = {}) {
 
     // If we have a road geometry but no parcel outlines yet, pull nearby parcels from the current layer so borders are visible.
     if (fitToPolygonOnly && parcelPolygons.length === 0 && bounds && typeof bounds.isValid === 'function' && bounds.isValid()) {
-        appendParcelsFromLayer(parcelPolygons, bounds, 200);
+        appendParcelsFromFabric(parcelPolygons, bounds, 200);
     }
 
     if (!polygon) return null;
 
-    // Compute neighbour polygons from the client-side parcel cache
+    // Compute neighbour polygons from the committed live fabric.
     let neighbours = [];
-    if (hasParcels && typeof window.findNeighbourPolygonsFromCache === 'function') {
+    if (hasParcels && typeof window.findNeighbourPolygonsFromLiveFabric === 'function') {
         const selectedIds = new Set();
         parcelLayers.forEach(layer => {
             const id = getParcelIdFromFeature(layer?.feature);
             if (id) selectedIds.add(id.toString());
         });
         selectedIds.forEach(parcelId => {
-            const found = window.findNeighbourPolygonsFromCache(parcelId);
+            const found = window.findNeighbourPolygonsFromLiveFabric(parcelId);
             if (Array.isArray(found)) {
                 found.forEach(ring => neighbours.push(ring));
             }
@@ -907,15 +887,11 @@ function showUploadProposalModal(proposal) {
                 const localKey = proposal && (proposal.proposalId || (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null));
                 const newProposal = localKey ? proposalStorage.getProposal(localKey) : null;
                 if (newProposal) {
-                    // Use the first parent parcel for context; no child fallback
-                    const firstParcelId = Array.isArray(newProposal.parentParcelIds) && newProposal.parentParcelIds.length > 0
-                        ? newProposal.parentParcelIds[0]
-                        : null;
                     const proposalKey = (typeof getProposalKey === 'function' ? getProposalKey(newProposal) : null) || newProposal.proposalId || localKey;
                     if (typeof selectAndHighlightProposal === 'function') {
-                        selectAndHighlightProposal(proposalKey, firstParcelId, false, true);
+                        selectAndHighlightProposal(proposalKey, null, false, true);
                     } else if (typeof showProposalInfo === 'function') {
-                        showProposalInfo(newProposal, firstParcelId);
+                        showProposalInfo(newProposal, null);
                     }
                 }
             }
@@ -1045,7 +1021,7 @@ function showUploadProposalModal(proposal) {
 
             // Trigger the same mint flow as "Create Proposal" button
             // We need to get the parcel IDs from the proposal
-            const parcelIds = proposal.parentParcelIds || [];
+            const parcelIds = proposal.cadastreParcelIds || [];
             if (parcelIds.length === 0) {
                 throw new Error('No parcels associated with this proposal');
             }
@@ -1054,16 +1030,8 @@ function showUploadProposalModal(proposal) {
             const parcelFeatureById = new Map();
             for (const parcelId of parcelIds) {
                 const idStr = parcelId && parcelId.toString ? parcelId.toString() : String(parcelId);
-                let parcelLayer = null;
-                if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.findParcelById) {
-                    parcelLayer = multiParcelSelection.findParcelById(idStr);
-                }
-                if (!parcelLayer && typeof resolveParcelLayerById === 'function') {
-                    parcelLayer = resolveParcelLayerById(idStr);
-                }
-                if (parcelLayer && parcelLayer.feature) {
-                    parcelFeatureById.set(idStr, parcelLayer.feature);
-                }
+                const feature = window.CadastralParcelRepository?.get?.(idStr) || null;
+                if (feature) parcelFeatureById.set(idStr, feature);
             }
 
             // Check prerequisite parcel NFTs before minting (mirrors Create Proposal flow)
@@ -1148,30 +1116,10 @@ function showUploadProposalModal(proposal) {
 
                         // If no cached screenshot, try to capture one
                         if (!screenshotDataUrl) {
-                            // Build polygon from parent features or fetch them
-                            let parentFeatures = proposal.parentFeatures || [];
-                            console.log('[shareMint] Initial parentFeatures count:', parentFeatures.length, 'parcelIds:', parcelIds);
-
-                            if (!parentFeatures.length && Array.isArray(parcelIds) && parcelIds.length > 0) {
-                                // Try to get features from parcel layer index
-                                for (const pid of parcelIds) {
-                                    let layer = null;
-                                    // Try findParcelLayerById first (local function)
-                                    if (typeof findParcelLayerById === 'function') {
-                                        layer = findParcelLayerById(pid);
-                                    }
-                                    // Fallback to resolveParcelLayerById (global)
-                                    if (!layer && typeof resolveParcelLayerById === 'function') {
-                                        layer = resolveParcelLayerById(pid);
-                                    }
-                                    if (layer && layer.feature && layer.feature.geometry) {
-                                        parentFeatures.push(layer.feature);
-                                        console.log('[shareMint] Found feature for parcel:', pid);
-                                    } else {
-                                        console.log('[shareMint] No feature found for parcel:', pid);
-                                    }
-                                }
-                            }
+                            // Screenshot geometry is read from the same repository that loaded the
+                            // proposal's cadastral ground; proposal snapshots and map layers are not
+                            // alternate geometry stores.
+                            const parentFeatures = window.CadastralParcelRepository?.getMany?.(parcelIds) || [];
 
                             console.log('[shareMint] Final parentFeatures count:', parentFeatures.length);
 
@@ -1251,7 +1199,7 @@ function showUploadProposalModal(proposal) {
                                 proposalId: proposal.proposalId || '',
                                 goal: goalKey,
                                 title: proposalName,
-                                parcelIds: parcelIds,
+                                cadastreParcelIds: parcelIds,
                                 conditional: isConditional,
                                 lens: lensAddresses,
                                 offer: {

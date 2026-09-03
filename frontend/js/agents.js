@@ -622,7 +622,7 @@ function isRoadLikeParcel(layer) {
  */
 function isStructureDescendantParcel(layer) {
     const producerId = layer && layer.feature && layer.feature.properties
-        ? (layer.feature.properties.producedByProposalId || layer.feature.properties.ancestorProposal)
+        ? layer.feature.properties.producedByProposalId
         : null;
     if (!producerId) return false;
     if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getProposal !== 'function') return false;
@@ -712,9 +712,9 @@ function agentDecideAction(agent, turnContext = null) {
                 const allProposals = preloadedProposals || proposalStorage.getAllProposals();
                 for (const proposal of allProposals) {
                     if (getLifecycleStatus(proposal) !== 'Executed') {
-                        const parcelIds = Array.isArray(proposal.parentParcelIds)
-                            ? proposal.parentParcelIds
-                            : (Array.isArray(proposal.childParcelIds) ? proposal.childParcelIds : []);
+                        const parcelIds = Array.isArray(proposal.cadastreParcelIds)
+                            ? proposal.cadastreParcelIds
+                            : [];
                         for (const parcelId of parcelIds) {
                             const parcelIdStr = parcelId.toString();
                             const ownerState = (typeof getProposalOwnerAcceptanceState === 'function')
@@ -794,15 +794,17 @@ function agentDecideAction(agent, turnContext = null) {
                 return { type: 'nothing' };
             }
 
-            // Only structure goals: ProposalManager.applyProposal can bootstrap a
-            // park/square/lake from just (goal, parentParcelIds) via
-            // _bootstrapStructureProposalFromMetadata. road-track and buildings
-            // require their own sub-proposal payloads (roadProposal /
-            // buildingProposal) that the agent can't synthesise; including them
-            // produced executed proposals whose auto-apply on every parcel load
-            // logged "Unsupported proposal goal: parcel" forever.
+            // Agents author the same complete structure instruction as the UI.  The selected live
+            // parcel ids below are transient authoring input only; the durable proposal receives
+            // their union geometry and the store projects them once to immutable cadastral ids.
             const proposalTypes = ['park', 'square', 'lake'];
             const randomType = proposalTypes[Math.floor(Math.random() * proposalTypes.length)];
+            const structureGeometry = (typeof buildGeometryFromParcels === 'function')
+                ? buildGeometryFromParcels(proposalParcels.map(parcel => parcel.layer))
+                : null;
+            if (!structureGeometry || !structureGeometry.type) {
+                return { type: 'nothing' };
+            }
 
             const maxBudget = Math.floor(agent.ethBalance * 0.05 * 100) / 100; // Max 5% of ETH, rounded to 2 decimals
             const budget = Math.max(0.01, Math.random() * maxBudget);
@@ -810,6 +812,7 @@ function agentDecideAction(agent, turnContext = null) {
             return {
                 type: 'create',
                 parcelIds: proposalParcels.map(p => p.id),
+                geometry: structureGeometry,
                 goal: randomType,
                 proposalType: randomType, // legacy logging only; remove once consumers migrated
                 title: randomType,
@@ -944,25 +947,44 @@ function executeAgentAction(agent, action) {
                     bounds = calculateProposalBounds(action.parcelIds);
                 }
 
+                const fabric = (typeof window !== 'undefined') ? window.LiveParcelFabric : null;
+                if (!fabric || typeof fabric.cadastreIdsForParcelIds !== 'function') {
+                    return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a>`
+                        + ' failed to create a proposal because cadastral ground is unavailable.';
+                }
+                let cadastreParcelIds;
+                try {
+                    cadastreParcelIds = fabric.cadastreIdsForParcelIds(action.parcelIds);
+                } catch (_) {
+                    return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a>`
+                        + ' failed to create a proposal because its selected ground is no longer current.';
+                }
+                if (!cadastreParcelIds.length || !action.geometry?.type) {
+                    return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a>`
+                        + ' failed to create a proposal because its authored geometry is incomplete.';
+                }
+
                 const proposal = {
                     author: agent.name,
                     title: action.title,
                     description: action.description,
                     offer: action.budget, // This is the budget that will be paid out
                     budget: action.budget, // Add budget field as specified
-                    parcelIds: action.parcelIds,
-                    // Persist the actual goal the agent picked so once the
-                    // proposal is executed the apply path can rehydrate the
-                    // right sub-proposal. Previously this was hardcoded to
-                    // 'parcel', which the apply pipeline rejects as
-                    // "Unsupported proposal goal" on every parcel load.
+                    cadastreParcelIds,
                     goal: action.goal || 'square',
+                    structureProposal: {
+                        kind: action.goal || 'square',
+                        geometry: action.geometry,
+                        blockName: action.title || null
+                    },
                     acceptedParcelIds: [],
                     bounds: bounds, // Store bounds for reliable positioning
                     createdAt: new Date().toISOString() // Add creation timestamp
                 };
 
-                const proposalId = proposalStorage.addProposal(proposal);
+                const proposalId = proposalStorage.addProposal(proposal, {
+                    selectedParcelIds: action.parcelIds
+                });
                 if (proposalId === null) {
                     // console.log('Attempt failed:This exact proposal already exists');
                     return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a>`
@@ -2103,7 +2125,7 @@ async function loadAgentChainData(agent, isUserAgent) {
 
             const pendingProposals = [];
             const acceptedProposals = [];
-            const proposalAcceptanceMap = new Map(); // proposalId -> {parentParcelIds:Set, acceptedParcels:Set}
+            const proposalAcceptanceMap = new Map(); // proposalId -> {cadastreParcelIds:Set, acceptedParcels:Set}
 
             const uniq = arr => Array.from(new Set(arr));
             const existingParcels = agentDialogListData && agentDialogListData.parcels ? agentDialogListData.parcels.data : [];
@@ -2126,7 +2148,7 @@ async function loadAgentChainData(agent, isUserAgent) {
                     try {
                         proposalStorage.importOnChainProposal({
                             proposalId: p.proposalId,
-                            parentParcelIds: Array.isArray(p.parentParcelIds) ? p.parentParcelIds : [],
+                            cadastreParcelIds: Array.isArray(p.cadastreParcelIds) ? p.cadastreParcelIds : [],
                             acceptedParcels: [],
                             isConditional: p.isConditional,
                             imageURI: p.imageURI,
@@ -2201,13 +2223,13 @@ async function loadAgentChainData(agent, isUserAgent) {
             }
 
             const ownedParcelIds = parcels.map(p => p.parcelId);
-            const addAcceptanceInfo = (proposalId, parentParcelIds = [], acceptedParcels = []) => {
+            const addAcceptanceInfo = (proposalId, cadastreParcelIds = [], acceptedParcels = []) => {
                 let entry = proposalAcceptanceMap.get(proposalId);
                 if (!entry) {
-                    entry = { parentParcelIds: new Set(), acceptedParcels: new Set() };
+                    entry = { cadastreParcelIds: new Set(), acceptedParcels: new Set() };
                     proposalAcceptanceMap.set(proposalId, entry);
                 }
-                (parentParcelIds || []).forEach(pid => entry.parentParcelIds.add(pid));
+                (cadastreParcelIds || []).forEach(pid => entry.cadastreParcelIds.add(pid));
                 (acceptedParcels || []).forEach(pid => entry.acceptedParcels.add(pid));
             };
 
@@ -2219,7 +2241,7 @@ async function loadAgentChainData(agent, isUserAgent) {
                     for (const parcel of parcels) {
                         const proposalsWithStatus = useSolana
                             ? (solanaAllProposals || [])
-                                .filter(proposal => Array.isArray(proposal.parentParcelIds) && proposal.parentParcelIds.includes(parcel.parcelId))
+                                .filter(proposal => Array.isArray(proposal.cadastreParcelIds) && proposal.cadastreParcelIds.includes(parcel.parcelId))
                                 .map(proposal => ({
                                     proposalId: proposal.proposalId,
                                     hasAccepted: Array.isArray(proposal.acceptedParcels) && proposal.acceptedParcels.includes(parcel.parcelId)
@@ -2258,7 +2280,7 @@ async function loadAgentChainData(agent, isUserAgent) {
                     const acceptanceByProposal = status && status.acceptanceByProposal ? status.acceptanceByProposal : {};
                     Object.keys(acceptanceByProposal).forEach(pid => {
                         const info = acceptanceByProposal[pid] || {};
-                        addAcceptanceInfo(pid, info.parentParcelIds || [], info.acceptedParcels || []);
+                        addAcceptanceInfo(pid, info.cadastreParcelIds || [], info.acceptedParcels || []);
                     });
                     if (status && Array.isArray(status.pending)) {
                         pendingProposals.push(...status.pending);
@@ -2289,9 +2311,9 @@ async function loadAgentChainData(agent, isUserAgent) {
                 const importHydratedProposal = (proposalId, proposalData = {}, acceptanceInfo = null) => {
                     proposalStorage.importOnChainProposal({
                         proposalId: proposalId,
-                        parentParcelIds: Array.isArray(proposalData.parentParcelIds)
-                            ? proposalData.parentParcelIds
-                            : (acceptanceInfo ? Array.from(acceptanceInfo.parentParcelIds) : []),
+                        cadastreParcelIds: Array.isArray(proposalData.cadastreParcelIds)
+                            ? proposalData.cadastreParcelIds
+                            : (acceptanceInfo ? Array.from(acceptanceInfo.cadastreParcelIds) : []),
                         acceptedParcels: acceptanceInfo ? Array.from(acceptanceInfo.acceptedParcels) : [],
                         isConditional: proposalData.isConditional,
                         imageURI: proposalData.imageURI,
@@ -2416,7 +2438,7 @@ function getUserPendingProposals(agentId, chainId = null) {
     const relevantProposals = allProposals
         .filter(proposal =>
             getLifecycleStatus(proposal) === 'Active' &&
-            (Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : (Array.isArray(proposal.childParcelIds) ? proposal.childParcelIds : [])).some(parcelId => userParcelIds.includes(parcelId)) &&
+            (Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds : []).some(parcelId => userParcelIds.includes(parcelId)) &&
             (
                 proposal.isMinted !== true ||
                 (normalizedChain &&
@@ -2883,9 +2905,9 @@ function viewPendingProposal(proposalId) {
     // Focus and highlight the proposal but don't show details modal
     if (typeof selectAndHighlightProposal === 'function' && typeof proposalStorage !== 'undefined') {
         const proposal = proposalStorage.getProposal(proposalId);
-        const parcels = Array.isArray(proposal?.parentParcelIds)
-            ? proposal.parentParcelIds
-            : (Array.isArray(proposal?.childParcelIds) ? proposal.childParcelIds : []);
+        const parcels = Array.isArray(proposal?.cadastreParcelIds)
+            ? proposal.cadastreParcelIds
+            : [];
         if (proposal && parcels.length > 0) {
             selectAndHighlightProposal(proposalId, parcels[0], true);
         }
@@ -2922,20 +2944,17 @@ function closeAgentDialog() {
  */
 async function ensureParcelLoaded(parcelId) {
     const targetId = parcelId && parcelId.toString();
-    if (!targetId) return false;
+    if (!targetId) return null;
 
-    const ground = (typeof CadastralGroundService !== 'undefined' && CadastralGroundService)
-        ? CadastralGroundService
-        : ((typeof window !== 'undefined') ? window.CadastralGroundService : null);
-    if (!ground || typeof ground.ensureIds !== 'function') return false;
+    const fabric = window.LiveParcelFabric;
+    const presenter = window.ParcelPresenter;
+    if (fabric?.get?.(targetId) && presenter?.getLayer?.(targetId)) return targetId;
+    const ground = window.CadastralParcelRepository;
+    if (!ground || typeof ground.ensureIds !== 'function') return null;
     try {
         await ground.ensureIds([targetId]);
-        const layer = (typeof resolveParcelLayerById === 'function')
-            ? resolveParcelLayerById(targetId)
-            : ((typeof multiParcelSelection !== 'undefined' && multiParcelSelection?.findParcelById)
-                ? multiParcelSelection.findParcelById(targetId)
-                : null);
-        return !!layer;
+        const layer = presenter?.resolveLiveLayers?.([targetId], { includeCorridors: false })?.[0] || null;
+        return layer ? fabric?.featureId?.(layer.feature) || null : null;
     } catch (error) {
         console.warn('Failed to load parcel before focusing', targetId, error);
     }
@@ -2943,13 +2962,13 @@ async function ensureParcelLoaded(parcelId) {
 }
 
 async function focusOnParcel(parcelId) {
-    const loaded = await ensureParcelLoaded(parcelId);
-    if (!loaded) {
+    const liveParcelId = await ensureParcelLoaded(parcelId);
+    if (!liveParcelId) {
         console.warn('Parcel could not be loaded for focus', parcelId);
         return;
     }
     if (typeof selectParcel === 'function') {
-        selectParcel(parcelId);
+        selectParcel(liveParcelId);
         closeAgentDialog();
     }
 }
@@ -2963,9 +2982,9 @@ function focusOnProposal(proposalId) {
 
     if (typeof selectAndHighlightProposal === 'function' && typeof proposalStorage !== 'undefined') {
         const proposal = proposalStorage.getProposal(proposalId);
-        const parcels = Array.isArray(proposal?.parentParcelIds)
-            ? proposal.parentParcelIds
-            : (Array.isArray(proposal?.childParcelIds) ? proposal.childParcelIds : []);
+        const parcels = Array.isArray(proposal?.cadastreParcelIds)
+            ? proposal.cadastreParcelIds
+            : [];
         if (proposal && parcels.length > 0) {
             selectAndHighlightProposal(proposalId, parcels[0], true);
         }
@@ -3125,8 +3144,8 @@ function getAgentParcelDetails(agentId) {
 async function focusOnParcelFromAgent(parcelId) {
     // Close the agent dialog first
     // Wait to close until we've confirmed the parcel is available
-    const loaded = await ensureParcelLoaded(parcelId);
-    if (!loaded) {
+    const liveParcelId = await ensureParcelLoaded(parcelId);
+    if (!liveParcelId) {
         console.warn('Parcel not available for focusing from agent dialog', parcelId);
         return;
     }
@@ -3142,27 +3161,7 @@ async function focusOnParcelFromAgent(parcelId) {
         }
     }
 
-    // Always call selectParcel with a small delay to ensure any cleanup is complete
-    setTimeout(() => {
-        if (typeof selectParcel === 'function') {
-            selectParcel(parcelId);
-
-            // Force re-apply selection style in case it was cleared by proposal layer updates
-            setTimeout(() => {
-                const selectedLayer = typeof parcelLayer !== 'undefined' && parcelLayer ?
-                    parcelLayer.getLayers().find(layer => {
-                        if (!layer?.feature) return false;
-                        const candidateId = (typeof ensureParcelId === 'function') ? ensureParcelId(layer.feature) : (layer.feature.properties?.parcelId || layer.feature.properties?.parcel_id || layer.feature.properties?.id);
-                        return candidateId && candidateId.toString() === parcelId.toString();
-                    }) : null;
-
-                if (selectedLayer && typeof selectedParcelStyle !== 'undefined') {
-                    selectedLayer.setStyle(selectedParcelStyle);
-                    selectedLayer.bringToFront();
-                }
-            }, 10);
-        }
-    }, 100);
+    if (typeof selectParcel === 'function') selectParcel(liveParcelId);
 }
 
 function initialiseAgentStorage() {

@@ -6,10 +6,10 @@
 // so they never actually ran.
 
 function getSharedGroundService() {
-    if (typeof CadastralGroundService !== 'undefined' && CadastralGroundService) {
-        return CadastralGroundService;
+    if (typeof CadastralParcelRepository !== 'undefined' && CadastralParcelRepository) {
+        return CadastralParcelRepository;
     }
-    return (typeof window !== 'undefined') ? window.CadastralGroundService : null;
+    return (typeof window !== 'undefined') ? window.CadastralParcelRepository : null;
 }
 
 function focusMapOnSharedProposal(proposal, payload) {
@@ -57,17 +57,15 @@ function focusMapOnSharedProposal(proposal, payload) {
 
         const geometryFeatures = [];
         if (proposal.roadProposal) {
-            const childIds = ensureArrayOfStrings(proposal.roadProposal.childParcelIds || []);
-            childIds.forEach(id => {
-                const feature = getParcelFeatureForHighlight(id, proposal);
-                if (feature && feature.geometry) {
-                    geometryFeatures.push(feature);
-                }
+            const polygon = proposal.roadProposal.definition?.polygon;
+            if (polygon) geometryFeatures.push({ type: 'Feature', properties: {}, geometry: polygon });
+            (proposal.roadProposal.definition?.features || []).forEach(feature => {
+                if (feature?.geometry) geometryFeatures.push(feature);
             });
         }
-        if (proposal.buildingProposal && proposal.buildingProposal.buildingFeature) {
-            geometryFeatures.push(proposal.buildingProposal.buildingFeature);
-        }
+        (proposal.geometry?.buildings || []).forEach(feature => {
+            if (feature?.geometry) geometryFeatures.push(feature);
+        });
         if (proposal.structureProposal && proposal.structureProposal.geometry) {
             geometryFeatures.push({ type: 'Feature', geometry: proposal.structureProposal.geometry });
         }
@@ -86,7 +84,7 @@ function focusMapOnSharedProposal(proposal, payload) {
             }
         }
 
-        const parcelLayers = ensureArrayOfStrings(proposal.parentParcelIds)
+        const parcelLayers = ensureArrayOfStrings(proposal.cadastreParcelIds)
             .map(id => findParcelLayerById(id))
             .filter(layer => layer && typeof layer.getBounds === 'function');
         if (parcelLayers.length) {
@@ -257,204 +255,43 @@ function buildSharedProposalsPayload(appliedProposals) {
     }
 
     const featuresForBounds = [];
+    const addGeometry = (geometry, properties = {}) => {
+        if (!geometry || !/Polygon$/.test(String(geometry.type || ''))) return;
+        featuresForBounds.push({ type: 'Feature', properties, geometry: deepClone(geometry) });
+    };
+    const addFeature = feature => {
+        if (feature?.type === 'Feature' && feature.geometry) featuresForBounds.push(deepClone(feature));
+    };
     const sanitized = appliedProposals.map(proposal => {
-        const parentIdsSet = new Set();
+        // Sharing publishes the same authored record the local store owns. It never reconstructs
+        // parcel parents or children from runtime output; those pieces belong to LiveParcelFabric.
+        const candidate = deepClone(proposal);
+        candidate.goal = resolveProposalGoalKey(proposal) || proposal.goal || null;
+        candidate.cadastreParcelIds = ancestryApi.computeCadastreParcelIds(proposal);
+        candidate.ownershipFlow = typeof ancestryApi.computeOwnershipFlow === 'function'
+            ? ancestryApi.computeOwnershipFlow(proposal)
+            : (Array.isArray(proposal.ownershipFlow) ? deepCloneArray(proposal.ownershipFlow) : []);
+        candidate.minted = isProposalMinted(proposal);
 
-        const goalKey = resolveProposalGoalKey(proposal) || null;
-
-        const sanitizedProposal = {
-            proposalId: proposal.proposalId,
-            goal: goalKey,
-            title: proposal.title || '',
-            description: proposal.description || '',
-            author: proposal.author || '',
-            createdAt: proposal.createdAt || new Date().toISOString(),
-            updatedAt: proposal.updatedAt || proposal.createdAt || new Date().toISOString(),
-            offer: typeof proposal.offer === 'number' ? proposal.offer : (proposal.offer || null),
-            parcelIds: ensureArrayOfStrings(proposal.parentParcelIds),
-            acceptedParcelIds: ensureArrayOfStrings(proposal.acceptedParcelIds),
-            // The publish-time stamps, computed here because a payload share IS a publication —
-            // this snapshot is what the recipient replays (see buildUploadReadyProposal, which
-            // stamps the same fields on the upload path).
-            cadastreParcelIds: ancestryApi.computeCadastreParcelIds(proposal),
-            ownershipFlow: (typeof window !== 'undefined' && window.__cadastreAncestry
-                && typeof window.__cadastreAncestry.computeOwnershipFlow === 'function')
-                ? window.__cadastreAncestry.computeOwnershipFlow(proposal)
-                : (Array.isArray(proposal.ownershipFlow) ? proposal.ownershipFlow : []),
-            color: proposal.color || null,
-            minted: isProposalMinted(proposal),
-            onchain: proposal.onchain ? {
-                transactionHash: proposal.onchain.transactionHash || null,
-                proposalId: proposal.onchain.proposalId || null,
-                chainId: proposal.onchain.chainId || null,
-                contractAddress: proposal.onchain.contractAddress || null,
-                metadataUri: proposal.onchain.metadataUri || null,
-                metadataUrl: proposal.onchain.metadataUrl || null,
-                imageUri: proposal.onchain.imageUri || null,
-                imageUrl: proposal.onchain.imageUrl || null
-            } : null
-        };
-        if (proposal.coordinatedPlanId !== undefined && proposal.coordinatedPlanId !== null
-            && String(proposal.coordinatedPlanId).trim()) {
-            sanitizedProposal.coordinatedPlanId = String(proposal.coordinatedPlanId).trim();
-        }
-
-        // Ancestors will be computed per proposal type below (prefer true parents)
-        const lensEntries = normalizeLensEntries(proposal.lens || proposal.lensEntries || proposal.lensAddresses);
-        if (lensEntries.length) {
-            sanitizedProposal.lens = lensEntries;
-        }
-
-        if (proposal.roadProposal) {
-            const childParcelIds = ensureArrayOfStrings(proposal.roadProposal.childParcelIds || []);
-            childParcelIds.forEach(id => {
-                const feature = getParcelFeatureForHighlight(id, proposal);
-                if (feature) featuresForBounds.push(feature);
-            });
-
-            // Extract parent parcel IDs (not full geometries)
-            const parentIds = (function () {
-                if (Array.isArray(proposal.roadProposal.parentParcelIds)) {
-                    return ensureArrayOfStrings(proposal.roadProposal.parentParcelIds);
-                }
-                return [];
-            })();
-            parentIds.forEach(id => parentIdsSet.add(id));
-
-            sanitizedProposal.roadProposal = {
-                definition: deepClone(proposal.roadProposal.definition),
-                metadata: deepClone(proposal.roadProposal.metadata),
-                id: proposal.roadProposal.id || proposal.roadProposal.proposalId || undefined,
-                parentParcelIds: parentIds
-            };
-        }
-
-        if (proposal.buildingProposal) {
-            const buildingFeature = proposal.buildingProposal.buildingFeature
-                ? deepClone(proposal.buildingProposal.buildingFeature)
-                : null;
-            if (buildingFeature) {
-                featuresForBounds.push(buildingFeature);
-            }
-
-            const parentIds = ensureArrayOfStrings(proposal.buildingProposal.parentParcelIds);
-            parentIds.forEach(id => parentIdsSet.add(id));
-
-            sanitizedProposal.buildingProposal = {
-                parameters: deepClone(proposal.buildingProposal.parameters) || {},
-                parentParcelIds: parentIds,
-                parentParcelNumbers: deepCloneArray(proposal.buildingProposal.parentParcelNumbers),
-                ancestorKey: proposal.buildingProposal.ancestorKey || parentIds.join('|'),
-                buildingFeature,
-                metadata: deepClone(proposal.buildingProposal.metadata),
-                typologyType: proposal.buildingProposal.typologyType || proposal.typologyType || null,
-                blockName: proposal.buildingProposal.blockName || null,
-                createdFrom: proposal.buildingProposal.createdFrom || null,
-                blockParcelIds: ensureArrayOfStrings(proposal.buildingProposal.blockParcelIds),
-                ineligibleParcels: deepCloneArray(proposal.buildingProposal.ineligibleParcels)
-            };
-            if (proposal.typologyType) sanitizedProposal.typologyType = proposal.typologyType;
-            const authoredBuildings = Array.isArray(proposal.geometry?.buildings)
-                ? deepCloneArray(proposal.geometry.buildings)
-                : [];
-            if (authoredBuildings.length || proposal.geometry?.blockMassing) {
-                sanitizedProposal.geometry = {};
-                if (authoredBuildings.length) sanitizedProposal.geometry.buildings = authoredBuildings;
-                if (proposal.geometry?.blockMassing) {
-                    sanitizedProposal.geometry.blockMassing = deepClone(proposal.geometry.blockMassing);
-                    featuresForBounds.push(deepClone(proposal.geometry.blockMassing));
-                }
-            }
-        } else if (proposal.buildingGeometry) {
-            const buildingFeature = {
-                type: 'Feature',
-                geometry: deepClone(proposal.buildingGeometry),
-                properties: deepClone(proposal.buildingProperties) || {}
-            };
-            featuresForBounds.push(buildingFeature);
-            const parentIds = ensureArrayOfStrings(proposal.parentParcelIds);
-            parentIds.forEach(id => parentIdsSet.add(id));
-            sanitizedProposal.buildingProposal = {
-                parameters: {},
-                parentParcelIds: parentIds,
-                parentParcelNumbers: [],
-                ancestorKey: parentIds.join('|'),
-                buildingFeature
-            };
-        }
-
-        // Structure proposals
-        if (proposal.structureProposal) {
-            const sp = proposal.structureProposal;
-            // Collect for bounds
-            if (sp.geometry) {
-                try { featuresForBounds.push({ type: 'Feature', geometry: deepClone(sp.geometry), properties: { structureKind: sp.kind || 'square' } }); } catch (_) { }
-            }
-            // Parents
-            const parentIds = ensureArrayOfStrings(sp.parentParcelIds && sp.parentParcelIds.length ? sp.parentParcelIds : proposal.parentParcelIds);
-            parentIds.forEach(id => parentIdsSet.add(id));
-
-            sanitizedProposal.structureProposal = {
-                kind: sp.kind || 'square',
-                geometry: deepClone(sp.geometry),
-                decorations: deepClone(sp.decorations || null),
-                blockName: sp.blockName || null,
-                parentParcelIds: parentIds
-            };
-        }
-
-        if (proposal.reparcellization && Array.isArray(proposal.reparcellization.polygons) && proposal.reparcellization.polygons.length > 0) {
-            const reparcelParcelIds = ensureArrayOfStrings(proposal.reparcellization.parcelIds && proposal.reparcellization.parcelIds.length > 0
-                ? proposal.reparcellization.parcelIds
-                : proposal.parentParcelIds);
-            reparcelParcelIds.forEach(id => parentIdsSet.add(id));
-
-            const clonedOwnerShares = deepCloneArray(proposal.reparcellization.ownerShares);
-            const clonedPolygons = deepCloneArray(proposal.reparcellization.polygons);
-
-            sanitizedProposal.goal = 'reparcellization';
-            sanitizedProposal.reparcellization = {
-                algorithm: proposal.reparcellization.algorithm || 'sweep-line',
-                generatedAt: proposal.reparcellization.generatedAt || proposal.updatedAt || proposal.createdAt || new Date().toISOString(),
-                parcelIds: reparcelParcelIds.slice(),
-                totalArea: Number.isFinite(Number(proposal.reparcellization.totalArea))
-                    ? Number(proposal.reparcellization.totalArea)
-                    : null,
-                ownerShares: clonedOwnerShares,
-                polygons: clonedPolygons
-            };
-
-            clonedPolygons.forEach(slice => {
-                if (!slice || !slice.geometry) return;
-                try {
-                    featuresForBounds.push({
-                        type: 'Feature',
-                        properties: {
-                            ownerKey: slice.ownerKey || null,
-                            displayName: slice.displayName || null,
-                            color: slice.color || null,
-                            percent: slice.percent || null
-                        },
-                        geometry: deepClone(slice.geometry)
-                    });
-                } catch (err) {
-                    console.warn('Failed to include reparcellization slice in shared payload bounds', err);
-                }
-            });
-        }
-
-        // If no explicit parents were collected, fall back to this proposal's parentParcelIds
-        if (parentIdsSet.size === 0) {
-            ensureArrayOfStrings(proposal.parentParcelIds).forEach(id => parentIdsSet.add(id));
-        }
-        const parentIds = Array.from(parentIdsSet).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-        sanitizedProposal.parentParcelIds = parentIds;
-
-        const gate = depthApi.preparePublishRecord(sanitizedProposal, {
-            geometricBaseIds: sanitizedProposal.cadastreParcelIds
+        addGeometry(candidate.roadProposal?.definition?.polygon, { proposalId: candidate.proposalId });
+        (candidate.roadProposal?.definition?.features || []).forEach(addFeature);
+        (candidate.geometry?.buildings || []).forEach(addFeature);
+        addFeature(candidate.geometry?.blockMassing);
+        addFeature(candidate.geometry?.groundSurface);
+        addGeometry(candidate.structureProposal?.geometry, {
+            proposalId: candidate.proposalId,
+            structureKind: candidate.structureProposal?.kind || null
         });
+        (candidate.reparcellization?.polygons || []).forEach(slice => addGeometry(slice?.geometry, {
+            proposalId: candidate.proposalId,
+            ownerKey: slice?.ownerKey || null
+        }));
+
+        const gate = depthApi.preparePublishRecord(candidate);
         if (!gate.verdict.flat) {
-            const detail = gate.verdict.violations.map(item => item.code).join(', ');
+            const detail = gate.verdict.violations
+                .map(item => item.code + (item.field ? ` (${item.field})` : ''))
+                .join(', ');
             throw new Error(`Cannot share non-conforming proposal ${proposal.proposalId || ''}: ${detail}`);
         }
         return gate.proposal;
@@ -1201,9 +1038,9 @@ async function loadSharedProposalFromLink(sharedProposal, payload) {
             } catch (_) { }
         }
 
-        await preloadProposalParcelOwners(stored.parentParcelIds, { forceRefresh: true });
+        await preloadProposalParcelOwners(stored.cadastreParcelIds, { forceRefresh: true });
 
-        const focusParcelId = Array.isArray(stored.parentParcelIds) ? stored.parentParcelIds[0] : null;
+        const focusParcelId = Array.isArray(stored.cadastreParcelIds) ? stored.cadastreParcelIds[0] : null;
         const storedKey = getProposalKey(stored);
         selectAndHighlightProposal(storedKey, focusParcelId, true);
         showProposalInfo(stored, focusParcelId);
@@ -1648,24 +1485,14 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
         }
     }
 
-    // For road proposals: ensure parentParcelIds are set
-    // (geometries will be fetched by ID when needed for reconstruction)
-    if (normalized.roadProposal) {
-        if (!ensureRoadParentParcelIds(sharedProposal, normalized, parentIds)) {
-            console.warn('Missing parent parcel IDs for road proposal', sharedProposal.proposalId);
-            return { applied: false, skipped: false, proposalId, reason: 'Missing parent parcel IDs for road proposal' };
-        }
-    }
-
     // A parked local copy may be an older server snapshot left by an interrupted/partial package
     // apply. Replace it too; otherwise the route repairs its order but faithfully replays stale
     // road and readjustment geometry forever. Applied records returned above remain untouched.
-    existing = proposalStorage.importProposal(normalized, { overwrite: true });
+    // Import and the parked-state adjustment below are one record mutation. Suppress the storage
+    // write here so a standalone import persists once after both changes, while a shared-plan
+    // caller can defer all members to the plan's single batch commit.
+    existing = proposalStorage.importProposal(normalized, { overwrite: true, deferSave: true });
     if (!existing) return { applied: false, skipped: false, proposalId, reason: 'Failed to import proposal' };
-    if (normalized.roadProposal?.parentParcelIds) {
-        existing.roadProposal = existing.roadProposal || {};
-        existing.roadProposal.parentParcelIds = normalized.roadProposal.parentParcelIds.slice();
-    }
 
     // Import changes records only. Keep every queued member parked until the complete ordered set
     // is present; the caller then sends them through the direct scoped materializer one by one.
@@ -1845,58 +1672,16 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
             if (!normalized) return fetchProgressIds.size + 1;
             return fetchProgressIds.has(normalized) ? fetchProgressIds.size : fetchProgressIds.size + 1;
         };
-        const isDerivedParcelId = (parcelId) => {
-            const id = parcelId ? String(parcelId) : '';
-            if (!id) return false;
-            if (typeof isSyntheticParcelId === 'function') return isSyntheticParcelId(id);
-            return id.includes('#') || /^HR-\d+-.+?_[a-z0-9]+_\d+$/i.test(id);
-        };
-
-        const getPrerequisiteParcelIdsForProposal = (proposal) => {
-            try {
-                // Keep this minimal: only consult explicit parentParcelIds fields.
-                // Do NOT attempt parcel feature resolution here.
-                const ids = [];
-                const computed = (typeof computeRequiredParentIdsForSharedProposal === 'function')
-                    ? computeRequiredParentIdsForSharedProposal(proposal)
-                    : [];
-                ensureArrayOfStrings(computed).forEach(id => ids.push(id));
-
-                // Some payloads keep ids under nested objects; include them defensively.
-                if (proposal && proposal.roadProposal && Array.isArray(proposal.roadProposal.parentParcelIds)) {
-                    ensureArrayOfStrings(proposal.roadProposal.parentParcelIds).forEach(id => ids.push(id));
-                }
-                if (proposal && proposal.buildingProposal && Array.isArray(proposal.buildingProposal.parentParcelIds)) {
-                    ensureArrayOfStrings(proposal.buildingProposal.parentParcelIds).forEach(id => ids.push(id));
-                }
-                if (proposal && proposal.structureProposal && Array.isArray(proposal.structureProposal.parentParcelIds)) {
-                    ensureArrayOfStrings(proposal.structureProposal.parentParcelIds).forEach(id => ids.push(id));
-                }
-                if (proposal && proposal.decideLaterProposal && Array.isArray(proposal.decideLaterProposal.parentParcelIds)) {
-                    ensureArrayOfStrings(proposal.decideLaterProposal.parentParcelIds).forEach(id => ids.push(id));
-                }
-                if (proposal && Array.isArray(proposal.parentParcelIds)) {
-                    ensureArrayOfStrings(proposal.parentParcelIds).forEach(id => ids.push(id));
-                }
-                // The geometry-derived cadastral ancestry stamped by the publish gate.
-                if (proposal && Array.isArray(proposal.cadastreParcelIds)) {
-                    ensureArrayOfStrings(proposal.cadastreParcelIds).forEach(id => ids.push(id));
-                }
-
-                return Array.from(new Set(ids.map(x => String(x)).filter(Boolean)));
-            } catch (_) {
-                return [];
+        const getCadastrePrerequisiteIds = (proposal) => {
+            if (!proposal || typeof proposal !== 'object') return [];
+            const normalized = (typeof canonicalizeProposalCadastreAnchors === 'function')
+                ? canonicalizeProposalCadastreAnchors(proposal)
+                : proposal;
+            const claims = (typeof window !== 'undefined') ? window.__claims : null;
+            if (!claims || typeof claims.cadastreParcelIdsOf !== 'function') {
+                throw new Error('Proposal cadastre claims service is unavailable.');
             }
-        };
-
-        const basePrerequisiteIds = (ids) => {
-            const baseIds = [];
-            (Array.isArray(ids) ? ids : []).forEach(id => {
-                const s = id && id.toString ? id.toString() : String(id || '');
-                if (!s) return;
-                if (!isDerivedParcelId(s)) baseIds.push(s);
-            });
-            return Array.from(new Set(baseIds));
+            return claims.cadastreParcelIdsOf(normalized);
         };
         let queue = idParts.map(normalizeId).filter(Boolean);
         // Position of each id in the link. Share URLs list proposals oldest-first, so the
@@ -1914,8 +1699,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         // apply loop shifts off the queue — so the loop's `if (!proposal)` fetch is skipped for it.
         if (prefetchedFirst && firstProposalId) loadedById.set(firstProposalId, prefetchedFirst);
         const proposalTypeById = new Map();
-        const basePrereqIdsById = new Map();
-        const lastUnfetchedBasePrereqIdsById = new Map();
+        const lastMissingCadastrePrereqIdsById = new Map();
         const groundService = getSharedGroundService();
         if (!groundService || typeof groundService.ensureIds !== 'function') {
             throw new Error('Cadastral ground service is unavailable.');
@@ -2219,25 +2003,25 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         }
 
         // One union prefetch for the whole plan: every preloaded proposal's
-        // declared BASE prerequisites start downloading in one batched chain up
+        // declared cadastral anchors start downloading in one batched chain up
         // front, so the per-proposal awaits inside the loop find them fetched
         // or in flight instead of paying one serial round-trip chain per
         // proposal. Proposals whose payload was not preloaded (single-proposal
         // links, fetch failures) still fetch their bases in the loop as before.
         try {
-            const unionBaseIds = [];
+            const unionCadastreIds = [];
             for (const qid of queue) {
                 const payload = loadedById.get(qid);
                 if (!payload) continue;
-                unionBaseIds.push(...basePrerequisiteIds(getPrerequisiteParcelIdsForProposal(payload)));
+                unionCadastreIds.push(...getCadastrePrerequisiteIds(payload));
             }
-            if (unionBaseIds.length > 0) {
-                groundService.ensureIds(unionBaseIds, { onProgress: reportSharedPlanProgress }).catch(err => {
+            if (unionCadastreIds.length > 0) {
+                groundService.ensureIds(unionCadastreIds, { onProgress: reportSharedPlanProgress }).catch(err => {
                     console.warn('[handleSharedPlanRoute] Union cadastral-ground load failed', err);
                 });
             }
         } catch (err) {
-            console.warn('[handleSharedPlanRoute] Union base-parcel prefetch failed; per-proposal fetches cover it', err);
+            console.warn('[handleSharedPlanRoute] Union cadastral-ground prefetch failed; per-proposal loads cover it', err);
         }
 
         // Judge the WHOLE plan from its records before applying any of it. The apply already
@@ -2333,27 +2117,16 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
 
                 markFetchProgress(id);
 
-                // Prefetch every BASE prerequisite before the attempt — loading, not healing.
-                // Derived ids in old payloads are no longer waited on or requeued (§15a): the
-                // ground a formation consumes resolves geometrically at apply, and a genuine miss
-                // fails loudly below with the named prerequisites.
-                const prereqIds = getPrerequisiteParcelIdsForProposal(proposal);
-                const baseIds = basePrerequisiteIds(prereqIds);
-                try {
-                    const queueKey = String(id);
-                    const payloadKey = (proposal && proposal.proposalId) ? String(proposal.proposalId) : '';
+                // Ensure the proposal's normalized cadastral declaration before the attempt.
+                // The repository decides whether each fact is cached, in flight, absent, or needs
+                // transport; the route neither classifies IDs nor resolves geometry itself.
+                const cadastreIds = getCadastrePrerequisiteIds(proposal);
 
-                    basePrereqIdsById.set(queueKey, baseIds);
-                    if (payloadKey) {
-                        basePrereqIdsById.set(payloadKey, baseIds);
-                    }
-                } catch (_) { }
-
-                if (baseIds.length > 0) {
-                    const fetchResult = await groundService.ensureIds(baseIds, { onProgress: reportSharedPlanProgress });
+                if (cadastreIds.length > 0) {
+                    const fetchResult = await groundService.ensureIds(cadastreIds, { onProgress: reportSharedPlanProgress });
                     try {
-                        lastUnfetchedBasePrereqIdsById.set(String(id), fetchResult.missingIds);
-                        if (proposal && proposal.proposalId) lastUnfetchedBasePrereqIdsById.set(String(proposal.proposalId), fetchResult.missingIds);
+                        lastMissingCadastrePrereqIdsById.set(String(id), fetchResult.missingIds);
+                        if (proposal && proposal.proposalId) lastMissingCadastrePrereqIdsById.set(String(proposal.proposalId), fetchResult.missingIds);
                     } catch (_) { }
                 }
 
@@ -2383,16 +2156,15 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                     }
                 } catch (_) { }
 
-                // Ensure prereq maps are also keyed by the final resolved proposal id.
+                // Ensure the repository result is also keyed by the final resolved proposal id.
                 try {
                     const pidKey = proposalId ? String(proposalId) : '';
-                    if (pidKey && prereqIds && Array.isArray(prereqIds)) {
-                        basePrereqIdsById.set(pidKey, baseIds);
-                        const baseMissing = lastUnfetchedBasePrereqIdsById.get(String(id))
-                            || lastUnfetchedBasePrereqIdsById.get((proposal && proposal.proposalId) ? String(proposal.proposalId) : '')
+                    if (pidKey && Array.isArray(cadastreIds)) {
+                        const missingCadastre = lastMissingCadastrePrereqIdsById.get(String(id))
+                            || lastMissingCadastrePrereqIdsById.get((proposal && proposal.proposalId) ? String(proposal.proposalId) : '')
                             || [];
-                        if (Array.isArray(baseMissing) && baseMissing.length) {
-                            lastUnfetchedBasePrereqIdsById.set(pidKey, baseMissing);
+                        if (Array.isArray(missingCadastre) && missingCadastre.length) {
+                            lastMissingCadastrePrereqIdsById.set(pidKey, missingCadastre);
                         }
                     }
                 } catch (_) { }
@@ -2412,7 +2184,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                     id: proposalId,
                     label,
                     type: (proposalTypeById.get(String(proposalId)) || proposalTypeById.get(String(id)) || formatSharedProposalTypeLabel(proposal) || ''),
-                    missingPrereqs: ensureArrayOfStrings(lastUnfetchedBasePrereqIdsById.get(String(proposalId || id)) || []),
+                    missingPrereqs: ensureArrayOfStrings(lastMissingCadastrePrereqIdsById.get(String(proposalId || id)) || []),
                     reason
                 });
             } catch (error) {
@@ -2429,16 +2201,13 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                         missingPrereqs: (() => {
                             try {
                                 const key = String(id);
-                                const explicitMissing = lastUnfetchedBasePrereqIdsById.get(key);
+                                const explicitMissing = lastMissingCadastrePrereqIdsById.get(key);
                                 if (Array.isArray(explicitMissing) && explicitMissing.length) return explicitMissing;
                                 const storedFailure = getStoredApplyFailureInfo(key);
                                 if (storedFailure && Array.isArray(storedFailure.missingIds) && storedFailure.missingIds.length) {
                                     return ensureArrayOfStrings(storedFailure.missingIds);
                                 }
-                                const basePrereqs = basePrereqIdsById.get(key) || [];
-                                const missing = ensureArrayOfStrings(basePrereqs)
-                                    .filter(pid => !(typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)));
-                                return missing;
+                                return [];
                             } catch (_) {
                                 return [];
                             }

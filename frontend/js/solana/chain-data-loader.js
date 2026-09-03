@@ -172,7 +172,7 @@
             return {
                 proposalId: address,
                 proposalIdNum: proposalId.toString(),
-                parentParcelIds: parcelIds,
+                cadastreParcelIds: parcelIds,
                 isConditional,
                 imageURI,
                 acceptancePossible,
@@ -291,7 +291,7 @@
     async function getProposalsByParcelFromChain(cluster, proposalProgramId, parcelId) {
         const allProposals = await getAllProposals(cluster, proposalProgramId);
         return allProposals
-            .filter(p => (p.parentParcelIds || []).includes(parcelId))
+            .filter(p => (p.cadastreParcelIds || []).includes(parcelId))
             .map(p => p.proposalId);
     }
 

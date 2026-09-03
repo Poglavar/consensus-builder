@@ -107,13 +107,18 @@
             opts
         );
         const topology = blockTopology();
-        const memberPairs = topology && typeof topology.neighborPairs === 'function'
-            ? topology.neighborPairs(
-                memberEntries.map(entry => ({ id: String(entry.id), rings: entry.rings })),
-                corridorEntries.map(entry => ({ id: String(entry.id), rings: entry.rings })),
-                opts
-            )
-            : rawPairs.filter(pair => !isCorridor(pair.a) && !isCorridor(pair.b));
+        // Road-aware topology is authoritative for the land graph.  Raw adjacency is still used
+        // below to measure land↔corridor contact, but it is never a safe substitute for the
+        // member graph: without the barrier pass, a shared cadastral edge under a road would join
+        // two separate blocks.  Fail closed when the topology service is unavailable.
+        if (!topology || typeof topology.neighborPairs !== 'function') {
+            return { blocks: [], corridorCount: corridorEntries.length, memberCount: memberEntries.length };
+        }
+        const memberPairs = topology.neighborPairs(
+            memberEntries.map(entry => ({ id: String(entry.id), rings: entry.rings })),
+            corridorEntries.map(entry => ({ id: String(entry.id), rings: entry.rings })),
+            opts
+        );
 
         // Adjacency between members only — the flood fill must never cross a road, which is what
         // makes the component a block rather than the whole town.

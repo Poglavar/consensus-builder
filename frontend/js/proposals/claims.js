@@ -8,9 +8,6 @@
 (function (global) {
     'use strict';
 
-    const planOrder = () => (global && global.__planOrder)
-        ? global.__planOrder
-        : (typeof require === 'function' ? require('./plan-order.js') : null);
     const formationDepth = () => (global && global.__formationDepth)
         ? global.__formationDepth
         : (typeof require === 'function' ? require('./formation-depth.js') : null);
@@ -29,29 +26,30 @@
         return CLAIM_RANKS[String(kind || '').trim()] || 0;
     }
 
-    // The base cadastral parcels a proposal stands on. Prefers the published stamp
-    // (cadastreParcelIds, written at upload); falls back to the roots of whatever the proposal
-    // declares locally. Never returns derived ids.
-    function baseParcelIdsOf(proposal) {
+    // The base cadastral parcels a proposal stands on. Durable records are normalized at their
+    // storage/import boundary, so reading claims is deliberately boring: no generated-id parser,
+    // no ancestry walk, and no reconstruction from duplicated typology fields.
+    function cadastreParcelIdsOf(proposal) {
         if (!proposal) return [];
-        const api = planOrder();
-        const stamped = Array.isArray(proposal.cadastreParcelIds)
-            ? proposal.cadastreParcelIds.map(id => String(id)).filter(Boolean)
-            : [];
-        if (stamped.length) {
-            return api ? api.cadastreIdsFromDeclared(stamped) : Array.from(new Set(stamped));
-        }
-        if (!api) return [];
+        const declared = Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
+        return Array.from(new Set(declared.map(id => String(id || '').trim()).filter(Boolean)));
+    }
 
-        const declared = [];
-        const push = (arr) => { if (Array.isArray(arr)) arr.forEach(id => declared.push(id)); };
-        push(proposal.parentParcelIds);
-        if (proposal.roadProposal) push(proposal.roadProposal.parentParcelIds);
-        if (proposal.structureProposal) push(proposal.structureProposal.parentParcelIds);
-        if (proposal.buildingProposal) push(proposal.buildingProposal.parentParcelIds);
-        if (proposal.decideLaterProposal) push(proposal.decideLaterProposal.parentParcelIds);
-        if (proposal.reparcellization) push(proposal.reparcellization.parentParcelIds);
-        return api.cadastreIdsFromDeclared(declared);
+    function materializedParcelsOf(proposal) {
+        const proposalId = proposal && proposal.proposalId;
+        const fabric = global && global.LiveParcelFabric;
+        if (!proposalId || !fabric || typeof fabric.producedBy !== 'function') return [];
+        return fabric.producedBy(String(proposalId));
+    }
+
+    function materializedParcelIdsOf(proposal) {
+        const fabric = global && global.LiveParcelFabric;
+        return materializedParcelsOf(proposal)
+            .map(feature => fabric && typeof fabric.featureId === 'function'
+                ? fabric.featureId(feature)
+                : feature?.properties?.parcelId)
+            .map(value => String(value || '').trim())
+            .filter(Boolean);
     }
 
     // Whether this replay's formation replaces the cadastral layer for one base parcel. The
@@ -64,26 +62,38 @@
             ? opts.isApplied
             : (item => item?.applied === true);
         if (!isApplied(proposal)) return false;
-        if (!Array.isArray(proposal.childParcelIds) || proposal.childParcelIds.length === 0) return false;
-        return baseParcelIdsOf(proposal).includes(String(parcelId));
+        const hasMaterializedOutput = typeof opts.hasMaterializedOutput === 'function'
+            ? opts.hasMaterializedOutput(proposal)
+            : materializedParcelsOf(proposal).length > 0;
+        if (!hasMaterializedOutput) return false;
+        return cadastreParcelIdsOf(proposal).includes(String(parcelId));
     }
 
     // Every proposal claiming ground on this base parcel — the dossier a click in cadastre view
-    // answers with. `parcelId` may be a derived id; it is projected to its root first.
+    // answers with. A live id is projected through fabric metadata, never its string shape.
     // options.isApplied lets the caller supply the app's real applied-state accessor.
     function dossierFor(parcelId, proposals, options) {
-        const api = planOrder();
         const opts = options || {};
         const isApplied = (typeof opts.isApplied === 'function')
             ? opts.isApplied
             : (p => p && p.applied === true);
-        const root = api ? api.cadastreRootId(parcelId) : String(parcelId || '');
-        if (!root) return [];
+        const parcelKey = String(parcelId || '').trim();
+        const fabric = global && global.LiveParcelFabric;
+        const liveFeature = fabric && typeof fabric.get === 'function' ? fabric.get(parcelKey) : null;
+        // When no live feature exists, this API's parcelId argument is itself an explicit
+        // cadastral anchor (used by dossier views and pure callers). No id-format inference is
+        // involved; callers holding a live id must supply the fabric entry or explicit roots.
+        const roots = Array.isArray(opts.cadastreParcelIds) && opts.cadastreParcelIds.length
+            ? opts.cadastreParcelIds.map(String)
+            : (liveFeature && typeof fabric.explicitCadastreIds === 'function'
+                ? fabric.explicitCadastreIds(liveFeature)
+                : (parcelKey ? [parcelKey] : []));
+        if (!roots.length) return [];
 
         const entries = [];
         (Array.isArray(proposals) ? proposals : []).forEach(p => {
             if (!p) return;
-            if (baseParcelIdsOf(p).indexOf(root) === -1) return;
+            if (!cadastreParcelIdsOf(p).some(id => roots.includes(id))) return;
             const kind = claimKindForGoal(p.goal);
             entries.push({
                 proposalId: p.proposalId ? String(p.proposalId) : null,
@@ -112,7 +122,9 @@
         CLAIM_RANKS,
         claimKindForGoal,
         claimRank,
-        baseParcelIdsOf,
+        cadastreParcelIdsOf,
+        materializedParcelsOf,
+        materializedParcelIdsOf,
         formationReplacesCadastreParcel,
         dossierFor,
         shortParcelLabel

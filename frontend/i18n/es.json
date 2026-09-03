@@ -168,7 +168,7 @@
             "instantCreateFailed": "No se pudo guardar el nuevo objeto.",
             "noAdapter": "No hay un editor registrado para este tipo de propuesta.",
             "notReshapeable": "Este tipo de propuesta no se puede remodelar.",
-            "parcelsNotContiguous": "Un lago necesita parcelas contiguas.",
+            "parcelsNotContiguous": "Las parcelas seleccionadas deben formar una sola superficie continua.",
             "parcelsUnavailable": "Las parcelas del borrador no están disponibles en la ciudad actual.",
             "readOnly": "Esta propuesta es de solo lectura.",
             "sourceMissing": "No se encontró la propuesta de origen."

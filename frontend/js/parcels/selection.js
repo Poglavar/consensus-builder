@@ -13,8 +13,8 @@
     function getParcelIdFromFeature(feature) {
         if (!feature) return null;
         const props = feature.properties || {};
-        return (typeof ensureParcelId === 'function'
-            ? ensureParcelId(feature)
+        return (typeof global.getParcelId === 'function'
+            ? global.getParcelId(feature)
             : (props.parcelId))?.toString?.() || null;
     }
 
@@ -57,13 +57,16 @@
         const proposalUIActive = (typeof global.isProposalUIActive === 'function')
             ? global.isProposalUIActive()
             : (document.getElementById('showProposalsCheckbox') && document.getElementById('showProposalsCheckbox').checked);
-        const activeProposalParcelIds = Array.isArray(global.currentlyHighlightedProposal?.parentParcelIds)
-            ? global.currentlyHighlightedProposal.parentParcelIds.map(id => id.toString())
-            : (Array.isArray(global.currentlyHighlightedProposal?.childParcelIds)
-                ? global.currentlyHighlightedProposal.childParcelIds.map(id => id.toString())
-                : []);
-        const restrictHoverToActiveProposal = proposalUIActive && activeProposalParcelIds.length > 0;
-        const parcelInActiveProposal = restrictHoverToActiveProposal && activeProposalParcelIds.includes(parcelId);
+        const activeProposalCadastreIds = global.currentlyHighlightedProposal && global.__claims
+            ? global.__claims.cadastreParcelIdsOf(global.currentlyHighlightedProposal)
+            : [];
+        const liveFeature = global.LiveParcelFabric?.get?.(parcelId) || null;
+        const parcelCadastreIds = liveFeature
+            ? global.LiveParcelFabric.explicitCadastreIds(liveFeature)
+            : [];
+        const restrictHoverToActiveProposal = proposalUIActive && activeProposalCadastreIds.length > 0;
+        const parcelInActiveProposal = restrictHoverToActiveProposal
+            && parcelCadastreIds.some(id => activeProposalCadastreIds.includes(id));
 
         // Only use proposal hover overlay when Proposal UI is active
         try {
@@ -308,30 +311,23 @@
 
     function selectParcel(parcelOrId, showPanel = true) {
         if (isStationPlacementMapInteractionActive()) return;
-        if (!global.parcelLayer) return;
         const parcelId = parcelOrId && parcelOrId.feature
             ? getParcelIdFromFeature(parcelOrId.feature)
             : parcelOrId;
         if (!parcelId) return;
+        const nextSelectedId = parcelId.toString();
+        const fabric = global.LiveParcelFabric;
+        const presenter = global.ParcelPresenter;
+        if (!fabric?.get?.(nextSelectedId) || !presenter?.getLayer) return;
 
-        const selectedLayer = parcelOrId && parcelOrId.feature
-            ? parcelOrId
-            : global.parcelLayer.getLayers().find(layer => {
-                if (!layer.feature || !layer.feature.properties) return false;
-                const layerParcelId = getParcelIdFromFeature(layer.feature);
-                return layerParcelId && layerParcelId.toString() === parcelId.toString();
-            });
+        const selectedLayer = presenter.getLayer(nextSelectedId);
 
         if (selectedLayer) {
-            const nextSelectedId = parcelId.toString();
             const previousSelectedId = global.selectedParcelId ? global.selectedParcelId.toString() : null;
             const previousSelectedLayer = previousSelectedId && previousSelectedId !== nextSelectedId
                 ? ((global.currentParcel?.id?.toString?.() === previousSelectedId && global.currentParcel?.layer)
                     ? global.currentParcel.layer
-                    : global.parcelLayer.getLayers().find(layer => {
-                        const layerParcelId = getParcelIdFromFeature(layer?.feature);
-                        return layerParcelId === previousSelectedId;
-                    }))
+                    : presenter.getLayer(previousSelectedId))
                 : null;
 
             global.selectedParcelId = nextSelectedId;
@@ -380,32 +376,6 @@
                         }
                     }
                 });
-            } else {
-                // Fallback: only process if we have a small number of parcels (safety check)
-                const totalLayers = (global.parcelLayer && typeof global.parcelLayer.getLayers === 'function')
-                    ? global.parcelLayer.getLayers().length
-                    : 0;
-                if (totalLayers < 1000) {
-                    // Only fallback to full scan if parcel count is reasonable
-                    global.parcelLayer.eachLayer(layer => {
-                        if (layer.feature && layer.feature.properties) {
-                            const layerParcelId = getParcelIdFromFeature(layer.feature);
-                            const isRoad = (layerParcelId && typeof global.isRoadParcel === 'function') ? global.isRoadParcel(layerParcelId) : false;
-                            const isTrack = (layer.feature.properties.isTrack === true) || Boolean(layer._trackStyle);
-                            if (layerParcelId !== parcelId.toString()) {
-                                // Check if this parcel is part of multi-selection before resetting style
-                                const isMultiSelected = typeof global.multiParcelSelection !== 'undefined' &&
-                                    global.multiParcelSelection.isActive &&
-                                    global.multiParcelSelection.selectedParcels.has(layerParcelId);
-                                if (!isMultiSelected) {
-                                    // Use getParcelStyle to preserve ownership highlighting
-                                    const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
-                                    layer.setStyle(styleFn(layerParcelId, layer, { isRoad, isTrack }));
-                                }
-                            }
-                        }
-                    });
-                }
             }
             const isTrackSelected = (selectedLayer?.feature?.properties?.isTrack === true) || Boolean(selectedLayer?._trackStyle);
             if (isTrackSelected) {

@@ -536,38 +536,16 @@ if (typeof window !== 'undefined') {
     window.corridorSurfaceFootprintForDefinition = corridorSurfaceFootprintForDefinition;
 }
 
-// Every geometry change re-derives the parcels the corridor now touches. Runs against the
-// currently loaded parcel fabric (same reach as drawing-time detection).
+// Every geometry change re-derives the parcels the corridor now touches from the committed
+// fabric. Leaflet is only a projection and never participates in the intersection decision.
 function collectParcelsIntersectingFootprint(footprintGeometry) {
-    if (!footprintGeometry || typeof parcelLayer === 'undefined' || !parcelLayer || typeof turf === 'undefined') return [];
+    if (!footprintGeometry || typeof turf === 'undefined') return [];
     const geometry = footprintGeometry.type ? footprintGeometry : { type: 'Polygon', coordinates: footprintGeometry };
-    let roadFeature = null;
-    let footprintBounds = null;
-    try {
-        roadFeature = { type: 'Feature', properties: {}, geometry };
-        footprintBounds = L.geoJSON(roadFeature).getBounds();
-    } catch (_) {
-        return [];
-    }
-    const ids = [];
-    parcelLayer.eachLayer(layer => {
-        const parcelId = getRoadDrawingParcelIdFromFeature(layer.feature);
-        if (!parcelId) return;
-        try {
-            if (footprintBounds && !footprintBounds.intersects(layer.getBounds())) return;
-        } catch (_) { }
-        const outerRings = getParcelOuterRingsLngLat(layer);
-        if (!outerRings || !outerRings.length) return;
-        try {
-            for (let r = 0; r < outerRings.length; r += 1) {
-                if (turf.booleanIntersects(roadFeature, turf.polygon([outerRings[r]]))) {
-                    ids.push(String(parcelId));
-                    break;
-                }
-            }
-        } catch (_) { }
-    });
-    return ids;
+    const roadFeature = { type: 'Feature', properties: {}, geometry };
+    return liveRoadDrawingParcelsIntersecting(roadFeature)
+        .map(getRoadDrawingParcelIdFromFeature)
+        .filter(Boolean)
+        .map(String);
 }
 
 // A non-blocking "working…" spinner, shown while anything slow enough to look like a hang is under
@@ -625,9 +603,11 @@ function cloneRoadValue(value) {
 }
 
 function baseRoadParentHints(ids) {
-    return Array.from(new Set((Array.isArray(ids) ? ids : [])
-        .map(id => String(id || '').split('#')[0])
-        .filter(Boolean)));
+    const fabric = window.LiveParcelFabric;
+    if (!fabric || typeof fabric.cadastreIdsForParcelIds !== 'function') {
+        throw new Error('Live parcel fabric provenance is unavailable while saving the corridor.');
+    }
+    return fabric.cadastreIdsForParcelIds(Array.isArray(ids) ? ids : []);
 }
 
 function writeRoadDefinition(record, definition) {
@@ -638,8 +618,6 @@ function writeRoadDefinition(record, definition) {
 
 function stripRoadDerivedFields(record) {
     if (!record) return record;
-    const governmentPlan = record.tags?.governmentPlan === true
-        || record.roadProposal?.definition?.source === 'government-plan';
     delete record.childParcelIds;
     delete record.descendantParcelIds;
     delete record.parentFeatures;
@@ -648,7 +626,7 @@ function stripRoadDerivedFields(record) {
     delete record.localEditAt;
     delete record.editSeq;
     delete record.revertSnapshot;
-    if (!governmentPlan) delete record.childFeatures;
+    delete record.childFeatures;
     const road = record.roadProposal;
     if (road) {
         delete road.childParcelIds;
@@ -657,7 +635,7 @@ function stripRoadDerivedFields(record) {
         delete road.formation;
         delete road.demolishedBuildings;
         delete road.demolitionScanned;
-        if (!governmentPlan) delete road.childFeatures;
+        delete road.childFeatures;
         if (road.definition) {
             delete road.definition.demolishedBuildings;
             delete road.definition.demolitionScanned;
@@ -698,10 +676,8 @@ function makeFreshRoadSnapshot(sourceProposal, definition, options = {}) {
     const geometricHints = cleanDefinition.polygon
         ? collectParcelsIntersectingFootprint(cleanDefinition.polygon)
         : [];
-    const fallbackHints = sourceProposal?.parentParcelIds
-        || sourceProposal?.roadProposal?.parentParcelIds
-        || [];
-    const parentParcelIds = baseRoadParentHints(geometricHints.length ? geometricHints : fallbackHints);
+    const fallbackHints = sourceProposal?.cadastreParcelIds || [];
+    const cadastreParcelIds = baseRoadParentHints(geometricHints.length ? geometricHints : fallbackHints);
 
     // The replacement keeps the SOURCE's place in the constraint order: the §15c replay
     // applies formations oldest-first, and stamping now() sent every edited road to the END
@@ -712,12 +688,10 @@ function makeFreshRoadSnapshot(sourceProposal, definition, options = {}) {
     clone.createdAt = (sourceProposal && sourceProposal.createdAt)
         ? sourceProposal.createdAt
         : new Date().toISOString();
-    clone.parentParcelIds = parentParcelIds.slice();
+    clone.cadastreParcelIds = cadastreParcelIds.slice();
     clone.roadProposal = {
         ...(clone.roadProposal || {}),
-        definition: cloneRoadValue(cleanDefinition),
-        parentParcelIds: parentParcelIds.slice(),
-        childParcelIds: []
+        definition: cloneRoadValue(cleanDefinition)
     };
     writeRoadDefinition(clone, cleanDefinition);
     stripRoadDerivedFields(clone);
@@ -1663,13 +1637,64 @@ function getRoadDrawingParcelIdFromFeature(feature) {
     return feature ? ensureParcelId(feature) : null;
 }
 
+function getRoadDrawingFabric() {
+    return (typeof window !== 'undefined' && window.LiveParcelFabric)
+        ? window.LiveParcelFabric
+        : null;
+}
+
+function getRoadDrawingPresenterLayer(parcelId) {
+    const id = parcelId !== undefined && parcelId !== null ? String(parcelId) : '';
+    if (!id || typeof window === 'undefined' || !window.ParcelPresenter
+        || typeof window.ParcelPresenter.getLayer !== 'function') return null;
+    return window.ParcelPresenter.getLayer(id);
+}
+
+function getRoadDrawingLiveFeature(parcelId) {
+    const id = parcelId !== undefined && parcelId !== null ? String(parcelId) : '';
+    const fabric = getRoadDrawingFabric();
+    return id && fabric && typeof fabric.get === 'function' ? fabric.get(id) : null;
+}
+
+function liveRoadDrawingParcelsIntersecting(queryFeature, options = {}) {
+    const fabric = getRoadDrawingFabric();
+    if (!queryFeature || !queryFeature.geometry || !fabric || typeof fabric.queryBounds !== 'function'
+        || typeof turf === 'undefined' || typeof turf.bbox !== 'function'
+        || typeof turf.booleanIntersects !== 'function') return [];
+    let candidates = [];
+    try {
+        candidates = fabric.queryBounds(turf.bbox(queryFeature), {
+            includeCorridors: options.includeCorridors === true
+        });
+    } catch (_) {
+        return [];
+    }
+    return candidates.filter(feature => {
+        try { return turf.booleanIntersects(queryFeature, feature); }
+        catch (_) { return false; }
+    });
+}
+
+function roadDrawingParcelEntry(feature) {
+    const id = getRoadDrawingParcelIdFromFeature(feature);
+    if (!id) return null;
+    const properties = feature.properties || {};
+    return {
+        id: String(id),
+        number: properties.BROJ_CESTICE,
+        area: Number(properties.calculatedArea) || 0,
+        estimatedMarketPrice: properties.estimatedMarketPrice,
+        feature,
+        layer: getRoadDrawingPresenterLayer(id)
+    };
+}
+
 function getParcelIdFromAny(parcel) {
     if (!parcel) return null;
     const fromFeature = parcel.feature ? getRoadDrawingParcelIdFromFeature(parcel.feature) : null;
-    const fromLayerFeature = parcel.layer?.feature ? getRoadDrawingParcelIdFromFeature(parcel.layer.feature) : null;
     const fromProps = parcel.properties ? ensureParcelId(parcel.properties) : null;
     const raw = parcel.id ?? parcel.parcelId;
-    const candidate = fromFeature || fromLayerFeature || fromProps || getParcelId(raw);
+    const candidate = fromFeature || fromProps || getParcelId(raw);
     return candidate ? candidate.toString() : null;
 }
 
@@ -1767,33 +1792,18 @@ function getMarketPrice(parcelId, currency) {
     if (parcel) {
         const estimatedPrice = parcel.estimatedMarketPrice ||
             parcel.properties?.estimatedMarketPrice ||
-            parcel.layer?.feature?.properties?.estimatedMarketPrice;
+            parcel.feature?.properties?.estimatedMarketPrice;
         if (Number.isFinite(estimatedPrice) && estimatedPrice > 0) {
             return estimatedPrice;
         }
     }
 
-    // Fallback: try to get from layer
-    if (parcelLayer) {
-        let foundLayer = null;
-        parcelLayer.eachLayer(layer => {
-            const layerId = getRoadDrawingParcelIdFromFeature(layer.feature);
-            if (layerId && layerId.toString() === targetId.toString()) {
-                foundLayer = layer;
-            }
-        });
-
-        if (foundLayer) {
-            // Check for precalculated estimatedMarketPrice in layer properties
-            const estimatedPrice = foundLayer.feature.properties.estimatedMarketPrice;
-            if (Number.isFinite(estimatedPrice) && estimatedPrice > 0) {
-                return estimatedPrice;
-            }
-
-            // Fallback to area calculation
-            const area = Number(foundLayer.feature.properties.calculatedArea) || 0;
-            return area * 100;
-        }
+    const liveFeature = getRoadDrawingLiveFeature(targetId);
+    if (liveFeature) {
+        const estimatedPrice = liveFeature.properties?.estimatedMarketPrice;
+        if (Number.isFinite(estimatedPrice) && estimatedPrice > 0) return estimatedPrice;
+        const area = Number(liveFeature.properties?.calculatedArea) || 0;
+        return area * 100;
     }
 
     // If found in arrays but no estimatedMarketPrice, use stored area
@@ -1818,7 +1828,7 @@ function updateRoadMarketPrice(parcels) {
         // Check for precalculated estimatedMarketPrice first
         const estimatedPrice = parcel?.estimatedMarketPrice ||
             parcel?.properties?.estimatedMarketPrice ||
-            parcel?.layer?.feature?.properties?.estimatedMarketPrice;
+            parcel?.feature?.properties?.estimatedMarketPrice;
         if (Number.isFinite(estimatedPrice) && estimatedPrice > 0) {
             return sum + estimatedPrice;
         }
@@ -1865,7 +1875,7 @@ async function updateRoadAcquiringDifficulty(parcels) {
         let marketPrice = 0;
         const estimatedPrice = parcel?.estimatedMarketPrice ||
             parcel?.properties?.estimatedMarketPrice ||
-            parcel?.layer?.feature?.properties?.estimatedMarketPrice;
+            parcel?.feature?.properties?.estimatedMarketPrice;
         if (Number.isFinite(estimatedPrice) && estimatedPrice > 0) {
             marketPrice = estimatedPrice;
         } else if (parcel && Number.isFinite(parcel.area)) {
@@ -1877,7 +1887,7 @@ async function updateRoadAcquiringDifficulty(parcels) {
 
         // Get ownership type from parcel feature properties (from GET /parcels/)
         let ownershipType = 'individual'; // default
-        const featureProps = parcel.layer?.feature?.properties || parcel.properties || {};
+        const featureProps = parcel.feature?.properties || parcel.properties || {};
         const ownershipList = featureProps.ownershipList || [];
         const ownershipTypeFromProps = featureProps.ownershipType;
 
@@ -2000,7 +2010,7 @@ async function updateRoadOwnershipCounts(parcels) {
         if (!parcelId) return { type: null, individualOwnerCount: 0 };
 
         // Get ownership data from parcel feature properties (from GET /parcels/)
-        const featureProps = parcel.layer?.feature?.properties || parcel.properties || {};
+        const featureProps = parcel.feature?.properties || parcel.properties || {};
         const ownershipList = featureProps.ownershipList || [];
         const ownershipType = featureProps.ownershipType;
 
@@ -2092,9 +2102,10 @@ function clearMapSelectionsForDrawing() {
 
     // The single-parcel selection: its style, the state the rest of the app reads, its panel.
     try {
-        const byId = (typeof getParcelLayerIdMap === 'function') ? getParcelLayerIdMap() : null;
         const selectedLayer = (window.currentParcel && window.currentParcel.layer)
-            || (window.selectedParcelId && byId ? byId.get(String(window.selectedParcelId)) : null);
+            || (window.selectedParcelId
+                ? (window.ParcelPresenter?.getLayer?.(String(window.selectedParcelId)) || null)
+                : null);
         if (selectedLayer && typeof restoreParcelLayerStyle === 'function') restoreParcelLayerStyle(selectedLayer);
     } catch (_) { }
     window.selectedParcelId = null;
@@ -3626,11 +3637,11 @@ function ensurePolygonIsClosed(coords) {
     return coords; // Already closed
 }
 
-// Get parcel outer ring(s) in [lng, lat] arrays; handles Polygon and MultiPolygon, with fallback to layer.getLatLngs()
-function getParcelOuterRingsLngLat(layer) {
+// Get parcel outer ring(s) in [lng, lat] arrays from an authoritative GeoJSON feature.
+function getParcelOuterRingsLngLat(feature) {
     const rings = [];
     try {
-        const geom = layer && layer.feature ? layer.feature.geometry : null;
+        const geom = feature?.geometry || null;
         if (geom && geom.type) {
             if (geom.type === 'Polygon') {
                 if (Array.isArray(geom.coordinates) && geom.coordinates.length > 0) {
@@ -3646,23 +3657,6 @@ function getParcelOuterRingsLngLat(layer) {
                         }
                     });
                 }
-            }
-        } else if (typeof layer.getLatLngs === 'function') {
-            const latlngs = layer.getLatLngs();
-            // MultiPolygon form: [ [ [LatLng...] (outer), [LatLng...] (holes) ], ... ]
-            if (Array.isArray(latlngs) && Array.isArray(latlngs[0]) && Array.isArray(latlngs[0][0])) {
-                latlngs.forEach(polyRings => {
-                    if (Array.isArray(polyRings) && Array.isArray(polyRings[0])) {
-                        const ring = polyRings[0].map(ll => [ll.lng, ll.lat]);
-                        const closed = ensurePolygonIsClosed(ring);
-                        if (Array.isArray(closed) && closed.length >= 4) rings.push(closed);
-                    }
-                });
-            } else if (Array.isArray(latlngs) && Array.isArray(latlngs[0])) {
-                // Polygon form: [ [LatLng...] (outer), [LatLng...] (hole1), ... ]
-                const ring = latlngs[0].map(ll => [ll.lng, ll.lat]);
-                const closed = ensurePolygonIsClosed(ring);
-                if (Array.isArray(closed) && closed.length >= 4) rings.push(closed);
             }
         }
     } catch (_) { }
@@ -3706,7 +3700,8 @@ function buildParcelPolygonLatLngs(parcels) {
     const results = [];
     if (!Array.isArray(parcels)) return results;
     parcels.forEach(parcel => {
-        const rings = getParcelOuterRingsLngLat(parcel.layer);
+        const feature = parcel.feature || getRoadDrawingLiveFeature(getParcelIdFromAny(parcel));
+        const rings = getParcelOuterRingsLngLat(feature);
         if (Array.isArray(rings) && rings.length > 0) {
             rings.forEach(ring => {
                 if (Array.isArray(ring) && ring.length >= 4) {
@@ -3742,87 +3737,34 @@ function buildParcelPolygonLatLngs(parcels) {
 //   options: Optional object with { skipBoundsFilter: boolean } to disable map bounds filtering
 // Returns: Array of affected parcel objects
 function findAndHighlightAffectedParcels(polygon, previousAffectedParcels, highlightStyle, excludeParcelIds = null, options = {}) {
-    if (!polygon || !parcelLayer) return [];
+    if (!polygon || !getRoadDrawingFabric()) return [];
 
     const turfPolygon = polygonLatLngsToTurfFeature(polygon);
     if (!turfPolygon) return [];
 
     // Clear previously affected parcels only after we have a valid polygon
     if (previousAffectedParcels && previousAffectedParcels.length > 0) {
-        parcelLayer.eachLayer(layer => {
-            const pid = getRoadDrawingParcelIdFromFeature(layer.feature);
-            if (!pid) return;
-            // Reset style for previously affected parcels
-            if (previousAffectedParcels.some(p => getParcelIdFromAny(p) === pid.toString())) {
-                const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(pid) : false;
-                layer.setStyle(isRoad ? roadStyle : normalStyle);
-            }
+        previousAffectedParcels.forEach(parcel => {
+            const pid = getParcelIdFromAny(parcel);
+            const layer = getRoadDrawingPresenterLayer(pid);
+            if (!pid || !layer || typeof layer.setStyle !== 'function') return;
+            const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(pid) : false;
+            layer.setStyle(isRoad ? roadStyle : normalStyle);
         });
     }
 
     const affectedParcels = [];
-    const excludeSet = excludeParcelIds ? (excludeParcelIds instanceof Set ? excludeParcelIds : new Set(excludeParcelIds)) : null;
-    const skipBoundsFilter = options && options.skipBoundsFilter === true;
+    const excludeSet = excludeParcelIds
+        ? new Set(Array.from(excludeParcelIds).map(String))
+        : null;
 
-    // Get current map bounds for filtering (unless skipped)
-    let mapBounds = null;
-    if (!skipBoundsFilter) {
-        try {
-            mapBounds = map.getBounds();
-        } catch (e) {
-            // Continue without bounds filtering if unavailable
-        }
-    }
-
-    // Check each parcel for intersection
-    parcelLayer.eachLayer(layer => {
-        // Skip parcels outside the current map view for performance (if bounds available and not skipped)
-        if (mapBounds) {
-            try {
-                const layerBounds = layer.getBounds();
-                if (!mapBounds.intersects(layerBounds)) {
-                    return; // Skip parcels outside view
-                }
-            } catch (e) {
-                // Some layers might not have bounds, continue anyway
-            }
-        }
-
-        const parcelId = getRoadDrawingParcelIdFromFeature(layer.feature);
-
-        // Skip if in exclusion list
-        if (excludeSet && excludeSet.has(parcelId)) {
-            return;
-        }
-
-        const outerRings = getParcelOuterRingsLngLat(layer);
-        if (!outerRings || outerRings.length === 0) return;
-
-        try {
-            // Check intersects against any outer ring; stop at first match
-            for (let r = 0; r < outerRings.length; r++) {
-                const ring = outerRings[r];
-                const turfParcelPolygon = turf.polygon([ring]);
-                if (turf.booleanIntersects(turfPolygon, turfParcelPolygon)) {
-                    const parcelArea = Number(layer.feature.properties.calculatedArea) || 0;
-
-                    affectedParcels.push({
-                        id: parcelId,
-                        number: layer.feature.properties.BROJ_CESTICE,
-                        area: parcelArea,
-                        estimatedMarketPrice: layer.feature.properties.estimatedMarketPrice,
-                        layer: layer
-                    });
-
-                    layer.setStyle(highlightStyle);
-
-                    if (typeof layer.bringToFront === 'function') {
-                        layer.bringToFront();
-                    }
-                    break;
-                }
-            }
-        } catch (error) { }
+    liveRoadDrawingParcelsIntersecting(turfPolygon).forEach(feature => {
+        const entry = roadDrawingParcelEntry(feature);
+        if (!entry || (excludeSet && excludeSet.has(entry.id))) return;
+        affectedParcels.push(entry);
+        const layer = entry.layer;
+        if (layer && typeof layer.setStyle === 'function') layer.setStyle(highlightStyle);
+        if (layer && typeof layer.bringToFront === 'function') layer.bringToFront();
     });
 
     return affectedParcels;
@@ -3831,7 +3773,7 @@ function findAndHighlightAffectedParcels(polygon, previousAffectedParcels, highl
 // Find NEW parcels affected by a segment polygon (incremental - only adds parcels not already locked)
 // This is called on click to add parcels from the newly confirmed segment
 function findNewAffectedParcelsForSegment(segmentPolygon) {
-    if (!segmentPolygon || !parcelLayer) return [];
+    if (!segmentPolygon || !getRoadDrawingFabric()) return [];
 
     // Define the green highlight style for committed road parcels
     const committedRoadStyle = {
@@ -3868,69 +3810,12 @@ function findNewAffectedParcelsForSegment(segmentPolygon) {
     }
 
     const newParcels = [];
-    // Check each parcel for intersection - NO mapBounds filter for long roads
-
-    // Get bounds of the segment polygon for fast filtering
-    // This is NOT about map view bounds - it's about segment geometry bounds
-    // A segment is always small (2 points), so this is a tight filter
-    let segmentBounds;
-    try {
-        segmentBounds = L.latLngBounds(segmentPolygon);
-    } catch (_) {
-        // Fall back to no bounds filtering if bounds calculation fails
-    }
-
-    // Check each parcel for intersection with the segment
-    parcelLayer.eachLayer(layer => {
-        const parcelId = getRoadDrawingParcelIdFromFeature(layer.feature);
-        if (!parcelId) return;
-
-        // Skip if already locked (already in our committed set)
-        if (lockedParcelIds.has(parcelId)) {
-            return;
-        }
-
-        // Fast bounds check: skip parcels that don't overlap the segment bounds
-        if (segmentBounds) {
-            try {
-                const layerBounds = layer.getBounds();
-                if (!segmentBounds.intersects(layerBounds)) {
-                    return; // Parcel doesn't overlap segment - skip expensive intersection test
-                }
-            } catch (_) {
-                // Continue with full intersection check if bounds unavailable
-            }
-        }
-
-        const outerRings = getParcelOuterRingsLngLat(layer);
-        if (!outerRings || outerRings.length === 0) return;
-
-        try {
-            // Check intersects against any outer ring; stop at first match
-            for (let r = 0; r < outerRings.length; r++) {
-                const ring = outerRings[r];
-                const turfParcelPolygon = turf.polygon([ring]);
-                if (turf.booleanIntersects(turfPolygon, turfParcelPolygon)) {
-                    const parcelArea = Number(layer.feature.properties.calculatedArea) || 0;
-
-                    newParcels.push({
-                        id: parcelId,
-                        number: layer.feature.properties.BROJ_CESTICE,
-                        area: parcelArea,
-                        estimatedMarketPrice: layer.feature.properties.estimatedMarketPrice,
-                        layer: layer
-                    });
-
-                    // Apply committed style
-                    layer.setStyle(committedRoadStyle);
-
-                    if (typeof layer.bringToFront === 'function') {
-                        layer.bringToFront();
-                    }
-                    break;
-                }
-            }
-        } catch (error) { }
+    liveRoadDrawingParcelsIntersecting(turfPolygon).forEach(feature => {
+        const entry = roadDrawingParcelEntry(feature);
+        if (!entry || lockedParcelIds.has(entry.id)) return;
+        newParcels.push(entry);
+        if (entry.layer && typeof entry.layer.setStyle === 'function') entry.layer.setStyle(committedRoadStyle);
+        if (entry.layer && typeof entry.layer.bringToFront === 'function') entry.layer.bringToFront();
     });
 
     return newParcels;
@@ -3938,7 +3823,7 @@ function findNewAffectedParcelsForSegment(segmentPolygon) {
 
 // Get ownership type from parcel's feature properties
 function getOwnershipTypeFromParcel(parcel) {
-    const featureProps = parcel.layer?.feature?.properties || parcel.properties || {};
+    const featureProps = parcel.feature?.properties || parcel.properties || {};
     const ownershipTypeFromProps = featureProps.ownershipType;
 
     if (ownershipTypeFromProps) {
@@ -4039,7 +3924,7 @@ function lockParcelsFromSegment(segmentPolygon) {
             segmentStats.marketPrice += price;
 
             // Count individual owners from ownership list
-            const featureProps = parcel.layer?.feature?.properties || {};
+            const featureProps = parcel.feature?.properties || {};
             const ownershipList = featureProps.ownershipList || [];
             if (Array.isArray(ownershipList) && ownershipList.length > 0) {
                 for (const owner of ownershipList) {
@@ -5084,13 +4969,12 @@ function resetRoadDrawing(hidePanel = true) {
 // Add a helper function to clear affected parcels
 function clearAffectedParcels() {
     if (roadAffectedParcels.length > 0) {
-        parcelLayer.eachLayer(layer => {
-            // Reset style for previously affected parcels
-            const layerParcelId = getRoadDrawingParcelIdFromFeature(layer.feature);
-            if (layerParcelId && roadAffectedParcels.some(p => getParcelIdFromAny(p) === layerParcelId)) {
-                const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(layerParcelId) : false;
-                layer.setStyle(isRoad ? roadStyle : normalStyle);
-            }
+        roadAffectedParcels.forEach(parcel => {
+            const parcelId = getParcelIdFromAny(parcel);
+            const layer = getRoadDrawingPresenterLayer(parcelId);
+            if (!parcelId || !layer || typeof layer.setStyle !== 'function') return;
+            const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
+            layer.setStyle(isRoad ? roadStyle : normalStyle);
         });
     }
     roadAffectedParcels = [];
@@ -5405,11 +5289,7 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
                 const centerlineSegments = Array.isArray(roadPoints?.[0]) ? roadPoints : (roadPoints ? [roadPoints] : []);
                 const hasCenterline = centerlineSegments.some(seg => Array.isArray(seg) && seg.length >= 2);
                 if (hasCenterline && roadWidth && affectedParcels.length > 0) {
-                    // Get the full GeoJSON features of parent parcels
-                    const parentFeatures = affectedParcels.map(p => {
-                        // We need a deep copy so the original features in parcelLayer are not mutated
-                        return JSON.parse(JSON.stringify(p.layer.feature));
-                    });
+                    const selectedParcelIds = affectedParcels.map(getParcelIdFromAny).filter(Boolean);
 
                     // Create the proposal
                     const proposalApi = (typeof Proposals !== 'undefined' && Proposals.manager) ? Proposals.manager : ProposalManager;
@@ -5431,7 +5311,7 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
                             sidewalkWidth: roadSidewalkWidth,
                             metadata: proposalMetadata
                         },
-                        parentFeatures: parentFeatures,
+                        parentParcelIds: selectedParcelIds,
                         author: authorValue,
                         description: descriptionValue,
                         offer: offerValue,
@@ -5466,13 +5346,6 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
                         } catch (err) {
                             console.warn('Failed to update stored proposal with lens', err);
                         }
-                    }
-
-                    if (proposal && proposal.onchain) {
-                        parentFeatures.forEach(feature => {
-                            if (!feature || !feature.properties) return;
-                            feature.properties.onchainProposal = { ...proposal.onchain };
-                        });
                     }
 
                     // Check if proposal was created successfully
@@ -5852,8 +5725,7 @@ function combineRoadPolygons(polygon1, polygon2) {
         return null;
     } catch (error) {
         console.error('Error combining road polygons:', error);
-        // Fall back to the most recent polygon if there's an error
-        return polygon2 || polygon1;
+        return null;
     }
 }
 
@@ -5863,33 +5735,11 @@ if (typeof window !== 'undefined') {
 
 // Check if a parcel number exists
 function parcelNumberExists(number) {
-    // Check parcelLayer
-    if (window.parcelLayer && typeof window.parcelLayer.eachLayer === 'function') {
-        let exists = false;
-        window.parcelLayer.eachLayer(layer => {
-            if (layer && layer.feature && layer.feature.properties &&
-                layer.feature.properties.BROJ_CESTICE === number) {
-                exists = true;
-            }
-        });
-        if (exists) return true;
-    }
-
-    // Check PersistentStorage
-    for (let i = 0; i < PersistentStorage.length; i++) {
-        const key = PersistentStorage.key(i);
-        if (key.startsWith('parcel_') && key.endsWith('_properties')) {
-            try {
-                const properties = JSON.parse(PersistentStorage.getItem(key));
-                if (properties && properties.BROJ_CESTICE === number) {
-                    return true;
-                }
-            } catch (e) {
-                console.warn('Error parsing properties from PersistentStorage:', e);
-            }
-        }
-    }
-    return false;
+    const fabric = getRoadDrawingFabric();
+    if (!fabric || typeof fabric.list !== 'function') return false;
+    return fabric.list({ includeCorridors: true }).some(feature => (
+        feature?.properties?.BROJ_CESTICE === number
+    ));
 }
 
 // Find next available number
@@ -5937,7 +5787,7 @@ function calculateAreaFromLatLngPolygon(latLngPolygon) {
 // Uses cached locked stats + adds preview-only parcels for combined display
 // PERFORMANCE: Uses mapBounds filter and avoids expensive async calls
 function findPreviewAffectedParcels(previewPolygon) {
-    if (!previewPolygon || !parcelLayer) return;
+    if (!previewPolygon || !getRoadDrawingFabric()) return;
 
     // Clear previous preview highlights (reverts to locked style or base style)
     clearPreviewAffectedParcels();
@@ -5968,65 +5818,14 @@ function findPreviewAffectedParcels(previewPolygon) {
         return;
     }
 
-    // Get map bounds for filtering - preview only needs visible parcels for responsiveness
-    let mapBounds = null;
-    try {
-        mapBounds = map.getBounds();
-    } catch (e) {
-        // Continue without bounds filtering if unavailable
-    }
-
     const newPreviewParcels = [];
 
-    // Find parcels that intersect with the preview polygon but aren't already locked
-    // Use mapBounds filter for performance during preview
-    parcelLayer.eachLayer(layer => {
-        // Skip parcels outside current view for performance
-        if (mapBounds) {
-            try {
-                const layerBounds = layer.getBounds();
-                if (!mapBounds.intersects(layerBounds)) {
-                    return;
-                }
-            } catch (e) { }
-        }
-
-        const parcelId = getRoadDrawingParcelIdFromFeature(layer.feature);
-        if (!parcelId) return;
-
-        // Skip if already locked
-        if (lockedParcelIds.has(parcelId)) {
-            return;
-        }
-
-        const outerRings = getParcelOuterRingsLngLat(layer);
-        if (!outerRings || outerRings.length === 0) return;
-
-        try {
-            for (let r = 0; r < outerRings.length; r++) {
-                const ring = outerRings[r];
-                const turfParcelPolygon = turf.polygon([ring]);
-                if (turf.booleanIntersects(turfPolygon, turfParcelPolygon)) {
-                    const parcelArea = Number(layer.feature.properties.calculatedArea) || 0;
-
-                    newPreviewParcels.push({
-                        id: parcelId,
-                        number: layer.feature.properties.BROJ_CESTICE,
-                        area: parcelArea,
-                        estimatedMarketPrice: layer.feature.properties.estimatedMarketPrice,
-                        layer: layer
-                    });
-
-                    // Apply preview style (orange)
-                    layer.setStyle(previewAffectedStyle);
-
-                    if (typeof layer.bringToFront === 'function') {
-                        layer.bringToFront();
-                    }
-                    break;
-                }
-            }
-        } catch (error) { }
+    liveRoadDrawingParcelsIntersecting(turfPolygon).forEach(feature => {
+        const entry = roadDrawingParcelEntry(feature);
+        if (!entry || lockedParcelIds.has(entry.id)) return;
+        newPreviewParcels.push(entry);
+        if (entry.layer && typeof entry.layer.setStyle === 'function') entry.layer.setStyle(previewAffectedStyle);
+        if (entry.layer && typeof entry.layer.bringToFront === 'function') entry.layer.bringToFront();
     });
 
     roadPreviewAffectedParcels = newPreviewParcels;
@@ -6054,7 +5853,7 @@ function findPreviewAffectedParcels(previewPolygon) {
         }
 
         // Count individual owners from parcel properties
-        const featureProps = parcel.layer?.feature?.properties || {};
+        const featureProps = parcel.feature?.properties || {};
         const ownershipList = featureProps.ownershipList || [];
         if (Array.isArray(ownershipList)) {
             for (const owner of ownershipList) {

@@ -18,20 +18,17 @@
 
     const resolveParcelIdFromProps = (props) => {
         if (!props) return null;
-        const ensured = typeof ensureParcelId === 'function'
-            ? ensureParcelId({ properties: props })
+        const ensured = typeof global.getParcelId === 'function'
+            ? global.getParcelId(props)
             : (props.parcelId ?? props.parcel_id ?? props.id);
         if (ensured !== undefined && ensured !== null) {
             return ensured;
         }
 
-        // Fallback for backend parcels that only expose cestica_id
+        // This feed is an external transport boundary and may expose only its source identifier.
         const fallback = props.cestica_id ?? props.cesticaId ?? null;
         if (fallback !== undefined && fallback !== null) {
-            const asString = fallback.toString();
-            props.parcelId = props.parcelId ?? asString;
-            props.id = props.id ?? asString;
-            return asString;
+            return fallback.toString();
         }
 
         return null;
@@ -199,21 +196,7 @@
         }
         if (typeof global.refreshParcelStylesForAppliedProposals === 'function') {
             global.refreshParcelStylesForAppliedProposals();
-            return;
         }
-        if (!global.parcelLayer || typeof global.parcelLayer.eachLayer !== 'function') {
-            return;
-        }
-        global.parcelLayer.eachLayer(layer => {
-            const parcelId = resolveParcelIdFromProps(layer?.feature?.properties);
-            const idStr = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
-            if (!idStr) return;
-            if (state.showAdParcels && adParcelIdSet.has(idStr)) {
-                layer.setStyle(getAdOverlayStyle());
-            } else if (typeof global.getParcelBaseStyle === 'function') {
-                layer.setStyle(global.getParcelBaseStyle(idStr));
-            }
-        });
     }
 
     async function fetchAdParcels() {
@@ -361,4 +344,3 @@
         }
     };
 })(typeof window !== 'undefined' ? window : globalThis);
-

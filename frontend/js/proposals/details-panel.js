@@ -5,7 +5,7 @@ async function focusProposalDetails(proposalIdOrHash, options = {}) {
     const proposal = getProposalByIdOrHash(proposalIdOrHash);
     if (!proposal) return false;
 
-    const parcelIds = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
+    const parcelIds = Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
     const fallbackParcelId = options.parcelId || (parcelIds.length > 0 ? parcelIds[0] : null);
     const shouldCenter = options.centerOnProposal !== false;
     const shouldShowDetails = options.showDetails !== false;
@@ -22,18 +22,14 @@ async function focusProposalDetails(proposalIdOrHash, options = {}) {
         shouldShowDetails
     );
 
-    // Background hydration. Synthetic descendant IDs are not fetchable; only ask the parcel
-    // server for real cadastre parents. Fire-and-forget — never await before returning, so
-    // a 3,000-parent proposal opens just as fast as a 3-parent one.
-    const synth = (typeof ProposalManager !== 'undefined' && typeof ProposalManager.isSyntheticParcelId === 'function')
-        ? ProposalManager.isSyntheticParcelId.bind(ProposalManager)
-        : (id) => id && (id.includes('#') || /_[0-9a-f]{4,}_/.test(id) || /^HR-\d+-\d+_[a-z0-9]+_\d+$/i.test(id));
-    const realCadastreIds = [...new Set(
-        parcelIds.map(id => id?.toString()).filter(id => id && !synth(id))
-    )];
-    const ground = (typeof CadastralGroundService !== 'undefined' && CadastralGroundService)
-        ? CadastralGroundService
-        : ((typeof window !== 'undefined') ? window.CadastralGroundService : null);
+    // Background hydration uses the proposal's explicit cadastral claim. Fire-and-forget — never
+    // await before returning, so a 3,000-parent proposal opens just as fast as a 3-parent one.
+    const realCadastreIds = (typeof window !== 'undefined' && window.__claims?.cadastreParcelIdsOf)
+        ? window.__claims.cadastreParcelIdsOf(proposal)
+        : [];
+    const ground = (typeof CadastralParcelRepository !== 'undefined' && CadastralParcelRepository)
+        ? CadastralParcelRepository
+        : ((typeof window !== 'undefined') ? window.CadastralParcelRepository : null);
     if (realCadastreIds.length > 0 && ground && typeof ground.ensureIds === 'function') {
         Promise.resolve()
             .then(() => ground.ensureIds(realCadastreIds))
@@ -74,7 +70,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
     collapseSidebarIfOpen();
 
-    const parcelIds = ensureArrayOfStrings(proposal.parentParcelIds);
+    const parcelIds = ensureArrayOfStrings(proposal.cadastreParcelIds);
 
     // Check proposal category for map application controls
     // Ensure we have the full proposal from storage if needed
@@ -99,30 +95,11 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // PERFORMANCE: Start timing parent parcel processing
     const perfStartParentIds = performance.now();
 
-    // Get parent parcel IDs from proposal (parentParcelIds for road/building proposals)
-    // WHY: We need to show which parcels were used to create this proposal in the UI
-    // The parent parcels are the ones that were split/merged to create new parcels
-    let parentParcelIds = [];
-    if (fullProposal.roadProposal) {
-        if (Array.isArray(fullProposal.roadProposal.parentParcelIds) && fullProposal.roadProposal.parentParcelIds.length > 0) {
-            parentParcelIds = fullProposal.roadProposal.parentParcelIds;
-        }
-    } else if (fullProposal.buildingProposal) {
-        if (Array.isArray(fullProposal.buildingProposal.parentParcelIds) && fullProposal.buildingProposal.parentParcelIds.length > 0) {
-            parentParcelIds = fullProposal.buildingProposal.parentParcelIds;
-        }
-    }
-
-    // If no parent parcel IDs found, fall back to proposal.parentParcelIds (for proposals that haven't been applied yet)
-    // But only if the proposal hasn't been applied (no childParcelIds exist)
-    if (parentParcelIds.length === 0) {
-        const hasChildren = (fullProposal.roadProposal && Array.isArray(fullProposal.roadProposal.childParcelIds) && fullProposal.roadProposal.childParcelIds.length > 0)
-            || (fullProposal.buildingProposal && fullProposal.buildingProposal.buildingFeature);
-
-        if (!hasChildren) {
-            parentParcelIds = parcelIds;
-        }
-    }
+    // The proposal has one durable land declaration. Typology-specific parent arrays are not
+    // alternate sources of truth and generated output ids never appear in this ancestor list.
+    const parentParcelIds = Array.isArray(fullProposal.cadastreParcelIds)
+        ? fullProposal.cadastreParcelIds.map(String)
+        : [];
 
     const perfEndParentIds = performance.now();
 
@@ -134,43 +111,26 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         const canonicalId = canonicalIdRaw && canonicalIdRaw.toString ? canonicalIdRaw.toString() : String(canonicalIdRaw || '');
         if (!canonicalId) return null;
 
-        let feature = getCachedParcelFeature(canonicalId, fullProposal);
-        let geometry = null;
+        const feature = window.CadastralParcelRepository?.get?.(canonicalId) || null;
+        const geometry = feature?.geometry || null;
 
-        if (!feature) {
-            try {
-                const record = readPersistedParcelRecord(canonicalId);
-                if (record && record.geometry && record.properties) {
-                    geometry = record.geometry;
-                    feature = ensureParcelIdOnFeature({
-                        type: 'Feature',
-                        properties: record.properties,
-                        geometry: {
-                            type: 'Polygon',
-                            coordinates: [geometry]
-                        }
-                    });
-                }
-            } catch (_) { }
-        }
-
-        if (!feature) {
+        const displayFeature = feature || (() => {
             // No data yet — render a stub row that the user can still click. The lazy list
             // will be re-rendered on parcelDataLoaded if scheduleHighlightRefresh promotes it.
-            feature = ensureParcelIdOnFeature({
+            return ensureParcelIdOnFeature({
                 type: 'Feature',
                 properties: { parcelId: canonicalId, BROJ_CESTICE: canonicalId },
                 geometry: null
             });
-        }
+        })();
 
         const isReplaced = (typeof isParcelReplacedByChildren === 'function') ? isParcelReplacedByChildren(canonicalId) : false;
-        const isRemoved = isReplaced || !feature.geometry;
+        const isRemoved = isReplaced || !displayFeature.geometry;
 
         return {
-            parcelId: getParcelIdFromFeature(feature) || canonicalId,
+            parcelId: getParcelIdFromFeature(displayFeature) || canonicalId,
             parcel: null,
-            feature,
+            feature: displayFeature,
             geometry,
             isRemoved
         };
@@ -277,24 +237,11 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         let isRoad = false;
         let roadName = null;
 
-        // Prefer cached proposal features to avoid hydrating parcel layers
-        const cachedFeature = getCachedParcelFeature(descendantKey);
-        if (cachedFeature?.properties) {
-            parcelNumber = getParcelDisplayNumberFromProperties(cachedFeature.properties, parcelNumber);
-            isRoad = isRoad || !!cachedFeature.properties.isRoad;
-            roadName = roadName || cachedFeature.properties.roadName || null;
-        }
-
-        if (!parcelNumber) {
-            try {
-                const record = readPersistedParcelRecord(descendantKey);
-                const props = record?.properties;
-                if (props) {
-                    parcelNumber = getParcelDisplayNumberFromProperties(props, parcelNumber);
-                    isRoad = isRoad || !!props.isRoad;
-                    roadName = roadName || props.roadName || record?.roadName || null;
-                }
-            } catch (_) { }
+        const liveFeature = window.LiveParcelFabric?.get?.(descendantKey) || null;
+        if (liveFeature?.properties) {
+            parcelNumber = getParcelDisplayNumberFromProperties(liveFeature.properties, parcelNumber);
+            isRoad = !!liveFeature.properties.isRoad;
+            roadName = liveFeature.properties.roadName || null;
         }
 
         const label = parcelNumber ? `Parcel ${parcelNumber}` : `Parcel ${descendantKey}`;
@@ -304,8 +251,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </div>`;
     };
 
-    const descendantKeys = Array.isArray(proposal.childParcelIds)
-        ? Array.from(new Set(proposal.childParcelIds.map(String)))
+    const descendantKeys = (typeof window !== 'undefined'
+        && window.__claims?.materializedParcelIdsOf)
+        ? window.__claims.materializedParcelIdsOf(fullProposal)
         : [];
     const descendantItemsInitial = descendantKeys.slice(0, MAX_LIST_INITIAL).map(renderDescendantItem).join('');
     const descendantItemsRemaining = descendantKeys.slice(MAX_LIST_INITIAL);
@@ -796,7 +744,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             }
         })() : ''}
             <div class="metric-group">
-                <span class="metric-label">${tProposal('panel.proposal.metrics.parcels', 'Parcels in Proposal:')}</span> <span class="metric-value">${proposal.parentParcelIds.length}</span>
+                <span class="metric-label">${tProposal('panel.proposal.metrics.parcels', 'Parcels in Proposal:')}</span> <span class="metric-value">${parcelIds.length}</span>
             </div>
             <div class="metric-group">
                 <span class="metric-label">${tProposal('panel.proposal.metrics.owners', 'Owners in Proposal:')}</span> <span class="metric-value">${(() => {

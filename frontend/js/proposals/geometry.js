@@ -152,7 +152,7 @@ function forEachProposalParcelInViewport(proposalIdSet, callback) {
 // geometry-less parcel operation may still need a map shape: prefer the live parcels it produced,
 // and use its current live subject parcels only when it produced neither geometry nor parcels.
 //
-// Keeping this decision separate from the renderer prevents parentParcelIds from quietly becoming
+// Keeping this decision separate from the renderer prevents cadastreParcelIds from quietly becoming
 // a visual selection again. Those ids are durable cadastral anchors, provenance rather than the
 // selected object.
 function collectProposalSelectionParcelIds(proposal, primaryFeatures = []) {
@@ -169,12 +169,13 @@ function collectProposalSelectionParcelIds(proposal, primaryFeatures = []) {
             if (id) outputIds.add(id);
         });
     };
-    add(proposal.childParcelIds);
-    add(proposal.roadProposal?.childParcelIds);
-    add(proposal.buildingProposal?.childParcelIds);
-    add(proposal.structureProposal?.childParcelIds);
-    add(proposal.reparcellization?.childParcelIds);
-    add(proposal.decideLaterProposal?.childParcelIds);
+    const runtimeRoot = typeof window !== 'undefined' ? window : globalThis;
+    const fabric = runtimeRoot.LiveParcelFabric;
+    const proposalId = proposal.proposalId ?? proposal.id;
+    if (proposalId !== undefined && proposalId !== null
+        && fabric?.producedBy && fabric?.featureId) {
+        add(fabric.producedBy(String(proposalId)).map(feature => fabric.featureId(feature)));
+    }
     if (outputIds.size > 0) return outputIds;
 
     // A body-owning proposal with missing geometry is malformed. Painting its source cadastre as
@@ -187,7 +188,7 @@ function collectProposalSelectionParcelIds(proposal, primaryFeatures = []) {
     );
     if (ownsBody) return outputIds;
 
-    add(proposal.parentParcelIds);
+    add(proposal.cadastreParcelIds);
     return outputIds;
 }
 
@@ -197,7 +198,7 @@ function collectProposalFeatureSets(proposal, options = {}) {
         : true;
     const parcelFeatures = [];
     const primaryFeatures = [];
-    const parcelIds = Array.isArray(proposal?.parentParcelIds) ? proposal.parentParcelIds : [];
+    const parcelIds = Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
     // Parents and road descendants are now handled by the in-place setStyle path in
     // renderAppliedProposalHighlight — it walks the viewport spatial index directly and
     // mutates layers without going through Feature extraction. We deliberately do NOT
@@ -421,14 +422,14 @@ function computeLatLngBoundsFromGeoJsonPolygon(polygonCoords) {
     return latLngs.length ? L.latLngBounds(latLngs) : null;
 }
 
-function collectParcelPolygonsFromParcelLayer(parcelIds) {
+function collectParcelPolygonsFromLiveFabric(parcelIds) {
     if (!Array.isArray(parcelIds) || !parcelIds.length) return [];
     const polygons = [];
+    const fabric = window.LiveParcelFabric;
     parcelIds.forEach(rawId => {
         if (!rawId) return;
         const id = String(rawId);
-        const layer = (typeof window.resolveParcelLayerById === 'function') ? window.resolveParcelLayerById(id) : null;
-        const geom = layer?.feature?.geometry;
+        const geom = fabric?.get?.(id)?.geometry;
         if (!geom || !geom.coordinates) return;
         if (geom.type === 'Polygon') polygons.push(geom.coordinates);
         else if (geom.type === 'MultiPolygon') geom.coordinates.forEach(p => polygons.push(p));
@@ -439,19 +440,15 @@ function collectParcelPolygonsFromParcelLayer(parcelIds) {
 function collectNeighbourPolygonsByBounds(bounds, options = {}) {
     const limit = options.limit || 200;
     const excludeIds = options.excludeIds instanceof Set ? options.excludeIds : new Set((options.excludeIds || []).map(String));
-    const layer = (typeof window !== 'undefined' && window.parcelLayer)
-        || (window?.parcelState && typeof window.parcelState.getParcelLayer === 'function' && window.parcelState.getParcelLayer())
-        || null;
-    if (!layer || !bounds || typeof bounds.intersects !== 'function' || typeof layer.getLayers !== 'function') return [];
+    const fabric = window.LiveParcelFabric;
+    if (!fabric || !bounds || typeof fabric.queryBounds !== 'function') return [];
     const result = [];
-    const layers = layer.getLayers();
-    for (const lay of layers) {
+    const features = fabric.queryBounds(bounds, { includeCorridors: true });
+    for (const feature of features) {
         if (result.length >= limit) break;
-        const lb = (lay && typeof lay.getBounds === 'function') ? lay.getBounds() : null;
-        if (!lb || !bounds.intersects(lb)) continue;
-        const id = (typeof getParcelIdFromFeature === 'function') ? getParcelIdFromFeature(lay?.feature) : null;
+        const id = (typeof getParcelIdFromFeature === 'function') ? getParcelIdFromFeature(feature) : null;
         if (id && excludeIds.has(String(id))) continue;
-        const geom = lay?.feature?.geometry;
+        const geom = feature?.geometry;
         if (!geom || !geom.coordinates) continue;
         if (geom.type === 'Polygon') result.push(geom.coordinates);
         else if (geom.type === 'MultiPolygon') geom.coordinates.forEach(p => result.push(p));
@@ -966,19 +963,11 @@ function calculateBoundsForLastAppliedProposal(proposalId) {
     // cadastral parents may have been replaced by an earlier member of the same plan. In that case
     // its authored geometry is the stable focus source; probing the retired parents first only
     // creates a false warning and a fetch that can never make them live again.
-    const childParcelIds = [];
-    const addAll = (list) => {
-        (Array.isArray(list) ? list : []).forEach(id => {
-            const val = id && id.toString ? id.toString() : String(id || '');
-            if (val) childParcelIds.push(val);
-        });
-    };
-
-    addAll(proposal.childParcelIds);
-    addAll(proposal?.roadProposal?.childParcelIds);
-    addAll(proposal?.reparcellization?.childParcelIds);
-    addAll(proposal?.decideLaterProposal?.childParcelIds);
-    addAll(proposal?.structureProposal?.childParcelIds);
+    const runtimeRoot = typeof window !== 'undefined' ? window : globalThis;
+    const fabric = runtimeRoot.LiveParcelFabric;
+    const childParcelIds = fabric?.producedBy && fabric?.featureId
+        ? fabric.producedBy(String(proposalId)).map(feature => fabric.featureId(feature)).filter(Boolean).map(String)
+        : [];
 
     console.debug('[calculateBoundsForLastAppliedProposal] Child parcels:', childParcelIds.length);
 
@@ -1016,7 +1005,7 @@ function calculateBoundsForLastAppliedProposal(proposalId) {
     // parents. If another formation replaced them they will remain absent, and the single warning
     // below describes the complete failure rather than an expected intermediate miss.
     if (!childParcelIds.length) {
-        const parentIds = ensureArrayOfStrings(proposal.parentParcelIds || []);
+        const parentIds = ensureArrayOfStrings(proposal.cadastreParcelIds || []);
         if (parentIds.length) {
             const parentBounds = leafletBoundsForParcels(parentIds);
             if (parentBounds) return parentBounds;
@@ -1084,56 +1073,26 @@ function calculateProposalGeometryBounds(proposal) {
 function calculateProposalBounds(parcelIds, options = {}) {
     if (!parcelIds || parcelIds.length === 0) return null;
 
-    const proposal = options.proposal || null;
-    const cache = proposal ? buildProposalFeatureCache(proposal) : null;
-
     const positions = [];
     const missingParcels = [];
-
-    parcelIds.forEach(rawParcelId => {
-        const parcelId = rawParcelId && rawParcelId.toString ? rawParcelId.toString() : (rawParcelId ? String(rawParcelId) : null);
-        if (!parcelId) {
-            return;
-        }
-
-        let center = null;
-
-        if (cache && cache.parcelsById && cache.parcelsById.has(parcelId)) {
-            const cachedFeature = cache.parcelsById.get(parcelId);
-            if (cachedFeature && cachedFeature.geometry) {
-                try {
-                    const boundsFromFeature = L.geoJSON(cachedFeature).getBounds();
-                    if (boundsFromFeature && typeof boundsFromFeature.getCenter === 'function' && boundsFromFeature.isValid && boundsFromFeature.isValid()) {
-                        center = boundsFromFeature.getCenter();
-                    }
-                } catch (e) {
-                    console.warn(`calculateProposalBounds: failed to compute bounds from cached feature for ${parcelId}`, e);
-                }
-            }
-        }
-
-        if (!center && typeof multiParcelSelection !== 'undefined' && multiParcelSelection && typeof multiParcelSelection.findParcelById === 'function') {
-            const parcelLayer = multiParcelSelection.findParcelById(parcelId);
-            if (parcelLayer && typeof parcelLayer.getBounds === 'function') {
-                try {
-                    const bounds = parcelLayer.getBounds();
-                    if (bounds && typeof bounds.getCenter === 'function') {
-                        const candidateCenter = bounds.getCenter();
-                        if (candidateCenter && !isNaN(candidateCenter.lat) && !isNaN(candidateCenter.lng)) {
-                            center = candidateCenter;
-                        }
-                    }
-                } catch (e) {
-                    console.warn(`Error getting bounds for parcel ${parcelId}:`, e);
-                }
-            }
-        }
-
-        if (center) {
-            positions.push(center);
-        } else {
-            missingParcels.push(parcelId);
-        }
+    const requested = parcelIds.map(value => String(value || '')).filter(Boolean);
+    const presenter = window.ParcelPresenter;
+    const resolvedLayers = presenter?.resolveLiveLayers?.(requested, { includeCorridors: true }) || [];
+    const resolvedAnchors = new Set();
+    resolvedLayers.forEach(layer => {
+        try {
+            const bounds = layer?.getBounds?.();
+            if (!bounds || !bounds.isValid?.()) return;
+            const center = bounds.getCenter?.();
+            if (center && Number.isFinite(center.lat) && Number.isFinite(center.lng)) positions.push(center);
+            const feature = layer.feature;
+            const id = window.LiveParcelFabric?.featureId?.(feature);
+            if (id) resolvedAnchors.add(id);
+            window.LiveParcelFabric?.explicitCadastreIds?.(feature)?.forEach(anchor => resolvedAnchors.add(String(anchor)));
+        } catch (_) { }
+    });
+    requested.forEach(id => {
+        if (!resolvedAnchors.has(id)) missingParcels.push(id);
     });
 
     if (positions.length === 0) {
@@ -1182,8 +1141,8 @@ function calculateProposalBounds(parcelIds, options = {}) {
 function computeProposalArea(proposal) {
     if (!proposal) return 0;
 
-    if (Array.isArray(proposal.parentParcelIds) && proposal.parentParcelIds.length > 0) {
-        return proposal.parentParcelIds.reduce((sum, id) => sum + getParcelAreaById(id), 0);
+    if (Array.isArray(proposal.cadastreParcelIds) && proposal.cadastreParcelIds.length > 0) {
+        return proposal.cadastreParcelIds.reduce((sum, id) => sum + getParcelAreaById(id), 0);
     }
 
     try {
@@ -1203,7 +1162,7 @@ function computeProposalArea(proposal) {
 function computeProposalMetrics(proposal) {
     const createdAt = Date.parse(proposal.createdAt) || 0;
     const executedAt = proposal.executedAt ? (Date.parse(proposal.executedAt) || 0) : 0;
-    const parcelCount = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds.length : 0;
+    const parcelCount = Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds.length : 0;
     const acceptedCount = Array.isArray(proposal.acceptedParcelIds) ? proposal.acceptedParcelIds.length : 0;
     const acceptanceRatio = parcelCount > 0 ? acceptedCount / parcelCount : 0;
     const offerValue = Number.isFinite(Number(proposal.offer)) ? Number(proposal.offer) : (Number.isFinite(Number(proposal.budget)) ? Number(proposal.budget) : 0);

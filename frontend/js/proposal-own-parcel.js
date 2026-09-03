@@ -25,42 +25,33 @@
         return out;
     }
 
-    // Child ids as recorded by the apply path: canonically on the proposal, with the per-type
-    // sub-object (roadProposal / reparcellization) as the older location.
-    function childParcelIds(proposal) {
-        if (!proposal || typeof proposal !== 'object') return [];
-        const roots = [
-            proposal.childParcelIds,
-            proposal.roadProposal && proposal.roadProposal.childParcelIds,
-            proposal.reparcellization && proposal.reparcellization.childParcelIds
-        ];
-        for (let i = 0; i < roots.length; i++) {
-            const ids = normalizeIds(roots[i]);
-            if (ids.length) return ids;
-        }
-        return [];
+    function materializedParcelIds(features) {
+        return normalizeIds((Array.isArray(features) ? features : []).map(feature => (
+            feature?.properties?.parcelId ?? feature?.properties?.parcel_id ?? feature?.properties?.id
+        )));
     }
 
-    // The one parcel this proposal IS, or null when it does not have one. `lookupFeature(id)`
-    // returns a parcel GeoJSON feature (or null) and is only consulted when the proposal has
-    // several children — the corridor flag is what tells a road apart from its own remainders.
-    function ownParcelId(proposal, lookupFeature) {
-        const ids = childParcelIds(proposal);
+    // The one parcel this proposal IS, or null when it does not have one. Materialized features
+    // come from LiveParcelFabric.producedBy(proposalId); the proposal never stores their IDs.
+    function ownParcelId(proposal, materializedFeatures) {
+        if (!proposal || typeof proposal !== 'object') return null;
+        const features = Array.isArray(materializedFeatures) ? materializedFeatures : [];
+        const ids = materializedParcelIds(features);
         if (!ids.length) return null;
         if (ids.length === 1) return ids[0];
-        if (typeof lookupFeature !== 'function') return null;
-        for (let i = 0; i < ids.length; i++) {
-            let feature = null;
-            try { feature = lookupFeature(ids[i]); } catch (_) { feature = null; }
+        for (let i = 0; i < features.length; i++) {
+            const feature = features[i];
             const properties = (feature && feature.properties) || {};
-            if (properties.isCorridor === true || properties.isCorridor === 'true') return ids[i];
+            if (properties.isCorridor === true || properties.isCorridor === 'true') {
+                return String(properties.parcelId ?? properties.parcel_id ?? properties.id);
+            }
         }
         // Several children and none is a corridor: a reparcellization is its slices, not one parcel.
         return null;
     }
 
     return {
-        childParcelIds: childParcelIds,
+        materializedParcelIds: materializedParcelIds,
         ownParcelId: ownParcelId
     };
 });

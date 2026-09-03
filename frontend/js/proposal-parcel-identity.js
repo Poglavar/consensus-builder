@@ -18,22 +18,16 @@ function _composeSyntheticParcelNumber(rootNumber, token, index) {
     const rawRoot = (rootNumber !== undefined && rootNumber !== null && String(rootNumber).trim().length)
         ? String(rootNumber).trim()
         : null;
-    const safeRoot = rawRoot
-        ? (_extractRootParcelNumber(rawRoot) || rawRoot.replace(/\s+/g, ''))
-        : null;
     const safeIndex = Number(index) || 1;
-    return safeRoot ? `${safeRoot}#${token}-${safeIndex}` : `${token}-${safeIndex}`;
+    return rawRoot ? `${rawRoot}#${token}-${safeIndex}` : `${token}-${safeIndex}`;
 }
 
 function _composeSyntheticParcelId(rootParcelId, token, index) {
     const rawRoot = (rootParcelId !== undefined && rootParcelId !== null && String(rootParcelId).trim().length)
         ? String(rootParcelId).trim()
         : null;
-    const safeRoot = rawRoot
-        ? (_extractRootParcelId(rawRoot) || rawRoot.replace(/\s+/g, ''))
-        : null;
     const safeIndex = Number(index) || 1;
-    return safeRoot ? `${safeRoot}#${token}-${safeIndex}` : `${token}-${safeIndex}`;
+    return rawRoot ? `${rawRoot}#${token}-${safeIndex}` : `${token}-${safeIndex}`;
 }
 
 // NOTE: child parcel ids are assigned solely by the id subsystem (_assignSyntheticChildIdentities /
@@ -42,73 +36,6 @@ function _composeSyntheticParcelId(rootParcelId, token, index) {
 // geometry or the id rules change, children simply get different ids, and that is fine. The
 // consensus layer (acceptance / sale / ownership transfer) is entirely parent-keyed, so child-id
 // identity is a local concern of whichever apply produced them, not something to recreate.
-
-function _escapeRegExp(value) {
-    return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
-function _parseSyntheticIndexFromIdentifiers(parcelNumber, parcelId, token) {
-    const normalizedToken = token ? _buildSyntheticToken(token) : null;
-
-    const tryMatch = (value) => {
-        if (!value) return null;
-        const str = String(value);
-
-        if (normalizedToken) {
-            const escaped = _escapeRegExp(normalizedToken);
-            const directMatch = str.match(new RegExp(`#${escaped}-(\\d+)$`));
-            if (directMatch) {
-                const parsed = Number(directMatch[1]);
-                if (Number.isFinite(parsed)) return parsed;
-            }
-            // Legacy "/token/idx" form for back-compat
-            const legacyMatch = str.match(new RegExp(`${escaped}/(\\d+)$`));
-            if (legacyMatch) {
-                const parsed = Number(legacyMatch[1]);
-                if (Number.isFinite(parsed)) return parsed;
-            }
-            const legacyUnderscore = str.match(new RegExp(`${escaped}_(\\d+)$`));
-            if (legacyUnderscore) {
-                const parsed = Number(legacyUnderscore[1]);
-                if (Number.isFinite(parsed)) return parsed;
-            }
-        }
-
-        const hashGeneric = str.match(/#([^#]+)-(\d+)$/);
-        if (hashGeneric) {
-            const parsed = Number(hashGeneric[2]);
-            if (Number.isFinite(parsed)) return parsed;
-        }
-
-        const tailNumeric = str.match(/(\d+)$/);
-        if (tailNumeric) {
-            const parsed = Number(tailNumeric[1]);
-            if (Number.isFinite(parsed)) return parsed;
-        }
-
-        return null;
-    };
-
-    return tryMatch(parcelId) ?? tryMatch(parcelNumber);
-}
-
-/**
- * Client-generated parcel ids (subdivision, proposal chaining, government-roads splits)
- * must not be requested from the cadastre API. Kept aligned with focusProposalDetails /
- * findMissingParentParcels filtering.
- */
-function isSyntheticParcelId(rawId) {
-    if (rawId === undefined || rawId === null) return false;
-    const id = String(rawId);
-    if (!id) return false;
-    if (id.includes('#')) return true;
-    // Road subdivision token segment (hex), e.g. …_a1b2c3d4_…
-    if (/_[0-9a-f]{4,}_/.test(id)) return true;
-    // government-roads.js composeSyntheticParcelId: `${safeRoot}_${token}_${index}` — token is often
-    // alphabetic (e.g. "proposal"), so the hex pattern above does not match.
-    if (/^HR-\d+-\d+_[a-z0-9]+_\d+$/i.test(id)) return true;
-    return false;
-}
 
 function _normalizeParcelId(value) {
     if (value === undefined || value === null) return null;
@@ -121,15 +48,9 @@ function _normalizeParcelId(value) {
 
 function _getParcelIdFromProperties(props) {
     if (!props) return null;
-    const candidateOrder = [
-        () => (typeof ensureParcelId === 'function' ? ensureParcelId({ properties: props }) : null),
-        () => props.parcelId,
-        () => props.parcel_id,
-        () => props.id
-    ];
-    for (const getter of candidateOrder) {
+    const candidates = [props.parcelId, props.parcel_id, props.id];
+    for (const value of candidates) {
         try {
-            const value = getter();
             const normalized = _normalizeParcelId(value);
             if (normalized) return normalized;
         } catch (_) { /* ignore */ }
@@ -139,13 +60,6 @@ function _getParcelIdFromProperties(props) {
 
 function _getParcelIdFromFeature(feature) {
     if (!feature) return null;
-    if (typeof ensureParcelId === 'function') {
-        try {
-            const ensured = ensureParcelId(feature);
-            const normalized = _normalizeParcelId(ensured);
-            if (normalized) return normalized;
-        } catch (_) { /* ignore */ }
-    }
     return _getParcelIdFromProperties(feature.properties);
 }
 
@@ -281,9 +195,6 @@ if (typeof module !== 'undefined' && module.exports) {
         _buildSyntheticToken,
         _composeSyntheticParcelNumber,
         _composeSyntheticParcelId,
-        _escapeRegExp,
-        _parseSyntheticIndexFromIdentifiers,
-        isSyntheticParcelId,
         _normalizeParcelId,
         _getParcelIdFromProperties,
         _getParcelIdFromFeature,

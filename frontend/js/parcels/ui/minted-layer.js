@@ -13,10 +13,6 @@
         totalMinted: null
     };
 
-    const getCache = () => (global.ParcelsState && typeof global.ParcelsState.getParcelCache === 'function')
-        ? global.ParcelsState.getParcelCache()
-        : global.parcelCache;
-
     function normalizeParcelId(parcelId) {
         if (parcelId === undefined || parcelId === null) return null;
         const str = parcelId.toString().trim();
@@ -54,20 +50,15 @@
         return state.layer;
     }
 
-    function getCachedFeature(parcelId) {
-        const cache = getCache();
-        if (cache && cache.byId instanceof Map) {
-            const feature = cache.byId.get(parcelId);
-            if (feature) return feature;
-        }
-        return null;
+    function getParcelFeature(parcelId) {
+        const id = String(parcelId || '');
+        return global.LiveParcelFabric?.get?.(id)
+            || global.CadastralParcelRepository?.get?.(id)
+            || null;
     }
 
     function resolveParcelLayer(parcelId) {
-        if (typeof global.resolveParcelLayerById === 'function') {
-            return global.resolveParcelLayerById(parcelId);
-        }
-        return null;
+        return global.ParcelPresenter?.getLayer?.(parcelId) || null;
     }
 
     function computeLatLng(feature, layer) {
@@ -128,7 +119,7 @@
         state.mintedIds.add(normalizedId);
 
         const layer = options.layer || resolveParcelLayer(normalizedId);
-        const featureHint = options.feature || (layer && layer.feature) || getCachedFeature(normalizedId);
+        const featureHint = options.feature || getParcelFeature(normalizedId);
         const latLng = computeLatLng(featureHint, layer);
 
         if (!latLng) {

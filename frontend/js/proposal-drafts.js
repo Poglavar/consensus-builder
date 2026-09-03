@@ -19,6 +19,18 @@
         }
     }
 
+    function authoredProposalBoundary() {
+        if (global.__formationDepth && typeof global.__formationDepth.stripDerivedRecordData === 'function') {
+            return global.__formationDepth;
+        }
+        if (typeof require === 'function') {
+            const authored = global.ProposalAuthoredRecord || require('./proposals/authored-record.js');
+            if (!global.ProposalAuthoredRecord) global.ProposalAuthoredRecord = authored;
+            return require('./proposals/formation-depth.js');
+        }
+        throw new Error('Cannot build proposal: the authored-record boundary is unavailable.');
+    }
+
     function isPlainObject(value) {
         if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
         const prototype = Object.getPrototypeOf(value);
@@ -154,13 +166,16 @@
     }
 
     function proposalFields(proposal) {
-        const parentParcelIds = Array.isArray(proposal?.parentParcelIds)
-            ? proposal.parentParcelIds.map(String)
+        const cadastreParcelIds = Array.isArray(proposal?.cadastreParcelIds)
+            ? proposal.cadastreParcelIds.map(String)
             : [];
         return {
             name: proposal?.title || proposal?.name || proposal?.proposalName || '',
             description: proposal?.description || '',
-            parentParcelIds,
+            // Draft selection is transient editor state. Keep the immutable authored declaration
+            // separately so an untouched edit does not need the live map to rediscover it.
+            parentParcelIds: cadastreParcelIds.slice(),
+            cadastreParcelIds: cadastreParcelIds.slice(),
             ownership: cloneDraftValue(proposal?.ownership || proposal?.proposalFacets?.ownership || proposal?.facets?.ownership || null),
             recipientScope: proposal?.recipientScope || proposal?.proposalFacets?.recipientScope || proposal?.facets?.recipientScope || null,
             recipientAddress: proposal?.recipientAddress || proposal?.proposalFacets?.recipientAddress || proposal?.facets?.recipientAddress || null,
@@ -199,11 +214,7 @@
             return {
                 typology: proposal?.typologyType || buildingProposal.typologyType || goal,
                 context: {
-                    parcelIds: cloneDraftValue(buildingProposal.blockParcelIds?.length
-                        ? buildingProposal.blockParcelIds
-                        : (buildingProposal.parentParcelIds || proposal?.parentParcelIds || [])),
-                    blockParcelIds: cloneDraftValue(buildingProposal.blockParcelIds || []),
-                    parentDetails: cloneDraftValue(buildingProposal.parentParcelNumbers || null),
+                    parcelIds: cloneDraftValue(proposal?.cadastreParcelIds || []),
                     blockName: buildingProposal.blockName || null,
                     parameters: cloneDraftValue(buildingProposal.parameters || {}),
                     buildingFeature: cloneDraftValue(buildingProposal.buildingFeature || buildings[0] || null),
@@ -823,10 +834,24 @@
             if (!proposal) {
                 proposal = mergeDraftValues(draft.sourceSnapshot || {}, draft.fields || {});
                 proposal.goal = draft.goal;
-                proposal.parentParcelIds = cloneDraftValue(draft.fields?.parentParcelIds || []);
+                const selected = cloneDraftValue(draft.fields?.parentParcelIds || []);
+                const authored = Array.isArray(draft.sourceSnapshot?.cadastreParcelIds)
+                    ? [...new Set(draft.sourceSnapshot.cadastreParcelIds.map(String).filter(Boolean))]
+                    : [];
+                const selectionUnchanged = authored.length === selected.length
+                    && selected.every(id => authored.includes(String(id)));
+                if (authored.length && selectionUnchanged) {
+                    proposal.cadastreParcelIds = authored;
+                } else {
+                    const fabric = global.LiveParcelFabric;
+                    if (!fabric || typeof fabric.cadastreIdsForParcelIds !== 'function') {
+                        throw new Error('Live parcel fabric is required to author changed proposal ground.');
+                    }
+                    proposal.cadastreParcelIds = fabric.cadastreIdsForParcelIds(selected);
+                }
                 proposal.editorPayload = cloneDraftValue(draft.editorPayload || {});
             }
-            const output = cloneDraftValue(proposal);
+            let output = cloneDraftValue(proposal);
             delete output.id;
             delete output.proposalId;
             delete output.proposal_id;
@@ -842,6 +867,19 @@
             output.sourceProposalId = draft.sourceProposalId || null;
             output.replacementOfProposalId = draft.sourceProposalId || null;
             output.proposalDraftId = draft.id;
+            // A draft may temporarily refer to the currently selected live parcel pieces. The
+            // serializer above must project that selection to cadastreParcelIds; this final
+            // boundary then guarantees that no live parent/child aliases or materialized features
+            // escape in the proposal object itself.
+            const boundary = authoredProposalBoundary();
+            output = boundary.stripDerivedRecordData(output);
+            const verdict = typeof boundary.conformanceOf === 'function'
+                ? boundary.conformanceOf(output)
+                : { flat: false, violations: [{ code: 'authored-boundary-unavailable' }] };
+            if (!verdict.flat) {
+                const violation = verdict.violations?.[0];
+                throw new Error(`Cannot build proposal: ${violation?.field || violation?.code || 'cadastral scope is invalid'}.`);
+            }
             return output;
         }
 

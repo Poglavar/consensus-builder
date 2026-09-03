@@ -122,8 +122,8 @@
         // Corridor/track detection needs the layer's feature flags. Callers that only have an id
         // would otherwise drop a corridor slice into the generic dark road style — resolve the
         // layer ourselves so the quiet corridor footprint survives every restyle path.
-        if (!layer && idStr && global.parcelLayerById instanceof Map) {
-            layer = global.parcelLayerById.get(idStr) || null;
+        if (!layer && idStr && global.LiveParcelFabric?.get?.(idStr)) {
+            layer = global.ParcelPresenter?.getLayer?.(idStr) || null;
         }
 
         // Check track first - tracks have isCorridor=true and isTrack=true but isRoad=false
@@ -245,11 +245,9 @@
                     const buildingProposal = proposal.buildingProposal || null;
                     if (buildingProposal) {
                         if (isApplied(proposal, buildingProposal)) {
-                            const ids = Array.isArray(buildingProposal.blockParcelIds) && buildingProposal.blockParcelIds.length > 0
-                                ? buildingProposal.blockParcelIds
-                                : Array.isArray(buildingProposal.parentParcelIds) && buildingProposal.parentParcelIds.length > 0
-                                    ? buildingProposal.parentParcelIds
-                                : (Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : []);
+                            const ids = Array.isArray(proposal.cadastreParcelIds)
+                                ? proposal.cadastreParcelIds
+                                : [];
                             if (Array.isArray(ids)) parcelIds.push(...ids);
                         }
                     } else {
@@ -259,7 +257,7 @@
                         const isBuildingGoal = ['buildings', 'building(s)', 'single-building', 'parcelBased'].includes(goalKey);
                         if ((isBuildingGoal || (proposal.geometry && Array.isArray(proposal.geometry.buildings) && proposal.geometry.buildings.length))
                             && isApplied(proposal)) {
-                            if (Array.isArray(proposal.parentParcelIds)) parcelIds.push(...proposal.parentParcelIds);
+                            if (Array.isArray(proposal.cadastreParcelIds)) parcelIds.push(...proposal.cadastreParcelIds);
                         }
                     }
 
@@ -267,9 +265,9 @@
                     if (structureProposal) {
                         const kind = (structureProposal.kind || '').toLowerCase();
                         if ((kind === 'park' || kind === 'square') && isApplied(proposal, structureProposal)) {
-                            const ids = Array.isArray(structureProposal.parentParcelIds) && structureProposal.parentParcelIds.length > 0
-                                ? structureProposal.parentParcelIds
-                                : (Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : []);
+                            const ids = Array.isArray(proposal.cadastreParcelIds)
+                                ? proposal.cadastreParcelIds
+                                : [];
                             if (Array.isArray(ids)) parcelIds.push(...ids);
                         }
                     }
@@ -400,9 +398,9 @@
         }
 
         if (selectedId) {
-            const selectedLayer = global.parcelLayer.getLayers().find(layer =>
-                layer.feature && layer.feature.properties && layer.feature.properties.parcelId.toString() === selectedId
-            );
+            const selectedLayer = global.LiveParcelFabric?.get?.(selectedId)
+                ? global.ParcelPresenter?.getLayer?.(selectedId)
+                : null;
             if (selectedLayer) {
                 const isTrackSelected = (selectedLayer?.feature?.properties?.isTrack === true) || Boolean(selectedLayer?._trackStyle);
                 if (isTrackSelected) {

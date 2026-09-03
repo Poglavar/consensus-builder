@@ -168,7 +168,7 @@
             "instantCreateFailed": "Could not save the new object.",
             "noAdapter": "No editor is registered for this proposal type.",
             "notReshapeable": "This proposal type cannot be reshaped.",
-            "parcelsNotContiguous": "A lake needs contiguous parcels.",
+            "parcelsNotContiguous": "The selected parcels must form one connected area.",
             "parcelsUnavailable": "The draft parcels are not available in the current city.",
             "readOnly": "This proposal is view-only.",
             "sourceMissing": "Proposal source not found."

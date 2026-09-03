@@ -21,13 +21,12 @@
     // ── candidate collection ─────────────────────────────────────────────────────────────────
 
     // footprint cache: proposalKey → { stamp, footprint, bbox }. The stamp moves whenever the
-    // proposal is edited, re-applied or recut (fresh childParcelIds), so a mutated road
+    // proposal is edited or re-applied, so a mutated road
     // definition cannot serve a stale corridor polygon.
     const footprintCache = new Map();
 
     function stampOf(proposal) {
-        const children = Array.isArray(proposal.childParcelIds) ? proposal.childParcelIds.length : 0;
-        return `${proposal.updatedAt || ''}|${proposal.appliedAt || ''}|${children}`;
+        return `${proposal.updatedAt || ''}|${proposal.appliedAt || ''}`;
     }
 
     function footprintFor(proposal, key) {
@@ -56,22 +55,12 @@
 
     function collectCandidates(latlng) {
         const parcels = [];
-        const index = (global.parcelLayerById instanceof Map) ? global.parcelLayerById : null;
-        const leafletMap = global.map;
-        if (index && leafletMap) {
-            index.forEach((layer, id) => {
-                if (!layer || !layer.feature || typeof layer.getBounds !== 'function') return;
-                // parcelLayerById is an ancestry/index cache: consumed cadastre and older
-                // derived pieces deliberately remain in it. They are not ground in the one
-                // live partition and must never be hover/click candidates.
-                try { if (!leafletMap.hasLayer(layer)) return; } catch (_) { return; }
-                try {
-                    const bounds = layer.getBounds();
-                    if (!bounds || !bounds.isValid || !bounds.isValid() || !bounds.contains(latlng)) return;
-                    parcels.push({ id: String(id), feature: layer.feature, live: true });
-                } catch (_) { }
-            });
-        }
+        const fabric = global.LiveParcelFabric;
+        const pointBounds = [latlng.lng, latlng.lat, latlng.lng, latlng.lat];
+        (fabric?.queryBounds?.(pointBounds, { includeCorridors: true }) || []).forEach(feature => {
+            const id = fabric.featureId?.(feature);
+            if (id) parcels.push({ id: String(id), feature, live: true });
+        });
 
         const proposals = [];
         const storage = global.proposalStorage;
@@ -238,7 +227,7 @@
         try {
             if (typeof global.getParcelDisplayNumberFromFeature === 'function') {
                 const broj = global.getParcelDisplayNumberFromFeature(entry.feature, '');
-                if (broj && broj.indexOf('#') === -1) return String(broj);
+                if (broj) return String(broj);
             }
         } catch (_) { }
         return String(entry.id);
@@ -247,24 +236,14 @@
     // ── multi-parcel base row ────────────────────────────────────────────────────────────────
 
     // A formed parcel minted from SEVERAL base parcels (a merged park, a corridor) anchors them
-    // all in properties.baseParcelIds (§15a). The base row then shows the whole set — count first,
+    // all in properties.cadastreParcelIds (§15a). The base row then shows the whole set — count first,
     // every id clickable, horizontally scrollable — instead of only the one under the click.
-    // When no formed level carries the anchor (an adopted structure, pre-§15a fabric), the
-    // PROPOSAL above still knows what it took: its formation record / parent lists.
+    // A proposal above still knows the same set through its single authored cadastral declaration.
     function parcelSetOfProposal(proposal) {
-        const lists = [
-            proposal?.structureProposal?.formation?.parcelIds,
-            proposal?.buildingProposal?.formation?.parcelIds,
-            proposal?.parentParcelIds,
-            proposal?.structureProposal?.parentParcelIds,
-            proposal?.buildingProposal?.parentParcelIds,
-            proposal?.roadProposal?.parentParcelIds,
-            proposal?.cadastreParcelIds
-        ];
-        for (const list of lists) {
-            if (Array.isArray(list) && list.length > 1) return list.map(String).filter(Boolean);
-        }
-        return null;
+        const ids = Array.isArray(proposal?.cadastreParcelIds)
+            ? Array.from(new Set(proposal.cadastreParcelIds.map(String).filter(Boolean)))
+            : [];
+        return ids.length > 1 ? ids : null;
     }
 
     function baseGroupIdsFor(stack, index, entry) {
@@ -274,8 +253,8 @@
             const above = stack[i];
             if (!above) continue;
             if (above.kind === 'parcel' && above.depth > 0) {
-                const baseIds = above.feature && above.feature.properties && Array.isArray(above.feature.properties.baseParcelIds)
-                    ? above.feature.properties.baseParcelIds.map(String).filter(Boolean)
+                const baseIds = above.feature && above.feature.properties && Array.isArray(above.feature.properties.cadastreParcelIds)
+                    ? above.feature.properties.cadastreParcelIds.map(String).filter(Boolean)
                     : [];
                 if (baseIds.length > 1) groupIds = baseIds;
             } else if (above.kind === 'proposal') {
@@ -283,21 +262,18 @@
             }
         }
         if (!groupIds || groupIds.length < 2) return null;
-        // The row is CADASTRAL by definition: fabric stamped before the anchor-flatten fix can
-        // still carry a derived id in baseParcelIds — flatten every pill to its base id here so
-        // "Cadastral parcel" never shows a `#`-suffixed name whatever the stored data holds.
-        const fe = global.__formationEdit;
-        const toBase = id => (fe && typeof fe.baseIdOf === 'function') ? fe.baseIdOf(String(id)) : String(id);
-        groupIds = groupIds.map(toBase).filter(Boolean);
+        // These IDs came from explicit cadastral provenance; their strings remain opaque.
+        groupIds = groupIds.map(String).filter(Boolean);
+        if (groupIds.length < 2) return null;
         // The clicked base parcel leads the list so it is never scrolled out of sight.
-        const ordered = [toBase(entry.id), ...groupIds.filter(id => id !== toBase(entry.id))];
+        const currentBase = String(entry.id || '');
+        const ordered = [currentBase, ...groupIds.filter(id => id !== currentBase)].filter(Boolean);
         return Array.from(new Set(ordered));
     }
 
     function baseFeatureById(id) {
         try {
-            const layer = (global.parcelLayerById instanceof Map) ? global.parcelLayerById.get(String(id)) : null;
-            return layer && layer.feature ? layer.feature : null;
+            return global.CadastralParcelRepository?.get?.(String(id)) || null;
         } catch (_) { return null; }
     }
 
@@ -305,7 +281,7 @@
         try {
             if (feature && typeof global.getParcelDisplayNumberFromFeature === 'function') {
                 const broj = global.getParcelDisplayNumberFromFeature(feature, '');
-                if (broj && broj.indexOf('#') === -1) return String(broj);
+                if (broj) return String(broj);
             }
         } catch (_) { }
         return String(id).replace(/^HR-\d+-/, '');

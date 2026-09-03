@@ -3,8 +3,14 @@
 // multiParcelSelection (selection controller) + caches. Extracted from proposals.js; loaded before
 // the proposals.js bootstrap so its load-time init can reference these.
 
+// One atomic envelope is the only durable local proposal state. Keep the key stable so an upgrade
+// replaces the old array in place instead of leaving two stores that can disagree.
 const PROPOSALS_STORAGE_KEY = 'cadastre_proposals';
+const PROPOSALS_STATE_VERSION = 2;
+const PROPOSALS_CUTOVER_KEY = 'cadastre_proposals_cutover_v2';
 
+// Kept as names only so the one-time cutover can remove the split counter and parked legacy copy.
+// Normal proposal writes never touch either key.
 const PROPOSALS_NEXT_ID_KEY = 'cadastre_proposals_nextId';
 
 // Where a READ-ONLY (secondary) tab parks work it is not allowed to write to the shared key above.
@@ -13,11 +19,137 @@ const PROPOSALS_NEXT_ID_KEY = 'cadastre_proposals_nextId';
 // opens one database per city.
 const PROPOSALS_RECOVERY_KEY = 'cadastre_proposals_recovery';
 
+// These are disposable materializations/registries from the pre-fabric runtime. Do not use a
+// store-wide clear here: ownership, language, chain and server/shared records live beside these
+// keys and must survive the local geometry cutover.
+const LEGACY_DERIVED_PARCEL_KEYS = Object.freeze([
+    'cadastre_blocks',
+    'roadParcels',
+    'cb_parks',
+    'cb_squares',
+    'cb_lakes',
+    'cb_transit_stations'
+]);
+
+function isServerOrSharedProposal(record) {
+    if (!record || typeof record !== 'object') return false;
+    return record.serverProposalId !== undefined && record.serverProposalId !== null
+        || record.source === 'server'
+        || record.source === 'shared'
+        || record.isShared === true
+        || record.shared === true
+        || record.isMinted === true;
+}
+
+function isLegacyDerivedParcelKey(key) {
+    const value = String(key || '');
+    if (LEGACY_DERIVED_PARCEL_KEYS.includes(value)) return true;
+    if (['parcel_nft_address', 'parcelNFTAddress', 'parcelNftAddress'].includes(value)) return false;
+    // parcel_<id> stores local geometry; parcel_<id>_owner is ownership state and is deliberately
+    // outside this cutover's authority.
+    return /^parcel_.+/.test(value) && !/_owner$/.test(value);
+}
+
+function proposalStateEnvelope(nextProposalId, records) {
+    return {
+        version: PROPOSALS_STATE_VERSION,
+        nextProposalId: Number.isFinite(Number(nextProposalId)) && Number(nextProposalId) >= 0
+            ? Math.floor(Number(nextProposalId))
+            : 0,
+        records: Array.isArray(records) ? records : []
+    };
+}
+
+function declaredCadastreAnchors(parcelIds) {
+    const output = [];
+    const seen = new Set();
+    Array.from(parcelIds || []).forEach(value => {
+        const id = String(value || '').trim();
+        if (!id || seen.has(id)) return;
+        seen.add(id);
+        output.push(id);
+    });
+    return output;
+}
+
+function explicitCadastreAnchors(parcelIds) {
+    const root = typeof window !== 'undefined' ? window : globalThis;
+    const fabric = root && root.LiveParcelFabric;
+    if (!fabric || typeof fabric.cadastreIdsForParcelIds !== 'function') {
+        const error = new Error('Live parcel fabric is required to resolve authored parcel selections.');
+        error.code = 'live-parcel-fabric-unavailable';
+        throw error;
+    }
+    return fabric.cadastreIdsForParcelIds(parcelIds);
+}
+
+function canonicalizeProposalCadastreAnchors(record) {
+    if (!record || typeof record !== 'object') return record;
+    const out = JSON.parse(JSON.stringify(record));
+    const declared = Array.isArray(out.cadastreParcelIds) && out.cadastreParcelIds.length
+        ? declaredCadastreAnchors(out.cadastreParcelIds)
+        : [];
+    if (declared.length) out.cadastreParcelIds = declared;
+    return out;
+}
+
+function proposalWithAuthoredSelection(record, selectedParcelIds) {
+    const out = canonicalizeProposalCadastreAnchors(record);
+    const selected = declaredCadastreAnchors(selectedParcelIds);
+    if (!selected.length) return out;
+    const projected = declaredCadastreAnchors(explicitCadastreAnchors(selected));
+    if (!projected.length) {
+        throw new Error('The selected live parcels have no cadastral provenance.');
+    }
+    const declared = declaredCadastreAnchors(out.cadastreParcelIds);
+    if (declared.length) {
+        const expected = new Set(declared);
+        const same = expected.size === projected.length && projected.every(id => expected.has(id));
+        if (!same) throw new Error('Local parcel selection conflicts with cadastreParcelIds.');
+    }
+    out.cadastreParcelIds = projected;
+    return out;
+}
+
+// `parentParcelIds` used to mean both current live input and durable land identity. A local
+// authoring/persistence boundary may still project an explicit live selection through
+// LiveParcelFabric, but remote import rejects an unstamped record instead of guessing its origin.
+// Never write the alias back. A persisted proposal has exactly one land declaration: flat,
+// original cadastral IDs in `cadastreParcelIds`. Compatibility views for old authoring code are not
+// state and cannot form a replay dependency graph.
+function stripProposalCadastreAliases(record) {
+    if (!record || typeof record !== 'object') return record;
+    delete record.parentParcelIds;
+    delete record.parcelIds;
+    ['roadProposal', 'reparcellization', 'decideLaterProposal', 'buildingProposal', 'structureProposal']
+        .forEach(key => {
+            const sub = record[key];
+            if (!sub || typeof sub !== 'object' || Array.isArray(sub)) return;
+            delete sub.parentParcelIds;
+            if (key === 'reparcellization') delete sub.parcelIds;
+            if (key === 'buildingProposal') {
+                delete sub.blockParcelIds;
+                delete sub.parentParcelNumbers;
+                delete sub.ancestorKey;
+                if (Array.isArray(sub.ineligibleParcels)) {
+                    sub.ineligibleParcels = sub.ineligibleParcels.map(entry => {
+                        if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return entry;
+                        const clean = { ...entry };
+                        delete clean.parcelId;
+                        delete clean.parcel_id;
+                        delete clean.parentParcelId;
+                        delete clean.parentParcelIds;
+                        return clean;
+                    });
+                }
+            }
+        });
+    return record;
+}
+
 const proposalMetadataFetchPromises = new Map();
 
 const proposalListTranslationsHydrated = new Set();
-
-const proposalAreaCache = new Map();
 
 // proposalStorage is the durable authored log, not a snapshot of the current browser's replay.
 // Persist only authored fields + applied/order state. Child ids, formation receipts, parent feature
@@ -27,62 +159,27 @@ function proposalRecordForPersistence(record) {
     if (!record || typeof record !== 'object') return record;
     const root = typeof window !== 'undefined' ? window : globalThis;
     const depthApi = root && root.__formationDepth;
-    let out = null;
-    if (depthApi && typeof depthApi.stripDerivedRecordData === 'function') {
-        out = depthApi.stripDerivedRecordData(record);
-    } else {
-        // data.js is also evaluated alone by storage tests. Keep the fallback deliberately small and
-        // conservative, but never let a missing optional module make replay output durable.
-        out = JSON.parse(JSON.stringify(record));
-        const governmentPlan = out.tags?.governmentPlan === true
-            || out.roadProposal?.definition?.kind === 'government_plan';
-        delete out.childParcelIds;
-        delete out.descendantParcelIds;
-        delete out.parentFeatures;
-        if (!governmentPlan) delete out.childFeatures;
-        ['roadProposal', 'reparcellization', 'decideLaterProposal', 'buildingProposal', 'structureProposal']
-            .forEach(key => {
-                const sub = out[key];
-                if (!sub || typeof sub !== 'object' || Array.isArray(sub)) return;
-                delete sub.childParcelIds;
-                delete sub.parentFeatures;
-                delete sub.parentsToRemove;
-                delete sub.formation;
-                if (!(key === 'roadProposal' && governmentPlan)) delete sub.childFeatures;
-                if (key === 'buildingProposal' || key === 'structureProposal') {
-                    delete sub.demolishedBuildings;
-                    delete sub.demolitionScanned;
-                }
-            });
+    if (!depthApi || typeof depthApi.stripDerivedRecordData !== 'function') {
+        throw new Error('Cannot persist proposal: the authored-record projection is unavailable.');
     }
-
-    const order = root && root.__planOrder;
-    const flatten = values => {
-        const declared = Array.isArray(values) ? values : [];
-        if (order && typeof order.cadastreIdsFromDeclared === 'function') {
-            return order.cadastreIdsFromDeclared(declared);
-        }
-        return Array.from(new Set(declared
-            .map(value => String(value || '').split('#')[0])
-            .filter(Boolean)));
-    };
-    const anchors = flatten(Array.isArray(out.cadastreParcelIds) && out.cadastreParcelIds.length
-        ? out.cadastreParcelIds
-        : out.parentParcelIds);
-    if (anchors.length) {
-        out.cadastreParcelIds = anchors.slice();
-        out.parentParcelIds = anchors.slice();
-        ['roadProposal', 'reparcellization', 'decideLaterProposal', 'buildingProposal', 'structureProposal']
-            .forEach(key => {
-                const sub = out[key];
-                if (!sub || typeof sub !== 'object' || Array.isArray(sub)) return;
-                sub.parentParcelIds = anchors.slice();
-            });
-        if (out.reparcellization && Array.isArray(out.reparcellization.parcelIds)) {
-            out.reparcellization.parcelIds = anchors.slice();
-        }
+    // Inspect the record as supplied before compatibility aliases are synchronized.  Syncing first
+    // would hide the exact malformed declaration this boundary exists to reject.
+    const invalid = typeof depthApi.findNonCadastralReference === 'function'
+        ? depthApi.findNonCadastralReference(record)
+        : null;
+    if (invalid) {
+        throw new Error(`Cannot persist proposal: ${invalid.path} contains live parcel id ${invalid.id}.`);
     }
-    return out;
+    const verdict = typeof depthApi.conformanceOf === 'function'
+        ? depthApi.conformanceOf(record)
+        : { flat: true };
+    if (!verdict.flat) {
+        const conflict = verdict.violations?.[0];
+        throw new Error(`Cannot persist proposal: ${conflict?.field || conflict?.code || 'cadastral declaration'} is invalid.`);
+    }
+    const canonical = canonicalizeProposalCadastreAnchors(record);
+    const out = depthApi.stripDerivedRecordData(canonical);
+    return stripProposalCadastreAliases(out);
 }
 
 const proposalStorage = {
@@ -136,7 +233,14 @@ const proposalStorage = {
     _indexProposal(proposal) {
         this._ensureIndexes();
         if (!proposal) return null;
-        this._normalizeProposalIdentity(proposal);
+        // This is the single ingress to the authored log. Callers historically mutated objects
+        // returned by getProposal() and then called _indexProposal(), which let live-fabric fields
+        // bypass addProposal()/importProposal() and poison the next whole-store save. Normalize the
+        // complete record here too, and only touch the caller's object after validation succeeds.
+        // Preserving the object identity keeps the existing mutation journal/UI references valid.
+        const canonical = this._normalizeProposal({ ...proposal });
+        Object.keys(proposal).forEach(key => { delete proposal[key]; });
+        Object.assign(proposal, canonical);
         const id = this._coerceProposalId(
             proposal.proposalId
             || proposal.tokenId
@@ -192,7 +296,7 @@ const proposalStorage = {
         const matches = [];
         for (const proposal of this.proposals.values()) {
             if (!proposal) continue;
-            const proposalIdKey = proposal.similarityHash || this._computeSimilarityHash(proposal.parentParcelIds);
+            const proposalIdKey = this._computeSimilarityHash(proposal.cadastreParcelIds);
             if (proposalIdKey && proposalIdKey === targetHash) {
                 matches.push(proposal);
             }
@@ -207,7 +311,9 @@ const proposalStorage = {
         const chainTokenId = raw.proposalId ?? raw.tokenId ?? (raw.onchain && raw.onchain.proposalId) ?? metaProps.tokenId ?? null;
         const rawProposalId = chainTokenId !== undefined && chainTokenId !== null ? String(chainTokenId) : null;
         const metaProposalId = metaProps.proposalId || metaProps.id || null;
-        const parentParcelIds = Array.isArray(raw.parentParcelIds) ? raw.parentParcelIds : [];
+        const cadastreParcelIds = normalizeParcelIdList(
+            raw.cadastreParcelIds || metaProps.cadastreParcelIds || []
+        );
         const normalizedChainId = typeof normalizeChainId === 'function'
             ? normalizeChainId(raw.chainId || (raw.onchain && raw.onchain.chainId))
             : (raw.chainId || (raw.onchain && raw.onchain.chainId) || null);
@@ -254,12 +360,12 @@ const proposalStorage = {
         };
 
         // Try to match an existing local proposal by similarity (parcel set) to borrow its richer title/name
-        const similarityHash = raw.similarityHash || this._computeSimilarityHash(parentParcelIds);
+        const similarityHash = this._computeSimilarityHash(cadastreParcelIds);
         let similar = null;
         try {
             for (const p of this.proposals.values()) {
                 if (!p) continue;
-                const hash = this._computeSimilarityHash(p.parentParcelIds || []);
+                const hash = this._computeSimilarityHash(p.cadastreParcelIds || []);
                 if (hash === similarityHash) {
                     similar = p;
                     break;
@@ -270,7 +376,7 @@ const proposalStorage = {
         let proposalId = metaProposalId || (existing && existing.proposalId) || rawProposalId || (similar && similar.proposalId) || null;
         if ((!proposalId || isLocalProposalId(proposalId)) && typeof this._buildDeterministicId === 'function') {
             try {
-                proposalId = this._buildDeterministicId({ ...(existing || {}), ...raw, parentParcelIds });
+                proposalId = this._buildDeterministicId({ ...(existing || {}), ...raw, cadastreParcelIds });
             } catch (_) { /* best-effort */ }
         }
         if (!proposalId && rawProposalId) {
@@ -336,7 +442,7 @@ const proposalStorage = {
             proposalId,
             tokenId: rawProposalId || (existing && existing.tokenId) || null,
             chainProposalId: chainProposalId || (existing && existing.chainProposalId) || null,
-            parentParcelIds,
+            cadastreParcelIds,
             title,
             description,
             name: title,
@@ -355,7 +461,6 @@ const proposalStorage = {
             createdAt: raw.createdAt || metaProps.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             acceptedParcels: Array.isArray(raw.acceptedParcels) ? raw.acceptedParcels : [],
-            similarityHash,
             isMinted: true,
             metadata: raw.metadata || (existing && existing.metadata) || null,
             lens: lensEntries.length ? lensEntries : (existing && existing.lens ? existing.lens : undefined),
@@ -416,17 +521,17 @@ const proposalStorage = {
             } else if (!merged.geometry) {
                 merged.geometry = safeClone(geometryPayload);
             }
-            if (Array.isArray(geometryPayload.childFeatures) && geometryPayload.childFeatures.length) {
-                merged.childFeatures = safeClone(geometryPayload.childFeatures);
-            }
-            if (Array.isArray(geometryPayload.features) && geometryPayload.features.length && !merged.childFeatures) {
-                merged.childFeatures = safeClone(geometryPayload.features);
-            }
-            if (Array.isArray(geometryPayload.roadChildFeatures) && geometryPayload.roadChildFeatures.length) {
-                merged.roadProposal = Object.assign({}, merged.roadProposal || {}, { childFeatures: safeClone(geometryPayload.roadChildFeatures) });
-            }
             if (geometryPayload.roadProposal) {
                 merged.roadProposal = Object.assign({}, merged.roadProposal || {}, safeClone(geometryPayload.roadProposal));
+            }
+            if (geometryPayload.buildingProposal) {
+                merged.buildingProposal = Object.assign({}, merged.buildingProposal || {}, safeClone(geometryPayload.buildingProposal));
+            }
+            if (geometryPayload.structureProposal) {
+                merged.structureProposal = Object.assign({}, merged.structureProposal || {}, safeClone(geometryPayload.structureProposal));
+            }
+            if (geometryPayload.reparcellization) {
+                merged.reparcellization = Object.assign({}, merged.reparcellization || {}, safeClone(geometryPayload.reparcellization));
             }
         }
 
@@ -526,42 +631,62 @@ const proposalStorage = {
         }
 
         merged.proposalId = this._coerceProposalId(merged.proposalId);
-        this._indexProposal(merged);
+        const authored = this._normalizeProposal(merged);
+        this._indexProposal(authored);
         this.save();
-        return merged;
+        return authored;
     },
 
     load() {
         this._ensureIndexes();
         if (typeof PersistentStorage === 'undefined') return;
+        let parsed = null;
+        let hasValidEnvelope = false;
+        let cutoverNeeded = false;
         try {
             const raw = PersistentStorage.getItem(PROPOSALS_STORAGE_KEY);
-            if (!raw) {
-                this.proposals.clear();
-                const storedNext = parseInt(PersistentStorage.getItem(PROPOSALS_NEXT_ID_KEY), 10);
-                this.nextProposalId = Number.isFinite(storedNext) && storedNext >= 0 ? storedNext : 0;
-                return;
-            }
-
-            const parsed = JSON.parse(raw);
+            parsed = raw ? JSON.parse(raw) : null;
+            hasValidEnvelope = !!(parsed && !Array.isArray(parsed)
+                && parsed.version === PROPOSALS_STATE_VERSION
+                && Array.isArray(parsed.records));
+            cutoverNeeded = PersistentStorage.getItem(PROPOSALS_CUTOVER_KEY) !== '1';
             this.proposals.clear();
-            if (!Array.isArray(parsed)) return;
-
-            parsed.forEach(entry => {
+            // An old array is intentionally not treated as authoritative local replay state. Keep
+            // only records that are explicitly server/shared or minted; stale local materialization
+            // is exactly what this cutover removes. Shared links are re-imported through their
+            // normal server/shared path when no provenance is present in an old blob.
+            const legacyRecords = Array.isArray(parsed)
+                ? parsed
+                : (Array.isArray(parsed?.records) ? parsed.records : []);
+            const records = hasValidEnvelope
+                ? parsed.records
+                : (cutoverNeeded ? legacyRecords.filter(isServerOrSharedProposal) : []);
+            records.forEach((entry, index) => {
                 if (!entry) return;
-                const normalized = this._normalizeProposal({ ...entry });
-                if (!normalized.proposalId) {
-                    const serverHintRaw = normalized.serverProposalId || normalized.id;
-                    const serverHint = serverHintRaw && !isLocalProposalId(serverHintRaw) ? String(serverHintRaw) : null;
-                    normalized.proposalId = serverHint || this._allocateProposalId();
+                try {
+                    const normalized = this._normalizeProposal({ ...entry });
+                    if (!normalized.proposalId) {
+                        const serverHintRaw = normalized.serverProposalId || normalized.id;
+                        const serverHint = serverHintRaw && !isLocalProposalId(serverHintRaw)
+                            ? String(serverHintRaw)
+                            : null;
+                        normalized.proposalId = serverHint || this._allocateProposalId();
+                    }
+                    this._indexProposal(normalized);
+                } catch (error) {
+                    const identity = entry.proposalId || entry.serverProposalId || entry.id || `record ${index + 1}`;
+                    // One malformed authored record cannot erase every other local proposal. It is
+                    // rejected at the record boundary and remains in the durable envelope until a
+                    // later successful save replaces that envelope with the valid in-memory set.
+                    console.error(`[proposalStorage] Ignoring invalid stored proposal ${identity}`, error);
                 }
-                this.proposals.set(normalized.proposalId, normalized);
-                this._indexProposal(normalized);
             });
 
-            const storedNext = parseInt(PersistentStorage.getItem(PROPOSALS_NEXT_ID_KEY), 10);
-            if (Number.isFinite(storedNext) && storedNext >= 0) {
-                this.nextProposalId = storedNext;
+            if (hasValidEnvelope) {
+                const storedNext = Number(parsed.nextProposalId);
+                this.nextProposalId = Number.isFinite(storedNext) && storedNext >= 0
+                    ? Math.floor(storedNext)
+                    : 0;
             } else {
                 const maxLocalId = Math.max(0, ...Array.from(this.proposals.keys()).map(id => {
                     const match = String(id).match(/local-(\d+)/);
@@ -572,13 +697,48 @@ const proposalStorage = {
                 this.nextProposalId = maxLocalId + 1;
             }
 
-            this.save();
+            if (cutoverNeeded && !(typeof window !== 'undefined' && window.__cbSecondaryTab)) {
+                this._runFreshLocalCutover();
+                this._persist();
+            }
         } catch (error) {
-            console.error('proposalStorage.load: Failed to parse proposals from storage', error);
+            console.error('proposalStorage.load: Failed to read the proposal-state envelope', error);
             this._ensureIndexes();
             this.proposals.clear();
-            const storedNext = parseInt(PersistentStorage.getItem(PROPOSALS_NEXT_ID_KEY), 10);
-            this.nextProposalId = Number.isFinite(storedNext) && storedNext >= 0 ? storedNext : 0;
+            this.nextProposalId = 0;
+            if (!(typeof window !== 'undefined' && window.__cbSecondaryTab)) {
+                this._runFreshLocalCutover();
+                this._persist();
+            }
+        }
+    },
+
+    _runFreshLocalCutover() {
+        if (typeof PersistentStorage === 'undefined') return false;
+        if (typeof window !== 'undefined' && window.__cbSecondaryTab) return false;
+        try {
+            // Never call PersistentStorage.clear(): server/shared proposal data, ownership, chain,
+            // language and other city-scoped state live in the same key/value store.
+            PersistentStorage.removeItem(PROPOSALS_NEXT_ID_KEY);
+            PersistentStorage.removeItem(PROPOSALS_RECOVERY_KEY);
+            const derivedKeys = [];
+            if (typeof PersistentStorage.forEach === 'function') {
+                PersistentStorage.forEach((_value, key) => {
+                    if (isLegacyDerivedParcelKey(key)) derivedKeys.push(String(key));
+                });
+            } else if (typeof PersistentStorage.length === 'number'
+                && typeof PersistentStorage.key === 'function') {
+                for (let index = 0; index < PersistentStorage.length; index += 1) {
+                    const key = PersistentStorage.key(index);
+                    if (isLegacyDerivedParcelKey(key)) derivedKeys.push(String(key));
+                }
+            }
+            derivedKeys.forEach(key => PersistentStorage.removeItem(key));
+            PersistentStorage.setItem(PROPOSALS_CUTOVER_KEY, '1');
+            return true;
+        } catch (error) {
+            console.warn('[proposalStorage] fresh local cutover failed', error);
+            return false;
         }
     },
 
@@ -615,11 +775,11 @@ const proposalStorage = {
         }
         try {
             const serialisable = Array.from(this.proposals.values()).map(proposalRecordForPersistence);
-            PersistentStorage.setItem(PROPOSALS_STORAGE_KEY, JSON.stringify(serialisable));
-            // Persist the next proposal id counter
-            PersistentStorage.setItem(PROPOSALS_NEXT_ID_KEY, String(this.nextProposalId));
+            const state = proposalStateEnvelope(this.nextProposalId, serialisable);
+            PersistentStorage.setItem(PROPOSALS_STORAGE_KEY, JSON.stringify(state));
         } catch (error) {
             console.error('proposalStorage.save: Failed to persist proposals', error);
+            throw error;
         }
     },
 
@@ -632,9 +792,10 @@ const proposalStorage = {
         try {
             const serialisable = Array.from(this.proposals.values()).map(proposalRecordForPersistence);
             if (!serialisable.length) return;
+            const state = proposalStateEnvelope(this.nextProposalId, serialisable);
             PersistentStorage.setItem(PROPOSALS_RECOVERY_KEY, JSON.stringify({
-                savedAt: new Date().toISOString(),
-                proposals: serialisable
+                ...state,
+                savedAt: new Date().toISOString()
             }));
         } catch (error) {
             console.error('[proposalStorage] could not park read-only work for recovery', error);
@@ -650,7 +811,7 @@ const proposalStorage = {
             const raw = PersistentStorage.getItem(PROPOSALS_RECOVERY_KEY);
             if (!raw) return null;
             const parsed = JSON.parse(raw);
-            const proposals = Array.isArray(parsed && parsed.proposals) ? parsed.proposals : null;
+            const proposals = Array.isArray(parsed && parsed.records) ? parsed.records : null;
             if (!proposals || !proposals.length) return null;
             // Only what this store does NOT already have: the usual case is that the user gave up
             // and redrew the road in the primary tab, and re-adding the parked copy would duplicate it.
@@ -727,25 +888,27 @@ const proposalStorage = {
         if (!id) {
             return [];
         }
-        // A derived parcel also shows proposals declared on its one cadastral root. Flat records
-        // keep the authoritative parent and child lists at the proposal root; sub-record mirrors
-        // never participate in lookup.
-        const matchIds = new Set([id]);
-        const hashAt = id.indexOf('#');
-        if (hashAt > 0) matchIds.add(id.slice(0, hashAt));
+        // Project a live parcel through its explicit fabric provenance. Generated-id syntax carries
+        // no semantics: two disconnected pieces may deliberately share one cadastral source and a
+        // future id format must not change which authored records claim the clicked ground.
+        const runtimeRoot = typeof window !== 'undefined' ? window : globalThis;
+        const fabric = runtimeRoot && runtimeRoot.LiveParcelFabric;
+        const liveFeature = fabric && typeof fabric.get === 'function' ? fabric.get(id) : null;
+        const cadastralFeature = !liveFeature && runtimeRoot?.CadastralParcelRepository?.get
+            ? runtimeRoot.CadastralParcelRepository.get(id)
+            : null;
+        const cadastreIds = liveFeature && typeof fabric.explicitCadastreIds === 'function'
+            ? fabric.explicitCadastreIds(liveFeature)
+            : (cadastralFeature ? [id] : []);
+        const matchIds = new Set(cadastreIds.map(String));
         const matchesId = value => {
             const normalized = normalizeParcelId(value);
             return normalized !== null && matchIds.has(normalized);
         };
         const results = [];
         for (const proposal of this.proposals.values()) {
-            const parentIds = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
-            const parcelMatch = parentIds.some(matchesId);
-
-            const childIds = Array.isArray(proposal.childParcelIds) ? proposal.childParcelIds : [];
-            const childMatch = childIds.some(matchesId);
-
-            if (parcelMatch || childMatch) {
+            const cadastreIds = Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
+            if (cadastreIds.some(matchesId)) {
                 results.push(proposal);
             }
         }
@@ -759,7 +922,13 @@ const proposalStorage = {
             this._ensureIndexes();
         }
 
-        const normalized = this._normalizeProposal({ ...proposal });
+        // A live selection is authoring input, not proposal data. Project it exactly once here and
+        // keep generated parcel ids out of the record passed to normalization/persistence.
+        const candidate = proposalWithAuthoredSelection(
+            { ...proposal },
+            options.selectedParcelIds
+        );
+        const normalized = this._normalizeProposal(candidate);
         const seed = this._buildHashSeed(normalized);
         const duplicate = this._findDuplicateBySeed(seed);
         if (duplicate) {
@@ -792,7 +961,7 @@ const proposalStorage = {
         }
 
         this._indexProposal(normalized);
-        this.save();
+        if (options.deferSave !== true) this.save();
         try {
             if (options.emitEvent !== false && typeof document !== 'undefined' && typeof CustomEvent === 'function') {
                 document.dispatchEvent(new CustomEvent('proposalCreated', {
@@ -808,7 +977,7 @@ const proposalStorage = {
             return null;
         }
 
-        const { overwrite = true, preserveStatus = false } = options;
+        const { overwrite = true, preserveStatus = false, deferSave = false } = options;
         const normalized = this._normalizeProposal({ ...proposal });
 
         if (!preserveStatus) {
@@ -846,7 +1015,7 @@ const proposalStorage = {
         }
 
         this._indexProposal(normalized);
-        this.save();
+        if (!deferSave) this.save();
         return normalized;
     },
 
@@ -871,6 +1040,9 @@ const proposalStorage = {
         this.proposals.clear();
         if (typeof PersistentStorage !== 'undefined') {
             PersistentStorage.removeItem(PROPOSALS_STORAGE_KEY);
+            PersistentStorage.removeItem(PROPOSALS_NEXT_ID_KEY);
+            PersistentStorage.removeItem(PROPOSALS_CUTOVER_KEY);
+            PersistentStorage.removeItem(PROPOSALS_RECOVERY_KEY);
         }
     },
 
@@ -925,24 +1097,32 @@ const proposalStorage = {
 
     _normalizeProposal(proposal, context = {}) {
         const { existingHash = null } = context || {};
-        // Ancestors-only contract: proposals never persist parcel geometries locally — they
-        // carry ancestor IDs + the rule (road definition, structure definition, building rule).
-        // Descendants are always re-derived deterministically from (ancestors, rule) on apply.
-        // Inbound payloads from server / chain / share links may still include these blobs;
-        // strip them at the storage boundary so they cannot leak into local proposal records.
-        //
-        // EXCEPTION: government road-plan proposals. Their definition holds no geometry
-        // (kind: 'government_plan', no polygon/points) and childParcelIds is empty, so the
-        // descendant road geometry cannot be re-derived — it lives solely in childFeatures.
-        // Preserve it, otherwise apply reads back an empty child set and returns false.
-        const isGovernmentPlan = proposal?.tags?.governmentPlan === true
-            || proposal?.roadProposal?.definition?.kind === 'government_plan';
-        const preservedChildFeatures = isGovernmentPlan
-            ? (Array.isArray(proposal.childFeatures) && proposal.childFeatures.length
-                ? proposal.childFeatures
-                : (Array.isArray(proposal.roadProposal?.childFeatures) ? proposal.roadProposal.childFeatures : null))
+        const root = typeof window !== 'undefined' ? window : globalThis;
+        const depthApi = root && root.__formationDepth;
+        if (!depthApi || typeof depthApi.stripDerivedRecordData !== 'function') {
+            throw new Error('Cannot normalize proposal: the authored-record projection is unavailable.');
+        }
+        // Remote, stored and newly authored records all enter the same strict representation.
+        // Local live selection is a separate addProposal option and has already been projected.
+        // This function never interprets an alias or asks the live fabric to explain record data.
+        const candidate = canonicalizeProposalCadastreAnchors(proposal);
+        const invalid = typeof depthApi.findNonCadastralReference === 'function'
+            ? depthApi.findNonCadastralReference(candidate)
             : null;
-
+        if (invalid) {
+            throw new Error(`Cannot load proposal: ${invalid.path} contains live parcel id ${invalid.id}; migrate the record first.`);
+        }
+        const verdict = typeof depthApi.conformanceOf === 'function'
+            ? depthApi.conformanceOf(candidate)
+            : { flat: true };
+        if (!verdict.flat) {
+            const conflict = verdict.violations?.[0];
+            throw new Error(`Cannot load proposal: ${conflict?.field || conflict?.code || 'cadastral declaration'} conflicts with cadastreParcelIds; migrate the record first.`);
+        }
+        proposal = canonicalizeProposalCadastreAnchors(candidate);
+        proposal = depthApi.stripDerivedRecordData(proposal);
+        // Authored records contain definitions and authored geometry only. Runtime materialized
+        // features live exclusively in LiveParcelFabric and are looked up by proposal id.
         delete proposal.parentFeatures;
         delete proposal.childFeatures;
         if (proposal.geometry && typeof proposal.geometry === 'object') {
@@ -958,22 +1138,14 @@ const proposalStorage = {
             delete proposal.definition;
             delete proposal.roadProposal.roadGeometry;
         }
-        if (preservedChildFeatures && preservedChildFeatures.length) {
-            proposal.childFeatures = preservedChildFeatures;
-        }
-        const normalizedParentParcelIds = normalizeParcelIdList(
-            (proposal.parentParcelIds && proposal.parentParcelIds.length ? proposal.parentParcelIds : proposal.parcelIds) || []
-        );
-        proposal.parentParcelIds = normalizedParentParcelIds;
-        if (proposal.parcelIds) {
-            delete proposal.parcelIds;
-        }
+        const normalizedCadastreParcelIds = normalizeParcelIdList(proposal.cadastreParcelIds || []);
+        proposal.cadastreParcelIds = normalizedCadastreParcelIds;
         proposal.acceptedParcelIds = normalizeParcelIdList(proposal.acceptedParcelIds || []);
         proposal.ownerAcceptances = normalizeOwnerAcceptances(proposal.ownerAcceptances || {});
         // Canonical current-record shape. Missing application state means locally unapplied;
         // legacy interpretation belongs exclusively to migrate-tessellation.js.
         normalizeProposalStatusAxes(proposal);
-        proposal.similarityHash = proposal.similarityHash || this._computeSimilarityHash(proposal.parentParcelIds);
+        delete proposal.similarityHash;
         proposal.lens = normalizeLensEntries(
             proposal.lens
             || proposal.lensEntries
@@ -1030,8 +1202,6 @@ const proposalStorage = {
 
         if (proposal.roadProposal) {
             const rp = { ...proposal.roadProposal };
-            rp.parentParcelIds = normalizeParcelIdList(rp.parentParcelIds || proposal.parentParcelIds || []);
-            rp.childParcelIds = normalizeParcelIdList(rp.childParcelIds || []);
             if (rp.parentsKeepDetails && typeof rp.parentsKeepDetails !== 'object') {
                 rp.parentsKeepDetails = null;
             }
@@ -1042,13 +1212,6 @@ const proposalStorage = {
 
         if (proposal.buildingProposal) {
             const bp = { ...proposal.buildingProposal };
-            bp.parentParcelIds = normalizeParcelIdList(bp.parentParcelIds && bp.parentParcelIds.length > 0 ? bp.parentParcelIds : proposal.parentParcelIds || []);
-            if (Array.isArray(bp.parentParcelNumbers)) {
-                bp.parentParcelNumbers = bp.parentParcelNumbers.map(entry => ({
-                    id: normalizeParcelId(entry?.id) || (entry?.id ? String(entry.id) : null),
-                    number: entry && entry.number ? String(entry.number) : (normalizeParcelId(entry?.id) || null)
-                })).filter(entry => entry.id);
-            }
             bp.parameters = bp.parameters && typeof bp.parameters === 'object' ? { ...bp.parameters } : {};
             Object.keys(bp.parameters).forEach(key => {
                 if (bp.parameters[key] === undefined || bp.parameters[key] === null) {
@@ -1058,59 +1221,18 @@ const proposalStorage = {
 
             if (!proposal.geometry) proposal.geometry = {};
 
-            // Legacy buildingFeatures/buildingFeature intentionally ignored; left untouched
-
-            if (Array.isArray(bp.buildings)) {
-                bp.buildings = bp.buildings
-                    .map(entry => {
-                        if (!entry || typeof entry !== 'object') return null;
-                        const clone = { ...entry };
-                        if (clone.feature) {
-                            try { clone.feature = JSON.parse(JSON.stringify(clone.feature)); } catch (_) { }
-                        }
-                        return clone;
-                    })
-                    .filter(Boolean);
-            }
-            if (!bp.ancestorKey) {
-                bp.ancestorKey = (bp.parentParcelIds || []).join('|');
-            }
-            const typology = String(proposal.typologyType || bp.typologyType || '').toLowerCase();
-            if (typology === 'block') {
-                const selected = [
-                    ...(Array.isArray(bp.blockParcelIds) ? bp.blockParcelIds : []),
-                    ...(Array.isArray(bp.parentParcelIds) ? bp.parentParcelIds : []),
-                    ...(Array.isArray(bp.buildings) ? bp.buildings.map(feature => feature?.properties?.parcelId) : []),
-                    ...(Array.isArray(proposal.geometry?.buildings)
-                        ? proposal.geometry.buildings.map(feature => feature?.properties?.parcelId)
-                        : []),
-                    ...(Array.isArray(bp.ineligibleParcels) ? bp.ineligibleParcels.map(entry => entry?.parcelId) : [])
-                ];
-                // Legacy records used parentParcelIds for both concepts, so an apply that touched
-                // fewer plots could erase block membership. Rebuild the authored membership once
-                // from every surviving authored clue; future records carry blockParcelIds directly.
-                bp.blockParcelIds = normalizeParcelIdList(selected);
-            }
             proposal.buildingProposal = bp;
-        } else if (proposal.buildingGeometry || ['buildings', 'building(s)', 'single-building', 'parcelBased'].includes(normalizeProposalGoalKey(proposal.goal) || '')) {
-            const parentIds = normalizeParcelIdList(proposal.parentParcelIds || []);
+        } else if (['buildings', 'building(s)', 'single-building', 'parcelBased'].includes(normalizeProposalGoalKey(proposal.goal) || '')) {
             proposal.buildingProposal = {
-                parentParcelIds: parentIds,
-                parentParcelNumbers: parentIds.map(id => ({ id, number: id })),
-                ancestorKey: parentIds.join('|'),
                 parameters: {}
             };
             if (!proposal.geometry) proposal.geometry = {};
-            if (proposal.buildingGeometry && !proposal.geometry.buildings) {
-                proposal.geometry.buildings = [deepClone(proposal.buildingGeometry)];
-            }
         }
 
         // Normalize structure proposals (parks/squares/lakes/stations)
         if (proposal.structureProposal) {
             const sp = { ...proposal.structureProposal };
             sp.kind = (sp.kind === 'park' || sp.kind === 'square' || sp.kind === 'lake' || sp.kind === 'station') ? sp.kind : 'square';
-            sp.parentParcelIds = normalizeParcelIdList(Array.isArray(sp.parentParcelIds) && sp.parentParcelIds.length > 0 ? sp.parentParcelIds : proposal.parentParcelIds || []);
             if (sp.geometry) {
                 try { sp.geometry = JSON.parse(JSON.stringify(sp.geometry)); } catch (_) { }
             }
@@ -1129,7 +1251,7 @@ const proposalStorage = {
         const parts = [];
         const city = (typeof getCurrentCityId === 'function') ? getCurrentCityId() : (proposal.city || '');
         const goal = normalizeProposalGoalKey(proposal.goal) || 'parcel';
-        const parentIds = normalizeParcelIdList(proposal.parentParcelIds || (proposal.roadProposal && proposal.roadProposal.parentParcelIds) || []);
+        const parentIds = normalizeParcelIdList(proposal.cadastreParcelIds || []);
 
         parts.push(`city:${city}`);
         parts.push(`goal:${goal}`);
@@ -1146,7 +1268,6 @@ const proposalStorage = {
 
         // Building proposals
         if (proposal.buildingProposal) {
-            parts.push(`buildingParents:${normalizeParcelIdList(proposal.buildingProposal.parentParcelIds || parentIds).join(',')}`);
             if (proposal.buildingProposal.parameters) {
                 // stableStringify (shared-utils.js) sorts keys at every level and keeps nested keys.
                 // The old JSON.stringify(params, sortedKeys) used an array replacer, which drops any
@@ -1156,15 +1277,10 @@ const proposalStorage = {
                 try { parts.push(`buildingParams:${stableStringify(proposal.buildingProposal.parameters)}`); } catch (_) { }
             }
         }
-        if (proposal.buildingGeometry) {
-            parts.push(`buildingGeom:${serialiseGeometry(proposal.buildingGeometry)}`);
-        }
-
         // Structure (park/square/lake/station)
         if (proposal.structureProposal) {
             const sp = proposal.structureProposal;
             parts.push(`structureKind:${sp.kind || ''}`);
-            parts.push(`structureParents:${normalizeParcelIdList(sp.parentParcelIds || parentIds).join(',')}`);
             if (sp.geometry) parts.push(`structureGeom:${serialiseGeometry(sp.geometry)}`);
             if (sp.kind === 'station') {
                 parts.push(`stationType:${sp.stationType || ''}`);
@@ -1178,7 +1294,6 @@ const proposalStorage = {
         if (proposal.reparcellization) {
             const rep = proposal.reparcellization;
             parts.push(`reparcAlg:${rep.algorithm || ''}`);
-            parts.push(`reparcParcels:${normalizeParcelIdList(rep.parcelIds || parentIds).join(',')}`);
             if (Array.isArray(rep.polygons)) {
                 try { parts.push(`reparcPolys:${JSON.stringify(rep.polygons)}`); } catch (_) { }
             }
@@ -1215,8 +1330,6 @@ const proposalHighlightState = {
     activeProposalId: null,
     pendingBlink: false
 };
-
-const proposalFeatureCache = new Map();
 
 const proposalHighlightStyleOverride = {
     _stash: new Map(), // Map<layer, {original, applied}>
@@ -1284,11 +1397,7 @@ const proposalHighlightStyleOverride = {
 const multiParcelSelection = {
     isActive: false,
     selectedParcels: new Set(),
-    syntheticParcelLayers: new Map(),
-    syntheticLayerGroup: null,
     lastSelectedParcelId: null,
-    parcelIdIndex: new Map(),
-    parcelIdIndexSize: 0,
 
     // Toggle multi-selection mode
     toggle(options = {}) {
@@ -1324,9 +1433,7 @@ const multiParcelSelection = {
             const preservedParcelInfo = (preserveSelectedParcel && (hasCurrentParcel || fallbackParcelId))
                 ? {
                     id: hasCurrentParcel ? currentParcel.id.toString() : fallbackParcelId,
-                    layer: hasCurrentParcel
-                        ? (currentParcel.layer || this.findParcelById(currentParcel.id))
-                        : this.findParcelById(fallbackParcelId)
+                    layer: this.findParcelById(hasCurrentParcel ? currentParcel.id : fallbackParcelId)
                 }
                 : null;
 
@@ -1337,9 +1444,7 @@ const multiParcelSelection = {
                     ? currentParcel.id.toString()
                     : (fallbackParcelId || null);
                 if (seedId) {
-                    const seedLayer = hasCurrentParcel
-                        ? (currentParcel.layer || this.findParcelById(seedId))
-                        : this.findParcelById(seedId);
+                    const seedLayer = this.findParcelById(seedId);
                     if (seedLayer) {
                         seedInfo = { id: seedId, layer: seedLayer };
                     }
@@ -1367,28 +1472,11 @@ const multiParcelSelection = {
     // Clear any currently selected single parcel
     clearSingleParcelSelection(options = {}) {
         const preservePanel = !!options.preservePanel;
-        if (typeof selectedParcelId !== 'undefined' && selectedParcelId && typeof parcelLayer !== 'undefined' && parcelLayer) {
-            parcelLayer.eachLayer(layer => {
-                const layerId = getParcelIdFromFeature(layer.feature);
-                if (layer.feature && layer.feature.properties &&
-                    layerId && layerId.toString() === selectedParcelId) {
-
-                    // Reset style
-                    const parcelIdValue = layerId;
-                    const baseStyle = (typeof getParcelBaseStyle === 'function')
-                        ? getParcelBaseStyle(parcelIdValue)
-                        : (() => {
-                            const isRoad = (typeof window.isRoadParcel === 'function') ? window.isRoadParcel(parcelIdValue) : false;
-                            const globalRoadStyle = window.roadStyle || { fillColor: '#00ff00', fillOpacity: 0.2, color: '#00ff00', weight: 1 };
-                            const globalNormalStyle = window.normalStyle || { fillColor: 'red', fillOpacity: 0.2, color: 'red', weight: 1 };
-                            return isRoad ? globalRoadStyle : globalNormalStyle;
-                        })();
-                    layer.setStyle(baseStyle);
-
-                    // ALWAYS use the authoritative function to re-attach the click handler
-                    layer.off('click').on('click', getCorrectClickHandler());
-                }
-            });
+        if (typeof selectedParcelId !== 'undefined' && selectedParcelId) {
+            const selectedLayer = window.LiveParcelFabric?.get?.(selectedParcelId)
+                ? window.ParcelPresenter?.getLayer?.(selectedParcelId)
+                : null;
+            if (selectedLayer) this.removeParcelHighlight(selectedLayer);
 
             // Clear the global selected parcel state
             window.selectedParcelId = null;
@@ -1446,364 +1534,77 @@ const multiParcelSelection = {
         this.lastSelectedParcelId = null;
 
         // Also clear any currently selected single parcel to avoid conflicts
-        if (typeof selectedParcelId !== 'undefined' && selectedParcelId && typeof parcelLayer !== 'undefined' && parcelLayer) {
-            parcelLayer.eachLayer(layer => {
-                const layerId = getParcelIdFromFeature(layer.feature);
-                if (layer.feature && layer.feature.properties && layerId && layerId.toString() === selectedParcelId) {
-                    const baseStyle = (typeof getParcelBaseStyle === 'function')
-                        ? getParcelBaseStyle(selectedParcelId)
-                        : (() => {
-                            const isRoad = (typeof window.isRoadParcel === 'function') ? window.isRoadParcel(selectedParcelId) : false;
-                            const globalRoadStyle = window.roadStyle || {
-                                fillColor: '#00ff00', fillOpacity: 0.2, color: '#00ff00', weight: 1
-                            };
-                            const globalNormalStyle = window.normalStyle || {
-                                fillColor: 'red', fillOpacity: 0.2, color: 'red', weight: 1
-                            };
-                            return isRoad ? globalRoadStyle : globalNormalStyle;
-                        })();
-                    layer.setStyle(baseStyle);
-                }
-            });
+        if (typeof selectedParcelId !== 'undefined' && selectedParcelId) {
+            const selectedLayer = window.LiveParcelFabric?.get?.(selectedParcelId)
+                ? window.ParcelPresenter?.getLayer?.(selectedParcelId)
+                : null;
+            if (selectedLayer) this.removeParcelHighlight(selectedLayer);
             window.selectedParcelId = null;
         }
 
         this.updateUI();
     },
 
-    getSyntheticLayerGroup() {
-        if (this.syntheticLayerGroup && typeof map !== 'undefined' && map && map.hasLayer(this.syntheticLayerGroup)) {
-            return this.syntheticLayerGroup;
-        }
-
-        if (!this.syntheticLayerGroup) {
-            this.syntheticLayerGroup = L.featureGroup();
-        }
-
-        if (typeof map !== 'undefined' && map && !map.hasLayer(this.syntheticLayerGroup)) {
-            this.syntheticLayerGroup.addTo(map);
-        }
-
-        return this.syntheticLayerGroup;
-    },
-
-    // Find parcel layer by ID with fallback to cache
+    // Resolve one exact current live identity. Expanding a cadastral anchor into whatever happens
+    // to occupy it is a set operation, not a singular lookup; callers that need that operation use
+    // ParcelPresenter.resolveLiveLayers explicitly. Keeping this exact prevents a click/selection
+    // from silently changing meaning after a parcel is cut.
     findParcelById(parcelId) {
         if (parcelId === undefined || parcelId === null) return null;
         const targetId = parcelId.toString();
         if (!targetId) return null;
-        // Generated parcel ids name the CURRENT materialization only. If one is not in the live
-        // layer, it is gone; recovering yesterday's copy from a grid/persistence cache would turn
-        // disposable proposal output back into ground. That is how an unapplied park could appear
-        // selectable again and become the source geometry of the next park.
-        const isGeneratedId = (typeof isSyntheticParcelId === 'function' && isSyntheticParcelId(targetId))
-            || (typeof ProposalManager !== 'undefined'
-                && typeof ProposalManager.isSyntheticParcelId === 'function'
-                && ProposalManager.isSyntheticParcelId(targetId));
+        const root = typeof globalThis !== 'undefined' ? globalThis : {};
+        const fabric = root.LiveParcelFabric
+            || (typeof window !== 'undefined' ? window.LiveParcelFabric : null);
+        const presenter = root.ParcelPresenter
+            || (typeof window !== 'undefined' ? window.ParcelPresenter : null);
+        if (!fabric || !presenter) return null;
 
-        if (this.syntheticParcelLayers.has(targetId)) {
-            const syntheticLayer = this.syntheticParcelLayers.get(targetId);
-            if (syntheticLayer) {
-                return syntheticLayer;
-            } else {
-                this.syntheticParcelLayers.delete(targetId);
-            }
-        }
-
-        let foundParcel = null;
-
-        // Ensure the parcel layer is initialized/attached before trying to index
-        if ((typeof parcelLayer === 'undefined' || !parcelLayer) && typeof ensureParcelLayerInitialized === 'function') {
-            ensureParcelLayerInitialized();
-        }
-        if ((typeof parcelLayer === 'undefined' || !parcelLayer) && typeof addParcelLayerToMapIfAppropriate === 'function') {
-            addParcelLayerToMapIfAppropriate();
-        }
-
-        // Keep an index of parcelId -> layer for O(1) lookups
-        if (typeof parcelLayer !== 'undefined' && parcelLayer) {
-            const currentLayerCount = typeof parcelLayer.getLayers === 'function'
-                ? parcelLayer.getLayers().length
-                : 0;
-            const indexStale = this.parcelIdIndexSize !== currentLayerCount || currentLayerCount === 0;
-            if (indexStale) {
-                this.parcelIdIndex.clear();
-                parcelLayer.eachLayer(layer => {
-                    const layerId = getParcelIdFromFeature(layer.feature);
-                    if (layerId !== undefined && layerId !== null) {
-                        this.parcelIdIndex.set(layerId.toString(), layer);
-                    }
-                });
-                this.parcelIdIndexSize = currentLayerCount;
-            }
-
-            // The index is invalidated on a COUNT, and a count is not a fingerprint: deriving a
-            // parcel's pieces removes layers and adds layers, so the total comes back identical
-            // while the ids under it have changed completely. The index then answers for a map that
-            // no longer exists — in both directions. A parcel plainly on screen cannot be found, so
-            // a caller resolving a selection through it concludes nothing is selected (block
-            // detection said "Select a parcel first" with a parcel selected in front of you); and a
-            // hit can hand back a layer the map has already taken off.
-            //
-            // So a hit is verified against the live layer group, and a miss is worth one rebuild
-            // before it is believed. Both are the slow path — the common case is a hit on a layer
-            // that is still there, which costs one hasLayer call.
-            const stillOnMap = layer => {
-                if (!layer) return false;
-                if (typeof parcelLayer.hasLayer !== 'function') return true;
-                try { return parcelLayer.hasLayer(layer); } catch (_) { return true; }
-            };
-            const rebuildIndex = () => {
-                this.parcelIdIndex.clear();
-                parcelLayer.eachLayer(layer => {
-                    const layerId = getParcelIdFromFeature(layer.feature);
-                    if (layerId !== undefined && layerId !== null) {
-                        this.parcelIdIndex.set(layerId.toString(), layer);
-                    }
-                });
-                this.parcelIdIndexSize = typeof parcelLayer.getLayers === 'function'
-                    ? parcelLayer.getLayers().length
-                    : this.parcelIdIndex.size;
-            };
-
-            foundParcel = this.parcelIdIndex.get(targetId) || null;
-            if (!indexStale && !stillOnMap(foundParcel)) {
-                rebuildIndex();
-                foundParcel = this.parcelIdIndex.get(targetId) || null;
-            }
-        } else {
-            console.warn('findParcelById: parcelLayer not available (initialization pending)');
-        }
-
-        // If not found in parcelLayer, try to recover from cache
-        if (!foundParcel && !isGeneratedId && typeof parcelCache !== 'undefined') {
-            foundParcel = this.recoverParcelFromCache(targetId);
-            if (foundParcel) {
-                // Sync cache into the index for future lookups
-                this.parcelIdIndex.set(targetId, foundParcel);
-                this.parcelIdIndexSize = this.parcelIdIndex.size;
-            }
-        }
-
-        // Final fallback: try PersistentStorage
-        if (!foundParcel && !isGeneratedId) {
-            foundParcel = this.recoverParcelFromPersistentStorage(targetId);
-            if (foundParcel) {
-                // Sync cache into the index for future lookups
-                this.parcelIdIndex.set(targetId, foundParcel);
-                this.parcelIdIndexSize = this.parcelIdIndex.size;
-            }
-        }
-
-        if (!foundParcel) {
-            // Only escalate when there is no known way to recover the parcel.
-            const hasFetchers = typeof CadastralGroundService !== 'undefined'
-                && CadastralGroundService
-                && typeof CadastralGroundService.ensureIds === 'function';
-            const isSynth = isGeneratedId;
-            if (!hasFetchers) {
-                console.error('findParcelById: Could not find parcel with ID:', parcelId, 'and no fetcher is available');
-            } else if (!isSynth && typeof window !== 'undefined' && window.__DEBUG_PARCEL_HYDRATION__) {
-                console.debug('findParcelById: Parcel missing for now, awaiting hydration for ID:', parcelId);
-            }
-        }
-
-        return foundParcel;
-    },
-
-    // Recover a presentation copy and instantiate it as a layer. Viewport cells retain ids only;
-    // authoritative cadastral geometry belongs to CadastralGroundService.
-    recoverParcelFromCache(parcelId) {
-        const id = parcelId === undefined || parcelId === null ? '' : String(parcelId);
-        const isGeneratedId = (typeof isSyntheticParcelId === 'function' && isSyntheticParcelId(id))
-            || (typeof ProposalManager !== 'undefined'
-                && typeof ProposalManager.isSyntheticParcelId === 'function'
-                && ProposalManager.isSyntheticParcelId(id));
-        if (isGeneratedId) return null;
-        // Don't recover parcels that have been removed by a proposal (e.g., parent parcels replaced by children)
-        if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(parcelId)) {
-            return null;
-        }
-
-        if (!parcelCache || !(parcelCache.byId instanceof Map)) return null;
-        const feature = parcelCache.byId.get(id) || null;
-        return feature ? this.createParcelLayerFromFeature(feature) : null;
-    },
-
-    // Recover parcel from PersistentStorage and instantiate as layer
-    recoverParcelFromPersistentStorage(parcelId) {
-        const id = parcelId === undefined || parcelId === null ? '' : String(parcelId);
-        const isGeneratedId = (typeof isSyntheticParcelId === 'function' && isSyntheticParcelId(id))
-            || (typeof ProposalManager !== 'undefined'
-                && typeof ProposalManager.isSyntheticParcelId === 'function'
-                && ProposalManager.isSyntheticParcelId(id));
-        if (isGeneratedId) return null;
-        // Don't recover parcels that have been removed by a proposal (e.g., parent parcels replaced by children)
-        if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(parcelId)) {
-            return null;
-        }
-
-        const record = typeof readPersistedParcelRecord === 'function'
-            ? readPersistedParcelRecord(parcelId)
+        return typeof fabric.get === 'function' && fabric.get(targetId)
+            && typeof presenter.getLayer === 'function'
+            ? (presenter.getLayer(targetId) || null)
             : null;
-
-        if (record && record.geometry && record.properties) {
-            try {
-                const rawGeometry = record.geometry;
-                const properties = record.properties;
-
-                const geometry = (rawGeometry && typeof rawGeometry === 'object' && rawGeometry.type && rawGeometry.coordinates)
-                    ? JSON.parse(JSON.stringify(rawGeometry))
-                    : null;
-
-                if (!geometry) return null;
-
-                const feature = ensureParcelIdOnFeature({
-                    type: 'Feature',
-                    properties: properties && typeof properties === 'object' ? { ...properties } : {},
-                    geometry
-                });
-
-                if (!feature || !feature.properties) {
-                    return null;
-                }
-
-                // Ensure calculatedArea is set when possible, but don't fail if unavailable
-                if (feature.properties.calculatedArea === undefined || feature.properties.calculatedArea === null) {
-                    if (typeof calculateArea === 'function') {
-                        try {
-                            feature.properties.calculatedArea = calculateArea([geometry]);
-                        } catch (_) {
-                            // Ignore area calculation failure; allow layer creation to proceed
-                        }
-                    }
-                }
-
-                return this.createParcelLayerFromFeature(feature);
-            } catch (e) {
-                console.error(`Error reconstructing parcel ${parcelId} from PersistentStorage:`, e);
-            }
-        }
-        return null;
     },
 
-    // Create a Leaflet layer from a feature and add it to parcelLayer
-    createParcelLayerFromFeature(feature, options = {}) {
-        if (!feature || !feature.geometry || !feature.properties) {
-            console.error('createParcelLayerFromFeature: Invalid feature provided');
-            return null;
+    // Selection is a view of one committed fabric revision. When a commit replaces parcel
+    // identities, remove identities that no longer exist and synchronously repaint the survivors.
+    // We deliberately do not guess which new piece should inherit a removed selection.
+    reconcileWithFabric() {
+        const fabric = window.LiveParcelFabric;
+        const presenter = window.ParcelPresenter;
+        if (!fabric || !presenter) return false;
+
+        let changed = false;
+        for (const id of Array.from(this.selectedParcels)) {
+            if (fabric.get(id)) continue;
+            this.selectedParcels.delete(id);
+            changed = true;
+        }
+        if (this.lastSelectedParcelId && !fabric.get(this.lastSelectedParcelId)) {
+            this.lastSelectedParcelId = this.selectedParcels.size
+                ? Array.from(this.selectedParcels).slice(-1)[0]
+                : null;
+            changed = true;
         }
 
-        const { addToParcelLayer = true, makeInteractive = true } = options;
-
-        const normalizedFeature = ensureParcelIdOnFeature(feature);
-
-        // Don't add parcels that have been removed by a proposal (e.g., parent parcels replaced by children)
-        const parcelId = getParcelIdFromFeature(normalizedFeature);
-        const persistedRecord = parcelId ? readPersistedParcelRecord(parcelId) : null;
-        if (addToParcelLayer && parcelId) {
-            if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(parcelId)) {
-                // Return null to prevent re-adding a removed parcel
-                return null;
-            }
+        const singleId = window.selectedParcelId === undefined || window.selectedParcelId === null
+            ? null
+            : String(window.selectedParcelId);
+        if (singleId && !fabric.get(singleId)) {
+            window.selectedParcelId = null;
+            window.currentParcel = null;
+            changed = true;
+        } else if (singleId) {
+            const layer = presenter.getLayer(singleId);
+            if (layer) window.currentParcel = { ...(window.currentParcel || {}), id: singleId, layer };
         }
 
-        try {
-            // Convert coordinates if needed (same logic as in fetchParcelData)
-            let convertedFeature = normalizedFeature;
-            if (typeof convertGeoJSON === 'function') {
-                const featureCollection = {
-                    type: 'FeatureCollection',
-                    features: [normalizedFeature]
-                };
-                const converted = convertGeoJSON(featureCollection);
-                convertedFeature = converted.features[0];
-            }
-
-            // Create the Leaflet layer
-            const layer = L.geoJSON(convertedFeature, {
-                style: (feature) => {
-                    const parcelId = getParcelIdFromFeature(feature);
-                    const storedRoad = (parcelId && typeof window.isRoadParcel === 'function') ? window.isRoadParcel(parcelId) : false;
-                    const propertyRoad = feature?.properties?.isRoad === true;
-                    const isRoad = storedRoad || propertyRoad;
-                    // Use global styles if available
-                    const roadStyleToUse = typeof roadStyle !== 'undefined' ? roadStyle : {
-                        fillColor: '#00ff00', fillOpacity: 0.2, color: '#00ff00', weight: 1
-                    };
-                    const normalStyleToUse = typeof normalStyle !== 'undefined' ? normalStyle : {
-                        fillColor: 'red', fillOpacity: 0.2, color: 'red', weight: 1
-                    };
-                    return isRoad ? roadStyleToUse : normalStyleToUse;
-                },
-                onEachFeature: function (feature, layer) {
-                    if (makeInteractive && typeof onParcelClick === 'function') {
-                        layer.on({
-                            mouseover: typeof highlightFeature === 'function' ? highlightFeature : () => { },
-                            mouseout: typeof resetHighlight === 'function' ? resetHighlight : () => { },
-                            click: onParcelClick
-                        });
-                    }
-                }
-            });
-
-            // Extract the actual parcel layer (geoJSON creates a layer group)
-            let parcelLayerInstance = null;
-            layer.eachLayer(l => {
-                if (!parcelLayerInstance) parcelLayerInstance = l;
-            });
-
-            if (parcelLayerInstance) {
-                // Add road properties if applicable
-                const parcelId = getParcelIdFromFeature(feature);
-                const storedRoad = (parcelId && typeof window.isRoadParcel === 'function') ? window.isRoadParcel(parcelId) : false;
-                const persistedProps = persistedRecord?.properties || {};
-                const propertyRoad = parcelLayerInstance?.feature?.properties?.isRoad === true
-                    || feature?.properties?.isRoad === true
-                    || persistedProps.isRoad === true;
-                const isRoad = storedRoad || propertyRoad;
-                parcelLayerInstance.feature.properties.isRoad = !!isRoad;
-                if (isRoad) {
-                    const roadName = feature?.properties?.roadName
-                        || persistedProps.roadName
-                        || 'Unnamed Road';
-                    parcelLayerInstance.bindTooltip(roadName, {
-                        permanent: false,
-                        direction: 'center',
-                        className: 'road-name-tooltip'
-                    });
-                    parcelLayerInstance.feature.properties.roadName = roadName;
-                    parcelLayerInstance.feature.properties.roadId = feature?.properties?.roadId
-                        || persistedProps.roadId
-                        || '';
-                    parcelLayerInstance.feature.properties.roadConfidence = feature?.properties?.roadConfidence
-                        || persistedProps.roadConfidence
-                        || '0';
-                }
-
-                // Add to parcelLayer if it exists
-                if (addToParcelLayer && typeof parcelLayer !== 'undefined' && parcelLayer) {
-                    parcelLayer.addLayer(parcelLayerInstance);
-                    if (typeof window.indexParcelLayer === 'function') {
-                        window.indexParcelLayer(parcelLayerInstance);
-                    }
-                    // Don't add directly to map - layers in parcelLayer are automatically rendered
-                    // when parcelLayer is on the map. Adding directly causes double rendering.
-                }
-
-                // Validate that the layer has getBounds before returning
-                if (typeof parcelLayerInstance.getBounds === 'function') {
-                    return parcelLayerInstance;
-                } else {
-                    console.error('createParcelLayerFromFeature: Created layer does not have getBounds method');
-                    return null;
-                }
-            }
-        } catch (e) {
-            console.error('Error creating parcel layer from feature:', e);
-        }
-
-        return null;
+        this.selectedParcels.forEach(id => {
+            const layer = presenter.getLayer(id);
+            if (layer) this.addParcelHighlight(layer);
+        });
+        if (changed) this.updateUI();
+        return changed;
     },
 
     // Add highlight to selected parcel
@@ -2102,16 +1903,14 @@ const multiParcelSelection = {
     // Reapply highlights to all currently selected parcels
     reapplyMultiParcelHighlights() {
         if (!this.isActive || !this.selectedParcels || this.selectedParcels.size === 0) return;
-
-        // Use a small delay to ensure parcel layer updates are complete
-        setTimeout(() => {
-            this.selectedParcels.forEach(parcelId => {
-                const parcel = this.findParcelById(parcelId);
-                if (parcel) {
-                    this.addParcelHighlight(parcel);
-                }
-            });
-        }, 50);
+        if (typeof window.ParcelPresenter?.restoreSelectionStyles === 'function') {
+            window.ParcelPresenter.restoreSelectionStyles();
+            return;
+        }
+        this.selectedParcels.forEach(parcelId => {
+            const parcel = this.findParcelById(parcelId);
+            if (parcel) this.addParcelHighlight(parcel);
+        });
     },
 
     // Select all parcels in a block (used for Buenos Aires block selection)

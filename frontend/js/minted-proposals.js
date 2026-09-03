@@ -255,19 +255,45 @@
             .filter(Boolean);
     };
 
+    const cadastreIdsForMintedEntry = (entry) => {
+        const metadataProps = entry?.metadata?.properties || {};
+        const own = (value, key) => value && typeof value === 'object'
+            && Object.prototype.hasOwnProperty.call(value, key);
+        if (own(entry, 'parentParcelIds') || own(metadataProps, 'parcelIds')) {
+            throw new Error('Minted proposal uses a retired parcel declaration.');
+        }
+        const source = entry?.cadastreParcelIds
+            || metadataProps.cadastreParcelIds
+            || [];
+        const ids = Array.from(new Set(normalizeIdList(source)));
+        const isDerived = globalScope.ProposalAuthoredRecord?.isDerivedParcelId;
+        if (typeof isDerived !== 'function') {
+            throw new Error('Authored proposal boundary is unavailable.');
+        }
+        const invalid = ids.find(id => isDerived(id));
+        if (invalid) throw new Error(`Minted proposal names generated parcel ${invalid}.`);
+        return ids;
+    };
+
     const openMintedProposalDetails = (entry) => {
         if (!entry || entry.proposalId === undefined || entry.proposalId === null) return;
 
         closeMintedProposalsModal();
 
-        const parentParcelIds = normalizeIdList(entry.parentParcelIds);
+        let cadastreParcelIds;
+        try {
+            cadastreParcelIds = cadastreIdsForMintedEntry(entry);
+        } catch (error) {
+            console.warn('Cannot open non-canonical minted proposal', entry, error);
+            return;
+        }
 
         let imported = null;
         try {
             if (globalScope.proposalStorage && typeof globalScope.proposalStorage.importOnChainProposal === 'function') {
                 imported = globalScope.proposalStorage.importOnChainProposal({
                     proposalId: entry.proposalId,
-                    parentParcelIds,
+                    cadastreParcelIds,
                     isConditional: entry.isConditional,
                     imageURI: entry.imageURI || entry.imageUrl || (entry.metadata && (entry.metadata.image || entry.metadata.image_url || entry.metadata.imageURI)) || '',
                     acceptancePossible: entry.acceptancePossible,
@@ -294,7 +320,7 @@
             console.warn('Failed to import minted proposal into storage', entry, err);
         }
 
-        const fallbackParcelId = parentParcelIds.length ? parentParcelIds[0] : null;
+        const fallbackParcelId = cadastreParcelIds.length ? cadastreParcelIds[0] : null;
         const targetProposalId = imported?.proposalId || imported?.chainProposalId || entry.proposalId;
         let opened = false;
 
@@ -574,7 +600,8 @@
             meta.className = 'minted-proposal-meta';
 
             const parcelsLabel = document.createElement('span');
-            const parcelCount = Array.isArray(entry.parentParcelIds) ? entry.parentParcelIds.length : 0;
+            let parcelCount = 0;
+            try { parcelCount = cadastreIdsForMintedEntry(entry).length; } catch (_) { }
             parcelsLabel.textContent = t('modal.mintedProposals.parcelsLabel', 'Parcels: {{count}}', { count: parcelCount });
 
             const lensCount = Array.isArray(entry.lens) ? entry.lens.length : 0;

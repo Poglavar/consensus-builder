@@ -310,7 +310,7 @@ function selectLandUse(key, { skipChecks = false } = {}) {
         console.warn('[proposals] Merge / Decide Later is no longer a creatable goal.');
         return false;
     }
-    if (!skipChecks && key === 'lake') {
+    if (!skipChecks && ['park', 'square', 'lake'].includes(key)) {
         const selection = getCurrentParcelSelectionContext();
         const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selection.layers) : { contiguous: true };
         if (!contiguity.contiguous) {

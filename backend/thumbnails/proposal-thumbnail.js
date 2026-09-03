@@ -164,9 +164,7 @@ function ringsToPolygonGeometries(rings) {
 }
 
 export function getProposalParentParcelIds(proposal) {
-    const ids = Array.isArray(proposal?.parentParcelIds)
-        ? proposal.parentParcelIds
-        : (Array.isArray(proposal?.roadProposal?.parentParcelIds) ? proposal.roadProposal.parentParcelIds : []);
+    const ids = Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
     return ids.map(id => (id === null || id === undefined ? null : String(id))).filter(Boolean);
 }
 

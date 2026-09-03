@@ -168,7 +168,7 @@
             "instantCreateFailed": "Novi objekat nije bilo moguće sačuvati.",
             "noAdapter": "Za ovu vrstu predloga nije registrovan uređivač.",
             "notReshapeable": "Ovoj vrsti predloga se ne može menjati oblik.",
-            "parcelsNotContiguous": "Jezero zahteva susedne parcele.",
+            "parcelsNotContiguous": "Izabrane parcele moraju činiti jednu povezanu površinu.",
             "parcelsUnavailable": "Parcele iz nacrta nisu dostupne u trenutnom gradu.",
             "readOnly": "Ovaj predlog se može samo pregledati.",
             "sourceMissing": "Izvorni predlog nije pronađen."

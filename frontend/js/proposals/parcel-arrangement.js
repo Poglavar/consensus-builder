@@ -34,6 +34,7 @@
     // Below this a piece is boundary noise from the cut, not a parcel. Same measured floor the rest
     // of the ancestry work uses (plan-order.MIN_INTERSECTION_M2).
     const MIN_PIECE_M2 = 0.25;
+    const LIVE_DERIVATION = 'corridor-arrangement';
 
     // ~1 cm at this latitude: fine enough that two genuinely different pieces cannot collide, coarse
     // enough that a vertex re-emitted with floating-point noise still hashes the same.
@@ -69,10 +70,10 @@
     // boundary (7 dp ≈ 1 cm) lands on the other side of it, which measures at ~0.5% of vertices, so
     // a piece with twenty vertices has roughly a one-in-ten chance of hashing differently than it
     // did before this change. That is survivable because a piece id is a content address, not a
-    // foreign key: an applied proposal finds its ground through the live-fabric GEOMETRY resolver
-    // (_resolveLiveFormationParents), never by looking a piece id up. Ids stay stable across
-    // rebuilds, which is what they are for; they are not stable across a change in how the fabric
-    // is computed, and nothing is entitled to assume they are.
+    // foreign key: an applied proposal finds its ground through its flat cadastral declaration and
+    // deterministic live-fabric materialization, never by looking an old piece id up. Ids stay
+    // stable across rebuilds, which is what they are for; they are not stable across a change in
+    // how the fabric is computed, and nothing is entitled to assume they are.
     const CLIP_SNAP_DECIMALS = 9;
 
     // Whatever still fails gets a coarser grid: 1.1 mm, then 1.1 cm. If every attempt fails the
@@ -317,18 +318,11 @@
         return `${parcelId}#${kind === 'road' ? 'r' : 'p'}${hashText(text)}`;
     }
 
-    // Is this id one of OURS?
-    //
-    // A scoped re-derivation compares what the arrangement says a parcel is made of against what is
-    // on the map, and removes the difference. Other things also mint derived ids under a cadastral
-    // parcel — a readjustment's plots, a building's carved host — and those are not the
-    // arrangement's to remove: it would delete a standing plan's plots the moment a road was drawn
-    // anywhere across the same parcel. The piece format is this module's, so the test belongs here.
-    function isPieceId(id) {
-        const text = (id === undefined || id === null) ? '' : String(id);
-        const cut = text.indexOf('#');
-        if (cut === -1) return false;
-        return /^[rp][0-9a-z]+$/.test(text.slice(cut + 1));
+    // Ownership of a live parcel is explicit domain provenance. Its opaque id may happen to be a
+    // content address, but no reader is allowed to reverse-engineer role or lineage from it.
+    function isArrangementFeature(feature) {
+        const props = feature && feature.properties || {};
+        return props.liveParcelDerivation === LIVE_DERIVATION;
     }
 
     /**
@@ -641,11 +635,14 @@
         const primary = piece.takers && piece.takers.length ? piece.takers[0] : null;
 
         props.calculatedArea = piece.areaM2;
-        props.parentParcelId = piece.parcelId;
-        props.parentParcelNumber = baseProps.BROJ_CESTICE !== undefined ? baseProps.BROJ_CESTICE : null;
         props.rootParcelId = piece.parcelId;
         props.rootParcelNumber = baseProps.BROJ_CESTICE !== undefined ? baseProps.BROJ_CESTICE : null;
-        props.baseParcelIds = [piece.parcelId];
+        props.cadastreParcelIds = [piece.parcelId];
+        props.liveParcelDerivation = LIVE_DERIVATION;
+        delete props.baseParcelIds;
+        delete props.parentParcelIds;
+        delete props.parentParcelId;
+        delete props.parentParcelNumber;
         props.formedByProposalIds = (piece.takers || []).slice();
         if (primary) props.proposalId = primary;
         else delete props.proposalId;
@@ -685,7 +682,7 @@
         takesOverlapping,
         takeHitsOn,
         pieceId,
-        isPieceId,
+        isArrangementFeature,
         canonicalPolygon,
         // Exported so nothing else re-implements the content address. A block's name is built on
         // this too, from its own outline rather than from any parcel in it.

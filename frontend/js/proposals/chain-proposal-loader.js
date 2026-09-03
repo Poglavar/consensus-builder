@@ -24,6 +24,40 @@
         return s;
     }
 
+    function canonicalCadastreIds(values) {
+        const ids = Array.from(new Set((Array.isArray(values) ? values : [])
+            .map(value => String(value == null ? '' : value).trim())
+            .filter(Boolean)));
+        const authored = global.ProposalAuthoredRecord;
+        if (!authored || typeof authored.isDerivedParcelId !== 'function') {
+            throw new Error('Authored proposal boundary is unavailable.');
+        }
+        const derived = ids.find(id => authored.isDerivedParcelId(id));
+        if (derived) {
+            throw new Error(`On-chain proposal names a generated parcel (${derived}); it must be republished against cadastral parcels.`);
+        }
+        return ids;
+    }
+
+    function rejectLegacyGround(record, metadataProperties, label) {
+        const own = (value, key) => value && typeof value === 'object'
+            && Object.prototype.hasOwnProperty.call(value, key);
+        if (own(record, 'parentParcelIds')) {
+            throw new Error(`${label} uses retired parentParcelIds; it must be republished with cadastreParcelIds.`);
+        }
+        if (own(metadataProperties, 'parcelIds')) {
+            throw new Error(`${label} metadata uses retired parcelIds; it must be republished with cadastreParcelIds.`);
+        }
+    }
+
+    function authoredChainRecord(raw, cadastreParcelIds) {
+        const depth = global.__formationDepth;
+        if (!depth || typeof depth.stripDerivedRecordData !== 'function') {
+            throw new Error('Authored proposal boundary is unavailable.');
+        }
+        return depth.stripDerivedRecordData({ ...(raw || {}), cadastreParcelIds });
+    }
+
     async function loadEvmProposal(ref) {
         const loader = global.ChainDataLoader;
         const storage = global.proposalStorage;
@@ -51,14 +85,26 @@
             } catch (_) { /* reconstruct with what the chain gave us */ }
         }
 
-        const imported = storage.importOnChainProposal({
+        let cadastreParcelIds;
+        try {
+            rejectLegacyGround(row, metadata?.properties, 'On-chain proposal');
+            cadastreParcelIds = canonicalCadastreIds(
+                row.cadastreParcelIds
+                || metadata?.properties?.cadastreParcelIds
+                || []
+            );
+        } catch (error) {
+            return { ok: false, reason: 'non-canonical-ground', error };
+        }
+        const imported = storage.importOnChainProposal(authoredChainRecord({
             ...row,
+            cadastreParcelIds,
             chainId: ref.chainId,
             contractAddress: ref.contract,
             metadata,
             lens: row.lens,
             onchain: { chainId: ref.chainId, contractAddress: ref.contract, proposalId: ref.tokenId, metadata }
-        });
+        }, cadastreParcelIds));
         return imported ? { ok: true, proposal: imported } : { ok: false, reason: 'import-failed' };
     }
 
@@ -94,9 +140,20 @@
             } catch (_) { /* reconstruct with what the chain gave us */ }
         }
 
+        let cadastreParcelIds;
+        try {
+            rejectLegacyGround(parsed, metadata?.properties, 'Solana proposal');
+            cadastreParcelIds = canonicalCadastreIds(
+                parsed.cadastreParcelIds
+                || metadata?.properties?.cadastreParcelIds
+                || []
+            );
+        } catch (error) {
+            return { ok: false, reason: 'non-canonical-ground', error };
+        }
         const imported = storage.importOnChainProposal({
             proposalId: parsed.proposalId || ref.tokenId,
-            parentParcelIds: parsed.parentParcelIds || [],
+            cadastreParcelIds,
             imageURI: metaUri,
             metadata,
             lens: parsed.lens || [],
@@ -149,9 +206,20 @@
         }
 
         const cantonChainId = `canton-${ref.chainId}`;
+        let cadastreParcelIds;
+        try {
+            rejectLegacyGround(match, metadata?.properties, 'Canton proposal');
+            cadastreParcelIds = canonicalCadastreIds(
+                match.cadastreParcelIds
+                || metadata?.properties?.cadastreParcelIds
+                || []
+            );
+        } catch (error) {
+            return { ok: false, reason: 'non-canonical-ground', error };
+        }
         const imported = storage.importOnChainProposal({
             proposalId: ref.tokenId,
-            parentParcelIds: match.parcelId != null ? [String(match.parcelId)] : [],
+            cadastreParcelIds,
             imageURI: match.imageUri || match.metadataUri || '',
             metadata,
             offer: match.price,

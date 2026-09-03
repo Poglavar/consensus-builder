@@ -40,8 +40,8 @@
 
     const resolveParcelId = (feature) => {
         const props = feature?.properties || {};
-        const id = typeof ensureParcelId === 'function'
-            ? ensureParcelId(feature)
+        const id = typeof global.getParcelId === 'function'
+            ? global.getParcelId(feature)
             : (props.parcelId ?? props.parcel_id ?? props.id);
         return id !== undefined && id !== null ? id.toString() : null;
     };
@@ -267,7 +267,9 @@
             || deriveOwnershipTypeFromSummary(feature.properties.ownership_summary)
             || null;
 
-        const blockName = feature.properties.block;
+        const blockName = typeof global.parcelBlockNameForId === 'function'
+            ? global.parcelBlockNameForId(parcelId)
+            : null;
         const cityId = typeof global.getCurrentCityId === 'function' ? global.getCurrentCityId() : 'zagreb';
         const isBuenosAires = cityId === 'buenos_aires';
 
@@ -293,46 +295,17 @@
         const parcelProposals = (global.CantonMode && global.CantonMode.isCantonProposal)
             ? allParcelProposals.filter((p) => !global.CantonMode.isCantonProposal(p))
             : allParcelProposals.slice();
-        // Structures matched by geometry: an old/imported park/lake whose declared parcel ids
-        // drifted still lists on the parcels its shape actually covers.
+        // The live fabric is the only authority that projects this connected parcel back to
+        // cadastral ground. proposalStorage performs the same flat projection when it builds the
+        // list above; geometry intersections and child-id scans are deliberately not recovery paths.
+        let parcelCadastreIds = [];
         try {
-            const covering = (typeof global.structureProposalsCoveringFeature === 'function')
-                ? global.structureProposalsCoveringFeature(feature)
-                : [];
-            covering.forEach(pid => {
-                if (parcelProposals.some(p => String(p.proposalId) === String(pid))) return;
-                const record = storage?.getProposal ? storage.getProposal(pid) : null;
-                if (record) parcelProposals.push(record);
-            });
-        } catch (_) { }
-        // Roads get the same geometry rescue: id-based matching misses corridors whose declared
-        // parent/child ids drifted, so a road physically covering this parcel always lists.
-        try {
-            const roadCovering = (typeof global.roadProposalsCoveringFeature === 'function')
-                ? global.roadProposalsCoveringFeature(feature)
-                : [];
-            roadCovering.forEach(pid => {
-                if (parcelProposals.some(p => String(p.proposalId) === String(pid))) return;
-                const record = storage?.getProposal ? storage.getProposal(pid) : null;
-                if (record) parcelProposals.push(record);
-            });
-        } catch (_) { }
-        // Claims rescue (rethink-proposals.md §13): any proposal whose BASE ancestry — the
-        // published cadastreParcelIds stamp, or the roots of whatever it declares — includes this
-        // parcel's root lists here too, whatever generation its declared ids are from. This is
-        // the dossier: the panel answers "what is claimed on this land", not "who names my id".
-        try {
-            if (global.__claims && global.__planOrder && storage?.getAllProposals) {
-                const claimRoot = global.__planOrder.cadastreRootId(resolveParcelId(feature));
-                if (claimRoot) {
-                    (storage.getAllProposals() || []).forEach(record => {
-                        if (!record || !record.proposalId) return;
-                        if (parcelProposals.some(p => String(p.proposalId) === String(record.proposalId))) return;
-                        if (global.__claims.baseParcelIdsOf(record).indexOf(claimRoot) !== -1) {
-                            parcelProposals.push(record);
-                        }
-                    });
-                }
+            const fabric = global.LiveParcelFabric;
+            if (fabric && typeof fabric.explicitCadastreIds === 'function') {
+                const liveFeature = typeof fabric.get === 'function'
+                    ? (fabric.get(resolveParcelId(feature)) || feature)
+                    : feature;
+                parcelCadastreIds = fabric.explicitCadastreIds(liveFeature);
             }
         } catch (_) { }
 
@@ -346,6 +319,7 @@
                 if (!global.__dossier || !parcelProposals.length) return null;
                 return global.__dossier.buildDossier(parcelId, parcelProposals, {
                     assumeMembership: true,
+                    cadastreParcelIds: parcelCadastreIds,
                     isVote: (typeof global.isVoteProposal === 'function') ? global.isVoteProposal : undefined,
                     isApplied: (typeof global.isProposalApplied === 'function') ? global.isProposalApplied : undefined,
                     parcelFeature: (feature && feature.geometry) ? feature : undefined
@@ -460,9 +434,7 @@
                 // One-hop output provenance: which proposal produced this disposable live piece.
                 // It is presentation metadata, not a proposal dependency or ancestry edge.
                 const isParcelProducer = parcelProposals.length > 1 && (
-                    String(feature?.properties?.producedByProposalId
-                        ?? feature?.properties?.ancestorProposal ?? '') === String(proposal.proposalId)
-                    || (Array.isArray(proposal.childParcelIds) && proposal.childParcelIds.map(String).includes(String(parcelId)))
+                    String(feature?.properties?.producedByProposalId || '') === String(proposal.proposalId)
                 );
                 const producerPill = isParcelProducer
                     ? `<span class="proposal-item-producer-pill" data-i18n-key="panel.parcel.proposalsSection.producerPill">${tParcel('panel.parcel.proposalsSection.producerPill', {}, 'Parcel source')}</span>`
@@ -506,7 +478,7 @@
                     const percent = Math.max(0, Math.min(100, Math.round((accepted / total) * 100)));
                     return `<span class="proposal-item-acceptbar" title="${title}: ${accepted}/${total}"><span class="proposal-item-acceptbar-fill" style="width:${percent}%"></span><span class="proposal-item-acceptbar-text">${accepted}/${total}</span></span>`;
                 };
-                const parcelIdsForAcceptance = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
+                const parcelIdsForAcceptance = Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
                 const acceptedParcelSet = new Set((proposal.acceptedParcelIds || []).map(value => String(value)));
                 const acceptedParcelCount = parcelIdsForAcceptance.filter(value => acceptedParcelSet.has(String(value))).length;
                 const parcelAcceptanceBar = acceptanceMiniBar(
@@ -1017,11 +989,8 @@
 
         if (typeof global.refreshParcelStylesForAppliedProposals === 'function') {
             global.refreshParcelStylesForAppliedProposals();
-        } else if (previouslySelectedId && global.parcelLayer) {
-            const previousLayer = global.parcelLayer.getLayers().find(layer => {
-                const id = resolveParcelId(layer?.feature);
-                return id !== undefined && id !== null && id.toString() === previouslySelectedId;
-            });
+        } else if (previouslySelectedId && global.LiveParcelFabric?.get?.(previouslySelectedId)) {
+            const previousLayer = global.ParcelPresenter?.getLayer?.(previouslySelectedId) || null;
             if (previousLayer) {
                 const isRoad = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(previouslySelectedId) : false;
                 previousLayer.setStyle(global.getParcelBaseStyle(previouslySelectedId, { isRoad }));

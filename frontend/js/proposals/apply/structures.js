@@ -11,6 +11,24 @@
         return kind !== 'station';
     }
 
+    function structureGeometryPartCount(geometry) {
+        const value = geometry && geometry.type === 'Feature' ? geometry.geometry : geometry;
+        if (!value) return 0;
+        if (value.type === 'Polygon') {
+            return Array.isArray(value.coordinates) && value.coordinates.length ? 1 : 0;
+        }
+        if (value.type === 'MultiPolygon') {
+            return Array.isArray(value.coordinates) ? value.coordinates.length : 0;
+        }
+        return 0;
+    }
+
+    // A land structure owns one parcel and therefore one connected place. Stations are attached
+    // content on a corridor and may legitimately have several platform polygons.
+    function structureGeometryIsContiguous(kind, geometry) {
+        return kind === 'station' || structureGeometryPartCount(geometry) === 1;
+    }
+
     function structureTakeContext(turfRef, arrangement) {
         const intersect = arrangement && typeof arrangement.clip === 'function'
             ? (left, right) => arrangement.clip('intersect', left, right)
@@ -31,6 +49,7 @@
     return {
     structureNeedsGroundFormation,
     structureTakeContext,
+    structureGeometryIsContiguous,
     async _applyStructureProposal(proposalId, proposalData, options = {}) {
         const startTime = performance.now();
         const idLabel = _normalizeProposalId(proposalId) || 'unknown-proposal';
@@ -41,7 +60,11 @@
         traceApply(`Starting application for ${idLabel}...`);
         try {
             const step1Time = performance.now();
-            const sp = proposalData.structureProposal || {};
+            // Everything added during application (demolition scan, generated decorations,
+            // materialized parcel ids) belongs to this run, never to the authored record.
+            const sp = proposalData.structureProposal
+                ? JSON.parse(JSON.stringify(proposalData.structureProposal))
+                : {};
             const kind = (sp.kind === 'park' || sp.kind === 'square' || sp.kind === 'lake' || sp.kind === 'station') ? sp.kind : 'square';
             const canonicalGeometry = typeof this._getCanonicalStructureGeometry === 'function'
                 ? this._getCanonicalStructureGeometry(proposalData, kind)
@@ -52,6 +75,18 @@
             }
             if (geometry && geometry.type && Array.isArray(geometry.coordinates)) {
                 try { sp.geometry = JSON.parse(JSON.stringify(geometry)); } catch (_) { sp.geometry = geometry; }
+            }
+            if (geometry && !structureGeometryIsContiguous(kind, geometry)) {
+                const parts = structureGeometryPartCount(geometry);
+                const message = `Cannot apply ${kind}: its footprint has ${parts} disconnected areas; a land structure must occupy one connected area.`;
+                try {
+                    this._setLastApplyFailure(idLabel, {
+                        code: 'structure-ground-disconnected',
+                        message
+                    });
+                } catch (_) { }
+                try { if (typeof updateStatus === 'function') updateStatus(message); } catch (_) { }
+                return false;
             }
             const refreshStructureLayer = () => {
                 if (kind === 'park') {
@@ -108,14 +143,10 @@
             }
             const blockName = sp.blockName || null;
 
-            // Persist canonical geometry/parents onto the structureProposal for downstream consumers
-            if (geometry) {
-                try { sp.geometry = JSON.parse(JSON.stringify(geometry)); } catch (_) { sp.geometry = geometry; }
-            }
             let parentIds = [];
             let flatParentIds = [];
             let liveParentFeatures = [];
-            const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, kind);
+            const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, kind, options);
             if (!liveParents.ok) return false;
             parentIds = liveParents.ids;
             flatParentIds = liveParents.cadastreIds.slice();
@@ -129,39 +160,13 @@
             // forms nothing.
             if (structureNeedsGroundFormation(kind, sp)) {
                 const formation = await this._formStructureParcel(
-                    proposalId, proposalData, sp, geometry, parentIds, idLabel, liveParentFeatures);
+                    proposalId, proposalData, sp, geometry, parentIds, idLabel, liveParentFeatures, options);
                 if (!formation.ok) return false;
                 parentIds = formation.parentIds;
             }
 
             const step4Time = performance.now();
-            // Add to appropriate collection and layer
-            // Ensure canonical geometry container is populated for downstream consumers
-            if (!proposalData.geometry || typeof proposalData.geometry !== 'object') {
-                proposalData.geometry = {
-                    superParcel: null,
-                    lakeGraphics: kind === 'lake' ? (sp.lakeGraphics || null) : null,
-                    parkGraphics: kind === 'park' ? geometry : null,
-                    squareGraphics: kind === 'square' ? geometry : null,
-                    stationGraphics: kind === 'station' ? geometry : null,
-                    buildings: null,
-                    reparcellizationPolygons: null
-                };
-            } else {
-                if (kind === 'lake' && sp.lakeGraphics && !proposalData.geometry.lakeGraphics) {
-                    proposalData.geometry.lakeGraphics = sp.lakeGraphics;
-                }
-                if (kind === 'park' && !proposalData.geometry.parkGraphics) {
-                    proposalData.geometry.parkGraphics = geometry;
-                }
-                if (kind === 'square' && !proposalData.geometry.squareGraphics) {
-                    proposalData.geometry.squareGraphics = geometry;
-                }
-                if (kind === 'station' && !proposalData.geometry.stationGraphics) {
-                    proposalData.geometry.stationGraphics = geometry;
-                }
-            }
-
+            // Add to the derived presentation collections. Authored geometry is read-only here.
             const feature = {
                 type: 'Feature',
                 properties: {
@@ -199,7 +204,6 @@
                     sp.decorations = JSON.parse(JSON.stringify(feature.properties.decorations));
                 }
                 window.parks.push(feature);
-                try { PersistentStorage.setItem('cb_parks', JSON.stringify(window.parks)); } catch (_) { }
             } else if (kind === 'lake') {
                 if (!Array.isArray(window.lakes)) window.lakes = [];
                 // Only remove if it's the same proposal (to avoid duplicates when re-applying)
@@ -209,7 +213,6 @@
                 });
                 try { if (typeof ensureLakeGraphics === 'function') ensureLakeGraphics(feature); } catch (_) { }
                 window.lakes.push(feature);
-                try { PersistentStorage.setItem('cb_lakes', JSON.stringify(window.lakes)); } catch (_) { }
             } else if (kind === 'station') {
                 if (!Array.isArray(window.transitStations)) window.transitStations = [];
                 window.transitStations = window.transitStations.filter(f => {
@@ -217,7 +220,6 @@
                     return String(f.properties.proposalId || '') !== String(proposalId);
                 });
                 window.transitStations.push(feature);
-                try { PersistentStorage.setItem('cb_transit_stations', JSON.stringify(window.transitStations)); } catch (_) { }
             } else {
                 if (!Array.isArray(window.squares)) window.squares = [];
                 // Only remove if it's the same proposal (to avoid duplicates when re-applying)
@@ -234,7 +236,6 @@
                     sp.decorations = JSON.parse(JSON.stringify(feature.properties.decorations));
                 }
                 window.squares.push(feature);
-                try { PersistentStorage.setItem('cb_squares', JSON.stringify(window.squares)); } catch (_) { }
             }
             traceApply(`Step 4: Prepared ${kind} layer data and storage (${(performance.now() - step4Time).toFixed(2)}ms)`);
 
@@ -248,9 +249,6 @@
             // application axis; the lifecycle (Active/Executed) is left as-is. Persist the model
             // BEFORE refreshing its views: both 2D and 3D building filters read the canonical
             // application flag when the structure-layer update event fires.
-            sp.parentParcelIds = flatParentIds.slice();
-            proposalData.parentParcelIds = flatParentIds.slice();
-            proposalData.structureProposal = sp;
             persistAppliedProposal(proposalData, proposalId);
             if (options.deferPresentation !== true) {
                 try { refreshStructureLayer(); } catch (error) {
@@ -281,7 +279,7 @@
     // parcel anchored flat to every base underneath. Partial coverage of any parcel REFUSES with
     // the offenders named — if only part of a parcel is wanted, a road or a land readjustment
     // cuts it first. Ownership goes to the City agent at apply, the reparcellization pattern.
-    async _formStructureParcel(proposalId, proposalData, sp, geometry, declaredParentIds, idLabel, resolvedParentFeatures = null) {
+    async _formStructureParcel(proposalId, proposalData, sp, geometry, declaredParentIds, idLabel, resolvedParentFeatures = null, options = {}) {
         const formationEdit = (typeof window !== 'undefined') ? window.__formationEdit : null;
         const turfRef = (typeof turf !== 'undefined') ? turf : null;
         if (!formationEdit || !turfRef || typeof turfRef.intersect !== 'function') {
@@ -305,8 +303,10 @@
         const candidateIds = declaredParentIds.slice();
         const candidateFeatures = Array.isArray(resolvedParentFeatures)
             ? resolvedParentFeatures
-            : (this._resolveParcelFeaturesByIds(candidateIds,
-                { preferMap: true, allowStorage: false, fallbackToMap: false, allowMissing: true }) || []);
+            : (this._resolveParcelFeaturesByIds(candidateIds, {
+                allowMissing: true,
+                _fabricTransaction: options._fabricTransaction
+            }) || []);
         const candidates = candidateFeatures
             .map(feature => ({ id: _getParcelIdFromFeature(feature), feature }))
             .filter(entry => entry.id !== undefined && entry.id !== null);
@@ -441,17 +441,19 @@
         // Mutating the cadastral feature in place made the square a visual overlay with the old
         // parcel still underneath and required ownership snapshots on unapply.
         const primary = takenFeatures[0];
+            const structureCadastreIds = formationEdit.baseIdsOfFeatures(takenFeatures);
+            if (!structureCadastreIds.length) {
+                throw new Error('Structure formation has no explicit cadastral anchors.');
+            }
             const childFeature = {
                 type: 'Feature',
                 geometry: JSON.parse(JSON.stringify(geometry)),
                 properties: {
-                    proposalId,
+                    producedByProposalId: proposalId,
                     structureType: sp.kind,
-                    parentParcelIds: takenIds.slice(),
-                    parentParcelId: takenIds[0],
-                    rootParcelId: _resolveRootParcelIdFromProperties(primary ? primary.properties : null, takenIds[0]) || takenIds[0],
-                    rootParcelNumber: _resolveRootParcelNumberFromProperties(primary ? primary.properties : null, takenIds[0]) || null,
-                    baseParcelIds: formationEdit.baseIdsOfFeatures(takenFeatures),
+                    rootParcelId: structureCadastreIds[0],
+                    rootParcelNumber: _resolveRootParcelNumberFromProperties(primary ? primary.properties : null) || null,
+                    cadastreParcelIds: structureCadastreIds,
                     calculatedArea: Math.round(_calculateGeoJsonArea(geometry)),
                     isProposed: true,
                     ownershipDetails: JSON.parse(JSON.stringify(cityOwnership)),
@@ -467,43 +469,53 @@
                 .map(feature => _getParcelIdFromFeature(feature))
                 .filter(id => id !== undefined && id !== null)
                 .map(String);
-            await this._addFeaturesToMap(bodyFeatures, true, proposalData);
+            await this._addFeaturesToMap(bodyFeatures, true, proposalData, options);
             bodyFeatures.forEach(feature => {
                 const bodyId = _getParcelIdFromFeature(feature);
-                try { this._persistParcelFeature(feature); } catch (_) { }
-                try { if (bodyId) this._markParcelProducedByProposal(bodyId, proposalId); } catch (_) { }
+                try { if (bodyId) this._markParcelProducedByProposal(bodyId, proposalId, options); } catch (_) { }
             });
-            this._consumeFeaturesFromLiveFabric(takenFeatures);
+            this._consumeFeaturesFromLiveFabric(takenFeatures, options);
             // §15c rebuild partial cuts: mint each outside piece. Derived parents keep their
             // identity (largest piece carries the parcel's own id; splits continue the OWNER's
             // numbering); base parents' leftovers mint as this structure's remainder children.
             const structureRemainderIds = [];
             if (partialCuts && partialCuts.length) {
-                const feCarry = (typeof window !== 'undefined') ? window.__formationEdit : null;
-                const allocForeign = (typeof _createForeignIndexAllocator === 'function') ? _createForeignIndexAllocator() : null;
+                const allocForeign = (typeof this._createForeignIndexAllocator === 'function')
+                    ? this._createForeignIndexAllocator(options)
+                    : null;
                 const structureRemainders = [];
                 const foreignPieces = [];
                 partialCuts.forEach(({ entry, parts }) => {
                     const parentId = String(entry.id);
                     const parentProps = entry.feature.properties || {};
-                    const idParts = feCarry && typeof feCarry.derivedIdParts === 'function' ? feCarry.derivedIdParts(parentId) : null;
+                    const parentIdentity = formationEdit.formationIdentityOf(entry.feature);
                     parts.forEach((part, partIndex) => {
                         const clone = JSON.parse(JSON.stringify(entry.feature));
                         clone.geometry = part.geometry;
                         clone.properties = clone.properties || {};
                         clone.properties.calculatedArea = Math.round(part.area);
-                        if (idParts && idParts.token && allocForeign) {
+                        if (parentIdentity && allocForeign) {
+                            const syntheticIndex = partIndex === 0
+                                ? parentIdentity.index
+                                : allocForeign(parentIdentity.cadastreParcelIds[0], parentIdentity.token);
                             const carriedId = partIndex === 0
                                 ? parentId
-                                : `${idParts.base}#${idParts.token}-${allocForeign(idParts.base, idParts.token)}`;
+                                : _composeSyntheticParcelId(
+                                    parentIdentity.cadastreParcelIds[0],
+                                    parentIdentity.token,
+                                    syntheticIndex);
                             clone.properties.parcelId = carriedId;
                             clone.properties.id = carriedId;
+                            clone.properties.syntheticToken = parentIdentity.token;
+                            clone.properties.syntheticIndex = syntheticIndex;
                             _ensureParcelIdOnProperties(clone.properties, carriedId);
-                            foreignPieces.push({ feature: clone, proposalId: String(parentProps.proposalId || '') });
+                            foreignPieces.push({
+                                feature: clone,
+                                proposalId: String(parentProps.producedByProposalId || '')
+                            });
                         } else {
                             // Base parent: the leftover is a §14.2 remainder of this structure.
-                            clone.properties.proposalId = proposalId;
-                            clone.properties.parentParcelId = parentId;
+                            clone.properties.producedByProposalId = proposalId;
                             clone.properties.isProposed = true;
                             delete clone.properties.color;
                             structureRemainders.push(clone);
@@ -515,50 +527,40 @@
                     // allocator after body ids; restarting at 1 here let a remainder overwrite the
                     // square body under the same `…#proposal-1` id.
                     const startIndexByRootId = {};
-                    bodyParcelIds.forEach(id => {
-                        const parts = feCarry && typeof feCarry.derivedIdParts === 'function'
-                            ? feCarry.derivedIdParts(id) : null;
-                        if (!parts || !parts.base || !Number.isFinite(parts.index)) return;
-                        startIndexByRootId[parts.base] = Math.max(
-                            Number(startIndexByRootId[parts.base]) || 1,
-                            parts.index + 1
+                    bodyFeatures.forEach(feature => {
+                        const identity = formationEdit.formationIdentityOf(feature);
+                        if (!identity) return;
+                        const base = identity.cadastreParcelIds[0];
+                        startIndexByRootId[base] = Math.max(
+                            Number(startIndexByRootId[base]) || 1,
+                            identity.index + 1
                         );
                     });
                     this._assignSyntheticChildIdentities(proposalId, structureRemainders, { startIndexByRootId });
                 }
                 const minted = [...foreignPieces.map(fp => fp.feature), ...structureRemainders];
                 if (minted.length) {
-                    await this._addFeaturesToMap(minted, true, proposalData);
-                    minted.forEach(feature => { try { this._persistParcelFeature(feature); } catch (_) { } });
+                    await this._addFeaturesToMap(minted, true, proposalData, options);
                 }
                 foreignPieces.forEach(({ feature, proposalId: ownerProposalId }) => {
                     const pid = _getParcelIdFromFeature(feature);
-                    try { if (pid && ownerProposalId) this._markParcelProducedByProposal(pid, ownerProposalId); } catch (_) { }
+                    try { if (pid && ownerProposalId) this._markParcelProducedByProposal(pid, ownerProposalId, options); } catch (_) { }
                 });
                 structureRemainders.forEach(feature => {
                     const pid = _getParcelIdFromFeature(feature);
                     try {
                         if (pid) {
                             structureRemainderIds.push(String(pid));
-                            this._markParcelProducedByProposal(pid, proposalId);
+                            this._markParcelProducedByProposal(pid, proposalId, options);
                         }
                     } catch (_) { }
                 });
             }
-            sp.childParcelIds = Array.from(new Set([...bodyParcelIds, ...structureRemainderIds]));
-            proposalData.childParcelIds = sp.childParcelIds.slice();
-            try { this._addChildParcels(proposalId, sp.childParcelIds, proposalData); } catch (_) { }
-            sp.formation = {
-                mode: plan.mode,
-                parcelIds: formationEdit.baseIdsOfFeatures(takenFeatures),
-                childParcelIds: sp.childParcelIds.slice(),
-                bodyParcelIds,
-                remainderParcelIds: structureRemainderIds.slice()
-            };
+            const structureCadastreCount = formationEdit.baseIdsOfFeatures(takenFeatures).length;
             try {
                 const structureLabel = proposalData.title || proposalData.name || String(proposalId);
                 console.info(`[structureFormation] ${structureLabel}: ${takenIds.length} live parcel piece(s)`
-                    + ` over ${sp.formation.parcelIds.length} cadastral parcel(s)`
+                    + ` over ${structureCadastreCount} cadastral parcel(s)`
                     + ` → ${bodyParcelIds.length} ${sp.kind} parcel(s)`
                     + (structureRemainderIds.length
                         ? ` + ${structureRemainderIds.length} terrain remainder(s)`
@@ -598,11 +600,7 @@
                 });
             } catch (_) { }
         if (cityAgentId && typeof transferParcelOwnership === 'function') {
-            sp.formation.ownerAgentId = cityAgentId;
-            const ownedNow = Array.isArray(sp.formation.bodyParcelIds)
-                ? sp.formation.bodyParcelIds
-                : sp.formation.childParcelIds;
-            ownedNow.forEach(pid => {
+            bodyParcelIds.forEach(pid => {
                 try { transferParcelOwnership(String(pid), null, cityAgentId, { skipAgentSync: true }); } catch (_) { }
             });
             if (typeof buildAgentOwnedParcelIndex === 'function' && typeof agentStorage !== 'undefined') {

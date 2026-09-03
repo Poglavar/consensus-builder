@@ -3,8 +3,8 @@
 //
 // A block is the ground enclosed by roads, decided by proposals/block-enumeration.js from boundary
 // lengths rather than from what happens to be on screen. This file is the thin part: it reads the
-// loaded parcels off the map, projects them to metres, says which are corridors and which are
-// already built on, and prints the result.
+// committed live fabric, projects it to metres, says which pieces are corridors and which are
+// already built on, and prints the result. Leaflet is presentation, never input.
 (function attachBlockBatch(global) {
     'use strict';
 
@@ -151,18 +151,12 @@
         return LEGACY_NAME_RE.test(String(name));
     }
 
-    /** The parcels a proposal's block is made of, wherever the record keeps them. */
+    /** The immutable cadastral scope declared by a block proposal. */
     function blockParcelIdsOf(proposal) {
         const ids = new Set();
-        [
-            proposal && proposal.parentParcelIds,
-            proposal && proposal.parcelIds,
-            proposal && proposal.buildingProposal && proposal.buildingProposal.parentParcelIds,
-            proposal && proposal.structureProposal && proposal.structureProposal.parentParcelIds,
-            proposal && proposal.ancestorParcelIds
-        ].forEach(list => (Array.isArray(list) ? list : []).forEach(id => {
+        (Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds : []).forEach(id => {
             if (id !== null && id !== undefined && String(id)) ids.add(String(id));
-        }));
+        });
         return [...ids];
     }
 
@@ -270,23 +264,11 @@
         return { renamed, failed, skipped: plan.blocked };
     }
 
-    // What already stands on the ground — and why this cannot be answered from parcel ids alone.
-    //
-    // Applying a building proposal REWRITES its parentParcelIds to the CADASTRAL BASE ids
-    // (apply/buildings.js: `flatParentIds = liveParents.cadastreIds`). So a design put on one piece
-    // of parcel 101 comes back recorded against "101" whole, and the piece on the far side of the
-    // road we cut through 101 then reads as built too. Widening a candidate's id to its parent to
-    // compare — `built.has(id.split('#')[0])` — turns that into a refusal: the first block to claim
-    // any piece of a parcel silently disqualifies every other block that parcel reaches into. That
-    // is the whole of the 26 skips in a run of 41, and the same rule at plan time is why blocks were
-    // reported as already built when they are empty.
-    //
-    // A building is a thing in a place, so ask where it is. One representative point per applied
-    // footprint, tested against the parcel that claims to be free. Ids are still consulted, but only
-    // on an exact match, which cannot reach across a cut.
+    // What already stands on the ground. A proposal's cadastral declaration is deliberately broader
+    // than a current road-cut piece, so occupancy is a geometry question: test one representative
+    // point per applied footprint against the live parcel under consideration.
     function occupancy() {
         const turf = global.turf;
-        const ids = new Set();
         const marks = [];
         const all = global.proposalStorage?.getAllProposals?.() || [];
         all.forEach(proposal => {
@@ -294,14 +276,6 @@
             const isBuilding = !!(proposal.buildingProposal || proposal.buildingGeometry
                 || (proposal.geometry && Array.isArray(proposal.geometry.buildings) && proposal.geometry.buildings.length));
             if (!isBuilding) return;
-            [
-                proposal.parentParcelIds,
-                proposal.parcelIds,
-                proposal.buildingProposal && proposal.buildingProposal.parentParcelIds
-            ].forEach(list => (Array.isArray(list) ? list : []).forEach(id => {
-                if (id !== null && id !== undefined && String(id)) ids.add(String(id));
-            }));
-
             if (!turf) return;
             const buildings = (proposal.geometry && Array.isArray(proposal.geometry.buildings) && proposal.geometry.buildings.length)
                 ? proposal.geometry.buildings
@@ -322,13 +296,12 @@
                 } catch (_) { /* a footprint we cannot read proves nothing about any parcel */ }
             });
         });
-        return { ids, marks };
+        return { marks };
     }
 
     // Who stands on this parcel — the empty list is "nobody", which is what makes it buildable.
     function occupiersOf(feature, id, occupied) {
         const names = [];
-        if (occupied.ids.has(String(id))) names.push(`recorded against ${id}`);
         const turf = global.turf;
         if (!turf || !occupied.marks.length || !feature) return names;
         let box = null;
@@ -348,25 +321,23 @@
     }
 
     function collectParcels() {
-        const layerGroup = global.parcelLayer;
+        const fabric = global.LiveParcelFabric;
         const turf = global.turf;
-        if (!layerGroup || typeof layerGroup.eachLayer !== 'function' || !turf) return [];
+        if (!fabric || typeof fabric.list !== 'function' || !turf) return [];
         const occupied = occupancy();
         const entries = [];
-        layerGroup.eachLayer(layer => {
-            const feature = layer && layer.feature;
+        fabric.list().forEach(feature => {
             if (!feature || !feature.geometry) return;
-            const id = (typeof global.getParcelIdFromFeature === 'function')
-                ? global.getParcelIdFromFeature(feature)
+            const id = (typeof fabric.featureId === 'function')
+                ? fabric.featureId(feature)
                 : (feature.properties && feature.properties.parcelId);
             if (id === undefined || id === null || !String(id)) return;
             const rings = metricRingsOf(feature);
             if (!rings.length) return;
             let areaM2 = 0;
             try { areaM2 = turf.area(feature); } catch (_) { areaM2 = 0; }
-            const isCorridor = (typeof global.isCorridorParcel === 'function')
-                ? global.isCorridorParcel(String(id), layer)
-                : false;
+            const props = feature.properties || {};
+            const isCorridor = props.isCorridor === true || props.isRoad === true || props.isTrack === true;
             entries.push({
                 id: String(id),
                 rings,
@@ -375,8 +346,11 @@
                 populated: isPopulated(feature, String(id), occupied),
                 // Kept for the diagnostic below, which has to say what a parcel IS when it explains
                 // why a block came out wrong. enumerateBlocks reads neither.
-                layer,
-                properties: feature.properties || {}
+                feature,
+                cadastreParcelIds: typeof fabric.explicitCadastreIds === 'function'
+                    ? fabric.explicitCadastreIds(feature)
+                    : [],
+                properties: props
             });
         });
         return entries;
@@ -458,9 +432,9 @@
     // The urban rule for one block, built the way the modal builds it: the shared outline generator
     // (blockRingOutline), then the shared massing split. Nothing about the design is re-derived
     // here — a batch block and a hand-made one come out of the same two functions.
-    function designFor(parcelLayers, params) {
+    function designFor(parcelEntries, params) {
         const turf = global.turf;
-        const features = parcelLayers.map(layer => layer.feature).filter(Boolean);
+        const features = parcelEntries.map(entry => entry && (entry.feature || entry)).filter(Boolean);
         if (!features.length || !turf) return null;
 
         let superparcel = global.robustUnion(features);
@@ -485,11 +459,11 @@
             : [outerRing];
         const massing = { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: rings } };
 
-        const forSplit = parcelLayers.map((layer, index) => ({
-            feature: layer.feature,
+        const forSplit = parcelEntries.map((entry, index) => ({
+            feature: entry && (entry.feature || entry),
             parcelId: (typeof global.ensureParcelId === 'function')
-                ? global.ensureParcelId(layer.feature)
-                : (layer.feature?.properties?.parcelId ?? `parcel-${index}`)
+                ? global.ensureParcelId(entry && (entry.feature || entry))
+                : (entry?.feature?.properties?.parcelId ?? entry?.properties?.parcelId ?? `parcel-${index}`)
         })).filter(entry => entry.feature && entry.feature.geometry);
 
         const rule = global.currentBlockRule();
@@ -524,16 +498,15 @@
 
         const createEach = async () => {
         for (const block of targets) {
-            // multiParcelSelection is a top-level `const` too, so it is reached by bare name.
-            const selection = (typeof multiParcelSelection !== 'undefined') ? multiParcelSelection : null;
+            const fabric = global.LiveParcelFabric;
             const found = block.parcelIds
-                .map(id => ({ id, layer: selection && selection.findParcelById ? selection.findParcelById(id) : null }));
-            const layers = found.filter(entry => entry.layer).map(entry => entry.layer);
-            if (layers.length !== block.parcelIds.length) {
+                .map(id => ({ id, feature: fabric && typeof fabric.get === 'function' ? fabric.get(id) : null }));
+            const entries = found.filter(entry => entry.feature);
+            if (entries.length !== block.parcelIds.length) {
                 failed.push({
                     block: block.name,
-                    reason: 'some parcels are no longer on the map',
-                    detail: found.filter(entry => !entry.layer).map(entry => entry.id).join(', ')
+                    reason: 'some parcels are no longer in the committed live fabric',
+                    detail: found.filter(entry => !entry.feature).map(entry => entry.id).join(', ')
                 });
                 continue;
             }
@@ -541,7 +514,7 @@
             // may have claimed ground this one counted on.
             const occupied = occupancy();
             const taken = found
-                .map(entry => ({ id: entry.id, by: occupiersOf(entry.layer.feature, entry.id, occupied) }))
+                .map(entry => ({ id: entry.id, by: occupiersOf(entry.feature, entry.id, occupied) }))
                 .filter(entry => entry.by.length);
             if (taken.length) {
                 failed.push({
@@ -553,7 +526,7 @@
             }
 
             let design = null;
-            try { design = designFor(layers, params); }
+            try { design = designFor(entries, params); }
             catch (error) {
                 failed.push({
                     block: block.name,
@@ -571,14 +544,7 @@
                 continue;
             }
 
-            // The parcel's NUMBER, not its id: this list is shown as "parent parcels", and a piece
-            // hash in that column is the same leak as one in the title.
-            const parentDetails = found.map(entry => ({
-                id: entry.id,
-                number: entry.layer.feature?.properties?.parentParcelNumber
-                    ?? entry.layer.feature?.properties?.BROJ_CESTICE
-                    ?? String(entry.id).split('#')[0]
-            }));
+            const cadastralAnchors = fabric.cadastreIdsForParcelIds(block.parcelIds);
             const proposal = {
                 title: block.name,
                 name: block.name,
@@ -586,18 +552,13 @@
                 primaryType: 'Urban Rule',
                 goal: 'buildings',
                 typologyType: 'block',
-                parentParcelIds: block.parcelIds.slice(),
-                parcelIds: block.parcelIds.slice(),
+                cadastreParcelIds: cadastralAnchors.slice(),
                 tags: ['buildings'],
                 applied: false,
                 termsConfirmed: true,
                 createdAt: new Date().toISOString(),
                 geometry: { buildings: design.buildings },
-                buildingProperties: { ...(design.buildings[0].properties || {}) },
-                properties: { ...(design.buildings[0].properties || {}) },
                 buildingProposal: {
-                    parentParcelIds: block.parcelIds.slice(),
-                    parentParcelNumbers: parentDetails,
                     createdFrom: 'blockify',
                     blockName: block.name,
                     parameters: {
@@ -612,9 +573,7 @@
                         wings: [],
                         rule: design.rule,
                         seed: params.seed
-                    },
-                    buildingFeature: design.buildings[0],
-                    buildings: design.buildings
+                    }
                 }
             };
 
@@ -706,7 +665,7 @@
         const parcels = collectParcels();
         const wanted = String(parcelId);
         const target = parcels.find(entry => entry.id === wanted)
-            || parcels.find(entry => entry.id.split('#')[0] === wanted);
+            || parcels.find(entry => entry.cadastreParcelIds.includes(wanted));
         if (!target) {
             console.warn(`[blockBatch] ${wanted} is not among the ${parcels.length} loaded parcels`);
             return null;
@@ -766,10 +725,10 @@
                 facingNothingM: Math.round(Math.max(0, perimeterM - alongRoadM - sharedWithBlockM)),
                 // Blank unless something already stands here. A NEIGHBOUR's name in this column is
                 // the block being wrongly counted as built — the batch skips those.
-                builtOnBy: occupiersOf(entry.layer && entry.layer.feature, id, occupied).join(', '),
+                builtOnBy: occupiersOf(entry.feature, id, occupied).join(', '),
                 // Should always be false: a member the road set knows about means this parcel is
                 // road ground the block absorbed, which is the bug that merges blocks across a street.
-                roadSetSaysRoad: !!(roadSet && (roadSet(id) || roadSet(id.split('#')[0])))
+                roadSetSaysRoad: !!entry.isCorridor || !!(roadSet && roadSet(id))
                     || props.isRoad === true || props.isCorridor === true
             };
         }).sort((a, b) => b.facingNothingM - a.facingNothingM);

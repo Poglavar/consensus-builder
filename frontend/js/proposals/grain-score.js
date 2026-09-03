@@ -504,55 +504,25 @@
         button.setAttribute('aria-pressed', String(sound.enabled));
     }
 
-    function featureForParcel(parcelId, proposals) {
+    function featureForParcel(parcelId) {
         const id = String(parcelId);
-        try {
-            if (typeof resolveParcelLayerById === 'function') {
-                const layer = resolveParcelLayerById(id);
-                if (layer && typeof layer.toGeoJSON === 'function') {
-                    const feature = layer.toGeoJSON(false);
-                    if (feature && feature.geometry) return feature;
-                }
-            }
-        } catch (_) { /* continue through the other stores */ }
-        try {
-            if (typeof readPersistedParcelRecord === 'function') {
-                const record = readPersistedParcelRecord(id);
-                if (record && record.geometry) {
-                    return { type: 'Feature', properties: record.properties || {}, geometry: record.geometry };
-                }
-            }
-        } catch (_) { }
-        if (typeof getCachedParcelFeature === 'function') {
-            for (const proposal of proposals) {
-                try {
-                    const feature = getCachedParcelFeature(id, proposal);
-                    if (feature && feature.geometry) return feature;
-                } catch (_) { }
-            }
-        }
-        return null;
-    }
-
-    function looksDerivedParcelId(parcelId, produced) {
-        const id = String(parcelId || '');
-        if (produced && produced.has(id)) return true;
-        if (typeof isSyntheticParcelId === 'function') {
-            try { if (isSyntheticParcelId(id)) return true; } catch (_) { }
-        }
-        return id.includes('#') || /^HR-\d+-.+?_[a-z0-9]+_\d+$/i.test(id);
+        return global.LiveParcelFabric?.get?.(id)
+            || global.CadastralParcelRepository?.get?.(id)
+            || null;
     }
 
     async function resolvePlanItems(proposals, fabric) {
         const resultingIds = (fabric.resulting || []).map(String);
-        let rows = resultingIds.map(id => ({ id, feature: featureForParcel(id, proposals) }));
+        let rows = resultingIds.map(id => ({ id, feature: featureForParcel(id) }));
         const produced = new Set((fabric.produced || []).map(String));
-        const cadastralIds = resultingIds.filter(id => !looksDerivedParcelId(id, produced));
-        if (cadastralIds.length && global.CadastralGroundService
-            && typeof global.CadastralGroundService.ensureIds === 'function') {
-            try { await global.CadastralGroundService.ensureIds(cadastralIds); }
+        // The yield model explicitly reports which ids were produced by proposals. Everything
+        // else is cadastral input; id spelling is not a provenance signal.
+        const cadastralIds = resultingIds.filter(id => !produced.has(id));
+        if (cadastralIds.length && global.CadastralParcelRepository
+            && typeof global.CadastralParcelRepository.ensureIds === 'function') {
+            try { await global.CadastralParcelRepository.ensureIds(cadastralIds); }
             catch (error) { console.warn('[grain-score] could not load cadastral ground', error); }
-            rows = resultingIds.map(id => ({ id, feature: featureForParcel(id, proposals) }));
+            rows = resultingIds.map(id => ({ id, feature: featureForParcel(id) }));
         }
         return rows.map(row => {
             const dimensions = row.feature ? rules.parcelDimensionsMeters(row.feature) : null;
@@ -566,7 +536,16 @@
             renderError(t('sidebar.proposals.grainScore.noApplied', 'Apply at least one proposal before summoning the rooster.'));
             return null;
         }
-        const fabric = yieldApi.resultingParcels(proposals, { appliedOnly: true });
+        const cadastreIds = Array.from(new Set(proposals.flatMap(proposal => (
+            Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds.map(String) : []
+        ))));
+        const materializedFeatures = global.LiveParcelFabric?.entriesForCadastre
+            ? global.LiveParcelFabric.entriesForCadastre(cadastreIds, { includeCorridors: false })
+            : [];
+        const fabric = yieldApi.resultingParcels(proposals, {
+            appliedOnly: true,
+            materializedFeatures
+        });
         const rows = await resolvePlanItems(proposals, fabric);
         const items = rows.filter(row => row.feature && Number.isFinite(row.widthMeters) && Number.isFinite(row.depthMeters));
         if (!items.length) {

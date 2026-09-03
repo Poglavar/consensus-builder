@@ -855,22 +855,14 @@ function showSharePlanPanel(options) {
         }
 
         const proposalFeaturesFor = (proposal) => {
-            // Live CHILDREN first — the applied footprint (a road's corridor pieces, a structure's
-            // ground, a building's parcel). The shared collectProposalHighlightFeatures helper only
-            // resolves road children and otherwise falls back to parentParcelIds, but parents are
-            // hidden once a proposal is applied, so structures/buildings would paint nothing.
+            // Materialized output is owned by LiveParcelFabric, never copied into the proposal.
             const ids = new Set();
             const push = (arr) => {
                 if (!Array.isArray(arr)) return;
                 arr.forEach(id => { if (id != null && String(id)) ids.add(String(id)); });
             };
-            if (proposal) {
-                push(proposal.childParcelIds);
-                push(proposal.roadProposal && proposal.roadProposal.childParcelIds);
-                push(proposal.buildingProposal && proposal.buildingProposal.childParcelIds);
-                push(proposal.structureProposal && proposal.structureProposal.childParcelIds);
-                push(proposal.reparcellization && proposal.reparcellization.childParcelIds);
-                push(proposal.decideLaterProposal && proposal.decideLaterProposal.childParcelIds);
+            if (proposal && window.__claims?.materializedParcelIdsOf) {
+                push(window.__claims.materializedParcelIdsOf(proposal));
             }
             const features = [];
             ids.forEach(id => {
@@ -1828,7 +1820,7 @@ function showShareLinkModal(shareUrl, payload, options = {}) {
             const totalProposals = proposalCount;
             const roadCount = proposals.filter(p => p.roadProposal).length;
             const buildingCount = proposals.filter(p => p.buildingProposal).length;
-            const parcelCount = proposals.reduce((sum, p) => sum + (Array.isArray(p.parentParcelIds) ? p.parentParcelIds.length : 0), 0);
+            const parcelCount = proposals.reduce((sum, p) => sum + (Array.isArray(p.cadastreParcelIds) ? p.cadastreParcelIds.length : 0), 0);
             const estimatedBytes = encodedLength !== null
                 ? encodedLength
                 : (typeof TextEncoder !== 'undefined' ? new TextEncoder().encode(JSON.stringify(payload)).length : JSON.stringify(payload).length);
@@ -2112,9 +2104,9 @@ function showSharedPayloadInspector(payload) {
 
                 const meta = document.createElement('div');
                 meta.className = 'spi-proposal-meta';
-                const parentIdsDisplay = Array.isArray(p.parentParcelIds) ? p.parentParcelIds.join(', ') : '';
-                const roadParents = (p.roadProposal && Array.isArray(p.roadProposal.parentParcelIds)) ? p.roadProposal.parentParcelIds.join(', ') : '';
-                const buildingParents = (p.buildingProposal && Array.isArray(p.buildingProposal.parentParcelIds)) ? p.buildingProposal.parentParcelIds.join(', ') : '';
+                const parentIdsDisplay = Array.isArray(p.cadastreParcelIds) ? p.cadastreParcelIds.join(', ') : '';
+                const roadParents = '';
+                const buildingParents = '';
                 meta.innerHTML = `
                     <small>
                         ${tShared('ancestorIds', 'Parent Parcel IDs:')} ${escapeHtml(parentIdsDisplay)}<br>
@@ -2180,14 +2172,14 @@ function showSharedPayloadInspector(payload) {
                 }
             } catch (_) { }
 
-            // Prepare the exact ground declared by the proposals. CadastralGroundService decides
+            // Prepare the exact ground declared by the proposals. CadastralParcelRepository decides
             // whether that means a cache hit, joining an in-flight request, or server transport.
             (async () => {
                 try {
                     try { window.suppressCameraMoves = true; } catch (_) { }
-                    const ground = (typeof CadastralGroundService !== 'undefined' && CadastralGroundService)
-                        ? CadastralGroundService
-                        : ((typeof window !== 'undefined') ? window.CadastralGroundService : null);
+                    const ground = (typeof CadastralParcelRepository !== 'undefined' && CadastralParcelRepository)
+                        ? CadastralParcelRepository
+                        : ((typeof window !== 'undefined') ? window.CadastralParcelRepository : null);
                     if (!ground || typeof ground.ensureProposalGround !== 'function') {
                         throw new Error('Cadastral ground service is unavailable.');
                     }

@@ -175,8 +175,8 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
     // recipient (City / third-party) shown alongside the owners, with its own Accept.
     let recipientRowHtml = '';
     const consentRow = proposalRecipientConsentRow(proposal);
-    const firstParcel = Array.isArray(proposal.parentParcelIds) && proposal.parentParcelIds.length
-        ? String(proposal.parentParcelIds[0]) : null;
+    const firstParcel = Array.isArray(proposal.cadastreParcelIds) && proposal.cadastreParcelIds.length
+        ? String(proposal.cadastreParcelIds[0]) : null;
     if (consentRow && (!firstParcel || firstParcel === parcelKey)) {
         const tUI = getProposalI18nHelper();
         const recipLabel = typeof escapeHtml === 'function' ? escapeHtml(consentRow.label) : consentRow.label;
@@ -199,7 +199,7 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
 
 function buildParcelAcceptanceStatusHtml(proposal) {
     const tProposalUI = getProposalI18nHelper();
-    const parcelIds = Array.isArray(proposal?.parentParcelIds) ? proposal.parentParcelIds : [];
+    const parcelIds = Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
     const total = parcelIds.length;
     if (!total) {
         return '';
@@ -265,14 +265,14 @@ function buildProposalOwnerAcceptanceSummaryFast(proposal) {
         totalOwners: 0,
         acceptedOwners: 0
     };
-    if (!proposal || !Array.isArray(proposal.parentParcelIds)) {
+    if (!proposal || !Array.isArray(proposal.cadastreParcelIds)) {
         return summary;
     }
 
     const acceptances = proposal.ownerAcceptances || {};
     let includeEntries = true;
 
-    proposal.parentParcelIds.forEach(parcelId => {
+    proposal.cadastreParcelIds.forEach(parcelId => {
         const normalizedParcelId = parcelId !== undefined && parcelId !== null
             ? parcelId.toString()
             : '';
@@ -378,12 +378,12 @@ function buildProposalOwnerAcceptanceSummary(proposal) {
         totalOwners: 0,
         acceptedOwners: 0
     };
-    if (!proposal || !Array.isArray(proposal.parentParcelIds) || typeof getProposalOwnerAcceptanceState !== 'function') {
+    if (!proposal || !Array.isArray(proposal.cadastreParcelIds) || typeof getProposalOwnerAcceptanceState !== 'function') {
         return summary;
     }
 
     const entries = [];
-    proposal.parentParcelIds.forEach(parcelId => {
+    proposal.cadastreParcelIds.forEach(parcelId => {
         const normalizedParcelId = parcelId !== undefined && parcelId !== null
             ? parcelId.toString()
             : '';
@@ -428,7 +428,7 @@ function applyProposalOwnershipTransfer(proposal) {
     if (!toAgentId) return; // no-change / open sale / unknown
     const goalKey = (proposal.goal || '').toString().toLowerCase();
     if (goalKey === 'decide-later' || goalKey === 'reparcellization') return; // owners set in appliers
-    const ids = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
+    const ids = Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
     ids.forEach(pid => {
         const key = `parcel_${pid}_owner`;
         const from = (typeof PersistentStorage !== 'undefined') ? PersistentStorage.getItem(key) : null;
@@ -476,7 +476,7 @@ function claimSaleOffer(proposalId, buyerAgentId) {
     proposal.lifecycleStatus = 'Executed';
     proposal.executedAt = new Date().toISOString();
 
-    const ids = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
+    const ids = Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
     ids.forEach(pid => {
         const from = (typeof PersistentStorage !== 'undefined') ? PersistentStorage.getItem(`parcel_${pid}_owner`) : null;
         if (typeof transferParcelOwnership === 'function') transferParcelOwnership(pid, from, buyer);
@@ -679,7 +679,7 @@ async function applyProposalToMap(proposalIdOrHash, options = {}) {
     if (revealDetails && typeof proposalStorage !== 'undefined') {
         const proposalForRefresh = proposalStorage.getProposal(safeId);
         if (proposalForRefresh) {
-            const parcelIds = Array.isArray(proposalForRefresh.parentParcelIds) ? proposalForRefresh.parentParcelIds : [];
+            const parcelIds = Array.isArray(proposalForRefresh.cadastreParcelIds) ? proposalForRefresh.cadastreParcelIds : [];
             const fallbackParcelId = options.parcelId || (parcelIds.length > 0 ? parcelIds[0] : null);
             const proposalKey = typeof getProposalKey === 'function' ? getProposalKey(proposalForRefresh) : null;
             const alreadyHighlighted = proposalKey && window.currentlyHighlightedProposalId === proposalKey;
@@ -1195,7 +1195,7 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
             return null;
         }
 
-        const parcelIds = (proposal.parentParcelIds || []).map(id => normalizeParcelId(id));
+        const parcelIds = (proposal.cadastreParcelIds || []).map(id => normalizeParcelId(id));
         if (!parcelIds.includes(normalizedParcelId)) {
             notifyAcceptIssue('this_parcel_is_not_part_of_the_proposal', 'This parcel is not part of the proposal.');
             return null;
@@ -1263,8 +1263,10 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
         }
         proposalStorage.save();
 
-        const parcelLayer = multiParcelSelection.findParcelById(normalizedParcelId);
-        const parcelNumber = parcelLayer?.feature?.properties?.BROJ_CESTICE || normalizedParcelId;
+        const parcelFeature = window.LiveParcelFabric?.get?.(normalizedParcelId)
+            || window.CadastralParcelRepository?.get?.(normalizedParcelId)
+            || null;
+        const parcelNumber = parcelFeature?.properties?.BROJ_CESTICE || normalizedParcelId;
 
         let proposalExecuted = false;
         // Proposals marked as not funded (e.g., ownership-transfer-from-me) cannot be executed.
@@ -1291,7 +1293,7 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
             const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
             const executedMessage = (() => {
                 const fullId = proposal.proposalId;
-                const parcelCount = proposal.parentParcelIds.length;
+                const parcelCount = proposal.cadastreParcelIds.length;
                 const fallback = `Proposal ${fullId} executed! All ${parcelCount} parcels accepted`;
                 if (t) {
                     return t(

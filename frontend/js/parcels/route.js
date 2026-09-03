@@ -61,13 +61,14 @@
     // Which Croatian city owns this parcel? The id carries its cadastral municipality
     // (HR-<maticni_broj_ko>-<broj_cestice>) but no city, and a hardcoded KO→city table would be ~90
     // numbers that go stale the moment a KO is added or a city's extent changes. So ask the data:
-    // the /parcels route serves the WHOLE country regardless of which city the app is currently in,
-    // so one lookup gives real coordinates, and the nearest city among those reading the Croatian
-    // cadastre is the answer. A fourth Croatian city then needs no change here at all.
+    // the cadastral repository serves the WHOLE country regardless of which city the app is
+    // currently in, so one service lookup gives real coordinates, and the nearest city among those
+    // reading the Croatian cadastre is the answer. A fourth Croatian city then needs no change here.
     async function resolveCroatianCityId(parcelId) {
         const manager = global.CityConfigManager;
-        const backendBase = typeof global.getBackendBase === 'function' ? global.getBackendBase() : null;
-        if (!manager || typeof manager.findNearestCity !== 'function' || !backendBase) {
+        const ground = global.CadastralParcelRepository;
+        if (!manager || typeof manager.findNearestCity !== 'function'
+            || !ground || typeof ground.ensureIds !== 'function') {
             return CROATIAN_FALLBACK_CITY;
         }
 
@@ -79,17 +80,14 @@
             return candidates[0]?.id || CROATIAN_FALLBACK_CITY;
         }
 
-        const controller = typeof AbortController === 'function' ? new AbortController() : null;
-        const deadline = controller ? setTimeout(() => controller.abort(), cityLookupTimeoutMs()) : null;
+        let timeoutHandle = null;
         try {
-            const url = `${backendBase.replace(/\/+$/, '')}/parcels?parcel_id=${encodeURIComponent(parcelId)}`;
-            const response = await fetch(url, {
-                headers: { Accept: 'application/json' },
-                ...(controller ? { signal: controller.signal } : {})
+            const timeout = new Promise((_, reject) => {
+                timeoutHandle = setTimeout(() => reject(new Error('cadastral ground lookup timed out')), cityLookupTimeoutMs());
             });
-            if (!response.ok) throw new Error(`parcels lookup ${response.status}`);
-            const data = await response.json();
-            const latLng = firstLatLngOfFeature((data && data.features || [])[0]);
+            const result = await Promise.race([ground.ensureIds([parcelId]), timeout]);
+            const feature = result && Array.isArray(result.features) ? result.features[0] : null;
+            const latLng = firstLatLngOfFeature(feature);
             if (!latLng) throw new Error('parcel has no usable geometry');
 
             const candidateIds = new Set(candidates.map(c => c.id));
@@ -102,7 +100,7 @@
                 '- falling back to', CROATIAN_FALLBACK_CITY, error && error.message);
             return CROATIAN_FALLBACK_CITY;
         } finally {
-            if (deadline) clearTimeout(deadline);
+            if (timeoutHandle) clearTimeout(timeoutHandle);
         }
     }
 
@@ -165,8 +163,13 @@
         // parcel machinery, then fetch the parcel by id and select/centre it —
         // same path the sidebar "locate parcel" feature uses.
         const selectParcel = (global.Parcels && global.Parcels.selection && global.Parcels.selection.selectParcel) || global.selectParcel;
-        const ground = global.CadastralGroundService || (global.Parcels && global.Parcels.ground);
-        if (!global.parcelLayer || !ground || typeof ground.ensureIds !== 'function' || typeof selectParcel !== 'function') {
+        const ground = global.CadastralParcelRepository;
+        const fabric = global.LiveParcelFabric;
+        const presenter = global.ParcelPresenter;
+        if (!ground || typeof ground.ensureIds !== 'function'
+            || !fabric || typeof fabric.get !== 'function'
+            || !presenter || typeof presenter.resolveLiveLayers !== 'function'
+            || typeof selectParcel !== 'function') {
             if (attempt < 40) setTimeout(() => handleParcelRouteFromUrl(attempt + 1), 250);
             return;
         }
@@ -174,9 +177,9 @@
         try {
             console.log('[handleParcelRouteFromUrl] opening parcel', parcelId);
             await ground.ensureIds([parcelId]);
-            const layer = typeof global.resolveParcelLayerById === 'function'
-                ? global.resolveParcelLayerById(parcelId)
-                : null;
+            const layer = presenter.getLayer(parcelId)
+                || presenter.resolveLiveLayers([parcelId], { includeCorridors: true })[0]
+                || null;
             const resolvedId = (layer && layer.feature && typeof global.getParcelId === 'function')
                 ? (global.getParcelId(layer.feature) || parcelId)
                 : parcelId;

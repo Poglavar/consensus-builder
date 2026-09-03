@@ -107,20 +107,15 @@ function proposalContentHash(str) {
 // children). Used as the dedup id when publishing: each edited local snapshot has its own local
 // record, while byte-identical snapshots may share the same immutable server artifact.
 //
-// TWO VERSIONS, deliberately (rethink-proposals.md — the wire-format demotion):
-//
-//   v2 `c2-…` — the UPLOAD identity. Excludes parentParcelIds everywhere (top level AND inside the
-//   typology payloads): geometry is authoritative and the cadastral lists are resolution hints.
-//
-//   Consent `c-…` — includes the flat cadastral target lists. A content-only offer retargeted to
-//   other ground must lapse even when its other terms are unchanged.
-function proposalContentPayload(proposal, includeParentIds) {
+// Upload identity keeps the established c2 geometry/content hash. Consent additionally binds to
+// the proposal's one cadastral declaration. Runtime parcel pieces participate in neither.
+function proposalContentPayload(proposal, includeCadastre = false) {
     const cleanPayload = (payload) => {
         if (!payload || typeof payload !== 'object') return null;
         const copy = { ...payload };
         ['applied', 'appliedAt', 'childParcelIds', 'childFeatures', 'parentFeatures', 'hash']
             .forEach(key => { delete copy[key]; });
-        if (!includeParentIds) delete copy.parentParcelIds;
+        delete copy.parentParcelIds;
         return copy;
     };
     const goal = (typeof resolveProposalGoalKey === 'function')
@@ -137,8 +132,9 @@ function proposalContentPayload(proposal, includeParentIds) {
         reparcellization: cleanPayload(proposal.reparcellization),
         decideLaterProposal: cleanPayload(proposal.decideLaterProposal)
     };
-    if (includeParentIds) {
-        content.parentParcelIds = (Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : []).map(String).slice().sort();
+    if (includeCadastre) {
+        content.cadastreParcelIds = (Array.isArray(proposal.cadastreParcelIds)
+            ? proposal.cadastreParcelIds : []).map(String).slice().sort();
     }
     return content;
 }

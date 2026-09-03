@@ -35,28 +35,6 @@
     // severance test — correctly — read as cutting the road in two. Register the take instead.
     const MIN_INTERSECTION_M2 = 0.25;
 
-    // HR-339270-823/1#p-road-2#p-other-1  ->  HR-339270-823/1
-    // Derived ids can nest, so strip repeatedly until the id stops changing.
-    function cadastreRootId(parcelId) {
-        const id = (parcelId === undefined || parcelId === null) ? '' : String(parcelId).trim();
-        const modernBase = id.split('#')[0];
-        const legacy = modernBase.match(/^(HR-\d+-.+?)_[a-z0-9]+_\d+$/i);
-        return legacy ? legacy[1] : modernBase;
-    }
-
-    // The cadastral parcels implied by a declared parent list, in order, deduped. This is the floor:
-    // it can only recover parcels a proposal already named, so it misses land the geometry covers but
-    // the author never declared (measured: one proposal declared 1 parent while covering 5 parcels).
-    // Geometry is the better source; this backs it up when parcels are not loaded.
-    function cadastreIdsFromDeclared(parentParcelIds) {
-        const out = [];
-        (Array.isArray(parentParcelIds) ? parentParcelIds : []).forEach(id => {
-            const root = cadastreRootId(id);
-            if (root && out.indexOf(root) === -1) out.push(root);
-        });
-        return out;
-    }
-
     // A road's footprint is derived by the same corridor builder used for cutting. Keeping a Turf
     // buffer here produced a second, round-capped acquisition model whose ancestry disagreed with
     // the square-ended parcel cut.
@@ -223,8 +201,6 @@
     const api = {
         MIN_INTERSECTION_M2,
         intersectionArea,
-        cadastreRootId,
-        cadastreIdsFromDeclared,
         footprintOf,
         computeCadastreParcelIds,
         computeBaseAncestry,

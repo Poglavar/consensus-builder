@@ -170,8 +170,8 @@ function previewProposalOnMap(proposalIdOrHash, { center = true, blink = true } 
     const featuresForBounds = primaryFeatures.length > 0 ? primaryFeatures : parcelFeatures;
     let bounds = computeBoundsFromFeatures(featuresForBounds);
 
-    if (!bounds && Array.isArray(proposal.parentParcelIds) && proposal.parentParcelIds.length > 0) {
-        const calculated = calculateProposalBounds(proposal.parentParcelIds, { proposal });
+    if (!bounds && Array.isArray(proposal.cadastreParcelIds) && proposal.cadastreParcelIds.length > 0) {
+        const calculated = calculateProposalBounds(proposal.cadastreParcelIds, { proposal });
         if (calculated && calculated.north !== undefined && calculated.west !== undefined) {
             try {
                 bounds = L.latLngBounds(
@@ -1617,16 +1617,17 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
         return;
     }
 
-    if (validKind === 'lake') {
-        const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selectedParcels) : { contiguous: true };
-        if (!contiguity.contiguous) {
-            if (typeof showProposalAlertMessage === 'function') {
-                showProposalAlertMessage('parcels_not_contiguous', parcelsNotContiguous);
-            } else {
-                updateStatus(parcelsNotContiguous);
-            }
-            return;
+    const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selectedParcels) : { contiguous: true };
+    const oneArea = (typeof window === 'undefined' || !window.__parcelContiguity?.isContiguous)
+        ? geometry?.type === 'Polygon' || (geometry?.type === 'MultiPolygon' && geometry.coordinates?.length === 1)
+        : window.__parcelContiguity.isContiguous(geometry);
+    if (!contiguity.contiguous || !oneArea) {
+        if (typeof showProposalAlertMessage === 'function') {
+            showProposalAlertMessage('parcels_not_contiguous', parcelsNotContiguous);
+        } else {
+            updateStatus(parcelsNotContiguous);
         }
+        return;
     }
 
     const totalArea = selectedParcels.reduce((sum, layer) => sum + (layer?.feature?.properties?.calculatedArea || 0), 0);

@@ -364,9 +364,7 @@ async function executeGameTurn() {
             : null;
         const activeProposals = (currentCityId && typeof isInCity === 'function')
             ? allActiveProposals.filter(p => {
-                const ids = Array.isArray(p.parentParcelIds) && p.parentParcelIds.length
-                    ? p.parentParcelIds
-                    : (Array.isArray(p.childParcelIds) ? p.childParcelIds : []);
+                const ids = Array.isArray(p.cadastreParcelIds) ? p.cadastreParcelIds : [];
                 if (!ids.length) return true;
                 return ids.some(id => isInCity(id, currentCityId));
             })
@@ -958,9 +956,9 @@ function showProposalFromLog(proposalId) {
         closeAgentDialog();
     }
 
-    const focusParcelId = Array.isArray(proposal.parentParcelIds) && proposal.parentParcelIds.length > 0
-        ? proposal.parentParcelIds[0]
-        : (Array.isArray(proposal.childParcelIds) && proposal.childParcelIds.length > 0 ? proposal.childParcelIds[0] : null);
+    const focusParcelId = Array.isArray(proposal.cadastreParcelIds) && proposal.cadastreParcelIds.length > 0
+        ? proposal.cadastreParcelIds[0]
+        : null;
     const proposalKey = proposal
         ? (proposal.proposalId !== undefined && proposal.proposalId !== null
             ? proposal.proposalId
@@ -1219,4 +1217,4 @@ function resetGameState(autoReinit = false) {
             'Game state has been reset. All agents and progress deleted.';
         updateStatus(statusMessage);
     }
-} 
+}

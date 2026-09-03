@@ -263,7 +263,12 @@ async function createStructureProposalFromDialog(kind, parcelIds, geometry, bloc
         structureGeometry = lakeGraphics.geometry || geometry;
     }
 
-    const parentParcelIds = normalizeParcelIdList(parcelIds || []);
+    const selectedParcelIds = normalizeParcelIdList(parcelIds || []);
+    const fabric = typeof window !== 'undefined' ? window.LiveParcelFabric : null;
+    if (!fabric || typeof fabric.cadastreIdsForParcelIds !== 'function') {
+        throw new Error('Live parcel fabric is required to author proposal ground.');
+    }
+    const cadastreParcelIds = fabric.cadastreIdsForParcelIds(selectedParcelIds);
 
     const proposal = {
         author,
@@ -275,13 +280,12 @@ async function createStructureProposalFromDialog(kind, parcelIds, geometry, bloc
         offerCurrency,
         budget: offer,
         budgetCurrency: offerCurrency,
-        parentParcelIds,
+        cadastreParcelIds,
         city: getProposalCityId(),
         type: 'structure',
         structureProposal: {
             kind: (kind === 'park' || kind === 'square' || kind === 'lake') ? kind : 'square',
             geometry: structureGeometry,
-            parentParcelIds,
             blockName: blockName || null,
             lakeGraphics: lakeGraphics || null
         },
@@ -306,7 +310,7 @@ async function createStructureProposalFromDialog(kind, parcelIds, geometry, bloc
         showProposalAlertMessage('an_identical_proposal_already_exists', 'An identical proposal already exists.');
         return;
     }
-    const primaryParcelId = parentParcelIds.length ? parentParcelIds[0] : null;
+    const primaryParcelId = selectedParcelIds.length ? selectedParcelIds[0] : null;
     // Close and update UI
     closeProposalDialog();
     try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
@@ -427,6 +431,16 @@ async function createProposal() {
             return;
         }
 
+        // The selection is a set of current live pieces. It is transient authoring input only;
+        // every durable or external relationship (proposal storage, ownership and chain minting)
+        // uses the immutable cadastral projection.
+        const selectedLiveParcelIds = finalParcelIds.map(id => id && id.toString ? id.toString() : String(id));
+        const liveFabric = window.LiveParcelFabric;
+        if (!liveFabric || typeof liveFabric.cadastreIdsForParcelIds !== 'function') {
+            throw new Error('Live parcel fabric is required to author proposal ground.');
+        }
+        const authoredCadastreParcelIds = liveFabric.cadastreIdsForParcelIds(selectedLiveParcelIds);
+
         // Check if parcels have NFTs on-chain before proceeding
         console.debug('[createProposal] Checking blockchain support and wallet connection');
         const blockchainSupported = typeof window.ProposalChainBridge !== 'undefined'
@@ -454,22 +468,16 @@ async function createProposal() {
         console.debug('[createProposal] Blockchain supported:', blockchainSupported, 'Solana supported:', solanaBlockchainSupported, 'Wallet connected:', isWalletConnected, 'Canton:', cantonActive);
         let shouldMintOnchain = ((((blockchainSupported || solanaBlockchainSupported) && isWalletConnected) || cantonActive) && finalParcelIds.length > 0);
 
-        // Use the parent parcel IDs directly - these are what the proposal references
-        const parcelIds = finalParcelIds.map(id => (id && id.toString ? id.toString() : String(id))).filter(Boolean);
+        // Parcel NFTs represent original cadastral land, never a browser's materialized pieces.
+        const parcelIds = authoredCadastreParcelIds.slice();
 
         // Build a feature map for parcels (used when minting prerequisites to get parcel names)
         const parcelFeatureById = new Map();
         for (const parcelId of parcelIds) {
-            let parcelLayer = null;
-            if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.findParcelById) {
-                parcelLayer = multiParcelSelection.findParcelById(parcelId);
-            }
-            if (!parcelLayer && typeof resolveParcelLayerById === 'function') {
-                parcelLayer = resolveParcelLayerById(parcelId);
-            }
-            if (parcelLayer && parcelLayer.feature) {
-                parcelFeatureById.set(parcelId, parcelLayer.feature);
-            }
+            const feature = window.CadastralParcelRepository?.get?.(parcelId)
+                || liveFabric?.entriesForCadastre?.([parcelId], { includeCorridors: false })?.[0]
+                || null;
+            if (feature) parcelFeatureById.set(parcelId, feature);
         }
 
         if (shouldMintOnchain && !cantonActive) {
@@ -606,14 +614,12 @@ async function createProposal() {
         const conditionalCheckbox = document.getElementById('proposalConditionalCheckbox');
         const isConditional = conditionalCheckbox ? conditionalCheckbox.checked : false;
 
-        const normalizedParentParcelIds = finalParcelIds.map(id => id && id.toString ? id.toString() : String(id));
-
         if (publishingDraftId && window.proposalDraftStore?.getDraft?.(publishingDraftId)) {
             window.proposalDraftStore.updateDraft(publishingDraftId, {
                 fields: {
                     name: proposalName || proposalType,
                     description,
-                    parentParcelIds: normalizedParentParcelIds,
+                    parentParcelIds: selectedLiveParcelIds,
                     offer,
                     offerCurrency,
                     acquisitionMode,
@@ -641,7 +647,7 @@ async function createProposal() {
             budgetCurrency: offerCurrency,
             acquisitionMode: acquisitionMode,
             boundaryAdjustment: boundaryMode,
-            parentParcelIds: normalizedParentParcelIds,
+            cadastreParcelIds: authoredCadastreParcelIds,
             primaryType: proposalMainType,
             goal: selectedTool,
             acceptedParcelIds: [], // Track which parcels have accepted the proposal
@@ -692,11 +698,10 @@ async function createProposal() {
         // "Ownership transfer from me" proposals are automatically accepted but not funded
         // This means all parcels are marked as accepted, but the proposal cannot be executed
         if (selectedTool === 'ownership-transfer-from-me') {
-            proposal.acceptedParcelIds = normalizedParentParcelIds.slice();
+            proposal.acceptedParcelIds = authoredCadastreParcelIds.slice();
             proposal.funded = false; // Explicitly mark as not funded - prevents execution
             proposal.ownershipTransferProposal = {
                 direction: 'from-me',
-                parentParcelIds: normalizedParentParcelIds.slice(),
                 status: 'accepted-not-funded'
             };
         }
@@ -705,7 +710,6 @@ async function createProposal() {
         if (selectedTool === 'ownership-transfer-to-me') {
             proposal.ownershipTransferProposal = {
                 direction: 'to-me',
-                parentParcelIds: normalizedParentParcelIds.slice(),
                 status: 'pending'
             };
         }
@@ -724,7 +728,6 @@ async function createProposal() {
             if (recip === 'to-me' || recip === 'to-city' || recip === 'third-party') {
                 proposal.ownershipTransferProposal = proposal.ownershipTransferProposal || {
                     direction: 'to-me',
-                    parentParcelIds: normalizedParentParcelIds.slice(),
                     status: 'pending'
                 };
                 proposal.ownershipTransferProposal.recipient = recip;
@@ -744,17 +747,11 @@ async function createProposal() {
             let structureGeometry = null;
             try {
                 if (typeof buildGeometryFromParcels === 'function') {
-                    const layers = finalParcelIds.map(id => {
-                        if (multiParcelSelection && typeof multiParcelSelection.findParcelById === 'function') {
-                            const layer = multiParcelSelection.findParcelById(id);
-                            if (layer && layer.feature) return layer;
-                        }
-                        if (typeof resolveParcelLayerById === 'function') {
-                            const layer = resolveParcelLayerById(id);
-                            if (layer && layer.feature) return layer;
-                        }
-                        return null;
-                    }).filter(Boolean);
+                    const fabric = window.LiveParcelFabric;
+                    const layers = finalParcelIds
+                        .map(id => fabric?.get?.(id) || null)
+                        .filter(Boolean)
+                        .map(feature => ({ feature }));
                     if (layers.length) {
                         structureGeometry = buildGeometryFromParcels(layers);
                     }
@@ -764,8 +761,7 @@ async function createProposal() {
             proposal.structureProposal = {
                 kind,
                 geometry: structureGeometry || null,
-                parentParcelIds: normalizedParentParcelIds,
-                blockName: formatParcelSelectionLabel(normalizedParentParcelIds)
+                blockName: formatParcelSelectionLabel(selectedLiveParcelIds)
             };
         }
 
@@ -782,9 +778,10 @@ async function createProposal() {
 
             if (roadDrawingContext) {
                 const isTrackContext = roadDrawingContext?.metadata?.isTrack === true;
-                const parentIds = (Array.isArray(roadDrawingContext.parentParcelIds) ? roadDrawingContext.parentParcelIds : normalizedParentParcelIds)
+                const selectedRoadParcelIds = (Array.isArray(roadDrawingContext.parentParcelIds) ? roadDrawingContext.parentParcelIds : selectedLiveParcelIds)
                     .map(id => id && id.toString ? id.toString() : String(id))
                     .filter(Boolean);
+                const roadCadastreParcelIds = liveFabric.cadastreIdsForParcelIds(selectedRoadParcelIds);
 
                 const centerlinePoints = Array.isArray(roadDrawingContext.centerline)
                     ? roadDrawingContext.centerline
@@ -846,12 +843,10 @@ async function createProposal() {
                 proposal.primaryType = isTrackContext ? 'Track' : 'Road';
                 proposal.goal = 'road-track';
                 proposal.isCorridor = true;
-                proposal.parentParcelIds = parentIds;
+                proposal.cadastreParcelIds = roadCadastreParcelIds;
 
                 proposal.roadProposal = {
                     definition: safeClone(roadDefinition),
-                    parentParcelIds: parentIds.slice(),
-                    childParcelIds: [],
                     mode: resolvedMetadata.mode,
                     isCorridor: true,
                     ownershipAndAcquisitionStats: roadDrawingContext.stats ? safeClone(roadDrawingContext.stats) : null
@@ -863,9 +858,10 @@ async function createProposal() {
                     return;
                 }
 
-                const corridorParents = (Array.isArray(corridor.parentParcelIds) ? corridor.parentParcelIds : normalizedParentParcelIds)
+                const selectedCorridorParcelIds = (Array.isArray(corridor.parentParcelIds) ? corridor.parentParcelIds : selectedLiveParcelIds)
                     .map(id => id && id.toString ? id.toString() : String(id))
                     .filter(Boolean);
+                const corridorCadastreParcelIds = liveFabric.cadastreIdsForParcelIds(selectedCorridorParcelIds);
                 const polygonGeometry = corridor.polygon || corridor.superGeometry || null;
                 const centerlinePoints = Array.isArray(corridor.centerline)
                     ? corridor.centerline.map(pair => {
@@ -895,12 +891,10 @@ async function createProposal() {
                 proposal.primaryType = corridor.type === 'track' ? 'Track' : 'Road';
                 proposal.goal = 'road-track';
                 proposal.isCorridor = true;
-                proposal.parentParcelIds = corridorParents;
+                proposal.cadastreParcelIds = corridorCadastreParcelIds;
 
                 proposal.roadProposal = {
                     definition: safeClone(roadDefinition),
-                    parentParcelIds: corridorParents.slice(),
-                    childParcelIds: [],
                     mode: corridor.mode || 'draw',
                     isCorridor: true
                 };
@@ -961,7 +955,8 @@ async function createProposal() {
             }
             proposal.goal = 'reparcellization';
             proposal.reparcellization = JSON.parse(JSON.stringify(pendingReparcelPlan));
-            proposal.reparcellization.parcelIds = finalParcelIds.slice();
+            delete proposal.reparcellization.parcelIds;
+            delete proposal.reparcellization.parentParcelIds;
         }
 
         // Building/urban-rule proposals: consume pendingBuildingProposalContext
@@ -996,21 +991,15 @@ async function createProposal() {
                 ? String(pendingBuildingContext.parameters.typology)
                 : (selectedTool === 'row' ? 'row' : (selectedTool === 'parcelBased' ? 'parcelBased' : 'block'));
 
-            const primaryBuildingFeature = buildingFeatures[0];
-            const buildingGeometry = primaryBuildingFeature ? primaryBuildingFeature.geometry : null;
-            const buildingProperties = primaryBuildingFeature && primaryBuildingFeature.properties ? { ...primaryBuildingFeature.properties } : {};
-
-            const parentDetails = Array.isArray(pendingBuildingContext.parentDetails) && pendingBuildingContext.parentDetails.length
-                ? pendingBuildingContext.parentDetails.map(detail => ({ id: detail.id, number: detail.number || detail.id }))
-                : normalizedParentParcelIds.map(id => ({ id, number: id }));
-            const ancestorKey = normalizedParentParcelIds.slice().sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).join('|');
+            const designParcelIds = pendingBuildingContext.parcelIds.map(String).filter(Boolean);
 
             proposal.primaryType = 'Urban Rule';
             proposal.goal = selectedTool === 'single' ? 'single' : 'buildings';
             proposal.typologyType = resolvedTypology;
-            proposal.buildingGeometry = buildingGeometry;
-            proposal.buildingProperties = buildingProperties;
-            proposal.properties = { ...buildingProperties };
+            // This is the complete authored selection, including block parcels where the rule did
+            // not manage to place a building. addProposal projects it to one flat root
+            // cadastreParcelIds declaration; output buildings must never redefine that scope.
+            proposal.cadastreParcelIds = liveFabric.cadastreIdsForParcelIds(designParcelIds);
             proposal.tags = ['buildings'];
 
             if (!proposal.geometry) proposal.geometry = {};
@@ -1027,21 +1016,11 @@ async function createProposal() {
             else delete proposal.geometry.groundSurface;
 
             proposal.buildingProposal = {
-                parentParcelIds: normalizedParentParcelIds.slice(),
-                ...(resolvedTypology === 'block' ? {
-                    blockParcelIds: (pendingBuildingContext.blockParcelIds?.length
-                        ? pendingBuildingContext.blockParcelIds
-                        : normalizedParentParcelIds).map(String)
-                } : {}),
-                parentParcelNumbers: parentDetails,
                 typologyType: resolvedTypology,
                 createdFrom: resolvedTypology === 'row' ? 'rowHouse' : (resolvedTypology === 'parcelBased' ? 'parcelBased' : 'blockify'),
-                blockName: pendingBuildingContext.blockName || formatParcelSelectionLabel(normalizedParentParcelIds),
+                blockName: pendingBuildingContext.blockName || formatParcelSelectionLabel(designParcelIds),
                 parameters: safeClone(pendingBuildingContext.parameters) || {},
-                buildingFeature: primaryBuildingFeature,
-                buildings: buildingFeatures,
                 ineligibleParcels: safeClone(pendingBuildingContext.ineligibleParcels) || [],
-                ancestorKey,
                 // §15a: how a FREEFORM building forms its parcel — footprint parcel by default,
                 // whole host parcels when the author chose so in the design modal.
                 ...(selectedTool === 'single' && pendingBuildingContext.takeWholeParcels === true
@@ -1207,19 +1186,22 @@ async function createProposal() {
                     }
                 };
 
-                // Declare every cadastral parcel once. The ground service decides which ones are
-                // cached, already in flight, known absent, or need a server request.
-                // Generated live-fabric ids are local replay output and are never server keys.
-                const isSyntheticParcel = (typeof ProposalManager !== 'undefined'
-                    && typeof ProposalManager.isSyntheticParcelId === 'function')
-                    ? ProposalManager.isSyntheticParcelId.bind(ProposalManager)
-                    : id => String(id || '').includes('#');
-                const cadastralIds = Array.from(new Set(finalParcelIds
-                    .filter(parcelId => parcelId && !isSyntheticParcel(parcelId))));
+                // Resolve every selected live parcel through its explicit cadastral provenance.
+                // The ground service decides which ids are cached, in flight, absent, or require
+                // transport; callers never infer provenance from generated id spelling.
+                let cadastralIds = [];
+                try {
+                    if (!liveFabric || typeof liveFabric.cadastreIdsForParcelIds !== 'function') {
+                        throw new Error('Live parcel fabric is unavailable.');
+                    }
+                    cadastralIds = liveFabric.cadastreIdsForParcelIds(finalParcelIds);
+                } catch (error) {
+                    console.warn('[proposal-mint] Unable to resolve cadastral provenance:', error);
+                }
                 if (cadastralIds.length) {
-                    const ground = (typeof CadastralGroundService !== 'undefined' && CadastralGroundService)
-                        ? CadastralGroundService
-                        : ((typeof window !== 'undefined') ? window.CadastralGroundService : null);
+                    const ground = (typeof CadastralParcelRepository !== 'undefined' && CadastralParcelRepository)
+                        ? CadastralParcelRepository
+                        : ((typeof window !== 'undefined') ? window.CadastralParcelRepository : null);
                     try {
                         if (!ground || typeof ground.ensureIds !== 'function') {
                             throw new Error('Cadastral ground service is unavailable.');
@@ -1231,22 +1213,16 @@ async function createProposal() {
                 }
 
                 for (const parcelId of finalParcelIds) {
-                    let parcelLayer = null;
-                    if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.findParcelById) {
-                        parcelLayer = multiParcelSelection.findParcelById(parcelId);
-                    }
-                    if (!parcelLayer && typeof resolveParcelLayerById === 'function') {
-                        parcelLayer = resolveParcelLayerById(parcelId);
-                    }
-                    if (parcelLayer && parcelLayer.feature) {
-                        const normalizedFeature = ensureParcelIdOnFeature(parcelLayer.feature);
+                    const liveFeature = window.LiveParcelFabric?.get?.(parcelId) || null;
+                    if (liveFeature) {
+                        const normalizedFeature = ensureParcelIdOnFeature(liveFeature);
                         parcelFeatures.push(normalizedFeature);
                         // Extract coordinates for polygon
-                        if (parcelLayer.feature.geometry && parcelLayer.feature.geometry.coordinates) {
-                            pushParcelPolygons(parcelLayer.feature.geometry.coordinates);
+                        if (liveFeature.geometry && liveFeature.geometry.coordinates) {
+                            pushParcelPolygons(liveFeature.geometry.coordinates);
                         }
                     } else {
-                        console.warn('[proposal-mint] Missing parcel layer or feature for', parcelId);
+                        console.warn('[proposal-mint] Missing live parcel feature for', parcelId);
                     }
                 }
 
@@ -1261,31 +1237,12 @@ async function createProposal() {
                     console.warn('No parcel features found for screenshot generation');
                     hideWaitingPopupSafe();
                 } else {
-                    // Use the parent parcel IDs from earlier - these are what the proposal references
-                    let parcelIdsForMinting = proposal.parentParcelIds;
-                    if (!parcelIdsForMinting || parcelIdsForMinting.length === 0) {
-                        // Derive parcel IDs in the format expected by the contract
-                        parcelIdsForMinting = parcelFeatures
-                            .map(feature => {
-                                if (window.ProposalChainBridge && window.ProposalChainBridge.deriveParcelIdFromFeature) {
-                                    return window.ProposalChainBridge.deriveParcelIdFromFeature(feature);
-                                }
-                                // Fallback: try to format from properties
-                                const props = feature.properties || {};
-                                const canonicalId = getParcelIdFromFeature(feature);
-                                if (canonicalId) return canonicalId.toString();
-                                if (props.MATICNI_BROJ_KO && props.BROJ_CESTICE) {
-                                    return window.ProposalChainBridge ?
-                                        window.ProposalChainBridge.formatParcelId(props.MATICNI_BROJ_KO, props.BROJ_CESTICE) :
-                                        `HR-${props.MATICNI_BROJ_KO}-${props.BROJ_CESTICE}`;
-                                }
-                                return null;
-                            })
-                            .filter(Boolean);
-                    }
+                    const parcelIdsForMinting = Array.isArray(proposal.cadastreParcelIds)
+                        ? proposal.cadastreParcelIds.slice()
+                        : [];
 
                     if (parcelIdsForMinting.length === 0) {
-                        console.warn('Could not derive formatted parcel IDs for on-chain minting');
+                        console.warn('Proposal has no cadastral IDs for on-chain minting');
                         hideWaitingPopupSafe();
                     } else {
                         // Verify required services are available
@@ -1561,7 +1518,7 @@ async function createProposal() {
                                 proposalId: proposal.proposalId || hash || '',
                                 goal: goalKey,
                                 title: metadataTitle,
-                                parcelIds: parcelIdsForMinting,
+                                cadastreParcelIds: parcelIdsForMinting,
                                 conditional: isConditional,
                                 lens: lensAddressesForMint,
                                 offer: {
@@ -1826,7 +1783,7 @@ async function createProposal() {
             const proposalLinkHtml = `<a href="#" data-proposal-id="${proposalIdAttr}" class="proposal-link proposal-link-clickable">${proposalIdForLog}</a>`;
             const budgetCurrencyLabel = offerCurrency || 'USDT';
             const onchainNote = onchainResult ? ' (on-chain)' : '';
-            addUserActionToGameLog(`<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> created a ${proposalType} proposal${onchainNote} (${proposalLinkHtml}) for ${proposal.parentParcelIds.length} parcel(s) with budget ${offer} ${budgetCurrencyLabel}.`);
+            addUserActionToGameLog(`<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> created a ${proposalType} proposal${onchainNote} (${proposalLinkHtml}) for ${proposal.cadastreParcelIds.length} parcel(s) with budget ${offer} ${budgetCurrencyLabel}.`);
 
             // Update user agent's created proposals
             if (!userAgent.proposalsCreated) {
@@ -1850,8 +1807,8 @@ async function createProposal() {
         updateProposalList();
 
         const statusMessage = onchainResult
-            ? `Proposal "${proposalType}" created and minted on blockchain with ${proposal.parentParcelIds.length} parcels.`
-            : `Proposal "${proposalType}" created successfully with ${proposal.parentParcelIds.length} parcels.`;
+            ? `Proposal "${proposalType}" created and minted on blockchain with ${proposal.cadastreParcelIds.length} parcels.`
+            : `Proposal "${proposalType}" created successfully with ${proposal.cadastreParcelIds.length} parcels.`;
         updateStatus(statusMessage);
 
         if (proposalMainType === 'Reparcellization' && typeof window !== 'undefined') {
@@ -1880,7 +1837,7 @@ async function createProposal() {
             updateStatus('Proposal saved, but it could not be applied to the cadastral fabric.');
         }
 
-        const focusParcelId = proposal.parentParcelIds[0] || null;
+        const focusParcelId = selectedLiveParcelIds[0] || null;
         const openProposalDetails = () => {
             if (!waitingPopupVisible) {
                 waitingPopupVisible = true;
@@ -1934,18 +1891,14 @@ function buildUploadReadyProposal(proposal) {
     if (!proposal) return null;
     const uploadProposal = { ...proposal };
 
-    // Which CADASTRAL parcels this proposal covers, recomputed HERE — at publish — rather than at
-    // creation. A road can be dragged around all afternoon; what matters is the land it covered at
-    // the moment it was uploaded or minted, because that is the snapshot other people replay and
-    // owners consent to. Stamping at creation would freeze an answer nobody ever saw, and would go
-    // stale on the first node drag. Computed on the upload copy, so the user's local record is not
-    // disturbed, and it is absent from proposalContentFingerprint's allowlist, so adding it can
-    // never change a share id. See rethink-proposals.md.
+    // The complete selected cadastral scope was stamped at creation. Publishing validates its
+    // current immutable geometry coverage but never re-enumerates it from output geometry: a block
+    // may intentionally include parcels on which no building could be generated.
     if (!window.__cadastreAncestry
         || typeof window.__cadastreAncestry.computeCadastreParcelIds !== 'function') {
         throw new Error('Cannot publish: cadastral geometry resolution is unavailable.');
     }
-    uploadProposal.cadastreParcelIds = window.__cadastreAncestry.computeCadastreParcelIds(proposal);
+    uploadProposal.cadastreParcelIds = window.__cadastreAncestry.computeCadastreParcelIds(uploadProposal);
 
     // The ownership flow (§9/§12 step 2) and the frame it was measured against (D5), stamped at the
     // same moment and for the same reason as cadastreParcelIds. The effect hash is derived from the
@@ -1993,7 +1946,8 @@ function buildUploadReadyProposal(proposal) {
             uploadProposal[key] = sanitized;
         });
 
-    // Remove parentFeatures - we only upload IDs, not full geometries
+    // Runtime materialization never crosses the publish boundary. The proposal already carries
+    // its one durable land declaration at root: cadastreParcelIds.
     if (uploadProposal.parentFeatures) {
         delete uploadProposal.parentFeatures;
     }
@@ -2001,14 +1955,9 @@ function buildUploadReadyProposal(proposal) {
         if (uploadProposal.roadProposal.parentFeatures) {
             delete uploadProposal.roadProposal.parentFeatures;
         }
-        // Remove childFeatures - child parcel geometries are fetched by ID when needed
+        // Runtime child pieces are regenerated by the receiver's live fabric.
         if (uploadProposal.roadProposal.childFeatures) {
             delete uploadProposal.roadProposal.childFeatures;
-        }
-        // Ensure parentParcelIds are set (for fetching ancestors on load)
-        if (!uploadProposal.roadProposal.parentParcelIds || uploadProposal.roadProposal.parentParcelIds.length === 0) {
-            const parentIds = uploadProposal.parentParcelIds || [];
-            uploadProposal.roadProposal.parentParcelIds = ensureArrayOfStrings(parentIds);
         }
     }
 
@@ -2023,27 +1972,20 @@ function buildUploadReadyProposal(proposal) {
         uploadProposal.hash = fingerprint;
     }
 
-    // The §15a publish gate: a PUBLISHED record is flat — `base cadastral parcel(s) → one
-    // formation → content`. Every parent declaration flattens to base ids here; derived parcel
-    // ids are replay output, never published input. A record that still is not flat is refused.
-    if (typeof window !== 'undefined' && window.__formationDepth) {
-        const geometricBaseIds = Array.isArray(uploadProposal.cadastreParcelIds)
-            ? uploadProposal.cadastreParcelIds.filter(Boolean)
-            : [];
-        const gate = window.__formationDepth.preparePublishRecord(
-            uploadProposal,
-            geometricBaseIds.length ? { geometricBaseIds } : {}
-        );
-        if (!gate.verdict.flat) {
-            const detail = gate.verdict.violations
-                .map(v => v.code + (v.id ? ` (${v.id})` : (Array.isArray(v.ids) ? ` (${v.ids.join(', ')})` : '')))
-                .join('; ');
-            throw new Error(`This proposal's record is not flat and cannot be published: ${detail}`);
-        }
-        return gate.proposal;
+    // The publish gate verifies the canonical authored record. It does not flatten generated ids;
+    // only the explicit migration is allowed to interpret legacy parcel declarations.
+    const depthApi = typeof window !== 'undefined' ? window.__formationDepth : null;
+    if (!depthApi || typeof depthApi.preparePublishRecord !== 'function') {
+        throw new Error('Cannot publish: the authored-record projection is unavailable.');
     }
-    console.error('[buildUploadReadyProposal] formation-depth module missing — publish gate skipped');
-    return uploadProposal;
+    const gate = depthApi.preparePublishRecord(uploadProposal);
+    if (!gate.verdict.flat) {
+        const detail = gate.verdict.violations
+            .map(v => v.code + (v.id ? ` (${v.id})` : (Array.isArray(v.ids) ? ` (${v.ids.join(', ')})` : '')))
+            .join('; ');
+        throw new Error(`This proposal's record is not flat and cannot be published: ${detail}`);
+    }
+    return gate.proposal;
 }
 
 function handleCreateProposalHotkey(event) {

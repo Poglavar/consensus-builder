@@ -1,9 +1,10 @@
 // One-time migration to the canonical ground model.
 //
 // It makes stored rows conform before the app sees them:
-//   - every parent declaration is a base cadastral id;
+//   - every legacy land declaration is folded once into root cadastreParcelIds;
 //   - derived children, formations, proposal ancestry and demolition scans are removed;
-//   - government-plan road child features are preserved because they are authored;
+//   - government-plan child parcel pieces collapse into one authored definition.polygon and are
+//     then removed; runtime partitions never survive as proposal content;
 //   - multipart reparcellization plots are exploded into contiguous parcels.
 //   - legacy road geometry mirrors collapse into roadProposal.definition;
 //   - malformed legacy corridor polygons are normalized to proper GeoJSON nesting.
@@ -21,16 +22,19 @@
 // Dry-run by default:
 //   node scripts/migrate-tessellation.js
 //   node scripts/migrate-tessellation.js --apply
+//   node scripts/migrate-tessellation.js --apply --normalize-only
 //   node scripts/migrate-tessellation.js --apply --ids 97,98
 
 import pkg from 'pg';
 import 'dotenv/config';
 import { pathToFileURL } from 'node:url';
 import { createRequire } from 'node:module';
+import { isDeepStrictEqual } from 'node:util';
 
 // The corridor contiguity test lives in the frontend engine (classic script with a CJS tail).
 const requireCjs = createRequire(import.meta.url);
 const formationEdit = requireCjs('../../frontend/js/proposals/formation-edit.js');
+const authoredRecord = requireCjs('../../frontend/js/proposals/authored-record.js');
 
 const { Pool } = pkg;
 const CRUMB_DEG2 = 1.2e-10;
@@ -49,6 +53,7 @@ function usage() {
         'partial-parcel readjustments).',
         '',
         '  --apply     Write changes. Without this the script only reports.',
+        '  --normalize-only  Clean proposal records without topology checks or road splitting.',
         '  --ids LIST  Limit to comma-separated numeric row ids.',
         '  --help      Show this message.'
     ].join('\n'));
@@ -59,7 +64,11 @@ function clone(value) {
 }
 
 function equal(a, b) {
-    return JSON.stringify(a) === JSON.stringify(b);
+    // PostgreSQL jsonb does not preserve object-key order. Stringifying two otherwise identical
+    // records therefore made every dry run claim that ownerAcceptances/proposal_data had changed,
+    // even immediately after applying the migration. Arrays remain order-sensitive; plain object
+    // keys do not, which is the semantic equality the JSON columns require.
+    return isDeepStrictEqual(a, b);
 }
 
 function canonicalLifecycle(value) {
@@ -80,6 +89,86 @@ export function baseParcelIds(list) {
             return legacy ? legacy[1] : modernBase;
         })
         .filter(Boolean)));
+}
+
+function baseParcelId(value) {
+    return baseParcelIds([value])[0] || '';
+}
+
+function flattenOwnerKey(value, sourceParcelId = '') {
+    let key = String(value ?? '');
+    const source = String(sourceParcelId || '');
+    if (source && key.includes(source)) key = key.split(source).join(baseParcelId(source));
+    return key.replace(/HR-\d+-[^:]+(?=:owner)/gi, match => baseParcelId(match));
+}
+
+function mergeUnique(left, right) {
+    return Array.from(new Set([...(Array.isArray(left) ? left : []), ...(Array.isArray(right) ? right : [])]
+        .map(value => String(value || '')).filter(Boolean)));
+}
+
+export function normalizeOwnerAcceptances(value) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return value;
+    const output = {};
+    Object.entries(value).forEach(([sourceParcelId, rawEntry]) => {
+        const parcelId = baseParcelId(sourceParcelId);
+        if (!parcelId) return;
+        const entry = rawEntry && typeof rawEntry === 'object' && !Array.isArray(rawEntry) ? rawEntry : {};
+        const existing = output[parcelId] || { owners: {}, ownerOrder: [], acceptedOwnerKeys: [], acceptedBy: {} };
+        const owners = { ...(existing.owners || {}) };
+        Object.entries(entry.owners || {}).forEach(([rawKey, rawOwner]) => {
+            const key = flattenOwnerKey(rawKey, sourceParcelId);
+            if (!key) return;
+            owners[key] = {
+                ...(owners[key] || {}),
+                ...(rawOwner && typeof rawOwner === 'object' ? clone(rawOwner) : {}),
+                key
+            };
+        });
+        const acceptedBy = { ...(existing.acceptedBy || {}) };
+        Object.entries(entry.acceptedBy || {}).forEach(([rawKey, acceptance]) => {
+            const key = flattenOwnerKey(rawKey, sourceParcelId);
+            if (key) acceptedBy[key] = clone(acceptance);
+        });
+        const ownerOrder = mergeUnique(
+            existing.ownerOrder,
+            (Array.isArray(entry.ownerOrder) ? entry.ownerOrder : Object.keys(entry.owners || {}))
+                .map(key => flattenOwnerKey(key, sourceParcelId))
+        );
+        const acceptedOwnerKeys = mergeUnique(
+            existing.acceptedOwnerKeys,
+            (Array.isArray(entry.acceptedOwnerKeys) ? entry.acceptedOwnerKeys : [])
+                .map(key => flattenOwnerKey(key, sourceParcelId))
+        );
+        output[parcelId] = {
+            ...existing,
+            ...clone(entry),
+            owners,
+            ownerOrder: mergeUnique(ownerOrder, [...Object.keys(owners), ...acceptedOwnerKeys]),
+            acceptedOwnerKeys,
+            acceptedBy
+        };
+    });
+    return output;
+}
+
+export function normalizeOwnershipFlow(value) {
+    if (!Array.isArray(value)) return value;
+    const byParcelAndDestination = new Map();
+    value.forEach(entry => {
+        if (!entry || typeof entry !== 'object' || !entry.parcelId) return;
+        const parcelId = baseParcelId(entry.parcelId);
+        if (!parcelId) return;
+        const destination = String(entry.destination || '');
+        const key = `${parcelId}\u0000${destination}`;
+        const existing = byParcelAndDestination.get(key);
+        if (existing) {
+            existing.cededM2 = (Number(existing.cededM2) || 0) + (Number(entry.cededM2) || 0);
+        } else {
+            byParcelAndDestination.set(key, { ...clone(entry), parcelId });
+        }
+    });
+    return Array.from(byParcelAndDestination.values());
 }
 
 function ringAreaDeg2(ring) {
@@ -215,6 +304,86 @@ function isGovernmentPlan(record) {
         || record?.roadProposal?.definition?.kind === 'government_plan';
 }
 
+function polygonGeometryFromGovernmentFeatures(features) {
+    const all = (Array.isArray(features) ? features : []).filter(feature => (
+        feature?.geometry && /Polygon$/.test(String(feature.geometry.type || ''))
+    ));
+    const road = all.filter(feature => {
+        const props = feature.properties || {};
+        return props.isRoad === true || props.isTrack === true || props.isCorridor === true;
+    });
+    const source = road.length ? road : all;
+    const polygons = source.flatMap(feature => (
+        feature.geometry.type === 'MultiPolygon'
+            ? feature.geometry.coordinates
+            : [feature.geometry.coordinates]
+    )).filter(Array.isArray);
+    if (!polygons.length) return null;
+    return polygons.length === 1
+        ? { type: 'Polygon', coordinates: clone(polygons[0]) }
+        : { type: 'MultiPolygon', coordinates: clone(polygons) };
+}
+
+function legacyBuildingFeatures(record) {
+    const building = record?.buildingProposal;
+    const canonical = Array.isArray(record?.geometry?.buildings)
+        ? record.geometry.buildings.filter(feature => feature?.geometry)
+        : [];
+    if (canonical.length) return canonical;
+    const many = Array.isArray(building?.buildings)
+        ? building.buildings
+            .map(value => value?.feature || value)
+            .filter(feature => feature?.geometry)
+        : [];
+    if (many.length) return many;
+    if (building?.buildingFeature?.geometry) return [building.buildingFeature];
+    if (record?.buildingGeometry) {
+        return [{
+            type: 'Feature',
+            geometry: record.buildingGeometry,
+            properties: record.buildingProperties || record.properties || {}
+        }];
+    }
+    return [];
+}
+
+function legacyCadastreCandidates(record) {
+    if (!record || typeof record !== 'object' || Array.isArray(record)) return [];
+    const ids = [];
+    const add = values => {
+        if (Array.isArray(values)) ids.push(...values);
+    };
+    add(record.cadastreParcelIds);
+    add(record.parentParcelIds);
+    add(record.parcelIds);
+    SUB_KEYS.forEach(key => add(record[key]?.parentParcelIds));
+    add(record.reparcellization?.parcelIds);
+    if (Array.isArray(record.reparcellization?.ownerShares)) {
+        record.reparcellization.ownerShares.forEach(entry => add(entry?.parcelIds));
+    }
+
+    const building = record.buildingProposal;
+    if (building && typeof building === 'object' && !Array.isArray(building)) {
+        add(building.blockParcelIds);
+        if (Array.isArray(building.parentParcelNumbers)) {
+            ids.push(...building.parentParcelNumbers.map(entry => entry?.id));
+        }
+        if (Array.isArray(building.ineligibleParcels)) {
+            ids.push(...building.ineligibleParcels.map(entry => entry?.parcelId));
+        }
+        if (Array.isArray(building.buildings)) {
+            ids.push(...building.buildings.map(entry => (
+                entry?.properties?.parcelId || entry?.feature?.properties?.parcelId
+            )));
+        }
+        ids.push(building.buildingFeature?.properties?.parcelId);
+    }
+    if (Array.isArray(record.geometry?.buildings)) {
+        ids.push(...record.geometry.buildings.map(feature => feature?.properties?.parcelId));
+    }
+    return baseParcelIds(ids.filter(Boolean));
+}
+
 export function normalizeStoredProposal(input) {
     if (!input || typeof input !== 'object' || Array.isArray(input)) {
         return { changed: false, value: input };
@@ -222,23 +391,50 @@ export function normalizeStoredProposal(input) {
     const output = clone(input);
     normalizeRoadGeometry(output);
     const governmentPlan = isGovernmentPlan(output);
+    const cadastralScope = legacyCadastreCandidates(input);
+    const buildings = legacyBuildingFeatures(output);
+    if (buildings.length) {
+        output.geometry = output.geometry && typeof output.geometry === 'object' && !Array.isArray(output.geometry)
+            ? output.geometry
+            : {};
+        output.geometry.buildings = buildings;
+    }
+    if (governmentPlan) {
+        const authoredFeatures = Array.isArray(output.roadProposal?.definition?.features)
+            ? output.roadProposal.definition.features
+            : (Array.isArray(output.roadProposal?.childFeatures)
+                ? output.roadProposal.childFeatures
+                : (Array.isArray(output.childFeatures) ? output.childFeatures : []));
+        const polygon = polygonGeometryFromGovernmentFeatures(authoredFeatures);
+        if (polygon) {
+            output.roadProposal = output.roadProposal || {};
+            output.roadProposal.definition = output.roadProposal.definition || { kind: 'government_plan' };
+            if (!output.roadProposal.definition.polygon) {
+                output.roadProposal.definition.polygon = polygon;
+            }
+            delete output.roadProposal.definition.features;
+        }
+    }
     if (!output.lifecycleStatus && output.status) {
         output.lifecycleStatus = canonicalLifecycle(output.status);
     }
-    const preferredParents = Array.isArray(output.cadastreParcelIds) && output.cadastreParcelIds.length
-        ? output.cadastreParcelIds
-        : output.parentParcelIds;
-
     [
         'applied', 'appliedAt', 'status', 'localEditAt', 'editSeq', 'revertSnapshot',
         'childParcelIds', 'descendantParcelIds', 'parentFeatures',
         'parentProposals', 'childProposals', 'parentProposalIds', 'childProposalIds',
-        'formation', 'demolishedBuildings', 'demolitionScanned'
+        'formation', 'demolishedBuildings', 'demolitionScanned', 'similarityHash'
     ].forEach(key => delete output[key]);
-    if (!governmentPlan) delete output.childFeatures;
-    if (Array.isArray(preferredParents)) output.parentParcelIds = baseParcelIds(preferredParents);
-    if (Array.isArray(output.cadastreParcelIds)) {
-        output.cadastreParcelIds = baseParcelIds(output.cadastreParcelIds);
+    delete output.childFeatures;
+    if (cadastralScope.length) output.cadastreParcelIds = cadastralScope;
+    else delete output.cadastreParcelIds;
+    if (Array.isArray(output.acceptedParcelIds)) {
+        output.acceptedParcelIds = baseParcelIds(output.acceptedParcelIds);
+    }
+    if (output.ownerAcceptances && typeof output.ownerAcceptances === 'object') {
+        output.ownerAcceptances = normalizeOwnerAcceptances(output.ownerAcceptances);
+    }
+    if (Array.isArray(output.ownershipFlow)) {
+        output.ownershipFlow = normalizeOwnershipFlow(output.ownershipFlow);
     }
 
     if (output.geometry && typeof output.geometry === 'object') {
@@ -258,11 +454,7 @@ export function normalizeStoredProposal(input) {
         delete sub.formation;
         delete sub.demolishedBuildings;
         delete sub.demolitionScanned;
-        if (!(key === 'roadProposal' && governmentPlan)) delete sub.childFeatures;
-        const subParents = Array.isArray(sub.parentParcelIds) && sub.parentParcelIds.length
-            ? sub.parentParcelIds
-            : output.parentParcelIds;
-        if (Array.isArray(subParents)) sub.parentParcelIds = baseParcelIds(subParents);
+        delete sub.childFeatures;
         if (key === 'reparcellization') {
             if (Array.isArray(sub.parcelIds)) sub.parcelIds = baseParcelIds(sub.parcelIds);
             sub = normalizePlan(sub).value;
@@ -271,15 +463,19 @@ export function normalizeStoredProposal(input) {
         clearRoadScan(sub.definition);
     });
 
-    return { changed: !equal(output, input), value: output };
+    const authored = authoredRecord.stripCadastreAliases(
+        authoredRecord.cleanFeatureContainers(output)
+    );
+    return { changed: !equal(authored, input), value: authored };
 }
 
-function normalizeSubColumn(value, key, parentParcelIds, governmentRecord) {
+function normalizeSubColumn(value, key, cadastreParcelIds, governmentRecord, childFeatures) {
     if (!value || typeof value !== 'object') return value;
     const wrapper = {
-        parentParcelIds: clone(parentParcelIds),
+        cadastreParcelIds: clone(cadastreParcelIds),
         tags: governmentRecord?.tags,
         geometry: governmentRecord?.geometry,
+        childFeatures: clone(childFeatures),
         [key]: clone(value)
     };
     return normalizeStoredProposal(wrapper).value[key];
@@ -287,24 +483,46 @@ function normalizeSubColumn(value, key, parentParcelIds, governmentRecord) {
 
 export function normalizeProposalRow(row) {
     const updates = {};
-    const proposalDataResult = normalizeStoredProposal(row.proposal_data);
+    const rowRecord = {
+        cadastreParcelIds: row.cadastre_parcel_ids,
+        parentParcelIds: row.ancestor_parcel_ids,
+        roadProposal: row.road_proposal,
+        buildingProposal: row.building_proposal,
+        structureProposal: row.structure_proposal,
+        reparcellization: row.reparcellization
+    };
+    const cadastre = baseParcelIds([
+        ...legacyCadastreCandidates(row.proposal_data),
+        ...legacyCadastreCandidates(rowRecord)
+    ]);
+    const proposalDataInput = row.proposal_data && typeof row.proposal_data === 'object'
+        ? { ...clone(row.proposal_data), cadastreParcelIds: cadastre }
+        : null;
+    const proposalDataResult = normalizeStoredProposal(proposalDataInput);
     const proposalData = proposalDataResult.value && typeof proposalDataResult.value === 'object'
         ? proposalDataResult.value
         : {};
-    const preferredCadastre = Array.isArray(row.cadastre_parcel_ids) && row.cadastre_parcel_ids.length
-        ? row.cadastre_parcel_ids
-        : (Array.isArray(proposalData.cadastreParcelIds) && proposalData.cadastreParcelIds.length
-            ? proposalData.cadastreParcelIds
-            : (Array.isArray(row.ancestor_parcel_ids) && row.ancestor_parcel_ids.length
-                ? row.ancestor_parcel_ids
-                : proposalData.parentParcelIds));
-    const cadastre = baseParcelIds(preferredCadastre);
-    const ancestors = cadastre.slice();
-    if (!equal(ancestors, row.ancestor_parcel_ids || [])) {
-        updates.ancestor_parcel_ids = ancestors.length ? ancestors : null;
+    if (row.ancestor_parcel_ids !== null && row.ancestor_parcel_ids !== undefined) {
+        updates.ancestor_parcel_ids = null;
     }
     if (!equal(cadastre, row.cadastre_parcel_ids || [])) {
         updates.cadastre_parcel_ids = cadastre.length ? cadastre : null;
+    }
+    const acceptedParcelIds = baseParcelIds(row.accepted_parcel_ids || []);
+    if (!equal(acceptedParcelIds, row.accepted_parcel_ids || [])) {
+        updates.accepted_parcel_ids = acceptedParcelIds.length ? acceptedParcelIds : null;
+    }
+    const ownerAcceptances = normalizeOwnerAcceptances(row.owner_acceptances);
+    if (!equal(ownerAcceptances, row.owner_acceptances)) {
+        updates.owner_acceptances = ownerAcceptances && Object.keys(ownerAcceptances).length
+            ? ownerAcceptances
+            : null;
+    }
+    const ownershipFlow = normalizeOwnershipFlow(row.ownership_flow);
+    if (!equal(ownershipFlow, row.ownership_flow)) {
+        updates.ownership_flow = Array.isArray(ownershipFlow) && ownershipFlow.length
+            ? ownershipFlow
+            : null;
     }
 
     [
@@ -320,11 +538,17 @@ export function normalizeProposalRow(row) {
         ...proposalData,
         roadProposal: row.road_proposal || proposalData.roadProposal
     };
-    const governmentPlan = isGovernmentPlan(governmentRecord);
-    if (!governmentPlan && row.child_features !== null && row.child_features !== undefined) {
+    if (row.child_features !== null && row.child_features !== undefined) {
         updates.child_features = null;
     }
-    if (proposalDataResult.changed) updates.proposal_data = proposalDataResult.value;
+    // The temporary wrapper above always supplies cadastreParcelIds so the normalizer can fold
+    // every legacy declaration into one root field. For geometry-only records that legitimately
+    // have no cadastral scope, the normalizer removes that empty wrapper field again. Compare the
+    // projected value with the stored JSON—not with the wrapper—or the migration rewrites that
+    // row forever despite producing byte-for-byte equivalent data.
+    if (!equal(proposalDataResult.value, row.proposal_data)) {
+        updates.proposal_data = proposalDataResult.value;
+    }
 
     for (const [column, key] of [
         ['road_proposal', 'roadProposal'],
@@ -336,8 +560,9 @@ export function normalizeProposalRow(row) {
         const normalized = normalizeSubColumn(
             row[column],
             key,
-            ancestors,
-            governmentRecord
+            cadastre,
+            governmentRecord,
+            row.child_features
         );
         if (!equal(normalized, row[column])) updates[column] = normalized;
     }
@@ -518,10 +743,11 @@ async function insertSplitSibling(pool, row, columns, overrides) {
 }
 
 export function parseArgs(argv) {
-    const parsed = { apply: false, ids: null, help: false };
+    const parsed = { apply: false, ids: null, normalizeOnly: false, help: false };
     for (let index = 0; index < argv.length; index += 1) {
         const arg = argv[index];
         if (arg === '--apply') parsed.apply = true;
+        else if (arg === '--normalize-only') parsed.normalizeOnly = true;
         else if (arg === '--help' || arg === '-h') parsed.help = true;
         else if (arg === '--ids') {
             parsed.ids = String(argv[++index] || '')
@@ -558,6 +784,7 @@ export async function run(argv = process.argv.slice(2)) {
         const sql = [
             'SELECT id, proposal_id, title,',
             'ancestor_parcel_ids, cadastre_parcel_ids, descendant_parcel_ids,',
+            'accepted_parcel_ids, owner_acceptances, ownership_flow,',
             'parent_features, child_features,',
             'parent_proposal_ids, child_proposal_ids,',
             'road_proposal, building_proposal, structure_proposal,',
@@ -612,6 +839,7 @@ export async function run(argv = process.argv.slice(2)) {
             }
 
             // ---- contiguity rulings (2026-08-07), on the post-normalize shape ----
+            if (args.normalizeOnly) continue;
             const rowData = (updates.proposal_data ?? row.proposal_data) || {};
             const roadRecord = (updates.road_proposal ?? row.road_proposal) || rowData.roadProposal || null;
             const definition = roadRecord && roadRecord.definition ? roadRecord.definition : null;

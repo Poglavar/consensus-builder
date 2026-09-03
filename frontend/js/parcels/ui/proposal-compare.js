@@ -201,9 +201,12 @@
     }
 
     function computeComparisonMetrics(proposal, parcelId) {
-        const parcelLayerRef = typeof global.parcelLayer !== 'undefined' ? global.parcelLayer : null;
-        const parcelLayerObj = parcelLayerRef ? parcelLayerRef.getLayers().find(l => String(l?.feature?.properties?.parcelId) === String(parcelId)) : null;
-        const parcelFeature = parcelLayerObj ? parcelLayerObj.feature : null;
+        // Geometry comes from the committed fabric.  The presenter layer is useful only as a
+        // prepared bounds accelerator; it must never be searched as a parcel database.
+        const parcelFeature = global.LiveParcelFabric?.get?.(String(parcelId)) || null;
+        const parcelLayerObj = parcelFeature
+            ? (global.ParcelPresenter?.getLayer?.(String(parcelId)) || null)
+            : null;
         const parcelArea = parcelFeature ? (parcelFeature.properties?.calculatedArea || safeArea(parcelFeature)) : 0;
 
         let proposedParcelArea = parcelArea;

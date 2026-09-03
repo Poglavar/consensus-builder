@@ -97,36 +97,26 @@ function showProposalAlertMessage(key, fallback, params = {}, alertOptions = {})
 function isParcelReplacedByChildren(parcelId) {
     if (!parcelId) return false;
     const idStr = String(parcelId);
-    if (typeof isSyntheticParcelId === 'function' && isSyntheticParcelId(idStr)) return false;
     if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') return false;
 
-    // A cadastral parent is absent whenever a standing formation minted ANY tessellation on that
-    // base parcel. Child-id prefixes cannot answer this: a multi-parcel corridor has one corridor
-    // id anchored to only one root, so a fully consumed second root has no `<root>#…` child even
-    // though the road owns all of it. Flat cadastre anchors plus the current derived child list are
-    // the complete statement of this replay.
+    // Claims asks the live fabric whether the applied proposal currently has materialized output.
+    // Proposal records contain no child list.
     const claims = (typeof window !== 'undefined') ? window.__claims : null;
     return proposalStorage.getAllProposals().some(proposal => {
         if (claims && typeof claims.formationReplacesCadastreParcel === 'function') {
             return claims.formationReplacesCadastreParcel(proposal, idStr, { isApplied });
         }
-        return !!(proposal && isApplied(proposal)
-            && Array.isArray(proposal.childParcelIds) && proposal.childParcelIds.length
-            && Array.isArray(proposal.cadastreParcelIds) && proposal.cadastreParcelIds.map(String).includes(idStr));
+        return false;
     });
 }
 
 function getProposalAreaMap(proposal) {
     if (!proposal) return { areaMap: new Map(), totalArea: 0 };
 
-    const cacheKey = getProposalKey(proposal) || proposal.proposalId || JSON.stringify(proposal.parentParcelIds || []);
-    if (cacheKey && proposalAreaCache.has(cacheKey)) {
-        return proposalAreaCache.get(cacheKey);
-    }
-
     const areaMap = new Map();
     let totalArea = 0;
-    const parcelIds = Array.isArray(proposal?.parentParcelIds) ? proposal.parentParcelIds : [];
+    const parcelIds = Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
+    const repository = window.CadastralParcelRepository;
 
     parcelIds.forEach(id => {
         const key = id?.toString ? id.toString() : String(id || '');
@@ -134,38 +124,20 @@ function getProposalAreaMap(proposal) {
 
         let area = 0;
 
-        // Prefer cached proposal feature data (no map hydration)
-        const cached = getCachedParcelFeature(key, proposal);
-        const props = cached?.properties;
+        const feature = repository?.get?.(key) || null;
+        const props = feature?.properties;
         if (props) {
             area = Number(props.calculatedArea || props.area || props.parcelArea || 0) || 0;
         }
-
-        // Fallback to persisted properties
-        if (!area) {
-            try {
-                const record = readPersistedParcelRecord(key);
-                const storedProps = record?.properties || null;
-                if (storedProps) {
-                    area = Number(storedProps.calculatedArea || storedProps.area || storedProps.parcelArea || 0) || 0;
-                }
-            } catch (_) { }
-        }
-
-        // Final fallback: treat as unit area to avoid zero totals
-        if (!area) {
-            area = 1;
+        if (!area && feature && typeof turf !== 'undefined' && typeof turf.area === 'function') {
+            try { area = Number(turf.area(feature)) || 0; } catch (_) { }
         }
 
         areaMap.set(key, area);
         totalArea += area;
     });
 
-    const result = { areaMap, totalArea };
-    if (cacheKey) {
-        proposalAreaCache.set(cacheKey, result);
-    }
-    return result;
+    return { areaMap, totalArea };
 }
 
 function resolveProposalIdKey(idOrHash) {
@@ -196,71 +168,13 @@ function isCameraMovementSuppressed() {
     try { return !!(window && window.suppressCameraMoves); } catch (_) { return false; }
 }
 
-function getProposalFeatureCacheKey(proposal) {
-    if (!proposal) return null;
-    if (typeof getProposalKey === 'function') {
-        const key = getProposalKey(proposal);
-        if (key) return key;
-    }
-    return proposal.proposalId || null;
-}
-
-function buildProposalFeatureCache(proposal) {
-    if (!proposal) return null;
-    const cacheKey = getProposalFeatureCacheKey(proposal);
-    if (cacheKey && proposalFeatureCache.has(cacheKey)) {
-        const existing = proposalFeatureCache.get(cacheKey);
-        // Check if parentParcelIds changed (not parentFeatures - we don't cache those)
-        const existingParentIds = Array.isArray(existing?.parentParcelIds) ? existing.parentParcelIds : [];
-        const currentParentIds = Array.isArray(proposal?.roadProposal?.parentParcelIds) ? proposal.roadProposal.parentParcelIds : [];
-        const parentIdsChanged = existingParentIds.length !== currentParentIds.length ||
-            !existingParentIds.every((id, i) => String(id) === String(currentParentIds[i]));
-        if (!parentIdsChanged) {
-            return existing;
-        }
-        proposalFeatureCache.delete(cacheKey);
-    }
-
-    const parcelsById = new Map();
-    // Cache any other parcels listed on the proposal (e.g., building proposals)
-    const parcelIds = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
-    parcelIds.forEach(parcelId => {
-        const key = parcelId && parcelId.toString ? parcelId.toString() : (parcelId ? String(parcelId) : null);
-        if (!key || parcelsById.has(key)) {
-            return;
-        }
-        // Only index placeholders here; actual feature resolution happens lazily
-        parcelsById.set(key, parcelsById.get(key) || null);
-    });
-
-    const cacheValue = { parcelsById };
-    if (cacheKey) {
-        proposalFeatureCache.set(cacheKey, cacheValue);
-    }
-    return cacheValue;
-}
-
-function getCachedParcelFeature(parcelId, proposal) {
-    if (!parcelId || !proposal) return null;
-    const cache = buildProposalFeatureCache(proposal);
-    if (!cache || !cache.parcelsById) return null;
-    const key = parcelId && parcelId.toString ? parcelId.toString() : String(parcelId);
-    const cached = cache.parcelsById.get(key);
-    if (cached && cached.geometry) {
-        const clone = cloneGeoJSONFeature(cached);
-        return clone || cached;
-    }
-    return null;
-}
-
 function resolveProposalParcelsInViewport(proposalIdSet /* , proposal */) {
     const out = [];
     forEachProposalParcelInViewport(proposalIdSet, (layer) => {
-        if (!layer || typeof layer.toGeoJSON !== 'function') return;
-        try {
-            const feature = layer.toGeoJSON(false);
-            if (feature) out.push(feature);
-        } catch (_) { /* ignore */ }
+        const parcelId = layer?.feature ? getParcelIdFromFeature(layer.feature) : null;
+        if (!parcelId) return;
+        const feature = window.LiveParcelFabric?.get?.(parcelId) || null;
+        if (feature) out.push(feature);
     });
     return out;
 }
@@ -309,7 +223,7 @@ function openProposalFromList(proposalIdOrHash, options = {}) {
         return false;
     }
 
-    const parcelIds = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
+    const parcelIds = Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
     const fallbackParcel = normalized.parcelId
         || getFirstSelectableParcel(proposal)
         || (parcelIds.length > 0 ? parcelIds[0] : null);
@@ -944,54 +858,32 @@ function cleanSharedQuery(params) {
 
 function computeRequiredParentIdsForSharedProposal(sp) {
     if (!sp || typeof sp !== 'object') return [];
-    if (sp.reparcellization && Array.isArray(sp.reparcellization.polygons) && sp.reparcellization.polygons.length > 0) {
-        // Reparcellization plans render their own geometry and do not depend on ancestor parcels being present locally.
-        return [];
+    const normalized = (typeof canonicalizeProposalCadastreAnchors === 'function')
+        ? canonicalizeProposalCadastreAnchors(sp)
+        : sp;
+    const claims = (typeof window !== 'undefined') ? window.__claims : null;
+    if (!claims || typeof claims.cadastreParcelIdsOf !== 'function') {
+        throw new Error('Proposal cadastre claims service is unavailable.');
     }
-    if (sp.roadProposal && Array.isArray(sp.roadProposal.parentParcelIds) && sp.roadProposal.parentParcelIds.length > 0) {
-        return ensureArrayOfStrings(sp.roadProposal.parentParcelIds);
-    }
-    if (sp.buildingProposal && Array.isArray(sp.buildingProposal.parentParcelIds) && sp.buildingProposal.parentParcelIds.length > 0) {
-        return ensureArrayOfStrings(sp.buildingProposal.parentParcelIds);
-    }
-    if (Array.isArray(sp.parentParcelIds) && sp.parentParcelIds.length > 0) {
-        return ensureArrayOfStrings(sp.parentParcelIds);
-    }
-    return [];
+    return claims.cadastreParcelIdsOf(normalized);
 }
 
 function gatherParentParcelIdsFromSharedProposals(proposals) {
-    // Only use the explicit parentParcelIds field from each proposal
+    // Shared records expose one normalized, flat declaration of cadastral ground.
     const ids = new Set();
     proposals.forEach(p => {
-        const list = Array.isArray(p.parentParcelIds) ? p.parentParcelIds : [];
+        const list = computeRequiredParentIdsForSharedProposal(p);
         ensureArrayOfStrings(list).forEach(id => ids.add(id));
     });
     return ids;
 }
 
-function ensureRoadParentParcelIds(sharedProposal, normalized, parentIds) {
+function roadHasDeclaredCadastre(sharedProposal, normalized, cadastreIds) {
     if (!normalized.roadProposal) return true;
-
-    // Prefer explicit parentParcelIds from shared payload; fallback to ancestor/parcel ids
-    let candidateIds = [];
-    const explicitParents = sharedProposal.roadProposal && Array.isArray(sharedProposal.roadProposal.parentParcelIds)
-        ? ensureArrayOfStrings(sharedProposal.roadProposal.parentParcelIds)
-        : [];
-    if (explicitParents.length > 0) {
-        candidateIds = explicitParents;
-    }
-    if (candidateIds.length === 0) {
-        candidateIds = parentIds.length > 0 ? parentIds : [];
-    }
-
-    if (candidateIds.length === 0) {
-        console.warn('No parent parcel IDs found for road proposal', sharedProposal.proposalId);
+    if (!cadastreIds.length) {
+        console.warn('No cadastreParcelIds found for road proposal', sharedProposal.proposalId);
         return false;
     }
-
-    // Just store the IDs - geometries will be fetched when needed
-    normalized.roadProposal.parentParcelIds = candidateIds;
     return true;
 }
 

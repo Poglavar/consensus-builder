@@ -214,22 +214,12 @@ function getProposalByIdOrHash(idOrHash) {
 }
 
 function getFirstSelectableParcel(proposal) {
-    if (!proposal || !Array.isArray(proposal.parentParcelIds)) {
-        return null;
-    }
-
-    for (const parcelId of proposal.parentParcelIds) {
-        try {
-            const layer = multiParcelSelection.findParcelById(parcelId);
-            if (layer) {
-                return parcelId;
-            }
-        } catch (_) {
-            // Ignore lookup issues and continue searching
-        }
-    }
-
-    return proposal.parentParcelIds.length > 0 ? proposal.parentParcelIds[0] : null;
+    const anchors = Array.isArray(proposal?.cadastreParcelIds)
+        ? proposal.cadastreParcelIds.map(String)
+        : [];
+    if (!anchors.length) return null;
+    const layer = window.ParcelPresenter?.resolveLiveLayers?.(anchors, { includeCorridors: true })?.[0] || null;
+    return layer ? window.LiveParcelFabric?.featureId?.(layer.feature) : anchors[0];
 }
 
 function refreshProposalData() {

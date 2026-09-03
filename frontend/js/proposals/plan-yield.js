@@ -360,17 +360,11 @@
 
     // ── The parcels a plan leaves standing ──────────────────────────────────────────────────────
     //
-    // Not "the parcels currently drawn on the map": that answer depends on where the map is framed
-    // and how much of the cadastre has been fetched, which is how a plan of 272 proposals came to
-    // report FOUR resulting parcels. The plan itself knows the answer without asking the map.
-    //
-    // A proposal that produced children CONSUMED its parents — a road cut parcel 101 into three
-    // pieces, so 101 is gone and the three pieces stand. A proposal that produced none (an urban
-    // rule builds on the parcels as they are) leaves its parents standing. So:
-    //
-    //     standing = (everything produced ∪ everything merely built on) − everything consumed
-    //
-    // Set arithmetic, so the answer does not depend on the order proposals are read in.
+    // A proposal is an authored instruction. It knows its immutable cadastral scope, but it does
+    // not know which live parcel pieces a particular application produced. Those pieces belong to
+    // LiveParcelFabric and may legitimately differ after the same proposal is rebased onto another
+    // current plan. Callers that need the materialized answer therefore pass an explicit fabric
+    // snapshot; this pure module never reads saved parent/child ids from proposal records.
 
     function pushIds(target, list) {
         if (!Array.isArray(list)) return;
@@ -381,39 +375,31 @@
         });
     }
 
-    /** The parent and child parcel ids a proposal declares, in either shape, wherever it keeps them. */
-    function parcelIdsOf(proposal) {
-        const parents = new Set();
-        const children = new Set();
-        if (!proposal || typeof proposal !== 'object') return { parents: [], children: [] };
+    /** The one durable land declaration carried by a canonical proposal. */
+    function cadastreIdsOf(proposal) {
+        const ids = new Set();
+        if (!proposal || typeof proposal !== 'object') return [];
+        pushIds(ids, proposal.cadastreParcelIds);
+        return [...ids];
+    }
 
-        const subs = [
-            proposal,
-            proposal.roadProposal, proposal.road_proposal,
-            proposal.buildingProposal, proposal.building_proposal,
-            proposal.structureProposal, proposal.structure_proposal,
-            proposal.reparcellization,
-            proposal.decideLaterProposal, proposal.decide_later_proposal
-        ];
-        subs.forEach(sub => {
-            if (!sub || typeof sub !== 'object') return;
-            pushIds(parents, sub.parentParcelIds);
-            pushIds(children, sub.childParcelIds);
-        });
-        pushIds(parents, proposal.ancestorParcelIds);
-        pushIds(parents, proposal.ancestor_parcel_ids);
-        pushIds(parents, proposal.cadastreParcelIds);
-        pushIds(parents, proposal.cadastre_parcel_ids);
-        pushIds(children, proposal.descendantParcelIds);
-        pushIds(children, proposal.descendant_parcel_ids);
+    function featureParcelId(feature) {
+        const props = feature && feature.properties || {};
+        const value = props.parcelId ?? props.id;
+        return value === undefined || value === null ? '' : String(value).trim();
+    }
 
-        return { parents: [...parents], children: [...children] };
+    function featureCadastreIds(feature) {
+        const ids = new Set();
+        pushIds(ids, feature && feature.properties && feature.properties.cadastreParcelIds);
+        return [...ids];
     }
 
     /**
-     * @returns {{resulting: string[], produced: string[], consumed: string[], builtOn: string[]}}
-     *          `resulting` is the plan's cadastre; the other three are the working shown, so a
-     *          surprising count can be read rather than argued with.
+     * @returns {{resulting: string[], produced: string[], consumed: string[], builtOn: string[],
+     *            cadastre: string[], materialized: boolean}}
+     *          `resulting` is the explicit live-fabric snapshot when supplied. With no snapshot,
+     *          it is the proposal set's cadastral scope and `materialized` is false.
      */
     function resultingParcels(proposals, options) {
         const opts = options || {};
@@ -421,28 +407,52 @@
             .filter(p => p && typeof p === 'object')
             .filter(p => (opts.appliedOnly ? isApplied(p) : true));
 
-        const produced = new Set();
-        const consumed = new Set();
-        const builtOn = new Set();
+        const cadastre = new Set();
+        list.forEach(proposal => cadastreIdsOf(proposal).forEach(id => cadastre.add(id)));
 
-        list.forEach(proposal => {
-            const { parents, children } = parcelIdsOf(proposal);
-            if (children.length) {
-                children.forEach(id => produced.add(id));
-                parents.forEach(id => consumed.add(id));
-                return;
-            }
-            parents.forEach(id => builtOn.add(id));
+        if (!Array.isArray(opts.materializedFeatures)) {
+            return {
+                resulting: [...cadastre],
+                produced: [],
+                consumed: [],
+                builtOn: [...cadastre],
+                cadastre: [...cadastre],
+                materialized: false
+            };
+        }
+
+        const resulting = new Set();
+        const produced = new Set();
+        const coveredCadastre = new Set();
+        opts.materializedFeatures.forEach(feature => {
+            const id = featureParcelId(feature);
+            const anchors = featureCadastreIds(feature).filter(anchor => cadastre.has(anchor));
+            if (!id || !anchors.length) return;
+            resulting.add(id);
+            anchors.forEach(anchor => coveredCadastre.add(anchor));
+            const props = feature.properties || {};
+            const isOriginal = anchors.length === 1 && anchors[0] === id
+                && !String(props.producedByProposalId || '').trim();
+            if (!isOriginal) produced.add(id);
         });
 
-        const resulting = new Set([...produced, ...builtOn]);
-        consumed.forEach(id => resulting.delete(id));
+        // An absent live entry is not evidence that land vanished. This can happen while a caller
+        // is still hydrating cadastral ground. Keep that cadastral parcel in the result rather than
+        // manufacturing a generated id.
+        cadastre.forEach(id => {
+            if (!coveredCadastre.has(id)) resulting.add(id);
+        });
+
+        const builtOn = new Set([...cadastre].filter(id => resulting.has(id)));
+        const consumed = new Set([...cadastre].filter(id => !resulting.has(id)));
 
         return {
             resulting: [...resulting],
             produced: [...produced],
             consumed: [...consumed],
-            builtOn: [...builtOn]
+            builtOn: [...builtOn],
+            cadastre: [...cadastre],
+            materialized: true
         };
     }
 
@@ -458,7 +468,7 @@
         epochYearOf,
         planYield,
         rederive,
-        parcelIdsOf,
+        cadastreIdsOf,
         resultingParcels
     };
 

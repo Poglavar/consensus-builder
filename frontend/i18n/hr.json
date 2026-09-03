@@ -168,7 +168,7 @@
             "instantCreateFailed": "Novi objekt nije bilo moguće spremiti.",
             "noAdapter": "Za ovu vrstu prijedloga nije registriran uređivač.",
             "notReshapeable": "Ovoj se vrsti prijedloga ne može mijenjati oblik.",
-            "parcelsNotContiguous": "Jezero zahtijeva susjedne parcele.",
+            "parcelsNotContiguous": "Odabrane čestice moraju činiti jednu povezanu površinu.",
             "parcelsUnavailable": "Čestice iz skice nisu dostupne u trenutačnom gradu.",
             "readOnly": "Ovaj se prijedlog može samo pregledavati.",
             "sourceMissing": "Izvorni prijedlog nije pronađen."

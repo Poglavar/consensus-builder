@@ -19,14 +19,13 @@
         if (!properties || properties.isCorridor !== true || properties.isRoad !== true || typeof findProposal !== 'function') {
             return null;
         }
-        const candidates = [properties.producedByProposalId, properties.ancestorProposal, properties.proposalId]
-            .map(value => value !== undefined && value !== null ? String(value) : null)
-            .filter(Boolean);
-        for (const candidate of candidates) {
-            const proposal = findProposal(candidate);
-            if (roadProposalIsApplied(proposal)) return proposal;
-        }
-        return null;
+        // A live parcel has one current producer stamp. `ancestorProposal` and `proposalId`
+        // belonged to the retired replay graph and can point at an unrelated historical record
+        // after the fabric has been replaced atomically.
+        const producer = properties.producedByProposalId;
+        if (producer === undefined || producer === null || String(producer).trim() === '') return null;
+        const proposal = findProposal(String(producer));
+        return roadProposalIsApplied(proposal) ? proposal : null;
     }
 
     return {

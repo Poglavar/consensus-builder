@@ -743,9 +743,9 @@ class AgentBubbleManager {
                 }
 
                 const proposal = proposalStorage.getProposal(proposalId);
-                const parcels = Array.isArray(proposal?.parentParcelIds)
-                    ? proposal.parentParcelIds
-                    : (Array.isArray(proposal?.childParcelIds) ? proposal.childParcelIds : []);
+                const parcels = Array.isArray(proposal?.cadastreParcelIds)
+                    ? proposal.cadastreParcelIds
+                    : [];
 
                 if (!proposal || parcels.length === 0) {
                     console.debug('[AgentBubble] proposal/parcels unavailable for auto-select', {
@@ -843,9 +843,9 @@ class AgentBubbleManager {
     getProposalPosition(proposalId) {
         if (typeof proposalStorage !== 'undefined') {
             const proposal = proposalStorage.getProposal(proposalId);
-            const parcels = Array.isArray(proposal?.parentParcelIds)
-                ? proposal.parentParcelIds
-                : (Array.isArray(proposal?.childParcelIds) ? proposal.childParcelIds : []);
+            const parcels = Array.isArray(proposal?.cadastreParcelIds)
+                ? proposal.cadastreParcelIds
+                : [];
             if (proposal && parcels.length > 0) {
 
                 // Strategy 1: Try stored bounds first (most reliable)

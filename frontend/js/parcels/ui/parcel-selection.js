@@ -25,9 +25,13 @@
         if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) return;
         const targetLayer = e && e.target ? e.target : null;
         if (!targetLayer || !targetLayer.feature) return;
-        const feature = targetLayer.feature;
-        const parcelId = resolveParcelId(feature);
+        const parcelId = resolveParcelId(targetLayer.feature);
         if (!parcelId) return;
+        const feature = global.LiveParcelFabric?.get?.(parcelId) || null;
+        const presentedLayer = global.ParcelPresenter?.getLayer?.(parcelId) || null;
+        // A click from an old Leaflet layer can arrive while an atomic fabric commit replaces the
+        // presentation. It has no authority to select geometry or identity after that commit.
+        if (!feature || presentedLayer !== targetLayer) return;
         const isRoad = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(parcelId) : false;
 
         // Applied corridor parcels are both parcels and proposal surfaces. Remember the proposal now;
@@ -47,12 +51,6 @@
                 const found = parcelProposals.find(p => !p.roadProposal
                     && typeof global.isProposalApplied === 'function' && global.isProposalApplied(p));
                 if (found) return found;
-                if (typeof global.structureProposalsCoveringFeature === 'function') {
-                    const covering = global.structureProposalsCoveringFeature(feature);
-                    if (covering.length && typeof global.getProposalByIdOrHash === 'function') {
-                        return global.getProposalByIdOrHash(covering[0]) || null;
-                    }
-                }
             } catch (_) { }
             return null;
         };
@@ -78,10 +76,7 @@
             const browseProposal = proposalOnThisParcel();
             if (browseProposal && typeof global.selectAndHighlightProposal === 'function') {
                 const proposalKey = (typeof global.getProposalKey === 'function' && global.getProposalKey(browseProposal))
-                    || browseProposal.proposalId
-                    || feature.properties.producedByProposalId
-                    || feature.properties.ancestorProposal
-                    || feature.properties.proposalId;
+                    || browseProposal.proposalId;
                 global.selectAndHighlightProposal(proposalKey, parcelId, true, true); // center + details; its tail closes the list
             }
             if (e) L.DomEvent.stopPropagation(e);
@@ -217,7 +212,7 @@
         }
 
         global.selectedParcelId = parcelId.toString();
-        const isTrackSelected = (targetLayer?.feature?.properties?.isTrack === true) || Boolean(targetLayer?._trackStyle);
+        const isTrackSelected = feature.properties?.isTrack === true || Boolean(targetLayer?._trackStyle);
         if (isTrackSelected) {
             const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
             const trackStyle = styleFn ? styleFn(parcelId, targetLayer, { isTrack: true }) : (global.trackStyle || {});
@@ -229,7 +224,9 @@
 
         global.window.selectedParcelId = global.selectedParcelId;
 
-        const blockName = feature.properties.block;
+        const blockName = typeof global.parcelBlockNameForId === 'function'
+            ? global.parcelBlockNameForId(parcelId)
+            : null;
         const blocksActive = global.document.getElementById('parcelBlocksCheckbox') && global.document.getElementById('parcelBlocksCheckbox').checked;
         if (blocksActive) {
             const currentSelectedBlockName = (typeof global.selectedBlockName !== 'undefined' && global.selectedBlockName)
@@ -271,22 +268,11 @@
                 // all). Roads open through their own corridor click surface only.
                 appliedProposal = parcelProposals.find(p => !p.roadProposal
                     && typeof global.isProposalApplied === 'function' && global.isProposalApplied(p)) || null;
-                if (!appliedProposal && typeof global.structureProposalsCoveringFeature === 'function') {
-                    // Geometry fallback: a structure whose declared parcel ids drifted still
-                    // opens when the clicked parcel sits inside its shape.
-                    const covering = global.structureProposalsCoveringFeature(feature);
-                    if (covering.length && typeof global.getProposalByIdOrHash === 'function') {
-                        appliedProposal = global.getProposalByIdOrHash(covering[0]) || null;
-                    }
-                }
             } catch (_) { }
         }
         if (appliedProposal && typeof global.selectAndHighlightProposal === 'function') {
             const proposalKey = (typeof global.getProposalKey === 'function' && global.getProposalKey(appliedProposal))
-                || appliedProposal.proposalId
-                || feature.properties.producedByProposalId
-                || feature.properties.ancestorProposal
-                || feature.properties.proposalId;
+                || appliedProposal.proposalId;
             global.__openProposalDetailsCollapsed = true;
             global.selectAndHighlightProposal(proposalKey, parcelId, false, true);
             if (typeof global.multiParcelSelection !== 'undefined'

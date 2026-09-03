@@ -26,10 +26,11 @@
         const entry = loaded.find(candidate => String(candidate.id) === id);
         out.loadedCadastreParcels = loaded.length;
         if (!entry) {
-            const pieces = (global.parcelLayerById instanceof Map)
-                ? Array.from(global.parcelLayerById.keys()).filter(key => String(key).split('#')[0] === id)
+            const fabric = global.LiveParcelFabric;
+            const pieces = fabric && typeof fabric.entriesForCadastre === 'function'
+                ? fabric.entriesForCadastre([id], { includeCorridors: true }).map(feature => fabric.featureId(feature))
                 : [];
-            out.piecesOnMap = pieces;
+            out.livePieces = pieces;
             out.verdict = pieces.length
                 ? `Not a cadastral parcel here — it is already cut into ${pieces.length} piece(s).`
                 : 'That parcel is not loaded in this session (nothing can derive it).';
@@ -89,14 +90,18 @@
             return out;
         }
 
-        const onMap = (global.parcelLayerById instanceof Map)
-            ? Array.from(global.parcelLayerById.keys()).filter(key => String(key).split('#')[0] === id && String(key) !== id)
+        const fabric = global.LiveParcelFabric;
+        const presenter = global.ParcelPresenter;
+        const onMap = fabric && typeof fabric.entriesForCadastre === 'function'
+            ? fabric.entriesForCadastre([id], { includeCorridors: true })
+                .map(feature => fabric.featureId(feature))
+                .filter(pieceId => pieceId !== id && presenter?.getLayer?.(pieceId))
             : [];
         out.piecesOnMap = onMap;
         out.verdict = onMap.length
             ? `It IS cut — ${onMap.length} piece(s) are on the map. What you selected is the cadastral parent.`
-            : `It SHOULD be cut into ${derived.length} piece(s) and none are on the map — the derivation never ran over it. `
-                + 'Run ProposalManager.deriveArrivingParcels(["' + id + '"]) to cut it now.';
+            : `INVARIANT FAILURE: it should be cut into ${derived.length} piece(s), but the committed live fabric has none. `
+                + 'Cadastral ground must enter through CadastralParcelRepository and its atomic integration callback.';
         return out;
     }
 
@@ -134,29 +139,22 @@
         }
         out.at = { lat: point[1], lng: point[0] };
 
-        const byId = (global.parcelLayerById instanceof Map) ? global.parcelLayerById : new Map();
-        const onMap = (global.parcelLayer && typeof global.parcelLayer.hasLayer === 'function')
-            ? global.parcelLayer
-            : null;
-        byId.forEach((layer, id) => {
-            if (!layer || typeof layer.toGeoJSON !== 'function') return;
-            // Bounds first: this walks every parcel in the session.
-            try {
-                const bounds = layer.getBounds && layer.getBounds();
-                if (bounds && bounds.isValid && bounds.isValid()
-                    && !bounds.contains([point[1], point[0]])) return;
-            } catch (_) { /* fall through to the exact test */ }
-            let feature = null;
-            try {
-                const gj = layer.toGeoJSON(false);
-                feature = (gj && gj.type === 'FeatureCollection') ? gj.features[0] : gj;
-            } catch (_) { return; }
+        const fabric = global.LiveParcelFabric;
+        const presenter = global.ParcelPresenter;
+        const epsilon = 0.00004;
+        const features = fabric && typeof fabric.queryBounds === 'function'
+            ? fabric.queryBounds([point[0] - epsilon, point[1] - epsilon, point[0] + epsilon, point[1] + epsilon], {
+                includeCorridors: true
+            })
+            : [];
+        features.forEach(feature => {
             if (!feature || !feature.geometry) return;
             let inside = false;
             try { inside = turf.booleanPointInPolygon(point, feature); } catch (_) { inside = false; }
             if (!inside) return;
-            const visible = onMap ? onMap.hasLayer(layer) : true;
-            (visible ? out.covering : out.hidden).push(String(id));
+            const id = fabric.featureId(feature);
+            const presented = !!presenter?.getLayer?.(id);
+            (presented ? out.covering : out.hidden).push(String(id));
         });
 
         // Applied records whose own footprint contains the point — a park or square razes the fabric
@@ -186,9 +184,13 @@
             out.verdict = `Nothing to click: "${structure.title || structure.proposalId}" (${structure.kind}) razed the fabric here `
                 + 'and its surface is drawn non-interactive. That is by design for a park/square/lake.';
         } else if (out.hidden.length) {
-            out.verdict = `${out.hidden.length} parcel(s) are here but HIDDEN — something derived claims them and its pieces `
-                + 'never arrived. That is a hole in the fabric: '
-                + `ProposalManager.deriveArrivingParcels(${JSON.stringify(out.hidden.map(id => String(id).split('#')[0]))})`;
+            const affectedCadastreIds = Array.from(new Set(out.hidden.flatMap(parcelKey => {
+                const feature = fabric?.get?.(parcelKey);
+                return feature ? fabric.explicitCadastreIds(feature) : [];
+            })));
+            out.affectedCadastreIds = affectedCadastreIds;
+            out.verdict = `${out.hidden.length} live parcel(s) cover this point but ParcelPresenter has no layer for them. `
+                + 'That is a presentation invariant failure; the fabric itself is intact.';
         } else {
             // Nothing on the map is not the same as nothing in the cadastre, and the difference
             // decides what to do about it: a parcel the backend HAS is a loading gap you can fill,
@@ -206,7 +208,7 @@
                 ]]
             };
             try {
-                const ground = global.CadastralGroundService;
+                const ground = global.CadastralParcelRepository;
                 if (!ground || typeof ground.ensureFootprint !== 'function') {
                     throw new Error('Cadastral ground service is unavailable');
                 }

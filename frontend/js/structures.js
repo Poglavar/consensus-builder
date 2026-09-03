@@ -1,10 +1,9 @@
 // Parks and Squares (structures) management
 
 (function () {
-    // In-memory and persisted storage for parks
-    const STORAGE_KEY = 'cb_parks';
-    const STORAGE_KEY_SQUARES = 'cb_squares';
-    const STORAGE_KEY_LAKES = 'cb_lakes';
+    // Structure features are a presentation cache rebuilt from currently standing proposal
+    // records. Their authored geometry/decorations live on the proposal; this module owns only the
+    // current render-session arrays and layers.
     const DECORATION_VERSION = 2; // bump when changing decoration generation rules
     const LAKE_GRAPHICS_VERSION = 3;
     const LAKE_SHORE_TARGET_RATIO = 0.2;
@@ -182,47 +181,6 @@
         };
     }
 
-    function saveParks() {
-        try {
-            PersistentStorage.setItem(STORAGE_KEY, JSON.stringify(window.parks));
-        } catch (e) { console.warn('Failed to save parks', e); }
-    }
-
-    function loadParks() {
-        try {
-            const raw = PersistentStorage.getItem(STORAGE_KEY);
-            if (!raw) return;
-            const arr = JSON.parse(raw);
-            if (Array.isArray(arr)) {
-                window.parks = arr.filter(f => f && f.type === 'Feature' && f.geometry);
-            }
-        } catch (e) { console.warn('Failed to load parks', e); }
-    }
-
-    function saveSquares() {
-        try { PersistentStorage.setItem(STORAGE_KEY_SQUARES, JSON.stringify(window.squares)); } catch (e) { console.warn('Failed to save squares', e); }
-    }
-    function loadSquares() {
-        try {
-            const raw = PersistentStorage.getItem(STORAGE_KEY_SQUARES);
-            if (!raw) return;
-            const arr = JSON.parse(raw);
-            if (Array.isArray(arr)) window.squares = arr.filter(f => f && f.type === 'Feature' && f.geometry);
-        } catch (e) { console.warn('Failed to load squares', e); }
-    }
-
-    function saveLakes() {
-        try { PersistentStorage.setItem(STORAGE_KEY_LAKES, JSON.stringify(window.lakes)); } catch (e) { console.warn('Failed to save lakes', e); }
-    }
-    function loadLakes() {
-        try {
-            const raw = PersistentStorage.getItem(STORAGE_KEY_LAKES);
-            if (!raw) return;
-            const arr = JSON.parse(raw);
-            if (Array.isArray(arr)) window.lakes = arr.filter(f => f && f.type === 'Feature' && f.geometry);
-        } catch (e) { console.warn('Failed to load lakes', e); }
-    }
-
     function featureBbox(feature) {
         try { return turf.bbox(feature); } catch (_) { return null; }
     }
@@ -261,7 +219,10 @@
                 const diff = turf.difference(current, cutter);
                 if (!diff || !diff.geometry) return null;
                 current = diff;
-            } catch (_) { }
+            } catch (error) {
+                console.error('[structures] failed to cut structure geometry', error);
+                return null;
+            }
         }
         return current.geometry;
     }
@@ -308,7 +269,7 @@
             && String(parkFeature?.properties?.proposalId || '') === String(window.structureGeometryEditorEditingProposalId)) {
             return;
         }
-        // Ensure deterministic decorations are present and persisted
+        // Ensure deterministic decorations are present on the proposal-backed feature.
         ensureParkDecorations(parkFeature);
         const decorations = (parkFeature.properties && parkFeature.properties.decorations) ? parkFeature.properties.decorations : null;
         if (!decorations) return;
@@ -544,7 +505,6 @@
 
                     dec.paths = newPaths;
                     dec.version = DECORATION_VERSION;
-                    saveParks();
                 }
                 return; // existing decorations verified/upgraded
             }
@@ -712,7 +672,6 @@
             }
 
             props.decorations = { ponds, flowerbeds: [], paths, trees, version: DECORATION_VERSION };
-            saveParks();
         } catch (_) { }
     }
 
@@ -956,8 +915,8 @@
                 if (pointInFeature(turf.point(candidate), squareFeature)) return candidate;
             }
             const random = randomPointsInside(squareFeature, 5);
-            const fallback = random && random[0] && random[0].geometry && random[0].geometry.coordinates;
-            return Array.isArray(fallback) ? fallback : null;
+            const randomCoordinate = random && random[0] && random[0].geometry && random[0].geometry.coordinates;
+            return Array.isArray(randomCoordinate) ? randomCoordinate : null;
         } catch (_) {
             return null;
         }
@@ -972,11 +931,10 @@
                 if (!Array.isArray(props.decorations.statues)) {
                     const statue = autoStatuePoint(squareFeature);
                     props.decorations.statues = statue ? [statue] : [];
-                    saveSquares();
                 }
                 return;
             }
-            // Fountain at centroid; ensure inside polygon by fallback random sampling
+            // Fountain at centroid; use an interior sample when the centroid is outside.
             let ctr = null;
             try { ctr = turf.centroid(squareFeature); } catch (_) { ctr = null; }
             let fountain = null;
@@ -985,11 +943,6 @@
             } else {
                 const pts = randomPointsInside(squareFeature, 10);
                 fountain = pts && pts[0] && pts[0].geometry && pts[0].geometry.coordinates;
-                if (!Array.isArray(fountain)) {
-                    // fallback to bbox center
-                    const b = featureBbox(squareFeature) || [0, 0, 0, 0];
-                    fountain = [(b[0] + b[2]) / 2, (b[1] + b[3]) / 2];
-                }
             }
             // A few stalls near periphery but inside
             const stalls = [];
@@ -1013,7 +966,6 @@
             }
             const statue = autoStatuePoint(squareFeature);
             props.decorations = { fountain, fountains: fountain ? [fountain] : [], trees: [], benches: [], stalls, statues: statue ? [statue] : [], version: 2 };
-            saveSquares();
         } catch (_) { }
     }
 
@@ -1024,13 +976,17 @@
         const baseArea = Math.max(0, turf.area(baseFeature) || 0);
         if (!baseArea) return null;
 
-        let bbox = null;
-        try { bbox = featureBbox(baseFeature); } catch (_) { bbox = null; }
-        const [minLng, minLat, maxLng, maxLat] = Array.isArray(bbox) && bbox.length === 4 ? bbox : [0, 0, 0, 0];
+        const bbox = featureBbox(baseFeature);
+        if (!Array.isArray(bbox) || bbox.length !== 4) return null;
+        const [minLng, minLat, maxLng, maxLat] = bbox;
         let widthMeters = 0;
         let heightMeters = 0;
-        try { widthMeters = turf.distance([minLng, minLat], [maxLng, minLat], { units: 'meters' }); } catch (_) { widthMeters = 0; }
-        try { heightMeters = turf.distance([minLng, minLat], [minLng, maxLat], { units: 'meters' }); } catch (_) { heightMeters = 0; }
+        try {
+            widthMeters = turf.distance([minLng, minLat], [maxLng, minLat], { units: 'meters' });
+            heightMeters = turf.distance([minLng, minLat], [minLng, maxLat], { units: 'meters' });
+        } catch (_) {
+            return null;
+        }
         const minDim = Math.max(1, Math.min(Math.max(widthMeters, 0), Math.max(heightMeters, 0)));
         const minWidth = 0.5;
         const maxWidth = Math.max(minWidth, minDim * 0.45);
@@ -1056,7 +1012,7 @@
             }
             let shore = null;
             try { shore = turf.difference(baseFeature, water); } catch (_) { shore = null; }
-            if (!shore) shore = baseFeature;
+            if (!shore || !shore.geometry) return null;
             const ratio = Math.max(0, Math.min(1, (baseArea - waterArea) / baseArea));
             const delta = Math.abs(ratio - targetRatio);
             const current = { water, shore, width, ratio, delta };
@@ -1092,10 +1048,10 @@
 
     function ensureLakeGraphics(lakeFeature) {
         try {
-            if (!lakeFeature || !lakeFeature.geometry) return;
+            if (!lakeFeature || !lakeFeature.geometry) return false;
             const props = lakeFeature.properties = lakeFeature.properties || {};
             const graphics = props.lakeGraphics;
-            if (graphics && graphics.version === LAKE_GRAPHICS_VERSION && graphics.shore && (graphics.water || graphics.shore)) return;
+            if (graphics && graphics.version === LAKE_GRAPHICS_VERSION && graphics.shore && graphics.water) return true;
 
             const geom = lakeFeature.geometry;
             const polygons = [];
@@ -1104,22 +1060,27 @@
             } else if (geom.type === 'MultiPolygon') {
                 geom.coordinates.forEach(rings => polygons.push(turf.polygon(rings)));
             }
-            if (!polygons.length) return;
+            if (!polygons.length) return false;
 
             let merged = polygons[0];
             for (let i = 1; i < polygons.length; i++) {
                 try {
                     const u = turf.union(merged, polygons[i]);
-                    if (u && u.geometry) merged = u;
-                } catch (_) { /* ignore */ }
+                    if (!u || !u.geometry) return false;
+                    merged = u;
+                } catch (_) {
+                    return false;
+                }
             }
-            const base = merged && merged.geometry ? merged : polygons[0];
+            const base = merged && merged.geometry ? merged : null;
+            if (!base) return false;
 
             const zones = computeLakeZones(base, { targetShoreRatio: LAKE_SHORE_TARGET_RATIO });
-            const shore = zones && zones.shore ? zones.shore : base;
-            const water = zones && zones.water ? zones.water : null;
-            const transitionRing = zones && zones.transition ? zones.transition : null;
-            const shoreWidth = zones && zones.width ? zones.width : 6;
+            if (!zones || !zones.shore || !zones.water) return false;
+            const shore = zones.shore;
+            const water = zones.water;
+            const transitionRing = zones.transition;
+            const shoreWidth = zones.width;
 
             const fish = [];
             const fishArea = water && water.geometry ? water : base;
@@ -1146,18 +1107,22 @@
                 shoreWidthMeters: shoreWidth,
                 shoreRatio: zones && typeof zones.ratio === 'number' ? zones.ratio : null
             };
-            saveLakes();
-        } catch (_) { }
+        } catch (error) {
+            console.error('[structures] failed to derive lake graphics', error);
+            return false;
+        }
+        return true;
     }
 
     function drawLakeDecorations(group, lakeFeature, corridorCutters = null) {
         if (!lakeFeature || !lakeFeature.geometry) return;
-        try { ensureLakeGraphics(lakeFeature); } catch (_) { }
+        if (!ensureLakeGraphics(lakeFeature)) return;
         const graphics = lakeFeature.properties && lakeFeature.properties.lakeGraphics;
+        if (!graphics || !graphics.shore || !graphics.water) return;
         // Applied roads cut through every rendered zone (a causeway across the lake).
         const cutters = Array.isArray(corridorCutters) ? corridorCutters : [];
-        const shoreGeom = subtractCorridorsFromGeometry(graphics && graphics.shore ? graphics.shore : lakeFeature.geometry, cutters);
-        const waterGeom = subtractCorridorsFromGeometry(graphics && graphics.water ? graphics.water : null, cutters);
+        const shoreGeom = subtractCorridorsFromGeometry(graphics.shore, cutters);
+        const waterGeom = subtractCorridorsFromGeometry(graphics.water, cutters);
         const transitionGeom = subtractCorridorsFromGeometry(graphics && graphics.transition ? graphics.transition : null, cutters);
 
         // Shore + water are the lake's claim surface, clickable (claims model).
@@ -1424,14 +1389,22 @@
             // 2) Simple sequential union (no shape change intent)
             try {
                 let seq = features[0] || null;
+                let seqFailed = false;
                 for (let i = 1; i < features.length; i++) {
                     try {
                         const merged = turf.union(seq, features[i]);
-                        if (merged && merged.geometry) seq = merged; // keep merging as-is
-                    } catch (_) { /* fall through to robust */ }
+                        if (!merged || !merged.geometry) {
+                            seqFailed = true;
+                            break;
+                        }
+                        seq = merged;
+                    } catch (_) {
+                        seqFailed = true;
+                        break;
+                    }
                 }
-                if (seq && seq.geometry) return seq;
-            } catch (_) { /* try robust next */ }
+                if (!seqFailed && seq && seq.geometry) return seq;
+            } catch (_) { /* try the strict robust union below */ }
 
             // 3) Robust union: clean + tiny-buffer dissolve to heal topology, then unbuffer
             const robust = (() => {
@@ -1446,32 +1419,16 @@
                         try {
                             const fb = turf.buffer(f, epsilon, { units: 'meters', steps: 16 });
                             acc = acc ? (turf.union(acc, fb) || acc) : fb;
-                        } catch (_) { /* skip this piece */ }
+                        } catch (_) { return null; }
                     }
                     if (!acc || !acc.geometry) return null;
                     try {
                         const unbuf = turf.buffer(acc, -epsilon, { units: 'meters', steps: 16 });
-                        if (unbuf && unbuf.geometry) return unbuf;
-                    } catch (_) { }
-                    return acc;
+                        return unbuf && unbuf.geometry ? unbuf : null;
+                    } catch (_) { return null; }
                 } catch (_) { return null; }
             })();
             if (robust && robust.geometry) return robust;
-
-            // 4) Fallback to convex hull of all parcel coordinates so a park always forms
-            try {
-                const fc = turf.featureCollection(features);
-                const hull = turf.convex(fc);
-                if (hull && hull.geometry) return hull;
-            } catch (_) { }
-
-            // 5) Last resort: bbox polygon
-            try {
-                const bb = turf.bbox(turf.featureCollection(features));
-                const box = turf.bboxPolygon(bb);
-                if (box && box.geometry) return box;
-            } catch (_) { }
-
             return null;
         } catch (e) { console.warn('Failed to compute block union', e); return null; }
     }
@@ -1559,9 +1516,6 @@
     window.ensureSquareDecorations = ensureSquareDecorations;
 
     function initialiseStructures() {
-        loadParks();
-        loadSquares();
-        loadLakes();
         if (typeof window !== 'undefined') {
             const runUpdates = () => {
                 try { updateParksLayer(); } catch (_) { }
@@ -1577,9 +1531,5 @@
         }
     }
 
-    if (typeof PersistentStorage !== 'undefined' && PersistentStorage.ensureReady) {
-        PersistentStorage.ensureReady(initialiseStructures);
-    } else {
-        initialiseStructures();
-    }
+    initialiseStructures();
 })();

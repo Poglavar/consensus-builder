@@ -1,4 +1,8 @@
 import { effectiveLifecycleStatus } from './lifecycle.js';
+import { createRequire } from 'node:module';
+
+const requireCjs = createRequire(import.meta.url);
+const authoredRecord = requireCjs('../../frontend/js/proposals/authored-record.js');
 
 const LOCAL_STATE_SUB_KEYS = Object.freeze([
     'roadProposal',
@@ -14,32 +18,19 @@ const iso = (value, fallback) => present(value)
     ? (value instanceof Date ? value.toISOString() : new Date(value).toISOString())
     : fallback;
 
-const LEGACY_DERIVED_PARCEL = /^HR-\d+-.+?_[a-z0-9]+_\d+$/i;
-
 export function isDerivedParcelDeclaration(value) {
-    const id = String(value ?? '');
-    return id.includes('#') || LEGACY_DERIVED_PARCEL.test(id);
+    return authoredRecord.isDerivedParcelId(value);
 }
 
 export function findNonCadastralParentDeclaration(proposal) {
-    if (!proposal || typeof proposal !== 'object' || Array.isArray(proposal)) return null;
-    const lists = [
-        ['parentParcelIds', proposal.parentParcelIds],
-        ['parcelIds', proposal.parcelIds],
-        ['cadastreParcelIds', proposal.cadastreParcelIds]
-    ];
-    LOCAL_STATE_SUB_KEYS.forEach(key => {
-        const sub = proposal[key];
-        if (!sub || typeof sub !== 'object' || Array.isArray(sub)) return;
-        lists.push([`${key}.parentParcelIds`, sub.parentParcelIds]);
-        if (key === 'reparcellization') lists.push([`${key}.parcelIds`, sub.parcelIds]);
-    });
-    for (const [path, values] of lists) {
-        if (!Array.isArray(values)) continue;
-        const id = values.find(isDerivedParcelDeclaration);
-        if (id !== undefined) return { path, id: String(id) };
-    }
-    return null;
+    return authoredRecord.findNonCadastralReference(proposal);
+}
+
+export function findLegacyCadastreDeclaration(proposal) {
+    const declarations = typeof authoredRecord.legacyCadastreDeclarations === 'function'
+        ? authoredRecord.legacyCadastreDeclarations(proposal)
+        : [];
+    return declarations[0] || null;
 }
 
 const clearRoadDemolition = definition => {
@@ -52,16 +43,13 @@ const clearRoadDemolition = definition => {
 export function stripLocalProposalState(proposal) {
     if (!proposal || typeof proposal !== 'object' || Array.isArray(proposal)) return proposal;
     const sanitized = JSON.parse(JSON.stringify(proposal));
-    const governmentPlan = sanitized.tags?.governmentPlan === true
-        || sanitized.roadProposal?.definition?.kind === 'government_plan';
-
     [
         'applied', 'appliedAt', 'status', 'localEditAt', 'editSeq', 'revertSnapshot',
         'childParcelIds', 'descendantParcelIds', 'parentFeatures',
         'parentProposals', 'childProposals', 'parentProposalIds', 'childProposalIds',
         'formation', 'demolishedBuildings', 'demolitionScanned'
     ].forEach(key => delete sanitized[key]);
-    if (!governmentPlan) delete sanitized.childFeatures;
+    delete sanitized.childFeatures;
 
     if (sanitized.geometry && typeof sanitized.geometry === 'object') {
         delete sanitized.geometry.parentFeatures;
@@ -85,14 +73,16 @@ export function stripLocalProposalState(proposal) {
         delete sub.formation;
         delete sub.demolishedBuildings;
         delete sub.demolitionScanned;
-        if (!(key === 'roadProposal' && governmentPlan)) delete sub.childFeatures;
+        delete sub.childFeatures;
         clearRoadDemolition(sub.definition);
     });
     if (sanitized.roadProposal) {
         delete sanitized.definition;
         delete sanitized.roadProposal.roadGeometry;
     }
-    return sanitized;
+    return authoredRecord.stripCadastreAliases(
+        authoredRecord.cleanFeatureContainers(sanitized)
+    );
 }
 
 export function serializeProposalRow(row, options = {}) {
@@ -124,9 +114,8 @@ export function serializeProposalRow(row, options = {}) {
     proposal.depositPercent = choose(row.deposit_percent, proposal.depositPercent);
     proposal.isConditional = choose(row.is_conditional, proposal.isConditional);
     proposal.disbursementMode = choose(row.disbursement_mode, proposal.disbursementMode);
-    proposal.parentParcelIds = choose(row.ancestor_parcel_ids, proposal.parentParcelIds ?? null);
-    // The CADASTRAL parcels the geometry covers. Unlike ancestor_parcel_ids these are never derived
-    // ids, so they mean the same thing on every machine. See rethink-proposals.md.
+    // One durable land relationship. `ancestor_parcel_ids` is a retired migration source and must
+    // never be reintroduced into the public proposal shape.
     proposal.cadastreParcelIds = choose(row.cadastre_parcel_ids, proposal.cadastreParcelIds ?? null);
     // Publish-time stamps of the formation's ownership flow and the cadastre frame it was measured
     // against (rethink-proposals.md §9/§12 step 2, D5).

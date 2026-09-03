@@ -1,50 +1,29 @@
-(function (global) {
+(function attachParcelIngest(global) {
     'use strict';
 
-    // One renderer for every parcel ever ingested, created on first use. Two canvases would be two
-    // surfaces to composite; a per-batch renderer would be dozens.
-    let _parcelCanvas = null;
+    // Rendering infrastructure shared by every ParcelPresenter layer. Geometry ingestion below
+    // is domain-only and never edits Leaflet, caches, or persistent records.
+    let parcelCanvas = null;
     function parcelCanvasRenderer() {
-        if (_parcelCanvas) return _parcelCanvas;
-        if (typeof L === 'undefined' || typeof L.canvas !== 'function') return undefined;
-
-        // The shared canvas, extended with two things the stock one lacks:
-        //
-        //  * MEASUREMENT. Every repaint through _draw is timed, split into full (moveend/zoom —
-        //    _redrawBounds is null and every in-view path repaints) and partial (adds/styles — only
-        //    the dirtied rect). A node-canvas benchmark put a full repaint of 15k parcel polygons
-        //    at ~200 ms in Cairo, so plausibly 50-100 ms in Chrome — the shape of "pan is not
-        //    supersmooth" — but that is an inference, and mapLoad() now reports the real number.
-        //
-        //  * A HOLD. Adding a layer schedules a repaint per frame, so a multi-batch ingest repaints
-        //    the dirtied region once per batch — during the exact pan that triggered the fetch.
-        //    holdRedraws() keeps EXTENDING the dirty rect but stops scheduling; releaseRedraws()
-        //    schedules the one repaint that covers everything. Deliberately does NOT touch _update:
-        //    moveend/zoom repaints bypass _requestRedraw entirely, so a pan mid-hold still paints.
-        //
-        // Leaflet 1.9.4 internals, feature-checked: the vendored build is pinned, and if any of
-        // these methods vanish in an upgrade the plain canvas is used and only the coalescing is
-        // lost, not rendering.
-        var proto = (L.Canvas && L.Canvas.prototype) || null;
-        var extendable = proto && typeof L.Canvas.extend === 'function'
+        if (parcelCanvas) return parcelCanvas;
+        if (!global.L || typeof global.L.canvas !== 'function') return undefined;
+        const proto = global.L.Canvas && global.L.Canvas.prototype;
+        const extendable = proto && typeof global.L.Canvas.extend === 'function'
             && typeof proto._requestRedraw === 'function'
             && typeof proto._extendRedrawBounds === 'function'
             && typeof proto._draw === 'function';
         if (!extendable) {
-            _parcelCanvas = L.canvas({ padding: 0.5 });
-            return _parcelCanvas;
+            parcelCanvas = global.L.canvas({ padding: 0.5 });
+            return parcelCanvas;
         }
-
-        var stats = {
+        const stats = {
             fullDraws: 0, fullLastMs: 0, fullMaxMs: 0, fullTotalMs: 0,
             partialDraws: 0, partialLastMs: 0, partialMaxMs: 0, partialTotalMs: 0,
             redrawsCoalesced: 0
         };
-        var nowMs = function () {
-            return (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
-        };
-        var ParcelCanvas = L.Canvas.extend({
-            _requestRedraw: function (layer) {
+        const now = () => (typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now());
+        const ParcelCanvas = global.L.Canvas.extend({
+            _requestRedraw(layer) {
                 if (this._holdDepth) {
                     if (!this._map) return;
                     if (layer) this._extendRedrawBounds(layer);
@@ -52,398 +31,76 @@
                     stats.redrawsCoalesced += 1;
                     return;
                 }
-                return L.Canvas.prototype._requestRedraw.call(this, layer);
+                return global.L.Canvas.prototype._requestRedraw.call(this, layer);
             },
-            _draw: function () {
-                var full = !this._redrawBounds;
-                var started = nowMs();
-                var out = L.Canvas.prototype._draw.call(this);
-                var took = nowMs() - started;
+            _draw() {
+                const full = !this._redrawBounds;
+                const started = now();
+                const result = global.L.Canvas.prototype._draw.call(this);
+                const elapsed = now() - started;
                 if (full) {
-                    stats.fullDraws += 1; stats.fullLastMs = took; stats.fullTotalMs += took;
-                    if (took > stats.fullMaxMs) stats.fullMaxMs = took;
+                    stats.fullDraws += 1;
+                    stats.fullLastMs = elapsed;
+                    stats.fullTotalMs += elapsed;
+                    stats.fullMaxMs = Math.max(stats.fullMaxMs, elapsed);
                 } else {
-                    stats.partialDraws += 1; stats.partialLastMs = took; stats.partialTotalMs += took;
-                    if (took > stats.partialMaxMs) stats.partialMaxMs = took;
+                    stats.partialDraws += 1;
+                    stats.partialLastMs = elapsed;
+                    stats.partialTotalMs += elapsed;
+                    stats.partialMaxMs = Math.max(stats.partialMaxMs, elapsed);
                 }
-                return out;
+                return result;
             },
-            holdRedraws: function () { this._holdDepth = (this._holdDepth || 0) + 1; },
-            releaseRedraws: function () {
+            holdRedraws() {
+                this._holdDepth = (this._holdDepth || 0) + 1;
+            },
+            releaseRedraws() {
                 if (this._holdDepth) this._holdDepth -= 1;
                 if (!this._holdDepth && this._heldRedraw) {
                     this._heldRedraw = false;
                     if (this._map) {
                         this._redrawRequest = this._redrawRequest
-                            || L.Util.requestAnimFrame(this._redraw, this);
+                            || global.L.Util.requestAnimFrame(this._redraw, this);
                     }
                 }
             }
         });
-        _parcelCanvas = new ParcelCanvas({ padding: 0.5 });
+        parcelCanvas = new ParcelCanvas({ padding: 0.5 });
         global.__parcelCanvasStats = stats;
-        return _parcelCanvas;
-    }
-    if (typeof window !== 'undefined') window.parcelCanvasRenderer = parcelCanvasRenderer;
-
-    function buildHumanParcelId(props) {
-        // Build HR-<maticni_broj_ko>-<broj_cestice> when available
-        const cad = props.maticni_broj_ko ?? props.MATICNI_BROJ_KO;
-        const num = props.broj_cestice ?? props.BROJ_CESTICE;
-        if (cad !== undefined && cad !== null && num !== undefined && num !== null) {
-            return `HR-${cad}-${num}`;
-        }
-        return null;
+        return parcelCanvas;
     }
 
     function normalizeFeatureParcelId(feature) {
         if (!feature || typeof feature !== 'object') return null;
-
-        // Prefer ensureParcelId helper if present
-        if (typeof global.ensureParcelId === 'function') {
-            const ensured = global.ensureParcelId(feature);
-            if (ensured) return ensured;
+        const props = feature.properties || (feature.properties = {});
+        let id = props.parcelId ?? props.parcel_id ?? props.PARCEL_ID ?? props.id;
+        if ((id === undefined || id === null || id === '')
+            && props.maticni_broj_ko !== undefined && props.broj_cestice !== undefined) {
+            id = `HR-${props.maticni_broj_ko}-${props.broj_cestice}`;
         }
-
-        var props = feature.properties || {};
-
-        // Explicit parcelId from source
-        var id = props.parcelId ?? props.parcel_id ?? props.id;
-        if (id !== undefined && id !== null) {
-            props.parcelId = String(id);
-            props.id = props.id || props.parcelId;
-            feature.properties = props;
-            return props.parcelId;
-        }
-
-        // OSS fallback: synthesize from cadastral + parcel number
-        var synthesized = buildHumanParcelId(props);
-        if (synthesized) {
-            props.parcelId = synthesized;
-            props.id = props.id || synthesized;
-            feature.properties = props;
-            return synthesized;
-        }
-
-        return null;
+        if (id === undefined || id === null || String(id).trim() === '') return null;
+        props.parcelId = String(id).trim();
+        props.id = props.parcelId;
+        return props.parcelId;
     }
 
-    async function ingestParcelFeatures(rawFeatures, options) {
-        if (!Array.isArray(rawFeatures) || rawFeatures.length === 0) {
-            return [];
+    // Explicit cadastral boundary used by deterministic fixtures and import tools. It deliberately
+    // delegates conversion, identity validation, deduplication, caching and live-fabric provisioning
+    // to the repository. There is no generic "parcel ingest": generated live parcels may only be
+    // committed by a ProposalManager mutation, while cadastral facts may only enter here.
+    async function ingestCadastralParcelFeatures(rawFeatures, options = {}) {
+        const repository = global.CadastralParcelRepository;
+        if (!repository || typeof repository.acceptFeatures !== 'function') {
+            throw new Error('Cadastral parcel repository is unavailable.');
         }
-
-        var tStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
-
-        var shouldReplaceExisting = !!(options && options.replaceExisting === true);
-
-        var tConvertStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
-        var convertedFeatures = rawFeatures;
-        if (!options || !options.skipConversion) {
-            var converted = global.convertGeoJSON({ type: 'FeatureCollection', features: rawFeatures });
-            convertedFeatures = Array.isArray(converted && converted.features) ? converted.features : [];
-        }
-        var convertMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tConvertStart;
-
-        if (!convertedFeatures.length) {
-            console.debug('[ingestParcelFeatures] timings: convert=' + (convertMs.toFixed ? convertMs.toFixed(1) : convertMs) + 'ms, nothing to ingest (' + rawFeatures.length + ' raw)');
-            return [];
-        }
-
-        if (typeof global.ensureParcelLayerInitialized === 'function') {
-            global.ensureParcelLayerInitialized();
-        }
-
-        var totalReplaceIds = 0;
-        var hiddenBaseIds = new Set();
-        var mapById = (global.parcelLayerById instanceof Map) ? global.parcelLayerById : null;
-        var parcelStore = (global.ParcelsState && global.ParcelsState.getParcelCache)
-            ? global.ParcelsState.getParcelCache()
-            : global.parcelCache;
-        var skippedExisting = 0;
-        var orphanSlicesSkipped = [];
-        // Per feature, called from the BATCHED loop below rather than a whole-list pass. As one
-        // pass this was the `prep` timing: up to ~90 ms of synchronous work on a big cell — a
-        // dropped frame of its own before a single layer was built, during the exact pan that
-        // triggered the fetch. The work is unchanged, feature-for-feature in the same order; only
-        // where the browser gets a frame back moved.
-        var prepFeature = function (feature, renderableFeatures, replaceIds) {
-            var parcelId = normalizeFeatureParcelId(feature);
-            if (!parcelId) return;
-
-            // Orphan-slice sweep: a DERIVED parcel whose minting proposal is known here and NOT
-            // applied is stale bookkeeping — typically debris from an older session that
-            // un-applied by a different id generation and left the slices behind. It must not
-            // reach the map, the cache, or persistence again. New-style ids carry their minting
-            // proposal literally (`…#c-<proposalId>-N`); old-style tokens (`…#p-<token>-N`) do
-            // not resolve to a proposal and are conservatively kept — never destroy what we
-            // cannot attribute.
-            try {
-                var idString = parcelId.toString();
-                var hashAt = idString.lastIndexOf('#');
-                if (hashAt > 0) {
-                    var mintId = idString.slice(hashAt + 1).replace(/-\d+$/, '');
-                    var storage = global.proposalStorage;
-                    var minting = (storage && typeof storage.getProposal === 'function') ? storage.getProposal(mintId) : null;
-                    if (minting) {
-                        var mintingApplied = (typeof global.isProposalApplied === 'function')
-                            ? global.isProposalApplied(minting)
-                            : minting.applied === true;
-                        if (!mintingApplied) {
-                            orphanSlicesSkipped.push(idString);
-                            try { if (typeof global.clearPersistedParcelRecord === 'function') global.clearPersistedParcelRecord(idString); } catch (_) { }
-                            try { if (parcelStore && parcelStore.byId instanceof Map) parcelStore.byId.delete(idString); } catch (_) { }
-                            return;
-                        }
-                    }
-                }
-            } catch (_) { /* best-effort guard — never blocks a legitimate parcel */ }
-
-            if (parcelStore && parcelStore.byId instanceof Map) {
-                const existing = parcelStore.byId.get(parcelId.toString());
-                if (existing && existing.properties) {
-                    feature.properties = Object.assign({}, feature.properties, {
-                        ownershipDetails: feature.properties.ownershipDetails || existing.properties.ownershipDetails,
-                        ownershipList: feature.properties.ownershipList || existing.properties.ownershipList,
-                        ownershipType: feature.properties.ownershipType || existing.properties.ownershipType
-                    });
-                }
-                parcelStore.byId.set(parcelId.toString(), feature);
-            }
-
-            // A standing formation's current derivation replaces this cadastral layer. Still
-            // instantiate and index the immutable base so the next cadastre-first replay has its
-            // ground fact; hide it after registration instead of dropping it at tile-ingest time.
-            try {
-                const idString = parcelId.toString();
-                const isReplaced = (typeof isParcelReplacedByChildren === 'function') ? isParcelReplacedByChildren(idString) : false;
-                if (isReplaced) {
-                    hiddenBaseIds.add(idString);
-                }
-            } catch (_) { /* best-effort guard */ }
-
-            if (!feature.geometry || !feature.geometry.coordinates) return;
-
-            const existsInMap = mapById && mapById.has(parcelId.toString());
-            if (existsInMap && !shouldReplaceExisting) {
-                skippedExisting++;
-                return;
-            }
-
-            if (shouldReplaceExisting) {
-                replaceIds.add(parcelId);
-            }
-
-            var isMultiPolygon = feature.geometry && feature.geometry.type === 'MultiPolygon';
-            if (isMultiPolygon && Array.isArray(feature.geometry.coordinates)) {
-                feature.geometry.coordinates.forEach(function (polygonCoords) {
-                    renderableFeatures.push({
-                        type: 'Feature',
-                        properties: Object.assign({}, feature.properties),
-                        geometry: { type: 'Polygon', coordinates: polygonCoords }
-                    });
-                });
-            } else {
-                renderableFeatures.push(feature);
-            }
-        };
-
-        // Skip logging; best-effort skip of removed ancestors only.
-        var reportOrphans = function () {
-            if (orphanSlicesSkipped.length) {
-                console.warn('[ingestParcelFeatures] dropped ' + orphanSlicesSkipped.length
-                    + ' orphan slice(s) whose minting proposal is not applied', orphanSlicesSkipped);
-            }
-        };
-
-        var prepMs = 0;
-        var removedExisting = 0;
-        var removeMs = 0;
-        // Removal of the slice's replaced ancestors, just before the slice's own layers go in —
-        // the same remove-before-add ordering the whole-list version had, held to per slice.
-        var removeReplacedIn = function (sliceIds) {
-            if (!shouldReplaceExisting || !sliceIds.size) return;
-            var tRemoveStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
-            if (typeof global.fastRemoveParcelLayersByIds === 'function') {
-                removedExisting += global.fastRemoveParcelLayersByIds(sliceIds);
-            } else if (typeof global.removeParcelLayerById === 'function') {
-                sliceIds.forEach(function (id) {
-                    global.removeParcelLayerById(id, { skipMapScan: true });
-                    removedExisting++;
-                });
-            }
-            removeMs += ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tRemoveStart;
-        };
-
-        var addedLayers = [];
-        var tIngestStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
-
-        var styleFeature = function (feature) {
-            var parcelId = normalizeFeatureParcelId(feature);
-            // Check if parcel is marked as road from feature properties or stored road parcels
-            const propertyIsRoad = feature?.properties?.isRoad === true || feature?.properties?.isRoad === 'true';
-            const storedIsRoad = parcelId && typeof global.isRoad === 'function' ? global.isRoad(parcelId) : false;
-            const isRoad = propertyIsRoad || storedIsRoad;
-            // getParcelStyle, NOT getParcelBaseStyle: the base style knows nothing about ownership
-            // highlighting. Ingest is the last painter after any pan, zoom or camera-moving
-            // selection, so painting the base style here quietly undid the highlighting a moment
-            // after every one of them. The feature is wrapped as a pseudo-layer because that is
-            // what the style path reads flags and ownership from.
-            const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
-            return styleFn(parcelId, { feature: feature }, { isRoad: isRoad });
-        };
-
-        var attachParcelEvents = function (feature, layer) {
-            var events = {
-                mouseover: typeof global.highlightFeature === 'function' ? global.highlightFeature : function () { },
-                mouseout: typeof global.resetHighlight === 'function' ? global.resetHighlight : function () { }
-            };
-
-            // Always attach the click handler — onParcelClick itself ignores clicks while a
-            // drawing tool is active (a CLICK-time decision). The old ingest-time gate baked the
-            // flag into the layer forever: every parcel fetched or sliced DURING a drawing
-            // session came out permanently unclickable (structures/blocks over such parcels
-            // looked dead, since their visuals are interactive:false and rely on parcel clicks).
-            if (global.onParcelClick) {
-                events.click = global.onParcelClick;
-            }
-
-            layer.on(events);
-            if (layer.options) layer.options.interactive = true;
-        };
-
-        var renderer = parcelCanvasRenderer();
-        var canHold = renderer && typeof renderer.holdRedraws === 'function';
-        if (canHold) renderer.holdRedraws();
-        var nowMs = function () {
-            return (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
-        };
-        var heldSince = nowMs();
-        try {
-            // In BATCHES, with a frame handed back ON THE CLOCK — a batch of simple parcels is
-            // nothing, the same count of complex ones is a frame, and only the clock knows which
-            // this was. Each batch preps ITS features, removes ITS replaced ancestors, then builds
-            // ITS layers: the same work in the same order as the old prep-everything-then-build,
-            // but no phase left as one long synchronous block.
-            //
-            // The renderer's redraws are HELD for the whole call: every addLayer otherwise
-            // schedules a repaint per frame, so a multi-batch ingest repainted the dirtied region
-            // once per batch — during the exact pan that triggered the fetch. Held, the dirty rect
-            // keeps growing and ONE repaint covers it on release. Pan/zoom repaints bypass the
-            // hold, so the map never freezes mid-drag.
-            var INGEST_BATCH = 120;
-            for (var batchStart = 0; batchStart < convertedFeatures.length; batchStart += INGEST_BATCH) {
-            var renderableFeatures = [];
-            var sliceReplaceIds = new Set();
-            var tPrepSlice = nowMs();
-            for (var f = batchStart; f < Math.min(batchStart + INGEST_BATCH, convertedFeatures.length); f++) {
-                prepFeature(convertedFeatures[f], renderableFeatures, sliceReplaceIds);
-            }
-            prepMs += nowMs() - tPrepSlice;
-            totalReplaceIds += sliceReplaceIds.size;
-            removeReplacedIn(sliceReplaceIds);
-            if (!renderableFeatures.length) {
-                if (nowMs() - heldSince >= 12 && typeof global.yieldToBrowser === 'function') {
-                    await global.yieldToBrowser();
-                    heldSince = nowMs();
-                }
-                continue;
-            }
-            var featureCollection = { type: 'FeatureCollection', features: renderableFeatures };
-            var geoJsonLayer = L.geoJSON(featureCollection, {
-                // ONE canvas for every parcel, instead of one SVG <path> each.
-                //
-                // Measured on a real Šibenik session: 42,144 paths in the overlay, and a drag
-                // transforms and re-rasterises the whole SVG every frame — which is the choppy pan.
-                // Parcels are the bulk of that, and they are the layer that can move cheapest: plain
-                // geometry with a style function and click handlers, no CSS classes, no pattern
-                // fills, nothing that reads layer._path except diagnostics.
-                //
-                // Same shared-renderer pattern the government plan overlay already uses. The padding
-                // draws half a viewport beyond the edge so a short pan needs no redraw at all.
-                renderer: parcelCanvasRenderer(),
-                style: styleFeature,
-                onEachFeature: attachParcelEvents
-            });
-
-            geoJsonLayer.eachLayer(function (layer) {
-                if (!global.parcelLayer) return;
-
-                var parcelId = normalizeFeatureParcelId(layer.feature);
-
-                global.parcelLayer.addLayer(layer);
-
-                if (typeof global.setParcelLayerById === 'function') {
-                    try { global.setParcelLayerById(parcelId, layer); } catch (_) { }
-                }
-
-                if (typeof global.indexParcelLayer === 'function') {
-                    global.indexParcelLayer(layer);
-                }
-
-                if (hiddenBaseIds.has(String(parcelId)) && typeof global.hideParcelLayerById === 'function') {
-                    global.hideParcelLayerById(String(parcelId));
-                }
-
-                addedLayers.push(layer);
-            });
-            if (nowMs() - heldSince >= 12
-                && batchStart + INGEST_BATCH < convertedFeatures.length
-                && typeof global.yieldToBrowser === 'function') {
-                await global.yieldToBrowser();
-                heldSince = nowMs();
-            }
-            }
-        } catch (error) {
-            console.error('[ingestParcelFeatures] Error during bulk add:', error);
-        } finally {
-            // In a finally: a hold left behind would swallow every later add-triggered repaint in
-            // the session, silently — parcels would exist, be clickable, and not paint until the
-            // next pan.
-            if (canHold) renderer.releaseRedraws();
-        }
-        reportOrphans();
-
-        // The loop now interleaves prep, removal and layer-building, so the loop total counts all
-        // three; subtracting the accumulators keeps `ingest` meaning what it always meant — layer
-        // construction alone — and the three figures still sum to the loop.
-        var ingestMs = Math.max(0, (((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tIngestStart) - prepMs - removeMs);
-
-        if (addedLayers.length) {
-            if (typeof global.addParcelLayerToMapIfAppropriate === 'function') {
-                global.addParcelLayerToMapIfAppropriate();
-            }
-
-            if (global.ParcelsState && global.ParcelsState.bumpParcelCoverageVersion) {
-                global.ParcelsState.bumpParcelCoverageVersion();
-            }
-
-            try {
-                global.dispatchEvent(new CustomEvent('parcelCoverageUpdated', {
-                    detail: { source: 'ingest', timestamp: Date.now() }
-                }));
-            } catch (_) { }
-
-            try {
-                var parcelIds = convertedFeatures.map(function (f) { return normalizeFeatureParcelId(f); }).filter(Boolean);
-                global.dispatchEvent(new CustomEvent('parcelDataLoaded', {
-                    detail: { features: convertedFeatures, parcelIds: parcelIds }
-                }));
-            } catch (_) { }
-
-            if (typeof global.updateVisibleParcelsCount === 'function') {
-                global.updateVisibleParcelsCount();
-            }
-        }
-
-        var totalMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tStart;
-        if (typeof console !== 'undefined' && console.debug) {
-            console.debug('[ingestParcelFeatures] timings: convert=' + (convertMs.toFixed ? convertMs.toFixed(1) : convertMs) + 'ms, prep=' + (prepMs.toFixed ? prepMs.toFixed(1) : prepMs) + 'ms, removeExisting=' + (removeMs.toFixed ? removeMs.toFixed(1) : removeMs) + 'ms, ingest=' + (ingestMs.toFixed ? ingestMs.toFixed(1) : ingestMs) + 'ms, total=' + (totalMs.toFixed ? totalMs.toFixed(1) : totalMs) + 'ms for ' + convertedFeatures.length + ' features (raw=' + rawFeatures.length + ', addedLayers=' + addedLayers.length + ', idsToReplace=' + totalReplaceIds + ', removedExisting=' + removedExisting + ', skippedExisting=' + skippedExisting + ', replaceExisting=' + shouldReplaceExisting + ')');
-        }
-
-        return addedLayers;
+        return repository.acceptFeatures(Array.isArray(rawFeatures) ? rawFeatures : [], {
+            ...(options.city ? { city: options.city } : {}),
+            ...(options.transaction ? { transaction: options.transaction } : {}),
+            skipConversion: options.skipConversion === true
+        });
     }
 
+    global.parcelCanvasRenderer = parcelCanvasRenderer;
     global.normalizeFeatureParcelId = normalizeFeatureParcelId;
-    global.ingestParcelFeatures = ingestParcelFeatures;
+    global.ingestCadastralParcelFeatures = ingestCadastralParcelFeatures;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -3,60 +3,30 @@
 
     const PARCEL_OWNER_VALUE_ELEMENT_ID = 'parcel-owner-value';
     const parcelOwnerErrorCache = new Map(); // Cache for failed requests to avoid repeated warnings
+    // Ownership responses are metadata, not parcel features. Keeping them in a dedicated cache
+    // prevents UI enrichment from becoming a second mutable copy of parcel geometry.
+    const parcelOwnershipMetadata = new Map();
     let parcelOwnerRequestSequence = 0;
     let suppressOwnerAcceptanceRefresh = false;
 
-    function getParcelStore() {
-        if (global.ParcelsState && typeof global.ParcelsState.getParcelCache === 'function') {
-            return global.ParcelsState.getParcelCache();
-        }
-        return global.parcelCache;
-    }
-
-    function getParcelFeatureFromStore(parcelId, options = {}) {
+    function ownershipMetadata(parcelId, createIfMissing = false) {
         const normalizedId = parcelId && parcelId.toString ? parcelId.toString().trim() : '';
         if (!normalizedId) return null;
-
-        const store = getParcelStore();
-        if (store && store.byId instanceof Map && store.byId.has(normalizedId)) {
-            return store.byId.get(normalizedId);
-        }
-
-        const layer = typeof global.resolveParcelLayerById === 'function'
-            ? global.resolveParcelLayerById(normalizedId)
-            : null;
-        if (layer && layer.feature) {
-            const feature = layer.feature;
-            if (store && store.byId instanceof Map) {
-                store.byId.set(normalizedId, feature);
-            }
-            return feature;
-        }
-
-        if (store && store.grid instanceof Map) {
-            for (const cell of store.grid.values()) {
-                if (!cell || !Array.isArray(cell.features)) continue;
-                const found = cell.features.find(f => {
-                    const props = f?.properties || {};
-                    const fid = props.parcelId ?? props.parcel_id ?? props.id;
-                    return fid && fid.toString() === normalizedId;
-                });
-                if (found) {
-                    if (store.byId instanceof Map) {
-                        store.byId.set(normalizedId, found);
-                    }
-                    return found;
-                }
-            }
-        }
-
-        if (options.createIfMissing && store && store.byId instanceof Map) {
-            const stub = { type: 'Feature', properties: { parcelId: normalizedId }, geometry: null };
-            store.byId.set(normalizedId, stub);
-            return stub;
-        }
-
-        return null;
+        if (parcelOwnershipMetadata.has(normalizedId)) return parcelOwnershipMetadata.get(normalizedId);
+        const source = global.LiveParcelFabric?.get?.(normalizedId)
+            || global.CadastralParcelRepository?.get?.(normalizedId)
+            || null;
+        const props = source?.properties || {};
+        const metadata = {
+            ownershipDetails: props.ownershipDetails ? { ...props.ownershipDetails } : {},
+            ownershipList: Array.isArray(props.ownershipList) ? props.ownershipList.slice() : null,
+            ownershipType: props.ownershipType || null
+        };
+        const hasSource = source && (metadata.ownershipList || metadata.ownershipType
+            || Object.keys(metadata.ownershipDetails).length);
+        if (!createIfMissing && !hasSource) return null;
+        parcelOwnershipMetadata.set(normalizedId, metadata);
+        return metadata;
     }
 
     function deriveOwnersFromOwnershipList(list = []) {
@@ -135,21 +105,21 @@
     }
 
     function getStoredParcelOwners(parcelId) {
-        const feature = getParcelFeatureFromStore(parcelId);
-        if (!feature || !feature.properties) return null;
+        const metadata = ownershipMetadata(parcelId);
+        if (!metadata) return null;
 
-        const details = feature.properties.ownershipDetails || {};
+        const details = metadata.ownershipDetails || {};
         if (Array.isArray(details.owners) && details.owners.length > 0) {
             return details.owners;
         }
 
-        const ownershipList = Array.isArray(feature.properties.ownershipList)
-            ? feature.properties.ownershipList
+        const ownershipList = Array.isArray(metadata.ownershipList)
+            ? metadata.ownershipList
             : null;
         if (ownershipList && ownershipList.length > 0) {
             const derived = deriveOwnersFromOwnershipList(ownershipList) || [];
             if (derived.length) {
-                feature.properties.ownershipDetails = Object.assign({}, details, { owners: derived });
+                metadata.ownershipDetails = Object.assign({}, details, { owners: derived });
                 return derived;
             }
         }
@@ -158,47 +128,32 @@
     }
 
     function setStoredParcelOwners(parcelId, owners = [], extras = {}) {
-        const feature = getParcelFeatureFromStore(parcelId, { createIfMissing: true });
-        if (!feature) return;
-        feature.properties = feature.properties || {};
-        const details = feature.properties.ownershipDetails || {};
+        const metadata = ownershipMetadata(parcelId, true);
+        if (!metadata) return;
+        const details = metadata.ownershipDetails || {};
         if (Array.isArray(owners)) {
             details.owners = normalizeOwnersForStore(owners);
         }
         if (extras.possessionSheets) {
             details.possessionSheets = extras.possessionSheets;
         }
-        feature.properties.ownershipDetails = details;
+        metadata.ownershipDetails = details;
 
-        if (!feature.properties.ownershipList && Array.isArray(extras.ownershipList)) {
-            feature.properties.ownershipList = extras.ownershipList;
+        if (!metadata.ownershipList && Array.isArray(extras.ownershipList)) {
+            metadata.ownershipList = extras.ownershipList.slice();
         }
-        if (!feature.properties.ownershipType && extras.ownershipType) {
-            feature.properties.ownershipType = extras.ownershipType;
+        if (!metadata.ownershipType && extras.ownershipType) {
+            metadata.ownershipType = extras.ownershipType;
         }
-
-        const store = getParcelStore();
-        if (store && store.byId instanceof Map) {
-            store.byId.set(parcelId.toString(), feature);
-        }
+        parcelOwnershipMetadata.set(parcelId.toString(), metadata);
     }
 
     function clearStoredParcelOwners(parcelId) {
-        const feature = getParcelFeatureFromStore(parcelId);
-        if (feature && feature.properties && feature.properties.ownershipDetails) {
-            delete feature.properties.ownershipDetails.owners;
-        }
+        parcelOwnershipMetadata.delete(String(parcelId || ''));
     }
 
     function clearAllStoredParcelOwners() {
-        const store = getParcelStore();
-        if (store && store.byId instanceof Map) {
-            store.byId.forEach(feature => {
-                if (feature && feature.properties && feature.properties.ownershipDetails) {
-                    delete feature.properties.ownershipDetails.owners;
-                }
-            });
-        }
+        parcelOwnershipMetadata.clear();
     }
 
     const parcelOwnerDataCache = {
@@ -628,17 +583,29 @@
             return storedOwners;
         }
 
-        // Synthetic parcel ids (descendants minted by proposal apply, e.g. "HR-X-123#5-2")
-        // cannot be looked up on the backend — the cadastre only knows original parcels.
-        // Their ownership is inherited from the ancestor at apply time and persisted locally;
-        // if we got here without stored owners that means apply did not populate them.
-        // Either way, hitting the backend is guaranteed to 404. Return empty and stay silent.
-        const isSynthetic = typeof global.ProposalManager !== 'undefined'
-            && typeof global.ProposalManager.isSyntheticParcelId === 'function'
-            && global.ProposalManager.isSyntheticParcelId(cacheKey);
-        if (isSynthetic) {
-            setStoredParcelOwners(cacheKey, []);
-            return [];
+        // The live fabric carries explicit cadastral provenance. If this live parcel is a formed
+        // piece, resolve owners through those cadastral ids instead of guessing from its id format
+        // or sending a generated id to the cadastral backend.
+        const liveFeature = global.LiveParcelFabric?.get?.(cacheKey) || null;
+        const cadastreIds = liveFeature && typeof global.LiveParcelFabric?.explicitCadastreIds === 'function'
+            ? global.LiveParcelFabric.explicitCadastreIds(liveFeature)
+            : [];
+        const isFormedLiveParcel = cadastreIds.length > 0
+            && !(cadastreIds.length === 1 && cadastreIds[0] === cacheKey);
+        if (isFormedLiveParcel) {
+            const inherited = [];
+            for (const cadastreId of cadastreIds) {
+                inherited.push(...await getRealParcelOwners(cadastreId));
+            }
+            const seen = new Set();
+            const owners = inherited.filter(owner => {
+                const key = JSON.stringify(owner || {});
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            });
+            setStoredParcelOwners(cacheKey, owners);
+            return owners;
         }
 
         // Check if we've already failed for this parcel (suppress repeated warnings)

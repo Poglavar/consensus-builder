@@ -74,7 +74,7 @@ function geometryToRings(geometry) {
 }
 
 /**
- * Fetch the polygons of specific parcels by the ids a proposal stores in parentParcelIds.
+ * Fetch the polygons of specific immutable cadastral parcels referenced by a proposal.
  * @returns {Promise<Array>} GeoJSON polygon coordinate arrays ([lng, lat] order)
  */
 export async function fetchParcelPolygonsByIds(pool, city, parcelIds) {

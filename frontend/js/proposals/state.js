@@ -2,7 +2,6 @@
 // Extracted from proposals.js. Loaded FIRST (before all other proposal modules) so every module
 // reads/writes these bindings by bare name via the shared classic-script global lexical scope.
 
-let _parcelRecordWriteCache = null; // Map<parcelId, record> when caching is enabled
 
 let currentProposalPreviewId = null;
 

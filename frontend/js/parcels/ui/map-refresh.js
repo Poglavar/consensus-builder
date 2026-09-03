@@ -8,19 +8,11 @@
     const uiSelection = Parcels.uiSelection || global.ParcelsUISelection || {};
 
     function refreshAllMapLayers() {
-        if (typeof global.blockStorage !== 'undefined' && typeof global.parcelLayer !== 'undefined' && global.parcelLayer && global.blockStorage.load) {
+        if (typeof global.blockStorage !== 'undefined' && global.blockStorage.load) {
+            // Block detection is an ephemeral id projection over the current Fabric revision.
+            // Refresh only rebinds those ids to Presenter layers; it never writes domain metadata
+            // into rendered GeoJSON clones or discovers membership by scanning Leaflet.
             global.blockStorage.load();
-            global.blockStorage.blocks.forEach((block, blockName) => {
-                block.parcels = [];
-                global.parcelLayer.eachLayer(layer => {
-                    const parcelId = layer.feature.properties.parcelId;
-                    if (block.parcelIds.includes(parcelId)) {
-                        layer.feature.properties.block = blockName;
-                        layer.feature.properties.blockValid = block.valid;
-                        block.parcels.push(layer);
-                    }
-                });
-            });
         }
 
         if (typeof global.refreshParcelStylesForAppliedProposals === 'function') {
@@ -93,4 +85,3 @@
     global.setupMap = setupMap;
     global.ParcelsUIMap = { refreshAllMapLayers, setupMap };
 })(typeof window !== 'undefined' ? window : globalThis);
-

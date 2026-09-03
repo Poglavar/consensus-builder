@@ -150,30 +150,15 @@
         return Boolean(walletState && walletState.status === 'connected' && accounts.length > 0);
     }
 
-    function extractFeatureFromLayer(layer) {
-        if (!layer) return null;
-        // Individual GeoJSON layer — has .feature directly
-        if (layer.feature && layer.feature.geometry) return layer.feature;
-        // Layer group (e.g. from L.geoJSON()) — dig into sub-layers
-        if (typeof layer.getLayers === 'function') {
-            const subLayers = layer.getLayers();
-            for (let i = 0; i < subLayers.length; i++) {
-                if (subLayers[i].feature && subLayers[i].feature.geometry) {
-                    return subLayers[i].feature;
-                }
-            }
-        }
-        // Try toGeoJSON as last resort
-        if (typeof layer.toGeoJSON === 'function') {
-            try {
-                const geojson = layer.toGeoJSON(false);
-                if (geojson && geojson.type === 'Feature' && geojson.geometry) return geojson;
-                if (geojson && geojson.type === 'FeatureCollection' && Array.isArray(geojson.features) && geojson.features.length > 0) {
-                    return geojson.features[0];
-                }
-            } catch (_) { /* ignore */ }
-        }
-        return null;
+    function getLiveParcelFeature(parcelId) {
+        const id = parcelId !== undefined && parcelId !== null ? String(parcelId) : '';
+        if (!id || !global.LiveParcelFabric || typeof global.LiveParcelFabric.get !== 'function') return null;
+        return global.LiveParcelFabric.get(id);
+    }
+
+    function getCurrentLiveParcelFeature() {
+        const parcelId = global.currentParcel?.id ?? global.selectedParcelId ?? null;
+        return getLiveParcelFeature(parcelId);
     }
 
     function collectMultiSelectedParcelsForMint() {
@@ -184,13 +169,13 @@
 
         const parcels = [];
         multi.selectedParcels.forEach((id) => {
-            const parcelLayer = typeof multi.findParcelById === 'function' ? multi.findParcelById(id) : null;
-            const feature = extractFeatureFromLayer(parcelLayer);
-            const parcelId = feature ? deriveParcelIdentifier(feature) : (id ? id.toString() : null);
+            const feature = getLiveParcelFeature(id);
+            if (!feature) return;
+            const parcelId = deriveParcelIdentifier(feature);
             if (!parcelId) return;
-            const props = feature && feature.properties ? feature.properties : {};
+            const props = feature.properties || {};
             const parcelName = props.name || props.parcel_name || props.parcel || props.BROJ_CESTICE || `Parcel ${parcelId}`;
-            parcels.push({ parcelId, parcelName, feature: feature || parcelLayer });
+            parcels.push({ parcelId, parcelName, feature });
         });
         return parcels;
     }
@@ -345,7 +330,7 @@
 
         const mintedLayerApi = global.ParcelsMintedLayer || null;
         const activeLayer = global.currentParcel && global.currentParcel.layer ? global.currentParcel.layer : null;
-        const activeFeature = activeLayer && activeLayer.feature ? activeLayer.feature : null;
+        const activeFeature = getCurrentLiveParcelFeature();
         const parcelIdForLayer = currentParcelMintStatusCache?.parcelId
             || currentParcelMintStatusParcelId
             || resolveParcelId(activeFeature);
@@ -461,9 +446,7 @@
             return null;
         }
 
-        const parcelFeature = global.currentParcel && global.currentParcel.layer && global.currentParcel.layer.feature
-            ? global.currentParcel.layer.feature
-            : null;
+        const parcelFeature = getCurrentLiveParcelFeature();
         if (!parcelFeature) {
             setParcelMintStatusIndicator(
                 tParcel('panel.parcel.nft.statusPrompt', {}, 'Select a parcel to check NFT status.'),
@@ -1078,9 +1061,7 @@
             }
         }
 
-        const feature = global.currentParcel && global.currentParcel.layer && global.currentParcel.layer.feature
-            ? global.currentParcel.layer.feature
-            : null;
+        const feature = getCurrentLiveParcelFeature();
         const props = feature ? (feature.properties || {}) : {};
 
         const parcelNumber = props.parcel || props.BROJ_CESTICE || props.parcel_number || null;
@@ -1138,9 +1119,7 @@
     }
 
     async function openClaimOnly() {
-        const parcelFeature = global.currentParcel && global.currentParcel.layer && global.currentParcel.layer.feature
-            ? global.currentParcel.layer.feature
-            : null;
+        const parcelFeature = getCurrentLiveParcelFeature();
         if (!parcelFeature) {
             if (typeof global.updateStatus === 'function') {
                 global.updateStatus('Select a parcel before attempting to claim it.');
@@ -1254,9 +1233,7 @@
     }
 
     async function openClaimPortal() {
-        const parcelFeature = global.currentParcel && global.currentParcel.layer && global.currentParcel.layer.feature
-            ? global.currentParcel.layer.feature
-            : null;
+        const parcelFeature = getCurrentLiveParcelFeature();
         if (!parcelFeature) {
             if (typeof global.updateStatus === 'function') {
                 global.updateStatus('Select a parcel before attempting to claim it.');
@@ -1602,16 +1579,8 @@
 
     function buildParcelThumbnailLoader(entry, imgEl, neighbours = []) {
         if (!imgEl) return;
-        let geometrySource = entry.feature?.geometry || entry.feature || {};
-        let polygons = extractPolygonCoordinateSets(geometrySource);
-        // If feature is a Leaflet layer (no geometry), try to extract from sub-layers
-        if (!polygons.length && entry.feature && typeof entry.feature.getLayers === 'function') {
-            const extracted = extractFeatureFromLayer(entry.feature);
-            if (extracted && extracted.geometry) {
-                geometrySource = extracted.geometry;
-                polygons = extractPolygonCoordinateSets(geometrySource);
-            }
-        }
+        const geometrySource = entry.feature?.geometry || {};
+        const polygons = extractPolygonCoordinateSets(geometrySource);
         if (!polygons.length) {
             imgEl.alt = 'Preview unavailable';
             return;
@@ -1724,7 +1693,7 @@
         const neighbourMap = {};
         try {
             await Promise.all(parcels.map(async (parcel) => {
-                neighbourMap[parcel.parcelId] = findNeighbourPolygonsFromCache(parcel.parcelId);
+                neighbourMap[parcel.parcelId] = findNeighbourPolygonsFromLiveFabric(parcel.parcelId);
             }));
         } catch (prefetchError) {
             console.warn('Failed to prefetch neighbours for mint thumbnails', prefetchError);
@@ -1855,8 +1824,7 @@
     }
 
     function collectCurrentParcelForMint() {
-        const layer = global.currentParcel && global.currentParcel.layer ? global.currentParcel.layer : null;
-        const parcelFeature = extractFeatureFromLayer(layer);
+        const parcelFeature = getCurrentLiveParcelFeature();
         if (!parcelFeature) return [];
         const parcelId = deriveParcelIdentifier(parcelFeature);
         if (!parcelId) return [];
@@ -1931,8 +1899,7 @@
         throw new Error(`Failed to create metadata URI for parcel ${parcelId}. Parcel was not minted.`);
     }
 
-    // Bounding boxes of cached parcels, computed once. The cache is append-only per session, so a
-    // feature's geometry never changes under us.
+    // Bounding boxes of immutable feature snapshots returned by the committed fabric.
     const featureBoundingBoxCache = new WeakMap();
 
     function featureBoundingBox(geometry) {
@@ -1967,19 +1934,13 @@
             && a[1] <= b[3] + EPSILON && b[1] <= a[3] + EPSILON;
     }
 
-    function findNeighbourPolygonsFromCache(parcelId) {
+    function findNeighbourPolygonsFromLiveFabric(parcelId) {
         if (!parcelId) return [];
         try {
-            // Grid cells remember membership only. CadastralGroundService owns source geometry;
-            // this UI reads the independent presentation copies indexed by parcel id.
-            const cache = (global.ParcelsState && typeof global.ParcelsState.getParcelCache === 'function')
-                ? global.ParcelsState.getParcelCache()
-                : global.parcelCache;
-            if (!cache || !cache.grid || !(cache.byId instanceof Map)) return [];
-
-            // Find the target feature
+            const fabric = global.LiveParcelFabric;
+            if (!fabric || typeof fabric.get !== 'function' || typeof fabric.queryBounds !== 'function') return [];
             const targetId = parcelId.toString();
-            const targetFeature = cache.byId.get(targetId) || null;
+            const targetFeature = fabric.get(targetId);
             if (!targetFeature || !targetFeature.geometry) return [];
 
             // Use turf to find touching/intersecting parcels from loaded cache
@@ -1997,12 +1958,11 @@
             const targetBox = featureBoundingBox(targetFeature.geometry);
             if (!targetBox) return [];
 
-            for (const [, cellData] of cache.grid) {
-                if (!cellData || !Array.isArray(cellData.ids)) continue;
-                for (const id of cellData.ids) {
-                    const feature = cache.byId.get(String(id));
+            const candidates = fabric.queryBounds(targetBox, { includeCorridors: false });
+            for (const feature of candidates) {
+                    const id = fabric.featureId?.(feature);
                     if (!feature || !feature.geometry) continue;
-                    const fId = (feature.properties?.parcelId || feature.properties?.BROJ_CESTICE || '').toString();
+                    const fId = String(id || '');
                     if (!fId || seen.has(fId)) continue;
                     seen.add(fId);
                     if (!boundingBoxesTouch(targetBox, featureBoundingBox(feature.geometry))) continue;
@@ -2022,7 +1982,6 @@
                             }
                         }
                     } catch (_) { /* skip invalid geometry */ }
-                }
             }
             return neighbours;
         } catch (error) {
@@ -2038,9 +1997,8 @@
             let metadataUri = null;
             const neighbours = Array.isArray(neighboursByParcelId[parcel.parcelId])
                 ? neighboursByParcelId[parcel.parcelId]
-                : findNeighbourPolygonsFromCache(parcel.parcelId);
-            // Resolve the GeoJSON feature — handle both direct features and Leaflet layer groups
-            const resolvedFeature = (parcel.feature && parcel.feature.geometry) ? parcel.feature : extractFeatureFromLayer(parcel.feature);
+                : findNeighbourPolygonsFromLiveFabric(parcel.parcelId);
+            const resolvedFeature = (parcel.feature && parcel.feature.geometry) ? parcel.feature : null;
             const calculatedArea = resolvedFeature?.properties?.calculatedArea;
             const areaSquareMeters = Number.isFinite(calculatedArea) && calculatedArea > 0
                 ? Math.round(calculatedArea * 100) / 100
@@ -2354,5 +2312,5 @@
     global.applyParcelMintStatusResult = applyParcelMintStatusResult;
     global.triggerParcelToolsTabActivated = triggerParcelToolsTabActivated;
     global.recheckParcelMintStatus = recheckParcelMintStatus;
-    global.findNeighbourPolygonsFromCache = findNeighbourPolygonsFromCache;
+    global.findNeighbourPolygonsFromLiveFabric = findNeighbourPolygonsFromLiveFabric;
 })(typeof window !== 'undefined' ? window : globalThis);

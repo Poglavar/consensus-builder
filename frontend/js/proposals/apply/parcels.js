@@ -18,16 +18,13 @@
             try { this._setLastApplyFailure(idLabel, { code: 'invalid-proposal', message: 'The proposal record carries no reparcellization plan.' }); } catch (_) { }
             return false;
         }
-        const plan = proposalData.reparcellization;
+        // Apply works from a private copy. Runtime contribution summaries and materialized parcel
+        // ids must never be written back into the authored plan.
+        const plan = JSON.parse(JSON.stringify(proposalData.reparcellization));
         const coordinatedPlanId = proposalData.coordinatedPlanId === undefined
             || proposalData.coordinatedPlanId === null
             ? ''
             : String(proposalData.coordinatedPlanId).trim();
-        // The authored polygons are the readjustment. Its resolved live pool is disposable replay
-        // state and must never be persisted as a second, history-dependent footprint.
-        if (proposalData.geometry && /Polygon/.test(String(proposalData.geometry.type || ''))) {
-            delete proposalData.geometry;
-        }
         if (!Array.isArray(plan.polygons) || plan.polygons.length === 0) {
             if (typeof updateStatus === 'function') {
                 updateStatus('Cannot apply reparcellization proposal: missing generated slices.');
@@ -40,11 +37,10 @@
         // Skip overlay rendering: add child parcels directly with existing parcel styling
         console.debug(`[_applyReparcellizationProposal] Skipping overlay rendering for ${plan.polygons.length} slice(s); will add child parcels directly.`);
 
-        const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, 'readjustment');
+        const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, 'readjustment', options);
         if (!liveParents.ok) return false;
         let parentIds = liveParents.ids;
         let parentFeatures = liveParents.features;
-        proposalData.cadastreParcelIds = liveParents.cadastreIds.slice();
 
         // A readjustment may stand on any ground NOT already taken — including the remainders a
         // road left behind. That is the whole point of drawing roads to form a block and then
@@ -70,7 +66,7 @@
                     const props = (layerFeature && layerFeature.properties) || {};
                     const takers = Array.isArray(props.formedByProposalIds) && props.formedByProposalIds.length
                         ? props.formedByProposalIds.map(String)
-                        : (props.proposalId ? [String(props.proposalId)] : []);
+                        : (props.producedByProposalId ? [String(props.producedByProposalId)] : []);
                     takers.forEach(ownerId => {
                         if (!ownerId) return;
                         const record = (typeof _getProposalRecord === 'function') ? _getProposalRecord(ownerId) : null;
@@ -130,68 +126,23 @@
             }
         }
 
-        // Who put what into the pool. Now that a readjustment can take PART of a parcel, the number
-        // that decides what someone is owed is their contributed AREA — the parcel's overlap with
-        // the take, times their recorded share of it — aggregated across every parcel they appear
-        // in. Counting parcels instead would pay a half-owner of two parcels the same as the sole
-        // owner of one. Stamped on the record so the plan can be read back without recomputing it.
-        try {
-            const contributionsApi = (typeof window !== 'undefined') ? window.__readjustmentContributions : null;
-            const planOrderForTake = (typeof window !== 'undefined') ? window.__planOrder : null;
-            if (contributionsApi && typeof contributionsApi.contributionsByOwner === 'function') {
-                const take = (planOrderForTake && typeof planOrderForTake.footprintOf === 'function')
-                    ? planOrderForTake.footprintOf(proposalData) : null;
-                const pool = contributionsApi.contributionsByOwner(parentFeatures, take);
-                proposalData.reparcellization = proposalData.reparcellization || {};
-                proposalData.reparcellization.contributions = pool.contributions.map(entry => ({
-                    ownerKey: entry.ownerKey,
-                    name: entry.name,
-                    areaM2: Math.round(entry.areaM2 * 100) / 100,
-                    share: entry.share,
-                    parcels: entry.parcels
-                }));
-                proposalData.reparcellization.contributedAreaM2 = Math.round(pool.totalM2 * 100) / 100;
-                // Ground whose ownership could not be read is pooled (dropping it would make the
-                // totals lie) but never assigned to anyone — it travels so the UI can show it.
-                proposalData.reparcellization.unattributedContributions = pool.unreadable.map(entry => ({
-                    parcelId: entry.parcelId,
-                    areaM2: Math.round(entry.areaM2 * 100) / 100,
-                    reason: entry.reason
-                }));
-                if (pool.unreadable.length) {
-                    console.warn(`[_applyReparcellizationProposal] ${idLabel}: ${pool.unreadable.length} contribution(s) could not be attributed to an owner`, pool.unreadable);
-                }
-            }
-        } catch (contributionError) {
-            console.warn(`[_applyReparcellizationProposal] ${idLabel}: could not compute owner contributions`, contributionError);
-        }
-
         const primaryFeature = parentFeatures.find(f => _getParcelIdFromFeature(f));
-        const primaryId = primaryFeature ? _getParcelIdFromFeature(primaryFeature) : (parentIds[0] || null);
         const primaryNumber = primaryFeature?.properties?.BROJ_CESTICE
             || primaryFeature?.properties?.parcelNumber
             || primaryFeature?.properties?.parcel_number
             || null;
-        const parentNumbers = parentFeatures
-            .map(f => f?.properties?.BROJ_CESTICE || f?.properties?.parcelNumber || f?.properties?.parcel_number)
-            .filter(Boolean);
-        const rootParcelId = _resolveRootParcelIdFromProperties(primaryFeature?.properties || null, primaryId) || null;
-        const rootParcelNumber = _resolveRootParcelNumberFromProperties(primaryFeature?.properties || null, primaryId)
-            || (primaryNumber ? _extractRootParcelNumber(primaryNumber) : null)
-            || primaryNumber
-            || 'parcel';
+        const rootParcelId = liveParents.cadastreIds[0] || null;
+        const rootParcelNumber = _resolveRootParcelNumberFromProperties(primaryFeature?.properties || null)
+            || primaryNumber || 'parcel';
 
-        const childFeatures = plan.polygons.map((slice, index) => {
+        const childFeatures = plan.polygons.map(slice => {
             if (!slice || !slice.geometry) return null;
             const feature = {
                 type: 'Feature',
                 geometry: slice.geometry,
                 properties: {
-                    proposalId,
-                    parentParcelIds: parentIds,
-                    parentParcelNumbers: parentNumbers,
-                    parentParcelId: primaryId || null,
-                    parentParcelNumber: primaryNumber || null,
+                    producedByProposalId: proposalId,
+                    cadastreParcelIds: liveParents.cadastreIds.slice(),
                     rootParcelId,
                     rootParcelNumber,
                     calculatedArea: Math.round(_calculateGeoJsonArea(slice.geometry)),
@@ -236,31 +187,25 @@
         // an unchanged record therefore derives the same ids from the same ordered geometry.
         const formationEdit = (typeof window !== 'undefined') ? window.__formationEdit : null;
         const turfRef = (typeof turf !== 'undefined') ? turf : null;
-        if (formationEdit && turfRef && typeof turfRef.intersect === 'function') {
-            try {
-                const anchorCtx = {
-                    area: f => { try { return turfRef.area(f) || 0; } catch (_) { return 0; } },
-                    intersectionArea: (a, b) => {
-                        try { const hit = turfRef.intersect(a, b); return hit ? turfRef.area(hit) : 0; } catch (_) { return 0; }
-                    }
-                };
-                const parentEntries = parentFeatures.map(feature => ({
-                    baseId: formationEdit.baseIdOf(
-                        _resolveRootParcelIdFromProperties(feature?.properties || null, _getParcelIdFromFeature(feature))
-                        || _getParcelIdFromFeature(feature) || ''),
-                    feature
-                })).filter(entry => entry.baseId && entry.baseId !== 'parcel');
-                childFeatures.forEach(feature => {
-                    const ids = formationEdit.overlappingBaseIds(feature, parentEntries, anchorCtx);
-                    if (ids.length) feature.properties.baseParcelIds = ids;
-                });
-                const cadastreIds = Array.from(new Set(parentEntries.map(entry => entry.baseId)));
-                if (cadastreIds.length) proposalData.cadastreParcelIds = cadastreIds;
-
-            } catch (error) {
-                console.warn('[_applyReparcellizationProposal] flat anchors skipped', error);
-            }
+        if (!formationEdit || !turfRef || typeof turfRef.intersect !== 'function') {
+            throw new Error('Readjustment formation requires the cadastral provenance geometry service.');
         }
+        const anchorCtx = {
+            area: f => { try { return turfRef.area(f) || 0; } catch (_) { return 0; } },
+            intersectionArea: (a, b) => {
+                try { const hit = turfRef.intersect(a, b); return hit ? turfRef.area(hit) : 0; } catch (_) { return 0; }
+            }
+        };
+        const parentEntries = parentFeatures.flatMap(feature => formationEdit.cadastreIdsOfFeature(feature)
+            .map(baseId => ({ baseId, feature })));
+        if (!parentEntries.length) {
+            throw new Error('Readjustment parents carry no explicit cadastral provenance.');
+        }
+        childFeatures.forEach(feature => {
+            const ids = formationEdit.overlappingBaseIds(feature, parentEntries, anchorCtx);
+            if (!ids.length) throw new Error('A readjustment plot lies on no declared cadastral parcel.');
+            feature.properties.cadastreParcelIds = ids;
+        });
 
         let allocForeignIndex = null;
         // §14.2: a formation owes the owner their remainders. The pool consumed above is the
@@ -298,15 +243,13 @@
                         // keeps the plot's id (same parcel, smaller), splits continue the
                         // victim's numbering, and the clone keeps the victim's proposalId and
                         // ownership untouched. Only ground under this plan's plots changes hands.
-                        const feCarry = (typeof window !== 'undefined') ? window.__formationEdit : null;
-                        const carryParts = (feCarry && typeof feCarry.derivedIdParts === 'function')
-                            ? feCarry.derivedIdParts(String(parentId || '')) : null;
-                        const ownTokenCarry = (typeof _buildSyntheticToken === 'function')
-                            ? _buildSyntheticToken(proposalId, 'proposal') : null;
-                        if (carryParts && carryParts.token && ownTokenCarry && carryParts.token !== ownTokenCarry
+                        const carryIdentity = formationEdit.formationIdentityOf(parentFeature);
+                        const parentProducer = parentFeature.properties
+                            && parentFeature.properties.producedByProposalId;
+                        if (carryIdentity && parentProducer && String(parentProducer) !== String(proposalId)
                             && typeof _extractPolygonsWithHolesFromGeometry === 'function'
                             && typeof _ensurePolygonIsClosed === 'function') {
-                            if (!allocForeignIndex) allocForeignIndex = _createForeignIndexAllocator();
+                            if (!allocForeignIndex) allocForeignIndex = this._createForeignIndexAllocator(options);
                             const parts = _extractPolygonsWithHolesFromGeometry(leftover.geometry)
                                 .map(({ outer, holes }) => {
                                     const coords = [_ensurePolygonIsClosed(outer || []), ...(Array.isArray(holes) ? holes.map(ring => _ensurePolygonIsClosed(ring || [])) : [])];
@@ -321,18 +264,27 @@
                                 carried.geometry = { type: 'Polygon', coordinates: part.coords };
                                 carried.properties = carried.properties || {};
                                 carried.properties.calculatedArea = Math.round(part.area);
+                                const syntheticIndex = partIndex === 0
+                                    ? carryIdentity.index
+                                    : allocForeignIndex(carryIdentity.cadastreParcelIds[0], carryIdentity.token);
                                 const carriedId = partIndex === 0
                                     ? String(parentId)
-                                    : `${carryParts.base}#${carryParts.token}-${allocForeignIndex(carryParts.base, carryParts.token)}`;
+                                    : _composeSyntheticParcelId(
+                                        carryIdentity.cadastreParcelIds[0],
+                                        carryIdentity.token,
+                                        syntheticIndex);
                                 const carriedNumber = partIndex === 0
                                     ? ((parentFeature.properties && parentFeature.properties.BROJ_CESTICE) || null)
-                                    : (typeof _composeSyntheticParcelNumber === 'function'
-                                        ? _composeSyntheticParcelNumber(
-                                            (carried.properties.rootParcelNumber || null),
-                                            carryParts.token,
-                                            Number(carriedId.slice(carriedId.lastIndexOf('-') + 1)))
-                                        : null);
-                                carried.properties.__carryIdentity = { parcelId: carriedId, parcelNumber: carriedNumber };
+                                    : _composeSyntheticParcelNumber(
+                                        carried.properties.rootParcelNumber || null,
+                                        carryIdentity.token,
+                                        syntheticIndex);
+                                carried.properties.__carryIdentity = {
+                                    parcelId: carriedId,
+                                    parcelNumber: carriedNumber,
+                                    syntheticToken: carryIdentity.token,
+                                    syntheticIndex
+                                };
                                 _ensureParcelIdOnProperties(carried.properties, carriedId);
                                 childFeatures.push(carried);
                             });
@@ -341,9 +293,7 @@
                         const remainder = JSON.parse(JSON.stringify(parentFeature));
                         remainder.geometry = leftover.geometry;
                         remainder.properties = remainder.properties || {};
-                        remainder.properties.proposalId = proposalId;
-                        remainder.properties.parentParcelId = parentId !== undefined && parentId !== null ? String(parentId) : null;
-                        remainder.properties.parentParcelNumber = parentFeature.properties ? (parentFeature.properties.BROJ_CESTICE || null) : null;
+                        remainder.properties.producedByProposalId = proposalId;
                         remainder.properties.calculatedArea = Math.round(leftoverArea);
                         remainder.properties.isProposed = true;
                         delete remainder.properties.color;
@@ -355,12 +305,12 @@
                 }
             }
         } catch (remainderError) {
-            console.warn('[_applyReparcellizationProposal] remainder minting failed', remainderError);
+            throw new Error(`Readjustment remainder formation failed: ${remainderError.message || remainderError}`);
         }
 
         this._assignSyntheticChildIdentities(proposalId, childFeatures);
 
-        await this._addFeaturesToMap(childFeatures, true, proposalData);
+        await this._addFeaturesToMap(childFeatures, true, proposalData, options);
 
         const childParcelIds = [];
         const touchedAgentIds = new Set();
@@ -369,17 +319,15 @@
             _ensureParcelIdOnProperties(feature.properties, parcelId);
             // §15b: a carried piece of a FOREIGN plot is the victim's child, not this
             // readjustment's — see the road apply's twin branch.
-            const pieceProposalId = feature.properties && feature.properties.proposalId
-                ? String(feature.properties.proposalId) : String(proposalId);
+            const pieceProposalId = feature.properties && feature.properties.producedByProposalId
+                ? String(feature.properties.producedByProposalId) : String(proposalId);
             if (pieceProposalId !== String(proposalId)) {
-                this._persistParcelFeature(feature);
-                this._markParcelProducedByProposal(parcelId, pieceProposalId);
+                this._markParcelProducedByProposal(parcelId, pieceProposalId, options);
                 return;
             }
             feature.properties.producedByProposalId = proposalId;
             delete feature.properties.ancestorProposal;
-            this._persistParcelFeature(feature);
-            this._markParcelProducedByProposal(parcelId, proposalId);
+            this._markParcelProducedByProposal(parcelId, proposalId, options);
             if (parcelId !== undefined && parcelId !== null) {
                 childParcelIds.push(String(parcelId));
                 // Per-slice ownership from the readjustment plan. The modal now REQUIRES a real owner
@@ -429,46 +377,45 @@
         const mintedIdSet = new Set(childFeatures
             .map(f => { try { return String(_getParcelIdFromFeature(f)); } catch (_) { return null; } })
             .filter(Boolean));
-        const feParcelAnchor = (typeof window !== 'undefined') ? window.__formationEdit : null;
         const carriedBaseAnchors = new Set();
         const consumedParentIds = Array.from(new Set(parentFeatures
             .map(f => { const id = _getParcelIdFromFeature(f); return id ? String(id) : null; })
             .filter(Boolean)))
             .filter(id => {
                 if (mintedIdSet.has(String(id))) {
-                    try {
-                        const baseId = (feParcelAnchor && typeof feParcelAnchor.baseIdOf === 'function')
-                            ? feParcelAnchor.baseIdOf(String(id)) : null;
-                        if (baseId && baseId !== String(id)) carriedBaseAnchors.add(baseId);
-                    } catch (_) { }
+                    const retained = parentFeatures.find(feature => (
+                        String(_getParcelIdFromFeature(feature) || '') === String(id)
+                    ));
+                    const fabric = (typeof window !== 'undefined' ? window : globalThis).LiveParcelFabric;
+                    const cadastreIds = fabric?.explicitCadastreIds?.(retained) || [];
+                    cadastreIds.forEach(baseId => carriedBaseAnchors.add(String(baseId)));
                     return false;
                 }
-                try {
-                    const layer = window.parcelLayerById.get(String(id));
-                    return !!(layer && window.parcelLayer && window.parcelLayer.hasLayer(layer));
-                } catch (_) { return true; }
+                // parentFeatures were resolved from the transaction's live-fabric draft. Their
+                // presence there is the domain proof that they are consumable; a Leaflet layer is
+                // only a projection and can never veto or resurrect a parcel mutation.
+                return true;
             });
         carriedBaseAnchors.forEach(baseId => {
             if (!consumedParentIds.includes(baseId)) consumedParentIds.push(baseId);
         });
         this._consumeFeaturesFromLiveFabric(parentFeatures.filter(f => {
             try { return !mintedIdSet.has(String(_getParcelIdFromFeature(f))); } catch (_) { return true; }
-        }));
-        if (childParcelIds.length) {
-            this._addChildParcels(proposalId, childParcelIds, proposalData);
+        }), options);
+        const fabric = (typeof window !== 'undefined' ? window : globalThis).LiveParcelFabric;
+        const parentCadastreIds = parentFeatures.flatMap(feature => (
+            fabric?.explicitCadastreIds?.(feature) || []
+        )).map(String).filter(Boolean);
+        const flatParentIds = Array.from(new Set(
+            Array.isArray(proposalData.cadastreParcelIds) && proposalData.cadastreParcelIds.length
+                ? proposalData.cadastreParcelIds.map(String)
+                : parentCadastreIds
+        ));
+        if (!flatParentIds.length) {
+            const error = new Error('Cannot apply reparcellization without explicit cadastral provenance.');
+            error.code = 'reparcellization-cadastre-provenance-missing';
+            throw error;
         }
-        const flatParentIds = Array.isArray(proposalData.cadastreParcelIds) && proposalData.cadastreParcelIds.length
-            ? Array.from(new Set(proposalData.cadastreParcelIds.map(String)))
-            : consumedParentIds.map(id => {
-                const fe = (typeof window !== 'undefined') ? window.__formationEdit : null;
-                return fe && typeof fe.baseIdOf === 'function' ? fe.baseIdOf(String(id)) : String(id);
-            });
-        plan.parentParcelIds = Array.from(new Set(flatParentIds));
-        plan.childParcelIds = childParcelIds;
-        proposalData.parentParcelIds = plan.parentParcelIds.slice();
-        proposalData.childParcelIds = childParcelIds;
-        proposalData.reparcellization = plan;
-
         persistAppliedProposal(proposalData, proposalId);
         // The status line is written once, for every type, by _runProposalApplyWithSummary.
         if (options.deferPresentation !== true) refreshProposalUIAfterApply();
@@ -501,8 +448,7 @@
         const idLabel = _normalizeProposalId(proposalId) || 'unknown-proposal';
         console.debug(`[_applyDecideLaterProposal] Starting application for ${idLabel}...`);
 
-        const decideLaterState = proposalData.decideLaterProposal || {};
-        const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, 'decide-later formation');
+        const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, 'decide-later formation', options);
         if (!liveParents.ok) return false;
         const parentIds = liveParents.ids;
         const parentFeatures = liveParents.features;
@@ -518,30 +464,20 @@
         }
 
         const primaryFeature = parentFeatures.find(f => _getParcelIdFromFeature(f));
-        const primaryId = primaryFeature ? _getParcelIdFromFeature(primaryFeature) : parentIds[0];
         const primaryNumber = primaryFeature?.properties?.BROJ_CESTICE
             || primaryFeature?.properties?.parcelNumber
             || primaryFeature?.properties?.parcel_number
             || null;
-        const parentNumbers = parentFeatures
-            .map(f => f?.properties?.BROJ_CESTICE || f?.properties?.parcelNumber || f?.properties?.parcel_number)
-            .filter(Boolean);
-        const rootParcelId = _resolveRootParcelIdFromProperties(primaryFeature?.properties || null, primaryId) || null;
-        const rootParcelNumber = _resolveRootParcelNumberFromProperties(primaryFeature?.properties || null, primaryId)
-            || (primaryNumber ? _extractRootParcelNumber(primaryNumber) : null)
-            || primaryNumber
-            || 'parcel';
+        const rootParcelId = flatParentIds[0] || null;
+        const rootParcelNumber = _resolveRootParcelNumberFromProperties(primaryFeature?.properties || null)
+            || primaryNumber || 'parcel';
 
         const childFeature = {
             type: 'Feature',
             geometry: mergedGeometry,
             properties: {
-                proposalId,
                 producedByProposalId: proposalId,
-                parentParcelIds: parentIds,
-                parentParcelNumbers: parentNumbers,
-                parentParcelId: primaryId || null,
-                parentParcelNumber: primaryNumber || null,
+                cadastreParcelIds: flatParentIds.slice(),
                 rootParcelId,
                 rootParcelNumber,
                 calculatedArea: Math.round(_calculateGeoJsonArea(mergedGeometry)),
@@ -599,20 +535,12 @@
             }
         }
 
-        this._persistParcelFeature(childFeature);
-        await this._addFeaturesToMap([childFeature], true, proposalData);
-        this._markParcelProducedByProposal(childParcelId, proposalId);
-        this._addChildParcels(proposalId, [childParcelId], proposalData);
+        await this._addFeaturesToMap([childFeature], true, proposalData, options);
+        this._markParcelProducedByProposal(childParcelId, proposalId, options);
 
 
-        this._consumeFeaturesFromLiveFabric(parentFeatures);
+        this._consumeFeaturesFromLiveFabric(parentFeatures, options);
 
-        proposalData.decideLaterProposal = {
-            parentParcelIds: flatParentIds,
-            childParcelIds: [String(childParcelId)]
-        };
-        proposalData.parentParcelIds = flatParentIds;
-        proposalData.childParcelIds = [String(childParcelId)];
         persistAppliedProposal(proposalData, proposalId);
         if (options.deferPresentation !== true) refreshProposalUIAfterApply();
 

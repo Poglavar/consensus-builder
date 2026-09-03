@@ -34,29 +34,33 @@
         try { return ctx.intersectionArea(a, b) || 0; } catch (_) { return 0; }
     }
 
-    // The formation token and index a derived id carries: 'HR-1-824#c-tok-3' →
-    // { base: 'HR-1-824', token: 'c-tok', index: 3 }. Null for base ids. The base keeps any
-    // deeper derivation intact ('x#c-a-1#c-b-2' → base 'x#c-a-1', token 'c-b') — callers that
-    // need the cadastral root flatten with baseIdOf.
-    function derivedIdParts(parcelId) {
-        const id = (parcelId === undefined || parcelId === null) ? '' : String(parcelId).trim();
-        const match = id.match(/^(.+)#([A-Za-z0-9_-]+)-(\d+)$/);
-        if (!match) return null;
-        return { base: match[1], token: match[2], index: Number(match[3]) };
+    function cadastreIdsOfFeature(feature) {
+        const props = feature && feature.properties || {};
+        return Array.from(new Set((Array.isArray(props.cadastreParcelIds) ? props.cadastreParcelIds : [])
+            .map(value => String(value || '').trim())
+            .filter(Boolean)));
     }
 
-    // The base cadastral id a derived id descends from, however many generations deep — the same
-    // repeated-suffix strip _stripSyntheticSuffix performs (`X#a-1#b-2` → `X`). Plain base ids
-    // pass through unchanged.
-    function baseIdOf(parcelId) {
-        let current = (parcelId !== undefined && parcelId !== null) ? String(parcelId).trim() : '';
-        if (!current) return '';
-        let previous = '';
-        while (current && current !== previous) {
-            previous = current;
-            current = current.replace(/#[A-Za-z0-9_-]+-\d+$/i, '');
-        }
-        return current;
+    // A formation identity is data, not a parcel-id grammar. Every generated feature carries the
+    // producer token, ordinal and original cadastral anchors explicitly. Consumers can therefore
+    // preserve or extend it without decoding punctuation from the opaque parcel id.
+    function formationIdentityOf(feature) {
+        const props = feature && feature.properties || {};
+        const parcelId = props.parcelId ?? props.parcel_id ?? props.PARCEL_ID ?? props.id;
+        const token = props.syntheticToken;
+        const index = Number(props.syntheticIndex);
+        const cadastreParcelIds = cadastreIdsOfFeature(feature);
+        if (parcelId === undefined || parcelId === null || String(parcelId).trim() === ''
+            || token === undefined || token === null || String(token).trim() === ''
+            || !Number.isInteger(index) || index < 1 || !cadastreParcelIds.length) return null;
+        return {
+            parcelId: String(parcelId),
+            parcelNumber: props.BROJ_CESTICE === undefined || props.BROJ_CESTICE === null
+                ? null : String(props.BROJ_CESTICE),
+            token: String(token),
+            index,
+            cadastreParcelIds
+        };
     }
 
     // Write a carried identity onto a freshly minted child's properties. Contiguity splits can
@@ -64,7 +68,8 @@
     // most once per assignment run — later duplicates fall through to counter minting.
     // Returns true when the identity was applied.
     function applyCarriedIdentity(props, carried, usedIds) {
-        if (!props || !carried || !carried.parcelId) return false;
+        if (!props || !carried || !carried.parcelId || !carried.syntheticToken
+            || !Number.isInteger(Number(carried.syntheticIndex)) || Number(carried.syntheticIndex) < 1) return false;
         const id = String(carried.parcelId);
         if (usedIds && usedIds.has(id)) return false;
         if (usedIds) usedIds.add(id);
@@ -72,11 +77,8 @@
         if (carried.parcelNumber !== undefined && carried.parcelNumber !== null && String(carried.parcelNumber)) {
             props.BROJ_CESTICE = String(carried.parcelNumber);
         }
-        const parsed = id.match(/#([A-Za-z0-9_-]+)-(\d+)$/);
-        if (parsed) {
-            props.syntheticToken = parsed[1];
-            props.syntheticIndex = Number(parsed[2]);
-        }
+        props.syntheticToken = String(carried.syntheticToken);
+        props.syntheticIndex = Number(carried.syntheticIndex);
         return true;
     }
 
@@ -371,17 +373,23 @@
 
     // Unique base cadastral ids under a set of features — the flat declaration a formation writes
     // (`cadastreParcelIds`). A synthetic feature can span several original parcels, so its complete
-    // `baseParcelIds` stamp is authoritative; root/id is only the fallback for an original parcel.
+    // `cadastreParcelIds` is authoritative; a raw cadastral feature may identify itself directly.
     function baseIdsOfFeatures(features) {
         const seen = new Set();
         const out = [];
         (Array.isArray(features) ? features : []).forEach(feature => {
             const props = (feature && feature.properties) || {};
-            const declared = Array.isArray(props.baseParcelIds) && props.baseParcelIds.length
-                ? props.baseParcelIds
-                : [props.rootParcelId || props.parcelId || props.parcel_id || props.id || null];
+            const ownId = props.parcelId || props.parcel_id || props.id || null;
+            const declared = Array.isArray(props.cadastreParcelIds) && props.cadastreParcelIds.length
+                ? props.cadastreParcelIds
+                : [];
+            if (ownId && !declared.length) {
+                const error = new Error(`Parcel ${ownId} has no explicit cadastral provenance.`);
+                error.code = 'parcel-cadastre-provenance-missing';
+                throw error;
+            }
             declared.forEach(raw => {
-                const baseId = baseIdOf(raw);
+                const baseId = String(raw || '').trim();
                 if (baseId && baseId !== 'parcel' && !seen.has(baseId)) {
                     seen.add(baseId);
                     out.push(baseId);
@@ -464,8 +472,8 @@
         DEFAULT_TOLERANCE_PCT,
         DEFAULT_TOLERANCE_M2,
         MIN_DELTA_PIECE_M2,
-        baseIdOf,
-        derivedIdParts,
+        cadastreIdsOfFeature,
+        formationIdentityOf,
         baseIdsOfFeatures,
         overlappingBaseIds,
         applyCarriedIdentity,

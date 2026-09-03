@@ -1791,23 +1791,18 @@
 
         const uniqueParcelIds = Array.from(new Set(finalParcelIds));
 
-        const parentDetails = uniqueParcelIds.map(idStr => {
-            let parcelNumber = idStr;
-            try {
-                if (typeof multiParcelSelection !== 'undefined' && typeof multiParcelSelection.findParcelById === 'function') {
-                    const layer = multiParcelSelection.findParcelById(idStr);
-                    if (layer && layer.feature && layer.feature.properties && layer.feature.properties.BROJ_CESTICE) {
-                        parcelNumber = String(layer.feature.properties.BROJ_CESTICE);
-                    }
-                }
-            } catch (_) { }
-            return { id: idStr, number: parcelNumber };
-        });
-
-        const ancestorKey = uniqueParcelIds
-            .slice()
-            .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
-            .join('|');
+        const fabric = (typeof window !== 'undefined') ? window.LiveParcelFabric : null;
+        if (!fabric || typeof fabric.cadastreIdsForParcelIds !== 'function') {
+            showSingleBuildingAlert('proposal_storage_is_unavailable', 'Cadastral ground is unavailable.');
+            return;
+        }
+        let cadastreParcelIds;
+        try {
+            cadastreParcelIds = fabric.cadastreIdsForParcelIds(uniqueParcelIds);
+        } catch (_) {
+            showSingleBuildingAlert('no_parcels_selected_for_this_proposal', 'The selected parcel ground is no longer current.');
+            return;
+        }
 
         const primaryBuilding = preparedBuildings[0];
         const proposedHeightMeters = Math.round(Number(primaryBuilding.height || currentHeightM || DEFAULT_HEIGHT_M));
@@ -1839,24 +1834,17 @@
             return b.feature;
         });
 
-        const buildingProperties = { ...primaryBuilding.feature.properties };
-
         const buildingProposalMetadata = {
-            parentParcelIds: uniqueParcelIds,
-            parentParcelNumbers: parentDetails,
-            applied: false,
             createdFrom: 'single-building',
             blockName: blockName,
             parameters: {
                 height: proposedHeightMeters,
                 rotation: proposedRotationDeg,
                 footprintMode: 'polygon'
-            },
-            ancestorKey
+            }
         };
 
         const nowIso = new Date().toISOString();
-        const goal = 'Buildings';
         const offerCurrency = 'EUR';
         const geometryObject = {
             superParcel: null,
@@ -1871,23 +1859,11 @@
             reparcellizationPolygons: null
         };
 
-        const offerObject = {
-            amount: offer,
-            currency: offerCurrency,
-            decayEnabled: false,
-            decayPercent: 0,
-            decayDurationMs: 0,
-            depositEnabled: false,
-            depositPercent: 0,
-            expiresAt: null,
-            isConditional: false,
-            disbursementMode: 'partial'
-        };
-
         const proposal = {
-            // Canonical schema fields
             proposalId: null,
             name: proposalName,
+            title: proposalName,
+            proposalName,
             description: description || proposalName,
             author,
             createdAt: nowIso,
@@ -1896,31 +1872,21 @@
             applied: false,
             tags: ['buildings'],
             lens: undefined,
-            parentParcelIds: uniqueParcelIds,
-            childParcelIds: [],
+            cadastreParcelIds,
             media: { screenshotUrl: null, imageUrl: null },
-            goal,
+            goal: 'buildings',
             acquisitionStrategy: 'full',
             typologyType: 'block',
             boundaryAdjustmentType: null,
-            offer: offerObject,
-            budget: {},
+            offer,
+            budget: offer,
+            offerCurrency,
+            budgetCurrency: offerCurrency,
             corridorType: null,
             blockName: blockName || null,
             geometry: geometryObject,
-
-            // Legacy/compatibility fields used elsewhere
             authorName: author,
-            title: proposalName,
-            proposalName: proposalName,
-            offerCurrency,
-            offer,
-            budgetCurrency: offerCurrency,
-            budget: offer,
-            parcelIds: uniqueParcelIds,
             type: 'building',
-            buildingProperties,
-            properties: { ...buildingProperties },
             buildingProposal: buildingProposalMetadata,
             acceptedParcelIds: []
         };
@@ -1938,7 +1904,9 @@
             return;
         }
 
-        const proposalId = addProposalFn.call(storage, proposal);
+        const proposalId = addProposalFn.call(storage, proposal, {
+            selectedParcelIds: uniqueParcelIds
+        });
         if (!proposalId) {
             showSingleBuildingAlert('a_proposal_with_the_same_parcels_already_exists', 'A proposal with the same parcels already exists.');
             return;

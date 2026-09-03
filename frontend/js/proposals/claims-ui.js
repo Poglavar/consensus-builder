@@ -18,40 +18,36 @@
 
     const claims = () => global.__claims || null;
 
-    function baseParcelIdsFor(proposal) {
+    function cadastreParcelIdsFor(proposal) {
         const api = claims();
         if (!api || !proposal) return [];
-        try { return api.baseParcelIdsOf(proposal); } catch (_) { return []; }
+        try { return api.cadastreParcelIdsOf(proposal); } catch (_) { return []; }
     }
 
     function openBaseParcel(parcelId) {
         try {
             const id = String(parcelId);
-            const index = (global.parcelLayerById instanceof Map) ? global.parcelLayerById : null;
-            const layer = index ? index.get(id) : null;
-            const onMap = !!(layer && typeof map !== 'undefined' && map
-                && typeof map.hasLayer === 'function' && map.hasLayer(layer));
+            const liveFeature = global.LiveParcelFabric?.get?.(id) || null;
 
-            // On-map parcels go through the normal selection flow.
-            if (onMap && typeof global.selectParcel === 'function') {
+            // A cadastral anchor is selectable only when it is itself a live parcel.
+            if (liveFeature && typeof global.selectParcel === 'function') {
                 global.selectParcel(id, true);
                 return;
             }
-            // A CONSUMED base parcel is not in the on-map group selectParcel searches — but it IS
-            // in the index (hidden layers are kept precisely so descendants, and this breadcrumb,
-            // can resolve). Open its panel straight from the index: this is invariant #3 — the
-            // ownership anchor stays reachable under applied fabric.
-            if (layer && layer.feature && typeof global.showParcelInfoPanel === 'function') {
+            // Consumed cadastral ground stays available as an immutable repository fact for the
+            // ownership breadcrumb; it is never retained as a hidden interactive Leaflet layer.
+            const feature = global.CadastralParcelRepository?.get?.(id) || null;
+            if (feature && typeof global.showParcelInfoPanel === 'function') {
                 try {
-                    if (typeof layer.getBounds === 'function' && typeof map !== 'undefined' && map) {
-                        const bounds = layer.getBounds();
-                        // Only move the view when the parcel is not already fully visible.
-                        if (bounds && bounds.isValid && bounds.isValid() && !map.getBounds().contains(bounds)) {
+                    const box = global.turf?.bbox?.(feature);
+                    if (Array.isArray(box) && box.length >= 4 && typeof map !== 'undefined' && map) {
+                        const bounds = [[box[1], box[0]], [box[3], box[2]]];
+                        if (!map.getBounds().contains(bounds)) {
                             map.fitBounds(bounds, { padding: [60, 60], maxZoom: 18, animate: false });
                         }
                     }
                 } catch (_) { }
-                global.showParcelInfoPanel(layer.feature);
+                global.showParcelInfoPanel(feature);
                 try { document.getElementById('parcel-info-panel')?.classList.add('visible'); } catch (_) { }
                 return;
             }
@@ -75,7 +71,7 @@
             const existing = containerEl.querySelector('.claim-breadcrumb');
             if (existing) existing.remove();
 
-            const ids = baseParcelIdsFor(proposal);
+            const ids = cadastreParcelIdsFor(proposal);
             if (!ids.length) return;
 
             const wrap = document.createElement('div');
@@ -123,21 +119,17 @@
         return pane;
     }
 
-    // Clones every BASE parcel currently known to the map — including parents hidden under
-    // applied fabric, which is the whole point: in cadastre view the original parcels are the
-    // only citizens.
+    // Clones every retained BASE cadastral fact. Consumed parents are absent from the live fabric
+    // and its presentation by design, so the immutable repository is the only complete source.
     function buildCadastreLayer() {
         ensureCadastrePane();
         const group = L.layerGroup([], { pane: CADASTRE_PANE });
-        const byId = (typeof global.getParcelLayerIdMap === 'function') ? global.getParcelLayerIdMap() : null;
-        if (!byId || typeof byId.forEach !== 'function') return group;
-        byId.forEach((layer, id) => {
-            const key = id === undefined || id === null ? '' : String(id);
-            if (!key || key.indexOf('#') !== -1) return; // derived — not a cadastral parcel
-            if (!layer || typeof layer.toGeoJSON !== 'function') return;
+        const repository = global.CadastralParcelRepository;
+        const features = repository && typeof repository.list === 'function' ? repository.list() : [];
+        features.forEach(feature => {
+            const key = String(feature?.properties?.parcelId || '');
+            if (!key) return;
             try {
-                const gj = layer.toGeoJSON(false);
-                const feature = gj && gj.type === 'FeatureCollection' ? gj.features[0] : gj;
                 if (!feature || !feature.geometry || !/Polygon/.test(feature.geometry.type || '')) return;
                 const baseStyle = { color: '#b91c1c', weight: 1.4, opacity: 0.9, fillColor: '#fef3c7', fillOpacity: 0.28 };
                 const hoverStyle = { color: '#7f1d1d', weight: 2.5, opacity: 1, fillColor: '#fde68a', fillOpacity: 0.5 };

@@ -6,11 +6,9 @@
 // the proposals that make up the plan, resolve the geometry of parcels the plan leaves standing,
 // and draw the result.
 //
-// The old resulting-parcel count read the MAP's parcel layer, which only ever holds what has been
-// fetched for the current view. A plan of 272 proposals therefore reported four parcels. The count
-// now comes from the proposals themselves (plan-yield's resultingParcels), and only the AREA still
-// needs geometry — so a parcel we cannot measure reduces the confidence of an average rather than
-// silently vanishing from a count.
+// The old resulting-parcel count read Leaflet's current viewport, so a large plan could report four
+// parcels. The current count reads the authoritative LiveParcelFabric over the plan's complete
+// cadastral scope. Proposal records supply that scope; they never store generated parcel ids.
 (function () {
     const DEFAULT_PRICE_PER_SQM = 5000;
 
@@ -48,43 +46,14 @@
         });
     }
 
-    function featureFromPersisted(parcelId) {
-        if (typeof readPersistedParcelRecord !== 'function') return null;
-        try {
-            const record = readPersistedParcelRecord(parcelId);
-            if (!record || !record.geometry) return null;
-            return { type: 'Feature', geometry: record.geometry, properties: {} };
-        } catch (_) {
-            return null;
-        }
-    }
-
-    // Every place a parcel's shape might be, cheapest first. Returns null rather than a zero area:
-    // a parcel we cannot find is a parcel we did not measure, and the difference is reported.
+    // Current output comes from the live fabric; an untouched cadastral result comes from the
+    // immutable repository. There is no third parcel store and Leaflet is never queried for data.
     function getParcelFeature(parcelId) {
         if (!parcelId) return null;
         const id = parcelId.toString();
-
-        try {
-            const cached = (typeof getCachedParcelFeature === 'function') ? getCachedParcelFeature(id) : null;
-            if (cached && cached.geometry) return cached;
-        } catch (_) { /* ignore */ }
-
-        try {
-            if (typeof resolveParcelLayerById === 'function') {
-                const layer = resolveParcelLayerById(id);
-                if (layer && typeof layer.toGeoJSON === 'function') return layer.toGeoJSON(false);
-            }
-        } catch (_) { /* ignore */ }
-
-        try {
-            if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection && typeof multiParcelSelection.findParcelById === 'function') {
-                const layer = multiParcelSelection.findParcelById(id);
-                if (layer && typeof layer.toGeoJSON === 'function') return layer.toGeoJSON(false);
-            }
-        } catch (_) { /* ignore */ }
-
-        return featureFromPersisted(id);
+        return window.LiveParcelFabric?.get?.(id)
+            || window.CadastralParcelRepository?.get?.(id)
+            || null;
     }
 
     function readAssumptionsFromModal(modal) {
@@ -117,7 +86,13 @@
 
         const applied = all.filter(p => p && p.applied === true);
         const result = api.planYield(applied, assumptions);
-        const parcels = api.resultingParcels(applied);
+        const cadastreIds = Array.from(new Set(applied.flatMap(proposal => (
+            Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds.map(String) : []
+        ))));
+        const materializedFeatures = window.LiveParcelFabric?.entriesForCadastre
+            ? window.LiveParcelFabric.entriesForCadastre(cadastreIds, { includeCorridors: false })
+            : [];
+        const parcels = api.resultingParcels(applied, { materializedFeatures });
 
         // Only the AREA needs the map. Count what we could measure so the average carries its own
         // confidence instead of pretending the parcels it could not reach do not exist.

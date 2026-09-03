@@ -13,22 +13,17 @@
     };
 
     async function selectBuenosAiresBlock(parcelId) {
-        if (!parcelId || !global.parcelLayer) {
+        const fabric = global.LiveParcelFabric;
+        const presenter = global.ParcelPresenter;
+        if (!parcelId || !fabric || typeof fabric.get !== 'function'
+            || !presenter || typeof presenter.resolveLiveLayers !== 'function') {
             if (typeof global.updateStatus === 'function') {
                 global.updateStatus('Unable to find block: parcel data not available');
             }
             return;
         }
 
-        let sourceParcel = null;
-        global.parcelLayer.eachLayer(layer => {
-            if (!layer?.feature) return;
-            const id = parcelIdFromFeature(layer.feature);
-            if (id && id.toString() === parcelId.toString()) {
-                sourceParcel = layer.feature;
-                return false;
-            }
-        });
+        const sourceParcel = fabric.get(String(parcelId));
         if (!sourceParcel || !sourceParcel.properties) {
             if (typeof global.updateStatus === 'function') {
                 global.updateStatus('Unable to find source parcel');
@@ -59,20 +54,18 @@
         }
 
         const localParcelIds = new Set();
-        const localParcelLayers = [];
-        global.parcelLayer.eachLayer(layer => {
-            if (layer.feature && layer.feature.properties) {
-                const layerSmp = layer.feature.properties.smp || layer.feature.properties.SMP;
+        fabric.list().forEach(feature => {
+            if (feature && feature.properties) {
+                const layerSmp = feature.properties.smp || feature.properties.SMP;
                 if (layerSmp) {
                     const layerParts = String(layerSmp).split('-');
                     if (layerParts.length >= 2) {
                         const layerSection = layerParts[0].padStart(3, '0');
                         const layerBlock = layerParts[1].padStart(3, '0');
                         if (layerSection === section && layerBlock === block) {
-                            const id = parcelIdFromFeature(layer.feature);
+                            const id = parcelIdFromFeature(feature);
                             if (id) {
                                 localParcelIds.add(id.toString());
-                                localParcelLayers.push(layer);
                             }
                         }
                     }
@@ -121,7 +114,7 @@
                 global.updateStatus(`Preparing ${blockParcelIds.length} block parcels...`);
             }
             try {
-                const ground = global.CadastralGroundService;
+                const ground = global.CadastralParcelRepository;
                 if (!ground || typeof ground.ensureIds !== 'function') {
                     throw new Error('Cadastral ground service is unavailable.');
                 }
@@ -131,24 +124,8 @@
             }
         }
 
-        const allBlockLayers = [];
-        global.parcelLayer.eachLayer(layer => {
-            if (layer.feature && layer.feature.properties) {
-                const id = parcelIdFromFeature(layer.feature);
-                if (!id) return;
-                const layerSmp = layer.feature.properties.smp || layer.feature.properties.SMP;
-                if (layerSmp) {
-                    const layerParts = String(layerSmp).split('-');
-                    if (layerParts.length >= 2) {
-                        const layerSection = layerParts[0].padStart(3, '0');
-                        const layerBlock = layerParts[1].padStart(3, '0');
-                        if (layerSection === section && layerBlock === block) {
-                            allBlockLayers.push(layer);
-                        }
-                    }
-                }
-            }
-        });
+        const requestedIds = blockParcelIds.length ? blockParcelIds : Array.from(localParcelIds);
+        const allBlockLayers = presenter.resolveLiveLayers(requestedIds, { includeCorridors: false });
 
         if (allBlockLayers.length === 0) {
             if (typeof global.updateStatus === 'function') {

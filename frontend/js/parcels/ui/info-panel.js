@@ -72,13 +72,13 @@
     }
 
     function buildParcelAcceptanceIndicators(proposal) {
-        if (!proposal || !Array.isArray(proposal.parentParcelIds) || proposal.parentParcelIds.length === 0) {
+        if (!proposal || !Array.isArray(proposal.cadastreParcelIds) || proposal.cadastreParcelIds.length === 0) {
             return '';
         }
         const acceptedSet = new Set(
             (proposal.acceptedParcelIds || []).map(id => (id !== undefined && id !== null) ? id.toString() : '')
         );
-        const entries = proposal.parentParcelIds.map((id, index) => {
+        const entries = proposal.cadastreParcelIds.map((id, index) => {
             const normalizedId = (id !== undefined && id !== null) ? id.toString() : `parcel_${index + 1}`;
             const isAccepted = acceptedSet.has(normalizedId);
             const parcelLabel = normalizedId
@@ -154,9 +154,9 @@
         if (typeof global.getProposalOwnerAcceptanceState !== 'function') {
             return '';
         }
-        const targetParcelId = Array.isArray(proposal?.parentParcelIds) && proposal.parentParcelIds.length > 0
-            ? proposal.parentParcelIds[0]
-            : (Array.isArray(proposal?.childParcelIds) && proposal.childParcelIds.length > 0 ? proposal.childParcelIds[0] : null);
+        const targetParcelId = Array.isArray(proposal?.cadastreParcelIds) && proposal.cadastreParcelIds.length > 0
+            ? proposal.cadastreParcelIds[0]
+            : null;
         if (!targetParcelId) {
             return '';
         }
@@ -197,4 +197,3 @@
     global.buildParcelAcceptanceIndicators = buildParcelAcceptanceIndicators;
     global.buildOwnerAcceptanceIndicators = buildOwnerAcceptanceIndicators;
 })(typeof window !== 'undefined' ? window : globalThis);
-

@@ -172,7 +172,7 @@
                                 }
 
                                 // If conversion failed, mark as failed and return invalid coord
-                                // The validation in ingestParcelFeatures will catch (0, 0) and skip this parcel
+                                // The cadastral repository validates unusable parcel geometry before publication.
                                 conversionFailed = true;
                                 conversionFailedCount++;
                                 const parcelId = properties?.parcelId;
@@ -255,4 +255,3 @@
         yieldToMainThread
     };
 })(typeof window !== 'undefined' ? window : globalThis);
-

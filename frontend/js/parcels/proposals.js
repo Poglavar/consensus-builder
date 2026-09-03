@@ -25,7 +25,7 @@
         const storageRef2 = (global.Proposals && global.Proposals.storage) ? global.Proposals.storage : global.proposalStorage;
         if (typeof global.selectAndHighlightProposal === 'function' && storageRef2) {
             const proposal = storageRef2.get ? storageRef2.get(proposalKey) : (storageRef2.getProposal ? storageRef2.getProposal(proposalKey) : null);
-            const parcels = Array.isArray(proposal?.parentParcelIds) ? proposal.parentParcelIds : [];
+            const parcels = Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
             if (proposal && parcels.length > 0) {
                 global.selectAndHighlightProposal(proposalKey, parcels[0], true);
             }
@@ -38,13 +38,12 @@
     const uiParcelPanel = (global.Parcels && global.Parcels.uiParcelPanel) ? global.Parcels.uiParcelPanel : (global.ParcelsUIParcelPanel || {});
 
     function scheduleParcelPanelFocus(parcelId) {
-        if (!global.parcelLayer || !parcelId) return;
+        if (!parcelId) return;
         const parcelIdStr = parcelId.toString();
         const focus = () => {
-            const parcel = global.parcelLayer.getLayers().find(layer => {
-                return layer.feature && layer.feature.properties &&
-                    layer.feature.properties.parcelId.toString() === parcelIdStr;
-            });
+            const parcel = global.LiveParcelFabric?.get?.(parcelIdStr)
+                ? global.ParcelPresenter?.getLayer?.(parcelIdStr)
+                : null;
             const showParcelInfoPanel = uiParcelPanel.showParcelInfoPanel || global.showParcelInfoPanel;
             if (parcel && typeof showParcelInfoPanel === 'function') {
                 showParcelInfoPanel(parcel.feature);

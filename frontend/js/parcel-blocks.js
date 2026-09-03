@@ -52,9 +52,7 @@ function parcelIdFromLayer(layer) {
     if (!layer) return null;
     const feature = layer.feature || layer;
     const props = feature.properties || {};
-    const id = typeof ensureParcelId === 'function'
-        ? ensureParcelId(feature)
-        : (props.parcelId ?? props.parcel_id ?? props.id);
+    const id = props.parcelId ?? props.parcel_id ?? props.id ?? feature.id;
     return id !== undefined && id !== null ? id.toString() : null;
 }
 
@@ -62,11 +60,9 @@ function isCorridorParcel(parcelOrId, layer = null) {
     const parcelId = (typeof parcelOrId === 'string' || typeof parcelOrId === 'number')
         ? parcelOrId.toString()
         : parcelIdFromLayer(parcelOrId || layer);
-    const props = (parcelOrId && parcelOrId.feature && parcelOrId.feature.properties)
-        || (parcelOrId && parcelOrId.properties)
-        || (layer && layer.feature && layer.feature.properties)
-        || (layer && layer.properties)
-        || {};
+    const liveFeature = parcelId ? liveBlockServices()?.fabric?.get?.(parcelId) : null;
+    if (!liveFeature) return false;
+    const props = liveFeature.properties || {};
 
     // Road parcels BOUND blocks — they are never inside one. The rule itself lives in
     // parcels/corridor-identity.js, which is where the reasoning about piece ids and ancestry is
@@ -74,66 +70,141 @@ function isCorridorParcel(parcelOrId, layer = null) {
     return window.__corridorIdentity.isCorridorGround({
         parcelId,
         properties: props,
-        persistedProperties: () => ((parcelId && typeof readPersistedParcelRecord === 'function')
-            ? (readPersistedParcelRecord(parcelId)?.properties || {})
-            : {}),
         isRoadInSet: (typeof window !== 'undefined' && typeof window.isRoadParcel === 'function')
             ? window.isRoadParcel
             : null
     });
 }
 
-// Add block storage management
+// Block detection reads the committed parcel fabric and obtains every Leaflet layer from the
+// presenter.  The registry and the feature group intentionally retain compatibility/ancestry
+// entries, so neither is a valid source of current block ground.
+function liveBlockServices() {
+    const root = (typeof window !== 'undefined') ? window : globalThis;
+    const fabric = root && root.LiveParcelFabric;
+    const presenter = root && root.ParcelPresenter;
+    if (!fabric || typeof fabric.queryBounds !== 'function' || typeof fabric.get !== 'function') return null;
+    if (!presenter || typeof presenter.getLayer !== 'function') return null;
+    return { fabric, presenter };
+}
+
+function liveBlockLayerForId(parcelId) {
+    const services = liveBlockServices();
+    const id = parcelId === undefined || parcelId === null ? '' : String(parcelId);
+    if (!services || !id) return null;
+    // Both checks are required: fabric membership is the domain authority; presenter membership
+    // is the only authority allowed to provide a layer for UI/geometry operations.
+    if (!services.fabric.get(id)) return null;
+    const layer = services.presenter.getLayer(id);
+    if (!layer || parcelIdFromLayer(layer) !== id) return null;
+    return layer;
+}
+
+function liveBlockFeatureForLayer(layer) {
+    const services = liveBlockServices();
+    const id = parcelIdFromLayer(layer);
+    if (!services || !id) return null;
+    return services.fabric.get(id) || null;
+}
+
+function liveBlockFeatureForId(parcelId) {
+    const services = liveBlockServices();
+    const id = parcelId === undefined || parcelId === null ? '' : String(parcelId);
+    if (!services || !id) return null;
+    return services.fabric.get(id) || null;
+}
+
+function liveBlockFeatures(block) {
+    if (!block) return [];
+    const ids = Array.from(new Set((block.parcelIds || block.parcels?.map(parcelIdFromLayer) || [])
+        .map(String).filter(Boolean)));
+    const features = ids.map(liveBlockFeatureForId).filter(Boolean);
+    return features.length === ids.length ? features : [];
+}
+
+function isTrackParcelLayer(layer) {
+    return liveBlockFeatureForLayer(layer)?.properties?.isTrack === true || Boolean(layer?._trackStyle);
+}
+
+function visibleLiveBlockLayers(includeCorridors = true) {
+    const services = liveBlockServices();
+    if (!services || typeof map === 'undefined' || !map || typeof map.getBounds !== 'function') return [];
+    let features;
+    try {
+        features = services.fabric.queryBounds(map.getBounds(), { includeCorridors: true });
+    } catch (_) {
+        return [];
+    }
+    const seen = new Set();
+    return (Array.isArray(features) ? features : []).map(feature => {
+        const id = typeof services.fabric.featureId === 'function'
+            ? services.fabric.featureId(feature)
+            : parcelIdFromLayer(feature);
+        if (!id || seen.has(id)) return null;
+        seen.add(id);
+        const layer = services.presenter.getLayer(id);
+        if (!layer || parcelIdFromLayer(layer) !== id) return null;
+        return layer;
+    }).filter(layer => layer && (includeCorridors || !isCorridorParcel(parcelIdFromLayer(layer))));
+}
+
+// Detected blocks are a revision-local UI projection. They are intentionally not durable: parcel
+// membership changes whenever the committed live fabric changes, so persisting ids/polygons made
+// an old detection silently authoritative after reload.
 const blockStorage = {
     blocks: new Map(),  // Key: blockName, Value: { parcels: [], valid: boolean, polygon?: any }
+    parcelToBlock: new Map(),
 
-    // Save blocks to PersistentStorage
-    save() {
-        const data = Array.from(this.blocks.entries()).map(([name, block]) => ({
-            name,
-            parcelIds: block.parcels.map(p => parcelIdFromLayer(p)).filter(Boolean),
-            valid: block.valid,
-            polygon: block.polygon && block.polygon.type ? block.polygon : null
-        }));
-        PersistentStorage.setItem('cadastre_blocks', JSON.stringify(data));
+    rebuildParcelIndex() {
+        this.parcelToBlock.clear();
+        this.blocks.forEach((block, name) => {
+            (block.parcelIds || []).forEach(id => this.parcelToBlock.set(String(id), name));
+        });
     },
 
-    // Load blocks from PersistentStorage
-    load() {
-        const data = PersistentStorage.getItem('cadastre_blocks');
-        if (data) {
-            this.blocks.clear();
-            JSON.parse(data).forEach(block => {
-                // Find all parcels that match the stored IDs
-                const parcels = [];
-                if (parcelLayer) {
-                    parcelLayer.eachLayer(layer => {
-                        const pid = parcelIdFromLayer(layer);
-                        if (pid && block.parcelIds.includes(pid)) {
-                            parcels.push(layer);
-                        }
-                    });
-                }
+    blockNameForParcel(parcelId) {
+        if (parcelId === undefined || parcelId === null) return null;
+        return this.parcelToBlock.get(String(parcelId)) || null;
+    },
 
-                this.blocks.set(block.name, {
-                    parcels,
-                    parcelIds: block.parcelIds,
-                    valid: block.valid,
-                    polygon: block.polygon || null
-                });
-            });
-        }
+    save() {
+        return false;
+    },
+
+    // Re-project the current in-memory detections onto presenter layers after a fabric commit.
+    load() {
+        const presenter = liveBlockServices()?.presenter;
+        if (!presenter || typeof presenter.getLayers !== 'function') return false;
+        this.blocks.forEach((block, name) => {
+            const parcelIds = Array.from(new Set((block.parcelIds || block.parcels?.map(parcelIdFromLayer) || [])
+                .map(String).filter(Boolean)));
+            const parcels = presenter.getLayers(parcelIds);
+            if (parcels.length !== parcelIds.length) {
+                this.blocks.delete(name);
+                return;
+            }
+            block.parcelIds = parcelIds;
+            block.parcels = parcels;
+            block.polygon = null;
+        });
+        this.rebuildParcelIndex();
+        return true;
     },
 
     // Add a new block
     addBlock(name, parcels, valid = true) {
+        const parcelIds = parcels.map(p => parcelIdFromLayer(p)).filter(Boolean);
+        const displacedBlocks = new Set(parcelIds.map(id => this.parcelToBlock.get(String(id))).filter(Boolean));
+        displacedBlocks.forEach(oldName => {
+            if (oldName !== name) this.blocks.delete(oldName);
+        });
         this.blocks.set(name, {
             parcels,
-            parcelIds: parcels.map(p => parcelIdFromLayer(p)).filter(Boolean),
+            parcelIds,
             valid,
             polygon: null
         });
-        this.save();
+        this.rebuildParcelIndex();
     },
 
     // Update block parcels (used when reloading the map)
@@ -141,14 +212,16 @@ const blockStorage = {
         if (this.blocks.has(name)) {
             const block = this.blocks.get(name);
             block.parcels = parcels;
+            block.parcelIds = parcels.map(parcelIdFromLayer).filter(Boolean);
             this.blocks.set(name, block);
+            this.rebuildParcelIndex();
         }
     },
 
     // Clear all blocks
     clear() {
         this.blocks.clear();
-        PersistentStorage.removeItem('cadastre_blocks');
+        this.parcelToBlock.clear();
         console.log('Cleared all blocks.');
     },
 
@@ -156,8 +229,8 @@ const blockStorage = {
     removeBlock(name) {
         const deleted = this.blocks.delete(name);
         if (deleted) {
+            this.rebuildParcelIndex();
             console.log(`Removed block: ${name}`);
-            this.save();
         }
         return deleted;
     },
@@ -167,19 +240,19 @@ const blockStorage = {
         const block = this.blocks.get(name);
         block.polygon = polygonFeature || null;
         this.blocks.set(name, block);
-        this.save();
     }
 };
+
+// Block membership is an ephemeral projection of the current Fabric revision. Consumers ask this
+// service by parcel id; membership is never smuggled through mutable Presenter feature clones.
+window.blockStorage = blockStorage;
+window.parcelBlockNameForId = parcelId => blockStorage.blockNameForParcel(parcelId);
 
 function initialiseBlockStorage() {
     blockStorage.load();
 }
 
-if (typeof PersistentStorage !== 'undefined' && PersistentStorage.ensureReady) {
-    PersistentStorage.ensureReady(initialiseBlockStorage);
-} else {
-    initialiseBlockStorage();
-}
+initialiseBlockStorage();
 
 // Add these arrays before the countBlocks function
 const blockAdjectives = [
@@ -244,7 +317,7 @@ function getBlockName(parcels) {
 // Helper function to check if a parcel is fully visible in the viewport
 function isParcelFullyVisible(parcel) {
     try {
-        const geom = parcel && parcel.feature && parcel.feature.geometry;
+        const geom = liveBlockFeatureForLayer(parcel)?.geometry;
         if (!geom) return false;
         const bounds = map.getBounds();
         if (geom.type === 'Polygon') {
@@ -267,19 +340,21 @@ function isBlockComplete(blockParcels) {
 
 // Helper function to check if two parcels share a boundary (using HTRS96 with tolerance)
 function parcelsShareBoundary(p1, p2) {
+    const feature1 = liveBlockFeatureForLayer(p1);
+    const feature2 = liveBlockFeatureForLayer(p2);
     // Debug info for drawn roads
-    const p1IsDrawnRoad = p1?.feature?.properties?.isRoad === true;
-    const p2IsDrawnRoad = p2?.feature?.properties?.isRoad === true;
+    const p1IsDrawnRoad = feature1?.properties?.isRoad === true;
+    const p2IsDrawnRoad = feature2?.properties?.isRoad === true;
 
     // Ensure both parcels have valid features
-    if (!p1?.feature || !p2?.feature) {
+    if (!feature1 || !feature2) {
         console.warn("Invalid parcel features for boundary check");
         return false;
     }
 
     // Get HTRS96 coordinates on-the-fly
-    const coords1 = getHtrsCoordinates(p1.feature);
-    const coords2 = getHtrsCoordinates(p2.feature);
+    const coords1 = getHtrsCoordinates(feature1);
+    const coords2 = getHtrsCoordinates(feature2);
 
     // Check if we got valid coordinates
     if (!coords1.length || !coords2.length) {
@@ -305,8 +380,7 @@ function parcelsShareBoundary(p1, p2) {
 
 // Helper function to find neighboring parcels using a precomputed map
 function findNeighbors(parcel, neighborMap) {
-    if (!parcel || !parcel.feature || !parcel.feature.properties) return [];
-    const parcelId = parcelIdFromLayer(parcel.feature);
+    const parcelId = parcelIdFromLayer(parcel);
     if (!parcelId) return [];
     // Return neighbors from the map, filtering out any potential road parcels if needed elsewhere
     // (floodfill already checks isRoad, so maybe not needed here)
@@ -382,32 +456,12 @@ function computeCombinedBounds(layers) {
 
 // Build neighbors using an edge-index (near-linear) over visible non-corridor parcels
 function getVisibleNonCorridorParcels() {
-    if (!parcelLayer) return [];
-    const bounds = map.getBounds();
-    const all = parcelLayer.getLayers().filter(layer => {
-        if (!layer || typeof layer.getBounds !== 'function') return false;
-        try {
-            return bounds.intersects(layer.getBounds());
-        } catch (_) { return false; }
-    });
-    const nonCorridor = all.filter(p => {
-        const pid = parcelIdFromLayer(p);
-        return pid && !isCorridorParcel(pid, p);
-    });
-
-    // Return all intersecting parcels - we'll validate block completeness later
-    // This allows us to process parcels for performance while ensuring blocks are complete
-    return nonCorridor;
+    // Return all intersecting live parcels; completeness is validated by the caller.
+    return visibleLiveBlockLayers(false);
 }
 
 function getVisibleCorridorParcels() {
-    if (!parcelLayer) return [];
-    const bounds = map.getBounds();
-    return parcelLayer.getLayers().filter(layer => {
-        if (!layer || typeof layer.getBounds !== 'function') return false;
-        try {
-            if (!bounds.intersects(layer.getBounds())) return false;
-        } catch (_) { return false; }
+    return visibleLiveBlockLayers(true).filter(layer => {
         const pid = parcelIdFromLayer(layer);
         return !!(pid && isCorridorParcel(pid, layer));
     });
@@ -415,6 +469,11 @@ function getVisibleCorridorParcels() {
 
 function buildNeighborMapFromEdges(parcels) {
     const idToLayer = new Map();
+    const services = liveBlockServices();
+    if (!services) {
+        console.error('[parcel-blocks] live parcel fabric/presenter is not loaded; blocks cannot be detected');
+        return { neighborMap: new Map(), idToLayer };
+    }
 
     // Adjacency is a GEOMETRIC question — do these two outlines run along each other — answered by
     // the pure, unit-tested parcels/parcel-adjacency.js. It used to be answered by hashing vertex
@@ -431,10 +490,13 @@ function buildNeighborMapFromEdges(parcels) {
         : null;
     const forAdjacency = [];
     parcels.forEach(layer => {
-        const feature = layer && layer.feature;
-        const id = parcelIdFromLayer(feature);
+        const requestedId = parcelIdFromLayer(layer);
+        const presented = requestedId ? services.presenter.getLayer(requestedId) : null;
+        const feature = requestedId ? services.fabric.get(requestedId) : null;
+        const id = feature && parcelIdFromLayer(feature);
         if (!id) return;
-        idToLayer.set(id, layer);
+        if (!presented || parcelIdFromLayer(presented) !== id) return;
+        idToLayer.set(id, presented);
         const rings = htrsRingsOf(feature);
         if (rings.length) forAdjacency.push({ id, rings });
     });
@@ -453,10 +515,14 @@ function buildNeighborMapFromEdges(parcels) {
     // outlines appear to share an edge underneath it. Use the LIVE corridor parcels from the same
     // fabric — never proposal records or rendered strips — so block consumers see one current
     // ground truth and do not care how that ground was produced.
-    const corridorBarriers = getVisibleCorridorParcels().map(layer => ({
-        id: parcelIdFromLayer(layer),
-        rings: htrsRingsOf(layer && layer.feature)
-    })).filter(entry => entry.id && entry.rings.length);
+    const corridorBarriers = services.fabric
+        .queryBounds(map.getBounds(), { includeCorridors: true })
+        .filter(feature => isCorridorParcel(parcelIdFromLayer(feature)))
+        .map(feature => ({
+            id: parcelIdFromLayer(feature),
+            rings: htrsRingsOf(feature)
+        }))
+        .filter(entry => entry.id && entry.rings.length);
 
     blockTopology.neighborPairs(forAdjacency, corridorBarriers).forEach(pair => {
         const la = idToLayer.get(pair.a);
@@ -475,7 +541,7 @@ function buildNeighborMapFromEdges(parcels) {
 
 // Modify the countBlocks function to pre-calculate neighbors
 async function countBlocks() {
-    if (!parcelLayer) {
+    if (!liveBlockServices()) {
         updateStatus('No parcels loaded. Please refresh data first.');
         return;
     }
@@ -513,6 +579,7 @@ async function countBlocks() {
             const blocksToRemove = new Set();
             let blockCount = 0;
             const totalNonCorridor = currentParcels.length;
+            let parcelsProcessedCount = 0;
 
             // ONE flood fill, shared with the batch enumeration (proposals/block-enumeration.js).
             // Growing a block outwards from a parcel is a single idea and it was written out here
@@ -539,13 +606,9 @@ async function countBlocks() {
                         console.log(`countBlocks: Found complete block "${blockName}" with ${blockParcels.length} parcels:`,
                             blockParcels.map(p => parcelIdFromLayer(p)).filter(Boolean));
                         blockParcels.forEach(p => {
-                            if (p?.feature?.properties) {
-                                const oldBlock = p.feature.properties.block;
-                                if (oldBlock && oldBlock !== blockName) {
-                                    blocksToRemove.add(oldBlock);
-                                }
-                                p.feature.properties.block = blockName;
-                                p.feature.properties.blockValid = true;
+                            const oldBlock = blockStorage.blockNameForParcel(parcelIdFromLayer(p));
+                            if (oldBlock && oldBlock !== blockName) {
+                                blocksToRemove.add(oldBlock);
                             }
                         });
                         blockStorage.addBlock(blockName, blockParcels, true);
@@ -556,7 +619,7 @@ async function countBlocks() {
                     }
                 }
 
-                const parcelsProcessedCount = processed.size;
+                parcelsProcessedCount += component.length;
                 const progress = Math.round((parcelsProcessedCount / totalNonCorridor) * 100);
                 if (parcelsCountedLabel) {
                     parcelsCountedLabel.textContent = `Parcels processed: ${parcelsProcessedCount} / ${totalNonCorridor} (${progress}%)`;
@@ -890,16 +953,6 @@ function clearBlocks() {
         window.verticesLayer = null;
     }
 
-    // Clear block properties from parcels
-    if (parcelLayer) {
-        parcelLayer.eachLayer(layer => {
-            if (layer.feature && layer.feature.properties) {
-                delete layer.feature.properties.block;
-                delete layer.feature.properties.blockValid;
-            }
-        });
-    }
-
     // Clear any highlighted block parcel styles
     try { clearHighlightedBlockParcels(); } catch (_) { }
 
@@ -1057,11 +1110,13 @@ async function renderBlockInfoStats(blockName) {
     }
     if (!blockStorage.blocks.has(blockName)) return;
     const block = blockStorage.blocks.get(blockName);
+    const parcelFeatures = liveBlockFeatures(block);
+    if (parcelFeatures.length !== (block.parcelIds || []).length) return;
 
     // Step 1: Basic calculations (quick)
-    const totalArea = block.parcels.reduce((sum, parcel) =>
-        sum + (parcel.feature.properties.calculatedArea || 0), 0);
-    const avgParcelArea = block.parcels.length > 0 ? (totalArea / block.parcels.length) : 0;
+    const totalArea = parcelFeatures.reduce((sum, feature) =>
+        sum + (feature.properties?.calculatedArea || 0), 0);
+    const avgParcelArea = parcelFeatures.length > 0 ? (totalArea / parcelFeatures.length) : 0;
 
     // Yield to browser
     await new Promise(resolve => setTimeout(resolve, 0));
@@ -1098,13 +1153,13 @@ async function renderBlockInfoStats(blockName) {
 
     // Step 3: Average parcel perimeter
     let avgParcelPerimeter = 0;
-    if (block.parcels.length > 0) {
+    if (parcelFeatures.length > 0) {
         let sumPerim = 0;
-        block.parcels.forEach(p => {
-            const ring = getExteriorRing(p.feature);
+        parcelFeatures.forEach(feature => {
+            const ring = getExteriorRing(feature);
             sumPerim += perimeterOfRingMeters(ring);
         });
-        avgParcelPerimeter = sumPerim / block.parcels.length;
+        avgParcelPerimeter = sumPerim / parcelFeatures.length;
     }
 
     // Yield to browser
@@ -1119,19 +1174,18 @@ async function renderBlockInfoStats(blockName) {
             // Create a LineString from the block's outer boundary
             const boundaryLine = turf.lineString(unionOuter);
 
-            for (let i = 0; i < block.parcels.length; i++) {
+            for (let i = 0; i < parcelFeatures.length; i++) {
                 if (currentStatsBlockName !== blockName) return; // Check frequently
-                const parcel = block.parcels[i];
+                const parcelFeature = parcelFeatures[i];
 
                 try {
                     // Check if parcel intersects with the block boundary
-                    const parcelFeature = parcel.feature;
                     const touchesBoundary = turf.booleanIntersects(parcelFeature, boundaryLine);
 
                     if (!touchesBoundary) {
                         // Parcel doesn't touch the outer boundary = landlocked
                         landlockedCount++;
-                        landlockedArea += (parcel?.feature?.properties?.calculatedArea || 0);
+                        landlockedArea += (parcelFeature.properties?.calculatedArea || 0);
                     }
                 } catch (e) {
                     console.warn('Error checking parcel boundary intersection:', e);
@@ -1200,15 +1254,15 @@ async function renderBlockInfoStats(blockName) {
     `;
 
     // Update the parcels list (sorted by area descending)
-    const sortedParcels = block.parcels.slice().sort((a, b) => {
-        const aArea = (a?.feature?.properties?.calculatedArea) || 0;
-        const bArea = (b?.feature?.properties?.calculatedArea) || 0;
+    const sortedParcels = parcelFeatures.slice().sort((a, b) => {
+        const aArea = a.properties?.calculatedArea || 0;
+        const bArea = b.properties?.calculatedArea || 0;
         return bArea - aArea;
     });
-    const parcelsList = sortedParcels.map(parcel => {
-        const parcelId = parcelIdFromLayer(parcel);
-        const parcelNumber = parcel?.feature?.properties?.BROJ_CESTICE;
-        const parcelArea = parcel?.feature?.properties?.calculatedArea || 0;
+    const parcelsList = sortedParcels.map(feature => {
+        const parcelId = parcelIdFromLayer(feature);
+        const parcelNumber = feature.properties?.BROJ_CESTICE;
+        const parcelArea = feature.properties?.calculatedArea || 0;
         return `
             <div class="parcel-item" style="cursor: pointer;" data-parcel-id="${parcelId}">
                 ${tBlock('panel.block.parcelLabel', { number: parcelNumber }, `Parcel ${parcelNumber}`)} 
@@ -1238,25 +1292,20 @@ async function renderBlockInfoStats(blockName) {
             const parcelId = this.dataset.parcelId;
             console.log('Clicked parcel ID:', parcelId);
 
-            // Find the parcel in the parcel layer
-            let selectedParcel = null;
-            parcelLayer.eachLayer(layer => {
-                if (parcelIdFromLayer(layer) === parcelId) {
-                    selectedParcel = layer;
-                    return false; // Break the loop
-                }
-            });
+            // Resolve the item against the committed fabric and current presentation.
+            const selectedParcel = liveBlockLayerForId(parcelId);
 
             if (selectedParcel) {
                 // Store the selected parcel ID
                 selectedParcelId = parcelId;
 
                 // First normalize other parcels but preserve block highlight for current block
-                parcelLayer.eachLayer(layer => {
+                const currentLayers = liveBlockServices()?.presenter?.getLayers?.() || [];
+                currentLayers.forEach(layer => {
                     const layerParcelId = parcelIdFromLayer(layer);
                     const isRoad = layerParcelId && typeof window.isRoadParcel === 'function' ? window.isRoadParcel(layerParcelId) : false;
-                    const isTrack = Boolean(layer?.feature?.properties?.isTrack) || Boolean(layer?._trackStyle);
-                    const layerBlockName = layer?.feature?.properties?.block;
+                    const isTrack = isTrackParcelLayer(layer);
+                    const layerBlockName = blockStorage.blockNameForParcel(layerParcelId);
                     const currentSelectedBlockName = (typeof selectedBlockName !== 'undefined' && selectedBlockName)
                         ? selectedBlockName
                         : (typeof window !== 'undefined' ? window.selectedBlockName : null);
@@ -1286,7 +1335,7 @@ async function renderBlockInfoStats(blockName) {
                 map.fitBounds(selectedParcel.getBounds(), { padding: [50, 50] });
 
                 // Now highlight the selected parcel and bring it to front
-                const isTrackSelected = (selectedParcel?.feature?.properties?.isTrack === true) || Boolean(selectedParcel?._trackStyle);
+                const isTrackSelected = isTrackParcelLayer(selectedParcel);
                 if (isTrackSelected) {
                     const styleFn = typeof window.getParcelStyle === 'function' ? window.getParcelStyle : window.getParcelBaseStyle;
                     const trackStyle = styleFn ? styleFn(parcelId, selectedParcel, { isTrack: true }) : (window.trackStyle || {});
@@ -1304,15 +1353,17 @@ async function renderBlockInfoStats(blockName) {
                 };
 
                 // Show parcel info panel with metrics
-                const metrics = calculateRoadMetrics(selectedParcel.feature.geometry.coordinates);
-                showParcelInfoPanel(selectedParcel.feature, metrics);
+                const selectedFeature = liveBlockFeatureForId(parcelId);
+                if (!selectedFeature) return;
+                const metrics = calculateRoadMetrics(selectedFeature.geometry.coordinates);
+                showParcelInfoPanel(selectedFeature, metrics);
 
                 // Show the parcel info panel
                 document.getElementById('parcel-info-panel').classList.add('visible');
 
                 // Update status
                 updateStatus(
-                    `Selected parcel ${selectedParcel.feature.properties.BROJ_CESTICE}`);
+                    `Selected parcel ${selectedFeature.properties?.BROJ_CESTICE || parcelId}`);
             } else {
                 console.error('Could not find parcel with ID:', parcelId);
                 updateStatus(`Could not find parcel with ID: ${parcelId}`);
@@ -1461,11 +1512,9 @@ function buildBlockProposalListItem(proposal) {
         }
     }
 
-    const parcelCount = Array.isArray(proposal.parentParcelIds)
-        ? proposal.parentParcelIds.length
-        : (Array.isArray(proposal.childParcelIds)
-            ? proposal.childParcelIds.length
-            : (proposal.buildingProposal?.parentParcelIds?.length || 0));
+    const parcelCount = Array.isArray(proposal.cadastreParcelIds)
+        ? proposal.cadastreParcelIds.length
+        : 0;
     const metaParts = [];
     if (parcelCount > 0) {
         metaParts.push(`${parcelCount} parcel${parcelCount === 1 ? '' : 's'}`);
@@ -1742,16 +1791,7 @@ function toggleBlockVerticesDisplay(blockName) {
     if (!blockStorage.blocks.has(blockName)) return;
     const block = blockStorage.blocks.get(blockName);
     // Build union once more
-    let unioned = null;
-    try {
-        if (block.parcels.length > 0) {
-            unioned = block.parcels[0].feature;
-            for (let i = 1; i < block.parcels.length; i++) {
-                const merged = turf.union(unioned, block.parcels[i].feature);
-                if (merged) unioned = merged;
-            }
-        }
-    } catch (e) { }
+    const unioned = unionLiveBlockFeatures(block);
     if (!unioned || !unioned.geometry) return;
 
     // Extract outer ring of largest polygon
@@ -1783,17 +1823,11 @@ function toggleBlockVerticesDisplay(blockName) {
 
 // Helper for labeling rejected parcels
 function addRejectionLabel(parcel, reason) {
-    // Get centroid
-    const coords = parcel.feature.geometry.coordinates[0];
-    let latSum = 0, lngSum = 0;
-    coords.forEach(coord => {
-        lngSum += coord[0];
-        latSum += coord[1];
-    });
-    const n = coords.length;
-    const centroid = [latSum / n, lngSum / n];
+    const feature = liveBlockFeatureForLayer(parcel);
+    if (!feature) return;
+    const centroid = turf.centroid(feature).geometry.coordinates;
     // Add label
-    const label = L.marker([centroid[0], centroid[1]], {
+    const label = L.marker([centroid[1], centroid[0]], {
         icon: L.divIcon({
             className: 'parcel-rejection-label',
             html: `<span style="background: #fff3f3; color: #c00; border: 1px solid #c00; border-radius: 6px; padding: 2px 8px; font-size: 13px;">${reason}</span>`,
@@ -1821,6 +1855,11 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
     const button = document.querySelector('button[onclick="animateFloodfillFromSelected()"]');
 
     const run = () => {
+        const services = liveBlockServices();
+        if (!services) {
+            return failBlockDetection(tBlock('alerts.messages.block_parcels_not_loaded', {},
+                'The parcels have not finished loading yet — wait for the map to settle and try again.'));
+        }
         if (typeof multiParcelSelection === 'undefined' || !multiParcelSelection || !multiParcelSelection.selectedParcels) {
             return failBlockDetection(tBlock('alerts.messages.block_multiselect_unavailable', {},
                 'Multi-select is unavailable, and a block is delivered as a multi-parcel selection.'));
@@ -1844,15 +1883,13 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
                 'Multi-select could not be turned on, and a block is delivered as a multi-parcel selection.'));
         }
 
-        // Resolve the seed parcel: prefer the passed layer, else last multi-select parcel, else current parcel layer
-        let seedParcel = startParcel;
+        // Resolve the seed by exact id through the committed fabric and presenter. A passed Leaflet
+        // object, selection registry entry, or currentParcel reference is only a hint; none can
+        // reintroduce a hidden ancestor or a layer removed from the live projection.
+        const startHintId = parcelIdFromLayer(startParcel);
+        let seedParcel = startHintId ? liveBlockLayerForId(startHintId) : null;
         const seedSources = [];
         if (!seedParcel) {
-            // `selectedParcelId` is the app-wide answer to "what is selected", and this gate did not
-            // consult it: turning multi-select on clears the single selection, so by the time the
-            // seed is resolved `currentParcel` can be null and only that id remembers the parcel
-            // whose highlight is still on screen. Being told to select a parcel while looking at a
-            // selected one is the worst possible reply.
             const candidateId = multiParcelSelection.lastSelectedParcelId
                 || (multiParcelSelection.selectedParcels.size > 0 ? Array.from(multiParcelSelection.selectedParcels).slice(-1)[0] : null)
                 || (currentParcel && currentParcel.id ? currentParcel.id : null)
@@ -1861,12 +1898,9 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
             seedSources.push(`multiSelect=${multiParcelSelection.selectedParcels.size}`);
             seedSources.push(`currentParcel=${(currentParcel && currentParcel.id) || '—'}`);
             seedSources.push(`selectedParcelId=${(typeof selectedParcelId !== 'undefined' && selectedParcelId) || '—'}`);
-            if (candidateId && typeof multiParcelSelection.findParcelById === 'function') {
-                seedParcel = multiParcelSelection.findParcelById(candidateId);
-                if (!seedParcel) seedSources.push(`findParcelById(${candidateId})=miss`);
-            }
-            if (!seedParcel && currentParcel && currentParcel.layer) {
-                seedParcel = currentParcel.layer;
+            if (candidateId) {
+                seedParcel = liveBlockLayerForId(candidateId);
+                if (!seedParcel) seedSources.push(`liveParcel(${candidateId})=miss`);
             }
         }
 
@@ -1888,20 +1922,7 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
                 'This is a road or track parcel. A block is the land BETWEEN corridors — start from a parcel inside one.'));
         }
 
-        if (!parcelLayer || typeof parcelLayer.getLayers !== 'function') {
-            return failBlockDetection(tBlock('alerts.messages.block_parcels_not_loaded', {},
-                'The parcels have not finished loading yet — wait for the map to settle and try again.'));
-        }
-
-        const bounds = map.getBounds();
-        const visibleParcels = parcelLayer.getLayers().filter(layer => {
-            if (!layer || typeof layer.getBounds !== 'function') return false;
-            try { return bounds.intersects(layer.getBounds()); } catch (_) { return false; }
-        });
-        const nonCorridorParcels = visibleParcels.filter(p => {
-            const pid = parcelIdFromLayer(p);
-            return pid && !isCorridorParcel(pid, p);
-        });
+        const nonCorridorParcels = getVisibleNonCorridorParcels();
 
         if (nonCorridorParcels.length === 0) {
             return failBlockDetection(tBlock('alerts.messages.block_no_parcels_in_view', {},
@@ -1991,19 +2012,10 @@ function detectBlockParcelIdsForParcel(parcelId) {
     try {
         const idStr = parcelId !== undefined && parcelId !== null ? String(parcelId) : null;
         if (!idStr) return null;
-        const seed = (window.parcelLayerById instanceof Map) ? window.parcelLayerById.get(idStr) : null;
+        const seed = liveBlockLayerForId(idStr);
         if (!seed) return null;
         if (isCorridorParcel(idStr, seed)) return null;
-        if (!parcelLayer || typeof parcelLayer.getLayers !== 'function') return null;
-        const bounds = map.getBounds();
-        const visibleParcels = parcelLayer.getLayers().filter(layer => {
-            if (!layer || typeof layer.getBounds !== 'function') return false;
-            try { return bounds.intersects(layer.getBounds()); } catch (_) { return false; }
-        });
-        const nonCorridorParcels = visibleParcels.filter(p => {
-            const pid = parcelIdFromLayer(p);
-            return pid && !isCorridorParcel(pid, p);
-        });
+        const nonCorridorParcels = getVisibleNonCorridorParcels();
         if (!nonCorridorParcels.length) return null;
         const { neighborMap } = buildNeighborMapFromEdges(nonCorridorParcels);
         const blockParcels = [];
@@ -2046,7 +2058,13 @@ function animateFloodfillFromSelected(options = {}) {
         return;
     }
 
-    const startParcel = currentParcel.layer;
+    const startParcelId = parcelIdFromLayer(currentParcel.layer);
+    const startParcel = startParcelId ? liveBlockLayerForId(startParcelId) : null;
+    if (!startParcel) {
+        failBlockDetection(tBlock('alerts.messages.block_seed_unresolved', {},
+            'Could not resolve the selected parcel in the live map, so there is nothing to grow a block from.'));
+        return;
+    }
     const button = document.querySelector('button[onclick="animateFloodfillFromSelected()"]');
 
     const run = () => new Promise(resolve => {
@@ -2060,15 +2078,7 @@ function animateFloodfillFromSelected(options = {}) {
 
         try {
             console.log('floodfillFromSelected: Starting from parcel:', parcelIdFromLayer(startParcel));
-            const bounds = map.getBounds();
-            const allParcels = parcelLayer.getLayers().filter(layer => {
-                if (!layer || typeof layer.getBounds !== 'function') return false;
-                try { return bounds.intersects(layer.getBounds()); } catch { return false; }
-            });
-            const nonCorridorParcels = allParcels.filter(p => {
-                const pid = parcelIdFromLayer(p);
-                return pid && p?.feature?.properties && !isCorridorParcel(pid, p);
-            });
+            const nonCorridorParcels = getVisibleNonCorridorParcels();
             console.log('floodfillFromSelected: Parcels being processed:', nonCorridorParcels.map(parcelIdFromLayer).filter(Boolean));
             const { neighborMap } = buildNeighborMapFromEdges(nonCorridorParcels);
 
@@ -2092,12 +2102,6 @@ function animateFloodfillFromSelected(options = {}) {
                                 blockParcels.map(parcelIdFromLayer).filter(Boolean));
                             blockStorage.addBlock(blockName, blockParcels, true);
                             blockPolygonCache.clear();
-                            blockParcels.forEach(p => {
-                                if (p && p.feature && p.feature.properties) {
-                                    p.feature.properties.block = blockName;
-                                    p.feature.properties.blockValid = true;
-                                }
-                            });
                             L.popup()
                                 .setLatLng(startParcel.getBounds().getCenter())
                                 .setContent(`A block was successfully formed starting from the selected parcel. Block name: ${blockName}, parcel count: ${blockParcels.length}`)
@@ -2138,14 +2142,20 @@ function animateFloodfillFromSelected(options = {}) {
                     }
 
                     if (reason) {
-                        L.geoJSON(current.toGeoJSON(false), { style: rejectedStyle, interactive: false }).addTo(map);
+                        const rejectedFeature = liveBlockFeatureForLayer(current);
+                        if (rejectedFeature) {
+                            L.geoJSON(rejectedFeature, { style: rejectedStyle, interactive: false }).addTo(map);
+                        }
                         addRejectionLabel(current, reason);
                         setTimeout(animateStep, 100);
                         return;
                     }
 
                     blockParcels.push(current);
-                    L.geoJSON(current.toGeoJSON(false), { style: acceptedStyle, interactive: false }).addTo(map);
+                    const acceptedFeature = liveBlockFeatureForLayer(current);
+                    if (acceptedFeature) {
+                        L.geoJSON(acceptedFeature, { style: acceptedStyle, interactive: false }).addTo(map);
+                    }
 
                     const neighbors = findNeighbors(current, neighborMap);
                     for (const neighbor of neighbors) {
@@ -2210,22 +2220,15 @@ function highlightNeighbors(parcel) {
     // Clear any existing highlighted neighbors first
     clearHighlightedNeighbors();
 
-    // Get all visible parcels in the current view
-    const bounds = map.getBounds();
-    const allParcels = parcelLayer.getLayers().filter(layer => {
-        if (!layer || typeof layer.getBounds !== 'function') return false;
-        try {
-            return bounds.intersects(layer.getBounds());
-        } catch (e) {
-            console.warn("Error getting bounds for layer:", layer, e);
-            return false;
-        }
-    });
+    const liveParcel = liveBlockLayerForId(parcelIdFromLayer(parcel));
+    if (!liveParcel) return;
+    // Get all visible parcels from the committed fabric and presenter.
+    const allParcels = visibleLiveBlockLayers(true);
 
     // Find neighbors using the same boundary detection as in floodfill
     const neighbors = allParcels.filter(p =>
-        p !== parcel &&
-        parcelsShareBoundary(parcel, p)
+        p !== liveParcel &&
+        parcelsShareBoundary(liveParcel, p)
     );
 
     // Style for normal (non-road) neighboring parcels
@@ -2252,7 +2255,9 @@ function highlightNeighbors(parcel) {
         const isNeighborRoad = neighborId ? isRoad(neighborId) : false;
 
         // Create a highlight layer from the neighbor's GeoJSON
-        const highlightLayer = L.geoJSON(neighbor.toGeoJSON(false), {
+        const neighborFeature = liveBlockFeatureForLayer(neighbor);
+        if (!neighborFeature) return;
+        const highlightLayer = L.geoJSON(neighborFeature, {
             style: isNeighborRoad ? roadNeighborStyle : normalNeighborStyle,
             interactive: false
         }).addTo(map);
@@ -2318,8 +2323,10 @@ function displayVertices(parcel) {
         window.verticesLayer = L.layerGroup().addTo(map);
     }
 
-    // Get coordinates of the parcel
-    if (!parcel.feature || !parcel.feature.geometry || !parcel.feature.geometry.coordinates) {
+    // Geometry always comes from the committed fabric; the layer only identifies the parcel and
+    // hosts the UI style.
+    const feature = liveBlockFeatureForLayer(parcel);
+    if (!feature?.geometry?.coordinates) {
         console.error('Invalid parcel geometry for displaying vertices:', parcel);
         return;
     }
@@ -2327,7 +2334,7 @@ function displayVertices(parcel) {
     // Extract exterior ring safely (Polygon or MultiPolygon)
     let coordinates;
     try {
-        const geom = parcel.feature.geometry;
+        const geom = feature.geometry;
         if (geom.type === 'Polygon') {
             coordinates = geom.coordinates[0];
         } else if (geom.type === 'MultiPolygon') {
@@ -2342,7 +2349,7 @@ function displayVertices(parcel) {
     }
 
     // Generate HTRS96 coordinates on-the-fly
-    const htrsCoordinates = getHtrsCoordinates(parcel.feature);
+    const htrsCoordinates = getHtrsCoordinates(feature);
 
     // Create a marker for each vertex
     coordinates.forEach((coord, index) => {
@@ -2405,7 +2412,7 @@ function displayVertices(parcel) {
         vertexMarkers.push(marker);
     });
 
-    updateStatus(`Showing ${coordinates.length} vertices for parcel ${parcel.feature.properties.BROJ_CESTICE}`);
+    updateStatus(`Showing ${coordinates.length} vertices for parcel ${feature.properties?.BROJ_CESTICE || parcelIdFromLayer(feature)}`);
 }
 
 // Function to clear vertex markers
@@ -2505,6 +2512,17 @@ let blockPolygonCache = new Map(); // blockName -> unioned polygon feature
 // Keep track of currently highlighted block parcel layers to restore styles later
 let highlightedBlockParcels = [];
 
+function unionLiveBlockFeatures(block) {
+    const features = liveBlockFeatures(block);
+    if (!features.length) return null;
+    let unioned = features[0];
+    for (let i = 1; i < features.length; i++) {
+        const merged = turf.union(unioned, features[i]);
+        if (merged) unioned = merged;
+    }
+    return unioned;
+}
+
 function clearHighlightedBlockParcels() {
     if (!Array.isArray(highlightedBlockParcels) || highlightedBlockParcels.length === 0) return;
     try {
@@ -2512,7 +2530,7 @@ function clearHighlightedBlockParcels() {
             try {
                 const parcelId = parcelIdFromLayer(layer);
                 const isRoadFlag = parcelId && typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
-                const isTrackFlag = Boolean(layer?.feature?.properties?.isTrack) || Boolean(layer?._trackStyle);
+                const isTrackFlag = isTrackParcelLayer(layer);
                 if (typeof layer.setStyle === 'function') {
                     const styleFn = typeof window.getParcelBaseStyle === 'function' ? window.getParcelBaseStyle : null;
                     const style = styleFn
@@ -2568,13 +2586,8 @@ function getUnionedPolygonForBlock(blockName, block) {
     if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) {
         return null;
     }
-    let unioned = block.parcels[0].feature;
-    for (let i = 1; i < block.parcels.length; i++) {
-        try {
-            const merged = turf.union(unioned, block.parcels[i].feature);
-            if (merged) unioned = merged;
-        } catch (_) { }
-    }
+    let unioned = null;
+    try { unioned = unionLiveBlockFeatures(block); } catch (_) { }
     if (unioned) {
         blockPolygonCache.set(blockName, unioned);
         // Persist unioned polygon for future sessions
@@ -2622,18 +2635,13 @@ function precomputeBlockPolygons() {
             blockPolygonCache.set(blockName, block.polygon);
             return;
         }
-        // Fallback: compute from parcels if available
+        // Compute from authoritative live parcel features if available.
         if (block.parcels && block.parcels.length) {
-            let unioned = block.parcels[0].feature;
-            for (let i = 1; i < block.parcels.length; i++) {
-                try {
-                    const next = block.parcels[i].feature;
-                    const merged = turf.union(unioned, next);
-                    if (merged) unioned = merged;
-                } catch (e) {
-                    console.warn('Failed to union parcel', i, 'in block', blockName, e);
-                }
+            let unioned = null;
+            try { unioned = unionLiveBlockFeatures(block); } catch (e) {
+                console.warn('Failed to union live parcel features in block', blockName, e);
             }
+            if (!unioned) return;
             blockPolygonCache.set(blockName, unioned);
             try { blockStorage.setBlockPolygon(blockName, unioned); } catch (_) { }
         }

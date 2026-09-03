@@ -1,514 +1,545 @@
-// The one application-level boundary for cadastral ground reads.
+// Immutable cadastral parcel repository.
 //
-// Consumers describe the ground they need. This service alone decides whether that ground is
-// already retained as cadastral data, is being loaded by another consumer, was previously found
-// to be absent, or must be requested from the server. Keeping those decisions here prevents
-// a shared-plan import, replay, editor, block selection, and financial calculation from each
-// maintaining a subtly different cache and fetching the same parcels again. parcels/fetch.js is
-// the private transport below this boundary and parcels/ingest.js is its presentation adapter; no
-// feature consumer chooses between either of them directly.
-(function (global) {
+// All consumers ask this repository for ground. It alone decides whether the answer comes from
+// retained memory, an in-flight request, or the transport. A missing parcel is cached only when
+// the transport explicitly says it is absent; unavailable/partial responses are errors and are
+// always retryable. The repository never reads or writes Leaflet.
+(function attachCadastralRepository(global, factory) {
+    const exported = factory(global);
+    if (typeof module === 'object' && module.exports) module.exports = exported;
+    if (global) {
+        const fabric = global.LiveParcelFabric;
+        const service = exported.createCadastralParcelRepository({
+            root: global,
+            transport: global.__cadastralGroundTransport,
+            convertFeatures: global.convertGeoJSON,
+            footprintOf: record => global.__planOrder && typeof global.__planOrder.footprintOf === 'function'
+                ? global.__planOrder.footprintOf(record)
+                : null,
+            cadastreParcelIdsOf: record => global.__claims && typeof global.__claims.cadastreParcelIdsOf === 'function'
+                ? global.__claims.cadastreParcelIdsOf(record)
+                : (record && record.cadastreParcelIds) || [],
+            boundsKeysOf: bounds => typeof global.getRequiredGridCells === 'function'
+                ? Array.from(global.getRequiredGridCells(bounds, 0))
+                : [],
+            onFeatures: async (features, context = {}) => {
+                if (!fabric || !features.length) return;
+                // A repository consumer may write only to the fabric draft whose token it was
+                // explicitly given. An unrelated viewport request must never leak into whichever
+                // proposal happens to be applying at the time.
+                if (context.transaction) {
+                    fabric.seedCadastre(features, { transaction: context.transaction });
+                    return;
+                }
+
+                // Outside a domain transaction, do not open an empty revision for facts whose
+                // cadastral ground is already represented by the committed partition. This check
+                // is an integration concern at the repository/fabric adapter — never a cache or
+                // renderer fallback.
+                const unpublished = features.filter(feature => {
+                    const id = fabric.featureId(feature);
+                    return id && fabric.entriesForCadastre([id], { includeCorridors: true }).length === 0;
+                });
+                if (!unpublished.length) return;
+                if (global.ProposalManager && typeof global.ProposalManager.integrateCadastralGround === 'function') {
+                    const integrated = await global.ProposalManager.integrateCadastralGround(unpublished);
+                    if (!integrated || integrated.ok !== true) {
+                        throw new Error('Cadastral ground could not be integrated into the live parcel fabric.');
+                    }
+                } else {
+                    await fabric.transact({ kind: 'cadastral-ground-arrived' }, token => {
+                        fabric.seedCadastre(unpublished, { transaction: token });
+                    });
+                }
+            }
+        });
+        try { delete global.__cadastralGroundTransport; } catch (_) { global.__cadastralGroundTransport = undefined; }
+        global.CadastralParcelRepository = service;
+        exported.CadastralParcelRepository = service;
+    }
+})(typeof window !== 'undefined' ? window : globalThis, function cadastralRepositoryFactory(defaultRoot) {
     'use strict';
 
     const COMPLETE_COVERAGE = 0.999;
     const FOOTPRINT_BATCH_SIZE = 20;
     const FOOTPRINT_CONCURRENCY = 6;
 
-    const now = () => ((typeof performance !== 'undefined' && performance.now)
-        ? performance.now()
-        : Date.now());
-
-    function normalizeIds(values) {
-        return Array.from(new Set((Array.isArray(values) ? values : [])
-            .map(value => (value === undefined || value === null ? '' : String(value)))
-            .filter(Boolean)));
+    function clone(value) {
+        if (value === undefined || value === null) return value;
+        if (typeof structuredClone === 'function') {
+            try { return structuredClone(value); } catch (_) { /* JSON fallback */ }
+        }
+        return JSON.parse(JSON.stringify(value));
     }
 
-    // The transport serves cadastral facts, never proposal-generated parcel identities. Callers
-    // are allowed to ask with whichever live piece they currently hold; flattening that request is
-    // service policy and therefore belongs here, beside the cache and transport decision. A derived
-    // `…#proposal-1` must not become an HTTP request merely because a proposal was just unapplied.
-    function cadastralRequestId(value) {
-        let id = value === undefined || value === null ? '' : String(value).trim();
-        if (!id) return '';
-        let previous = '';
-        while (id && id !== previous) {
-            previous = id;
-            id = id.replace(/#[A-Za-z0-9_-]+-\d+$/i, '');
-        }
-        // Legacy government-road output used `${root}_${token}_${index}` rather than `#`.
-        if (/^HR-\d+-.+_[A-Za-z0-9]+_\d+$/i.test(id)) {
-            id = id.replace(/_[A-Za-z0-9]+_\d+$/i, '');
-        }
-        return id.split('#')[0];
+    function now() {
+        return typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now();
     }
 
-    function normalizeCadastralIds(values) {
-        return normalizeIds(normalizeIds(values).map(cadastralRequestId));
+    function normalizeId(value) {
+        return value === undefined || value === null ? '' : String(value).trim();
     }
 
-    function geometryFingerprint(value) {
-        let json = '';
-        try { json = JSON.stringify(value || null); } catch (_) { json = ''; }
-        let hash = 2166136261;
-        for (let index = 0; index < json.length; index += 1) {
-            hash ^= json.charCodeAt(index);
-            hash = Math.imul(hash, 16777619);
-        }
-        return `${json.length}:${(hash >>> 0).toString(36)}`;
+    function assertCadastralIds(values) {
+        // This API is the cadastral boundary. IDs are opaque; their role comes from this contract
+        // and the provenance stamped on accepted features, never from punctuation in the value.
+        return Array.from(new Set(Array.from(values || []).map(normalizeId).filter(Boolean)));
+    }
+
+    function featureId(feature) {
+        const props = feature && feature.properties || {};
+        return normalizeId(props.parcelId ?? props.parcel_id ?? props.PARCEL_ID ?? props.id);
+    }
+
+    function geometryFingerprint(geometry) {
+        const geom = geometry && geometry.type === 'Feature' ? geometry.geometry : geometry;
+        return geom && geom.type ? JSON.stringify(geom) : '';
     }
 
     function multiPolygonOfFootprints(footprints) {
         const polygons = [];
-        (Array.isArray(footprints) ? footprints : []).forEach(entry => {
-            const geometry = entry && (entry.type === 'Feature' ? entry.geometry : entry);
-            if (!geometry || !Array.isArray(geometry.coordinates)) return;
-            if (geometry.type === 'Polygon') polygons.push(geometry.coordinates);
-            else if (geometry.type === 'MultiPolygon') geometry.coordinates.forEach(part => polygons.push(part));
+        (footprints || []).forEach(value => {
+            const geom = value && value.type === 'Feature' ? value.geometry : value;
+            if (!geom) return;
+            if (geom.type === 'Polygon') polygons.push(clone(geom.coordinates));
+            else if (geom.type === 'MultiPolygon') clone(geom.coordinates).forEach(coords => polygons.push(coords));
         });
-        return polygons.length ? { type: 'MultiPolygon', coordinates: polygons } : null;
+        if (!polygons.length) return null;
+        return polygons.length === 1
+            ? { type: 'Polygon', coordinates: polygons[0] }
+            : { type: 'MultiPolygon', coordinates: polygons };
     }
 
-    function createCadastralGroundService(dependencies = {}) {
-        const successfulFootprints = new Set();
-        const footprintResults = new Map();
-        const footprintInFlight = new Map();
+    function createCadastralParcelRepository(dependencies = {}) {
+        const root = dependencies.root || defaultRoot || {};
+        const source = dependencies.transport || null;
+        const featureStores = new Map();
+        const absentStores = new Map();
         const idInFlight = new Map();
-        // Cadastral facts live here, independently of Leaflet layers. A map layer can be hidden,
-        // removed, or rebuilt without changing whether the application already owns the parcel's
-        // geometry. Values are canonical WGS84 features retained before the presentation adapter;
-        // maps are city-scoped because local parcel ids are not globally unique.
-        const featuresByCity = new Map();
-        const presentationInFlight = new Map();
-        const knownMissingIds = new Set();
+        const footprintInFlight = new Map();
+        const footprintResults = new Map();
+        const boundsInFlight = new Map();
+        const loadedBounds = new Map();
 
-        const browserRoot = () => dependencies.root
-            || ((global && global.window) ? global.window : global);
-        const dependency = name => {
-            if (Object.prototype.hasOwnProperty.call(dependencies, name)) return dependencies[name];
-            const root = browserRoot();
-            if (root && root[name] !== undefined) return root[name];
-            return global ? global[name] : undefined;
-        };
-        // Capture the bridge once during service construction. The browser singleton deletes the
-        // temporary global immediately afterwards, so feature code cannot discover or call the raw
-        // transport even accidentally.
-        const privateTransport = dependencies.transport || dependency('__cadastralGroundTransport') || null;
-        const transport = () => privateTransport;
-        const emit = (listener, event) => {
-            if (typeof listener !== 'function') return;
-            try { listener(Object.freeze({ ...event })); } catch (_) { /* progress is observational */ }
-        };
         const cityKey = () => {
             try {
-                const manager = dependency('CityConfigManager');
-                const id = manager && typeof manager.getCurrentCityId === 'function'
+                const manager = root.CityConfigManager;
+                const value = manager && typeof manager.getCurrentCityId === 'function'
                     ? manager.getCurrentCityId()
-                    : null;
-                if (id) return String(id);
-            } catch (_) { }
-            return 'current-city';
-        };
-        const scopedId = (scope, id) => `${scope}\u0000${String(id || '')}`;
-        const footprintPrefix = scope => `${scope}:`;
-        const inFlightForScope = (requests, scope, prefix) => Array.from(requests.entries())
-            .filter(([key]) => String(key).startsWith(prefix(scope)))
-            .map(([, request]) => request);
-        const featureStore = scope => {
-            const key = String(scope || cityKey());
-            let store = featuresByCity.get(key);
-            if (!store) {
-                store = new Map();
-                featuresByCity.set(key, store);
+                    : (typeof root.getCurrentCityId === 'function' ? root.getCurrentCityId() : root.CURRENT_CITY_ID);
+                return normalizeId(value) || 'default';
+            } catch (_) {
+                return 'default';
             }
-            return store;
         };
-        const featureId = feature => {
-            if (!feature || typeof feature !== 'object') return '';
-            const props = feature.properties || {};
-            let value = props.parcelId ?? props.parcel_id ?? props.PARCEL_ID ?? props.id;
-            if (value === undefined || value === null || value === '') {
-                try {
-                    const normalize = dependency('normalizeFeatureParcelId');
-                    if (typeof normalize === 'function') value = normalize(feature);
-                } catch (_) { }
+        const scoped = (city, key) => `${city}\u0000${key}`;
+        const storeFor = (collection, city) => {
+            if (!collection.has(city)) collection.set(city, new Map());
+            return collection.get(city);
+        };
+        const featureStore = city => storeFor(featureStores, city);
+        const absentStore = city => {
+            if (!absentStores.has(city)) absentStores.set(city, new Set());
+            return absentStores.get(city);
+        };
+        const transport = () => dependencies.transport || source;
+        const emit = (handler, detail) => {
+            if (typeof handler === 'function') {
+                try { handler(detail); } catch (_) { /* progress cannot alter the result */ }
             }
-            if (value === undefined || value === null || value === '') return '';
-            const raw = String(value);
-            const cadastral = cadastralRequestId(raw);
-            // Proposal output is disposable presentation, never cadastral ground.
-            return cadastral && cadastral === raw ? cadastral : '';
         };
-        const cloneFeature = feature => {
-            if (!feature) return feature;
-            if (typeof structuredClone === 'function') {
-                try { return structuredClone(feature); } catch (_) { }
-            }
-            try { return JSON.parse(JSON.stringify(feature)); } catch (_) { return feature; }
+        const pendingForCity = (registry, city) => {
+            const prefix = `${city}\u0000`;
+            return Array.from(new Set(Array.from(registry.entries())
+                .filter(([key]) => key.startsWith(prefix))
+                .map(([, task]) => task)));
         };
-        const rememberFeatures = (features, options = {}) => {
-            const scope = String(options.city || cityKey());
-            const store = featureStore(scope);
-            const remembered = [];
-            (Array.isArray(features) ? features : []).forEach(feature => {
-                const id = featureId(feature);
-                if (!id) return;
-                // First cadastral fact wins for the life of this city cache. Take ownership of a
-                // copy: neither the transport response nor presentation code may later mutate the
-                // retained ground identity/geometry.
-                if (!store.has(id)) store.set(id, cloneFeature(feature));
-                knownMissingIds.delete(scopedId(scope, id));
-                remembered.push(id);
-            });
-            return normalizeIds(remembered);
-        };
-        const presentedLayer = (id, scope = cityKey()) => {
-            const key = String(id || '');
-            if (!key) return null;
-            // The registry represents the current city. Never let a city switch satisfy an older
-            // request with a coincidentally identical local id from the new city.
-            if (scope !== cityKey()) return null;
-            try {
-                const resolve = dependency('resolveParcelLayerById');
-                return typeof resolve === 'function' ? (resolve(key) || null) : null;
-            } catch (_) { }
-            return null;
-        };
-        const cachedFeature = (id, scope = cityKey()) => featureStore(scope).get(String(id || '')) || null;
-        const presentCachedIds = async (values, options = {}) => {
-            const scope = String(options.city || cityKey());
-            if (scope !== cityKey()) return [];
-            const ids = normalizeCadastralIds(values);
-            const waiting = new Set();
-            const toPresent = [];
-            ids.forEach(id => {
-                if (presentedLayer(id, scope)) return;
-                const pending = presentationInFlight.get(scopedId(scope, id));
-                if (pending) waiting.add(pending);
-                else if (cachedFeature(id, scope)) toPresent.push(id);
-            });
-            if (toPresent.length) {
-                const ingest = dependencies.ingestFeatures || dependency('ingestParcelFeatures');
-                if (typeof ingest !== 'function') {
-                    throw new Error('Cadastral ground presentation adapter is unavailable.');
-                }
-                emit(options.onProgress, {
-                    phase: 'ground-present-cached-ids',
-                    cached: toPresent.length,
-                    total: ids.length
-                });
-                const features = toPresent.map(id => cloneFeature(cachedFeature(id, scope))).filter(Boolean);
-                const task = Promise.resolve().then(() => ingest(features, {
-                    skipConversion: true,
-                    replaceExisting: false,
-                    fromGroundCache: true
-                }));
-                toPresent.forEach(id => presentationInFlight.set(scopedId(scope, id), task));
-                waiting.add(task);
-                task.finally(() => {
-                    toPresent.forEach(id => {
-                        const key = scopedId(scope, id);
-                        if (presentationInFlight.get(key) === task) presentationInFlight.delete(key);
-                    });
-                }).catch(() => undefined);
-            }
-            if (waiting.size) await Promise.all(Array.from(waiting));
-            return ids.filter(id => !!presentedLayer(id, scope));
-        };
-        const acceptFeatures = async (features, options = {}) => {
-            const values = Array.isArray(features) ? features.filter(Boolean) : [];
-            if (!values.length) return [];
-            const scope = String(options.city || cityKey());
-            // A city changed while its request was in flight. Its source projection belongs to
-            // the old city, so do not convert or present it using the new city's configuration.
-            if (scope !== cityKey()) return [];
-            let canonical = values;
+
+        function normalizeFeatures(input, options = {}) {
+            const raw = Array.isArray(input) ? input : [];
+            let features = raw;
             if (options.skipConversion !== true) {
-                const convert = dependencies.convertFeatures || dependency('convertGeoJSON');
-                if (typeof convert !== 'function') {
-                    throw new Error('Cadastral ground conversion adapter is unavailable.');
+                const convert = dependencies.convertFeatures;
+                if (typeof convert !== 'function') throw new Error('Cadastral coordinate conversion is unavailable.');
+                const converted = convert({ type: 'FeatureCollection', features: raw });
+                if (!converted || !Array.isArray(converted.features)) {
+                    throw new Error('Cadastral coordinate conversion returned no FeatureCollection.');
                 }
-                const converted = convert({ type: 'FeatureCollection', features: values });
-                canonical = Array.isArray(converted && converted.features) ? converted.features : [];
+                features = converted.features;
             }
-            const ids = rememberFeatures(canonical, { city: scope });
-            if (!ids.length) return [];
-            const presentationIds = options.replaceExisting === true
-                ? ids
-                : ids.filter(id => !presentedLayer(id, scope));
-            if (!presentationIds.length) return ids;
-            const ingest = dependencies.ingestFeatures || dependency('ingestParcelFeatures');
-            if (typeof ingest !== 'function') throw new Error('Cadastral ground presentation adapter is unavailable.');
-            // The service keeps ownership of canonical facts. Leaflet receives independent copies,
-            // so removing or mutating a map layer cannot corrupt the cache or cause a refetch.
-            const presentationFeatures = presentationIds
-                .map(id => cloneFeature(cachedFeature(id, scope)))
-                .filter(Boolean);
-            const { city: _city, ...presentationOptions } = options;
-            await ingest(presentationFeatures, {
-                ...presentationOptions,
-                skipConversion: true
+            return features.map(rawFeature => {
+                const feature = clone(rawFeature);
+                const id = featureId(feature);
+                if (!id) {
+                    const error = new Error('Cadastral transport returned a feature without parcelId.');
+                    error.code = 'cadastral-feature-id-missing';
+                    throw error;
+                }
+                assertCadastralIds([id]);
+                if (!feature.geometry || !/Polygon$/.test(String(feature.geometry.type || ''))) {
+                    const error = new Error(`Cadastral parcel ${id} has no polygon geometry.`);
+                    error.code = 'cadastral-feature-geometry-invalid';
+                    throw error;
+                }
+                const props = feature.properties || (feature.properties = {});
+                props.parcelId = id;
+                props.id = id;
+                props.cadastreParcelIds = [id];
+                return feature;
             });
-            // Producers receive accepted cadastral ids, never renderer objects. This keeps the
-            // transport/cache contract independent of Leaflet while still allowing viewport cells
-            // to memoize membership without retaining another feature array.
-            return ids;
-        };
-        const acceptTransportResult = async (result, ingestOptions = {}) => {
-            if (!result || typeof result !== 'object') return result;
-            const features = Array.isArray(result.features) ? result.features : [];
-            if (features.length) {
-                await acceptFeatures(features, { ...ingestOptions, ...(result.ingestOptions || {}) });
+        }
+
+        async function provideFeatures(features, options = {}) {
+            const list = (Array.isArray(features) ? features : []).filter(Boolean).map(clone);
+            if (!list.length || typeof dependencies.onFeatures !== 'function') return;
+            await dependencies.onFeatures(list, {
+                city: normalizeId(options.city) || cityKey(),
+                transaction: options.transaction || null
+            });
+        }
+
+        async function acceptFeatures(input, options = {}) {
+            const city = normalizeId(options.city) || cityKey();
+            const features = normalizeFeatures(input, options);
+            const store = featureStore(city);
+            const absent = absentStore(city);
+            const staged = new Map();
+            for (const feature of features) {
+                const id = featureId(feature);
+                const current = staged.get(id) || store.get(id);
+                if (current) {
+                    // Cadastral facts are immutable for a session. Conflicting geometry is an
+                    // upstream data error, not permission to replace the ground under proposals.
+                    if (JSON.stringify(current.geometry) !== JSON.stringify(feature.geometry)) {
+                        const error = new Error(`Conflicting cadastral geometry received for ${id}.`);
+                        error.code = 'cadastral-feature-conflict';
+                        error.parcelId = id;
+                        throw error;
+                    }
+                    continue;
+                }
+                staged.set(id, feature);
             }
-            return result;
-        };
-        const summarizeTransportResult = result => {
-            const ids = Object.freeze(normalizeIds(result?.ids));
-            return Object.freeze({
-                ids,
-                coverage: result?.coverage === undefined ? null : result.coverage,
-                count: Number(result?.count) || ids.length,
-                queryMs: Number(result?.queryMs) || null
-            });
-        };
-        const isReady = (id, scope = cityKey()) => {
-            const key = String(id || '');
-            if (!key || scope !== cityKey()) return false;
-            return !!cachedFeature(key, scope) && !!presentedLayer(key, scope);
-        };
-        const footprintOf = record => {
-            if (!record) return null;
-            try {
-                if (typeof dependencies.footprintOf === 'function') return dependencies.footprintOf(record);
-                const order = browserRoot()?.__planOrder || dependency('__planOrder');
-                return order && typeof order.footprintOf === 'function' ? order.footprintOf(record) : null;
-            } catch (_) { return null; }
-        };
-        const baseIdsOf = record => {
-            if (!record) return [];
-            try {
-                if (typeof dependencies.baseParcelIdsOf === 'function') {
-                    return normalizeIds(dependencies.baseParcelIdsOf(record));
-                }
-                const claims = browserRoot()?.__claims || dependency('__claims');
-                if (claims && typeof claims.baseParcelIdsOf === 'function') {
-                    return normalizeIds(claims.baseParcelIdsOf(record));
-                }
-            } catch (_) { }
-            return normalizeIds(normalizeIds([
-                ...(Array.isArray(record.cadastreParcelIds) ? record.cadastreParcelIds : []),
-                ...(Array.isArray(record.parentParcelIds) ? record.parentParcelIds : [])
-            ]).map(id => id.split('#')[0]));
-        };
-        const footprintKeyOf = record => {
-            const footprint = footprintOf(record);
-            const geometry = footprint && (footprint.type === 'Feature' ? footprint.geometry : footprint);
-            if (!geometry || !geometry.type) return { footprint: null, key: '' };
+            staged.forEach((feature, id) => store.set(id, feature));
+            staged.forEach((_feature, id) => absent.delete(id));
+            // Immutable facts stay retained even if their requested fabric transaction later
+            // refuses them. A subsequent consumer receives the same facts from this repository
+            // and provisioning is attempted again; transport is never repeated as a repair step.
+            if (options.provide !== false) {
+                await provideFeatures(features, { city, transaction: options.transaction || null });
+            }
+            return Array.from(new Set(features.map(featureId)));
+        }
+
+        function explicitTransportResult(result, requestedIds) {
+            if (!result || result.status === 'unavailable') {
+                const error = new Error(result && result.message || 'Cadastral transport is unavailable.');
+                error.code = 'cadastral-transport-unavailable';
+                throw error;
+            }
+            if (result.status === 'partial') {
+                const error = new Error(result.message || 'Cadastral transport returned a partial response.');
+                error.code = 'cadastral-transport-partial';
+                throw error;
+            }
+            const absentIds = assertCadastralIds(result.absentIds || []);
+            if (requestedIds && !Array.isArray(result.absentIds) && result.complete !== true) {
+                const error = new Error('Cadastral id transport did not declare whether its result is complete.');
+                error.code = 'cadastral-transport-ambiguous';
+                throw error;
+            }
             return {
-                footprint,
-                key: `${cityKey()}:${geometryFingerprint(geometry)}`
+                ...result,
+                status: result.status || 'ready',
+                features: Array.isArray(result.features) ? result.features : [],
+                absentIds
             };
-        };
-        const retainedCoverageOf = record => {
-            const scope = cityKey();
-            const candidates = Array.from(featureStore(scope).entries())
-                .map(([id, feature]) => ({ id, feature }));
-            try {
-                if (typeof dependencies.loadedCoverageOf === 'function') {
-                    return dependencies.loadedCoverageOf(record, candidates);
+        }
+
+        async function acceptTransportResult(rawResult, options = {}) {
+            const result = explicitTransportResult(rawResult, options.requestedIds);
+            // Normalize and validate the complete response before either repository or fabric sees
+            // it. A transport that claims completeness but omits an id must not partially publish
+            // the facts it happened to return.
+            const normalized = normalizeFeatures(result.features, {
+                skipConversion: options.skipConversion === true
+            });
+            const responseIds = normalized.map(featureId);
+            if (options.requestedIds && result.complete === true) {
+                const found = new Set(responseIds);
+                const explicitAbsent = new Set(result.absentIds);
+                const undeclared = options.requestedIds.filter(id => !found.has(id) && !explicitAbsent.has(id));
+                if (undeclared.length) {
+                    const error = new Error(`Cadastral transport omitted ${undeclared.length} id(s) from a complete response.`);
+                    error.code = 'cadastral-transport-inconsistent';
+                    error.parcelIds = undeclared;
+                    throw error;
                 }
-                const order = browserRoot()?.__planOrder || dependency('__planOrder');
-                const t = dependency('turf');
-                const footprint = footprintOf(record);
-                if (!order || typeof order.computeBaseAncestry !== 'function'
-                    || !t || typeof t.area !== 'function' || !footprint) return null;
-                const footprintArea = Number(t.area(footprint));
-                if (!(footprintArea > 0)) return null;
-                const hits = order.computeBaseAncestry(footprint, candidates);
-                const coveredArea = hits.reduce((sum, hit) => sum + (Number(hit?.area) || 0), 0);
-                return {
-                    ids: hits.map(hit => String(hit.id)),
-                    coverage: Math.min(1, coveredArea / footprintArea)
-                };
-            } catch (_) { }
-            return null;
-        };
+            }
+            const ids = await acceptFeatures(normalized, {
+                city: options.city,
+                skipConversion: true,
+                provide: false
+            });
+            const city = normalizeId(options.city) || cityKey();
+            const absent = absentStore(city);
+            result.absentIds.forEach(id => absent.add(id));
+            return { ...result, ids };
+        }
 
         async function ensureIds(parcelIds, options = {}) {
             const started = now();
-            const ids = normalizeCadastralIds(parcelIds);
-            const onProgress = options.onProgress;
-            const scope = cityKey();
-            emit(onProgress, { phase: 'ground-check-ids', total: ids.length });
-            if (!ids.length) {
-                return {
-                    ids: [], cachedIds: [], restoredPresentationIds: [], requestedIds: [], waitingIds: [], missingIds: [], requestCount: 0,
-                    elapsed: now() - started
-                };
-            }
+            const city = cityKey();
+            const ids = assertCadastralIds(parcelIds);
+            const store = featureStore(city);
+            const absent = absentStore(city);
+            emit(options.onProgress, { phase: 'ground-check-ids', total: ids.length });
 
-            // Cached geometry is authoritative. Recreate a missing presentation only when the
-            // service already retains the cadastral fact. Keeping the empty-cache path synchronous
-            // registers the id request before another consumer can race it with a footprint request.
-            const presentedBefore = new Set(ids.filter(id => !!presentedLayer(id, scope)));
-            const needsPresentation = ids.some(id => (
-                !presentedLayer(id, scope)
-                && (cachedFeature(id, scope) || presentationInFlight.has(scopedId(scope, id)))
-            ));
-            if (needsPresentation) {
-                await presentCachedIds(ids, { city: scope, onProgress });
-            }
+            // A footprint request can return the same immutable cadastral facts. Join requests that
+            // were already running before this call, then decide what is actually missing. The
+            // reverse path in ensureFootprint follows the same rule; whichever request starts first
+            // owns the transport and the other observes its repository commit.
+            const footprintWaits = pendingForCity(footprintInFlight, city);
+            if (footprintWaits.length) await Promise.all(footprintWaits);
 
-            // A footprint request may already be loading some or all of these ids. It cannot expose
-            // that mapping before the server answers, so join it once and check the registry again
-            // rather than racing it with a duplicate id request.
-            const footprintRequests = inFlightForScope(footprintInFlight, scope, footprintPrefix);
-            if (footprintRequests.length) {
-                emit(onProgress, {
-                    phase: 'ground-wait-footprints',
-                    waiting: new Set(footprintRequests).size,
-                    total: ids.length
-                });
-                await Promise.allSettled(Array.from(new Set(footprintRequests)));
-                await presentCachedIds(ids, { city: scope, onProgress });
-            }
-
-            const cachedIds = ids.filter(id => !!cachedFeature(id, scope));
-            const restoredPresentationIds = cachedIds.filter(id => (
-                !presentedBefore.has(id) && !!presentedLayer(id, scope)
-            ));
-            const knownAbsent = ids.filter(id => (
-                !cachedFeature(id, scope) && knownMissingIds.has(scopedId(scope, id))
-            ));
-            const waiting = new Set();
+            const cachedIds = ids.filter(id => store.has(id));
+            const knownAbsent = ids.filter(id => absent.has(id));
             const waitingIds = [];
             const requestedIds = [];
+            const waits = new Set();
+
             ids.forEach(id => {
-                const cacheKey = scopedId(scope, id);
-                if (cachedFeature(id, scope) || knownMissingIds.has(cacheKey)) return;
-                const pending = idInFlight.get(cacheKey);
+                if (store.has(id) || absent.has(id)) return;
+                const pending = idInFlight.get(scoped(city, id));
                 if (pending) {
-                    waiting.add(pending);
                     waitingIds.push(id);
-                }
-                else requestedIds.push(id);
+                    waits.add(pending);
+                } else requestedIds.push(id);
             });
 
             let ownRequest = null;
             if (requestedIds.length) {
-                const fetchByIds = transport()?.fetchByIds;
-                if (typeof fetchByIds !== 'function') {
-                    throw new Error('Cadastral ground transport is unavailable.');
-                }
-                emit(onProgress, {
-                    phase: 'ground-load-ids',
-                    cached: cachedIds.length,
-                    requested: requestedIds.length,
-                    total: ids.length
-                });
-                ownRequest = Promise.resolve().then(() => fetchByIds(requestedIds, {
-                    onProgress: (done, total) => emit(onProgress, {
-                        phase: 'ground-load-ids-progress', done, total, requested: requestedIds.length
-                    })
-                })).then(async result => {
-                    await acceptTransportResult(result, { city: scope, replaceExisting: true });
-                    const responseIds = normalizeIds(result && Array.isArray(result.ids) ? result.ids : []);
-                    responseIds.forEach(id => {
-                        knownMissingIds.delete(scopedId(scope, id));
+                const fetchByIds = transport() && transport().fetchByIds;
+                if (typeof fetchByIds !== 'function') throw new Error('Cadastral id transport is unavailable.');
+                emit(options.onProgress, { phase: 'ground-load-ids', done: 0, total: requestedIds.length });
+                ownRequest = Promise.resolve()
+                    .then(() => fetchByIds(requestedIds, {
+                        city,
+                        onProgress: progress => emit(options.onProgress, {
+                            phase: 'ground-load-ids-progress',
+                            done: typeof progress === 'number' ? progress : progress && progress.done,
+                            total: requestedIds.length
+                        })
+                    }))
+                    .then(result => acceptTransportResult(result, {
+                        city,
+                        requestedIds,
+                        skipConversion: result && result.returnsWGS84 === true,
+                        transaction: options.transaction || null
+                    }))
+                    .finally(() => {
+                        requestedIds.forEach(id => {
+                            const key = scoped(city, id);
+                            if (idInFlight.get(key) === ownRequest) idInFlight.delete(key);
+                        });
                     });
-                    requestedIds.forEach(id => {
-                        const cacheKey = scopedId(scope, id);
-                        if (cachedFeature(id, scope)) knownMissingIds.delete(cacheKey);
-                        else knownMissingIds.add(cacheKey);
-                    });
-                    return result;
-                });
-                requestedIds.forEach(id => idInFlight.set(scopedId(scope, id), ownRequest));
-                waiting.add(ownRequest);
-                ownRequest.finally(() => {
-                    requestedIds.forEach(id => {
-                        const cacheKey = scopedId(scope, id);
-                        if (idInFlight.get(cacheKey) === ownRequest) idInFlight.delete(cacheKey);
-                    });
-                }).catch(() => undefined);
-            } else if (waiting.size) {
-                emit(onProgress, { phase: 'ground-wait-ids', waiting: waiting.size, total: ids.length });
+                requestedIds.forEach(id => idInFlight.set(scoped(city, id), ownRequest));
+                waits.add(ownRequest);
             }
+            if (waits.size) await Promise.all(waits);
 
-            if (waiting.size) await Promise.all(Array.from(waiting));
-            await presentCachedIds(ids, { city: scope, onProgress });
-            const missingIds = ids.filter(id => !isReady(id, scope));
-            emit(onProgress, {
+            const foundIds = ids.filter(id => store.has(id));
+            const absentIds = ids.filter(id => absent.has(id));
+            const unavailableIds = ids.filter(id => !store.has(id) && !absent.has(id));
+            if (unavailableIds.length) {
+                const error = new Error(`Cadastral ground remains unavailable for: ${unavailableIds.join(', ')}`);
+                error.code = 'cadastral-ground-unavailable';
+                error.parcelIds = unavailableIds;
+                throw error;
+            }
+            emit(options.onProgress, {
                 phase: 'ground-ids-ready',
                 cached: cachedIds.length,
-                loaded: Math.max(0, ids.length - cachedIds.length - missingIds.length),
-                missing: missingIds.length,
+                loaded: foundIds.filter(id => !cachedIds.includes(id)).length,
+                absent: absentIds.length,
                 total: ids.length
             });
+            const features = foundIds.map(id => clone(store.get(id)));
+            await provideFeatures(features, { city, transaction: options.transaction || null });
             return {
+                status: absentIds.length ? 'partial' : 'ready',
                 ids,
+                features,
+                foundIds,
                 cachedIds,
-                restoredPresentationIds,
                 requestedIds,
                 waitingIds,
                 knownAbsent,
-                missingIds,
+                absentIds,
+                missingIds: absentIds.slice(),
+                unavailableIds: [],
                 requestCount: ownRequest ? 1 : 0,
                 elapsed: now() - started
             };
         }
 
-        async function ensureProposalGround(records, options = {}) {
-            const members = (Array.isArray(records) ? records : []).filter(Boolean);
-            const started = now();
-            const onProgress = options.onProgress;
-            const purpose = options.purpose || 'application';
-            const scope = cityKey();
-            const declaredByRecord = new Map(members.map(record => [record, baseIdsOf(record)]));
-            // A flat applied record names its cadastral ground exactly. Publishing is the one
-            // exception: it asks by authored footprint in order to ESTABLISH/verify that stamp.
-            // This distinction prevents an application from first fetching declared ids and then
-            // fetching the same ground again by geometry.
-            const recordsUsingIds = purpose === 'publish'
-                ? []
-                : members.filter(record => (declaredByRecord.get(record) || []).length > 0);
-            const allDeclaredIds = normalizeIds(recordsUsingIds.flatMap(record => declaredByRecord.get(record) || []));
-            emit(onProgress, {
-                phase: 'ground-check',
-                members: members.length,
-                parcelIds: allDeclaredIds.length,
-                purpose
-            });
-
-            const idResult = allDeclaredIds.length
-                ? await ensureIds(allDeclaredIds, { onProgress })
-                : {
-                    cachedIds: [], requestedIds: [], waitingIds: [], knownAbsent: [], missingIds: [],
-                    requestCount: 0
-                };
-
-            // Another consumer may already be loading ids that cover an unstamped/publish
-            // footprint. Join that one service-owned request, then measure local coverage below;
-            // otherwise the same parcel can be requested once by id and once by geometry merely
-            // because the two callers arrived a few milliseconds apart.
-            const hasFootprintMembers = members.some(record => (
-                purpose === 'publish' || !(declaredByRecord.get(record) || []).length
-            ));
-            if (hasFootprintMembers) {
-                const idRequests = Array.from(new Set(inFlightForScope(
-                    idInFlight,
-                    scope,
-                    currentScope => `${currentScope}\u0000`
-                )));
-                if (idRequests.length) {
-                    emit(onProgress, {
-                        phase: 'ground-wait-ids',
-                        waiting: idRequests.length,
-                        total: members.length
-                    });
-                    await Promise.allSettled(idRequests);
-                }
+        function footprintOf(record) {
+            if (typeof dependencies.footprintOf === 'function') {
+                try { return dependencies.footprintOf(record); } catch (_) { return null; }
             }
+            const geometry = record && record.geometry;
+            if (!geometry) return null;
+            if (geometry.type === 'Feature') return geometry;
+            return geometry.type ? { type: 'Feature', properties: {}, geometry } : null;
+        }
+
+        function cadastreIdsOf(record) {
+            const raw = typeof dependencies.cadastreParcelIdsOf === 'function'
+                ? dependencies.cadastreParcelIdsOf(record)
+                : (record && record.cadastreParcelIds);
+            return assertCadastralIds(raw || []);
+        }
+
+        function retainedCoverageOf(geometry, city, options = {}) {
+            const geom = geometry && geometry.type === 'Feature' ? geometry.geometry : geometry;
+            const footprint = geom && geom.type
+                ? { type: 'Feature', properties: {}, geometry: clone(geom) }
+                : null;
+            if (!footprint) return { ids: [], coverage: 0 };
+            const requestedIds = assertCadastralIds(options.ids || []);
+            const stored = requestedIds.length
+                ? requestedIds.map(id => featureStore(city).get(id)).filter(Boolean).map(clone)
+                : Array.from(featureStore(city).values(), clone);
+            const supplied = dependencies.coverageOf;
+            if (typeof supplied === 'function') {
+                const answer = supplied(footprint, stored, { city }) || {};
+                return {
+                    ids: assertCadastralIds(answer.ids || []),
+                    coverage: Math.max(0, Math.min(1, Number(answer.coverage) || 0))
+                };
+            }
+            const order = root.__planOrder;
+            const turf = root.turf;
+            if (!order || typeof order.computeBaseAncestry !== 'function'
+                || !turf || typeof turf.area !== 'function') {
+                return { ids: [], coverage: 0 };
+            }
+            try {
+                const footprintArea = Number(turf.area(footprint)) || 0;
+                if (!(footprintArea > 0)) return { ids: [], coverage: 0 };
+                const hits = order.computeBaseAncestry(footprint, stored.map(feature => ({
+                    id: featureId(feature),
+                    feature
+                })));
+                const coveredArea = hits.reduce((sum, hit) => sum + (Number(hit.area) || 0), 0);
+                return {
+                    ids: assertCadastralIds(hits.map(hit => hit.id)),
+                    coverage: Math.max(0, Math.min(1, coveredArea / footprintArea))
+                };
+            } catch (_) {
+                return { ids: [], coverage: 0 };
+            }
+        }
+
+        function footprintSummary(geometry, city, transportResult = null) {
+            const retained = retainedCoverageOf(geometry, city);
+            const resultIds = assertCadastralIds(transportResult && transportResult.ids || []);
+            const ids = retained.ids.length ? retained.ids : resultIds;
+            const hasTransportCoverage = transportResult
+                && transportResult.coverage !== undefined
+                && transportResult.coverage !== null
+                && Number.isFinite(Number(transportResult.coverage));
+            const transportCoverage = hasTransportCoverage ? Number(transportResult.coverage) : null;
+            const coverage = hasTransportCoverage
+                ? Math.max(0, Math.min(1, transportCoverage))
+                : retained.coverage;
+            return {
+                status: 'ready',
+                ids,
+                features: ids.map(id => clone(featureStore(city).get(id))).filter(Boolean),
+                coverage,
+                count: ids.length,
+                queryMs: Number(transportResult && transportResult.queryMs) || null
+            };
+        }
+
+        async function ensureFootprint(geometry, options = {}) {
+            const started = now();
+            const city = cityKey();
+            const geom = geometry && geometry.type === 'Feature' ? geometry.geometry : geometry;
+            const fingerprint = geometryFingerprint(geom);
+            if (!fingerprint) throw new Error('Cannot request cadastral ground without a polygon footprint.');
+            const key = scoped(city, fingerprint);
+            if (footprintResults.has(key)) {
+                const result = clone(footprintResults.get(key));
+                await provideFeatures(result.features, { city, transaction: options.transaction || null });
+                return { members: 1, coveredMembers: 1, requests: 0, result, elapsed: now() - started };
+            }
+            const pending = footprintInFlight.get(key);
+            if (pending) {
+                const shared = clone(await pending);
+                await provideFeatures(shared.result?.features, { city, transaction: options.transaction || null });
+                return shared;
+            }
+            const fetchUnderGeometry = transport() && transport().fetchUnderGeometry;
+            const task = Promise.resolve()
+                .then(async () => {
+                    const idWaits = pendingForCity(idInFlight, city);
+                    if (idWaits.length) await Promise.all(idWaits);
+                    const cached = footprintSummary(geom, city);
+                    if (cached.coverage >= COMPLETE_COVERAGE) {
+                        footprintResults.set(key, clone(cached));
+                        return { cached };
+                    }
+                    if (typeof fetchUnderGeometry !== 'function') {
+                        throw new Error('Cadastral footprint transport is unavailable.');
+                    }
+                    return fetchUnderGeometry(geom, {
+                    city,
+                    parcelsOnly: options.parcelsOnly !== false
+                    });
+                })
+                .then(async outcome => {
+                    if (outcome && outcome.cached) {
+                        return {
+                            members: 1,
+                            coveredMembers: 1,
+                            fetchedMembers: 0,
+                            requests: 0,
+                            result: clone(outcome.cached),
+                            elapsed: now() - started
+                        };
+                    }
+                    const result = await acceptTransportResult(outcome, {
+                        city,
+                        skipConversion: outcome && outcome.returnsWGS84 === true
+                    });
+                    const summary = footprintSummary(geom, city, result);
+                    footprintResults.set(key, clone(summary));
+                    return { members: 1, coveredMembers: 0, fetchedMembers: 1, requests: 1, result: summary, elapsed: now() - started };
+                })
+                .finally(() => { if (footprintInFlight.get(key) === task) footprintInFlight.delete(key); });
+            footprintInFlight.set(key, task);
+            const result = clone(await task);
+            await provideFeatures(result.result?.features, { city, transaction: options.transaction || null });
+            return result;
+        }
+
+        async function ensureProposalGround(records, options = {}) {
+            const started = now();
+            const members = (Array.isArray(records) ? records : []).filter(Boolean);
+            const purpose = String(options.purpose || 'application');
+            const declared = new Map(members.map(record => [record, cadastreIdsOf(record)]));
+            const byIds = purpose === 'publish' ? [] : members.filter(record => declared.get(record).length);
+            const allIds = assertCadastralIds(byIds.flatMap(record => declared.get(record)));
+            emit(options.onProgress, { phase: 'ground-check', members: members.length, parcelIds: allIds.length, purpose });
+
+            const idResult = allIds.length ? await ensureIds(allIds, {
+                onProgress: options.onProgress,
+                transaction: options.transaction || null
+            }) : {
+                cachedIds: [], requestedIds: [], waitingIds: [], missingIds: [], requestCount: 0, features: []
+            };
             const profile = {
                 members: members.length,
                 cachedMembers: 0,
@@ -520,7 +551,7 @@
                 requests: idResult.requestCount,
                 idRequests: idResult.requestCount,
                 footprintRequests: 0,
-                parcels: 0,
+                parcels: idResult.features.length,
                 serverMs: 0,
                 slowestMs: 0,
                 slowest: null,
@@ -528,336 +559,246 @@
                 failed: 0,
                 missingIds: idResult.missingIds.slice()
             };
-            if (!members.length) return { ...profile, elapsed: now() - started };
-
-            const pending = [];
-            const pendingByKey = new Map();
-            const existing = new Set();
-            const waitingFootprints = [];
-            const cachedIds = new Set(idResult.cachedIds || []);
-            const requestedIds = new Set(idResult.requestedIds || []);
-            const waitingIds = new Set(idResult.waitingIds || []);
-            const missingIds = new Set(idResult.missingIds || []);
-            const cachedFootprintIds = normalizeIds(members.flatMap(record => {
-                const declared = declaredByRecord.get(record) || [];
-                if (purpose !== 'publish' && declared.length) return [];
-                const { key } = footprintKeyOf(record);
-                const result = key ? footprintResults.get(key) : null;
-                return result && Array.isArray(result.ids) ? result.ids : [];
-            }));
-            if (cachedFootprintIds.length) {
-                await presentCachedIds(cachedFootprintIds, { city: scope, onProgress });
-            }
-            members.forEach(record => {
-                const declared = declaredByRecord.get(record) || [];
-                if (purpose !== 'publish' && declared.length) {
-                    if (declared.some(id => requestedIds.has(id))) profile.loadedMembers += 1;
-                    else if (declared.some(id => waitingIds.has(id))) profile.waitingMembers += 1;
-                    else if (declared.every(id => cachedIds.has(id))) profile.cachedMembers += 1;
-                    if (declared.some(id => missingIds.has(id))) profile.unavailableMembers += 1;
-                    return;
-                }
-
-                const { footprint, key } = footprintKeyOf(record);
-                if (key && successfulFootprints.has(key)) {
-                    profile.cachedMembers += 1;
-                    return;
-                }
-
-                const resolved = retainedCoverageOf(record);
-                const coverage = Number(resolved && resolved.coverage);
-                if (Number.isFinite(coverage) && coverage > COMPLETE_COVERAGE) {
-                    const retainedIds = normalizeIds(resolved.ids)
-                        .filter(id => !!cachedFeature(id, scope));
-                    // The map may be a useful spatial index, but it is never a second source of
-                    // cadastral facts. Coverage is reusable only when every contributing parcel is
-                    // already retained by this service.
-                    if (retainedIds.length === normalizeIds(resolved.ids).length) {
-                        if (key) successfulFootprints.add(key);
-                        if (key) footprintResults.set(key, summarizeTransportResult({
-                            ids: retainedIds,
-                            coverage,
-                            count: retainedIds.length,
-                            queryMs: null
-                        }));
-                        profile.cachedMembers += 1;
-                        return;
-                    }
-                }
-
-                // With no footprint, the exact ids above are the only honest request. Do not turn
-                // them into a bounding box or invent a second fetch path.
-                if (!footprint || !key) {
-                    profile.unavailableMembers += 1;
-                    return;
-                }
-                const inFlight = footprintInFlight.get(key);
-                if (inFlight) {
-                    existing.add(inFlight);
-                    waitingFootprints.push({ key, request: inFlight });
-                    profile.waitingMembers += 1;
-                    return;
-                }
-                const queued = pendingByKey.get(key);
-                if (queued) {
-                    queued.memberCount += 1;
-                    profile.waitingMembers += 1;
-                    return;
-                }
-                const entry = { record, footprint, key, memberCount: 1 };
-                pendingByKey.set(key, entry);
-                pending.push(entry);
+            const resolvedIds = new Set(idResult.foundIds || []);
+            const cached = new Set(idResult.cachedIds);
+            const requested = new Set(idResult.requestedIds);
+            const waiting = new Set(idResult.waitingIds);
+            byIds.forEach(record => {
+                const ids = declared.get(record);
+                if (ids.some(id => requested.has(id))) profile.loadedMembers += 1;
+                else if (ids.some(id => waiting.has(id))) profile.waitingMembers += 1;
+                else if (ids.every(id => cached.has(id))) profile.cachedMembers += 1;
             });
 
-            const loadBatch = async entries => {
-                if (!entries.length) return;
-                const geometry = multiPolygonOfFootprints(entries.map(entry => entry.footprint));
-                const fetchUnderGeometry = transport()?.fetchUnderGeometry;
-                if (!geometry || typeof fetchUnderGeometry !== 'function') {
-                    profile.failed += entries.reduce((sum, entry) => sum + entry.memberCount, 0);
-                    return;
+            const footprintGroups = new Map();
+            const cachedFootprintFeatures = [];
+            members.forEach(record => {
+                if (purpose !== 'publish' && declared.get(record).length) return;
+                const footprint = footprintOf(record);
+                const fingerprint = geometryFingerprint(footprint);
+                if (!footprint || !fingerprint) {
+                    const error = new Error(`Proposal ${record.proposalId || record.title || ''} has neither cadastral ids nor a usable footprint.`);
+                    error.code = 'proposal-cadastral-ground-unspecified';
+                    throw error;
                 }
-                const requestStarted = now();
-                try {
-                    const loaded = await fetchUnderGeometry(geometry, { parcelsOnly: true });
-                    await acceptTransportResult(loaded, {
-                        city: scope,
-                        skipConversion: true,
-                        replaceExisting: false
-                    });
-                    const took = now() - requestStarted;
-                    profile.requests += 1;
-                    profile.footprintRequests += 1;
-                    if (took > profile.slowestMs) {
-                        profile.slowestMs = took;
-                        profile.slowest = entries.length;
-                    }
-                    if (!loaded) {
-                        profile.failed += entries.reduce((sum, entry) => sum + entry.memberCount, 0);
-                        return;
-                    }
-                    profile.parcels += Number(loaded.count) || 0;
-                    profile.serverMs += Number(loaded.queryMs) || 0;
-                    normalizeIds(loaded.ids).forEach(id => {
-                        knownMissingIds.delete(scopedId(scope, id));
-                    });
-                    const summary = summarizeTransportResult(loaded);
-                    entries.forEach(entry => {
-                        successfulFootprints.add(entry.key);
-                        footprintResults.set(entry.key, summary);
-                    });
-                } catch (error) {
-                    const took = now() - requestStarted;
-                    profile.requests += 1;
-                    profile.footprintRequests += 1;
-                    if (took > profile.slowestMs) {
-                        profile.slowestMs = took;
-                        profile.slowest = entries.length;
-                    }
-                    const overCap = /\b413\b/.test(String(error && error.message));
-                    if (overCap) profile.refused.push(entries.length);
-                    if (entries.length > 1) {
-                        const middle = Math.ceil(entries.length / 2);
-                        await loadBatch(entries.slice(0, middle));
-                        await loadBatch(entries.slice(middle));
-                        return;
-                    }
-                    profile.failed += entries[0].memberCount;
-                    console.warn('[cadastral-ground] footprint request failed for', entries[0].key, error);
+                const key = scoped(cityKey(), fingerprint);
+                if (footprintResults.has(key)) {
+                    profile.cachedMembers += 1;
+                    const cachedResult = footprintResults.get(key);
+                    (cachedResult?.ids || []).forEach(id => resolvedIds.add(String(id)));
+                    cachedFootprintFeatures.push(...(cachedResult?.features || []));
+                } else if (footprintGroups.has(key)) {
+                    footprintGroups.get(key).records.push(record);
+                } else {
+                    footprintGroups.set(key, { records: [record], footprint, key });
                 }
-            };
-
-            const chunks = [];
-            for (let index = 0; index < pending.length; index += FOOTPRINT_BATCH_SIZE) {
-                chunks.push(pending.slice(index, index + FOOTPRINT_BATCH_SIZE));
-            }
-            const pendingMembers = pending.reduce((sum, entry) => sum + entry.memberCount, 0);
-            if (chunks.length) {
-                emit(onProgress, {
-                    phase: 'ground-load-footprints',
-                    members: pendingMembers,
-                    batches: chunks.length,
-                    cachedMembers: profile.cachedMembers
+            });
+            // A cached answer is still an answer to this transaction. Repository retention and
+            // live-fabric membership are deliberately independent, so each consumer gets the
+            // immutable facts provisioned into its own explicit draft even when transport is not
+            // involved.
+            if (cachedFootprintFeatures.length) {
+                await provideFeatures(cachedFootprintFeatures, {
+                    city: cityKey(),
+                    transaction: options.transaction || null
                 });
             }
 
+            const footprintEntries = Array.from(footprintGroups.values());
+
+            const chunks = [];
+            for (let i = 0; i < footprintEntries.length; i += FOOTPRINT_BATCH_SIZE) {
+                chunks.push(footprintEntries.slice(i, i + FOOTPRINT_BATCH_SIZE));
+            }
+            if (chunks.length) emit(options.onProgress, {
+                phase: 'ground-load-footprints',
+                members: footprintEntries.reduce((sum, entry) => sum + entry.records.length, 0),
+                batches: chunks.length,
+                cachedMembers: profile.cachedMembers
+            });
             let cursor = 0;
-            let completedBatches = 0;
             const worker = async () => {
                 while (cursor < chunks.length) {
-                    const entries = chunks[cursor++];
-                    const task = loadBatch(entries);
-                    entries.forEach(entry => footprintInFlight.set(entry.key, task));
-                    try { await task; }
-                    finally {
-                        entries.forEach(entry => {
-                            if (footprintInFlight.get(entry.key) === task) footprintInFlight.delete(entry.key);
-                        });
+                    const chunk = chunks[cursor++];
+                    const geometry = multiPolygonOfFootprints(chunk.map(entry => entry.footprint));
+                    const requestStarted = now();
+                    const result = await ensureFootprint(geometry, {
+                        parcelsOnly: true,
+                        transaction: options.transaction || null
+                    });
+                    const elapsed = now() - requestStarted;
+                    profile.footprintRequests += result.requests || 0;
+                    profile.requests += result.requests || 0;
+                    profile.parcels += Number(result.result && result.result.count) || 0;
+                    profile.serverMs += Number(result.result && result.result.queryMs) || 0;
+                    profile.slowestMs = Math.max(profile.slowestMs, elapsed);
+                    let chunkMembers = 0;
+                    chunk.forEach(entry => {
+                        const summary = footprintSummary(entry.footprint, cityKey(), result.result);
+                        footprintResults.set(entry.key, clone(summary));
+                        summary.ids.forEach(id => resolvedIds.add(String(id)));
+                        chunkMembers += entry.records.length;
+                    });
+                    if ((result.requests || 0) > 0) {
+                        profile.loadedMembers += chunkMembers;
+                        profile.fetchedMembers += chunkMembers;
+                    } else {
+                        profile.cachedMembers += chunkMembers;
                     }
-                    completedBatches += 1;
-                    emit(onProgress, {
+                    emit(options.onProgress, {
                         phase: 'ground-load-footprints-progress',
-                        done: completedBatches,
+                        done: cursor,
                         total: chunks.length,
-                        members: pendingMembers,
+                        members: footprintEntries.reduce((sum, entry) => sum + entry.records.length, 0),
                         parcels: profile.parcels
                     });
                 }
             };
-            if (chunks.length) {
-                const lanes = Math.min(FOOTPRINT_CONCURRENCY, chunks.length);
-                await Promise.all(Array.from({ length: lanes }, worker));
-            }
-            if (existing.size) await Promise.all(Array.from(existing));
-
-            const loadedFootprints = pending
-                .filter(entry => successfulFootprints.has(entry.key))
-                .reduce((sum, entry) => sum + entry.memberCount, 0);
-            const joinedFootprints = waitingFootprints.filter(entry => successfulFootprints.has(entry.key)).length;
-            const failedPendingMembers = pending
-                .filter(entry => !successfulFootprints.has(entry.key))
-                .reduce((sum, entry) => sum + entry.memberCount, 0);
-            profile.loadedMembers += loadedFootprints;
-            profile.unavailableMembers += failedPendingMembers
-                + (waitingFootprints.length - joinedFootprints);
-            profile.coveredMembers = profile.cachedMembers + joinedFootprints;
-            profile.fetchedMembers = profile.loadedMembers;
+            await Promise.all(Array.from({ length: Math.min(FOOTPRINT_CONCURRENCY, chunks.length) }, worker));
+            profile.coveredMembers = members.length;
             const elapsed = now() - started;
-            emit(onProgress, {
-                phase: 'ground-ready',
-                members: members.length,
-                cachedMembers: profile.cachedMembers,
-                loadedMembers: profile.loadedMembers,
-                waitingMembers: profile.waitingMembers,
-                unavailableMembers: profile.unavailableMembers,
-                idRequests: profile.idRequests,
-                footprintRequests: profile.footprintRequests,
-                missingIds: profile.missingIds.length,
-                elapsed
+            emit(options.onProgress, {
+                phase: 'ground-ready', members: members.length, cachedMembers: profile.cachedMembers,
+                loadedMembers: profile.loadedMembers, waitingMembers: profile.waitingMembers,
+                unavailableMembers: 0, idRequests: profile.idRequests,
+                footprintRequests: profile.footprintRequests, missingIds: profile.missingIds.length, elapsed
             });
+            profile.featureIds = Array.from(resolvedIds);
+            profile.features = profile.featureIds.map(id => featureStore(cityKey()).get(id)).filter(Boolean).map(clone);
             return { ...profile, elapsed };
         }
 
-        async function ensureFootprint(geometry, options = {}) {
-            const geom = geometry && geometry.type === 'Feature' ? geometry.geometry : geometry;
-            const record = options.record || { geometry: geom };
-            if (!options.record) {
-                const scope = cityKey();
-                const key = `${scope}:${geometryFingerprint(geom)}`;
-
-                // An id request may be loading the same ground. Once it settles, local coverage can
-                // answer this footprint without a second server request.
-                const idRequests = inFlightForScope(idInFlight, scope, currentScope => `${currentScope}\u0000`);
-                if (idRequests.length) await Promise.allSettled(Array.from(new Set(idRequests)));
-
-                const local = retainedCoverageOf(record);
-                const localCoverage = Number(local && local.coverage);
-                if (Number.isFinite(localCoverage) && localCoverage > COMPLETE_COVERAGE) {
-                    const result = summarizeTransportResult({
-                        ids: normalizeIds(local.ids),
-                        coverage: localCoverage,
-                        count: normalizeIds(local.ids).length,
-                        queryMs: null
-                    });
-                    const retainedIds = result.ids.filter(id => !!cachedFeature(id, scope));
-                    if (retainedIds.length === result.ids.length) {
-                        const retained = summarizeTransportResult({
-                            ...result,
-                            ids: retainedIds,
-                            count: retainedIds.length
-                        });
-                        successfulFootprints.add(key);
-                        footprintResults.set(key, retained);
-                        return { members: 1, coveredMembers: 1, requests: 0, result: retained, elapsed: 0 };
-                    }
-                }
-                if (successfulFootprints.has(key)) {
-                    const result = footprintResults.get(key) || null;
-                    if (result && Array.isArray(result.ids)) {
-                        await presentCachedIds(result.ids, { city: scope, onProgress: options.onProgress });
-                    }
-                    return {
-                        members: 1,
-                        coveredMembers: 1,
-                        requests: 0,
-                        result,
-                        elapsed: 0
-                    };
-                }
-                const pending = footprintInFlight.get(key);
-                if (pending) return pending;
-                const fetchUnderGeometry = transport()?.fetchUnderGeometry;
-                if (typeof fetchUnderGeometry !== 'function') throw new Error('Cadastral ground transport is unavailable.');
-                const started = now();
-                const task = Promise.resolve()
-                    .then(() => fetchUnderGeometry(geometry, { parcelsOnly: options.parcelsOnly !== false }))
-                    .then(async result => {
-                        if (!result) throw new Error('Cadastral footprint transport returned no result.');
-                        await acceptTransportResult(result, {
-                            city: scope,
-                            skipConversion: true,
-                            replaceExisting: false
-                        });
-                        const summary = summarizeTransportResult(result);
-                        successfulFootprints.add(key);
-                        footprintResults.set(key, summary);
-                        return { members: 1, coveredMembers: 0, fetchedMembers: 1, requests: 1, result: summary, elapsed: now() - started };
-                    })
-                    .finally(() => { if (footprintInFlight.get(key) === task) footprintInFlight.delete(key); });
-                footprintInFlight.set(key, task);
-                return task;
+        async function ensureBounds(bounds, options = {}) {
+            const city = cityKey();
+            const rawKeys = typeof dependencies.boundsKeysOf === 'function'
+                ? dependencies.boundsKeysOf(bounds)
+                : [];
+            const fallbackKey = (() => {
+                if (!bounds || typeof bounds.getSouthWest !== 'function') return geometryFingerprint(bounds);
+                const sw = bounds.getSouthWest();
+                const ne = bounds.getNorthEast();
+                return [sw.lng, sw.lat, ne.lng, ne.lat].map(value => Number(value).toFixed(6)).join(',');
+            })();
+            const keys = Array.from(new Set((rawKeys && rawKeys.length ? rawKeys : [fallbackKey]).map(normalizeId).filter(Boolean)));
+            const loaded = loadedBounds.get(city) || new Map();
+            loadedBounds.set(city, loaded);
+            const pendingKeys = keys.filter(key => !loaded.has(key));
+            if (!pendingKeys.length) {
+                const cachedIds = new Set(keys.flatMap(key => Array.from(loaded.get(key) || [])));
+                const result = {
+                    status: 'ready', cached: true, keys,
+                    features: Array.from(cachedIds, id => featureStore(city).get(id)).filter(Boolean).map(clone),
+                    requestCount: 0
+                };
+                await provideFeatures(result.features, { city, transaction: options.transaction || null });
+                return result;
             }
-            return ensureProposalGround([record], { ...options, purpose: options.purpose || 'publish' });
+
+            const waits = new Set();
+            const ownKeys = [];
+            pendingKeys.forEach(key => {
+                const pending = boundsInFlight.get(scoped(city, key));
+                if (pending) waits.add(pending);
+                else ownKeys.push(key);
+            });
+            let own = null;
+            if (ownKeys.length) {
+                const fetchBounds = transport() && transport().fetchBounds;
+                if (typeof fetchBounds !== 'function') throw new Error('Cadastral bounds transport is unavailable.');
+                own = Promise.resolve()
+                    .then(() => fetchBounds(bounds, { city, keys: ownKeys, onProgress: options.onProgress }))
+                    .then(result => acceptTransportResult(result, {
+                        city,
+                        skipConversion: result && result.returnsWGS84 === true
+                    }))
+                    .then(result => {
+                        const ids = new Set((result.ids || []).map(String));
+                        ownKeys.forEach(key => loaded.set(key, new Set(ids)));
+                        return result;
+                    })
+                    .finally(() => ownKeys.forEach(key => {
+                        const cacheKey = scoped(city, key);
+                        if (boundsInFlight.get(cacheKey) === own) boundsInFlight.delete(cacheKey);
+                    }));
+                ownKeys.forEach(key => boundsInFlight.set(scoped(city, key), own));
+                waits.add(own);
+            }
+            await Promise.all(waits);
+            const resolvedIds = new Set(keys.flatMap(key => Array.from(loaded.get(key) || [])));
+            const result = {
+                status: 'ready', cached: false, keys,
+                features: Array.from(resolvedIds, id => featureStore(city).get(id)).filter(Boolean).map(clone),
+                requestCount: own ? 1 : 0
+            };
+            await provideFeatures(result.features, { city, transaction: options.transaction || null });
+            return result;
+        }
+
+        function get(id, options = {}) {
+            const city = normalizeId(options.city) || cityKey();
+            const value = featureStore(city).get(normalizeId(id));
+            return value ? clone(value) : null;
+        }
+
+        function getMany(ids, options = {}) {
+            const city = normalizeId(options.city) || cityKey();
+            return assertCadastralIds(ids).map(id => featureStore(city).get(id)).filter(Boolean).map(clone);
+        }
+
+        function list(options = {}) {
+            const city = normalizeId(options.city) || cityKey();
+            return Array.from(featureStore(city).values(), clone);
+        }
+
+        // Pure repository query used after `ensure*` has made ground available.  Consumers never
+        // scan a second cache or a renderer: the same service that owns retrieval owns the answer.
+        function coverageOf(geometry, options = {}) {
+            const city = normalizeId(options.city) || cityKey();
+            return clone(retainedCoverageOf(geometry, city, { ids: options.ids }));
         }
 
         function reset() {
-            successfulFootprints.clear();
-            footprintResults.clear();
-            footprintInFlight.clear();
+            featureStores.clear();
+            absentStores.clear();
             idInFlight.clear();
-            presentationInFlight.clear();
-            featuresByCity.clear();
-            knownMissingIds.clear();
+            footprintInFlight.clear();
+            footprintResults.clear();
+            boundsInFlight.clear();
+            loadedBounds.clear();
+        }
+
+        function snapshot() {
+            const city = cityKey();
+            return {
+                city,
+                featureCount: featureStore(city).size,
+                loadedIds: new Set(featureStore(city).keys()),
+                absentIds: new Set(absentStore(city)),
+                footprintCount: Array.from(footprintResults.keys()).filter(key => key.startsWith(`${city}\u0000`)).length,
+                boundsCount: (loadedBounds.get(city) || new Map()).size,
+                boundsKeys: Array.from((loadedBounds.get(city) || new Map()).keys())
+            };
         }
 
         return Object.freeze({
             ensureIds,
             ensureProposalGround,
             ensureFootprint,
+            ensureBounds,
             acceptFeatures,
+            get,
+            getMany,
+            list,
+            coverageOf,
             reset,
-            snapshot: () => {
-                const prefix = `${cityKey()}\u0000`;
-                const currentIds = values => new Set(Array.from(values)
-                    .filter(value => String(value).startsWith(prefix))
-                    .map(value => String(value).slice(prefix.length)));
-                return {
-                    loadedIds: new Set(featureStore(cityKey()).keys()),
-                    missingIds: currentIds(knownMissingIds),
-                    footprintCount: successfulFootprints.size,
-                    featureCount: featureStore(cityKey()).size,
-                    idRequestsInFlight: idInFlight.size,
-                    footprintRequestsInFlight: footprintInFlight.size
-                };
-            }
+            snapshot
         });
     }
 
-    const service = createCadastralGroundService();
-    if (global) {
-        try { delete global.__cadastralGroundTransport; } catch (_) { global.__cadastralGroundTransport = undefined; }
-        global.CadastralGroundService = service;
-    }
-    if (typeof module !== 'undefined' && module.exports) {
-        module.exports = {
-            COMPLETE_COVERAGE,
-            FOOTPRINT_BATCH_SIZE,
-            FOOTPRINT_CONCURRENCY,
-            createCadastralGroundService,
-            CadastralGroundService: service,
-            cadastralRequestId,
-            geometryFingerprint,
-            multiPolygonOfFootprints
-        };
-    }
-})(typeof window !== 'undefined' ? window : globalThis);
+    const service = defaultRoot && defaultRoot.CadastralParcelRepository || null;
+    return {
+        COMPLETE_COVERAGE,
+        createCadastralParcelRepository,
+        CadastralParcelRepository: service
+    };
+});

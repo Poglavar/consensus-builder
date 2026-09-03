@@ -127,8 +127,8 @@
         );
 
         return allProposals.find(proposal => {
-            const proposalParcelIds = Array.isArray(proposal.parentParcelIds)
-                ? proposal.parentParcelIds
+            const proposalParcelIds = Array.isArray(proposal.cadastreParcelIds)
+                ? proposal.cadastreParcelIds
                 : [];
 
             if (proposalParcelIds.length !== normalizedSearchIds.length) {
@@ -167,8 +167,7 @@
 
         return {
             proposalId,
-            parentParcelIds: Array.isArray(parcelIds) ? parcelIds : [],
-            childParcelIds: [],
+            cadastreParcelIds: Array.isArray(parcelIds) ? parcelIds : [],
             name: `Proposal #${tokenId}`,
             description: `Minted proposal from blockchain`,
             author: owner || 'Unknown',

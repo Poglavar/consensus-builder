@@ -37,14 +37,16 @@
         // are the same boundary. 0.03 rad is ~1.7°.
         angleToleranceRad: 0.03,
         offsetToleranceM: 0.25,
-        // Only segments in the same stretch of a line are compared, so two parcels at opposite ends
-        // of a long straight street are never mistaken for neighbours.
-        alongCellM: 25
+        // Candidate-grid size. The grid is spatial rather than based on a line's absolute normal
+        // offset: HTRS coordinates are about five million metres from (0, 0), so even a microscopic
+        // angle difference made two edges meeting at the same vertex appear half a metre apart when
+        // their independently-rotated offsets were subtracted.
+        candidateCellM: 25
     };
 
-    // A segment as (line, extent): the line in normal form (θ, d) with θ in [0, π), and the extent
-    // as the two endpoints projected onto the line's direction. Splitting a boundary changes the
-    // extent and leaves the line alone, which is what makes this immune to how it was split.
+    // Keep the real endpoints. Any distance or overlap comparison must be built in a coordinate
+    // frame shared by the pair being compared; independently rotating absolute HTRS coordinates is
+    // precisely what made adjacency depend on where in Croatia the same shape happened to sit.
     function segmentsOf(parcels, options) {
         const opts = { ...DEFAULTS, ...(options || {}) };
         const segments = [];
@@ -64,17 +66,12 @@
                     let theta = Math.atan2(dy, dx);
                     if (theta < 0) theta += Math.PI;
                     if (theta >= Math.PI) theta -= Math.PI;
-                    const ux = Math.cos(theta);
-                    const uy = Math.sin(theta);
-                    const a = ux * p[0] + uy * p[1];
-                    const b = ux * q[0] + uy * q[1];
                     segments.push({
                         index: segments.length,
                         id,
                         theta,
-                        offset: -uy * p[0] + ux * p[1],
-                        lo: Math.min(a, b),
-                        hi: Math.max(a, b)
+                        p: [p[0], p[1]],
+                        q: [q[0], q[1]]
                     });
                 }
             });
@@ -83,11 +80,114 @@
     }
 
     // θ wraps: a boundary stored one way round is θ, the other way round is θ ± π, and they are the
-    // same line.
-    function sameLine(s1, s2, opts) {
+    // same direction. Keep this separate from distance: comparing the two segments' independently
+    // rotated normal-form offsets is not translation invariant.
+    function angleDifference(s1, s2) {
         const dt = Math.abs(s1.theta - s2.theta);
-        if (dt > opts.angleToleranceRad && Math.abs(dt - Math.PI) > opts.angleToleranceRad) return false;
-        return Math.abs(s1.offset - s2.offset) <= opts.offsetToleranceM;
+        return Math.min(dt, Math.abs(dt - Math.PI));
+    }
+
+    function projectedSegment(segment, anchor, ux, uy, nx, ny) {
+        const px = segment.p[0] - anchor[0];
+        const py = segment.p[1] - anchor[1];
+        const qx = segment.q[0] - anchor[0];
+        const qy = segment.q[1] - anchor[1];
+        const pa = (ux * px) + (uy * py);
+        const qa = (ux * qx) + (uy * qy);
+        const pn = (nx * px) + (ny * py);
+        const qn = (nx * qx) + (ny * qy);
+        return pa <= qa
+            ? { lo: pa, hi: qa, nLo: pn, nHi: qn }
+            : { lo: qa, hi: pa, nLo: qn, nHi: pn };
+    }
+
+    function normalAt(projected, along) {
+        const length = projected.hi - projected.lo;
+        if (!(length > 0)) return projected.nLo;
+        const ratio = Math.max(0, Math.min(1, (along - projected.lo) / length));
+        return projected.nLo + ((projected.nHi - projected.nLo) * ratio);
+    }
+
+    // Return the part of [lo, hi] on which the two almost-parallel segments stay within the
+    // cadastral seam tolerance. Their separation is linear in this common coordinate frame, so the
+    // valid interval is bounded by d = -tolerance and d = +tolerance.
+    function closeInterval(first, second, lo, hi, tolerance) {
+        if (!(hi > lo)) return null;
+        const differenceAt = along => normalAt(first, along) - normalAt(second, along);
+        const dLo = differenceAt(lo);
+        const dHi = differenceAt(hi);
+        const candidates = [lo, hi];
+        const slope = (dHi - dLo) / (hi - lo);
+        if (Math.abs(slope) > 1e-12) {
+            [-tolerance, tolerance].forEach(limit => {
+                const along = lo + ((limit - dLo) / slope);
+                if (along > lo && along < hi) candidates.push(along);
+            });
+        }
+        candidates.sort((a, b) => a - b);
+        let validLo = null;
+        let validHi = null;
+        for (let index = 0; index + 1 < candidates.length; index += 1) {
+            const from = candidates[index];
+            const to = candidates[index + 1];
+            const midpoint = (from + to) / 2;
+            if (Math.abs(differenceAt(midpoint)) > tolerance + 1e-9) continue;
+            if (validLo === null) validLo = from;
+            validHi = to;
+        }
+        return validLo !== null && validHi > validLo ? [validLo, validHi] : null;
+    }
+
+    // Measure a shared stretch in a common, pair-local coordinate frame. This is invariant under
+    // translating the whole city and therefore keeps its metre tolerances meaningful in HTRS96.
+    function sharedSpan(s1, s2, opts) {
+        if (angleDifference(s1, s2) > opts.angleToleranceRad) return null;
+
+        let u1x = Math.cos(s1.theta);
+        let u1y = Math.sin(s1.theta);
+        let u2x = Math.cos(s2.theta);
+        let u2y = Math.sin(s2.theta);
+        if ((u1x * u2x) + (u1y * u2y) < 0) {
+            u2x *= -1;
+            u2y *= -1;
+        }
+        let ux = u1x + u2x;
+        let uy = u1y + u2y;
+        const magnitude = Math.hypot(ux, uy);
+        if (!(magnitude > 0)) return null;
+        ux /= magnitude;
+        uy /= magnitude;
+        let theta = Math.atan2(uy, ux);
+        if (theta < 0) {
+            theta += Math.PI;
+            ux *= -1;
+            uy *= -1;
+        } else if (theta >= Math.PI) {
+            theta -= Math.PI;
+            ux *= -1;
+            uy *= -1;
+        }
+        const nx = -uy;
+        const ny = ux;
+        const anchor = s1.p;
+        const first = projectedSegment(s1, anchor, ux, uy, nx, ny);
+        const second = projectedSegment(s2, anchor, ux, uy, nx, ny);
+        const overlapLo = Math.max(first.lo, second.lo);
+        const overlapHi = Math.min(first.hi, second.hi);
+        const close = closeInterval(first, second, overlapLo, overlapHi, opts.offsetToleranceM);
+        if (!close) return null;
+
+        const [localLo, localHi] = close;
+        const midpoint = (localLo + localHi) / 2;
+        const anchorAlong = (ux * anchor[0]) + (uy * anchor[1]);
+        const anchorOffset = (nx * anchor[0]) + (ny * anchor[1]);
+        return {
+            theta,
+            offset: anchorOffset + ((normalAt(first, midpoint) + normalAt(second, midpoint)) / 2),
+            lo: anchorAlong + localLo,
+            hi: anchorAlong + localHi,
+            lengthM: localHi - localLo
+        };
     }
 
     /**
@@ -104,8 +204,11 @@
         const opts = { ...DEFAULTS, ...(options || {}) };
         const segments = segmentsOf(parcels, opts);
 
-        // Bucket by (line, stretch of that line) so only plausible partners are ever compared. A
-        // segment longer than a cell is filed in every cell it spans.
+        // Bucket by ordinary XY bounds so only spatially plausible partners are compared. The old
+        // (angle, normal offset, along) index repeated the same origin-sensitive offset mistake as
+        // the comparison itself, which meant a correct pair could be discarded before it was even
+        // measured. Expanded spatial bounds are translation invariant and still near-linear for
+        // cadastral segments.
         const buckets = new Map();
         const fileUnder = (key, segment) => {
             let list = buckets.get(key);
@@ -113,20 +216,21 @@
             list.push(segment);
         };
         segments.forEach(segment => {
-            const t = Math.round(segment.theta / opts.angleToleranceRad);
-            const d = Math.round(segment.offset / opts.offsetToleranceM);
-            const from = Math.floor(segment.lo / opts.alongCellM);
-            const to = Math.floor(segment.hi / opts.alongCellM);
-            for (let cell = from; cell <= to; cell += 1) fileUnder(`${t}|${d}|${cell}`, segment);
+            const padding = Math.max(0, Number(opts.offsetToleranceM) || 0);
+            const cellM = Math.max(1, Number(opts.candidateCellM) || DEFAULTS.candidateCellM);
+            const minX = Math.floor((Math.min(segment.p[0], segment.q[0]) - padding) / cellM);
+            const maxX = Math.floor((Math.max(segment.p[0], segment.q[0]) + padding) / cellM);
+            const minY = Math.floor((Math.min(segment.p[1], segment.q[1]) - padding) / cellM);
+            const maxY = Math.floor((Math.max(segment.p[1], segment.q[1]) + padding) / cellM);
+            for (let x = minX; x <= maxX; x += 1) {
+                for (let y = minY; y <= maxY; y += 1) fileUnder(`${x}|${y}`, segment);
+            }
         });
 
         const shared = new Map();
         const counted = new Set();
         const consider = (s1, s2) => {
             if (s1.id === s2.id) return;
-            if (!sameLine(s1, s2, opts)) return;
-            const overlap = Math.min(s1.hi, s2.hi) - Math.max(s1.lo, s2.lo);
-            if (!(overlap > 0)) return;
             // A segment spanning several cells meets the same partner in each of them; count the
             // pair of segments once, not once per cell.
             const pairKey = s1.index < s2.index
@@ -134,6 +238,8 @@
                 : `${s2.index}#${s1.index}`;
             if (counted.has(pairKey)) return;
             counted.add(pairKey);
+            const span = sharedSpan(s1, s2, opts);
+            if (!span) return;
             const key = s1.id < s2.id ? `${s1.id}~${s2.id}` : `${s2.id}~${s1.id}`;
             let record = shared.get(key);
             if (!record) {
@@ -141,37 +247,18 @@
                 record = { a, b, sharedM: 0, spans: [] };
                 shared.set(key, record);
             }
-            record.sharedM += overlap;
+            record.sharedM += span.lengthM;
             // Keep the actual shared stretch as well as its length. Parcel adjacency answers the
             // geometric question "do these outlines run together?"; block topology has one extra
             // question: "does that shared stretch run THROUGH live road ground?". Returning metric
             // spans lets that higher layer answer without reimplementing this tolerant/T-junction-
             // safe matching algorithm.
-            record.spans.push({
-                theta: s1.theta,
-                offset: (s1.offset + s2.offset) / 2,
-                lo: Math.max(s1.lo, s2.lo),
-                hi: Math.min(s1.hi, s2.hi),
-                lengthM: overlap
-            });
+            record.spans.push(span);
         };
 
-        buckets.forEach((list, key) => {
+        buckets.forEach(list => {
             for (let i = 0; i < list.length; i += 1) {
                 for (let j = i + 1; j < list.length; j += 1) consider(list[i], list[j]);
-            }
-            // Neighbouring buckets, forward only, so each unordered pair of buckets is visited once.
-            const [t, d, cell] = key.split('|').map(Number);
-            for (let dt = -1; dt <= 1; dt += 1) {
-                for (let dd = -1; dd <= 1; dd += 1) {
-                    for (let dc = -1; dc <= 1; dc += 1) {
-                        if (dt === 0 && dd === 0 && dc === 0) continue;
-                        if (!(dt > 0 || (dt === 0 && (dd > 0 || (dd === 0 && dc > 0))))) continue;
-                        const other = buckets.get(`${t + dt}|${d + dd}|${cell + dc}`);
-                        if (!other) continue;
-                        list.forEach(s1 => other.forEach(s2 => consider(s1, s2)));
-                    }
-                }
             }
         });
 

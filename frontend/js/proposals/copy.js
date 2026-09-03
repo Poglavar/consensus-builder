@@ -34,45 +34,31 @@ function formatCopyDuration(ms) {
     return `${pad(hours)}h:${pad(minutes)}m:${pad(seconds)}s`;
 }
 
-function resolveCopyParcelLayer(id) {
-    try {
-        if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection
-            && typeof multiParcelSelection.findParcelById === 'function') {
-            const layer = multiParcelSelection.findParcelById(id);
-            if (layer) return layer;
-        }
-        if (typeof resolveParcelLayerById === 'function') {
-            const layer = resolveParcelLayerById(id);
-            if (layer) return layer;
-        }
-    } catch (_) { /* not loaded */ }
-    return null;
+function resolveCopyParcelLayers(ids) {
+    const presenter = window.ParcelPresenter;
+    if (!presenter || typeof presenter.resolveLiveLayers !== 'function') return [];
+    return presenter.resolveLiveLayers(ids, { includeCorridors: false });
 }
 
-// The source's parcels may not be loaded (different viewport, or the app was reloaded straight
-// into another city). Pull them in before we decide whether the copy can proceed. Synthetic
-// descendant ids aren't fetchable from the parcel server, so they're skipped.
-async function hydrateParcelsForCopy(parcelIds) {
-    if (!parcelIds.length) return;
-    const isSynthetic = (typeof ProposalManager !== 'undefined' && typeof ProposalManager.isSyntheticParcelId === 'function')
-        ? ProposalManager.isSyntheticParcelId.bind(ProposalManager)
-        : () => false;
-    const real = [...new Set(parcelIds.filter(id => !isSynthetic(id)))];
-    if (!real.length) return;
+// The source's cadastral ground may not be loaded (different viewport, or the app was reloaded
+// straight into another city). Durable proposals declare those ids explicitly.
+async function hydrateParcelsForCopy(cadastreParcelIds) {
+    const ids = [...new Set((cadastreParcelIds || []).map(String).filter(Boolean))];
+    if (!ids.length) return;
     try {
-        const ground = (typeof CadastralGroundService !== 'undefined' && CadastralGroundService)
-            ? CadastralGroundService
-            : ((typeof window !== 'undefined') ? window.CadastralGroundService : null);
+        const ground = (typeof CadastralParcelRepository !== 'undefined' && CadastralParcelRepository)
+            ? CadastralParcelRepository
+            : ((typeof window !== 'undefined') ? window.CadastralParcelRepository : null);
         if (!ground || typeof ground.ensureIds !== 'function') {
             throw new Error('Cadastral ground service is unavailable.');
         }
-        await ground.ensureIds(real);
+        await ground.ensureIds(ids);
     } catch (error) {
         console.warn('[copyProposal] parcel hydration failed', error);
     }
 }
 
-// Re-select the source proposal's parent parcels, using the same clear→add→highlight→updateUI
+// Re-select the current live pieces over the source proposal's cadastral ground, using the same clear→add→highlight→updateUI
 // pattern the geometry tools use. The create dialog reads this selection back out via
 // getCurrentParcelSelectionContext().
 function reselectParcelsForCopy(parcelIds) {
@@ -84,20 +70,20 @@ function reselectParcelsForCopy(parcelIds) {
         multiParcelSelection.selectedParcels.clear();
     }
 
-    let resolved = 0;
-    parcelIds.forEach((id) => {
+    const layers = resolveCopyParcelLayers(parcelIds);
+    layers.forEach(layer => {
+        const id = window.LiveParcelFabric?.featureId?.(layer.feature);
+        if (!id || multiParcelSelection.selectedParcels.has(id)) return;
         multiParcelSelection.selectedParcels.add(id);
-        const layer = resolveCopyParcelLayer(id);
-        if (layer) {
-            resolved += 1;
-            try {
-                if (typeof multiParcelSelection.addParcelHighlight === 'function') multiParcelSelection.addParcelHighlight(layer);
-            } catch (_) { }
-        }
+        try {
+            if (typeof multiParcelSelection.addParcelHighlight === 'function') multiParcelSelection.addParcelHighlight(layer);
+        } catch (_) { }
     });
-    multiParcelSelection.lastSelectedParcelId = parcelIds[parcelIds.length - 1];
+    multiParcelSelection.lastSelectedParcelId = multiParcelSelection.selectedParcels.size
+        ? Array.from(multiParcelSelection.selectedParcels).slice(-1)[0]
+        : null;
     try { if (typeof multiParcelSelection.updateUI === 'function') multiParcelSelection.updateUI(); } catch (_) { }
-    return resolved;
+    return layers.length;
 }
 
 function roadDefinitionOf(source) {
@@ -150,23 +136,20 @@ async function copyCorridorIntoNewProposal(source, sourceKey, sourceName, option
 
 // Put the source proposal's geometry back into the pending globals that createProposal() reads.
 // Returns true when geometry was seeded (i.e. the dialog should show it as already submitted).
-function seedPendingGeometryFromProposal(source, goalKey) {
+function seedPendingGeometryFromProposal(source, goalKey, selectedLiveParcelIds = []) {
     if (!source) return false;
-    const parentIds = (Array.isArray(source.parentParcelIds) ? source.parentParcelIds : []).map(String);
+    const selectionIds = Array.from(new Set((selectedLiveParcelIds || []).map(String).filter(Boolean)));
 
     if (COPY_BUILDING_GOALS.includes(goalKey)) {
         const bp = source.buildingProposal || {};
-        const buildings = (Array.isArray(bp.buildings) && bp.buildings.length)
-            ? bp.buildings
-            : ((source.geometry && Array.isArray(source.geometry.buildings)) ? source.geometry.buildings : []);
-        const primary = bp.buildingFeature
-            || (buildings.length ? buildings[0] : null)
-            || (source.buildingGeometry ? { type: 'Feature', geometry: source.buildingGeometry, properties: source.buildingProperties || {} } : null);
+        const buildings = (source.geometry && Array.isArray(source.geometry.buildings))
+            ? source.geometry.buildings
+            : [];
+        const primary = buildings.length ? buildings[0] : null;
         if (!primary && !buildings.length) return false;
 
         const context = {
-            parcelIds: (Array.isArray(bp.parentParcelIds) && bp.parentParcelIds.length ? bp.parentParcelIds : parentIds).map(String),
-            parentDetails: Array.isArray(bp.parentParcelNumbers) ? copyDeepClone(bp.parentParcelNumbers) : null,
+            parcelIds: selectionIds,
             blockName: bp.blockName || null,
             parameters: copyDeepClone(bp.parameters) || {},
             buildingFeature: copyDeepClone(primary),
@@ -192,7 +175,7 @@ function seedPendingGeometryFromProposal(source, goalKey) {
             sidewalkWidth: definition.sidewalkWidth,
             polygon: copyDeepClone(definition.polygon),
             metadata: copyDeepClone(definition.metadata) || {},
-            parentParcelIds: parentIds.slice()
+            parentParcelIds: selectionIds.slice()
         };
         return true;
     }
@@ -200,7 +183,10 @@ function seedPendingGeometryFromProposal(source, goalKey) {
     if (goalKey === 'reparcellization') {
         const plan = source.reparcellization;
         if (!plan || !Array.isArray(plan.polygons) || !plan.polygons.length) return false;
-        window.pendingReparcellizationPlan = copyDeepClone(plan);
+        window.pendingReparcellizationPlan = {
+            ...copyDeepClone(plan),
+            parcelIds: selectionIds.slice()
+        };
         return true;
     }
 
@@ -385,9 +371,7 @@ async function copyProposalIntoNewProposal(proposalIdOrHash) {
 
     const sourceKey = (typeof getProposalKey === 'function' ? getProposalKey(source) : null) || source.proposalId;
     const sourceName = source.title || source.name || source.proposalName || sourceKey;
-    const parcelIds = (Array.isArray(source.parentParcelIds) ? source.parentParcelIds : [])
-        .map(id => (id === null || id === undefined) ? null : String(id))
-        .filter(Boolean);
+    const cadastreParcelIds = window.__claims?.cadastreParcelIdsOf?.(source) || [];
 
     // Validate everything BEFORE mutating the parcel selection or opening the dialog: a half-applied
     // copy would leave the map dirty.
@@ -400,8 +384,8 @@ async function copyProposalIntoNewProposal(proposalIdOrHash) {
     //   - the parcels genuinely could not load    → the only case the old message described
     //
     // A corridor needs no parcels at all: its copy reopens the drawing tool from the stored centerline.
-    if (!parcelIds.length) {
-        console.warn('[copyProposal] proposal has no parent parcels; aborting copy.');
+    if (!cadastreParcelIds.length) {
+        console.warn('[copyProposal] proposal has no cadastral parcels; aborting copy.');
         return;
     }
 
@@ -422,20 +406,25 @@ async function copyProposalIntoNewProposal(proposalIdOrHash) {
     }
 
     const needsParcelsOnMap = goalKey !== 'road-track';
+    let parcelIds = cadastreParcelIds.slice();
     if (needsParcelsOnMap) {
-        await hydrateParcelsForCopy(parcelIds);
-        const resolvedCount = parcelIds.filter(id => !!resolveCopyParcelLayer(id)).length;
-        if (resolvedCount !== parcelIds.length) {
-            // An applied proposal has replaced its parents with its own children. Re-fetching them would
-            // draw the pre-proposal cadastre over the proposal; unapplying is what puts them back.
-            const applied = isProposalAppliedToMap(source);
-            console.warn(`[copyProposal] ${resolvedCount}/${parcelIds.length} parent parcels resolved (applied: ${applied}); aborting copy.`);
+        await hydrateParcelsForCopy(cadastreParcelIds);
+        const fabric = window.LiveParcelFabric;
+        const missingCadastreIds = !fabric || typeof fabric.entriesForCadastre !== 'function'
+            ? cadastreParcelIds.slice()
+            : cadastreParcelIds.filter(id => fabric.entriesForCadastre([id], { includeCorridors: false }).length === 0);
+        const layers = resolveCopyParcelLayers(cadastreParcelIds);
+        parcelIds = layers
+            .map(layer => window.LiveParcelFabric?.featureId?.(layer.feature))
+            .filter(Boolean);
+        if (missingCadastreIds.length || !parcelIds.length) {
+            console.warn('[copyProposal] current live fabric does not cover the proposal cadastral scope', {
+                missingCadastreIds
+            });
             if (typeof showProposalAlertMessage === 'function') {
                 showProposalAlertMessage(
-                    applied ? 'copy_proposal_applied' : 'copy_proposal_parcels_unavailable',
-                    applied
-                        ? copyProposalI18n('proposals.copy.appliedFirst', 'Remove this proposal from the map first, then copy it.')
-                        : copyProposalI18n('proposals.copy.parcelsUnavailable', "Could not load this proposal's parcels. Try again once they are on the map.")
+                    'copy_proposal_parcels_unavailable',
+                    copyProposalI18n('proposals.copy.parcelsUnavailable', "Could not load this proposal's cadastral ground. Try again once it is on the map.")
                 );
             }
             return;
@@ -452,7 +441,7 @@ async function copyProposalIntoNewProposal(proposalIdOrHash) {
         return;
     }
 
-    const seededGeometry = seedPendingGeometryFromProposal(source, goalKey);
+    const seededGeometry = seedPendingGeometryFromProposal(source, goalKey, parcelIds);
 
     const overrides = {
         goal: dialogGoalForCopy(goalKey),

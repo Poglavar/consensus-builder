@@ -25,8 +25,8 @@
 
     const resolveParcelId = (feature) => {
         const props = feature?.properties || {};
-        const id = typeof ensureParcelId === 'function'
-            ? ensureParcelId(feature)
+        const id = typeof global.getParcelId === 'function'
+            ? global.getParcelId(feature)
             : (props.parcelId ?? props.parcel_id ?? props.id);
         return id !== undefined && id !== null ? id.toString() : null;
     };

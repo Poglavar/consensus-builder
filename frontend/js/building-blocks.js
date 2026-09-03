@@ -1202,12 +1202,7 @@ function hydrateProposedBuildingsFromProposals() {
         if (!isApplied(p, p.buildingProposal)) return;
 
         if (cityId && isInCityFn) {
-            const cityIds = (Array.isArray(p.buildingProposal.blockParcelIds) && p.buildingProposal.blockParcelIds.length)
-                ? p.buildingProposal.blockParcelIds
-                : (Array.isArray(p.buildingProposal.parentParcelIds) && p.buildingProposal.parentParcelIds.length)
-                    ? p.buildingProposal.parentParcelIds
-                : (Array.isArray(p.parcelIds) && p.parcelIds.length ? p.parcelIds
-                    : (Array.isArray(p.parentParcelIds) ? p.parentParcelIds : []));
+            const cityIds = Array.isArray(p.cadastreParcelIds) ? p.cadastreParcelIds : [];
             if (cityIds.length && !cityIds.some(id => isInCityFn(id, cityId))) return;
         }
 
@@ -1231,9 +1226,7 @@ function hydrateProposedBuildingsFromProposals() {
         // must NOT be overridden by proposal-level buildingProperties; otherwise we can collapse multiple
         // buildings into one on reload (e.g. 5 buildings -> 4).
         const baseProps = {
-            ...(p.buildingProperties || p.properties || {}),
-            parentParcelIds: bp.parentParcelIds || p.parcelIds || [],
-            parentParcelNumbers: bp.parentParcelNumbers || null,
+            cadastreParcelIds: Array.isArray(p.cadastreParcelIds) ? p.cadastreParcelIds.slice() : [],
             title: p.title || null,
             author: p.author || null
         };
@@ -1386,9 +1379,9 @@ if (typeof PersistentStorage !== 'undefined' && typeof PersistentStorage.ensureR
 // Add this function to update the proposed buildings layer
 // The explicitly recorded parts of an APPLIED urban rule that it left out, as plain features.
 // One collector is read by both the 2D layer and the 3D view, so they cannot disagree. Ground
-// identity remains flat: the proposal records the excluded live parcel id, and this presentation
-// adapter asks the live-tessellation resolver for that parcel. It never reaches into the retained
-// cadastral registry, whose hidden source polygons may span several road-cut blocks.
+// identity remains flat: the proposal records the excluded plot's authored geometry, so this
+// presentation adapter never has to retain or resolve the disposable live parcel that happened to
+// be present while the rule was authored.
 function appliedIneligibleBlockParts(onlyProposalId) {
     const store = (typeof window !== 'undefined') ? window.proposalStorage : null;
     if (!store || typeof store.getAllProposals !== 'function') return [];
@@ -1399,28 +1392,9 @@ function appliedIneligibleBlockParts(onlyProposalId) {
     const standing = record => (typeof window.isProposalApplied === 'function')
         ? window.isProposalApplied(record)
         : !!(record && record.applied === true);
-    const resolveParcelFeatures = parcelId => {
-        const resolve = (typeof window !== 'undefined') ? window.resolveLiveParcelLayers : null;
-        if (typeof resolve !== 'function') return [];
-        let layers = [];
-        try {
-            layers = resolve([String(parcelId)], { includeCorridors: false }) || [];
-        } catch (_) { return []; }
-        return layers.flatMap(layer => {
-            if (!layer || typeof layer.toGeoJSON !== 'function') return [];
-            try {
-                const value = layer.toGeoJSON(false);
-                return value && value.type === 'FeatureCollection'
-                    ? (Array.isArray(value.features) ? value.features : [])
-                    : (value ? [value] : []);
-            } catch (_) { return []; }
-        });
-    };
-
     return collector({
         records: store.getAllProposals(),
         isApplied: standing,
-        resolveParcelFeatures,
         onlyProposalId
     });
 }
@@ -4381,18 +4355,14 @@ async function saveBlockifyDesignForProposal() {
     // plot is part of the block that cannot take a building AS IT STANDS, and without this the
     // applied result is a gap with no explanation anywhere.
     const ineligibleParcels = blockExcludedParcels.map(entry => ({
-        parcelId: entry.parcelId,
         status: entry.status,
         height: (currentBlockRule() || {}).maxHeightM || Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT,
+        geometry: entry.feature?.geometry ? JSON.parse(JSON.stringify(entry.feature.geometry)) : null,
         wouldBe: entry.wouldBe ? JSON.parse(JSON.stringify(entry.wouldBe)) : null
     }));
 
     const context = {
         parcelIds: normalizedParcelIds.slice(),
-        // Authored membership is not the same thing as the smaller set of parcels touched by the
-        // permitted massing. Keep it explicit so apply-time footprint resolution cannot shrink the
-        // block when the rule intentionally leaves a selected plot unbuilt.
-        blockParcelIds: normalizedParcelIds.slice(),
         parentDetails: parentDetails.slice(),
         blockName: getBlockifyDisplayName(),
         parameters,

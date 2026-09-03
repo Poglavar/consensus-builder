@@ -5,10 +5,10 @@ const serverSyncLifecycleOf = (typeof getLifecycleStatus === 'function')
     : (typeof require === 'function' ? require('./status.js').getLifecycleStatus : null);
 
 function getServerSyncGroundService() {
-    if (typeof CadastralGroundService !== 'undefined' && CadastralGroundService) return CadastralGroundService;
+    if (typeof CadastralParcelRepository !== 'undefined' && CadastralParcelRepository) return CadastralParcelRepository;
     const root = (typeof window !== 'undefined') ? window : globalThis;
-    if (root && root.CadastralGroundService) return root.CadastralGroundService;
-    if (typeof require === 'function') return require('../parcels/ground-service.js').CadastralGroundService;
+    if (root && root.CadastralParcelRepository) return root.CadastralParcelRepository;
+    if (typeof require === 'function') return require('../parcels/ground-service.js').CadastralParcelRepository;
     return null;
 }
 
@@ -60,9 +60,7 @@ function normalizeServerProposalSummary(raw, cityCode) {
         // the goal emoji for every row, even though almost all of them have a picture.
         screenshotUrl: raw.screenshotUrl || raw.screenshot_url || null,
         epochYear: raw.epochYear ?? raw.epoch_year ?? null,
-        parentParcelIds: Array.isArray(raw.parentParcelIds) ? raw.parentParcelIds : [],
-        // The BASE-ancestry stamp — what the claims/dossier surfaces match on. Dropping it here
-        // would silently blind every "does this server proposal touch my parcel" check.
+        // The single proposal-to-land relationship used by claims and dossiers.
         cadastreParcelIds: Array.isArray(raw.cadastreParcelIds) ? raw.cadastreParcelIds : [],
         acceptedParcelIds: Array.isArray(raw.acceptedParcelIds) ? raw.acceptedParcelIds : [],
         isMinted: false
@@ -435,7 +433,7 @@ async function uploadProposalToServer(proposal) {
     // Publish measures the footprint against the cadastre the browser has LOADED, and refuses below
     // 95%. That is the right question and the wrong source: pan away from a road and its parcels
     // are no longer on the map, so a perfectly publishable proposal was refused for having been
-    // scrolled past. Apply stopped depending on that when it started asking CadastralGroundService
+    // scrolled past. Apply stopped depending on that when it started asking CadastralParcelRepository
     // for the ground under a footprint; publish asks the same service here before the gate runs.
     //
     // Ground that is genuinely absent — an existing street with no cadastral parcel under it — is
@@ -577,55 +575,8 @@ async function preloadProposalParcelOwners(parcelIds, options = {}) {
     }));
 }
 
-function findMissingParentParcels(parentIds) {
-    if (!Array.isArray(parentIds) || parentIds.length === 0) return [];
-
-    const fetchableParentIds = [];
-    parentIds.forEach(id => {
-        const parcelId = id && id.toString ? id.toString() : String(id);
-        if (!parcelId) return;
-        if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.isSyntheticParcelId === 'function'
-            && ProposalManager.isSyntheticParcelId(parcelId)) {
-            return;
-        }
-        // A standing formation deliberately removed this cadastral parent from the live fabric.
-        // Fetching it again cannot satisfy findParcelById: ingestion keeps the immutable base for
-        // future replay but does not resurrect it as a selectable layer over its descendants.
-        if (typeof isParcelReplacedByChildren === 'function') {
-            try {
-                if (isParcelReplacedByChildren(parcelId)) return;
-            } catch (_) { /* treat an uncertain replacement state as ordinarily missing */ }
-        }
-        fetchableParentIds.push(parcelId);
-    });
-
-    // Check if parcelLayer is available before checking for missing parcels
-    // This prevents warnings when the layer isn't ready yet
-    const isParcelLayerReady = (typeof parcelLayer !== 'undefined' && parcelLayer && typeof parcelLayer.eachLayer === 'function') ||
-        (typeof multiParcelSelection !== 'undefined' && multiParcelSelection && typeof multiParcelSelection.findParcelById === 'function');
-
-    if (!isParcelLayerReady) {
-        // If parcel layer isn't ready, assume every fetchable parcel is missing. Synthetic and
-        // intentionally replaced ids were removed above because neither can become a live layer.
-        return fetchableParentIds;
-    }
-
-    const missing = [];
-    fetchableParentIds.forEach(parcelId => {
-        const layer = (typeof multiParcelSelection !== 'undefined' && typeof multiParcelSelection.findParcelById === 'function')
-            ? multiParcelSelection.findParcelById(parcelId)
-            : null;
-        if (!layer || !layer.feature) {
-            missing.push(parcelId);
-        }
-    });
-    return missing;
-}
-
 function prepareProposalForImport(sharedProposal) {
     if (!sharedProposal || typeof sharedProposal !== 'object') return null;
-
-    const parentIds = ensureArrayOfStrings(sharedProposal.parentParcelIds);
     const inferredGoal = (() => {
         try {
             const explicit = normalizeProposalGoalKey(sharedProposal.goal);
@@ -645,167 +596,6 @@ function prepareProposalForImport(sharedProposal) {
             return 'parcel';
         }
     })();
-
-    const isDecideLater = inferredGoal === 'decide-later';
-
-    // Preserve server ID for lookup by URL parameter later.
-    const serverId = sharedProposal.id || sharedProposal.proposalId || sharedProposal.proposal_id;
-    const serverProposalId = (serverId && /^\d+$/.test(String(serverId))) ? String(serverId) : (sharedProposal.serverProposalId || null);
-
-    const base = {
-        proposalId: sharedProposal.proposalId || sharedProposal.proposal_id || sharedProposal.id || null,
-        serverProposalId,
-        title: sharedProposal.title || sharedProposal.name || null,
-        goal: inferredGoal,
-        acceptedParcelIds: ensureArrayOfStrings(sharedProposal.acceptedParcelIds),
-        author: sharedProposal.author || sharedProposal.createdBy || sharedProposal.owner || null,
-        description: typeof sharedProposal.description === 'string' ? sharedProposal.description : '',
-        offer: (typeof sharedProposal.offer === 'number') ? sharedProposal.offer : (sharedProposal.offer || null),
-        createdAt: sharedProposal.createdAt || new Date().toISOString(),
-        updatedAt: sharedProposal.updatedAt || sharedProposal.createdAt || new Date().toISOString(),
-        lifecycleStatus: getLifecycleStatus(sharedProposal),
-        applied: false,
-        color: sharedProposal.color || null,
-        parentParcelIds: parentIds
-    };
-    if (sharedProposal.typologyType) base.typologyType = String(sharedProposal.typologyType);
-    if (sharedProposal.coordinatedPlanId !== undefined && sharedProposal.coordinatedPlanId !== null
-        && String(sharedProposal.coordinatedPlanId).trim()) {
-        base.coordinatedPlanId = String(sharedProposal.coordinatedPlanId).trim();
-    }
-    // Publish-time stamps ride along unchanged: base ancestry, ownership flow, and the effect
-    // hash. They describe the PUBLISHED version, so an import must never recompute them.
-    const stampedCadastre = ensureArrayOfStrings(sharedProposal.cadastreParcelIds);
-    if (stampedCadastre.length) base.cadastreParcelIds = stampedCadastre;
-    if (Array.isArray(sharedProposal.ownershipFlow) && sharedProposal.ownershipFlow.length) {
-        base.ownershipFlow = deepCloneArray(sharedProposal.ownershipFlow);
-    }
-    if (typeof sharedProposal.effectHash === 'string' && sharedProposal.effectHash) {
-        base.effectHash = sharedProposal.effectHash;
-    }
-    const lensEntries = normalizeLensEntries(sharedProposal.lens || sharedProposal.lensEntries || sharedProposal.lensAddresses);
-    if (lensEntries.length) {
-        base.lens = lensEntries;
-    }
-
-    // Decide-later proposals intentionally have no uploaded geometry.
-    // They are applied by deriving geometry from parent parcels on the target.
-    if (isDecideLater) {
-        const raw = sharedProposal.decideLaterProposal && typeof sharedProposal.decideLaterProposal === 'object'
-            ? sharedProposal.decideLaterProposal
-            : {};
-        const parentParcelIds = ensureArrayOfStrings(raw.parentParcelIds && raw.parentParcelIds.length ? raw.parentParcelIds : base.parentParcelIds);
-        base.decideLaterProposal = {
-            ...deepClone(raw),
-            parentParcelIds
-        };
-        delete base.decideLaterProposal.childParcelIds;
-        if (base.parentParcelIds.length === 0 && parentParcelIds.length > 0) {
-            base.parentParcelIds = parentParcelIds.slice();
-        }
-    }
-
-    if (sharedProposal.roadProposal) {
-        base.roadProposal = {
-            definition: deepClone(sharedProposal.roadProposal.definition),
-            metadata: deepClone(sharedProposal.roadProposal.metadata),
-            parentParcelIds: ensureArrayOfStrings(sharedProposal.roadProposal.parentParcelIds)
-        };
-    }
-
-    if (sharedProposal.buildingProposal) {
-        const bp = sharedProposal.buildingProposal;
-        const buildingFeatures = (() => {
-            const features = [];
-            if (sharedProposal.geometry && Array.isArray(sharedProposal.geometry.buildings)) {
-                deepCloneArray(sharedProposal.geometry.buildings)
-                    .filter(feature => feature && feature.geometry)
-                    .forEach(feature => features.push(feature));
-            }
-            if (!features.length && Array.isArray(bp.buildings)) {
-                bp.buildings
-                    .map(entry => entry && entry.feature ? deepClone(entry.feature) : null)
-                    .filter(feature => feature && feature.geometry)
-                    .forEach(feature => features.push(feature));
-            }
-            return features;
-        })();
-
-        base.buildingProposal = {
-            parameters: deepClone(bp.parameters) || {},
-            parentParcelIds: ensureArrayOfStrings(bp.parentParcelIds),
-            parentParcelNumbers: deepCloneArray(bp.parentParcelNumbers),
-            ancestorKey: bp.ancestorKey || ensureArrayOfStrings(bp.parentParcelIds).join('|'),
-            typologyType: bp.typologyType || sharedProposal.typologyType || null,
-            blockName: bp.blockName || null,
-            createdFrom: bp.createdFrom || null,
-            blockParcelIds: ensureArrayOfStrings(bp.blockParcelIds),
-            ineligibleParcels: deepCloneArray(bp.ineligibleParcels)
-        };
-        if (base.buildingProposal.parentParcelIds.length === 0) {
-            base.buildingProposal.parentParcelIds = base.parentParcelIds.slice();
-        }
-        if (buildingFeatures.length) {
-            base.geometry = base.geometry || {};
-            base.geometry.buildings = deepCloneArray(buildingFeatures);
-        }
-        if (sharedProposal.geometry?.blockMassing) {
-            base.geometry = base.geometry || {};
-            base.geometry.blockMassing = deepClone(sharedProposal.geometry.blockMassing);
-        }
-    }
-
-    // Structure proposals (parks/squares/lakes/stations)
-    if (sharedProposal.structureProposal && !isDecideLater) {
-        const sharedStructure = sharedProposal.structureProposal;
-        base.structureProposal = {
-            kind: (sharedStructure.kind === 'park' || sharedStructure.kind === 'square' || sharedStructure.kind === 'lake' || sharedStructure.kind === 'station') ? sharedStructure.kind : 'square',
-            geometry: deepClone(sharedStructure.geometry),
-            decorations: deepClone(sharedStructure.decorations || null),
-            blockName: sharedStructure.blockName || null,
-            parentParcelIds: ensureArrayOfStrings(sharedStructure.parentParcelIds && sharedStructure.parentParcelIds.length ? sharedStructure.parentParcelIds : base.parentParcelIds)
-        };
-        if (base.structureProposal.kind === 'station') {
-            base.structureProposal.stationType = sharedStructure.stationType || 'tram';
-            base.structureProposal.center = deepClone(sharedStructure.center || null);
-            base.structureProposal.bearing = Number.isFinite(Number(sharedStructure.bearing)) ? Number(sharedStructure.bearing) : 0;
-            if (base.structureProposal.stationType === 'elevated') {
-                base.structureProposal.platformHeightM = Number.isFinite(Number(sharedStructure.platformHeightM))
-                    ? Number(sharedStructure.platformHeightM)
-                    : 10;
-            }
-            base.structureProposal.attachment = deepClone(sharedStructure.attachment || null);
-            base.structureProposal.modelVersion = sharedStructure.modelVersion || 1;
-        }
-        base.goal = normalizeProposalGoalKey(base.structureProposal.kind) || base.goal;
-    }
-
-    if (sharedProposal.reparcellization && Array.isArray(sharedProposal.reparcellization.polygons) && sharedProposal.reparcellization.polygons.length > 0) {
-        const reparcelParcelIds = (sharedProposal.reparcellization.parcelIds && sharedProposal.reparcellization.parcelIds.length > 0)
-            ? ensureArrayOfStrings(sharedProposal.reparcellization.parcelIds)
-            : (base.parentParcelIds.length > 0 ? base.parentParcelIds.slice() : []);
-        const ownerShares = deepCloneArray(sharedProposal.reparcellization.ownerShares);
-        const polygons = deepCloneArray(sharedProposal.reparcellization.polygons);
-
-        base.goal = 'reparcellization';
-        base.reparcellization = {
-            algorithm: sharedProposal.reparcellization.algorithm || 'sweep-line',
-            generatedAt: sharedProposal.reparcellization.generatedAt || sharedProposal.generatedAt || new Date().toISOString(),
-            parcelIds: reparcelParcelIds.slice(),
-            totalArea: Number.isFinite(Number(sharedProposal.reparcellization.totalArea))
-                ? Number(sharedProposal.reparcellization.totalArea)
-                : null,
-            ownerShares,
-            polygons
-        };
-
-        if (base.parentParcelIds.length === 0 && reparcelParcelIds.length > 0) {
-            base.parentParcelIds = reparcelParcelIds.slice();
-        }
-    }
-
-    // Derived-at-apply data never crosses browsers (§15a) — children/formations regenerate
-    // from the definition against THIS browser's fabric. Old server rows still carry them.
     const depthApi = (typeof window !== 'undefined' && window.__formationDepth)
         ? window.__formationDepth
         : (typeof require === 'function' ? require('./formation-depth.js') : null);
@@ -813,12 +603,44 @@ function prepareProposalForImport(sharedProposal) {
         || typeof depthApi.conformanceOf !== 'function') {
         throw new Error('Cannot import proposal: the flat-record gate is unavailable.');
     }
-    const stripped = depthApi.stripDerivedRecordData(base);
-    const verdict = depthApi.conformanceOf(stripped);
+    // Import is intentionally boring: the API already serves the canonical authored record.
+    // Reconstructing legacy parent/block/child fields here would make transport depend on one
+    // browser's materialized parcel ids again. Old rows are handled once by the DB migration.
+    const candidate = deepClone(sharedProposal);
+    const serverId = sharedProposal.id || sharedProposal.proposalId || sharedProposal.proposal_id;
+    candidate.proposalId = sharedProposal.proposalId || sharedProposal.proposal_id || sharedProposal.id || null;
+    candidate.serverProposalId = (serverId && /^\d+$/.test(String(serverId)))
+        ? String(serverId)
+        : (sharedProposal.serverProposalId || null);
+    candidate.goal = inferredGoal;
+    candidate.lifecycleStatus = getLifecycleStatus(sharedProposal);
+    candidate.acceptedParcelIds = ensureArrayOfStrings(sharedProposal.acceptedParcelIds);
+    candidate.createdAt = sharedProposal.createdAt || new Date().toISOString();
+    candidate.updatedAt = sharedProposal.updatedAt || candidate.createdAt;
+    const lensEntries = normalizeLensEntries(
+        sharedProposal.lens || sharedProposal.lensEntries || sharedProposal.lensAddresses
+    );
+    if (lensEntries.length) candidate.lens = lensEntries;
+
+    const verdict = depthApi.conformanceOf(candidate);
+    const invalid = typeof depthApi.findNonCadastralReference === 'function'
+        ? depthApi.findNonCadastralReference(candidate)
+        : null;
+    if (invalid) {
+        verdict.flat = false;
+        verdict.violations.push({
+            code: 'non-cadastral-reference',
+            field: invalid.path,
+            id: invalid.id
+        });
+    }
     if (!verdict.flat) {
-        const detail = verdict.violations.map(item => item.code + (item.id ? ` (${item.id})` : '')).join('; ');
+        const detail = verdict.violations
+            .map(item => item.code + (item.field ? ` (${item.field})` : '') + (item.id ? `: ${item.id}` : ''))
+            .join('; ');
         throw new Error(`Cannot import non-conforming proposal; run migrate-tessellation.js first: ${detail}`);
     }
+    const stripped = depthApi.stripDerivedRecordData(candidate);
     return parkProposalForImport(stripped);
 }
 

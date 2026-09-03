@@ -108,9 +108,7 @@ function handleDescendantItemClick(element) {
         if (!proposalIdAttr) return;
         const descendantProposal = getProposalByIdOrHash(proposalIdAttr);
         if (!descendantProposal) return;
-        const parentIds = Array.isArray(descendantProposal.parentParcelIds) ? descendantProposal.parentParcelIds : [];
-        const fallbackParcel = parentIds[0] || null;
-        selectAndHighlightProposal(getProposalKey(descendantProposal) || proposalIdAttr, fallbackParcel, true);
+        selectAndHighlightProposal(getProposalKey(descendantProposal) || proposalIdAttr, null, true);
     } else if (type === 'parcel') {
         const parcelId = element.getAttribute('data-parcel-id');
         if (!parcelId) return;
@@ -132,10 +130,7 @@ function handleProposalParcelClick(parcelId, event) {
             multiParcelSelection.clearSingleParcelSelection();
         }
 
-        let proposals = proposalStorage.getProposalsForParcel(parcelId).filter(p => getLifecycleStatus(p) !== 'Executed');
-        if (proposals.length === 0) {
-            proposals = proposalStorage.getProposalsForParcel(parcelId).filter(p => getLifecycleStatus(p) !== 'Executed');
-        }
+        const proposals = proposalStorage.getProposalsForParcel(parcelId).filter(p => getLifecycleStatus(p) !== 'Executed');
 
         if (proposals.length === 1) {
             const proposal = proposals[0];
@@ -225,14 +220,15 @@ function getCurrentParcelSelectionContext() {
     try {
         if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection && multiParcelSelection.selectedParcels && multiParcelSelection.selectedParcels.size > 0) {
             context.ids = Array.from(multiParcelSelection.selectedParcels).map(id => id.toString());
-            if (typeof multiParcelSelection.getSelectedParcels === 'function') {
-                context.layers = (multiParcelSelection.getSelectedParcels() || []).filter(Boolean);
-            } else if (typeof multiParcelSelection.findParcelById === 'function') {
-                context.layers = context.ids.map(id => multiParcelSelection.findParcelById(id)).filter(Boolean);
+            context.layers = window.ParcelPresenter?.getLayers?.(context.ids) || [];
+        } else if (typeof selectedParcelId !== 'undefined' && selectedParcelId) {
+            const id = selectedParcelId.toString();
+            const feature = window.LiveParcelFabric?.get?.(id) || null;
+            const layer = feature ? (window.ParcelPresenter?.getLayer?.(id) || null) : null;
+            if (feature && layer) {
+                context.ids = [id];
+                context.layers = [layer];
             }
-        } else if (typeof selectedParcelId !== 'undefined' && selectedParcelId && currentParcel && currentParcel.layer) {
-            context.ids = [selectedParcelId.toString()];
-            context.layers = [currentParcel.layer];
         }
     } catch (e) {
         console.warn('Failed to resolve parcel selection context', e);
@@ -276,20 +272,29 @@ async function launchStructureToolForSelection(kind) {
         return false;
     }
     if (await shouldStopFreshProposalForWholeBlock(kind, selection)) return false;
-    if (kind === 'lake') {
-        const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selection.layers) : { contiguous: true };
-        if (!contiguity.contiguous) {
-            if (typeof showProposalAlertMessage === 'function') {
-                showProposalAlertMessage('parcels_not_contiguous', 'Parcels not contiguous');
-            } else if (typeof alert === 'function') {
-                alert('Parcels not contiguous');
-            }
-            return false;
+    const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selection.layers) : { contiguous: true };
+    if (!contiguity.contiguous) {
+        if (typeof showProposalAlertMessage === 'function') {
+            showProposalAlertMessage('parcels_not_contiguous', 'Parcels not contiguous');
+        } else if (typeof alert === 'function') {
+            alert('Parcels not contiguous');
         }
+        return false;
     }
     const geometry = buildGeometryFromParcels(selection.layers);
     if (!geometry) {
         updateStatus('Could not build geometry for the selected parcels.');
+        return false;
+    }
+    const oneArea = (typeof window === 'undefined' || !window.__parcelContiguity?.isContiguous)
+        ? geometry.type === 'Polygon' || (geometry.type === 'MultiPolygon' && geometry.coordinates?.length === 1)
+        : window.__parcelContiguity.isContiguous(geometry);
+    if (!oneArea) {
+        if (typeof showProposalAlertMessage === 'function') {
+            showProposalAlertMessage('parcels_not_contiguous', 'Parcels not contiguous');
+        } else if (typeof alert === 'function') {
+            alert('Parcels not contiguous');
+        }
         return false;
     }
     if (typeof showStructureProposalDialog !== 'function') {
@@ -1063,9 +1068,9 @@ function fitMapToAppliedProposals() {
             }
         } catch (_) { }
         if (bounds) { extend(bounds); continue; }
-        // Fallback: frame the proposal's parent parcels' layers (same pattern selectAndHighlightProposal uses).
+        // Last resort: frame the proposal's immutable cadastral anchors.
         try {
-            const ids = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
+            const ids = Array.isArray(proposal.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
             ids.forEach(pid => {
                 const layer = (typeof findParcelLayerById === 'function') ? findParcelLayerById(pid) : null;
                 if (layer && typeof layer.getBounds === 'function') extend(layer.getBounds());

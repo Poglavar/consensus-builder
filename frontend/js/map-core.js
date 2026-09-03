@@ -74,9 +74,6 @@ let baseTileLayer = null;
 const BasemapManager = (typeof window !== 'undefined' && window.BasemapManager) ? window.BasemapManager : null;
 
 const parcelState = (typeof window !== 'undefined' && window.ParcelsState) ? window.ParcelsState : null;
-const resolveParcelCache = () => (parcelState && typeof parcelState.getParcelCache === 'function')
-    ? parcelState.getParcelCache()
-    : (typeof parcelCache !== 'undefined' ? parcelCache : null);
 const resolveParcelLayer = () => (parcelState && typeof parcelState.getParcelLayer === 'function')
     ? parcelState.getParcelLayer()
     : (typeof window !== 'undefined' ? window.parcelLayer : null);
@@ -813,7 +810,6 @@ function setupMapEventHandlers() {
         if (typeof ParcelFetchController !== 'undefined' && ParcelFetchController && typeof ParcelFetchController.handleMoveEnd === 'function') {
             ParcelFetchController.handleMoveEnd(map, {
                 parcelFetchConfig,
-                resolveParcelCache,
                 resolveParcelLayer,
                 isZoomWithinParcelRange
             });

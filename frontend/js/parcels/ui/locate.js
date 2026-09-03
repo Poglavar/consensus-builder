@@ -33,10 +33,8 @@
         const keysToDelete = [];
         for (let i = 0; i < PersistentStorage.length; i++) {
             const key = PersistentStorage.key(i);
-            if (key === 'cadastre_blocks') {
-                continue;
-            }
-            if (key.startsWith('parcel_') ||
+            if (key === 'cadastre_blocks' ||
+                key.startsWith('parcel_') ||
                 key.startsWith('road_') ||
                 key.includes('_geometry') ||
                 key.includes('_properties') ||
@@ -55,29 +53,16 @@
         // Final message shown after clearing
         const clearedMessage = `Cleared ${count} parcel-related items from local storage`;
 
-        if (global.parcelLayer) {
-            global.parcelLayer.clearLayers();
+        const fabric = global.LiveParcelFabric;
+        if (fabric && typeof fabric.transact === 'function' && typeof fabric.replaceAll === 'function') {
+            await fabric.transact({ kind: 'clear-local-parcel-data' }, transaction => {
+                fabric.replaceAll([], { transaction });
+            });
         }
-        if (typeof global.clearParcelLayerIndex === 'function') {
-            global.clearParcelLayerIndex();
+        if (global.CadastralParcelRepository && typeof global.CadastralParcelRepository.reset === 'function') {
+            global.CadastralParcelRepository.reset();
         }
-        if (global.parcelCache && global.parcelCache.grid) {
-            global.parcelCache.grid.clear();
-        }
-        if (typeof global.ParcelsState?.bumpParcelCoverageVersion === 'function') {
-            global.ParcelsState.bumpParcelCoverageVersion();
-        }
-        try {
-            if (typeof global.dispatchEvent === 'function') {
-                global.dispatchEvent(new CustomEvent('parcelCoverageUpdated', {
-                    detail: {
-                        version: global.parcelCoverageVersion,
-                        source: 'clear',
-                        timestamp: Date.now()
-                    }
-                }));
-            }
-        } catch (_) { }
+        if (typeof blockStorage !== 'undefined' && typeof blockStorage.clear === 'function') blockStorage.clear();
         const clearLabels = uiLabels.clearParcelNumberLabels || global.clearParcelNumberLabels;
         if (typeof clearLabels === 'function') {
             clearLabels();
@@ -143,7 +128,7 @@
                 }
             }
 
-            if (typeof global.parcelLayer === 'undefined' || !global.parcelLayer) {
+            if (!global.LiveParcelFabric || !global.ParcelPresenter) {
                 locateError.textContent = t('locateDataNotLoaded', 'Parcel data not loaded');
                 return;
             }
@@ -153,7 +138,7 @@
             // Declare the id to the ground service. It decides whether this is a registry hit, an
             // in-flight join, a known absence, or a server load; the locate UI only resolves the
             // resulting layer. selectParcel centres the map and loads the surrounding viewport.
-            const ground = global.CadastralGroundService || Parcels.ground;
+            const ground = global.CadastralParcelRepository;
             if (!ground || typeof ground.ensureIds !== 'function') {
                 locateError.textContent = t('locateNotFound', 'Parcel not found');
                 return;
@@ -163,9 +148,9 @@
             locateButton.disabled = true;
             try {
                 await ground.ensureIds([value]);
-                const layer = typeof global.resolveParcelLayerById === 'function'
-                    ? global.resolveParcelLayerById(value)
-                    : global.parcelLayer.getLayers().find(candidate => resolveParcelId(candidate.feature) === value);
+                const layer = global.LiveParcelFabric.get(value)
+                    ? global.ParcelPresenter.getLayer(value)
+                    : null;
                 const foundId = layer && layer.feature ? (resolveParcelId(layer.feature) || value) : null;
                 if (foundId && typeof selectParcel === 'function') {
                     selectParcel(foundId);

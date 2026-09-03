@@ -567,17 +567,16 @@
         return p ? (p.proposalId || p.id || null) : null;
     }
 
-    // Union of every parcel id a proposal touches (before + after, across its sub-proposals).
+    // Union of the durable cadastral scope and this fabric revision's materialized output.
     function getProposalParcelIdSet(proposal) {
         const ids = new Set();
         if (!proposal) return ids;
         const add = (arr) => { if (Array.isArray(arr)) arr.forEach(id => { if (id != null) ids.add(String(id)); }); };
-        add(proposal.parentParcelIds);
-        add(proposal.childParcelIds);
-        ['roadProposal', 'decideLaterProposal', 'reparcellization', 'buildingProposal', 'structureProposal'].forEach(k => {
-            const sp = proposal[k];
-            if (sp) { add(sp.parentParcelIds); add(sp.childParcelIds); }
-        });
+        add(proposal.cadastreParcelIds);
+        const fabric = window.LiveParcelFabric;
+        if (proposal.proposalId && fabric?.producedBy && fabric?.featureId) {
+            add(fabric.producedBy(proposal.proposalId).map(feature => fabric.featureId(feature)));
+        }
         return ids;
     }
 
@@ -1454,21 +1453,15 @@
     }
 
     function proposalParcelFeatures3D(proposal) {
-        if (typeof parcelLayer === 'undefined' || !parcelLayer) return [];
-        const ids = new Set([
-            ...(proposal?.parentParcelIds || []),
-            ...(proposal?.childParcelIds || []),
-            ...(proposal?.roadProposal?.childParcelIds || []),
-            ...(proposal?.buildingProposal?.childParcelIds || []),
-            ...(proposal?.reparcellization?.childParcelIds || [])
-        ].map(String));
-        const features = [];
-        parcelLayer.getLayers().forEach(layer => {
-            const feature = layer?.feature;
-            const value = feature?.properties?.parcelId || feature?.properties?.parcel_id || feature?.properties?.id;
-            if (value !== undefined && ids.has(String(value))) features.push(feature);
-        });
-        return features;
+        const fabric = window.LiveParcelFabric;
+        if (!proposal || !fabric) return [];
+        const produced = proposal.proposalId && typeof fabric.producedBy === 'function'
+            ? fabric.producedBy(proposal.proposalId)
+            : [];
+        if (produced.length) return produced;
+        return typeof fabric.entriesForCadastre === 'function'
+            ? fabric.entriesForCadastre(proposal.cadastreParcelIds || [])
+            : [];
     }
 
     function rebuildProposalInteraction3D() {
@@ -1502,7 +1495,7 @@
                 const before = new Set(wrapper.children);
                 addDraftPreviewFeature3D(feature, wrapper, applied ? 'source' : 'draft', isBuilding ? 'buildings' : 'proposal');
                 const parcelId = feature?.properties?.parcelId || feature?.properties?.parcel_id || feature?.properties?.id
-                    || proposal.parentParcelIds?.[0] || null;
+                    || proposal.cadastreParcelIds?.[0] || null;
                 wrapper.children.filter(child => !before.has(child)).forEach(child => {
                     child.traverse?.(object => {
                         object.userData = object.userData || {};
@@ -2349,18 +2342,13 @@
     function getAppliedDescendantParcelIdSet() {
         const ids = new Set();
         try {
+            const fabric = window.LiveParcelFabric;
             for (const p of getAppliedProposals()) {
-                const buckets = [];
-                if (p.roadProposal && Array.isArray(p.roadProposal.childParcelIds)) buckets.push(p.roadProposal.childParcelIds);
-                if (p.decideLaterProposal && Array.isArray(p.decideLaterProposal.childParcelIds)) buckets.push(p.decideLaterProposal.childParcelIds);
-                if (p.reparcellization && Array.isArray(p.reparcellization.childParcelIds)) buckets.push(p.reparcellization.childParcelIds);
-                if (p.buildingProposal && Array.isArray(p.buildingProposal.childParcelIds)) buckets.push(p.buildingProposal.childParcelIds);
-                if (Array.isArray(p.childParcelIds)) buckets.push(p.childParcelIds);
-                for (const arr of buckets) {
-                    for (const id of arr) {
-                        if (id != null) ids.add(String(id));
-                    }
-                }
+                if (!p?.proposalId || !fabric?.producedBy || !fabric?.featureId) continue;
+                fabric.producedBy(p.proposalId).forEach(feature => {
+                    const id = fabric.featureId(feature);
+                    if (id) ids.add(String(id));
+                });
             }
         } catch (e) {
             console.warn('[3D] getAppliedDescendantParcelIdSet failed:', e);
@@ -4147,8 +4135,8 @@
         const inActiveCity = (f) => {
             if (!cityId || !isInCityFn) return true;
             const props = (f && f.properties) || {};
-            const ids = Array.isArray(props.parentParcelIds) && props.parentParcelIds.length
-                ? props.parentParcelIds
+            const ids = Array.isArray(props.cadastreParcelIds) && props.cadastreParcelIds.length
+                ? props.cadastreParcelIds
                 : (props.parcelId ? [props.parcelId] : []);
             if (!ids.length) return true;
             return ids.some(id => isInCityFn(id, cityId));
@@ -6245,7 +6233,7 @@
         const picked = pickMapSubjectFromEvent(evt);
         if (picked?.proposalId) {
             const proposal = window.proposalStorage?.getProposal?.(picked.proposalId) || null;
-            const parcelId = picked.parcelId || proposal?.parentParcelIds?.[0] || null;
+            const parcelId = picked.parcelId || proposal?.cadastreParcelIds?.[0] || null;
             if (proposal) {
                 // 3D is a viewing mode (for now): no 2D details panel here. Clicking a proposal
                 // selects it silently and isolates it; clicking it again returns to full view.

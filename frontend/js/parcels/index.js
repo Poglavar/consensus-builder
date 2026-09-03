@@ -76,18 +76,12 @@
             getGridKey: global.getGridKey,
             getRequiredGridCells: global.getRequiredGridCells,
             computeGridKeysForBounds: global.computeGridKeysForBounds,
-            indexParcelLayer: global.indexParcelLayer,
-            unindexParcelLayer: global.unindexParcelLayer,
-            clearParcelLayerIndex: global.clearParcelLayerIndex,
-            resolveParcelLayerById: global.resolveParcelLayerById,
-            removeParcelLayerById: global.removeParcelLayerById,
             ensureParcelLayerInitialized: global.ensureParcelLayerInitialized,
             addParcelLayerToMapIfAppropriate: global.addParcelLayerToMapIfAppropriate
         },
-        ground: global.CadastralGroundService,
+        ground: global.CadastralParcelRepository,
         fetch: {
             fetchParcelData: global.fetchParcelData,
-            ingestParcelFeatures: global.ingestParcelFeatures,
             refreshParcelDataWithBusyState: global.refreshParcelDataWithBusyState
         },
         blocks: {

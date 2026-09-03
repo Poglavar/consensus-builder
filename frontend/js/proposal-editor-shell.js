@@ -908,6 +908,28 @@
 
     const STRUCTURE_KIND_LABELS = { park: 'Park', square: 'Square', lake: 'Lake' };
 
+    function structureGeometryIsOneArea(geometry) {
+        const value = geometry?.type === 'Feature' ? geometry.geometry : geometry;
+        try {
+            if (global.__parcelContiguity?.isContiguous) {
+                return global.__parcelContiguity.isContiguous(value);
+            }
+        } catch (_) { }
+        if (value?.type === 'Polygon') return Array.isArray(value.coordinates) && value.coordinates.length > 0;
+        return value?.type === 'MultiPolygon'
+            && Array.isArray(value.coordinates)
+            && value.coordinates.length === 1;
+    }
+
+    function reportDisconnectedStructureSelection() {
+        const message = tDraft(
+            'proposalDrafts.errors.parcelsNotContiguous',
+            'The selected parcels must form one connected area.'
+        );
+        if (typeof global.showStyledAlert === 'function') global.showStyledAlert(message);
+        else if (typeof global.updateStatus === 'function') global.updateStatus(message);
+    }
+
     // One-click structures: a park/square/lake IS the selection's union — there is no design
     // tool, the object simply appears applied (auto-named). Terms come later via "Create proposal".
     async function instantCreateStructureFromSelection(kind, parcelIds) {
@@ -915,15 +937,21 @@
         const ids = (parcelIds || []).map(String).filter(Boolean);
         if (!ids.length) return null;
         const selection = await global.prepareProposalDraftParcelSelection?.(ids);
-        if (!selection?.layers?.length) {
+        if (selection?.complete === false || !selection?.layers?.length) {
             const message = tDraft('proposalDrafts.errors.parcelsUnavailable', 'The selected parcels are not available in this city view.');
             if (typeof global.showStyledAlert === 'function') global.showStyledAlert(message);
             return null;
         }
-        // Selection ids can outlive the parcel layers they named: unapplying a formation or
-        // re-cutting a corridor replaces those layers while their ancestry remains indexed. The
-        // adapter has just resolved that intent onto the current visible fabric; publish exactly
-        // those ids alongside the geometry, never the stale request that led to them.
+        const contiguity = typeof global.areParcelsContiguous === 'function'
+            ? global.areParcelsContiguous(selection.layers)
+            : { contiguous: true };
+        if (!contiguity.contiguous) {
+            reportDisconnectedStructureSelection();
+            return null;
+        }
+        // Publish the exact live ids that were selected alongside their geometry. The adapter may
+        // only substitute ids when reopening an authored record with its immutable footprint;
+        // fresh creation never guesses from cadastral ancestry.
         const liveIds = Array.isArray(selection.ids) && selection.ids.length
             ? selection.ids.map(String)
             : ids;
@@ -932,6 +960,10 @@
             : null;
         if (!geometry || !geometry.type) {
             console.warn('[ProposalEditor] Could not build structure geometry from the selection', ids);
+            return null;
+        }
+        if (!structureGeometryIsOneArea(geometry)) {
+            reportDisconnectedStructureSelection();
             return null;
         }
         let lakeGraphics = null;
@@ -944,6 +976,10 @@
                 return null;
             }
             structureGeometry = lakeGraphics.geometry;
+        }
+        if (!structureGeometryIsOneArea(structureGeometry)) {
+            reportDisconnectedStructureSelection();
+            return null;
         }
         const draft = global.proposalDraftStore.createDraft({
             cityId: currentCityId(),
@@ -1435,7 +1471,7 @@
         // the normal focus/details behaviour.
         if (landed) {
             global.__openProposalDetailsCollapsed = true;
-            try { global.selectAndHighlightProposal?.(proposalId, (proposal.parentParcelIds || [])[0] || null, false, true); } catch (_) { }
+            try { global.selectAndHighlightProposal?.(proposalId, null, false, true); } catch (_) { }
         }
         return proposalId;
     }

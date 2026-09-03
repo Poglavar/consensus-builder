@@ -6,7 +6,8 @@
 })(typeof window !== 'undefined' ? window : globalThis, function (global) {
     'use strict';
 
-    const STORAGE_KEY = 'cb_transit_stations';
+    // Applied station features are rebuilt from standing proposal records. This module owns only
+    // the current render-session collection; authored station geometry remains in the proposal.
     const PANE = 'transitStationsPane';
     const HIT_PANE = 'transitStationHitPane';
     const ICON_PANE = 'transitStationIconsPane';
@@ -119,12 +120,7 @@
 
     function stationCenter(station) {
         const props = station?.properties || {};
-        const stored = coordinate(props.center || props.coordinate || props.location);
-        if (stored) return stored;
-        try {
-            const feature = stationFeature(station);
-            return global.turf?.centroid(feature)?.geometry?.coordinates || null;
-        } catch (_) { return null; }
+        return coordinate(props.center || props.coordinate || props.location);
     }
 
     function stationBearing(station) {
@@ -181,7 +177,7 @@
             try { global.hideParcelInfoPanel?.(); } catch (_) { }
             if (typeof global.selectAndHighlightProposal === 'function') {
                 global.__openProposalDetailsCollapsed = true;
-                global.selectAndHighlightProposal(String(proposalId), station?.properties?.parentParcelIds?.[0] || null, false, true);
+                global.selectAndHighlightProposal(String(proposalId), null, false, true);
                 return true;
             } else if (typeof global.showProposalDetails === 'function') {
                 global.showProposalDetails(String(proposalId));
@@ -289,25 +285,6 @@
         try { global.dispatchEvent(new global.Event('stationsUpdated')); } catch (_) { }
     }
 
-    function saveStations() {
-        try { global.PersistentStorage?.setItem(STORAGE_KEY, JSON.stringify(global.transitStations || [])); } catch (error) {
-            console.warn('[transit-stations] failed to persist stations', error);
-        }
-    }
-
-    function loadStations() {
-        try {
-            const raw = global.PersistentStorage?.getItem(STORAGE_KEY);
-            if (!raw) return;
-            const parsed = JSON.parse(raw);
-            if (Array.isArray(parsed)) {
-                global.transitStations = parsed.filter(entry => stationFeature(entry)?.geometry && stationType(entry));
-            }
-        } catch (error) {
-            console.warn('[transit-stations] failed to load stations', error);
-        }
-    }
-
     function upsertStation(station) {
         const feature = stationFeature(station);
         if (!feature) return false;
@@ -316,7 +293,6 @@
             global.transitStations = (global.transitStations || []).filter(entry => String(entry?.properties?.proposalId || '') !== String(proposalId));
         }
         global.transitStations.push(clone(feature));
-        saveStations();
         updateTransitStationsLayer();
         return true;
     }
@@ -326,7 +302,6 @@
         const before = (global.transitStations || []).length;
         global.transitStations = (global.transitStations || []).filter(entry => String(entry?.properties?.proposalId || '') !== key);
         if (global.transitStations.length === before) return false;
-        saveStations();
         updateTransitStationsLayer();
         return true;
     }
@@ -650,20 +625,11 @@
             try { bounds = global.turf?.bbox?.(feature) || null; } catch (_) { }
             entries.push({ id, feature, bounds });
         };
-        if (global.parcelLayerById instanceof Map) {
-            for (const [id, layer] of global.parcelLayerById.entries()) {
-                const feature = layer?.feature || layer;
-                const key = parcelIdForFeature(feature, id);
-                addEntry(key, feature);
-            }
-        }
-        try {
-            global.parcelLayer?.getLayers?.().forEach(layer => {
-                const feature = layer?.feature;
-                const key = parcelIdForFeature(feature);
-                addEntry(key, feature);
-            });
-        } catch (_) { }
+        const fabric = global.LiveParcelFabric;
+        (fabric?.list?.() || []).forEach(feature => {
+            const key = parcelIdForFeature(feature);
+            addEntry(key, feature);
+        });
         return entries;
     }
 
@@ -975,8 +941,7 @@
     }
 
     function placementParcelLayerVersion() {
-        const value = global.ParcelsState?.getParcelLayerIndexVersion?.()
-            ?? global.parcelLayerIndexVersion;
+        const value = global.LiveParcelFabric?.snapshot?.().revision;
         return Number.isFinite(Number(value)) ? Number(value) : null;
     }
 
@@ -1341,7 +1306,6 @@
     }
 
     function initialise() {
-        loadStations();
         const render = () => {
             try { updateTransitStationsLayer(); } catch (error) { console.warn('[transit-stations] initial render failed', error); }
         };
@@ -1349,8 +1313,7 @@
         else render();
     }
 
-    if (global.PersistentStorage?.ensureReady) global.PersistentStorage.ensureReady(initialise);
-    else initialise();
+    initialise();
 
     global.startTransitStationPlacement = startTransitStationPlacement;
     global.cancelTransitStationPlacement = cancelTransitStationPlacement;
@@ -1363,7 +1326,6 @@
     global.isTransitStationGeometryEditorActive = () => !!stationEditor;
 
     return Object.freeze({
-        STORAGE_KEY,
         COLORS,
         normalizeType,
         specFor,

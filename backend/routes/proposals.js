@@ -6,6 +6,7 @@ import { createJsonBodyValidator, validators } from '../utils/request-validation
 import { generateAndStoreProposalThumbnail } from '../thumbnails/proposal-thumbnail.js';
 import { canonicalizeLifecycleStatus, resolveIncomingLifecycleStatus } from '../proposals/lifecycle.js';
 import {
+    findLegacyCadastreDeclaration,
     findNonCadastralParentDeclaration,
     isDerivedParcelDeclaration,
     serializeProposalRow,
@@ -140,9 +141,6 @@ function ownershipFlowValidator(value) {
         if (!parcelId || /\p{C}/u.test(parcelId)) {
             return { ok: false, error: `ownershipFlow[${i}].parcelId must be a non-empty string.` };
         }
-        if (isDerivedParcelDeclaration(parcelId)) {
-            return { ok: false, error: `ownershipFlow[${i}].parcelId must be a base cadastral id.` };
-        }
         const cededM2 = Number(entry.cededM2);
         if (!Number.isFinite(cededM2) || cededM2 < 0) {
             return { ok: false, error: `ownershipFlow[${i}].cededM2 must be a non-negative number.` };
@@ -238,9 +236,7 @@ const proposalCreateBodyValidator = createJsonBodyValidator({
         depositPercent: { required: false, validate: validators.optional(validators.finiteNumber({ label: 'depositPercent', integer: true })) },
         isConditional: { required: false, validate: validators.optional(validators.boolean({ label: 'isConditional' }), { nullValue: false }) },
         disbursementMode: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_DISBURSEMENT_MODE_LENGTH, label: 'disbursementMode', disallowControlChars: true })) },
-        parentParcelIds: { required: false, validate: validators.optional(stringArrayValidator('parentParcelIds'), { nullValue: [] }) },
-        // Cadastral (base) parcels the geometry covers. Every parent declaration is flat too;
-        // this separate stamp is the geometry-authoritative effect/consent frame.
+        // The proposal's one and only durable land declaration.
         cadastreParcelIds: { required: false, validate: validators.optional(stringArrayValidator('cadastreParcelIds'), { nullValue: [] }) },
         // Per crossed base parcel: ceded area + ownership destination, stamped at publish (§9/§12).
         ownershipFlow: { required: false, validate: validators.optional(ownershipFlowValidator, { nullValue: [] }) },
@@ -470,10 +466,16 @@ export function setupProposalsRoute(app, pool) {
 
     app.post('/proposals', proposalCreateBodyValidator, async (req, res) => {
         try {
+            const legacyDeclaration = findLegacyCadastreDeclaration(req.body);
+            if (legacyDeclaration) {
+                return res.status(400).json({
+                    error: `${legacyDeclaration.path} is retired. Send the proposal's land once in cadastreParcelIds.`
+                });
+            }
             const nonCadastralParent = findNonCadastralParentDeclaration(req.body);
             if (nonCadastralParent) {
                 return res.status(400).json({
-                    error: `${nonCadastralParent.path} must contain only base cadastral ids; found ${nonCadastralParent.id}. Run migrate-tessellation.js for stored records.`
+                    error: `${nonCadastralParent.path} names land outside cadastreParcelIds: ${nonCadastralParent.id}.`
                 });
             }
             // The server enforces the flat transport contract even if an older client sends
@@ -507,9 +509,26 @@ export function setupProposalsRoute(app, pool) {
             const isConditional = validated.isConditional ?? false;
             const disbursementMode = validated.disbursementMode ?? null;
 
-            const parentParcelIds = validated.parentParcelIds ?? [];
             const cadastreParcelIds = validated.cadastreParcelIds ?? [];
+            if (!cadastreParcelIds.length) {
+                return res.status(400).json({
+                    error: 'cadastreParcelIds must contain the proposal\'s cadastral land.'
+                });
+            }
+            const generatedAnchor = cadastreParcelIds.find(isDerivedParcelDeclaration);
+            if (generatedAnchor) {
+                return res.status(400).json({
+                    error: `cadastreParcelIds must contain original cadastral ids; found generated parcel ${generatedAnchor}.`
+                });
+            }
             const ownershipFlow = validated.ownershipFlow ?? [];
+            const cadastreSet = new Set(cadastreParcelIds.map(String));
+            const flowOutsideScope = ownershipFlow.find(entry => !cadastreSet.has(String(entry.parcelId)));
+            if (flowOutsideScope) {
+                return res.status(400).json({
+                    error: `ownershipFlow parcel ${flowOutsideScope.parcelId} is outside cadastreParcelIds.`
+                });
+            }
             const cadastreFrame = validated.cadastreFrame ?? null;
             const acceptedParcelIds = validated.acceptedParcelIds ?? [];
             const ownerAcceptances = validated.ownerAcceptances ?? {};
@@ -593,7 +612,7 @@ export function setupProposalsRoute(app, pool) {
                 decayEnabled, decayPercent, decayDurationMs,
                 depositEnabled, depositPercent,
                 isConditional, disbursementMode,
-                parentParcelIds.length ? JSON.stringify(parentParcelIds) : null,
+                null,
                 cadastreParcelIds.length ? JSON.stringify(cadastreParcelIds) : null,
                 acceptedParcelIds.length ? JSON.stringify(acceptedParcelIds) : null,
                 Object.keys(ownerAcceptances).length ? JSON.stringify(ownerAcceptances) : null,
@@ -752,19 +771,17 @@ export function setupProposalsRoute(app, pool) {
             const params = [parcelIds];
             const cityClause = city ? `AND p.city = $${params.push(city)}` : '';
 
-            // Pre-filter with ?| (GIN-indexed), then dedupe the two flat base declarations. The
-            // legacy descendant column is intentionally absent: it is derived replay output.
+            // The canonical root declaration is the only proposal-to-land relationship.
             const sql = `
                 SELECT ids.pid AS parcel_id, COUNT(DISTINCT p.id)::int AS n
                 FROM proposal p
                 CROSS JOIN LATERAL (
                     SELECT DISTINCT e AS pid
                     FROM jsonb_array_elements_text(
-                        COALESCE(p.ancestor_parcel_ids, '[]'::jsonb)
-                        || COALESCE(p.cadastre_parcel_ids, '[]'::jsonb)
+                        COALESCE(p.cadastre_parcel_ids, '[]'::jsonb)
                     ) AS e
                 ) ids
-                WHERE (p.ancestor_parcel_ids ?| $1::text[] OR p.cadastre_parcel_ids ?| $1::text[])
+                WHERE p.cadastre_parcel_ids ?| $1::text[]
                   AND ids.pid = ANY($1::text[])
                   ${cityClause}
                 GROUP BY ids.pid
@@ -1020,8 +1037,7 @@ export function setupProposalsRoute(app, pool) {
                 params.push(filters.lifecycle);
             }
 
-            // Both stored declarations contain base cadastral ids; either can answer membership.
-            clauses.push(`(ancestor_parcel_ids @> $${params.length + 1}::jsonb OR cadastre_parcel_ids @> $${params.length + 1}::jsonb)`);
+            clauses.push(`cadastre_parcel_ids @> $${params.length + 1}::jsonb`);
             params.push(JSON.stringify([String(parcelId)]));
 
             const sql = `

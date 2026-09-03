@@ -357,7 +357,7 @@
 
             try {
                 if (typeof clearLocalParcelData === 'function') {
-                    clearLocalParcelData();
+                    await clearLocalParcelData();
                 }
             } catch (error) {
                 console.warn('Error clearing local parcel data during data source switch', error);
@@ -393,4 +393,3 @@
     window.getBackendBase = getBackendBase;
     window.getCurrentDataSource = getDataSource;
 })();
-

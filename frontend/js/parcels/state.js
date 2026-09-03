@@ -33,15 +33,7 @@
     const PARCEL_FETCH_LATLNG_PADDING = PARCELS_LATLNG_PADDING;
     const PARCEL_FETCH_DEBOUNCE_MS = 500;
     const PARCEL_FETCH_GRID_RADIUS = 1;
-    const parcelCache = {
-        grid: new Map(),
-        gridSize: PARCELS_GRID_SIZE,
-        byId: new Map()
-    };
-    const parcelLayerIndex = new Map();
-    let parcelLayerIndexVersion = 0;
     let isFetchingParcels = false;
-    let parcelCoverageVersion = 0;
     let parcelMergeInProgress = false;
 
     function isParcelDrawingModeActive() {
@@ -89,20 +81,7 @@
         getParcelFetchPadding: () => PARCEL_FETCH_LATLNG_PADDING,
         getParcelFetchDebounce: () => PARCEL_FETCH_DEBOUNCE_MS,
         getParcelFetchGridRadius: () => PARCEL_FETCH_GRID_RADIUS,
-        getParcelCache: () => parcelCache,
-        getParcelLayerIndex: () => parcelLayerIndex,
-        bumpParcelLayerIndexVersion: () => {
-            parcelLayerIndexVersion += 1;
-            try { global.parcelLayerIndexVersion = parcelLayerIndexVersion; } catch (_) { /* noop */ }
-            return parcelLayerIndexVersion;
-        },
-        getParcelLayerIndexVersion: () => parcelLayerIndexVersion,
-        getParcelCoverageVersion: () => parcelCoverageVersion,
-        bumpParcelCoverageVersion: () => {
-            parcelCoverageVersion += 1;
-            try { global.parcelCoverageVersion = parcelCoverageVersion; } catch (_) { /* noop */ }
-            return parcelCoverageVersion;
-        },
+        getParcelGridSize: () => PARCELS_GRID_SIZE,
         isFetchingParcels: () => isFetchingParcels,
         setIsFetchingParcels: value => {
             const next = !!value;
@@ -143,8 +122,6 @@
     global.PARCEL_FETCH_LATLNG_PADDING = PARCEL_FETCH_LATLNG_PADDING;
     global.PARCEL_FETCH_DEBOUNCE_MS = PARCEL_FETCH_DEBOUNCE_MS;
     global.PARCEL_FETCH_GRID_RADIUS = PARCEL_FETCH_GRID_RADIUS;
-    global.parcelCache = parcelCache;
-    global.parcelLayerIndex = parcelLayerIndex;
     global.parcelMergeInProgress = parcelMergeInProgress;
     global.isParcelMergeInProgress = () => parcelMergeInProgress;
     global.setParcelMergeInProgressState = api.setParcelMergeInProgressState;

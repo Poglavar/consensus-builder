@@ -38,26 +38,11 @@
 
         const step1Time = performance.now();
         const buildingProposal = proposalData.buildingProposal ? { ...proposalData.buildingProposal } : {};
-        const typology = String(proposalData.typologyType || buildingProposal.typologyType || '').toLowerCase();
-        if (typology === 'block') {
-            buildingProposal.blockParcelIds = [...new Set([
-                ...(Array.isArray(buildingProposal.blockParcelIds) ? buildingProposal.blockParcelIds : []),
-                ...(Array.isArray(buildingProposal.parentParcelIds) ? buildingProposal.parentParcelIds : []),
-                ...(Array.isArray(buildingProposal.buildings)
-                    ? buildingProposal.buildings.map(feature => feature?.properties?.parcelId)
-                    : []),
-                ...(Array.isArray(buildingProposal.ineligibleParcels)
-                    ? buildingProposal.ineligibleParcels.map(entry => entry?.parcelId)
-                    : [])
-            ].map(value => value == null ? '' : String(value)).filter(Boolean))];
-        }
-        const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, 'building');
+        const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, 'building', options);
         if (!liveParents.ok) return false;
         const uniqueParentIds = liveParents.ids;
         const flatParentIds = liveParents.cadastreIds.slice();
         traceApply(`Step 1: Resolved ${uniqueParentIds.length} live parcel(s) from geometry (${(performance.now() - step1Time).toFixed(2)}ms)`);
-
-        const ancestorKey = flatParentIds.slice().sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).join('|');
 
         const step4Time = performance.now();
         const cloneFeature = (raw) => {
@@ -84,10 +69,6 @@
             return false;
         }
 
-        const baseProperties = {
-            ...(proposalData.buildingProperties || {}),
-            ...(proposalData.properties || {})
-        };
         const proposalState = lifecycleOf(proposalData) === 'Executed' ? 'executed' : 'applied';
 
         const preparedFeatures = candidateFeatures
@@ -96,12 +77,11 @@
                 const cloned = cloneFeature(raw);
                 if (!cloned || !cloned.geometry) return null;
                 const properties = {
-                    ...baseProperties,
                     ...(cloned.properties || {}),
                     proposalId,
                     proposalState,
                     parentParcelIds: flatParentIds,
-                    parentParcelNumbers: buildingProposal.parentParcelNumbers || null,
+                    parentParcelNumbers: flatParentIds.map(id => ({ id, number: id })),
                     title: proposalData.title || null,
                     author: proposalData.author || null,
                     buildingIndex: index
@@ -172,7 +152,7 @@
             if (shouldFormOwnBuildingParcel(proposalData, goalKey, preparedFeatures.length)) {
                 const formation = await this._formBuildingParcel(
                     proposalId, proposalData, buildingProposal, preparedFeatures[0].geometry,
-                    uniqueParentIds, idLabel, liveParents.features);
+                    uniqueParentIds, idLabel, liveParents.features, options);
                 if (!formation.ok) return false;
                 workingParentIds = formation.parentIds;
                 preparedFeatures[0].properties.parentParcelIds = flatParentIds.slice();
@@ -213,20 +193,8 @@
             showBuildingsCheckbox.checked = true;
         }
 
-        buildingProposal.parentParcelIds = flatParentIds.slice();
-        buildingProposal.ancestorKey = ancestorKey;
-        proposalData.buildingProposal = buildingProposal;
-        proposalData.parentParcelIds = flatParentIds.slice();
-
-        if (!proposalData.geometry || typeof proposalData.geometry !== 'object') {
-            proposalData.geometry = {};
-        }
-        proposalData.geometry.buildings = preparedFeatures.map(feature => {
-            const stored = cloneFeature(feature);
-            if (stored && stored.properties) stored.properties.parentParcelIds = flatParentIds.slice();
-            return stored;
-        }).filter(Boolean);
-
+        // `preparedFeatures` belong to the live rendering registry.  The authored record remains
+        // untouched: its GeoJSON does not acquire proposal ids, live parcel ids, or replay state.
         persistAppliedProposal(proposalData, proposalId);
 
         traceApply(`Formed from ${workingParentIds.length} live parcel(s)`);
@@ -248,7 +216,7 @@
     //                the building's parcel (the family-house-with-yard case).
     // Ownership goes to the PROPOSER (ownership-flow's declared destination for freeform).
     // Buildings on existing parcels (blocks/row/parcelBased) stay content and never reach here.
-    async _formBuildingParcel(proposalId, proposalData, buildingProposal, footprintGeometry, declaredParentIds, idLabel, resolvedParentFeatures = null) {
+    async _formBuildingParcel(proposalId, proposalData, buildingProposal, footprintGeometry, declaredParentIds, idLabel, resolvedParentFeatures = null, options = {}) {
         const formationEdit = (typeof window !== 'undefined') ? window.__formationEdit : null;
         const turfRef = (typeof turf !== 'undefined') ? turf : null;
         if (!formationEdit || !turfRef || typeof turfRef.intersect !== 'function') {
@@ -272,8 +240,10 @@
         const candidateIds = declaredParentIds.slice();
         const candidateFeatures = Array.isArray(resolvedParentFeatures)
             ? resolvedParentFeatures
-            : (this._resolveParcelFeaturesByIds(candidateIds,
-                { preferMap: true, allowStorage: false, fallbackToMap: false, allowMissing: true }) || []);
+            : (this._resolveParcelFeaturesByIds(candidateIds, {
+                allowMissing: true,
+                _fabricTransaction: options._fabricTransaction
+            }) || []);
         const candidates = candidateFeatures
             .map(feature => ({ id: _getParcelIdFromFeature(feature), feature }))
             .filter(entry => entry.id !== undefined && entry.id !== null);
@@ -282,9 +252,8 @@
         const proposerOwnership = { owners: [{ name: proposerName, ownerLabel: proposerName, percentageShare: 100, actualShareText: '100%' }] };
         const proposerAgentId = (typeof getOrCreateAgentForRecipient === 'function') ? getOrCreateAgentForRecipient(proposerName) : null;
 
-        const finishOwnership = (ownedIds, formationRecord) => {
+        const finishOwnership = (ownedIds) => {
             if (proposerAgentId && typeof transferParcelOwnership === 'function') {
-                formationRecord.ownerAgentId = proposerAgentId;
                 ownedIds.forEach(pid => {
                     try { transferParcelOwnership(String(pid), null, proposerAgentId, { skipAgentSync: true }); } catch (_) { }
                 });
@@ -347,16 +316,18 @@
                 }
             }
             const primary = takenFeatures[0];
+            const childCadastreIds = formationEdit.baseIdsOfFeatures(takenFeatures);
+            if (!childCadastreIds.length) {
+                throw new Error('Building formation has no explicit cadastral anchors.');
+            }
             const childFeature = {
                 type: 'Feature',
                 geometry: JSON.parse(JSON.stringify(unionFeature.geometry)),
                 properties: {
-                    proposalId,
-                    parentParcelIds: takenIds.slice(),
-                    parentParcelId: takenIds[0],
-                    rootParcelId: _resolveRootParcelIdFromProperties(primary ? primary.properties : null, takenIds[0]) || takenIds[0],
-                    rootParcelNumber: _resolveRootParcelNumberFromProperties(primary ? primary.properties : null, takenIds[0]) || null,
-                    baseParcelIds: formationEdit.baseIdsOfFeatures(takenFeatures),
+                    producedByProposalId: proposalId,
+                    rootParcelId: childCadastreIds[0],
+                    rootParcelNumber: _resolveRootParcelNumberFromProperties(primary ? primary.properties : null) || null,
+                    cadastreParcelIds: childCadastreIds,
                     calculatedArea: Math.round(_calculateGeoJsonArea(unionFeature.geometry)),
                     isProposed: true,
                     ownershipDetails: JSON.parse(JSON.stringify(proposerOwnership)),
@@ -369,22 +340,13 @@
                 .map(feature => _getParcelIdFromFeature(feature))
                 .filter(id => id !== undefined && id !== null)
                 .map(String);
-            await this._addFeaturesToMap(bodyFeatures, true, proposalData);
+            await this._addFeaturesToMap(bodyFeatures, true, proposalData, options);
             bodyFeatures.forEach(feature => {
                 const childId = _getParcelIdFromFeature(feature);
-                try { this._persistParcelFeature(feature); } catch (_) { }
-                try { if (childId) this._markParcelProducedByProposal(childId, proposalId); } catch (_) { }
+                try { if (childId) this._markParcelProducedByProposal(childId, proposalId, options); } catch (_) { }
             });
-            this._consumeFeaturesFromLiveFabric(takenFeatures);
-            buildingProposal.childParcelIds = childIds;
-            proposalData.childParcelIds = buildingProposal.childParcelIds.slice();
-            try { this._addChildParcels(proposalId, buildingProposal.childParcelIds, proposalData); } catch (_) { }
-            buildingProposal.formation = {
-                mode: plan.mode,
-                parcelIds: formationEdit.baseIdsOfFeatures(takenFeatures),
-                childParcelIds: buildingProposal.childParcelIds.slice()
-            };
-            finishOwnership(buildingProposal.childParcelIds, buildingProposal.formation);
+            this._consumeFeaturesFromLiveFabric(takenFeatures, options);
+            finishOwnership(childIds);
             return { ok: true, parentIds: takenIds.slice() };
         }
 
@@ -421,23 +383,22 @@
         const hostIds = hosts.map(entry => String(entry.id));
         const hostFeatures = hosts.map(entry => entry.feature);
         const primary = hostFeatures[0];
-        const parentEntries = hosts.map(entry => ({
-            baseId: formationEdit.baseIdOf(
-                (entry.feature.properties && entry.feature.properties.rootParcelId) || String(entry.id)),
-            feature: entry.feature
-        }));
+        const parentEntries = hosts.flatMap(entry => formationEdit.cadastreIdsOfFeature(entry.feature)
+            .map(baseId => ({ baseId, feature: entry.feature })));
+        const buildingCadastreIds = formationEdit.overlappingBaseIds(footprint, parentEntries, takeCtx);
+        if (!buildingCadastreIds.length) {
+            throw new Error('Building formation has no explicit cadastral anchors under its footprint.');
+        }
 
         const buildingParcel = {
             type: 'Feature',
             geometry: JSON.parse(JSON.stringify(footprintGeometry)),
             properties: {
-                proposalId,
+                producedByProposalId: proposalId,
                 buildingParcel: true,
-                parentParcelIds: hostIds.slice(),
-                parentParcelId: hostIds[0],
-                rootParcelId: _resolveRootParcelIdFromProperties(primary ? primary.properties : null, hostIds[0]) || hostIds[0],
-                rootParcelNumber: _resolveRootParcelNumberFromProperties(primary ? primary.properties : null, hostIds[0]) || null,
-                baseParcelIds: formationEdit.overlappingBaseIds(footprint, parentEntries, takeCtx),
+                rootParcelId: buildingCadastreIds[0],
+                rootParcelNumber: _resolveRootParcelNumberFromProperties(primary ? primary.properties : null) || null,
+                cadastreParcelIds: buildingCadastreIds,
                 calculatedArea: Math.round(_calculateGeoJsonArea(footprintGeometry)),
                 isProposed: true,
                 ownershipDetails: JSON.parse(JSON.stringify(proposerOwnership)),
@@ -451,7 +412,7 @@
         const ownRemainders = [];
         const foreignRemainders = [];
         const allocateForeignIndex = typeof this._createForeignIndexAllocator === 'function'
-            ? this._createForeignIndexAllocator()
+            ? this._createForeignIndexAllocator(options)
             : null;
         // `threw` distinguishes a real "fully consumed" (null difference) from a failed
         // computation, so the caller can refuse instead of hiding ground it never re-minted.
@@ -492,12 +453,11 @@
                 return; // host fully consumed by the footprint
             }
             const hostId = String(_getParcelIdFromFeature(hostFeature) || '');
-            const idParts = typeof formationEdit.derivedIdParts === 'function'
-                ? formationEdit.derivedIdParts(hostId)
-                : null;
-            const isForeign = !!(idParts && idParts.token
-                && hostFeature.properties && hostFeature.properties.proposalId
-                && String(hostFeature.properties.proposalId) !== String(proposalId));
+            const hostIdentity = formationEdit.formationIdentityOf(hostFeature);
+            const hostProducer = hostFeature.properties
+                && hostFeature.properties.producedByProposalId;
+            const isForeign = !!(hostIdentity && hostProducer
+                && String(hostProducer) !== String(proposalId));
             const geometries = difference.geometry.type === 'MultiPolygon'
                 ? difference.geometry.coordinates.map(coordinates => ({ type: 'Polygon', coordinates }))
                 : [difference.geometry];
@@ -512,20 +472,26 @@
                 remainder.properties = remainder.properties || {};
                 remainder.properties.calculatedArea = Math.round(part.area);
                 if (isForeign && allocateForeignIndex) {
+                    const syntheticIndex = index === 0
+                        ? hostIdentity.index
+                        : allocateForeignIndex(hostIdentity.cadastreParcelIds[0], hostIdentity.token);
                     remainder.properties.__carryIdentity = {
                         parcelId: index === 0
                             ? hostId
-                            : `${idParts.base}#${idParts.token}-${allocateForeignIndex(idParts.base, idParts.token)}`,
-                        parcelNumber: index === 0 ? (hostFeature.properties.BROJ_CESTICE || null) : null
+                            : _composeSyntheticParcelId(hostIdentity.cadastreParcelIds[0], hostIdentity.token, syntheticIndex),
+                        parcelNumber: index === 0
+                            ? (hostFeature.properties.BROJ_CESTICE || null)
+                            : _composeSyntheticParcelNumber(
+                                hostFeature.properties.rootParcelNumber || null,
+                                hostIdentity.token,
+                                syntheticIndex),
+                        syntheticToken: hostIdentity.token,
+                        syntheticIndex
                     };
                     foreignRemainders.push(remainder);
                     return;
                 }
-                remainder.properties.proposalId = proposalId;
-                remainder.properties.parentParcelId = hostId || null;
-                remainder.properties.parentParcelNumber = hostFeature.properties
-                    ? (hostFeature.properties.BROJ_CESTICE || null)
-                    : null;
+                remainder.properties.producedByProposalId = proposalId;
                 ownRemainders.push(remainder);
             });
         });
@@ -554,21 +520,21 @@
         }
         const children = [buildingParcel, ...ownRemainders, ...foreignRemainders];
         this._assignSyntheticChildIdentities(proposalId, children);
-        await this._addFeaturesToMap(children, true, proposalData);
+        await this._addFeaturesToMap(children, true, proposalData, options);
         const childIds = [];
         const buildingParcelIds = [];
         children.forEach(child => {
             const childId = _getParcelIdFromFeature(child);
             const ownsChild = child.properties
-                && String(child.properties.proposalId || proposalId) === String(proposalId);
+                && String(child.properties.producedByProposalId || proposalId) === String(proposalId);
             if (ownsChild && childId !== undefined && childId !== null) childIds.push(String(childId));
             if (ownsChild && child.properties && child.properties.buildingParcel === true
                 && childId !== undefined && childId !== null) buildingParcelIds.push(String(childId));
-            try { this._persistParcelFeature(child); } catch (_) { }
             try {
                 if (childId) this._markParcelProducedByProposal(
                     childId,
-                    ownsChild ? proposalId : String(child.properties.proposalId)
+                    ownsChild ? proposalId : String(child.properties.producedByProposalId),
+                    options
                 );
             } catch (_) { }
         });
@@ -583,18 +549,8 @@
         this._consumeFeaturesFromLiveFabric(hostFeatures.filter(hostFeature => {
             const hostId = String(_getParcelIdFromFeature(hostFeature) || '');
             return !(hostId && reusedHostIds.has(hostId));
-        }));
-        buildingProposal.childParcelIds = childIds.slice();
-        proposalData.childParcelIds = childIds.slice();
-        try { this._addChildParcels(proposalId, childIds, proposalData); } catch (_) { }
-
-        buildingProposal.formation = {
-            mode: 'footprint',
-            parcelIds: formationEdit.baseIdsOfFeatures(hostFeatures),
-            childParcelIds: childIds.slice(),
-            buildingParcelIds
-        };
-        finishOwnership(buildingProposal.formation.buildingParcelIds, buildingProposal.formation);
+        }), options);
+        finishOwnership(buildingParcelIds);
 
         return { ok: true, parentIds: hostIds.slice() };
     },

@@ -181,20 +181,31 @@
     }
 
     // The dossier itself. `proposals` is every proposal the caller knows about; membership is by
-    // base ancestry (the claims-rescue rule). Options:
+    // explicit cadastral provenance (the claims-rescue rule). Options:
     //   isVote, isApplied — the app's real predicates
     //   baseParcels       — [{ id, feature }] for computing unstamped flows
     //   parcelFeature     — this parcel's polygon (enables the ceded-ground checks + remainder)
-    //   assumeMembership  — the caller already decided which proposals belong (e.g. the parcel
-    //                       panel's list, which adds geometry rescues the ancestry filter would
-    //                       miss); triage the given list as-is.
+    //   assumeMembership  — the caller already projected membership through explicit cadastral
+    //                       claims; triage the given list as-is.
     function buildDossier(parcelId, proposals, options) {
         const api = planOrder();
         const claimsApi = claims();
         const opts = options || {};
-        const root = api ? api.cadastreRootId(parcelId) : String(parcelId || '');
-        const empty = { root, entries: [], remainder: null };
-        if (!root || !claimsApi) return empty;
+        const parcelKey = String(parcelId || '').trim();
+        const fabric = global && global.LiveParcelFabric;
+        const liveFeature = fabric && typeof fabric.get === 'function' ? fabric.get(parcelKey) : null;
+        const roots = Array.from(new Set(
+            (Array.isArray(opts.cadastreParcelIds) && opts.cadastreParcelIds.length
+                ? opts.cadastreParcelIds
+                : (liveFeature && typeof fabric.explicitCadastreIds === 'function'
+                    ? fabric.explicitCadastreIds(liveFeature)
+                    : (parcelKey ? [parcelKey] : [])))
+                .map(value => String(value || '').trim())
+                .filter(Boolean)
+        ));
+        const root = roots[0] || '';
+        const empty = { root, roots, entries: [], remainder: null };
+        if (!roots.length || !claimsApi) return empty;
 
         const isApplied = typeof opts.isApplied === 'function'
             ? opts.isApplied
@@ -203,7 +214,7 @@
         const list = (Array.isArray(proposals) ? proposals : []).filter(Boolean);
         const members = opts.assumeMembership === true
             ? list
-            : list.filter(p => claimsApi.baseParcelIdsOf(p).indexOf(root) !== -1);
+            : list.filter(p => claimsApi.cadastreParcelIdsOf(p).some(id => roots.includes(id)));
         if (!members.length) return empty;
 
         // Flows first: the ceding formations are context for every entry's triage.
@@ -211,9 +222,9 @@
         members.forEach(p => flows.set(p, flowOf(p, opts.baseParcels)));
         const cedingFlows = [];
         members.forEach(p => {
-            const entry = (flows.get(p) || []).find(f => f && String(f.parcelId) === root
+            const entries = (flows.get(p) || []).filter(f => f && roots.includes(String(f.parcelId))
                 && Math.round(Number(f.cededM2) || 0) > 0);
-            if (!entry || !api) return;
+            if (!entries.length || !api) return;
             let footprint = null;
             try { footprint = api.footprintOf(p); } catch (_) { footprint = null; }
             if (footprint) {
@@ -221,28 +232,31 @@
                     id: p.proposalId ? String(p.proposalId) : '',
                     createdAt: p.createdAt || null,
                     footprint,
-                    cededM2: entry.cededM2
+                    cededM2: entries.reduce((sum, entry) => sum + (Number(entry.cededM2) || 0), 0)
                 });
             }
         });
 
         const entries = members.map(p => {
             const flow = flows.get(p) || [];
-            const mine = flow.find(f => f && String(f.parcelId) === root) || null;
-            const channel = channelFor(p, root, {
-                flow,
-                isVote: opts.isVote,
-                cedingFlows,
-                parcelFeature: opts.parcelFeature
-            });
+            const mine = flow.filter(f => f && roots.includes(String(f.parcelId)));
+            const channels = roots.map(parcelRoot => channelFor(p, parcelRoot, {
+                    flow,
+                    isVote: opts.isVote,
+                    cedingFlows,
+                    parcelFeature: opts.parcelFeature
+                }));
+            const channel = channels.sort((a, b) => CHANNEL_RANK[b] - CHANNEL_RANK[a])[0] || 'offer';
+            const cededM2 = mine.reduce((sum, item) => sum + (Number(item.cededM2) || 0), 0);
+            const destination = mine.map(item => String(item.destination || '')).find(Boolean) || null;
             return {
                 proposalId: p.proposalId ? String(p.proposalId) : null,
                 serverProposalId: p.serverProposalId ? String(p.serverProposalId) : null,
                 title: p.title || p.name || '',
                 goal: p.goal || '',
                 channel,
-                cededM2: mine ? Math.round(Number(mine.cededM2) || 0) : 0,
-                destination: mine ? String(mine.destination || '') : null,
+                cededM2: Math.round(cededM2),
+                destination,
                 applied: !!isApplied(p)
             };
         });
@@ -259,7 +273,7 @@
             cedingFlows.filter(c => acceptedIds.has(c.id)).map(c => c.footprint)
         );
 
-        return { root, entries, remainder };
+        return { root, roots, entries, remainder };
     }
 
     const api = { CHANNELS, CHANNEL_RANK, channelFor, remainderReport, buildDossier };
