@@ -9,79 +9,141 @@ land they affect by pointing at parcels that only exist in one browser's memory.
 
 ---
 
-## 0. Current architecture: flat cadastral anchors and proposal-owned output
+## 0. Current architecture: one source, one fabric, one presenter
 
-Implemented 2026-08-27. Durable land state has only two kinds of entity:
+Implemented 2026-08-27 and made authoritative 2026-09-02. Durable land state has only two kinds of
+entity:
 
-1. original cadastral parcels;
-2. authored proposal records, each stamped with the original parcel IDs in `cadastreParcelIds`.
+1. immutable original cadastral parcels;
+2. authored proposal records, each related directly to those originals by `cadastreParcelIds`.
 
-`parentParcelIds` remains a transport-compatibility alias, but after normalization it contains the
-same flat cadastral IDs. Generated parcel IDs, child lists, formation receipts, parent-feature
-snapshots, demolition scans, and map layers are replay output. They may exist in memory or a cache,
-but they are not proposal prerequisites and are stripped from durable proposal storage.
+Generated parcel IDs, child lists, formation receipts, parent-feature snapshots, demolition scans,
+and Leaflet layers are disposable materialization. They are never proposal prerequisites. Legacy
+payloads must be flattened at an explicit migration or publishing boundary. Runtime import rejects
+records whose `cadastreParcelIds` stamp is missing or conflicts with compatibility aliases; it never
+guesses provenance from a generated ID or current geometry. Persistence writes only
+`cadastreParcelIds`. A transient compatibility spelling is not a second relationship and must never
+be used to construct ancestry.
+
+### 0.1 Ownership boundaries
 
 ```mermaid
 flowchart LR
-    C1["Cadastral parcel A"] --- P1["Proposal 1"]
-    C1 --- P2["Proposal 2"]
-    C2["Cadastral parcel B"] --- P2
-    C2 --- P3["Proposal 3"]
+    API["Cadastral API"] --> Transport["Private transport adapter"]
+    Transport --> Repository["CadastralParcelRepository<br/>immutable facts + single-flight cache"]
+    Repository -->|"features, regardless of cache/server"| Mutation["Proposal mutation"]
+    Log["Authored proposal log<br/>flat cadastreParcelIds"] --> Mutation
+    Mutation -->|"private transaction draft"| Fabric["LiveParcelFabric<br/>committed parcel partition"]
+    Fabric -->|"prepared change set"| Presenter["ParcelPresenter<br/>sole Leaflet geometry writer"]
+    Presenter --> Map["Leaflet parcel layer"]
+    Fabric --> Selection["Selection, topology, claims"]
 
-    P1 -.-> O1["Disposable map output"]
-    P2 -.-> O2["Disposable map output"]
-    P3 -.-> O3["Disposable map output"]
-
-    classDef durable fill:#dcfce7,stroke:#16a34a
-    classDef output fill:#f3f4f6,stroke:#6b7280,stroke-dasharray: 5 5
-    class C1,C2,P1,P2,P3 durable
-    class O1,O2,O3 output
+    classDef durable fill:#dcfce7,stroke:#15803d
+    classDef derived fill:#f3f4f6,stroke:#6b7280,stroke-dasharray: 5 5
+    class Repository,Log durable
+    class Fabric,Presenter,Map derived
 ```
 
-The relationships are deliberately **not** a dependency graph. A proposal that names cadastral
-parcel A and a 17 km track that also crosses A do not become transitive dependencies. Cadastral IDs
-answer “which original ground is under this proposal?”; they do not answer “what must be replayed?”.
+Each box has one job:
 
-Ordinary unapply and delete are local mutations:
+- `CadastralParcelRepository` is the only consumer of cadastral transport. Callers ask it for IDs,
+  a footprint, or bounds; they cannot request “cache” or “server”. It deduplicates concurrent loads,
+  keeps facts per city, returns defensive copies, distinguishes confirmed absence from failure, and
+  rejects conflicting geometry for an ID.
+- `LiveParcelFabric` is the only authority for the current parcel partition. Readers see a complete
+  committed revision. Writers need the exact private transaction token. Every live parcel has one
+  ID, one connected polygon, and explicit flat `cadastreParcelIds`; generated-ID parsing is forbidden.
+- `ParcelPresenter` is the only code that adds, replaces, or removes parcel geometry in Leaflet. It
+  prepares every replacement layer before commit, swaps the projection synchronously with the fabric
+  revision, and restores the old projection if the swap fails. The map is a view, never a geometry
+  database.
+- Selection, block topology, proposal claims, bounds, and apply/unapply logic read the fabric or the
+  repository. They may ask the presenter for a layer only to style, frame, or display an already
+  identified live feature.
 
-1. prove the changed record's original cadastral anchors are loaded (fetch only its footprint when
-   they are not);
-2. remove generated parcels and presentation features owned by that record's
-   `producedByProposalId`;
-3. re-derive corridor arrangement only for those cadastral anchors, using the corridor takes that
-   still stand;
-4. reconcile visibility: an original cadastral layer is shown exactly when no live derived output
-   claims it.
+### 0.2 Mutation boundary
 
-No other proposal is reset or re-applied. A corridor may be consulted as a geometric take over one
-affected parcel, but its hundreds of other cadastral anchors are outside the mutation. If local
-coverage or clipping cannot be proved, the transaction rolls back and leaves the proposal applied;
-ordinary unapply never escalates to a whole-plan rebuild.
+Every apply, unapply, delete, corridor edit, and ground arrival is serialized through one proposal
+mutation transaction. Authored records and a private fabric draft change together; the presenter is
+a fabric commit participant.
 
-Corridors use a distinct local scope rule because a road ribbon is a **take**, not content requiring
-a complete parcel host. Bridges, shorelines, cadastral gaps, and retired parcel identifiers can
-legitimately leave part of a ribbon outside current cadastre (the Šibenik track is 97.78% covered).
-A corridor mutation therefore uses the union of its published flat anchors and the current loaded
-cadastral parcels its geometry reaches, then derives only those parcels against the standing take
-set. It never turns one member's sub-99.9% footprint coverage into failure of the whole road batch.
-The strict complete-host proof remains for buildings, parks, and other ground-hosted formations.
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User
+    participant Manager as ProposalManager
+    participant Repository as CadastralParcelRepository
+    participant Fabric as LiveParcelFabric
+    participant Presenter as ParcelPresenter
 
-The full replay remains a boot/recovery materializer: it discards disposable output and derives all
-standing authored records from cadastre. It is not the implementation of a local removal.
+    User->>Manager: apply / unapply / edit
+    Manager->>Fabric: begin private draft
+    Manager->>Repository: ensure required cadastral ground
+    Repository-->>Manager: immutable facts
+    Manager->>Fabric: replace closed cadastral scope
+    Manager->>Manager: update authored record
+    Manager->>Presenter: prepare complete layer change
+    alt all preparation succeeds
+        Manager->>Fabric: publish one revision
+        Presenter->>Presenter: swap Leaflet projection synchronously
+        Manager-->>User: committed result
+    else any step fails
+        Manager->>Fabric: discard draft
+        Manager->>Manager: restore authored snapshot
+        Presenter->>Presenter: retain or restore old projection
+        Manager-->>User: unchanged state + explicit failure
+    end
+```
 
-Runtime output can carry `producedByProposalId` for click routing and ownership presentation. This is
-one-hop provenance only. It is not an ancestry edge, does not affect replay scope or order, and new
-output never writes the legacy `ancestorProposal` key.
+Ordinary unapply is local. It loads the changed proposal's recorded original anchors once, removes
+output stamped with that proposal's `producedByProposalId`, and rematerializes the smallest closed
+cadastral scope containing formations that share those anchors. A corridor crossing one affected
+parcel is consulted as a take on that parcel; its hundreds of other anchors do not join the mutation.
+No path may silently escalate an unapply into a whole-plan replay.
+
+Corridors use a distinct scope rule because a ribbon is a take, not content requiring a complete
+parcel host. Bridges, shorelines, and cadastral gaps may leave part of a ribbon outside current
+cadastre. Each corridor take nevertheless carries its flat published `cadastreParcelIds` declaration.
+Materialization indexes takes by those declared anchors and clips only inside them; it never scans
+the repository or map for geometrically nearby parcels. Ground-hosted buildings, parks, and
+readjustments retain the strict complete-host proof.
+
+The full replay exists only for boot/recovery. It folds all standing authored records into one private
+fabric draft without temporarily changing their applied flags, then publishes one revision. A shared
+plan waits for that single-flight barrier and applies only records not already standing.
+
+### 0.3 Forbidden recovery paths
+
+The following mechanisms were removed and must not return:
+
+- fetching cadastral geometry anywhere outside `CadastralParcelRepository`;
+- treating a Leaflet layer, visibility flag, parcel index, IndexedDB geometry, or generated ID string
+  as cadastral truth;
+- restoring hidden “historical” parcel layers after unapply;
+- scanning the map to rebuild a parcel index or recover a proposal's ground;
+- borrowing whichever fabric transaction happens to be active;
+- writing parcel geometry outside `ParcelPresenter`;
+- using click-time intersection as a fallback for missing proposal provenance;
+- persisting generated child geometry as a prerequisite for future replay.
+
+Runtime output may carry `producedByProposalId` for one-hop ownership and click routing. It is not an
+ancestry edge. New output deletes `ancestorProposal`, `baseParcelIds`, `parentParcelId`, and
+`parentParcelIds` from live parcel properties.
 
 The contract is enforced in:
 
-- `frontend/js/proposals/claims.js` — flat anchor projection and claim dossiers;
-- `frontend/js/proposal-manager.js` — proposal-owned removal and per-cadastral-parcel corridor
-  derivation;
-- `frontend/js/proposals/apply/transaction.js` — atomic rollback of record, parcel, cache, and
-  presentation state;
+- `frontend/js/parcels/ground-service.js` — immutable cadastral repository and request deduplication;
+- `frontend/js/parcels/live-fabric.js` — isolated revisions, closed-scope replacement, contiguity and
+  provenance invariants;
+- `frontend/js/parcels/presenter.js` — atomic Leaflet projection;
+- `frontend/js/proposals/apply/transaction.js` — authored-record/fabric mutation journal;
+- `frontend/js/proposal-manager.js` — local scope resolution and materialization;
+- `frontend/js/proposals/claims.js` — flat proposal-to-cadastre projection;
 - `frontend/js/proposals/data.js` — authored-log persistence projection;
-- `frontend/js/proposal-editor-adapters.js` — base IDs resolved to current live pieces at edit time.
+- `backend/test/proposal-ground-service.test.js`, `live-parcel-fabric.test.js`,
+  `parcel-presenter-atomic.test.js`, `parcel-identity-opacity.test.js`,
+  `incremental-unapply.test.js`, `live-block-selection-authority.test.js`, and
+  `parcel-selection-contiguity.test.js` — architectural regression gates.
 
 ## 1. Historical model (retired)
 
