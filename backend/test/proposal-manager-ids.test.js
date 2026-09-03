@@ -137,6 +137,46 @@ describe('ProposalManager._assignSyntheticChildIdentities', () => {
     });
 });
 
+describe('ProposalManager._getProposalChildParcels', () => {
+    it('reads proposal output from the authoritative live fabric outside a mutation', () => {
+        const previous = globalThis.LiveParcelFabric;
+        globalThis.LiveParcelFabric = {
+            producedBy: proposalId => proposalId === 'p-park'
+                ? [{ properties: { parcelId: 'HR-1#p-park-1' } }]
+                : [],
+            featureId: feature => feature?.properties?.parcelId || null
+        };
+
+        try {
+            expect(ProposalManager._getProposalChildParcels('p-park'))
+                .toEqual(['HR-1#p-park-1']);
+        } finally {
+            if (previous === undefined) delete globalThis.LiveParcelFabric;
+            else globalThis.LiveParcelFabric = previous;
+        }
+    });
+
+    it('reads pending output from the transaction draft while using canonical id extraction', () => {
+        const previous = globalThis.LiveParcelFabric;
+        globalThis.LiveParcelFabric = {
+            producedBy: () => [],
+            featureId: feature => feature?.properties?.parcelId || null
+        };
+        const draft = {
+            producedBy: () => [{ properties: { parcelId: 'HR-2#p-square-1' } }]
+        };
+
+        try {
+            expect(ProposalManager._getProposalChildParcels('p-square', {
+                _parcelMutation: { fabric: draft }
+            })).toEqual(['HR-2#p-square-1']);
+        } finally {
+            if (previous === undefined) delete globalThis.LiveParcelFabric;
+            else globalThis.LiveParcelFabric = previous;
+        }
+    });
+});
+
 describe('_shouldSkipUncutRemainder', () => {
     // A road corridor that misses a listed parent leaves turf.difference returning the WHOLE parent.
     // Without this guard that became a "ghost split" — a synthetic descendant with parent geometry.
