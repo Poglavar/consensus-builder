@@ -43,8 +43,11 @@ const agentStorage = {
     },
 
     serializeMutationDraft(draft) {
-        const data = Array.from(draft.agents.entries()).map(([id, agent]) => ({ id, ...agent }));
-        return { key: 'consensus_agents', value: JSON.stringify(data) };
+        const serialize = agents => JSON.stringify(Array.from(agents.entries()).map(([id, agent]) => ({ id, ...agent })));
+        const value = serialize(draft.agents);
+        // Unchanged agents mean nothing durable to write for this store.
+        if (value === serialize(this.agents)) return null;
+        return { key: 'consensus_agents', value };
     },
 
     publishMutationDraft(draft) {

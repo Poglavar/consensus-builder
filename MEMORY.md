@@ -253,3 +253,30 @@
 - 2026-08-15: Članovi istog `coordinatedPlanId` plana koegzistiraju na zajedničkim izvornim katastarskim roditeljima prema stvarnim nepreklapajućim geometrijama, a njihove zgrade ostaju sadržaj već objavljenih čestica parcelacije umjesto da ih ponovno režu po tlocrtu.
 - 2026-09-02 (authoritative parcel architecture): parcel state is now split into three explicit owners. `CadastralParcelRepository` alone talks to parcel transport and retains immutable, city-scoped facts with single-flight ID/footprint/bounds loads; consumers receive the same answer whether it was cached or fetched. `LiveParcelFabric` alone owns the committed live partition (private transaction drafts, defensive reads, one connected polygon per ID, explicit flat `cadastreParcelIds`, closed-scope replacement). `ParcelPresenter` alone mutates the Leaflet parcel group and commits/rolls back as a fabric participant, so the map is never a geometry source. Proposal apply/unapply/edit/ground-arrival operations use one serialized authored-record + fabric transaction; ordinary unapply uses its recorded flat cadastral scope and cannot escalate to global replay. Removed geometry persistence/index recovery, hidden-layer restoration, generated-ID ancestry parsing, click-time geometry recovery, ambient transaction borrowing, and direct transport consumers. Full replay is boot/recovery only and keeps applied flags stable while its private draft is built. Architecture recorded at `rethink-proposals.md` §0 and locked by repository/fabric/presenter/unapply/selection tests.
 - 2026-09-03 (browser verification of the parcel-fabric rework, fixes uncommitted on main): the local formation closure now widens the scope ONLY through formations that consume ground (readjustments, decide-later, merge-takes whose pieces span several parcels); a formation that adopts ground parcel by parcel is replayed when it touches the scope but does not pull its other anchors in. Rationale: on the Šibenik plan every applied formation shared an anchor with a neighbour, so one building's unapply replayed all 167 formations (5 s against 75 ms before the rework); the fabric's own closed-scope rule only needs the spanning pieces. Also: the fabric's coverage invariant is area accounting per parcel + per-vertex boundary test (no polygon booleans — turf's clipper crashed on 661-parcel corridor scopes) with a 1 m² sliver budget matching parcel-arrangement MIN_PIECE_M2; corridor takes are applied corridors only; parks/squares/lakes count as ground rivals in the shared-plan gate; the proposal store's mutation draft is copy-on-read with cached persistence fragments (whole-store cloning per mutation was 46% of a plan apply); the migration prunes stale acceptance references instead of refusing the row and commits repaired rows even when one row stays invalid.
+
+## 2026-09-03 (late) — the three remaining parcel-fabric performance items
+
+- **Ground arrives per grid cell.** `CadastralParcelRepository.ensureBounds` issues one request and one
+  provision per cell (≤ 6 in flight) and holds the corridor strip refresh across the fan-out; each cell
+  is its own fabric mutation, so a pan paints progressively and never in one 500-800 ms task.
+- **Reads are not writes.** Inside a mutation `getAllProposals()` clones and marks every record touched
+  (copy-on-read); read-only listings use `peekAllProposals()` / `_peekProposals(store)`. Anything a
+  listing yields that will be edited must be re-fetched through the draft (`_getProposalRecord`).
+  An untouched draft serializes to `null`: no IndexedDB transaction for a mutation that only read.
+- **Post-commit notices leave the commit task.** ParcelPresenter coalesces the commits of one tick into
+  one deferred `parcelFabricCommitted`/`parcelDataLoaded`/`parcelCoverageUpdated` (zero timeout, not rAF).
+- **Corridor strips are a keyed render.** `corridor-render.js` keeps one Leaflet group per corridor plus
+  one per cross-corridor junction (keyed by joined ids + position); a refresh rebuilds only corridors
+  whose render hash (definition + owner class + editor preview) changed and re-finds junctions only
+  among bbox neighbours. Z-order is by PANES (strips 655 < junctions 656 < markings 657 < rails 658 <
+  hit 659), never by build order. ~610 ms per refresh → ~30 ms.
+- **One IndexedDB row per proposal record.** `proposal:<id>` rows + `cadastre_proposals_manifest`; a
+  mutation writes only its touched rows/deletes in the coordinator's single transaction. The legacy
+  `cadastre_proposals` envelope is migrated into rows once at load (primary tab only) and deleted in
+  the same write; `PROPOSALS_STATE_VERSION` still gates the legacy read. Plan apply: 601 MB → 3.6 MB.
+- **Stored file URLs never come from the request Host** (2026-09-04). The API bakes in
+  `PUBLIC_API_BASE_URL` when pinned (prod) and otherwise returns/stores the served PATH
+  (`/uploads/images/<file>`); the client resolves paths — and re-anchors stale `localhost:<port>`
+  origins — against `getBackendBase()` via `resolveBackendAssetUrl`. Served-file mounts send
+  `Cross-Origin-Resource-Policy: cross-origin` (helmet's same-origin default blocked every
+  cross-origin thumbnail <img>, prod included). `scripts/relativize-screenshot-urls.mjs` repairs rows.

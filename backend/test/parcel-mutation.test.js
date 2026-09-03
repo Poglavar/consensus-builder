@@ -163,3 +163,54 @@ describe('ParcelMutation', () => {
         consoleSpy.mockRestore();
     });
 });
+
+// A store may hand the coordinator several rows and deletes for one mutation; they travel in the
+// same atomic write, and a publication failure compensates each of them from its own pre-image.
+describe('ParcelMutation with per-row store changes', () => {
+    function rowStore() {
+        return {
+            proposals: new Map([['a', { v: 1 }], ['gone', { v: 1 }]]),
+            snapshotForMutation() { return { records: new Map(this.proposals) }; },
+            createMutationDraft(snapshot) { return { proposals: new Map(snapshot.records) }; },
+            serializeMutationDraft(draft) {
+                const entries = [];
+                draft.proposals.forEach((record, id) => entries.push({ key: `proposal:${id}`, value: JSON.stringify(record) }));
+                this.proposals.forEach((_record, id) => { if (!draft.proposals.has(id)) entries.push({ key: `proposal:${id}`, delete: true }); });
+                return entries;
+            },
+            publishMutationDraft(draft) { this.proposals = new Map(draft.proposals); },
+            restoreMutationSnapshot(snapshot) { this.proposals = new Map(snapshot.records); }
+        };
+    }
+
+    it('writes every row and delete of one mutation in one transaction', async () => {
+        const store = rowStore();
+        const storage = memoryStorage({ 'proposal:a': '{"v":1}', 'proposal:gone': '{"v":1}' });
+        await ParcelMutation.run({ kind: 'edit' }, context => {
+            context.proposals.proposals.set('a', { v: 2 });
+            context.proposals.proposals.delete('gone');
+            return true;
+        }, { runtime: {}, proposalStore: store, agentStore: null, storage, fabric: null });
+        expect(storage.writes).toHaveLength(1);
+        expect([...storage.writes[0].puts.entries()]).toEqual([['proposal:a', '{"v":2}']]);
+        expect(storage.writes[0].deletes).toEqual(['proposal:gone']);
+        expect(storage.getItem('proposal:gone')).toBeNull();
+    });
+
+    it('compensates each row from its own pre-image when publication fails', async () => {
+        const store = rowStore();
+        const storage = memoryStorage({ 'proposal:a': '{"v":1}', 'proposal:gone': '{"v":1}' });
+        const fabric = await seededFabric();
+        fabric.addCommitParticipant({ prepare: value => value, commit: () => { throw new Error('presenter failed'); } });
+        await expect(ParcelMutation.run({ kind: 'edit' }, context => {
+            context.proposals.proposals.set('a', { v: 2 });
+            context.proposals.proposals.delete('gone');
+            context.fabric.replaceCadastreScope(['HR-A'], [polygon('HR-A#p-1', { cadastreParcelIds: ['HR-A'], producedByProposalId: 'p' })]);
+            return true;
+        }, { runtime: {}, proposalStore: store, agentStore: null, storage, fabric })).rejects.toThrow('presenter failed');
+        expect(storage.writes).toHaveLength(2);
+        expect(storage.getItem('proposal:a')).toBe('{"v":1}');
+        expect(storage.getItem('proposal:gone')).toBe('{"v":1}');
+        expect(store.proposals.get('gone')).toEqual({ v: 1 });
+    });
+});

@@ -260,6 +260,58 @@
         restoreSelectionStyles();
     }
 
+    // Post-commit notices leave the commit task. The swap itself must stay synchronous and atomic,
+    // but the listeners it wakes — label redraw, the visible-count scan over every layer, block
+    // rebuilds, coverage recomputation — are whole-map work that used to run inside the same task,
+    // and on a pan into fresh ground that task was 500-800 ms. Commits landing in one tick (one per
+    // grid cell now) coalesce into ONE notice carrying the union of their ids and the latest
+    // revision. A zero timeout rather than rAF: a background tab never paints, and listeners would
+    // otherwise hear nothing until something else repainted the map.
+    let pendingNotice = null;
+    function scheduleTimer(callback) {
+        if (typeof global.setTimeout === 'function') return global.setTimeout(callback, 0);
+        if (typeof setTimeout === 'function') return setTimeout(callback, 0);
+        return null;
+    }
+    function queuePresentationNotice(change) {
+        if (typeof global.setTimeout !== 'function' && typeof setTimeout !== 'function') {
+            notifyPresentationChanged(change);
+            return;
+        }
+        if (!pendingNotice) {
+            pendingNotice = {
+                revision: change.revision, fromRevision: change.fromRevision,
+                added: new Set(), updated: new Set(), removed: new Set()
+            };
+            scheduleTimer(flushPresentationNotice);
+        }
+        const notice = pendingNotice;
+        notice.revision = change.revision;
+        (change.addedIds || []).forEach(id => {
+            const key = String(id);
+            if (notice.removed.delete(key)) notice.updated.add(key); else notice.added.add(key);
+        });
+        (change.updatedIds || []).forEach(id => { const key = String(id); if (!notice.added.has(key)) notice.updated.add(key); });
+        (change.removedIds || []).forEach(id => {
+            const key = String(id);
+            notice.added.delete(key);
+            notice.updated.delete(key);
+            notice.removed.add(key);
+        });
+    }
+    function flushPresentationNotice() {
+        const notice = pendingNotice;
+        pendingNotice = null;
+        if (!notice) return;
+        notifyPresentationChanged(Object.freeze({
+            revision: notice.revision,
+            fromRevision: notice.fromRevision,
+            addedIds: Array.from(notice.added),
+            updatedIds: Array.from(notice.updated),
+            removedIds: Array.from(notice.removed)
+        }));
+    }
+
     function notifyPresentationChanged(change) {
         try {
             if (typeof global.dispatchEvent === 'function' && typeof global.CustomEvent === 'function') {
@@ -399,7 +451,7 @@
         global.LiveParcelFabric.addCommitParticipant(presenter);
         // Subscribers run only after the fabric and every prepared projection have committed. UI
         // refreshes therefore never observe the brief synchronous swap inside a failed commit.
-        global.LiveParcelFabric.subscribe(change => notifyPresentationChanged(change));
+        global.LiveParcelFabric.subscribe(change => queuePresentationNotice(change));
     }
     ensureGroup();
     reconcileWithFabric();

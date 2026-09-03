@@ -1437,7 +1437,10 @@ function junctionTreatmentPerArm(junction, fallbackProfile, options) {
     });
     if (!surfacePolygons.length) return null;
     const [lat, lng] = htrs96ToWGS84(junction.point[0], junction.point[1]);
-    return { lat, lng, degree: arms.length, surfacePolygons, crosswalkPolygons };
+    // Which corridors meet here, so a keyed renderer can drop and rebuild only the treatments a
+    // changed corridor takes part in.
+    const corridorIds = junction.corridorIds ? Array.from(junction.corridorIds, String).sort() : [];
+    return { lat, lng, degree: arms.length, surfacePolygons, crosswalkPolygons, corridorIds };
 }
 
 // Per-segment treatments for ONE road whose segments may differ in cross-section.
@@ -1546,9 +1549,13 @@ function buildCrossCorridorJunctionTreatments(corridors) {
         profile: corridor.profile,
         corridorId: corridor.corridorId
     })));
+    // The fallback profile for an arm without one comes from the junction's own arms, never from
+    // whichever corridor happened to be first in the input: a renderer that recomputes junctions
+    // for a subset of corridors must draw exactly what the full pass draws.
     return corridorJunctionsWithArms(planarEntries)
         .filter(junction => junctionNeedsTreatment(junction) && junction.corridorIds.size >= 2)
-        .map(junction => junctionTreatmentPerArm(junction, planarCorridors[0].profile,
+        .map(junction => junctionTreatmentPerArm(junction,
+            (junction.arms.find(arm => arm.profile) || {}).profile || planarCorridors[0].profile,
             { crossings: junction.arms.length >= 3 }))
         .filter(Boolean);
 }

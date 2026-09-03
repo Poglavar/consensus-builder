@@ -577,3 +577,172 @@ describe('the ground service is the only parcel transport consumer', () => {
         });
     });
 });
+
+// One request and one provision per grid cell: a viewport is several small fabric mutations that
+// land as each cell does, not one mutation of everything once the last cell has arrived.
+describe('CadastralParcelRepository.ensureBounds per-cell provisioning', () => {
+    const boundsFor = keys => ({
+        keys,
+        getSouthWest: () => ({ lat: 46, lng: 16 }),
+        getNorthEast: () => ({ lat: 46.01, lng: 16.01 })
+    });
+
+    function boundsFixture() {
+        const pending = new Map();
+        const inFlight = new Set();
+        let maxInFlight = 0;
+        const fetchBounds = vi.fn((bounds, opts) => new Promise((resolve, reject) => {
+            const [key] = opts.keys;
+            inFlight.add(key);
+            maxInFlight = Math.max(maxInFlight, inFlight.size);
+            pending.set(key, {
+                resolve: ids => { inFlight.delete(key); resolve(parcelResult(ids)); },
+                reject: error => { inFlight.delete(key); reject(error); }
+            });
+        }));
+        const onFeatures = vi.fn(async () => {});
+        const holdRuns = [];
+        const held = vi.fn(async run => {
+            const finished = run();
+            holdRuns.push(finished);
+            return finished;
+        });
+        const service = createCadastralParcelRepository({
+            root: { withCorridorStripRefreshHeld: held },
+            onFeatures,
+            convertFeatures: featureCollection => featureCollection,
+            boundsKeysOf: bounds => bounds.keys,
+            transport: {
+                fetchBounds,
+                fetchByIds: vi.fn(),
+                fetchUnderGeometry: vi.fn(),
+                fetchRoadIds: vi.fn(),
+                supportsRoadIds: () => false
+            },
+            footprintOf: () => null,
+            cadastreParcelIdsOf: () => [],
+            coverageOf: () => ({ ids: [], coverage: 0 })
+        });
+        const settle = async () => { for (let i = 0; i < 24; i += 1) await Promise.resolve(); };
+        const providedIds = () => onFeatures.mock.calls.map(call => call[0].map(feature => feature.properties.parcelId));
+        return {
+            service, fetchBounds, onFeatures, held, holdRuns, settle, providedIds,
+            keysInFlight: () => Array.from(inFlight),
+            maxInFlight: () => maxInFlight,
+            resolveCell: (key, ids) => pending.get(key).resolve(ids),
+            rejectCell: (key, error) => pending.get(key).reject(error)
+        };
+    }
+
+    it('provisions every cell as it lands, each in its own onFeatures call, in landing order', async () => {
+        const f = boundsFixture();
+        const call = f.service.ensureBounds(boundsFor(['0,0', '0,1', '1,0']));
+        await f.settle();
+        expect(f.fetchBounds.mock.calls.map(c => c[1].keys)).toEqual([['0,0'], ['0,1'], ['1,0']]);
+
+        f.resolveCell('0,1', ['B1', 'B2']);
+        await f.settle();
+        expect(f.providedIds()).toEqual([['B1', 'B2']]);
+
+        f.resolveCell('1,0', ['C1']);
+        await f.settle();
+        f.resolveCell('0,0', ['A1']);
+        const result = await call;
+
+        expect(f.providedIds()).toEqual([['B1', 'B2'], ['C1'], ['A1']]);
+        expect(result.cached).toBe(false);
+        expect(result.requestCount).toBe(3);
+        expect(result.features.map(feature => feature.properties.parcelId).sort()).toEqual(['A1', 'B1', 'B2', 'C1']);
+    });
+
+    it('records loaded ids per cell and serves a repeat viewport from cache', async () => {
+        const f = boundsFixture();
+        const first = f.service.ensureBounds(boundsFor(['0,0', '0,1']));
+        await f.settle();
+        f.resolveCell('0,0', ['A1']);
+        f.resolveCell('0,1', ['B1']);
+        await first;
+
+        const again = await f.service.ensureBounds(boundsFor(['0,1']));
+        expect(f.fetchBounds).toHaveBeenCalledTimes(2);
+        expect(again.cached).toBe(true);
+        expect(again.features.map(feature => feature.properties.parcelId)).toEqual(['B1']);
+    });
+
+    it('keeps at most six cells in flight', async () => {
+        const f = boundsFixture();
+        const keys = Array.from({ length: 10 }, (_, i) => `${i},0`);
+        const call = f.service.ensureBounds(boundsFor(keys));
+        await f.settle();
+        expect(f.fetchBounds).toHaveBeenCalledTimes(6);
+
+        f.resolveCell('0,0', ['P0']);
+        await f.settle();
+        expect(f.fetchBounds).toHaveBeenCalledTimes(7);
+
+        // Cells beyond the sixth only start once a slot frees, so release them one at a time.
+        for (const [i, key] of keys.slice(1).entries()) {
+            await f.settle();
+            f.resolveCell(key, [`P${i + 1}`]);
+        }
+        await call;
+        expect(f.maxInFlight()).toBe(6);
+        expect(f.fetchBounds).toHaveBeenCalledTimes(10);
+    });
+
+    it('joins a concurrent overlapping viewport instead of fetching a cell twice', async () => {
+        const f = boundsFixture();
+        const first = f.service.ensureBounds(boundsFor(['0,0', '0,1']));
+        const second = f.service.ensureBounds(boundsFor(['0,1', '0,2']));
+        await f.settle();
+        expect(f.fetchBounds.mock.calls.map(c => c[1].keys[0])).toEqual(['0,0', '0,1', '0,2']);
+
+        f.resolveCell('0,0', ['A1']);
+        f.resolveCell('0,1', ['B1']);
+        f.resolveCell('0,2', ['C1']);
+        const [one, two] = await Promise.all([first, second]);
+        expect(one.features.map(x => x.properties.parcelId).sort()).toEqual(['A1', 'B1']);
+        expect(two.features.map(x => x.properties.parcelId).sort()).toEqual(['B1', 'C1']);
+        // The second caller owned 0,2 and waited for 0,1; it still hands its consumer the waited cell.
+        expect(f.providedIds()).toContainEqual(['B1']);
+    });
+
+    it('holds the corridor strip refresh across the whole fan-out and reports progress per cell', async () => {
+        const f = boundsFixture();
+        const progress = [];
+        const call = f.service.ensureBounds(boundsFor(['0,0', '0,1']), { onProgress: detail => progress.push(detail) });
+        await f.settle();
+        expect(f.held).toHaveBeenCalledTimes(1);
+
+        f.resolveCell('0,0', ['A1']);
+        await f.settle();
+        let holdReleased = false;
+        f.holdRuns[0].then(() => { holdReleased = true; });
+        await f.settle();
+        expect(holdReleased).toBe(false);
+
+        f.resolveCell('0,1', ['B1']);
+        await call;
+        expect(holdReleased).toBe(true);
+        expect(progress).toEqual([{ done: 1, total: 2 }, { done: 2, total: 2 }]);
+        expect(f.onFeatures).toHaveBeenCalledTimes(2);
+    });
+
+    it('rejects when a cell fails, after every other cell has settled, and refetches only that cell', async () => {
+        const f = boundsFixture();
+        const call = f.service.ensureBounds(boundsFor(['0,0', '0,1']));
+        await f.settle();
+        f.rejectCell('0,0', new Error('cell down'));
+        await f.settle();
+        f.resolveCell('0,1', ['B1']);
+        await expect(call).rejects.toThrow('cell down');
+        expect(f.providedIds()).toEqual([['B1']]);
+
+        const retry = f.service.ensureBounds(boundsFor(['0,0', '0,1']));
+        await f.settle();
+        expect(f.fetchBounds.mock.calls.map(c => c[1].keys[0])).toEqual(['0,0', '0,1', '0,0']);
+        f.resolveCell('0,0', ['A1']);
+        const result = await retry;
+        expect(result.features.map(x => x.properties.parcelId).sort()).toEqual(['A1', 'B1']);
+    });
+});

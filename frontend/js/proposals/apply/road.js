@@ -84,8 +84,11 @@
                 ? '' : String(excludeProposalId);
             const store = options?._parcelMutation?.proposals
                 || (typeof proposalStorage !== 'undefined' ? proposalStorage : null);
-            const all = store && typeof store.getAllProposals === 'function'
-                ? store.getAllProposals() : [];
+            // Read-only scan: the draft's peek hands out shared records without marking them
+            // touched, so an overlap check does not turn into a rewrite of every row.
+            const all = store && typeof store.peekAllProposals === 'function'
+                ? store.peekAllProposals()
+                : (store && typeof store.getAllProposals === 'function' ? store.getAllProposals() : []);
             for (const p of all) {
                 if (!p) continue;
                 if (excludeKey && String(p.proposalId) === excludeKey) continue;

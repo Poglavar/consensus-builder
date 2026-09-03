@@ -274,6 +274,14 @@ function _proposalStore(options) {
         || (typeof proposalStorage !== 'undefined' ? proposalStorage : null);
 }
 
+// Read-only listing of the store. Inside a mutation, getAllProposals() clones and marks every
+// record touched, which turned a cadastral ground arrival into a full re-serialization of the log.
+function _peekProposals(store) {
+    if (!store) return [];
+    if (typeof store.peekAllProposals === 'function') return store.peekAllProposals();
+    return typeof store.getAllProposals === 'function' ? store.getAllProposals() : [];
+}
+
 // The committed live fabric (read-only view outside a mutation).
 function _committedFabric() {
     const root = (typeof window !== 'undefined') ? window : globalThis;
@@ -780,8 +788,8 @@ const ProposalManager = {
                 .filter(value => value !== undefined && value !== null && String(value))
                 .map(String)
         ));
-        const allRecords = typeof store.getAllProposals === 'function'
-            ? store.getAllProposals()
+        const allRecords = store
+            ? _peekProposals(store)
             : Array.from(store.proposals?.values?.() || []);
 
         _announceApply('Planning the new corridor junctions…');
@@ -1227,9 +1235,11 @@ const ProposalManager = {
         const cadastreIds = new Set(Array.from(initialCadastreParcelIds || []).map(String).filter(Boolean));
         seeds.forEach(record => proposalClaims.cadastreParcelIdsOf(record).forEach(id => cadastreIds.add(String(id))));
 
+        // Candidates are only filtered here; the records that end up replayed are fetched through
+        // the draft by id (and so cloned and marked touched) by the caller, never edited in place.
         const store = _proposalStore(options);
-        const candidates = store?.getAllProposals
-            ? store.getAllProposals().filter(record => {
+        const candidates = store
+            ? _peekProposals(store).filter(record => {
                 if (!record) return false;
                 const goalKey = applyRoute?.normalizeGoalKey?.(record.goal) || String(record.goal || '');
                 return goalKey !== 'road-track' && (appliedOf(record) || seedIds.has(String(record.proposalId || '')));
@@ -1383,7 +1393,9 @@ const ProposalManager = {
             });
             closure.records.forEach(record => {
                 const id = String(record?.proposalId || '');
-                if (id && !seedById.has(id)) seedById.set(id, record);
+                // The closure lists shared records; anything replayed or stripped below must be
+                // the draft's own copy so the edit is journaled and persisted.
+                if (id && !seedById.has(id)) seedById.set(id, _getProposalRecord(id, opts) || record);
             });
 
             const replay = [];
@@ -1414,7 +1426,7 @@ const ProposalManager = {
 
             const fabric = await this._deriveCorridorFabric({
                 parcelIds: cadastreParcelIds,
-                takes: this._appliedCorridorTakes(_proposalStore(opts)?.getAllProposals?.()),
+                takes: this._appliedCorridorTakes(_peekProposals(_proposalStore(opts))),
                 onProgress: opts.onProgress,
                 _parcelMutation: opts._parcelMutation
             });
@@ -1775,7 +1787,7 @@ const ProposalManager = {
         fabric.seedCadastre(list);
 
         const ids = list.map(_getParcelIdFromFeature).filter(Boolean).map(String);
-        const takes = this._appliedCorridorTakes(_proposalStore(opts)?.getAllProposals?.());
+        const takes = this._appliedCorridorTakes(_peekProposals(_proposalStore(opts)));
         let derived = { added: 0, removed: 0, unchanged: 0, parcels: ids.length, parcelIds: ids, failed: [] };
         if (takes.length) {
             derived = await this._deriveCorridorFabric({
@@ -2676,17 +2688,21 @@ const ProposalManager = {
         const runtime = typeof window !== 'undefined' ? window : globalThis;
         const collect = runtime && runtime.collectAppliedProposalAlternatives;
         if (typeof collect !== 'function') return [];
-        if (!Array.isArray(candidateRecords) && typeof store.getAllProposals !== 'function') return [];
         try {
             // Shared-plan application supplies the records that were already standing before the
             // plan began. Include the target so replacement-family links originating on it remain
-            // visible, without rescanning every parked/incoming record for every member.
+            // visible, without rescanning every parked/incoming record for every member. The full
+            // listing is a read-only scan (peek); the alternatives it yields are re-fetched through
+            // the draft below before anyone edits them.
             const records = Array.isArray(candidateRecords)
                 ? [proposalData, ...candidateRecords.filter(record => record && record !== proposalData)]
-                : store.getAllProposals();
-            return collect(proposalData, records, {
+                : _peekProposals(store);
+            const alternatives = collect(proposalData, records, {
                 planOrder: runtime.__planOrder || null
             });
+            // Each alternative is about to be parked (applied=false, re-indexed): hand back the
+            // draft's own copy so the edit is journaled, persisted and restorable.
+            return alternatives.map(record => _getProposalRecord(record?.proposalId, options) || record);
         } catch (error) {
             console.warn('[applyProposal] could not inspect applied alternatives', error);
             return [];

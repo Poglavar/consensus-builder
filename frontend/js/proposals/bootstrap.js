@@ -30,7 +30,9 @@ if (typeof document !== 'undefined') {
     document.addEventListener('proposalScreenshotUpdated', (event) => {
         const detail = event && event.detail ? event.detail : {};
         const { proposalId } = detail;
-        const imageSrc = detail.screenshotUrl || detail.screenshotDataUrl;
+        const rawSrc = detail.screenshotUrl || detail.screenshotDataUrl;
+        // A stored thumbnail is a served path; resolve it against the backend (data URLs pass through).
+        const imageSrc = (typeof resolveBackendAssetUrl === 'function') ? (resolveBackendAssetUrl(rawSrc) || rawSrc) : rawSrc;
         if (!proposalId || !imageSrc) return;
         const escapedId = (typeof CSS !== 'undefined' && CSS.escape)
             ? CSS.escape(String(proposalId))
@@ -179,9 +181,6 @@ if (typeof document !== 'undefined') {
 if (typeof window !== 'undefined') {
     window.proposalStorage = proposalStorage;
     window.multiParcelSelection = multiParcelSelection;
-    window.addEventListener('parcelFabricCommitted', () => {
-        multiParcelSelection.reconcileWithFabric();
-    });
     window.getProposalOwnerAcceptanceState = getProposalOwnerAcceptanceState;
     window.buildOwnerAcceptanceSectionHtml = buildOwnerAcceptanceSectionHtml;
     window.handleUserRejectProposal = handleUserRejectProposal;

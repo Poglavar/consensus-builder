@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -71,9 +71,20 @@ function environment(options = {}) {
     };
     context.window = context;
     context.globalThis = context;
+    // Post-commit notices need a timer and an event target; the atomic-projection tests run
+    // without either, which keeps their commits observable synchronously.
+    const timers = [];
+    if (options.events) {
+        context.dispatchEvent = vi.fn();
+        context.CustomEvent = class CustomEvent { constructor(type, init) { this.type = type; this.detail = init && init.detail; } };
+    }
+    if (options.timers) context.setTimeout = callback => { timers.push(callback); return timers.length; };
     vm.runInNewContext(presenterSource, context);
     return {
         fabric,
+        context,
+        timers,
+        flushTimers: () => { const due = timers.splice(0); due.forEach(callback => callback()); },
         presenter: context.ParcelPresenter,
         members,
         failAddFor: id => { failNextAddFor = id; }
@@ -137,5 +148,52 @@ describe('parcel presenter ownership boundary', () => {
     it.each(sourceFiles)('%s does not mutate the parcel Leaflet group', absolutePath => {
         const source = readFileSync(absolutePath, 'utf8');
         expect(source, relative(frontendJsRoot, absolutePath)).not.toMatch(parcelGroupMutation);
+    });
+});
+
+// The swap is synchronous; the notices it raises are not. Commits landing in one tick share one
+// deferred notice with the union of their ids, so per-cell ground arrivals wake the whole-map
+// listeners once instead of once per cell, and never inside the commit task.
+describe('parcel presenter post-commit notices', () => {
+    it('coalesces the commits of one tick into one deferred notice carrying the union of ids', async () => {
+        const { fabric, context, timers, flushTimers } = environment({ events: true, timers: true });
+        await mutate(fabric, mutation => mutation.seedCadastre([polygon('HR-A')]));
+        await mutate(fabric, mutation => mutation.seedCadastre([polygon('HR-B')]));
+
+        expect(context.dispatchEvent).not.toHaveBeenCalled();
+        expect(timers).toHaveLength(1);
+
+        flushTimers();
+        const events = context.dispatchEvent.mock.calls.map(call => call[0]);
+        expect(events.map(event => event.type)).toEqual(['parcelFabricCommitted', 'parcelDataLoaded', 'parcelCoverageUpdated']);
+        expect(events[1].detail.parcelIds.sort()).toEqual(['HR-A', 'HR-B']);
+        expect(events[1].detail.revision).toBe(2);
+        expect(events[0].detail.addedIds.sort()).toEqual(['HR-A', 'HR-B']);
+
+        await mutate(fabric, mutation => mutation.seedCadastre([polygon('HR-C')]));
+        expect(timers).toHaveLength(1);
+        flushTimers();
+        expect(context.dispatchEvent).toHaveBeenCalledTimes(6);
+        expect(context.dispatchEvent.mock.calls[4][0].detail.parcelIds).toEqual(['HR-C']);
+    });
+
+    it('reports a piece added then replaced within one tick once, as removed', async () => {
+        const { fabric, context, flushTimers } = environment({ events: true, timers: true });
+        await mutate(fabric, mutation => mutation.seedCadastre([polygon('HR-A')]));
+        await mutate(fabric, mutation => mutation.replaceCadastreScope(['HR-A'], [polygon('HR-A#park-1', {
+            cadastreParcelIds: ['HR-A'], producedByProposalId: 'park'
+        })]));
+        flushTimers();
+        const committed = context.dispatchEvent.mock.calls[0][0].detail;
+        expect(committed.addedIds).toEqual(['HR-A#park-1']);
+        expect(committed.updatedIds).toEqual([]);
+        expect(committed.removedIds).toEqual(['HR-A']);
+    });
+
+    it('dispatches synchronously where no timer exists', async () => {
+        const { fabric, context } = environment({ events: true });
+        await mutate(fabric, mutation => mutation.seedCadastre([polygon('HR-A')]));
+        expect(context.dispatchEvent).toHaveBeenCalledTimes(3);
+        expect(context.dispatchEvent.mock.calls[1][0].detail.parcelIds).toEqual(['HR-A']);
     });
 });

@@ -26,7 +26,12 @@ function bootStore({ secondaryTab }) {
     globalThis.PersistentStorage = {
         getItem: key => (store.has(key) ? store.get(key) : null),
         setItem: (key, value) => store.set(key, String(value)),
-        removeItem: key => store.delete(key)
+        removeItem: key => store.delete(key),
+        forEach: callback => store.forEach((value, key) => callback(value, key)),
+        atomicWrite: async change => {
+            (change.deletes || []).forEach(key => store.delete(key));
+            (change.puts || new Map()).forEach((value, key) => store.set(key, String(value)));
+        }
     };
     // data.js is a classic script declaring top-level `const`s, which an indirect eval keeps in its
     // own script scope rather than putting on globalThis — so take the object as the completion value.
@@ -55,8 +60,8 @@ describe('read-only tab keeps work instead of dropping it', () => {
     it('never writes the shared key from a read-only tab', () => {
         ctx = withProposal(bootStore({ secondaryTab: true }), ROAD);
         ctx.proposalStorage._persist();
-        // The reason the guard exists at all: the primary tab's blob must be untouched.
-        expect(ctx.store.has('cadastre_proposals')).toBe(false);
+        // The reason the guard exists at all: the primary tab's rows must be untouched.
+        expect(Array.from(ctx.store.keys()).filter(key => key.startsWith('proposal:') || key === 'cadastre_proposals_manifest' || key === 'cadastre_proposals')).toEqual([]);
     });
 
     it('parks the work under its own key rather than discarding it', () => {

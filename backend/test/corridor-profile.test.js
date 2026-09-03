@@ -848,6 +848,27 @@ describe('buildCrossCorridorJunctionTreatments', () => {
         });
     });
 
+    it('names the corridors each treatment joins, sorted, and draws the same patch for any input order', () => {
+        withPlanarProjection(() => {
+            const main = { corridorId: 'main', centerline: [[{ lat: 0, lng: -50 }, { lat: 0, lng: 50 }]], profile };
+            const branch = { corridorId: 'branch', centerline: [[{ lat: 0, lng: 0 }, { lat: 50, lng: 0 }]], profile };
+            const aside = { corridorId: 'aside', centerline: [[{ lat: 300, lng: -50 }, { lat: 300, lng: 50 }]], profile };
+            const one = buildCrossCorridorJunctionTreatments([main, branch, aside]);
+            expect(one).toHaveLength(1);
+            expect(one[0].corridorIds).toEqual(['branch', 'main']);
+            // A subset pass (what a keyed renderer runs after one corridor changed) must agree with
+            // the full pass to the coordinate. Arm order follows input order, so compare the
+            // polygons as sets.
+            const canonical = treatment => ({
+                lat: treatment.lat, lng: treatment.lng, degree: treatment.degree, corridorIds: treatment.corridorIds,
+                surface: treatment.surfacePolygons.map(polygon => JSON.stringify(polygon)).sort(),
+                crosswalks: treatment.crosswalkPolygons.map(polygon => JSON.stringify(polygon)).sort()
+            });
+            const subset = buildCrossCorridorJunctionTreatments([branch, main]);
+            expect(subset.map(canonical)).toEqual(one.map(canonical));
+        });
+    });
+
     it('does not duplicate a single road own junctions', () => {
         withPlanarProjection(() => {
             const road = {

@@ -59,6 +59,7 @@
     const COMPLETE_COVERAGE = 0.999;
     const FOOTPRINT_BATCH_SIZE = 20;
     const FOOTPRINT_CONCURRENCY = 6;
+    const BOUNDS_CONCURRENCY = 6;
 
     function clone(value) {
         if (value === undefined || value === null) return value;
@@ -196,8 +197,11 @@
             });
         }
 
+        // Retained facts are deep-frozen, and every consumer (the fabric's seedCadastre included)
+        // clones what it keeps, so the stored objects go out as they are. Cloning here cost a
+        // second copy of every arriving parcel on each pan.
         async function provideFeatures(features, options = {}) {
-            const list = (Array.isArray(features) ? features : []).filter(Boolean).map(clone);
+            const list = (Array.isArray(features) ? features : []).filter(Boolean);
             if (!list.length || typeof dependencies.onFeatures !== 'function') return;
             await dependencies.onFeatures(list, {
                 city: normalizeId(options.city) || cityKey(),
@@ -701,37 +705,75 @@
                 if (pending) waits.add(pending);
                 else ownKeys.push(key);
             });
-            let own = null;
+            const provision = { city, mutation: options.mutation || null };
+            let requestCount = 0;
             if (ownKeys.length) {
                 const requestTransport = transport();
                 const fetchBounds = requestTransport && requestTransport.fetchBounds;
                 if (typeof fetchBounds !== 'function') throw new Error('Cadastral bounds transport is unavailable.');
-                own = Promise.resolve()
-                    .then(() => fetchBounds(bounds, { city, keys: ownKeys, onProgress: options.onProgress }))
-                    .then(result => acceptTransportResult(result, {
-                        city,
-                        skipConversion: result && result.returnsWGS84 === true
-                    }))
-                    .then(result => {
-                        const ids = new Set((result.ids || []).map(String));
-                        ownKeys.forEach(key => loaded.set(key, new Set(ids)));
-                        return result;
-                    })
-                    .finally(() => ownKeys.forEach(key => {
-                        const cacheKey = scoped(city, key);
-                        if (boundsInFlight.get(cacheKey) === own) boundsInFlight.delete(cacheKey);
-                    }));
-                ownKeys.forEach(key => boundsInFlight.set(scoped(city, key), own));
-                waits.add(own);
+                // One request and one provision per cell, at most BOUNDS_CONCURRENCY in flight. A
+                // cell's parcels reach the fabric as soon as that cell lands, as their own mutation,
+                // so a viewport of nine cells is nine small commits that paint progressively instead
+                // of one commit of everything — a 500-800 ms task on every pan into new ground. Each
+                // key also records the ids its own cell returned rather than the merged viewport.
+                // Per-cell requests bypass the transport's cross-cell mixed-CRS check; every result
+                // carries its own returnsWGS84 and is accepted on its own terms.
+                let active = 0;
+                const queue = [];
+                const acquire = () => new Promise(resolve => {
+                    if (active < BOUNDS_CONCURRENCY) { active += 1; resolve(); } else queue.push(resolve);
+                });
+                const release = () => {
+                    const next = queue.shift();
+                    if (next) next(); else active -= 1;
+                };
+                let done = 0;
+                ownKeys.forEach(key => {
+                    const cacheKey = scoped(city, key);
+                    const own = acquire()
+                        .then(() => fetchBounds(bounds, { city, keys: [key] }))
+                        .then(result => acceptTransportResult(result, {
+                            city,
+                            skipConversion: result && result.returnsWGS84 === true
+                        }))
+                        .then(async result => {
+                            const ids = new Set((result.ids || []).map(String));
+                            loaded.set(key, ids);
+                            requestCount += 1;
+                            done += 1;
+                            emit(options.onProgress, { done, total: ownKeys.length });
+                            await provideFeatures(Array.from(ids, id => featureStore(city).get(id)).filter(Boolean), provision);
+                            return result;
+                        })
+                        .finally(() => {
+                            release();
+                            if (boundsInFlight.get(cacheKey) === own) boundsInFlight.delete(cacheKey);
+                        });
+                    boundsInFlight.set(cacheKey, own);
+                    waits.add(own);
+                });
             }
-            await Promise.all(waits);
+            // Every cell arrival schedules a corridor strip refresh after its commit; hold them so a
+            // pan pays for one redraw, not one per cell. Settle every cell before reporting the
+            // first failure, so no cell is left to reject unobserved.
+            const held = typeof root.withCorridorStripRefreshHeld === 'function'
+                ? root.withCorridorStripRefreshHeld
+                : run => run();
+            const settled = await held(() => Promise.allSettled(waits));
+            const failure = settled.find(entry => entry.status === 'rejected');
+            if (failure) throw failure.reason;
             const resolvedIds = new Set(keys.flatMap(key => Array.from(loaded.get(key) || [])));
             const result = {
                 status: 'ready', cached: false, keys,
-                features: Array.from(resolvedIds, id => featureStore(city).get(id)).filter(Boolean).map(clone),
-                requestCount: own ? 1 : 0
+                // Frozen facts, handed out as peekMany does; the viewport caller only counts them.
+                features: Array.from(resolvedIds, id => featureStore(city).get(id)).filter(Boolean),
+                requestCount
             };
-            await provideFeatures(result.features, { city, mutation: options.mutation || null });
+            // Own cells were provisioned as they landed; cached and waited-for cells still owe this
+            // caller's consumer (and its mutation draft, when given) their parcels.
+            const ownSet = new Set(ownKeys);
+            const restIds = new Set(keys.filter(key => !ownSet.has(key)).flatMap(key => Array.from(loaded.get(key) || [])));
+            await provideFeatures(Array.from(restIds, id => featureStore(city).get(id)).filter(Boolean), provision);
             return result;
         }
 

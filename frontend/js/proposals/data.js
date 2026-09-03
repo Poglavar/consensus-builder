@@ -3,10 +3,29 @@
 // multiParcelSelection (selection controller) + caches. Extracted from proposals.js; loaded before
 // the proposals.js bootstrap so its load-time init can reference these.
 
-// One atomic envelope is the only durable local proposal state. Keep the key stable so an upgrade
-// replaces the old array in place instead of leaving two stores that can disagree.
+// The pre-2026-09 durable layout: ONE envelope holding every record. It is read once at boot,
+// split into rows (below) and deleted in the same write; nothing writes it any more. The version
+// gate stays: an envelope of any other shape is refused, never converted at runtime.
 const PROPOSALS_STORAGE_KEY = 'cadastre_proposals';
 const PROPOSALS_STATE_VERSION = 2;
+
+// Durable layout: one row per record under PROPOSAL_ROW_PREFIX + id, plus a small manifest. A
+// mutation writes only the rows it touched (and a delete per record it removed), inside the one
+// IndexedDB transaction the coordinator already opens, so atomicity is unchanged and the write is
+// tens of kilobytes instead of the whole log. Writing the envelope per mutation moved ~3.6 MB
+// through IndexedDB for every one of a plan's members: 601 MB for a 7 MB change on Šibenik.
+const PROPOSAL_ROW_PREFIX = 'proposal:';
+const PROPOSALS_MANIFEST_KEY = 'cadastre_proposals_manifest';
+const PROPOSALS_MANIFEST_VERSION = 1;
+const proposalRowKey = id => PROPOSAL_ROW_PREFIX + String(id);
+function proposalManifest(nextProposalId) {
+    return JSON.stringify({
+        manifestVersion: PROPOSALS_MANIFEST_VERSION,
+        nextProposalId: Number.isFinite(Number(nextProposalId)) && Number(nextProposalId) >= 0
+            ? Math.floor(Number(nextProposalId))
+            : 0
+    });
+}
 
 // Where a READ-ONLY (secondary) tab parks work it is not allowed to write to the shared key above.
 // Separate key on purpose: the primary tab's blob stays untouched, so nothing can be clobbered, and
@@ -235,25 +254,36 @@ const proposalStorage = {
         return draft;
     },
 
-    // The durable envelope is one blob, so every write serializes every record. Untouched records
-    // reuse their cached persistence fragment; only records this mutation touched are projected
-    // again. The cache is dropped on every out-of-protocol write (_persist, _indexProposal).
+    // The durable change of one mutation: a row per touched record still present, a delete per
+    // record the mutation removed, and the manifest. Untouched records are not even projected. A
+    // mutation that only read the log has nothing durable to say (listing through
+    // peekAllProposals leaves touched empty; adds, edits, deletes and clears all mark it), so it
+    // returns null and the coordinator opens no IndexedDB transaction. The coordinator accepts an
+    // array of {key, value} / {key, delete: true} entries and writes them in one transaction.
     serializeMutationDraft(draft) {
-        const cache = this._persistFragments || (this._persistFragments = new Map());
-        const touched = draft.proposals instanceof DraftRecordMap ? draft.proposals.touched : null;
-        const entries = draft.proposals instanceof DraftRecordMap ? draft.proposals.rawEntries() : draft.proposals.entries();
-        const fragments = [];
-        for (const [id, record] of entries) {
-            let fragment = touched && !touched.has(id) ? cache.get(id) : undefined;
-            if (fragment === undefined) {
-                fragment = JSON.stringify(proposalRecordForPersistence(record));
-                if (draft._fragments) draft._fragments.set(id, fragment);
-            }
-            fragments.push(fragment);
+        const isDraft = draft.proposals instanceof DraftRecordMap;
+        const touched = isDraft ? draft.proposals.touched : null;
+        const rawEntries = () => (isDraft ? draft.proposals.rawEntries() : draft.proposals.entries());
+        const entries = [];
+        const nextIds = new Set();
+        for (const [id, record] of rawEntries()) {
+            nextIds.add(id);
+            if (touched && !touched.has(id)) continue;
+            const fragment = JSON.stringify(proposalRecordForPersistence(record));
+            if (draft._fragments) draft._fragments.set(id, fragment);
+            entries.push({ key: proposalRowKey(id), value: fragment });
         }
-        const envelope = JSON.stringify(proposalStateEnvelope(draft.nextProposalId, []));
-        const value = envelope.slice(0, envelope.lastIndexOf('[]}')) + '[' + fragments.join(',') + ']}';
-        return { key: PROPOSALS_STORAGE_KEY, value };
+        this.proposals.forEach((_record, id) => {
+            if (!nextIds.has(id)) entries.push({ key: proposalRowKey(id), delete: true });
+        });
+        if (!entries.length && draft.nextProposalId === this.nextProposalId) return null;
+        entries.push({ key: PROPOSALS_MANIFEST_KEY, value: proposalManifest(draft.nextProposalId) });
+        // A boot migration still in flight leaves the envelope visible until its transaction
+        // completes; deleting it again here is harmless and keeps the two layouts from coexisting.
+        if (typeof PersistentStorage !== 'undefined' && PersistentStorage.getItem(PROPOSALS_STORAGE_KEY) != null) {
+            entries.push({ key: PROPOSALS_STORAGE_KEY, delete: true });
+        }
+        return entries;
     },
 
     publishMutationDraft(draft) {
@@ -790,6 +820,11 @@ const proposalStorage = {
     load() {
         this._ensureIndexes();
         if (typeof PersistentStorage === 'undefined') return;
+        const manifestRaw = PersistentStorage.getItem(PROPOSALS_MANIFEST_KEY);
+        if (manifestRaw) {
+            this._loadRows(manifestRaw);
+            return;
+        }
         let parsed = null;
         let hasValidEnvelope = false;
         try {
@@ -836,7 +871,78 @@ const proposalStorage = {
             this._ensureIndexes();
             this.proposals.clear();
             this.nextProposalId = 0;
+            return;
         }
+        this._migrateEnvelopeToRows();
+    },
+
+    // The row layout: every `proposal:<id>` key in the store plus the manifest. The raw rows seed
+    // the fragment cache, so the first mutation after a reload projects only what it touches.
+    _loadRows(manifestRaw) {
+        let manifest = null;
+        try { manifest = JSON.parse(manifestRaw); } catch (error) {
+            console.error('proposalStorage.load: Failed to read the proposal manifest', error);
+        }
+        this.proposals.clear();
+        const rows = [];
+        PersistentStorage.forEach((value, key) => {
+            const name = String(key);
+            if (name.startsWith(PROPOSAL_ROW_PREFIX)) rows.push([name.slice(PROPOSAL_ROW_PREFIX.length), value]);
+        });
+        const fragments = new Map();
+        rows.forEach(([rowId, raw]) => {
+            try {
+                const normalized = this._normalizeProposal({ ...JSON.parse(raw) });
+                if (!normalized.proposalId) normalized.proposalId = rowId;
+                const id = this._indexProposal(normalized);
+                if (id) fragments.set(id, raw);
+            } catch (error) {
+                // One malformed row cannot erase every other local proposal.
+                console.error(`[proposalStorage] Rejected invalid stored proposal ${rowId}`, error);
+            }
+        });
+        const storedNext = Number(manifest && manifest.nextProposalId);
+        this.nextProposalId = Number.isFinite(storedNext) && storedNext >= 0 ? Math.floor(storedNext) : 0;
+        this._persistFragments = fragments;
+    },
+
+    // One-time: split the legacy envelope into rows plus the manifest and delete it, in ONE
+    // write. Issued at boot before any mutation can run; IndexedDB commits readwrite transactions
+    // in creation order, so a later mutation cannot overtake it, and a tab that dies first simply
+    // migrates again at its next boot. A read-only tab must not write shared rows.
+    _migrateEnvelopeToRows() {
+        if (typeof window !== 'undefined' && window.__cbSecondaryTab) return null;
+        if (typeof PersistentStorage.atomicWrite !== 'function') {
+            console.error('proposalStorage.load: PersistentStorage.atomicWrite is required to migrate the proposal envelope into rows.');
+            return null;
+        }
+        const puts = new Map();
+        const fragments = new Map();
+        this.proposals.forEach((record, id) => {
+            try {
+                const fragment = JSON.stringify(proposalRecordForPersistence(record));
+                puts.set(proposalRowKey(id), fragment);
+                fragments.set(id, fragment);
+            } catch (error) {
+                // A record that loaded but cannot be projected stays in memory for this session
+                // and is gone after the next reload; say so, do not lose every other record over it.
+                console.error(`[proposalStorage] Proposal ${id} could not be migrated into a row and will not survive a reload`, error);
+            }
+        });
+        puts.set(PROPOSALS_MANIFEST_KEY, proposalManifest(this.nextProposalId));
+        this._persistFragments = fragments;
+        const write = Promise.resolve(PersistentStorage.atomicWrite({ puts, deletes: [PROPOSALS_STORAGE_KEY] }));
+        write.then(
+            () => console.log(`[${new Date().toISOString()}] [proposalStorage] Migrated ${puts.size - 1} proposal record(s) from the envelope into rows.`),
+            error => console.error('[proposalStorage] Migrating the proposal envelope into rows failed; the envelope stays until the next load.', error)
+        );
+        return write;
+    },
+
+    _allocateProposalId() {
+        const id = `local-${this.nextProposalId}`;
+        this.nextProposalId += 1;
+        return id;
     },
 
     save() {
@@ -848,9 +954,6 @@ const proposalStorage = {
     },
 
     _persist() {
-        // A whole-store write outside the mutation protocol may follow in-place edits anywhere;
-        // forget every cached fragment so the next mutation re-projects from the live records.
-        if (this._persistFragments) this._persistFragments.clear();
         if (typeof PersistentStorage === 'undefined') return;
         // Secondary tab (app already open elsewhere): skip writes so we don't clobber the primary
         // tab's data. All tabs share one blob with no cross-tab merge — see multi-tab-guard.js.
@@ -873,10 +976,33 @@ const proposalStorage = {
             try { window.__cbReportSecondaryWriteBlocked?.(); } catch (_) { }
             return;
         }
+        // A whole-store save outside the mutation protocol may follow in-place edits anywhere, so
+        // every record is projected again — but only the rows whose projection differs from what
+        // is on disk are written, plus a delete for every row on disk with no record in memory,
+        // plus the manifest, in one write.
         try {
-            const serialisable = Array.from(this.proposals.values()).map(proposalRecordForPersistence);
-            const state = proposalStateEnvelope(this.nextProposalId, serialisable);
-            PersistentStorage.setItem(PROPOSALS_STORAGE_KEY, JSON.stringify(state));
+            if (typeof PersistentStorage.atomicWrite !== 'function') {
+                throw new Error('PersistentStorage.atomicWrite is required to persist proposals.');
+            }
+            const previous = this._persistFragments || new Map();
+            const fragments = new Map();
+            const puts = new Map();
+            this.proposals.forEach((record, id) => {
+                const fragment = JSON.stringify(proposalRecordForPersistence(record));
+                fragments.set(id, fragment);
+                if (previous.get(id) !== fragment) puts.set(proposalRowKey(id), fragment);
+            });
+            const deletes = [];
+            PersistentStorage.forEach((_value, key) => {
+                const name = String(key);
+                if (name.startsWith(PROPOSAL_ROW_PREFIX) && !this.proposals.has(name.slice(PROPOSAL_ROW_PREFIX.length))) deletes.push(name);
+            });
+            if (PersistentStorage.getItem(PROPOSALS_STORAGE_KEY) != null) deletes.push(PROPOSALS_STORAGE_KEY);
+            puts.set(PROPOSALS_MANIFEST_KEY, proposalManifest(this.nextProposalId));
+            this._persistFragments = fragments;
+            Promise.resolve(PersistentStorage.atomicWrite({ puts, deletes })).catch(error => {
+                console.error('proposalStorage.save: Failed to persist proposals', error);
+            });
         } catch (error) {
             console.error('proposalStorage.save: Failed to persist proposals', error);
             throw error;
@@ -946,6 +1072,15 @@ const proposalStorage = {
 
     getAllProposals() {
         return Array.from(this.proposals.values());
+    },
+
+    // Read-only listing. Inside a mutation, getAllProposals() clones every record and marks it
+    // touched (copy-on-read), so a body that merely lists the log would re-serialize and persist
+    // all of it. Callers that promise not to edit what they read get the shared objects instead.
+    peekAllProposals() {
+        return this.proposals instanceof DraftRecordMap
+            ? Array.from(this.proposals.rawEntries(), ([, record]) => record)
+            : Array.from(this.proposals.values());
     },
 
     /**
@@ -1138,10 +1273,16 @@ const proposalStorage = {
 
     clear() {
         this.proposals.clear();
-        if (typeof PersistentStorage !== 'undefined') {
-            PersistentStorage.removeItem(PROPOSALS_STORAGE_KEY);
-            PersistentStorage.removeItem(PROPOSALS_RECOVERY_KEY);
-        }
+        this._persistFragments = new Map();
+        if (typeof PersistentStorage === 'undefined') return;
+        // Every row, the manifest, the legacy envelope and the parked recovery blob, in one write.
+        const deletes = [PROPOSALS_MANIFEST_KEY, PROPOSALS_STORAGE_KEY, PROPOSALS_RECOVERY_KEY];
+        PersistentStorage.forEach((_value, key) => {
+            if (String(key).startsWith(PROPOSAL_ROW_PREFIX)) deletes.push(String(key));
+        });
+        Promise.resolve(PersistentStorage.atomicWrite({ puts: new Map(), deletes })).catch(error => {
+            console.error('proposalStorage.clear: Failed to clear persisted proposals', error);
+        });
     },
 
     // Lifecycle-only mutation. It deliberately does not infer or change local map visibility.

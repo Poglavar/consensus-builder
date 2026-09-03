@@ -43,7 +43,14 @@ function bootStore() {
     install('PersistentStorage', {
         getItem: key => persisted.get(key) || null,
         setItem: (key, value) => persisted.set(key, String(value)),
-        removeItem: key => persisted.delete(key)
+        removeItem: key => persisted.delete(key),
+        forEach: callback => persisted.forEach((value, key) => callback(value, key)),
+        // Applies synchronously, like the real store's cache does once its transaction completes,
+        // so the assertions below can read the map straight after the call.
+        atomicWrite: async change => {
+            (change.deletes || []).forEach(key => persisted.delete(key));
+            (change.puts || new Map()).forEach((value, key) => persisted.set(key, String(value)));
+        }
     });
     const api = (0, eval)(dataSource + '\n;({ proposalStorage, proposalWithAuthoredSelection })');
     return { storage: api.proposalStorage, proposalWithAuthoredSelection: api.proposalWithAuthoredSelection, persisted };
@@ -76,7 +83,7 @@ describe('proposalStorage authored-log persistence', () => {
 
         storage._persist();
 
-        const stored = JSON.parse(persisted.get('cadastre_proposals')).records[0];
+        const stored = JSON.parse(persisted.get('proposal:road-1'));
         expect(stored.applied).toBe(true);
         expect(stored.cadastreParcelIds).toEqual(['HR-A', 'HR-B']);
         expect(stored).not.toHaveProperty('childParcelIds');
@@ -112,7 +119,7 @@ describe('proposalStorage authored-log persistence', () => {
 
         expect(() => storage._persist()).toThrow(/buildingProposal\.blockParcelIds is invalid/);
         expect(cadastreIdsForParcelIds).not.toHaveBeenCalled();
-        expect(persisted.has('cadastre_proposals')).toBe(false);
+        expect(Array.from(persisted.keys()).some(key => key.startsWith('proposal:'))).toBe(false);
     });
 
     it('persists one authored building geometry without live rendering stamps or mirrors', () => {
@@ -148,7 +155,7 @@ describe('proposalStorage authored-log persistence', () => {
 
         storage._persist();
 
-        const stored = JSON.parse(persisted.get('cadastre_proposals')).records[0];
+        const stored = JSON.parse(persisted.get('proposal:block-2'));
         expect(stored.geometry.buildings).toHaveLength(1);
         expect(stored.geometry.buildings[0].properties).toEqual({ height: 12 });
         expect(stored).not.toHaveProperty('buildingGeometry');
@@ -200,10 +207,13 @@ describe('proposalStorage authored-log persistence', () => {
             expect.stringContaining('Rejected invalid stored proposal invalid-1'),
             expect.any(Error)
         );
+        // Loading a legacy envelope migrates it into rows in one write and deletes the envelope.
+        expect(persisted.has('cadastre_proposals')).toBe(false);
+        expect(JSON.parse(persisted.get('cadastre_proposals_manifest')).nextProposalId).toBe(4);
+        expect(Array.from(persisted.keys()).filter(key => key.startsWith('proposal:'))).toEqual(['proposal:valid-1']);
 
         storage._persist();
-        expect(JSON.parse(persisted.get('cadastre_proposals')).records.map(record => record.proposalId))
-            .toEqual(['valid-1']);
+        expect(Array.from(persisted.keys()).filter(key => key.startsWith('proposal:'))).toEqual(['proposal:valid-1']);
         consoleError.mockRestore();
     });
 
