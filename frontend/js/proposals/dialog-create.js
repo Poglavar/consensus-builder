@@ -1343,7 +1343,10 @@ function showProposalDialog(overrides = null) {
     // The ownership-only entry is labelled Offer, so its untouched name and description must
     // describe an offer too. Using the generic dialog default here used to open this flow as a
     // "Square" until the user picked a recipient.
-    updateProposalNameAndDescription(ownershipOnly ? 'Offer' : DEFAULT_PROPOSAL_TYPE);
+    updateProposalNameAndDescription(
+        ownershipOnly ? 'Offer' : DEFAULT_PROPOSAL_TYPE,
+        ownershipOnly
+    );
 
     // Epoha: ponudi zadnju korištenu, da niz prijedloga za isto desetljeće ne
     // traži isti odabir svaki put.
