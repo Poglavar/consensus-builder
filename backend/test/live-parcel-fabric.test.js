@@ -65,6 +65,20 @@ describe('live parcel fabric', () => {
         expect(fabric.get('HR-A').geometry.coordinates[0][0][0]).toBe(0);
     });
 
+    it('checks cadastral presence from its index without cloning parcel geometry', async () => {
+        const fabric = createLiveParcelFabric();
+        await mutate(fabric, mutation => mutation.seedCadastre([polygon('HR-A')]));
+        const cloneSpy = vi.spyOn(globalThis, 'structuredClone');
+
+        try {
+            expect(fabric.hasCadastreEntries(['HR-A'])).toBe(true);
+            expect(fabric.hasCadastreEntries(['HR-MISSING'])).toBe(false);
+            expect(cloneSpy).not.toHaveBeenCalled();
+        } finally {
+            cloneSpy.mockRestore();
+        }
+    });
+
     it('splits disconnected raw cadastral geometry deterministically', async () => {
         const fabric = createLiveParcelFabric();
         const raw = polygon('HR-A');

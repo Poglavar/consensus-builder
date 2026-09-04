@@ -559,6 +559,18 @@
                 .map(clone);
         }
 
+        function hasCadastreEntriesFrom(data, ids, query = {}) {
+            for (const raw of Array.from(ids || [])) {
+                const parcelIds = data.byCadastreId.get(normalizeId(raw));
+                if (!parcelIds?.size) continue;
+                if (query.includeCorridors === true) return true;
+                for (const parcelId of parcelIds) {
+                    if (!isCorridor(data.byId.get(parcelId))) return true;
+                }
+            }
+            return false;
+        }
+
         function queryBoundsFrom(data, bounds, query = {}) {
             const box = boundsArray(bounds);
             if (!box) return [];
@@ -737,6 +749,7 @@
                 getMany: (ids, query) => (assertActive(draft), getManyFrom(draft.data, ids, query)),
                 list: () => (assertActive(draft), Array.from(draft.data.byId.values(), clone)),
                 entriesForCadastre: (ids, query) => (assertActive(draft), entriesForCadastreFrom(draft.data, ids, query)),
+                hasCadastreEntries: (ids, query) => (assertActive(draft), hasCadastreEntriesFrom(draft.data, ids, query)),
                 producedBy(proposalId) {
                     assertActive(draft);
                     const ids = draft.data.byProducerId.get(normalizeId(proposalId));
@@ -820,6 +833,7 @@
         function getMany(ids, query) { return getManyFrom(committed, ids, query); }
         function list() { return Array.from(committed.byId.values(), clone); }
         function entriesForCadastre(ids, query) { return entriesForCadastreFrom(committed, ids, query); }
+        function hasCadastreEntries(ids, query) { return hasCadastreEntriesFrom(committed, ids, query); }
         function producedBy(proposalId) {
             const ids = committed.byProducerId.get(normalizeId(proposalId));
             return ids ? Array.from(ids, id => clone(committed.byId.get(id))) : [];
@@ -863,6 +877,7 @@
             getMany,
             list,
             entriesForCadastre,
+            hasCadastreEntries,
             producedBy,
             queryBounds,
             claimedCadastreIds,

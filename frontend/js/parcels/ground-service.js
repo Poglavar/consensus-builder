@@ -38,7 +38,7 @@
                 // renderer fallback.
                 const unpublished = features.filter(feature => {
                     const id = fabric.featureId(feature);
-                    return id && fabric.entriesForCadastre([id], { includeCorridors: true }).length === 0;
+                    return id && !fabric.hasCadastreEntries([id], { includeCorridors: true });
                 });
                 if (!unpublished.length) return;
                 if (global.ProposalManager && typeof global.ProposalManager.integrateCadastralGround === 'function') {
