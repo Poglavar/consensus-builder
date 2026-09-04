@@ -1034,15 +1034,11 @@
     function footprintFullyInsideBlock(footprintFeature, blockFeature) {
         try {
             if (!footprintFeature || !blockFeature) return false;
-            // Difference is more reliable than booleanWithin for polygons: booleanWithin can miss
-            // an edge crossing the notch of a concave parcel because every vertex is still inside.
-            // A tiny tolerance absorbs floating-point residue after clipping.
-            try {
-                const outside = turf.difference(footprintFeature, blockFeature);
-                return !outside || turf.area(outside) <= 0.05;
-            } catch (_) {
-                return turf.booleanWithin(footprintFeature, blockFeature);
-            }
+            return window.SingleBuildingGeometry?.footprintWithinBoundary?.(
+                footprintFeature,
+                blockFeature,
+                turf
+            ) === true;
         } catch (_) { return false; }
     }
 

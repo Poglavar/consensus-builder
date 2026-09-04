@@ -7,7 +7,9 @@ import * as turf from '@turf/turf';
 
 const require = createRequire(import.meta.url);
 const {
+    GROUND_AREA_EPSILON_M2,
     buildRectangleRing,
+    footprintWithinBoundary,
     isSimpleRing,
     moveGeometryCenter,
     projectedGeometryCenter,
@@ -119,5 +121,25 @@ describe('freeform polygon editing', () => {
         expect(beforeY).toBeLessThan(center[1]);
         expect(afterX).toBeGreaterThan(center[0]);
         expect(afterY).toBeLessThan(center[1]);
+    });
+
+    it('uses the authoritative 0.01 m² boundary tolerance', () => {
+        const lat = 43.735;
+        const metresToLat = metres => metres / 111320;
+        const metresToLng = metres => metres / (111320 * Math.cos(lat * Math.PI / 180));
+        const rectangle = (westM, southM, eastM, northM) => turf.polygon([[
+            [metresToLng(westM), lat + metresToLat(southM)],
+            [metresToLng(eastM), lat + metresToLat(southM)],
+            [metresToLng(eastM), lat + metresToLat(northM)],
+            [metresToLng(westM), lat + metresToLat(northM)],
+            [metresToLng(westM), lat + metresToLat(southM)]
+        ]]);
+        const host = rectangle(0, 0, 10, 10);
+        const outsideByAboutPointZeroTwo = rectangle(-0.004, 2, 5, 7);
+        const outsideByAboutPointZeroZeroFive = rectangle(-0.001, 2, 5, 7);
+
+        expect(GROUND_AREA_EPSILON_M2).toBe(0.01);
+        expect(footprintWithinBoundary(outsideByAboutPointZeroTwo, host, turf)).toBe(false);
+        expect(footprintWithinBoundary(outsideByAboutPointZeroZeroFive, host, turf)).toBe(true);
     });
 });

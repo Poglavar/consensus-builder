@@ -10,6 +10,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const {
     ProposalManager,
+    _flatGroundCoverageIsComplete,
     _shouldSkipUncutRemainder
 } = require('../../frontend/js/proposal-manager.js');
 const {
@@ -192,6 +193,23 @@ describe('_shouldSkipUncutRemainder', () => {
 
     it('scales its tolerance with the parent, so a ~1 m² cut on a small parcel is kept', () => {
         expect(_shouldSkipUncutRemainder(500, 499)).toBe(false);
+    });
+});
+
+describe('_flatGroundCoverageIsComplete', () => {
+    it('rejects the 0.018 m² outside sliver produced by the former building-editor tolerance', () => {
+        expect(_flatGroundCoverageIsComplete(1, 1, 0.9983738316419258, 11.272744860315052)).toBe(false);
+    });
+
+    it('accepts geometry noise within 0.01 m² regardless of footprint size', () => {
+        expect(_flatGroundCoverageIsComplete(1, 1, 1 - (0.009 / 1), 1)).toBe(true);
+        expect(_flatGroundCoverageIsComplete(1, 1, 1 - (0.009 / 10000), 10000)).toBe(true);
+    });
+
+    it('never treats absent declared or resolved ground as complete', () => {
+        expect(_flatGroundCoverageIsComplete(0, 1, 1, 10)).toBe(false);
+        expect(_flatGroundCoverageIsComplete(1, 0, 1, 10)).toBe(false);
+        expect(_flatGroundCoverageIsComplete(1, 1, 0, 0.005)).toBe(false);
     });
 });
 

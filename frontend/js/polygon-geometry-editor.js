@@ -208,15 +208,11 @@
             const footprint = turfApi.polygon([closed]);
             // Turf booleanWithin only checks polygon vertices in this case and can miss an edge
             // crossing the notch of a concave parcel. Difference measures the actual outside area.
-            let outside = null;
-            let outsideMeasured = false;
-            try {
-                outside = turfApi.difference(footprint, polygonBoundary);
-                outsideMeasured = true;
-            } catch (_) {
-                if (turfApi.booleanWithin(footprint, polygonBoundary)) return points;
-            }
-            if (outsideMeasured && (!outside || turfApi.area(outside) <= 0.05)) return points;
+            if (global.SingleBuildingGeometry?.footprintWithinBoundary?.(
+                footprint,
+                polygonBoundary,
+                turfApi
+            )) return points;
             const clipped = largestPolygon(turfApi.intersect(footprint, polygonBoundary), turfApi);
             const clippedRing = clipped && clipped.geometry && clipped.geometry.coordinates[0];
             const constrained = openRing(clippedRing);

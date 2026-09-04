@@ -524,9 +524,18 @@ function _assignSyntheticChildIdentitiesImpl(proposalId, childFeatures, options 
     });
 }
 
-// Same completeness bar as finishing a corridor. Below this, even a tiny unloaded edge
-// may contain a cadastral parcel that changes the cut, so replay still asks the backend.
-const FLAT_GROUND_COMPLETE_COVERAGE = 0.999;
+// The authored footprint and immutable cadastral scope may differ only by the shared geometry
+// epsilon. A percentage threshold rejects tiny valid footprints more harshly than large ones.
+const FLAT_GROUND_AREA_EPSILON_M2 = 0.01;
+
+function _flatGroundCoverageIsComplete(declaredCount, resolvedCount, coverage, footprintArea) {
+    const area = Number(footprintArea);
+    const ratio = Number(coverage);
+    if (!(Number(declaredCount) > 0) || !(Number(resolvedCount) > 0)
+        || !(area > 0) || !(ratio > 0) || !Number.isFinite(ratio)) return false;
+    const boundedRatio = Math.max(0, Math.min(1, ratio));
+    return area * (1 - boundedRatio) <= FLAT_GROUND_AREA_EPSILON_M2;
+}
 
 const _now = () => ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now());
 
@@ -1186,7 +1195,16 @@ const ProposalManager = {
                     : null;
             } catch (_) { resolved = null; }
             const coverage = Number(resolved && resolved.coverage) || 0;
-            complete = declared.length > 0 && coverage > FLAT_GROUND_COMPLETE_COVERAGE;
+            const turfApi = browserRoot.turf;
+            const footprintArea = turfApi && typeof turfApi.area === 'function'
+                ? Number(turfApi.area(footprint)) || 0
+                : 0;
+            complete = _flatGroundCoverageIsComplete(
+                declared.length,
+                Array.isArray(resolved?.ids) ? resolved.ids.length : 0,
+                coverage,
+                footprintArea
+            );
         }
 
         const flat = Array.from(new Set((declared || []).map(String).filter(Boolean)));
@@ -3498,6 +3516,7 @@ if (typeof window !== 'undefined') {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         ProposalManager,
+        _flatGroundCoverageIsComplete,
         _shouldSkipUncutRemainder
     };
 }

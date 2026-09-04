@@ -11,6 +11,8 @@
 (function (global) {
     'use strict';
 
+    const GROUND_AREA_EPSILON_M2 = 0.01;
+
     function ensureClosedRing(ring) {
         if (!Array.isArray(ring) || ring.length === 0) return ring;
         const first = ring[0];
@@ -87,6 +89,22 @@
             }
         }
         return true;
+    }
+
+    // The editor and the authoritative apply path use the same absolute area tolerance. A looser
+    // editor check used to accept a default footprint with 0.018 m² outside its host parcel; the
+    // proposal was then saved but correctly refused by apply.
+    function footprintWithinBoundary(footprint, boundary, turfApi, epsilonM2 = GROUND_AREA_EPSILON_M2) {
+        if (!footprint?.geometry || !boundary?.geometry || !turfApi) return false;
+        try {
+            const outside = turfApi.difference(footprint, boundary);
+            if (!outside) return true;
+            const outsideArea = Number(turfApi.area(outside));
+            const epsilon = Number.isFinite(Number(epsilonM2)) ? Math.max(0, Number(epsilonM2)) : GROUND_AREA_EPSILON_M2;
+            return Number.isFinite(outsideArea) && outsideArea <= epsilon;
+        } catch (_) {
+            try { return turfApi.booleanWithin(footprint, boundary); } catch (_) { return false; }
+        }
     }
 
     function outerRings(geometry) {
@@ -226,8 +244,10 @@
     }
 
     const api = {
+        GROUND_AREA_EPSILON_M2,
         buildRectangleRing,
         ensureClosedRing,
+        footprintWithinBoundary,
         isSimpleRing,
         projectedGeometryCenter,
         translateGeometry,

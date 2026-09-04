@@ -184,10 +184,13 @@
             if (!feature?.geometry || feature.geometry.type !== 'Polygon' || turf.area(feature) < 0.5) return false;
             if (typeof turf.kinks === 'function' && turf.kinks(feature).features.length) return false;
             if (!cachedSuperparcel?.geometry) return true;
-            const outside = turf.difference(feature, cachedSuperparcel);
-            return !outside || turf.area(outside) <= 0.05;
+            return window.SingleBuildingGeometry?.footprintWithinBoundary?.(
+                feature,
+                cachedSuperparcel,
+                turf
+            ) === true;
         } catch (_) {
-            try { return turf.booleanWithin(feature, cachedSuperparcel); } catch (_) { return false; }
+            return false;
         }
     }
 
