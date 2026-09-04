@@ -16,6 +16,8 @@
     const planWorkerPending = new Map();
     let planWorkerDisabledReason = null;
     let lastPlanComputationMode = 'not-run';
+    const GOVERNMENT_PLAN_PANE = 'governmentRoadPlanPane';
+    let planCanvasRenderer = null;
 
     function isLocalFileOrigin() {
         try {
@@ -2164,10 +2166,6 @@
         dashArray: '',
         interactive: false
     };
-    const planCanvasRenderer = (typeof L !== 'undefined' && typeof L.canvas === 'function')
-        ? L.canvas({ padding: 0.5 })
-        : null;
-
     const planCatalogState = {
         promise: null
     };
@@ -2177,6 +2175,24 @@
         if (typeof window === 'undefined' || typeof window.map === 'undefined' || !window.map) {
             throw new Error('Map is not initialized yet.');
         }
+    }
+
+    function governmentPlanRenderer() {
+        ensureMapReady();
+        if (typeof L === 'undefined' || typeof L.canvas !== 'function') return undefined;
+        let pane = window.map.getPane(GOVERNMENT_PLAN_PANE);
+        if (!pane && typeof window.map.createPane === 'function') {
+            pane = window.map.createPane(GOVERNMENT_PLAN_PANE);
+        }
+        if (!pane) return undefined;
+        // The plan is display-only. Its own pane keeps its full-viewport canvas from ever taking a
+        // click away from the parcel canvas, including after the plan paths have been cleared.
+        pane.style.zIndex = '410';
+        pane.style.pointerEvents = 'none';
+        if (!planCanvasRenderer) {
+            planCanvasRenderer = L.canvas({ pane: GOVERNMENT_PLAN_PANE, padding: 0.5 });
+        }
+        return planCanvasRenderer;
     }
 
     function initialiseGovernmentPlanProposalState() {
@@ -2620,8 +2636,11 @@
             return planLayer;
         }
         ensureMapReady();
+        const renderer = governmentPlanRenderer();
         planLayer = L.geoJSON([], {
-            renderer: planCanvasRenderer || undefined,
+            pane: renderer ? GOVERNMENT_PLAN_PANE : undefined,
+            renderer,
+            interactive: false,
             style: () => getPlanLayerStyle(useHighlightStyle)
         }).addTo(window.map);
         try { planLayer.bringToFront(); } catch (_) { }

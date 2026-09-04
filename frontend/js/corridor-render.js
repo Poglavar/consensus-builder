@@ -20,6 +20,12 @@ const CORRIDOR_JUNCTIONS_PANE = 'corridorJunctionsPane';
 const CORRIDOR_MARKINGS_PANE = 'corridorMarkingsPane';
 const CORRIDOR_HIT_PANE = 'corridorHitPane';
 const CORRIDOR_RAIL_PANE = 'corridorRailPane';
+const CORRIDOR_CANVAS_PANES = new Set([
+    CORRIDOR_STRIPS_PANE,
+    CORRIDOR_JUNCTIONS_PANE,
+    CORRIDOR_MARKINGS_PANE,
+    CORRIDOR_RAIL_PANE
+]);
 
 function ensureCorridorStripsPane() {
     if (typeof map === 'undefined' || !map || typeof map.getPane !== 'function') return null;
@@ -85,13 +91,18 @@ function ensureCorridorHitPane() {
 // strips, rails and hit areas in a fixed z-order.
 const _corridorCanvasByPane = new Map();
 function corridorCanvasFor(pane) {
-    const key = pane || 'overlayPane';
-    if (!_corridorCanvasByPane.has(key)) {
-        _corridorCanvasByPane.set(key, (typeof L !== 'undefined' && typeof L.canvas === 'function')
-            ? L.canvas({ pane: key, padding: 0.5 })
+    // A missing or interactive pane must fail visibly. Falling back to overlayPane creates a
+    // full-viewport canvas above the parcel canvas; even with interactive:false paths, that DOM
+    // element catches the click before the parcel renderer can see it.
+    if (!CORRIDOR_CANVAS_PANES.has(pane)) {
+        throw new Error(`Corridor canvas requires a non-interactive corridor pane; received ${String(pane)}.`);
+    }
+    if (!_corridorCanvasByPane.has(pane)) {
+        _corridorCanvasByPane.set(pane, (typeof L !== 'undefined' && typeof L.canvas === 'function')
+            ? L.canvas({ pane, padding: 0.5 })
             : undefined);
     }
-    return _corridorCanvasByPane.get(key);
+    return _corridorCanvasByPane.get(pane);
 }
 
 function renderCorridorLaneMarkings(markings, group, pane) {
@@ -253,9 +264,8 @@ function ensureCorridorRailPane() {
 function corridorRailRenderer() {
     if (!corridorRailCanvasRenderer && typeof L !== 'undefined' && L.canvas) {
         const pane = ensureCorridorRailPane();
-        corridorRailCanvasRenderer = pane
-            ? L.canvas({ padding: 0.5, pane: CORRIDOR_RAIL_PANE })
-            : L.canvas({ padding: 0.5 });
+        if (!pane) return undefined;
+        corridorRailCanvasRenderer = L.canvas({ padding: 0.5, pane: CORRIDOR_RAIL_PANE });
     }
     return corridorRailCanvasRenderer;
 }
@@ -396,7 +406,6 @@ function renderCorridorParkingBays(bays, group, pane) {
         const isEdge = bay.kind === 'edge';
         L.polyline(bay.line, {
             pane: pane || undefined,
-            renderer: corridorCanvasFor(pane),
             renderer,
             color: '#f4f4f4',
             weight: isEdge ? 1.5 : 1,

@@ -1021,6 +1021,20 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
 // mobile users constantly missed node snaps and built near-miss disconnected junctions.
 const ROAD_SNAP_PIXELS = (typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches) ? 26 : 12;
 let roadSnapMarker = null;
+const ROAD_DRAWING_MARKER_PANE = 'road-snap';
+
+function ensureRoadDrawingMarkerPane() {
+    if (typeof map === 'undefined' || !map || typeof map.getPane !== 'function') return null;
+    let pane = map.getPane(ROAD_DRAWING_MARKER_PANE);
+    if (!pane && typeof map.createPane === 'function') pane = map.createPane(ROAD_DRAWING_MARKER_PANE);
+    if (pane && pane.style) {
+        pane.style.zIndex = '675';
+        // Vertex and snap rings are guides, not controls. Clicks must reach the map so clicking the
+        // first vertex can close a loop and so this high pane can never block parcel interaction.
+        pane.style.pointerEvents = 'none';
+    }
+    return pane ? ROAD_DRAWING_MARKER_PANE : null;
+}
 
 // Closest point to `p` on the pixel segment ab, clamped to the segment.
 // projectPointOnPixelSegment + the snap priority ladder (pickSnapTarget) moved to
@@ -1138,18 +1152,23 @@ function showRoadSnapMarker(snap) {
     }
     // Its own pane above the corridor strips and hit targets — a snap ring under the asphalt
     // is invisible exactly when it matters (snapping onto a road).
-    if (!map.getPane('road-snap')) {
-        map.createPane('road-snap').style.zIndex = 675;
-    }
-    roadSnapMarker = L.circleMarker(latlng, { ...style, interactive: false, pane: 'road-snap' }).addTo(map);
+    const pane = ensureRoadDrawingMarkerPane();
+    roadSnapMarker = L.circleMarker(latlng, {
+        ...style,
+        interactive: false,
+        ...(pane ? { pane } : {})
+    }).addTo(map);
 }
 
 function createRoadVertexMarker(latlng) {
+    const pane = ensureRoadDrawingMarkerPane();
     const marker = L.circleMarker(latlng, {
         radius: 5,
         color: 'green',
         fillColor: '#00ff00',
-        fillOpacity: 1
+        fillOpacity: 1,
+        interactive: false,
+        ...(pane ? { pane } : {})
     }).addTo(map);
     return marker;
 }
@@ -1184,6 +1203,14 @@ function redrawRoadStrips() {
     };
     if (!roadProfile || typeof buildCorridorStrips !== 'function') return restoreCorridorFill();
 
+    // Drawing and applied corridors share the same non-interactive render panes. These calls used
+    // to omit `pane`, creating a second canvas in Leaflet's default overlayPane. Once the drawing
+    // finished all of its paths were removed, but Leaflet kept that empty canvas above the parcel
+    // canvas and it caught every map click. corridorCanvasFor() now also refuses a missing pane.
+    ensureCorridorStripsPane();
+    ensureCorridorJunctionsPane();
+    ensureCorridorMarkingsPane();
+
     // Seeded segments keep their cross-section; only segments without an override use the tool profile.
     const entries = getAllRoadSegments(true)
         .map((segment, index) => ({
@@ -1214,6 +1241,7 @@ function redrawRoadStrips() {
         const decorations = ((typeof buildCorridorDecorations === 'function') ? buildCorridorDecorations([entry.points], entry.profile) : [])
             .filter(decoration => decoration.kind === 'tree');
         const segmentLayer = renderCorridorStrips(strips, {
+            pane: CORRIDOR_STRIPS_PANE,
             markings: [], decorations, junctions: [],
             // Rails come with the cross-section: a rail lane in the profile being drawn lays its track
             // right there on the map, so a track is drawn as a track from the first click.
@@ -1230,10 +1258,10 @@ function redrawRoadStrips() {
         ? buildCorridorJunctionTreatmentsForEntries(entries)
         : [];
     if (junctions.length && typeof renderCorridorJunctions === 'function') {
-        renderCorridorJunctions(junctions, group, undefined);
+        renderCorridorJunctions(junctions, group, CORRIDOR_JUNCTIONS_PANE);
     }
     if (typeof renderCorridorLaneMarkings === 'function') {
-        renderCorridorLaneMarkings(markings, group, undefined);
+        renderCorridorLaneMarkings(markings, group, CORRIDOR_MARKINGS_PANE);
     }
     roadStripLayer = group;
     if (roadPolygonLayer) roadPolygonLayer.setStyle({ fillOpacity: 0 });

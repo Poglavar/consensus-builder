@@ -18,11 +18,48 @@
 // The invariant: a pane that accepts pointer events must not be drawn by a canvas renderer.
 
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
+import { relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const read = rel => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8');
 const render = read('../../frontend/js/corridor-render.js');
+const drawing = read('../../frontend/js/road-drawing.js');
+const governmentRoads = read('../../frontend/js/government-roads.js');
+const mapCore = read('../../frontend/js/map-core.js');
+const structures = read('../../frontend/js/structures.js');
+const frontendJsRoot = fileURLToPath(new URL('../../frontend/js/', import.meta.url));
+
+function javascriptFiles(directory) {
+    return readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
+        const path = resolve(directory, entry.name);
+        if (entry.isDirectory()) return entry.name === 'vendor' ? [] : javascriptFiles(path);
+        return entry.isFile() && entry.name.endsWith('.js') ? [path] : [];
+    });
+}
+
+function explicitCanvasCalls() {
+    const calls = [];
+    javascriptFiles(frontendJsRoot).forEach(path => {
+        const source = readFileSync(path, 'utf8');
+        const pattern = /(?:[A-Za-z_$][\w$]*\.)*L\.canvas\s*\(\s*\{[\s\S]*?\}\s*\)/g;
+        for (const match of source.matchAll(pattern)) {
+            calls.push({
+                file: relative(frontendJsRoot, path),
+                call: match[0].replace(/\s+/g, ' ')
+            });
+        }
+    });
+    return calls;
+}
+
+function sourceSection(source, startMarker, endMarker) {
+    const start = source.indexOf(startMarker);
+    const end = source.indexOf(endMarker, start + startMarker.length);
+    expect(start, `missing source marker: ${startMarker}`).toBeGreaterThanOrEqual(0);
+    expect(end, `missing source marker: ${endMarker}`).toBeGreaterThan(start);
+    return source.slice(start, end);
+}
 
 /** Panes this file creates, with the pointer-events value it forces on each. */
 function panesWithPointerEvents(source) {
@@ -83,5 +120,99 @@ describe('an interactive pane is never drawn on canvas', () => {
         // Reverting them would put ~9,700 paths back into the SVG for no reason.
         expect(render).toContain('corridorCanvasFor(pane)');
         expect(panes.get('CORRIDOR_RAIL_PANE')).toBe('none');
+    });
+
+    it('cannot silently turn a missing corridor pane into another default-pane canvas', () => {
+        const allowed = sourceSection(render, 'const CORRIDOR_CANVAS_PANES', 'function ensureCorridorStripsPane');
+        const factory = sourceSection(render, 'function corridorCanvasFor(pane)', 'function renderCorridorLaneMarkings');
+        const railFactory = sourceSection(render, 'function corridorRailRenderer()', 'const CORRIDOR_SLEEPER_SPACING');
+
+        ['CORRIDOR_STRIPS_PANE', 'CORRIDOR_JUNCTIONS_PANE', 'CORRIDOR_MARKINGS_PANE', 'CORRIDOR_RAIL_PANE']
+            .forEach(pane => {
+                expect(allowed).toContain(pane);
+                expect(panes.get(pane)).toBe('none');
+            });
+        expect(allowed).not.toContain('CORRIDOR_HIT_PANE');
+        expect(factory).toContain('CORRIDOR_CANVAS_PANES.has(pane)');
+        expect(factory).not.toContain("pane || 'overlayPane'");
+        expect(railFactory).not.toContain("L.canvas({ padding: 0.5 })");
+    });
+
+    it('draws the live road preview in those panes, never in the clickable default overlay pane', () => {
+        const preview = sourceSection(
+            drawing,
+            'function redrawRoadStrips()',
+            '// The cross-section of the corridor being drawn'
+        );
+
+        expect(preview).toContain('pane: CORRIDOR_STRIPS_PANE');
+        expect(preview).toContain('renderCorridorJunctions(junctions, group, CORRIDOR_JUNCTIONS_PANE)');
+        expect(preview).toContain('renderCorridorLaneMarkings(markings, group, CORRIDOR_MARKINGS_PANE)');
+        expect(preview).not.toContain('renderCorridorJunctions(junctions, group, undefined)');
+        expect(preview).not.toContain('renderCorridorLaneMarkings(markings, group, undefined)');
+    });
+
+    it('keeps drawing vertices above the corridor without turning their pane into a click shield', () => {
+        const markerPane = sourceSection(
+            drawing,
+            'function ensureRoadDrawingMarkerPane()',
+            '// Closest point to `p` on the pixel segment'
+        );
+        const marker = sourceSection(
+            drawing,
+            'function createRoadVertexMarker(latlng)',
+            '// Markers are cosmetic'
+        );
+
+        expect(markerPane).toContain("pane.style.pointerEvents = 'none'");
+        expect(marker).toContain('interactive: false');
+        expect(marker).toContain('...(pane ? { pane } : {})');
+    });
+});
+
+describe('every decorative main-map canvas names a click-through pane', () => {
+    it('keeps the complete renderer list explicit so a new canvas requires a pane review', () => {
+        const sites = explicitCanvasCalls().map(({ file, call }) => {
+            const named = call.match(/\bpane\s*:\s*([A-Za-z_$][\w$]*|'[^']+')/);
+            const pane = named ? named[1].replaceAll("'", '') : (/\{\s*pane\s*[,}]/.test(call) ? 'pane' : null);
+            return `${file}:${pane || 'default'}`;
+        }).sort();
+
+        expect(sites).toEqual([
+            'building-blocks.js:proposedBuildingsPane',
+            'corridor-render.js:CORRIDOR_RAIL_PANE',
+            'corridor-render.js:pane',
+            'government-roads.js:GOVERNMENT_PLAN_PANE',
+            'parcels/ingest.js:default',
+            'structures.js:SQUARES_PANE'
+        ]);
+    });
+
+    it('allows only the intentional parcel renderer to use the default pane', () => {
+        const bare = explicitCanvasCalls().filter(({ call }) => !/\bpane\s*(?::|[,}])/.test(call));
+        expect(bare).toEqual([{
+            file: 'parcels/ingest.js',
+            call: 'global.L.canvas({ padding: 0.5 })'
+        }]);
+    });
+
+    it('keeps the government-plan renderer in a display-only pane', () => {
+        const renderer = sourceSection(governmentRoads, 'function governmentPlanRenderer()', 'function initialiseGovernmentPlanProposalState');
+        const layer = sourceSection(governmentRoads, 'function ensurePlanLayer(useHighlightStyle)', 'function setPlanLayerFeatures');
+
+        expect(renderer).toContain("pane.style.pointerEvents = 'none'");
+        expect(renderer).toContain('L.canvas({ pane: GOVERNMENT_PLAN_PANE, padding: 0.5 })');
+        expect(layer).toContain('pane: renderer ? GOVERNMENT_PLAN_PANE : undefined');
+        expect(layer).toContain('interactive: false');
+    });
+
+    it('keeps the square texture canvas click-through too', () => {
+        const pane = sourceSection(structures, 'function ensureSquaresPane()', 'function ensureSquaresIconPane');
+        expect(pane).toContain("pane.style.pointerEvents = 'none'");
+        expect(structures).toContain('L.canvas({ padding: 0.5, pane: SQUARES_PANE })');
+    });
+
+    it('does not opt the main map into one shared catch-all canvas', () => {
+        expect(mapCore).not.toMatch(/preferCanvas\s*:\s*true/);
     });
 });
