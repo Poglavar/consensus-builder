@@ -657,16 +657,19 @@ describe('CadastralParcelRepository.ensureBounds per-cell provisioning', () => {
 
     it('records loaded ids per cell and serves a repeat viewport from cache', async () => {
         const f = boundsFixture();
-        const first = f.service.ensureBounds(boundsFor(['0,0', '0,1']));
+        const firstCall = f.service.ensureBounds(boundsFor(['0,0', '0,1']));
         await f.settle();
         f.resolveCell('0,0', ['A1']);
         f.resolveCell('0,1', ['B1']);
-        await first;
+        const first = await firstCall;
 
         const again = await f.service.ensureBounds(boundsFor(['0,1']));
         expect(f.fetchBounds).toHaveBeenCalledTimes(2);
         expect(again.cached).toBe(true);
         expect(again.features.map(feature => feature.properties.parcelId)).toEqual(['B1']);
+        expect(Object.isFrozen(again.features[0])).toBe(true);
+        expect(again.features[0]).toBe(first.features.find(feature => feature.properties.parcelId === 'B1'));
+        expect(f.onFeatures.mock.calls.at(-1)[0][0]).toBe(again.features[0]);
     });
 
     it('keeps at most six cells in flight', async () => {

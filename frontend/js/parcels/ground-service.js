@@ -691,7 +691,10 @@
                 const cachedIds = new Set(keys.flatMap(key => Array.from(loaded.get(key) || [])));
                 const result = {
                     status: 'ready', cached: true, keys,
-                    features: Array.from(cachedIds, id => featureStore(city).get(id)).filter(Boolean).map(clone),
+                    // These are the same deep-frozen repository facts returned by the uncached
+                    // path below. Cloning the full viewport here made every cached zoom copy
+                    // thousands of polygons before the fabric could reject them as already shown.
+                    features: Array.from(cachedIds, id => featureStore(city).get(id)).filter(Boolean),
                     requestCount: 0
                 };
                 await provideFeatures(result.features, { city, mutation: options.mutation || null });
