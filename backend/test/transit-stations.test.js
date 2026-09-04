@@ -621,6 +621,101 @@ describe('station placement input ownership', () => {
         }
     });
 
+    it('restores the ready message after moving away from an incomplete cadastral footprint', async () => {
+        const keys = [
+            'map', 'L', 'document', 'turf', 'addEventListener', 'removeEventListener',
+            'isThreeModeActive', 'clearParcelHover', 'proposalStorage', 'LiveParcelFabric',
+            'CadastralParcelRepository', 'CityConfigManager', 'updateStatus', 'TransitAlignments'
+        ];
+        const originals = new Map(keys.map(key => [key, globalThis[key]]));
+        const handlers = new Map();
+        const messages = [];
+        const cursor = { lat: 45.81, lng: 15.98 };
+        const container = {
+            style: {},
+            addEventListener(type, handler, capture) { handlers.set(`${type}:${capture === true}`, handler); },
+            removeEventListener(type, handler, capture) {
+                if (handlers.get(`${type}:${capture === true}`) === handler) handlers.delete(`${type}:${capture === true}`);
+            }
+        };
+        const layer = { addTo() { return this; }, clearLayers() {} };
+        const rail = {
+            proposalId: 'rail', applied: true,
+            roadProposal: { definition: {
+                width: 6,
+                profile: { strips: [{ type: 'rail', width: 6 }] },
+                points: [[{ lng: 15.979, lat: 45.81 }, { lng: 15.981, lat: 45.81 }]]
+            } }
+        };
+        globalThis.map = {
+            _container: container,
+            getContainer: () => container,
+            getPane: () => ({ style: {} }),
+            createPane: () => ({ style: {} }),
+            on(type, handler) { handlers.set(`map:${type}`, handler); },
+            off(type, handler) {
+                if (handlers.get(`map:${type}`) === handler) handlers.delete(`map:${type}`);
+            },
+            removeLayer() {},
+            mouseEventToLatLng: () => cursor
+        };
+        globalThis.L = {
+            featureGroup: () => layer,
+            geoJSON: () => ({ addTo() { return this; } }),
+            polyline: () => ({ addTo() { return this; } }),
+            marker: () => ({ addTo() { return this; } }),
+            divIcon: options => options
+        };
+        globalThis.document = {
+            getElementById: () => null,
+            querySelector: () => null,
+            querySelectorAll: () => []
+        };
+        globalThis.turf = turf;
+        globalThis.addEventListener = () => {};
+        globalThis.removeEventListener = () => {};
+        globalThis.isThreeModeActive = () => false;
+        globalThis.clearParcelHover = () => {};
+        globalThis.proposalStorage = { getAllProposals: () => [rail] };
+        globalThis.LiveParcelFabric = {
+            snapshot: () => ({ revision: 1 }),
+            list: () => [rectangle(15.978, 45.8095, 15.982, 45.8105, 'track-ground')]
+        };
+        globalThis.CadastralParcelRepository = {
+            ensureFootprint: vi.fn().mockResolvedValue({ result: { ids: ['partial-ground'], coverage: 0.5 } })
+        };
+        globalThis.CityConfigManager = { getCurrentCityId: () => 'test-city' };
+        globalThis.TransitAlignments = { getRecords: () => [], queryNearby: () => [] };
+        globalThis.updateStatus = message => messages.push(message);
+
+        try {
+            expect(stations.startTransitStationPlacement('tram')).toBe(true);
+            handlers.get('map:mousemove')?.({ latlng: cursor });
+            expect(messages.at(-1)).toBe('Snapped to a compatible track. Click to place; Esc cancels.');
+
+            handlers.get('click:true')?.({
+                button: 0,
+                clientX: 100,
+                clientY: 120,
+                target: { closest: () => null },
+                preventDefault() {},
+                stopImmediatePropagation() {}
+            });
+            await vi.waitFor(() => {
+                expect(messages.at(-1)).toBe('The complete station footprint must lie on cadastral ground.');
+            });
+
+            handlers.get('map:mousemove')?.({ latlng: cursor });
+            expect(messages.at(-1)).toBe('Snapped to a compatible track. Click to place; Esc cancels.');
+        } finally {
+            stations.cancelTransitStationPlacement();
+            for (const [key, value] of originals.entries()) {
+                if (value === undefined) delete globalThis[key];
+                else globalThis[key] = value;
+            }
+        }
+    });
+
     it('registers station placement as a parcel drawing mode fallback', () => {
         const source = readFileSync(new URL('../../frontend/js/parcels/state.js', import.meta.url), 'utf8');
         expect(source).toContain('global.transitStationPlacementMode');

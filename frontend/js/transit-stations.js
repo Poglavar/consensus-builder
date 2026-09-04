@@ -1153,6 +1153,7 @@
             active.valid = false;
             active.reason = 'no-loaded-parcel';
             active.parcelIds = [];
+            active.statusKey = null;
             renderPlacementPreview();
             updatePlacementStatus('The complete station footprint must lie on cadastral ground.');
             return null;
