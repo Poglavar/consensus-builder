@@ -1340,7 +1340,10 @@ function showProposalDialog(overrides = null) {
 
     // Pre-fill name and description with default text (facets already set it for a chosen goal;
     // this only fills the empty do-nothing default).
-    updateProposalNameAndDescription(DEFAULT_PROPOSAL_TYPE);
+    // The ownership-only entry is labelled Offer, so its untouched name and description must
+    // describe an offer too. Using the generic dialog default here used to open this flow as a
+    // "Square" until the user picked a recipient.
+    updateProposalNameAndDescription(ownershipOnly ? 'Offer' : DEFAULT_PROPOSAL_TYPE);
 
     // Epoha: ponudi zadnju korištenu, da niz prijedloga za isto desetljeće ne
     // traži isti odabir svaki put.

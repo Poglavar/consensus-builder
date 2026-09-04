@@ -34,4 +34,10 @@ describe('active proposal parcel modes', () => {
         );
         expect(activeFilterBlock).not.toContain("value: 'decide-later'");
     });
+
+    it('names the ownership-only palette flow as an Offer before a recipient is chosen', () => {
+        expect(dialogSource).toContain(
+            "updateProposalNameAndDescription(ownershipOnly ? 'Offer' : DEFAULT_PROPOSAL_TYPE);"
+        );
+    });
 });
