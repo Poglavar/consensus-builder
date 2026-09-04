@@ -123,6 +123,12 @@ rsync -a --delete \
     --exclude='deploy-frontend.sh' --exclude='rollback-frontend.sh' \
     --exclude='Dockerfile' --exclude='.env' --exclude='.deploy-build-counter' \
     "$REMOTE_REPO/frontend/" "$DOCROOT/"
+# Excluded destination files survive rsync --delete. Remove exact deployment artefacts that an
+# older deployment may already have copied into the public docroot.
+rm -f \
+    "$DOCROOT/deploy-frontend.sh" \
+    "$DOCROOT/rollback-frontend.sh" \
+    "$DOCROOT/deploy-to-server.sh"
 chown -R www-data:www-data "$DOCROOT"; chmod -R 755 "$DOCROOT"
 
 # Verify + reload nginx.
