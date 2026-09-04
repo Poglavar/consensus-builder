@@ -1301,7 +1301,7 @@ const ProposalManager = {
         }
         seeds.forEach(record => {
             const id = String(record?.proposalId || '');
-            if (id && !id.startsWith('old-footprint-') && !included.has(id)) included.set(id, record);
+            if (id && !included.has(id)) included.set(id, record);
         });
         return { records: Array.from(included.values()), cadastreParcelIds: Array.from(cadastreIds) };
     },
@@ -1405,8 +1405,6 @@ const ProposalManager = {
                 if (id === undefined || id === null || !String(id)) return;
                 const key = String(id);
                 const live = _getProposalRecord(key, opts);
-                // Geometry-only old-footprint seeds are not authored records and own no output.
-                if (!live && key.startsWith('old-footprint-')) return;
                 if (!seedById.has(key)) seedById.set(key, live || seed);
             });
             closure.records.forEach(record => {
@@ -2167,35 +2165,30 @@ const ProposalManager = {
         const goalKey = (applyRoute && typeof applyRoute.normalizeGoalKey === 'function')
             ? applyRoute.normalizeGoalKey(proposal.goal)
             : String(proposal.goal || '');
-        const supersededFootprints = (Array.isArray(options.supersededFootprints) ? options.supersededFootprints : [])
-            .filter(footprint => footprint && footprint.geometry);
-        const planOrderApi = (typeof window !== 'undefined') ? window.__planOrder : null;
-        (Array.isArray(options.supersededIds) ? options.supersededIds : []).forEach(id => {
-            const record = _getProposalRecord(id, options);
-            if (!record || !planOrderApi || typeof planOrderApi.footprintOf !== 'function') return;
-            try {
-                const footprint = planOrderApi.footprintOf(record);
-                if (footprint && footprint.geometry) supersededFootprints.push(footprint);
-            } catch (_) { /* a record with no readable footprint freed no ground */ }
-        });
-
         const priorAppliedAt = Object.prototype.hasOwnProperty.call(proposal, 'appliedAt')
             ? proposal.appliedAt
             : null;
         try { setProposalApplied(proposal, true, priorAppliedAt ? { appliedAt: priorAppliedAt } : {}); }
         catch (_) { proposal.applied = true; }
 
-        const oldFootprintSeeds = supersededFootprints.map((footprint, index) => ({
-            proposalId: `old-footprint-${index}`,
-            geometry: footprint.geometry
-        }));
         // Alternatives were parked as record-state changes above. Name the records as seeds so
-        // their proposal-owned output is removed; their flat anchors stay local and no other
-        // proposal sharing those anchors is pulled into the operation.
-        const supersededRecords = (Array.isArray(options.supersededRecords)
-            ? options.supersededRecords
-            : []).filter(Boolean);
-        const localSeeds = [proposal, ...supersededRecords, ...oldFootprintSeeds];
+        // their proposal-owned output is removed and their immutable cadastral declarations extend
+        // the local scope. A geometry-only pseudo-record has no declaration to validate and caused
+        // every explicit conflict replacement to be refused as incomplete ground.
+        const supersededById = new Map();
+        const addSuperseded = record => {
+            const id = String(record?.proposalId || '');
+            if (!id || id === String(proposal.proposalId || '') || supersededById.has(id)) return;
+            supersededById.set(id, _getProposalRecord(id, options) || record);
+        };
+        (Array.isArray(options.supersededRecords) ? options.supersededRecords : [])
+            .filter(Boolean)
+            .forEach(addSuperseded);
+        (Array.isArray(options.supersededIds) ? options.supersededIds : [])
+            .map(id => _getProposalRecord(id, options))
+            .filter(Boolean)
+            .forEach(addSuperseded);
+        const localSeeds = [proposal, ...supersededById.values()];
         const materialize = goalKey === 'road-track'
             ? this.rematerializeCorridorScope
             : this.rematerializeFlatScope;
@@ -2797,20 +2790,12 @@ const ProposalManager = {
             if (!validation.ok) return false;
         }
 
-        const parkedFootprints = [];
         const switchedAlternatives = this._collectAppliedAlternativesForExplicitApply(
             proposal,
             null,
             applyOptions
         );
         switchedAlternatives.forEach(alternative => {
-            try {
-                const order = (typeof window !== 'undefined') ? window.__planOrder : null;
-                const footprint = order && typeof order.footprintOf === 'function'
-                    ? order.footprintOf(alternative)
-                    : null;
-                if (footprint && footprint.geometry) parkedFootprints.push(footprint);
-            } catch (_) { }
             setProposalApplied(alternative, false, { stamp: false });
             store._indexProposal?.(alternative);
         });
@@ -2818,7 +2803,6 @@ const ProposalManager = {
         store._indexProposal?.(proposal);
         const derived = await this.deriveForNewProposal(proposal, {
             ...applyOptions,
-            supersededFootprints: parkedFootprints,
             supersededRecords: switchedAlternatives
         });
         if (!derived || derived.ok !== true || !appliedOf(proposal)) return false;

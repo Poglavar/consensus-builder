@@ -192,6 +192,53 @@ describe('ProposalManager mutation boundary', () => {
         expect(store.getProposal('conflict').applied).toBe(false);
     });
 
+    it('rematerializes an explicitly superseded record without adding a geometry-only pseudo proposal', async () => {
+        store.getProposal('target').goal = 'park';
+        store.getProposal('target').cadastreParcelIds = ['HR-1'];
+        store.getProposal('conflict').goal = 'park';
+        store.getProposal('conflict').cadastreParcelIds = ['HR-1'];
+        const footprint = {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+                type: 'Polygon',
+                coordinates: [[[15, 43], [15.001, 43], [15.001, 43.001], [15, 43.001], [15, 43]]]
+            }
+        };
+        ProposalManager._collectAppliedAlternativesForExplicitApply = (_proposal, _records, options) => (
+            [options._parcelMutation.proposals.getProposal('conflict')]
+        );
+        ProposalManager.rematerializeFlatScope = async records => {
+            expect(records.map(record => record.proposalId)).toEqual(['target', 'conflict']);
+            return { ok: true, failed: [] };
+        };
+
+        const previousWindow = globalThis.window;
+        globalThis.window = { __planOrder: { footprintOf: () => footprint } };
+        try {
+            await expect(ProposalManager.applyProposal('target')).resolves.toBe(true);
+        } finally {
+            if (previousWindow === undefined) delete globalThis.window;
+            else globalThis.window = previousWindow;
+        }
+    });
+
+    it('resolves superseded ids to authored records in the same local scope', async () => {
+        store.getProposal('target').goal = 'park';
+        store.getProposal('target').cadastreParcelIds = ['HR-2'];
+        store.getProposal('conflict').goal = 'park';
+        store.getProposal('conflict').cadastreParcelIds = ['HR-1'];
+        store.getProposal('conflict').applied = false;
+        ProposalManager.rematerializeFlatScope = async records => {
+            expect(records.map(record => record.proposalId)).toEqual(['target', 'conflict']);
+            return { ok: true, failed: [] };
+        };
+
+        await expect(ProposalManager.deriveForNewProposal(store.getProposal('target'), {
+            supersededIds: ['conflict']
+        })).resolves.toMatchObject({ applied: true });
+    });
+
     it('keeps ownership-only proposals out of the fabric mutation path', async () => {
         const offer = {
             proposalId: 'offer',
