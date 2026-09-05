@@ -9,9 +9,28 @@ const {
     resolveDrawShortcut,
     resolveOwnerDisplayName,
     normalizePlotOwners,
-    plotIsAssigned
+    plotIsAssigned,
+    readjustmentInputFeatures
 } = require('../../frontend/js/reparcellization-ui-state.js');
 const source = readFileSync(new URL('../../frontend/js/reparcellization.js', import.meta.url), 'utf8');
+
+describe('saved readjustment inputs', () => {
+    const original = { type: 'Feature', properties: { parcelId: 'HR-335550-1791/69', owner: 'Original owner' } };
+    const replacement = { type: 'Feature', properties: { parcelId: 'HR-335550-1791/69#plan-1', owner: 'New owner' } };
+    const sources = { cadastre: new Map([[original.properties.parcelId, original]]), live: new Map([[replacement.properties.parcelId, replacement]]) };
+
+    it('recovers original owner facts for a saved plan after the live root was consumed', () => {
+        expect(readjustmentInputFeatures({ ids: [original.properties.parcelId], source: 'cadastre' }, sources))
+            .toEqual({ features: [original], missing: [] });
+    });
+
+    it('keeps new selections on their live pieces and does not resurrect consumed originals', () => {
+        expect(readjustmentInputFeatures({ ids: [replacement.properties.parcelId] }, sources))
+            .toEqual({ features: [replacement], missing: [] });
+        expect(readjustmentInputFeatures({ ids: [original.properties.parcelId] }, sources))
+            .toEqual({ features: [], missing: [original.properties.parcelId] });
+    });
+});
 
 describe('land-readjustment UI state', () => {
     it('uses F, C, and U for finish, cancel, and undo while drawing', () => {

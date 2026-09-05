@@ -151,4 +151,18 @@ describe('proposal editor selection follows the live fabric', () => {
         expect(result.substituted).toBe(false);
         expect(result.complete).toBe(true);
     });
+
+    it('resolves a saved building preview array onto its actual plot after readjustment', async () => {
+        const { baseId, west, east } = installSplitFabric();
+        const turf = require('@turf/turf');
+        install('turf', turf);
+        install('__planOrder', require('../../frontend/js/proposals/plan-order.js'));
+        west.feature.geometry = turf.bboxPolygon([16,45,16.001,45.001]).geometry;
+        east.feature.geometry = turf.bboxPolygon([16.002,45,16.003,45.001]).geometry;
+        const buildings = [turf.bboxPolygon([16.0002,45.0002,16.0008,45.0008])];
+        const result = await prepareParcelSelection([baseId], buildings);
+        expect(result.complete).toBe(true);
+        expect(result.ids).toEqual([`${baseId}#west`]);
+        expect(result.layers).toEqual([west]);
+    });
 });

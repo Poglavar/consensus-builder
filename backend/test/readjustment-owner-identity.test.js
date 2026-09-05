@@ -18,7 +18,7 @@ const require = createRequire(import.meta.url);
 const read = rel => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8');
 const source = read('../../frontend/js/reparcellization.js');
 const { normalizeOwnerSlots } = require('../../frontend/js/reparcellization-shares.js');
-const { resolveOwnerDisplayName } = require('../../frontend/js/reparcellization-ui-state.js');
+const { resolveOwnerDisplayName, readjustmentInputFeatures } = require('../../frontend/js/reparcellization-ui-state.js');
 const contributions = require('../../frontend/js/proposals/readjustment-contributions.js');
 
 // English strings with {{param}} interpolation — enough for the two keys these functions read.
@@ -49,10 +49,12 @@ function loadEditorOwnerIdentity() {
     // A test states its cadastre inline rather than going through the live ownership cache.
     const slotsById = new Map();
     const featuresById = new Map();
+    const cadastreFeaturesById = new Map();
     const ensureParcelOwnerSlots = async (parcelId) => slotsById.get(String(parcelId)) || [];
 
     const editorWindow = {
         __readjustmentContributions: contributions,
+        CadastralParcelRepository: cadastreFeaturesById,
         LiveParcelFabric: {
             cadastreIdsForParcelIds: ids => ids.map(String),
             get: id => featuresById.get(String(id)) || null
@@ -68,12 +70,23 @@ function loadEditorOwnerIdentity() {
         normalizeOwnerSlots,
         state,
         (ownerKey, index) => `color:${ownerKey || index}`,
-        selection => (selection?.ids || [])
-            .map(id => editorWindow.LiveParcelFabric.get(id))
-            .filter(Boolean)
+        selection => readjustmentInputFeatures(selection, {
+            live: editorWindow.LiveParcelFabric, cadastre: cadastreFeaturesById
+        }).features
     );
-    return { ...api, state, slotsById, featuresById };
+    return { ...api, state, slotsById, featuresById, cadastreFeaturesById };
 }
+
+it('builds the saved plan owner ledger from immutable facts after its live inputs were consumed', async () => {
+    const editor = loadEditorOwnerIdentity();
+    const id = 'HR-335550-1791/69';
+    editor.cadastreFeaturesById.set(id, parcel(id, 500));
+    editor.slotsById.set(id, [{ key: `parcel:${id}:owner:grad`, displayName: 'GRAD ZAGREB', shareText: '1/1' }]);
+    const owners = await editor.buildOwnerShares({ ids: [id], source: 'cadastre' });
+    expect(owners).toHaveLength(1);
+    expect(owners[0]).toMatchObject({ displayName: 'GRAD ZAGREB', area: 500, percent: 1 });
+    expect(editor.featuresById.size).toBe(0);
+});
 
 // The editor reads authoritative GeoJSON features from LiveParcelFabric by parcel ID.
 function parcel(parcelId, areaM2, extraProps = {}) {

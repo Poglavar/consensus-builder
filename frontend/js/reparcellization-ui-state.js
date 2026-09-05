@@ -58,7 +58,17 @@
         return normalizePlotOwners(plot).length > 0;
     }
 
-    const api = { resolveDrawShortcut, resolveOwnerDisplayName, normalizePlotOwners, plotIsAssigned };
+    // Saved plans declare immutable cadastral inputs; a new selection declares current live pieces.
+    // Never substitute one for the other: an applied plan has consumed its original live IDs.
+    function readjustmentInputFeatures(selection, sources) {
+        const ids = Array.isArray(selection?.ids) ? selection.ids.map(String).filter(Boolean) : [];
+        const source = selection?.source === 'cadastre' ? sources.cadastre : sources.live;
+        const features = ids.map(id => source?.get?.(id) || null);
+        const missing = ids.filter((id, index) => !features[index]);
+        return { features: features.filter(Boolean), missing };
+    }
+
+    const api = { resolveDrawShortcut, resolveOwnerDisplayName, normalizePlotOwners, plotIsAssigned, readjustmentInputFeatures };
     if (typeof window !== 'undefined') window.__reparcellizationUiState = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

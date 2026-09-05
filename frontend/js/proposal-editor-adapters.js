@@ -521,6 +521,11 @@
 
     function featureOverlapsFootprint(domainFeature, footprint) {
         if (!footprint) return true;
+        // Building drafts preview an array of authored features. Passing that array to Turf as
+        // one polygon reports zero overlap and makes every consumed cadastral anchor unavailable.
+        if (Array.isArray(footprint)) {
+            return footprint.some(part => featureOverlapsFootprint(domainFeature, part));
+        }
         const feature = domainFeature || null;
         if (!feature?.geometry) return false;
         try {

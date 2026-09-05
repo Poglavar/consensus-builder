@@ -4,7 +4,8 @@
         || typeof reparcellizationUiState.resolveDrawShortcut !== 'function'
         || typeof reparcellizationUiState.resolveOwnerDisplayName !== 'function'
         || typeof reparcellizationUiState.normalizePlotOwners !== 'function'
-        || typeof reparcellizationUiState.plotIsAssigned !== 'function') {
+        || typeof reparcellizationUiState.plotIsAssigned !== 'function'
+        || typeof reparcellizationUiState.readjustmentInputFeatures !== 'function') {
         console.error('[reparcellization] UI state helpers are unavailable.');
         return;
     }
@@ -12,7 +13,8 @@
         resolveDrawShortcut,
         resolveOwnerDisplayName,
         normalizePlotOwners,
-        plotIsAssigned
+        plotIsAssigned,
+        readjustmentInputFeatures
     } = reparcellizationUiState;
 
     function liveReparcellizationFeature(parcelOrId) {
@@ -26,9 +28,11 @@
     }
 
     function liveSelectionFeatures(selection) {
-        const ids = Array.isArray(selection?.ids) ? selection.ids.map(String).filter(Boolean) : [];
-        const features = ids.map(liveReparcellizationFeature).filter(Boolean);
-        return features.length === ids.length ? features : [];
+        const { features, missing } = readjustmentInputFeatures(selection, {
+            live: window.LiveParcelFabric,
+            cadastre: window.CadastralParcelRepository
+        });
+        return missing.length ? [] : features;
     }
 
     const COLOR_PALETTE = [
@@ -3588,7 +3592,13 @@
         return { ownerKey: key || `parcel:${parcelId}:owner`, displayName };
     }
 
-    function cadastralIdentityForLiveParcel(parcelId) {
+    function cadastralIdentityForLiveParcel(parcelId, selection) {
+        if (selection?.source === 'cadastre') {
+            if (!window.CadastralParcelRepository?.get?.(parcelId)) {
+                throw new Error(`Saved readjustment input ${parcelId} is missing from the cadastre.`);
+            }
+            return String(parcelId);
+        }
         const fabric = (typeof window !== 'undefined') ? window.LiveParcelFabric : null;
         if (!fabric || typeof fabric.cadastreIdsForParcelIds !== 'function') {
             throw new Error('Live parcel fabric provenance is unavailable while assigning readjustment owners.');
@@ -3612,7 +3622,7 @@
         for (const feature of parcelFeatures) {
             if (!feature || !feature.properties) continue;
             const parcelId = feature.properties.parcelId;
-            const cadastralIdentity = cadastralIdentityForLiveParcel(parcelId);
+            const cadastralIdentity = cadastralIdentityForLiveParcel(parcelId, selection);
             const area = Number(feature.properties.calculatedArea) || computeFeatureArea(feature);
             if (!area || !Number.isFinite(area)) continue;
 
@@ -3875,13 +3885,10 @@
             : [];
     }
 
-    // Declare the complete input set to the ground service before resolving layers. The service
+    // Declare the complete input set to the ground service before resolving facts. The service
     // alone decides which are already present, in flight, absent, or need transport.
-    async function resolveInputParcelLayers(parcelIds) {
+    async function resolveInputParcelFeatures(parcelIds) {
         const ids = (parcelIds || []).map(String);
-        const lookup = id => window.LiveParcelFabric?.get?.(id)
-            ? (window.ParcelPresenter?.getLayer?.(id) || null)
-            : null;
         if (ids.length && window.CadastralParcelRepository
             && typeof window.CadastralParcelRepository.ensureIds === 'function') {
             try {
@@ -3890,9 +3897,9 @@
                 console.warn('[reparcellization] loading the plan\'s cadastral ground failed', error);
             }
         }
-        const layers = ids.map(lookup);
-        const missing = ids.filter((id, index) => !layers[index]);
-        return { layers: layers.filter(Boolean), missing };
+        return readjustmentInputFeatures({ ids, source: 'cadastre' }, {
+            cadastre: window.CadastralParcelRepository
+        });
     }
 
     // `initialPolygons` (optional) reopens the editor on a saved plan's polygons[] instead of
@@ -3944,15 +3951,15 @@
                 : null);
         if (savedPolygons && savedPolygons.length) {
             const planIds = declaredPlanParcelIds(selection);
-            const resolved = planIds.length ? await resolveInputParcelLayers(planIds) : { layers: [], missing: [] };
+            const resolved = planIds.length ? await resolveInputParcelFeatures(planIds) : { features: [], missing: [] };
             const savedPool = options.poolGeometry
                 || (window.pendingReparcellizationPlan && window.pendingReparcellizationPlan.poolGeometry)
                 || null;
             const explicitPool = savedPool && /Polygon/.test(String(savedPool.type || ''))
                 ? { type: 'Feature', properties: { parcelIds: planIds.slice() }, geometry: JSON.parse(JSON.stringify(savedPool)) }
                 : null;
-            const inputPool = resolved.layers.length && !resolved.missing.length
-                ? buildSuperParcel({ ids: planIds, layers: resolved.layers })
+            const inputPool = resolved.features.length && !resolved.missing.length
+                ? buildSuperParcelFromPlan(resolved.features, planIds)
                 : null;
             if (explicitPool) {
                 console.debug('[reparcellization] pooled from the plan\'s saved connected extent',
@@ -3967,11 +3974,11 @@
                 // the plan editable, but the pool is then only as trustworthy as the outputs — say
                 // so rather than presenting a derived boundary as if it were the cadastre.
                 console.warn('[reparcellization] could not resolve every input parcel — pooling from the plan geometry instead',
-                    { declared: planIds.length, resolved: resolved.layers.length, missing: resolved.missing });
+                    { declared: planIds.length, resolved: resolved.features.length, missing: resolved.missing });
                 planPool = buildSuperParcelFromPlan(savedPolygons, planIds);
                 state.poolFromOutputs = true;
             }
-            if (planPool) selection = { ids: planIds.slice(), layers: resolved.layers };
+            if (planPool) selection = { ids: planIds.slice(), source: 'cadastre' };
         }
 
         // A readjustment may be designed on any ground that is not already taken — the remainders a
