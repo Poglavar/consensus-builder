@@ -1270,13 +1270,13 @@ function renderProposalLoadProgress() {
     const total = Number(proposalLoadProgressTotal) || 0;
     const done = Number(proposalLoadProgressDone) || 0;
     if (total <= 0) {
-        proposalLoadProgressBarEl.style.display = 'none';
+        proposalLoadProgressBarEl.style.visibility = 'hidden';
         proposalLoadProgressFillEl.style.width = '0%';
         if (proposalLoadProgressTextEl) proposalLoadProgressTextEl.textContent = '';
         return;
     }
     const ratio = Math.max(0, Math.min(1, done / total));
-    proposalLoadProgressBarEl.style.display = 'block';
+    proposalLoadProgressBarEl.style.visibility = 'visible';
     proposalLoadProgressFillEl.style.width = `${(ratio * 100).toFixed(1)}%`;
     if (proposalLoadProgressTextEl) {
         proposalLoadProgressTextEl.textContent = `${done} / ${total}`;

@@ -890,82 +890,44 @@ function roadHasDeclaredCadastre(sharedProposal, normalized, cadastreIds) {
 function ensureProposalLoadOverlay() {
     if (proposalLoadOverlay) return proposalLoadOverlay;
 
-    const styleId = 'proposal-load-overlay-style';
-    if (!document.getElementById(styleId)) {
-        const style = document.createElement('style');
-        style.id = styleId;
-        style.textContent = `
-            @keyframes proposal-load-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-            .proposal-load-spinner { width: 28px; height: 28px; border: 3px solid #d0d7de; border-top-color: #0d3b66; border-radius: 50%; animation: proposal-load-spin 0.9s linear infinite; margin-bottom: 12px; }
-        `;
-        document.head.appendChild(style);
-    }
-
     proposalLoadOverlay = document.createElement('div');
-    proposalLoadOverlay.style.position = 'fixed';
-    proposalLoadOverlay.style.inset = '0';
-    proposalLoadOverlay.style.background = 'rgba(0,0,0,0.35)';
-    proposalLoadOverlay.style.zIndex = '12050';
+    proposalLoadOverlay.className = 'proposal-load-overlay';
     proposalLoadOverlay.style.display = 'none';
-    proposalLoadOverlay.style.alignItems = 'center';
-    proposalLoadOverlay.style.justifyContent = 'center';
 
     const card = document.createElement('div');
-    card.style.background = '#fff';
-    card.style.borderRadius = '12px';
-    card.style.padding = '20px 22px';
-    card.style.width = '320px';
-    card.style.boxShadow = '0 10px 30px rgba(0,0,0,0.25)';
-    card.style.fontFamily = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-    card.style.textAlign = 'center';
+    card.className = 'proposal-load-card';
 
     proposalLoadTitleEl = document.createElement('div');
+    proposalLoadTitleEl.className = 'proposal-load-title';
     const initialTitle = (typeof tShare === 'function')
         ? tShare('plan.fetchingPlanTitle', 'Fetching proposal')
         : 'Fetching proposal';
     proposalLoadTitleEl.textContent = initialTitle;
-    proposalLoadTitleEl.style.fontWeight = '700';
-    proposalLoadTitleEl.style.fontSize = '16px';
-    proposalLoadTitleEl.style.marginBottom = '6px';
 
     const spinner = document.createElement('div');
     spinner.className = 'proposal-load-spinner';
     spinner.setAttribute('aria-hidden', 'true');
 
     proposalLoadStatusEl = document.createElement('div');
-    proposalLoadStatusEl.style.fontSize = '13px';
-    proposalLoadStatusEl.style.color = '#334155';
-    proposalLoadStatusEl.style.marginBottom = '6px';
+    proposalLoadStatusEl.className = 'proposal-load-status';
+    proposalLoadStatusEl.setAttribute('role', 'status');
     proposalLoadStatusEl.textContent = 'Preparing…';
 
     proposalLoadBytesEl = document.createElement('div');
-    proposalLoadBytesEl.style.fontSize = '12px';
-    proposalLoadBytesEl.style.color = '#64748b';
+    proposalLoadBytesEl.className = 'proposal-load-bytes';
     proposalLoadBytesEl.textContent = '0.00 MB';
 
     proposalLoadProgressTextEl = document.createElement('div');
-    proposalLoadProgressTextEl.style.fontSize = '12px';
-    proposalLoadProgressTextEl.style.color = '#334155';
-    proposalLoadProgressTextEl.style.marginTop = '8px';
+    proposalLoadProgressTextEl.className = 'proposal-load-progress-text';
     proposalLoadProgressTextEl.textContent = '';
 
     const progressBar = document.createElement('div');
-    progressBar.style.position = 'relative';
-    progressBar.style.height = '8px';
-    progressBar.style.background = '#e5e7eb';
-    progressBar.style.borderRadius = '999px';
-    progressBar.style.overflow = 'hidden';
-    progressBar.style.marginTop = '6px';
-    progressBar.style.display = 'none';
+    progressBar.className = 'proposal-load-progress-bar';
+    progressBar.style.visibility = 'hidden';
 
     const progressFill = document.createElement('div');
-    progressFill.style.position = 'absolute';
-    progressFill.style.left = '0';
-    progressFill.style.top = '0';
-    progressFill.style.height = '100%';
+    progressFill.className = 'proposal-load-progress-fill';
     progressFill.style.width = '0%';
-    progressFill.style.background = '#0d3b66';
-    progressFill.style.transition = 'width 0.2s ease';
 
     progressBar.appendChild(progressFill);
     proposalLoadProgressBarEl = progressBar;

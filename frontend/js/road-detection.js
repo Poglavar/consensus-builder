@@ -228,8 +228,10 @@ function markRoadFeature(feature) {
 }
 
 function isMarkedRoadFeature(feature) {
-    const cadastreIds = roadDetectionCadastreIds(feature);
-    return cadastreIds.some(isRoadParcel);
+    // A cadastral road may have been replaced by buildings, parks and road remnants. Its
+    // classification belongs to that exact parcel, not every live piece sharing its provenance.
+    // Derived road/corridor pieces carry their own isRoad flag, read by the base-style resolver.
+    return isRoadParcel(resolveParcelId(feature));
 }
 
 // Fetch DKP_NACINI_UPORABE features in current bbox, paginated if needed
