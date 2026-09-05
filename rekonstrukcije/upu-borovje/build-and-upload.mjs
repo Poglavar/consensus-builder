@@ -22,14 +22,17 @@ import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 
 import { buildBorovjeTopology, roadDefinitionFor } from './plan-topology.mjs';
+import { repairBorovjeRecords } from './flat-plan.mjs';
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, '..', '..');
 const require = createRequire(path.join(repoRoot, 'backend', 'package.json'));
 const turf = require('@turf/turf');
+globalThis.turf = turf;
+const planOrder = require('../frontend/js/proposals/plan-order.js');
 
 const CITY = 'zagreb';
-const COORDINATED_PLAN_ID = 'upu-borovje';
+const RECONSTRUCTION_PLAN_ID = 'upu-borovje';
 // Kept stable because the historical import and shared links already use these identifiers.
 const PARCELATION_IDS = [
     'p-upu-borovje-parcelacija',
@@ -109,7 +112,7 @@ function buildBuildingProposal(feature, intersecting) {
     };
     return {
         proposalId: `upu-borovje-${slugify(name)}`,
-        coordinatedPlanId: COORDINATED_PLAN_ID,
+        reconstructionPlanId: RECONSTRUCTION_PLAN_ID,
         city: CITY,
         goal: 'single',
         type: 'building',
@@ -147,7 +150,7 @@ function buildParkProposal(feature, intersecting) {
         : `UPU Borovje – javni park ${name}`;
     return {
         proposalId: `upu-borovje-${slugify(name)}`,
-        coordinatedPlanId: COORDINATED_PLAN_ID,
+        reconstructionPlanId: RECONSTRUCTION_PLAN_ID,
         city: CITY,
         goal: 'park',
         type: 'structure',
@@ -205,7 +208,7 @@ function buildStreetNetworkProposal(road, parentParcelIds, options = {}) {
     const title = options.title || 'UPU Borovje – ulična mreža';
     return {
         proposalId: options.proposalId || 'upu-borovje-ulice',
-        coordinatedPlanId: COORDINATED_PLAN_ID,
+        reconstructionPlanId: RECONSTRUCTION_PLAN_ID,
         city: CITY,
         goal: 'road-track',
         type: 'road',
@@ -245,7 +248,7 @@ function buildReparcellizationProposal(component, index, parentParcelIds) {
     const title = `UPU Borovje – nova parcelacija – blok ${index + 1}/3`;
     return {
         proposalId: PARCELATION_IDS[index],
-        coordinatedPlanId: COORDINATED_PLAN_ID,
+        reconstructionPlanId: RECONSTRUCTION_PLAN_ID,
         city: CITY,
         goal: 'reparcellization',
         type: 'parcel',
@@ -348,8 +351,13 @@ async function main() {
         proposals.push(p);
     }
 
-    for (const p of proposals) {
-        console.log(`${p.proposalId}  [${p.goal}]  parcels: ${p.parentParcelIds.length}  "${p.title}"`);
+    // Publish the same ordinary, flat-cadastre representation as the saved-record repair.
+    // Exact footprint anchors are computed after trimming the buildings to their intended plots.
+    const repaired = repairBorovjeRecords(proposals, turf).records;
+    for (const p of repaired) {
+        p.cadastreParcelIds = exactIntersecting(planOrder.footprintOf(p).geometry);
+        if (!p.cadastreParcelIds.length) throw new Error(`${p.proposalId}: no cadastral ground`);
+        console.log(`${p.proposalId}  [${p.goal}]  parcels: ${p.cadastreParcelIds.length}  "${p.title}"`);
     }
     console.log(`\n${proposals.length} proposals built`
         + ` (${buildings.features.length - 1} buildings + ${zones.features.length} parks`
@@ -361,7 +369,7 @@ async function main() {
     }
 
     let ok = 0;
-    for (const p of proposals) {
+    for (const p of repaired) {
         try {
             const saved = await postProposal(baseUrl, p, origin);
             ok += 1;

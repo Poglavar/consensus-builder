@@ -29,19 +29,24 @@ node build-and-upload.mjs --apply       # POST to http://localhost:3000 (determi
 database rows 633–651 and 699. It is retained beside the reconstruction because its assumptions and
 fixed record identifiers are specific to this import; it is not part of a clean new upload.
 
-`apply-clean-topology.mjs` is the final local migration for those historical rows. It rebuilds the
+`apply-clean-topology.mjs` is the historical August topology migration. It rebuilt the
 ground from the actual UPU extent, smooths the collector road to ten intentional edges, stores two connected road
-polygons and splits the non-road ground into three connected readjustments. It is dry-run by
-default, backs up the original affected rows, and is idempotent:
+polygons and split the non-road ground into three connected readjustments. Its writer predates
+the flat cadastral model and must not be rerun against current rows.
+
+For the current local database, use `repair-flat-plan.mjs`. It preserves all 22 identities and the
+17 plot boundaries, removes the obsolete coordinated-plan runtime behavior, clips building edges
+to their intended plots, and recomputes the one flat cadastral declaration per record:
 
 ```
-PGHOST=127.0.0.1 node apply-clean-topology.mjs
-PGHOST=127.0.0.1 node apply-clean-topology.mjs --apply
+PGHOST=127.0.0.1 node repair-flat-plan.mjs --dry-run
+PGHOST=127.0.0.1 node repair-flat-plan.mjs --apply
 ```
 
-`proposal_id` is UNIQUE server-side and there is no update route - to refresh
-already-uploaded proposals, delete the rows first:
-`delete from proposal where proposal_id like 'upu-borovje%'`.
+Every changed row is backed up in `public.proposal_borovje_flat_backup` in the update transaction.
+The repair checks cadastral coverage, connected valid ground geometry, gaps, overlaps and canonical
+record serialization before committing. A second run makes zero changes. The fresh-upload generator
+uses the same `flat-plan.mjs` projection, so rebuilding does not restore obsolete runtime metadata.
 
 ## What gets extracted (committed in `data/`)
 
@@ -88,16 +93,21 @@ The six GeoJSON files above are committed in this folder as the canonical recons
 
 ## Sequencing and tessellation
 
-The plan is a coordinated package (`coordinatedPlanId: upu-borovje`). Its three
-readjustments first form only their connected non-road blocks. The two road
-proposals then occupy the complementary bands. Their unions reproduce the
-73.634,7 m² UPU extent with no overlaps, gaps or land outside the plan. Buildings,
-parks and recreation proposals then resolve their live parcels geometrically.
-Shared-plan loading enforces the full dependency order: land readjustments →
-roads → buildings → parks and recreation.
-If only part of the package is already applied, the loader first removes those
-stale package members and imports every current definition before replaying the
-whole package in that order.
+The plan is an ordinary package, grouped for provenance by `reconstructionPlanId: upu-borovje`.
+Roads apply first, then the three readjustments subdivide their connected non-road blocks, retaining
+all cadastral remainders. Buildings occupy those plots (`goal: buildings`, `typologyType: single`
+for the geometry editor), followed by parks and recreation. Do not restore `coordinatedPlanId`:
+that historical mode deliberately omitted remainders needed by the other blocks and roads.
+
+Verified locally on 2026-09-05: **22/22 applied**, also after full rebuild and reload; all 11 buildings
+and 6 parks are present. Only M1-11 (25.462 m² / 1.102%) and M1-9 (0.052 m² / 0.009%) needed edge
+trimming in the saved data. PostGIS measures 73,635.281 m² of authored ground, 0.002173 m² of boundary
+rounding gap and 0.000002 m² overlap. The actual applied fabric has 0.013 m² of rounding-scale gaps
+inside the original UPU extent. No building was moved or removed.
+
+An applied browser copy is intentionally retained when the same link is reopened. After repairing
+server rows, use a clean browser origin (`http://127.0.0.1:8080` instead of `http://localhost:8080`),
+or unapply the old local copies before reopening the link; do not erase unrelated local proposals.
 
 `apply-clean-topology.mjs` refuses to write unless the canonical mesh verifies:
 every plot and road is connected, no plot is smaller than 150 m², the three
@@ -106,6 +116,7 @@ or area outside the UPU extent.
 
 ## Named proposal links
 
-`/proposals/:ids` accepted only numeric server ids; `frontend/js/proposals/core.js`
-now also accepts slug ids, so the whole plan opens with a deterministic link
-(`/proposals/upu-borovje-m1-1,…?city=zagreb`).
+The frontend accepts numeric row IDs, or one registered named-plan slug. Individual proposal slugs
+are API identifiers, not a supported comma-separated frontend route. The repaired local plan is:
+
+`http://127.0.0.1:8080/proposals/633,1304,1305,699,641,638,639,643,640,642,637,635,644,636,634,645,646,647,648,649,650,651?city=zagreb`
