@@ -3076,6 +3076,16 @@
             "showAllParcels": "Show all parcels",
             "trees": "Trees",
             "plannedAs": "Planned as",
+            "facades": "Facades",
+            "facadeStyle": "Facade style",
+            "facadesTooltip": "Illustrative windows and materials on proposed buildings. Each building keeps its design.",
+            "facadesNote": "Illustrative designs for proposed buildings.",
+            "facadeStyles": {
+                "mixed": "Mixed palette",
+                "brick": "Brick",
+                "stone": "Pale stone",
+                "plaster": "Plaster"
+            },
             "plannedAsTooltip": "Planned as — draw the volume the rule permits, one example of what could be built under it, or both",
             "representationMassing": "Massing",
             "representationMassingTooltip": "Massing — the volume the rule permits, which is what the proposal asserts",

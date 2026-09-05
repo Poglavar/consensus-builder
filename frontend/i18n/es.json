@@ -3125,6 +3125,16 @@
             "showAllParcels": "Mostrar todas las parcelas",
             "trees": "Árboles",
             "plannedAs": "Planificado como",
+            "facades": "Fachadas",
+            "facadeStyle": "Estilo de fachada",
+            "facadesTooltip": "Ejemplos de ventanas y materiales en los edificios propuestos. Cada edificio conserva su diseño.",
+            "facadesNote": "Diseños ilustrativos para los edificios propuestos.",
+            "facadeStyles": {
+                "mixed": "Paleta mixta",
+                "brick": "Ladrillo",
+                "stone": "Piedra clara",
+                "plaster": "Revoco"
+            },
             "plannedAsTooltip": "Planificado como — dibuja el volumen que permite la norma, un ejemplo de lo que podría construirse, o ambos",
             "representationMassing": "Volumen",
             "representationMassingTooltip": "Volumen — el volumen que permite la norma, que es lo que la propuesta establece",

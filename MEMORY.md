@@ -280,3 +280,8 @@
   origins — against `getBackendBase()` via `resolveBackendAssetUrl`. Served-file mounts send
   `Cross-Origin-Resource-Policy: cross-origin` (helmet's same-origin default blocked every
   cross-origin thumbnail <img>, prod included). `scripts/relativize-screenshot-urls.mjs` repairs rows.
+- **Illustrative facades** (2026-09-05): proposed building extrusions have an optional, remembered
+  facade skin keyed by stable building identity, with editable brick/stone/plaster presets in
+  `three-building-facades.js`; wall-local metric coordinates and shared shader uniforms keep
+  toggles independent of geometry rebuilds, while envelopes, real context and uploaded models retain
+  their own appearance. Start with shaded architectural detail before adding physical relief.

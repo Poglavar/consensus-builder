@@ -31,6 +31,20 @@
         console.error('[3D] Building display policy is unavailable. Skipping 3D mode initialization.');
         return;
     }
+    const buildingFacades = window.__threeBuildingFacades;
+    if (!buildingFacades) {
+        console.error('[3D] Procedural building facades are unavailable. Skipping 3D mode initialization.');
+        return;
+    }
+    const facadeState = buildingFacades.createState(THREE);
+    const FACADE_PREF_KEY = 'cb_3d_facades';
+    const FACADE_STYLE_KEY = 'cb_3d_facade_style';
+    let facadesEnabled = false;
+    let facadeStyle = 'mixed';
+    let facadeCheckbox = null;
+    let facadeStyleSelect = null;
+    let facadeNote = null;
+
     const structureRefresh = (typeof window !== 'undefined') ? window.__threeStructureRefresh : null;
     if (!structureRefresh
         || typeof structureRefresh.refreshStructureScene3D !== 'function'
@@ -399,6 +413,26 @@
         try { PersistentStorage.setItem(PLANNED_REPRESENTATION_KEY, mode); } catch (_) { }
         updateRepresentationControls();
         rebuild3DBuildingsOnly();
+    }
+
+    function setFacadeAppearance(enabled, style = facadeStyle, savePreference = true) {
+        facadesEnabled = !!enabled;
+        facadeStyle = buildingFacades.STYLES.some(preset => preset.id === style) ? style : 'mixed';
+        buildingFacades.setState(facadeState, facadesEnabled, facadeStyle);
+        facadeFloorLineMaterial.visible = !facadesEnabled;
+        if (facadeCheckbox) facadeCheckbox.checked = facadesEnabled;
+        if (facadeStyleSelect) {
+            facadeStyleSelect.value = facadeStyle;
+            facadeStyleSelect.disabled = !facadesEnabled;
+        }
+        if (facadeNote) facadeNote.hidden = !facadesEnabled;
+        if (savePreference) {
+            try {
+                PersistentStorage.setItem(FACADE_PREF_KEY, facadesEnabled ? '1' : '0');
+                PersistentStorage.setItem(FACADE_STYLE_KEY, facadeStyle);
+            } catch (_) { }
+        }
+        // Shared uniforms only: toggling does not re-slice parcels, reload buildings or move the camera.
     }
 
     function setRerollBusy(busy) {
@@ -1018,6 +1052,39 @@
 
         buildingModeControlsEl.appendChild(representationRow);
         updateRepresentationControls();
+
+        const facadeRow = document.createElement('div');
+        facadeRow.className = 'three-mode-emphasis-row';
+        const facadeLabel = document.createElement('label');
+        facadeLabel.className = 'three-mode-trees-toggle three-mode-facade-label';
+        facadeLabel.title = threeI18n('threeMode.controls.facadesTooltip',
+            'Illustrative windows and materials on proposed buildings. Each building keeps its design.');
+        facadeCheckbox = document.createElement('input');
+        facadeCheckbox.id = 'three-mode-facades';
+        facadeCheckbox.type = 'checkbox';
+        facadeCheckbox.addEventListener('change', () => setFacadeAppearance(facadeCheckbox.checked));
+        const facadeText = document.createElement('span');
+        facadeText.className = 'three-mode-emphasis-label';
+        facadeText.textContent = threeI18n('threeMode.controls.facades', 'Facades');
+        facadeLabel.append(facadeCheckbox, facadeText);
+        facadeStyleSelect = document.createElement('select');
+        facadeStyleSelect.id = 'three-mode-facade-style';
+        facadeStyleSelect.className = 'three-mode-display-select';
+        facadeStyleSelect.setAttribute('aria-label', threeI18n('threeMode.controls.facadeStyle', 'Facade style'));
+        ['mixed', ...buildingFacades.STYLES.map(style => style.id)].forEach(id => {
+            const option = document.createElement('option');
+            option.value = id;
+            option.textContent = threeI18n('threeMode.controls.facadeStyles.' + id, id);
+            facadeStyleSelect.appendChild(option);
+        });
+        facadeStyleSelect.addEventListener('change', () => setFacadeAppearance(facadesEnabled, facadeStyleSelect.value));
+        facadeRow.append(facadeLabel, facadeStyleSelect);
+        buildingModeControlsEl.appendChild(facadeRow);
+        facadeNote = document.createElement('div');
+        facadeNote.className = 'three-mode-facade-note';
+        facadeNote.textContent = threeI18n('threeMode.controls.facadesNote', 'Illustrative designs for proposed buildings.');
+        buildingModeControlsEl.appendChild(facadeNote);
+        setFacadeAppearance(facadesEnabled, facadeStyle, false);
 
         // Scenery toggles — populated dynamically from GET /decor/layers (see refreshDecorToggles),
         // so a checkbox appears only for layers the current city has actually ingested (e.g. Trees for
@@ -4523,11 +4590,12 @@
                 const plan = window.UrbanRuleVariation.plannedDrawPlan(
                     feat, plannedRepresentation, variationDeps, buildOutDisplaySalt);
                 if (plan.buildOut) {
-                    createBuildingSlices(plan.buildOut, estimateBuildingHeightMeters(plan.buildOut), buildingMaterial, targetGroup);
+                    createBuildingSlices(plan.buildOut, estimateBuildingHeightMeters(plan.buildOut), buildingMaterial, targetGroup, feat);
                 }
                 if (plan.massing) {
                     const material = plan.massingStyle === 'envelope' ? buildingMaterials.massing : buildingMaterial;
-                    createBuildingSlices(plan.massing, estimateBuildingHeightMeters(plan.massing), material, targetGroup);
+                    createBuildingSlices(plan.massing, estimateBuildingHeightMeters(plan.massing), material, targetGroup,
+                        plan.massingStyle === 'envelope' ? null : feat);
                 }
             } catch (_) { }
         }
@@ -4680,6 +4748,8 @@
     const floorLineMaterial = new THREE.LineBasicMaterial({
         color: 0x2a2f36, transparent: true, opacity: 0.4, depthWrite: false
     });
+    // Facade skins supply their own storey bands. Material visibility preserves parcel isolation.
+    const facadeFloorLineMaterial = floorLineMaterial.clone();
 
     function buildingFloorRingsXY(buildingFeature) {
         // Outer + courtyard rings of the footprint, nudged ~0.06 m outward (real metres) so the
@@ -4700,7 +4770,7 @@
         return rings;
     }
 
-    function addBuildingFloorLines(buildingFeature, height, targetGroup) {
+    function addBuildingFloorLines(buildingFeature, height, targetGroup, hasFacade = false) {
         const step = (typeof window !== 'undefined' && Number(window.STOREY_HEIGHT_M)) || 3.3;
         if (!(height > step * 1.5)) return; // nothing to divide on a ~1-storey box
         let rings;
@@ -4717,14 +4787,37 @@
         if (!positions.length) return;
         const geometry = new THREE.BufferGeometry();
         geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-        const lines = new THREE.LineSegments(geometry, floorLineMaterial);
+        const lines = new THREE.LineSegments(geometry, hasFacade ? facadeFloorLineMaterial : floorLineMaterial);
         lines.userData.isBuildingFloorLines = true;
+        lines.userData.cbFacadeOwned = hasFacade;
         targetGroup.add(lines);
     }
 
-    function createBuildingSlices(buildingFeature, height, material, targetGroup) {
-        if (!buildingFeature || !buildingFeature.geometry || !window.LiveParcelFabric) {
-            const meshes = polygonFeatureToMeshes(buildingFeature, material, 0, height);
+    function createBuildingSlices(buildingFeature, height, material, targetGroup, facadeSource = null) {
+        if (!buildingFeature?.geometry) return;
+        const ruleFloorHeight = buildingFeature.properties?.urbanRule?.floorHeightM;
+        const design = facadeSource ? buildingFacades.buildingDesign(
+            buildingFacades.buildingKey(facadeSource, window.CityConfigManager?.getCurrentCityId?.() || ''),
+            height, typeof ruleFloorHeight === 'number' && Number.isFinite(ruleFloorHeight) && ruleFloorHeight > 0
+                ? ruleFloorHeight : (window.STOREY_HEIGHT_M || 3.3)) : null;
+        const point = buildingFeature.geometry.type === 'MultiPolygon'
+            ? buildingFeature.geometry.coordinates[0][0][0] : buildingFeature.geometry.coordinates[0][0];
+        const metresPerUnit = Math.cos(point[1] * Math.PI / 180);
+        const prepareFacades = (meshes, ownsMaterial = false) => {
+            if (!design || !meshes.length) return meshes;
+            const facadeMaterial = buildingFacades.configureMaterial(
+                ownsMaterial ? meshes[0].material : cloneBuildingMaterial(meshes[0].material), design, facadeState, THREE);
+            meshes.forEach(mesh => {
+                mesh.material = facadeMaterial;
+                mesh.geometry.setAttribute('cbFacadeCoord', new THREE.Float32BufferAttribute(
+                    buildingFacades.wallCoordinates(mesh.geometry.attributes.position.array,
+                        mesh.geometry.attributes.normal.array, metresPerUnit), 3));
+                mesh.userData.cbFacadeOwned = true;
+            });
+            return meshes;
+        };
+        if (!window.LiveParcelFabric) {
+            const meshes = prepareFacades(polygonFeatureToMeshes(buildingFeature, material, 0, height));
             meshes.forEach(m => targetGroup.add(m));
             return;
         }
@@ -4846,7 +4939,7 @@
                     if (cleaned && cleaned.geometry && turf.area(cleaned) > 0) sliceGeom = cleaned;
                 } catch (_) { }
 
-                const sliceMeshes = polygonFeatureToMeshes(sliceGeom, sliceMaterial, 0, height);
+                const sliceMeshes = prepareFacades(polygonFeatureToMeshes(sliceGeom, sliceMaterial, 0, height), true);
 
                 // Tag the slice with its parcel so parcel-isolation can match the
                 // building footprint sitting on a clicked parcel.
@@ -4858,6 +4951,7 @@
                     pendingSliceObjects.push(mesh);
                     const edges = new THREE.EdgesGeometry(mesh.geometry);
                     const line = new THREE.LineSegments(edges, materials.sliceEdges);
+                    line.userData.cbFacadeOwned = !!design;
                     if (sliceParcelId) line.userData.parcelId = sliceParcelId;
                     pendingSliceObjects.push(line);
                 });
@@ -4875,14 +4969,17 @@
         } else {
             if (slices > 0) {
                 console.warn("Slicing did not cover the whole building, drawing it unsliced instead.");
-                pendingSliceObjects.forEach(object => { try { object.geometry?.dispose?.(); } catch (_) { } });
+                pendingSliceObjects.forEach(object => {
+                    if (!object.userData.cbFacadeOwned) { try { object.geometry?.dispose?.(); } catch (_) { } }
+                });
+                buildingFacades.disposeGroup(pendingSliceObjects);
             }
-            const meshes = polygonFeatureToMeshes(buildingFeature, material, 0, height);
+            const meshes = prepareFacades(polygonFeatureToMeshes(buildingFeature, material, 0, height));
             meshes.forEach(m => targetGroup.add(m));
         }
 
         // Storey divisions wrap the whole building once, whether it drew sliced or unsliced.
-        try { addBuildingFloorLines(buildingFeature, height, targetGroup); } catch (_) { }
+        try { addBuildingFloorLines(buildingFeature, height, targetGroup, !!design); } catch (_) { }
     }
 
     function getBuildingParcelIntersectionPoints(buildingFeature) {
@@ -4966,6 +5063,7 @@
 
     function clearGroupChildren(group) {
         if (!group) return;
+        buildingFacades.disposeGroup(group);
         for (let i = group.children.length - 1; i >= 0; i--) group.remove(group.children[i]);
     }
 
@@ -5316,6 +5414,10 @@
         proposalDraftGroup = new THREE.Group();
         treesEnabled = loadTreesEnabledPref();
         plannedRepresentation = loadPlannedRepresentation();
+        try {
+            setFacadeAppearance(PersistentStorage.getItem(FACADE_PREF_KEY) === '1',
+                PersistentStorage.getItem(FACADE_STYLE_KEY), false);
+        } catch (_) { }
         treesGroup.visible = treesEnabled && !realisticLayerActive;
         scene.add(flatGroup);
         scene.add(corridorGroup);
@@ -5717,6 +5819,7 @@
 
     function disposeScene() {
         cancelLoop();
+        buildingFacades.disposeGroup(buildingGroup);
         stopIntroAutoRotate();
         corridorTerrainSampler = null;
         corridorTerrainReferenceGeneration += 1;
@@ -5746,6 +5849,9 @@
         parcelInfoPanelEl = null;
         displayStateSelects = { built: null, planned: null };
         representationSelect = null;
+        facadeCheckbox = null;
+        facadeStyleSelect = null;
+        facadeNote = null;
         rerollBtn = null;
         rerollBusy = false;
         if (renderer) {

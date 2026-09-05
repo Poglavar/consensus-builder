@@ -3111,6 +3111,16 @@
             "showAllParcels": "Prikaži sve parcele",
             "trees": "Drveće",
             "plannedAs": "Planirano kao",
+            "facades": "Fasade",
+            "facadeStyle": "Stil fasade",
+            "facadesTooltip": "Primeri prozora i materijala na planiranim zgradama. Svaka zgrada zadržava isti izgled.",
+            "facadesNote": "Ilustrativni prikaz fasada planiranih zgrada.",
+            "facadeStyles": {
+                "mixed": "Mešovita paleta",
+                "brick": "Opeka",
+                "stone": "Svetli kamen",
+                "plaster": "Malter"
+            },
             "plannedAsTooltip": "Planirano kao — prikaži gabarit koji pravilo dozvoljava, jedan primer izgradnje po njemu, ili oboje",
             "representationMassing": "Gabarit",
             "representationMassingTooltip": "Gabarit — zapremina koju pravilo dozvoljava, ono što predlog zapravo propisuje",

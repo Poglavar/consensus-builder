@@ -3111,6 +3111,16 @@
             "showAllParcels": "Prikaži sve čestice",
             "trees": "Stabla",
             "plannedAs": "Planirano kao",
+            "facades": "Pročelja",
+            "facadeStyle": "Stil pročelja",
+            "facadesTooltip": "Primjeri prozora i materijala na planiranim zgradama. Svaka zgrada zadržava isti izgled.",
+            "facadesNote": "Ilustrativni prikaz pročelja planiranih zgrada.",
+            "facadeStyles": {
+                "mixed": "Mješovita paleta",
+                "brick": "Opeka",
+                "stone": "Svijetli kamen",
+                "plaster": "Žbuka"
+            },
             "plannedAsTooltip": "Planirano kao — prikaži gabarit koji pravilo dopušta, jedan primjer izgradnje po njemu, ili oboje",
             "representationMassing": "Gabarit",
             "representationMassingTooltip": "Gabarit — volumen koji pravilo dopušta, ono što prijedlog zapravo propisuje",

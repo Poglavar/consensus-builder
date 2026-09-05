@@ -606,6 +606,27 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
     margin: 0;
 }
 
+#three-container .three-mode-facade-label {
+    flex: 0 0 70px;
+    min-width: 0;
+}
+
+#three-container .three-mode-facade-label .three-mode-emphasis-label {
+    flex: 1 1 auto;
+}
+
+#three-container .three-mode-facade-note {
+    max-width: 246px;
+    color: #667181;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+#three-container .three-mode-display-select:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
 #three-container .three-mode-emphasis-label {
     font-size: 12px;
     font-weight: 600;
