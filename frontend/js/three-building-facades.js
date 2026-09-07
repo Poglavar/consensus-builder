@@ -8,11 +8,12 @@
     'use strict';
 
     // The style laboratory: palette, masonry amount, window width and pilaster spacing.
+    // Fresh terracotta, honey limestone and peach render, with warm white joinery and clay roofs.
     // Colours are sRGB; Three converts these to linear light when making the uniforms.
     const STYLES = Object.freeze([
-        { id: 'brick', wall: '#a66d53', trim: '#e0d5bd', roof: '#62686a', brick: 1, window: 0.48, pilasters: 3 },
-        { id: 'stone', wall: '#d4c8b3', trim: '#e8dfce', roof: '#717575', brick: 0, window: 0.44, pilasters: 2 },
-        { id: 'plaster', wall: '#cdc6b8', trim: '#e6decf', roof: '#666f71', brick: 0, window: 0.52, pilasters: 4 }
+        { id: 'brick', wall: '#dc7952', trim: '#fff2da', roof: '#bf6846', brick: 1, window: 0.48, pilasters: 3 },
+        { id: 'stone', wall: '#f2d18c', trim: '#fff7e5', roof: '#c78051', brick: 0, window: 0.44, pilasters: 2 },
+        { id: 'plaster', wall: '#f4b99d', trim: '#fff9ed', roof: '#cd7957', brick: 0, window: 0.52, pilasters: 4 }
     ].map(Object.freeze));
 
     // Window proportions repeat across a building; shutter positions vary per opening.
@@ -21,7 +22,7 @@
         { id: 'sash', width: 0.88, height: 1.08, arch: 0 },
         { id: 'arched', width: 0.96, height: 1.04, arch: 1 }
     ].map(Object.freeze));
-    const SHUTTER_COLORS = Object.freeze(['#5e7461', '#607583', '#795c53', '#6e6a5e']);
+    const SHUTTER_COLORS = Object.freeze(['#288978', '#2f86a6', '#b64e3f', '#678b43']);
 
     function hashKey(key) {
         let hash = 2166136261;
@@ -191,10 +192,10 @@ vec3 cbFacadeColor(vec3 original) {
     float brickCoverage = cbFacadeBrickCoverage(brick.x, brickFootprint.x)
         * cbFacadeBrickCoverage(brick.y, brickFootprint.y);
     float brickDetail = 1.0 - smoothstep(0.5, 2.0, max(brickFootprint.x, brickFootprint.y));
-    vec3 mortar = trim * 0.66;
-    vec3 brickColor = wall * (0.90 + 0.18 * cbFacadeNoise(floor(brick)));
+    vec3 mortar = trim * 0.84;
+    vec3 brickColor = wall * (0.97 + 0.06 * cbFacadeNoise(floor(brick)));
     // Subpixel masonry fades to the same average colour, not bare brick with all mortar gone.
-    vec3 averageMasonry = mix(mortar, wall * 0.99, 0.93 * 0.93);
+    vec3 averageMasonry = mix(mortar, wall, 0.93 * 0.93);
     brickColor = mix(mortar, brickColor, brickCoverage);
     wall = mix(wall, mix(averageMasonry, brickColor, brickDetail), settings.x);
 
@@ -251,14 +252,14 @@ vec3 cbFacadeColor(vec3 original) {
     float reveal = cbFacadeOpening(opening, windowSize + vec2(0.035), aa, windowStyle.z);
     float glass = cbFacadeOpening(opening, windowSize - vec2(0.055), aa, windowStyle.z);
     float windowVariation = cbFacadeNoise(vec2(column + cbFacadeBuilding.z, floorIndex));
-    vec3 glazing = mix(vec3(0.075, 0.12, 0.14), vec3(0.20, 0.28, 0.30), windowVariation);
+    vec3 glazing = mix(vec3(0.16, 0.32, 0.42), vec3(0.29, 0.48, 0.58), windowVariation);
     glazing *= 0.88 + 0.20 * (opening.y / floorHeight + 0.5);
     float verticalBar = 1.0 - smoothstep(0.021, 0.021 + aa.x, abs(opening.x));
     float transomY = mix(abs(opening.y - windowSize.y * 0.45), abs(abs(opening.y) - windowSize.y / 3.0), sash);
     float transom = 1.0 - smoothstep(0.021, 0.021 + aa.y, transomY);
-    glazing = mix(glazing, trim * 0.60, max(verticalBar, transom) * 0.85);
+    glazing = mix(glazing, trim * 0.92, max(verticalBar, transom) * 0.85);
     wall = mix(wall, trim, surround * allowed);
-    wall = mix(wall, trim * 0.37, reveal * allowed);
+    wall = mix(wall, trim * 0.52, reveal * allowed);
     wall = mix(wall, glazing, glass * allowed);
     vec2 closedPanel = vec2(abs(opening.x) - windowSize.x * 0.5, opening.y);
     vec3 closedPaint = cbFacadeShutter(closedPanel, vec2(windowSize.x * 0.5, windowSize.y), aa,
@@ -303,7 +304,7 @@ vec3 cbFacadeColor(vec3 original) {
             });
             patchShader(shader);
         };
-        material.customProgramCacheKey = () => priorKey + '|cb-facades-v3';
+        material.customProgramCacheKey = () => priorKey + '|cb-facades-v4';
         material.needsUpdate = true;
         return material;
     }
