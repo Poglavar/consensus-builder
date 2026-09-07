@@ -4800,16 +4800,19 @@
 
     function createBuildingSlices(buildingFeature, height, material, targetGroup, facadeSource = null) {
         if (!buildingFeature?.geometry) return;
+        const hasFacade = !!facadeSource;
+        const city = window.CityConfigManager?.getCurrentCityId?.() || '';
         const ruleFloorHeight = buildingFeature.properties?.urbanRule?.floorHeightM;
-        const design = facadeSource ? buildingFacades.buildingDesign(
-            buildingFacades.buildingKey(facadeSource, window.CityConfigManager?.getCurrentCityId?.() || ''),
-            height, typeof ruleFloorHeight === 'number' && Number.isFinite(ruleFloorHeight) && ruleFloorHeight > 0
-                ? ruleFloorHeight : (window.STOREY_HEIGHT_M || 3.3)) : null;
+        const floorHeight = typeof ruleFloorHeight === 'number' && Number.isFinite(ruleFloorHeight) && ruleFloorHeight > 0
+            ? ruleFloorHeight : (window.STOREY_HEIGHT_M || 3.3);
         const point = buildingFeature.geometry.type === 'MultiPolygon'
             ? buildingFeature.geometry.coordinates[0][0][0] : buildingFeature.geometry.coordinates[0][0];
         const metresPerUnit = Math.cos(point[1] * Math.PI / 180);
-        const prepareFacades = (meshes, ownsMaterial = false) => {
-            if (!design || !meshes.length) return meshes;
+        const prepareFacades = (meshes, owner = facadeSource, ownsMaterial = false) => {
+            if (!hasFacade || !meshes.length) return meshes;
+            // Use the actual intersected parcel, not the source volume's parcel hint. This
+            // changes the skin at ownership seams and keeps separate volumes on one parcel alike.
+            const design = buildingFacades.buildingDesign(buildingFacades.buildingKey(owner, city), height, floorHeight);
             const facadeMaterial = buildingFacades.configureMaterial(
                 ownsMaterial ? meshes[0].material : cloneBuildingMaterial(meshes[0].material), design, facadeState, THREE);
             meshes.forEach(mesh => {
@@ -4944,7 +4947,7 @@
                     if (cleaned && cleaned.geometry && turf.area(cleaned) > 0) sliceGeom = cleaned;
                 } catch (_) { }
 
-                const sliceMeshes = prepareFacades(polygonFeatureToMeshes(sliceGeom, sliceMaterial, 0, height), true);
+                const sliceMeshes = prepareFacades(polygonFeatureToMeshes(sliceGeom, sliceMaterial, 0, height), slice.parcelFeature, true);
 
                 // Tag the slice with its parcel so parcel-isolation can match the
                 // building footprint sitting on a clicked parcel.
@@ -4956,7 +4959,7 @@
                     pendingSliceObjects.push(mesh);
                     const edges = new THREE.EdgesGeometry(mesh.geometry);
                     const line = new THREE.LineSegments(edges, materials.sliceEdges);
-                    line.userData.cbFacadeOwned = !!design;
+                    line.userData.cbFacadeOwned = hasFacade;
                     if (sliceParcelId) line.userData.parcelId = sliceParcelId;
                     pendingSliceObjects.push(line);
                 });
@@ -4984,7 +4987,7 @@
         }
 
         // Storey divisions wrap the whole building once, whether it drew sliced or unsliced.
-        try { addBuildingFloorLines(buildingFeature, height, targetGroup, !!design); } catch (_) { }
+        try { addBuildingFloorLines(buildingFeature, height, targetGroup, hasFacade); } catch (_) { }
     }
 
     function getBuildingParcelIntersectionPoints(buildingFeature) {

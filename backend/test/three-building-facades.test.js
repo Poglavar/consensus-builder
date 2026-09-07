@@ -1,4 +1,4 @@
-// Locks building identity, wall-local metric mapping, shared toggle uniforms and resource ownership.
+// Locks parcel-based design identity, wall-local metric mapping, shared toggles and resource ownership.
 import { describe, it, expect, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
@@ -19,9 +19,11 @@ const shader = () => ({ uniforms: {}, vertexShader: 'void main() {\n#include <be
 const material = () => ({ userData: {}, onBeforeCompile() {}, customProgramCacheKey() { return 'phong'; } });
 
 describe('procedural building facades', () => {
-    it('keeps a building design across regeneration, height changes and render order', () => {
+    it('keeps a parcel design across volumes, proposals, regeneration and height changes', () => {
         const original = { ...rectangle, properties: { proposalId: 42, buildingIndex: 3, parcelId: '123/4' } };
-        const changed = { ...original, geometry: polygon([[0, 0], [1, 0], [0, 1], [0, 0]]).geometry };
+        const changed = { ...original, id: 'another-volume',
+            properties: { parcelId: '123/4', proposalId: 99, buildingIndex: 8, buildingId: 'new', variationSeed: 17 },
+            geometry: polygon([[0, 0], [1, 0], [0, 1], [0, 0]]).geometry };
         const key = facades.buildingKey(original, 'zagreb');
         expect(facades.buildingKey(changed, 'zagreb')).toBe(key);
         const design = facades.buildingDesign(key, 19.8);
@@ -31,7 +33,16 @@ describe('procedural building facades', () => {
         expect(design.floorHeight).toBeCloseTo(3.3);
         expect(facades.buildingDesign(key, 35, 3.5).floorHeight).toBe(3.5);
         expect(facades.buildingKey(original, 'sibenik')).not.toBe(key);
-        expect(facades.buildingKey({ ...original, properties: { ...original.properties, buildingIndex: 4 } }, 'zagreb')).not.toBe(key);
+        expect(facades.buildingKey({ ...original, properties: { ...original.properties, parcelId: '123/5' } }, 'zagreb')).not.toBe(key);
+    });
+
+    it('normalizes parcel IDs while retaining building identity when no parcel is known', () => {
+        const withParcel = parcelId => ({ ...rectangle, properties: { parcelId } });
+        expect(facades.buildingKey(withParcel(123), 'zagreb')).toBe(facades.buildingKey(withParcel(' 123 '), 'zagreb'));
+        expect(facades.buildingKey(withParcel(0), 'zagreb')).not.toBe(facades.buildingKey(rectangle, 'zagreb'));
+        const anonymous = { ...rectangle, properties: { proposalId: 42, buildingId: 'volume-a' } };
+        expect(facades.buildingKey(anonymous)).not.toBe(facades.buildingKey({ ...anonymous,
+            properties: { ...anonymous.properties, buildingId: 'volume-b' } }));
     });
 
     it('canonicalizes anonymous geometry regardless of ring start, winding or closing vertex', () => {

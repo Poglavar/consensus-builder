@@ -31,6 +31,10 @@
 
     function buildingKey(feature, city = '') {
         const p = feature.properties || {};
+        // Ownership is the design unit: every volume on a parcel shares its facade identity.
+        // Building/proposal IDs and regenerated geometry must not change an owner's design.
+        const parcelId = p.parcelId == null ? '' : String(p.parcelId).trim();
+        if (parcelId) return JSON.stringify([city, 'parcel', parcelId]);
         const identity = p.buildingId ?? feature.id ?? p.id;
         if (identity != null) return JSON.stringify([city, p.proposalId, identity]);
         if (p.buildingIndex != null || p.variationSeed != null) {
