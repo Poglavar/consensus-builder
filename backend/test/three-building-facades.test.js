@@ -122,6 +122,34 @@ describe('procedural building facades', () => {
         expect(() => facades.patchShader({ vertexShader: '', fragmentShader: '' })).toThrow(/shader chunks/);
     });
 
+    it('preserves masonry coverage across pixel footprints instead of widening the mortar with distance', () => {
+        // Evaluate the actual scalar GLSL math, using JS equivalents of its built-ins. This
+        // checks the area-preserving filter itself without a second implementation of it.
+        const fragment = facades.patchShader(shader()).fragmentShader;
+        const scalarFunctions = ['cbFacadeBrickIntegral', 'cbFacadeBrickCoverage'].map(name => {
+            const declaration = fragment.match(new RegExp(`float ${name}\\([^)]*\\) \\{[\\s\\S]*?\\n\\}`));
+            expect(declaration, `Missing shader function ${name}`).not.toBeNull();
+            return declaration[0].replace(/^float /, 'function ')
+                .replace(/\bfloat (?=\w+\s*=)/g, 'let ')
+                .replace(/\bfloat /g, '');
+        }).join('\n');
+        const context = {
+            floor: Math.floor, max: Math.max,
+            fract: x => x - Math.floor(x),
+            clamp: (x, low, high) => Math.max(low, Math.min(high, x))
+        };
+        vm.runInNewContext(scalarFunctions, context);
+        const coverage = context.cbFacadeBrickCoverage;
+        expect(coverage(0.5, 0.01)).toBeCloseTo(1);
+        expect(coverage(0, 0.01)).toBeCloseTo(0);
+        for (const footprint of [0.01, 0.07, 0.25, 0.7, 1, 2.3, 4]) {
+            const samples = Array.from({ length: 1000 }, (_, i) => coverage((i + 0.5) / 1000, footprint));
+            expect(samples.every(value => value >= -1e-8 && value <= 1 + 1e-8)).toBe(true);
+            expect(samples.reduce((sum, value) => sum + value, 0) / samples.length).toBeCloseTo(0.93, 4);
+            expect(coverage(-3.72, footprint)).toBeCloseTo(coverage(8.28, footprint), 10);
+        }
+    });
+
     it('constructs controls without overwriting saved preferences, then restores and saves user changes', () => {
         // Exercise the real viewer setter with storage/control collaborators, without a browser.
         const source = readFileSync(new URL('../../frontend/js/three-mode.js', import.meta.url), 'utf8');

@@ -1775,6 +1775,22 @@
         // screen-door/display globals at evaluation and touches THREE at
         // evaluation, so the loader resolves window.THREE first and injects
         // with async=false to preserve execution order.
+        function setLazy3DModePending(mode) {
+            window.__pending3DMode = mode;
+            if (typeof window.updateModeButtonStates === 'function') {
+                window.updateModeButtonStates();
+                return;
+            }
+            // Paint the requested mode immediately, even before Three.js has downloaded.
+            var selectedId = mode === 'photo' ? 'mode-realistic-toggle'
+                : mode === 'model' ? 'mode-3d-toggle' : 'mode-2d-toggle';
+            ['mode-2d-toggle', 'mode-3d-toggle', 'mode-realistic-toggle'].forEach(function (id) {
+                var button = document.getElementById(id);
+                if (!button) return;
+                button.classList.toggle('active', id === selectedId);
+                button.classList.toggle('mode-btn-loading', !!mode && id === selectedId);
+            });
+        }
         window.__ensure3DModeStack = (() => {
             let promise = null;
             return function ensure3DModeStack() {
@@ -1828,10 +1844,14 @@
         // this wrapper until three-mode.js replaces it with the real enter3D at
         // stack evaluation.
         window.enterThreeMode = function lazyEnterThreeMode(options) {
+            var mode = window.__pending3DMode || 'model';
+            setLazy3DModePending(mode);
             window.__ensure3DModeStack().then(function (ok) {
                 if (ok && window.enterThreeMode !== lazyEnterThreeMode) {
                     window.enterThreeMode(options);
                 }
+            }).finally(function () {
+                if (window.__pending3DMode === mode) setLazy3DModePending(null);
             });
         };
         // Mode buttons: the first press loads the stack, then re-clicks so the
@@ -1847,9 +1867,13 @@
                 }
                 event.preventDefault();
                 event.stopImmediatePropagation();
+                var mode = id === 'mode-realistic-toggle' ? 'photo' : id === 'mode-3d-toggle' ? 'model' : null;
+                if (mode) setLazy3DModePending(mode);
                 window.__ensure3DModeStack().then(function (ok) {
                     el.removeEventListener('click', shim, true);
                     if (ok) el.click();
+                }).finally(function () {
+                    if (mode && window.__pending3DMode === mode) setLazy3DModePending(null);
                 });
             }, true);
         });

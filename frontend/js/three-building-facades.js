@@ -141,6 +141,16 @@ float cbFacadeBox(vec2 p, vec2 halfSize, vec2 aa) {
 float cbFacadeNoise(vec2 p) {
     return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
 }
+// Integral of one brick interval, with a 3.5% mortar joint at either end. Filtering the
+// interval preserves its area as pixels grow; widening smoothstep joints washed the wall out.
+float cbFacadeBrickIntegral(float x) {
+    return floor(x) * 0.93 + clamp(fract(x) - 0.035, 0.0, 0.93);
+}
+float cbFacadeBrickCoverage(float phase, float footprint) {
+    float halfWidth = max(footprint, 0.00001) * 0.5;
+    float center = fract(phase);
+    return (cbFacadeBrickIntegral(center + halfWidth) - cbFacadeBrickIntegral(center - halfWidth)) / (2.0 * halfWidth);
+}
 // A shallow segmental arch, clipped to the same rectangle as ordinary windows.
 float cbFacadeOpening(vec2 p, vec2 halfSize, vec2 aa, float arched) {
     float rise = halfSize.x * 0.55;
@@ -169,15 +179,20 @@ vec3 cbFacadeColor(vec3 original) {
     vec2 aa = max(fwidth(p), vec2(0.004));
     float detail = 1.0 - smoothstep(0.22, 0.9, max(aa.x, aa.y));
 
-    // Fine brick joints disappear before they become subpixel noise while orbiting.
+    // Measure the pixel footprint BEFORE the staggered row offset: derivatives across that
+    // discontinuity otherwise stretch the mortar into alternating pale/dark strips.
     vec2 brick = vec2(p.x / 0.32, p.y / 0.105);
+    vec2 brickFootprint = max(fwidth(brick), vec2(0.00001));
     brick.x += mod(floor(brick.y), 2.0) * 0.5;
-    vec2 jointAA = max(fwidth(brick), vec2(0.005));
-    vec2 joint = smoothstep(vec2(0.035), vec2(0.035) + jointAA, min(fract(brick), 1.0 - fract(brick)));
-    float brickDetail = 1.0 - smoothstep(0.025, 0.12, max(aa.x, aa.y));
+    float brickCoverage = cbFacadeBrickCoverage(brick.x, brickFootprint.x)
+        * cbFacadeBrickCoverage(brick.y, brickFootprint.y);
+    float brickDetail = 1.0 - smoothstep(0.5, 2.0, max(brickFootprint.x, brickFootprint.y));
+    vec3 mortar = trim * 0.66;
     vec3 brickColor = wall * (0.90 + 0.18 * cbFacadeNoise(floor(brick)));
-    brickColor = mix(trim * 0.66, brickColor, joint.x * joint.y);
-    wall = mix(wall, brickColor, settings.x * brickDetail);
+    // Subpixel masonry fades to the same average colour, not bare brick with all mortar gone.
+    vec3 averageMasonry = mix(mortar, wall * 0.99, 0.93 * 0.93);
+    brickColor = mix(mortar, brickColor, brickCoverage);
+    wall = mix(wall, mix(averageMasonry, brickColor, brickDetail), settings.x);
 
     float margin = min(0.5, width * 0.12);
     float bays = max(1.0, floor((width - 2.0 * margin) / cbFacadeDesign.y));
@@ -284,7 +299,7 @@ vec3 cbFacadeColor(vec3 original) {
             });
             patchShader(shader);
         };
-        material.customProgramCacheKey = () => priorKey + '|cb-facades-v2';
+        material.customProgramCacheKey = () => priorKey + '|cb-facades-v3';
         material.needsUpdate = true;
         return material;
     }

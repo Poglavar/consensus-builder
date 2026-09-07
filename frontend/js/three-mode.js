@@ -162,14 +162,20 @@
             // Loading spinners on the lower-left mode icons: photo (globe) while its tiles compose,
             // model (3D) while its scene renders. Photo entry passes through 3D init, so photo-loading
             // wins there — only the globe spins, never both.
-            const photoLoading = !!(window.PhotorealMode && typeof window.PhotorealMode.isLoading === 'function' && window.PhotorealMode.isLoading());
-            const modelLoading = !!renderingOverlayEl && !photoLoading;
+            // The first click precedes this module's lazy load. Keep that requested mode
+            // selected through module evaluation and the deferred scene initialization.
+            const pendingMode = window.__pending3DMode;
+            const photoLoading = pendingMode === 'photo'
+                || !!(window.PhotorealMode && typeof window.PhotorealMode.isLoading === 'function' && window.PhotorealMode.isLoading());
+            const modelLoading = (pendingMode === 'model' || isTransitioning3D || !!renderingOverlayEl) && !photoLoading && !rw;
+            const photoSelected = rw || photoLoading;
+            const modelSelected = !photoSelected && (isActive || modelLoading);
             const btn2d = document.getElementById('mode-2d-toggle');
             const btn3d = document.getElementById('mode-3d-toggle');
             const btnRw = document.getElementById('mode-realistic-toggle');
-            if (btn2d) btn2d.classList.toggle('active', !isActive);
-            if (btn3d) { btn3d.classList.toggle('active', isActive && !rw); btn3d.classList.toggle('mode-btn-loading', modelLoading); }
-            if (btnRw) { btnRw.classList.toggle('active', rw); btnRw.classList.toggle('mode-btn-loading', photoLoading); }
+            if (btn2d) btn2d.classList.toggle('active', !modelSelected && !photoSelected);
+            if (btn3d) { btn3d.classList.toggle('active', modelSelected); btn3d.classList.toggle('mode-btn-loading', modelLoading); }
+            if (btnRw) { btnRw.classList.toggle('active', photoSelected); btnRw.classList.toggle('mode-btn-loading', photoLoading); }
             // The AI render is a PHOTO of the scene: it only means anything over the photorealistic
             // mesh. Absent in 2D (there is no scene to render), present but disabled in model view
             // so the feature is discoverable and says what it needs, live in photo view.
@@ -295,9 +301,10 @@
 
     const materials = {
         parcels: new THREE.MeshLambertMaterial({ color: 0xdddddd, emissive: 0x000000 }),
-        parcelEdges: new THREE.LineBasicMaterial({ color: 0x999999, linewidth: 1, depthTest: false, depthWrite: false }),
+        // Ground lines sit just above their surfaces, but must stay behind solid buildings.
+        parcelEdges: new THREE.LineBasicMaterial({ color: 0x999999, linewidth: 1, depthTest: true, depthWrite: false }),
         roads: new THREE.MeshLambertMaterial({ color: 0xb0b0b0, emissive: 0x000000 }),
-        roadLines: new THREE.LineBasicMaterial({ color: 0x666666, linewidth: 1, depthTest: false, depthWrite: false }),
+        roadLines: new THREE.LineBasicMaterial({ color: 0x666666, linewidth: 1, depthTest: true, depthWrite: false }),
         sliceEdges: new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 1 })
     };
 
@@ -1459,7 +1466,7 @@
             polygonOffsetUnits: -5,
             side: THREE.DoubleSide
         });
-        const line = new THREE.LineBasicMaterial({ color, transparent: true, opacity: style === 'source' ? 0.55 : 1, depthTest: false });
+        const line = new THREE.LineBasicMaterial({ color, transparent: true, opacity: style === 'source' ? 0.55 : 1, depthTest: true, depthWrite: false });
         if (feature.geometry.type === 'LineString' || feature.geometry.type === 'MultiLineString') {
             const object = lineFeatureToLine(feature, line, style === 'source' ? 0.35 : 0.55);
             if (object) { object.renderOrder = style === 'source' ? 9100 : 9200; target.add(object); }
@@ -1614,7 +1621,7 @@
         const grassMat = new THREE.MeshLambertMaterial({ color: 0x1b5e20, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
         const flowerMat = new THREE.MeshLambertMaterial({ color: 0xf472b6, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
         const waterMat = new THREE.MeshPhongMaterial({ color: 0x2b6cb0, specular: 0x1f3a60, shininess: 40, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
-        const pathLineMat = new THREE.LineBasicMaterial({ color: 0xdfe8d6, depthTest: false });
+        const pathLineMat = new THREE.LineBasicMaterial({ color: 0xdfe8d6, depthTest: true, depthWrite: false });
 
         parks.forEach(p => {
             try {
@@ -1642,15 +1649,13 @@
                             const feature = { type: 'Feature', geometry: { type: 'LineString', coordinates: pathCoords }, properties: {} };
                             const line = lineFeatureToLine(feature, pathLineMat, 0.075);
                             if (line) {
-                                // Elevate and ensure render on top
+                                // The path's height clears the park surface; buildings still occlude it.
                                 line.renderOrder = 9999;
-                                if (line.material) { line.material.depthTest = false; }
                                 // If it's a Group (MultiLineString), apply to children
                                 if (line.isGroup) {
                                     line.traverse(obj => {
                                         if (obj.isLine) {
                                             obj.renderOrder = 9999;
-                                            if (obj.material) obj.material.depthTest = false;
                                         }
                                     });
                                 }
@@ -6756,6 +6761,6 @@
         rebuildProposalDraftPreview3D(event.detail || null);
     });
 
-    // Initial paint: mark 2D as the active mode on load.
+    // Initial paint also honors the click that requested this lazy-loaded module.
     updateModeButtonStates();
 })();
