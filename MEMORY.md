@@ -280,6 +280,18 @@
   origins — against `getBackendBase()` via `resolveBackendAssetUrl`. Served-file mounts send
   `Cross-Origin-Resource-Policy: cross-origin` (helmet's same-origin default blocked every
   cross-origin thumbnail <img>, prod included). `scripts/relativize-screenshot-urls.mjs` repairs rows.
+- **Production migration policy** (2026-09-04): production Šibenik proposals/plans are disposable and
+  should be replaced wholesale from the finished laptop data; use one deterministic migration for
+  every other unambiguous record, while ambiguous records simply remain unusable—no plan-specific fixers.
+- **Production non-Šibenik record migration applied** (2026-09-04): scoped `--normalize-only` pass
+  migrated 95/175 rows and left 80 ambiguous Zagreb rows unchanged; repeat dry-run reports zero
+  changes, strict serialization accepts 95/rejects 80, and all 299 Šibenik rows plus 20 plans retained
+  their pre-run hashes. Rollback dump: Valhalla `/root/backups/prod/pre-migration/consensus-proposals-2026-09-03T2340Z.dump`.
+- **Production Šibenik plan data removed** (2026-09-04): after proving the one plan's 299 members had
+  no cross-plan, cross-proposal, AI-scene, or FK references, one transaction deleted
+  `sibenik-2066-1` and all 299 `city='sibenik'` proposals. Public plan/proposal routes now return 404
+  and the Šibenik proposal count is zero. Rollback dump: Valhalla
+  `/root/backups/prod/pre-migration/consensus-before-sibenik-delete-2026-09-03T2347Z.dump`.
 - **Illustrative facades** (2026-09-05; ownership rule updated 2026-09-07): proposed extrusions have
   an optional, remembered facade skin keyed by city + live parcel ID, so separate volumes on the
   same parcel share a design and crossing an ownership seam changes it. Brick/stone/plaster presets live in
