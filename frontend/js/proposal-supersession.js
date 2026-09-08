@@ -124,7 +124,23 @@
         return list.filter(candidate => {
             const candidateId = proposalRecordId(candidate);
             if (!candidateId || candidateId === targetId || !proposalIsAppliedForReplacement(candidate)) return false;
-            if (familyIds.has(candidateId)) return true;
+            if (familyIds.has(candidateId)) {
+                // One saved layout can become several independently applicable parcel agreements.
+                // Those disjoint members still replace the combined source, but not each other.
+                const targetAgreement = proposal.reparcellizationAgreement;
+                const candidateAgreement = candidate.reparcellizationAgreement;
+                if (targetAgreement?.groupId && targetAgreement.groupId === candidateAgreement?.groupId
+                    && targetAgreement.index !== candidateAgreement.index
+                    && proposal.reparcellization && candidate.reparcellization
+                    && typeof planOrder?.footprintOf === 'function'
+                    && typeof planOrder?.intersectionArea === 'function') {
+                    const targetLand = planOrder.footprintOf(proposal);
+                    const candidateLand = planOrder.footprintOf(candidate);
+                    if (targetLand && candidateLand
+                        && planOrder.intersectionArea(targetLand, candidateLand) < minimumOverlapM2) return false;
+                }
+                return true;
+            }
             // A standing park, square or lake holds its ground as exclusively as a building does:
             // a plan member whose footprint lies inside an applied park must be refused, not
             // stacked on top of it (Šibenik, 2026-09-03: a plan re-applied two buildings inside

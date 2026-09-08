@@ -201,3 +201,57 @@ describe('ground is taken by overlap, not by parcel identity', () => {
         expect(alternatives.map(entry => entry.proposalId)).toEqual(['single-a']);
     });
 });
+
+describe('reparcellization agreement replacement families', () => {
+    const plot = (west, east, south = 0, north = 1) => turf.polygon([[
+        [west, south], [east, south], [east, north], [west, north], [west, south]
+    ]]);
+    const agreement = (proposalId, geometry, applied, index) => ({
+        proposalId, sourceProposalId: 'source-plan', applied,
+        reparcellizationAgreement: { groupId: 'courtyard-group', index, count: 2 },
+        reparcellization: { polygons: [{ geometry, jointPool: false }] }
+    });
+
+    it('allows two disjoint siblings from the same source to remain applied alternatives', () => {
+        const first = agreement('agreement-1', plot(0, 1).geometry, true, 0);
+        const second = agreement('agreement-2', plot(2, 3).geometry, false, 1);
+        expect(collectAppliedProposalAlternatives(second, [first, second], {
+            planOrder: require('../../frontend/js/proposals/plan-order.js')
+        })).toEqual([]);
+    });
+
+    it('parks both applied siblings when the original source is the target', () => {
+        const source = { proposalId: 'source-plan', applied: false,
+            reparcellization: { polygons: [{ geometry: plot(0, 3).geometry }] } };
+        const first = agreement('agreement-1', plot(0, 1).geometry, true, 0);
+        const second = agreement('agreement-2', plot(2, 3).geometry, true, 1);
+        expect(collectAppliedProposalAlternatives(source, [source, first, second], {
+            planOrder: require('../../frontend/js/proposals/plan-order.js')
+        }).map(record => record.proposalId)).toEqual(['agreement-1', 'agreement-2']);
+    });
+
+    it('parks the original source when publishing a sibling agreement', () => {
+        const source = { proposalId: 'source-plan', applied: true };
+        const first = agreement('agreement-1', plot(0, 1).geometry, true, 0);
+        const second = agreement('agreement-2', plot(2, 3).geometry, false, 1);
+        expect(collectAppliedProposalAlternatives(second, [source, first, second], {
+            planOrder: require('../../frontend/js/proposals/plan-order.js')
+        }).map(record => record.proposalId)).toEqual(['source-plan']);
+    });
+
+    it('still treats overlapping siblings in one group as rivals', () => {
+        const first = agreement('agreement-1', plot(0, 2).geometry, true, 0);
+        const second = agreement('agreement-2', plot(1, 3).geometry, false, 1);
+        expect(collectAppliedProposalAlternatives(second, [first, second], {
+            planOrder: require('../../frontend/js/proposals/plan-order.js')
+        }).map(record => record.proposalId)).toEqual(['agreement-1']);
+    });
+
+    it('keeps a same-index replacement as an alternative even when its sibling is disjoint', () => {
+        const original = agreement('agreement-1', plot(0, 1).geometry, true, 0);
+        const replacement = { ...agreement('agreement-1b', plot(0, 1).geometry, false, 0), sourceProposalId: 'agreement-1' };
+        expect(collectAppliedProposalAlternatives(replacement, [original, replacement], {
+            planOrder: require('../../frontend/js/proposals/plan-order.js')
+        }).map(record => record.proposalId)).toEqual(['agreement-1']);
+    });
+});

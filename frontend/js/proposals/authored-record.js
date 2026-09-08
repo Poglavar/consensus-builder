@@ -75,9 +75,12 @@
                 return clean;
             });
         }
-        if (Array.isArray(plan.polygons)) {
-            plan.polygons.forEach(polygon => {
+        // Original-input snapshots use the same owner identities as their resulting plots.
+        for (const entries of [plan.polygons, plan.inputParcels]) {
+            if (!Array.isArray(entries)) continue;
+            entries.forEach(polygon => {
                 if (!polygon || typeof polygon !== 'object' || Array.isArray(polygon)) return;
+                if (typeof polygon.label === 'string') polygon.label = stripGeneratedParcelTokens(polygon.label);
                 if (typeof polygon.ownerKey === 'string') {
                     polygon.ownerKey = stripGeneratedParcelTokens(polygon.ownerKey);
                 }

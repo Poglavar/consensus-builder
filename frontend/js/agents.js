@@ -449,6 +449,30 @@ function getOrCreateAgentForRecipient(label, options = {}) {
     return id;
 }
 
+function getOrCreateJointPoolAgent(label, members, options = {}) {
+    const store = options.agentStore || agentStorage;
+    const normalized = (Array.isArray(members) ? members : []).map(member => ({
+        agentId: String(member.agentId || member.ownerKey || '').trim(),
+        name: String(member.name || member.displayName || member.ownerLabel || '').trim(),
+        share: member.share
+    })).sort((a, b) => `${a.agentId}\u0000${a.name}`.localeCompare(`${b.agentId}\u0000${b.name}`));
+    if (!normalized.length || normalized.some(member => !member.agentId || !member.name || !Number.isFinite(member.share) || member.share <= 0)
+        || Math.abs(normalized.reduce((sum, member) => sum + member.share, 0) - 1) > 1e-6) {
+        throw new Error('Joint pool members must have valid identities and shares summing to one.');
+    }
+    const key = JSON.stringify(normalized);
+    const id = 'agent_joint_pool_' + _recipientHash(key);
+    const existing = store.getAgent(id);
+    if (existing && JSON.stringify(existing.members) !== key) throw new Error('Joint pool identity collision.');
+    if (!store.getAgent(id)) {
+        store.addAgent({ id, name: label || normalized.map(member => member.name).join(' / '), avatarIndex: 0,
+            jointPool: true, members: normalized, ethBalance: 0, walletAddresses: [], ownedParcels: [],
+            proposalsCreated: [], proposalsAccepted: [], proposalsExecuted: [], createdAt: new Date().toISOString(),
+            lastActionAt: null, aiControlled: false, userControlled: false });
+    }
+    return id;
+}
+
 // Resolve the agent id that should RECEIVE the parcels for a proposal's ownership facet.
 // Returns null for no-transfer / open-sale (no fixed recipient yet).
 function resolveProposalRecipientAgentId(proposal, options = {}) {
@@ -3219,6 +3243,7 @@ window.getAgentOwnedParcels = getAgentOwnedParcels;
 window.buildAgentOwnedParcelIndex = buildAgentOwnedParcelIndex;
 window.updateAgentOwnedParcels = updateAgentOwnedParcels;
 window.transferParcelOwnership = transferParcelOwnership;
+window.getOrCreateJointPoolAgent = getOrCreateJointPoolAgent;
 window.agentDecideAction = agentDecideAction;
 window.executeAgentAction = executeAgentAction;
 window.showAgentDialog = showAgentDialog;

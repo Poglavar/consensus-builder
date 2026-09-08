@@ -126,6 +126,17 @@
             }
         }
 
+        // Validate and normalize every ownership declaration before any feature, map, or
+        // transactional storage mutation. Joint owners describe the complete ownership of a slice.
+        const ownershipApi = (typeof ReparcellizationOwnership !== 'undefined')
+            ? ReparcellizationOwnership
+            : ((typeof window !== 'undefined' && window.ReparcellizationOwnership)
+                || (typeof require === 'function' ? require('../../reparcellization-ownership.js') : null));
+        if (!ownershipApi || typeof ownershipApi.validatePlanOwnership !== 'function') {
+            throw new Error('Reparcellization ownership validator is not loaded');
+        }
+        const normalizedOwnership = ownershipApi.validatePlanOwnership(plan.polygons, proposalData);
+
         const primaryFeature = parentFeatures.find(f => _getParcelIdFromFeature(f));
         const primaryNumber = primaryFeature?.properties?.BROJ_CESTICE
             || primaryFeature?.properties?.parcelNumber
@@ -135,7 +146,7 @@
         const rootParcelNumber = _resolveRootParcelNumberFromProperties(primaryFeature?.properties || null)
             || primaryNumber || 'parcel';
 
-        const childFeatures = plan.polygons.map(slice => {
+        const childFeatures = plan.polygons.map((slice, sliceIndex) => {
             if (!slice || !slice.geometry) return null;
             const feature = {
                 type: 'Feature',
@@ -148,28 +159,18 @@
                     calculatedArea: Math.round(_calculateGeoJsonArea(slice.geometry)),
                     isProposed: true,
                     color: slice.color || null,
-                    ownerKey: slice.ownerKey || null,
-                    displayName: slice.displayName || null,
+                    ownerKey: normalizedOwnership[sliceIndex].owners[0].ownerKey,
+                    displayName: slice.displayName || normalizedOwnership[sliceIndex].owners[0].name,
                     percent: slice.percent !== undefined ? slice.percent : null
                 }
             };
 
-            const pct = Number(slice.percent);
-            if (Number.isFinite(pct)) {
-                const isSingleOwnerPlan = proposalData?.reparcellization?.isSingleOwner === true;
-                const percentValue = isSingleOwnerPlan ? 100 : (pct > 1 ? pct : pct * 100);
-                feature.properties.ownershipDetails = {
-                    owners: [{
-                        name: slice.displayName || proposalData?.author || 'Owner',
-                        ownerLabel: slice.displayName || proposalData?.author || 'Owner',
-                        percentageShare: percentValue,
-                        actualShareText: `${percentValue}%`
-                    }]
-                };
-            }
+            feature.properties.ownershipDetails = normalizedOwnership[sliceIndex];
+            feature.properties.jointPool = slice.jointPool === true;
 
             return feature;
         }).filter(Boolean);
+        const authoredChildren = new Set(childFeatures);
 
         if (!childFeatures.length) {
             if (typeof updateStatus === 'function') {
@@ -340,18 +341,22 @@
                 // untransferred (no phantom owner). skipAgentSync defers the per-agent owned-parcels
                 // rebuild to one pass after the loop — per-child it re-scanned the whole keyspace
                 // (O(children²), the ~1s-per-parcel freeze).
-                if (typeof transferParcelOwnership === 'function') {
-                    const ownerKey = feature.properties.ownerKey;
-                    const displayName = feature.properties.displayName;
+                if (authoredChildren.has(feature) && typeof transferParcelOwnership === 'function') {
                     let agentId = null;
-                    if (ownerKey === 'public-land') {
-                        agentId = (typeof getOrCreateCityAgent === 'function')
-                            ? getOrCreateCityAgent(ownershipContext)
-                            : null;
-                    } else if (ownerKey && ownershipContext.agentStore?.getAgent?.(ownerKey)) {
-                        agentId = ownerKey;
-                    } else if (ownerKey && displayName && displayName !== 'Unassigned' && typeof getOrCreateAgentForRecipient === 'function') {
-                        agentId = getOrCreateAgentForRecipient(displayName, ownershipContext);
+                    const owners = feature.properties.ownershipDetails?.owners || [];
+                    const resolveOwnerAgent = owner => {
+                        if (owner.ownerKey === 'public-land') return getOrCreateCityAgent(ownershipContext);
+                        if (ownershipContext.agentStore?.getAgent?.(owner.ownerKey)) return owner.ownerKey;
+                        return getOrCreateAgentForRecipient(owner.name, ownershipContext);
+                    };
+                    if (owners.length > 1) {
+                        agentId = getOrCreateJointPoolAgent(
+                            owners.map(owner => owner.name).join(' / '),
+                            owners.map(owner => ({ agentId: resolveOwnerAgent(owner), name: owner.name, share: owner.percentageShare / 100 })),
+                            ownershipContext
+                        );
+                    } else if (owners.length === 1) {
+                        agentId = resolveOwnerAgent(owners[0]);
                     }
                     if (agentId) {
                         transferParcelOwnership(String(parcelId), null, agentId, {

@@ -1206,6 +1206,7 @@
             const output = commonProposalFromDraft(draft);
             const plan = clone(draft.editorPayload?.plan || {});
             delete plan.parcelIds;
+            delete plan.agreementBatch;
             output.goal = 'reparcellization';
             output.primaryType = 'Reparcellization';
             output.reparcellization = plan;

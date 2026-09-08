@@ -1420,10 +1420,149 @@
 
 /* Algorithm radios wrap on narrow screens */
 .reparcel-alg-options {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    align-items: stretch;
+}
+
+.reparcel-alg-option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    min-height: 44px;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+    color: #374151;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.reparcel-alg-option:hover {
+    border-color: #9ca3af;
+    background: #f9fafb;
+}
+
+.reparcel-alg-option input[type="radio"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.reparcel-alg-option:has(input[type="radio"]:checked) {
+    border-color: #1B998B;
+    background: #ecfdf5;
+    color: #065f46;
+    box-shadow: inset 0 0 0 1px #1B998B;
+}
+
+.reparcel-alg-option:has(input[type="radio"]:focus-visible) {
+    outline: 3px solid rgba(27, 153, 139, 0.35);
+    outline-offset: 2px;
+}
+
+.reparcel-alg-option span {
+    display: block;
+    line-height: 1.25;
+}
+
+.reparcel-courtyard-tools {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px 16px;
     align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.reparcel-courtyard-label {
+    flex: 0 0 auto;
+    font-weight: 600;
+    color: #374151;
+}
+
+.reparcel-courtyard-hint {
+    flex: 1 1 100%;
+    margin: 0;
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.reparcel-courtyard-tools[hidden],
+.reparcel-old-plots-view .reparcel-courtyard-tools {
+    display: none;
+}
+
+.reparcel-courtyard-tools > .btn {
+    min-height: 40px;
+}
+
+.reparcel-owner-popup__joint {
+    width: 100%;
+    min-height: 40px;
+    margin-top: 8px;
+}
+
+.reparcel-agreement-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.reparcel-agreement-options label {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    box-sizing: border-box;
+    min-height: 44px;
+    padding: 9px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+    color: #374151;
+    cursor: pointer;
+}
+
+.reparcel-agreement-options label:focus-within {
+    outline: 3px solid rgba(27, 153, 139, 0.35);
+    outline-offset: 2px;
+}
+
+.reparcel-agreement-options input[type="radio"] {
+    margin-top: 3px;
+    accent-color: #1B998B;
+    flex: 0 0 auto;
+}
+
+.reparcel-agreement-options span {
+    line-height: 1.3;
+}
+
+.reparcel-agreement-hint {
+    margin: 8px 0 0;
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+@media (max-width: 520px) {
+    .reparcel-alg-options {
+        grid-template-columns: 1fr;
+    }
+    .reparcel-courtyard-label {
+        flex-basis: 100%;
+    }
 }
 
 /* Drawing icons are greyed out until Manual is selected */

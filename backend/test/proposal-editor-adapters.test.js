@@ -538,3 +538,116 @@ describe('reparcellization inputs survive the trip into the design editor', () =
         await expect(openWith(draft, [])).rejects.toThrow(/not available/i);
     });
 });
+
+describe('reparcellization publish handoff', () => {
+    it('restores transient parcel IDs when staging a saved plan for terms', async () => {
+        const shellPath = '../../frontend/js/proposal-editor-shell.js';
+        const previous = {
+            proposalDraftStore: globalThis.proposalDraftStore,
+            prepare: globalThis.prepareProposalDraftParcelSelection,
+            show: globalThis.showProposalDialog,
+            pending: globalThis.pendingReparcellizationPlan,
+            draftId: globalThis.pendingProposalDraftId,
+            source: globalThis.pendingProposalReplacementSource
+        };
+        const plan = {
+            algorithm: 'amend',
+            inputParcels: [{ label: 'A', geometry: { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]] } }],
+            polygons: [{ geometry: { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]] }, jointPool: true }]
+        };
+        const draft = {
+            id: 'draft-handoff', goal: 'reparcellization', adapterKey: 'reparcellization',
+            sourceProposalId: null, sourceSnapshot: {}, revision: 4,
+            fields: { selectedParcelIds: ['live-piece-1', 'live-piece-2'], name: 'Block', description: 'Plan', offer: 10, offerCurrency: 'USDT' },
+            editorPayload: { plan }, validation: { valid: true }
+        };
+        let opened = null;
+        globalThis.proposalDraftStore = {
+            validateDraft: () => draft,
+            getPublishReceipt: () => null,
+            updateDraft: () => draft,
+            markPublishFailed: () => {}
+        };
+        globalThis.prepareProposalDraftParcelSelection = async () => ({
+            ids: draft.fields.selectedParcelIds.slice(),
+            layers: draft.fields.selectedParcelIds.map(id => ({ feature: { properties: { parcel_id: id } } }))
+        });
+        globalThis.showProposalDialog = overrides => { opened = overrides; };
+        delete globalThis.pendingReparcellizationPlan;
+        delete globalThis.pendingProposalDraftId;
+        delete globalThis.pendingProposalReplacementSource;
+        delete require.cache[require.resolve(shellPath)];
+        require(shellPath);
+        try {
+            await globalThis.stageProposalDraftForPublishing(draft.id);
+            expect(opened.geometryPreset.submitted).toBe(true);
+            expect(plan).not.toHaveProperty('parcelIds');
+            expect(globalThis.pendingReparcellizationPlan.parcelIds).toEqual(['live-piece-1', 'live-piece-2']);
+            expect(globalThis.pendingReparcellizationPlan.inputParcels).toEqual(plan.inputParcels);
+            expect(globalThis.pendingReparcellizationPlan.polygons[0].jointPool).toBe(true);
+        } finally {
+            if (previous.proposalDraftStore === undefined) delete globalThis.proposalDraftStore;
+            else globalThis.proposalDraftStore = previous.proposalDraftStore;
+            if (previous.prepare === undefined) delete globalThis.prepareProposalDraftParcelSelection;
+            else globalThis.prepareProposalDraftParcelSelection = previous.prepare;
+            if (previous.show === undefined) delete globalThis.showProposalDialog;
+            else globalThis.showProposalDialog = previous.show;
+            if (previous.pending === undefined) delete globalThis.pendingReparcellizationPlan;
+            else globalThis.pendingReparcellizationPlan = previous.pending;
+            if (previous.draftId === undefined) delete globalThis.pendingProposalDraftId;
+            else globalThis.pendingProposalDraftId = previous.draftId;
+            if (previous.source === undefined) delete globalThis.pendingProposalReplacementSource;
+            else globalThis.pendingProposalReplacementSource = previous.source;
+        }
+    });
+
+    it('resumes a persisted agreement batch without requiring replaced live pieces', async () => {
+        const shellPath = '../../frontend/js/proposal-editor-shell.js';
+        const previous = {
+            proposalDraftStore: globalThis.proposalDraftStore,
+            prepare: globalThis.prepareProposalDraftParcelSelection,
+            show: globalThis.showProposalDialog,
+            pending: globalThis.pendingReparcellizationPlan
+        };
+        const plan = {
+            algorithm: 'amend',
+            inputParcels: [{ label: 'A', geometry: { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]] } }],
+            polygons: [{ geometry: { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]] }, jointPool: true }]
+        };
+        const draft = {
+            id: 'draft-batch-retry', goal: 'reparcellization', adapterKey: 'reparcellization',
+            sourceSnapshot: {}, revision: 2,
+            fields: { selectedParcelIds: ['replaced-live-piece'], name: 'Block', description: 'Plan', offer: 10, offerCurrency: 'USDT' },
+            editorPayload: { plan }, publish: { parcelAgreementBatch: { groupId: 'group-1', items: [] } },
+            validation: { valid: true }
+        };
+        let prepareCalls = 0;
+        let opened = 0;
+        globalThis.proposalDraftStore = {
+            validateDraft: () => draft,
+            getPublishReceipt: () => null,
+            updateDraft: () => draft,
+            markPublishFailed: () => {}
+        };
+        globalThis.prepareProposalDraftParcelSelection = async () => { prepareCalls += 1; throw new Error('must not resolve replaced pieces'); };
+        globalThis.showProposalDialog = () => { opened += 1; };
+        delete globalThis.pendingReparcellizationPlan;
+        delete require.cache[require.resolve(shellPath)];
+        require(shellPath);
+        try {
+            await globalThis.stageProposalDraftForPublishing(draft.id);
+            expect(prepareCalls).toBe(0);
+            expect(opened).toBe(1);
+            expect(globalThis.pendingReparcellizationPlan.parcelIds).toEqual(['replaced-live-piece']);
+        } finally {
+            if (previous.proposalDraftStore === undefined) delete globalThis.proposalDraftStore;
+            else globalThis.proposalDraftStore = previous.proposalDraftStore;
+            if (previous.prepare === undefined) delete globalThis.prepareProposalDraftParcelSelection;
+            else globalThis.prepareProposalDraftParcelSelection = previous.prepare;
+            if (previous.show === undefined) delete globalThis.showProposalDialog;
+            else globalThis.showProposalDialog = previous.show;
+            if (previous.pending === undefined) delete globalThis.pendingReparcellizationPlan;
+            else globalThis.pendingReparcellizationPlan = previous.pending;
+        }
+    });
+});

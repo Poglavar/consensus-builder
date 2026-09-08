@@ -1130,6 +1130,8 @@
         }
         if (draft.goal === 'reparcellization') {
             global.pendingReparcellizationPlan = JSON.parse(JSON.stringify(payload.plan || {}));
+            // Selection is transient dialog state; stored plans intentionally omit live parcel IDs.
+            global.pendingReparcellizationPlan.parcelIds = (draft.fields?.selectedParcelIds || []).map(String);
             return true;
         }
         return !!payload.geometry;
@@ -1176,8 +1178,11 @@
             }
             return false;
         }
-        const selection = await global.prepareProposalDraftParcelSelection?.(draft);
-        if (!selection?.layers?.length) {
+        // A saved batch already contains immutable instructions. Earlier members may have
+        // replaced the original live pieces, so retry must not depend on selecting them again.
+        const resumingAgreements = !!draft.publish?.parcelAgreementBatch;
+        const selection = resumingAgreements ? null : await global.prepareProposalDraftParcelSelection?.(draft);
+        if (!resumingAgreements && !selection?.layers?.length) {
             const message = tDraft('proposalDrafts.errors.parcelsUnavailable', 'The draft parcels are not available in the current city.');
             store.markPublishFailed(draftId, new Error(message));
             // The editor shell is dormant UI — say it out loud instead of rendering into the void.
@@ -1185,7 +1190,7 @@
             else if (typeof global.updateStatus === 'function') global.updateStatus(message);
             return false;
         }
-        if ((selection.usesSourceChildren || selection.substituted) && selection.ids?.length) {
+        if ((selection?.usesSourceChildren || selection?.substituted) && selection.ids?.length) {
             store.updateDraft(draftId, { fields: { selectedParcelIds: selection.ids.map(String) } }, {
                 coalesceKey: 'applied-source-descendants'
             });
@@ -1261,6 +1266,7 @@
                     : tDraft('proposalDrafts.actions.createProposal', 'Create proposal'));
             submit.dataset.proposalDraftId = draft.id;
         }
+        global.refreshReparcellizationAgreementSubmit?.();
         closeProposalEditorShell();
         return true;
     }

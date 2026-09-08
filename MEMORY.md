@@ -298,3 +298,8 @@
   `three-building-facades.js`; wall-local metric coordinates and shared shader uniforms keep
   toggles independent of geometry rebuilds, while envelopes, real context and uploaded models retain
   their own appearance. Start with shaded architectural detail before adding physical relief.
+- **Advanced land readjustment** (2026-09-08): keep Automatic / Draw freely / Keep existing parcels in
+  one layout radio group; courtyard tools appear in Keep existing parcels, while one versus separate
+  parcel agreements is chosen in the later proposal terms dialog. Separate agreements preserve each
+  original private remainder and share the courtyard in proportion to final private allocations;
+  their durable batch can resume after partial creation, and disjoint members coexist on the map.
