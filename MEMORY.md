@@ -298,3 +298,17 @@
   `three-building-facades.js`; wall-local metric coordinates and shared shader uniforms keep
   toggles independent of geometry rebuilds, while envelopes, real context and uploaded models retain
   their own appearance. Start with shaded architectural detail before adding physical relief.
+- **Planning comparison direction** (2026-09-14): user agreed to Built / Currently permitted /
+  Proposed in CB, with the permitted view enabled only where GUP capacity data exists.
+- **Spatial comparison, no reverse GUP translation** (2026-09-14): user chose GUP-to-spatial plus
+  directly authored spatial proposals as the integration direction, dropping proposal-to-GUP-text
+  conversion because partial reverse translation adds complexity without helping the reports.
+- **GUP amendment editor location** (2026-09-14): extend Urbana pravila's existing rule editor for
+  saved GUP alternatives and evaluations; CB keeps spatial proposal authoring and comparisons,
+  with both using the same plan model and cadastre-data solver API.
+- **GUP solver parcel scope** (2026-09-14): user fixed inputs to existing cadastral parcels;
+  theoretical merging, subdivision and new plot formation are outside the evaluation because
+  there are too many possible combinations, so two 300 m² parcels remain unbuildable under a 400 m² minimum.
+- **Incremental GUP evaluation** (2026-09-14): user requires amended plans to inherit compatible
+  base solutions for unaffected existing parcels without resolving or solving them again;
+  complete plan results combine inherited solutions with evaluated changes.
