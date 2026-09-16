@@ -14,11 +14,13 @@
         "plan-yield": "PGHOST=${PGHOST:-localhost} node scripts/plan-yield.js"
     },
     "dependencies": {
+        "@anthropic-ai/sdk": "^0.126.0",
         "@solana/kit": "^5.5.1",
         "@solana/web3.js": "^1.99.0",
         "@turf/turf": "^6.5.0",
         "@x402/core": "^2.26.0",
         "@x402/express": "^2.26.0",
+        "@x402/fetch": "^2.26.0",
         "@x402/svm": "^2.26.0",
         "canvas": "^3.2.3",
         "cors": "^2.8.5",
@@ -33,7 +35,6 @@
     "devDependencies": {
         "@babel/parser": "7.29.7",
         "@vitest/coverage-v8": "^3.2.4",
-        "@x402/fetch": "^2.26.0",
         "nodemon": "^3.1.0",
         "supertest": "^7.0.0",
         "vitest": "^3.1.1"

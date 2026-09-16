@@ -13,3 +13,6 @@ test-results/
 
 # wrangler local cache (account id, build artifacts) — tooling state, not source
 .wrangler/
+
+# runtime logs of the backend jobs (PM2 and the agent runner write here)
+backend/logs/
