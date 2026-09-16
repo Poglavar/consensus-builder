@@ -2,6 +2,7 @@
 members = [
     "programs/parcel_nft",
     "programs/proposal_nft",
+    "programs/proposal_market",
 ]
 resolver = "2"
 

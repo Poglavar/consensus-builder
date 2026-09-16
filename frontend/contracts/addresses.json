@@ -16,11 +16,13 @@
   },
   "solana": {
     "ParcelNFT": "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1",
-    "ProposalNFT": "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg"
+    "ProposalNFT": "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg",
+    "ProposalMarket": "GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB"
   },
   "solana-devnet": {
     "ParcelNFT": "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1",
-    "ProposalNFT": "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg"
+    "ProposalNFT": "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg",
+    "ProposalMarket": "GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB"
   },
   "solana-mainnet-beta": {}
 }

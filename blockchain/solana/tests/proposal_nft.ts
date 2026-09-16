@@ -19,7 +19,12 @@ describe("proposal_nft", () => {
     let counterPDA: PublicKey;
 
     before(async () => {
-        counterPDA = await initializeProposalCounter(program, (provider.wallet as any).payer);
+        // proposal_market.ts runs first (mocha sorts files by name) and initializes the counter
+        // when it is absent; a second `initialize` on the existing PDA would fail this whole file.
+        const [counter] = findProposalCounterPDA(program.programId);
+        counterPDA = (await program.account.proposalCounter.fetchNullable(counter))
+            ? counter
+            : await initializeProposalCounter(program, (provider.wallet as any).payer);
     });
 
     async function getCounterValue(): Promise<number> {

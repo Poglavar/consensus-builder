@@ -1,0 +1,22 @@
+[package]
+name = "proposal_market"
+version = "0.1.0"
+description = "Urban Game Theory Proposal Market - parimutuel prediction market per proposal (Solana)"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "proposal_market"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+
+[dependencies]
+# Same anchor-lang line as parcel_nft/proposal_nft so the workspace resolves ONE anchor version.
+anchor-lang = { version = "0.30.1", features = ["init-if-needed"] }
+anchor-spl = "0.30.1"
