@@ -312,3 +312,25 @@
 - **Incremental GUP evaluation** (2026-09-14): user requires amended plans to inherit compatible
   base solutions for unaffected existing parcels without resolving or solving them again;
   complete plan results combine inherited solutions with evaluated changes.
+- 2026-09-16: **"Agents functionality for UGT"** (branch/worktree `colosseum-worlds-fair`, Colosseum
+  Crypto World's Fair, Solana track). Design and workstream interfaces in
+  `agents-functionality-for-ugt.md`. Decisions: prediction markets have NO deadline (resolve only on
+  on-chain Executed/Cancelled); x402 fee and market stakes in devnet USDC; agent model spend capped at
+  $1,000/day in a ledger; x402 prices are config, kept low; paid routes are new `/agent/*` paths so
+  the free `/proposals` routes the app uses stay untouched.
+- 2026-09-16 (later): **WS1 x402 gate + WS4 market program built.** Paid route is `POST /agent/proposals`
+  only — `POST /proposals/batch` turned out to be a READ (ids → records), so there is no batch create to
+  gate. x402 uses the `upfront` flow (settle BEFORE the handler, so a row always carries the settlement
+  signature); the author-vs-payer check therefore runs in `onBeforeSettle` off the signed transaction,
+  not after a verify step (upfront has none). `/agent/*` bypasses the Origin gate and the IP write
+  limiter (payment is both). Market program `proposal_market` = `GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB`
+  on anchor-lang 0.30.1 with anchor-spl, reads Proposal by a mirrored prefix struct (no declare_program!);
+  18 localnet cases pass. **Never run `anchor keys sync` in blockchain/solana** — the original deploy
+  keypairs are not in the repo, so it rewrites parcel_nft/proposal_nft declare_id to throwaway keys.
+- 2026-09-16 (night): **WS2 done, transaction explorer built** (`frontend/tx-explorer.html`, store-backed
+  `GET /transactions` over `consensus.solana_transaction`, backfill `scripts/sync-transactions.mjs`).
+  Public devnet RPC throttles `getTransaction` for minutes → decoded transactions are persisted once and
+  synced incrementally. The x402 facilitator fee payer is labelled but NEVER scanned (it signs every
+  devnet x402 payment by anyone). Deployed `proposal_nft` on devnet is older than the source
+  (`accept_proposal` takes 2 accounts, IDL says 4); its Proposal account layout still matches.
+
