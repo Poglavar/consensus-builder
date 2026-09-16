@@ -301,3 +301,60 @@ describe('GET /docs/database', () => {
         });
     });
 });
+
+describe('agent quickstart docs', () => {
+    const X402_ENV = {
+        PUBLIC_API_BASE_URL: 'https://api.example.test',
+        X402_NETWORK: 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
+        X402_FACILITATOR_URL: 'https://x402.org/facilitator',
+        X402_PAY_TO: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ',
+        X402_PRICE_PROPOSAL: '$0.05'
+    };
+
+    it('GET /docs/agents renders the quickstart with the live price and base URL substituted', async () => {
+        const app = createRouteApp(setupDocsRoute, createDocsPool(), { env: X402_ENV });
+        const res = await request(app).get('/docs/agents');
+        expect(res.status).toBe(200);
+        expect(res.headers['content-type']).toMatch(/text\/html/);
+        expect(res.text).toContain('<title>Agent quickstart');
+        expect(res.text).toContain('$0.05');
+        expect(res.text).toContain('https://api.example.test/agent/proposals');
+        expect(res.text).toContain('4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU');
+        expect(res.text).not.toContain('$(base)');
+        expect(res.text).not.toContain('$(price)');
+    });
+
+    it('GET /docs/agents says when the price is not configured instead of printing a placeholder', async () => {
+        const app = createRouteApp(setupDocsRoute, createDocsPool(), { env: { PUBLIC_API_BASE_URL: 'https://api.example.test' } });
+        const res = await request(app).get('/docs/agents');
+        expect(res.status).toBe(200);
+        expect(res.text).toContain('price not configured');
+        expect(res.text).not.toContain('$(price)');
+    });
+
+    it('GET /docs/agents.json returns the recipe schema with the live x402 terms and endpoints', async () => {
+        const app = createRouteApp(setupDocsRoute, createDocsPool(), { env: X402_ENV });
+        const res = await request(app).get('/docs/agents.json');
+        expect(res.status).toBe(200);
+        expect(res.body.schema.required).toEqual(['cadastreParcelIds']);
+        expect(res.body.schema.properties.cadastreParcelIds.minItems).toBe(1);
+        expect(res.body.x402).toMatchObject({
+            enabled: true,
+            network: X402_ENV.X402_NETWORK,
+            payTo: X402_ENV.X402_PAY_TO,
+            priceProposal: '$0.05',
+            paymentFlow: 'upfront'
+        });
+        expect(res.body.endpoints.submit).toBe('https://api.example.test/agent/proposals');
+        expect(res.body.market.programId).toMatch(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/);
+        expect(res.body.docs).toBe('https://api.example.test/docs/agents');
+    });
+
+    it('the /docs page links to the agent quickstart', async () => {
+        const app = createRouteApp(setupDocsRoute, createDocsPool(), { env: X402_ENV });
+        const res = await request(app).get('/docs');
+        expect(res.status).toBe(200);
+        expect(res.text).toContain('href="/docs/agents"');
+    });
+});
+

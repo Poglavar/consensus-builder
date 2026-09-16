@@ -208,7 +208,7 @@ function lensArrayValidator(value) {
     return { ok: true, value };
 }
 
-const proposalCreateBodyValidator = createJsonBodyValidator({
+export const proposalCreateBodyValidator = createJsonBodyValidator({
     allowUnknownFields: true,
     schema: {
         proposalId: { required: false, validate: validateIdentifierField('proposalId') },
@@ -321,151 +321,11 @@ const proposalScreenshotPatchValidator = createJsonBodyValidator({
     }
 });
 
-export function setupProposalsRoute(app, pool) {
-    // The marketplace/on-chain LIFECYCLE status, past-expiry-aware. A proposal past expires_at reads
-    // as 'Expired' even if the stored value is stale. This one expression is used both for the
-    // returned lifecycleStatus and for the ?lifecycle= FILTER, so filtering and display agree
-    // (case-insensitive — the DB may carry both 'Executed' and 'executed').
-    const EFFECTIVE_STATUS_SQL = `
-        CASE
-            WHEN LOWER(COALESCE(lifecycle_status, '')) NOT IN ('executed', 'cancelled', 'expired')
-                AND expires_at IS NOT NULL AND expires_at <= now()
-            THEN 'Expired'
-            WHEN LOWER(COALESCE(lifecycle_status, '')) = 'executed' THEN 'Executed'
-            WHEN LOWER(COALESCE(lifecycle_status, '')) = 'cancelled' THEN 'Cancelled'
-            WHEN LOWER(COALESCE(lifecycle_status, '')) = 'expired' THEN 'Expired'
-            WHEN LOWER(COALESCE(lifecycle_status, '')) = 'draft' THEN 'draft'
-            ELSE 'Active'
-        END`;
-
-    // The complete public proposal representation. The single and batch endpoints deliberately
-    // share this list and serializeProposalRow so a plan does not receive a thinner record than a
-    // direct proposal link.
-    const FULL_PROPOSAL_COLUMNS = `
-        id, proposal_id, city, name, title, description, author, type,
-        lifecycle_status, ${EFFECTIVE_STATUS_SQL} AS effective_status,
-        offer, offer_currency, budget, budget_currency,
-        created_at, expires_at, updated_at,
-        decay_enabled, decay_percent, decay_duration_ms,
-        deposit_enabled, deposit_percent,
-        is_conditional, disbursement_mode,
-        cadastre_parcel_ids, ownership_flow, cadastre_frame,
-        accepted_parcel_ids, owner_acceptances,
-        road_proposal, building_proposal, structure_proposal, reparcellization,
-        lens, bounds, onchain_data, screenshot_url, epoch_year, proposal_data`;
-
-    // ORDER BY only over columns the summary actually carries. Computed sorts the client offers
-    // (area, parcel count, acceptance ratio) need per-row geometry/JSONB work the list endpoint
-    // does not do, so they stay client-side; these are the DB-derivable ones.
-    const SORT_ORDER_BY = {
-        'created-desc': 'created_at DESC',
-        'created-asc': 'created_at ASC',
-        'author-asc': "COALESCE(author, proposal_data->>'author', '') ASC",
-        'author-desc': "COALESCE(author, proposal_data->>'author', '') DESC",
-        'value-desc': "NULLIF(proposal_data->>'offer', '')::numeric DESC NULLS LAST",
-        'value-asc': "NULLIF(proposal_data->>'offer', '')::numeric ASC NULLS LAST"
-    };
-
-    const parseFilters = (req) => {
-        const city = normalizeCityCode(req.query.city);
-        // The lifecycle-phase filter (Active/Executed/Cancelled/Expired). Named `?lifecycle=`.
-        const lifecycleRaw = typeof req.query.lifecycle === 'string' && req.query.lifecycle.trim()
-            ? req.query.lifecycle.trim()
-            : null;
-        const lifecycle = lifecycleRaw ? canonicalizeLifecycleStatus(lifecycleRaw) : null;
-        const type = req.query.type;
-        const author = req.query.author;
-        const goal = typeof req.query.goal === 'string' && req.query.goal.trim() ? req.query.goal.trim() : null;
-        const q = typeof req.query.q === 'string' && req.query.q.trim() ? req.query.q.trim() : null;
-        const sort = Object.prototype.hasOwnProperty.call(SORT_ORDER_BY, req.query.sort) ? req.query.sort : null;
-        const limit = parseInt(req.query.limit, 10);
-        const offset = parseInt(req.query.offset, 10);
-
-        return {
-            city,
-            lifecycle,
-            lifecycleError: lifecycleRaw && !lifecycle
-                ? 'lifecycle must be one of: Active, Executed, Cancelled, Expired, draft.'
-                : null,
-            type,
-            author,
-            goal,
-            q,
-            sort,
-            limit: Number.isFinite(limit) && limit > 0 ? limit : 100,
-            offset: Number.isFinite(offset) && offset >= 0 ? offset : 0
-        };
-    };
-
-    const buildFilterQuery = ({
-        city,
-        lifecycle,
-        type,
-        author,
-        goal,
-        q,
-        sort,
-        baseSelect,
-        includePagination = true,
-        limit,
-        offset
-    }) => {
-        let sql = baseSelect || '';
-        const params = [];
-        const clauses = [];
-
-        if (city) {
-            clauses.push(`city = $${params.length + 1}`);
-            params.push(city);
-        }
-
-        if (lifecycle) {
-            // Filter on the EFFECTIVE lifecycle so ?lifecycle=Active excludes expired-but-stale rows
-            // and ?lifecycle=Expired finds them — matching what the summary returns.
-            clauses.push(`LOWER(${EFFECTIVE_STATUS_SQL}) = LOWER($${params.length + 1})`);
-            params.push(lifecycle);
-        }
-
-        if (type) {
-            clauses.push(`type = $${params.length + 1}`);
-            params.push(type);
-        }
-
-        if (author) {
-            clauses.push(`author = $${params.length + 1}`);
-            params.push(author);
-        }
-
-        if (goal) {
-            clauses.push(`COALESCE(proposal_data->>'goal', type) = $${params.length + 1}`);
-            params.push(goal);
-        }
-
-        if (q) {
-            // Free-text over the display name/title and author — the same fields the client search
-            // box matches, but across ALL rows instead of only the fetched page.
-            const p = params.length + 1;
-            clauses.push(
-                `(COALESCE(name, title, proposal_data->>'name', proposal_data->>'title', '') ILIKE $${p}`
-                + ` OR COALESCE(author, proposal_data->>'author', '') ILIKE $${p})`
-            );
-            params.push(`%${q}%`);
-        }
-
-        if (clauses.length) {
-            sql += `\n            WHERE ${clauses.join(' AND ')}`;
-        }
-
-        if (includePagination) {
-            const orderBy = SORT_ORDER_BY[sort] || SORT_ORDER_BY['created-desc'];
-            sql += `\n            ORDER BY ${orderBy} LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
-            params.push(limit, offset);
-        }
-
-        return { sql, params };
-    };
-
-    app.post('/proposals', proposalCreateBodyValidator, async (req, res) => {
+// The create handler is shared by the free POST /proposals and the paid POST /agent/proposals
+// (routes/agent-proposals.js): one persistence path, two front doors. It closes over nothing but
+// the pool, so a caller that has already bound the author (the x402 payer) gets identical behaviour.
+export function createProposalCreateHandler(pool) {
+    return async (req, res) => {
         try {
             const legacyDeclaration = findLegacyCadastreDeclaration(req.body);
             if (legacyDeclaration) {
@@ -737,7 +597,154 @@ export function setupProposalsRoute(app, pool) {
 
             res.status(500).json({ error: 'Internal server error' });
         }
-    });
+    };
+}
+
+export function setupProposalsRoute(app, pool) {
+    // The marketplace/on-chain LIFECYCLE status, past-expiry-aware. A proposal past expires_at reads
+    // as 'Expired' even if the stored value is stale. This one expression is used both for the
+    // returned lifecycleStatus and for the ?lifecycle= FILTER, so filtering and display agree
+    // (case-insensitive — the DB may carry both 'Executed' and 'executed').
+    const EFFECTIVE_STATUS_SQL = `
+        CASE
+            WHEN LOWER(COALESCE(lifecycle_status, '')) NOT IN ('executed', 'cancelled', 'expired')
+                AND expires_at IS NOT NULL AND expires_at <= now()
+            THEN 'Expired'
+            WHEN LOWER(COALESCE(lifecycle_status, '')) = 'executed' THEN 'Executed'
+            WHEN LOWER(COALESCE(lifecycle_status, '')) = 'cancelled' THEN 'Cancelled'
+            WHEN LOWER(COALESCE(lifecycle_status, '')) = 'expired' THEN 'Expired'
+            WHEN LOWER(COALESCE(lifecycle_status, '')) = 'draft' THEN 'draft'
+            ELSE 'Active'
+        END`;
+
+    // The complete public proposal representation. The single and batch endpoints deliberately
+    // share this list and serializeProposalRow so a plan does not receive a thinner record than a
+    // direct proposal link.
+    const FULL_PROPOSAL_COLUMNS = `
+        id, proposal_id, city, name, title, description, author, type,
+        lifecycle_status, ${EFFECTIVE_STATUS_SQL} AS effective_status,
+        offer, offer_currency, budget, budget_currency,
+        created_at, expires_at, updated_at,
+        decay_enabled, decay_percent, decay_duration_ms,
+        deposit_enabled, deposit_percent,
+        is_conditional, disbursement_mode,
+        cadastre_parcel_ids, ownership_flow, cadastre_frame,
+        accepted_parcel_ids, owner_acceptances,
+        road_proposal, building_proposal, structure_proposal, reparcellization,
+        lens, bounds, onchain_data, screenshot_url, epoch_year, proposal_data`;
+
+    // ORDER BY only over columns the summary actually carries. Computed sorts the client offers
+    // (area, parcel count, acceptance ratio) need per-row geometry/JSONB work the list endpoint
+    // does not do, so they stay client-side; these are the DB-derivable ones.
+    const SORT_ORDER_BY = {
+        'created-desc': 'created_at DESC',
+        'created-asc': 'created_at ASC',
+        'author-asc': "COALESCE(author, proposal_data->>'author', '') ASC",
+        'author-desc': "COALESCE(author, proposal_data->>'author', '') DESC",
+        'value-desc': "NULLIF(proposal_data->>'offer', '')::numeric DESC NULLS LAST",
+        'value-asc': "NULLIF(proposal_data->>'offer', '')::numeric ASC NULLS LAST"
+    };
+
+    const parseFilters = (req) => {
+        const city = normalizeCityCode(req.query.city);
+        // The lifecycle-phase filter (Active/Executed/Cancelled/Expired). Named `?lifecycle=`.
+        const lifecycleRaw = typeof req.query.lifecycle === 'string' && req.query.lifecycle.trim()
+            ? req.query.lifecycle.trim()
+            : null;
+        const lifecycle = lifecycleRaw ? canonicalizeLifecycleStatus(lifecycleRaw) : null;
+        const type = req.query.type;
+        const author = req.query.author;
+        const goal = typeof req.query.goal === 'string' && req.query.goal.trim() ? req.query.goal.trim() : null;
+        const q = typeof req.query.q === 'string' && req.query.q.trim() ? req.query.q.trim() : null;
+        const sort = Object.prototype.hasOwnProperty.call(SORT_ORDER_BY, req.query.sort) ? req.query.sort : null;
+        const limit = parseInt(req.query.limit, 10);
+        const offset = parseInt(req.query.offset, 10);
+
+        return {
+            city,
+            lifecycle,
+            lifecycleError: lifecycleRaw && !lifecycle
+                ? 'lifecycle must be one of: Active, Executed, Cancelled, Expired, draft.'
+                : null,
+            type,
+            author,
+            goal,
+            q,
+            sort,
+            limit: Number.isFinite(limit) && limit > 0 ? limit : 100,
+            offset: Number.isFinite(offset) && offset >= 0 ? offset : 0
+        };
+    };
+
+    const buildFilterQuery = ({
+        city,
+        lifecycle,
+        type,
+        author,
+        goal,
+        q,
+        sort,
+        baseSelect,
+        includePagination = true,
+        limit,
+        offset
+    }) => {
+        let sql = baseSelect || '';
+        const params = [];
+        const clauses = [];
+
+        if (city) {
+            clauses.push(`city = $${params.length + 1}`);
+            params.push(city);
+        }
+
+        if (lifecycle) {
+            // Filter on the EFFECTIVE lifecycle so ?lifecycle=Active excludes expired-but-stale rows
+            // and ?lifecycle=Expired finds them — matching what the summary returns.
+            clauses.push(`LOWER(${EFFECTIVE_STATUS_SQL}) = LOWER($${params.length + 1})`);
+            params.push(lifecycle);
+        }
+
+        if (type) {
+            clauses.push(`type = $${params.length + 1}`);
+            params.push(type);
+        }
+
+        if (author) {
+            clauses.push(`author = $${params.length + 1}`);
+            params.push(author);
+        }
+
+        if (goal) {
+            clauses.push(`COALESCE(proposal_data->>'goal', type) = $${params.length + 1}`);
+            params.push(goal);
+        }
+
+        if (q) {
+            // Free-text over the display name/title and author — the same fields the client search
+            // box matches, but across ALL rows instead of only the fetched page.
+            const p = params.length + 1;
+            clauses.push(
+                `(COALESCE(name, title, proposal_data->>'name', proposal_data->>'title', '') ILIKE $${p}`
+                + ` OR COALESCE(author, proposal_data->>'author', '') ILIKE $${p})`
+            );
+            params.push(`%${q}%`);
+        }
+
+        if (clauses.length) {
+            sql += `\n            WHERE ${clauses.join(' AND ')}`;
+        }
+
+        if (includePagination) {
+            const orderBy = SORT_ORDER_BY[sort] || SORT_ORDER_BY['created-desc'];
+            sql += `\n            ORDER BY ${orderBy} LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+            params.push(limit, offset);
+        }
+
+        return { sql, params };
+    };
+
+    app.post('/proposals', proposalCreateBodyValidator, createProposalCreateHandler(pool));
 
     app.get('/proposals/count', async (req, res) => {
         try {

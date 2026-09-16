@@ -6,6 +6,7 @@ Current route-level coverage status for modules wired in [backend/index.js](../i
 | ------------------------- | ------- | ---------------------------- |
 | `routes/area-monitors.js` | Covered | `test/area-monitors.test.js` |
 | `routes/ads.js`           | Covered | `test/ads.test.js`           |
+| `routes/agent-proposals.js` | Covered | `test/agent-proposals.test.js` |
 | `routes/assets.js`        | Covered | `test/assets.test.js`        |
 | `routes/buildings.js`     | Covered | `test/buildings.test.js`     |
 | `routes/city-stats.js`    | Covered | `test/city-stats.test.js`    |
@@ -27,4 +28,4 @@ Current route-level coverage status for modules wired in [backend/index.js](../i
 | `routes/streets.js`       | Covered | `test/streets.test.js`       |
 | `routes/urban-rules.js`   | Covered | `test/urban-rules.test.js`   |
 
-Summary: 22 of 22 route modules currently have route-level tests.
+Summary: 23 of 23 route modules currently have route-level tests.

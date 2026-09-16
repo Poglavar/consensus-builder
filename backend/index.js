@@ -34,6 +34,8 @@ import { setupFileStorageRoutes } from './routes/file-storage.js';
 import { setupAdsRoute } from './routes/ads.js';
 import { setupRoadParcelsRoute } from './routes/road-parcels.js';
 import { setupProposalsRoute } from './routes/proposals.js';
+import { setupAgentProposalsRoute } from './routes/agent-proposals.js';
+import { isAgentPath } from './utils/x402-payment.js';
 import { setupRoadCorridorRoute } from './routes/road-corridor.js';
 import { setupReparcellizationRoute } from './routes/reparcellization.js';
 import { setupGeoRoute } from './routes/geo.js';
@@ -284,6 +286,8 @@ export function createApp({
     const localhostPattern = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
     app.use((req, res, next) => {
         if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) return next();
+        // /agent/* is for headless agents: payment (x402) is their authentication, they send no Origin.
+        if (isAgentPath(req.path)) return next();
 
         const origin = req.get('origin') || req.get('referer');
         if (!origin) {
@@ -335,7 +339,8 @@ export function createApp({
     ]);
     app.use((req, res, next) => {
         if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
-            if (req.method === 'POST' && RATE_LIMIT_EXEMPT_POST_PATHS.has(req.path)) {
+            // /agent/* pays per request, so the payment is the limiter (design decision, not an oversight).
+            if (req.method === 'POST' && (RATE_LIMIT_EXEMPT_POST_PATHS.has(req.path) || isAgentPath(req.path))) {
                 return next();
             }
             return writeRateLimiter(req, res, next);
@@ -383,6 +388,7 @@ export function createApp({
     setupAdsRoute(app, activePool);
     setupRoadParcelsRoute(app, activePool);
     setupProposalsRoute(app, activePool);
+    setupAgentProposalsRoute(app, activePool, { env }); // paid x402 front door to the same create handler
     setupRoadCorridorRoute(app, activePool);
     setupReparcellizationRoute(app);
     setupGeoRoute(app);

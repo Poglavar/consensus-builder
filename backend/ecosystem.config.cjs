@@ -34,7 +34,16 @@ module.exports = {
       // Cloudflare). Cooldown counts every attempt; the quota counts only successful renders.
       AI_SCENE_COOLDOWN_MS: 20000,        // at most one render per IP per 20s
       AI_SCENE_QUOTA_MAX: 10,             // at most 10 successful renders per IP...
-      AI_SCENE_QUOTA_WINDOW_MS: 86400000  // ...per rolling 24h
+      AI_SCENE_QUOTA_WINDOW_MS: 86400000, // ...per rolling 24h
+      // --- Agents functionality for UGT: x402 pay-to-post gate on POST /agent/proposals ---
+      // All four are public (network id, facilitator, treasury pubkey, price) and all four are
+      // required: with any of them unset the route answers 503 and nothing is charged. Devnet for
+      // the hackathon. The mainnet facilitator is a different URL, so a network switch changes
+      // the first two lines TOGETHER. The price is a commit, never a hand edit.
+      X402_NETWORK: 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
+      X402_FACILITATOR_URL: 'https://x402.org/facilitator',
+      X402_PAY_TO: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ',
+      X402_PRICE_PROPOSAL: '$0.05'
     },
     error_file: '/root/code/consensus-builder/backend/logs/err.log',
     out_file: '/root/code/consensus-builder/backend/logs/out.log',

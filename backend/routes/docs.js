@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { marked } from 'marked';
+import { readX402Config } from '../utils/x402-payment.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -11,27 +12,15 @@ let cachedDatabaseSchema = null;
 let lastDatabaseRefresh = null;
 const DATABASE_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
-export function setupDocsRoute(app, pool) {
-    // GET /docs - General documentation (markdown converted to HTML)
-    app.get('/docs', (req, res) => {
-        try {
-            const docsPath = path.join(__dirname, 'docs.md');
-            const markdownContent = fs.readFileSync(docsPath, 'utf8');
-
-            // Process the markdown content to replace $(date) with actual date
-            const processedContent = markdownContent.replace(/\$\(date\)/g, new Date().toLocaleDateString());
-
-            // Convert markdown to HTML
-            const htmlContent = marked(processedContent);
-
-            // Create a complete HTML page with styling
-            const fullHtml = `
+// One page template for every markdown doc served here, so /docs and /docs/agents look the same.
+function renderDocPage(htmlContent, title) {
+    return `
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consensus Builder API Documentation</title>
+    <title>${title}</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -140,6 +129,7 @@ export function setupDocsRoute(app, pool) {
         ${htmlContent}
         <div class="footer">
             <p><strong>Quick Links:</strong> 
+                <a href="/docs/agents">Agent quickstart</a> | 
                 <a href="/docs/api">API Schema (JSON)</a> | 
                 <a href="/docs/database">Database Schema (JSON)</a> | 
                 <a href="/health">Health Check</a>
@@ -148,12 +138,98 @@ export function setupDocsRoute(app, pool) {
     </div>
 </body>
 </html>`;
+}
+
+export function setupDocsRoute(app, pool, { env = process.env } = {}) {
+    // GET /docs - General documentation (markdown converted to HTML)
+    app.get('/docs', (req, res) => {
+        try {
+            const docsPath = path.join(__dirname, 'docs.md');
+            const markdownContent = fs.readFileSync(docsPath, 'utf8');
+
+            // Process the markdown content to replace $(date) with actual date
+            const processedContent = markdownContent.replace(/\$\(date\)/g, new Date().toLocaleDateString());
+
+            // Convert markdown to HTML
+            const htmlContent = marked(processedContent);
+
+            // Create a complete HTML page with styling
+            const fullHtml = renderDocPage(htmlContent, 'Consensus Builder API Documentation');
 
             res.setHeader('Content-Type', 'text/html');
             res.send(fullHtml);
         } catch (error) {
             console.error('Error reading docs.md:', error);
             res.status(500).json({ error: 'Failed to load documentation' });
+        }
+    });
+
+    // The base URL printed into the agent docs. Display only (never persisted), so falling back to
+    // the request's own host is fine here; PUBLIC_API_BASE_URL wins when set.
+    const docsBaseUrl = (req) => (env.PUBLIC_API_BASE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
+    const marketProgramId = () => {
+        try {
+            const addresses = JSON.parse(fs.readFileSync(path.join(__dirname, '../../frontend/contracts/addresses.json'), 'utf8'));
+            return addresses['solana-devnet']?.ProposalMarket || '(unknown)';
+        } catch {
+            return '(unknown)';
+        }
+    };
+
+    // GET /docs/agents - the agent quickstart: how to pay for and post a proposal over x402.
+    app.get('/docs/agents', (req, res) => {
+        try {
+            const x402 = readX402Config(env);
+            const markdown = fs.readFileSync(path.join(__dirname, 'docs-agents.md'), 'utf8')
+                .replace(/\$\(base\)/g, docsBaseUrl(req))
+                .replace(/\$\(price\)/g, x402.priceProposal || '(price not configured on this server)')
+                .replace(/\$\(network\)/g, x402.network || 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1')
+                .replace(/\$\(marketProgram\)/g, marketProgramId())
+                .replace(/\$\(date\)/g, new Date().toLocaleDateString());
+            res.setHeader('Content-Type', 'text/html');
+            res.send(renderDocPage(marked(markdown), 'Agent quickstart — Urban Game Theory'));
+        } catch (error) {
+            console.error('Error reading docs-agents.md:', error);
+            res.status(500).json({ error: 'Failed to load agent documentation' });
+        }
+    });
+
+    // GET /docs/agents.json - the minimal recipe as JSON Schema plus the live payment terms.
+    app.get('/docs/agents.json', (req, res) => {
+        try {
+            const schema = JSON.parse(fs.readFileSync(path.join(__dirname, 'agent-recipe-schema.json'), 'utf8'));
+            const x402 = readX402Config(env);
+            const base = docsBaseUrl(req);
+            res.json({
+                docs: `${base}/docs/agents`,
+                schema,
+                x402: {
+                    enabled: x402.enabled,
+                    network: x402.network,
+                    facilitatorUrl: x402.facilitatorUrl,
+                    payTo: x402.payTo,
+                    priceProposal: x402.priceProposal,
+                    paymentFlow: 'upfront',
+                    usdcMint: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU'
+                },
+                endpoints: {
+                    submit: `${base}/agent/proposals`,
+                    read: `${base}/proposals/{id}`,
+                    listByAuthor: `${base}/proposals?author={wallet}`,
+                    parcelsUnder: `${base}/parcels/under`,
+                    urbanRules: `${base}/urban-rules?coordinates={lng},{lat}`,
+                    buildingFootprints: `${base}/buildings/footprints`
+                },
+                market: {
+                    programId: marketProgramId(),
+                    cluster: 'devnet',
+                    idl: 'blockchain/solana/idl/proposal_market.json',
+                    client: 'frontend/js/solana/market-client.js'
+                }
+            });
+        } catch (error) {
+            console.error('Error building /docs/agents.json:', error);
+            res.status(500).json({ error: 'Failed to load agent schema' });
         }
     });
 
