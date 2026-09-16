@@ -1,0 +1,360 @@
+{
+  "_comment": "Offline fixture for tx-explorer.html (?sample=1). Same contract as GET /transactions; the addresses are the real devnet program ids plus plausible stand-ins for the wallets, so the page can be developed and reviewed without an RPC.",
+  "cluster": "devnet",
+  "fetchedAt": "2026-09-16T20:00:00.000Z",
+  "cached": false,
+  "explorer": {
+    "tx": "https://explorer.solana.com/tx/{sig}?cluster=devnet",
+    "address": "https://explorer.solana.com/address/{addr}?cluster=devnet",
+    "solscanTx": "https://solscan.io/tx/{sig}?cluster=devnet",
+    "solscanAddress": "https://solscan.io/account/{addr}?cluster=devnet"
+  },
+  "watched": [
+    { "address": "G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg", "label": "agent densifier-01", "kind": "wallet" },
+    { "address": "7Np41oeYqPefeNQEHSv1UDhYrehxin3NStELsSKCT4K2", "label": "treasury wallet", "kind": "wallet" },
+    { "address": "2RtYpQvXk8ZmNb3JcFdWa9sGu5eLh7MxTrVy4ZqPnKu1", "label": "operator wallet", "kind": "wallet" },
+    { "address": "CKPKq4F1x9jrcLc2yqPiWMDkRzqvWq1r7Xx2Vv7dWYp5", "label": "x402 facilitator (fee payer)", "kind": "fee-payer" },
+    { "address": "GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB", "label": "proposal market program", "kind": "program" },
+    { "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA", "label": "SPL Token", "kind": "program" },
+    { "address": "11111111111111111111111111111111", "label": "System Program", "kind": "program" },
+    { "address": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU", "label": "USDC (devnet)", "kind": "mint" },
+    { "address": "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin", "label": "agent densifier-01 USDC account", "kind": "token-account" },
+    { "address": "Hc1qHRNJZZ2KXxYFsz9pW3ZGxQHkbA7vJYM4tEsWpDq8", "label": "treasury USDC account", "kind": "token-account" },
+    { "address": "3TqWpXvK9sJmRb2YnZdFc7uGa4eLh5MxQrVy8ZtPkNu6", "label": "market vault USDC account", "kind": "token-account" }
+  ],
+  "count": 3,
+  "transactions": [
+    {
+      "signature": "5Jq8vNwYcT3RpXn2dJhLgWb9sFa5eUu3NxQrMy8ZtPvCkEJ8kx7ZLmPqSdVn5Ga3tRbWcYh4uNfXpQ2rMvA6sT9Bz",
+      "slot": 499439818,
+      "blockTime": 1789586329,
+      "time": "2026-09-16T19:18:49.000Z",
+      "status": "success",
+      "error": null,
+      "feePayer": {
+        "address": "CKPKq4F1x9jrcLc2yqPiWMDkRzqvWq1r7Xx2Vv7dWYp5",
+        "label": "x402 facilitator (fee payer)",
+        "kind": "fee-payer",
+        "short": "CKPK…WYp5"
+      },
+      "feeLamports": 10001,
+      "feeSol": "0.000010001",
+      "programs": ["spl-token"],
+      "actions": ["transferChecked"],
+      "summary": "agent densifier-01 paid 0.05 USDC to treasury wallet (x402 settlement, fee paid by x402 facilitator)",
+      "amounts": [
+        {
+          "kind": "token",
+          "mint": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+          "symbol": "USDC",
+          "decimals": 6,
+          "amount": "0.05",
+          "amountAtomic": "50000",
+          "from": {
+            "address": "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin",
+            "label": "agent densifier-01 USDC account",
+            "kind": "token-account",
+            "short": "9xQe…VFin",
+            "owner": {
+              "address": "G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg",
+              "label": "agent densifier-01",
+              "kind": "wallet",
+              "short": "G4R6…HvEg"
+            }
+          },
+          "to": {
+            "address": "Hc1qHRNJZZ2KXxYFsz9pW3ZGxQHkbA7vJYM4tEsWpDq8",
+            "label": "treasury USDC account",
+            "kind": "token-account",
+            "short": "Hc1q…pDq8",
+            "owner": {
+              "address": "7Np41oeYqPefeNQEHSv1UDhYrehxin3NStELsSKCT4K2",
+              "label": "treasury wallet",
+              "kind": "wallet",
+              "short": "7Np4…T4K2"
+            }
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "index": 0,
+          "inner": false,
+          "parentIndex": null,
+          "program": {
+            "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+            "label": "SPL Token",
+            "name": "spl-token"
+          },
+          "action": "transferChecked",
+          "args": { "amount": "50000", "decimals": 6 },
+          "accounts": [
+            {
+              "role": "source",
+              "address": "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin",
+              "label": "agent densifier-01 USDC account",
+              "kind": "token-account",
+              "short": "9xQe…VFin",
+              "signer": false,
+              "writable": true
+            },
+            {
+              "role": "mint",
+              "address": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+              "label": "USDC (devnet)",
+              "kind": "mint",
+              "short": "4zMM…ncDU",
+              "signer": false,
+              "writable": false
+            },
+            {
+              "role": "destination",
+              "address": "Hc1qHRNJZZ2KXxYFsz9pW3ZGxQHkbA7vJYM4tEsWpDq8",
+              "label": "treasury USDC account",
+              "kind": "token-account",
+              "short": "Hc1q…pDq8",
+              "signer": false,
+              "writable": true
+            },
+            {
+              "role": "owner",
+              "address": "G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg",
+              "label": "agent densifier-01",
+              "kind": "wallet",
+              "short": "G4R6…HvEg",
+              "signer": true,
+              "writable": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "signature": "4mVzKqYcT7RpXn2dJhLgWb9sFa5eUu3NxQrMy8ZtPvCk3TqWpXvK9sJmRb2YnZdFc7uGa4eLh5MxQrVy8ZtPkNu6",
+      "slot": 499439455,
+      "blockTime": 1789586102,
+      "time": "2026-09-16T19:15:02.000Z",
+      "status": "success",
+      "error": null,
+      "feePayer": {
+        "address": "G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg",
+        "label": "agent densifier-01",
+        "kind": "wallet",
+        "short": "G4R6…HvEg"
+      },
+      "feeLamports": 5000,
+      "feeSol": "0.000005",
+      "programs": ["proposal-market", "spl-token"],
+      "actions": ["stake", "transfer"],
+      "summary": "agent densifier-01 staked 0.3 USDC on YES in the proposal market",
+      "amounts": [
+        {
+          "kind": "token",
+          "mint": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+          "symbol": "USDC",
+          "decimals": 6,
+          "amount": "0.3",
+          "amountAtomic": "300000",
+          "from": {
+            "address": "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin",
+            "label": "agent densifier-01 USDC account",
+            "kind": "token-account",
+            "short": "9xQe…VFin",
+            "owner": {
+              "address": "G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg",
+              "label": "agent densifier-01",
+              "kind": "wallet",
+              "short": "G4R6…HvEg"
+            }
+          },
+          "to": {
+            "address": "3TqWpXvK9sJmRb2YnZdFc7uGa4eLh5MxQrVy8ZtPkNu6",
+            "label": "market vault USDC account",
+            "kind": "token-account",
+            "short": "3TqW…kNu6",
+            "owner": null
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "index": 0,
+          "inner": false,
+          "parentIndex": null,
+          "program": {
+            "address": "GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB",
+            "label": "proposal market program",
+            "name": "proposal-market"
+          },
+          "action": "stake",
+          "args": { "side": 1, "amount": "300000" },
+          "accounts": [
+            {
+              "role": "market",
+              "address": "EJ8kx7ZLmPqSdVn5Ga3tRbWcYh4uNfXpQ2rMvA6sT9Bz",
+              "label": null,
+              "kind": null,
+              "short": "EJ8k…T9Bz",
+              "signer": false,
+              "writable": true
+            },
+            {
+              "role": "position",
+              "address": "4mVzKqYcT7RpXn2dJhLgWb9sFa5eUu3NxQrMy8ZtPvCk",
+              "label": null,
+              "kind": null,
+              "short": "4mVz…PvCk",
+              "signer": false,
+              "writable": true
+            },
+            {
+              "role": "vault",
+              "address": "3TqWpXvK9sJmRb2YnZdFc7uGa4eLh5MxQrVy8ZtPkNu6",
+              "label": "market vault USDC account",
+              "kind": "token-account",
+              "short": "3TqW…kNu6",
+              "signer": false,
+              "writable": true
+            },
+            {
+              "role": "stakerTokenAccount",
+              "address": "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin",
+              "label": "agent densifier-01 USDC account",
+              "kind": "token-account",
+              "short": "9xQe…VFin",
+              "signer": false,
+              "writable": true
+            },
+            {
+              "role": "staker",
+              "address": "G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg",
+              "label": "agent densifier-01",
+              "kind": "wallet",
+              "short": "G4R6…HvEg",
+              "signer": true,
+              "writable": true
+            }
+          ]
+        },
+        {
+          "index": 0,
+          "inner": true,
+          "parentIndex": 0,
+          "program": {
+            "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+            "label": "SPL Token",
+            "name": "spl-token"
+          },
+          "action": "transfer",
+          "args": { "amount": "300000" },
+          "accounts": [
+            {
+              "role": "source",
+              "address": "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin",
+              "label": "agent densifier-01 USDC account",
+              "kind": "token-account",
+              "short": "9xQe…VFin",
+              "signer": false,
+              "writable": true
+            },
+            {
+              "role": "destination",
+              "address": "3TqWpXvK9sJmRb2YnZdFc7uGa4eLh5MxQrVy8ZtPkNu6",
+              "label": "market vault USDC account",
+              "kind": "token-account",
+              "short": "3TqW…kNu6",
+              "signer": false,
+              "writable": true
+            },
+            {
+              "role": "authority",
+              "address": "G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg",
+              "label": "agent densifier-01",
+              "kind": "wallet",
+              "short": "G4R6…HvEg",
+              "signer": true,
+              "writable": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "signature": "2RtYpQvXk8ZmNb3JcFdWa9sGu5eLh7MxTrVy4ZqPnKu1Hc1qHRNJZZ2KXxYFsz9pW3ZGxQHkbA7vJYM4tEsWpDq8",
+      "slot": 499438120,
+      "blockTime": 1789585240,
+      "time": "2026-09-16T19:00:40.000Z",
+      "status": "success",
+      "error": null,
+      "feePayer": {
+        "address": "2RtYpQvXk8ZmNb3JcFdWa9sGu5eLh7MxTrVy4ZqPnKu1",
+        "label": "operator wallet",
+        "kind": "wallet",
+        "short": "2RtY…nKu1"
+      },
+      "feeLamports": 5000,
+      "feeSol": "0.000005",
+      "programs": ["system"],
+      "actions": ["transfer"],
+      "summary": "operator wallet funded agent densifier-01 with 0.5 SOL for transaction fees",
+      "amounts": [
+        {
+          "kind": "sol",
+          "mint": null,
+          "symbol": "SOL",
+          "decimals": 9,
+          "amount": "0.5",
+          "amountAtomic": "500000000",
+          "from": {
+            "address": "2RtYpQvXk8ZmNb3JcFdWa9sGu5eLh7MxTrVy4ZqPnKu1",
+            "label": "operator wallet",
+            "kind": "wallet",
+            "short": "2RtY…nKu1",
+            "owner": null
+          },
+          "to": {
+            "address": "G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg",
+            "label": "agent densifier-01",
+            "kind": "wallet",
+            "short": "G4R6…HvEg",
+            "owner": null
+          }
+        }
+      ],
+      "instructions": [
+        {
+          "index": 0,
+          "inner": false,
+          "parentIndex": null,
+          "program": {
+            "address": "11111111111111111111111111111111",
+            "label": "System Program",
+            "name": "system"
+          },
+          "action": "transfer",
+          "args": { "lamports": "500000000" },
+          "accounts": [
+            {
+              "role": "source",
+              "address": "2RtYpQvXk8ZmNb3JcFdWa9sGu5eLh7MxTrVy4ZqPnKu1",
+              "label": "operator wallet",
+              "kind": "wallet",
+              "short": "2RtY…nKu1",
+              "signer": true,
+              "writable": true
+            },
+            {
+              "role": "destination",
+              "address": "G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg",
+              "label": "agent densifier-01",
+              "kind": "wallet",
+              "short": "G4R6…HvEg",
+              "signer": false,
+              "writable": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

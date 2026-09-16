@@ -1,0 +1,780 @@
+/* Styles for tx-explorer.html — the standalone devnet transaction explorer.
+   Self-contained on purpose: css/base.css pins html/body to the viewport with overflow:hidden for
+   the full-screen map app, which would make this long scrolling ops page unreadable. The font stack
+   is the same one base.css uses, so the page still looks like the rest of the project. */
+
+:root {
+    --tx-bg: #f7f8fa;
+    --tx-surface: #fff;
+    --tx-ink: #1d2126;
+    --tx-muted: #767d87;
+    --tx-border: #e2e5ea;
+    --tx-border-strong: #c9cfd7;
+    --tx-accent: #2b6;
+    --tx-accent-ink: #1c7a46;
+    --tx-warn-bg: #fdecea;
+    --tx-warn-ink: #8c2f22;
+    --tx-warn-border: #f0b4ab;
+    --tx-ok-bg: #e7f6ed;
+    --tx-ok-ink: #1c7a46;
+    --tx-tag-bg: #eef1f6;
+    --tx-tag-ink: #4a525d;
+    --tx-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --tx-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.tx-body {
+    margin: 0;
+    padding: 0;
+    background: var(--tx-bg);
+    color: var(--tx-ink);
+    font-family: var(--tx-sans);
+    font-size: 15px;
+    line-height: 1.45;
+    -webkit-text-size-adjust: 100%;
+}
+
+.tx-wrap {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+/* ---------- header ---------- */
+
+.tx-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.tx-header-titles {
+    min-width: 0;
+}
+
+.tx-title {
+    margin: 0;
+    font-size: 1.35rem;
+}
+
+.tx-sub {
+    margin: 2px 0 0;
+    color: var(--tx-muted);
+    font-size: 0.85rem;
+    max-width: 60ch;
+}
+
+.tx-fetched {
+    margin: 6px 0 0;
+    color: var(--tx-muted);
+    font-size: 0.8rem;
+    min-height: 1.2em;
+}
+
+.tx-header-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.tx-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    color: var(--tx-muted);
+}
+
+.tx-control-check {
+    white-space: nowrap;
+}
+
+.tx-control-grow {
+    flex: 1 1 260px;
+    min-width: 0;
+}
+
+.tx-control select,
+.tx-control input[type="search"] {
+    font: inherit;
+    padding: 7px 9px;
+    color: var(--tx-ink);
+    background: var(--tx-surface);
+    border: 1px solid var(--tx-border-strong);
+    border-radius: 6px;
+    min-width: 0;
+    width: 100%;
+}
+
+.tx-control select {
+    width: auto;
+}
+
+.tx-button {
+    font: inherit;
+    min-height: 36px;
+    padding: 7px 14px;
+    cursor: pointer;
+    color: #fff;
+    background: var(--tx-accent);
+    border: 1px solid var(--tx-accent);
+    border-radius: 6px;
+}
+
+.tx-button:hover {
+    background: var(--tx-accent-ink);
+    border-color: var(--tx-accent-ink);
+}
+
+.tx-button:disabled {
+    cursor: progress;
+    opacity: 0.6;
+}
+
+.tx-button-ghost {
+    color: var(--tx-tag-ink);
+    background: var(--tx-surface);
+    border-color: var(--tx-border-strong);
+}
+
+.tx-button-ghost:hover {
+    color: var(--tx-ink);
+    background: var(--tx-tag-bg);
+    border-color: var(--tx-border-strong);
+}
+
+/* ---------- banner / empty ---------- */
+
+.tx-banner {
+    margin: 0 0 14px;
+    padding: 10px 12px;
+    color: var(--tx-warn-ink);
+    background: var(--tx-warn-bg);
+    border: 1px solid var(--tx-warn-border);
+    border-radius: 8px;
+    font-size: 0.86rem;
+    overflow-wrap: anywhere;
+}
+
+.tx-banner[hidden] {
+    display: none;
+}
+
+.tx-empty {
+    margin: 16px 0;
+    padding: 24px 12px;
+    text-align: center;
+    color: var(--tx-muted);
+    background: var(--tx-surface);
+    border: 1px dashed var(--tx-border-strong);
+    border-radius: 10px;
+}
+
+.tx-empty[hidden] {
+    display: none;
+}
+
+.tx-count {
+    margin: 0 0 8px;
+    color: var(--tx-muted);
+    font-size: 0.8rem;
+    min-height: 1.1em;
+}
+
+.tx-muted {
+    color: var(--tx-muted);
+    font-size: 0.82rem;
+    margin: 0;
+}
+
+.tx-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ---------- legend ---------- */
+
+.tx-section-title {
+    margin: 0 0 8px;
+    font-size: 0.95rem;
+}
+
+.tx-legend,
+.tx-filters {
+    margin-bottom: 14px;
+    padding: 12px;
+    background: var(--tx-surface);
+    border: 1px solid var(--tx-border);
+    border-radius: 10px;
+}
+
+.tx-legend-body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+}
+
+.tx-legend-group {
+    min-width: 0;
+    flex: 1 1 260px;
+}
+
+.tx-legend-kind {
+    margin: 0 0 4px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--tx-muted);
+}
+
+.tx-legend-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tx-legend-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+}
+
+.tx-legend-label {
+    font-weight: 600;
+}
+
+/* ---------- filters ---------- */
+
+.tx-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.tx-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.tx-chip-legend {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--tx-muted);
+    flex: 0 0 72px;
+}
+
+.tx-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-width: 0;
+}
+
+.tx-chip {
+    font: inherit;
+    font-size: 0.76rem;
+    min-height: 28px;
+    padding: 3px 10px;
+    cursor: pointer;
+    color: var(--tx-tag-ink);
+    background: var(--tx-tag-bg);
+    border: 1px solid transparent;
+    border-radius: 999px;
+}
+
+.tx-chip:hover {
+    border-color: var(--tx-border-strong);
+}
+
+.tx-chip.is-on {
+    color: #fff;
+    background: var(--tx-accent-ink);
+    border-color: var(--tx-accent-ink);
+}
+
+/* ---------- table ---------- */
+
+.tx-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--tx-surface);
+    border: 1px solid var(--tx-border);
+    border-radius: 10px;
+    overflow: hidden;
+    font-size: 0.84rem;
+}
+
+.tx-table[hidden] {
+    display: none;
+}
+
+.tx-table thead th {
+    text-align: left;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--tx-muted);
+    font-weight: 600;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--tx-border);
+    white-space: nowrap;
+}
+
+.tx-row {
+    cursor: pointer;
+    border-top: 1px solid var(--tx-border);
+}
+
+.tx-row:hover {
+    background: #fafbfc;
+}
+
+.tx-row:focus-visible {
+    outline: 2px solid var(--tx-accent-ink);
+    outline-offset: -2px;
+}
+
+.tx-row.is-expanded {
+    background: #f4f8f6;
+}
+
+.tx-row.is-failed .tx-summary {
+    color: var(--tx-warn-ink);
+}
+
+.tx-cell {
+    padding: 8px 10px;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+}
+
+.tx-cell-time,
+.tx-cell-fee,
+.tx-cell-status {
+    white-space: nowrap;
+}
+
+.tx-time,
+.tx-fee {
+    font-variant-numeric: tabular-nums;
+}
+
+.tx-cell-summary {
+    min-width: 22ch;
+}
+
+.tx-summary {
+    display: block;
+}
+
+.tx-slot,
+.tx-row-error {
+    display: block;
+    font-size: 0.74rem;
+    color: var(--tx-muted);
+}
+
+.tx-row-error {
+    color: var(--tx-warn-ink);
+}
+
+.tx-status {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.tx-status-success {
+    color: var(--tx-ok-ink);
+    background: var(--tx-ok-bg);
+}
+
+.tx-status-failed {
+    color: var(--tx-warn-ink);
+    background: var(--tx-warn-bg);
+}
+
+.tx-tag {
+    display: inline-block;
+    margin: 0 4px 4px 0;
+    padding: 1px 7px;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    color: var(--tx-tag-ink);
+    background: var(--tx-tag-bg);
+}
+
+.tx-tag-action {
+    font-family: var(--tx-mono);
+    color: var(--tx-accent-ink);
+    background: var(--tx-ok-bg);
+}
+
+.tx-amount {
+    margin-bottom: 4px;
+}
+
+.tx-amount-text {
+    display: block;
+}
+
+.tx-amount-owner {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--tx-muted);
+}
+
+.tx-address {
+    font-family: var(--tx-mono);
+    font-size: 0.78rem;
+    overflow-wrap: anywhere;
+}
+
+.tx-link {
+    font-size: 0.74rem;
+    color: var(--tx-accent-ink);
+    white-space: nowrap;
+}
+
+.tx-cell-sig .tx-link {
+    margin-left: 6px;
+}
+
+.tx-copy {
+    font: inherit;
+    font-size: 0.78rem;
+    line-height: 1;
+    min-height: 0;
+    margin-left: 4px;
+    padding: 2px 5px;
+    cursor: pointer;
+    color: var(--tx-muted);
+    background: transparent;
+    border: 1px solid var(--tx-border);
+    border-radius: 4px;
+}
+
+.tx-copy:hover {
+    color: var(--tx-ink);
+    border-color: var(--tx-border-strong);
+}
+
+/* Copy feedback without a JS timer: the class is removed on animationend. */
+.tx-copy.is-copied {
+    animation: tx-copied 900ms ease-out;
+}
+
+@keyframes tx-copied {
+    0% {
+        color: #fff;
+        background: var(--tx-accent-ink);
+        border-color: var(--tx-accent-ink);
+    }
+
+    70% {
+        color: #fff;
+        background: var(--tx-accent-ink);
+        border-color: var(--tx-accent-ink);
+    }
+
+    100% {
+        color: var(--tx-muted);
+        background: transparent;
+        border-color: var(--tx-border);
+    }
+}
+
+/* ---------- details panel ---------- */
+
+.tx-details-row {
+    border-top: 1px solid var(--tx-border);
+    background: #f9fbfa;
+}
+
+.tx-details-cell {
+    padding: 10px 12px 14px;
+}
+
+.tx-details-title {
+    margin: 0 0 8px;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--tx-muted);
+}
+
+.tx-ix-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tx-ix {
+    padding: 8px 10px;
+    background: var(--tx-surface);
+    border: 1px solid var(--tx-border);
+    border-radius: 8px;
+}
+
+.tx-ix-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.tx-ix-index {
+    font-family: var(--tx-mono);
+    font-size: 0.76rem;
+    color: var(--tx-muted);
+}
+
+.tx-ix-program {
+    font-weight: 600;
+}
+
+.tx-ix-name {
+    font-family: var(--tx-mono);
+    font-size: 0.74rem;
+    color: var(--tx-muted);
+}
+
+.tx-ix-action {
+    font-family: var(--tx-mono);
+    font-size: 0.74rem;
+    padding: 1px 7px;
+    border-radius: 4px;
+    color: var(--tx-accent-ink);
+    background: var(--tx-ok-bg);
+}
+
+.tx-ix-sub {
+    margin: 8px 0 4px;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--tx-muted);
+}
+
+.tx-args {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+}
+
+.tx-arg {
+    font-size: 0.78rem;
+}
+
+.tx-arg-key {
+    color: var(--tx-muted);
+    margin-right: 4px;
+}
+
+.tx-arg-value {
+    font-family: var(--tx-mono);
+}
+
+.tx-accounts {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+}
+
+.tx-accounts th {
+    text-align: left;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--tx-muted);
+    font-weight: 600;
+    padding: 4px 6px;
+    border-bottom: 1px solid var(--tx-border);
+}
+
+.tx-accounts td {
+    padding: 4px 6px;
+    vertical-align: top;
+    border-bottom: 1px solid var(--tx-border);
+    overflow-wrap: anywhere;
+}
+
+.tx-account-role {
+    color: var(--tx-muted);
+}
+
+.tx-account-links a {
+    margin-right: 6px;
+}
+
+/* ---------- mobile: the table becomes stacked cards (CSS only) ---------- */
+
+@media (max-width: 760px) {
+
+    .tx-wrap {
+        padding: 12px;
+    }
+
+    .tx-header-controls {
+        width: 100%;
+    }
+
+    .tx-table,
+    .tx-table thead,
+    .tx-table tbody,
+    .tx-table tr,
+    .tx-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .tx-table {
+        border: 0;
+        background: transparent;
+        overflow: visible;
+    }
+
+    .tx-table thead {
+        display: none;
+    }
+
+    .tx-row {
+        margin-bottom: 10px;
+        padding: 8px 10px;
+        background: var(--tx-surface);
+        border: 1px solid var(--tx-border);
+        border-radius: 10px;
+    }
+
+    .tx-cell {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 8px;
+        padding: 3px 0;
+        white-space: normal;
+    }
+
+    /* The column header moves into the cell, from the data-label the row model writes. */
+    .tx-cell::before {
+        content: attr(data-label);
+        flex: 0 0 82px;
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--tx-muted);
+        padding-top: 2px;
+    }
+
+    .tx-cell-summary {
+        min-width: 0;
+        font-size: 0.9rem;
+    }
+
+    .tx-cell>* {
+        min-width: 0;
+    }
+
+    .tx-details-row {
+        margin-bottom: 10px;
+        border-radius: 10px;
+    }
+
+    .tx-details-cell {
+        padding: 8px;
+    }
+
+    .tx-accounts,
+    .tx-accounts tbody,
+    .tx-accounts tr,
+    .tx-accounts td {
+        display: block;
+        width: 100%;
+    }
+
+    .tx-accounts thead {
+        display: none;
+    }
+
+    .tx-account {
+        margin-bottom: 6px;
+        padding: 6px;
+        border: 1px solid var(--tx-border);
+        border-radius: 6px;
+    }
+
+    .tx-accounts td {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 8px;
+        padding: 2px 0;
+        border-bottom: 0;
+    }
+
+    .tx-accounts td::before {
+        content: attr(data-label);
+        flex: 0 0 66px;
+        font-size: 0.66rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--tx-muted);
+    }
+
+    .tx-chip-legend {
+        flex-basis: 100%;
+    }
+}
+
+@media (max-width: 400px) {
+    .tx-wrap {
+        padding: 10px;
+    }
+
+    .tx-title {
+        font-size: 1.15rem;
+    }
+
+    .tx-header-controls {
+        gap: 6px;
+    }
+
+    .tx-cell::before {
+        flex-basis: 100%;
+    }
+
+    .tx-accounts td::before {
+        flex-basis: 100%;
+    }
+}

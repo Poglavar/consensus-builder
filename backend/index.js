@@ -35,6 +35,7 @@ import { setupAdsRoute } from './routes/ads.js';
 import { setupRoadParcelsRoute } from './routes/road-parcels.js';
 import { setupProposalsRoute } from './routes/proposals.js';
 import { setupAgentProposalsRoute } from './routes/agent-proposals.js';
+import { setupTransactionsRoute } from './routes/transactions.js';
 import { isAgentPath } from './utils/x402-payment.js';
 import { setupRoadCorridorRoute } from './routes/road-corridor.js';
 import { setupReparcellizationRoute } from './routes/reparcellization.js';
@@ -389,6 +390,7 @@ export function createApp({
     setupRoadParcelsRoute(app, activePool);
     setupProposalsRoute(app, activePool);
     setupAgentProposalsRoute(app, activePool, { env }); // paid x402 front door to the same create handler
+    setupTransactionsRoute(app, activePool); // devnet transaction explorer, derived from the chain
     setupRoadCorridorRoute(app, activePool);
     setupReparcellizationRoute(app);
     setupGeoRoute(app);

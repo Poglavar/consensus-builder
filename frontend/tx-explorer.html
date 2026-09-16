@@ -1,0 +1,95 @@
+<!doctype html>
+<!-- Standalone devnet transaction explorer for the "Agents functionality for UGT" system: every
+     transaction the agents, the x402 gate and the proposal market sign, with block-explorer links,
+     amounts and who-is-who labels. Not linked from the main UI; the owner opens it directly.
+     Add ?sample=1 to render frontend/data/tx-explorer-sample.json instead of calling the API. -->
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Urban Game Theory — Transactions (devnet)</title>
+    <link rel="icon" href="favicon.ico" />
+    <link rel="stylesheet" href="css/tx-explorer.css?v=1" />
+</head>
+
+<body class="tx-body">
+    <main id="tx-explorer" class="tx-wrap">
+
+        <header id="tx-header" class="tx-header">
+            <div class="tx-header-titles">
+                <h1 class="tx-title">Transactions (devnet)</h1>
+                <p class="tx-sub">Every devnet transaction the agent pipeline signs: who paid whom, which program,
+                    which instruction.</p>
+                <p id="tx-fetched-at" class="tx-fetched"></p>
+            </div>
+            <div class="tx-header-controls">
+                <button id="tx-refresh" type="button" class="tx-button">Refresh</button>
+                <label class="tx-control tx-control-check" for="tx-auto">
+                    <input id="tx-auto" type="checkbox" />
+                    <span>Auto-refresh (30 s)</span>
+                </label>
+                <label class="tx-control" for="tx-limit">
+                    <span>Limit</span>
+                    <select id="tx-limit">
+                        <option value="25" selected>25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option>
+                    </select>
+                </label>
+            </div>
+        </header>
+
+        <p id="tx-banner" class="tx-banner" role="alert" hidden></p>
+
+        <section id="tx-legend" class="tx-legend" aria-labelledby="tx-legend-title">
+            <h2 id="tx-legend-title" class="tx-section-title">Who is who</h2>
+            <div id="tx-legend-body" class="tx-legend-body"></div>
+        </section>
+
+        <section id="tx-filters" class="tx-filters" aria-label="Filters">
+            <div class="tx-filter-row">
+                <label class="tx-control tx-control-grow" for="tx-search">
+                    <span class="tx-visually-hidden">Filter</span>
+                    <input id="tx-search" type="search" autocomplete="off"
+                        placeholder="Filter by signature, label, summary, program, action or address" />
+                </label>
+                <button id="tx-filter-clear" type="button" class="tx-button tx-button-ghost">Clear filters</button>
+            </div>
+            <div class="tx-chip-row">
+                <span class="tx-chip-legend">Programs</span>
+                <div id="tx-program-chips" class="tx-chips"></div>
+            </div>
+            <div class="tx-chip-row">
+                <span class="tx-chip-legend">Actions</span>
+                <div id="tx-action-chips" class="tx-chips"></div>
+            </div>
+        </section>
+
+        <p id="tx-count" class="tx-count"></p>
+
+        <table id="tx-table" class="tx-table">
+            <thead>
+                <tr>
+                    <th scope="col">Time</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">What happened</th>
+                    <th scope="col">Program / action</th>
+                    <th scope="col">Amounts</th>
+                    <th scope="col">Fee payer</th>
+                    <th scope="col">Fee (SOL)</th>
+                    <th scope="col">Signature</th>
+                </tr>
+            </thead>
+            <tbody id="tx-tbody"></tbody>
+        </table>
+
+        <p id="tx-empty" class="tx-empty" hidden></p>
+
+    </main>
+
+    <script src="js/tx-explorer.js?v=1" defer></script>
+</body>
+
+</html>

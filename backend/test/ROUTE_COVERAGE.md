@@ -26,6 +26,7 @@ Current route-level coverage status for modules wired in [backend/index.js](../i
 | `routes/planned-roads.js` | Covered | `test/planned-roads.test.js` |
 | `routes/proposals.js`     | Covered | `test/proposals.test.js`     |
 | `routes/streets.js`       | Covered | `test/streets.test.js`       |
+| `routes/transactions.js`  | Covered | `test/transactions.test.js`  |
 | `routes/urban-rules.js`   | Covered | `test/urban-rules.test.js`   |
 
-Summary: 23 of 23 route modules currently have route-level tests.
+Summary: 24 of 24 route modules currently have route-level tests.
