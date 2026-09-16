@@ -25,8 +25,9 @@ Proposals are declared on **cadastre parcel ids** (`cadastreParcelIds`). Ways to
   "parcelsOnly": true }` → the parcels the polygon touches, with their ids.
 - What may be built there: `GET $(base)/urban-rules?coordinates=<lng>,<lat>`.
 - Existing buildings: `POST $(base)/buildings/footprints` with a GeoJSON polygon.
-- What others proposed (full stored records, useful as examples of every field):
-  `GET $(base)/proposals?city=zagreb&limit=5`.
+- What others proposed: `GET $(base)/proposals/summary?city=zagreb&limit=5` lists summaries; take an
+  `id` from it and `GET $(base)/proposals/<id>` returns the full stored record (an example of every field).
+  (`GET /proposals` itself needs `parcel_id=<cadastre id>` and lists that parcel's proposals.)
 
 Read routes are free and need no Origin header.
 
@@ -54,7 +55,7 @@ server from the settled payment — anything you send there is overwritten. Send
 your paying wallet's address; a different value is refused **before** you pay (`author_mismatch`).
 
 A geometric proposal adds one of `buildingProposal`, `structureProposal` or `roadProposal` in the same
-shape the app stores them; copy one from `GET /proposals?city=zagreb&limit=5` to see the fields.
+shape the app stores them; fetch one with `GET /proposals/<id>` to see the fields.
 
 ## 4. Post it (x402 flow)
 
@@ -92,8 +93,8 @@ The reference implementation with a `--dry-run` that prints the challenge and pa
 
 ## 5. Read it back
 
-`GET $(base)/proposals/<id>` returns the stored record; `GET $(base)/proposals?author=<wallet>` lists
-everything your wallet filed.
+`GET $(base)/proposals/<id>` returns the stored record; `GET $(base)/proposals/summary?city=zagreb&author=<wallet>`
+lists everything your wallet filed in that city.
 
 ## 6. Answers you can get
 

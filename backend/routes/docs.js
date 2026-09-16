@@ -215,7 +215,8 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                 endpoints: {
                     submit: `${base}/agent/proposals`,
                     read: `${base}/proposals/{id}`,
-                    listByAuthor: `${base}/proposals?author={wallet}`,
+                    listByAuthor: `${base}/proposals/summary?city={city}&author={wallet}`,
+                    listByParcel: `${base}/proposals?parcel_id={cadastreParcelId}`,
                     parcelsUnder: `${base}/parcels/under`,
                     urbanRules: `${base}/urban-rules?coordinates={lng},{lat}`,
                     buildingFootprints: `${base}/buildings/footprints`
