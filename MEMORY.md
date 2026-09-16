@@ -333,4 +333,11 @@
   synced incrementally. The x402 facilitator fee payer is labelled but NEVER scanned (it signs every
   devnet x402 payment by anyone). Deployed `proposal_nft` on devnet is older than the source
   (`accept_proposal` takes 2 accounts, IDL says 4); its Proposal account layout still matches.
+- 2026-09-17: **WS3 agent runner live on devnet** (`backend/agents/run.mjs`): plan → ONE Anthropic batch
+  (`claude-opus-5`, $0.01/run) → mint → paid post → stake, checkpointed in `consensus.agent_run`. Mint
+  precedes the paid post (no on-chain write path after creation). Confirm Solana sends by polling
+  (`agents/solana-send.js`) — Alchemy devnet has no `signatureSubscribe`. Batch `custom_id` allows only
+  `[A-Za-z0-9_-]`. In a compiled message the counter PDA precedes the proposal PDA; identify the proposal
+  by its account discriminator. `GET /proposals` needs `parcel_id`; filtered lists are `/proposals/summary`.
+  `routes/urban-rules.js` returns no variables for the 2025 GUP (NULL `short_name`; join on `title`).
 

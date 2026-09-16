@@ -107,7 +107,7 @@ Each workstream is independently buildable. The contract between them is in §5.
   and how to read `/parcels/under`, `/buildings/footprints`, `/urban-rules` to choose land.
 - **Acceptance:** an outside script following only the page succeeds end to end on devnet.
 
-### WS3: Agent runner (`backend/agents/`)
+### WS3: Agent runner (`backend/agents/`) — BUILT 2026-09-17, one live day on devnet (see §8)
 
 - **Personas** in `backend/agents/personas.json`: name, wallet keypair path, weights (density,
   open space, value uplift, heritage), target areas (bbox or KO), daily proposal count, stake size.
@@ -339,7 +339,50 @@ Proposal ACCOUNT layout matches the source (18 devnet proposals decode cleanly w
 prefix), so `proposal_market` resolves correctly against the deployed program; only the accept
 path's parcel-ownership check differs from the source — relevant to WS6.
 
-**Not done.** WS3, WS5, WS6, WS7. Prod has none of this yet (`X402_*` values are in
-`ecosystem.config.cjs`, uncommitted; the deploy script refuses uncommitted backend changes; the
-transactions DDL must be applied on the server by hand before the route can serve there).
+### 2026-09-17 — WS3, the agent runner, live end to end
+
+**Built.** `backend/agents/run.mjs` (CLI, `--dry-run` | `--live`, `--persona`, `--day`, `--until STAGE`,
+`--api`) orchestrates, per persona per UTC day: `parcel-source.js` (SQL: current parcels in the persona
+bbox, 400–2000 m², GDI buildings ≥90 % inside → built GFA, the containing 2025-GUP rule and its
+variables) → `planner.js` (pure: `evaluateParcel`/`realizeFromEnvelope` envelope and one legal massing,
+`measureBuilding` GFA, `computeGain` at €4000/m², rule caps for `max_gbp`/`max_izgradenost`, persona-weighted
+score; rule-backed candidates preferred over the 5-floor default) → `llm-picker.js` (ONE Anthropic
+Batches job for all personas, `claude-opus-5`, effort medium, `output_config.format` json_schema; cost
+estimate as an upper bound; `assertUnderCap` against `consensus.agent_cost` for the day, cap
+`AGENT_LLM_DAILY_CAP_USD` = 1000; pending batches are checkpointed by id) → `minter.js` (Node port of
+`mint_and_fund`, byte-identical to `proposal-bridge.js`) → `record-builder.js` + `x402-client.js` (the
+paid POST with the on-chain fields, since a record has no on-chain write path after creation) →
+`bettor.js` (create market if absent + stake YES via `market-client.js`). Ledger `backend/db/agents-ddl.sql`
+(`agent_run` = checkpoint with `stage`/`summary`, `agent_cost` per batch item; owned by `geo_user`).
+`telegram.js` sends one summary per run (no-op without `TELEGRAM_*`). `solana-send.js` confirms by
+polling `getSignatureStatuses` because Alchemy's devnet RPC has no `signatureSubscribe`. Registered in
+`alerts-server-telegram/bot-list.json` as an inactive `db-rows` check on `consensus.agent_run` until it
+is scheduled on prod. Tests: 84 planner-side + 56 chain-side + 7 send + ledger; full suite 4632.
+
+**Live day 2026-09-16, persona densifier-01, all read back.** Dry run: 48 parcels → 8 rule-backed
+candidates in Rudeš, estimate ≤ $0.052, zero rows written. Live: batch `2026-09-16_densifier-01`
+cost **$0.0107** (1752 in / 506 out tokens, in `agent_cost`); 3 picks → 3 mints (`5yqp…1hd7`,
+`qvqc…2rpJ`, `Gwne…7UQ9`, all Active) → rows **1340, 1341, 1342** through the paid route (author =
+persona wallet, `agent.paid.tx`, `onchain.proposalId` = the PDA, one massing feature each, model-written
+names such as "Rudeš 2132: 400 m² on an empty lot") → 3 markets created and 0.25 USDC staked YES on each
+(`yes_pool` 250000 read back on chain). `agent_run` ends `stage staked, status done`; a rerun on the
+same day skips everything and spends nothing. The explorer decodes every step with the persona label
+("opened a market on proposal …", "staked 0.25 USDC on YES in market …"), which also verified the
+decoder paths that had only synthetic coverage before.
+
+**Bugs the live run found (all fixed in code).** Batch `custom_id` may not contain `:`; web3's
+`sendAndConfirmTransaction` reports "expired" on a landed transaction when the RPC lacks WebSocket
+subscriptions (a mint was recovered from the chain by hand — and mis-recorded once, because the
+compiled message lists the counter before the proposal; the account with the Proposal discriminator is
+the one); the minter returns `proposalPda` while the record reads `onchain.proposalId` (a null that
+looked minted — the builder now refuses it); BigInt in a checkpoint summary threw in `JSON.stringify`.
+
+**Findings for later.** `routes/urban-rules.js` joins `ur.short_name = urv.rule_short_name`, but every
+2025-GUP `urban_rule` row has a NULL `short_name` (the name is in `title`), so the live route returns no
+variables for the current plan; the planner joins on `COALESCE(short_name, title)`. `GET /proposals`
+requires `parcel_id`; the list with filters is `GET /proposals/summary` (docs corrected). The offer is
+30 % of the € gain and labelled EUR; stakes are the USDC side.
+
+**Not done.** WS5, WS6, WS7. Prod has none of this yet (`X402_*` in `ecosystem.config.cjs`, `SOLANA_RPC_URL`
+and `ANTHROPIC_API_KEY` needed in the server `.env`, both DDL files applied by hand, the runner scheduled).
 
