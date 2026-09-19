@@ -4,7 +4,10 @@
     'use strict';
     if (!root) return;
 
-    function dependencies() {
+    async function dependencies() {
+        if (!root.solanaWeb3?.Transaction && typeof root.ensureWalletVendors === 'function') {
+            await root.ensureWalletVendors();
+        }
         if (!root.solanaWeb3?.Transaction) throw new Error('Solana web3.js is unavailable');
         if (!root.SolanaPledgeClient) throw new Error('Proposal support client is unavailable');
         if (!root.SolanaChainDataLoader?.getConnection) throw new Error('Solana connection is unavailable');
@@ -48,7 +51,7 @@
     }
 
     async function donate(options) {
-        const client = dependencies(); const { provider, wallet, cluster } = walletContext();
+        const client = await dependencies(); const { provider, wallet, cluster } = walletContext();
         if (!options?.proposal) throw new Error('proposal account is required');
         if (!options.operationId) throw new Error('operationId is required for idempotent donations');
         const amount = client.parseUsdc(String(options.amount));
@@ -70,7 +73,7 @@
     }
 
     async function pledge(options) {
-        const client = dependencies(); const { provider, wallet, cluster } = walletContext();
+        const client = await dependencies(); const { provider, wallet, cluster } = walletContext();
         if (!options?.proposal) throw new Error('proposal account is required');
         const amount = client.parseUsdc(String(options.amount));
         if (amount <= 0n) throw new Error('pledge amount must be positive');
@@ -89,7 +92,7 @@
     }
 
     async function releaseDonations(options) {
-        const client = dependencies(); const { provider, wallet, cluster } = walletContext();
+        const client = await dependencies(); const { provider, wallet, cluster } = walletContext();
         const connection = root.SolanaChainDataLoader.getConnection(cluster);
         const escrow = await client.readDonationEscrow(connection, options?.proposal, options?.programId);
         if (!escrow) throw new Error('This proposal has no donation escrow');
@@ -98,7 +101,7 @@
     }
 
     async function refundMyDonations(options) {
-        const client = dependencies(); const { provider, wallet, cluster } = walletContext();
+        const client = await dependencies(); const { provider, wallet, cluster } = walletContext();
         const connection = root.SolanaChainDataLoader.getConnection(cluster);
         const positions = (await client.listDonationPositions(connection, options?.proposal, wallet, options?.programId)).filter(position => !position.refunded);
         if (!positions.length) throw new Error('You have no refundable donations on this proposal');
@@ -109,7 +112,7 @@
     }
 
     async function commitmentAction(options, builderName) {
-        const client = dependencies(); const { provider, wallet, cluster } = walletContext();
+        const client = await dependencies(); const { provider, wallet, cluster } = walletContext();
         const connection = root.SolanaChainDataLoader.getConnection(cluster);
         const commitment = await client.readPledgeCommitment(connection, options?.proposal, wallet, options?.programId);
         if (!commitment || commitment.status !== client.constants.PLEDGE_ACTIVE) throw new Error('You have no active pledge on this proposal');
@@ -122,7 +125,7 @@
     function voidPledge(options) { return commitmentAction(options, 'buildVoidPledgeIx'); }
 
     async function readSummary(proposal, programId) {
-        const client = dependencies();
+        const client = await dependencies();
         const cluster = root.solanaWalletManager?.getCluster?.() || 'devnet';
         const connection = root.SolanaChainDataLoader.getConnection(cluster);
         const wallet = root.solanaWalletManager?.getProvider?.()?.publicKey || null;
