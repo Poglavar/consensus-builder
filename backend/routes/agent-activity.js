@@ -52,18 +52,70 @@ function runEvents(row) {
     return events;
 }
 
+function proposalEvents(row) {
+    const agent = row.agent || {};
+    const proposalId = String(row.proposal_id);
+    const persona = String(agent.persona || 'agent');
+    const wallet = agent.wallet || null;
+    return [{
+        id: `proposal:${proposalId}:published`,
+        source: 'live',
+        actor: { id: wallet || persona, name: persona, kind: 'agent', controller: 'llm', wallet },
+        action: { type: 'publish', proposalId },
+        entity: { type: 'proposal', id: proposalId },
+        ok: true,
+        message: `${persona} published proposal ${row.display_name || proposalId} through x402.`,
+        transaction: agent.paid?.tx || null,
+        occurredAt: row.created_at,
+        recordedAt: row.updated_at || row.created_at,
+        runId: agent.run_id || null
+    }];
+}
+
+function mergeEvents(...lists) {
+    const byAction = new Map();
+    lists.flat().forEach(event => {
+        const hasEntityOrTransaction = Boolean(event.entity?.id || event.transaction);
+        const key = hasEntityOrTransaction
+            ? `${event.action?.type || ''}:${event.entity?.id || ''}:${event.transaction || ''}`
+            : (event.id || `${event.recordedAt}:${event.message || ''}`);
+        byAction.set(key, event);
+    });
+    return Array.from(byAction.values()).sort((left, right) => {
+        const a = Date.parse(left.recordedAt || left.occurredAt || 0) || 0;
+        const b = Date.parse(right.recordedAt || right.occurredAt || 0) || 0;
+        return a - b;
+    });
+}
+
 export function setupAgentActivityRoute(app, pool) {
     app.get('/agent/activity', async (req, res) => {
         try {
             const limit = asLimit(req.query.limit);
-            const { rows } = await pool.query(
-                `SELECT run_id, persona, status, stage, summary, started_at, updated_at
-                   FROM consensus.agent_run
-                  ORDER BY updated_at DESC
-                  LIMIT $1`,
-                [limit]
-            );
-            const events = rows.flatMap(runEvents).slice(-limit);
+            const [runs, proposals] = await Promise.all([
+                pool.query(
+                    `SELECT run_id, persona, status, stage, summary, started_at, updated_at
+                       FROM consensus.agent_run
+                      ORDER BY updated_at DESC
+                      LIMIT $1`,
+                    [limit]
+                ),
+                pool.query(
+                    `SELECT proposal_id,
+                            COALESCE(name, title, proposal_data->>'name', proposal_data->>'title') AS display_name,
+                            proposal_data->'agent' AS agent,
+                            created_at, updated_at
+                       FROM proposal
+                      WHERE proposal_data ? 'agent'
+                      ORDER BY created_at DESC
+                      LIMIT $1`,
+                    [limit]
+                )
+            ]);
+            const events = mergeEvents(
+                runs.rows.flatMap(runEvents),
+                proposals.rows.flatMap(proposalEvents)
+            ).slice(-limit);
             res.json({ events, count: events.length, source: 'live' });
         } catch (error) {
             console.error('GET /agent/activity failed', error);
@@ -72,4 +124,4 @@ export function setupAgentActivityRoute(app, pool) {
     });
 }
 
-export { asLimit, runEvents };
+export { asLimit, mergeEvents, proposalEvents, runEvents };
