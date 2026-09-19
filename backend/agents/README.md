@@ -28,6 +28,12 @@ and can later fulfil it after execution.
 Policy—what proposal another agent wants to back and for how much—stays outside the money-moving
 module and can be supplied by a later model step.
 
+Both this runner and the browser simulation use `frontend/js/agent-action-engine.js`. A controller
+(`human`, `algorithm`, or `llm`) chooses an action, the registered deterministic handler executes
+it, and the engine emits the same actor/action/entity/activity envelope. The browser Activity view
+merges simulation events with `GET /agent/activity`; actor rows look the same by default, while the
+closed Details disclosure preserves controller and source provenance for audits.
+
 ## Persona config (`personas.json`)
 
 | field | meaning |

@@ -117,6 +117,12 @@
     color: #333;
 }
 
+.activity-live-status {
+    margin: 4px 0 10px;
+    color: #6b7785;
+    font-size: 12px;
+}
+
 .game-log-modal-body {
     padding: 20px 24px;
     flex: 1;
@@ -136,6 +142,72 @@
     font-size: 13px;
     line-height: 1.4;
 }
+
+.activity-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 10px;
+}
+
+.activity-filters button {
+    appearance: none;
+    border: 1px solid #cbd7e3;
+    border-radius: 999px;
+    padding: 6px 10px;
+    color: #38536c;
+    background: #fff;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.activity-filters button.is-active {
+    border-color: #1677c8;
+    color: #fff;
+    background: #1677c8;
+}
+
+.activity-filters .activity-refresh {
+    margin-left: auto;
+}
+
+.activity-entry {
+    margin: 0 0 8px;
+    padding: 10px 11px;
+    border: 1px solid #e0e6ed;
+    border-radius: 8px;
+    background: #fff;
+    font-family: inherit;
+}
+
+.activity-entry-main {
+    color: #263747;
+    line-height: 1.45;
+}
+
+.activity-entry-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 6px;
+    color: #748493;
+    font-size: 11px;
+}
+
+.activity-entry-links a {
+    color: #1677c8;
+    text-decoration: none;
+}
+
+.activity-entry-meta {
+    margin-top: 6px;
+    color: #738292;
+    font-size: 10px;
+}
+
+.activity-entry-meta summary { cursor: pointer; }
+.activity-entry-meta span { display: block; margin-top: 3px; }
 
 .log-entry {
     margin-bottom: 4px;

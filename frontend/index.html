@@ -368,7 +368,7 @@
                         </button>
                         <button class="btn btn-warning" onclick="resetGameState(true)"
                             data-i18n-key="sidebar.game.newGame">New Game</button>
-                        <button id="show-game-log-btn" class="btn btn-info" onclick="showGameLogDialog()"
+                        <button id="show-game-log-btn" class="btn btn-info" data-section-independent="true" onclick="showGameLogDialog()"
                             data-i18n-key="sidebar.game.showGameLog">Show Game Log</button>
                         <button id="show-agents-btn" class="btn btn-info" onclick="showAgentsStatistics()"
                             data-i18n-key="sidebar.game.showAgents">Show Agents</button>
@@ -1620,6 +1620,7 @@
             'js/reparcellization-ui-state.js',
             'js/reparcellization.js',
             'js/financials.js',
+            'js/agent-action-engine.js',
             'js/agent-support-simulation.js',
             'js/agents.js',
             'js/agent-bubbles.js',

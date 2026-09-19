@@ -79,15 +79,22 @@ const gameState = {
         }
     },
 
-    // Add entry to game log
-    addLogEntry(message, isUserAction = false, options = {}) {
+    // Add a structured activity. `text` stays for old dialogs/storage readers, while actor/action/
+    // source let the unified explorer filter simulation, live, human, algorithmic and LLM activity.
+    addActivityEvent(activity, options = {}) {
         const skipPersist = options && options.skipPersist === true;
         const skipUiUpdate = options && options.skipUiUpdate === true;
         const timestamp = this.currentDateTime.toISOString().slice(0, 19).replace('T', ' ');
+        const message = activity?.messageHtml || activity?.message || '';
         const logEntry = `[Turn ${this.currentTurn}] [${timestamp}] ${message}`;
         const logEntryObj = {
+            ...(activity || {}),
             text: logEntry,
-            isUserAction: isUserAction
+            isUserAction: activity?.actor?.kind === 'human' || activity?.isUserAction === true,
+            source: activity?.source || 'simulation',
+            occurredAt: activity?.occurredAt || this.currentDateTime.toISOString(),
+            recordedAt: activity?.recordedAt || new Date().toISOString(),
+            turn: activity?.turn ?? this.currentTurn
         };
         this.gameLog.push(logEntryObj);
 
@@ -103,6 +110,21 @@ const gameState = {
             this.updateGameUI();
         }
         // console.log('Game Log:', logEntry);
+    },
+
+    // Backwards-compatible entrypoint for the older human/system call sites.
+    addLogEntry(message, isUserAction = false, options = {}) {
+        const currentUser = isUserAction && typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null;
+        this.addActivityEvent({
+            id: `local:${Date.now()}:${this.gameLog.length + 1}`,
+            source: 'simulation',
+            actor: currentUser
+                ? { id: currentUser.id, name: currentUser.name, kind: 'human', controller: 'human', avatarIndex: currentUser.avatarIndex }
+                : { id: 'system', name: 'System', kind: 'system', controller: 'system' },
+            action: options.action || { type: 'log' },
+            messageHtml: message,
+            isUserAction
+        }, options);
     },
 
     // Clear all game data
@@ -406,7 +428,9 @@ async function executeGameTurn() {
             }
         }
 
-        // Have each AI-controlled agent decide and act
+        const actionEngine = getUnifiedAgentActionEngine();
+        // Have each AI-controlled agent decide and act through the same action contract. A local
+        // agent can switch controller from "algorithm" to "llm" without changing execution or UI.
         for (let index = 0; index < agents.length; index++) {
             const agent = agents[index];
             // Skip agents that are not AI controlled
@@ -414,14 +438,28 @@ async function executeGameTurn() {
                 continue;
             }
 
-            const action = agentDecideAction(agent, {
+            const turnContext = {
                 activeProposals,
                 ownedParcelsByAgent,
                 turnParcelPool,
-                neighborMap
-            });
-            const result = executeAgentAction(agent, action);
-            gameState.addLogEntry(result, false, { skipPersist: true, skipUiUpdate: true });
+                neighborMap,
+                source: 'simulation',
+                turn: gameState.currentTurn,
+                occurredAt: gameState.currentDateTime.toISOString(),
+                skipPersist: true,
+                skipUiUpdate: true
+            };
+            try {
+                await actionEngine.run(agent, turnContext);
+            } catch (error) {
+                gameState.addActivityEvent({
+                    id: `simulation:${agent.id}:error:${Date.now()}`,
+                    source: 'simulation',
+                    actor: window.AgentActionEngine.normalizeActor(agent),
+                    action: { type: 'error' }, ok: false,
+                    message: `${agent.name} could not act: ${error.message}`
+                }, { skipPersist: true, skipUiUpdate: true });
+            }
 
             // Update agent's last action timestamp
             agentStorage.updateAgent(agent.id, { lastActionAt: new Date().toISOString() });
@@ -469,6 +507,32 @@ async function executeGameTurn() {
             executeGameTurn();
         }
     }
+}
+
+let unifiedAgentActionEngine = null;
+
+function getUnifiedAgentActionEngine() {
+    if (unifiedAgentActionEngine) return unifiedAgentActionEngine;
+    if (!window.AgentActionEngine) throw new Error('AgentActionEngine is unavailable');
+    unifiedAgentActionEngine = window.AgentActionEngine.createEngine({
+        decisionProviders: {
+            algorithm: (agent, context) => agentDecideAction(agent, context),
+            llm: async (agent, context) => {
+                if (typeof window.agentLlmDecisionProvider !== 'function') {
+                    throw new Error('No LLM decision provider is configured');
+                }
+                return window.agentLlmDecisionProvider(agent, context);
+            }
+        },
+        actionHandlers: {
+            '*': (agent, action) => executeAgentAction(agent, action)
+        },
+        onActivity: (activity, context) => gameState.addActivityEvent(activity, {
+            skipPersist: context.skipPersist === true,
+            skipUiUpdate: context.skipUiUpdate === true
+        })
+    });
+    return unifiedAgentActionEngine;
 }
 
 /**
@@ -612,35 +676,119 @@ function toggleGamePlayPause() {
     }
 }
 
-/**
- * Show the game log dialog
- */
+let liveAgentActivity = [];
+let selectedActivityFilter = 'all';
+
+function escapeActivityHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, character => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[character]);
+}
+
+function normalizeStoredActivity(entry, index) {
+    if (entry && typeof entry === 'object' && entry.actor && entry.action) return entry;
+    const text = typeof entry === 'string' ? entry : (entry?.text || '');
+    return {
+        id: `legacy:${index}:${text.slice(0, 24)}`, source: 'simulation',
+        actor: { id: entry?.isUserAction ? 'human' : 'system', name: entry?.isUserAction ? 'Human' : 'System', kind: entry?.isUserAction ? 'human' : 'system', controller: entry?.isUserAction ? 'human' : 'system' },
+        action: { type: 'log' }, text, messageHtml: text, isUserAction: entry?.isUserAction === true,
+        recordedAt: entry?.recordedAt || null
+    };
+}
+
+function allActivityEvents() {
+    const local = gameState.gameLog.map(normalizeStoredActivity);
+    if (window.AgentActionEngine?.mergeActivities) {
+        return window.AgentActionEngine.mergeActivities(local, liveAgentActivity);
+    }
+    return [...local, ...liveAgentActivity];
+}
+
+function activityEntryHtml(event) {
+    const isLocalHtml = event.source === 'simulation' && (event.text || event.messageHtml);
+    const body = isLocalHtml
+        ? (event.text || event.messageHtml)
+        : escapeActivityHtml(event.message || event.text || `${event.actor?.name || 'Someone'} ${event.action?.type || 'acted'}.`);
+    const timestamp = event.source === 'live' && event.occurredAt
+        ? `<time datetime="${escapeActivityHtml(event.occurredAt)}">${escapeActivityHtml(new Date(event.occurredAt).toLocaleString())}</time>`
+        : '';
+    const proposalLink = event.entity?.type === 'proposal' && event.entity.id
+        ? `<a href="#" data-proposal-id="${escapeActivityHtml(event.entity.id)}" class="proposal-link proposal-link-clickable">Open proposal</a>`
+        : '';
+    const transactionLink = event.transaction
+        ? `<a href="https://explorer.solana.com/tx/${escapeActivityHtml(event.transaction)}?cluster=devnet" target="_blank" rel="noopener">Transaction ↗</a>`
+        : '';
+    const details = [event.source, event.actor?.controller, event.action?.type].filter(Boolean).map(escapeActivityHtml).join(' · ');
+    return `<article class="log-entry activity-entry${event.isUserAction ? ' user-action' : ''}" data-source="${escapeActivityHtml(event.source)}" data-actor-kind="${escapeActivityHtml(event.actor?.kind)}">
+        <div class="activity-entry-main">${body}</div>
+        <div class="activity-entry-links">${timestamp}${proposalLink}${transactionLink}</div>
+        <details class="activity-entry-meta"><summary>Details</summary><span>${details}</span>${event.runId ? `<span>Run ${escapeActivityHtml(event.runId)}</span>` : ''}</details>
+    </article>`;
+}
+
+function renderActivityExplorer() {
+    const content = document.getElementById('game-log-content');
+    if (!content) return;
+    const events = allActivityEvents().filter(event => window.AgentActionEngine?.matchesActivity
+        ? window.AgentActionEngine.matchesActivity(event, selectedActivityFilter)
+        : true);
+    content.innerHTML = events.length
+        ? events.map(activityEntryHtml).join('')
+        : '<p class="no-logs">No matching activity yet.</p>';
+    content.setAttribute('data-rendered-count', String(events.length));
+    document.querySelectorAll('[data-activity-filter]').forEach(button => {
+        button.classList.toggle('is-active', button.dataset.activityFilter === selectedActivityFilter);
+    });
+    setupGameLogClickListeners();
+}
+
+function setActivityFilter(filter) {
+    selectedActivityFilter = filter || 'all';
+    renderActivityExplorer();
+}
+
+async function loadLiveAgentActivity() {
+    const base = typeof window.getBackendBase === 'function'
+        ? window.getBackendBase().replace(/\/$/, '')
+        : 'https://api.urbangametheory.xyz';
+    const status = document.querySelector('[data-activity-live-status]');
+    if (status) status.textContent = 'Loading live activity…';
+    try {
+        const response = await fetch(`${base}/agent/activity?limit=100`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const payload = await response.json();
+        liveAgentActivity = Array.isArray(payload.events) ? payload.events : [];
+        if (status) status.textContent = `${liveAgentActivity.length} live events`;
+    } catch (error) {
+        console.warn('Could not load live agent activity', error);
+        if (status) status.textContent = 'Live activity unavailable';
+    }
+    renderActivityExplorer();
+}
+
+/** Show one activity explorer for simulation, human, algorithmic and live LLM actions. */
 function showGameLogDialog() {
-    // Create modal dialog
     const modal = document.createElement('div');
     modal.className = 'game-log-modal';
     modal.innerHTML = `
         <div class="game-log-modal-content">
             <div class="game-log-modal-header">
-                <h2 data-i18n-key="gameDialogs.log.title">${translateGameText('gameDialogs.log.title', 'Game Log')}</h2>
+                <div><h2>Activity</h2><div class="activity-live-status" data-activity-live-status>Local activity</div></div>
                 <button type="button" class="game-log-modal-close close-circle-btn close-circle-btn--lg"
                     data-i18n-key="gameDialogs.log.closeAria" data-i18n-attr="aria-label"
-                    aria-label="${translateGameText('gameDialogs.log.closeAria', 'Close game log')}"
+                    aria-label="${translateGameText('gameDialogs.log.closeAria', 'Close activity')}"
                     onclick="closeGameLogDialog()">&times;</button>
             </div>
             <div class="game-log-modal-body">
-                <div id="game-log-content" class="game-log-content">
-                    ${gameState.gameLog.length === 0 ?
-            `<p class="no-logs" data-i18n-key="gameDialogs.log.empty">${translateGameText('gameDialogs.log.empty', 'No game events yet. Start the game to see agent activities.')}</p>` :
-            gameState.gameLog.map(entry => {
-                // Handle both old string format and new object format
-                const entryText = typeof entry === 'string' ? entry : entry.text;
-                const isUserAction = typeof entry === 'object' && entry.isUserAction;
-                const cssClass = isUserAction ? 'log-entry user-action' : 'log-entry';
-                return `<div class="${cssClass}">${entryText}</div>`;
-            }).join('')
-        }
-                </div>
+                <nav class="activity-filters" aria-label="Filter activity">
+                    <button type="button" data-activity-filter="all" onclick="setActivityFilter('all')">All</button>
+                    <button type="button" data-activity-filter="live" onclick="setActivityFilter('live')">Live</button>
+                    <button type="button" data-activity-filter="simulation" onclick="setActivityFilter('simulation')">Simulation</button>
+                    <button type="button" data-activity-filter="human" onclick="setActivityFilter('human')">People</button>
+                    <button type="button" data-activity-filter="agent" onclick="setActivityFilter('agent')">Agents</button>
+                    <button type="button" class="activity-refresh" onclick="loadLiveAgentActivity()">Refresh</button>
+                </nav>
+                <div id="game-log-content" class="game-log-content"></div>
             </div>
         </div>
     `;
@@ -650,15 +798,8 @@ function showGameLogDialog() {
         try { window.i18n.applyTranslations(modal); } catch (_) { /* ignore */ }
     }
 
-    // Auto-scroll to bottom
-    const logContent = document.getElementById('game-log-content');
-    if (logContent) {
-        logContent.scrollTop = logContent.scrollHeight;
-        logContent.setAttribute('data-rendered-count', String(gameState.gameLog.length));
-    }
-
-    // Set up event listeners for clickable links
-    setupGameLogClickListeners();
+    renderActivityExplorer();
+    loadLiveAgentActivity();
 }
 
 /**
@@ -801,41 +942,9 @@ function updateGameLogDialogIfOpen() {
         return;
     }
 
-    // Store current scroll position to determine if user was at bottom
-    const wasAtBottom = logContentElement.scrollTop >= (logContentElement.scrollHeight - logContentElement.clientHeight - 10);
-
-    const renderedCountRaw = logContentElement.getAttribute('data-rendered-count');
-    const renderedCount = Number.isFinite(Number(renderedCountRaw)) ? Number(renderedCountRaw) : 0;
-
-    const renderEntriesToHtml = (entries) => entries.map(entry => {
-        const entryText = typeof entry === 'string' ? entry : entry.text;
-        const isUserAction = typeof entry === 'object' && entry.isUserAction;
-        const cssClass = isUserAction ? 'log-entry user-action' : 'log-entry';
-        return `<div class="${cssClass}">${entryText}</div>`;
-    }).join('');
-
-    if (gameState.gameLog.length === 0) {
-        logContentElement.innerHTML = '<p class="no-logs">No game events yet. Start the game to see agent activities.</p>';
-        logContentElement.setAttribute('data-rendered-count', '0');
-    } else if (renderedCount > 0 && renderedCount <= gameState.gameLog.length) {
-        const newEntries = gameState.gameLog.slice(renderedCount);
-        if (newEntries.length > 0) {
-            logContentElement.insertAdjacentHTML('beforeend', renderEntriesToHtml(newEntries));
-            logContentElement.setAttribute('data-rendered-count', String(gameState.gameLog.length));
-        }
-    } else {
-        logContentElement.innerHTML = renderEntriesToHtml(gameState.gameLog);
-        logContentElement.setAttribute('data-rendered-count', String(gameState.gameLog.length));
-    }
-
-    // Re-setup click listeners for new content
-    setupGameLogClickListeners();
-
-    // If user was at bottom before update, keep them at bottom
-    // Otherwise, maintain their current scroll position
-    if (wasAtBottom) {
-        logContentElement.scrollTop = logContentElement.scrollHeight;
-    }
+    const scrollTop = logContentElement.scrollTop;
+    renderActivityExplorer();
+    logContentElement.scrollTop = scrollTop;
 }
 
 /**
@@ -1196,6 +1305,7 @@ function resetGameState(autoReinit = false) {
             proposalsExecuted: [],
             createdAt: new Date().toISOString(),
             lastActionAt: null,
+            controller: 'human',
             aiControlled: false,
             userControlled: true
         };

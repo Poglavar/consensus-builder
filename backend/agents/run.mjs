@@ -36,6 +36,7 @@ import { sendAndConfirmPolling } from './solana-send.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
+const actionEngineApi = require('../../frontend/js/agent-action-engine.js');
 
 const STAGES = ['planned', 'chosen', 'minted', 'posted', 'staked'];
 const PROPOSAL_NFT_PROGRAM = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
@@ -221,8 +222,21 @@ async function main() {
             const mints = { ...(summary.mints ?? {}) };
             const posts = { ...(summary.posts ?? {}) };
             const stakes = { ...(summary.stakes ?? {}) };
+            const activities = Array.isArray(summary.activities) ? [...summary.activities] : [];
             const city = summary.city ?? 'zagreb';
             let personaFailed = false;
+            const runtime = actionEngineApi.createEngine({
+                decisionProviders: { llm: (_actor, context) => context.action },
+                actionHandlers: { '*': (_actor, _action, context) => context.execute() },
+                onActivity: activity => activities.push(activity)
+            });
+            const actor = {
+                id: persona.name, name: persona.name, controller: 'llm', wallet: keypair.publicKey.toBase58()
+            };
+            const runAction = async (action, execute) => {
+                const result = await runtime.run(actor, { action, execute, source: 'live' });
+                return result.outcome;
+            };
 
             for (const [k, pick] of picks.entries()) {
                 const candidate = e.candidates.find((c) => c.candidateId === pick.candidateId);
@@ -232,14 +246,14 @@ async function main() {
                 // mint
                 if (!mints[pick.candidateId]) {
                     try {
-                        const minted = await mintProposal({
+                        const minted = await runAction({ type: 'create', proposalId: pick.proposalId }, () => mintProposal({
                             connection, programId: PROPOSAL_NFT_PROGRAM, ownerKeypair: keypair,
                             parcelIds: [candidate.parcelId], isConditional: true,
                             imageUri: `${apiBase}/proposals/${pick.proposalId}`, lamports: 0n, lens: [keypair.publicKey.toBase58()],
                             sendAndConfirm: sendAndConfirmPolling
-                        });
+                        }));
                         mints[pick.candidateId] = { ...minted, count: minted.count === undefined ? undefined : String(minted.count) };
-                        await updateRun(pool, e.runId, { stage: 'chosen', status: 'running', summaryPatch: { mints } });
+                        await updateRun(pool, e.runId, { stage: 'chosen', status: 'running', summaryPatch: { mints, activities } });
                         log(`${tag} minted: pda ${minted.proposalPda} tx ${minted.signature}`);
                     } catch (err) {
                         failures.push(`${tag} mint: ${err.message}`);
@@ -255,23 +269,25 @@ async function main() {
                         // The minter reports the account as proposalPda; the record (and the app's
                         // isProposalMinted) expects onchain.proposalId. Map explicitly — a null here
                         // would store a record that looks minted and points nowhere.
-                        const mint = mints[pick.candidateId];
-                        const onchain = {
-                            transactionHash: mint.transactionHash ?? mint.signature,
-                            proposalId: mint.proposalPda,
-                            chainId: mint.chainId ?? 'solana-devnet',
-                            contractAddress: mint.contractAddress ?? PROPOSAL_NFT_PROGRAM
-                        };
-                        const body = buildProposalRecord({ candidate, pick, persona, runId: e.runId, city, onchain, turf });
-                        const { paidFetch } = await createPaidClient({
-                            secretKey: secret,
-                            paymentId: paymentIdForProposal(body.proposalId),
-                            rpcUrl
+                        const res = await runAction({ type: 'publish', proposalId: pick.proposalId }, async () => {
+                            const mint = mints[pick.candidateId];
+                            const onchain = {
+                                transactionHash: mint.transactionHash ?? mint.signature,
+                                proposalId: mint.proposalPda,
+                                chainId: mint.chainId ?? 'solana-devnet',
+                                contractAddress: mint.contractAddress ?? PROPOSAL_NFT_PROGRAM
+                            };
+                            const body = buildProposalRecord({ candidate, pick, persona, runId: e.runId, city, onchain, turf });
+                            const { paidFetch } = await createPaidClient({
+                                secretKey: secret,
+                                paymentId: paymentIdForProposal(body.proposalId),
+                                rpcUrl
+                            });
+                            return postAgentProposal({ baseUrl: apiBase, paidFetch, body });
                         });
-                        const res = await postAgentProposal({ baseUrl: apiBase, paidFetch, body });
                         if (res.status === 201) {
                             posts[pick.candidateId] = { id: res.body.id, proposalId: res.body.proposalId ?? pick.proposalId, status: res.status, tx: res.receipt?.transaction ?? null };
-                            await updateRun(pool, e.runId, { stage: 'minted', status: 'running', summaryPatch: { posts } });
+                            await updateRun(pool, e.runId, { stage: 'minted', status: 'running', summaryPatch: { posts, activities } });
                             log(`${tag} posted: row ${res.body.id} (${res.status}) paid tx ${res.receipt?.transaction ?? '-'}`);
                         } else {
                             throw new Error(`HTTP ${res.status}: ${typeof res.body === 'string' ? res.body : JSON.stringify(res.body)}`);
@@ -287,13 +303,13 @@ async function main() {
                 // stake YES on its own proposal
                 if (!stakes[pick.candidateId]) {
                     try {
-                        const staked = await ensureMarketAndStake({
+                        const staked = await runAction({ type: 'stake', proposalId: pick.proposalId, amount: persona.stakeUsdc, side: 'yes' }, () => ensureMarketAndStake({
                             connection, ownerKeypair: keypair, proposalPda: mints[pick.candidateId].proposalPda,
                             stakeMint: USDC_DEVNET, side: SIDE_YES, amountAtomic: usdcToAtomic(String(persona.stakeUsdc)),
                             sendAndConfirm: sendAndConfirmPolling
-                        });
+                        }));
                         stakes[pick.candidateId] = staked;
-                        await updateRun(pool, e.runId, { stage: 'posted', status: 'running', summaryPatch: { stakes } });
+                        await updateRun(pool, e.runId, { stage: 'posted', status: 'running', summaryPatch: { stakes, activities } });
                         log(`${tag} staked ${persona.stakeUsdc} USDC YES: market ${staked.marketPda}${staked.created ? ' (created)' : ''} tx ${staked.stakeSignature}`);
                     } catch (err) {
                         failures.push(`${tag} stake: ${err.message}`);
@@ -309,7 +325,7 @@ async function main() {
             await updateRun(pool, e.runId, {
                 stage: reached && done ? untilStage : (Object.keys(stakes).length ? 'staked' : Object.keys(posts).length ? 'posted' : Object.keys(mints).length ? 'minted' : 'chosen'),
                 status: personaFailed ? 'failed' : (done && untilStage === 'staked' ? 'done' : 'running'),
-                summaryPatch: { mints, posts, stakes }
+                summaryPatch: { mints, posts, stakes, activities }
             });
             report.push(`${persona.name}: ${picks.length} picks · ${Object.keys(mints).length} minted · ${Object.keys(posts).length} posted · ${Object.keys(stakes).length} staked · $${(summary.pickCostUsd ?? 0).toFixed(4)}`);
         }

@@ -665,10 +665,24 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 ${proposalEnsHtml ? `<div class="proposal-ens-row" style="text-align: center; margin-top: 4px;">${proposalEnsHtml}</div>` : ''}
             </div>
             ${agentProvenanceHtml}
-            ${isSolanaPledgeProposal ? `<div class="metric-group proposal-pledge-summary" data-proposal-account="${nftInfo.tokenId}">
-                <span class="metric-label">${tProposal('panel.proposal.pledge.summary', 'Proposal support:')}</span>
-                <span class="metric-value">${tProposal('panel.proposal.pledge.loading', 'Loading…')}</span>
-            </div>` : ''}
+            ${isSolanaPledgeProposal ? `<section class="proposal-funding-card proposal-pledge-summary" data-proposal-account="${nftInfo.tokenId}" aria-label="${tProposal('panel.proposal.pledge.summary', 'Proposal funding')}">
+                <div class="proposal-funding-head">
+                    <div>
+                        <div class="proposal-funding-eyebrow">${tProposal('panel.proposal.pledge.onchain', 'On-chain support')}</div>
+                        <h3>${tProposal('panel.proposal.pledge.summary', 'Funding & commitments')}</h3>
+                    </div>
+                    <span class="proposal-funding-state">${safeAgentText(supportLifecycle)}</span>
+                </div>
+                <div class="proposal-funding-grid" aria-live="polite">
+                    <div><span>${tProposal('panel.proposal.pledge.donations', 'Donations')}</span><strong data-funding="donated">${tProposal('panel.proposal.pledge.loading', 'Loading…')}</strong><small data-funding="donation-status"></small></div>
+                    <div><span>${tProposal('panel.proposal.pledge.pledges', 'Pledges')}</span><strong data-funding="pledged">${tProposal('panel.proposal.pledge.loading', 'Loading…')}</strong><small data-funding="pledge-status"></small></div>
+                </div>
+                <div class="proposal-funding-you" data-funding="you">${tProposal('panel.proposal.pledge.connect', 'Connect a Solana wallet to see your support.')}</div>
+                <div class="proposal-funding-links">
+                    <a href="https://explorer.solana.com/address/${nftInfo.tokenId}?cluster=devnet" target="_blank" rel="noopener">${tProposal('panel.proposal.pledge.proposalExplorer', 'Proposal account')} ↗</a>
+                    <a href="https://explorer.solana.com/address/${window.SolanaPledgeClient?.constants?.PROGRAM_ID || '1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g'}?cluster=devnet" target="_blank" rel="noopener">${tProposal('panel.proposal.pledge.programExplorer', 'Funding program')} ↗</a>
+                </div>
+            </section>` : ''}
             ${parcelAcceptancePlaceholder}
             ${ownerAcceptancePlaceholder}
 
@@ -1065,18 +1079,55 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     if (isSolanaPledgeProposal && window.SolanaPledgeBridge?.readSummary) {
         Promise.resolve(window.SolanaPledgeBridge.readSummary(nftInfo.tokenId))
             .then(summary => {
-                const row = document.querySelector(`.proposal-pledge-summary[data-proposal-account="${nftInfo.tokenId}"] .metric-value`);
-                if (!row) return;
+                const card = document.querySelector(`.proposal-pledge-summary[data-proposal-account="${nftInfo.tokenId}"]`);
+                if (!card) return;
                 const donated = summary?.donations?.totalDonated || 0n;
                 const pledged = summary?.pledges?.activePledged || 0n;
                 const donors = summary?.donations?.donorCount || 0n;
                 const pledgers = summary?.pledges?.activeCount || 0n;
-                row.textContent = `${window.SolanaPledgeClient.formatUsdc(donated)} donated (${donors}) · ${window.SolanaPledgeClient.formatUsdc(pledged)} pledged (${pledgers})`;
+                const released = summary?.donations?.totalReleased || 0n;
+                const refunded = summary?.donations?.totalRefunded || 0n;
+                const fulfilled = summary?.pledges?.totalFulfilled || 0n;
+                const format = window.SolanaPledgeClient.formatUsdc;
+                const donationStatus = summary?.donations?.released
+                    ? `${format(released)} USDC released`
+                    : (supportLifecycle === 'Cancelled' || supportLifecycle === 'Expired')
+                        ? `${format(refunded)} USDC refunded · remaining donations refundable`
+                        : 'Held in refundable escrow until execution';
+                const pledgeStatus = fulfilled > 0n
+                    ? `${format(fulfilled)} USDC fulfilled`
+                    : 'Soft commitments; funds stay in each wallet';
+                const donatedNode = card.querySelector('[data-funding="donated"]');
+                const pledgedNode = card.querySelector('[data-funding="pledged"]');
+                const donationStatusNode = card.querySelector('[data-funding="donation-status"]');
+                const pledgeStatusNode = card.querySelector('[data-funding="pledge-status"]');
+                if (donatedNode) donatedNode.textContent = `${format(donated)} USDC · ${donors} donor${donors === 1n ? '' : 's'}`;
+                if (pledgedNode) pledgedNode.textContent = `${format(pledged)} USDC · ${pledgers} active`;
+                if (donationStatusNode) donationStatusNode.textContent = donationStatus;
+                if (pledgeStatusNode) pledgeStatusNode.textContent = pledgeStatus;
+
+                const myDonationRows = Array.isArray(summary?.myDonations) ? summary.myDonations : [];
+                const myDonated = myDonationRows.reduce((total, row) => total + (row.refunded ? 0n : row.amount), 0n);
+                const myRefunded = myDonationRows.reduce((total, row) => total + (row.refunded ? row.amount : 0n), 0n);
+                const myPledge = summary?.myPledge;
+                const pledgeLabels = ['active', 'fulfilled', 'revoked', 'voided'];
+                const mySupport = card.querySelector('[data-funding="you"]');
+                if (mySupport && summary?.wallet) {
+                    const donationCopy = myDonationRows.length
+                        ? `${format(myDonated)} USDC donated${myRefunded ? ` · ${format(myRefunded)} refunded` : ''}`
+                        : 'no donations';
+                    const pledgeCopy = myPledge
+                        ? `${format(myPledge.amount)} USDC pledge · ${pledgeLabels[myPledge.status] || 'unknown'}`
+                        : 'no pledge';
+                    mySupport.textContent = `Your support: ${donationCopy}; ${pledgeCopy}.`;
+                }
             })
             .catch(error => {
                 console.warn('Could not load proposal pledge totals', error);
-                const row = document.querySelector(`.proposal-pledge-summary[data-proposal-account="${nftInfo.tokenId}"] .metric-value`);
-                if (row) row.textContent = tProposal('panel.proposal.pledge.unavailable', 'Unavailable');
+                const card = document.querySelector(`.proposal-pledge-summary[data-proposal-account="${nftInfo.tokenId}"]`);
+                if (card) card.querySelectorAll('[data-funding="donated"], [data-funding="pledged"]').forEach(node => {
+                    node.textContent = tProposal('panel.proposal.pledge.unavailable', 'Unavailable');
+                });
             });
     }
 

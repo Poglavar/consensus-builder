@@ -969,7 +969,8 @@ function handleLogout(letAIRun) {
         // Update agent flags
         agentStorage.updateAgent(currentUserAgent.id, {
             userControlled: false,
-            aiControlled: letAIRun
+            aiControlled: letAIRun,
+            controller: letAIRun ? 'algorithm' : 'inactive'
         });
 
         // Add to game log

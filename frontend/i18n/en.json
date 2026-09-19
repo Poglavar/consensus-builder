@@ -327,8 +327,8 @@
             "play": "Play",
             "pause": "Pause",
             "newGame": "New Game",
-            "showGameLog": "Show Game Log",
-            "showGameLogCount": "Show Game Log ({{count}})",
+            "showGameLog": "Activity",
+            "showGameLogCount": "Activity ({{count}})",
             "showAgents": "Show Agents",
             "showAgentsCount": "Show Agents ({{count}})"
         },
@@ -438,16 +438,16 @@
                 }
             },
             "newGame": "New Game",
-            "showGameLog": "Show Game Log",
-            "showGameLogCount": "Show Game Log ({{count}})",
+            "showGameLog": "Activity",
+            "showGameLogCount": "Activity ({{count}})",
             "showAgents": "Show Agents",
             "showAgentsCount": "Show Agents ({{count}})"
         },
         "gameDialogs": {
             "log": {
-                "title": "Game Log",
-                "closeAria": "Close game log",
-                "empty": "No game events yet. Start the game to see agent activities."
+                "title": "Activity",
+                "closeAria": "Close activity",
+                "empty": "No activity yet. Start the simulation or refresh live activity."
             },
             "agents": {
                 "title": "Agent Statistics",
@@ -986,7 +986,13 @@
                 "void": "Clear my pledge"
             },
             "pledge": {
-                "summary": "Proposal support:",
+                "summary": "Funding & commitments",
+                "onchain": "On-chain support",
+                "donations": "Donations",
+                "pledges": "Pledges",
+                "connect": "Connect a Solana wallet to see your support.",
+                "proposalExplorer": "Proposal account",
+                "programExplorer": "Funding program",
                 "loading": "Loading…",
                 "none": "0 USDC · no backers yet",
                 "unavailable": "Unavailable"

@@ -126,12 +126,13 @@
         const cluster = root.solanaWalletManager?.getCluster?.() || 'devnet';
         const connection = root.SolanaChainDataLoader.getConnection(cluster);
         const wallet = root.solanaWalletManager?.getProvider?.()?.publicKey || null;
-        const [donations, pledges, myPledge] = await Promise.all([
+        const [donations, pledges, myPledge, myDonations] = await Promise.all([
             client.readDonationEscrow(connection, proposal, programId),
             client.readPledgeBook(connection, proposal, programId),
-            wallet ? client.readPledgeCommitment(connection, proposal, wallet, programId) : null
+            wallet ? client.readPledgeCommitment(connection, proposal, wallet, programId) : null,
+            wallet ? client.listDonationPositions(connection, proposal, wallet, programId) : []
         ]);
-        return { donations, pledges, myPledge };
+        return { donations, pledges, myPledge, myDonations, wallet: wallet?.toBase58?.() || null };
     }
 
     root.SolanaPledgeBridge = { donate, pledge, releaseDonations, refundMyDonations, revokePledge, fulfillPledge, voidPledge, readSummary };

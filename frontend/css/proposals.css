@@ -731,6 +731,93 @@ textarea.proposal-description-input {
     font-size: 18px;
 }
 
+.proposal-funding-card {
+    margin: 14px 0;
+    padding: 14px;
+    border: 1px solid #d7e1ec;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #f7fbff, #ffffff);
+    box-shadow: 0 5px 18px rgba(31, 78, 121, 0.08);
+}
+
+.proposal-funding-head,
+.proposal-funding-links {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.proposal-funding-head h3 {
+    margin: 2px 0 0;
+    font-size: 16px;
+}
+
+.proposal-funding-eyebrow,
+.proposal-funding-grid span,
+.proposal-funding-grid small {
+    color: #66788a;
+    font-size: 11px;
+}
+
+.proposal-funding-eyebrow {
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.proposal-funding-state {
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #e6f2ff;
+    color: #0a5ea8;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.proposal-funding-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.proposal-funding-grid > div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    padding: 10px;
+    border: 1px solid #e3eaf1;
+    border-radius: 9px;
+    background: #fff;
+}
+
+.proposal-funding-grid strong {
+    color: #203246;
+    font-size: 14px;
+}
+
+.proposal-funding-you {
+    margin-top: 10px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    background: #eef7ee;
+    color: #245b2a;
+    font-size: 12px;
+}
+
+.proposal-funding-links {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    font-size: 11px;
+}
+
+@media (max-width: 520px) {
+    .proposal-funding-grid { grid-template-columns: 1fr; }
+}
+
 .proposal-list {
     margin-top: 10px;
 }

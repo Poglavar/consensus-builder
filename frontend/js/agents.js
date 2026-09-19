@@ -208,6 +208,7 @@ function createAgent() {
         proposalsExecuted: [],
         createdAt: new Date().toISOString(),
         lastActionAt: null,
+        controller: 'algorithm',
         aiControlled: true, // AI controls this agent by default
         userControlled: false // Not controlled by user
     };
@@ -235,6 +236,7 @@ function createUserAgent(name, avatarIndex, options = {}) {
         proposalsExecuted: [],
         createdAt: new Date().toISOString(),
         lastActionAt: null,
+        controller: 'human',
         aiControlled: false, // Not AI controlled
         userControlled: true, // Controlled by user
         isGuest: options.isGuest === true // Track if user hasn't personalized their profile
@@ -257,7 +259,7 @@ function setUserControlledAgent(agentId, isUserControlled = true) {
 
     // Set the specified agent as user controlled
     if (isUserControlled) {
-        agentStorage.updateAgent(agentId, { userControlled: true, aiControlled: false });
+        agentStorage.updateAgent(agentId, { userControlled: true, aiControlled: false, controller: 'human' });
     }
 }
 
@@ -405,7 +407,7 @@ function getOrCreateCityAgent(options = {}) {
             ethBalance: 0, walletAddresses: [], ownedParcels: [],
             proposalsCreated: [], proposalsAccepted: [], proposalsExecuted: [],
             createdAt: new Date().toISOString(), lastActionAt: null,
-            aiControlled: false, userControlled: false
+            controller: 'system', aiControlled: false, userControlled: false
         });
     }
     return CITY_AGENT_ID;
@@ -443,7 +445,7 @@ function getOrCreateAgentForRecipient(label, options = {}) {
             ethBalance: 0, walletAddresses: trimmed.startsWith('0x') ? [trimmed] : [],
             ownedParcels: [], proposalsCreated: [], proposalsAccepted: [], proposalsExecuted: [],
             createdAt: new Date().toISOString(), lastActionAt: null,
-            aiControlled: false, userControlled: false
+            controller: 'human', aiControlled: false, userControlled: false
         });
     }
     return id;

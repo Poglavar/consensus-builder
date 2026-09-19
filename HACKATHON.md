@@ -43,6 +43,16 @@ git diff 3ee1855...colosseum-worlds-fair
    with live [soft-pledge](https://explorer.solana.com/tx/Fs4neKgYxY5QmV7FwovJg1Ay8X5mecVafZkW4N87NSfC9hGqs1sTm2gYX5ypjdyAvWPhCwF9vUfnquyBiNmdbGT?cluster=devnet)
    and [funded-donation](https://explorer.solana.com/tx/dFJn5idbgQy85NmJ3bpGTPW284nYGifec9TKy98pP4PHUsgY3WpqU5M5HnQ4UNxMTrdeDo5rp6ShdsLZ346fbH3?cluster=devnet)
    proof transactions.
+8. **Complete funding lifecycles** — a guarded devnet script proves both outcomes with a separate
+   supporter wallet. The cancelled path [refunds its donation](https://explorer.solana.com/tx/4ZzwYiHiM4kbt5zypFw1WRuji1rLkydwsfm3QWLKVLh8RSMiP4bX9axX3PCNYYvXgNyuDveA7Qa2cx69xuzdD9af?cluster=devnet)
+   and [voids its pledge](https://explorer.solana.com/tx/4yPScLbBHM1KzxsrYYBvSXnA4ZPfx3DuDTEoJwMFmudRJQhP89tghvyfk6qpXVsc2aej3ZSbq5mNGGedB7ZwDvbX?cluster=devnet);
+   the executed path [releases its donation](https://explorer.solana.com/tx/3s1v1sGhPbdN2JzydhNDhLTY1M6mW5uFntXRkGbmx2cyPHGPeVuks93HWZtjTQfPFbRhFj4FhQR6vWahNMvawLn5?cluster=devnet)
+   and [fulfils its pledge](https://explorer.solana.com/tx/5NUeperNd6wu3ZizQW7ASWZtfa2nFKjevnGeVtqAeFWhFyfDbcUBKw5enRwKcTRAyZ1yHNpeEqWC8Vs2dyp94UgA?cluster=devnet).
+   Run it with `cd blockchain/solana && node scripts/proposal-support-lifecycle.mjs --live`.
+9. **One agent/action/activity model** — browser algorithms and the server LLM runner use the same
+   controller/action/event contract. The Activity explorer combines live and simulated events,
+   filters by source or actor type, and keeps AI/human provenance in expandable details instead of
+   visually segregating actors throughout the product.
 
 ## Pre-existing platform foundations
 
