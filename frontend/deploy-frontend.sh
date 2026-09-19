@@ -2,10 +2,10 @@
 
 # Frontend deployment script for consensus-builder.
 #
-# Migrated from the old "rsync the local working tree" pattern to server-side `git pull`:
-# the server (67.205.138.129) fetches origin/main over HTTPS, stamps a cache-bust build token,
-# and syncs frontend/ into the nginx docroot. Deploys now ship exactly what's on origin/main
-# (so: commit + push before deploying), and no longer depend on the local working-tree state.
+# Migrated from the old "rsync the local working tree" pattern to a server-side Git sync:
+# the server fetches the selected branch (main by default), stamps a cache-bust build token,
+# and syncs frontend/ into the nginx docroot. Deploys now ship exactly what's on that remote
+# branch (so: commit + push before deploying), and do not depend on local working-tree state.
 # The Cloudflare cache purge still runs locally (uses this dir's optional .env).
 
 set -euo pipefail
@@ -13,7 +13,7 @@ set -euo pipefail
 # ---- Configuration ----
 SERVER='root@67.205.138.129'
 SSH_KEY="$HOME/.ssh/id_ed25519"
-BRANCH='main'
+BRANCH="${BRANCH:-main}"
 REPO_URL='https://github.com/Poglavar/consensus-builder.git'   # HTTPS: no server deploy key needed
 REMOTE_REPO='/opt/consensus-builder'                           # server-side clone (deploy-only)
 DOCROOT='/var/www/urbangametheory.xyz'                         # nginx docroot

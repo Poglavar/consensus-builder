@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Deploy the consensus-builder backend to the `do` server: the server pulls the
-# latest commit from GitHub, reinstalls deps, and restarts the PM2 process, then
+# Deploy the consensus-builder backend to the `do` server: the server syncs the
+# selected branch (main by default), reinstalls deps, and restarts the PM2 process, then
 # a public smoke test confirms the API is healthy. (Migrated from the old
-# rsync-based flow to git-pull; the repo is cloned at $DEPLOY_DIR on the server.)
+# rsync-based flow to Git sync; the repo is cloned at $DEPLOY_DIR on the server.)
 
 set -euo pipefail
 
@@ -10,6 +10,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SSH_HOST="${SSH_HOST:-do}"
 DEPLOY_DIR="${DEPLOY_DIR:-/root/code/consensus-builder/backend}"
 PM2_APP="${PM2_APP:-consensus-builder-api}"
+BRANCH="${BRANCH:-main}"
 DEPLOY_SMOKE_RETRIES="${DEPLOY_SMOKE_RETRIES:-5}"
 DEPLOY_SMOKE_RETRY_DELAY_SECONDS="${DEPLOY_SMOKE_RETRY_DELAY_SECONDS:-5}"
 
@@ -23,15 +24,17 @@ fi
 
 echo "Deploying ${PM2_APP} to ${SSH_HOST} (${DEPLOY_DIR})..."
 ssh "${SSH_HOST}" \
-  "DEPLOY_DIR='${DEPLOY_DIR}' PM2_APP='${PM2_APP}' \
+  "DEPLOY_DIR='${DEPLOY_DIR}' PM2_APP='${PM2_APP}' BRANCH='${BRANCH}' \
    DEPLOY_SMOKE_RETRIES='${DEPLOY_SMOKE_RETRIES}' \
    DEPLOY_SMOKE_RETRY_DELAY_SECONDS='${DEPLOY_SMOKE_RETRY_DELAY_SECONDS}' bash -s" << 'EOF'
 set -euo pipefail
 
 cd "${DEPLOY_DIR}"
 
-echo "Pulling latest commit..."
-git pull --ff-only
+echo "Syncing to origin/${BRANCH}..."
+git fetch --prune origin
+git reset --hard "origin/${BRANCH}"
+git checkout -B "${BRANCH}" "origin/${BRANCH}"
 
 echo "Installing dependencies (npm ci)..."
 npm ci
