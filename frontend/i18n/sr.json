@@ -952,7 +952,9 @@
                 "editGeometryUnavailable": "Ovaj tip predloga ne može se preoblikovati (ili je mintovan i nepromenljiv).",
                 "details": "Detalji predloga",
                 "propose": "Predloži",
-                "editDetails": "Detalji"
+                "editDetails": "Detalji",
+                "counterpropose": "Kopiraj predlog",
+                "counterproposeHint": "Napravite protivpredlog kao kopiju koju možete uređivati. Predlog koji gledate ostaje nepromenjen."
             },
             "expiry": {
                 "expired": "Predlog je istekao",

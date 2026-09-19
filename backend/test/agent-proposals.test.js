@@ -199,8 +199,12 @@ describe(`POST ${AGENT_PROPOSALS_PATH} — unpaid`, () => {
         expect(discovery.info.input.bodyType).toBe('json');
         expect(discovery.info.input.body.cadastreParcelIds).toEqual(['HR-335550-1234/1']);
         expect(discovery.info.output.example).toMatchObject({ id: 1342, screenshotUrl: null });
-        expect(discovery.schema.properties.input.properties.body.required).toContain('cadastreParcelIds');
-        expect(discovery.schema.properties.input.properties.body).not.toHaveProperty('$id');
+        const discoveredBody = discovery.schema.properties.input.properties.body;
+        expect(discoveredBody.required).toContain('cadastreParcelIds');
+        expect(discoveredBody.properties.goal).toBeTruthy();
+        expect(discoveredBody.properties.structureProposal.required).toEqual(['kind', 'geometry']);
+        expect(discoveredBody.properties.ownershipFlow.items.required).toEqual(['parcelId', 'cededM2', 'destination']);
+        expect(discoveredBody).not.toHaveProperty('$id');
         expect(required.extensions['payment-identifier'].info).toEqual({ required: true });
 
         expect(pool.getCalls()).toHaveLength(0);

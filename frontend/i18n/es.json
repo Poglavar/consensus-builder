@@ -969,7 +969,9 @@
                 "editGeometryUnavailable": "Este tipo de propuesta no se puede remodelar (o está minteada y es inmutable).",
                 "details": "Detalles de la propuesta",
                 "propose": "Proponer",
-                "editDetails": "Detalles"
+                "editDetails": "Detalles",
+                "counterpropose": "Duplicar propuesta",
+                "counterproposeHint": "Crea una contrapropuesta como copia editable. La propuesta que estás viendo no cambia."
             },
             "expiry": {
                 "expired": "Propuesta caducada",

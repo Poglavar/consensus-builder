@@ -63,7 +63,11 @@ server from the settled payment — anything you send there is overwritten. Send
 your paying wallet's address; a different value is refused **before** you pay (`author_mismatch`).
 
 A geometric proposal adds one of `buildingProposal`, `structureProposal` or `roadProposal` in the same
-shape the app stores them; fetch one with `GET /proposals/<id>` to see the fields.
+shape the app stores them; fetch one with `GET /proposals/<id>` to see the fields. A park should say
+`type: "structure"`, `goal: "park"`, include its GeoJSON footprint in
+`structureProposal: { "kind": "park", "geometry": ... }`, and declare
+`facets.ownership: "to-city"`. Its publish-time `ownershipFlow` uses `destination: "public"`; a park
+name or description by itself does not change land use or ownership.
 
 ## 4. Post it (x402 flow)
 
@@ -127,6 +131,8 @@ npm run demo:x402 -- --live --url $(base) \
   --city zagreb --parcels HR-335550-1234/1 \
   --app-url https://urbangametheory.xyz
 ```
+
+For a full geometric recipe, replace `--city` and `--parcels` with `--body-file proposal.json`.
 
 Use `--dry-run` and omit `--keypair` to perform discovery and inspect the 402 without signing,
 paying or writing anything. The generated proposal id and payment identifier are deterministic for

@@ -15,6 +15,10 @@
     },
     "proposalId": { "type": "string", "maxLength": 255, "description": "Unique operation id. Reuse it, together with the same x402 payment identifier and body, for safe retries." },
     "type": { "type": "string", "maxLength": 50, "description": "parcel | building | structure | road (free text, 50 chars)." },
+    "goal": {
+      "type": "string",
+      "description": "Semantic land-use goal. Formation goals include park, square, lake, station, road-track, single, buildings, and reparcellization. A park/square/lake/station/road-track forms public ground."
+    },
     "name": { "type": "string", "maxLength": 500 },
     "title": { "type": "string", "maxLength": 500 },
     "description": { "type": "string" },
@@ -22,8 +26,49 @@
     "offer": { "type": "number", "description": "Amount offered to the parcel owners." },
     "offerCurrency": { "type": "string", "maxLength": 10 },
     "buildingProposal": { "type": "object", "description": "A building massing in the app's stored shape; copy from GET /proposals?city=…&limit=5." },
-    "structureProposal": { "type": "object", "description": "A park/square/lake in the app's stored shape." },
+    "geometry": { "type": "object", "description": "Top-level GeoJSON geometry for the proposal footprint." },
+    "structureProposal": {
+      "type": "object",
+      "description": "A park/square/lake/station. Set kind and its GeoJSON Polygon or MultiPolygon geometry.",
+      "properties": {
+        "kind": { "type": "string", "enum": ["park", "square", "lake", "station"] },
+        "geometry": { "type": "object" },
+        "applied": { "type": "boolean" }
+      },
+      "required": ["kind", "geometry"],
+      "additionalProperties": true
+    },
     "roadProposal": { "type": "object", "description": "A road corridor in the app's stored shape." },
+    "facets": {
+      "type": "object",
+      "description": "Authored terms. For public formations use ownership: to-city.",
+      "properties": {
+        "ownership": { "type": "string", "enum": ["no-change", "to-me", "to-city", "third-party", "per-slice"] }
+      },
+      "additionalProperties": true
+    },
+    "ownershipFlow": {
+      "type": "array",
+      "description": "Publish-time effect stamp: area taken from each cadastral parcel and its destination. Public formations use destination: public.",
+      "items": {
+        "type": "object",
+        "required": ["parcelId", "cededM2", "destination"],
+        "properties": {
+          "parcelId": { "type": "string" },
+          "cededM2": { "type": "number", "minimum": 0 },
+          "destination": { "type": "string", "enum": ["public", "proposer", "mapping", "undecided"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "cadastreFrame": {
+      "type": "object",
+      "description": "When the ownership flow was measured.",
+      "properties": { "capturedAt": { "type": "string", "description": "ISO 8601 capture timestamp." } },
+      "required": ["capturedAt"],
+      "additionalProperties": true
+    },
+    "effectHash": { "type": "string", "description": "Fingerprint of goal + footprint + ownershipFlow. Acceptances bind to this effect." },
     "agent": {
       "type": "object",
       "description": "Free-form provenance kept on the record; wallet and paid are overwritten by the server.",

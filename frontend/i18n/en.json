@@ -922,7 +922,9 @@
                 "editGeometryUnavailable": "This proposal type cannot be reshaped (or it is minted and immutable).",
                 "details": "Proposal details",
                 "propose": "Propose",
-                "editDetails": "Details"
+                "editDetails": "Details",
+                "counterpropose": "Fork proposal",
+                "counterproposeHint": "Counterpropose by creating an editable copy. The proposal you are viewing stays unchanged."
             },
             "expiry": {
                 "expired": "Proposal Expired",

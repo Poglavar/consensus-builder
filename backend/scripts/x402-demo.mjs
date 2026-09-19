@@ -18,7 +18,8 @@ function usage(exitCode) {
         '',
         'Required:',
         '  --url <base>          Backend base URL, e.g. http://localhost:3999',
-        '  --parcels <a,b,...>   Cadastre parcel ids',
+        '  --parcels <a,b,...>   Cadastre parcel ids (or use --body-file)',
+        '  --body-file <file>    Exact proposal JSON; useful for geometric proposals',
         '  --keypair <file>      Solana keypair JSON (live mode only)',
         '',
         'Optional:',
@@ -52,8 +53,8 @@ function parseArgs(argv) {
         console.error('choose exactly one of --dry-run or --live');
         usage(2);
     }
-    if (!args.url || !args.parcels) {
-        console.error('--url and --parcels are required');
+    if (!args.url || (!args.parcels && !args['body-file'])) {
+        console.error('--url and either --parcels or --body-file are required');
         usage(2);
     }
     if (args.live && !args.keypair) {
@@ -68,6 +69,21 @@ function loadSecretKey(file) {
     const secret = new Uint8Array(JSON.parse(readFileSync(resolved, 'utf8')));
     if (secret.length !== 64) throw new Error(`keypair must contain 64 bytes, got ${secret.length}`);
     return secret;
+}
+
+function loadProposalBody(file) {
+    const resolved = file.startsWith('~') ? path.join(os.homedir(), file.slice(1)) : file;
+    const body = JSON.parse(readFileSync(resolved, 'utf8'));
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+        throw new Error('body file must contain one proposal object');
+    }
+    if (!body.proposalId || !String(body.proposalId).trim()) {
+        throw new Error('body file must contain a stable proposalId');
+    }
+    if (!Array.isArray(body.cadastreParcelIds) || body.cadastreParcelIds.length === 0) {
+        throw new Error('body file must contain at least one cadastreParcelIds entry');
+    }
+    return body;
 }
 
 function catalogLabel(catalog) {
@@ -106,18 +122,20 @@ function printResult(result) {
 
 async function main() {
     const args = parseArgs(process.argv.slice(2));
-    const body = buildDemoProposal({
-        city: args.city,
-        parcels: args.parcels,
-        proposalId: args['proposal-id'],
-        name: args.name,
-        description: args.description,
-        offer: args.offer,
-        currency: args.currency,
-        persona: args.persona,
-        rationale: args.rationale,
-        runId: args['run-id']
-    });
+    const body = args['body-file']
+        ? loadProposalBody(args['body-file'])
+        : buildDemoProposal({
+            city: args.city,
+            parcels: args.parcels,
+            proposalId: args['proposal-id'],
+            name: args.name,
+            description: args.description,
+            offer: args.offer,
+            currency: args.currency,
+            persona: args.persona,
+            rationale: args.rationale,
+            runId: args['run-id']
+        });
     const result = await runX402Demo({
         baseUrl: args.url,
         body,

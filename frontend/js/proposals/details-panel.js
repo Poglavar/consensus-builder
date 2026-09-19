@@ -392,23 +392,20 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </button>
     `;
 
-    // Geometry is direct manipulation (corridors: node handles + cross-section); everything else —
-    // terms, offer, name, expiry, decay, deposit — is edited through one "Details" action that opens
-    // the full create dialog prefilled from the object. Saving creates an immutable replacement
-    // snapshot; the source remains untouched. Minted proposals use the same fork semantics.
-    const editButtonHtml = (proposalKey && !isMinted)
+    // A proposal's details are an immutable inspection surface. Any authoring starts from an
+    // explicit fork: the create dialog receives a cloned draft, while this source proposal remains
+    // untouched. Naming the action matters — the old "Details" label made the editable clone look
+    // like an editor for the proposal being viewed.
+    const forkButtonHtml = proposalKey
         ? `
-        <button class="btn btn-primary btn-propose-proposal" onclick="proposeExistingProposal('${proposalKey}')">
-            <i class="fas fa-file-signature"></i> ${tProposal('panel.proposal.actions.editDetails', 'Details')}
+        <button class="btn btn-primary btn-counterpropose-proposal"
+            onclick="proposeExistingProposal('${proposalKey}')"
+            title="${tProposal('panel.proposal.actions.counterproposeHint', 'Create an editable copy. The proposal you are viewing stays unchanged.')}"
+            aria-label="${tProposal('panel.proposal.actions.counterproposeHint', 'Create an editable copy. The proposal you are viewing stays unchanged.')}">
+            <i class="fas fa-code-branch"></i> ${tProposal('panel.proposal.actions.counterpropose', 'Fork proposal')}
         </button>
     `
-        : (proposalKey && isMinted
-            ? `
-        <button class="btn btn-primary btn-proposal-details-expand" onclick="toggleProposalDetailsPanelMinimized(false)">
-            <i class="fas fa-file-alt"></i> ${tProposal('panel.proposal.actions.details', 'Proposal details')}
-        </button>
-    `
-            : '');
+        : '';
 
     const buyOfferProposal = fullProposal || proposal;
     const buyButtonHtml = (typeof isProposalOpenSaleOffer === 'function' && isProposalOpenSaleOffer(buyOfferProposal))
@@ -436,48 +433,16 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     `
         : '';
 
-    // Geometry editing in place: corridors get their cross-section editor (nodes are edited
-    // directly on the map), building/reparcellization types reopen their design tool seeded
-    // from the object. Minted objects are immutable — neither button appears.
-    // Minted roads are editable too — the cross-section edit forks the road into a local copy
-    // (runLocalCorridorGeometryUpdate detaches its published pointers), leaving the NFT untouched.
-    const corridorProfileEditable = !!(proposalKey && appliedState
-        && (fullProposal?.roadProposal?.definition || proposal?.roadProposal?.definition)
-        && typeof openCorridorProfileEditor === 'function');
-    const geometryEditable = !corridorProfileEditable && !!(proposalKey
-        && typeof canEditProposalGeometry === 'function'
-        && typeof editProposalGeometry === 'function'
-        && canEditProposalGeometry(fullProposal || proposal));
-    const crossSectionButtonHtml = corridorProfileEditable
-        ? `
-        <button class="btn btn-outline-secondary btn-cross-section" onclick="openCorridorProfileEditor('${proposalKey}')">
-            <i class="fas fa-road"></i> ${tProposal('panel.road.crossSectionButton', 'Edit cross-section')}
-        </button>
-    `
-        : (geometryEditable
-            ? `
-        <button class="btn btn-outline-secondary btn-edit-geometry" onclick="editProposalGeometry('${proposalKey}')">
-            <i class="fas fa-draw-polygon"></i> ${tProposal('panel.proposal.actions.editGeometry', 'Edit geometry')}
-        </button>
-    `
-            : `
-        <button class="btn btn-outline-secondary btn-edit-geometry" disabled aria-disabled="true"
-            style="opacity: 0.45; cursor: not-allowed;"
-            title="${tProposal('panel.proposal.actions.editGeometryUnavailable', 'This proposal type cannot be reshaped (or it is minted and immutable).')}">
-            <i class="fas fa-draw-polygon"></i> ${tProposal('panel.proposal.actions.editGeometry', 'Edit geometry')}
-        </button>
-    `);
-
-    // Fixed slots so buttons never shuffle between selections: Edit · Propose/Details ·
-    // Apply/Unapply · Share. Contextual extras (Buy, Drive) append at the end. Deletion lives
+    // The details footer is deliberately view/action-only. Geometry, terms, and ownership are
+    // edited only on the clone produced by Counterpropose / Fork. Contextual extras (Buy, Drive)
+    // append at the end. Deletion lives
     // in the proposal lists (type-aware there) — the panel only offers the reversible Unapply,
     // which means the same thing for local, server, and on-chain proposals.
-    // Colors are role-coded: blue = propose/details, green = apply, yellow = unapply,
+    // Colors are role-coded: blue = fork, green = apply, yellow = unapply,
     // neutral outline = edit/share.
     const primaryActionsHtml = `
         <div class="proposal-actions proposal-actions-group">
-            ${crossSectionButtonHtml}
-            ${editButtonHtml}
+            ${forkButtonHtml}
             ${mapActionButtonHtml ? mapActionButtonHtml : ''}
             ${shareButtonHtml}
             ${buyButtonHtml}
