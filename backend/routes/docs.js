@@ -230,19 +230,24 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     idl: 'blockchain/solana/idl/proposal_market.json',
                     client: 'frontend/js/solana/market-client.js'
                 },
-                pledges: {
+                proposalSupport: {
                     programId: pledgeProgramId(),
                     cluster: 'devnet',
                     mint: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU',
                     status: `${base}/agent/pledges/{proposalAccount}`,
                     idl: 'blockchain/solana/idl/proposal_pledge.json',
                     client: 'frontend/js/solana/pledge-client.js',
-                    lifecycle: {
-                        active: 'pledge',
+                    donations: {
+                        active: 'fund USDC escrow immediately',
                         executed: 'release to the proposal owner',
-                        cancelledOrExpired: 'each backer refunds their own pledge'
+                        cancelledOrExpired: 'each donor refunds their own receipts',
+                        idempotency: 'SHA-256 a stable operation id into an immutable donation-position PDA'
                     },
-                    idempotency: 'SHA-256 a stable operation id; the resulting pledge-position PDA can be created only once'
+                    pledges: {
+                        active: 'record or update an unfunded, revocable commitment',
+                        executed: 'the pledger signs to fulfil it from their wallet',
+                        cancelledOrExpired: 'void the commitment without moving funds'
+                    }
                 }
             });
         } catch (error) {

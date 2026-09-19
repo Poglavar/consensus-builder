@@ -22,9 +22,9 @@ spend cap and the Telegram summary. The modules here hold no state and never dec
 
 This is intentionally hybrid rather than an unconstrained LLM loop: SQL and the deterministic
 planner decide what is feasible, the model chooses among those candidates and explains why, and
-deterministic adapters validate, pay, mint and stake. `pledger.js` is the equivalent adapter for
-joining a proposal: it creates the devnet-USDC escrow when needed, hashes a stable operation id into
-the pledge-position PDA, and checks that position before retrying so an agent cannot double-pledge.
+deterministic adapters validate, pay, mint and stake. `donor.js` funds refundable proposal escrow
+with an idempotent receipt, while `pledger.js` records an updateable commitment without moving USDC
+and can later fulfil it after execution.
 Policy—what proposal another agent wants to back and for how much—stays outside the money-moving
 module and can be supplied by a later model step.
 

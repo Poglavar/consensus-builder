@@ -1,7 +1,7 @@
 [package]
 name = "proposal_pledge"
 version = "0.1.0"
-description = "Contributor-safe USDC pledges for consensus-builder proposals"
+description = "Funded USDC donations and soft pledges for consensus-builder proposals"
 edition = "2021"
 
 [lib]

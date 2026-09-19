@@ -731,7 +731,7 @@ function agentDecideAction(agent, turnContext = null) {
         ? safeTurnContext.neighborMap
         : null;
 
-    const actions = ['nothing', 'accept', 'create', 'donate'];
+    const actions = ['nothing', 'accept', 'create', 'donate', 'pledge'];
     const actionType = actions[Math.floor(Math.random() * actions.length)];
 
     const indexedOwnedParcels = safeTurnContext.ownedParcelsByAgent && typeof safeTurnContext.ownedParcelsByAgent.get === 'function'
@@ -866,7 +866,7 @@ function agentDecideAction(agent, turnContext = null) {
             if (typeof proposalStorage !== 'undefined') {
                 const allProposals = preloadedProposals || proposalStorage.getAllProposals();
                 for (const proposal of allProposals) {
-                    if (getLifecycleStatus(proposal) !== 'Executed' && proposal.author !== agent.name) {
+                    if (getLifecycleStatus(proposal) === 'Active' && proposal.author !== agent.name) {
                         donatableProposals.push(proposal);
                     }
                 }
@@ -888,6 +888,26 @@ function agentDecideAction(agent, turnContext = null) {
                 };
             }
             return { type: 'nothing' };
+
+        case 'pledge': {
+            const pledgeableProposals = [];
+            if (typeof proposalStorage !== 'undefined') {
+                const allProposals = preloadedProposals || proposalStorage.getAllProposals();
+                for (const proposal of allProposals) {
+                    if (getLifecycleStatus(proposal) === 'Active' && proposal.author !== agent.name) {
+                        pledgeableProposals.push(proposal);
+                    }
+                }
+            }
+            if (!pledgeableProposals.length || agent.ethBalance <= 0.01) return { type: 'nothing' };
+            const proposal = pledgeableProposals[Math.floor(Math.random() * pledgeableProposals.length)];
+            const maxPledge = Math.max(0.01, Math.floor(agent.ethBalance * 0.1 * 100) / 100);
+            return {
+                type: 'pledge',
+                proposalId: proposal.proposalId || proposal.id || proposal.tokenId,
+                amount: Math.round(Math.max(0.01, Math.random() * maxPledge) * 100) / 100
+            };
+        }
 
         default:
             return { type: 'nothing' };
@@ -938,6 +958,15 @@ function executeAgentAction(agent, action) {
                     if (!agent.proposalsExecuted.includes(action.proposalId)) {
                         agent.proposalsExecuted.push(action.proposalId);
                         agentStorage.updateAgent(agent.id, { proposalsExecuted: agent.proposalsExecuted });
+                    }
+                    const executedProposal = proposalStorage.getProposal(action.proposalId);
+                    if (executedProposal && window.AgentSupportSimulation) {
+                        window.AgentSupportSimulation.settle(executedProposal, id => agentStorage.getAgent(id));
+                        if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(executedProposal);
+                        proposalStorage.save();
+                        for (const participant of agentStorage.getAllAgents()) {
+                            agentStorage.updateAgent(participant.id, { ethBalance: participant.ethBalance });
+                        }
                     }
                 }
                 // Update agent's accepted proposals list
@@ -1065,12 +1094,14 @@ function executeAgentAction(agent, action) {
             return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> tried to create a proposal but failed.`;
 
         case 'donate':
-            // For now, just add to the proposal's budget and deduct from agent
             if (typeof proposalStorage !== 'undefined') {
                 const proposal = proposalStorage.getProposal(action.proposalId);
-                if (proposal && agent.ethBalance >= action.amount) {
-                    proposal.budget = (proposal.budget || proposal.offer || 0) + action.amount;
-                    proposal.offer = proposal.budget; // Keep offer in sync with budget
+                if (proposal && window.AgentSupportSimulation) {
+                    try {
+                        window.AgentSupportSimulation.donate(proposal, agent, action.amount);
+                    } catch (_) {
+                        return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> tried to donate to a proposal but failed.`;
+                    }
                     proposal.proposalId = proposal.proposalId || proposal.tokenId || action.proposalId;
                     if (typeof proposalStorage._indexProposal === 'function') {
                         proposalStorage._indexProposal(proposal);
@@ -1079,7 +1110,7 @@ function executeAgentAction(agent, action) {
                     }
                     proposalStorage.save();
 
-                    agent.ethBalance -= action.amount;
+                    // AgentSupportSimulation already moved the funded donation out of the wallet.
                     agentStorage.updateAgent(agent.id, { ethBalance: agent.ethBalance });
 
                     // Show agent bubble for this interaction
@@ -1103,6 +1134,31 @@ function executeAgentAction(agent, action) {
                 }
             }
             return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> tried to donate to a proposal but failed.`;
+
+        case 'pledge':
+            if (typeof proposalStorage !== 'undefined' && window.AgentSupportSimulation) {
+                const proposal = proposalStorage.getProposal(action.proposalId);
+                if (proposal) {
+                    try {
+                        window.AgentSupportSimulation.pledge(proposal, agent, action.amount);
+                    } catch (_) {
+                        return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> tried to pledge to a proposal but failed.`;
+                    }
+                    proposal.proposalId = proposal.proposalId || proposal.tokenId || action.proposalId;
+                    if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(proposal);
+                    proposalStorage.save();
+                    if (typeof window.agentBubbleManager !== 'undefined') {
+                        const proposalPosition = window.agentBubbleManager.getProposalPosition(action.proposalId);
+                        if (proposalPosition) window.agentBubbleManager.addBubble({
+                            agentId: agent.id, agentName: agent.name, avatarIndex: agent.avatarIndex,
+                            objectType: 'proposal', objectId: action.proposalId, objectPosition: proposalPosition,
+                            action: `pledged ${action.amount} ${getChainCurrencySymbol()} to proposal`
+                        });
+                    }
+                    return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> pledged ${action.amount} ${getChainCurrencySymbol()} to proposal ${buildProposalLogLinkAgent(action.proposalId, proposal)}.`;
+                }
+            }
+            return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> tried to pledge to a proposal but failed.`;
 
         default:
             return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> performed an unknown action.`;

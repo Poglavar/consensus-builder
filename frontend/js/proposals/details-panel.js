@@ -434,9 +434,24 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </button>
     `
         : '';
-    const pledgeButtonHtml = isSolanaPledgeProposal && proposalKey
-        ? `<button type="button" class="btn btn-outline-primary btn-pledge-proposal" onclick="openProposalBoostDialog('${proposalKey}')">💪 ${tProposal('panel.proposal.boost.send', 'Pledge USDC')}</button>`
-        : '';
+    const supportLifecycle = getLifecycleStatus(fullProposal);
+    let proposalSupportButtonsHtml = '';
+    if (isSolanaPledgeProposal && proposalKey) {
+        if (supportLifecycle === 'Active') {
+            proposalSupportButtonsHtml = `
+                <button type="button" class="btn btn-outline-primary btn-donate-proposal" onclick="openProposalBoostDialog('${proposalKey}', 'donate')">🎁 ${tProposal('panel.proposal.support.donate', 'Donate USDC')}</button>
+                <button type="button" class="btn btn-outline-primary btn-pledge-proposal" onclick="openProposalBoostDialog('${proposalKey}', 'pledge')">💪 ${tProposal('panel.proposal.boost.send', 'Pledge USDC')}</button>
+                <button type="button" class="btn btn-outline-secondary" onclick="settleProposalSupport('${proposalKey}', 'revokePledge')">${tProposal('panel.proposal.support.revoke', 'Revoke my pledge')}</button>`;
+        } else if (supportLifecycle === 'Executed') {
+            proposalSupportButtonsHtml = `
+                <button type="button" class="btn btn-outline-primary" onclick="settleProposalSupport('${proposalKey}', 'releaseDonations')">${tProposal('panel.proposal.support.release', 'Release donations')}</button>
+                <button type="button" class="btn btn-outline-primary" onclick="settleProposalSupport('${proposalKey}', 'fulfillPledge')">${tProposal('panel.proposal.support.fulfill', 'Fulfill my pledge')}</button>`;
+        } else if (supportLifecycle === 'Cancelled' || supportLifecycle === 'Expired') {
+            proposalSupportButtonsHtml = `
+                <button type="button" class="btn btn-outline-primary" onclick="settleProposalSupport('${proposalKey}', 'refundMyDonations')">${tProposal('panel.proposal.support.refund', 'Refund my donations')}</button>
+                <button type="button" class="btn btn-outline-secondary" onclick="settleProposalSupport('${proposalKey}', 'voidPledge')">${tProposal('panel.proposal.support.void', 'Clear my pledge')}</button>`;
+        }
+    }
 
     // The details footer is deliberately view/action-only. Geometry, terms, and ownership are
     // edited only on the clone produced by Counterpropose / Fork. Contextual extras (Buy, Drive)
@@ -449,7 +464,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         <div class="proposal-actions proposal-actions-group">
             ${forkButtonHtml}
             ${mapActionButtonHtml ? mapActionButtonHtml : ''}
-            ${pledgeButtonHtml}
+            ${proposalSupportButtonsHtml}
             ${shareButtonHtml}
             ${buyButtonHtml}
             ${driveButtonHtml}
@@ -651,7 +666,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             </div>
             ${agentProvenanceHtml}
             ${isSolanaPledgeProposal ? `<div class="metric-group proposal-pledge-summary" data-proposal-account="${nftInfo.tokenId}">
-                <span class="metric-label">${tProposal('panel.proposal.pledge.summary', 'USDC pledged:')}</span>
+                <span class="metric-label">${tProposal('panel.proposal.pledge.summary', 'Proposal support:')}</span>
                 <span class="metric-value">${tProposal('panel.proposal.pledge.loading', 'Loading…')}</span>
             </div>` : ''}
             ${parcelAcceptancePlaceholder}
@@ -711,8 +726,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             // Warning text only shown when no deposit
             const noDepositWarningHtml = !hasDeposit ? `
             <div class="proposal-no-deposit-warning">⚠️ ${tProposal('panel.proposal.offer.noDepositWarning', 'No deposit - proposal not backed by funds')}</div>` : '';
-            const boostLabel = tProposal('panel.proposal.boost.buttonLabel', 'Pledge USDC to this proposal');
-
             // Check if this is an ownership-transfer-from-me proposal
             const isFromMeProposal = resolveProposalGoalKey(proposal, null) === 'ownership-transfer-from-me';
             const acceptTransferLabel = tProposal('panel.proposal.acceptTransfer.buttonLabel', 'Accept ownership transfer');
@@ -735,7 +748,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                         <span class="offer-original">${originalAmountText}</span>
                     </div>
                     ${acceptTransferButtonHtml}
-                    <button type="button" class="offer-boost-button" title="${boostLabel}" aria-label="${boostLabel}" onclick="openProposalBoostDialog('${proposal.proposalId || proposal.proposalId || ''}')">💪</button>
                 </div>
                 ${hasDeposit ? `<div class="offer-bar-deposit-container">${depositBarsHtml}</div>` : ''}
             </div>${noDepositWarningHtml}`;
@@ -748,7 +760,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                         <span class="offer-amount">${currencySymbol}${proposal.offer.toLocaleString('hr-HR')}${currencySuffix}</span>
                     </div>
                     ${acceptTransferButtonHtml}
-                    <button type="button" class="offer-boost-button" title="${boostLabel}" aria-label="${boostLabel}" onclick="openProposalBoostDialog('${proposal.proposalId || proposal.proposalId || ''}')">💪</button>
                 </div>
                 ${hasDeposit ? `<div class="offer-bar-deposit-container">${depositBarsHtml}</div>` : ''}
             </div>${noDepositWarningHtml}`;
@@ -1056,13 +1067,11 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             .then(summary => {
                 const row = document.querySelector(`.proposal-pledge-summary[data-proposal-account="${nftInfo.tokenId}"] .metric-value`);
                 if (!row) return;
-                if (!summary) {
-                    row.textContent = tProposal('panel.proposal.pledge.none', '0 USDC · no backers yet');
-                    return;
-                }
-                const amount = window.SolanaPledgeClient.formatUsdc(summary.totalPledged);
-                const backers = summary.backerCount.toString();
-                row.textContent = `${amount} USDC · ${backers} ${Number(summary.backerCount) === 1 ? 'backer' : 'backers'}`;
+                const donated = summary?.donations?.totalDonated || 0n;
+                const pledged = summary?.pledges?.activePledged || 0n;
+                const donors = summary?.donations?.donorCount || 0n;
+                const pledgers = summary?.pledges?.activeCount || 0n;
+                row.textContent = `${window.SolanaPledgeClient.formatUsdc(donated)} donated (${donors}) · ${window.SolanaPledgeClient.formatUsdc(pledged)} pledged (${pledgers})`;
             })
             .catch(error => {
                 console.warn('Could not load proposal pledge totals', error);
@@ -1302,7 +1311,7 @@ function resolveProposalForBoost(idOrHash) {
     return null;
 }
 
-function openProposalBoostDialog(idOrHash = null) {
+function openProposalBoostDialog(idOrHash = null, supportKind = 'pledge') {
     const tProposalUI = getProposalI18nHelper();
     const proposal = resolveProposalForBoost(idOrHash);
     if (!proposal) {
@@ -1325,10 +1334,14 @@ function openProposalBoostDialog(idOrHash = null) {
         }
     });
 
-    const modalTitle = tProposalUI('panel.proposal.boost.title', 'Pledge to this proposal');
-    const modalCloseLabel = tProposalUI('panel.proposal.boost.closeLabel', 'Close pledge dialog');
-    const modalCopy = tProposalUI('panel.proposal.boost.copy', 'Pledge devnet USDC in escrow. It is released to the proposal owner only after execution, or refunded to you if the proposal is cancelled or expires.');
-    const sendLabel = tProposalUI('panel.proposal.boost.send', 'Pledge');
+    const isDonation = supportKind === 'donate';
+    const modalTitle = isDonation ? 'Donate to this proposal' : tProposalUI('panel.proposal.boost.title', 'Pledge to this proposal');
+    const modalCloseLabel = isDonation ? 'Close donation dialog' : tProposalUI('panel.proposal.boost.closeLabel', 'Close pledge dialog');
+    const modalCopy = isDonation
+        ? 'Donate devnet USDC now. It stays in proposal escrow until execution, and you can refund it if the proposal is cancelled or expires.'
+        : 'Publish a revocable USDC commitment. No USDC leaves your wallet now; after execution, you choose whether to fulfil it.';
+    const sendLabel = isDonation ? 'Donate' : tProposalUI('panel.proposal.boost.send', 'Pledge');
+    overlay.dataset.supportKind = isDonation ? 'donate' : 'pledge';
     overlay.dataset.pledgeOperationId = (globalThis.crypto && typeof globalThis.crypto.randomUUID === 'function')
         ? globalThis.crypto.randomUUID()
         : `pledge-${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -1422,17 +1435,18 @@ async function submitProposalBoost(idOrHash = null) {
         return;
     }
     const overlay = document.getElementById('proposalBoostOverlay');
-    const pendingKey = `proposalPledgePending:${nftInfo.tokenId}:${solState.accounts[0]}`;
+    const supportKind = overlay?.dataset?.supportKind === 'donate' ? 'donate' : 'pledge';
+    const pendingKey = `proposalSupportPending:${supportKind}:${nftInfo.tokenId}:${solState.accounts[0]}`;
     let operationId = overlay?.dataset?.pledgeOperationId;
     try {
         const pending = JSON.parse(sessionStorage.getItem(pendingKey) || 'null');
         if (pending?.amount === rawAmount && pending?.operationId) operationId = pending.operationId;
         sessionStorage.setItem(pendingKey, JSON.stringify({ amount: rawAmount, operationId }));
     } catch (_) { /* sessionStorage is optional; the open dialog still preserves this retry id */ }
-    setBoostStatus('Waiting for your USDC pledge confirmation...');
+    setBoostStatus(supportKind === 'donate' ? 'Waiting for your USDC donation confirmation...' : 'Waiting for your pledge confirmation...');
     let txResult;
     try {
-        txResult = await window.SolanaPledgeBridge.pledge({
+        txResult = await window.SolanaPledgeBridge[supportKind]({
             proposal: nftInfo.tokenId,
             amount: rawAmount,
             operationId
@@ -1440,8 +1454,8 @@ async function submitProposalBoost(idOrHash = null) {
     } catch (error) {
         setBoostStatus('');
         const reason = error && (error.reason || error.shortMessage || error.message) ? (error.reason || error.shortMessage || error.message) : 'Unknown error';
-        console.error('USDC pledge failed', error, error?.logs || []);
-        showProposalAlertMessage('proposal_boost_failed', `Pledge transaction failed: ${reason}`, { reason });
+        console.error(`USDC ${supportKind} failed`, error, error?.logs || []);
+        showProposalAlertMessage('proposal_boost_failed', `${supportKind === 'donate' ? 'Donation' : 'Pledge'} transaction failed: ${reason}`, { reason });
         return;
     }
     closeProposalBoostDialog();
@@ -1452,10 +1466,31 @@ async function submitProposalBoost(idOrHash = null) {
         : {};
     showProposalAlertMessage(
         'proposal_boost_success',
-        'Success! {{amount}} USDC is pledged in escrow for this proposal.',
+        supportKind === 'donate'
+            ? 'Success! {{amount}} USDC was donated into refundable proposal escrow.'
+            : 'Success! {{amount}} USDC is publicly pledged; no funds moved yet.',
         { amount: rawAmount, currency: 'USDC', txLink },
         alertOptions
     );
+}
+
+async function settleProposalSupport(idOrHash, action) {
+    const proposal = resolveProposalForBoost(idOrHash);
+    const nftInfo = proposal ? getProposalNftInfo(proposal) : null;
+    if (!nftInfo?.tokenId || !window.SolanaPledgeBridge?.[action]) {
+        showProposalAlertMessage('proposal_boost_failed', 'Proposal support action is unavailable.');
+        return;
+    }
+    try {
+        const result = await window.SolanaPledgeBridge[action]({ proposal: nftInfo.tokenId });
+        const linkOptions = result?.explorerUrl ? { linkUrl: result.explorerUrl, linkText: 'See transaction on Solana Explorer' } : {};
+        showProposalAlertMessage('proposal_boost_success', 'Proposal support updated successfully.', {}, linkOptions);
+        showProposalInfo(proposal);
+    } catch (error) {
+        const reason = error?.reason || error?.shortMessage || error?.message || 'Unknown error';
+        console.error(`Proposal support ${action} failed`, error, error?.logs || []);
+        showProposalAlertMessage('proposal_boost_failed', `Proposal support action failed: ${reason}`, { reason });
+    }
 }
 
 function openProposalLens(proposalIdOrHash) {

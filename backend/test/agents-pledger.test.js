@@ -1,74 +1,43 @@
-// Covers deterministic, retry-safe pledge transaction planning for Node agents.
+// Covers agent signer adapters for funded donations and unfunded pledges.
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
-import { ensureEscrowAndPledge, pledgeIdBytes } from '../agents/pledger.js';
+import { ensurePledgeBookAndSet } from '../agents/pledger.js';
+import { donationIdBytes, ensureDonationEscrowAndDonate } from '../agents/donor.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
 const client = require('../../frontend/js/solana/pledge-client.js');
 client.configure({ web3 });
+const proposal = web3.Keypair.generate().publicKey;
 
-const proposal = web3.Keypair.generate().publicKey.toBase58();
-
-function positionAccount(escrow, owner, id, amount) {
-    const data = Buffer.alloc(client.POSITION_SIZE);
-    Buffer.from(client.ACCOUNT_DISCRIMINATORS.PledgePosition).copy(data, 0);
-    escrow.toBuffer().copy(data, 8);
-    owner.toBuffer().copy(data, 40);
-    Buffer.from(id).copy(data, 72);
-    data.writeBigUInt64LE(amount, 104);
-    data.writeUInt8(0, 112);
-    data.writeUInt8(255, 113);
-    return { data };
-}
-
-describe('agent pledge adapter', () => {
-    it('creates the escrow and pledge together when both accounts are absent', async () => {
-        const signer = web3.Keypair.generate();
-        const reads = [];
-        const connection = { getAccountInfo: async address => { reads.push(address.toBase58()); return null; } };
-        const sends = [];
-        const sendAndConfirm = async (_connection, transaction, signers, options) => {
-            sends.push({ transaction, signers, options });
-            return 'pledge-signature';
-        };
-        const result = await ensureEscrowAndPledge({
-            connection, pledgerKeypair: signer, proposalPda: proposal,
-            amountAtomic: 500000n, operationId: 'agent:run-1:proposal-7', sendAndConfirm
+describe('agent proposal support adapters', () => {
+    it('creates and funds an idempotent donation', async () => {
+        const signer = web3.Keypair.generate(); const sent = [];
+        const result = await ensureDonationEscrowAndDonate({
+            connection: { getAccountInfo: async () => null }, donorKeypair: signer, proposalPda: proposal,
+            amountAtomic: 500000n, operationId: 'agent:run-1:proposal-7',
+            sendAndConfirm: async (_connection, transaction) => { sent.push(transaction); return 'donation-signature'; }
         });
-        expect(result).toMatchObject({ created: true, replayed: false, signature: 'pledge-signature' });
-        expect(reads).toHaveLength(2);
-        expect(sends).toHaveLength(1);
-        expect(sends[0].transaction.instructions.map(ix => Array.from(ix.data.slice(0, 8)))).toEqual([
-            client.IX_DISCRIMINATORS.create_escrow,
-            client.IX_DISCRIMINATORS.pledge
+        expect(result).toMatchObject({ created: true, replayed: false, signature: 'donation-signature' });
+        expect(sent[0].instructions.map(ix => Array.from(ix.data.slice(0, 8)))).toEqual([
+            client.IX_DISCRIMINATORS.create_donation_escrow, client.IX_DISCRIMINATORS.donate
         ]);
-        expect(sends[0].signers).toEqual([signer]);
-        expect(sends[0].options).toEqual({ commitment: 'confirmed' });
+        expect(donationIdBytes('stable')).toHaveLength(32);
     });
 
-    it('treats the same operation id and amount as an already-completed retry', async () => {
-        const signer = web3.Keypair.generate();
-        const id = pledgeIdBytes('stable-id');
-        const [escrow] = client.getEscrowPda(proposal);
-        const [position] = client.getPositionPda(escrow, signer.publicKey, id);
-        const connection = {
-            getAccountInfo: async address => address.equals(position)
-                ? positionAccount(escrow, signer.publicKey, id, 250000n)
-                : null
-        };
-        let sends = 0;
-        const result = await ensureEscrowAndPledge({
-            connection, pledgerKeypair: signer, proposalPda: proposal,
-            amountAtomic: 250000n, operationId: 'stable-id',
-            sendAndConfirm: async () => { sends += 1; }
+    it('publishes a soft pledge without a token-transfer account', async () => {
+        const signer = web3.Keypair.generate(); const sent = [];
+        const result = await ensurePledgeBookAndSet({
+            connection: { getAccountInfo: async () => null }, pledgerKeypair: signer, proposalPda: proposal,
+            amountAtomic: 10000000n,
+            sendAndConfirm: async (_connection, transaction) => { sent.push(transaction); return 'pledge-signature'; }
         });
-        expect(result).toMatchObject({ created: false, replayed: true, signature: null });
-        expect(sends).toBe(0);
-
-        await expect(ensureEscrowAndPledge({
-            connection, pledgerKeypair: signer, proposalPda: proposal,
-            amountAtomic: 500000n, operationId: 'stable-id'
-        })).rejects.toThrow(/different pledge amount/);
+        expect(result).toMatchObject({ created: true, replayed: false, signature: 'pledge-signature' });
+        expect(sent[0].instructions.map(ix => Array.from(ix.data.slice(0, 8)))).toEqual([
+            client.IX_DISCRIMINATORS.create_pledge_book, client.IX_DISCRIMINATORS.set_pledge
+        ]);
+        const setPledge = sent[0].instructions[1];
+        expect(setPledge.keys).toHaveLength(5);
+        expect(setPledge.keys.some(key => key.pubkey.toBase58() === client.constants.TOKEN_PROGRAM_ID)).toBe(false);
     });
 });

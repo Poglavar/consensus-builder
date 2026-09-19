@@ -485,24 +485,36 @@ function buildSummary(primary, ctx) {
     if (name === 'proposal_pledge') {
         const proposalAddress = accountAddress(primary, 'proposal');
         const onProposal = proposalAddress ? ` for proposal ${label(proposalAddress)}` : '';
-        if (action === 'create_escrow') {
-            return `${label(actorAddress(primary, 'creator'))} opened a USDC pledge escrow${onProposal}`;
+        if (action === 'create_donation_escrow') {
+            return `${label(actorAddress(primary, 'creator'))} opened a refundable USDC donation escrow${onProposal}`;
         }
-        if (action === 'pledge') {
+        if (action === 'donate') {
             const inner = innerTokenAmount(primary, rawInner, ctx);
             const amount = inner?.amount ?? (args.amount != null ? formatAtomicAmount(String(args.amount), 6) : '?');
-            return `${label(actorAddress(primary, 'pledger'))} pledged ${amount} ${inner?.symbol ?? 'USDC'}${onProposal}`;
+            return `${label(actorAddress(primary, 'donor'))} donated ${amount} ${inner?.symbol ?? 'USDC'}${onProposal}`;
         }
-        if (action === 'release') {
+        if (action === 'release_donations') {
             const inner = innerTokenAmount(primary, rawInner, ctx);
             const amount = inner ? ` ${inner.amount ?? inner.amountAtomic} ${inner.symbol ?? 'tokens'}` : '';
-            return `${label(actorAddress(primary, 'releaser'))} released${amount}${onProposal} to ${label(accountAddress(primary, 'beneficiary'))}`;
+            return `${label(actorAddress(primary, 'releaser'))} released donations${amount}${onProposal} to ${label(accountAddress(primary, 'beneficiary'))}`;
         }
-        if (action === 'refund') {
+        if (action === 'refund_donation') {
             const inner = innerTokenAmount(primary, rawInner, ctx);
             const amount = inner ? ` ${inner.amount ?? inner.amountAtomic} ${inner.symbol ?? 'tokens'}` : '';
-            return `${label(actorAddress(primary, 'pledger'))} refunded${amount}${onProposal}`;
+            return `${label(actorAddress(primary, 'donor'))} refunded a donation${amount}${onProposal}`;
         }
+        if (action === 'create_pledge_book') return `${label(actorAddress(primary, 'creator'))} opened a soft-pledge ledger${onProposal}`;
+        if (action === 'set_pledge') {
+            const amount = args.amount != null ? formatAtomicAmount(String(args.amount), 6) : '?';
+            return `${label(actorAddress(primary, 'pledger'))} pledged ${amount} USDC${onProposal} without locking funds`;
+        }
+        if (action === 'revoke_pledge') return `${label(actorAddress(primary, 'pledger'))} revoked a pledge${onProposal}`;
+        if (action === 'fulfill_pledge') {
+            const inner = innerTokenAmount(primary, rawInner, ctx);
+            const amount = inner ? ` ${inner.amount ?? inner.amountAtomic} ${inner.symbol ?? 'USDC'}` : '';
+            return `${label(actorAddress(primary, 'pledger'))} fulfilled a pledge${amount}${onProposal}`;
+        }
+        if (action === 'void_pledge') return `a pledge was voided${onProposal}`;
     }
 
     if (name === 'proposal_nft') {

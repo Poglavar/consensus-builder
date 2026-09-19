@@ -392,6 +392,20 @@ async function executeGameTurn() {
             proposalStorage.beginBatch();
         }
 
+        // Reconcile support against lifecycle before agents act. Donations return to their donors
+        // when a proposal is Cancelled/Expired; soft pledges are voided without touching balances.
+        if (window.AgentSupportSimulation) {
+            for (const proposal of allActiveProposals) {
+                const status = typeof getLifecycleStatus === 'function' ? getLifecycleStatus(proposal) : proposal.lifecycleStatus;
+                if (status !== 'Cancelled' && status !== 'Expired') continue;
+                const outcome = window.AgentSupportSimulation.refund(proposal, id => agentStorage.getAgent(id));
+                if (!outcome.refunded && !outcome.voided) continue;
+                if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(proposal);
+                proposalStorage.save();
+                for (const participant of agents) agentStorage.updateAgent(participant.id, { ethBalance: participant.ethBalance });
+            }
+        }
+
         // Have each AI-controlled agent decide and act
         for (let index = 0; index < agents.length; index++) {
             const agent = agents[index];

@@ -1,5 +1,5 @@
-// Free, read-only discovery surface for the on-chain pledge program. Writes go directly to Solana;
-// the API never takes custody and never accepts a client-reported balance as truth.
+// Free, read-only discovery surface for on-chain proposal donations and soft pledges. Writes go
+// directly to Solana; the API never takes custody or accepts client-reported balances as truth.
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
@@ -22,25 +22,36 @@ export function setupAgentPledgesRoute(app, { env = process.env, connection = nu
             return res.status(400).json({ error: 'proposal must be a Solana public key' });
         }
         try {
-            const escrow = await pledgeClient.readEscrow(getConnection(), proposal);
-            if (!escrow) {
-                const [escrowPda] = pledgeClient.getEscrowPda(proposal);
-                return res.json({ exists: false, proposal: proposal.toBase58(), escrow: escrowPda.toBase58() });
-            }
+            const [donations, pledges] = await Promise.all([
+                pledgeClient.readDonationEscrow(getConnection(), proposal),
+                pledgeClient.readPledgeBook(getConnection(), proposal)
+            ]);
             return res.json({
-                exists: true,
-                proposal: escrow.proposal,
-                escrow: pledgeClient.getEscrowPda(proposal)[0].toBase58(),
-                beneficiary: escrow.beneficiary,
-                mint: escrow.pledgeMint,
-                vault: escrow.vault,
-                totalPledgedAtomic: escrow.totalPledged.toString(),
-                totalPledgedUsdc: pledgeClient.formatUsdc(escrow.totalPledged),
-                totalReleasedAtomic: escrow.totalReleased.toString(),
-                totalRefundedAtomic: escrow.totalRefunded.toString(),
-                pledgeCount: escrow.pledgeCount.toString(),
-                backerCount: escrow.backerCount.toString(),
-                released: escrow.released
+                exists: Boolean(donations || pledges),
+                proposal: proposal.toBase58(),
+                donations: donations ? {
+                    escrow: pledgeClient.getDonationEscrowPda(proposal)[0].toBase58(),
+                    beneficiary: donations.beneficiary,
+                    vault: donations.vault,
+                    totalAtomic: donations.totalDonated.toString(),
+                    totalUsdc: pledgeClient.formatUsdc(donations.totalDonated),
+                    releasedAtomic: donations.totalReleased.toString(),
+                    refundedAtomic: donations.totalRefunded.toString(),
+                    donationCount: donations.donationCount.toString(),
+                    donorCount: donations.donorCount.toString(),
+                    released: donations.released
+                } : null,
+                pledges: pledges ? {
+                    book: pledgeClient.getPledgeBookPda(proposal)[0].toBase58(),
+                    beneficiary: pledges.beneficiary,
+                    activeAtomic: pledges.activePledged.toString(),
+                    activeUsdc: pledgeClient.formatUsdc(pledges.activePledged),
+                    fulfilledAtomic: pledges.totalFulfilled.toString(),
+                    revokedAtomic: pledges.totalRevoked.toString(),
+                    pledgeCount: pledges.pledgeCount.toString(),
+                    activeCount: pledges.activeCount.toString(),
+                    fulfilledCount: pledges.fulfilledCount.toString()
+                } : null
             });
         } catch (error) {
             console.error('Failed to read proposal pledge escrow:', error);

@@ -974,11 +974,19 @@
                 "buttonLabel": "Pledge USDC to this proposal",
                 "title": "Pledge to this proposal",
                 "closeLabel": "Close pledge dialog",
-                "copy": "Pledge devnet USDC in escrow. It is released to the proposal owner only after execution, or refunded to you if the proposal is cancelled or expires.",
+                "copy": "Publish a revocable USDC commitment. No USDC leaves your wallet until you fulfil it after execution.",
                 "send": "Pledge USDC"
             },
+            "support": {
+                "donate": "Donate USDC",
+                "revoke": "Revoke my pledge",
+                "release": "Release donations",
+                "fulfill": "Fulfill my pledge",
+                "refund": "Refund my donations",
+                "void": "Clear my pledge"
+            },
             "pledge": {
-                "summary": "USDC pledged:",
+                "summary": "Proposal support:",
                 "loading": "Loading…",
                 "none": "0 USDC · no backers yet",
                 "unavailable": "Unavailable"

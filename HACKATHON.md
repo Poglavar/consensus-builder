@@ -36,9 +36,13 @@ git diff 3ee1855...colosseum-worlds-fair
    decoding for the demo flow.
 6. **Safe proposal review** — Details is read-only; Counterpropose/Fork creates a separately editable
    clone instead of mutating someone else's proposal.
-7. **USDC pledge escrow** — a devnet Solana program plus browser and agent clients for pledging,
-   execution-triggered release, cancellation/expiry refunds, exact on-chain totals, and retry-safe
-   operation IDs.
+7. **Proposal funding** — one devnet Solana program and shared browser/agent codec for two distinct
+   commitments: funded donations held until execution (and refundable on cancellation/expiry), plus
+   revocable soft pledges that move USDC only when their owner fulfils them after execution.
+   Deployed as [`1jES…6g`](https://explorer.solana.com/address/1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g?cluster=devnet),
+   with live [soft-pledge](https://explorer.solana.com/tx/Fs4neKgYxY5QmV7FwovJg1Ay8X5mecVafZkW4N87NSfC9hGqs1sTm2gYX5ypjdyAvWPhCwF9vUfnquyBiNmdbGT?cluster=devnet)
+   and [funded-donation](https://explorer.solana.com/tx/dFJn5idbgQy85NmJ3bpGTPW284nYGifec9TKy98pP4PHUsgY3WpqU5M5HnQ4UNxMTrdeDo5rp6ShdsLZ346fbH3?cluster=devnet)
+   proof transactions.
 
 ## Pre-existing platform foundations
 

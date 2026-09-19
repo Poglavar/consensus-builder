@@ -4,24 +4,20 @@
     "name": "proposal_pledge",
     "version": "0.1.0",
     "spec": "0.1.0",
-    "description": "Contributor-safe USDC pledges for consensus-builder proposals"
+    "description": "Funded USDC donations and soft pledges for consensus-builder proposals"
   },
   "instructions": [
     {
-      "name": "create_escrow",
-      "docs": [
-        "Create the one USDC escrow for an Active proposal. Permissionless: beneficiary and lifecycle",
-        "are read from the proposal account, so the payer cannot redirect or control the funds."
-      ],
+      "name": "create_donation_escrow",
       "discriminator": [
-        253,
-        215,
-        165,
-        116,
-        36,
-        108,
-        68,
-        80
+        17,
+        120,
+        220,
+        167,
+        31,
+        167,
+        226,
+        163
       ],
       "accounts": [
         {
@@ -32,6 +28,15 @@
               {
                 "kind": "const",
                 "value": [
+                  100,
+                  111,
+                  110,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
                   101,
                   115,
                   99,
@@ -51,7 +56,7 @@
           "name": "proposal"
         },
         {
-          "name": "pledge_mint",
+          "name": "mint",
           "address": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"
         },
         {
@@ -102,7 +107,7 @@
               },
               {
                 "kind": "account",
-                "path": "pledge_mint"
+                "path": "mint"
               }
             ],
             "program": {
@@ -165,20 +170,79 @@
       "args": []
     },
     {
-      "name": "pledge",
+      "name": "create_pledge_book",
+      "discriminator": [
+        72,
+        156,
+        10,
+        193,
+        200,
+        63,
+        147,
+        146
+      ],
+      "accounts": [
+        {
+          "name": "book",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  108,
+                  101,
+                  100,
+                  103,
+                  101,
+                  95,
+                  98,
+                  111,
+                  111,
+                  107
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "proposal"
+              }
+            ]
+          }
+        },
+        {
+          "name": "proposal"
+        },
+        {
+          "name": "mint",
+          "address": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"
+        },
+        {
+          "name": "creator",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "donate",
       "docs": [
-        "Deposit one immutable pledge. `pledge_id` should be stable across retries; its PDA can exist",
-        "only once, so a retried logical operation can never charge twice."
+        "Fund one immutable donation. A stable donation_id makes retries idempotent."
       ],
       "discriminator": [
-        235,
-        47,
-        156,
-        254,
-        0,
-        88,
-        212,
-        142
+        121,
+        186,
+        218,
+        211,
+        73,
+        70,
+        196,
+        180
       ],
       "accounts": [
         {
@@ -189,6 +253,15 @@
               {
                 "kind": "const",
                 "value": [
+                  100,
+                  111,
+                  110,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
                   101,
                   115,
                   99,
@@ -200,7 +273,7 @@
               {
                 "kind": "account",
                 "path": "escrow.proposal",
-                "account": "Escrow"
+                "account": "DonationEscrow"
               }
             ]
           }
@@ -210,6 +283,154 @@
         },
         {
           "name": "position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  111,
+                  110,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "escrow"
+              },
+              {
+                "kind": "account",
+                "path": "donor"
+              },
+              {
+                "kind": "arg",
+                "path": "donation_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "donor_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  111,
+                  110,
+                  111,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "escrow"
+              },
+              {
+                "kind": "account",
+                "path": "donor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "donor_token_account",
+          "writable": true
+        },
+        {
+          "name": "donor",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "donation_id",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "fulfill_pledge",
+      "docs": [
+        "Move the pledged USDC only after execution, with the pledger signing."
+      ],
+      "discriminator": [
+        155,
+        51,
+        62,
+        164,
+        72,
+        200,
+        103,
+        251
+      ],
+      "accounts": [
+        {
+          "name": "book",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  108,
+                  101,
+                  100,
+                  103,
+                  101,
+                  95,
+                  98,
+                  111,
+                  111,
+                  107
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "book.proposal",
+                "account": "PledgeBook"
+              }
+            ]
+          },
+          "relations": [
+            "commitment"
+          ]
+        },
+        {
+          "name": "proposal"
+        },
+        {
+          "name": "commitment",
           "writable": true,
           "pda": {
             "seeds": [
@@ -226,38 +447,7 @@
               },
               {
                 "kind": "account",
-                "path": "escrow"
-              },
-              {
-                "kind": "account",
-                "path": "pledger"
-              },
-              {
-                "kind": "arg",
-                "path": "pledge_id"
-              }
-            ]
-          }
-        },
-        {
-          "name": "backer",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  98,
-                  97,
-                  99,
-                  107,
-                  101,
-                  114
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "escrow"
+                "path": "book"
               },
               {
                 "kind": "account",
@@ -267,12 +457,104 @@
           }
         },
         {
-          "name": "vault",
-          "writable": true
+          "name": "mint"
         },
         {
           "name": "pledger_token_account",
           "writable": true
+        },
+        {
+          "name": "beneficiary"
+        },
+        {
+          "name": "beneficiary_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "beneficiary"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
         },
         {
           "name": "pledger",
@@ -284,41 +566,30 @@
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
           "name": "system_program",
           "address": "11111111111111111111111111111111"
         }
       ],
-      "args": [
-        {
-          "name": "pledge_id",
-          "type": {
-            "array": [
-              "u8",
-              32
-            ]
-          }
-        },
-        {
-          "name": "amount",
-          "type": "u64"
-        }
-      ]
+      "args": []
     },
     {
-      "name": "refund",
+      "name": "refund_donation",
       "docs": [
-        "Refund exactly one contributor's immutable pledge after cancellation or expiry. A position",
-        "stays on-chain as a receipt and cannot be claimed twice."
+        "Refund one funded donation to its owner after cancellation or expiry."
       ],
       "discriminator": [
-        2,
-        96,
+        122,
+        218,
         183,
-        251,
-        63,
-        208,
-        46,
-        46
+        126,
+        27,
+        195,
+        121,
+        196
       ],
       "accounts": [
         {
@@ -329,6 +600,15 @@
               {
                 "kind": "const",
                 "value": [
+                  100,
+                  111,
+                  110,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
                   101,
                   115,
                   99,
@@ -340,7 +620,7 @@
               {
                 "kind": "account",
                 "path": "escrow.proposal",
-                "account": "Escrow"
+                "account": "DonationEscrow"
               }
             ]
           },
@@ -359,12 +639,14 @@
               {
                 "kind": "const",
                 "value": [
-                  112,
-                  108,
-                  101,
                   100,
-                  103,
-                  101
+                  111,
+                  110,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
                 ]
               },
               {
@@ -373,12 +655,12 @@
               },
               {
                 "kind": "account",
-                "path": "pledger"
+                "path": "donor"
               },
               {
                 "kind": "account",
-                "path": "position.pledge_id",
-                "account": "PledgePosition"
+                "path": "position.donation_id",
+                "account": "DonationPosition"
               }
             ]
           }
@@ -388,11 +670,11 @@
           "writable": true
         },
         {
-          "name": "pledger_token_account",
+          "name": "donor_token_account",
           "writable": true
         },
         {
-          "name": "pledger",
+          "name": "donor",
           "writable": true,
           "signer": true
         },
@@ -404,20 +686,19 @@
       "args": []
     },
     {
-      "name": "release",
+      "name": "release_donations",
       "docs": [
-        "Permissionless settlement after proposal execution. The complete vault is paid to the",
-        "proposal owner captured at escrow creation; the caller can neither choose nor alter it."
+        "Permissionless settlement after execution to the captured proposal owner."
       ],
       "discriminator": [
-        253,
-        249,
-        15,
-        206,
-        28,
-        127,
-        193,
-        241
+        179,
+        132,
+        96,
+        218,
+        222,
+        133,
+        8,
+        41
       ],
       "accounts": [
         {
@@ -428,6 +709,15 @@
               {
                 "kind": "const",
                 "value": [
+                  100,
+                  111,
+                  110,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
                   101,
                   115,
                   99,
@@ -439,7 +729,7 @@
               {
                 "kind": "account",
                 "path": "escrow.proposal",
-                "account": "Escrow"
+                "account": "DonationEscrow"
               }
             ]
           }
@@ -448,7 +738,7 @@
           "name": "proposal"
         },
         {
-          "name": "pledge_mint"
+          "name": "mint"
         },
         {
           "name": "vault",
@@ -505,7 +795,7 @@
               },
               {
                 "kind": "account",
-                "path": "pledge_mint"
+                "path": "mint"
               }
             ],
             "program": {
@@ -566,46 +856,328 @@
         }
       ],
       "args": []
+    },
+    {
+      "name": "revoke_pledge",
+      "discriminator": [
+        148,
+        10,
+        32,
+        57,
+        46,
+        23,
+        47,
+        154
+      ],
+      "accounts": [
+        {
+          "name": "book",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  108,
+                  101,
+                  100,
+                  103,
+                  101,
+                  95,
+                  98,
+                  111,
+                  111,
+                  107
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "book.proposal",
+                "account": "PledgeBook"
+              }
+            ]
+          },
+          "relations": [
+            "commitment"
+          ]
+        },
+        {
+          "name": "proposal"
+        },
+        {
+          "name": "commitment",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  108,
+                  101,
+                  100,
+                  103,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "book"
+              },
+              {
+                "kind": "account",
+                "path": "pledger"
+              }
+            ]
+          }
+        },
+        {
+          "name": "pledger",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "set_pledge",
+      "docs": [
+        "Create or replace this wallet's soft commitment. No USDC moves at pledge time."
+      ],
+      "discriminator": [
+        28,
+        155,
+        221,
+        80,
+        2,
+        110,
+        77,
+        26
+      ],
+      "accounts": [
+        {
+          "name": "book",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  108,
+                  101,
+                  100,
+                  103,
+                  101,
+                  95,
+                  98,
+                  111,
+                  111,
+                  107
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "book.proposal",
+                "account": "PledgeBook"
+              }
+            ]
+          }
+        },
+        {
+          "name": "proposal"
+        },
+        {
+          "name": "commitment",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  108,
+                  101,
+                  100,
+                  103,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "book"
+              },
+              {
+                "kind": "account",
+                "path": "pledger"
+              }
+            ]
+          }
+        },
+        {
+          "name": "pledger",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "void_pledge",
+      "docs": [
+        "Clear an unfunded commitment once a proposal is cancelled or expires."
+      ],
+      "discriminator": [
+        240,
+        40,
+        118,
+        116,
+        12,
+        195,
+        148,
+        96
+      ],
+      "accounts": [
+        {
+          "name": "book",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  108,
+                  101,
+                  100,
+                  103,
+                  101,
+                  95,
+                  98,
+                  111,
+                  111,
+                  107
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "book.proposal",
+                "account": "PledgeBook"
+              }
+            ]
+          },
+          "relations": [
+            "commitment"
+          ]
+        },
+        {
+          "name": "proposal"
+        },
+        {
+          "name": "commitment",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  108,
+                  101,
+                  100,
+                  103,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "book"
+              },
+              {
+                "kind": "account",
+                "path": "commitment.owner",
+                "account": "PledgeCommitment"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
     {
-      "name": "Backer",
+      "name": "DonationEscrow",
       "discriminator": [
-        199,
-        128,
-        179,
-        190,
-        2,
+        80,
+        16,
         66,
-        118,
-        252
+        221,
+        66,
+        84,
+        175,
+        228
       ]
     },
     {
-      "name": "Escrow",
+      "name": "DonationPosition",
       "discriminator": [
-        31,
-        213,
+        126,
+        11,
+        141,
+        195,
+        219,
         123,
-        187,
-        186,
-        22,
-        218,
-        155
+        134,
+        42
       ]
     },
     {
-      "name": "PledgePosition",
+      "name": "Donor",
       "discriminator": [
-        70,
-        252,
-        205,
-        167,
-        148,
-        232,
-        30,
-        171
+        43,
+        66,
+        58,
+        146,
+        38,
+        217,
+        15,
+        26
+      ]
+    },
+    {
+      "name": "PledgeBook",
+      "discriminator": [
+        24,
+        193,
+        154,
+        165,
+        1,
+        51,
+        253,
+        96
+      ]
+    },
+    {
+      "name": "PledgeCommitment",
+      "discriminator": [
+        238,
+        112,
+        179,
+        175,
+        31,
+        209,
+        249,
+        219
       ]
     }
   ],
@@ -613,95 +1185,82 @@
     {
       "code": 6000,
       "name": "InvalidProposalAccount",
-      "msg": "The proposal account is not a proposal_nft Proposal (or not this escrow's)"
+      "msg": "Invalid proposal account"
     },
     {
       "code": 6001,
-      "name": "InvalidPledgeMint",
-      "msg": "The escrow token must be devnet USDC"
+      "name": "InvalidMint",
+      "msg": "Support token must be devnet USDC"
     },
     {
       "code": 6002,
       "name": "ProposalNotActive",
-      "msg": "The proposal is not Active"
+      "msg": "Proposal is not Active"
     },
     {
       "code": 6003,
       "name": "ProposalNotExecuted",
-      "msg": "The proposal has not Executed"
+      "msg": "Proposal has not Executed"
     },
     {
       "code": 6004,
       "name": "ProposalNotRefundable",
-      "msg": "Only Cancelled or Expired proposals are refundable"
+      "msg": "Proposal is not Cancelled or Expired"
     },
     {
       "code": 6005,
       "name": "ZeroAmount",
-      "msg": "Pledge amount must be positive"
+      "msg": "Support amount must be positive"
     },
     {
       "code": 6006,
-      "name": "EscrowReleased",
-      "msg": "This escrow has already been released"
+      "name": "DonationsReleased",
+      "msg": "Donations already released"
     },
     {
       "code": 6007,
       "name": "AlreadyRefunded",
-      "msg": "This pledge was already refunded"
+      "msg": "Donation already refunded"
     },
     {
       "code": 6008,
       "name": "NothingToRelease",
-      "msg": "The vault has nothing to release"
+      "msg": "Nothing to release"
     },
     {
       "code": 6009,
       "name": "NothingToRefund",
-      "msg": "This position has nothing to refund"
+      "msg": "Nothing to refund"
     },
     {
       "code": 6010,
       "name": "MathOverflow",
-      "msg": "Arithmetic overflow"
+      "msg": "Arithmetic overflow or inconsistent aggregate"
     },
     {
       "code": 6011,
       "name": "InvalidPosition",
-      "msg": "The pledge position does not belong to this escrow and contributor"
+      "msg": "Invalid donation position"
+    },
+    {
+      "code": 6012,
+      "name": "InvalidCommitment",
+      "msg": "Invalid pledge commitment"
+    },
+    {
+      "code": 6013,
+      "name": "PledgeNotActive",
+      "msg": "Pledge is not active"
+    },
+    {
+      "code": 6014,
+      "name": "PledgeAlreadyFulfilled",
+      "msg": "Fulfilled pledge cannot be changed"
     }
   ],
   "types": [
     {
-      "name": "Backer",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "escrow",
-            "type": "pubkey"
-          },
-          {
-            "name": "owner",
-            "type": "pubkey"
-          },
-          {
-            "name": "total_pledged",
-            "type": "u64"
-          },
-          {
-            "name": "pledge_count",
-            "type": "u64"
-          },
-          {
-            "name": "bump",
-            "type": "u8"
-          }
-        ]
-      }
-    },
-    {
-      "name": "Escrow",
+      "name": "DonationEscrow",
       "type": {
         "kind": "struct",
         "fields": [
@@ -714,7 +1273,7 @@
             "type": "pubkey"
           },
           {
-            "name": "pledge_mint",
+            "name": "mint",
             "type": "pubkey"
           },
           {
@@ -722,7 +1281,7 @@
             "type": "pubkey"
           },
           {
-            "name": "total_pledged",
+            "name": "total_donated",
             "type": "u64"
           },
           {
@@ -734,11 +1293,11 @@
             "type": "u64"
           },
           {
-            "name": "pledge_count",
+            "name": "donation_count",
             "type": "u64"
           },
           {
-            "name": "backer_count",
+            "name": "donor_count",
             "type": "u64"
           },
           {
@@ -753,7 +1312,7 @@
       }
     },
     {
-      "name": "PledgePosition",
+      "name": "DonationPosition",
       "type": {
         "kind": "struct",
         "fields": [
@@ -766,7 +1325,7 @@
             "type": "pubkey"
           },
           {
-            "name": "pledge_id",
+            "name": "donation_id",
             "type": {
               "array": [
                 "u8",
@@ -780,6 +1339,118 @@
           },
           {
             "name": "refunded",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Donor",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "total_donated",
+            "type": "u64"
+          },
+          {
+            "name": "donation_count",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PledgeBook",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal",
+            "type": "pubkey"
+          },
+          {
+            "name": "beneficiary",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "active_pledged",
+            "type": "u64"
+          },
+          {
+            "name": "total_fulfilled",
+            "type": "u64"
+          },
+          {
+            "name": "total_revoked",
+            "type": "u64"
+          },
+          {
+            "name": "pledge_count",
+            "type": "u64"
+          },
+          {
+            "name": "active_count",
+            "type": "u64"
+          },
+          {
+            "name": "fulfilled_count",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PledgeCommitment",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "book",
+            "type": "pubkey"
+          },
+          {
+            "name": "proposal",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "type": "u8"
+          },
+          {
+            "name": "initialized",
             "type": "bool"
           },
           {

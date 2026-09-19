@@ -47,12 +47,19 @@ describe('proposal_pledge source/IDL contract', () => {
         expect(addresses['solana-devnet'].ProposalPledge).toBe(declared);
     });
 
-    it('has four lifecycle instructions and three receipt accounts with Anchor discriminators', () => {
-        expect(pledgeIdl.instructions.map(ix => ix.name).sort()).toEqual(['create_escrow', 'pledge', 'refund', 'release']);
+    it('has funded-donation and soft-pledge lifecycles with Anchor discriminators', () => {
+        expect(pledgeIdl.instructions.map(ix => ix.name).sort()).toEqual([
+            'create_donation_escrow', 'create_pledge_book', 'donate', 'fulfill_pledge',
+            'refund_donation', 'release_donations', 'revoke_pledge', 'set_pledge', 'void_pledge'
+        ]);
         for (const ix of pledgeIdl.instructions) expect(ix.discriminator).toEqual(disc('global', ix.name));
-        expect(pledgeIdl.accounts.map(account => account.name).sort()).toEqual(['Backer', 'Escrow', 'PledgePosition']);
+        expect(pledgeIdl.accounts.map(account => account.name).sort()).toEqual([
+            'DonationEscrow', 'DonationPosition', 'Donor', 'PledgeBook', 'PledgeCommitment'
+        ]);
         for (const account of pledgeIdl.accounts) expect(account.discriminator).toEqual(disc('account', account.name));
-        const pledgeMint = pledgeIdl.instructions.find(ix => ix.name === 'create_escrow').accounts.find(account => account.name === 'pledge_mint');
-        expect(pledgeMint.address).toBe('4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU');
+        for (const instructionName of ['create_donation_escrow', 'create_pledge_book']) {
+            const mint = pledgeIdl.instructions.find(ix => ix.name === instructionName).accounts.find(account => account.name === 'mint');
+            expect(mint.address).toBe('4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU');
+        }
     });
 });
