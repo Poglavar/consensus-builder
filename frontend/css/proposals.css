@@ -1092,6 +1092,134 @@ textarea.proposal-description-input {
     margin-left: 0;
 }
 
+.proposal-agent-badge--panel {
+    font-size: 11px;
+    padding: 2px 7px;
+}
+
+.proposal-agent-provenance {
+    margin: 10px 0 14px;
+    padding: 13px;
+    border: 1px solid #ddd6fe;
+    border-radius: 10px;
+    background: linear-gradient(145deg, #faf8ff 0%, #f5f3ff 100%);
+    color: #312e81;
+}
+
+.proposal-agent-provenance-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.proposal-agent-eyebrow {
+    color: #6d28d9;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.proposal-agent-persona {
+    margin-top: 2px;
+    color: #2e1065;
+    font-size: 16px;
+    font-weight: 750;
+}
+
+.proposal-agent-payment {
+    flex: 0 0 auto;
+    padding: 4px 8px;
+    border: 1px solid #c4b5fd;
+    border-radius: 999px;
+    background: #fff;
+    color: #5b21b6;
+    font-size: 12px;
+    font-weight: 750;
+}
+
+.proposal-agent-rationale {
+    margin: 10px 0;
+    color: #4c466f;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.proposal-agent-facts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px 12px;
+    margin: 10px 0 0;
+}
+
+.proposal-agent-facts > div {
+    min-width: 0;
+}
+
+.proposal-agent-facts dt {
+    color: #7c6fa3;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.proposal-agent-facts dd {
+    margin: 2px 0 0;
+    overflow: hidden;
+    color: #312e81;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.proposal-agent-facts a {
+    color: #5b21b6;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.proposal-agent-facts a:hover {
+    text-decoration: underline;
+}
+
+.proposal-agent-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #ddd6fe;
+    color: #6d28d9;
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 0.02em;
+}
+
+.proposal-agent-flow .fa-arrow-right {
+    color: #a78bfa;
+    font-size: 9px;
+}
+
+@media (max-width: 520px) {
+    .proposal-agent-facts {
+        grid-template-columns: 1fr;
+    }
+
+    .proposal-agent-flow {
+        align-items: stretch;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .proposal-agent-flow .fa-arrow-right {
+        transform: rotate(90deg);
+    }
+}
+
 .proposal-status.active {
     background-color: #e3f2fd;
     color: #1976d2;

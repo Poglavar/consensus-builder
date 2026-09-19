@@ -607,6 +607,40 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         })
         : '—';
 
+    const agentProvenance = typeof ProposalAgentProvenance !== 'undefined'
+        ? ProposalAgentProvenance.read(fullProposal)
+        : null;
+    const safeAgentText = value => typeof escapeHtml === 'function'
+        ? escapeHtml(String(value ?? ''))
+        : String(value ?? '');
+    const agentBadgeHtml = agentProvenance
+        ? `<div class="proposal-agent-badge proposal-agent-badge--panel"><span aria-hidden="true">✦</span> ${safeAgentText(tProposal('panel.proposal.agent.badge', 'Agent proposal'))}</div>`
+        : '';
+    const agentProvenanceHtml = agentProvenance ? `
+        <section class="proposal-agent-provenance" aria-label="${safeAgentText(tProposal('panel.proposal.agent.sectionLabel', 'Agent provenance'))}">
+            <div class="proposal-agent-provenance-head">
+                <div>
+                    <div class="proposal-agent-eyebrow">${safeAgentText(tProposal('panel.proposal.agent.verified', 'Verified x402 submission'))}</div>
+                    <div class="proposal-agent-persona">${safeAgentText(agentProvenance.persona)}</div>
+                </div>
+                <div class="proposal-agent-payment">${safeAgentText(agentProvenance.paymentLabel)}</div>
+            </div>
+            ${agentProvenance.rationale ? `<p class="proposal-agent-rationale">${safeAgentText(agentProvenance.rationale)}</p>` : ''}
+            <dl class="proposal-agent-facts">
+                <div><dt>${safeAgentText(tProposal('panel.proposal.agent.payer', 'Paying wallet'))}</dt><dd title="${safeAgentText(agentProvenance.wallet)}">${safeAgentText(agentProvenance.walletShort)}</dd></div>
+                ${agentProvenance.runId ? `<div><dt>${safeAgentText(tProposal('panel.proposal.agent.run', 'Agent run'))}</dt><dd title="${safeAgentText(agentProvenance.runId)}">${safeAgentText(agentProvenance.runId)}</dd></div>` : ''}
+                <div><dt>${safeAgentText(tProposal('panel.proposal.agent.settlement', 'Settlement'))}</dt><dd><a href="${safeAgentText(agentProvenance.explorerUrl)}" target="_blank" rel="noopener" title="${safeAgentText(agentProvenance.transaction)}">${safeAgentText(agentProvenance.transactionShort)} <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i></a></dd></div>
+            </dl>
+            <div class="proposal-agent-flow" aria-label="${safeAgentText(tProposal('panel.proposal.agent.flowLabel', 'How this proposal was created'))}">
+                <span>${safeAgentText(tProposal('panel.proposal.agent.flowDiscover', 'Discoverable API'))}</span>
+                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                <span>${safeAgentText(tProposal('panel.proposal.agent.flowPay', 'x402 payment'))}</span>
+                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                <span>${safeAgentText(tProposal('panel.proposal.agent.flowStore', 'Stored proposal'))}</span>
+            </div>
+        </section>
+    ` : '';
+
     const content = `
         <div class="proposal-info">
             ${expiryCountdownHtml}
@@ -618,6 +652,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <div class="proposal-conditionality ${conditionalBadgeClass}" title="${conditionalBadgeTitle}">
                     ${conditionalBadgeLabel}
                 </div>
+                ${agentBadgeHtml}
                 ${(() => {
             const label = isMinted
                 ? tProposal('panel.proposal.lifecycle.minted', 'Minted')
@@ -643,6 +678,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 </div>` : ''}
                 ${proposalEnsHtml ? `<div class="proposal-ens-row" style="text-align: center; margin-top: 4px;">${proposalEnsHtml}</div>` : ''}
             </div>
+            ${agentProvenanceHtml}
             ${parcelAcceptancePlaceholder}
             ${ownerAcceptancePlaceholder}
 

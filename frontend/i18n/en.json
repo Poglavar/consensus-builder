@@ -1014,7 +1014,19 @@
             },
             "descendantRoadSuffix": " • Road",
             "descendantRoadNamedSuffix": " • Road: {{name}}",
-            "basedOn": "Based on"
+            "basedOn": "Based on",
+            "agent": {
+                "badge": "Agent proposal",
+                "sectionLabel": "Agent provenance",
+                "verified": "Verified x402 submission",
+                "payer": "Paying wallet",
+                "run": "Agent run",
+                "settlement": "Settlement",
+                "flowLabel": "How this proposal was created",
+                "flowDiscover": "Discoverable API",
+                "flowPay": "x402 payment",
+                "flowStore": "Stored proposal"
+            }
         },
         "block": {
             "title": "Block Info",

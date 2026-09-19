@@ -3749,6 +3749,22 @@
     line-height: 1.5;
 }
 
+.proposal-agent-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 1px 7px;
+    border: 1px solid #c4b5fd;
+    border-radius: 9px;
+    background: #f5f3ff;
+    color: #5b21b6;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.5;
+    letter-spacing: 0.35px;
+    text-transform: uppercase;
+}
+
 .proposal-mint-state--compact {
     display: inline-flex;
     align-items: center;

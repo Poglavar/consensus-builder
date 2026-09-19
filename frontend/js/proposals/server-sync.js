@@ -59,6 +59,9 @@ function normalizeServerProposalSummary(raw, cityCode) {
         // onchain_data->>'imageUrl')). Dropping it here is what made the server tab fall back to
         // the goal emoji for every row, even though almost all of them have a picture.
         screenshotUrl: raw.screenshotUrl || raw.screenshot_url || null,
+        agent: raw.agent && typeof raw.agent === 'object' && !Array.isArray(raw.agent)
+            ? raw.agent
+            : null,
         epochYear: raw.epochYear ?? raw.epoch_year ?? null,
         // The single proposal-to-land relationship used by claims and dossiers.
         cadastreParcelIds: Array.isArray(raw.cadastreParcelIds) ? raw.cadastreParcelIds : [],

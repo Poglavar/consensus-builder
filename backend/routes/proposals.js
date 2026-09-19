@@ -415,6 +415,8 @@ export function createProposalCreateHandler(pool) {
             const onchainData = validated.onchain ?? validated.onchainData ?? null;
             const screenshotUrl = validated.screenshotUrl ?? validated.screenshot_url ?? null;
             const epochYear = validated.epochYear ?? null;
+            const agentPaymentId = req.x402Payment?.id ?? null;
+            const agentRequestHash = req.x402Payment?.requestHash ?? null;
 
             // Corridor acquisition stats were scraped from the client's DOM and trusted. Recompute
             // them from PostGIS and overwrite the client copy (best-effort + Zagreb-only inside;
@@ -459,7 +461,8 @@ export function createProposalCreateHandler(pool) {
                     cadastre_parcel_ids, accepted_parcel_ids, owner_acceptances,
                     road_proposal, building_proposal, structure_proposal, reparcellization,
                     lens, bounds, onchain_data, screenshot_url, proposal_data,
-                    ownership_flow, cadastre_frame, epoch_year
+                    ownership_flow, cadastre_frame, epoch_year,
+                    agent_payment_id, agent_request_hash
                 ) VALUES (
                     $1, $2, $3, $4, $5, $6, $7,
                     $8,
@@ -471,7 +474,8 @@ export function createProposalCreateHandler(pool) {
                     $22, $23, $24,
                     $25, $26, $27, $28,
                     $29, $30, $31, $32, $33,
-                    $34, $35, $36
+                    $34, $35, $36,
+                    $37, $38
                 )
                 RETURNING id, proposal_id, created_at
             `;
@@ -498,7 +502,9 @@ export function createProposalCreateHandler(pool) {
                 JSON.stringify(proposalData),
                 ownershipFlow.length ? JSON.stringify(ownershipFlow) : null,
                 cadastreFrame ? JSON.stringify(cadastreFrame) : null,
-                epochYear
+                epochYear,
+                agentPaymentId,
+                agentRequestHash
             ];
 
             const result = await pool.query(sql, params);
@@ -841,6 +847,7 @@ export function setupProposalsRoute(app, pool) {
                 -- server proposal touch my parcel" without fetching every proposal in full.
                 cadastre_parcel_ids,
                 COALESCE(screenshot_url, onchain_data->>'imageUrl') AS screenshot_url,
+                proposal_data->'agent' AS agent,
                 epoch_year,
                 COUNT(*) OVER() AS total_count
             FROM proposal`,
@@ -875,6 +882,9 @@ export function setupProposalsRoute(app, pool) {
                     createdAt: proposal.createdAt || null,
                     cadastreParcelIds: Array.isArray(row.cadastre_parcel_ids) ? row.cadastre_parcel_ids : null,
                     screenshotUrl: proposal.screenshotUrl || null,
+                    agent: row.agent && typeof row.agent === 'object' && !Array.isArray(row.agent)
+                        ? row.agent
+                        : null,
                     epochYear: proposal.epochYear ?? null
                 };
             }).filter(Boolean);

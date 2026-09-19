@@ -22,10 +22,12 @@ import {
     setTransactionMessageLifetimeUsingBlockhash
 } from '@solana/kit';
 import { decodePaymentRequiredHeader, decodePaymentResponseHeader, encodePaymentSignatureHeader } from '@x402/core/http';
+import { appendPaymentIdentifierToExtensions } from '@x402/extensions/payment-identifier';
 import { createMockPool } from './helpers/mock-pool.js';
 import { validProposalBody, insertResult, updateResult } from './helpers/fixtures.js';
 import { setupProposalsRoute } from '../routes/proposals.js';
 import { setupAgentProposalsRoute, AGENT_PROPOSALS_PATH } from '../routes/agent-proposals.js';
+import { CDP_FACILITATOR_URL, hashAgentProposalRequest } from '../utils/x402-payment.js';
 import { generateAndStoreProposalThumbnail } from '../thumbnails/proposal-thumbnail.js';
 
 vi.mock('../thumbnails/proposal-thumbnail.js', () => ({
@@ -36,6 +38,7 @@ const NETWORK = 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1';
 const USDC_DEVNET = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 const TOKEN_PROGRAM = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';
 const TX = '5igNaTuReOfTheSettledTransfer';
+const PAYMENT_ID = 'proposal_1234567890abcdef';
 
 // Real keys: x402 validates addresses, and the payer is read back off the signed transaction.
 let agent;       // the paying wallet
@@ -124,15 +127,19 @@ function agentBody(overrides = {}) {
 
 // Fetch the challenge and answer it the way an x402 client does: echo the accepted requirement
 // and attach the signed transaction.
-async function payFor(app, body, { signer = agent, transaction } = {}) {
+async function payFor(app, body, { signer = agent, transaction, paymentId = PAYMENT_ID } = {}) {
     const challenge = await request(app).post(AGENT_PROPOSALS_PATH).send(body);
     expect(challenge.status).toBe(402);
     const required = decodePaymentRequiredHeader(challenge.headers['payment-required']);
+    const extensions = structuredClone(required.extensions);
+    if (paymentId !== null) appendPaymentIdentifierToExtensions(extensions, paymentId);
     return encodePaymentSignatureHeader({
         x402Version: 2,
         resource: required.resource,
         accepted: required.accepts[0],
-        payload: { transaction: transaction ?? await signedTransfer(signer) }
+        payload: { transaction: transaction ?? await signedTransfer(signer) },
+        // Bazaar catalogs the route, while payment-identifier makes the operation replay-safe.
+        extensions
     });
 }
 
@@ -145,12 +152,17 @@ let pool;
 let sequence;
 let facilitator;
 let app;
+let idempotencyRows;
 
 beforeEach(() => {
     pool = createMockPool();
+    idempotencyRows = [];
     const realQuery = pool.query.bind(pool);
     pool.query = (sql, params) => {
         sequence.push('db');
+        if (sql.includes('WHERE agent_payment_id = $1')) {
+            return Promise.resolve({ rows: idempotencyRows, rowCount: idempotencyRows.length });
+        }
         return realQuery(sql, params);
     };
     sequence = [];
@@ -178,6 +190,18 @@ describe(`POST ${AGENT_PROPOSALS_PATH} — unpaid`, () => {
         expect(accept.amount).toBe('50000'); // $0.05 in USDC atomic units
         expect(accept.extra.paymentFlow).toBe('upfront');
         expect(accept.extra.feePayer).toBe(feePayer.address);
+
+        expect(required.resource.serviceName).toBe('Urban Game Theory');
+        expect(required.resource.tags).toEqual(['urban-planning', 'land', 'proposals', 'agents']);
+        const discovery = required.extensions.bazaar;
+        expect(discovery.info.input.type).toBe('http');
+        expect(discovery.info.input.method).toBe('POST');
+        expect(discovery.info.input.bodyType).toBe('json');
+        expect(discovery.info.input.body.cadastreParcelIds).toEqual(['HR-335550-1234/1']);
+        expect(discovery.info.output.example).toMatchObject({ id: 1342, screenshotUrl: null });
+        expect(discovery.schema.properties.input.properties.body.required).toContain('cadastreParcelIds');
+        expect(discovery.schema.properties.input.properties.body).not.toHaveProperty('$id');
+        expect(required.extensions['payment-identifier'].info).toEqual({ required: true });
 
         expect(pool.getCalls()).toHaveLength(0);
         expect(facilitator.settle).not.toHaveBeenCalled();
@@ -213,7 +237,9 @@ describe(`POST ${AGENT_PROPOSALS_PATH} — paid`, () => {
         expect(res.headers['payment-response']).toBeTruthy();
 
         // Upfront flow: settle, THEN the two DB writes of the create handler. No separate verify.
-        expect(sequence).toEqual(['settle', 'db', 'db']);
+        expect(sequence).toEqual(['db', 'settle', 'db', 'db']);
+        expect(facilitator.settle.mock.calls[0][0].extensions.bazaar.info.input.method).toBe('POST');
+        expect(facilitator.settle.mock.calls[0][0].extensions['payment-identifier'].info.id).toBe(PAYMENT_ID);
 
         const calls = pool.getCalls();
         expect(calls[0].sql).toContain('INSERT INTO proposal');
@@ -226,8 +252,10 @@ describe(`POST ${AGENT_PROPOSALS_PATH} — paid`, () => {
             rationale: 'Infill on an underused corner.',
             run_id: 'run-1',
             wallet: agent.address,
-            paid: { network: NETWORK, asset: USDC_DEVNET, amount: '0.05', amountAtomic: '50000', tx: TX }
+            paid: { id: PAYMENT_ID, network: NETWORK, asset: USDC_DEVNET, amount: '0.05', amountAtomic: '50000', tx: TX }
         });
+        expect(params[36]).toBe(PAYMENT_ID);
+        expect(params[37]).toBe(hashAgentProposalRequest(agentBody()));
     });
 
     it('accepts a body whose author already names the paying wallet', async () => {
@@ -271,6 +299,72 @@ describe(`POST ${AGENT_PROPOSALS_PATH} — paid`, () => {
         expect(pool.getCalls()).toHaveLength(0);
     });
 
+    it('requires the standard payment identifier before any settlement', async () => {
+        const header = await payFor(app, agentBody(), { paymentId: null });
+
+        const res = await request(app).post(AGENT_PROPOSALS_PATH).set('PAYMENT-SIGNATURE', header).send(agentBody());
+
+        expect(res.status).toBe(402);
+        expect(paymentError(res)).toBe('payment_identifier_required');
+        expect(facilitator.settle).not.toHaveBeenCalled();
+        expect(pool.getCalls()).toHaveLength(0);
+    });
+
+    it('returns the original 201 for an exact replay without settling or writing again', async () => {
+        const body = agentBody();
+        const header = await payFor(app, body);
+        idempotencyRows = [{
+            id: 77,
+            proposal_id: body.proposalId,
+            created_at: new Date('2026-09-20T02:01:03.000Z'),
+            screenshot_url: null,
+            author: agent.address,
+            agent_request_hash: hashAgentProposalRequest(body),
+            paid: { id: PAYMENT_ID, network: NETWORK, tx: TX }
+        }];
+        sequence.length = 0;
+
+        const res = await request(app).post(AGENT_PROPOSALS_PATH).set('PAYMENT-SIGNATURE', header).send(body);
+
+        expect(res.status).toBe(201);
+        expect(res.body).toEqual({
+            id: 77,
+            proposalId: body.proposalId,
+            createdAt: '2026-09-20T02:01:03.000Z',
+            screenshotUrl: null
+        });
+        expect(decodePaymentResponseHeader(res.headers['payment-response'])).toMatchObject({
+            success: true,
+            transaction: TX,
+            payer: agent.address
+        });
+        expect(sequence).toEqual(['db']);
+        expect(facilitator.settle).not.toHaveBeenCalled();
+        expect(pool.getCalls()).toHaveLength(0);
+    });
+
+    it('rejects reuse of a payment identifier for a changed request before settlement', async () => {
+        const body = agentBody();
+        const changed = agentBody({ description: 'A different operation.' });
+        const header = await payFor(app, changed);
+        idempotencyRows = [{
+            id: 77,
+            proposal_id: body.proposalId,
+            created_at: new Date(),
+            screenshot_url: null,
+            author: agent.address,
+            agent_request_hash: hashAgentProposalRequest(body),
+            paid: { id: PAYMENT_ID, network: NETWORK, tx: TX }
+        }];
+
+        const res = await request(app).post(AGENT_PROPOSALS_PATH).set('PAYMENT-SIGNATURE', header).send(changed);
+
+        expect(res.status).toBe(402);
+        expect(paymentError(res)).toBe('payment_identifier_conflict');
+        expect(facilitator.settle).not.toHaveBeenCalled();
+        expect(pool.getCalls()).toHaveLength(0);
+    });
+
     it('falls back to the transaction payer when the facilitator receipt omits it', async () => {
         facilitator = createFakeFacilitator(sequence, { settlePayer: '' });
         app = createApp(pool, facilitator);
@@ -295,14 +389,15 @@ describe(`POST ${AGENT_PROPOSALS_PATH} — paid`, () => {
         const res = await request(app).post(AGENT_PROPOSALS_PATH).set('PAYMENT-SIGNATURE', header).send(agentBody());
 
         expect(res.status).toBe(402);
-        expect(sequence).toEqual(['settle']);
+        expect(sequence).toEqual(['db', 'settle']);
         expect(pool.getCalls()).toHaveLength(0);
     });
 
     it('still reports a duplicate proposal id as 409 after settlement', async () => {
         const dup = Object.assign(new Error('duplicate key'), { code: '23505', detail: 'Key (proposal_id)=(test-proposal-001) already exists.' });
-        pool.query = async () => {
+        pool.query = async (sql) => {
             sequence.push('db');
+            if (sql.includes('WHERE agent_payment_id = $1')) return { rows: [], rowCount: 0 };
             throw dup;
         };
         const header = await payFor(app, agentBody());
@@ -340,6 +435,19 @@ describe('the free route and the unconfigured server', () => {
 
         expect(res.status).toBe(503);
         expect(res.body.missing).toEqual(['X402_FACILITATOR_URL', 'X402_PAY_TO', 'X402_PRICE_PROPOSAL']);
+        expect(facilitator.settle).not.toHaveBeenCalled();
+        expect(pool.getCalls()).toHaveLength(0);
+    });
+
+    it('fails closed when the hosted CDP facilitator has no server credentials', async () => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        const bare = createApp(pool, facilitator, { ...ENV, X402_FACILITATOR_URL: CDP_FACILITATOR_URL });
+        warn.mockRestore();
+
+        const res = await request(bare).post(AGENT_PROPOSALS_PATH).send(agentBody());
+
+        expect(res.status).toBe(503);
+        expect(res.body.missing).toEqual(['CDP_API_KEY_ID', 'CDP_API_KEY_SECRET']);
         expect(facilitator.settle).not.toHaveBeenCalled();
         expect(pool.getCalls()).toHaveLength(0);
     });

@@ -42,7 +42,12 @@ describe('normalizeServerProposalSummary', () => {
         type: 'road',
         status: 'Active',
         createdAt: '2026-07-14T00:47:49.263Z',
-        screenshotUrl: 'https://api.urbangametheory.xyz/uploads/images/proposal-thumb-62-1784065207119.png'
+        screenshotUrl: 'https://api.urbangametheory.xyz/uploads/images/proposal-thumb-62-1784065207119.png',
+        agent: {
+            persona: 'densifier-01',
+            wallet: 'AgentWallet111111111111111111111111111111111',
+            paid: { tx: 'SettlementSignature111111111111111111111111111' }
+        }
     };
 
     it('carries the server-rendered thumbnail url through to the list item', () => {
@@ -59,6 +64,10 @@ describe('normalizeServerProposalSummary', () => {
     it('leaves screenshotUrl null when the server has no thumbnail for the proposal', () => {
         const { screenshotUrl, ...withoutThumb } = summaryRow;
         expect(normalizeServerProposalSummary(withoutThumb, 'zagreb').screenshotUrl).toBeNull();
+    });
+
+    it('carries verified agent provenance through to the list card', () => {
+        expect(normalizeServerProposalSummary(summaryRow, 'zagreb').agent).toEqual(summaryRow.agent);
     });
 
     it('still maps the identifying fields the list keys off', () => {

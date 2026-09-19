@@ -1044,7 +1044,19 @@
             },
             "descendantRoadSuffix": " • Cesta",
             "descendantRoadNamedSuffix": " • Cesta: {{name}}",
-            "basedOn": "Temeljeno na"
+            "basedOn": "Temeljeno na",
+            "agent": {
+                "badge": "Prijedlog agenta",
+                "sectionLabel": "Podrijetlo prijedloga agenta",
+                "verified": "Potvrđeno slanje putem x402",
+                "payer": "Novčanik platitelja",
+                "run": "Izvršavanje agenta",
+                "settlement": "Namirenje",
+                "flowLabel": "Kako je prijedlog nastao",
+                "flowDiscover": "API dostupan agentima",
+                "flowPay": "Plaćanje putem x402",
+                "flowStore": "Spremljeni prijedlog"
+            }
         },
         "block": {
             "title": "Informacije o bloku",

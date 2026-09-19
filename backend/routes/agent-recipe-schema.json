@@ -13,7 +13,7 @@
       "items": { "type": "string", "maxLength": 255 },
       "description": "The parcels the proposal is declared on (from POST /parcels/under)."
     },
-    "proposalId": { "type": "string", "maxLength": 255, "description": "Optional unique id; the server generates one if absent. A duplicate is a paid 409." },
+    "proposalId": { "type": "string", "maxLength": 255, "description": "Unique operation id. Reuse it, together with the same x402 payment identifier and body, for safe retries." },
     "type": { "type": "string", "maxLength": 50, "description": "parcel | building | structure | road (free text, 50 chars)." },
     "name": { "type": "string", "maxLength": 500 },
     "title": { "type": "string", "maxLength": 500 },

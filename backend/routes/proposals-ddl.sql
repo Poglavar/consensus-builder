@@ -67,6 +67,10 @@ CREATE TABLE IF NOT EXISTS proposal (
     -- (apply order stays created_at via plan-order.js). NULL = unbucketed.
     epoch_year INTEGER CHECK (epoch_year IS NULL OR (epoch_year BETWEEN 2026 AND 2966)),
 
+    -- x402 idempotency metadata. NULL for proposals created through the free human route.
+    agent_payment_id VARCHAR(128),
+    agent_request_hash VARCHAR(64),
+
     -- Full proposal data as JSONB (for complete reconstruction)
     -- This stores the entire proposal object as it exists in the frontend
     proposal_data JSONB NOT NULL,
@@ -94,6 +98,8 @@ CREATE INDEX IF NOT EXISTS idx_proposal_created_at ON proposal(created_at);
 CREATE INDEX IF NOT EXISTS idx_proposal_expires_at ON proposal(expires_at);
 CREATE INDEX IF NOT EXISTS idx_proposal_cadastre_parcel_ids ON proposal USING GIN(cadastre_parcel_ids);
 CREATE INDEX IF NOT EXISTS idx_proposal_proposal_data ON proposal USING GIN(proposal_data);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_proposal_agent_payment_id
+    ON proposal(agent_payment_id) WHERE agent_payment_id IS NOT NULL;
 
 -- Comments for documentation
 COMMENT ON TABLE proposal IS 'Stores proposal definitions and shared lifecycle state';
@@ -103,11 +109,17 @@ COMMENT ON COLUMN proposal.ownership_flow IS 'Per crossed base cadastral parcel:
 COMMENT ON COLUMN proposal.cadastre_frame IS 'Which cadastre frame the publish-time stamps were computed against ({ capturedAt }). See rethink-proposals.md D5/§11.';
 COMMENT ON COLUMN proposal.proposal_data IS 'Complete proposal definition used for reconstruction';
 COMMENT ON COLUMN proposal.screenshot_url IS 'Static map screenshot URL used as the proposal thumbnail in lists and cards';
+COMMENT ON COLUMN proposal.agent_payment_id IS 'Stable x402 payment-identifier used to replay a completed agent submission without settling again';
+COMMENT ON COLUMN proposal.agent_request_hash IS 'SHA-256 of the accepted request JSON bound to agent_payment_id';
 
 -- Migration for existing installs (table name is `proposal` on the live server):
 -- ALTER TABLE proposal ADD COLUMN IF NOT EXISTS screenshot_url VARCHAR(2000);
 -- ALTER TABLE proposal ADD COLUMN IF NOT EXISTS epoch_year INTEGER
 --     CHECK (epoch_year IS NULL OR (epoch_year BETWEEN 2026 AND 2966));
+-- ALTER TABLE proposal ADD COLUMN IF NOT EXISTS agent_payment_id VARCHAR(128);
+-- ALTER TABLE proposal ADD COLUMN IF NOT EXISTS agent_request_hash VARCHAR(64);
+-- CREATE UNIQUE INDEX IF NOT EXISTS idx_proposal_agent_payment_id
+--     ON proposal(agent_payment_id) WHERE agent_payment_id IS NOT NULL;
 --
 -- Lifecycle cleanup — run backend/scripts/remove-server-applied.js in dry-run mode first, then with
 -- --apply. Add --drop-applied only after every deployed API version has stopped reading the column.

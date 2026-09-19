@@ -1044,7 +1044,19 @@
             },
             "descendantRoadSuffix": " • Put",
             "descendantRoadNamedSuffix": " • Put: {{name}}",
-            "basedOn": "Zasnovano na"
+            "basedOn": "Zasnovano na",
+            "agent": {
+                "badge": "Predlog agenta",
+                "sectionLabel": "Poreklo predloga agenta",
+                "verified": "Potvrđeno slanje putem x402",
+                "payer": "Novčanik platioca",
+                "run": "Izvršavanje agenta",
+                "settlement": "Poravnanje",
+                "flowLabel": "Kako je predlog nastao",
+                "flowDiscover": "API dostupan agentima",
+                "flowPay": "Plaćanje putem x402",
+                "flowStore": "Sačuvani predlog"
+            }
         },
         "block": {
             "title": "Informacije o bloku",

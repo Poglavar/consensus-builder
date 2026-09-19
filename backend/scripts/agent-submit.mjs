@@ -13,7 +13,14 @@
 //       [--rpc https://api.devnet.solana.com] [--dry-run]
 
 import { readFileSync } from 'node:fs';
-import { createPaidClient, fetchChallenge, postAgentProposal, agentProposalsUrl } from '../agents/x402-client.js';
+import { randomUUID } from 'node:crypto';
+import {
+    agentProposalsUrl,
+    createPaidClient,
+    fetchChallenge,
+    paymentIdForProposal,
+    postAgentProposal
+} from '../agents/x402-client.js';
 
 function usage(exitCode) {
     const lines = [
@@ -25,6 +32,7 @@ function usage(exitCode) {
         '  --city <id>           City id, e.g. zagreb',
         '  --parcels <a,b,...>   Cadastre parcel ids the proposal covers',
         'Optional:',
+        '  --proposal-id <id>    Stable proposal id; reuse it to retry without paying twice',
         '  --name, --description, --offer <number>, --currency <code>   proposal fields',
         '  --persona <name> --rationale <text> --run-id <id>             stored under agent.*',
         '  --rpc <url>           Solana RPC for the payment client (default: the network default)',
@@ -66,12 +74,8 @@ async function main() {
         }
     }
 
-    const secretKey = new Uint8Array(JSON.parse(readFileSync(args.keypair, 'utf8')));
-    const { payerAddress, paidFetch } = await createPaidClient({ secretKey, rpcUrl: args.rpc });
-    const target = agentProposalsUrl(args.url);
-    log(`payer ${payerAddress} → ${target}`);
-
     const body = {
+        proposalId: args['proposal-id'] ?? `agent-submit-${randomUUID()}`,
         city: args.city,
         cadastreParcelIds: args.parcels.split(',').map(s => s.trim()).filter(Boolean),
         type: 'parcel',
@@ -85,6 +89,14 @@ async function main() {
             run_id: args['run-id'] ?? null
         }
     };
+    const secretKey = new Uint8Array(JSON.parse(readFileSync(args.keypair, 'utf8')));
+    const { payerAddress, paidFetch } = await createPaidClient({
+        secretKey,
+        paymentId: paymentIdForProposal(body.proposalId),
+        rpcUrl: args.rpc
+    });
+    const target = agentProposalsUrl(args.url);
+    log(`payer ${payerAddress} → ${target} (${body.proposalId})`);
 
     // The challenge first, so a dry run shows exactly what would be paid.
     const required = await fetchChallenge({ baseUrl: args.url, body });

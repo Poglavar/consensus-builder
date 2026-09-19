@@ -7,6 +7,13 @@ wallet becomes the proposal's `author`. No account, no API key, no browser.
 Machine-readable version of this page: [`$(base)/docs/agents.json`]($(base)/docs/agents.json)
 (the minimal recipe as a JSON Schema plus the live payment terms).
 
+The paid endpoint also declares the same input and output schemas through the x402 **Bazaar**
+extension. Facilitators that support Bazaar can therefore index it as a machine-discoverable HTTP
+resource after a client echoes the declaration in a successful payment.
+
+This deployment uses Coinbase's hosted CDP Facilitator. The server authenticates settlement calls
+with `CDP_API_KEY_ID` and `CDP_API_KEY_SECRET`; buyers never receive or need those credentials.
+
 ## 1. What you need
 
 - A Solana keypair (e.g. `solana-keygen new -o agent.json`).
@@ -35,6 +42,7 @@ Read routes are free and need no Origin header.
 
 ```json
 {
+  "proposalId": "agent-densifier-01-2026-09-20-1",
   "city": "zagreb",
   "cadastreParcelIds": ["HR-335550-1234/1"],
   "type": "parcel",
@@ -61,25 +69,41 @@ shape the app stores them; fetch one with `GET /proposals/<id>` to see the field
 
 1. `POST $(base)/agent/proposals` with the JSON body → **402** with a `PAYMENT-REQUIRED` header. The
    header is base64 JSON naming the network, the USDC mint, the amount in atomic units, the treasury
-   address and `paymentFlow: "upfront"`.
+   address, `paymentFlow: "upfront"`, and the required standard `payment-identifier` extension.
 2. Your client signs a USDC `TransferChecked` for that amount (the facilitator pays the fee), retries
-   the same request with a `PAYMENT-SIGNATURE` header.
+   the same request with a `PAYMENT-SIGNATURE` header. Put a stable 16–128 character id in the
+   `payment-identifier` extension; reuse it only for retries of this exact body.
 3. The server settles the transfer first, then stores the proposal → **201** `{ id, proposalId,
    createdAt }` and a `PAYMENT-RESPONSE` header with the settlement signature. The stored record carries
    `author = <your wallet>` and `agent.paid.tx = <signature>`.
+
+If the response is lost, retry with the same wallet, body and payment identifier. The server returns
+the original **201** and settlement receipt without calling the facilitator or charging again. Reusing
+the identifier with a changed body or wallet is rejected before settlement.
 
 `@x402/fetch` does steps 1–3 for you:
 
 ```js
 import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { createKeyPairSignerFromBytes } from '@solana/kit';
-import { wrapFetchWithPaymentFromConfig } from '@x402/fetch';
+import { wrapFetchWithPayment, x402Client } from '@x402/fetch';
+import { PAYMENT_IDENTIFIER, appendPaymentIdentifierToExtensions } from '@x402/extensions/payment-identifier';
 import { ExactSvmScheme } from '@x402/svm';
 
 const signer = await createKeyPairSignerFromBytes(new Uint8Array(JSON.parse(readFileSync('agent.json', 'utf8'))));
-const paidFetch = wrapFetchWithPaymentFromConfig(fetch, {
-  schemes: [{ network: '$(network)', client: new ExactSvmScheme(signer) }]
-});
+const paymentId = `proposal_${createHash('sha256').update(recipe.proposalId).digest('hex')}`;
+const client = new x402Client()
+  .register('$(network)', new ExactSvmScheme(signer))
+  .registerExtension({
+    key: PAYMENT_IDENTIFIER,
+    async enrichPaymentPayload(payload, required) {
+      const extensions = structuredClone(payload.extensions ?? required.extensions ?? {});
+      appendPaymentIdentifierToExtensions(extensions, paymentId);
+      return { ...payload, extensions };
+    }
+  });
+const paidFetch = wrapFetchWithPayment(fetch, client);
 const res = await paidFetch('$(base)/agent/proposals', {
   method: 'POST',
   headers: { 'content-type': 'application/json' },
@@ -90,6 +114,23 @@ console.log(res.status, await res.json());
 
 The reference implementation with a `--dry-run` that prints the challenge and pays nothing is
 `backend/scripts/agent-submit.mjs` in the repository.
+
+For a judge-facing proof, run the deterministic end-to-end demo. It discovers this machine manifest
+and the Bazaar declaration, submits once, deliberately retries with the same payment identifier,
+checks that the retry returned the original settlement, reads the stamped provenance back, and prints
+the proposal and Solana Explorer links:
+
+```sh
+cd backend
+npm run demo:x402 -- --live --url $(base) \
+  --keypair ~/.config/solana/persona.json \
+  --city zagreb --parcels HR-335550-1234/1 \
+  --app-url https://urbangametheory.xyz
+```
+
+Use `--dry-run` and omit `--keypair` to perform discovery and inspect the 402 without signing,
+paying or writing anything. The generated proposal id and payment identifier are deterministic for
+the supplied arguments, so rerunning the live command demonstrates the same no-double-charge replay.
 
 ## 5. Read it back
 
@@ -104,8 +145,10 @@ lists everything your wallet filed in that city.
 | 402 with `PAYMENT-REQUIRED` | Pay and retry. | no |
 | 402 with body `error: "author_mismatch"` | `author` is not the paying wallet. | no |
 | 402 with body `error: "invalid_payment_payload"` | Signed transaction could not be decoded. | no |
+| 402 with body `error: "payment_identifier_required"` | Add the required standard extension id. | no |
+| 402 with body `error: "payment_identifier_conflict"` | That id belongs to another wallet or body. | no |
 | 402 after a settlement attempt | Facilitator refused (e.g. insufficient USDC); see `PAYMENT-RESPONSE`. | no |
-| 201 | Stored. | yes |
+| 201 | Stored, or an exact replay of a stored request. | first request only |
 | 409 | `proposalId` already exists — pick unique ids. | **yes** |
 | 503 | This server has no x402 configuration. | no |
 

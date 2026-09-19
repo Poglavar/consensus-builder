@@ -6,7 +6,15 @@
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 import { encodePaymentRequiredHeader, encodePaymentResponseHeader } from '@x402/core/http';
-import { createPaidClient, fetchChallenge, postAgentProposal, agentProposalsUrl, AGENT_PROPOSALS_PATH } from '../agents/x402-client.js';
+import { declarePaymentIdentifierExtension } from '@x402/extensions/payment-identifier';
+import {
+    AGENT_PROPOSALS_PATH,
+    agentProposalsUrl,
+    createPaidClient,
+    fetchChallenge,
+    paymentIdForProposal,
+    postAgentProposal
+} from '../agents/x402-client.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
@@ -17,6 +25,7 @@ const BASE = 'http://backend.test:3999';
 const TREASURY = web3.Keypair.generate().publicKey.toBase58();
 const PAYER = web3.Keypair.generate().publicKey.toBase58();
 const BODY = { city: 'zagreb', cadastreParcelIds: ['HR-1'], type: 'parcel', name: 'test' };
+const PAYMENT_ID = 'proposal_1234567890abcdef';
 
 function challengeHeader() {
     return encodePaymentRequiredHeader({
@@ -31,7 +40,8 @@ function challengeHeader() {
             payTo: TREASURY,
             maxTimeoutSeconds: 60,
             extra: { paymentFlow: 'upfront' }
-        }]
+        }],
+        extensions: { 'payment-identifier': declarePaymentIdentifierExtension(true) }
     });
 }
 
@@ -72,7 +82,12 @@ describe('createPaidClient', () => {
         const calls = [];
         const fetchImpl = async (url, init) => { calls.push({ url, init }); return createdResponse(); };
 
-        const { payerAddress, paidFetch } = await createPaidClient({ secretKey: keypair.secretKey, rpcUrl: 'http://127.0.0.1:1', fetchImpl });
+        const { payerAddress, paidFetch } = await createPaidClient({
+            secretKey: keypair.secretKey,
+            paymentId: PAYMENT_ID,
+            rpcUrl: 'http://127.0.0.1:1',
+            fetchImpl
+        });
 
         expect(payerAddress).toBe(keypair.publicKey.toBase58());
         expect(typeof paidFetch).toBe('function');
@@ -92,6 +107,7 @@ describe('createPaidClient', () => {
         const fetchImpl = async () => challengeResponse();
         const { paidFetch } = await createPaidClient({
             secretKey: web3.Keypair.generate().secretKey,
+            paymentId: PAYMENT_ID,
             rpcUrl: 'http://127.0.0.1:1', // refused locally: proves no network is reached
             fetchImpl
         });
@@ -103,8 +119,27 @@ describe('createPaidClient', () => {
     });
 
     it('refuses a key that is not 64 bytes', async () => {
-        await expect(createPaidClient({ secretKey: new Uint8Array(32) })).rejects.toThrow(/64 bytes/);
-        await expect(createPaidClient({ secretKey: [1, 2, 3] })).rejects.toThrow(/Uint8Array/);
+        await expect(createPaidClient({ secretKey: new Uint8Array(32), paymentId: PAYMENT_ID })).rejects.toThrow(/64 bytes/);
+        await expect(createPaidClient({ secretKey: [1, 2, 3], paymentId: PAYMENT_ID })).rejects.toThrow(/Uint8Array/);
+    });
+
+    it('requires a protocol-valid stable payment id', async () => {
+        const secretKey = web3.Keypair.generate().secretKey;
+        await expect(createPaidClient({ secretKey })).rejects.toThrow(/paymentId/);
+        await expect(createPaidClient({ secretKey, paymentId: 'too-short' })).rejects.toThrow(/paymentId/);
+    });
+});
+
+describe('paymentIdForProposal', () => {
+    it('derives the same valid id for the same proposal id', () => {
+        const id = paymentIdForProposal('agent-densifier-01-2026-09-17-1');
+        expect(id).toBe(paymentIdForProposal('agent-densifier-01-2026-09-17-1'));
+        expect(id).toMatch(/^proposal_[a-f0-9]{64}$/);
+        expect(id).not.toBe(paymentIdForProposal('agent-densifier-01-2026-09-17-2'));
+    });
+
+    it('requires a proposal id', () => {
+        expect(() => paymentIdForProposal('')).toThrow(/proposalId/);
     });
 });
 

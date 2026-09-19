@@ -1061,7 +1061,19 @@
             },
             "descendantRoadSuffix": " • Carretera",
             "descendantRoadNamedSuffix": " • Carretera: {{name}}",
-            "basedOn": "Basado en"
+            "basedOn": "Basado en",
+            "agent": {
+                "badge": "Propuesta de agente",
+                "sectionLabel": "Procedencia de la propuesta",
+                "verified": "Envío x402 verificado",
+                "payer": "Cartera pagadora",
+                "run": "Ejecución del agente",
+                "settlement": "Liquidación",
+                "flowLabel": "Cómo se creó esta propuesta",
+                "flowDiscover": "API detectable",
+                "flowPay": "Pago x402",
+                "flowStore": "Propuesta almacenada"
+            }
         },
         "block": {
             "title": "Información del bloque",

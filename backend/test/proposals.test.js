@@ -357,7 +357,8 @@ describe('POST /proposals', () => {
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[7]).toBe('Active');
-        expect(insertParams).toHaveLength(36);
+        expect(insertParams).toHaveLength(38);
+        expect(insertParams.slice(36)).toEqual([null, null]);
         expect(pool.getCalls()[0].sql).not.toMatch(/\bapplied\b/);
         expect(JSON.parse(insertParams[24])).toEqual({ width: 6 });
         expect(JSON.parse(insertParams[32])).not.toHaveProperty('applied');
@@ -1221,6 +1222,21 @@ describe('GET /proposals/summary', () => {
         const call = pool.getCalls()[0];
         expect(call.params).toContain(5);
         expect(call.params).toContain(10);
+    });
+
+    it('includes agent provenance in lightweight summaries for the proposal card badge', async () => {
+        const agent = {
+            persona: 'densifier-01',
+            wallet: 'AgentWallet111111111111111111111111111111111',
+            paid: { amount: '0.05', tx: 'SettlementSignature111111111111111111111111111' }
+        };
+        pool.setResult({ rows: [summaryDbRow({ agent })] });
+
+        const res = await request(app).get('/proposals/summary');
+
+        expect(res.status).toBe(200);
+        expect(res.body.proposals[0].agent).toEqual(agent);
+        expect(pool.getCalls()[0].sql).toMatch(/proposal_data->'agent' AS agent/);
     });
 
     it('serves the goal so the client does not re-derive it from the lossy type', async () => {

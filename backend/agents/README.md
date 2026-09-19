@@ -85,7 +85,7 @@ A batch that has not finished inside `awaitMs` is not an error — `runPickBatch
 | `ANTHROPIC_API_KEY` | `llm-picker.js` (via the SDK client the caller constructs) | the Batches API key |
 | `AGENT_LLM_MODEL` | the orchestrator, passed into `buildPickRequests`/`runPickBatch` | overrides `DEFAULT_MODEL` (`claude-opus-5`); must be priced in `agents/lib/llm-cost/rates.json` or the cost call throws |
 | `PGHOST` / `PGPORT` / `PGUSER` / `PGPASSWORD` / `PGDATABASE` | `parcel-source.js` (via the pool the caller passes) | the shared `geodata` database |
-| `X402_*` | `routes/agent-proposals.js` | the pay-to-post gate; see the design doc §WS1 |
+| `X402_*`, `CDP_API_KEY_ID`, `CDP_API_KEY_SECRET` | `routes/agent-proposals.js` | the hosted-CDP pay-to-post gate; see the design doc §WS1 |
 
 ## Tests
 
@@ -115,4 +115,3 @@ Confirmation polls `getSignatureStatuses` (`solana-send.js`): Alchemy's devnet R
 `signatureSubscribe`, and web3's default confirm then reports a landed transaction as expired.
 Env: `ANTHROPIC_API_KEY`, `AGENT_LLM_MODEL` (claude-opus-5), `AGENT_LLM_DAILY_CAP_USD`, `AGENT_API_BASE`,
 `SOLANA_RPC_URL`, `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` (optional; one summary per run).
-

@@ -3,8 +3,12 @@
 import { describe, it, expect } from 'vitest';
 import {
     buildAgentStamp,
+    CDP_CREDENTIAL_ENV_NAMES,
+    CDP_FACILITATOR_URL,
     formatAtomicAmount,
+    hashAgentProposalRequest,
     isAgentPath,
+    isCdpFacilitatorUrl,
     readX402Config,
     X402_ENV_NAMES
 } from '../utils/x402-payment.js';
@@ -34,8 +38,32 @@ describe('readX402Config', () => {
         expect(config.network).toBeNull();
     });
 
+    it('requires CDP credentials only for the hosted CDP facilitator', () => {
+        const hosted = readX402Config({ ...FULL_ENV, X402_FACILITATOR_URL: CDP_FACILITATOR_URL });
+        expect(hosted.enabled).toBe(false);
+        expect(hosted.usesCdp).toBe(true);
+        expect(hosted.missing).toEqual(CDP_CREDENTIAL_ENV_NAMES);
+
+        const configured = readX402Config({
+            ...FULL_ENV,
+            X402_FACILITATOR_URL: CDP_FACILITATOR_URL,
+            CDP_API_KEY_ID: 'organizations/example/apiKeys/example',
+            CDP_API_KEY_SECRET: 'secret'
+        });
+        expect(configured.enabled).toBe(true);
+        expect(configured.missing).toEqual([]);
+    });
+
+    it('recognizes only the canonical CDP hosted facilitator URL', () => {
+        expect(isCdpFacilitatorUrl(CDP_FACILITATOR_URL)).toBe(true);
+        expect(isCdpFacilitatorUrl(`${CDP_FACILITATOR_URL}/`)).toBe(true);
+        expect(isCdpFacilitatorUrl('https://x402.org/facilitator')).toBe(false);
+        expect(isCdpFacilitatorUrl('not a url')).toBe(false);
+    });
+
     it('reads exactly the documented variable names', () => {
         expect(X402_ENV_NAMES).toEqual(['X402_NETWORK', 'X402_FACILITATOR_URL', 'X402_PAY_TO', 'X402_PRICE_PROPOSAL']);
+        expect(CDP_CREDENTIAL_ENV_NAMES).toEqual(['CDP_API_KEY_ID', 'CDP_API_KEY_SECRET']);
     });
 });
 
@@ -76,8 +104,21 @@ describe('formatAtomicAmount', () => {
     });
 });
 
+describe('hashAgentProposalRequest', () => {
+    it('is independent of object key order but preserves array order', () => {
+        const first = hashAgentProposalRequest({ city: 'zagreb', nested: { b: 2, a: 1 }, parcels: ['A', 'B'] });
+        const reordered = hashAgentProposalRequest({ parcels: ['A', 'B'], nested: { a: 1, b: 2 }, city: 'zagreb' });
+        const changed = hashAgentProposalRequest({ city: 'zagreb', nested: { a: 1, b: 2 }, parcels: ['B', 'A'] });
+
+        expect(first).toMatch(/^[a-f0-9]{64}$/);
+        expect(reordered).toBe(first);
+        expect(changed).not.toBe(first);
+    });
+});
+
 describe('buildAgentStamp', () => {
     const payment = {
+        id: 'proposal_1234567890abcdef',
         payer: 'PAYER111',
         transaction: 'SIG111',
         network: 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
@@ -93,7 +134,7 @@ describe('buildAgentStamp', () => {
             rationale: 'infill',
             run_id: 'r1',
             wallet: 'PAYER111',
-            paid: { network: payment.network, asset: payment.asset, amount: '0.05', amountAtomic: '50000', tx: 'SIG111' }
+            paid: { id: payment.id, network: payment.network, asset: payment.asset, amount: '0.05', amountAtomic: '50000', tx: 'SIG111' }
         });
     });
 

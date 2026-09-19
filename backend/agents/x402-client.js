@@ -4,9 +4,15 @@
 // of its own — scripts/agent-submit.mjs and agents/run.mjs are the callers.
 
 import { createKeyPairSignerFromBytes } from '@solana/kit';
-import { wrapFetchWithPaymentFromConfig } from '@x402/fetch';
+import { wrapFetchWithPayment, x402Client } from '@x402/fetch';
 import { decodePaymentRequiredHeader, decodePaymentResponseHeader } from '@x402/core/http';
+import {
+    PAYMENT_IDENTIFIER,
+    appendPaymentIdentifierToExtensions,
+    isValidPaymentId
+} from '@x402/extensions/payment-identifier';
 import { ExactSvmScheme } from '@x402/svm';
+import { createHash } from 'node:crypto';
 
 export const AGENT_PROPOSALS_PATH = '/agent/proposals';
 
@@ -22,6 +28,13 @@ function resolveFetch(fetchImpl) {
     return impl;
 }
 
+/** A stable, protocol-valid payment id for every attempt to create the same proposal id. */
+export function paymentIdForProposal(proposalId) {
+    const value = typeof proposalId === 'string' ? proposalId.trim() : '';
+    if (!value) throw new Error('proposalId is required to derive a stable payment id');
+    return `proposal_${createHash('sha256').update(value).digest('hex')}`;
+}
+
 /**
  * Build the paying client for one persona keypair.
  *
@@ -29,19 +42,25 @@ function resolveFetch(fetchImpl) {
  * only becomes known when the 402 challenge arrives, and @x402/fetch matches a wildcard family
  * entry against whatever network the challenge names (see node_modules/@x402/fetch/README.md).
  *
- * @param {{ secretKey: Uint8Array, rpcUrl?: string, fetchImpl?: Function }} options
+ * @param {{ secretKey: Uint8Array, paymentId: string, rpcUrl?: string, fetchImpl?: Function }} options
  * @returns {Promise<{ payerAddress: string, paidFetch: Function }>}
  */
-export async function createPaidClient({ secretKey, rpcUrl, fetchImpl } = {}) {
+export async function createPaidClient({ secretKey, paymentId, rpcUrl, fetchImpl } = {}) {
     if (!(secretKey instanceof Uint8Array)) throw new Error('secretKey must be a Uint8Array (the 64-byte array in a Solana keypair JSON file)');
     if (secretKey.length !== 64) throw new Error(`secretKey must be 64 bytes, got ${secretKey.length}`);
+    if (!isValidPaymentId(paymentId)) throw new Error('paymentId must be 16–128 characters using only letters, numbers, hyphens and underscores');
     const signer = await createKeyPairSignerFromBytes(secretKey);
-    const paidFetch = wrapFetchWithPaymentFromConfig(resolveFetch(fetchImpl), {
-        schemes: [{
-            network: 'solana:*',
-            client: new ExactSvmScheme(signer, rpcUrl ? { rpcUrl } : undefined)
-        }]
-    });
+    const client = new x402Client()
+        .register('solana:*', new ExactSvmScheme(signer, rpcUrl ? { rpcUrl } : undefined))
+        .registerExtension({
+            key: PAYMENT_IDENTIFIER,
+            async enrichPaymentPayload(payload, paymentRequired) {
+                const extensions = structuredClone(payload.extensions ?? paymentRequired.extensions ?? {});
+                appendPaymentIdentifierToExtensions(extensions, paymentId);
+                return { ...payload, extensions };
+            }
+        });
+    const paidFetch = wrapFetchWithPayment(resolveFetch(fetchImpl), client);
     return { payerAddress: signer.address, paidFetch };
 }
 

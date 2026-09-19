@@ -27,7 +27,7 @@ import { fetchCandidateParcels } from './parcel-source.js';
 import { planCandidates } from './planner.js';
 import { buildProposalRecord } from './record-builder.js';
 import { buildPickRequests, parsePicks, estimateBatchCostUsd, runPickBatch, pickCustomId, DEFAULT_MODEL } from './llm-picker.js';
-import { createPaidClient, postAgentProposal } from './x402-client.js';
+import { createPaidClient, paymentIdForProposal, postAgentProposal } from './x402-client.js';
 import { mintProposal } from './minter.js';
 import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
 import { getRun, startRun, updateRun, recordCosts, dailySpendUsd, assertUnderCap, dailyCapUsd } from './ledger.js';
@@ -106,8 +106,8 @@ function stageIndex(stage) {
     return stage ? STAGES.indexOf(stage) : -1;
 }
 
-// summary.picks carry a deterministic proposalId so a rerun that already posted one gets the 409
-// with the same id instead of a duplicate proposal.
+// summary.picks carry a deterministic proposalId. It also derives the x402 payment identifier, so
+// a retry of a completed post returns the original 201 without another settlement.
 function proposalIdFor(persona, day, index) {
     return `agent-${persona.name}-${day}-${index + 1}`;
 }
@@ -252,7 +252,6 @@ async function main() {
                 // post (paid)
                 if (!posts[pick.candidateId]) {
                     try {
-                        const { paidFetch } = await createPaidClient({ secretKey: secret, rpcUrl });
                         // The minter reports the account as proposalPda; the record (and the app's
                         // isProposalMinted) expects onchain.proposalId. Map explicitly — a null here
                         // would store a record that looks minted and points nowhere.
@@ -264,8 +263,13 @@ async function main() {
                             contractAddress: mint.contractAddress ?? PROPOSAL_NFT_PROGRAM
                         };
                         const body = buildProposalRecord({ candidate, pick, persona, runId: e.runId, city, onchain, turf });
+                        const { paidFetch } = await createPaidClient({
+                            secretKey: secret,
+                            paymentId: paymentIdForProposal(body.proposalId),
+                            rpcUrl
+                        });
                         const res = await postAgentProposal({ baseUrl: apiBase, paidFetch, body });
-                        if (res.status === 201 || (res.status === 409 && res.body?.id)) {
+                        if (res.status === 201) {
                             posts[pick.candidateId] = { id: res.body.id, proposalId: res.body.proposalId ?? pick.proposalId, status: res.status, tx: res.receipt?.transaction ?? null };
                             await updateRun(pool, e.runId, { stage: 'minted', status: 'running', summaryPatch: { posts } });
                             log(`${tag} posted: row ${res.body.id} (${res.status}) paid tx ${res.receipt?.transaction ?? '-'}`);
