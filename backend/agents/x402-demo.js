@@ -282,7 +282,9 @@ export async function runX402Demo({
         links: {
             manifest: manifestUrl,
             proposalApi: stored.url,
-            proposalApp: proposalAppUrl(appUrl, body.proposalId),
+            // The public frontend's share route is keyed by the database row id; the stable
+            // proposalId remains the API identity and is used by the read-back URL above.
+            proposalApp: proposalAppUrl(appUrl, first.body?.id ?? body.proposalId),
             settlement: solanaExplorerUrl(replayProof.transaction, first.receipt?.network || accept.network)
         }
     };

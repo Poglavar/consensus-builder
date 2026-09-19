@@ -160,7 +160,7 @@ describe('x402 demo evidence', () => {
         expect(result.replayProof.transaction).toBe(TX);
         expect(result.links).toMatchObject({
             proposalApi: `https://api.test/proposals/${body.proposalId}`,
-            proposalApp: `https://app.test/proposals/${body.proposalId}`,
+            proposalApp: 'https://app.test/proposals/7',
             settlement: `https://explorer.solana.com/tx/${TX}?cluster=devnet`
         });
         expect(result.discovered.catalogAfter.state).toBe('listed');
