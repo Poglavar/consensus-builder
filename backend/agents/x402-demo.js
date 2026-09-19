@@ -118,6 +118,30 @@ export async function findBazaarListing({ facilitatorUrl, submitUrl, payTo, netw
     if (!clean(facilitatorUrl)) return { state: 'unconfigured', listing: null };
     try {
         const client = bazaarClient ?? withBazaar(new HTTPFacilitatorClient({ url: facilitatorUrl }));
+        const expected = normalizeBaseUrl(submitUrl);
+        // CDP's public catalog currently ignores list filters (including payTo/network) and caps
+        // list pages at 20. Searching for the exact public URL avoids treating an unrelated first
+        // page as the whole Bazaar. Older facilitators may not expose search, so keep the list call
+        // as a compatibility fallback.
+        if (typeof client.extensions.bazaar.search === 'function') {
+            const result = await client.extensions.bazaar.search({
+                query: expected,
+                type: 'http',
+                payTo: clean(payTo) || undefined,
+                network: clean(network) || undefined,
+                extensions: 'bazaar',
+                limit: 100
+            });
+            const listing = (result?.resources || []).find(item => {
+                try { return normalizeBaseUrl(item.resource) === expected; } catch { return false; }
+            }) ?? null;
+            return {
+                state: listing ? 'listed' : 'not-listed',
+                listing,
+                total: result?.resources?.length ?? null,
+                partialResults: Boolean(result?.partialResults)
+            };
+        }
         const page = await client.extensions.bazaar.listResources({
             type: 'http',
             payTo: clean(payTo) || undefined,
@@ -126,7 +150,6 @@ export async function findBazaarListing({ facilitatorUrl, submitUrl, payTo, netw
             limit: 100,
             offset: 0
         });
-        const expected = normalizeBaseUrl(submitUrl);
         const listing = (page?.items || []).find(item => {
             try { return normalizeBaseUrl(item.resource) === expected; } catch { return false; }
         }) ?? null;

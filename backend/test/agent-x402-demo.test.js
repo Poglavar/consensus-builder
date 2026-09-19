@@ -67,20 +67,38 @@ describe('x402 demo discovery', () => {
     });
 
     it('finds only the exact endpoint in a facilitator catalog page', async () => {
-        const listResources = vi.fn().mockResolvedValue({
-            items: [{ resource: 'https://api.example.test/other' }, { resource: 'https://api.example.test/agent/proposals' }],
-            pagination: { total: 2 }
+        const search = vi.fn().mockResolvedValue({
+            resources: [{ resource: 'https://api.example.test/other' }, { resource: 'https://api.example.test/agent/proposals' }],
+            partialResults: false
         });
         const result = await findBazaarListing({
             facilitatorUrl: 'https://facilitator.test',
             submitUrl: 'https://api.example.test/agent/proposals',
             payTo: 'Treasury111',
             network: NETWORK,
-            bazaarClient: { extensions: { bazaar: { listResources } } }
+            bazaarClient: { extensions: { bazaar: { search } } }
         });
         expect(result.state).toBe('listed');
         expect(result.listing.resource).toContain('/agent/proposals');
-        expect(listResources).toHaveBeenCalledWith(expect.objectContaining({ type: 'http', extensions: 'bazaar' }));
+        expect(search).toHaveBeenCalledWith(expect.objectContaining({
+            query: 'https://api.example.test/agent/proposals',
+            type: 'http',
+            extensions: 'bazaar'
+        }));
+    });
+
+    it('falls back to listing for facilitators without Bazaar search', async () => {
+        const listResources = vi.fn().mockResolvedValue({
+            items: [{ resource: 'https://api.example.test/agent/proposals' }],
+            pagination: { total: 1 }
+        });
+        const result = await findBazaarListing({
+            facilitatorUrl: 'https://facilitator.test',
+            submitUrl: 'https://api.example.test/agent/proposals',
+            bazaarClient: { extensions: { bazaar: { listResources } } }
+        });
+        expect(result.state).toBe('listed');
+        expect(listResources).toHaveBeenCalledOnce();
     });
 });
 
