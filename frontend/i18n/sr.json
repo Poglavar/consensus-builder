@@ -1001,15 +1001,17 @@
                 "noDepositWarning": "Nema depozita - predlog nije podržan sredstvima"
             },
             "boost": {
-                "buttonLabel": "Pojačaj ovaj predlog",
-                "title": "Pojačaj predlog",
-                "closeLabel": "Zatvori dijalog za pojačanje",
-                "copy": "Kreator predloga, ali i bilo ko drugi, može da pojača predlog slanjem novca. Ako predlog istekne pre izvršenja, donacije će biti refundirane.",
-                "expiryLabel": "Vreme isteka pojačanja (opciono)",
-                "expiryPlaceholder": "YYYY-MM-DDTHH:MM:SSZ ili epoch sekunde",
-                "expiryHint": "Opciono: dodaj vreme posle kog ovo pojačanje ističe.",
-                "send": "Pošalji",
-                "cityTokenLabel": "City Meme Token"
+                "buttonLabel": "Založi USDC za ovaj predlog",
+                "title": "Založi za ovaj predlog",
+                "closeLabel": "Zatvori dijalog zaloga",
+                "copy": "Založite testni USDC u escrow. Sredstva se isplaćuju vlasniku predloga tek nakon izvršenja, ili se vraćaju vama ako se predlog otkaže ili istekne.",
+                "send": "Založi USDC"
+            },
+            "pledge": {
+                "summary": "Založeni USDC:",
+                "loading": "Učitavanje…",
+                "none": "0 USDC · još nema podržavalaca",
+                "unavailable": "Nedostupno"
             },
             "acceptTransfer": {
                 "buttonLabel": "Prihvati prenos vlasništva",

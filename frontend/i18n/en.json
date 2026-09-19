@@ -971,15 +971,17 @@
                 "noDepositWarning": "No deposit - proposal not backed by funds"
             },
             "boost": {
-                "buttonLabel": "Boost this proposal",
-                "title": "Boost the proposal",
-                "closeLabel": "Close boost dialog",
-                "copy": "The proposal creator, but also anyone else, can boost any proposal by sending money to it. If the proposal expires before executing the donations will be refunded.",
-                "cityTokenLabel": "City Meme Token",
-                "expiryLabel": "Boost expiry timestamp (optional)",
-                "expiryPlaceholder": "YYYY-MM-DDTHH:MM:SSZ or epoch seconds",
-                "expiryHint": "Optional: add a timestamp after which this boost should expire.",
-                "send": "Send"
+                "buttonLabel": "Pledge USDC to this proposal",
+                "title": "Pledge to this proposal",
+                "closeLabel": "Close pledge dialog",
+                "copy": "Pledge devnet USDC in escrow. It is released to the proposal owner only after execution, or refunded to you if the proposal is cancelled or expires.",
+                "send": "Pledge USDC"
+            },
+            "pledge": {
+                "summary": "USDC pledged:",
+                "loading": "Loading…",
+                "none": "0 USDC · no backers yet",
+                "unavailable": "Unavailable"
             },
             "acceptTransfer": {
                 "buttonLabel": "Accept ownership transfer",

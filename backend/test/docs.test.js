@@ -347,6 +347,11 @@ describe('agent quickstart docs', () => {
         });
         expect(res.body.endpoints.submit).toBe('https://api.example.test/agent/proposals');
         expect(res.body.market.programId).toMatch(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/);
+        expect(res.body.pledges).toMatchObject({
+            programId: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/),
+            cluster: 'devnet',
+            status: 'https://api.example.test/agent/pledges/{proposalAccount}'
+        });
         expect(res.body.docs).toBe('https://api.example.test/docs/agents');
     });
 
@@ -357,4 +362,3 @@ describe('agent quickstart docs', () => {
         expect(res.text).toContain('href="/docs/agents"');
     });
 });
-

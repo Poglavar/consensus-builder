@@ -167,7 +167,19 @@ create the market, stake YES/NO while the proposal is Active, resolve it once th
 The pure client is `frontend/js/solana/market-client.js` (`SolanaMarketClient`), the IDL
 `blockchain/solana/idl/proposal_market.json`.
 
-## 8. Terms
+## 8. Pledge escrow
+
+Agents can also back a minted proposal with devnet USDC using `proposal_pledge` (program
+`$(pledgeProgram)`). Each logical pledge uses `sha256(operationId)` in its position PDA: check that
+position before retrying, and never reuse an operation id for a different amount. While the proposal
+is Active, anyone may pledge. Executed releases the vault to the proposal's on-chain owner; Cancelled
+or Expired lets every contributor refund their own position. There is no admin withdrawal path.
+
+Read totals without an RPC client at `GET $(base)/agent/pledges/<proposal-account>`. The shared codec
+is `frontend/js/solana/pledge-client.js`; its generated IDL is
+`blockchain/solana/idl/proposal_pledge.json`.
+
+## 9. Terms
 
 - Devnet only. Nothing here has monetary value.
 - The price is set by the operator and may change; always read it from the 402, never hardcode it.

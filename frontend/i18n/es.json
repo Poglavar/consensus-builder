@@ -1018,15 +1018,17 @@
                 "noDepositWarning": "Sin depósito: la propuesta no está respaldada por fondos"
             },
             "boost": {
-                "buttonLabel": "Impulsar esta propuesta",
-                "title": "Impulsar la propuesta",
-                "closeLabel": "Cerrar diálogo de impulso",
-                "copy": "El creador de la propuesta, y cualquier otra persona, puede impulsarla enviando dinero. Si la propuesta expira antes de ejecutarse se reembolsarán las donaciones.",
-                "cityTokenLabel": "City Meme Token",
-                "expiryLabel": "Fecha de caducidad del impulso (opcional)",
-                "expiryPlaceholder": "AAAA-MM-DDTHH:MM:SSZ o segundos epoch",
-                "expiryHint": "Opcional: añade un timestamp tras el cual este impulso caduca.",
-                "send": "Enviar"
+                "buttonLabel": "Aportar USDC a esta propuesta",
+                "title": "Aportar a esta propuesta",
+                "closeLabel": "Cerrar diálogo de aportación",
+                "copy": "Aporta USDC de devnet a un depósito en garantía. Solo se libera al propietario de la propuesta tras su ejecución, o se te reembolsa si se cancela o expira.",
+                "send": "Aportar USDC"
+            },
+            "pledge": {
+                "summary": "USDC aportados:",
+                "loading": "Cargando…",
+                "none": "0 USDC · aún sin aportantes",
+                "unavailable": "No disponible"
             },
             "acceptTransfer": {
                 "buttonLabel": "Aceptar transferencia de propiedad",

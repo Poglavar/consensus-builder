@@ -35,6 +35,7 @@ import { setupAdsRoute } from './routes/ads.js';
 import { setupRoadParcelsRoute } from './routes/road-parcels.js';
 import { setupProposalsRoute } from './routes/proposals.js';
 import { setupAgentProposalsRoute } from './routes/agent-proposals.js';
+import { setupAgentPledgesRoute } from './routes/agent-pledges.js';
 import { setupTransactionsRoute } from './routes/transactions.js';
 import { isAgentPath } from './utils/x402-payment.js';
 import { setupRoadCorridorRoute } from './routes/road-corridor.js';
@@ -390,6 +391,7 @@ export function createApp({
     setupRoadParcelsRoute(app, activePool);
     setupProposalsRoute(app, activePool);
     setupAgentProposalsRoute(app, activePool, { env }); // paid x402 front door to the same create handler
+    setupAgentPledgesRoute(app, { env }); // read-only view; pledge writes go directly to Solana
     setupTransactionsRoute(app, activePool); // devnet transaction explorer, derived from the chain
     setupRoadCorridorRoute(app, activePool);
     setupReparcellizationRoute(app);

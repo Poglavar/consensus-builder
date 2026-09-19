@@ -184,8 +184,8 @@ describe('base58 helpers', () => {
 });
 
 describe('loadIdls', () => {
-    it('indexes the three programs by address and by name', () => {
-        expect([...idls.byName.keys()].sort()).toEqual(['parcel_nft', 'proposal_market', 'proposal_nft']);
+    it('indexes the app programs by address and by name', () => {
+        expect([...idls.byName.keys()].sort()).toEqual(['parcel_nft', 'proposal_market', 'proposal_nft', 'proposal_pledge']);
         expect(idls.byAddress.get(PROPOSAL_PROGRAM).name).toBe('proposal_nft');
         expect(idls.byAddress.get(MARKET_PROGRAM).name).toBe('proposal_market');
         expect(idls.byAddress.get('4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1').name).toBe('parcel_nft');
@@ -646,4 +646,3 @@ describe('program deploy buffer chunks', () => {
         expect(decoded.summary).toBe('treasury wallet uploaded a program chunk to deploy buffer 5BvU…7Yq1');
     });
 });
-

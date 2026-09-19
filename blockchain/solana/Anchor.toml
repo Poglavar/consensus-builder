@@ -8,11 +8,13 @@ skip-lint = false
 parcel_nft = "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1"
 proposal_market = "GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB"
 proposal_nft = "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg"
+proposal_pledge = "1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g"
 
 [programs.localnet]
 parcel_nft = "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1"
 proposal_market = "GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB"
 proposal_nft = "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg"
+proposal_pledge = "1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g"
 
 [registry]
 url = "https://api.apr.dev"

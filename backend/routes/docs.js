@@ -167,14 +167,16 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
     // The base URL printed into the agent docs. Display only (never persisted), so falling back to
     // the request's own host is fine here; PUBLIC_API_BASE_URL wins when set.
     const docsBaseUrl = (req) => (env.PUBLIC_API_BASE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
-    const marketProgramId = () => {
+    const solanaProgramId = (name) => {
         try {
             const addresses = JSON.parse(fs.readFileSync(path.join(__dirname, '../../frontend/contracts/addresses.json'), 'utf8'));
-            return addresses['solana-devnet']?.ProposalMarket || '(unknown)';
+            return addresses['solana-devnet']?.[name] || '(unknown)';
         } catch {
             return '(unknown)';
         }
     };
+    const marketProgramId = () => solanaProgramId('ProposalMarket');
+    const pledgeProgramId = () => solanaProgramId('ProposalPledge');
 
     // GET /docs/agents - the agent quickstart: how to pay for and post a proposal over x402.
     app.get('/docs/agents', (req, res) => {
@@ -185,6 +187,7 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                 .replace(/\$\(price\)/g, x402.priceProposal || '(price not configured on this server)')
                 .replace(/\$\(network\)/g, x402.network || 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1')
                 .replace(/\$\(marketProgram\)/g, marketProgramId())
+                .replace(/\$\(pledgeProgram\)/g, pledgeProgramId())
                 .replace(/\$\(date\)/g, new Date().toLocaleDateString());
             res.setHeader('Content-Type', 'text/html');
             res.send(renderDocPage(marked(markdown), 'Agent quickstart — Urban Game Theory'));
@@ -226,6 +229,20 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     cluster: 'devnet',
                     idl: 'blockchain/solana/idl/proposal_market.json',
                     client: 'frontend/js/solana/market-client.js'
+                },
+                pledges: {
+                    programId: pledgeProgramId(),
+                    cluster: 'devnet',
+                    mint: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU',
+                    status: `${base}/agent/pledges/{proposalAccount}`,
+                    idl: 'blockchain/solana/idl/proposal_pledge.json',
+                    client: 'frontend/js/solana/pledge-client.js',
+                    lifecycle: {
+                        active: 'pledge',
+                        executed: 'release to the proposal owner',
+                        cancelledOrExpired: 'each backer refunds their own pledge'
+                    },
+                    idempotency: 'SHA-256 a stable operation id; the resulting pledge-position PDA can be created only once'
                 }
             });
         } catch (error) {

@@ -8,7 +8,7 @@ import path from 'path';
 import { formatAtomicAmount } from '../utils/x402-payment.js';
 import { shortAddress } from './address-book.js';
 
-const IDL_FILES = ['parcel_nft.json', 'proposal_nft.json', 'proposal_market.json'];
+const IDL_FILES = ['parcel_nft.json', 'proposal_nft.json', 'proposal_market.json', 'proposal_pledge.json'];
 
 const LAMPORTS_DECIMALS = 9;
 
@@ -72,7 +72,7 @@ export function encodeBase58(buf) {
 const ANCHOR_IDL_IX_DISCRIMINATOR = '40f4bc78a7e9690a';
 
 /**
- * Read the three program IDLs from `dir`. Returns lookups by program address and by program name;
+ * Read the app program IDLs from `dir`. Returns lookups by program address and by program name;
  * each instruction is indexed by the hex of its 8-byte Anchor discriminator.
  */
 export function loadIdls(dir) {
@@ -479,6 +479,29 @@ function buildSummary(primary, ctx) {
             const claimer = label(actorAddress(primary, 'claimer'));
             if (!inner) return `${claimer} claimed${fromMarket}`;
             return `${claimer} claimed ${inner.amount ?? inner.amountAtomic} ${inner.symbol ?? 'tokens'}${fromMarket}`;
+        }
+    }
+
+    if (name === 'proposal_pledge') {
+        const proposalAddress = accountAddress(primary, 'proposal');
+        const onProposal = proposalAddress ? ` for proposal ${label(proposalAddress)}` : '';
+        if (action === 'create_escrow') {
+            return `${label(actorAddress(primary, 'creator'))} opened a USDC pledge escrow${onProposal}`;
+        }
+        if (action === 'pledge') {
+            const inner = innerTokenAmount(primary, rawInner, ctx);
+            const amount = inner?.amount ?? (args.amount != null ? formatAtomicAmount(String(args.amount), 6) : '?');
+            return `${label(actorAddress(primary, 'pledger'))} pledged ${amount} ${inner?.symbol ?? 'USDC'}${onProposal}`;
+        }
+        if (action === 'release') {
+            const inner = innerTokenAmount(primary, rawInner, ctx);
+            const amount = inner ? ` ${inner.amount ?? inner.amountAtomic} ${inner.symbol ?? 'tokens'}` : '';
+            return `${label(actorAddress(primary, 'releaser'))} released${amount}${onProposal} to ${label(accountAddress(primary, 'beneficiary'))}`;
+        }
+        if (action === 'refund') {
+            const inner = innerTokenAmount(primary, rawInner, ctx);
+            const amount = inner ? ` ${inner.amount ?? inner.amountAtomic} ${inner.symbol ?? 'tokens'}` : '';
+            return `${label(actorAddress(primary, 'pledger'))} refunded${amount}${onProposal}`;
         }
     }
 

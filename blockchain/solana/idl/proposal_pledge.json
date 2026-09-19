@@ -1,0 +1,793 @@
+{
+  "address": "1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g",
+  "metadata": {
+    "name": "proposal_pledge",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Contributor-safe USDC pledges for consensus-builder proposals"
+  },
+  "instructions": [
+    {
+      "name": "create_escrow",
+      "docs": [
+        "Create the one USDC escrow for an Active proposal. Permissionless: beneficiary and lifecycle",
+        "are read from the proposal account, so the payer cannot redirect or control the funds."
+      ],
+      "discriminator": [
+        253,
+        215,
+        165,
+        116,
+        36,
+        108,
+        68,
+        80
+      ],
+      "accounts": [
+        {
+          "name": "escrow",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "proposal"
+              }
+            ]
+          }
+        },
+        {
+          "name": "proposal"
+        },
+        {
+          "name": "pledge_mint",
+          "address": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "escrow"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pledge_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "creator",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "pledge",
+      "docs": [
+        "Deposit one immutable pledge. `pledge_id` should be stable across retries; its PDA can exist",
+        "only once, so a retried logical operation can never charge twice."
+      ],
+      "discriminator": [
+        235,
+        47,
+        156,
+        254,
+        0,
+        88,
+        212,
+        142
+      ],
+      "accounts": [
+        {
+          "name": "escrow",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "escrow.proposal",
+                "account": "Escrow"
+              }
+            ]
+          }
+        },
+        {
+          "name": "proposal"
+        },
+        {
+          "name": "position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  108,
+                  101,
+                  100,
+                  103,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "escrow"
+              },
+              {
+                "kind": "account",
+                "path": "pledger"
+              },
+              {
+                "kind": "arg",
+                "path": "pledge_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "backer",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  97,
+                  99,
+                  107,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "escrow"
+              },
+              {
+                "kind": "account",
+                "path": "pledger"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "pledger_token_account",
+          "writable": true
+        },
+        {
+          "name": "pledger",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "pledge_id",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "refund",
+      "docs": [
+        "Refund exactly one contributor's immutable pledge after cancellation or expiry. A position",
+        "stays on-chain as a receipt and cannot be claimed twice."
+      ],
+      "discriminator": [
+        2,
+        96,
+        183,
+        251,
+        63,
+        208,
+        46,
+        46
+      ],
+      "accounts": [
+        {
+          "name": "escrow",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "escrow.proposal",
+                "account": "Escrow"
+              }
+            ]
+          },
+          "relations": [
+            "position"
+          ]
+        },
+        {
+          "name": "proposal"
+        },
+        {
+          "name": "position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  108,
+                  101,
+                  100,
+                  103,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "escrow"
+              },
+              {
+                "kind": "account",
+                "path": "pledger"
+              },
+              {
+                "kind": "account",
+                "path": "position.pledge_id",
+                "account": "PledgePosition"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "pledger_token_account",
+          "writable": true
+        },
+        {
+          "name": "pledger",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "release",
+      "docs": [
+        "Permissionless settlement after proposal execution. The complete vault is paid to the",
+        "proposal owner captured at escrow creation; the caller can neither choose nor alter it."
+      ],
+      "discriminator": [
+        253,
+        249,
+        15,
+        206,
+        28,
+        127,
+        193,
+        241
+      ],
+      "accounts": [
+        {
+          "name": "escrow",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "escrow.proposal",
+                "account": "Escrow"
+              }
+            ]
+          }
+        },
+        {
+          "name": "proposal"
+        },
+        {
+          "name": "pledge_mint"
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "beneficiary"
+        },
+        {
+          "name": "beneficiary_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "beneficiary"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pledge_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "releaser",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Backer",
+      "discriminator": [
+        199,
+        128,
+        179,
+        190,
+        2,
+        66,
+        118,
+        252
+      ]
+    },
+    {
+      "name": "Escrow",
+      "discriminator": [
+        31,
+        213,
+        123,
+        187,
+        186,
+        22,
+        218,
+        155
+      ]
+    },
+    {
+      "name": "PledgePosition",
+      "discriminator": [
+        70,
+        252,
+        205,
+        167,
+        148,
+        232,
+        30,
+        171
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidProposalAccount",
+      "msg": "The proposal account is not a proposal_nft Proposal (or not this escrow's)"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidPledgeMint",
+      "msg": "The escrow token must be devnet USDC"
+    },
+    {
+      "code": 6002,
+      "name": "ProposalNotActive",
+      "msg": "The proposal is not Active"
+    },
+    {
+      "code": 6003,
+      "name": "ProposalNotExecuted",
+      "msg": "The proposal has not Executed"
+    },
+    {
+      "code": 6004,
+      "name": "ProposalNotRefundable",
+      "msg": "Only Cancelled or Expired proposals are refundable"
+    },
+    {
+      "code": 6005,
+      "name": "ZeroAmount",
+      "msg": "Pledge amount must be positive"
+    },
+    {
+      "code": 6006,
+      "name": "EscrowReleased",
+      "msg": "This escrow has already been released"
+    },
+    {
+      "code": 6007,
+      "name": "AlreadyRefunded",
+      "msg": "This pledge was already refunded"
+    },
+    {
+      "code": 6008,
+      "name": "NothingToRelease",
+      "msg": "The vault has nothing to release"
+    },
+    {
+      "code": 6009,
+      "name": "NothingToRefund",
+      "msg": "This position has nothing to refund"
+    },
+    {
+      "code": 6010,
+      "name": "MathOverflow",
+      "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6011,
+      "name": "InvalidPosition",
+      "msg": "The pledge position does not belong to this escrow and contributor"
+    }
+  ],
+  "types": [
+    {
+      "name": "Backer",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "total_pledged",
+            "type": "u64"
+          },
+          {
+            "name": "pledge_count",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Escrow",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal",
+            "type": "pubkey"
+          },
+          {
+            "name": "beneficiary",
+            "type": "pubkey"
+          },
+          {
+            "name": "pledge_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "total_pledged",
+            "type": "u64"
+          },
+          {
+            "name": "total_released",
+            "type": "u64"
+          },
+          {
+            "name": "total_refunded",
+            "type": "u64"
+          },
+          {
+            "name": "pledge_count",
+            "type": "u64"
+          },
+          {
+            "name": "backer_count",
+            "type": "u64"
+          },
+          {
+            "name": "released",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PledgePosition",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "pledge_id",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "refunded",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ]
+}

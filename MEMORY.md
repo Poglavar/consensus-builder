@@ -340,4 +340,6 @@
   `[A-Za-z0-9_-]`. In a compiled message the counter PDA precedes the proposal PDA; identify the proposal
   by its account discriminator. `GET /proposals` needs `parcel_id`; filtered lists are `/proposals/summary`.
   `routes/urban-rules.js` returns no variables for the 2025 GUP (NULL `short_name`; join on `title`).
-
+- 2026-09-19: **World's Fair scope is explicit.** `colosseum-worlds-fair` owns all work after the
+  pre-hackathon baseline `3ee1855`; `HACKATHON.md` separates pre-existing UGT foundations from the
+  market, x402, agent provenance/runner, transaction explorer, safe proposal review, and USDC escrow.

@@ -340,6 +340,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
     const nftInfo = getProposalNftInfo(fullProposal);
     const mintedExplorerUrl = nftInfo ? buildProposalNftExplorerUrl(fullProposal) : null;
+    const nftChain = nftInfo && String(nftInfo.chain || nftInfo.chainId || '');
+    const isSolanaPledgeProposal = Boolean(isMinted && nftInfo?.tokenId && nftChain.startsWith('solana'));
 
     // ENS line for minted proposals (numeric on-chain token id → <id>.proposals.…).
     // Self-gates: proposalEnsName returns '' for non-numeric ids, so drafts show nothing.
@@ -432,6 +434,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </button>
     `
         : '';
+    const pledgeButtonHtml = isSolanaPledgeProposal && proposalKey
+        ? `<button type="button" class="btn btn-outline-primary btn-pledge-proposal" onclick="openProposalBoostDialog('${proposalKey}')">💪 ${tProposal('panel.proposal.boost.send', 'Pledge USDC')}</button>`
+        : '';
 
     // The details footer is deliberately view/action-only. Geometry, terms, and ownership are
     // edited only on the clone produced by Counterpropose / Fork. Contextual extras (Buy, Drive)
@@ -444,6 +449,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         <div class="proposal-actions proposal-actions-group">
             ${forkButtonHtml}
             ${mapActionButtonHtml ? mapActionButtonHtml : ''}
+            ${pledgeButtonHtml}
             ${shareButtonHtml}
             ${buyButtonHtml}
             ${driveButtonHtml}
@@ -644,6 +650,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 ${proposalEnsHtml ? `<div class="proposal-ens-row" style="text-align: center; margin-top: 4px;">${proposalEnsHtml}</div>` : ''}
             </div>
             ${agentProvenanceHtml}
+            ${isSolanaPledgeProposal ? `<div class="metric-group proposal-pledge-summary" data-proposal-account="${nftInfo.tokenId}">
+                <span class="metric-label">${tProposal('panel.proposal.pledge.summary', 'USDC pledged:')}</span>
+                <span class="metric-value">${tProposal('panel.proposal.pledge.loading', 'Loading…')}</span>
+            </div>` : ''}
             ${parcelAcceptancePlaceholder}
             ${ownerAcceptancePlaceholder}
 
@@ -701,7 +711,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             // Warning text only shown when no deposit
             const noDepositWarningHtml = !hasDeposit ? `
             <div class="proposal-no-deposit-warning">⚠️ ${tProposal('panel.proposal.offer.noDepositWarning', 'No deposit - proposal not backed by funds')}</div>` : '';
-            const boostLabel = tProposal('panel.proposal.boost.buttonLabel', 'Boost this proposal');
+            const boostLabel = tProposal('panel.proposal.boost.buttonLabel', 'Pledge USDC to this proposal');
 
             // Check if this is an ownership-transfer-from-me proposal
             const isFromMeProposal = resolveProposalGoalKey(proposal, null) === 'ownership-transfer-from-me';
@@ -1039,6 +1049,28 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         }
     }
 
+    // Pledge totals are chain state, not proposal metadata. Hydrate after rendering so a slow RPC
+    // never delays opening Details, and guard the DOM node in case the user selected another plan.
+    if (isSolanaPledgeProposal && window.SolanaPledgeBridge?.readSummary) {
+        Promise.resolve(window.SolanaPledgeBridge.readSummary(nftInfo.tokenId))
+            .then(summary => {
+                const row = document.querySelector(`.proposal-pledge-summary[data-proposal-account="${nftInfo.tokenId}"] .metric-value`);
+                if (!row) return;
+                if (!summary) {
+                    row.textContent = tProposal('panel.proposal.pledge.none', '0 USDC · no backers yet');
+                    return;
+                }
+                const amount = window.SolanaPledgeClient.formatUsdc(summary.totalPledged);
+                const backers = summary.backerCount.toString();
+                row.textContent = `${amount} USDC · ${backers} ${Number(summary.backerCount) === 1 ? 'backer' : 'backers'}`;
+            })
+            .catch(error => {
+                console.warn('Could not load proposal pledge totals', error);
+                const row = document.querySelector(`.proposal-pledge-summary[data-proposal-account="${nftInfo.tokenId}"] .metric-value`);
+                if (row) row.textContent = tProposal('panel.proposal.pledge.unavailable', 'Unavailable');
+            });
+    }
+
     // Ensure lens pattern is applied after render when lens exists
     try {
         if (hasProposalLens) {
@@ -1293,30 +1325,13 @@ function openProposalBoostDialog(idOrHash = null) {
         }
     });
 
-    // Detect if Solana wallet is active for currency options
-    const boostSolWm = window.solanaWalletManager;
-    const boostSolState = boostSolWm && typeof boostSolWm.getState === 'function' ? boostSolWm.getState() : null;
-    const boostIsSolana = boostSolState && boostSolState.status === 'connected'
-        && Array.isArray(boostSolState.accounts) && boostSolState.accounts.length > 0;
-
-    const modalTitle = tProposalUI('panel.proposal.boost.title', 'Boost the proposal');
-    const modalCloseLabel = tProposalUI('panel.proposal.boost.closeLabel', 'Close boost dialog');
-    const modalCopy = tProposalUI('panel.proposal.boost.copy', 'The proposal creator, but also anyone else, can boost any proposal by sending money to it. If the proposal expires before executing the donations will be refunded.');
-    const sendLabel = tProposalUI('panel.proposal.boost.send', 'Send');
-    const expiryLabel = tProposalUI('panel.proposal.boost.expiryLabel', 'Boost expiry timestamp (optional)');
-    const expiryPlaceholder = tProposalUI('panel.proposal.boost.expiryPlaceholder', 'YYYY-MM-DDTHH:MM:SSZ or epoch seconds');
-    const expiryHint = tProposalUI('panel.proposal.boost.expiryHint', 'Optional: add a timestamp after which this boost should expire.');
-    const cityTokenLabel = tProposalUI('panel.proposal.boost.cityTokenLabel', 'City Meme Token');
-
-    const currencyOptionsHtml = boostIsSolana
-        ? `<option value="SOL">SOL</option>`
-        : `<option value="CITY">${cityTokenLabel}</option>
-                        <option value="ETH">ETH</option>
-                        <option value="USDC">USDC</option>
-                        <option value="USDT">USDT</option>
-                        <option value="EUR">EUR</option>
-                        <option value="USD">USD</option>
-                        <option value="ARS">ARS</option>`;
+    const modalTitle = tProposalUI('panel.proposal.boost.title', 'Pledge to this proposal');
+    const modalCloseLabel = tProposalUI('panel.proposal.boost.closeLabel', 'Close pledge dialog');
+    const modalCopy = tProposalUI('panel.proposal.boost.copy', 'Pledge devnet USDC in escrow. It is released to the proposal owner only after execution, or refunded to you if the proposal is cancelled or expires.');
+    const sendLabel = tProposalUI('panel.proposal.boost.send', 'Pledge');
+    overlay.dataset.pledgeOperationId = (globalThis.crypto && typeof globalThis.crypto.randomUUID === 'function')
+        ? globalThis.crypto.randomUUID()
+        : `pledge-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
     overlay.innerHTML = `
         <div class="proposal-boost-modal" role="dialog" aria-modal="true">
@@ -1327,15 +1342,10 @@ function openProposalBoostDialog(idOrHash = null) {
             <div class="proposal-boost-body">
                 <p class="proposal-boost-copy">${modalCopy}</p>
                 <div class="proposal-offer-row proposal-boost-row" style="display:flex; gap:8px; align-items:center;">
-                    <input type="text" id="proposalBoostAmount" placeholder="0" inputmode="numeric" style="flex:1 1 auto;" oninput="handleProposalOfferInput(this)">
+                    <input type="text" id="proposalBoostAmount" placeholder="1.00" inputmode="decimal" autocomplete="off" style="flex:1 1 auto;">
                     <select id="proposalBoostCurrency" style="flex:0 0 112px; max-width:112px; min-width:112px;">
-                        ${currencyOptionsHtml}
+                        <option value="USDC">USDC</option>
                     </select>
-                </div>
-                <div class="proposal-boost-row proposal-boost-expiry">
-                    <label for="proposalBoostExpiry" class="proposal-boost-expiry-label">${expiryLabel}</label>
-                    <input type="text" id="proposalBoostExpiry" placeholder="${expiryPlaceholder}" autocomplete="off" inputmode="text">
-                    <div class="proposal-boost-expiry-hint">${expiryHint}</div>
                 </div>
                 <div class="proposal-boost-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px;">
                     <button type="button" class="btn proposal-boost-send" style="min-width:100px; width:120px;" onclick="submitProposalBoost('${boostKey}')">${sendLabel}</button>
@@ -1346,20 +1356,6 @@ function openProposalBoostDialog(idOrHash = null) {
     `;
 
     document.body.appendChild(overlay);
-
-    const currencySelect = overlay.querySelector('#proposalBoostCurrency');
-    const defaultCurrency = proposal.offerCurrency || (boostIsSolana ? 'SOL' : 'CITY');
-    if (currencySelect) {
-        const optionExists = Array.from(currencySelect.options).some(opt => opt.value === defaultCurrency);
-        if (optionExists) {
-            currencySelect.value = defaultCurrency;
-        } else {
-            currencySelect.value = boostIsSolana ? 'SOL' : 'CITY';
-        }
-    }
-    if (currencySelect && !currencySelect.value) {
-        currencySelect.value = 'CITY';
-    }
 
     const amountInput = overlay.querySelector('#proposalBoostAmount');
     if (amountInput) {
@@ -1378,10 +1374,7 @@ function closeProposalBoostDialog() {
 }
 
 async function submitProposalBoost(idOrHash = null) {
-    const tProposalUI = getProposalI18nHelper();
     const amountInput = document.getElementById('proposalBoostAmount');
-    const currencySelect = document.getElementById('proposalBoostCurrency');
-    const expiryInput = document.getElementById('proposalBoostExpiry');
     const statusEl = document.getElementById('proposalBoostStatus');
     const setBoostStatus = (text = '') => {
         if (statusEl) {
@@ -1389,27 +1382,11 @@ async function submitProposalBoost(idOrHash = null) {
         }
     };
     setBoostStatus('');
-    const rawAmount = amountInput ? amountInput.value : '';
-    const amount = typeof parseProposalOfferValue === 'function'
-        ? parseProposalOfferValue(rawAmount)
-        : 0;
-
-    if (!amount || amount <= 0) {
+    const rawAmount = amountInput ? amountInput.value.trim() : '';
+    try {
+        if (!window.SolanaPledgeClient || window.SolanaPledgeClient.parseUsdc(rawAmount) <= 0n) throw new Error('invalid');
+    } catch (_) {
         showProposalAlertMessage('please_enter_a_valid_boost_amount', 'Please enter a valid boost amount.');
-        return;
-    }
-
-    const currency = (currencySelect && currencySelect.value) ? currencySelect.value : 'USDT';
-    const rawBoostExpiry = expiryInput ? expiryInput.value.trim() : '';
-    const boostExpiryTimestamp = rawBoostExpiry ? parseBoostExpiryInput(rawBoostExpiry) : null;
-    if (rawBoostExpiry && !boostExpiryTimestamp) {
-        showProposalAlertMessage('please_enter_a_valid_boost_expiry', 'Please enter a valid boost expiry timestamp.');
-        return;
-    }
-
-    const supportedBoostCurrencies = ['CITY', 'ETH', 'SOL'];
-    if (!supportedBoostCurrencies.includes(currency)) {
-        showProposalAlertMessage('proposal_boost_failed', 'Currency currently not supported [OK]');
         return;
     }
 
@@ -1425,172 +1402,60 @@ async function submitProposalBoost(idOrHash = null) {
         return;
     }
 
-    // Check if any wallet is connected (EVM or Solana)
     const solWm = window.solanaWalletManager;
     const solState = solWm && typeof solWm.getState === 'function' ? solWm.getState() : null;
     const isSolanaConnected = solState && solState.status === 'connected' && Array.isArray(solState.accounts) && solState.accounts.length > 0;
-
-    const evmWm = window.walletManager;
-    const walletState = evmWm && typeof evmWm.getState === 'function' ? evmWm.getState() : null;
-    const isEvmConnected = walletState && walletState.status === 'connected' && walletState.accounts && walletState.accounts.length > 0;
-
-    if (!isEvmConnected && !isSolanaConnected) {
-        showProposalAlertMessage('proposal_boost_wallet_required', 'Connect a wallet to boost this proposal.');
+    if (!isSolanaConnected) {
+        showProposalAlertMessage('proposal_boost_wallet_required', 'Connect a Solana wallet to pledge to this proposal.');
         if (typeof handleWalletButtonClick === 'function') {
             handleWalletButtonClick();
         }
         return;
     }
-
-    const targetChainId = normalizeChainIdForBoost(nftInfo.chain || (walletState && walletState.chainId) || window.DEFAULT_CHAIN_ID || null);
-    const contractAddress = nftInfo.contract || null;
-
-    if (!targetChainId || !contractAddress) {
-        showProposalAlertMessage('proposal_boost_contract_missing', 'Proposal contract address is not configured for this network.');
+    const targetChainId = normalizeChainIdForBoost(nftInfo.chain || null);
+    if (typeof targetChainId !== 'string' || !targetChainId.startsWith('solana')) {
+        showProposalAlertMessage('proposal_boost_failed', 'USDC escrow pledges currently require a Solana proposal.');
         return;
     }
-
-    // Only do chain switching for EVM wallets, not Solana
-    const isSolanaChain = typeof targetChainId === 'string' && targetChainId.startsWith('solana');
-    if (!isSolanaChain && isEvmConnected) {
-        const walletChainId = normalizeChainIdForBoost(walletState.chainId);
-        if (walletChainId && walletChainId !== targetChainId && evmWm && typeof evmWm.switchChain === 'function') {
-            try {
-                await evmWm.switchChain(targetChainId);
-            } catch (switchError) {
-                console.warn('Boost: network switch rejected or failed', switchError);
-                showProposalAlertMessage('proposal_boost_switch_network', 'Switch your wallet to network {{chainId}} to boost this proposal.', { chainId: targetChainId });
-                return;
-            }
-        }
-    }
-
-    if (!window.ProposalChainBridge || typeof window.ProposalChainBridge.contributeToProposal !== 'function') {
-        showProposalAlertMessage('proposal_boost_failed', 'Boost transaction failed: blockchain bridge unavailable.');
+    if (!window.SolanaPledgeBridge || typeof window.SolanaPledgeBridge.pledge !== 'function') {
+        showProposalAlertMessage('proposal_boost_failed', 'Pledge transaction failed: blockchain bridge unavailable.');
         return;
     }
-
-    const handleStatusUpdate = status => {
-        if (status === 'approve') {
-            setBoostStatus('Waiting for approve confirmation...');
-        } else if (status === 'transfer') {
-            setBoostStatus('Waiting for transfer confirmation...');
-        }
-    };
-
-    if (currency === 'CITY') {
-        setBoostStatus('You will be asked for two transactions, Approve and Transfer');
-    } else {
-        setBoostStatus('Waiting for transfer confirmation...');
-    }
-
-    let txResult = null;
+    const overlay = document.getElementById('proposalBoostOverlay');
+    const pendingKey = `proposalPledgePending:${nftInfo.tokenId}:${solState.accounts[0]}`;
+    let operationId = overlay?.dataset?.pledgeOperationId;
     try {
-        txResult = await window.ProposalChainBridge.contributeToProposal({
-            proposalId: nftInfo.tokenId,
-            chainId: targetChainId,
-            contractAddress,
-            currency,
-            amount,
-            onStatus: handleStatusUpdate
+        const pending = JSON.parse(sessionStorage.getItem(pendingKey) || 'null');
+        if (pending?.amount === rawAmount && pending?.operationId) operationId = pending.operationId;
+        sessionStorage.setItem(pendingKey, JSON.stringify({ amount: rawAmount, operationId }));
+    } catch (_) { /* sessionStorage is optional; the open dialog still preserves this retry id */ }
+    setBoostStatus('Waiting for your USDC pledge confirmation...');
+    let txResult;
+    try {
+        txResult = await window.SolanaPledgeBridge.pledge({
+            proposal: nftInfo.tokenId,
+            amount: rawAmount,
+            operationId
         });
     } catch (error) {
         setBoostStatus('');
-        const code = error && error.code;
-        if (code === 'CITY_TOKEN_MISSING') {
-            showProposalAlertMessage('proposal_boost_missing_token', 'City Meme Token address is not configured for the connected network.');
-            return;
-        }
-        if (code === 'CONTRACT_MISSING' || code === 'CONTRACT_NOT_FOUND' || code === 'CONTRACT_INVALID') {
-            showProposalAlertMessage('proposal_boost_contract_missing', 'Proposal contract address is not configured for this network.');
-            return;
-        }
-        if (code === 'WALLET_NOT_CONNECTED' || code === 'WALLET_NOT_READY') {
-            showProposalAlertMessage('proposal_boost_wallet_required', 'Connect a wallet to boost this proposal.');
-            if (typeof handleWalletButtonClick === 'function') {
-                handleWalletButtonClick();
-            }
-            return;
-        }
-        if (code === 'WRONG_NETWORK') {
-            showProposalAlertMessage('proposal_boost_switch_network', 'Switch your wallet to network {{chainId}} to boost this proposal.', { chainId: targetChainId });
-            return;
-        }
-        if (code === 'UNSUPPORTED_CURRENCY') {
-            showProposalAlertMessage('proposal_boost_failed', 'Currency currently not supported [OK]');
-            return;
-        }
-
         const reason = error && (error.reason || error.shortMessage || error.message) ? (error.reason || error.shortMessage || error.message) : 'Unknown error';
-        showProposalAlertMessage('proposal_boost_failed', `Boost transaction failed: ${reason}`, { reason });
+        console.error('USDC pledge failed', error, error?.logs || []);
+        showProposalAlertMessage('proposal_boost_failed', `Pledge transaction failed: ${reason}`, { reason });
         return;
     }
-
-    const baseOffer = typeof proposal.offer === 'number'
-        ? proposal.offer
-        : parseProposalOfferValue(proposal.offer);
-    const updatedOffer = (baseOffer || 0) + amount;
-
-    const updatedProposal = {
-        ...proposal,
-        offer: updatedOffer,
-        offerCurrency: currency,
-        lastBoostExpiryTimestamp: boostExpiryTimestamp || null,
-        updatedAt: new Date().toISOString(),
-        proposalId: proposal.proposalId || idOrHash
-    };
-
-    if (typeof proposalStorage !== 'undefined' && typeof proposalStorage._indexProposal === 'function') {
-        proposalStorage._indexProposal(updatedProposal);
-        if (typeof proposalStorage.save === 'function') {
-            proposalStorage.save();
-        }
-    }
-
-    window.currentlyHighlightedProposal = updatedProposal;
-
     closeProposalBoostDialog();
-
-    const txLink = txResult && txResult.explorerUrl
-        ? txResult.explorerUrl
-        : '';
-    const amountDisplay = typeof rawAmount === 'string' && rawAmount.trim() ? rawAmount.trim() : String(amount);
+    try { sessionStorage.removeItem(pendingKey); } catch (_) { }
+    const txLink = txResult?.explorerUrl || '';
     const alertOptions = txLink
-        ? { linkUrl: txLink, linkText: 'See transaction on Etherscan' }
+        ? { linkUrl: txLink, linkText: 'See transaction on Solana Explorer' }
         : {};
-
     showProposalAlertMessage(
         'proposal_boost_success',
-        'Success! Thank you for boosting this proposal with {{amount}} of {{currency}}. This could help it happen 🤞 See transaction {{txLink}}',
-        { amount: amountDisplay, currency, txLink: txLink },
+        'Success! {{amount}} USDC is pledged in escrow for this proposal.',
+        { amount: rawAmount, currency: 'USDC', txLink },
         alertOptions
     );
-
-    try {
-        showProposalInfo(updatedProposal, window.selectedParcelInProposal);
-    } catch (error) {
-        console.warn('Failed to refresh proposal details after boost', error);
-    }
-
-    if (typeof refreshProposalsLayer === 'function') {
-        try { refreshProposalsLayer(); } catch (_) { }
-    }
-
-    function parseBoostExpiryInput(rawValue) {
-        if (!rawValue) return null;
-
-        // Accept epoch seconds/milliseconds
-        const numeric = Number(rawValue);
-        if (!Number.isNaN(numeric) && numeric > 0) {
-            const milliseconds = numeric < 1e12 ? numeric * 1000 : numeric;
-            const numericDate = new Date(milliseconds);
-            return Number.isNaN(numericDate.getTime()) ? null : numericDate.toISOString();
-        }
-
-        // Accept ISO 8601 or other date-compatible strings
-        const date = new Date(rawValue);
-        return Number.isNaN(date.getTime()) ? null : date.toISOString();
-    }
 }
 
 function openProposalLens(proposalIdOrHash) {
