@@ -768,6 +768,7 @@ async function loadLiveAgentActivity() {
 
 /** Show one activity explorer for simulation, human, algorithmic and live LLM actions. */
 function showGameLogDialog() {
+    if (document.querySelector('.game-log-modal')) return;
     const modal = document.createElement('div');
     modal.className = 'game-log-modal';
     modal.innerHTML = `

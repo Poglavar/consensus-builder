@@ -43,20 +43,32 @@
         return null;
     }
 
+    function defaultMessage(actor, action) {
+        const proposal = action.proposalId ? ` proposal ${action.proposalId}` : '';
+        const amount = action.amount ? ` ${action.amount} USDC` : '';
+        if (action.type === 'create') return `${actor.name} created${proposal}.`;
+        if (action.type === 'publish') return `${actor.name} published${proposal} through x402.`;
+        if (action.type === 'stake') return `${actor.name} staked${amount}${proposal ? ` on${proposal}` : ''}.`;
+        if (action.type === 'donate') return `${actor.name} donated${amount}${proposal ? ` to${proposal}` : ''}.`;
+        if (action.type === 'pledge') return `${actor.name} pledged${amount}${proposal ? ` to${proposal}` : ''}.`;
+        return `${actor.name} ${action.type}.`;
+    }
+
     function createActivityEvent({ actor, action, outcome, source = 'simulation', occurredAt, recordedAt, turn = null } = {}) {
         const normalizedActor = normalizeActor(actor);
         const normalizedAction = normalizeAction(action);
         const result = typeof outcome === 'string' ? { ok: true, messageHtml: outcome } : (outcome || { ok: true });
         const now = new Date().toISOString();
         sequence += 1;
+        const httpFailed = Number.isFinite(Number(result.status)) && Number(result.status) >= 400;
         return {
             id: result.id || `${source}:${normalizedActor.id}:${Date.now()}:${sequence}`,
             source,
             actor: normalizedActor,
             action: normalizedAction,
             entity: result.entity || entityFromAction(normalizedAction),
-            ok: result.ok !== false,
-            message: result.message || null,
+            ok: result.ok !== false && !httpFailed,
+            message: result.message || (result.messageHtml ? null : defaultMessage(normalizedActor, normalizedAction)),
             messageHtml: result.messageHtml || null,
             transaction: result.transaction || result.signature || result.transactionHash || result.stakeSignature || result.receipt?.transaction || null,
             occurredAt: occurredAt || now,

@@ -435,22 +435,31 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     `
         : '';
     const supportLifecycle = getLifecycleStatus(fullProposal);
+    const supportWalletState = window.solanaWalletManager?.getState?.();
+    const supportWalletConnected = supportWalletState?.status === 'connected'
+        && Array.isArray(supportWalletState.accounts) && supportWalletState.accounts.length > 0;
+    const supportButtonHtml = (action) => {
+        const supportButtons = {
+            connect: `<button type="button" class="btn btn-outline-primary btn-connect-proposal-support" onclick="handleWalletButtonClick()">${tProposal('panel.proposal.support.connect', 'Connect Solana wallet')}</button>`,
+            donate: `<button type="button" class="btn btn-outline-primary btn-donate-proposal" onclick="openProposalBoostDialog('${proposalKey}', 'donate')">🎁 ${tProposal('panel.proposal.support.donate', 'Donate USDC')}</button>`,
+            pledge: `<button type="button" class="btn btn-outline-primary btn-pledge-proposal" onclick="openProposalBoostDialog('${proposalKey}', 'pledge')">💪 ${tProposal('panel.proposal.boost.send', 'Pledge USDC')}</button>`,
+            revokePledge: `<button type="button" class="btn btn-outline-secondary" onclick="settleProposalSupport('${proposalKey}', 'revokePledge')">${tProposal('panel.proposal.support.revoke', 'Revoke my pledge')}</button>`,
+            releaseDonations: `<button type="button" class="btn btn-outline-primary" onclick="settleProposalSupport('${proposalKey}', 'releaseDonations')">${tProposal('panel.proposal.support.release', 'Release donations')}</button>`,
+            fulfillPledge: `<button type="button" class="btn btn-outline-primary" onclick="settleProposalSupport('${proposalKey}', 'fulfillPledge')">${tProposal('panel.proposal.support.fulfill', 'Fulfill my pledge')}</button>`,
+            refundMyDonations: `<button type="button" class="btn btn-outline-primary" onclick="settleProposalSupport('${proposalKey}', 'refundMyDonations')">${tProposal('panel.proposal.support.refund', 'Refund my donations')}</button>`,
+            voidPledge: `<button type="button" class="btn btn-outline-secondary" onclick="settleProposalSupport('${proposalKey}', 'voidPledge')">${tProposal('panel.proposal.support.void', 'Clear my pledge')}</button>`
+        };
+        return supportButtons[action] || '';
+    };
+    const renderSupportButtons = (summary = null, summaryReady = false) => {
+        const actions = window.ProposalSupportView?.actionKeys?.({
+            lifecycle: supportLifecycle, walletConnected: supportWalletConnected, summary, summaryReady
+        }) || [];
+        return actions.map(supportButtonHtml).join('');
+    };
     let proposalSupportButtonsHtml = '';
     if (isSolanaPledgeProposal && proposalKey) {
-        if (supportLifecycle === 'Active') {
-            proposalSupportButtonsHtml = `
-                <button type="button" class="btn btn-outline-primary btn-donate-proposal" onclick="openProposalBoostDialog('${proposalKey}', 'donate')">🎁 ${tProposal('panel.proposal.support.donate', 'Donate USDC')}</button>
-                <button type="button" class="btn btn-outline-primary btn-pledge-proposal" onclick="openProposalBoostDialog('${proposalKey}', 'pledge')">💪 ${tProposal('panel.proposal.boost.send', 'Pledge USDC')}</button>
-                <button type="button" class="btn btn-outline-secondary" onclick="settleProposalSupport('${proposalKey}', 'revokePledge')">${tProposal('panel.proposal.support.revoke', 'Revoke my pledge')}</button>`;
-        } else if (supportLifecycle === 'Executed') {
-            proposalSupportButtonsHtml = `
-                <button type="button" class="btn btn-outline-primary" onclick="settleProposalSupport('${proposalKey}', 'releaseDonations')">${tProposal('panel.proposal.support.release', 'Release donations')}</button>
-                <button type="button" class="btn btn-outline-primary" onclick="settleProposalSupport('${proposalKey}', 'fulfillPledge')">${tProposal('panel.proposal.support.fulfill', 'Fulfill my pledge')}</button>`;
-        } else if (supportLifecycle === 'Cancelled' || supportLifecycle === 'Expired') {
-            proposalSupportButtonsHtml = `
-                <button type="button" class="btn btn-outline-primary" onclick="settleProposalSupport('${proposalKey}', 'refundMyDonations')">${tProposal('panel.proposal.support.refund', 'Refund my donations')}</button>
-                <button type="button" class="btn btn-outline-secondary" onclick="settleProposalSupport('${proposalKey}', 'voidPledge')">${tProposal('panel.proposal.support.void', 'Clear my pledge')}</button>`;
-        }
+        proposalSupportButtonsHtml = `<span class="proposal-support-actions" data-proposal-support-actions="${nftInfo.tokenId}">${renderSupportButtons()}</span>`;
     }
 
     // The details footer is deliberately view/action-only. Geometry, terms, and ownership are
@@ -1121,6 +1130,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                         : 'no pledge';
                     mySupport.textContent = `Your support: ${donationCopy}; ${pledgeCopy}.`;
                 }
+                const actions = document.querySelector(`[data-proposal-support-actions="${nftInfo.tokenId}"]`);
+                if (actions) actions.innerHTML = renderSupportButtons(summary, true);
             })
             .catch(error => {
                 console.warn('Could not load proposal pledge totals', error);
@@ -1346,11 +1357,30 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     document.body.classList.add('proposal-details-open');
     // Close on Escape when this panel is the active proposal surface
     installProposalDetailsEscapeHandler();
+    bindProposalSupportWalletRefresh();
 
     // Setup click listeners for any clickable links in the proposal info
     if (typeof setupGameLogClickListeners === 'function') {
         setupGameLogClickListeners();
     }
+}
+
+let proposalSupportWalletRefreshBound = false;
+let proposalSupportWalletRefreshTimer = null;
+
+function bindProposalSupportWalletRefresh() {
+    if (proposalSupportWalletRefreshBound || !window.solanaWalletManager?.on) return;
+    proposalSupportWalletRefreshBound = true;
+    const refresh = () => {
+        clearTimeout(proposalSupportWalletRefreshTimer);
+        proposalSupportWalletRefreshTimer = setTimeout(() => {
+            const panel = document.getElementById('proposal-details-panel');
+            const content = document.getElementById('proposal-details-content');
+            if (!panel?.classList.contains('visible') || !currentProposalDetailsContext) return;
+            showProposalInfo(currentProposalDetailsContext, null, { scrollTop: content?.scrollTop || 0 });
+        }, 0);
+    };
+    ['connect', 'disconnect', 'accountsChanged'].forEach(event => window.solanaWalletManager.on(event, refresh));
 }
 
 function resolveProposalForBoost(idOrHash) {
@@ -1523,6 +1553,7 @@ async function submitProposalBoost(idOrHash = null) {
         { amount: rawAmount, currency: 'USDC', txLink },
         alertOptions
     );
+    showProposalInfo(proposal);
 }
 
 async function settleProposalSupport(idOrHash, action) {

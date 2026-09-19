@@ -31,4 +31,13 @@ describe('unified agent action engine', () => {
         });
         expect(engineApi.matchesActivity({ source: 'live', actor: { kind: 'human' } }, 'human')).toBe(true);
     });
+
+    it('does not label HTTP failures as successful activity', () => {
+        const event = engineApi.createActivityEvent({
+            actor: { id: 'a1', name: 'Alex', controller: 'llm' },
+            action: { type: 'publish', proposalId: 'p1' },
+            outcome: { status: 400 }
+        });
+        expect(event).toMatchObject({ ok: false, message: 'Alex published proposal p1 through x402.' });
+    });
 });

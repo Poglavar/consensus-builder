@@ -283,15 +283,15 @@ async function main() {
                                 paymentId: paymentIdForProposal(body.proposalId),
                                 rpcUrl
                             });
-                            return postAgentProposal({ baseUrl: apiBase, paidFetch, body });
+                            const response = await postAgentProposal({ baseUrl: apiBase, paidFetch, body });
+                            if (response.status !== 201) {
+                                throw new Error(`HTTP ${response.status}: ${typeof response.body === 'string' ? response.body : JSON.stringify(response.body)}`);
+                            }
+                            return response;
                         });
-                        if (res.status === 201) {
-                            posts[pick.candidateId] = { id: res.body.id, proposalId: res.body.proposalId ?? pick.proposalId, status: res.status, tx: res.receipt?.transaction ?? null };
-                            await updateRun(pool, e.runId, { stage: 'minted', status: 'running', summaryPatch: { posts, activities } });
-                            log(`${tag} posted: row ${res.body.id} (${res.status}) paid tx ${res.receipt?.transaction ?? '-'}`);
-                        } else {
-                            throw new Error(`HTTP ${res.status}: ${typeof res.body === 'string' ? res.body : JSON.stringify(res.body)}`);
-                        }
+                        posts[pick.candidateId] = { id: res.body.id, proposalId: res.body.proposalId ?? pick.proposalId, status: res.status, tx: res.receipt?.transaction ?? null };
+                        await updateRun(pool, e.runId, { stage: 'minted', status: 'running', summaryPatch: { posts, activities } });
+                        log(`${tag} posted: row ${res.body.id} (${res.status}) paid tx ${res.receipt?.transaction ?? '-'}`);
                     } catch (err) {
                         failures.push(`${tag} post: ${err.message}`);
                         personaFailed = true;

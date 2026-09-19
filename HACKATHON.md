@@ -53,6 +53,12 @@ git diff 3ee1855...colosseum-worlds-fair
    controller/action/event contract. The Activity explorer combines live and simulated events,
    filters by source or actor type, and keeps AI/human provenance in expandable details instead of
    visually segregating actors throughout the product.
+10. **Fresh end-to-end LLM agent proof** — `densifier-01` used Claude to select and explain one
+    rule-backed Rudeš building proposal (model cost `$0.0054`), [minted it on Solana devnet](https://explorer.solana.com/tx/5oFxz5jQwtVVmQmybPUBq1Zjifiq7tpvTZqs2ZYEKQ22NYZHP9Bb1LDXiPRX4QSHSZ8ByrnyXfgfMK2f9tTaVDXN?cluster=devnet),
+    [paid `0.05 USDC` through x402](https://explorer.solana.com/tx/5bZkHoEaP1jiGTNEAJXHh5uhHvGevekwRsyAMn1MyKTXFheUqYmj8h5hYU9n1GccBqj5He6u6vgK4HS2HCoSV4n1?cluster=devnet),
+    published [proposal 763](https://api.urbangametheory.xyz/proposals/763), then
+    [staked `0.25 USDC` YES](https://explorer.solana.com/tx/scK9S8NqVDmh8GE1NNksEJwFyeam2hB4dVL4xPYFp4jNENKWX6HL9kaU9wdQEwpztQwBCmx3pJ1kXRVR5MsovDG?cluster=devnet).
+    The public Activity explorer shows all three actions from the same structured event stream.
 
 ## Pre-existing platform foundations
 

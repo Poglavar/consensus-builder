@@ -2362,3 +2362,6 @@ body.share-plan-mode .leaflet-control-container .leaflet-control-zoom {
     pointer-events: auto;
     opacity: 1;
 }
+.proposal-support-actions {
+    display: contents;
+}
