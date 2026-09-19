@@ -83,7 +83,8 @@ describe('x402 demo discovery', () => {
         expect(search).toHaveBeenCalledWith(expect.objectContaining({
             query: 'https://api.example.test/agent/proposals',
             type: 'http',
-            extensions: 'bazaar'
+            extensions: 'bazaar',
+            limit: 20
         }));
     });
 

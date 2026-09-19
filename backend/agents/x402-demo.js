@@ -130,7 +130,8 @@ export async function findBazaarListing({ facilitatorUrl, submitUrl, payTo, netw
                 payTo: clean(payTo) || undefined,
                 network: clean(network) || undefined,
                 extensions: 'bazaar',
-                limit: 100
+                // CDP currently rejects search limits above 20.
+                limit: 20
             });
             const listing = (result?.resources || []).find(item => {
                 try { return normalizeBaseUrl(item.resource) === expected; } catch { return false; }
