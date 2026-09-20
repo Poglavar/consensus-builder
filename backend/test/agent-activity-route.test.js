@@ -1,7 +1,7 @@
 import express from 'express';
 import request from 'supertest';
 import { describe, expect, it } from 'vitest';
-import { proposalEvents, runDetail, runEvents, setupAgentActivityRoute } from '../routes/agent-activity.js';
+import { controllerOf, proposalEvents, runDetail, runEvents, setupAgentActivityRoute } from '../routes/agent-activity.js';
 
 const row = {
     run_id: '2026-09-20-densifier-01', persona: 'densifier-01', status: 'done', stage: 'staked',
@@ -80,6 +80,13 @@ describe('agent activity', () => {
         expect(event.actor.controller).toBe('algorithm');
         expect(event.model).toBeNull();
         expect(runDetail(algorithmic, [])).toMatchObject({ controller: 'algorithm', model: null, costs: [] });
+    });
+
+    it('recognises legacy LLM runs from their immutable batch/cost evidence', () => {
+        const legacy = { batchId: 'msgbatch-legacy', pickCostUsd: 0.0054 };
+        expect(controllerOf(legacy)).toBe('llm');
+        expect(runDetail({ ...row, summary: legacy }, [{ model: 'claude-opus-5', batch_id: 'msgbatch-legacy', usd: '0.0054' }]))
+            .toMatchObject({ controller: 'llm', model: 'claude-opus-5', batchId: 'msgbatch-legacy' });
     });
 
     it('serves a run with its events and immutable cost-ledger rows', async () => {

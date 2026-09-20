@@ -4,9 +4,17 @@ function asLimit(value) {
     return Math.min(parsed, 250);
 }
 
+function controllerOf(summary = {}) {
+    if (summary.controller) return summary.controller;
+    if (summary.decisionResult?.controller) return summary.decisionResult.controller;
+    // Runs created before controller provenance was added still carry LLM-only evidence.
+    if (summary.decisionResult?.model || summary.model || summary.batchId || Number(summary.pickCostUsd) > 0) return 'llm';
+    return 'algorithm';
+}
+
 function runEvents(row) {
     const summary = row.summary || {};
-    const controller = summary.controller || summary.decisionResult?.controller || (summary.model ? 'llm' : 'algorithm');
+    const controller = controllerOf(summary);
     const actor = {
         id: String(row.persona), name: String(row.persona), kind: 'agent', controller, wallet: summary.wallet || null
     };
@@ -125,9 +133,9 @@ function runDetail(row, costs = []) {
         startedAt: row.started_at,
         finishedAt: row.finished_at || null,
         updatedAt: row.updated_at,
-        controller: summary.controller || summary.decisionResult?.controller || (summary.model ? 'llm' : 'algorithm'),
-        model: summary.decisionResult?.model || summary.model || null,
-        batchId: summary.decisionResult?.batchId || summary.batchId || null,
+        controller: controllerOf(summary),
+        model: summary.decisionResult?.model || summary.model || costs[0]?.model || null,
+        batchId: summary.decisionResult?.batchId || summary.batchId || costs[0]?.batch_id || null,
         picks: Array.isArray(summary.picks) ? summary.picks.map(pick => ({
             candidateId: pick.candidateId || null,
             proposalId: pick.proposalId || null,
@@ -215,4 +223,4 @@ export function setupAgentActivityRoute(app, pool) {
     });
 }
 
-export { asLimit, mergeEvents, proposalEvents, runDetail, runEvents };
+export { asLimit, controllerOf, mergeEvents, proposalEvents, runDetail, runEvents };
