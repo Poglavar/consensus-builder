@@ -300,7 +300,7 @@
     },
     "sidebar": {
         "header": {
-            "title": "Consensus Builder",
+            "title": "Urban Game Theory",
             "devBadge": "Development",
             "debugBadge": "Debug",
             "aiBadge": "AI-friendly",
@@ -650,7 +650,7 @@
             "contactTitle": "Contact",
             "telegramLabel": "Telegram",
             "aboutTitle": "About",
-            "aboutParagraph": "This application helps communities reach consensus on future land development. This is an early alpha version. Do play around freely but do not put in too much work -- all data is saved locally in your browser and will be lost. See <a href=\"roadmap.html\" target=\"_blank\">the roadmap</a> for the development plan.",
+            "aboutParagraph": "Urban Game Theory is a market for real-world land change: humans and agents propose, fund, and forecast changes to real parcels, while public records resolve what actually happened. Open the <a href=\"/hackathon-demo.html\">live hackathon demo</a>, or see <a href=\"roadmap.html\" target=\"_blank\">the roadmap</a>.",
             "instructionsTitle": "Instructions",
             "instructionsParagraph": "The key paradigm is the <strong>Proposal</strong>. On this platform anyone can create proposals and interact with proposals of others. Proposals affect parcels and they have owners, those owners can decide whether to accept proposals.<br><br>There are many different types of proposals! The simplest and most common is a <strong>Purchase proposal</strong>, which offers to pay for ownership of parcels. But there are also <strong>Building proposals</strong> which propose Urban Rules for Parcel Blocks, <strong>Road proposals</strong> which propose new roads or rail cutting through parcels (thus creating new Parcel Blocks), <strong>Reparcellization</strong> proposals which reshape parcels but keep ownership shares, and more. <br><br>Proposals are initially funded by their author but can be boosted by anyone who sends money to them, increasing the likelihood of acceptance by owners. Proposals come in flavours: they can be conditional, expiring, fully funded or not. Both public goods (parks, squares, roads...) and private development can be coordinated using this infrastructure.<br><br>To get a feel how it could play out, start the Game mode and see how Agents create and accept proposals. To get more serious, connect your Ethereum wallet, explore the parcels in your city of interest that have been minted, create on-chain proposals for them, and see what happens!",
             "advancedTitle": "Advanced Options",
@@ -1226,7 +1226,15 @@
             "nextButton": "Next"
         },
         "welcome": {
-            "title": "Welcome to Consensus Builder!",
+            "kicker": "Urban Game Theory",
+            "title": "A market for real-world land change",
+            "statement": "Humans and agents propose, fund, and forecast changes to real parcels, while public records resolve what actually happened.",
+            "flowLabel": "Product flow",
+            "flowPropose": "Propose",
+            "flowFund": "Fund",
+            "flowForecast": "Forecast",
+            "flowResolve": "Resolve",
+            "demoLink": "Open the live hackathon demo",
             "subtitle": "Choose your avatar and enter a username:",
             "closeLabel": "Close welcome dialog",
             "avatarLabel": "Choose your avatar:",

@@ -232,7 +232,14 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     recipeId: LAND_RECIPE_ID,
                     recipe: `${base}/oracle/recipes/${LAND_RECIPE_ID}?proposal={proposalAccount}&market={marketAccount}`,
                     source: 'Solana proposal account plus its terminal transaction',
-                    attester: solanaProgramId('ProposalNFT')
+                    attester: solanaProgramId('ProposalNFT'),
+                    publicRecords: {
+                        summary: `${base}/oracle/public-records/summary`,
+                        source: 'Croatian judiciary e-Oglasna archive',
+                        attestation: 'Solana Attestation Service on devnet',
+                        privacy: 'aggregate-only from this API; parcel-level legal records remain in the dedicated oracle boundary',
+                        marketIntegration: 'not yet consumed by the proposal-market program'
+                    }
                 },
                 market: {
                     programId: marketProgramId(),

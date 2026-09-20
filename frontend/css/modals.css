@@ -3932,10 +3932,61 @@
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    max-width: 400px;
+    max-width: 560px;
+    max-height: min(92vh, 760px);
+    overflow-y: auto;
     width: 90%;
     position: relative;
     text-align: center;
+}
+
+.welcome-product-kicker {
+    display: block;
+    margin-bottom: 8px;
+    color: #087f5b;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+}
+
+.welcome-modal-content .welcome-product-statement {
+    max-width: 470px;
+    margin: 0 auto 16px;
+    color: #4a5568;
+}
+
+.welcome-product-flow {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.welcome-product-flow span {
+    padding: 8px 4px;
+    border: 1px solid #cfe8dc;
+    border-radius: 999px;
+    background: #f0faf5;
+    color: #176a4b;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.welcome-demo-link {
+    display: inline-block;
+    margin-bottom: 18px;
+    color: #176a4b;
+    font-size: 14px;
+    font-weight: 700;
+    text-underline-offset: 3px;
+}
+
+.welcome-modal-content .welcome-identity-prompt {
+    margin-bottom: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #e5e7eb;
+    font-size: 14px;
 }
 
 .welcome-modal-close {
@@ -4075,10 +4126,20 @@
 }
 
 .welcome-modal-content h2 {
-    margin: 0 0 15px 0;
+    margin: 0 0 12px 0;
     color: #333;
     font-size: 24px;
     font-weight: 600;
+}
+
+@media (max-width: 520px) {
+    .welcome-modal-content {
+        padding: 26px 20px 22px;
+    }
+
+    .welcome-product-flow {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 .welcome-modal-content p {

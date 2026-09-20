@@ -5,6 +5,9 @@ Urban Game Theory is a long-running project. This branch isolates the work built
 Colosseum World's Fair hackathon so it can be reviewed independently of the existing city,
 parcel, ownership, proposal-rendering, and Lens foundations.
 
+> Urban Game Theory is a market for real-world land change: humans and agents propose, fund, and
+> forecast changes to real parcels, while public records resolve what actually happened.
+
 ## Review boundary
 
 - Pre-hackathon baseline: `3ee1855` (`Record the GUP scenario integration direction and inventory`)
@@ -101,6 +104,11 @@ git diff 3ee1855...colosseum-worlds-fair
 20. **Demo recovery path** — the Demo Center loads each evidence source independently, keeps partial
     failures visible, links devnet SOL/USDC faucets, and documents a browser-local simulation reset
     that does not touch public proposals or on-chain records.
+21. **Privacy-preserving public-record oracle bridge** — the public API reports aggregate health for
+    the existing Croatian court oracle and links its public Solana Attestation Service schema without
+    republishing decision identifiers, parties, quotes, or parcel identifiers. The Demo Center keeps
+    this external evidence feed separate from the current ProposalNFT lifecycle resolver and labels
+    recipe-bound external resolution as the remaining protocol gap.
 
 ## Pre-existing platform foundations
 
@@ -120,7 +128,8 @@ states come from public evidence rather than a scripted success screen.
 4. Donate or pledge devnet USDC, inspect the distinct escrow/commitment states, and find the human
    action beside algorithmic and LLM actions in the same Activity explorer.
 5. Resolve the lifecycle by releasing an executed proposal or refunding a cancelled/expired one.
-6. Open the market's `proposal-lifecycle-v1` recipe and matching source-hashed oracle event.
+6. Verify the court oracle's aggregate health and public SAS schema, then open the market's separate
+   `proposal-lifecycle-v1` recipe and matching source-hashed on-chain lifecycle event.
 
 If a live dependency is slow, use the Demo Center's retry button. The resettable fallback is the
 map's **Game → Enable game mode → New Game** flow; it clears browser-local simulation state only.

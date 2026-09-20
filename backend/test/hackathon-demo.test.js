@@ -36,6 +36,21 @@ describe('hackathon demo evidence model', () => {
         expect(model.oracle).toMatchObject({ tone: 'success', label: 'Cancelled proposal event attested' });
     });
 
+    it('shows external public records separately from proposal-market resolution', () => {
+        const model = demo.buildDemoModel({
+            docs,
+            publicRecords: {
+                attestations: 57, decisions: 28, parcels: 55,
+                schemaUrl: 'https://explorer.solana.com/address/schema?cluster=devnet'
+            }
+        });
+        expect(model.publicRecords).toMatchObject({
+            tone: 'success', label: '57 court attestations on Solana',
+            detail: expect.stringContaining('privacy-preserving aggregate')
+        });
+        expect(model.oracle).toMatchObject({ tone: 'waiting', event: null });
+    });
+
     it('does not relabel an LLM run as algorithmic evidence', () => {
         const model = demo.buildDemoModel({
             now: '2026-09-21T12:00:00Z', docs,

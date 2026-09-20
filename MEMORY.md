@@ -349,5 +349,6 @@
   `AgentActionEngine` and the same Activity schema; simulation keeps synthetic balances while live
   support stays Solana/USDC. The scheduled persona is opt-in and defaults to one proposal, three
   signed actions, `$0.25` model spend and `0.35 USDC` per day, superseding the original `$1,000` cap.
+- 2026-09-20: **Hackathon product thesis.** Urban Game Theory is a market for real-world land change: humans and agents propose, fund and forecast changes to real parcels, while public records resolve what happened; court-derived public APIs stay aggregate-only unless a deliberate privacy review approves parcel-level disclosure.
   Donations move USDC into refundable escrow now; pledges remain revocable and unfunded until the
   pledger chooses to fulfil after execution.

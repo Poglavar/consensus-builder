@@ -61,4 +61,23 @@ describe('land-event routes', () => {
         expect(res.status).toBe(400);
         expect(pool.query).not.toHaveBeenCalled();
     });
+
+    it('exposes privacy-preserving public-record oracle health and the public SAS schema', async () => {
+        const pool = { query: vi.fn().mockResolvedValue({ rows: [{
+            attestations: 57, parcels: 55, decisions: 28,
+            schema_id: 'schema-account', latest_attestation_at: '2026-05-12T13:30:13Z'
+        }] }) };
+        const res = await request(appFor(pool)).get('/oracle/public-records/summary');
+        expect(res.status).toBe(200);
+        expect(res.body).toMatchObject({
+            source: 'Croatian judiciary e-Oglasna archive',
+            chain: 'solana:devnet', schemaId: 'schema-account',
+            attestations: 57, parcels: 55, decisions: 28,
+            marketIntegration: expect.stringContaining('do not consume')
+        });
+        expect(res.body.schemaUrl).toContain('/address/schema-account?cluster=devnet');
+        expect(res.body).not.toHaveProperty('events');
+        expect(res.body).not.toHaveProperty('decisionUuid');
+        expect(pool.query.mock.calls[0][0]).toMatch(/FROM court\.attestation/);
+    });
 });

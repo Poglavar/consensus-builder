@@ -9,8 +9,8 @@
         return;
     }
 
-    const DEFAULT_TITLE = 'Consensus Builder';
-    const DEFAULT_DESCRIPTION = 'Help communities reach consensus on future land development.';
+    const DEFAULT_TITLE = 'Urban Game Theory';
+    const DEFAULT_DESCRIPTION = 'A market for real-world land change: humans and agents propose, fund and forecast changes to real parcels, while public records resolve what actually happened.';
     const DEFAULT_IMAGE = '/images/consensus-builder-logo-2.png';
 
     /**
@@ -204,4 +204,3 @@
     globalScope.updateProposalOGMetadata = updateProposalOGMetadata;
     globalScope.resetOGMetadata = resetOGMetadata;
 })();
-

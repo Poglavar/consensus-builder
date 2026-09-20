@@ -104,3 +104,4 @@ mapping lives in `backend/buildings/overture-cities.js`.
 - consensus.urban_rule
 - consensus.urban_rule_text
 - consensus.urban_rule_variable
+- court.attestation

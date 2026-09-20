@@ -25,7 +25,7 @@
     }
 
     function buildDemoModel({
-        runs = [], events = [], docs = {}, discovery = null, oracleEvents = [], errors = {},
+        runs = [], events = [], docs = {}, discovery = null, oracleEvents = [], publicRecords = null, errors = {},
         now = new Date().toISOString()
     } = {}) {
         const latestAlgorithm = newest(runs, run => run.controller === 'algorithm' && (run.role || 'proposer') === 'proposer');
@@ -89,6 +89,17 @@
             programs: {
                 market: docs.market?.programId || null,
                 support: docs.proposalSupport?.programId || null
+            },
+            publicRecords: publicRecords?.attestations > 0 ? {
+                tone: 'success',
+                label: `${publicRecords.attestations} court attestations on Solana`,
+                detail: `${publicRecords.decisions} decisions · ${publicRecords.parcels} parcel facts · privacy-preserving aggregate`,
+                summary: publicRecords
+            } : {
+                tone: errors.publicRecords ? 'error' : 'waiting',
+                label: errors.publicRecords ? 'Public-record oracle unavailable' : 'Waiting for external land evidence',
+                detail: errors.publicRecords || 'The court oracle publishes parcel-level SAS attestations; this app republishes only aggregate health and its public schema.',
+                summary: publicRecords
             },
             oracle: latestOracle ? {
                 tone: 'success',
@@ -161,7 +172,13 @@
             model.evidence.latestTransaction ? { label: 'Latest transaction ↗', href: `https://explorer.solana.com/tx/${encodeURIComponent(model.evidence.latestTransaction)}?cluster=devnet` } : {},
             model.evidence.latestProposalId ? { label: 'Latest proposal', href: `/proposals/${encodeURIComponent(model.evidence.latestProposalId)}` } : {}
         ]);
-        addCard(cards, 'Land-event oracle', model.oracle, [
+        addCard(cards, 'Official public records', model.publicRecords, [
+            { label: 'Oracle health JSON ↗', href: `${apiBase}/oracle/public-records/summary` },
+            model.publicRecords.summary?.schemaUrl
+                ? { label: 'Solana attestation schema ↗', href: model.publicRecords.summary.schemaUrl }
+                : {}
+        ]);
+        addCard(cards, 'Market resolution', model.oracle, [
             { label: 'Oracle events ↗', href: `${apiBase}/oracle/events` },
             model.oracle.event?.source?.transactionUrl
                 ? { label: 'Source transaction ↗', href: model.oracle.event.source.transactionUrl }
@@ -172,6 +189,23 @@
         ]);
         element.append(cards);
 
+        const thesis = node(doc, 'section', null, 'hd-flow hd-thesis');
+        thesis.append(node(doc, 'span', 'THE PRODUCT', 'hd-eyebrow'));
+        thesis.append(node(doc, 'h2', 'From a real parcel to a resolved claim'));
+        const thesisGrid = node(doc, 'div', null, 'hd-thesis-grid');
+        [
+            ['1', 'Propose', 'A human or agent proposes a change to exact cadastral parcels.'],
+            ['2', 'Fund + forecast', 'Wallets donate, pledge, or take a YES/NO market position.'],
+            ['3', 'Observe', 'Public registers and court records attest what happened in the real world.'],
+            ['4', 'Resolve', 'A declared evidence recipe determines the outcome and unlocks settlement.']
+        ].forEach(([number, title, detail]) => {
+            const item = node(doc, 'article');
+            item.append(node(doc, 'span', number, 'hd-step-number'), node(doc, 'strong', title), node(doc, 'p', detail));
+            thesisGrid.append(item);
+        });
+        thesis.append(thesisGrid);
+        element.append(thesis);
+
         const flow = node(doc, 'section', null, 'hd-flow');
         flow.append(node(doc, 'h2', 'Five-minute judge path'));
         const list = node(doc, 'ol');
@@ -181,6 +215,7 @@
             ['Open a proposal in read-only Details; Counterpropose creates the editable clone.', model.evidence.latestProposalId ? `/proposals/${encodeURIComponent(model.evidence.latestProposalId)}` : '/'],
             ['Compare funded donation with a revocable soft pledge, using the same wallet UI.', model.evidence.latestProposalId ? `/proposals/${encodeURIComponent(model.evidence.latestProposalId)}` : '/'],
             ['Inspect the prediction market’s hashed oracle recipe and market account.', model.evidence.latestProposalId ? `/proposals/${encodeURIComponent(model.evidence.latestProposalId)}` : '/'],
+            ['Verify the external court oracle’s aggregate health and public SAS schema.', `${apiBase}/oracle/public-records/summary`],
             ['Open a source-hashed proposal lifecycle event and its Solana transaction.', `${apiBase}/oracle/events`]
         ].forEach(([label, href]) => {
             const item = node(doc, 'li'); item.append(link(doc, label, href)); list.append(item);
@@ -191,6 +226,12 @@
         if (model.programs.support) programs.append(link(doc, `Funding program ${model.programs.support}`, `https://explorer.solana.com/address/${model.programs.support}?cluster=devnet`));
         flow.append(programs);
         element.append(flow);
+
+        const boundary = node(doc, 'section', null, 'hd-flow hd-boundary');
+        boundary.append(node(doc, 'span', 'HONEST BOUNDARY', 'hd-eyebrow'));
+        boundary.append(node(doc, 'h2', 'External evidence is live; external market resolution is next'));
+        boundary.append(node(doc, 'p', 'Today the market resolves from the proposal program’s Executed/Cancelled state. The court oracle is a separate live Solana Attestation Service feed. The remaining protocol gap is binding a market to a declared external evidence recipe without exposing personal legal data.'));
+        element.append(boundary);
 
         const readiness = node(doc, 'section', null, 'hd-flow hd-readiness');
         readiness.append(node(doc, 'h2', 'Demo readiness and recovery'));
@@ -230,7 +271,8 @@
             activity: `${base}/agent/activity?limit=150`,
             docs: `${base}/docs/agents.json`,
             discovery: `${base}/agent/discovery`,
-            oracle: `${base}/oracle/events?limit=25`
+            oracle: `${base}/oracle/events?limit=25`,
+            publicRecords: `${base}/oracle/public-records/summary`
         };
         const entries = Object.entries(requests);
         const results = await Promise.allSettled(entries.map(([, url]) => fetchJson(url)));
@@ -256,6 +298,7 @@
             docs: values.docs || {},
             discovery: values.discovery || null,
             oracleEvents: values.oracle?.events || [],
+            publicRecords: values.publicRecords || null,
             errors
         }), { apiBase: base });
     }

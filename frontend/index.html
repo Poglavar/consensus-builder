@@ -3,29 +3,29 @@
 
 <head>
     <base href="/">
-    <title>Consensus Builder</title>
+    <title>Urban Game Theory — A market for real-world land change</title>
     <meta charset="utf-8" />
     <!-- Capture photoreal diagnostics before the share flow rewrites /proposals/... and drops the query. -->
     <script>try{(function(){var params=new URLSearchParams(location.search);if(params.has('seat'))sessionStorage.setItem('cbSeatDebug','1');if(params.has('seam'))sessionStorage.setItem('cbPhotorealSeam',params.get('seam'));})();}catch(e){}</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Open Graph / Social Media Meta Tags -->
-    <meta property="og:title" content="Consensus Builder">
-    <meta property="og:description" content="Help communities reach consensus on future land development.">
+    <meta property="og:title" content="Urban Game Theory">
+    <meta property="og:description" content="Humans and agents propose, fund and forecast changes to real parcels, while public records resolve what actually happened.">
     <meta property="og:image" content="https://urbangametheory.xyz/images/consensus-builder-logo-2.png">
     <meta property="og:url" content="https://urbangametheory.xyz/">
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Consensus Builder">
+    <meta property="og:site_name" content="Urban Game Theory">
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Consensus Builder">
-    <meta name="twitter:description" content="Help communities reach consensus on future land development.">
+    <meta name="twitter:title" content="Urban Game Theory">
+    <meta name="twitter:description" content="A market for real-world land change.">
     <meta name="twitter:image" content="https://urbangametheory.xyz/images/consensus-builder-logo-2.png">
     <meta name="twitter:url" content="https://urbangametheory.xyz/">
 
     <!-- Standard Meta Tags -->
-    <meta name="description" content="Help communities reach consensus on future land development.">
+    <meta name="description" content="Urban Game Theory is a market for real-world land change: humans and agents propose, fund and forecast changes to real parcels, while public records resolve what actually happened.">
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="images/consensus-builder-logo-2.png" />
@@ -244,9 +244,9 @@
         <div class="sidebar-header">
             <div class="header-title">
                 <h2>
-                    <img src="images/consensus-builder-logo.png" alt="Consensus Builder Logo"
+                    <img src="images/consensus-builder-logo.png" alt="Urban Game Theory logo"
                         style="height:32px; vertical-align:middle; margin-right:10px;">
-                    <span data-i18n-key="sidebar.header.title">Consensus Builder</span>
+                    <span data-i18n-key="sidebar.header.title">Urban Game Theory</span>
                 </h2>
                 <span class="version-badge header-ai-badge" data-i18n-key="sidebar.header.aiBadgeTooltip"
                     data-i18n-attr="title,aria-label"
@@ -958,11 +958,10 @@
                     <div class="info-subsection">
                         <h4 data-i18n-key="sidebar.info.aboutTitle">About</h4>
                         <p data-i18n-key="sidebar.info.aboutParagraph" data-i18n-attr="html">
-                            This application helps communities reach consensus on future land development.
-                            This is an early alpha version. Do play around freely but do not put in too much work -- all
-                            data is saved locally
-                            in your browser and will be lost.
-                            See <a href="roadmap.html" target="_blank">the roadmap</a> for the development plan.
+                            Urban Game Theory is a market for real-world land change: humans and agents propose, fund,
+                            and forecast changes to real parcels, while public records resolve what actually happened.
+                            Open the <a href="/hackathon-demo.html">live hackathon demo</a>, or see
+                            <a href="roadmap.html" target="_blank">the roadmap</a>.
                         </p>
                     </div>
                     <hr>
@@ -1935,8 +1934,17 @@
                 class="welcome-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close welcome dialog"
                 title="Close welcome dialog" data-i18n-key="modal.welcome.closeLabel" data-i18n-attr="aria-label,title"
                 onclick="hideWelcomeModal()">&times;</button>
-            <h2 data-i18n-key="modal.welcome.title">Welcome to Consensus Builder!</h2>
-            <p data-i18n-key="modal.welcome.subtitle">Choose your avatar and enter a username:</p>
+            <span class="welcome-product-kicker" data-i18n-key="modal.welcome.kicker">Urban Game Theory</span>
+            <h2 data-i18n-key="modal.welcome.title">A market for real-world land change</h2>
+            <p class="welcome-product-statement" data-i18n-key="modal.welcome.statement">Humans and agents propose, fund, and forecast changes to real parcels, while public records resolve what actually happened.</p>
+            <div class="welcome-product-flow" aria-label="Product flow" data-i18n-key="modal.welcome.flowLabel" data-i18n-attr="aria-label">
+                <span data-i18n-key="modal.welcome.flowPropose">Propose</span>
+                <span data-i18n-key="modal.welcome.flowFund">Fund</span>
+                <span data-i18n-key="modal.welcome.flowForecast">Forecast</span>
+                <span data-i18n-key="modal.welcome.flowResolve">Resolve</span>
+            </div>
+            <a class="welcome-demo-link" href="/hackathon-demo.html" data-i18n-key="modal.welcome.demoLink">Open the live hackathon demo</a>
+            <p class="welcome-identity-prompt" data-i18n-key="modal.welcome.subtitle">Choose your avatar and enter a username:</p>
             <form id="welcome-form" onsubmit="submitUsername(event)">
                 <div class="form-group">
                     <label for="avatar-selection" data-i18n-key="modal.welcome.avatarLabel">Choose your avatar:</label>

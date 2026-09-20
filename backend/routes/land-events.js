@@ -33,6 +33,40 @@ function eventFromRow(row) {
 }
 
 export function setupLandEventsRoute(app, pool) {
+    app.get('/oracle/public-records/summary', async (_req, res) => {
+        try {
+            const { rows } = await pool.query(`
+                SELECT count(*)::int AS attestations,
+                       count(DISTINCT parcel_uid)::int AS parcels,
+                       count(DISTINCT decision_uuid)::int AS decisions,
+                       min(schema_id) AS schema_id,
+                       max(created_at) AS latest_attestation_at
+                FROM court.attestation
+                WHERE chain = 'solana-devnet'
+            `);
+            const row = rows[0] || {};
+            const schemaId = row.schema_id || null;
+            return res.json({
+                source: 'Croatian judiciary e-Oglasna archive',
+                evidence: 'parcel-level court-decision attestations',
+                privacy: 'aggregate-only; decision identifiers, parties, quotes and parcel identifiers are not republished here',
+                chain: 'solana:devnet',
+                schemaId,
+                schemaUrl: schemaId
+                    ? `https://explorer.solana.com/address/${encodeURIComponent(schemaId)}?cluster=devnet`
+                    : null,
+                attestations: Number(row.attestations || 0),
+                parcels: Number(row.parcels || 0),
+                decisions: Number(row.decisions || 0),
+                latestAttestationAt: row.latest_attestation_at || null,
+                marketIntegration: 'external evidence feed exists; proposal markets do not consume it yet'
+            });
+        } catch (error) {
+            console.error('GET /oracle/public-records/summary failed', error);
+            return res.status(500).json({ error: 'Failed to read public-record oracle summary' });
+        }
+    });
+
     app.get('/oracle/events', async (req, res) => {
         try {
             const limit = limitOf(req.query.limit);
