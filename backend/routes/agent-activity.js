@@ -12,7 +12,10 @@ function runEvents(row) {
     const base = {
         source: 'live', actor, ok: row.status !== 'failed',
         occurredAt: row.updated_at || row.started_at, recordedAt: row.updated_at || row.started_at,
-        runId: row.run_id
+        runId: row.run_id,
+        model: summary.decisionResult?.model || summary.model || null,
+        modelCostUsd: summary.decisionResult?.costUsd ?? summary.pickCostUsd ?? null,
+        batchId: summary.decisionResult?.batchId || summary.batchId || null
     };
     if (Array.isArray(summary.activities) && summary.activities.length) {
         return summary.activities.map((event, index) => ({
@@ -20,12 +23,15 @@ function runEvents(row) {
             id: event.id || `activity:${row.run_id}:${index}`,
             source: 'live',
             actor: event.actor || actor,
-            runId: row.run_id
+            runId: row.run_id,
+            model: event.model || base.model,
+            modelCostUsd: event.modelCostUsd ?? base.modelCostUsd,
+            batchId: event.batchId || base.batchId
         }));
     }
     const events = [{
         ...base, id: `run:${row.run_id}:${row.stage || 'started'}`,
-        action: { type: row.stage || 'started' },
+        action: { type: 'run_status', stage: row.stage || 'started' },
         message: `${row.persona} agent run ${row.status}: ${row.stage || 'started'}.`
     }];
     const picks = Array.isArray(summary.picks) ? summary.picks : [];

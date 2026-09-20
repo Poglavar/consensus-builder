@@ -686,6 +686,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                     <div><span>${tProposal('panel.proposal.pledge.donations', 'Donations')}</span><strong data-funding="donated">${tProposal('panel.proposal.pledge.loading', 'Loading…')}</strong><small data-funding="donation-status"></small></div>
                     <div><span>${tProposal('panel.proposal.pledge.pledges', 'Pledges')}</span><strong data-funding="pledged">${tProposal('panel.proposal.pledge.loading', 'Loading…')}</strong><small data-funding="pledge-status"></small></div>
                 </div>
+                <div class="proposal-funding-explainer">
+                    <div><strong>${tProposal('panel.proposal.pledge.donationMeaningTitle', 'Donation')}</strong> ${tProposal('panel.proposal.pledge.donationMeaning', 'moves USDC into escrow now; it is refundable if the proposal is cancelled or expires.')}</div>
+                    <div><strong>${tProposal('panel.proposal.pledge.pledgeMeaningTitle', 'Pledge')}</strong> ${tProposal('panel.proposal.pledge.pledgeMeaning', 'is a revocable public commitment; no USDC moves until you fulfil it after execution.')}</div>
+                </div>
                 <div class="proposal-funding-you" data-funding="you">${tProposal('panel.proposal.pledge.connect', 'Connect a Solana wallet to see your support.')}</div>
                 <div class="proposal-funding-links">
                     <a href="https://explorer.solana.com/address/${nftInfo.tokenId}?cluster=devnet" target="_blank" rel="noopener">${tProposal('panel.proposal.pledge.proposalExplorer', 'Proposal account')} ↗</a>
@@ -1392,6 +1396,24 @@ function resolveProposalForBoost(idOrHash) {
     return null;
 }
 
+const proposalSupportInFlight = new Set();
+
+function proposalSupportActor(wallet) {
+    return { id: wallet, name: wallet ? `${wallet.slice(0, 4)}…${wallet.slice(-4)}` : 'Wallet user', wallet, controller: 'human' };
+}
+
+async function recordHumanProposalSupport({ wallet, action, proposalId, amount = null, result, message }) {
+    if (typeof window.dispatchAgentAction !== 'function') return;
+    const transaction = result?.transactionHash || result?.transactionHashes?.[0] || null;
+    await window.dispatchAgentAction(proposalSupportActor(wallet), { type: action, proposalId, amount }, {
+        source: 'live',
+        outcome: {
+            id: transaction ? `solana:${transaction}` : `wallet:${wallet}:${action}:${proposalId}:${Date.now()}`,
+            ok: true, transaction, message
+        }
+    });
+}
+
 function openProposalBoostDialog(idOrHash = null, supportKind = 'pledge') {
     const tProposalUI = getProposalI18nHelper();
     const proposal = resolveProposalForBoost(idOrHash);
@@ -1405,7 +1427,7 @@ function openProposalBoostDialog(idOrHash = null, supportKind = 'pledge') {
         existing.parentNode.removeChild(existing);
     }
 
-    const boostKey = proposal.proposalId || proposal.proposalId || '';
+    const boostKey = proposal.proposalId || proposal.tokenId || idOrHash || '';
     const overlay = document.createElement('div');
     overlay.id = 'proposalBoostOverlay';
     overlay.className = 'proposal-boost-overlay';
@@ -1435,6 +1457,7 @@ function openProposalBoostDialog(idOrHash = null, supportKind = 'pledge') {
             </div>
             <div class="proposal-boost-body">
                 <p class="proposal-boost-copy">${modalCopy}</p>
+                <div class="proposal-support-wallet-summary" data-support-wallet-summary aria-live="polite">Checking wallet balances…</div>
                 <div class="proposal-offer-row proposal-boost-row" style="display:flex; gap:8px; align-items:center;">
                     <input type="text" id="proposalBoostAmount" placeholder="1.00" inputmode="decimal" autocomplete="off" style="flex:1 1 auto;">
                     <select id="proposalBoostCurrency" style="flex:0 0 112px; max-width:112px; min-width:112px;">
@@ -1442,7 +1465,7 @@ function openProposalBoostDialog(idOrHash = null, supportKind = 'pledge') {
                     </select>
                 </div>
                 <div class="proposal-boost-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px;">
-                    <button type="button" class="btn proposal-boost-send" style="min-width:100px; width:120px;" onclick="submitProposalBoost('${boostKey}')">${sendLabel}</button>
+                    <button type="button" class="btn proposal-boost-send" data-support-submit style="min-width:100px; width:120px;" onclick="submitProposalBoost('${boostKey}')">${sendLabel}</button>
                     <div class="proposal-boost-status" id="proposalBoostStatus" aria-live="polite" style="font-size:12px; text-align:center; min-height:18px;"></div>
                 </div>
             </div>
@@ -1450,6 +1473,19 @@ function openProposalBoostDialog(idOrHash = null, supportKind = 'pledge') {
     `;
 
     document.body.appendChild(overlay);
+
+    const walletSummary = overlay.querySelector('[data-support-wallet-summary]');
+    if (window.SolanaPledgeBridge?.walletBalances) {
+        window.SolanaPledgeBridge.walletBalances().then(balance => {
+            if (!walletSummary?.isConnected) return;
+            walletSummary.textContent = `${balance.usdc} devnet USDC · ${balance.sol.toFixed(4)} SOL for fees${isDonation ? '' : ' · pledging does not move USDC now'}`;
+        }).catch(error => {
+            if (!walletSummary?.isConnected) return;
+            walletSummary.textContent = window.ProposalSupportView?.errorText?.(error, supportKind) || error.message;
+        });
+    } else if (walletSummary) {
+        walletSummary.textContent = 'Connect a Solana devnet wallet to view balances.';
+    }
 
     const amountInput = overlay.querySelector('#proposalBoostAmount');
     if (amountInput) {
@@ -1468,6 +1504,9 @@ function closeProposalBoostDialog() {
 }
 
 async function submitProposalBoost(idOrHash = null) {
+    const overlay = document.getElementById('proposalBoostOverlay');
+    const supportKind = overlay?.dataset?.supportKind === 'donate' ? 'donate' : 'pledge';
+    const submitButton = overlay?.querySelector('[data-support-submit]');
     const amountInput = document.getElementById('proposalBoostAmount');
     const statusEl = document.getElementById('proposalBoostStatus');
     const setBoostStatus = (text = '') => {
@@ -1500,7 +1539,7 @@ async function submitProposalBoost(idOrHash = null) {
     const solState = solWm && typeof solWm.getState === 'function' ? solWm.getState() : null;
     const isSolanaConnected = solState && solState.status === 'connected' && Array.isArray(solState.accounts) && solState.accounts.length > 0;
     if (!isSolanaConnected) {
-        showProposalAlertMessage('proposal_boost_wallet_required', 'Connect a Solana wallet to pledge to this proposal.');
+        showProposalAlertMessage('proposal_boost_wallet_required', `Connect a Solana wallet to ${supportKind === 'donate' ? 'donate to' : 'pledge to'} this proposal.`);
         if (typeof handleWalletButtonClick === 'function') {
             handleWalletButtonClick();
         }
@@ -1508,37 +1547,44 @@ async function submitProposalBoost(idOrHash = null) {
     }
     const targetChainId = normalizeChainIdForBoost(nftInfo.chain || null);
     if (typeof targetChainId !== 'string' || !targetChainId.startsWith('solana')) {
-        showProposalAlertMessage('proposal_boost_failed', 'USDC escrow pledges currently require a Solana proposal.');
+        showProposalAlertMessage('proposal_boost_failed', `${supportKind === 'donate' ? 'Donations' : 'Pledges'} currently require a Solana proposal.`);
         return;
     }
-    if (!window.SolanaPledgeBridge || typeof window.SolanaPledgeBridge.pledge !== 'function') {
-        showProposalAlertMessage('proposal_boost_failed', 'Pledge transaction failed: blockchain bridge unavailable.');
+    if (!window.SolanaPledgeBridge || typeof window.SolanaPledgeBridge[supportKind] !== 'function') {
+        showProposalAlertMessage('proposal_boost_failed', `${supportKind === 'donate' ? 'Donation' : 'Pledge'} transaction failed: blockchain bridge unavailable.`);
         return;
     }
-    const overlay = document.getElementById('proposalBoostOverlay');
-    const supportKind = overlay?.dataset?.supportKind === 'donate' ? 'donate' : 'pledge';
     const pendingKey = `proposalSupportPending:${supportKind}:${nftInfo.tokenId}:${solState.accounts[0]}`;
+    if (proposalSupportInFlight.has(pendingKey)) return;
     let operationId = overlay?.dataset?.pledgeOperationId;
     try {
         const pending = JSON.parse(sessionStorage.getItem(pendingKey) || 'null');
         if (pending?.amount === rawAmount && pending?.operationId) operationId = pending.operationId;
         sessionStorage.setItem(pendingKey, JSON.stringify({ amount: rawAmount, operationId }));
     } catch (_) { /* sessionStorage is optional; the open dialog still preserves this retry id */ }
-    setBoostStatus(supportKind === 'donate' ? 'Waiting for your USDC donation confirmation...' : 'Waiting for your pledge confirmation...');
+    proposalSupportInFlight.add(pendingKey);
+    if (submitButton) submitButton.disabled = true;
+    setBoostStatus('Checking your wallet…');
     let txResult;
     try {
         txResult = await window.SolanaPledgeBridge[supportKind]({
             proposal: nftInfo.tokenId,
             amount: rawAmount,
-            operationId
+            operationId,
+            onStatus: status => setBoostStatus(window.ProposalSupportView?.statusText?.(status, supportKind) || status.state)
         });
     } catch (error) {
-        setBoostStatus('');
-        const reason = error && (error.reason || error.shortMessage || error.message) ? (error.reason || error.shortMessage || error.message) : 'Unknown error';
+        proposalSupportInFlight.delete(pendingKey);
+        if (submitButton) submitButton.disabled = false;
+        const reason = window.ProposalSupportView?.errorText?.(error, supportKind)
+            || (error && (error.reason || error.shortMessage || error.message) ? (error.reason || error.shortMessage || error.message) : 'Unknown error');
+        setBoostStatus(reason);
         console.error(`USDC ${supportKind} failed`, error, error?.logs || []);
-        showProposalAlertMessage('proposal_boost_failed', `${supportKind === 'donate' ? 'Donation' : 'Pledge'} transaction failed: ${reason}`, { reason });
+        const linkOptions = error?.explorerUrl ? { linkUrl: error.explorerUrl, linkText: 'Check transaction on Solana Explorer' } : {};
+        showProposalAlertMessage('proposal_boost_failed', `${supportKind === 'donate' ? 'Donation' : 'Pledge'}: ${reason}`, { reason }, linkOptions);
         return;
     }
+    proposalSupportInFlight.delete(pendingKey);
     closeProposalBoostDialog();
     try { sessionStorage.removeItem(pendingKey); } catch (_) { }
     const txLink = txResult?.explorerUrl || '';
@@ -1553,6 +1599,14 @@ async function submitProposalBoost(idOrHash = null) {
         { amount: rawAmount, currency: 'USDC', txLink },
         alertOptions
     );
+    await recordHumanProposalSupport({
+        wallet: solState.accounts[0], action: supportKind,
+        proposalId: proposal.proposalId || proposal.tokenId || nftInfo.tokenId,
+        amount: rawAmount, result: txResult,
+        message: supportKind === 'donate'
+            ? `${proposalSupportActor(solState.accounts[0]).name} donated ${rawAmount} USDC to proposal ${proposal.proposalId || proposal.tokenId || nftInfo.tokenId}.`
+            : `${proposalSupportActor(solState.accounts[0]).name} pledged ${rawAmount} USDC to proposal ${proposal.proposalId || proposal.tokenId || nftInfo.tokenId}.`
+    });
     showProposalInfo(proposal);
 }
 
@@ -1563,15 +1617,35 @@ async function settleProposalSupport(idOrHash, action) {
         showProposalAlertMessage('proposal_boost_failed', 'Proposal support action is unavailable.');
         return;
     }
+    const solState = window.solanaWalletManager?.getState?.();
+    const wallet = solState?.accounts?.[0] || null;
+    const key = `${action}:${nftInfo.tokenId}:${wallet || 'wallet'}`;
+    if (proposalSupportInFlight.has(key)) return;
+    proposalSupportInFlight.add(key);
     try {
         const result = await window.SolanaPledgeBridge[action]({ proposal: nftInfo.tokenId });
         const linkOptions = result?.explorerUrl ? { linkUrl: result.explorerUrl, linkText: 'See transaction on Solana Explorer' } : {};
-        showProposalAlertMessage('proposal_boost_success', 'Proposal support updated successfully.', {}, linkOptions);
+        const messages = {
+            revokePledge: 'Your pledge was revoked; no USDC moved.',
+            fulfillPledge: 'Your pledged USDC was transferred to the proposal owner.',
+            voidPledge: 'Your pledge was cleared; no USDC moved.',
+            refundMyDonations: 'Your refundable donations were returned.',
+            releaseDonations: 'Escrowed donations were released to the proposal owner.'
+        };
+        const message = messages[action] || 'Proposal support updated successfully.';
+        showProposalAlertMessage('proposal_boost_success', message, {}, linkOptions);
+        await recordHumanProposalSupport({
+            wallet, action, proposalId: proposal.proposalId || proposal.tokenId || nftInfo.tokenId,
+            result, message: `${proposalSupportActor(wallet).name}: ${message}`
+        });
         showProposalInfo(proposal);
     } catch (error) {
-        const reason = error?.reason || error?.shortMessage || error?.message || 'Unknown error';
+        const reason = window.ProposalSupportView?.errorText?.(error, action) || error?.reason || error?.shortMessage || error?.message || 'Unknown error';
         console.error(`Proposal support ${action} failed`, error, error?.logs || []);
-        showProposalAlertMessage('proposal_boost_failed', `Proposal support action failed: ${reason}`, { reason });
+        const linkOptions = error?.explorerUrl ? { linkUrl: error.explorerUrl, linkText: 'Check transaction on Solana Explorer' } : {};
+        showProposalAlertMessage('proposal_boost_failed', `Proposal support action failed: ${reason}`, { reason }, linkOptions);
+    } finally {
+        proposalSupportInFlight.delete(key);
     }
 }
 

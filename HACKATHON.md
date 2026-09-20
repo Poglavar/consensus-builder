@@ -50,15 +50,22 @@ git diff 3ee1855...colosseum-worlds-fair
    and [fulfils its pledge](https://explorer.solana.com/tx/5NUeperNd6wu3ZizQW7ASWZtfa2nFKjevnGeVtqAeFWhFyfDbcUBKw5enRwKcTRAyZ1yHNpeEqWC8Vs2dyp94UgA?cluster=devnet).
    Run it with `cd blockchain/solana && node scripts/proposal-support-lifecycle.mjs --live`.
 9. **One agent/action/activity model** — browser algorithms and the server LLM runner use the same
-   controller/action/event contract. The Activity explorer combines live and simulated events,
-   filters by source or actor type, and keeps AI/human provenance in expandable details instead of
-   visually segregating actors throughout the product.
+   controller/action/event contract, including confirmed human wallet actions. The Activity explorer
+   combines live and simulated events, independently filters source/controller/action/result/search,
+   and keeps wallet/model/cost/run provenance in expandable details instead of visually segregating
+   actors throughout the product.
 10. **Fresh end-to-end LLM agent proof** — `densifier-01` used Claude to select and explain one
     rule-backed Rudeš building proposal (model cost `$0.0054`), [minted it on Solana devnet](https://explorer.solana.com/tx/5oFxz5jQwtVVmQmybPUBq1Zjifiq7tpvTZqs2ZYEKQ22NYZHP9Bb1LDXiPRX4QSHSZ8ByrnyXfgfMK2f9tTaVDXN?cluster=devnet),
     [paid `0.05 USDC` through x402](https://explorer.solana.com/tx/5bZkHoEaP1jiGTNEAJXHh5uhHvGevekwRsyAMn1MyKTXFheUqYmj8h5hYU9n1GccBqj5He6u6vgK4HS2HCoSV4n1?cluster=devnet),
     published [proposal 763](https://api.urbangametheory.xyz/proposals/763), then
     [staked `0.25 USDC` YES](https://explorer.solana.com/tx/scK9S8NqVDmh8GE1NNksEJwFyeam2hB4dVL4xPYFp4jNENKWX6HL9kaU9wdQEwpztQwBCmx3pJ1kXRVR5MsovDG?cluster=devnet).
     The public Activity explorer shows all three actions from the same structured event stream.
+11. **Bounded daily autonomy and wallet-grade support UX** — the opt-in PM2 persona schedule stores
+    its complete decision input, model/usage/cost, rationale, x402 payment id and every transaction;
+    it refuses more than one proposal, three signed actions, `$0.25` of model spend or `0.35 USDC`
+    per day by default. Human donation and pledge flows show wallet balances, distinguish escrowed
+    funds from soft commitments, prevent duplicate submission, expose submitted/confirmed states,
+    preserve explorer links on uncertain confirmation and batch large refunds safely.
 
 ## Pre-existing platform foundations
 
@@ -72,5 +79,6 @@ fundable proposal workflow; it does not claim the whole application as new.
 1. Discover the paid proposal capability through the x402/Bazaar metadata.
 2. Run an agent proposal through payment, persistence, and its on-chain transaction link.
 3. Open the resulting proposal in read-only Details and fork it with Counterpropose.
-4. Pledge devnet USDC and inspect the escrow totals through the UI or agent endpoint.
+4. Donate or pledge devnet USDC, inspect the distinct escrow/commitment states, and find the human
+   action beside algorithmic and LLM actions in the same Activity explorer.
 5. Resolve the lifecycle by releasing an executed proposal or refunding a cancelled/expired one.

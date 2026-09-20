@@ -31,4 +31,11 @@ describe('proposal support action presentation', () => {
             }
         })).toEqual(['releaseDonations']);
     });
+
+    it('turns wallet lifecycle and common failures into actionable copy', () => {
+        expect(supportView.statusText({ state: 'awaiting_signature' }, 'donate')).toMatch(/Approve the donation/);
+        expect(supportView.statusText({ state: 'submitted' }, 'pledge')).toMatch(/waiting for confirmation/);
+        expect(supportView.errorText({ code: 'INSUFFICIENT_SOL' }, 'donate')).toMatch(/devnet SOL/);
+        expect(supportView.errorText({ code: 'CONFIRMATION_UNKNOWN' }, 'pledge')).toMatch(/Check the transaction before retrying/);
+    });
 });

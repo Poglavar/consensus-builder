@@ -110,11 +110,41 @@
         };
     }
 
+    function includesQuery(event, query) {
+        if (!query) return true;
+        const haystack = [
+            event.actor?.name, event.actor?.id, event.actor?.wallet,
+            event.action?.type, event.entity?.id, event.message, event.text,
+            event.transaction, event.runId, event.model, event.batchId
+        ].filter(Boolean).join(' ').toLocaleLowerCase();
+        return haystack.includes(String(query).trim().toLocaleLowerCase());
+    }
+
     function matchesActivity(event, filter = 'all') {
-        if (!event || filter === 'all') return Boolean(event);
-        if (filter === 'live' || filter === 'simulation') return event.source === filter;
-        if (filter === 'human' || filter === 'agent') return event.actor?.kind === filter;
-        return event.action?.type === filter;
+        if (!event) return false;
+        if (typeof filter === 'string') {
+            if (filter === 'all') return true;
+            if (filter === 'live' || filter === 'simulation') return event.source === filter;
+            if (filter === 'human' || filter === 'agent' || filter === 'system') return event.actor?.kind === filter;
+            if (filter === 'algorithm' || filter === 'llm') return event.actor?.controller === filter;
+            if (filter === 'success') return event.ok !== false;
+            if (filter === 'failed') return event.ok === false;
+            return event.action?.type === filter;
+        }
+        const source = filter.source || 'all';
+        const actor = filter.actor || filter.controller || 'all';
+        const action = filter.action || 'all';
+        const status = filter.status || 'all';
+        if (source !== 'all' && event.source !== source) return false;
+        if (actor !== 'all') {
+            if (actor === 'human' || actor === 'agent' || actor === 'system') {
+                if (event.actor?.kind !== actor) return false;
+            } else if (event.actor?.controller !== actor) return false;
+        }
+        if (action !== 'all' && event.action?.type !== action) return false;
+        if (status === 'success' && event.ok === false) return false;
+        if (status === 'failed' && event.ok !== false) return false;
+        return includesQuery(event, filter.query);
     }
 
     function mergeActivities(...lists) {

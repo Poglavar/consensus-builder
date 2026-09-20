@@ -7,6 +7,7 @@ const row = {
     run_id: '2026-09-20-densifier-01', persona: 'densifier-01', status: 'done', stage: 'staked',
     started_at: '2026-09-20T08:00:00Z', updated_at: '2026-09-20T08:05:00Z',
     summary: {
+        model: 'claude-opus-5', pickCostUsd: 0.0054, batchId: 'msgbatch-1',
         picks: [{ candidateId: 'c1', proposalId: 'agent-p1', name: 'Courtyard homes' }],
         mints: { c1: { signature: 'mint-tx' } },
         posts: { c1: { tx: 'pay-tx' } },
@@ -18,8 +19,8 @@ describe('agent activity', () => {
     it('projects runner checkpoints into the shared activity schema', () => {
         const events = runEvents(row);
         expect(events).toHaveLength(4);
-        expect(events.map(event => event.action.type)).toEqual(['staked', 'create', 'publish', 'stake']);
-        expect(events[1]).toMatchObject({ source: 'live', actor: { kind: 'agent', controller: 'llm' }, entity: { type: 'proposal', id: 'agent-p1' }, transaction: 'mint-tx' });
+        expect(events.map(event => event.action.type)).toEqual(['run_status', 'create', 'publish', 'stake']);
+        expect(events[1]).toMatchObject({ source: 'live', actor: { kind: 'agent', controller: 'llm' }, entity: { type: 'proposal', id: 'agent-p1' }, transaction: 'mint-tx', model: 'claude-opus-5', modelCostUsd: 0.0054, batchId: 'msgbatch-1' });
     });
 
     it('serves bounded recent activity', async () => {

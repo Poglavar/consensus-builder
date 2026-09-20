@@ -40,4 +40,33 @@ describe('unified agent action engine', () => {
         });
         expect(event).toMatchObject({ ok: false, message: 'Alex published proposal p1 through x402.' });
     });
+
+    it('runs human, algorithmic and LLM controllers through the same handler contract', async () => {
+        const handled = [];
+        const engine = engineApi.createEngine({
+            decisionProviders: {
+                human: (_actor, context) => context.action,
+                algorithm: (_actor, context) => context.action,
+                llm: (_actor, context) => context.action
+            },
+            actionHandlers: { '*': (actor, action) => { handled.push([actor.id, action.type]); return { ok: true }; } }
+        });
+        for (const controller of ['human', 'algorithm', 'llm']) {
+            const result = await engine.run({ id: controller, controller }, { action: { type: 'pledge', proposalId: 'p1' } });
+            expect(result.activity).toMatchObject({ actor: { controller }, action: { type: 'pledge' }, entity: { id: 'p1' } });
+        }
+        expect(handled).toEqual([['human', 'pledge'], ['algorithm', 'pledge'], ['llm', 'pledge']]);
+    });
+
+    it('combines source, controller, action, result and search filters', () => {
+        const event = engineApi.createActivityEvent({
+            actor: { id: 'wallet-1', name: 'Densifier', controller: 'llm', wallet: 'wallet-1' },
+            action: { type: 'stake', proposalId: 'proposal-42' }, outcome: { ok: true, transaction: 'tx-1' }, source: 'live'
+        });
+        expect(engineApi.matchesActivity(event, { source: 'live', actor: 'llm', action: 'stake', status: 'success', query: 'proposal-42' })).toBe(true);
+        expect(engineApi.matchesActivity(event, { source: 'simulation' })).toBe(false);
+        expect(engineApi.matchesActivity(event, { actor: 'algorithm' })).toBe(false);
+        expect(engineApi.matchesActivity(event, { status: 'failed' })).toBe(false);
+        expect(engineApi.matchesActivity(event, 'llm')).toBe(true);
+    });
 });

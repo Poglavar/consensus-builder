@@ -10,7 +10,8 @@
 //   node agents/run.mjs --live    [--persona NAME] [--day YYYY-MM-DD] [--until STAGE] [--api URL]
 //   STAGE: planned | chosen | minted | posted | staked (default staked)
 // Env: PG* (run with PGHOST=localhost on the host), ANTHROPIC_API_KEY, AGENT_LLM_MODEL,
-//      AGENT_LLM_DAILY_CAP_USD (1000), AGENT_API_BASE (default http://localhost:$API_PORT),
+//      AGENT_LLM_DAILY_CAP_USD (safe default 0.25), AGENT_DAILY_ACTION_CAP (3),
+//      AGENT_DAILY_USDC_CAP (0.35), AGENT_API_BASE (default http://localhost:$API_PORT),
 //      SOLANA_RPC_URL, TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID (optional, one summary per run).
 
 import 'dotenv/config';
@@ -33,6 +34,7 @@ import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
 import { getRun, startRun, updateRun, recordCosts, dailySpendUsd, assertUnderCap, dailyCapUsd } from './ledger.js';
 import { sendTelegram } from './telegram.js';
 import { sendAndConfirmPolling } from './solana-send.js';
+import { assertExecutionPlan, decisionCompletion, executionPolicy, summarizeExecutionPlan } from './run-policy.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -159,7 +161,9 @@ async function main() {
             let run = null;
             if (args.live) {
                 await startRun(pool, { runId, persona: persona.name, day, mode });
-                run = await updateRun(pool, runId, { stage: 'planned', status: 'running', summaryPatch: { candidates, city: persona.areas?.[0]?.city ?? 'zagreb' } });
+                run = await updateRun(pool, runId, { stage: 'planned', status: 'running', summaryPatch: {
+                    candidates, city: persona.areas?.[0]?.city ?? 'zagreb', wallet: persona.wallet, model
+                } });
             }
             entries.push({ persona, runId, run, candidates });
         }
@@ -167,6 +171,7 @@ async function main() {
         // ---- stage 2: choose (ONE batch for all personas) ------------------------------------
         const needPicks = entries.filter((e) => e.candidates.length && !(e.run?.summary?.picks));
         const requests = buildPickRequests({ runId: `${day}`, day, entries: needPicks, model });
+        const requestsByPersona = new Map(needPicks.map((entry, index) => [entry.persona.name, requests[index]]));
         const estimate = estimateBatchCostUsd(requests, model);
         const spent = args.live ? await dailySpendUsd(pool, day) : 0;
         const cap = dailyCapUsd(process.env);
@@ -179,6 +184,19 @@ async function main() {
 
         if (needPicks.length) {
             assertUnderCap({ spentUsd: spent, estimateUsd: estimate, capUsd: cap });
+            for (const e of needPicks) {
+                const request = requestsByPersona.get(e.persona.name);
+                if (!request) continue;
+                e.run = await updateRun(pool, e.runId, { status: 'running', summaryPatch: {
+                    decisionInput: {
+                        customId: request.custom_id,
+                        model: request.params.model,
+                        maxTokens: request.params.max_tokens,
+                        systemPrompt: request.params.system,
+                        userPrompt: request.params.messages?.[0]?.content ?? null
+                    }
+                } });
+            }
             const existingBatchId = needPicks.find((e) => e.run?.summary?.batchId)?.run.summary.batchId ?? null;
             const client = new Anthropic();
             const batch = await runPickBatch({
@@ -196,7 +214,9 @@ async function main() {
                 const result = batch.results.find((r) => r.customId === pickCustomId(day, e.persona.name));
                 if (!result || result.error) {
                     failures.push(`${e.persona.name}: batch item ${result?.error ?? 'missing'}`);
-                    await updateRun(pool, e.runId, { status: 'failed', summaryPatch: { error: result?.error ?? 'batch item missing' } });
+                    await updateRun(pool, e.runId, { status: 'failed', summaryPatch: {
+                        outcome: 'failed', error: result?.error ?? 'batch item missing'
+                    } });
                     continue;
                 }
                 if (typeof result.costUsd === 'number') {
@@ -204,14 +224,35 @@ async function main() {
                 }
                 const { picks, rejected } = parsePicks(result.text, e.candidates, e.persona.dailyProposals);
                 const withIds = picks.map((p, idx) => ({ ...p, proposalId: proposalIdFor(e.persona, day, idx) }));
-                e.run = await updateRun(pool, e.runId, { stage: 'chosen', status: 'running', summaryPatch: { picks: withIds, rejectedPicks: rejected, pickCostUsd: result.costUsd ?? null } });
+                const completion = decisionCompletion(withIds);
+                e.run = await updateRun(pool, e.runId, { stage: 'chosen', status: completion.status, summaryPatch: {
+                    picks: withIds,
+                    rejectedPicks: rejected,
+                    pickCostUsd: result.costUsd ?? null,
+                    decisionResult: { model, batchId: batch.batchId, usage: result.usage ?? null, costUsd: result.costUsd ?? null },
+                    ...(completion.outcome ? { outcome: completion.outcome } : {})
+                } });
                 log(`${e.persona.name} chosen: ${withIds.length} pick(s) (${rejected.length} rejected) · $${(result.costUsd ?? 0).toFixed(4)}`);
                 for (const p of withIds) log(`   ${p.proposalId} ← ${p.candidateId}: ${p.name}`);
+                if (completion.noPicks) report.push(`${e.persona.name}: no proposal selected · $${(result.costUsd ?? 0).toFixed(4)}`);
             }
         }
         if (stageIndex(args.until) < stageIndex('minted')) return;
 
         // ---- stages 3–5 per persona: mint → post → stake --------------------------------------
+        const policy = executionPolicy(process.env);
+        const executionPlan = assertExecutionPlan(summarizeExecutionPlan(entries, policy), policy);
+        log(`execution policy: ${executionPlan.actionCount}/${policy.maxActions} signed actions · ≤ ${executionPlan.maxUsdc.toFixed(2)}/${policy.maxUsdc.toFixed(2)} USDC`);
+        for (const e of entries.filter(entry => entry.run?.summary?.picks?.length)) {
+            e.run = await updateRun(pool, e.runId, { status: 'running', summaryPatch: {
+                executionPolicy: policy,
+                executionPlan: {
+                    proposalCount: executionPlan.proposals.filter(item => item.persona === e.persona.name).length,
+                    actions: executionPlan.proposals.filter(item => item.persona === e.persona.name).reduce((sum, item) => sum + item.actions, 0),
+                    maxUsdc: executionPlan.proposals.filter(item => item.persona === e.persona.name).reduce((sum, item) => sum + item.usdc, 0)
+                }
+            } });
+        }
         const connection = new Connection(rpcUrl, 'confirmed');
         for (const e of entries) {
             const persona = e.persona;
@@ -266,6 +307,7 @@ async function main() {
                 // post (paid)
                 if (!posts[pick.candidateId]) {
                     try {
+                        const paymentId = paymentIdForProposal(pick.proposalId);
                         // The minter reports the account as proposalPda; the record (and the app's
                         // isProposalMinted) expects onchain.proposalId. Map explicitly — a null here
                         // would store a record that looks minted and points nowhere.
@@ -280,7 +322,7 @@ async function main() {
                             const body = buildProposalRecord({ candidate, pick, persona, runId: e.runId, city, onchain, turf });
                             const { paidFetch } = await createPaidClient({
                                 secretKey: secret,
-                                paymentId: paymentIdForProposal(body.proposalId),
+                                paymentId,
                                 rpcUrl
                             });
                             const response = await postAgentProposal({ baseUrl: apiBase, paidFetch, body });
@@ -289,7 +331,13 @@ async function main() {
                             }
                             return response;
                         });
-                        posts[pick.candidateId] = { id: res.body.id, proposalId: res.body.proposalId ?? pick.proposalId, status: res.status, tx: res.receipt?.transaction ?? null };
+                        posts[pick.candidateId] = {
+                            id: res.body.id,
+                            proposalId: res.body.proposalId ?? pick.proposalId,
+                            paymentId,
+                            status: res.status,
+                            tx: res.receipt?.transaction ?? null
+                        };
                         await updateRun(pool, e.runId, { stage: 'minted', status: 'running', summaryPatch: { posts, activities } });
                         log(`${tag} posted: row ${res.body.id} (${res.status}) paid tx ${res.receipt?.transaction ?? '-'}`);
                     } catch (err) {
@@ -325,7 +373,10 @@ async function main() {
             await updateRun(pool, e.runId, {
                 stage: reached && done ? untilStage : (Object.keys(stakes).length ? 'staked' : Object.keys(posts).length ? 'posted' : Object.keys(mints).length ? 'minted' : 'chosen'),
                 status: personaFailed ? 'failed' : (done && untilStage === 'staked' ? 'done' : 'running'),
-                summaryPatch: { mints, posts, stakes, activities }
+                summaryPatch: {
+                    mints, posts, stakes, activities,
+                    outcome: personaFailed ? 'failed' : (done && untilStage === 'staked' ? 'completed' : 'partial')
+                }
             });
             report.push(`${persona.name}: ${picks.length} picks · ${Object.keys(mints).length} minted · ${Object.keys(posts).length} posted · ${Object.keys(stakes).length} staked · $${(summary.pickCostUsd ?? 0).toFixed(4)}`);
         }

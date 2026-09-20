@@ -208,11 +208,11 @@ describe('assertUnderCap', () => {
 });
 
 describe('dailyCapUsd', () => {
-    it('defaults to $1000 and reads the override', () => {
-        expect(dailyCapUsd({})).toBe(1000);
+    it('defaults to a constrained $0.25 and reads the override', () => {
+        expect(dailyCapUsd({})).toBe(0.25);
         expect(dailyCapUsd({ AGENT_LLM_DAILY_CAP_USD: '25.5' })).toBe(25.5);
-        expect(dailyCapUsd({ AGENT_LLM_DAILY_CAP_USD: '' })).toBe(1000);
-        expect(dailyCapUsd()).toBe(1000);
+        expect(dailyCapUsd({ AGENT_LLM_DAILY_CAP_USD: '' })).toBe(0.25);
+        expect(dailyCapUsd()).toBe(0.25);
     });
 
     it('refuses a cap that is not a non-negative number', () => {
@@ -231,4 +231,3 @@ describe('summary serialisation', () => {
         expect(JSON.parse(patch)).toEqual({ mints: { a: { count: '42', lamports: '0' } } });
     });
 });
-

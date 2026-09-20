@@ -343,3 +343,9 @@
 - 2026-09-19: **World's Fair scope is explicit.** `colosseum-worlds-fair` owns all work after the
   pre-hackathon baseline `3ee1855`; `HACKATHON.md` separates pre-existing UGT foundations from the
   market, x402, agent provenance/runner, transaction explorer, safe proposal review, and USDC escrow.
+- 2026-09-20: **One agent runtime, bounded live controller.** Human, algorithmic and LLM actors use
+  `AgentActionEngine` and the same Activity schema; simulation keeps synthetic balances while live
+  support stays Solana/USDC. The scheduled persona is opt-in and defaults to one proposal, three
+  signed actions, `$0.25` model spend and `0.35 USDC` per day, superseding the original `$1,000` cap.
+  Donations move USDC into refundable escrow now; pledges remain revocable and unfunded until the
+  pledger chooses to fulfil after execution.

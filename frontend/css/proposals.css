@@ -807,6 +807,28 @@ textarea.proposal-description-input {
     font-size: 12px;
 }
 
+.proposal-funding-explainer,
+.proposal-support-wallet-summary {
+    margin-top: 10px;
+    color: #52687b;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.proposal-funding-explainer > div + div { margin-top: 5px; }
+
+.proposal-support-wallet-summary {
+    padding: 8px 10px;
+    border: 1px solid #dbe6ef;
+    border-radius: 8px;
+    background: #f7fbff;
+}
+
+.proposal-boost-send:disabled {
+    cursor: wait;
+    opacity: 0.58;
+}
+
 .proposal-funding-links {
     justify-content: flex-start;
     flex-wrap: wrap;

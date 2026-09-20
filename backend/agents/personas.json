@@ -7,7 +7,7 @@
       "keypairPath": "~/.config/solana/ugt-persona-01.json",
       "weights": { "density": 0.6, "openSpace": 0.1, "valueUplift": 0.3, "heritage": 0.0 },
       "areas": [{ "city": "zagreb", "bbox": [15.93, 45.78, 16.02, 45.83] }],
-      "dailyProposals": 3,
+      "dailyProposals": 1,
       "stakeUsdc": "0.25"
     }
   ]

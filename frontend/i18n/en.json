@@ -981,7 +981,7 @@
                 "connect": "Connect Solana wallet",
                 "donate": "Donate USDC",
                 "revoke": "Revoke my pledge",
-                "release": "Release donations",
+                "release": "Release donations to proposal owner",
                 "fulfill": "Fulfill my pledge",
                 "refund": "Refund my donations",
                 "void": "Clear my pledge"
@@ -994,6 +994,10 @@
                 "connect": "Connect a Solana wallet to see your support.",
                 "proposalExplorer": "Proposal account",
                 "programExplorer": "Funding program",
+                "donationMeaningTitle": "Donation",
+                "donationMeaning": "moves USDC into escrow now; it is refundable if the proposal is cancelled or expires.",
+                "pledgeMeaningTitle": "Pledge",
+                "pledgeMeaning": "is a revocable public commitment; no USDC moves until you fulfil it after execution.",
                 "loading": "Loading…",
                 "none": "0 USDC · no backers yet",
                 "unavailable": "Unavailable"

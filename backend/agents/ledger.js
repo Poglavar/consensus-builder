@@ -183,10 +183,10 @@ export function assertUnderCap({ spentUsd, estimateUsd, capUsd } = {}) {
     return total;
 }
 
-/** The day's spend cap in dollars, from AGENT_LLM_DAILY_CAP_USD (default 1000). */
+/** The day's spend cap in dollars, from AGENT_LLM_DAILY_CAP_USD (safe default: $0.25). */
 export function dailyCapUsd(env = {}) {
     const raw = env?.AGENT_LLM_DAILY_CAP_USD;
-    if (raw === undefined || raw === null || raw === '') return 1000;
+    if (raw === undefined || raw === null || raw === '') return 0.25;
     const value = Number(raw);
     if (!Number.isFinite(value) || value < 0) {
         throw new Error(`AGENT_LLM_DAILY_CAP_USD must be a non-negative number, got ${JSON.stringify(raw)}`);

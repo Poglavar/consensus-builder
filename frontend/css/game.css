@@ -150,23 +150,27 @@
     margin-bottom: 10px;
 }
 
-.activity-filters button {
+.activity-filters button,
+.activity-filters select,
+.activity-filters input {
     appearance: none;
     border: 1px solid #cbd7e3;
-    border-radius: 999px;
+    border-radius: 8px;
     padding: 6px 10px;
     color: #38536c;
     background: #fff;
-    cursor: pointer;
     font-size: 12px;
     font-weight: 600;
 }
 
-.activity-filters button.is-active {
-    border-color: #1677c8;
-    color: #fff;
-    background: #1677c8;
+.activity-filters input {
+    flex: 1 1 220px;
+    min-width: 170px;
+    font-weight: 400;
 }
+
+.activity-filters button,
+.activity-filters select { cursor: pointer; }
 
 .activity-filters .activity-refresh {
     margin-left: auto;
@@ -179,6 +183,11 @@
     border-radius: 8px;
     background: #fff;
     font-family: inherit;
+}
+
+.activity-entry.is-failed {
+    border-color: #e7a6a6;
+    background: #fff8f8;
 }
 
 .activity-entry-main {

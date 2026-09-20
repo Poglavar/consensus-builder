@@ -18,7 +18,9 @@ personas.json ──▶ parcel-source.js ──▶ planner.js ──▶ llm-pick
 | `llm-picker.js` | the Anthropic Batches step: request building, parsing, cost estimate, submit/await/collect | pure except `runPickBatch` |
 
 `run.mjs` (the orchestrator) owns the sequencing, the checkpoints, the proposal ids, the daily
-spend cap and the Telegram summary. The modules here hold no state and never decide to spend.
+spend cap, signed-action/USDC caps and the Telegram summary. The modules here hold no state and
+never decide to spend. `run-policy.js` refuses a live plan before it touches a wallet when it would
+exceed three signed actions or 0.35 USDC by default.
 
 This is intentionally hybrid rather than an unconstrained LLM loop: SQL and the deterministic
 planner decide what is feasible, the model chooses among those candidates and explains why, and
@@ -43,7 +45,7 @@ closed Details disclosure preserves controller and source provenance for audits.
 | `keypairPath` | where the signing key lives — **outside the repo** |
 | `weights` | `{ density, openSpace, valueUplift, heritage }`; drives the planner's score and is put into the prompt in words |
 | `areas` | `[{ city, bbox: [minLng, minLat, maxLng, maxLat] }]` |
-| `dailyProposals` | how many picks the model may make for this persona in one run |
+| `dailyProposals` | how many picks the model may make for this persona in one run (the hackathon persona is capped at one) |
 | `stakeUsdc` | the bettor's stake size |
 
 `heritage` is declared and weighted but contributes **0**: there is no heritage dataset wired in
@@ -98,6 +100,10 @@ A batch that has not finished inside `awaitMs` is not an error — `runPickBatch
 |---|---|---|
 | `ANTHROPIC_API_KEY` | `llm-picker.js` (via the SDK client the caller constructs) | the Batches API key |
 | `AGENT_LLM_MODEL` | the orchestrator, passed into `buildPickRequests`/`runPickBatch` | overrides `DEFAULT_MODEL` (`claude-opus-5`); must be priced in `agents/lib/llm-cost/rates.json` or the cost call throws |
+| `AGENT_LLM_DAILY_CAP_USD` | `ledger.js` | hard metered-model ceiling; safe default 0.25 |
+| `AGENT_DAILY_ACTION_CAP` | `run-policy.js` | maximum signed mint/post/stake actions; safe default 3 |
+| `AGENT_DAILY_USDC_CAP` | `run-policy.js` | maximum x402 plus stake spend; safe default 0.35 USDC |
+| `AGENT_PROPOSAL_FEE_USDC` | `run-policy.js` | conservative x402 fee used in the pre-signing plan; default 0.05 USDC |
 | `PGHOST` / `PGPORT` / `PGUSER` / `PGPASSWORD` / `PGDATABASE` | `parcel-source.js` (via the pool the caller passes) | the shared `geodata` database |
 | `X402_*`, `CDP_API_KEY_ID`, `CDP_API_KEY_SECRET` | `routes/agent-proposals.js` | the hosted-CDP pay-to-post gate; see the design doc §WS1 |
 
@@ -121,11 +127,34 @@ PGHOST=localhost node agents/run.mjs --live --until posted          # stop befor
 ```
 
 One `consensus.agent_run` row per persona per UTC day is the checkpoint (`stage`, `summary` with
-candidates, batchId, picks, mints, posts, stakes); a rerun resumes at the first unfinished stage and
-a finished day is a no-op. Model calls go through ONE Anthropic Batches job per run and are refused
-when the day's `agent_cost` total plus the estimate would exceed `AGENT_LLM_DAILY_CAP_USD` (1000).
+candidates, the complete model input, model/batch/usage/cost, picks and rationales, execution policy,
+mint records, x402 payment ids/transactions, posts, stakes and activity); a rerun resumes at the
+first unfinished stage and a finished day is a no-op. A valid zero-pick answer is terminal and is
+stored as `outcome: "no-picks"`, rather than leaving a permanently-running row. Model calls go
+through ONE Anthropic Batches job per run and are refused when the day's `agent_cost` total plus the
+estimate would exceed `AGENT_LLM_DAILY_CAP_USD` (safe default 0.25).
 Mint happens BEFORE the paid post because a stored record has no on-chain write path after creation.
 Confirmation polls `getSignatureStatuses` (`solana-send.js`): Alchemy's devnet RPC has no
 `signatureSubscribe`, and web3's default confirm then reports a landed transaction as expired.
 Env: `ANTHROPIC_API_KEY`, `AGENT_LLM_MODEL` (claude-opus-5), `AGENT_LLM_DAILY_CAP_USD`, `AGENT_API_BASE`,
 `SOLANA_RPC_URL`, `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` (optional; one summary per run).
+
+## Daily schedule (opt-in)
+
+`agents/ecosystem.config.cjs` defines one `consensus-builder-agents` PM2 process at 02:00 UTC with
+the limits above and four candidates offered to the model. It is deliberately separate from the API
+ecosystem file, so an ordinary backend deploy cannot silently acquire a signing key or start an
+autonomous spender.
+
+After the dedicated low-value devnet key exists at the persona's `keypairPath` and the server-local
+`.env` has `ANTHROPIC_API_KEY`, database credentials and `SOLANA_RPC_URL`, activation is explicit:
+
+```bash
+cd /root/code/consensus-builder/backend
+pm2 start agents/ecosystem.config.cjs --only consensus-builder-agents
+pm2 save
+```
+
+The `UGT Agent Runner` entry already present in `alerts-server-telegram/bot-list.json` remains
+inactive until the first scheduled run completes. Its outcome check should then be enabled against
+`consensus.agent_run`; process logs alone are not proof that a proposal run finished.

@@ -84,7 +84,8 @@ const gameState = {
     addActivityEvent(activity, options = {}) {
         const skipPersist = options && options.skipPersist === true;
         const skipUiUpdate = options && options.skipUiUpdate === true;
-        const timestamp = this.currentDateTime.toISOString().slice(0, 19).replace('T', ' ');
+        const eventTime = activity?.occurredAt ? new Date(activity.occurredAt) : this.currentDateTime;
+        const timestamp = (Number.isNaN(eventTime.getTime()) ? this.currentDateTime : eventTime).toISOString().slice(0, 19).replace('T', ' ');
         const message = activity?.messageHtml || activity?.message || '';
         const logEntry = `[Turn ${this.currentTurn}] [${timestamp}] ${message}`;
         const logEntryObj = {
@@ -517,6 +518,7 @@ function getUnifiedAgentActionEngine() {
     unifiedAgentActionEngine = window.AgentActionEngine.createEngine({
         decisionProviders: {
             algorithm: (agent, context) => agentDecideAction(agent, context),
+            human: (_actor, context) => context.action,
             llm: async (agent, context) => {
                 if (typeof window.agentLlmDecisionProvider !== 'function') {
                     throw new Error('No LLM decision provider is configured');
@@ -525,7 +527,9 @@ function getUnifiedAgentActionEngine() {
             }
         },
         actionHandlers: {
-            '*': (agent, action) => executeAgentAction(agent, action)
+            '*': (agent, action, context) => Object.prototype.hasOwnProperty.call(context, 'outcome')
+                ? context.outcome
+                : executeAgentAction(agent, action)
         },
         onActivity: (activity, context) => gameState.addActivityEvent(activity, {
             skipPersist: context.skipPersist === true,
@@ -533,6 +537,20 @@ function getUnifiedAgentActionEngine() {
         })
     });
     return unifiedAgentActionEngine;
+}
+
+// UI and wallet flows use this adapter after their deterministic side effect has completed. Human,
+// algorithmic and LLM controllers therefore enter the same action engine and emit the same event
+// shape; the browser never needs a second "human activity" implementation.
+async function dispatchAgentAction(actor, action, context = {}) {
+    const result = await getUnifiedAgentActionEngine().run(actor, {
+        ...context,
+        action,
+        source: context.source || 'live',
+        occurredAt: context.occurredAt || new Date().toISOString()
+    });
+    updateGameLogDialogIfOpen();
+    return result;
 }
 
 /**
@@ -677,7 +695,7 @@ function toggleGamePlayPause() {
 }
 
 let liveAgentActivity = [];
-let selectedActivityFilter = 'all';
+let selectedActivityFilters = { source: 'all', actor: 'all', action: 'all', status: 'all', query: '' };
 
 function escapeActivityHtml(value) {
     return String(value ?? '').replace(/[&<>"']/g, character => ({
@@ -718,11 +736,22 @@ function activityEntryHtml(event) {
     const transactionLink = event.transaction
         ? `<a href="https://explorer.solana.com/tx/${escapeActivityHtml(event.transaction)}?cluster=devnet" target="_blank" rel="noopener">Transaction ↗</a>`
         : '';
-    const details = [event.source, event.actor?.controller, event.action?.type].filter(Boolean).map(escapeActivityHtml).join(' · ');
-    return `<article class="log-entry activity-entry${event.isUserAction ? ' user-action' : ''}" data-source="${escapeActivityHtml(event.source)}" data-actor-kind="${escapeActivityHtml(event.actor?.kind)}">
+    const details = [
+        `Source: ${event.source || 'unknown'}`,
+        `Controller: ${event.actor?.controller || 'unknown'}`,
+        `Action: ${event.action?.type || 'unknown'}`,
+        `Result: ${event.ok === false ? 'failed' : 'success'}`
+    ].map(escapeActivityHtml).join(' · ');
+    const actorDetails = [event.actor?.name, event.actor?.wallet, event.actor?.id]
+        .filter(Boolean).map(escapeActivityHtml).join(' · ');
+    const entityDetails = event.entity?.id ? `<span>${escapeActivityHtml(event.entity.type || 'entity')}: ${escapeActivityHtml(event.entity.id)}</span>` : '';
+    const modelDetails = event.model
+        ? `<span>Model: ${escapeActivityHtml(event.model)}${event.modelCostUsd !== null && event.modelCostUsd !== undefined ? ` · $${escapeActivityHtml(Number(event.modelCostUsd).toFixed(4))}` : ''}</span>`
+        : '';
+    return `<article class="log-entry activity-entry${event.isUserAction ? ' user-action' : ''}${event.ok === false ? ' is-failed' : ''}" data-source="${escapeActivityHtml(event.source)}" data-actor-kind="${escapeActivityHtml(event.actor?.kind)}">
         <div class="activity-entry-main">${body}</div>
         <div class="activity-entry-links">${timestamp}${proposalLink}${transactionLink}</div>
-        <details class="activity-entry-meta"><summary>Details</summary><span>${details}</span>${event.runId ? `<span>Run ${escapeActivityHtml(event.runId)}</span>` : ''}</details>
+        <details class="activity-entry-meta"><summary>Details</summary><span>${details}</span><span>Actor: ${actorDetails}</span>${entityDetails}${modelDetails}${event.runId ? `<span>Run ${escapeActivityHtml(event.runId)}</span>` : ''}${event.batchId ? `<span>Batch ${escapeActivityHtml(event.batchId)}</span>` : ''}</details>
     </article>`;
 }
 
@@ -730,20 +759,31 @@ function renderActivityExplorer() {
     const content = document.getElementById('game-log-content');
     if (!content) return;
     const events = allActivityEvents().filter(event => window.AgentActionEngine?.matchesActivity
-        ? window.AgentActionEngine.matchesActivity(event, selectedActivityFilter)
-        : true);
+        ? window.AgentActionEngine.matchesActivity(event, selectedActivityFilters)
+        : true).reverse();
     content.innerHTML = events.length
         ? events.map(activityEntryHtml).join('')
         : '<p class="no-logs">No matching activity yet.</p>';
     content.setAttribute('data-rendered-count', String(events.length));
-    document.querySelectorAll('[data-activity-filter]').forEach(button => {
-        button.classList.toggle('is-active', button.dataset.activityFilter === selectedActivityFilter);
+    document.querySelectorAll('[data-activity-filter-field]').forEach(field => {
+        const key = field.dataset.activityFilterField;
+        const expected = selectedActivityFilters[key] ?? '';
+        if (field.value !== expected) field.value = expected;
     });
     setupGameLogClickListeners();
 }
 
-function setActivityFilter(filter) {
-    selectedActivityFilter = filter || 'all';
+function setActivityFilter(dimension, value) {
+    if (value === undefined) {
+        selectedActivityFilters = { source: 'all', actor: 'all', action: 'all', status: 'all', query: '' };
+        if (dimension && dimension !== 'all') {
+            if (dimension === 'live' || dimension === 'simulation') selectedActivityFilters.source = dimension;
+            else if (dimension === 'human' || dimension === 'agent' || dimension === 'algorithm' || dimension === 'llm') selectedActivityFilters.actor = dimension;
+            else selectedActivityFilters.action = dimension;
+        }
+    } else {
+        selectedActivityFilters = { ...selectedActivityFilters, [dimension]: value || 'all' };
+    }
     renderActivityExplorer();
 }
 
@@ -782,11 +822,20 @@ function showGameLogDialog() {
             </div>
             <div class="game-log-modal-body">
                 <nav class="activity-filters" aria-label="Filter activity">
-                    <button type="button" data-activity-filter="all" onclick="setActivityFilter('all')">All</button>
-                    <button type="button" data-activity-filter="live" onclick="setActivityFilter('live')">Live</button>
-                    <button type="button" data-activity-filter="simulation" onclick="setActivityFilter('simulation')">Simulation</button>
-                    <button type="button" data-activity-filter="human" onclick="setActivityFilter('human')">People</button>
-                    <button type="button" data-activity-filter="agent" onclick="setActivityFilter('agent')">Agents</button>
+                    <input type="search" data-activity-filter-field="query" aria-label="Search activity" placeholder="Actor, proposal or transaction" oninput="setActivityFilter('query', this.value)">
+                    <select data-activity-filter-field="source" aria-label="Activity source" onchange="setActivityFilter('source', this.value)">
+                        <option value="all">All sources</option><option value="live">Live</option><option value="simulation">Simulation</option>
+                    </select>
+                    <select data-activity-filter-field="actor" aria-label="Activity actor" onchange="setActivityFilter('actor', this.value)">
+                        <option value="all">Everyone</option><option value="human">People</option><option value="algorithm">Algorithmic agents</option><option value="llm">LLM agents</option><option value="system">System</option>
+                    </select>
+                    <select data-activity-filter-field="action" aria-label="Activity action" onchange="setActivityFilter('action', this.value)">
+                        <option value="all">All actions</option><option value="create">Create</option><option value="publish">Publish</option><option value="accept">Accept</option><option value="donate">Donate</option><option value="pledge">Pledge</option><option value="stake">Stake</option><option value="revokePledge">Revoke pledge</option><option value="refundMyDonations">Refund donation</option><option value="fulfillPledge">Fulfil pledge</option><option value="releaseDonations">Release donations</option>
+                    </select>
+                    <select data-activity-filter-field="status" aria-label="Activity result" onchange="setActivityFilter('status', this.value)">
+                        <option value="all">Any result</option><option value="success">Succeeded</option><option value="failed">Failed</option>
+                    </select>
+                    <button type="button" onclick="setActivityFilter('all')">Clear</button>
                     <button type="button" class="activity-refresh" onclick="loadLiveAgentActivity()">Refresh</button>
                 </nav>
                 <div id="game-log-content" class="game-log-content"></div>
@@ -1246,6 +1295,7 @@ window.executeGameTurn = executeGameTurn;
 window.toggleGamePlayPause = toggleGamePlayPause;
 window.resetGameState = resetGameState;
 window.showGameLogDialog = showGameLogDialog;
+window.dispatchAgentAction = dispatchAgentAction;
 window.closeGameLogDialog = closeGameLogDialog;
 window.updateGameLogDialogIfOpen = updateGameLogDialogIfOpen;
 window.showAgentsStatistics = showAgentsStatistics;

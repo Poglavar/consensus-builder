@@ -50,5 +50,24 @@
         return [];
     }
 
-    return { actionKeys, hasActivePledge, hasRefundableDonation, hasUnreleasedDonations };
+    function statusText(status = {}, kind = 'pledge') {
+        const label = kind === 'donate' ? 'donation' : 'pledge';
+        if (status.state === 'preparing') return `Checking your wallet and preparing the ${label}…`;
+        if (status.state === 'awaiting_signature') return `Approve the ${label} in your wallet…`;
+        if (status.state === 'submitted') return 'Submitted to Solana; waiting for confirmation…';
+        if (status.state === 'confirmed') return 'Confirmed on Solana.';
+        return '';
+    }
+
+    function errorText(error, kind = 'pledge') {
+        const label = kind === 'donate' ? 'Donation' : 'Pledge';
+        if (error?.code === 'INSUFFICIENT_SOL') return 'This wallet needs devnet SOL to pay the transaction fee.';
+        if (error?.code === 'INSUFFICIENT_USDC') return error.message || 'This wallet does not have enough devnet USDC.';
+        if (error?.code === 'WRONG_NETWORK') return 'Switch the wallet to Solana devnet and try again.';
+        if (error?.code === 'CONFIRMATION_UNKNOWN') return `${label} was submitted, but confirmation is still unknown. Check the transaction before retrying.`;
+        if (error?.code === 'SIMULATION_FAILED') return `${label} cannot be submitted. Check the wallet balances and proposal state.`;
+        return error?.reason || error?.shortMessage || error?.message || 'Unknown error';
+    }
+
+    return { actionKeys, hasActivePledge, hasRefundableDonation, hasUnreleasedDonations, statusText, errorText };
 });
