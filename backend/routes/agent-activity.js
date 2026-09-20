@@ -124,9 +124,13 @@ function mergeEvents(...lists) {
 
 function runDetail(row, costs = []) {
     const summary = row.summary || {};
+    const recordedCost = costs.reduce((total, cost) => total + (Number(cost.usd) || 0), 0);
+    const summaryCost = Number(summary.decisionResult?.costUsd ?? summary.pickCostUsd ?? 0);
     return {
         id: row.run_id,
         persona: row.persona,
+        role: summary.role || 'proposer',
+        wallet: summary.wallet || null,
         mode: row.mode,
         status: row.status,
         stage: row.stage,
@@ -135,7 +139,10 @@ function runDetail(row, costs = []) {
         updatedAt: row.updated_at,
         controller: controllerOf(summary),
         model: summary.decisionResult?.model || summary.model || costs[0]?.model || null,
+        modelCostUsd: recordedCost || (Number.isFinite(summaryCost) ? summaryCost : 0),
         batchId: summary.decisionResult?.batchId || summary.batchId || costs[0]?.batch_id || null,
+        outcome: summary.outcome || null,
+        support: summary.support || null,
         picks: Array.isArray(summary.picks) ? summary.picks.map(pick => ({
             candidateId: pick.candidateId || null,
             proposalId: pick.proposalId || null,
@@ -189,6 +196,33 @@ export function setupAgentActivityRoute(app, pool) {
         } catch (error) {
             console.error('GET /agent/activity failed', error);
             res.status(500).json({ error: 'Failed to read agent activity' });
+        }
+    });
+
+    // Bounded run index for the judge/demo surface. This is intentionally separate from the event
+    // feed: a completed zero-pick run is evidence of scheduler liveness even when it produced no
+    // proposal transaction. Controller filtering is applied after legacy provenance inference.
+    app.get('/agent/runs', async (req, res) => {
+        try {
+            const limit = asLimit(req.query.limit);
+            const controller = String(req.query.controller || '').trim().toLowerCase();
+            if (controller && !['algorithm', 'llm'].includes(controller)) {
+                return res.status(400).json({ error: 'controller must be algorithm or llm' });
+            }
+            const { rows } = await pool.query(
+                `SELECT run_id, persona, mode, status, stage, summary, started_at, finished_at, updated_at
+                   FROM consensus.agent_run
+                  ORDER BY updated_at DESC
+                  LIMIT $1`,
+                [controller ? 250 : limit]
+            );
+            const runs = rows.map(row => runDetail(row, []))
+                .filter(run => !controller || run.controller === controller)
+                .slice(0, limit);
+            return res.json({ runs, count: runs.length });
+        } catch (error) {
+            console.error('GET /agent/runs failed', error);
+            return res.status(500).json({ error: 'Failed to read agent runs' });
         }
     });
 

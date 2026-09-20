@@ -78,13 +78,14 @@
         const { cluster } = walletContextOrGuest();
         const connection = root.SolanaChainDataLoader.getConnection(cluster);
         const wallet = root.solanaWalletManager?.getProvider?.()?.publicKey || null;
+        const [marketAddress] = client.getMarketPda(proposal);
         const market = await client.readMarket(connection, proposal);
-        if (!market) return { market: null, wallet: wallet?.toBase58?.() || null };
+        if (!market) return { market: null, marketAddress: marketAddress.toBase58(), wallet: wallet?.toBase58?.() || null };
         const [yes, no] = wallet ? await Promise.all([
             client.readPosition(connection, proposal, wallet, client.constants.SIDE_YES),
             client.readPosition(connection, proposal, wallet, client.constants.SIDE_NO)
         ]) : [null, null];
-        return { market, yes, no, wallet: wallet?.toBase58?.() || null };
+        return { market, marketAddress: marketAddress.toBase58(), yes, no, wallet: wallet?.toBase58?.() || null };
     }
 
     function walletContextOrGuest() {

@@ -77,6 +77,30 @@ git diff 3ee1855...colosseum-worlds-fair
     It drills into proposal/support/market actions, rationales, exact model-ledger cost, run/batch ids
     and Solana transactions; a standalone judge-friendly view is also available at
     `/actor-explorer.html` without creating a second agent runtime.
+14. **Live Hackathon Demo Center** — `/hackathon-demo.html` reads the public x402 recipe, run ledger
+    and unified activity feed into a five-minute judge path. It never substitutes the historical LLM
+    proof for a deterministic run: the algorithm card remains pending until a recent completed
+    algorithmic checkpoint exists, then updates automatically.
+15. **Deterministic supporter persona** — `supporter-01` is a second actor role inside the same
+    persona/controller/checkpoint/activity system. It deterministically chooses an active minted
+    proposal by somebody else and can sign an on-chain soft pledge, funded donation or market stake;
+    the initial low-risk schedule uses one `0.10 USDC` soft commitment at 02:15 UTC.
+16. **Explicit prediction-market lifecycle** — Details now states the contract’s actual evidence
+    rule, permissionless resolver, locked-stake behavior, market account and payout/refund rule. It
+    also exposes the crucial boundary that an app-level `Expired` label is not `Cancelled` on-chain
+   and therefore cannot silently resolve NO.
+17. **Reproducible hosted discovery proof** — `/agent/discovery` queries the configured Coinbase
+    facilitator with server-side credentials and returns the exact Bazaar record for the paid
+    proposal endpoint. The Demo Center links this record instead of treating configuration as proof.
+18. **Minimal land-event oracle** — `proposal-lifecycle-v1` snapshots terminal Solana proposal
+    accounts into source-timestamped `proposal_lifecycle` records with account-data hashes, source
+    transactions and the ProposalNFT program as attester. The sync is idempotent and dry-run-first.
+19. **Market oracle recipes** — every proposal market exposes a subject-specific hashed recipe:
+    ProposalNFT `Executed → YES`, `Cancelled → NO`. Proposal Details shows the declaration and the
+    matching terminal event while the market program remains the final permissionless verifier.
+20. **Demo recovery path** — the Demo Center loads each evidence source independently, keeps partial
+    failures visible, links devnet SOL/USDC faucets, and documents a browser-local simulation reset
+    that does not touch public proposals or on-chain records.
 
 ## Pre-existing platform foundations
 
@@ -87,9 +111,16 @@ fundable proposal workflow; it does not claim the whole application as new.
 
 ## Judge demo path
 
+Start at [`/hackathon-demo.html`](https://urbangametheory.xyz/hackathon-demo.html); its pending/live
+states come from public evidence rather than a scripted success screen.
+
 1. Discover the paid proposal capability through the x402/Bazaar metadata.
 2. Run an agent proposal through payment, persistence, and its on-chain transaction link.
 3. Open the resulting proposal in read-only Details and fork it with Counterpropose.
 4. Donate or pledge devnet USDC, inspect the distinct escrow/commitment states, and find the human
    action beside algorithmic and LLM actions in the same Activity explorer.
 5. Resolve the lifecycle by releasing an executed proposal or refunding a cancelled/expired one.
+6. Open the market's `proposal-lifecycle-v1` recipe and matching source-hashed oracle event.
+
+If a live dependency is slow, use the Demo Center's retry button. The resettable fallback is the
+map's **Game → Enable game mode → New Game** flow; it clears browser-local simulation state only.

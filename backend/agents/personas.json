@@ -1,14 +1,26 @@
 {
-  "_comment": "Server-side agent personas (design §WS3). Public keys only — keypairs live outside the repo at keypairPath. The transaction explorer uses name+wallet for labels; the runner uses the rest.",
+  "_comment": "Server-side agent personas (design §WS3). Keypairs live outside the repo at keypairPath. Proposer and supporter roles share the same controller, checkpoint and activity system.",
   "personas": [
     {
       "name": "densifier-01",
+      "role": "proposer",
       "wallet": "G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg",
       "keypairPath": "~/.config/solana/ugt-persona-01.json",
       "weights": { "density": 0.6, "openSpace": 0.1, "valueUplift": 0.3, "heritage": 0.0 },
       "areas": [{ "city": "zagreb", "bbox": [15.93, 45.78, 16.02, 45.83] }],
       "dailyProposals": 1,
       "stakeUsdc": "0.25"
+    },
+    {
+      "name": "supporter-01",
+      "role": "supporter",
+      "wallet": "FoPmPhKE6bykLoumQSvygZCSJYLkxBfsqjE3ybMvSjYs",
+      "keypairPath": "~/.config/solana/ugt-supporter-01.json",
+      "support": {
+        "cities": ["zagreb"],
+        "actions": ["pledge"],
+        "amountUsdc": "0.10"
+      }
     }
   ]
 }

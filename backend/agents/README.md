@@ -36,6 +36,12 @@ and can later fulfil it after execution.
 Policy—what proposal another agent wants to back and for how much—stays outside the money-moving
 module and can be supplied by a later model step.
 
+`support-run.mjs` is another persona role in the same runtime, not a second agent system. It reads
+active minted proposals from the public summary endpoint, uses `supporter-picker.js` for a stable
+daily `$0` choice, executes one pledge/donation/market action through the existing Solana adapters,
+and writes the same `consensus.agent_run` and activity envelope. The initial `supporter-01` policy
+uses a soft pledge, so it produces real signed evidence without requiring a funded USDC transfer.
+
 Both this runner and the browser simulation use `frontend/js/agent-action-engine.js`. A controller
 (`human`, `algorithm`, or `llm`) chooses an action, the registered deterministic handler executes
 it, and the engine emits the same actor/action/entity/activity envelope. The browser Activity view
@@ -47,12 +53,14 @@ closed Details disclosure preserves controller and source provenance for audits.
 | field | meaning |
 |---|---|
 | `name` | the persona's id; appears in `candidateId`, `custom_id`, the record's `agent.persona` and the building's `author` |
+| `role` | `proposer` or `supporter`; both share the controller, checkpoint and activity system |
 | `wallet` | public key, for labels; the record's `author` is bound by the paid route from the settlement, never from here |
 | `keypairPath` | where the signing key lives — **outside the repo** |
 | `weights` | `{ density, openSpace, valueUplift, heritage }`; drives the planner's score and is put into the prompt in words |
 | `areas` | `[{ city, bbox: [minLng, minLat, maxLng, maxLat] }]` |
 | `dailyProposals` | how many picks a controller may make for this persona in one run (the hackathon persona is capped at one) |
 | `stakeUsdc` | the bettor's stake size |
+| `support` | supporter cities, allowed action types and per-action USDC amount |
 
 `heritage` is declared and weighted but contributes **0**: there is no heritage dataset wired in
 yet, and a term faked from something else would look like a judgement nobody made.
@@ -112,6 +120,7 @@ A batch that has not finished inside `awaitMs` is not an error — `runPickBatch
 | `AGENT_DAILY_ACTION_CAP` | `run-policy.js` | maximum signed mint/x402/market-create/stake actions; safe default 4 |
 | `AGENT_DAILY_USDC_CAP` | `run-policy.js` | maximum x402 plus stake spend; safe default 0.35 USDC |
 | `AGENT_PROPOSAL_FEE_USDC` | `run-policy.js` | conservative x402 fee used in the pre-signing plan; default 0.05 USDC |
+| `AGENT_SUPPORT_USDC_CAP` | `support-run.mjs` | maximum amount of its one daily support action; safe default 0.25 USDC |
 | `PGHOST` / `PGPORT` / `PGUSER` / `PGPASSWORD` / `PGDATABASE` | `parcel-source.js` (via the pool the caller passes) | the shared `geodata` database |
 | `X402_*`, `CDP_API_KEY_ID`, `CDP_API_KEY_SECRET` | `routes/agent-proposals.js` | the hosted-CDP pay-to-post gate; see the design doc §WS1 |
 
@@ -133,7 +142,14 @@ PGHOST=localhost node agents/run.mjs --dry-run                       # algorithm
 PGHOST=localhost node agents/run.mjs --live --persona densifier-01 --api http://localhost:3999
 PGHOST=localhost node agents/run.mjs --live --controller llm         # optional explicit Anthropic mode
 PGHOST=localhost node agents/run.mjs --live --until posted          # stop before staking
+node agents/support-run.mjs --dry-run --api https://api.urbangametheory.xyz
+PGHOST=localhost node agents/support-run.mjs --live --persona supporter-01 --api https://api.urbangametheory.xyz
+PGHOST=localhost npm run sync:land-events -- --dry-run
 ```
+
+The opt-in PM2 ecosystem schedules the proposer at 02:00 UTC, the supporter at 02:15 UTC,
+and the deterministic proposal-lifecycle oracle at 02:30 UTC. The oracle only materializes
+terminal Solana account state that has matching transaction evidence in the shared ledger.
 
 One `consensus.agent_run` row per persona per UTC day is the checkpoint (`stage`, `summary` with
 candidates, controller input/result, picks and rationales, execution policy,
@@ -150,8 +166,12 @@ summary per run). Anthropic variables are optional and read only in explicit LLM
 
 ## Daily schedule (opt-in)
 
-`agents/ecosystem.config.cjs` defines one `consensus-builder-agents` PM2 process at 02:00 UTC with
-the limits above and four candidates offered to the algorithmic controller. It is deliberately separate from the API
+`agents/ecosystem.config.cjs` defines `consensus-builder-agents` at 02:00 UTC, the shared-runtime
+`consensus-builder-supporter` persona at 02:15 UTC, and the deterministic
+`consensus-builder-land-oracle` materializer at 02:30 UTC. All three are one-shot,
+non-restarting scheduled processes; the proposer has the limits above and four candidates offered
+to the algorithmic controller.
+They are deliberately separate from the API
 ecosystem file, so an ordinary backend deploy cannot silently acquire a signing key or start an
 autonomous spender.
 
@@ -161,6 +181,7 @@ After the dedicated low-value devnet key exists at the persona's `keypairPath` a
 ```bash
 cd /root/code/consensus-builder/backend
 pm2 start agents/ecosystem.config.cjs --only consensus-builder-agents
+pm2 start agents/ecosystem.config.cjs --only consensus-builder-supporter
 pm2 save
 ```
 

@@ -7,6 +7,10 @@ wallet becomes the proposal's `author`. No account, no API key, no browser.
 Machine-readable version of this page: [`$(base)/docs/agents.json`]($(base)/docs/agents.json)
 (the minimal recipe as a JSON Schema plus the live payment terms).
 
+Live hosted-catalog proof: [`$(base)/agent/discovery`]($(base)/agent/discovery). This endpoint queries
+the configured facilitator and returns the exact Bazaar record for `POST /agent/proposals`; it does
+not expose the server's CDP credentials.
+
 The paid endpoint also declares the same input and output schemas through the x402 **Bazaar**
 extension. Facilitators that support Bazaar can therefore index it as a machine-discoverable HTTP
 resource after a client echoes the declaration in a successful payment.
@@ -164,16 +168,24 @@ Every minted proposal can get a parimutuel prediction market on whether it execu
 (`proposal_market`, program `$(marketProgram)` on devnet, stakes in the same devnet USDC). Anyone may
 create the market, stake YES/NO while the proposal is Active, resolve it once the proposal is Executed
 (YES) or Cancelled (NO), and claim. There is no deadline: a proposal nobody accepts keeps stakes locked.
+An app-level expiry does **not** resolve NO: `proposal_market` reads the proposal account and only its
+on-chain `Executed` or `Cancelled` status is terminal. Resolution is permissionless; it is not an
+oracle vote or an administrator choosing the outcome.
+The equivalent machine-readable `proposal-lifecycle-v1` recipe is available at
+`GET $(base)/oracle/recipes/proposal-lifecycle-v1?proposal=<proposal-account>&market=<market-account>`;
+persisted terminal observations are at `GET $(base)/oracle/events?subject=<proposal-account>`.
 The pure client is `frontend/js/solana/market-client.js` (`SolanaMarketClient`), the IDL
 `blockchain/solana/idl/proposal_market.json`.
 
-## 8. Pledge escrow
+## 8. Donations and soft pledges
 
 Agents can also back a minted proposal with devnet USDC using `proposal_pledge` (program
-`$(pledgeProgram)`). Each logical pledge uses `sha256(operationId)` in its position PDA: check that
-position before retrying, and never reuse an operation id for a different amount. While the proposal
-is Active, anyone may pledge. Executed releases the vault to the proposal's on-chain owner; Cancelled
-or Expired lets every contributor refund their own position. There is no admin withdrawal path.
+`$(pledgeProgram)`). A **donation** moves USDC into escrow immediately. Each donation uses
+`sha256(operationId)` in its receipt PDA: check that position before retrying, and never reuse an
+operation id for a different amount. Executed releases the escrow to the proposal owner; Cancelled
+or Expired lets each donor refund their own receipts. A **pledge** is instead a revocable, unfunded
+public commitment: USDC moves only when the pledger fulfils it after execution. There is no admin
+withdrawal path.
 
 Read totals without an RPC client at `GET $(base)/agent/pledges/<proposal-account>`. The shared codec
 is `frontend/js/solana/pledge-client.js`; its generated IDL is

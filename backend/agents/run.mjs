@@ -97,8 +97,8 @@ function todayUtc() {
 
 function loadPersonas(onlyName) {
     const file = JSON.parse(fs.readFileSync(path.join(__dirname, 'personas.json'), 'utf8'));
-    const personas = (file.personas || []).filter((p) => !onlyName || p.name === onlyName);
-    if (!personas.length) throw new Error(onlyName ? `no persona named ${onlyName}` : 'personas.json lists no personas');
+    const personas = (file.personas || []).filter((p) => (p.role || 'proposer') === 'proposer' && (!onlyName || p.name === onlyName));
+    if (!personas.length) throw new Error(onlyName ? `no proposer persona named ${onlyName}` : 'personas.json lists no proposer personas');
     return personas;
 }
 

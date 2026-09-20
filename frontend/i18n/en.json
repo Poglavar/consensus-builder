@@ -1002,6 +1002,13 @@
                 "none": "0 USDC · no backers yet",
                 "unavailable": "Unavailable"
             },
+            "market": {
+                "oracleTitle": "Oracle recipe",
+                "oracleLoading": "Loading proposal-lifecycle-v1…",
+                "recipeLink": "Recipe declaration ↗",
+                "eventLink": "Source event ↗",
+                "finalVerifier": "The Solana program remains the final verifier."
+            },
             "acceptTransfer": {
                 "buttonLabel": "Accept ownership transfer",
                 "title": "Accept ownership transfer",

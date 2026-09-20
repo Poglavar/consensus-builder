@@ -23,5 +23,41 @@ module.exports = {
     out_file: '/root/code/consensus-builder/backend/logs/agents.log',
     merge_logs: true,
     time: true
+  }, {
+    name: 'consensus-builder-supporter',
+    script: 'agents/support-run.mjs',
+    args: '--live --persona supporter-01 --api https://api.urbangametheory.xyz',
+    cwd: '/root/code/consensus-builder/backend',
+    exec_mode: 'fork',
+    instances: 1,
+    autorestart: false,
+    cron_restart: '15 2 * * *',
+    kill_timeout: 900000,
+    env: {
+      NODE_ENV: 'production',
+      AGENT_API_BASE: 'https://api.urbangametheory.xyz',
+      AGENT_SUPPORT_USDC_CAP: '0.25'
+    },
+    error_file: '/root/code/consensus-builder/backend/logs/agents-error.log',
+    out_file: '/root/code/consensus-builder/backend/logs/agents.log',
+    merge_logs: true,
+    time: true
+  }, {
+    name: 'consensus-builder-land-oracle',
+    script: 'scripts/sync-land-events.mjs',
+    args: '--live',
+    cwd: '/root/code/consensus-builder/backend',
+    exec_mode: 'fork',
+    instances: 1,
+    autorestart: false,
+    cron_restart: '30 2 * * *',
+    kill_timeout: 900000,
+    env: {
+      NODE_ENV: 'production'
+    },
+    error_file: '/root/code/consensus-builder/backend/logs/agents-error.log',
+    out_file: '/root/code/consensus-builder/backend/logs/agents.log',
+    merge_logs: true,
+    time: true
   }]
 };

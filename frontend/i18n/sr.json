@@ -1013,6 +1013,13 @@
                 "none": "0 USDC · još nema podržavalaca",
                 "unavailable": "Nedostupno"
             },
+            "market": {
+                "oracleTitle": "Recept oracle-a",
+                "oracleLoading": "Učitavanje proposal-lifecycle-v1…",
+                "recipeLink": "Deklaracija recepta ↗",
+                "eventLink": "Izvorni događaj ↗",
+                "finalVerifier": "Program na Solani ostaje konačni verifikator."
+            },
             "acceptTransfer": {
                 "buttonLabel": "Prihvati prenos vlasništva",
                 "title": "Prihvati prenos vlasništva",

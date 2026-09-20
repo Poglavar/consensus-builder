@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { marked } from 'marked';
 import { readX402Config } from '../utils/x402-payment.js';
+import { EVENT_TYPE as LAND_EVENT_TYPE, RECIPE_ID as LAND_RECIPE_ID } from '../oracle/proposal-lifecycle.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -217,6 +218,7 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                 },
                 endpoints: {
                     submit: `${base}/agent/proposals`,
+                    discovery: `${base}/agent/discovery`,
                     read: `${base}/proposals/{id}`,
                     listByAuthor: `${base}/proposals/summary?city={city}&author={wallet}`,
                     listByParcel: `${base}/proposals?parcel_id={cadastreParcelId}`,
@@ -224,9 +226,25 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     urbanRules: `${base}/urban-rules?coordinates={lng},{lat}`,
                     buildingFootprints: `${base}/buildings/footprints`
                 },
+                oracle: {
+                    eventType: LAND_EVENT_TYPE,
+                    events: `${base}/oracle/events?subject={proposalAccount}`,
+                    recipeId: LAND_RECIPE_ID,
+                    recipe: `${base}/oracle/recipes/${LAND_RECIPE_ID}?proposal={proposalAccount}&market={marketAccount}`,
+                    source: 'Solana proposal account plus its terminal transaction',
+                    attester: solanaProgramId('ProposalNFT')
+                },
                 market: {
                     programId: marketProgramId(),
                     cluster: 'devnet',
+                    resolution: {
+                        yes: 'proposal account status is Executed',
+                        no: 'proposal account status is Cancelled',
+                        permissionless: true,
+                        deadline: null,
+                        expired: 'not terminal in the market program; the proposal must be cancelled or executed on-chain',
+                        oracleRecipe: LAND_RECIPE_ID
+                    },
                     idl: 'blockchain/solana/idl/proposal_market.json',
                     client: 'frontend/js/solana/market-client.js'
                 },

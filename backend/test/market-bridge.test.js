@@ -10,6 +10,7 @@ describe('Solana market bridge', () => {
         const market = { stakeMint: 'mint-1', yesPool: 100n, noPool: 50n, resolved: false };
         const client = {
             constants: { SIDE_YES: 1, SIDE_NO: 0 },
+            getMarketPda: vi.fn(() => [{ toBase58: () => 'market-pda-1' }]),
             readMarket: vi.fn(async () => market),
             readPosition: vi.fn(async (_connection, _proposal, _wallet, side) => ({ side, amount: 10n }))
         };
@@ -22,7 +23,7 @@ describe('Solana market bridge', () => {
         vm.runInNewContext(bridgeSource, { window });
 
         await expect(window.SolanaMarketBridge.readSummary('proposal-1')).resolves.toMatchObject({
-            market, wallet: 'wallet-1', yes: { side: 1 }, no: { side: 0 }
+            market, marketAddress: 'market-pda-1', wallet: 'wallet-1', yes: { side: 1 }, no: { side: 0 }
         });
         expect(client.readPosition).toHaveBeenCalledTimes(2);
     });

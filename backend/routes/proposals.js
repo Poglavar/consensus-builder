@@ -847,6 +847,7 @@ export function setupProposalsRoute(app, pool) {
                 -- server proposal touch my parcel" without fetching every proposal in full.
                 cadastre_parcel_ids,
                 COALESCE(screenshot_url, onchain_data->>'imageUrl') AS screenshot_url,
+                onchain_data,
                 proposal_data->'agent' AS agent,
                 epoch_year,
                 COUNT(*) OVER() AS total_count
@@ -882,6 +883,9 @@ export function setupProposalsRoute(app, pool) {
                     createdAt: proposal.createdAt || null,
                     cadastreParcelIds: Array.isArray(row.cadastre_parcel_ids) ? row.cadastre_parcel_ids : null,
                     screenshotUrl: proposal.screenshotUrl || null,
+                    onchain: row.onchain_data && typeof row.onchain_data === 'object' && !Array.isArray(row.onchain_data)
+                        ? row.onchain_data
+                        : null,
                     agent: row.agent && typeof row.agent === 'object' && !Array.isArray(row.agent)
                         ? row.agent
                         : null,

@@ -73,6 +73,79 @@
         };
     }
 
+    function lifecycle(lifecycleStatus, marketModel = { exists: false }) {
+        const status = String(lifecycleStatus || '').trim().toLowerCase();
+        const exists = Boolean(marketModel?.exists);
+        const resolved = Boolean(marketModel?.resolved);
+        const base = {
+            rule: 'The market reads the proposal account on Solana: Executed resolves YES; Cancelled resolves NO. Resolution is permissionless.',
+            canOpen: !exists && status === 'active',
+            canStake: exists && !resolved && status === 'active',
+            canResolve: exists && !resolved && (status === 'executed' || status === 'cancelled'),
+            expectedOutcome: status === 'executed' ? 'yes' : status === 'cancelled' ? 'no' : null
+        };
+        if (resolved) {
+            const outcome = marketModel.outcome === 'yes' ? 'YES' : 'NO';
+            const winningPool = marketModel.outcome === 'yes' ? atomic(marketModel.yesPool) : atomic(marketModel.noPool);
+            return {
+                ...base, canOpen: false, canStake: false, canResolve: false,
+                state: `Resolved ${outcome}`,
+                next: winningPool === 0n
+                    ? 'Nobody backed the winning outcome, so every unclaimed position can reclaim its original stake.'
+                    : 'Winning positions split the full pool pro rata. Losing positions have no payout.'
+            };
+        }
+        if (status === 'executed') return { ...base, state: 'Ready to resolve YES', next: 'Anyone can submit resolution; the program verifies Executed directly from the proposal account.' };
+        if (status === 'cancelled') return { ...base, state: 'Ready to resolve NO', next: 'Anyone can submit resolution; the program verifies Cancelled directly from the proposal account.' };
+        if (status === 'expired') return {
+            ...base, canOpen: false, canStake: false, canResolve: false,
+            state: 'Awaiting on-chain cancellation',
+            next: 'The app deadline passed, but Expired is not a terminal status understood by this market program. Stakes stay locked until the proposal is cancelled or executed on-chain.'
+        };
+        if (status === 'active') return {
+            ...base,
+            state: exists ? 'Open for staking' : 'Ready to open',
+            next: exists
+                ? 'Stakes are locked while the proposal remains Active. There is no market deadline or early exit.'
+                : 'Any wallet can open the single market for this Active proposal, then stake YES or NO.'
+        };
+        return { ...base, canOpen: false, canStake: false, canResolve: false, state: 'Not tradeable', next: 'The proposal must be Active on-chain before a market can be opened.' };
+    }
+
+    function marketHistory(events, proposalIds) {
+        const ids = new Set((proposalIds || []).filter(Boolean).map(String));
+        const actionTypes = new Set(['createMarket', 'stake', 'resolve', 'claim']);
+        const byTransaction = new Map();
+        (events || []).forEach(event => {
+            const proposalId = event?.entity?.id || event?.action?.proposalId;
+            if (!event?.transaction || !actionTypes.has(event?.action?.type) || !ids.has(String(proposalId || ''))) return;
+            byTransaction.set(String(event.transaction), event);
+        });
+        return Array.from(byTransaction.values()).sort((left, right) =>
+            (Date.parse(right.recordedAt || right.occurredAt || 0) || 0)
+            - (Date.parse(left.recordedAt || left.occurredAt || 0) || 0));
+    }
+
+    function oracleEvidence(recipe, event, error = null) {
+        if (error) return { tone: 'error', label: 'Oracle evidence feed unavailable', detail: String(error) };
+        if (!recipe) return { tone: 'waiting', label: 'Loading oracle recipe', detail: 'The market declaration has not loaded yet.' };
+        if (!event) return {
+            tone: 'waiting', label: 'Recipe declared; terminal event pending',
+            detail: `${recipe.id} · ${recipe.hash}`
+        };
+        const proposalMatches = String(event.subject?.id || '') === String(recipe.subject?.proposalAccount || '');
+        const outcomeMatches = recipe.outcomes?.[event.outcome] === (event.outcome === 'executed' ? 'YES' : 'NO');
+        if (!proposalMatches || !outcomeMatches) return {
+            tone: 'error', label: 'Oracle evidence does not match this market',
+            detail: 'The subject or outcome is outside the declared recipe.'
+        };
+        return {
+            tone: 'success',
+            label: `${event.outcome === 'executed' ? 'YES' : 'NO'} evidence recorded`,
+            detail: `${event.observedAt || 'source time unavailable'} · ${event.source?.hash || 'source hash unavailable'}`
+        };
+    }
+
     function statusText(status = {}) {
         if (status.state === 'preparing') return 'Checking your wallet and preparing the market transaction…';
         if (status.state === 'awaiting_signature') return 'Approve the market transaction in your wallet…';
@@ -90,5 +163,5 @@
         return error?.reason || error?.shortMessage || error?.message || 'Unknown market transaction error.';
     }
 
-    return { USDC_DECIMALS, formatAtomic, parseUsdc, model, statusText, errorText };
+    return { USDC_DECIMALS, formatAtomic, parseUsdc, model, lifecycle, marketHistory, oracleEvidence, statusText, errorText };
 });

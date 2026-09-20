@@ -11,6 +11,7 @@
         "test:watch": "vitest",
         "test:coverage": "vitest run --coverage",
         "demo:x402": "node scripts/x402-demo.mjs",
+        "sync:land-events": "node scripts/sync-land-events.mjs",
         "smoke:prod:parcels": "node scripts/smoke-production-bbox.mjs",
         "plan-yield": "PGHOST=${PGHOST:-localhost} node scripts/plan-yield.js"
     },

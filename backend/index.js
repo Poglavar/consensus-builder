@@ -37,6 +37,8 @@ import { setupProposalsRoute } from './routes/proposals.js';
 import { setupAgentProposalsRoute } from './routes/agent-proposals.js';
 import { setupAgentPledgesRoute } from './routes/agent-pledges.js';
 import { setupAgentActivityRoute } from './routes/agent-activity.js';
+import { setupAgentDiscoveryRoute } from './routes/agent-discovery.js';
+import { setupLandEventsRoute } from './routes/land-events.js';
 import { setupTransactionsRoute } from './routes/transactions.js';
 import { isAgentPath } from './utils/x402-payment.js';
 import { setupRoadCorridorRoute } from './routes/road-corridor.js';
@@ -394,6 +396,8 @@ export function createApp({
     setupAgentProposalsRoute(app, activePool, { env }); // paid x402 front door to the same create handler
     setupAgentPledgesRoute(app, { env }); // read-only view; pledge writes go directly to Solana
     setupAgentActivityRoute(app, activePool); // shared live activity source for human/agent explorer UI
+    setupAgentDiscoveryRoute(app, { env }); // hosted Bazaar listing proof; credentials remain server-side
+    setupLandEventsRoute(app, activePool); // deterministic proposal lifecycle events + recipe declarations
     setupTransactionsRoute(app, activePool); // devnet transaction explorer, derived from the chain
     setupRoadCorridorRoute(app, activePool);
     setupReparcellizationRoute(app);

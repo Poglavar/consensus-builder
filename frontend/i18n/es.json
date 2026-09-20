@@ -1030,6 +1030,13 @@
                 "none": "0 USDC · aún sin aportantes",
                 "unavailable": "No disponible"
             },
+            "market": {
+                "oracleTitle": "Receta del oráculo",
+                "oracleLoading": "Cargando proposal-lifecycle-v1…",
+                "recipeLink": "Declaración de la receta ↗",
+                "eventLink": "Evento fuente ↗",
+                "finalVerifier": "El programa de Solana sigue siendo el verificador final."
+            },
             "acceptTransfer": {
                 "buttonLabel": "Aceptar transferencia de propiedad",
                 "title": "Aceptar transferencia de propiedad",

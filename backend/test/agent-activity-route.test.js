@@ -30,7 +30,7 @@ describe('agent activity', () => {
             input_tokens: 120, output_tokens: 45, cache_read_tokens: 0, cache_creation_tokens: 0,
             usd: '0.005400', created_at: '2026-09-20T08:03:00Z'
         }]);
-        expect(detail).toMatchObject({ id: row.run_id, model: 'claude-opus-5', costs: [{ usd: 0.0054, inputTokens: 120 }] });
+        expect(detail).toMatchObject({ id: row.run_id, role: 'proposer', model: 'claude-opus-5', modelCostUsd: 0.0054, costs: [{ usd: 0.0054, inputTokens: 120 }] });
         expect(detail.picks[0]).toMatchObject({ proposalId: 'agent-p1', name: 'Courtyard homes' });
     });
 
@@ -102,5 +102,33 @@ describe('agent activity', () => {
         expect(response.status).toBe(200);
         expect(response.body.run).toMatchObject({ id: row.run_id, costs: [{ usd: 0.01 }] });
         expect(response.body.events).toHaveLength(4);
+    });
+
+    it('lists recent runs and filters after inferring legacy controller provenance', async () => {
+        const algorithmic = {
+            ...row,
+            run_id: '2026-09-21-supporter-01',
+            persona: 'supporter-01',
+            summary: { role: 'supporter', controller: 'algorithm', wallet: 'wallet-2', outcome: 'completed', support: { type: 'pledge' } }
+        };
+        const pool = { query: async () => ({ rows: [algorithmic, row] }) };
+        const app = express();
+        setupAgentActivityRoute(app, pool);
+
+        const response = await request(app).get('/agent/runs?controller=algorithm&limit=10');
+
+        expect(response.status).toBe(200);
+        expect(response.body.count).toBe(1);
+        expect(response.body.runs[0]).toMatchObject({
+            id: '2026-09-21-supporter-01', role: 'supporter', controller: 'algorithm',
+            wallet: 'wallet-2', modelCostUsd: 0, support: { type: 'pledge' }
+        });
+    });
+
+    it('rejects unknown controller filters on the run index', async () => {
+        const app = express();
+        setupAgentActivityRoute(app, { query: async () => ({ rows: [] }) });
+        const response = await request(app).get('/agent/runs?controller=magic');
+        expect(response.status).toBe(400);
     });
 });

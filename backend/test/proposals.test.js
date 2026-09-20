@@ -1239,6 +1239,17 @@ describe('GET /proposals/summary', () => {
         expect(pool.getCalls()[0].sql).toMatch(/proposal_data->'agent' AS agent/);
     });
 
+    it('includes the minted proposal account so autonomous supporters need no full-record scan', async () => {
+        const onchain = { proposalId: 'ProposalPda1111111111111111111111111111111', chainId: 'solana-devnet' };
+        pool.setResult({ rows: [summaryDbRow({ onchain_data: onchain })] });
+
+        const res = await request(app).get('/proposals/summary?lifecycle=Active');
+
+        expect(res.status).toBe(200);
+        expect(res.body.proposals[0].onchain).toEqual(onchain);
+        expect(pool.getCalls()[0].sql).toMatch(/onchain_data/);
+    });
+
     it('serves the goal so the client does not re-derive it from the lossy type', async () => {
         pool.setResult({
             rows: [

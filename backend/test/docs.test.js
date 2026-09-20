@@ -354,6 +354,13 @@ describe('agent quickstart docs', () => {
         });
         expect(res.body.proposalSupport.donations.active).toMatch(/escrow immediately/);
         expect(res.body.proposalSupport.pledges.active).toMatch(/unfunded/);
+        expect(res.body.market.resolution).toMatchObject({
+            yes: expect.stringMatching(/Executed/),
+            no: expect.stringMatching(/Cancelled/),
+            permissionless: true,
+            deadline: null
+        });
+        expect(res.body.market.resolution.expired).toMatch(/not terminal/);
         expect(res.body.docs).toBe('https://api.example.test/docs/agents');
     });
 
