@@ -12,7 +12,8 @@ describe('daily algorithmic agent schedule', () => {
             script: 'agents/run.mjs',
             instances: 1,
             autorestart: false,
-            cron_restart: '0 2 * * *'
+            cron_restart: '0 2 * * *',
+            merge_logs: true
         });
         expect(app.args).toContain('--persona densifier-01');
         expect(app.args).toContain('--candidates 4');

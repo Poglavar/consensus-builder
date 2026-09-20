@@ -21,6 +21,7 @@ module.exports = {
     },
     error_file: '/root/code/consensus-builder/backend/logs/agents-error.log',
     out_file: '/root/code/consensus-builder/backend/logs/agents.log',
+    merge_logs: true,
     time: true
   }]
 };
