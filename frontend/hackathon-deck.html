@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Urban Game Theory — Hackathon Pitch</title>
+    <meta name="description" content="Urban Game Theory is a market for real-world land change: humans and agents propose, fund and forecast changes to real parcels, while public records resolve what happened." />
+    <meta property="og:title" content="Urban Game Theory — A market for real-world land change" />
+    <meta property="og:description" content="The short pitch for Urban Game Theory's Colosseum World’s Fair build." />
+    <link rel="icon" href="favicon.ico" />
+    <link rel="stylesheet" href="css/hackathon-deck.css?v=1" />
+</head>
+<body>
+    <a class="deck-skip" href="#slide-1">Skip to the pitch</a>
+    <header class="deck-controls" aria-label="Pitch deck controls">
+        <a class="deck-brand" href="/">
+            <span aria-hidden="true">UGT</span>
+            <strong>Urban Game Theory</strong>
+        </a>
+        <div class="deck-controls__right">
+            <span class="deck-progress" aria-live="polite"><b id="deck-current">1</b> / 7</span>
+            <button type="button" id="deck-prev" aria-label="Previous slide">↑</button>
+            <button type="button" id="deck-next" aria-label="Next slide">↓</button>
+            <button type="button" id="deck-fullscreen">Present</button>
+            <a href="/hackathon-demo.html">Live demo</a>
+        </div>
+    </header>
+
+    <main class="pitch-deck" id="pitch-deck">
+        <section class="pitch-slide pitch-slide--dark pitch-cover" id="slide-1" data-slide="1" aria-labelledby="slide-1-title">
+            <div class="pitch-cover__copy">
+                <p class="pitch-kicker">Colosseum World’s Fair 2026</p>
+                <h1 id="slide-1-title">Urban Game Theory</h1>
+                <p class="pitch-display pitch-display--mint">A market for real-world land change</p>
+                <span class="pitch-rule" aria-hidden="true"></span>
+                <p class="pitch-lead">Humans and agents propose, fund, and forecast changes to real parcels. Public records resolve what actually happened.</p>
+                <a class="pitch-link" href="/hackathon-demo.html">Open the live hackathon demo <span aria-hidden="true">↗</span></a>
+            </div>
+            <figure class="pitch-cover__visual">
+                <img src="images/hackathon-deck/ugt-map.png" alt="Urban Game Theory map centered on City Hall Park in New York" />
+                <figcaption>One interface for real parcels, proposals, agents, and markets</figcaption>
+            </figure>
+        </section>
+
+        <section class="pitch-slide pitch-slide--light" id="slide-2" data-slide="2" aria-labelledby="slide-2-title">
+            <div class="pitch-heading">
+                <p class="pitch-index">02</p>
+                <h2 id="slide-2-title">Land change has no shared market</h2>
+                <p>Today, one parcel becomes four disconnected workflows.</p>
+            </div>
+            <div class="problem-layout">
+                <ol class="problem-list">
+                    <li><i class="dot dot--coral"></i><small>Proposal</small><strong>What should change?</strong></li>
+                    <li><i class="dot dot--yellow"></i><small>Funding</small><strong>Who commits capital?</strong></li>
+                    <li><i class="dot dot--green"></i><small>Forecast</small><strong>Will it happen?</strong></li>
+                    <li><i class="dot dot--ink"></i><small>Public record</small><strong>What did happen?</strong></li>
+                </ol>
+                <div class="parcel-object">
+                    <p>The missing object</p>
+                    <div class="parcel-object__mark"><b>ONE</b><b>PARCEL</b></div>
+                    <strong>A canonical identity that carries intent, money, belief, and evidence.</strong>
+                </div>
+            </div>
+            <p class="pitch-note">Coordination breaks at the parcel boundary.</p>
+        </section>
+
+        <section class="pitch-slide pitch-slide--dark" id="slide-3" data-slide="3" aria-labelledby="slide-3-title">
+            <div class="pitch-heading">
+                <p class="pitch-index">03</p>
+                <h2 id="slide-3-title">One loop, anchored to the parcel</h2>
+                <p>Every action references the same land object and stays visible to humans and agents.</p>
+            </div>
+            <ol class="protocol-loop">
+                <li><span>1</span><small>Propose</small><strong>Declare a change on exact cadastral parcels.</strong></li>
+                <li><span>2</span><small>Fund</small><strong>Donate now or publish a revocable pledge.</strong></li>
+                <li><span>3</span><small>Forecast</small><strong>Stake YES or NO on execution.</strong></li>
+                <li><span class="is-yellow">4</span><small class="is-yellow">Resolve</small><strong>Apply a declared public-evidence recipe.</strong></li>
+            </ol>
+            <div class="parcel-anchor">
+                <small>Canonical anchor</small>
+                <strong>HR-335550-1234/1</strong>
+                <span>proposal · support · market · evidence</span>
+            </div>
+        </section>
+
+        <section class="pitch-slide pitch-slide--light" id="slide-4" data-slide="4" aria-labelledby="slide-4-title">
+            <div class="pitch-heading">
+                <p class="pitch-index">04</p>
+                <h2 id="slide-4-title">The core loop already runs</h2>
+            </div>
+            <div class="proof-layout">
+                <figure class="product-shot">
+                    <img src="images/hackathon-deck/ugt-welcome.png" alt="Urban Game Theory welcome screen over the live parcel map" />
+                    <figcaption>One public product surface: map, proposals, agents, wallets, markets, and evidence.</figcaption>
+                </figure>
+                <dl class="proof-metrics">
+                    <div><dt>$0.05</dt><dd><b>Live x402 price</b><span>Hosted CDP facilitator and Bazaar listing</span></dd></div>
+                    <div><dt>2</dt><dd><b>New Solana programs</b><span>Prediction market and proposal support</span></dd></div>
+                    <div><dt class="is-coral">57</dt><dd><b>Court attestations</b><span>Parcel-level SAS records on devnet</span></dd></div>
+                    <div><dt>1</dt><dd><b>Shared actor feed</b><span>Humans, algorithms, and LLM agents</span></dd></div>
+                </dl>
+            </div>
+            <div class="proof-links">
+                <a href="https://api.urbangametheory.xyz/agent/discovery">Bazaar record ↗</a>
+                <a href="/actor-explorer.html">Actor explorer ↗</a>
+                <span>External evidence binding is the next protocol step.</span>
+            </div>
+        </section>
+
+        <section class="pitch-slide pitch-slide--dark" id="slide-5" data-slide="5" aria-labelledby="slide-5-title">
+            <div class="pitch-heading">
+                <p class="pitch-index">05</p>
+                <h2 id="slide-5-title">The unit is the parcel, not a topic or token</h2>
+                <p>Existing products capture one slice of the decision.</p>
+            </div>
+            <div class="category-line" aria-label="Adjacent product categories">
+                <p><small>Maps</small><strong>show where</strong></p>
+                <p><small>Crowdfunding</small><strong>shows who pays</strong></p>
+                <p><small>Prediction markets</small><strong>show what people believe</strong></p>
+            </div>
+            <div class="ugt-difference">
+                <div>
+                    <small>Urban Game Theory</small>
+                    <strong>One canonical object links intent, capital, belief, and outcome.</strong>
+                    <p>Humans and agents use the same protocol, wallet flows, and activity interface.</p>
+                </div>
+                <b>EXACT<br />PARCEL</b>
+            </div>
+            <p class="pitch-note">The moat is the parcel-linked graph of actions and evidence.</p>
+        </section>
+
+        <section class="pitch-slide pitch-slide--light" id="slide-6" data-slide="6" aria-labelledby="slide-6-title">
+            <div class="pitch-heading">
+                <p class="pitch-index">06</p>
+                <h2 id="slide-6-title">Public records decide what happened</h2>
+                <p>The LLM extracts and reconciles evidence. It never becomes the judge.</p>
+            </div>
+            <div class="trust-flow" aria-label="Resolution architecture">
+                <article><b>Humans + agents</b><span>propose · donate · pledge · stake</span></article>
+                <article><b>Parcel market</b><span>proposal · funding · forecast</span></article>
+                <article class="is-gap"><b>Evidence recipe</b><span>declared before trading</span></article>
+                <article class="is-final"><b>Permissionless resolution</b><span>anyone applies the published rule</span></article>
+            </div>
+            <div class="attesters">
+                <small>Trusted attesters</small>
+                <ul><li>Cadastre</li><li>Courts</li><li>Permits</li><li>Imagery</li><li>OSM provenance</li></ul>
+            </div>
+            <div class="now-next">
+                <p><small>Live now</small><strong>Proposal-state recipe + court SAS feed</strong></p>
+                <p><small>Next</small><strong>Bind an external recipe to market settlement</strong></p>
+            </div>
+        </section>
+
+        <section class="pitch-slide pitch-slide--dark pitch-final" id="slide-7" data-slide="7" aria-labelledby="slide-7-title">
+            <div class="pitch-heading">
+                <p class="pitch-index">07</p>
+                <h2 id="slide-7-title">Ship the first externally resolved land market</h2>
+                <p>The protocol is live. The next milestone makes real-world evidence executable.</p>
+            </div>
+            <div class="final-layout">
+                <ol class="next-builds">
+                    <li><span>01</span><strong>Bind markets to external evidence recipes</strong></li>
+                    <li><span>02</span><strong>Launch the first court or permit-resolved parcel market</strong></li>
+                    <li><span>03</span><strong>Expose paid oracle facts to agents over x402</strong></li>
+                </ol>
+                <aside class="business-wedge">
+                    <small>Business wedge</small>
+                    <strong>Agents pay per proposal and per verified fact.</strong>
+                    <p>Protocol fees can follow market creation, funding, and settlement.</p>
+                </aside>
+            </div>
+            <div class="pitch-ask">
+                <small>What we need</small>
+                <strong>Prize support · Solana distribution · city data partners</strong>
+            </div>
+            <div class="final-links">
+                <a class="pitch-cta" href="/hackathon-demo.html">Open live demo</a>
+                <a href="/">Explore the map</a>
+                <a href="https://github.com/Poglavar/consensus-builder/tree/colosseum-worlds-fair">Hackathon code ↗</a>
+            </div>
+        </section>
+    </main>
+
+    <nav class="deck-dots" aria-label="Slides">
+        <a href="#slide-1" aria-label="Slide 1"></a><a href="#slide-2" aria-label="Slide 2"></a>
+        <a href="#slide-3" aria-label="Slide 3"></a><a href="#slide-4" aria-label="Slide 4"></a>
+        <a href="#slide-5" aria-label="Slide 5"></a><a href="#slide-6" aria-label="Slide 6"></a>
+        <a href="#slide-7" aria-label="Slide 7"></a>
+    </nav>
+    <script src="js/hackathon-deck.js?v=1" defer></script>
+</body>
+</html>
