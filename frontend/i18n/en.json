@@ -329,7 +329,7 @@
             "newGame": "New Game",
             "showGameLog": "Activity",
             "showGameLogCount": "Activity ({{count}})",
-            "showAgents": "Show Agents",
+            "showAgents": "Actors",
             "showAgentsCount": "Show Agents ({{count}})"
         },
         "proposals": {
@@ -440,7 +440,7 @@
             "newGame": "New Game",
             "showGameLog": "Activity",
             "showGameLogCount": "Activity ({{count}})",
-            "showAgents": "Show Agents",
+            "showAgents": "Actors",
             "showAgentsCount": "Show Agents ({{count}})"
         },
         "gameDialogs": {

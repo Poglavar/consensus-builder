@@ -1,18 +1,18 @@
 #!/usr/bin/env node
-// Agent runner (design §WS3): for each persona, once per UTC day — plan candidate parcels, let the
-// model pick and write rationales in ONE Batches API job, mint each pick on Solana devnet with the
-// persona keypair, post it through the paid x402 route (mint first: the record has no on-chain write
-// path after creation), then stake on its market. Every stage is checkpointed in consensus.agent_run
-// so a rerun resumes where it stopped and never redoes a mint, a payment or a stake.
+// Agent runner (design §WS3): for each persona, once per UTC day — plan candidate parcels, choose
+// with either the default deterministic controller or an explicitly requested LLM batch, mint each
+// pick on Solana devnet with the persona keypair, post it through the paid x402 route (mint first:
+// the record has no on-chain write path after creation), then stake on its market. Every stage is
+// checkpointed in consensus.agent_run so a rerun never redoes a mint, payment or stake.
 //
 // Usage:
-//   node agents/run.mjs --dry-run [--persona NAME] [--day YYYY-MM-DD] [--candidates N]
-//   node agents/run.mjs --live    [--persona NAME] [--day YYYY-MM-DD] [--until STAGE] [--api URL]
+//   node agents/run.mjs --dry-run [--controller algorithm|llm] [--persona NAME] [--day YYYY-MM-DD]
+//   node agents/run.mjs --live    [--controller algorithm|llm] [--persona NAME] [--until STAGE]
 //   STAGE: planned | chosen | minted | posted | staked (default staked)
-// Env: PG* (run with PGHOST=localhost on the host), ANTHROPIC_API_KEY, AGENT_LLM_MODEL,
-//      AGENT_LLM_DAILY_CAP_USD (safe default 0.25), AGENT_DAILY_ACTION_CAP (3),
+// Env: PG* (run with PGHOST=localhost on the host), AGENT_DAILY_ACTION_CAP (4),
 //      AGENT_DAILY_USDC_CAP (0.35), AGENT_API_BASE (default http://localhost:$API_PORT),
 //      SOLANA_RPC_URL, TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID (optional, one summary per run).
+//      ANTHROPIC_API_KEY/AGENT_LLM_* are read only with explicit --controller llm.
 
 import 'dotenv/config';
 import fs from 'node:fs';
@@ -21,12 +21,12 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
-import Anthropic from '@anthropic-ai/sdk';
 import { Connection, Keypair } from '@solana/web3.js';
 import * as turf from '@turf/turf';
 import { fetchCandidateParcels } from './parcel-source.js';
 import { planCandidates } from './planner.js';
 import { buildProposalRecord } from './record-builder.js';
+import { selectAlgorithmicPicks } from './algorithmic-picker.js';
 import { buildPickRequests, parsePicks, estimateBatchCostUsd, runPickBatch, pickCustomId, DEFAULT_MODEL } from './llm-picker.js';
 import { createPaidClient, paymentIdForProposal, postAgentProposal } from './x402-client.js';
 import { mintProposal } from './minter.js';
@@ -41,19 +41,21 @@ const require = createRequire(import.meta.url);
 const actionEngineApi = require('../../frontend/js/agent-action-engine.js');
 
 const STAGES = ['planned', 'chosen', 'minted', 'posted', 'staked'];
+const CONTROLLERS = ['algorithm', 'llm'];
 const PROPOSAL_NFT_PROGRAM = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
 const USDC_DEVNET = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 const SIDE_YES = 1;
 
 function usage(exitCode) {
     console.log([
-        'Agent runner: plan → pick (LLM batch) → mint → paid post → stake, per persona per UTC day.',
+        'Agent runner: plan → pick (algorithm by default, optional LLM) → mint → paid post → stake.',
         '',
-        '  --dry-run            Plan and estimate the batch cost; write nothing, call no model, sign nothing',
+        '  --dry-run            Plan and choose; write nothing, call no model, sign nothing',
         '  --live               Run for real, checkpointed in consensus.agent_run (rerun = resume)',
+        '  --controller TYPE    algorithm (default, $0) or llm (explicit Anthropic batch)',
         '  --persona NAME       Only this persona (default: every persona in personas.json)',
         '  --day YYYY-MM-DD     The run day (default: today, UTC)',
-        '  --candidates N       Candidates per persona offered to the model (default 8)',
+        '  --candidates N       Candidates per persona offered to the controller (default 8)',
         '  --until STAGE        Stop after STAGE: planned | chosen | minted | posted | staked',
         '  --api URL            Backend base for POST /agent/proposals (default AGENT_API_BASE or http://localhost:$API_PORT)',
         '  --help               This text'
@@ -62,7 +64,7 @@ function usage(exitCode) {
 }
 
 function parseArgs(argv) {
-    const args = { candidates: 8, until: 'staked' };
+    const args = { candidates: 8, until: 'staked', controller: 'algorithm' };
     for (let i = 0; i < argv.length; i += 1) {
         const token = argv[i];
         if (token === '--help') usage(0);
@@ -80,6 +82,7 @@ function parseArgs(argv) {
         usage(2);
     }
     if (!STAGES.includes(args.until)) usage(2);
+    if (!CONTROLLERS.includes(args.controller)) usage(2);
     if (!Number.isInteger(args.candidates) || args.candidates < 1) usage(2);
     return args;
 }
@@ -118,7 +121,8 @@ function proposalIdFor(persona, day, index) {
 async function main() {
     const args = parseArgs(process.argv.slice(2));
     const day = args.day || todayUtc();
-    const model = process.env.AGENT_LLM_MODEL || DEFAULT_MODEL;
+    const controller = args.controller;
+    const model = controller === 'llm' ? (process.env.AGENT_LLM_MODEL || DEFAULT_MODEL) : null;
     const apiBase = (args.api || process.env.AGENT_API_BASE || `http://localhost:${process.env.API_PORT || 3000}`).replace(/\/$/, '');
     const rpcUrl = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
     const personas = loadPersonas(args.persona);
@@ -127,7 +131,7 @@ async function main() {
         password: process.env.PGPASSWORD, database: process.env.PGDATABASE
     });
     const mode = args.dryRun ? 'dry-run' : 'live';
-    log(`${mode} · day ${day} · ${personas.length} persona(s) · model ${model} · api ${apiBase}`);
+    log(`${mode} · day ${day} · ${personas.length} persona(s) · controller ${controller}${model ? ` (${model})` : ' ($0 model spend)'} · api ${apiBase}`);
 
     const failures = [];
     const report = [];
@@ -162,79 +166,124 @@ async function main() {
             if (args.live) {
                 await startRun(pool, { runId, persona: persona.name, day, mode });
                 run = await updateRun(pool, runId, { stage: 'planned', status: 'running', summaryPatch: {
-                    candidates, city: persona.areas?.[0]?.city ?? 'zagreb', wallet: persona.wallet, model
+                    candidates, city: persona.areas?.[0]?.city ?? 'zagreb', wallet: persona.wallet,
+                    controller, ...(model ? { model } : {})
                 } });
             }
             entries.push({ persona, runId, run, candidates });
         }
 
-        // ---- stage 2: choose (ONE batch for all personas) ------------------------------------
-        const needPicks = entries.filter((e) => e.candidates.length && !(e.run?.summary?.picks));
-        const requests = buildPickRequests({ runId: `${day}`, day, entries: needPicks, model });
-        const requestsByPersona = new Map(needPicks.map((entry, index) => [entry.persona.name, requests[index]]));
-        const estimate = estimateBatchCostUsd(requests, model);
-        const spent = args.live ? await dailySpendUsd(pool, day) : 0;
-        const cap = dailyCapUsd(process.env);
-        log(`batch: ${requests.length} request(s) · estimated ≤ $${estimate.toFixed(4)} · spent today $${spent.toFixed(4)} · cap $${cap}`);
-        if (args.dryRun) {
-            log('dry run: nothing written, no model called, nothing signed');
-            return;
-        }
-        if (stageIndex(args.until) < stageIndex('chosen')) return;
-
-        if (needPicks.length) {
-            assertUnderCap({ spentUsd: spent, estimateUsd: estimate, capUsd: cap });
-            for (const e of needPicks) {
-                const request = requestsByPersona.get(e.persona.name);
-                if (!request) continue;
-                e.run = await updateRun(pool, e.runId, { status: 'running', summaryPatch: {
-                    decisionInput: {
-                        customId: request.custom_id,
-                        model: request.params.model,
-                        maxTokens: request.params.max_tokens,
-                        systemPrompt: request.params.system,
-                        userPrompt: request.params.messages?.[0]?.content ?? null
-                    }
-                } });
+        // ---- stage 2: choose ---------------------------------------------------------------
+        const needDecision = entries.filter((e) => !Array.isArray(e.run?.summary?.picks));
+        if (controller === 'algorithm') {
+            const decisions = new Map(needDecision.map((entry) => [
+                entry.persona.name,
+                selectAlgorithmicPicks({ day, persona: entry.persona, candidates: entry.candidates })
+            ]));
+            for (const e of needDecision) {
+                const decision = decisions.get(e.persona.name);
+                log(`${e.persona.name} algorithm: ${decision.picks.length} pick(s) from ${decision.policy.eligibleCandidateIds.length} eligible candidates · $0 model spend`);
+                for (const pick of decision.picks) log(`   ${pick.candidateId}: ${pick.name}`);
             }
-            const existingBatchId = needPicks.find((e) => e.run?.summary?.batchId)?.run.summary.batchId ?? null;
-            const client = new Anthropic();
-            const batch = await runPickBatch({
-                client, requests, model, runId: day, existingBatchId,
-                onProgress: (p) => log(`batch ${p.batchId ?? ''}: ${p.status ?? ''} ${p.succeeded ?? 0} ok / ${p.errored ?? 0} err / ${p.processing ?? 0} processing`)
-            });
-            for (const e of needPicks) {
-                await updateRun(pool, e.runId, { stage: 'planned', status: 'running', summaryPatch: { batchId: batch.batchId } });
-            }
-            if (!batch.done) {
-                log(`batch ${batch.batchId} still processing — checkpointed; rerun later to continue`);
+            if (args.dryRun) {
+                log('dry run: nothing written, no model called, nothing signed');
                 return;
             }
-            for (const e of needPicks) {
-                const result = batch.results.find((r) => r.customId === pickCustomId(day, e.persona.name));
-                if (!result || result.error) {
-                    failures.push(`${e.persona.name}: batch item ${result?.error ?? 'missing'}`);
-                    await updateRun(pool, e.runId, { status: 'failed', summaryPatch: {
-                        outcome: 'failed', error: result?.error ?? 'batch item missing'
-                    } });
-                    continue;
-                }
-                if (typeof result.costUsd === 'number') {
-                    await recordCosts(pool, e.runId, [{ item: result.customId, provider: 'anthropic', model, batchId: batch.batchId, usage: result.usage, usd: result.costUsd }]);
-                }
-                const { picks, rejected } = parsePicks(result.text, e.candidates, e.persona.dailyProposals);
-                const withIds = picks.map((p, idx) => ({ ...p, proposalId: proposalIdFor(e.persona, day, idx) }));
+            if (stageIndex(args.until) < stageIndex('chosen')) return;
+
+            for (const e of needDecision) {
+                const decision = decisions.get(e.persona.name);
+                const withIds = decision.picks.map((pick, index) => ({
+                    ...pick, proposalId: proposalIdFor(e.persona, day, index)
+                }));
                 const completion = decisionCompletion(withIds);
                 e.run = await updateRun(pool, e.runId, { stage: 'chosen', status: completion.status, summaryPatch: {
+                    controller: 'algorithm',
                     picks: withIds,
-                    rejectedPicks: rejected,
-                    pickCostUsd: result.costUsd ?? null,
-                    decisionResult: { model, batchId: batch.batchId, usage: result.usage ?? null, costUsd: result.costUsd ?? null },
+                    rejectedPicks: decision.rejected,
+                    pickCostUsd: 0,
+                    decisionInput: {
+                        controller: 'algorithm', day,
+                        candidateIds: e.candidates.map(candidate => candidate.candidateId)
+                    },
+                    decisionResult: { controller: 'algorithm', costUsd: 0, policy: decision.policy },
                     ...(completion.outcome ? { outcome: completion.outcome } : {})
                 } });
-                log(`${e.persona.name} chosen: ${withIds.length} pick(s) (${rejected.length} rejected) · $${(result.costUsd ?? 0).toFixed(4)}`);
-                for (const p of withIds) log(`   ${p.proposalId} ← ${p.candidateId}: ${p.name}`);
-                if (completion.noPicks) report.push(`${e.persona.name}: no proposal selected · $${(result.costUsd ?? 0).toFixed(4)}`);
+                log(`${e.persona.name} chosen: ${withIds.length} pick(s) · $0.0000`);
+                for (const pick of withIds) log(`   ${pick.proposalId} ← ${pick.candidateId}: ${pick.name}`);
+                if (completion.noPicks) report.push(`${e.persona.name}: no proposal selected · $0.0000`);
+            }
+        } else {
+            const needPicks = needDecision.filter((entry) => entry.candidates.length);
+            const requests = buildPickRequests({ runId: `${day}`, day, entries: needPicks, model });
+            const requestsByPersona = new Map(needPicks.map((entry, index) => [entry.persona.name, requests[index]]));
+            const estimate = estimateBatchCostUsd(requests, model);
+            const spent = args.live ? await dailySpendUsd(pool, day) : 0;
+            const cap = dailyCapUsd(process.env);
+            log(`batch: ${requests.length} request(s) · estimated ≤ $${estimate.toFixed(4)} · spent today $${spent.toFixed(4)} · cap $${cap}`);
+            if (args.dryRun) {
+                log('dry run: nothing written, no model called, nothing signed');
+                return;
+            }
+            if (stageIndex(args.until) < stageIndex('chosen')) return;
+
+            if (needPicks.length) {
+                assertUnderCap({ spentUsd: spent, estimateUsd: estimate, capUsd: cap });
+                for (const e of needPicks) {
+                    const request = requestsByPersona.get(e.persona.name);
+                    if (!request) continue;
+                    e.run = await updateRun(pool, e.runId, { status: 'running', summaryPatch: {
+                        decisionInput: {
+                            controller: 'llm',
+                            customId: request.custom_id,
+                            model: request.params.model,
+                            maxTokens: request.params.max_tokens,
+                            systemPrompt: request.params.system,
+                            userPrompt: request.params.messages?.[0]?.content ?? null
+                        }
+                    } });
+                }
+                const existingBatchId = needPicks.find((e) => e.run?.summary?.batchId)?.run.summary.batchId ?? null;
+                const { default: Anthropic } = await import('@anthropic-ai/sdk');
+                const client = new Anthropic();
+                const batch = await runPickBatch({
+                    client, requests, model, runId: day, existingBatchId,
+                    onProgress: (p) => log(`batch ${p.batchId ?? ''}: ${p.status ?? ''} ${p.succeeded ?? 0} ok / ${p.errored ?? 0} err / ${p.processing ?? 0} processing`)
+                });
+                for (const e of needPicks) {
+                    await updateRun(pool, e.runId, { stage: 'planned', status: 'running', summaryPatch: { batchId: batch.batchId } });
+                }
+                if (!batch.done) {
+                    log(`batch ${batch.batchId} still processing — checkpointed; rerun later to continue`);
+                    return;
+                }
+                for (const e of needPicks) {
+                    const result = batch.results.find((r) => r.customId === pickCustomId(day, e.persona.name));
+                    if (!result || result.error) {
+                        failures.push(`${e.persona.name}: batch item ${result?.error ?? 'missing'}`);
+                        await updateRun(pool, e.runId, { status: 'failed', summaryPatch: {
+                            outcome: 'failed', error: result?.error ?? 'batch item missing'
+                        } });
+                        continue;
+                    }
+                    if (typeof result.costUsd === 'number') {
+                        await recordCosts(pool, e.runId, [{ item: result.customId, provider: 'anthropic', model, batchId: batch.batchId, usage: result.usage, usd: result.costUsd }]);
+                    }
+                    const { picks, rejected } = parsePicks(result.text, e.candidates, e.persona.dailyProposals);
+                    const withIds = picks.map((pick, index) => ({ ...pick, proposalId: proposalIdFor(e.persona, day, index) }));
+                    const completion = decisionCompletion(withIds);
+                    e.run = await updateRun(pool, e.runId, { stage: 'chosen', status: completion.status, summaryPatch: {
+                        controller: 'llm',
+                        picks: withIds,
+                        rejectedPicks: rejected,
+                        pickCostUsd: result.costUsd ?? null,
+                        decisionResult: { controller: 'llm', model, batchId: batch.batchId, usage: result.usage ?? null, costUsd: result.costUsd ?? null },
+                        ...(completion.outcome ? { outcome: completion.outcome } : {})
+                    } });
+                    log(`${e.persona.name} chosen: ${withIds.length} pick(s) (${rejected.length} rejected) · $${(result.costUsd ?? 0).toFixed(4)}`);
+                    for (const pick of withIds) log(`   ${pick.proposalId} ← ${pick.candidateId}: ${pick.name}`);
+                    if (completion.noPicks) report.push(`${e.persona.name}: no proposal selected · $${(result.costUsd ?? 0).toFixed(4)}`);
+                }
             }
         }
         if (stageIndex(args.until) < stageIndex('minted')) return;
@@ -265,14 +314,18 @@ async function main() {
             const stakes = { ...(summary.stakes ?? {}) };
             const activities = Array.isArray(summary.activities) ? [...summary.activities] : [];
             const city = summary.city ?? 'zagreb';
+            const runController = summary.controller || (summary.model ? 'llm' : controller);
             let personaFailed = false;
             const runtime = actionEngineApi.createEngine({
-                decisionProviders: { llm: (_actor, context) => context.action },
+                decisionProviders: {
+                    algorithm: (_actor, context) => context.action,
+                    llm: (_actor, context) => context.action
+                },
                 actionHandlers: { '*': (_actor, _action, context) => context.execute() },
                 onActivity: activity => activities.push(activity)
             });
             const actor = {
-                id: persona.name, name: persona.name, controller: 'llm', wallet: keypair.publicKey.toBase58()
+                id: persona.name, name: persona.name, controller: runController, wallet: keypair.publicKey.toBase58()
             };
             const runAction = async (action, execute) => {
                 const result = await runtime.run(actor, { action, execute, source: 'live' });
@@ -319,7 +372,10 @@ async function main() {
                                 chainId: mint.chainId ?? 'solana-devnet',
                                 contractAddress: mint.contractAddress ?? PROPOSAL_NFT_PROGRAM
                             };
-                            const body = buildProposalRecord({ candidate, pick, persona, runId: e.runId, city, onchain, turf });
+                            const body = buildProposalRecord({
+                                candidate, pick, persona: { ...persona, controller: runController },
+                                runId: e.runId, city, onchain, turf
+                            });
                             const { paidFetch } = await createPaidClient({
                                 secretKey: secret,
                                 paymentId,
@@ -392,6 +448,9 @@ async function main() {
         await sendTelegram(text);
         process.exit(1);
     }
+    // This exact line is the external monitor's success sentinel. It is emitted only after every
+    // persona has reached a non-failing terminal path, including the valid zero-pick outcome.
+    log(`AGENT DAILY RUN — status=completed day=${day} personas=${personas.length}`);
     await sendTelegram(headline);
 }
 

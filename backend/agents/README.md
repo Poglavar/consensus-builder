@@ -1,13 +1,15 @@
 # `backend/agents/` — the agent runner
 
-Server-side personas that plan building proposals, have a model choose and justify them, and post
-them through the paid `/agent/proposals` route. Design: `agents-functionality-for-ugt.md` §WS3.
+Server-side personas that plan building proposals, choose and justify them with either a deterministic
+algorithm or an explicitly requested model, and post them through the paid `/agent/proposals` route.
+Design: `agents-functionality-for-ugt.md` §WS3.
 
 ## Data flow
 
 ```
-personas.json ──▶ parcel-source.js ──▶ planner.js ──▶ llm-picker.js ──▶ record-builder.js ──▶ POST /agent/proposals
-  (who, where)      parcels + rules      candidates      picks + text        the stored record       (x402, pays, binds author)
+personas.json ──▶ parcel-source.js ──▶ planner.js ──▶ algorithmic-picker.js ──▶ record-builder.js ──▶ POST /agent/proposals
+  (who, where)      parcels + rules      candidates       picks + text ($0)      stored record          (x402, binds author)
+                                                    └──▶ llm-picker.js (explicit optional controller)
 ```
 
 | stage | what it is | pure? |
@@ -15,16 +17,20 @@ personas.json ──▶ parcel-source.js ──▶ planner.js ──▶ llm-pick
 | `parcel-source.js` | one SQL statement: parcels in a persona's bbox with area, geometry, the GDI buildings on them and the urban rule over them | no — the only I/O here |
 | `planner.js` | envelope, one legal build-out, GFA, € gain, offer, persona score | yes (turf injected) |
 | `record-builder.js` | the POST body, in the shape the app stores for a single freeform building | yes (turf injected) |
+| `algorithmic-picker.js` | explicit guardrails plus seeded variation among the near-best candidates | yes |
 | `llm-picker.js` | the Anthropic Batches step: request building, parsing, cost estimate, submit/await/collect | pure except `runPickBatch` |
 
 `run.mjs` (the orchestrator) owns the sequencing, the checkpoints, the proposal ids, the daily
 spend cap, signed-action/USDC caps and the Telegram summary. The modules here hold no state and
 never decide to spend. `run-policy.js` refuses a live plan before it touches a wallet when it would
-exceed three signed actions or 0.35 USDC by default.
+exceed four possible signed actions or 0.35 USDC by default.
 
-This is intentionally hybrid rather than an unconstrained LLM loop: SQL and the deterministic
-planner decide what is feasible, the model chooses among those candidates and explains why, and
-deterministic adapters validate, pay, mint and stake. `donor.js` funds refundable proposal escrow
+The daily schedule is intentionally algorithmic: SQL and the deterministic planner decide what is
+feasible, then `algorithmic-picker.js` accepts only urban-rule-backed positive-uplift candidates and
+uses a stable day/persona hash to vary among the top three candidates within 90% of the best score.
+It has zero model spend and is reproducible for a given day. An LLM can still be demonstrated by
+passing `--controller llm`; deterministic adapters validate, pay, mint and stake in both modes.
+`donor.js` funds refundable proposal escrow
 with an idempotent receipt, while `pledger.js` records an updateable commitment without moving USDC
 and can later fulfil it after execution.
 Policy—what proposal another agent wants to back and for how much—stays outside the money-moving
@@ -45,7 +51,7 @@ closed Details disclosure preserves controller and source provenance for audits.
 | `keypairPath` | where the signing key lives — **outside the repo** |
 | `weights` | `{ density, openSpace, valueUplift, heritage }`; drives the planner's score and is put into the prompt in words |
 | `areas` | `[{ city, bbox: [minLng, minLat, maxLng, maxLat] }]` |
-| `dailyProposals` | how many picks the model may make for this persona in one run (the hackathon persona is capped at one) |
+| `dailyProposals` | how many picks a controller may make for this persona in one run (the hackathon persona is capped at one) |
 | `stakeUsdc` | the bettor's stake size |
 
 `heritage` is declared and weighted but contributes **0**: there is no heritage dataset wired in
@@ -80,9 +86,11 @@ that to the wallet the facilitator verified, and a body naming a different one i
 USDC moves. With an `onchain` argument it also writes `onchain`, `nft`, `isMinted` and `tokenId`,
 which is what `frontend/js/proposals/chain.js` reads to show a proposal as minted.
 
-## Cost
+## Optional LLM cost
 
-Every LLM call goes through the shared harness (`agents/lib/llm-cost`), in **batch only** — half
+The default and scheduled algorithmic controller makes no model calls and costs `$0`. When
+`--controller llm` is explicitly selected, every call goes through the shared harness
+(`agents/lib/llm-cost`), in **batch only** — half
 price, ledgered per item as it arrives, so a killed run still accounts for what it spent. Read it
 back with `llm-cost --repo consensus-builder --by script`.
 
@@ -98,10 +106,10 @@ A batch that has not finished inside `awaitMs` is not an error — `runPickBatch
 
 | variable | used by | meaning |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | `llm-picker.js` (via the SDK client the caller constructs) | the Batches API key |
+| `ANTHROPIC_API_KEY` | explicit `--controller llm` only | the optional Batches API key; not needed by the scheduled agent |
 | `AGENT_LLM_MODEL` | the orchestrator, passed into `buildPickRequests`/`runPickBatch` | overrides `DEFAULT_MODEL` (`claude-opus-5`); must be priced in `agents/lib/llm-cost/rates.json` or the cost call throws |
 | `AGENT_LLM_DAILY_CAP_USD` | `ledger.js` | hard metered-model ceiling; safe default 0.25 |
-| `AGENT_DAILY_ACTION_CAP` | `run-policy.js` | maximum signed mint/post/stake actions; safe default 3 |
+| `AGENT_DAILY_ACTION_CAP` | `run-policy.js` | maximum signed mint/x402/market-create/stake actions; safe default 4 |
 | `AGENT_DAILY_USDC_CAP` | `run-policy.js` | maximum x402 plus stake spend; safe default 0.35 USDC |
 | `AGENT_PROPOSAL_FEE_USDC` | `run-policy.js` | conservative x402 fee used in the pre-signing plan; default 0.05 USDC |
 | `PGHOST` / `PGPORT` / `PGUSER` / `PGPASSWORD` / `PGDATABASE` | `parcel-source.js` (via the pool the caller passes) | the shared `geodata` database |
@@ -121,33 +129,34 @@ None of them touch the network or the ledger. The one test that needs the databa
 
 ```bash
 cd backend
-PGHOST=localhost node agents/run.mjs --dry-run                       # plan + cost estimate, writes nothing
+PGHOST=localhost node agents/run.mjs --dry-run                       # algorithmic plan + pick, writes nothing
 PGHOST=localhost node agents/run.mjs --live --persona densifier-01 --api http://localhost:3999
+PGHOST=localhost node agents/run.mjs --live --controller llm         # optional explicit Anthropic mode
 PGHOST=localhost node agents/run.mjs --live --until posted          # stop before staking
 ```
 
 One `consensus.agent_run` row per persona per UTC day is the checkpoint (`stage`, `summary` with
-candidates, the complete model input, model/batch/usage/cost, picks and rationales, execution policy,
+candidates, controller input/result, picks and rationales, execution policy,
 mint records, x402 payment ids/transactions, posts, stakes and activity); a rerun resumes at the
 first unfinished stage and a finished day is a no-op. A valid zero-pick answer is terminal and is
-stored as `outcome: "no-picks"`, rather than leaving a permanently-running row. Model calls go
-through ONE Anthropic Batches job per run and are refused when the day's `agent_cost` total plus the
-estimate would exceed `AGENT_LLM_DAILY_CAP_USD` (safe default 0.25).
+stored as `outcome: "no-picks"`, rather than leaving a permanently-running row. In explicit LLM
+mode, the complete prompt/model/batch/usage/cost is also stored and calls are refused when the day's
+`agent_cost` total plus the estimate would exceed `AGENT_LLM_DAILY_CAP_USD` (safe default 0.25).
 Mint happens BEFORE the paid post because a stored record has no on-chain write path after creation.
 Confirmation polls `getSignatureStatuses` (`solana-send.js`): Alchemy's devnet RPC has no
 `signatureSubscribe`, and web3's default confirm then reports a landed transaction as expired.
-Env: `ANTHROPIC_API_KEY`, `AGENT_LLM_MODEL` (claude-opus-5), `AGENT_LLM_DAILY_CAP_USD`, `AGENT_API_BASE`,
-`SOLANA_RPC_URL`, `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` (optional; one summary per run).
+Env: `AGENT_API_BASE`, `SOLANA_RPC_URL`, `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` (optional; one
+summary per run). Anthropic variables are optional and read only in explicit LLM mode.
 
 ## Daily schedule (opt-in)
 
 `agents/ecosystem.config.cjs` defines one `consensus-builder-agents` PM2 process at 02:00 UTC with
-the limits above and four candidates offered to the model. It is deliberately separate from the API
+the limits above and four candidates offered to the algorithmic controller. It is deliberately separate from the API
 ecosystem file, so an ordinary backend deploy cannot silently acquire a signing key or start an
 autonomous spender.
 
 After the dedicated low-value devnet key exists at the persona's `keypairPath` and the server-local
-`.env` has `ANTHROPIC_API_KEY`, database credentials and `SOLANA_RPC_URL`, activation is explicit:
+`.env` has database credentials and `SOLANA_RPC_URL`, activation is explicit:
 
 ```bash
 cd /root/code/consensus-builder/backend
@@ -158,3 +167,18 @@ pm2 save
 The `UGT Agent Runner` entry already present in `alerts-server-telegram/bot-list.json` remains
 inactive until the first scheduled run completes. Its outcome check should then be enabled against
 `consensus.agent_run`; process logs alone are not proof that a proposal run finished.
+
+Candidate discovery repairs malformed imported parcel, building-footprint and urban-rule polygons
+with `ST_MakeValid` before topology operations. This keeps one invalid source geometry from aborting
+the bounded daily run; it does not rewrite the source tables.
+
+## Actor and run explorer
+
+`frontend/actor-explorer.html` is a read-only explorer of the shared activity envelope. It loads
+`GET /agent/activity` and opens `GET /agent/runs/:runId` only when a run is selected; the latter
+returns the recorded rationales plus exact `consensus.agent_cost` rows, not a cost estimate.
+
+The map-app wiring seam is `window.ActorExplorer.mount(element, { events, loadRun })`. Feed it the
+same merged activity list already used by the Activity UI (human, algorithmic, and LLM events all
+share that shape), and provide `loadRun` only for live run IDs. It deliberately does not create,
+schedule, or execute an agent.

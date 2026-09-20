@@ -50,8 +50,14 @@ describe('candidateParcelsSql', () => {
     });
 
     it('measures area and footprints geodesically, and returns WGS84 geometry', () => {
-        expect(candidateParcelsSql).toContain('ST_Area(ST_Transform(p.geom, 4326)::geography)');
+        expect(candidateParcelsSql).toContain('ST_Area(ST_Transform(ST_CollectionExtract(ST_MakeValid(p.geom), 3), 4326)::geography)');
         expect(candidateParcelsSql).toContain('ST_AsGeoJSON(ST_Transform(s.geom, 4326))');
+    });
+
+    it('repairs malformed source geometries before topology operations', () => {
+        expect(candidateParcelsSql).toContain('ST_MakeValid(p.geom)');
+        expect(candidateParcelsSql).toContain('ST_MakeValid(bf.geom)');
+        expect(candidateParcelsSql).toContain('ST_MakeValid(ur.geom)');
     });
 
     it('joins urban rules on title as well as short_name — every 2025 GUP row has a null short_name', () => {

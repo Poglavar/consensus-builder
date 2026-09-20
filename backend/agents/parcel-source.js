@@ -47,14 +47,16 @@ candidate AS (
         p.maticni_broj_ko,
         p.broj_cestice,
         cm.naziv AS ko_name,
-        p.geom,
-        ST_Area(ST_Transform(p.geom, 4326)::geography)::float8 AS area_m2
+        ST_CollectionExtract(ST_MakeValid(p.geom), 3) AS geom,
+        ST_Area(ST_Transform(ST_CollectionExtract(ST_MakeValid(p.geom), 3), 4326)::geography)::float8 AS area_m2
     FROM public.parcel p
     JOIN public.cadastral_municipality cm ON cm.maticni_broj = p.maticni_broj_ko
     CROSS JOIN area a
     WHERE p.current = true
       AND p.geom && a.geom
-      AND ST_Intersects(p.geom, a.geom)
+      -- Source parcel/building imports occasionally contain self-intersections. The runner is a
+      -- bounded daily job, so one malformed feature must not make every persona miss its run.
+      AND ST_Intersects(ST_CollectionExtract(ST_MakeValid(p.geom), 3), a.geom)
       AND ($5::text IS NULL OR cm.grad_opcina = $5::text)
 ),
 sized AS (
@@ -87,16 +89,16 @@ LEFT JOIN LATERAL (
         SUM(f.footprint_m2 * f.floors)::float8 AS built_gfa_m2
     FROM (
         SELECT
-            ST_Area(ST_Transform(bf.geom, 4326)::geography)::float8 AS footprint_m2,
+            ST_Area(ST_Transform(ST_CollectionExtract(ST_MakeValid(bf.geom), 3), 4326)::geography)::float8 AS footprint_m2,
             CASE WHEN bg.height_m IS NULL THEN 1
                  ELSE GREATEST(1, ROUND(bg.height_m / ${EXISTING_FLOOR_HEIGHT_M})) END AS floors
         FROM public.gdi_building_footprint bf
         LEFT JOIN public.gdi_building bg ON bg.object_id = bf.object_id
         WHERE bf.geom && s.geom
-          AND ST_Intersects(bf.geom, s.geom)
-          AND ST_Area(ST_Transform(bf.geom, 4326)::geography) > 0
-          AND ST_Area(ST_Transform(ST_Intersection(bf.geom, s.geom), 4326)::geography)
-              / ST_Area(ST_Transform(bf.geom, 4326)::geography) >= ${CONTAINMENT_RATIO}
+          AND ST_Intersects(ST_CollectionExtract(ST_MakeValid(bf.geom), 3), s.geom)
+          AND ST_Area(ST_Transform(ST_CollectionExtract(ST_MakeValid(bf.geom), 3), 4326)::geography) > 0
+          AND ST_Area(ST_Transform(ST_Intersection(ST_CollectionExtract(ST_MakeValid(bf.geom), 3), s.geom), 4326)::geography)
+              / ST_Area(ST_Transform(ST_CollectionExtract(ST_MakeValid(bf.geom), 3), 4326)::geography) >= ${CONTAINMENT_RATIO}
     ) f
 ) b ON TRUE
 LEFT JOIN LATERAL (
@@ -112,7 +114,7 @@ LEFT JOIN LATERAL (
        AND (ur.exception_para = urv.exception_paragraph
             OR (ur.exception_para IS NULL AND urv.exception_paragraph IS NULL))
     WHERE ur.current
-      AND ST_Contains(ur.geom, ST_PointOnSurface(s.geom))
+      AND ST_Contains(ST_CollectionExtract(ST_MakeValid(ur.geom), 3), ST_PointOnSurface(s.geom))
     ORDER BY ur.gup DESC,
              (urv.variables IS NULL),
              (urv.rule_id LIKE '%stambene-i-mješovite-namjene') DESC,

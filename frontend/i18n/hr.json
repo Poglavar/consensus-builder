@@ -418,7 +418,7 @@
                 }
             },
             "newGame": "Nova igra",
-            "showAgents": "Prikaži agente",
+            "showAgents": "Akteri",
             "showAgentsCount": "Prikaži agente ({{count}})",
             "showGameLog": "Prikaži zapisnik igre",
             "showGameLogCount": "Prikaži zapisnik igre ({{count}})"
@@ -470,7 +470,7 @@
             "newGame": "Nova igra",
             "showGameLog": "Prikaži dnevnik igre",
             "showGameLogCount": "Prikaži dnevnik igre ({{count}})",
-            "showAgents": "Prikaži agente",
+            "showAgents": "Akteri",
             "showAgentsCount": "Prikaži agente ({{count}})"
         },
         "gameDialogs": {

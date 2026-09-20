@@ -62,7 +62,8 @@ export function buildProposalRecord({ candidate, pick, persona, runId, city, onc
         agent: {
             persona: personaName,
             rationale,
-            run_id: runId
+            run_id: runId,
+            ...(persona?.controller ? { controller: persona.controller } : {})
         },
         cadastreParcelIds: [candidate.parcelId],
         offer: candidate.offerEur,

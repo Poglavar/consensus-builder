@@ -329,7 +329,7 @@
             "newGame": "Nuevo juego",
             "showGameLog": "Mostrar registro del juego",
             "showGameLogCount": "Mostrar registro del juego ({{count}})",
-            "showAgents": "Mostrar agentes",
+            "showAgents": "Actores",
             "showAgentsCount": "Mostrar agentes ({{count}})"
         },
         "gameDialogs": {
@@ -610,7 +610,7 @@
                 }
             },
             "newGame": "Nueva partida",
-            "showAgents": "Mostrar agentes",
+            "showAgents": "Actores",
             "showAgentsCount": "Mostrar agentes ({{count}})",
             "showGameLog": "Mostrar registro del juego",
             "showGameLogCount": "Mostrar registro del juego ({{count}})"

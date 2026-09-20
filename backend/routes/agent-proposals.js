@@ -52,6 +52,7 @@ export const AGENT_PROPOSALS_DISCOVERY = declareDiscoveryExtension({
         offerCurrency: 'USDC',
         agent: {
             persona: 'densifier-01',
+            controller: 'algorithm',
             rationale: 'The lot is underused and close to public transport.',
             run_id: '2026-09-20-densifier-01'
         }

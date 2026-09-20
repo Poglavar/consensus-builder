@@ -74,6 +74,7 @@
       "description": "Free-form provenance kept on the record; wallet and paid are overwritten by the server.",
       "properties": {
         "persona": { "type": ["string", "null"] },
+        "controller": { "type": ["string", "null"], "enum": ["algorithm", "llm", null] },
         "rationale": { "type": ["string", "null"] },
         "run_id": { "type": ["string", "null"] }
       }

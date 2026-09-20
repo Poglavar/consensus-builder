@@ -110,6 +110,7 @@ const gameState = {
         if (!skipUiUpdate) {
             this.updateGameUI();
         }
+        if (actorExplorerController?.setEvents) actorExplorerController.setEvents(allActivityEvents());
         // console.log('Game Log:', logEntry);
     },
 
@@ -553,29 +554,18 @@ async function dispatchAgentAction(actor, action, context = {}) {
     return result;
 }
 
-/**
- * Update the agents button with count
- */
+/** This is a global actor explorer, not a simulation-agent count. */
 function updateAgentsButton() {
     const agentsBtn = document.getElementById('show-agents-btn');
-    if (!agentsBtn || typeof agentStorage === 'undefined') return;
-
-    const agents = agentStorage.getAllAgents();
-    const hasAgents = agents.length > 0;
-    const key = hasAgents ? 'sidebar.game.showAgentsCount' : 'sidebar.game.showAgents';
+    if (!agentsBtn) return;
+    const key = 'sidebar.game.showAgents';
     const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
-
     agentsBtn.setAttribute('data-i18n-key', key);
-    if (hasAgents) {
-        agentsBtn.setAttribute('data-i18n-params', JSON.stringify({ count: agents.length }));
-    } else {
-        agentsBtn.removeAttribute('data-i18n-params');
-    }
-
+    agentsBtn.removeAttribute('data-i18n-params');
     if (i18nApi && typeof i18nApi.t === 'function') {
-        agentsBtn.textContent = i18nApi.t(key, { count: agents.length });
+        agentsBtn.textContent = i18nApi.t(key);
     } else {
-        agentsBtn.textContent = hasAgents ? `Show Agents (${agents.length})` : 'Show Agents';
+        agentsBtn.textContent = 'Actors';
     }
 }
 
@@ -696,6 +686,7 @@ function toggleGamePlayPause() {
 
 let liveAgentActivity = [];
 let selectedActivityFilters = { source: 'all', actor: 'all', action: 'all', status: 'all', query: '' };
+let actorExplorerController = null;
 
 function escapeActivityHtml(value) {
     return String(value ?? '').replace(/[&<>"']/g, character => ({
@@ -798,6 +789,7 @@ async function loadLiveAgentActivity() {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const payload = await response.json();
         liveAgentActivity = Array.isArray(payload.events) ? payload.events : [];
+        if (actorExplorerController?.setEvents) actorExplorerController.setEvents(allActivityEvents());
         if (status) status.textContent = `${liveAgentActivity.length} live events`;
     } catch (error) {
         console.warn('Could not load live agent activity', error);
@@ -830,7 +822,7 @@ function showGameLogDialog() {
                         <option value="all">Everyone</option><option value="human">People</option><option value="algorithm">Algorithmic agents</option><option value="llm">LLM agents</option><option value="system">System</option>
                     </select>
                     <select data-activity-filter-field="action" aria-label="Activity action" onchange="setActivityFilter('action', this.value)">
-                        <option value="all">All actions</option><option value="create">Create</option><option value="publish">Publish</option><option value="accept">Accept</option><option value="donate">Donate</option><option value="pledge">Pledge</option><option value="stake">Stake</option><option value="revokePledge">Revoke pledge</option><option value="refundMyDonations">Refund donation</option><option value="fulfillPledge">Fulfil pledge</option><option value="releaseDonations">Release donations</option>
+                        <option value="all">All actions</option><option value="create">Create</option><option value="publish">Publish</option><option value="accept">Accept</option><option value="donate">Donate</option><option value="pledge">Pledge</option><option value="createMarket">Open market</option><option value="stake">Market stake</option><option value="resolve">Resolve market</option><option value="claim">Claim winnings</option><option value="revokePledge">Revoke pledge</option><option value="refundMyDonations">Refund donation</option><option value="fulfillPledge">Fulfil pledge</option><option value="releaseDonations">Release donations</option>
                     </select>
                     <select data-activity-filter-field="status" aria-label="Activity result" onchange="setActivityFilter('status', this.value)">
                         <option value="all">Any result</option><option value="success">Succeeded</option><option value="failed">Failed</option>
@@ -862,118 +854,39 @@ function closeGameLogDialog() {
     }
 }
 
-/**
- * Show agents statistics dialog
- */
+/** One explorer for people, algorithmic agents and LLM agents, backed by the shared activity feed. */
 async function showAgentsStatistics() {
-    const agents = agentStorage.getAllAgents();
-
-    if (agents.length === 0) {
-        showGameAlert('no_agents_exist_yet_start_the_game_to_create_agents', 'No agents exist yet. Start the game to create agents.');
+    if (document.querySelector('.agents-stats-modal')) return;
+    if (!window.ActorExplorer?.mount) {
+        showGameAlert('actor_explorer_unavailable', 'Actor explorer is unavailable.');
         return;
     }
-
-    // Calculate statistics for each agent
-    const agentStats = await Promise.all(agents.map(async agent => {
-        const ownedParcels = getAgentOwnedParcels(agent.id);
-        let portfolioValue = 0;
-        if (typeof calculatePortfolioValue === 'function') {
-            try {
-                portfolioValue = await calculatePortfolioValue(ownedParcels);
-            } catch (error) {
-                console.warn('Failed to calculate portfolio value for agent', agent.id, error);
-            }
-        }
-
-        // Count executed proposals authored by this agent
-        let proposalsAppliedCount = 0;
-        if (typeof proposalStorage !== 'undefined') {
-            const allProposals = proposalStorage.getAllProposals();
-            proposalsAppliedCount = allProposals.filter(proposal => {
-                if (proposal.author !== agent.name) return false;
-                if (typeof isProposalApplied === 'function') {
-                    return isProposalApplied(proposal);
-                }
-                return isApplied(proposal);
-            }).length;
-        }
-
-        return {
-            ...agent,
-            currentParcels: ownedParcels,
-            portfolioValue: portfolioValue,
-            totalWealth: agent.ethBalance + portfolioValue,
-            proposalsAppliedCount
-        };
-    }));
-
-    // Sort by total wealth descending
-    agentStats.sort((a, b) => b.totalWealth - a.totalWealth);
-
-    // Create modal dialog
     const modal = document.createElement('div');
-    modal.className = 'agents-stats-modal';
+    modal.className = 'agents-stats-modal actor-explorer-modal';
     modal.innerHTML = `
         <div class="agents-stats-modal-content">
             <div class="agents-stats-modal-header">
-                <h2 data-i18n-key="gameDialogs.agents.title">${translateGameText('gameDialogs.agents.title', 'Agent Statistics')}</h2>
+                <div><h2>Actors</h2><p class="ae-muted">People, algorithms and LLM agents share one activity and evidence model.</p></div>
                 <button type="button" class="agents-stats-modal-close close-circle-btn close-circle-btn--lg"
-                    data-i18n-key="gameDialogs.agents.closeAria" data-i18n-attr="aria-label"
-                    aria-label="${translateGameText('gameDialogs.agents.closeAria', 'Close agent statistics')}"
+                    aria-label="Close actor explorer"
                     onclick="closeAgentsStatistics()">&times;</button>
             </div>
-            <div class="agents-stats-modal-body">
-                <div class="agents-stats-table-container">
-                    <table class="agents-stats-table">
-                        <thead>
-                            <tr>
-                                <th data-i18n-key="gameDialogs.agents.avatar">${translateGameText('gameDialogs.agents.avatar', 'Avatar')}</th>
-                                <th data-i18n-key="gameDialogs.agents.name">${translateGameText('gameDialogs.agents.name', 'Name')}</th>
-                                <th data-i18n-key="gameDialogs.agents.ethBalance">${translateGameText('gameDialogs.agents.ethBalance', (typeof getChainCurrencySymbol === 'function' ? getChainCurrencySymbol() : 'ETH') + ' Balance')}</th>
-                                <th data-i18n-key="gameDialogs.agents.parcelsOwned">${translateGameText('gameDialogs.agents.parcelsOwned', 'Parcels Owned')}</th>
-                                <th data-i18n-key="gameDialogs.agents.proposalsCreated">${translateGameText('gameDialogs.agents.proposalsCreated', 'Proposals Created')}</th>
-                                <th data-i18n-key="gameDialogs.agents.proposalsAccepted">${translateGameText('gameDialogs.agents.proposalsAccepted', 'Proposals Accepted')}</th>
-                                <th data-i18n-key="gameDialogs.agents.proposalsApplied">${translateGameText('gameDialogs.agents.proposalsApplied', 'Proposals Applied')}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${agentStats.map(agent => {
-        const isUserAgent = agent.userControlled === true;
-        const rowClass = isUserAgent ? 'user-agent-row' : '';
-        const ethBalanceDisplay = isUserAgent ? '-' : `${agent.ethBalance.toFixed(2)} ${typeof getChainCurrencySymbol === 'function' ? getChainCurrencySymbol() : 'ETH'}`;
-        return `
-                                <tr class="${rowClass}">
-                                    <td>
-                                        <img src="${getAvatarImagePath(agent.avatarIndex)}" class="agent-avatar" style="width: 40px; height: 40px; border-radius: 50%; cursor: pointer;" onclick="showAgentDialog('${agent.id}')">
-                                    </td>
-                                    <td>
-                                        <a href="#" onclick="showAgentDialog('${agent.id}'); return false;" class="agent-link">
-                                            ${agent.name}
-                                        </a>
-                                        ${isUserAgent ? `<div class="user-agent-indicator" data-i18n-key="gameDialogs.agents.you">${translateGameText('gameDialogs.agents.you', '(You)')}</div>` : ''}
-                                    </td>
-                                    <td ${isUserAgent ? 'data-user-eth-balance-table' : ''}>${ethBalanceDisplay}</td>
-                                    <td>${agent.currentParcels.length}</td>
-                                    <td>${agent.proposalsCreated ? agent.proposalsCreated.length : 0}</td>
-                                    <td>${agent.proposalsAccepted ? agent.proposalsAccepted.length : 0}</td>
-                                    <td>${agent.proposalsAppliedCount || 0}</td>
-                                </tr>
-                                `;
-    }).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <div class="agents-stats-modal-body"><div id="actor-explorer-dialog"></div></div>
         </div>
     `;
-
     document.body.appendChild(modal);
-    if (window.i18n && typeof window.i18n.applyTranslations === 'function') {
-        try { window.i18n.applyTranslations(modal); } catch (_) { /* ignore */ }
-    }
-    if (typeof window.refreshUserEthBalanceDisplay === 'function') {
-        window.refreshUserEthBalanceDisplay();
-    }
+    const apiBase = typeof window.getBackendBase === 'function'
+        ? window.getBackendBase().replace(/\/$/, '')
+        : 'https://api.urbangametheory.xyz';
+    actorExplorerController = window.ActorExplorer.mount(modal.querySelector('#actor-explorer-dialog'), {
+        events: allActivityEvents(),
+        loadRun: async runId => {
+            const response = await fetch(`${apiBase}/agent/runs/${encodeURIComponent(runId)}`);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return (await response.json()).run;
+        }
+    });
+    await loadLiveAgentActivity();
 }
 
 /**
@@ -1005,6 +918,7 @@ function closeAgentsStatistics() {
     if (modal) {
         document.body.removeChild(modal);
     }
+    actorExplorerController = null;
 }
 
 /**

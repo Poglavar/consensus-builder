@@ -10,8 +10,8 @@ function entry(picks = 1, stakeUsdc = '0.25') {
 
 describe('live agent execution policy', () => {
     it('defaults to one proposal worth of signed actions and USDC', () => {
-        expect(executionPolicy({})).toEqual({ maxActions: 3, maxUsdc: 0.35, proposalFeeUsdc: 0.05 });
-        expect(assertExecutionPlan(summarizeExecutionPlan([entry()]))).toMatchObject({ proposalCount: 1, actionCount: 3, maxUsdc: 0.3 });
+        expect(executionPolicy({})).toEqual({ maxActions: 4, maxUsdc: 0.35, proposalFeeUsdc: 0.05 });
+        expect(assertExecutionPlan(summarizeExecutionPlan([entry()]))).toMatchObject({ proposalCount: 1, actionCount: 4, maxUsdc: 0.3 });
     });
 
     it('refuses additional signed actions even if a persona is misconfigured', () => {
@@ -20,7 +20,7 @@ describe('live agent execution policy', () => {
     });
 
     it('enforces the USDC ceiling independently of the action count', () => {
-        const policy = executionPolicy({ AGENT_DAILY_ACTION_CAP: '3', AGENT_DAILY_USDC_CAP: '0.20' });
+        const policy = executionPolicy({ AGENT_DAILY_ACTION_CAP: '4', AGENT_DAILY_USDC_CAP: '0.20' });
         expect(() => assertExecutionPlan(summarizeExecutionPlan([entry()], policy), policy)).toThrow(/USDC cap reached/);
     });
 

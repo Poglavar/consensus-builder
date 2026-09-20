@@ -81,6 +81,10 @@ describe('buildProposalRecord — the stored shape', () => {
         expect(record.agent.paid).toBeUndefined();
     });
 
+    it('records the selected controller when the runner supplies one', () => {
+        expect(build({ persona: { ...PERSONA, controller: 'algorithm' } }).agent.controller).toBe('algorithm');
+    });
+
     it('declares its land once, and its offer in USDC', () => {
         expect(record.cadastreParcelIds).toEqual(['HR-335614-2178']);
         expect(record.offer).toBe(725640);
@@ -206,4 +210,3 @@ describe('onchain guard', () => {
         expect(() => build({ onchain: { proposalId: 'pda', chainId: 'solana-devnet', contractAddress: 'x' } })).toThrow(/proposalId/);
     });
 });
-

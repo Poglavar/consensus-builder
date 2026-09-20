@@ -324,6 +324,19 @@
     flex-direction: column;
 }
 
+.actor-explorer-modal .agents-stats-modal-content {
+    max-width: 1180px;
+}
+
+.actor-explorer-modal .agents-stats-modal-header p {
+    margin: 4px 0 14px;
+}
+
+#actor-explorer-dialog {
+    min-height: 0;
+    overflow-y: auto;
+}
+
 .agents-stats-table-container {
     overflow-x: auto;
     overflow-y: auto;

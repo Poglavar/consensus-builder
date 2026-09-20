@@ -5,7 +5,7 @@ module.exports = {
   apps: [{
     name: 'consensus-builder-agents',
     script: 'agents/run.mjs',
-    args: '--live --persona densifier-01 --candidates 4 --api https://api.urbangametheory.xyz',
+    args: '--live --controller algorithm --persona densifier-01 --candidates 4 --api https://api.urbangametheory.xyz',
     cwd: '/root/code/consensus-builder/backend',
     exec_mode: 'fork',
     instances: 1,
@@ -14,9 +14,7 @@ module.exports = {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
-      AGENT_LLM_MODEL: 'claude-opus-5',
-      AGENT_LLM_DAILY_CAP_USD: '0.25',
-      AGENT_DAILY_ACTION_CAP: '3',
+      AGENT_DAILY_ACTION_CAP: '4',
       AGENT_DAILY_USDC_CAP: '0.35',
       AGENT_PROPOSAL_FEE_USDC: '0.05',
       AGENT_API_BASE: 'https://api.urbangametheory.xyz'

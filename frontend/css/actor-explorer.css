@@ -1,0 +1,35 @@
+/* Readable, mobile-first standalone presentation for actor-explorer.html. It intentionally avoids
+   the map app's viewport lock and uses the existing neutral surface/green accent palette. */
+:root { --ae-bg:#f7f8fa; --ae-surface:#fff; --ae-ink:#1d2126; --ae-muted:#69717c; --ae-line:#dce1e7; --ae-accent:#187a49; --ae-accent-soft:#e7f6ed; --ae-danger:#9d3024; --ae-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; --ae-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; }
+* { box-sizing:border-box; }
+.ae-body { margin:0; background:var(--ae-bg); color:var(--ae-ink); font:15px/1.45 var(--ae-sans); }
+.ae-wrap { max-width:1180px; margin:auto; padding:18px; }
+.ae-header { margin-bottom:16px; }
+.ae-header h1,.ae-section-title { margin:0; font-size:1.15rem; }
+.ae-header p,.ae-muted { color:var(--ae-muted); }
+.ae-header p { max-width:72ch; margin:4px 0 0; }
+.ae-filters,.ae-profiles,.ae-activity,.ae-run-detail { margin:0 0 14px; padding:12px; background:var(--ae-surface); border:1px solid var(--ae-line); border-radius:10px; }
+.ae-filters { display:flex; flex-wrap:wrap; gap:8px; }
+.ae-filters input { flex:1 1 260px; }
+.ae-filters input,.ae-filters select,.ae-button { min-height:36px; padding:7px 9px; border:1px solid var(--ae-line); border-radius:6px; font:inherit; background:#fff; color:var(--ae-ink); }
+.ae-button,.ae-profile-card,.ae-link { cursor:pointer; }
+.ae-button-quiet { color:var(--ae-muted); }
+.ae-profile-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:8px; margin-top:9px; }
+.ae-profile-card { display:flex; min-width:0; flex-direction:column; align-items:flex-start; gap:4px; padding:10px; text-align:left; background:#fff; border:1px solid var(--ae-line); border-radius:8px; font:inherit; color:inherit; }
+.ae-profile-card:hover,.ae-profile-card.is-selected { border-color:var(--ae-accent); background:var(--ae-accent-soft); }
+.ae-tag { display:inline-block; width:max-content; max-width:100%; padding:1px 6px; color:#42505f; background:#eef1f5; border-radius:999px; font-size:.76rem; overflow-wrap:anywhere; }
+.ae-wallet,.ae-provenance { display:block; max-width:100%; overflow-wrap:anywhere; font:12px/1.4 var(--ae-mono); }
+.ae-list { display:grid; gap:8px; padding:0; margin:9px 0 0; list-style:none; }
+.ae-event { padding:10px; border:1px solid var(--ae-line); border-left:3px solid var(--ae-accent); border-radius:6px; }
+.ae-event.is-failed { border-left-color:var(--ae-danger); }
+.ae-event-message { display:block; margin:3px 0; }
+.ae-meta { display:flex; flex-wrap:wrap; align-items:center; gap:5px; margin-top:6px; }
+.ae-link { padding:0; color:var(--ae-accent); background:transparent; border:0; font:inherit; text-decoration:underline; }
+.ae-run-detail:empty { display:none; }
+.ae-rationale { margin-top:9px; padding:9px; background:#f7f9fb; border-radius:6px; }
+.ae-rationale p { margin:4px 0; }
+.ae-rationale small { color:var(--ae-muted); }
+.ae-error { color:var(--ae-danger); }
+.ae-empty { margin:9px 0; color:var(--ae-muted); }
+details { margin-top:8px; } summary { cursor:pointer; color:var(--ae-muted); } pre { white-space:pre-wrap; }
+@media (min-width:900px) { #actor-explorer { display:grid; grid-template-columns:minmax(0,1.8fr) minmax(270px,.8fr); gap:14px; align-items:start; } .ae-filters,.ae-profiles { grid-column:1 / -1; } .ae-activity { margin:0; } .ae-run-detail { position:sticky; top:14px; } }

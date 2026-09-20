@@ -113,6 +113,7 @@
                 'css/corridor-editor.css',
                 'css/corridor-render.css',
                 'css/game.css',
+                'css/actor-explorer.css',
                 'css/road-analysis.css',
                 'css/utilities.css',
                 'css/canton-mode.css',
@@ -370,7 +371,7 @@
                             data-i18n-key="sidebar.game.newGame">New Game</button>
                         <button id="show-game-log-btn" class="btn btn-info" data-section-independent="true" onclick="showGameLogDialog()"
                             data-i18n-key="sidebar.game.showGameLog">Show Game Log</button>
-                        <button id="show-agents-btn" class="btn btn-info" onclick="showAgentsStatistics()"
+                        <button id="show-agents-btn" class="btn btn-info" data-section-independent="true" onclick="showAgentsStatistics()"
                             data-i18n-key="sidebar.game.showAgents">Show Agents</button>
                     </div>
                 </div>
@@ -1460,6 +1461,8 @@
             'js/solana/proposal-bridge.js',
             'js/solana/pledge-client.js',
             'js/solana/pledge-bridge.js',
+            'js/solana/market-client.js',
+            'js/solana/market-bridge.js',
             'js/solana/parcel-mint.js',
             'js/solana/blockchain-sync.js',
             'js/ipfs.js',
@@ -1565,6 +1568,7 @@
             'js/proposals/layer-render.js',
             'js/proposals/drill-ui.js',
             'js/proposals/support-view.js',
+            'js/proposals/market-view.js',
             'js/proposals/details-panel.js',
             'js/proposals/create.js',
             'js/proposal-drafts.js',
@@ -1622,6 +1626,7 @@
             'js/reparcellization.js',
             'js/financials.js',
             'js/agent-action-engine.js',
+            'js/actor-explorer.js',
             'js/agent-support-simulation.js',
             'js/agents.js',
             'js/agent-bubbles.js',

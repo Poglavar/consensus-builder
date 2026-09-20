@@ -6,8 +6,9 @@ function asLimit(value) {
 
 function runEvents(row) {
     const summary = row.summary || {};
+    const controller = summary.controller || summary.decisionResult?.controller || (summary.model ? 'llm' : 'algorithm');
     const actor = {
-        id: String(row.persona), name: String(row.persona), kind: 'agent', controller: 'llm', wallet: summary.wallet || null
+        id: String(row.persona), name: String(row.persona), kind: 'agent', controller, wallet: summary.wallet || null
     };
     const base = {
         source: 'live', actor, ok: row.status !== 'failed',
@@ -16,6 +17,24 @@ function runEvents(row) {
         model: summary.decisionResult?.model || summary.model || null,
         modelCostUsd: summary.decisionResult?.costUsd ?? summary.pickCostUsd ?? null,
         batchId: summary.decisionResult?.batchId || summary.batchId || null
+    };
+    const pickForProposal = (proposalId) => (summary.picks || [])
+        .find(pick => String(pick.proposalId) === String(proposalId));
+    const withRunContext = (event) => {
+        const proposalId = event?.entity?.id || event?.action?.proposalId;
+        const pick = proposalId ? pickForProposal(proposalId) : null;
+        return {
+            ...event,
+            // The activity envelope remains shared. These are optional evidence fields, rather than
+            // an agent-only shape, so a human or algorithmic event can carry the same provenance.
+            rationale: event.rationale || pick?.rationale || null,
+            provenance: event.provenance || {
+                runId: row.run_id,
+                stage: row.stage || null,
+                mode: row.mode || null,
+                transaction: event.transaction || null
+            }
+        };
     };
     if (Array.isArray(summary.activities) && summary.activities.length) {
         return summary.activities.map((event, index) => ({
@@ -27,7 +46,7 @@ function runEvents(row) {
             model: event.model || base.model,
             modelCostUsd: event.modelCostUsd ?? base.modelCostUsd,
             batchId: event.batchId || base.batchId
-        }));
+        })).map(withRunContext);
     }
     const events = [{
         ...base, id: `run:${row.run_id}:${row.stage || 'started'}`,
@@ -55,7 +74,7 @@ function runEvents(row) {
             message: `${row.persona} backed proposal ${pick.name || pick.proposalId}.`
         });
     }
-    return events;
+    return events.map(withRunContext);
 }
 
 function proposalEvents(row) {
@@ -63,10 +82,11 @@ function proposalEvents(row) {
     const proposalId = String(row.proposal_id);
     const persona = String(agent.persona || 'agent');
     const wallet = agent.wallet || null;
+    const controller = agent.controller || 'llm';
     return [{
         id: `proposal:${proposalId}:published`,
         source: 'live',
-        actor: { id: wallet || persona, name: persona, kind: 'agent', controller: 'llm', wallet },
+        actor: { id: wallet || persona, name: persona, kind: 'agent', controller, wallet },
         action: { type: 'publish', proposalId },
         entity: { type: 'proposal', id: proposalId },
         ok: true,
@@ -94,13 +114,48 @@ function mergeEvents(...lists) {
     });
 }
 
+function runDetail(row, costs = []) {
+    const summary = row.summary || {};
+    return {
+        id: row.run_id,
+        persona: row.persona,
+        mode: row.mode,
+        status: row.status,
+        stage: row.stage,
+        startedAt: row.started_at,
+        finishedAt: row.finished_at || null,
+        updatedAt: row.updated_at,
+        controller: summary.controller || summary.decisionResult?.controller || (summary.model ? 'llm' : 'algorithm'),
+        model: summary.decisionResult?.model || summary.model || null,
+        batchId: summary.decisionResult?.batchId || summary.batchId || null,
+        picks: Array.isArray(summary.picks) ? summary.picks.map(pick => ({
+            candidateId: pick.candidateId || null,
+            proposalId: pick.proposalId || null,
+            name: pick.name || null,
+            rationale: pick.rationale || null
+        })) : [],
+        costs: costs.map(cost => ({
+            item: cost.item,
+            provider: cost.provider,
+            model: cost.model,
+            batchId: cost.batch_id,
+            inputTokens: cost.input_tokens,
+            outputTokens: cost.output_tokens,
+            cacheReadTokens: cost.cache_read_tokens,
+            cacheCreationTokens: cost.cache_creation_tokens,
+            usd: Number(cost.usd),
+            recordedAt: cost.created_at
+        }))
+    };
+}
+
 export function setupAgentActivityRoute(app, pool) {
     app.get('/agent/activity', async (req, res) => {
         try {
             const limit = asLimit(req.query.limit);
             const [runs, proposals] = await Promise.all([
                 pool.query(
-                    `SELECT run_id, persona, status, stage, summary, started_at, updated_at
+                    `SELECT run_id, persona, mode, status, stage, summary, started_at, updated_at
                        FROM consensus.agent_run
                       ORDER BY updated_at DESC
                       LIMIT $1`,
@@ -128,6 +183,36 @@ export function setupAgentActivityRoute(app, pool) {
             res.status(500).json({ error: 'Failed to read agent activity' });
         }
     });
+
+    // Read-only drill-down for the explorer. Costs are taken from the immutable per-call ledger,
+    // never re-estimated from an activity message or model name.
+    app.get('/agent/runs/:runId', async (req, res) => {
+        try {
+            const runId = String(req.params.runId || '').trim();
+            if (!runId) return res.status(400).json({ error: 'runId is required' });
+            const { rows } = await pool.query(
+                `SELECT run_id, persona, mode, status, stage, summary, started_at, finished_at, updated_at
+                   FROM consensus.agent_run
+                  WHERE run_id = $1
+                  LIMIT 1`,
+                [runId]
+            );
+            const row = rows[0];
+            if (!row) return res.status(404).json({ error: 'Agent run not found' });
+            const costs = await pool.query(
+                `SELECT item, provider, model, batch_id, input_tokens, output_tokens,
+                        cache_read_tokens, cache_creation_tokens, usd, created_at
+                   FROM consensus.agent_cost
+                  WHERE run_id = $1
+                  ORDER BY created_at ASC, id ASC`,
+                [runId]
+            );
+            return res.json({ run: runDetail(row, costs.rows), events: runEvents(row) });
+        } catch (error) {
+            console.error('GET /agent/runs/:runId failed', error);
+            return res.status(500).json({ error: 'Failed to read agent run' });
+        }
+    });
 }
 
-export { asLimit, mergeEvents, proposalEvents, runEvents };
+export { asLimit, mergeEvents, proposalEvents, runDetail, runEvents };

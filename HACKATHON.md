@@ -49,7 +49,7 @@ git diff 3ee1855...colosseum-worlds-fair
    the executed path [releases its donation](https://explorer.solana.com/tx/3s1v1sGhPbdN2JzydhNDhLTY1M6mW5uFntXRkGbmx2cyPHGPeVuks93HWZtjTQfPFbRhFj4FhQR6vWahNMvawLn5?cluster=devnet)
    and [fulfils its pledge](https://explorer.solana.com/tx/5NUeperNd6wu3ZizQW7ASWZtfa2nFKjevnGeVtqAeFWhFyfDbcUBKw5enRwKcTRAyZ1yHNpeEqWC8Vs2dyp94UgA?cluster=devnet).
    Run it with `cd blockchain/solana && node scripts/proposal-support-lifecycle.mjs --live`.
-9. **One agent/action/activity model** — browser algorithms and the server LLM runner use the same
+9. **One agent/action/activity model** — browser algorithms and the server agent runner use the same
    controller/action/event contract, including confirmed human wallet actions. The Activity explorer
    combines live and simulated events, independently filters source/controller/action/result/search,
    and keeps wallet/model/cost/run provenance in expandable details instead of visually segregating
@@ -60,12 +60,23 @@ git diff 3ee1855...colosseum-worlds-fair
     published [proposal 763](https://api.urbangametheory.xyz/proposals/763), then
     [staked `0.25 USDC` YES](https://explorer.solana.com/tx/scK9S8NqVDmh8GE1NNksEJwFyeam2hB4dVL4xPYFp4jNENKWX6HL9kaU9wdQEwpztQwBCmx3pJ1kXRVR5MsovDG?cluster=devnet).
     The public Activity explorer shows all three actions from the same structured event stream.
-11. **Bounded daily autonomy and wallet-grade support UX** — the opt-in PM2 persona schedule stores
-    its complete decision input, model/usage/cost, rationale, x402 payment id and every transaction;
-    it refuses more than one proposal, three signed actions, `$0.25` of model spend or `0.35 USDC`
-    per day by default. Human donation and pledge flows show wallet balances, distinguish escrowed
+11. **Bounded daily autonomy and wallet-grade support UX** — the opt-in PM2 persona schedule uses
+    an auditable `$0` deterministic controller and stores its complete decision policy, rationale,
+    x402 payment id and every transaction; it refuses more than one proposal, four possible signed
+    actions or `0.35 USDC` per day by default. The one-off LLM proof remains available as a separate,
+    explicit controller mode. Human donation and pledge flows show wallet balances, distinguish escrowed
     funds from soft commitments, prevent duplicate submission, expose submitted/confirmed states,
     preserve explorer links on uncertain confirmation and batch large refunds safely.
+12. **Wallet prediction-market experience** — proposal Details reads the deployed parimutuel market,
+    shows YES/NO pools and implied odds, lets a connected human open the single market, stake devnet
+    USDC on either side, permissionlessly resolve it from the proposal's terminal on-chain state and
+    claim winnings or empty-winning-pool refunds, with explicit signature/confirmation states and
+    transaction links.
+13. **Neutral actor and run explorer** — the former simulation-only agent statistics surface now
+    profiles people, algorithmic controllers and LLM controllers from the same activity envelopes.
+    It drills into proposal/support/market actions, rationales, exact model-ledger cost, run/batch ids
+    and Solana transactions; a standalone judge-friendly view is also available at
+    `/actor-explorer.html` without creating a second agent runtime.
 
 ## Pre-existing platform foundations
 
