@@ -26,7 +26,7 @@
 
     function buildDemoModel({
         runs = [], events = [], docs = {}, discovery = null, oracleDiscovery = null,
-        oracleEvents = [], publicRecords = null, errors = {},
+        oracleEvents = [], publicRecords = null, prospectiveMarket = null, proofManifest = null, errors = {},
         now = new Date().toISOString()
     } = {}) {
         const latestAlgorithm = newest(runs, run => run.controller === 'algorithm' && (run.role || 'proposer') === 'proposer');
@@ -46,6 +46,17 @@
         const externalProof = external.proof || {};
         const externalChronology = externalProof.chronology || {};
         const externalProspective = externalChronology.classification === 'prospective';
+        const declaredProspective = external.prospectiveProof || {};
+        const prospective = prospectiveMarket?.market ? prospectiveMarket : declaredProspective.market ? {
+            state: time(declaredProspective.closesAt) > time(now) ? 'open' : 'checking_evidence',
+            market: declaredProspective.market,
+            marketUrl: `https://explorer.solana.com/address/${declaredProspective.market}?cluster=devnet`,
+            recipeHash: declaredProspective.recipeHash || null,
+            closesAt: declaredProspective.closesAt,
+            stakes: { yes: 0.01, no: 0.01, pool: 0.02 },
+            resolver: { cadence: 'hourly at minute 45', lastRun: null }
+        } : null;
+        const prospectiveError = errors.prospective;
         const mcpTools = docs.mcp?.tools || [];
         const mcpComplete = ['ugt_submit_proposal', 'ugt_pledge', 'ugt_donate', 'ugt_forecast', 'ugt_buy_verified_fact']
             .every(name => mcpTools.includes(name));
@@ -68,7 +79,7 @@
             },
             {
                 label: 'Two-sided market',
-                status: external?.prospectiveProof?.market ? 'success' : 'waiting'
+                status: prospective?.market ? 'success' : prospectiveError ? 'error' : 'waiting'
             },
             {
                 label: 'Fact discovery',
@@ -164,6 +175,29 @@
                 detail: errors.publicRecords || 'The court oracle publishes parcel-level SAS attestations; this app republishes only aggregate health and its public schema.',
                 summary: publicRecords
             },
+            prospectiveMarket: prospective ? {
+                tone: prospective.state === 'resolver_error' ? 'error' : 'success',
+                state: prospective.state || 'unknown',
+                label: prospective.state === 'settled' ? 'Prospective market settled from later evidence'
+                    : prospective.state === 'awaiting_evidence' ? 'Trading closed; waiting for matching later evidence'
+                        : prospective.state === 'checking_evidence' ? 'Trading closed; resolver is checking public records'
+                            : prospective.state === 'open' ? 'Two-sided prospective court market is open'
+                                : 'Prospective market status available',
+                detail: prospective.state === 'settled'
+                    ? 'The market, both stakes and committed recipe predated the resolving source record.'
+                    : `${prospective.stakes?.pool ?? 0.02} devnet USDC across YES and NO · resolver ${prospective.resolver?.cadence || 'runs on a public schedule'} · only post-close source-timestamped evidence qualifies`,
+                market: prospective.market,
+                marketUrl: prospective.marketUrl,
+                recipeHash: prospective.recipeHash || null,
+                closesAt: prospective.closesAt || null,
+                stakes: prospective.stakes || null,
+                resolver: prospective.resolver || null
+            } : {
+                tone: prospectiveError ? 'error' : 'waiting', state: 'unavailable',
+                label: prospectiveError ? 'Prospective market status unavailable' : 'Prospective market not declared',
+                detail: prospectiveError || 'No public prospective-market evidence was returned.',
+                market: null, marketUrl: null, recipeHash: null, closesAt: null, stakes: null, resolver: null
+            },
             externalMarket: externalLive ? {
                 tone: 'success',
                 label: externalProspective
@@ -204,6 +238,7 @@
                 recipeId: docs.oracle?.recipeId || 'proposal-lifecycle-v1'
             },
             errors,
+            proofManifest,
             latestLlm
         };
     }
@@ -244,6 +279,31 @@
     function render(element, model, { apiBase = backendBase() } = {}) {
         const doc = element.ownerDocument;
         element.replaceChildren();
+
+        const live = model.prospectiveMarket;
+        const liveMarket = node(doc, 'section', null, `hd-live-market is-${live.tone}`);
+        const liveCopy = node(doc, 'div', null, 'hd-live-market__copy');
+        const liveHead = node(doc, 'div', null, 'hd-card-head');
+        liveHead.append(node(doc, 'span', 'LIVE EXPERIMENT · GENUINELY PROSPECTIVE', 'hd-eyebrow'),
+            node(doc, 'span', String(live.state || 'unknown').replaceAll('_', ' ').toUpperCase(), 'hd-pill'));
+        liveCopy.append(liveHead, node(doc, 'h2', live.label), node(doc, 'p', live.detail, 'hd-muted'));
+        const liveLinks = node(doc, 'div', null, 'hd-links');
+        if (live.marketUrl) liveLinks.append(link(doc, 'Inspect market account ↗', live.marketUrl));
+        liveLinks.append(link(doc, 'Live resolver status ↗', `${apiBase}/oracle/markets/prospective/status`));
+        liveLinks.append(link(doc, 'Hackathon proof manifest ↗', `${apiBase}/hackathon/proof.json`));
+        liveCopy.append(liveLinks);
+        const liveFacts = node(doc, 'dl', null, 'hd-live-market__facts');
+        [
+            ['Market', live.market || 'Unavailable'],
+            ['Pool', live.stakes ? `${live.stakes.pool} devnet USDC` : 'Unavailable'],
+            ['Trading close', live.closesAt ? new Date(live.closesAt).toLocaleString() : 'Unavailable'],
+            ['Recipe', live.recipeHash || 'Unavailable'],
+            ['Last resolver check', live.resolver?.lastRun?.endedAt ? new Date(live.resolver.lastRun.endedAt).toLocaleString() : 'Awaiting public run ledger']
+        ].forEach(([label, value]) => {
+            const row = node(doc, 'div'); row.append(node(doc, 'dt', label), node(doc, 'dd', value)); liveFacts.append(row);
+        });
+        liveMarket.append(liveCopy, liveFacts);
+        element.append(liveMarket);
 
         const story = node(doc, 'section', null, 'hd-story');
         const storyCopy = node(doc, 'div', null, 'hd-story-copy');
@@ -461,7 +521,9 @@
             discovery: `${base}/agent/discovery`,
             oracleDiscovery: `${base}/agent/discovery?resource=oracle-facts`,
             oracle: `${base}/oracle/events?limit=25`,
-            publicRecords: `${base}/oracle/public-records/summary`
+            publicRecords: `${base}/oracle/public-records/summary`,
+            prospective: `${base}/oracle/markets/prospective/status`,
+            proofManifest: `${base}/hackathon/proof.json`
         };
         const entries = Object.entries(requests);
         const results = await Promise.allSettled(entries.map(([, url]) => fetchJson(url)));
@@ -489,6 +551,8 @@
             oracleDiscovery: values.oracleDiscovery || null,
             oracleEvents: values.oracle?.events || [],
             publicRecords: values.publicRecords || null,
+            prospectiveMarket: values.prospective || null,
+            proofManifest: values.proofManifest || null,
             errors
         }), { apiBase: base });
     }

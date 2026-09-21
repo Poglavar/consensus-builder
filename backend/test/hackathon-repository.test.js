@@ -89,6 +89,10 @@ describe('hackathon repository documentation', () => {
         expect(audit).toContain('external_market_lifecycle');
         expect(script).toContain('result.status !== \'verified\'');
         expect(read('docs/hackathon-build.md')).toContain('npm run audit:hackathon');
+        expect(read('backend/package.json')).toContain('"demo:judge"');
+        expect(read('backend/deploy-backend.sh')).toContain('export RELEASE_SHA="$(git rev-parse HEAD)"');
+        expect(read('backend/routes/hackathon-proof.js')).toContain("'/hackathon/proof.json'");
+        expect(read('backend/routes/hackathon-proof.js')).toContain("'/oracle/markets/prospective/status'");
     });
 
     it('ships one guarded MCP action surface over the existing agent adapters', () => {

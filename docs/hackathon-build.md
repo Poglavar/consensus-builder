@@ -149,6 +149,17 @@ start from the warning and instructions in [`blockchain/solana/README.md`](../bl
 ## 7. Live demonstration
 
 The safest judge path is the deployed [Demo Center](https://urbangametheory.xyz/hackathon-demo.html).
+
+For a bounded, read-only command-line walkthrough of the same public evidence:
+
+```bash
+cd backend
+npm run demo:judge
+```
+
+The machine-readable scope is `/hackathon/proof.json`; the privacy-preserving prospective resolver
+state is `/oracle/markets/prospective/status`. Neither endpoint exposes the private parcel recipe,
+wallets, credentials or RPC configuration.
 It links the Bazaar discovery record, paid agent proof, proposal and support transactions, market
 state, unified activity, hashed recipe, and court-oracle aggregate. Missing dependencies remain
 visibly pending.

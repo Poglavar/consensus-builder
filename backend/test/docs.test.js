@@ -354,6 +354,8 @@ describe('agent quickstart docs', () => {
         expect(res.body.endpoints.oracleFactLatest).toBe('https://api.example.test/agent/oracle/facts');
         expect(res.body.endpoints.oracleFact).toContain('/agent/oracle/facts?subject=');
         expect(res.body.endpoints.oracleFactDiscovery).toContain('resource=oracle-facts');
+        expect(res.body.endpoints.hackathonProof).toBe('https://api.example.test/hackathon/proof.json');
+        expect(res.body.endpoints.prospectiveMarketStatus).toBe('https://api.example.test/oracle/markets/prospective/status');
         expect(res.body.mcp).toMatchObject({
             transport: 'stdio', source: 'backend/agents/mcp-server.mjs', liveActionsEnabledByDefault: false
         });

@@ -41,6 +41,7 @@ npm ci
 
 echo "Restarting PM2 process..."
 mkdir -p logs
+export RELEASE_SHA="$(git rev-parse HEAD)"
 # Restart FROM THE ECOSYSTEM FILE, not by process name. `pm2 restart <name>` reuses the config PM2
 # saved when the app was first started, so a change to `env:` in ecosystem.config.cjs is silently
 # ignored — the deploy reports success and the process keeps the old environment. (That is exactly

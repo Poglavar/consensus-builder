@@ -8,7 +8,7 @@
     <meta property="og:title" content="Hyperstition: Markets for Possible Cities" />
     <meta property="og:description" content="Urban Game Theory's Colosseum World’s Fair build, by Consensus Builder." />
     <link rel="icon" href="favicon.ico" />
-    <link rel="stylesheet" href="css/hackathon-deck.css?v=3" />
+    <link rel="stylesheet" href="css/hackathon-deck.css?v=4" />
 </head>
 <body>
     <a class="deck-skip" href="#slide-1">Skip to the pitch</a>
@@ -38,6 +38,13 @@
             </div>
             <figure class="pitch-cover__visual">
                 <img src="images/hackathon-deck/ugt-map.png" alt="Urban Game Theory map centered on City Hall Park in New York" />
+                <div class="pitch-weather" aria-hidden="true">
+                    <div class="pitch-weather__clouds pitch-weather__clouds--back"></div>
+                    <div class="pitch-weather__clouds pitch-weather__clouds--front"></div>
+                    <div class="pitch-weather__rain"></div>
+                    <div class="pitch-weather__lightning"></div>
+                    <div class="pitch-weather__sun"></div>
+                </div>
                 <figcaption>One interface for real parcels, proposals, agents, and markets</figcaption>
             </figure>
         </section>
@@ -56,19 +63,19 @@
                     <li><i class="dot dot--ink"></i><small>Public record</small><strong>What did happen?</strong></li>
                 </ol>
                 <div class="parcel-object">
-                    <p>The missing object</p>
-                    <div class="parcel-object__mark"><b>ONE</b><b>PARCEL</b></div>
-                    <strong>A canonical identity that carries intent, money, belief, and evidence.</strong>
+                    <p>The shared anchor</p>
+                    <div class="parcel-object__mark"><b>REAL</b><b>PARCELS</b></div>
+                    <strong>A canonical parcel set that carries intent, money, belief, and evidence.</strong>
                 </div>
             </div>
-            <p class="pitch-note">Coordination breaks at the parcel boundary.</p>
+            <p class="pitch-note">Real parcels make proposals visible to affected stakeholders—and give coordination a concrete Schelling point.</p>
         </section>
 
         <section class="pitch-slide pitch-slide--dark" id="slide-3" data-slide="3" aria-labelledby="slide-3-title">
             <div class="pitch-heading">
                 <p class="pitch-index">03</p>
                 <h2 id="slide-3-title">A fiction enters reality through a verifiable loop</h2>
-                <p>Every stage references the same land object and stays visible to humans and agents.</p>
+                <p>Every stage references the same parcel set and stays visible to humans, agents, and affected stakeholders.</p>
             </div>
             <ol class="protocol-loop">
                 <li><span>1</span><small>Imagined</small><strong>A possible change becomes a falsifiable claim.</strong></li>
@@ -79,8 +86,8 @@
                 <li><span class="is-yellow">6</span><small class="is-yellow">Realized</small><strong>The declared recipe resolves and pays out.</strong></li>
             </ol>
             <div class="parcel-anchor">
-                <small>Canonical anchor</small>
-                <strong>HR-335550-1234/1</strong>
+                <small>Canonical parcel set</small>
+                <strong>HR-335550 · 8 parcels</strong>
                 <span>possible future · proposal · capital · belief · evidence · outcome</span>
             </div>
         </section>
@@ -96,23 +103,23 @@
                     <figcaption>One public product surface: map, proposals, agents, wallets, markets, and evidence.</figcaption>
                 </figure>
                 <dl class="proof-metrics">
-                    <div><dt>$0.05</dt><dd><b>Live x402 price</b><span>Hosted CDP facilitator and Bazaar listing</span></dd></div>
-                    <div><dt>2</dt><dd><b>New Solana programs</b><span>Prediction market and proposal support</span></dd></div>
-                    <div><dt class="is-coral">92</dt><dd><b>Court attestations</b><span>Including 35 source-timed V2 records on devnet</span></dd></div>
-                    <div><dt>1</dt><dd><b>Shared actor feed</b><span>Humans, algorithms, and LLM agents—with live proposer and supporter runs</span></dd></div>
+                    <div><dt id="proof-x402-price">…</dt><dd><b>Live x402 price</b><span>Hosted CDP facilitator and Bazaar listing</span></dd></div>
+                    <div><dt id="proof-program-count">…</dt><dd><b>New Solana programs</b><span>Prediction market and proposal support</span></dd></div>
+                    <div><dt class="is-coral" id="proof-attestation-count">…</dt><dd><b>Court attestations</b><span id="proof-attestation-detail">Loading the live source-timed V2 count…</span></dd></div>
+                    <div><dt>ONE</dt><dd><b>Shared actor feed</b><span>Humans, algorithms, and LLM agents—with live proposer and supporter runs</span></dd></div>
                 </dl>
             </div>
             <div class="proof-links">
                 <a href="https://api.urbangametheory.xyz/agent/discovery">Bazaar record ↗</a>
                 <a href="/actor-explorer.html">Actor explorer ↗</a>
-                <span>External verifier and paid recipe-bound oracle facts live.</span>
+                <span id="proof-market-state">External verifier and paid recipe-bound oracle facts live. Loading prospective market state…</span>
             </div>
         </section>
 
         <section class="pitch-slide pitch-slide--dark" id="slide-5" data-slide="5" aria-labelledby="slide-5-title">
             <div class="pitch-heading">
                 <p class="pitch-index">05</p>
-                <h2 id="slide-5-title">Verifiable hyperstition, anchored to the parcel</h2>
+                <h2 id="slide-5-title">Verifiable hyperstition, anchored to real parcels</h2>
                 <p>The future can mobilize action. It cannot declare itself true.</p>
             </div>
             <div class="category-line" aria-label="Adjacent product categories">
@@ -123,12 +130,12 @@
             <div class="ugt-difference">
                 <div>
                     <small>Urban Game Theory · Consensus Builder</small>
-                    <strong>One canonical object links imagination, intent, capital, belief, and outcome.</strong>
-                    <p>Humans and agents use the same protocol, wallet flows, and activity interface.</p>
+                    <strong>A canonical parcel set links imagination, intent, capital, belief, and outcome.</strong>
+                    <p>It locates each proposal for stakeholders; humans and agents coordinate through the same protocol.</p>
                 </div>
-                <b>EXACT<br />PARCEL</b>
+                <b>REAL<br />PARCELS</b>
             </div>
-            <p class="pitch-note">The moat is the parcel-linked graph of actions and evidence.</p>
+            <p class="pitch-note">The moat is the graph connecting parcel sets, stakeholders, actions, and evidence.</p>
         </section>
 
         <section class="pitch-slide pitch-slide--light" id="slide-6" data-slide="6" aria-labelledby="slide-6-title">
@@ -190,6 +197,6 @@
         <a href="#slide-5" aria-label="Slide 5"></a><a href="#slide-6" aria-label="Slide 6"></a>
         <a href="#slide-7" aria-label="Slide 7"></a>
     </nav>
-    <script src="js/hackathon-deck.js?v=1" defer></script>
+    <script src="js/hackathon-deck.js?v=2" defer></script>
 </body>
 </html>

@@ -6,6 +6,7 @@ import { readX402Config, readX402OracleConfig } from '../utils/x402-payment.js';
 import { EVENT_TYPE as LAND_EVENT_TYPE, RECIPE_ID as LAND_RECIPE_ID } from '../oracle/proposal-lifecycle.js';
 import { COURT_RECIPE_ID, COURT_RECIPE_V2_ID, COURT_SCHEMA_V2 } from '../oracle/court-parcel-operation.js';
 import { classifyExternalMarketChronology } from '../oracle/external-market-chronology.js';
+import { PROSPECTIVE_MARKET } from '../oracle/prospective-market-public.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -234,7 +235,9 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     listByParcel: `${base}/proposals?parcel_id={cadastreParcelId}`,
                     parcelsUnder: `${base}/parcels/under`,
                     urbanRules: `${base}/urban-rules?coordinates={lng},{lat}`,
-                    buildingFootprints: `${base}/buildings/footprints`
+                    buildingFootprints: `${base}/buildings/footprints`,
+                    hackathonProof: `${base}/hackathon/proof.json`,
+                    prospectiveMarketStatus: `${base}/oracle/markets/prospective/status`
                 },
                 mcp: {
                     transport: 'stdio',
@@ -302,14 +305,10 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                             v2Attestations: 5,
                             proofAttestation: 'AoF7DacKAkH3YcuWFp6vgYkVUspT8whmX1WWfWVUabFe',
                             proofTransaction: '5rRaRysV8hNmNDXiMoXGpLYNEFZxRZrQk6uQxG1A1cHwEjMEJcVUG4zn1QPZkBKhBX8dLMipjWFrswzqE1HMa9Ta',
-                            market: 'Atps3gg4ZCvDMtbosTK5Evrb1PAwY2shUBvkzjihkaNQ',
-                            recipeHash: 'sha256:1d8195b99b29f3c46b8902b703efea223513f63debd8eecb07bc02956aee9175',
-                            closesAt: '2026-09-22T21:00:00.000Z',
-                            transactions: {
-                                create: '5Xj91vDkDa71qAXjpkxoyBJXRxXPw7Fc333Tx9eW71LMQ3wCLvxNUR3RwxL8U22oioYpUgMHz59XY5zWB9tAvSpd',
-                                yesStake: '38v9wsfiW4eAkbFvqVyRH3npT7exUon44fEFUpM3p9PQwtYbnPSQv83rDFnmYuF7ccy5xgtXZZ51KaLRtB1eyPDe',
-                                noStake: '3Hr8pZSS76ff4ZXpHEn1DMymt9oZ9BQQDVxYZykf8FQrL4bPhL9W5fwsv3kRFftgDEe31UxJSicWF3ksaDUodKCU'
-                            },
+                            market: PROSPECTIVE_MARKET.market,
+                            recipeHash: PROSPECTIVE_MARKET.recipeHash,
+                            closesAt: PROSPECTIVE_MARKET.closesAt,
+                            transactions: PROSPECTIVE_MARKET.transactions,
                             script: 'blockchain/solana/scripts/prospective-external-market.mjs',
                             recipeId: COURT_RECIPE_V2_ID,
                             recipe: `${base}/oracle/recipes/${COURT_RECIPE_V2_ID}?parcelUid={parcelUid}&yesOperation={yesOperation}&noOperation={noOperation}&closesAt={unixSeconds}`,

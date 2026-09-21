@@ -59,7 +59,9 @@ export async function auditHackathonProof({
         runs: '/agent/runs?limit=50',
         activity: '/agent/activity?limit=200',
         oracleEvents: '/oracle/events?limit=25',
-        publicRecords: '/oracle/public-records/summary'
+        publicRecords: '/oracle/public-records/summary',
+        proofManifest: '/hackathon/proof.json',
+        prospectiveStatus: '/oracle/markets/prospective/status'
     };
     const entries = Object.entries(paths);
     const settled = await Promise.allSettled(entries.map(([, path]) => readJson(fetchImpl, `${base}${path}`)));
@@ -128,6 +130,18 @@ export async function auditHackathonProof({
             closesAt: external.prospectiveProof.closesAt,
             transactions: external.prospectiveProof.transactions
         } : errors.docs || null),
+        check('public_proof_manifest', Boolean(values.proofManifest?.hackathon?.branch === 'colosseum-worlds-fair'
+            && values.proofManifest?.publicProof?.prospectiveMarket === `${base}/oracle/markets/prospective/status`),
+        'Hackathon scope and public evidence links are machine-readable',
+        values.proofManifest?.hackathon || errors.proofManifest || null),
+        check('prospective_resolver_status', Boolean(values.prospectiveStatus?.market === external?.prospectiveProof?.market
+            && ['open', 'checking_evidence', 'awaiting_evidence', 'settled'].includes(values.prospectiveStatus?.state)),
+        'The prospective market exposes a redacted live resolver state',
+        values.prospectiveStatus ? {
+            market: values.prospectiveStatus.market,
+            state: values.prospectiveStatus.state,
+            lastCheck: values.prospectiveStatus.resolver?.lastRun?.endedAt || null
+        } : errors.prospectiveStatus || null),
         check('chronology_label', Boolean(chronology?.classification),
             'The external-market proof publishes its evidence chronology classification',
             chronology?.classification || errors.docs || null, 'advisory')

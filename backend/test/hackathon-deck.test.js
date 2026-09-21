@@ -14,9 +14,24 @@ describe('hackathon pitch deck page', () => {
         expect(html).toContain('Hyperstition');
         expect(html).toContain('Markets for possible cities');
         expect(html).toContain('Possible cities lack a common path to reality');
+        expect(html).toContain('REAL</b><b>PARCELS');
+        expect(html).toContain('concrete Schelling point');
+        expect(html).toContain('Canonical parcel set');
+        expect(html).toContain('anchored to real parcels');
+        expect(html).not.toContain('ONE</b><b>PARCEL');
+        expect(html).not.toContain('anchored to the parcel');
         expect(html).not.toContain('no shared market');
         expect(html).toContain('Scale the evidence market');
-        expect(html).toContain('js/hackathon-deck.js?v=1');
+        expect(html).toContain('js/hackathon-deck.js?v=2');
+        expect(html).toContain('id="proof-attestation-count"');
+        expect(html).not.toContain('<dt class="is-coral">92</dt>');
+        expect(html).toContain('class="pitch-weather"');
+        expect(html).toContain('pitch-weather__lightning');
+        const css = fs.readFileSync(path.join(frontend, 'css/hackathon-deck.css'), 'utf8');
+        expect(css).toContain('@keyframes cover-lightning-flash');
+        expect(css).toContain('@keyframes cover-lightning-bolt');
+        expect(css).toContain('@keyframes cover-sunrise');
+        expect(css).toContain('@media (prefers-reduced-motion:reduce)');
     });
 
     it('shows the external resolver and first settlement as live', () => {

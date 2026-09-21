@@ -9,6 +9,35 @@
     const fullscreen = document.getElementById('deck-fullscreen');
     let active = 0;
 
+    async function json(url) {
+        const response = await fetch(url, { headers: { accept: 'application/json' } });
+        if (!response.ok) throw new Error(`${url} returned ${response.status}`);
+        return response.json();
+    }
+
+    async function hydrateProofMetrics() {
+        const api = 'https://api.urbangametheory.xyz';
+        const [docs, records, manifest, market] = await Promise.allSettled([
+            json(`${api}/docs/agents.json`),
+            json(`${api}/oracle/public-records/summary`),
+            json(`${api}/hackathon/proof.json`),
+            json(`${api}/oracle/markets/prospective/status`)
+        ]);
+        const set = (id, value) => {
+            const element = document.getElementById(id);
+            if (element) element.textContent = value;
+        };
+        set('proof-x402-price', docs.status === 'fulfilled' ? docs.value.x402?.priceProposal || '—' : '—');
+        set('proof-program-count', manifest.status === 'fulfilled' ? String(manifest.value.hackathonPrograms?.length || '—') : '—');
+        set('proof-attestation-count', records.status === 'fulfilled' ? String(records.value.attestations ?? '—') : '—');
+        set('proof-attestation-detail', records.status === 'fulfilled'
+            ? `Including ${records.value.v2?.attestations || 0} source-timed V2 records on devnet`
+            : 'Live court-oracle count unavailable');
+        set('proof-market-state', market.status === 'fulfilled'
+            ? `Prospective court market: ${String(market.value.state || 'unknown').replaceAll('_', ' ')}.`
+            : 'External verifier and paid recipe-bound oracle facts live.');
+    }
+
     function setActive(index) {
         active = Math.max(0, Math.min(index, slides.length - 1));
         current.textContent = String(active + 1);
@@ -63,4 +92,5 @@
 
     const initial = slides.findIndex(slide => `#${slide.id}` === location.hash);
     setActive(initial >= 0 ? initial : 0);
+    hydrateProofMetrics().catch(() => {});
 }());

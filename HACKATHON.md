@@ -193,6 +193,11 @@ fundable proposal workflow; it does not claim the whole application as new.
 Start at [`/hackathon-demo.html`](https://urbangametheory.xyz/hackathon-demo.html); its pending/live
 states come from public evidence rather than a scripted success screen.
 
+The same proof is available without the UI: `cd backend && npm run demo:judge` audits the public
+contracts and prints the judge path. `/hackathon/proof.json` declares the branch, baseline, programs,
+surfaces and trust boundary; `/oracle/markets/prospective/status` publishes only the prospective
+market commitment and resolver health, with parcel and operator details explicitly redacted.
+
 1. Discover the paid proposal capability through the x402/Bazaar metadata.
 2. Run an agent proposal through payment, persistence, and its on-chain transaction link.
 3. Open the resulting proposal in read-only Details and fork it with Counterpropose.

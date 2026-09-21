@@ -52,9 +52,40 @@ button,a { -webkit-tap-highlight-color:transparent; }
 .pitch-lead { max-width:660px; margin:0; color:#bed0c8; font-size:clamp(1.05rem,1.65vw,1.4rem); line-height:1.52; }
 .pitch-link { display:inline-block; margin-top:32px; color:var(--mint); font-weight:800; }
 .pitch-cover__visual { position:relative; min-height:min(70vh,760px); margin:0; border-radius:36px; overflow:hidden; box-shadow:0 30px 90px rgba(0,0,0,.36); }
-.pitch-cover__visual::after { content:""; position:absolute; inset:0; background:linear-gradient(90deg,rgba(7,26,21,.72),transparent 28%); pointer-events:none; }
-.pitch-cover__visual img { width:100%; height:100%; min-height:min(70vh,760px); object-fit:cover; object-position:66% center; }
-.pitch-cover__visual figcaption { position:absolute; z-index:2; inset:auto 28px 26px; max-width:360px; color:var(--white); font-size:12px; }
+.pitch-cover__visual::after { content:""; position:absolute; z-index:2; inset:0; background:linear-gradient(90deg,rgba(7,26,21,.72),transparent 28%); pointer-events:none; }
+.pitch-cover__visual img { position:relative; z-index:0; width:100%; height:100%; min-height:min(70vh,760px); object-fit:cover; object-position:66% center; animation:cover-weather-image 8.4s cubic-bezier(.4,0,.2,1) both; }
+.pitch-cover__visual figcaption { position:absolute; z-index:3; inset:auto 28px 26px; max-width:360px; color:var(--white); font-size:12px; }
+
+/* A one-shot weather reveal: storm obscures the possible city, evidence arrives like a flash, and
+   the image resolves into daylight. Every layer stays clipped inside the existing cover artwork. */
+.pitch-weather { position:absolute; z-index:1; inset:0; overflow:hidden; pointer-events:none; }
+.pitch-weather::before { content:""; position:absolute; inset:0; background:linear-gradient(155deg,rgba(7,18,26,.82),rgba(35,48,55,.7) 52%,rgba(4,14,18,.88)); animation:cover-storm-sky 8.4s ease-out both; }
+.pitch-weather__clouds { position:absolute; width:145%; height:76%; filter:blur(7px); will-change:transform,opacity; }
+.pitch-weather__clouds::before,.pitch-weather__clouds::after { content:""; position:absolute; inset:0; background-repeat:repeat-x; }
+.pitch-weather__clouds::before { background-image:radial-gradient(ellipse at 8% 58%,rgba(63,78,84,.98) 0 9%,transparent 10%),radial-gradient(ellipse at 22% 42%,rgba(76,91,96,.98) 0 13%,transparent 14%),radial-gradient(ellipse at 39% 62%,rgba(48,64,70,.98) 0 15%,transparent 16%),radial-gradient(ellipse at 57% 35%,rgba(78,91,96,.98) 0 13%,transparent 14%),radial-gradient(ellipse at 73% 58%,rgba(42,57,64,.98) 0 15%,transparent 16%),radial-gradient(ellipse at 91% 38%,rgba(72,86,92,.98) 0 12%,transparent 13%); background-size:68% 100%; }
+.pitch-weather__clouds::after { inset:23% 0 -16%; background:linear-gradient(180deg,rgba(44,58,64,.86),rgba(16,28,34,.7) 62%,transparent); }
+.pitch-weather__clouds--back { top:-18%; left:-23%; opacity:.96; animation:cover-clouds-back 8.4s cubic-bezier(.4,0,.2,1) both; }
+.pitch-weather__clouds--front { right:-22%; bottom:-20%; opacity:.94; transform:scaleX(-1); animation:cover-clouds-front 8.4s cubic-bezier(.4,0,.2,1) both; }
+.pitch-weather__rain { position:absolute; inset:-30% -20% 0; opacity:0; transform:rotate(8deg); background-image:repeating-linear-gradient(105deg,transparent 0 17px,rgba(210,235,245,.52) 18px 19px,transparent 20px 34px); background-size:100% 58px; animation:cover-rain-visibility 8.4s ease-in-out both,cover-rain-fall .34s linear infinite; }
+.pitch-weather__lightning { position:absolute; inset:0; mix-blend-mode:screen; }
+.pitch-weather__lightning::before { content:""; position:absolute; inset:0; opacity:0; background:rgba(231,248,255,.8); animation:cover-lightning-flash 8.4s linear both; }
+.pitch-weather__lightning::after { content:""; position:absolute; top:3%; left:61%; width:15%; height:55%; opacity:0; background:linear-gradient(180deg,#fff,#cceeff 70%,transparent); clip-path:polygon(47% 0,70% 0,54% 34%,76% 34%,30% 100%,43% 51%,24% 51%); filter:drop-shadow(0 0 11px #d9f4ff); animation:cover-lightning-bolt 8.4s linear both; }
+.pitch-weather__sun { position:absolute; inset:-12%; opacity:0; background:radial-gradient(circle at 83% 19%,rgba(255,250,205,.98) 0 2.5%,rgba(255,226,124,.42) 3.5% 9%,rgba(255,211,92,.16) 15%,transparent 34%),conic-gradient(from 8deg at 83% 19%,transparent 0 7%,rgba(255,238,164,.12) 8% 10%,transparent 11% 20%,rgba(255,238,164,.1) 21% 23%,transparent 24% 100%); mix-blend-mode:screen; animation:cover-sunrise 8.4s ease-out both; }
+
+@keyframes cover-weather-image {
+    0%,46% { filter:brightness(.45) saturate(.7) contrast(1.08); transform:scale(1.035); }
+    23%,24%,35%,36% { filter:brightness(1.18) saturate(.68) contrast(1.12); }
+    68% { filter:brightness(.84) saturate(.92) contrast(1.03); }
+    100% { filter:brightness(1.08) saturate(1.06) contrast(1.01); transform:scale(1); }
+}
+@keyframes cover-storm-sky { 0%,48% { opacity:1; } 72%,100% { opacity:0; } }
+@keyframes cover-clouds-back { 0%,42% { transform:translate3d(0,0,0); opacity:.96; } 76%,100% { transform:translate3d(86%, -12%,0); opacity:0; } }
+@keyframes cover-clouds-front { 0%,44% { transform:translate3d(0,0,0) scaleX(-1); opacity:.94; } 78%,100% { transform:translate3d(-88%,10%,0) scaleX(-1); opacity:0; } }
+@keyframes cover-rain-visibility { 0%,10% { opacity:0; } 17%,48% { opacity:.78; } 64%,100% { opacity:0; } }
+@keyframes cover-rain-fall { from { background-position:0 0; } to { background-position:-9px 58px; } }
+@keyframes cover-lightning-flash { 0%,20%,25%,32%,37%,100% { opacity:0; } 21%,23%,33%,35% { opacity:.42; } 22%,34% { opacity:.08; } }
+@keyframes cover-lightning-bolt { 0%,20%,25%,32%,37%,100% { opacity:0; } 21%,23%,33%,35% { opacity:1; } 22%,34% { opacity:.3; } }
+@keyframes cover-sunrise { 0%,59% { opacity:0; transform:scale(.82); } 78% { opacity:.74; } 100% { opacity:.58; transform:scale(1); } }
 
 .problem-layout { display:grid; grid-template-columns:minmax(440px,.9fr) minmax(400px,1.1fr); gap:clamp(40px,8vw,120px); align-items:center; margin-top:clamp(44px,8vh,90px); }
 .problem-list { display:grid; gap:24px; margin:0; padding:0; list-style:none; }
@@ -194,7 +225,12 @@ button,a { -webkit-tap-highlight-color:transparent; }
     .pitch-ask small { display:block; margin-bottom:12px; }
     .deck-dots { display:none; }
 }
-@media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
+@media (prefers-reduced-motion:reduce) {
+    html { scroll-behavior:auto; }
+    .pitch-cover__visual img { animation:none; filter:brightness(1.05) saturate(1.04); }
+    .pitch-weather::before,.pitch-weather__clouds,.pitch-weather__rain,.pitch-weather__lightning { display:none; }
+    .pitch-weather__sun { animation:none; opacity:.5; transform:none; }
+}
 @media print {
     .deck-controls,.deck-dots,.deck-skip { display:none !important; }
     .pitch-slide { min-height:100vh; break-after:page; page-break-after:always; }

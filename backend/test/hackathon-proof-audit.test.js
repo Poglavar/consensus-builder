@@ -39,6 +39,13 @@ function fixtures(overrides = {}) {
             attestations: 62, decisions: 29, schemaId: 'schema',
             v2: { status: 'live_devnet', attestations: 5 }
         },
+        '/hackathon/proof.json': {
+            hackathon: { branch: 'colosseum-worlds-fair' },
+            publicProof: { prospectiveMarket: `${BASE}/oracle/markets/prospective/status` }
+        },
+        '/oracle/markets/prospective/status': {
+            state: 'open', market: 'prospective-market', resolver: { lastRun: { endedAt: '2026-09-21T11:45:00Z' } }
+        },
         ...overrides
     };
 }
@@ -59,8 +66,8 @@ describe('public hackathon proof audit', () => {
             baseUrl: BASE, fetchImpl, now: Date.parse('2026-09-21T12:00:00Z')
         });
         expect(result.status).toBe('verified');
-        expect(result.summary).toEqual({ pass: 9, warn: 0, fail: 0 });
-        expect(fetchImpl).toHaveBeenCalledTimes(7);
+        expect(result.summary).toEqual({ pass: 11, warn: 0, fail: 0 });
+        expect(fetchImpl).toHaveBeenCalledTimes(9);
         expect(result.checks.find(item => item.id === 'deterministic_supporter')).toMatchObject({
             status: 'pass', evidence: { proposalId: 'p1', transaction: 'supporter-transaction' }
         });
@@ -84,7 +91,7 @@ describe('public hackathon proof audit', () => {
             baseUrl: BASE, fetchImpl: fetchFor(data), now: Date.parse('2026-09-21T12:00:00Z')
         });
         expect(result.status).toBe('verified');
-        expect(result.summary).toEqual({ pass: 8, warn: 1, fail: 0 });
+        expect(result.summary).toEqual({ pass: 10, warn: 1, fail: 0 });
     });
 
     it('requires an exact normalized resource URL', () => {

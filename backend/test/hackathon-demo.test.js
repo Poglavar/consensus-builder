@@ -125,6 +125,23 @@ describe('hackathon demo evidence model', () => {
         });
     });
 
+    it('puts the redacted prospective resolver state into its own live model', () => {
+        const model = demo.buildDemoModel({
+            docs,
+            prospectiveMarket: {
+                state: 'awaiting_evidence', market: 'prospective-market', marketUrl: 'https://explorer/market',
+                recipeHash: `sha256:${'b'.repeat(64)}`, closesAt: '2026-09-22T21:00:00.000Z',
+                stakes: { yes: 0.01, no: 0.01, pool: 0.02 },
+                resolver: { cadence: 'hourly at minute 45', lastRun: { endedAt: '2026-09-22T21:45:00Z' } }
+            }
+        });
+        expect(model.prospectiveMarket).toMatchObject({
+            tone: 'success', state: 'awaiting_evidence',
+            label: 'Trading closed; waiting for matching later evidence', market: 'prospective-market'
+        });
+        expect(model.proofChecks).toContainEqual({ label: 'Two-sided market', status: 'success' });
+    });
+
     it('does not relabel an LLM run as algorithmic evidence', () => {
         const model = demo.buildDemoModel({
             now: '2026-09-21T12:00:00Z', docs,

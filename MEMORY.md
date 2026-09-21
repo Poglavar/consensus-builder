@@ -377,3 +377,8 @@
 - 2026-09-22: **The scheduled evidence path is live and monitored.** Its first resumed production
   run completed 30 new V2 attestations (35 V2 and 92 Solana court attestations total); fixed-nonce
   exponential RPC retries make ambiguous submission responses idempotent.
+- 2026-09-22: **Judge proof is a public contract, not a slide claim.** `/hackathon/proof.json`
+  declares the branch, baseline, programs, surfaces and honest trust boundary. The prospective
+  resolver publishes only its commitment, aggregate stakes and run health at
+  `/oracle/markets/prospective/status`; parcel recipes, wallets and operator configuration remain
+  private. `npm run demo:judge` audits and narrates those same public endpoints without mutations.
