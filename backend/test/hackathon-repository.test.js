@@ -91,6 +91,7 @@ describe('hackathon repository documentation', () => {
         expect(read('docs/hackathon-build.md')).toContain('npm run audit:hackathon');
         expect(read('backend/package.json')).toContain('"demo:judge"');
         expect(read('backend/deploy-backend.sh')).toContain('export RELEASE_SHA="$(git rev-parse HEAD)"');
+        expect(read('backend/ecosystem.config.cjs')).toContain('RELEASE_SHA: process.env.RELEASE_SHA || null');
         expect(read('backend/routes/hackathon-proof.js')).toContain("'/hackathon/proof.json'");
         expect(read('backend/routes/hackathon-proof.js')).toContain("'/oracle/markets/prospective/status'");
     });

@@ -10,6 +10,10 @@ module.exports = {
     env: {
       NODE_ENV: 'production',
       API_PORT: 3000,
+      // Injected by deploy-backend.sh from the checked-out revision. PM2 only forwards values
+      // declared in this env block when restarting from the ecosystem file, so declaring it here
+      // keeps the public hackathon proof manifest tied to the exact deployed commit.
+      RELEASE_SHA: process.env.RELEASE_SHA || null,
       // The origin baked into stored image URLs (proposal thumbnails). Without it,
       // resolveThumbnailBaseUrl() falls back to the request's Host header — which the client
       // controls — so a spoofed Host on POST /proposals would permanently store an attacker's
