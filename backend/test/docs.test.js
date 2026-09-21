@@ -369,7 +369,12 @@ describe('agent quickstart docs', () => {
             proofMarket: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/),
             proofResolution: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{64,88}$/),
             proofClaim: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{64,88}$/),
-            proof: { yesStakeAtomic: '10000', noStakeAtomic: '10000', payoutAtomic: '20000', decimals: 6 }
+            proof: expect.objectContaining({
+                recipeHash: expect.stringMatching(/^[0-9a-f]{64}$/),
+                attestation: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/),
+                evidenceHash: expect.stringMatching(/^[0-9a-f]{64}$/),
+                yesStakeAtomic: '10000', noStakeAtomic: '10000', payoutAtomic: '20000', decimals: 6
+            })
         });
         expect(res.body.market.externalResolution).toMatchObject({
             status: 'live_devnet', account: 'ExternalMarket',

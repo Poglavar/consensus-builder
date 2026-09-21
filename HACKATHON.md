@@ -1,12 +1,18 @@
 <!-- This manifest defines the reviewable scope of the Colosseum World's Fair build. -->
-# Colosseum World's Fair hackathon scope
+# Hyperstition: Markets for Possible Cities
+
+**An Urban Game Theory project by Consensus Builder · Colosseum World's Fair 2026**
 
 Urban Game Theory is a long-running project. This branch isolates the work built for the
 Colosseum World's Fair hackathon so it can be reviewed independently of the existing city,
 parcel, ownership, proposal-rendering, and Lens foundations.
 
-> Urban Game Theory is a market for real-world land change: humans and agents propose, fund, and
-> forecast changes to real parcels, while public records resolve what actually happened.
+> Humans and agents imagine, propose, fund, and forecast changes to real parcels. Public records
+> decide which possible futures became real.
+
+The hackathon framing is **verifiable hyperstition**: a proposed future can mobilize attention,
+capital and action, but it cannot declare itself true. A precommitted evidence recipe and independent
+public records determine whether it was realized.
 
 ## Review boundary
 

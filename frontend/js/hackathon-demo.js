@@ -41,6 +41,7 @@
         const latestOracle = newest(oracleEvents, event => event.eventType === 'proposal_lifecycle');
         const external = docs.oracle?.externalMarket || {};
         const externalLive = external.status === 'live_devnet' && external.proofMarket && external.proofResolution;
+        const externalProof = external.proof || {};
         return {
             generatedAt: now,
             x402: {
@@ -109,14 +110,16 @@
                 detail: '0.01 USDC on YES + 0.01 USDC on NO · permissionless SAS resolution · 0.02 USDC claimed',
                 market: external.proofMarket,
                 resolution: external.proofResolution,
-                claim: external.proofClaim || null
+                claim: external.proofClaim || null,
+                proof: externalProof
             } : {
                 tone: 'waiting',
                 label: 'External market proof unavailable',
                 detail: 'The public agent metadata did not return a verified devnet market and resolution transaction.',
                 market: null,
                 resolution: null,
-                claim: null
+                claim: null,
+                proof: {}
             },
             oracle: latestOracle ? {
                 tone: 'success',
@@ -172,6 +175,33 @@
     function render(element, model, { apiBase = backendBase() } = {}) {
         const doc = element.ownerDocument;
         element.replaceChildren();
+
+        const story = node(doc, 'section', null, 'hd-story');
+        const storyCopy = node(doc, 'div', null, 'hd-story-copy');
+        storyCopy.append(node(doc, 'span', 'HYPERSTITION · ONE FUTURE, END TO END', 'hd-eyebrow'));
+        storyCopy.append(node(doc, 'h2', 'A possible land future became a verifiable market'));
+        storyCopy.append(node(doc, 'p', 'The market committed its question before settlement. Two wallets backed competing outcomes. A public court attestation selected the result, any wallet could resolve it, and the winner claimed the pool.'));
+        const storyLinks = node(doc, 'div', null, 'hd-links');
+        if (model.externalMarket.market) storyLinks.append(link(doc, 'Open market account ↗', `https://explorer.solana.com/address/${encodeURIComponent(model.externalMarket.market)}?cluster=devnet`));
+        if (model.externalMarket.resolution) storyLinks.append(link(doc, 'Verify resolution ↗', `https://explorer.solana.com/tx/${encodeURIComponent(model.externalMarket.resolution)}?cluster=devnet`));
+        if (model.externalMarket.claim) storyLinks.append(link(doc, 'Verify payout ↗', `https://explorer.solana.com/tx/${encodeURIComponent(model.externalMarket.claim)}?cluster=devnet`));
+        storyCopy.append(storyLinks);
+        const storyFlow = node(doc, 'ol', null, 'hd-story-flow');
+        [
+            ['01', 'Imagined', 'A parcel future becomes a falsifiable question.'],
+            ['02', 'Proposed', 'Its recipe and outcomes are committed by hash.'],
+            ['03', 'Backed', 'Capital enters both competing outcomes.'],
+            ['04', 'Forecast', 'YES and NO remain visible until close.'],
+            ['05', 'Attested', 'A trusted public record supplies evidence.'],
+            ['06', 'Realized', 'The program derives the result and pays out.']
+        ].forEach(([number, title, detail]) => {
+            const item = node(doc, 'li');
+            item.append(node(doc, 'span', number), node(doc, 'strong', title), node(doc, 'small', detail));
+            storyFlow.append(item);
+        });
+        story.append(storyCopy, storyFlow);
+        element.append(story);
+
         const cards = node(doc, 'section', null, 'hd-grid');
         addCard(cards, 'x402', model.x402, [
             { label: 'View discovery record ↗', href: model.x402.discoveryUrl || `${apiBase}/agent/discovery` },
@@ -219,13 +249,13 @@
 
         const thesis = node(doc, 'section', null, 'hd-flow hd-thesis');
         thesis.append(node(doc, 'span', 'THE PRODUCT', 'hd-eyebrow'));
-        thesis.append(node(doc, 'h2', 'From a real parcel to a resolved claim'));
+        thesis.append(node(doc, 'h2', 'The narrative can mobilize reality. It cannot declare itself true.'));
         const thesisGrid = node(doc, 'div', null, 'hd-thesis-grid');
         [
-            ['1', 'Propose', 'A human or agent proposes a change to exact cadastral parcels.'],
-            ['2', 'Fund + forecast', 'Wallets donate, pledge, or take a YES/NO market position.'],
-            ['3', 'Observe', 'Public registers and court records attest what happened in the real world.'],
-            ['4', 'Resolve', 'A declared evidence recipe determines the outcome and unlocks settlement.']
+            ['1', 'Possible future', 'A human or agent expresses a falsifiable change to exact cadastral parcels.'],
+            ['2', 'Causal force', 'Attention, negotiation, funding and forecasts organize around that future.'],
+            ['3', 'Reality check', 'Independent public records attest what actually happened in the world.'],
+            ['4', 'Settlement', 'A declared evidence recipe resolves the claim and unlocks the outcome.']
         ].forEach(([number, title, detail]) => {
             const item = node(doc, 'article');
             item.append(node(doc, 'span', number, 'hd-step-number'), node(doc, 'strong', title), node(doc, 'p', detail));

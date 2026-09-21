@@ -1,15 +1,18 @@
 # Urban Game Theory
 
-> A market for real-world land change: humans and agents propose, fund, and forecast changes to
-> exact parcels, while public records resolve what actually happened.
+## Hyperstition: Markets for Possible Cities
+
+> Humans and agents imagine, propose, fund, and forecast changes to exact parcels. Public records
+> decide which possible futures became real.
 
 Urban Game Theory connects four workflows that are normally separate—mapping, proposals, funding,
 and prediction markets—through one canonical parcel identity. Humans, deterministic agents, and
 LLM-controlled agents use the same proposal, wallet, and activity interfaces.
 
-This branch contains the submission for the **Colosseum Crypto World's Fair 2026**. Urban Game
-Theory predates the event; [`HACKATHON.md`](HACKATHON.md) identifies the exact baseline, commits,
-and features built during the hackathon.
+This branch contains the **Hyperstition: Markets for Possible Cities** submission for the
+**Colosseum Crypto World's Fair 2026**, built as an Urban Game Theory project by Consensus Builder.
+Urban Game Theory predates the event; [`HACKATHON.md`](HACKATHON.md) identifies the exact baseline,
+commits, and features built during the hackathon.
 
 ## Start here
 

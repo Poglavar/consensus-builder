@@ -12,7 +12,8 @@ describe('hackathon demo evidence model', () => {
         oracle: {
             externalMarket: {
                 status: 'live_devnet', proofMarket: 'external-market',
-                proofResolution: 'resolution-transaction', proofClaim: 'claim-transaction'
+                proofResolution: 'resolution-transaction', proofClaim: 'claim-transaction',
+                proof: { recipeHash: 'aa'.repeat(32), yesStakeAtomic: '10000' }
             }
         }
     };
@@ -65,7 +66,8 @@ describe('hackathon demo evidence model', () => {
             detail: expect.stringContaining('0.02 USDC claimed'),
             market: 'external-market',
             resolution: 'resolution-transaction',
-            claim: 'claim-transaction'
+            claim: 'claim-transaction',
+            proof: { recipeHash: 'aa'.repeat(32), yesStakeAtomic: '10000' }
         });
     });
 

@@ -250,7 +250,18 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                         proofMarket: '5wyJ7XjbnoPUaDgaHAttdhdS38VmHf1p3jGwwVUeN8QM',
                         proofResolution: '39sN9w1Pj75Hp7vjxQzaNQ89uRxSsTjFFoE4GCPfWXMU7v1koLEUtV6odzUfQcxuZJNWwXhs1UWKswSMRQbdLETJ',
                         proofClaim: '2Ht5ZdVHZuFdEu5PkhkQxqNjoPQSBM9jeGaWKPiWzpLjbWtahP5bhKh3offRcvKDVN6JBFMy6piozWnEExy3RNzJ',
-                        proof: { yesStakeAtomic: '10000', noStakeAtomic: '10000', payoutAtomic: '20000', decimals: 6 }
+                        proof: {
+                            recipeHash: '956161fdc52eb86424952ad2cd447b9876720fee4459c4af541095e211b1df75',
+                            attestation: '12VxrWBkHfabA1jdV9HfniPNSj95Tp16uhXprpXzPgWk',
+                            evidenceHash: '6a2dcae7c7b3c0ed7c8d9f93f415a5296f1293b0001e7857a806589b04eac789',
+                            create: '5rcKhFUdkEaoXiyme4WBEEdQdW9dxvR6tPhqdAxUoW1T4KYC6LqwkBGf91T634pLRMUcbAsFeHvgoKghVTf2hBAD',
+                            yesStake: 'fvSPdGu3DTpJ9MNpQX5iFw8MyjFkqmrdKjoSn9LfbXEYtAPjJTQT7vLcc1HDvicEZTcDwsw55MG7KKCaSUg7bnE',
+                            noStake: '4nVnKJAFnPfqk6fPqa1cK6GQVQxSzZFd9tmWUAaZE79ZVRKZqyfWhawPy1SenkfctLpormsKXKY2GJLSQLiQp7M4',
+                            yesStakeAtomic: '10000',
+                            noStakeAtomic: '10000',
+                            payoutAtomic: '20000',
+                            decimals: 6
+                        }
                     }
                 },
                 market: {
