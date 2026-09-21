@@ -169,6 +169,7 @@
         let features;
         let returnsWGS84 = true;
         if (city === 'buenos_aires') features = await requestOneByOne(ids, 'parcel-ba', 'smp');
+        else if (city === 'belgrade') features = await requestOneByOne(ids, 'parcel-bg', 'parcel_id');
         else if (city === 'colorado') features = await requestOneByOne(ids, 'parcel-co', 'parcel_id');
         else if (city === 'ljubljana') features = await requestOneByOne(ids, 'parcel-lj', 'parcel_id');
         else if (city === 'new_york') features = await requestOneByOne(ids, 'parcel-nyc', 'parcel_id');
