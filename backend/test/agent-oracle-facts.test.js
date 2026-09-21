@@ -141,8 +141,11 @@ describe(`GET ${AGENT_ORACLE_FACTS_PATH}`, () => {
 
     it('advertises the exact paid fact query through the x402 Bazaar extension', async () => {
         const { app } = appFor(pool);
-        const res = await request(app).get(AGENT_ORACLE_FACTS_PATH).query({ subject: PROPOSAL });
+        const res = await request(app).get(AGENT_ORACLE_FACTS_PATH);
         expect(res.status).toBe(402);
+        expect(pool.query).toHaveBeenCalledWith(expect.stringContaining('($2::text IS NULL OR subject_id = $2)'), [
+            'proposal_lifecycle', null
+        ]);
         const required = decodePaymentRequiredHeader(res.headers['payment-required']);
         expect(required.accepts[0]).toMatchObject({
             network: NETWORK,
@@ -156,7 +159,22 @@ describe(`GET ${AGENT_ORACLE_FACTS_PATH}`, () => {
             type: 'http', method: 'GET', queryParams: { subject: PROPOSAL }
         });
         expect(required.extensions.bazaar.schema.properties.input.properties.queryParams.required)
-            .toContain('subject');
+            .toBeUndefined();
+    });
+
+    it('returns the latest verified fact when no subject is supplied', async () => {
+        const { app } = appFor(pool);
+        const challenge = await request(app).get(AGENT_ORACLE_FACTS_PATH);
+        const paid = await request(app)
+            .get(AGENT_ORACLE_FACTS_PATH)
+            .set('PAYMENT-SIGNATURE', await paymentHeader(challenge));
+
+        expect(paid.status).toBe(200);
+        expect(paid.body).toMatchObject({
+            fact: { subject: { id: PROPOSAL } },
+            recipe: { subject: { proposalAccount: PROPOSAL } },
+            verification: { status: 'verified' }
+        });
     });
 
     it('settles before returning the verified recipe-bound bundle', async () => {

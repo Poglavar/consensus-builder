@@ -227,6 +227,7 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     submit: `${base}/agent/proposals`,
                     discovery: `${base}/agent/discovery`,
                     oracleFactDiscovery: `${base}/agent/discovery?resource=oracle-facts`,
+                    oracleFactLatest: `${base}/agent/oracle/facts`,
                     oracleFact: `${base}/agent/oracle/facts?subject={proposalAccount}&market={marketAccount}`,
                     read: `${base}/proposals/{id}`,
                     listByAuthor: `${base}/proposals/summary?city={city}&author={wallet}`,

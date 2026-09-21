@@ -19,9 +19,8 @@ function decodeExtensionResponsesHeader(value) {
 
 export function oracleFactUrl(baseUrl, proposalAccount, marketAccount = null) {
     if (!baseUrl) throw new Error('baseUrl is required');
-    if (!proposalAccount) throw new Error('proposalAccount is required');
     const url = new URL('/agent/oracle/facts', baseUrl);
-    url.searchParams.set('subject', proposalAccount);
+    if (proposalAccount) url.searchParams.set('subject', proposalAccount);
     if (marketAccount) url.searchParams.set('market', marketAccount);
     return url.toString();
 }

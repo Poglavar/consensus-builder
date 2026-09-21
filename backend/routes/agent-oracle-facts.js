@@ -20,9 +20,8 @@ export const AGENT_ORACLE_FACTS_DISCOVERY = declareDiscoveryExtension({
     },
     inputSchema: {
         type: 'object',
-        required: ['subject'],
         properties: {
-            subject: { type: 'string', description: 'Solana ProposalNFT account to verify.' },
+            subject: { type: 'string', description: 'Optional Solana ProposalNFT account to verify; omit for the latest verified fact.' },
             market: { type: 'string', description: 'Optional market account to bind into the returned recipe.' }
         },
         additionalProperties: false
@@ -67,9 +66,9 @@ function publicResourceUrl(env) {
 }
 
 function parseFactQuery(req, res, next) {
-    const proposalAccount = validAddress(req.query.subject);
+    const proposalAccount = req.query.subject ? validAddress(req.query.subject) : null;
     const marketAccount = req.query.market ? validAddress(req.query.market) : null;
-    if (!proposalAccount) return res.status(400).json({ error: 'subject must be a Solana address' });
+    if (req.query.subject && !proposalAccount) return res.status(400).json({ error: 'subject must be a Solana address' });
     if (req.query.market && !marketAccount) return res.status(400).json({ error: 'market must be a Solana address' });
     req.oracleFactQuery = { proposalAccount, marketAccount };
     next();
@@ -83,14 +82,17 @@ function loadVerifiedFact(pool) {
                        source_hash, source_observed_at, attester, transaction_signature,
                        evidence, created_at
                 FROM consensus.land_event
-                WHERE event_type = $1 AND subject_id = $2
+                WHERE event_type = $1
+                  AND ($2::text IS NULL OR subject_id = $2)
                 ORDER BY source_observed_at DESC
                 LIMIT 1
             `, [EVENT_TYPE, req.oracleFactQuery.proposalAccount]);
             if (!rows[0]) return res.status(404).json({ error: 'No verified terminal fact exists for this proposal.' });
+            const proposalAccount = req.oracleFactQuery.proposalAccount || rows[0].subject_id;
             req.oracleFactBundle = buildVerifiedProposalFact({
                 event: eventFromRow(rows[0]),
-                ...req.oracleFactQuery
+                proposalAccount,
+                marketAccount: req.oracleFactQuery.marketAccount
             });
             next();
         } catch (error) {
@@ -124,7 +126,7 @@ export function setupAgentOracleFactsRoute(app, pool, { env = process.env, facil
                 price: config.priceOracleFact,
                 extra: { paymentFlow: 'upfront' }
             },
-            description: 'Return one recipe-bound, source-hashed proposal lifecycle fact.',
+            description: 'Return the latest or a subject-selected recipe-bound, source-hashed proposal lifecycle fact.',
             mimeType: 'application/json',
             serviceName: 'Urban Game Theory',
             tags: ['urban-planning', 'land', 'oracle', 'agents'],

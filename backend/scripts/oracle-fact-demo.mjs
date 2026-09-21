@@ -18,9 +18,9 @@ function usage(code = 0) {
         'Paid oracle fact demo: inspect → pay → verify → discover.',
         '',
         'Choose exactly one: --dry-run | --live',
-        'Required: --url <backend> --subject <proposal account>',
+        'Required: --url <backend>',
         'Live only: --keypair <Solana devnet keypair JSON>',
-        'Optional: --market <market account> --rpc <URL> --json'
+        'Optional: --subject <proposal account> (omit for latest) --market <market account> --rpc <URL> --json'
     ].join('\n'));
     process.exit(code);
 }
@@ -37,7 +37,7 @@ function argsOf(argv) {
         args[token.slice(2)] = argv[index + 1];
         index += 1;
     }
-    if (Boolean(args.dryRun) === Boolean(args.live) || !args.url || !args.subject || (args.live && !args.keypair)) usage(2);
+    if (Boolean(args.dryRun) === Boolean(args.live) || !args.url || (args.live && !args.keypair)) usage(2);
     return args;
 }
 
@@ -48,7 +48,8 @@ function secretFrom(file) {
 
 function assertBundle(bundle, subject) {
     if (bundle?.verification?.status !== 'verified') throw new Error('response is not a verified fact bundle');
-    if (bundle?.fact?.subject?.id !== subject) throw new Error('response subject does not match the request');
+    if (subject && bundle?.fact?.subject?.id !== subject) throw new Error('response subject does not match the request');
+    if (!bundle?.fact?.subject?.id) throw new Error('response has no fact subject');
     if (bundle?.verification?.recipeHash !== bundle?.recipe?.hash) throw new Error('response recipe hash is inconsistent');
 }
 

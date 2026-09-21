@@ -197,9 +197,12 @@ lists everything your wallet filed in that city.
 
 Agents can buy a machine-ready terminal proposal fact for **$(oraclePrice)** in devnet USDC:
 
-`GET $(base)/agent/oracle/facts?subject=<proposal-account>&market=<optional-market-account>`
+`GET $(base)/agent/oracle/facts`
 
-The first request checks the address and confirms that a fact exists **before charging**, then returns
+Omit query parameters to buy the latest verified fact, or select one with
+`?subject=<proposal-account>&market=<optional-market-account>`.
+
+The first request validates any supplied address and confirms that a fact exists **before charging**, then returns
 402. After payment, the response contains the source-hashed event, the exact subject-specific
 `proposal-lifecycle-v1` recipe, its deterministic Lens evaluation, and explicit integrity checks.
 The same evaluator supports unique-attester thresholds, required source classes, conflicting-source

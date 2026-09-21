@@ -10,8 +10,10 @@ describe('paid oracle fact client', () => {
         expect(oracleFactUrl('https://api.example.test/base', PROPOSAL, MARKET)).toBe(
             `https://api.example.test/agent/oracle/facts?subject=${PROPOSAL}&market=${MARKET}`
         );
+        expect(oracleFactUrl('https://api.example.test/base')).toBe(
+            'https://api.example.test/agent/oracle/facts'
+        );
         expect(() => oracleFactUrl('', PROPOSAL)).toThrow(/baseUrl/);
-        expect(() => oracleFactUrl('https://api.example.test', '')).toThrow(/proposalAccount/);
     });
 
     it('returns the verified bundle and decoded x402 settlement receipt', async () => {
@@ -63,5 +65,16 @@ describe('paid oracle fact client', () => {
         });
 
         expect(result.extensionResponses).toBeNull();
+    });
+
+    it('can buy the latest fact through the advertised queryless resource URL', async () => {
+        const paidFetch = vi.fn(async () => new Response('{}', { status: 200 }));
+
+        await buyOracleFact({ baseUrl: 'https://api.example.test', paidFetch });
+
+        expect(paidFetch).toHaveBeenCalledWith(
+            'https://api.example.test/agent/oracle/facts',
+            { headers: { accept: 'application/json' } }
+        );
     });
 });

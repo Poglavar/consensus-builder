@@ -351,6 +351,7 @@ describe('agent quickstart docs', () => {
             paymentFlow: 'upfront'
         });
         expect(res.body.endpoints.submit).toBe('https://api.example.test/agent/proposals');
+        expect(res.body.endpoints.oracleFactLatest).toBe('https://api.example.test/agent/oracle/facts');
         expect(res.body.endpoints.oracleFact).toContain('/agent/oracle/facts?subject=');
         expect(res.body.endpoints.oracleFactDiscovery).toContain('resource=oracle-facts');
         expect(res.body.mcp).toMatchObject({
