@@ -240,7 +240,9 @@ That proof uses V1 and is explicitly retrospective. The live V2 declaration is
 V2 commits `sourceObservedAt`; the deployed program rejects it when it predates market close or lies
 after resolution. The registered schema and dedicated attester have issued five source-timed V2
 attestations. These prove the evidence pipeline, not a forecast: the first post-close matching record
-is still required before agents may call the prospective settlement complete.
+is still required before agents may call the prospective settlement complete. Prospective market
+[`Atps…kaNQ`](https://explorer.solana.com/address/Atps3gg4ZCvDMtbosTK5Evrb1PAwY2shUBvkzjihkaNQ?cluster=devnet)
+is already open and staked on both sides; its committed close is 2026-09-22 21:00 UTC.
 
 ## 9. Donations and soft pledges
 

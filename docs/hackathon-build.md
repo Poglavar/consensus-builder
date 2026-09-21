@@ -213,6 +213,8 @@ market close. The deployed devnet program independently enforces
 `market.closesAt <= sourceObservedAt <= resolution time` on-chain. The registered V2 schema is
 `G747jAqNr6ZwBiNAdeW1Bc4PWQH7arfvq5cjDXDcSoMG`, and the runner uses it by default. The scraper now
 stores the official source timestamp and the dedicated attester can publish it as an `int64` Unix
-second. The remaining step is necessarily temporal: open a market, then wait for a matching court
-record published after it closes. The existing settled market remains an honest retrospective V1
-integration proof until that later record exists.
+second. The first live V2 market is `Atps3gg4ZCvDMtbosTK5Evrb1PAwY2shUBvkzjihkaNQ`; both outcomes
+were staked before its 2026-09-22 21:00 UTC close. The remaining step is necessarily temporal: wait
+for a matching court record officially published after it closes, then run the settle phase. The
+existing settled market remains an honest retrospective V1 integration proof until that later record
+exists.

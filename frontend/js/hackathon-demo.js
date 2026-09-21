@@ -143,7 +143,9 @@
                     : 'Court evidence settled a two-sided integration proof',
                 detail: externalProspective
                     ? 'The source record and attestation arrived after trading closed · 0.02 USDC claimed'
-                    : 'Retrospective payout proven · V2 schema and on-chain chronology guard now live · awaiting the first post-close court record',
+                    : external.prospectiveProof?.market
+                        ? `Retrospective payout proven · prospective V2 market open until ${new Date(external.prospectiveProof.closesAt).toLocaleString()} · awaiting later evidence`
+                        : 'Retrospective payout proven · V2 schema and on-chain chronology guard now live · awaiting the first post-close court record',
                 market: external.proofMarket,
                 resolution: external.proofResolution,
                 claim: external.proofClaim || null,
@@ -245,6 +247,13 @@
                 proofOrder.append(row);
             });
             storyCopy.append(proofOrder, node(doc, 'p', chronology.reason, 'hd-proof-reason'));
+        }
+        if (model.externalMarket.nextProof?.market) {
+            const next = model.externalMarket.nextProof;
+            storyCopy.append(
+                node(doc, 'p', `A separate V2 market is now open and two-sided. It closes ${new Date(next.closesAt).toLocaleString()} and can settle only from a matching later public record.`, 'hd-proof-reason'),
+                link(doc, 'Open prospective market ↗', `https://explorer.solana.com/address/${encodeURIComponent(next.market)}?cluster=devnet`)
+            );
         }
         const storyFlow = node(doc, 'ol', null, 'hd-story-flow');
         [
@@ -357,6 +366,7 @@
             ['Inspect the prediction market’s hashed oracle recipe and market account.', model.evidence.latestProposalId ? `/proposals/${encodeURIComponent(model.evidence.latestProposalId)}` : '/'],
             ['Verify the external court oracle’s aggregate health and public SAS schema.', `${apiBase}/oracle/public-records/summary`],
             ['Follow the live retrospective court-attestation proof from resolution to USDC claim.', model.externalMarket.resolution ? `https://explorer.solana.com/tx/${encodeURIComponent(model.externalMarket.resolution)}?cluster=devnet` : `${apiBase}/docs/agents.json`],
+            ['Inspect the open two-sided V2 market awaiting a genuinely later court record.', model.externalMarket.nextProof?.market ? `https://explorer.solana.com/address/${encodeURIComponent(model.externalMarket.nextProof.market)}?cluster=devnet` : `${apiBase}/docs/agents.json`],
             ['Open a source-hashed proposal lifecycle event and its Solana transaction.', `${apiBase}/oracle/events`]
         ].forEach(([label, href]) => {
             const item = node(doc, 'li'); item.append(link(doc, label, href)); list.append(item);
@@ -371,7 +381,7 @@
         const boundary = node(doc, 'section', null, 'hd-flow hd-boundary');
         boundary.append(node(doc, 'span', 'HONEST BOUNDARY', 'hd-eyebrow'));
         boundary.append(node(doc, 'h2', 'One authoritative source is live; broader geography still needs corroboration'));
-        boundary.append(node(doc, 'p', 'The live external market verifies the Croatian court SAS issuer. The V2 schema and source-time guard are now registered and deployed on devnet; the remaining proof is necessarily prospective: open a market first, then wait for a genuinely later public record. The reusable Lens evaluator is code-ready, while permit, imagery, news and OSM collectors remain future work. Everything shown here uses devnet assets with no monetary value.'));
+        boundary.append(node(doc, 'p', 'The live external market verifies the Croatian court SAS issuer. The V2 schema, source-time guard, attester and a two-sided prospective market are live on devnet; settlement now honestly waits for a matching public record published after the committed close. The reusable Lens evaluator is code-ready, while permit, imagery, news and OSM collectors remain future work. Everything shown here uses devnet assets with no monetary value.'));
         element.append(boundary);
 
         const readiness = node(doc, 'section', null, 'hd-flow hd-readiness');

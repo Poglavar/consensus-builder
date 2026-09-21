@@ -119,6 +119,15 @@ export async function auditHackathonProof({
             && externalProof.create && externalProof.yesStake && externalProof.noStake),
         'A two-sided recipe-bound external market resolved and paid out on devnet',
         external ? { market: external.proofMarket, resolution: external.proofResolution, claim: external.proofClaim } : errors.docs || null),
+        check('prospective_market_open', Boolean(external?.prospectiveProof?.status === 'market_open_awaiting_post_close_evidence'
+            && external.prospectiveProof.market && external.prospectiveProof.transactions?.create
+            && external.prospectiveProof.transactions?.yesStake && external.prospectiveProof.transactions?.noStake),
+        'A source-timed V2 market opened and both outcomes were staked before future evidence',
+        external?.prospectiveProof ? {
+            market: external.prospectiveProof.market,
+            closesAt: external.prospectiveProof.closesAt,
+            transactions: external.prospectiveProof.transactions
+        } : errors.docs || null),
         check('chronology_label', Boolean(chronology?.classification),
             'The external-market proof publishes its evidence chronology classification',
             chronology?.classification || errors.docs || null, 'advisory')

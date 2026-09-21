@@ -394,18 +394,26 @@ describe('agent quickstart docs', () => {
             })
         });
         expect(res.body.oracle.externalMarket.prospectiveProof).toMatchObject({
-            status: 'awaiting_post_close_evidence',
+            status: 'market_open_awaiting_post_close_evidence',
             attestationStatus: 'live_devnet',
             v2Attestations: 5,
             proofAttestation: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/),
             proofTransaction: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{64,88}$/),
+            market: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/),
+            recipeHash: expect.stringMatching(/^sha256:[0-9a-f]{64}$/),
+            closesAt: expect.stringMatching(/^2026-/),
+            transactions: expect.objectContaining({
+                create: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{64,88}$/),
+                yesStake: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{64,88}$/),
+                noStake: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{64,88}$/)
+            }),
             recipeId: 'court-parcel-operation-v2',
             recipe: expect.stringContaining('/oracle/recipes/court-parcel-operation-v2'),
             schema: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/),
             schemaRegistration: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{64,88}$/),
             marketProgramUpgrade: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{64,88}$/),
             temporalGuard: expect.stringContaining('sourceObservedAt'),
-            requirement: expect.stringContaining('open a market before its evidence exists')
+            requirement: expect.stringContaining('wait for a matching official record')
         });
         expect(res.body.market.externalResolution).toMatchObject({
             status: 'live_devnet', account: 'ExternalMarket',

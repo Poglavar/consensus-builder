@@ -296,11 +296,19 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                             })
                         },
                         prospectiveProof: {
-                            status: 'awaiting_post_close_evidence',
+                            status: 'market_open_awaiting_post_close_evidence',
                             attestationStatus: 'live_devnet',
                             v2Attestations: 5,
                             proofAttestation: 'AoF7DacKAkH3YcuWFp6vgYkVUspT8whmX1WWfWVUabFe',
                             proofTransaction: '5rRaRysV8hNmNDXiMoXGpLYNEFZxRZrQk6uQxG1A1cHwEjMEJcVUG4zn1QPZkBKhBX8dLMipjWFrswzqE1HMa9Ta',
+                            market: 'Atps3gg4ZCvDMtbosTK5Evrb1PAwY2shUBvkzjihkaNQ',
+                            recipeHash: 'sha256:1d8195b99b29f3c46b8902b703efea223513f63debd8eecb07bc02956aee9175',
+                            closesAt: '2026-09-22T21:00:00.000Z',
+                            transactions: {
+                                create: '5Xj91vDkDa71qAXjpkxoyBJXRxXPw7Fc333Tx9eW71LMQ3wCLvxNUR3RwxL8U22oioYpUgMHz59XY5zWB9tAvSpd',
+                                yesStake: '38v9wsfiW4eAkbFvqVyRH3npT7exUon44fEFUpM3p9PQwtYbnPSQv83rDFnmYuF7ccy5xgtXZZ51KaLRtB1eyPDe',
+                                noStake: '3Hr8pZSS76ff4ZXpHEn1DMymt9oZ9BQQDVxYZykf8FQrL4bPhL9W5fwsv3kRFftgDEe31UxJSicWF3ksaDUodKCU'
+                            },
                             script: 'blockchain/solana/scripts/prospective-external-market.mjs',
                             recipeId: COURT_RECIPE_V2_ID,
                             recipe: `${base}/oracle/recipes/${COURT_RECIPE_V2_ID}?parcelUid={parcelUid}&yesOperation={yesOperation}&noOperation={noOperation}&closesAt={unixSeconds}`,
@@ -309,7 +317,7 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                             schemaRegistration: '3JqgCCCeM8Duf8mVtYbi5reZQBZvZ1QZPQojTpV9LKDWjsMq8rXLw56c2mhdP3WLraPx1SUednLwqpuwFhhzwQpa',
                             marketProgramUpgrade: '5rxykVhB775kvWzNvoJTjL2GxgKKkTKBywQcoDwQNEZW3shCjUHTBQsjxjwDtqLKbPpUxds8Rot5qbvcMUwsKfQG',
                             temporalGuard: 'proposal_market requires market close <= sourceObservedAt <= resolution time',
-                            requirement: 'open a market before its evidence exists, then issue and settle a source-timed post-close attestation'
+                            requirement: 'wait for a matching official record published after close, attest it with V2, then settle permissionlessly'
                         }
                     }
                 },

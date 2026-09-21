@@ -367,3 +367,7 @@
   produced 35 private parcel facts from two unambiguous decisions and five V2 SAS attestations on
   devnet. These prove scraper → interpreter → attester, but remain retrospective until a market is
   opened before a later matching public record appears.
+- 2026-09-21: **The prospective clock is running.** V2 market `Atps…kaNQ` was opened and both YES and
+  NO received 0.01 devnet USDC before its 2026-09-22 21:00 UTC close. Its private state is mode-0600
+  on the operator host. Pre-existing V2 attestations are ineligible by construction; settlement must
+  wait for a matching official record whose `sourceObservedAt` and first SAS transaction are later.

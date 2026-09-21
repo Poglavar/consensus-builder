@@ -13,6 +13,11 @@ function fixtures(overrides = {}) {
                 proof: {
                     create: 'create', yesStake: 'yes', noStake: 'no',
                     chronology: { classification: 'retrospective_integration' }
+                },
+                prospectiveProof: {
+                    status: 'market_open_awaiting_post_close_evidence', market: 'prospective-market',
+                    closesAt: '2026-09-22T21:00:00.000Z',
+                    transactions: { create: 'pc', yesStake: 'py', noStake: 'pn' }
                 }
             } }
         },
@@ -54,7 +59,7 @@ describe('public hackathon proof audit', () => {
             baseUrl: BASE, fetchImpl, now: Date.parse('2026-09-21T12:00:00Z')
         });
         expect(result.status).toBe('verified');
-        expect(result.summary).toEqual({ pass: 8, warn: 0, fail: 0 });
+        expect(result.summary).toEqual({ pass: 9, warn: 0, fail: 0 });
         expect(fetchImpl).toHaveBeenCalledTimes(7);
         expect(result.checks.find(item => item.id === 'deterministic_supporter')).toMatchObject({
             status: 'pass', evidence: { proposalId: 'p1', transaction: 'supporter-transaction' }
@@ -79,7 +84,7 @@ describe('public hackathon proof audit', () => {
             baseUrl: BASE, fetchImpl: fetchFor(data), now: Date.parse('2026-09-21T12:00:00Z')
         });
         expect(result.status).toBe('verified');
-        expect(result.summary).toEqual({ pass: 7, warn: 1, fail: 0 });
+        expect(result.summary).toEqual({ pass: 8, warn: 1, fail: 0 });
     });
 
     it('requires an exact normalized resource URL', () => {

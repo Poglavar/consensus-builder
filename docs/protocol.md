@@ -257,10 +257,11 @@ permit, imagery and OSM collectors are not yet connected.
 **Live V2 evidence path:** the V2 recipe, two-phase runner, attestation parser and market guard commit
 the court source-publication time and reject pre-close or future evidence. The V2 SAS schema is
 registered, the devnet market program is upgraded, the dedicated court attester is deployed, and
-five source-timed attestations now prove the scraper → strict interpreter → SAS path. They are not a
-prospective settlement because their official publication times predate a new market close.
+five source-timed attestations now prove the scraper → strict interpreter → SAS path. Market
+`Atps…kaNQ` was then opened and staked on both sides with a 2026-09-22 21:00 UTC close. The earlier
+attestations cannot resolve it; only a matching record officially published after that close can.
 
-**Next:** open and complete the first genuinely prospective court market from a later record, then
+**Next:** complete the open prospective court market from a later matching record, then
 package the existing proposal, funding, market and verified-fact contracts for more autonomous agent
 clients and cities. Additional public-record and sensing adapters are deliberately deferred; they
 can enter later through the existing adapter contract and Lens evaluator.
