@@ -10,21 +10,22 @@ import os from 'node:os';
 import path from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
 import { createRequire } from 'node:module';
-import {
-    Connection, Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction
-} from '@solana/web3.js';
-import {
-    createAssociatedTokenAccountIdempotentInstruction,
-    createTransferCheckedInstruction,
-    getAssociatedTokenAddressSync
-} from '@solana/spl-token';
 import { mintProposal } from '../../../backend/agents/minter.js';
 import { ensureDonationEscrowAndDonate } from '../../../backend/agents/donor.js';
 import { ensurePledgeBookAndSet } from '../../../backend/agents/pledger.js';
 import { sendAndConfirmPolling } from '../../../backend/agents/solana-send.js';
 
-const require = createRequire(import.meta.url);
-const support = require('../../../frontend/js/solana/pledge-client.js');
+const solanaRequire = createRequire(new URL('../package.json', import.meta.url));
+const localRequire = createRequire(import.meta.url);
+const {
+    Connection, Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction
+} = solanaRequire('@solana/web3.js');
+const {
+    createAssociatedTokenAccountIdempotentInstruction,
+    createTransferCheckedInstruction,
+    getAssociatedTokenAddressSync
+} = solanaRequire('@solana/spl-token');
+const support = localRequire('../../../frontend/js/solana/pledge-client.js');
 support.configure({ web3: { Connection, Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction } });
 
 const RPC_URL = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';

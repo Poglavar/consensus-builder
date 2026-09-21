@@ -11,14 +11,6 @@ import os from 'node:os';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import {
-    Connection, Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction
-} from '@solana/web3.js';
-import {
-    createAssociatedTokenAccountIdempotentInstruction,
-    createTransferCheckedInstruction,
-    getAssociatedTokenAddressSync
-} from '@solana/spl-token';
-import {
     buildCourtParcelOperationRecipe,
     COURT_ATTESTER,
     COURT_CREDENTIAL,
@@ -28,8 +20,17 @@ import {
 import { assertCourtAttestation, decodeCourtAttestation } from '../../../backend/oracle/sas-court-attestation.js';
 import { sendAndConfirmPolling } from '../../../backend/agents/solana-send.js';
 
-const require = createRequire(import.meta.url);
-const marketClient = require('../../../frontend/js/solana/market-client.js');
+const solanaRequire = createRequire(new URL('../package.json', import.meta.url));
+const localRequire = createRequire(import.meta.url);
+const {
+    Connection, Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction
+} = solanaRequire('@solana/web3.js');
+const {
+    createAssociatedTokenAccountIdempotentInstruction,
+    createTransferCheckedInstruction,
+    getAssociatedTokenAddressSync
+} = solanaRequire('@solana/spl-token');
+const marketClient = localRequire('../../../frontend/js/solana/market-client.js');
 marketClient.configure({
     web3: { Connection, Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction }
 });
