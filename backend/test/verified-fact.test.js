@@ -35,6 +35,7 @@ describe('verified proposal fact bundle', () => {
             verification: {
                 status: 'verified',
                 recipeHash: expect.stringMatching(/^sha256:[a-f0-9]{64}$/),
+                lens: { status: 'resolved', decision: 'NO', outcome: 'cancelled' },
                 checks: { subjectMatches: true, terminalStatusMatches: true }
             }
         });

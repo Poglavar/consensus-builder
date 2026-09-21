@@ -159,6 +159,23 @@ Adapters must obey these invariants:
 8. Raw records that create privacy or redistribution risk stay behind the source boundary; public
    events disclose only the minimum evidence allowed by that source.
 
+The shared [`recipe-evaluator`](../backend/oracle/recipe-evaluator.js) applies the Lens after an
+adapter validates each source-specific fact. `verification.evidencePolicy` may declare:
+
+```json
+{
+  "threshold": 2,
+  "requiredAttesterKinds": ["independent_imagery", "osm_provenance"],
+  "challengeWindowSeconds": 259200
+}
+```
+
+The evaluator counts each trusted attester once, rejects wrong subjects and unsupported outcomes,
+detects one attester equivocating, treats evidence for competing outcomes as disputed, and resolves
+only after the threshold, required source classes, and challenge window all pass. The default for
+existing one-source recipes is threshold 1 with no delay. This gives future permit/imagery/OSM
+recipes one decision engine instead of bespoke resolution logic per source.
+
 The current `proposal-lifecycle-v1` module predates a generic loader and directly exports equivalent
 recipe, collection, and verification helpers. `court-parcel-operation-v1` is the live concrete
 external adapter; `court-parcel-operation-v2` adds the source-time contract needed for prospective
@@ -230,13 +247,19 @@ correctly classifies it as retrospective because the attestation existed before 
 
 **Live API:** agents can buy a recipe-bound proposal lifecycle fact over x402. Availability and
 integrity are checked before charging; the paid response packages the public source-hashed event,
-exact recipe and verification checks. Bazaar discovery declares its query and output contracts.
+exact recipe, deterministic Lens evaluation and verification checks. Bazaar discovery declares its
+query and output contracts.
+
+**Code-ready:** the reusable Lens evaluator supports unique-attester thresholds, required source
+classes, equivocation/conflict detection and challenge windows. The proposal fact endpoint uses it;
+permit, imagery and OSM collectors are not yet connected.
 
 **Code-ready, not yet live:** the V2 recipe, two-phase runner, attestation parser and market guard
 commit the court source-publication time and reject pre-close or future evidence. A real proof still
 requires registering the V2 SAS schema, upgrading the devnet market program, teaching the dedicated
 court attester to issue V2, then waiting for a genuinely later court record.
 
-**Next:** complete those operational V2 steps, then generalize the fixed parser into
-permit/imagery/OSM adapters and define challenge rules for sources that are not already authoritative
-public records.
+**Next:** complete the operational V2 steps for the first genuinely prospective court market, then
+package the existing proposal, funding, market and verified-fact contracts for more autonomous agent
+clients and cities. Additional public-record and sensing adapters are deliberately deferred; they
+can enter later through the existing adapter contract and Lens evaluator.

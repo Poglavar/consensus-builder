@@ -959,8 +959,8 @@
                         <h4 data-i18n-key="sidebar.info.aboutTitle">About</h4>
                         <p data-i18n-key="sidebar.info.aboutParagraph" data-i18n-attr="html">
                             <strong>Hyperstition: Markets for Possible Cities</strong> is Urban Game Theory's hackathon build by Consensus Builder. Humans and agents imagine, propose, fund and forecast changes to real parcels; public records decide which possible futures became real.
-                            Open the <a href="/hackathon-demo.html">live hackathon demo</a>, or see
-                            <a href="roadmap.html" target="_blank">the roadmap</a>.
+                            Open the <a href="/hackathon-demo.html">live hackathon demo</a>, read the
+                            <a href="/deck.html">pitch deck</a>, or see <a href="roadmap.html" target="_blank">the roadmap</a>.
                         </p>
                     </div>
                     <hr>
@@ -1567,6 +1567,7 @@
             'js/proposals/drill-ui.js',
             'js/proposals/support-view.js',
             'js/proposals/market-view.js',
+            'js/proposals/possibility-timeline.js',
             'js/proposals/details-panel.js',
             'js/proposals/create.js',
             'js/proposal-drafts.js',
@@ -1944,7 +1945,10 @@
                 <span data-i18n-key="modal.welcome.flowAttest">Attest</span>
                 <span data-i18n-key="modal.welcome.flowRealize">Realize</span>
             </div>
-            <a class="welcome-demo-link" href="/hackathon-demo.html" data-i18n-key="modal.welcome.demoLink">Open the live hackathon demo</a>
+            <div class="welcome-hackathon-links">
+                <a class="welcome-demo-link" href="/hackathon-demo.html" data-i18n-key="modal.welcome.demoLink">Open the live hackathon demo</a>
+                <a class="welcome-demo-link" href="/deck.html" data-i18n-key="modal.welcome.deckLink">Read the pitch deck</a>
+            </div>
             <p class="welcome-identity-prompt" data-i18n-key="modal.welcome.subtitle">Choose your avatar and enter a username:</p>
             <form id="welcome-form" onsubmit="submitUsername(event)">
                 <div class="form-group">

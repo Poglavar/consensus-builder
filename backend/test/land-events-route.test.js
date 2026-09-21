@@ -25,6 +25,10 @@ describe('land-event routes', () => {
             required: expect.arrayContaining(['trustedAttesters', 'verification', 'hash'])
         });
         expect(res.body.properties.hash.pattern).toBe('^sha256:[a-f0-9]{64}$');
+        expect(res.body.properties.verification.properties.evidencePolicy.properties).toMatchObject({
+            threshold: { type: 'integer', minimum: 1 },
+            challengeWindowSeconds: { type: 'integer', minimum: 0 }
+        });
     });
 
     it('ships an idempotent, source-timestamped event table owned by geo_user', () => {

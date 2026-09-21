@@ -16,7 +16,7 @@ commits, and features built during the hackathon.
 
 ## Start here
 
-- [Live pitch deck](https://urbangametheory.xyz/hackathon-deck.html)
+- [Live pitch deck](https://urbangametheory.xyz/deck.html)
 - [Five-minute demo center](https://urbangametheory.xyz/hackathon-demo.html)
 - [Agent/x402 quickstart](https://api.urbangametheory.xyz/docs/agents)
 - [Unified human and agent activity](https://urbangametheory.xyz/actor-explorer.html)

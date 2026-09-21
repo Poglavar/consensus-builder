@@ -56,7 +56,7 @@ python3 -m http.server 8080 --directory frontend
 
 Then open:
 
-- <http://localhost:8080/hackathon-deck.html> for the pitch;
+- <http://localhost:8080/deck.html> for the pitch;
 - <http://localhost:8080/hackathon-demo.html> for the judge path; or
 - <http://localhost:8080/> for the parcel map.
 
@@ -140,6 +140,22 @@ The safest judge path is the deployed [Demo Center](https://urbangametheory.xyz/
 It links the Bazaar discovery record, paid agent proof, proposal and support transactions, market
 state, unified activity, hashed recipe, and court-oracle aggregate. Missing dependencies remain
 visibly pending.
+
+The same public evidence can be checked without trusting the Demo Center UI:
+
+```sh
+cd backend
+npm run audit:hackathon -- --url https://api.urbangametheory.xyz
+```
+
+The audit reads seven unauthenticated endpoints, requires exact Bazaar resource matches, and exits
+non-zero when any required proof is absent. Add `--json` for a machine-readable report. It signs no
+transactions and reads neither local keys nor private database state.
+
+For a single proposal, open read-only **Details** on the map. The **From possible future to public
+fact** timeline merges the public activity feed and proposal-lifecycle oracle into proposed, backed,
+forecast and resolved stages. A missing stage remains pending; transaction-backed stages link to
+Solana Explorer.
 
 All tokens and programs used by the hackathon flow are on devnet. Do not reuse the deployment or
 operator configuration for assets with real value.

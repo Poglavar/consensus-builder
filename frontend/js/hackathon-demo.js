@@ -94,7 +94,9 @@
                 detail: latestSupporter.support
                     ? `${latestSupporter.persona} · ${latestSupporter.support.type} · proposal ${latestSupporter.support.proposalId}`
                     : `${latestSupporter.persona} · ${latestSupporter.outcome || latestSupporter.stage || 'pending'}`,
-                run: latestSupporter
+                run: latestSupporter,
+                transaction: latestSupporter.support?.signature || null,
+                proposalId: latestSupporter.support?.proposalId || null
             } : {
                 tone: 'waiting', label: 'Supporter persona ready, first run pending',
                 detail: 'The deterministic supporter will pledge to an active minted proposal by another actor.', run: null
@@ -266,7 +268,13 @@
             { label: 'Run record ↗', href: `${apiBase}/agent/runs/${encodeURIComponent(model.algorithm.run.id)}` }
         ] : []);
         addCard(cards, 'Supporter persona', model.supporter, model.supporter.run ? [
-            { label: 'Run record ↗', href: `${apiBase}/agent/runs/${encodeURIComponent(model.supporter.run.id)}` }
+            { label: 'Run record ↗', href: `${apiBase}/agent/runs/${encodeURIComponent(model.supporter.run.id)}` },
+            model.supporter.transaction
+                ? { label: 'Verify support transaction ↗', href: `https://explorer.solana.com/tx/${encodeURIComponent(model.supporter.transaction)}?cluster=devnet` }
+                : {},
+            model.supporter.proposalId
+                ? { label: 'Open supported proposal', href: `/proposals/${encodeURIComponent(model.supporter.proposalId)}` }
+                : {}
         ] : []);
         addCard(cards, 'On-chain evidence', model.evidence, [
             { label: 'Actor Explorer', href: '/actor-explorer.html' },
@@ -344,7 +352,7 @@
         const boundary = node(doc, 'section', null, 'hd-flow hd-boundary');
         boundary.append(node(doc, 'span', 'HONEST BOUNDARY', 'hd-eyebrow'));
         boundary.append(node(doc, 'h2', 'One authoritative source is live; broader geography still needs corroboration'));
-        boundary.append(node(doc, 'p', 'The live external market verifies the V1 Croatian court SAS schema and trusted issuer. A V2 source-time guard is code-ready but still needs schema registration, attester rollout, a program upgrade, and a genuinely later court record. Permit, imagery, news and OSM adapters—and challenge rules for sources that are easier to manipulate—remain future work. Everything shown here uses devnet assets with no monetary value.'));
+        boundary.append(node(doc, 'p', 'The live external market verifies the V1 Croatian court SAS schema and trusted issuer. A V2 source-time guard and reusable Lens evaluator—with thresholds, conflict detection, and challenge windows—are code-ready. V2 still needs schema registration, attester rollout, a program upgrade, and a genuinely later court record; permit, imagery, news and OSM collectors remain future work. Everything shown here uses devnet assets with no monetary value.'));
         element.append(boundary);
 
         const readiness = node(doc, 'section', null, 'hd-flow hd-readiness');

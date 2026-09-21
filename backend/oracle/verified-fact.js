@@ -9,6 +9,7 @@ import {
     STATUS_CANCELLED,
     STATUS_EXECUTED
 } from './proposal-lifecycle.js';
+import { evaluateResolutionRecipe } from './recipe-evaluator.js';
 
 const OUTCOME_STATUS = Object.freeze({
     executed: STATUS_EXECUTED,
@@ -42,6 +43,16 @@ export function buildVerifiedProposalFact({ event, proposalAccount, marketAccoun
     }
 
     const recipe = buildProposalLifecycleRecipe({ proposalAccount, marketAccount });
+    const lens = evaluateResolutionRecipe({
+        recipe,
+        evidence: [event],
+        now: event.recordedAt || event.observedAt,
+        subjectMatches: candidate => candidate.subject?.type === 'proposal'
+            && candidate.subject?.id === proposalAccount
+    });
+    if (lens.status !== 'resolved' || lens.outcome !== event.outcome) {
+        throw new Error(`event does not satisfy its resolution recipe: ${lens.reason}`);
+    }
     return {
         fact: event,
         recipe,
@@ -50,6 +61,7 @@ export function buildVerifiedProposalFact({ event, proposalAccount, marketAccoun
             method: 'source-hashed Solana program account plus terminal transaction',
             eventId: event.id,
             recipeHash: recipe.hash,
+            lens,
             checks: {
                 subjectMatches: true,
                 terminalStatusMatches: true,

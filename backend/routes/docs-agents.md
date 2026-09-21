@@ -170,7 +170,9 @@ Agents can buy a machine-ready terminal proposal fact for **$(oraclePrice)** in 
 
 The first request checks the address and confirms that a fact exists **before charging**, then returns
 402. After payment, the response contains the source-hashed event, the exact subject-specific
-`proposal-lifecycle-v1` recipe, and explicit integrity checks. This is packaging and availability,
+`proposal-lifecycle-v1` recipe, its deterministic Lens evaluation, and explicit integrity checks.
+The same evaluator supports unique-attester thresholds, required source classes, conflicting-source
+detection, and challenge windows for future composite recipes. This is packaging and availability,
 not a secret oracle: the underlying event feed remains public at `GET $(base)/oracle/events` so the
 paid result can be independently audited.
 

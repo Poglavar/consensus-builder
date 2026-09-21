@@ -119,10 +119,13 @@ describe('hackathon demo evidence model', () => {
             runs: [{
                 id: 'support', persona: 'supporter-01', role: 'supporter', controller: 'algorithm',
                 status: 'done', updatedAt: '2026-09-21T02:15:00Z',
-                support: { type: 'pledge', proposalId: 'p2' }
+                support: { type: 'pledge', proposalId: 'p2', signature: 'support-tx' }
             }]
         });
         expect(model.algorithm.run).toBeNull();
-        expect(model.supporter).toMatchObject({ tone: 'success', detail: 'supporter-01 · pledge · proposal p2' });
+        expect(model.supporter).toMatchObject({
+            tone: 'success', detail: 'supporter-01 · pledge · proposal p2',
+            transaction: 'support-tx', proposalId: 'p2'
+        });
     });
 });

@@ -101,7 +101,9 @@ git diff 3ee1855...colosseum-worlds-fair
 15. **Deterministic supporter persona** — `supporter-01` is a second actor role inside the same
     persona/controller/checkpoint/activity system. It deterministically chooses an active minted
     proposal by somebody else and can sign an on-chain soft pledge, funded donation or market stake;
-    the initial low-risk schedule uses one `0.10 USDC` soft commitment at 02:15 UTC.
+    the initial low-risk schedule uses one `0.10 USDC` soft commitment at 02:15 UTC. Its first live
+    run selected another actor's proposal and recorded this
+    [pledge transaction](https://explorer.solana.com/tx/5KxyA5tpSxbXiYodbwmhxPdtUubRXhGJ9cG7nnJQfpaYHbkcfX4ncMRux8nFjhfau1VMmzzpGdX6iFwTb1ZG4nUu?cluster=devnet).
 16. **Explicit prediction-market lifecycle** — Details now states the contract’s actual evidence
     rule, permissionless resolver, locked-stake behavior, market account and payout/refund rule. It
     also exposes the crucial boundary that an app-level `Expired` label is not `Cancelled` on-chain
@@ -140,6 +142,20 @@ git diff 3ee1855...colosseum-worlds-fair
     event, its subject-specific recipe, and explicit integrity checks for 0.01 devnet USDC. The route
     declares query/output schemas through Bazaar and has its own hosted-catalog proof endpoint. The
     underlying event feed remains free so buyers can independently audit what they received.
+25. **One Lens evaluator for every source** — the paid fact path now runs through a deterministic
+    recipe evaluator that counts each trusted attester once, supports thresholds and required source
+    classes, detects equivocation or competing outcomes, and enforces challenge windows. Synthetic
+    permit + imagery + OSM policies are contract-tested; connecting those collectors remains future
+    work rather than introducing separate agent or oracle systems.
+26. **One-command public proof audit** — `npm run audit:hackathon` reads only the public HTTP
+    contracts a judge or outside agent can see and verifies exact Bazaar listings, recent algorithmic
+    proposer and supporter actions, a source-hashed lifecycle event, court-attestation health, and
+    the two-sided external-market payout. Required failures produce a non-zero exit code; chronology
+    metadata is reported separately so a retrospective proof cannot masquerade as a forecast.
+27. **One proposal-to-reality timeline** — read-only proposal Details now combines the same neutral
+    activity envelopes used by humans and agents with the proposal lifecycle oracle. Proposed,
+    backed, forecast and resolved stages stay visibly pending until matching public evidence exists,
+    and every transaction-backed stage links to Solana Explorer.
 
 ### Live external-market integration proof
 

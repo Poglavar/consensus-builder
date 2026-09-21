@@ -18,6 +18,16 @@ describe('proposal details authoring contract', () => {
         expect(detailsSource).not.toContain('class="btn btn-outline-secondary btn-edit-geometry"');
     });
 
+    it('shows one evidence-backed possible-future timeline in read-only Details', () => {
+        const index = read('../../frontend/index.html');
+        expect(detailsSource).toContain('From possible future to public fact');
+        expect(detailsSource).toContain('hydrateProposalPossibilityTimeline');
+        expect(detailsSource).toContain('/agent/activity?limit=200');
+        expect(detailsSource).toContain('/oracle/events?subject=');
+        expect(index.indexOf('js/proposals/possibility-timeline.js'))
+            .toBeLessThan(index.indexOf('js/proposals/details-panel.js'));
+    });
+
     it.each(['en', 'hr', 'sr', 'es'])('%s explains that the fork leaves its source unchanged', locale => {
         const dictionary = JSON.parse(read(`../../frontend/i18n/${locale}.json`));
         expect(dictionary.panel.proposal.actions.counterpropose).toEqual(expect.any(String));

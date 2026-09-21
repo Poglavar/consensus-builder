@@ -3,7 +3,10 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const frontend = path.resolve(import.meta.dirname, '../../frontend');
-const html = fs.readFileSync(path.join(frontend, 'hackathon-deck.html'), 'utf8');
+const html = fs.readFileSync(path.join(frontend, 'deck.html'), 'utf8');
+const landing = fs.readFileSync(path.join(frontend, 'index.html'), 'utf8');
+const demo = fs.readFileSync(path.join(frontend, 'hackathon-demo.html'), 'utf8');
+const actors = fs.readFileSync(path.join(frontend, 'actor-explorer.html'), 'utf8');
 
 describe('hackathon pitch deck page', () => {
     it('keeps the judge pitch short and navigable', () => {
@@ -18,14 +21,22 @@ describe('hackathon pitch deck page', () => {
         expect(html).toContain('The core loop already runs');
         expect(html).toContain('External verifier and paid recipe-bound oracle facts live.');
         expect(html).toContain('Court SAS → market outcome → USDC payout');
-        expect(html).toContain('V2 source-time guard for prospective evidence');
+        expect(html).toContain('V2 source-time guard + one reusable Lens evaluator');
         expect(html).toContain('The future can mobilize action. It cannot declare itself true.');
-        expect(html).toContain('Add permit and imagery evidence adapters');
+        expect(html).toContain('agent SDK/MCP tools');
+        expect(html).toContain('more cities and autonomous agent clients');
     });
 
     it('links directly to live judge evidence', () => {
         expect(html).toContain('/hackathon-demo.html');
         expect(html).toContain('https://api.urbangametheory.xyz/agent/discovery');
         expect(html).toContain('/actor-explorer.html');
+    });
+
+    it('is directly reachable from every other judge-facing page and the main landing page', () => {
+        expect(landing).toContain('href="/deck.html"');
+        expect(demo).toContain('href="/deck.html"');
+        expect(actors).toContain('href="/deck.html"');
+        expect([landing, demo, actors].join('\n')).not.toContain('hackathon-deck.html');
     });
 });

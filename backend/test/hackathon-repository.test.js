@@ -69,4 +69,23 @@ describe('hackathon repository documentation', () => {
         expect(read('backend/routes/docs-agents.md')).toContain('/agent/discovery?resource=oracle-facts');
         expect(read('backend/scripts/oracle-fact-demo.mjs')).toContain('inspect → pay → verify → discover');
     });
+
+    it('uses one deterministic Lens evaluator for single and composite source recipes', () => {
+        const evaluator = read('backend/oracle/recipe-evaluator.js');
+        expect(evaluator).toContain("status: 'disputed'");
+        expect(evaluator).toContain("status: 'challenge_window'");
+        expect(evaluator).toContain('requiredAttesterKinds');
+        expect(read('backend/oracle/verified-fact.js')).toContain('evaluateResolutionRecipe');
+        expect(read('docs/protocol.md')).toContain('unique-attester thresholds');
+    });
+
+    it('ships a read-only public proof audit for judges and agents', () => {
+        const audit = read('backend/agents/hackathon-proof-audit.js');
+        const script = read('backend/scripts/hackathon-proof-audit.mjs');
+        expect(audit).toContain("'/agent/discovery?resource=oracle-facts'");
+        expect(audit).toContain('deterministic_supporter');
+        expect(audit).toContain('external_market_lifecycle');
+        expect(script).toContain('result.status !== \'verified\'');
+        expect(read('docs/hackathon-build.md')).toContain('npm run audit:hackathon');
+    });
 });

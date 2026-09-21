@@ -675,6 +675,18 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 ${proposalEnsHtml ? `<div class="proposal-ens-row" style="text-align: center; margin-top: 4px;">${proposalEnsHtml}</div>` : ''}
             </div>
             ${agentProvenanceHtml}
+            ${isSolanaPledgeProposal ? `<section class="proposal-possibility-card" data-proposal-timeline="${nftInfo.tokenId}" aria-label="Proposal timeline">
+                <div class="proposal-funding-head">
+                    <div>
+                        <div class="proposal-funding-eyebrow">Verifiable hyperstition</div>
+                        <h3>From possible future to public fact</h3>
+                    </div>
+                    <span class="proposal-funding-state" data-timeline-state>Loading evidence…</span>
+                </div>
+                <ol class="proposal-possibility-timeline" data-timeline-stages aria-live="polite">
+                    <li class="is-pending"><span>Loading the shared activity and oracle evidence…</span></li>
+                </ol>
+            </section>` : ''}
             ${isSolanaPledgeProposal ? `<section class="proposal-funding-card proposal-pledge-summary" data-proposal-account="${nftInfo.tokenId}" aria-label="${tProposal('panel.proposal.pledge.summary', 'Proposal funding')}">
                 <div class="proposal-funding-head">
                     <div>
@@ -1181,6 +1193,14 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             });
     }
 
+    if (isSolanaPledgeProposal && window.ProposalPossibilityTimeline?.build) {
+        hydrateProposalPossibilityTimeline(
+            nftInfo.tokenId,
+            fullProposal?.proposalId || '',
+            fullProposal?.createdAt || fullProposal?.created_at || proposal?.createdAt || proposal?.created_at || null
+        );
+    }
+
     // Market reads use the same proposal account and wallet context as pledge hydration, but the
     // market itself is optional: agent runs may open it later. Never make Details wait on RPC.
     if (isSolanaPledgeProposal && window.SolanaMarketBridge?.readSummary) {
@@ -1439,6 +1459,86 @@ function resolveProposalForBoost(idOrHash) {
 
 const proposalSupportInFlight = new Set();
 const proposalMarketInFlight = new Set();
+
+function proposalTimelineEvidenceText(evidence) {
+    if (!evidence) return '';
+    const parts = [];
+    if (evidence.actor) parts.push(evidence.actor);
+    if (evidence.action) parts.push(evidence.action);
+    if (evidence.amount) parts.push(`${evidence.amount} USDC`);
+    if (evidence.side) parts.push(String(evidence.side).toUpperCase());
+    if (evidence.occurredAt) {
+        const parsed = Date.parse(evidence.occurredAt);
+        parts.push(Number.isFinite(parsed) ? new Date(parsed).toLocaleString() : evidence.occurredAt);
+    }
+    return parts.join(' · ');
+}
+
+function renderProposalPossibilityTimeline(card, model) {
+    const list = card?.querySelector('[data-timeline-stages]');
+    const state = card?.querySelector('[data-timeline-state]');
+    if (!list) return;
+    if (state) state.textContent = model.complete ? 'Loop complete' : `Next: ${model.current || 'public outcome'}`;
+    list.replaceChildren();
+    model.stages.forEach((stage, index) => {
+        const item = document.createElement('li');
+        item.className = `is-${stage.status}`;
+        const marker = document.createElement('span');
+        marker.className = 'proposal-possibility-marker';
+        marker.textContent = String(index + 1).padStart(2, '0');
+        const copy = document.createElement('div');
+        const title = document.createElement('strong');
+        title.textContent = stage.title;
+        const description = document.createElement('p');
+        description.textContent = stage.description;
+        copy.append(title, description);
+        if (stage.evidence) {
+            const evidence = document.createElement('small');
+            evidence.textContent = proposalTimelineEvidenceText(stage.evidence);
+            copy.append(evidence);
+            const href = stage.evidence.sourceUrl || (stage.evidence.transaction
+                ? `https://explorer.solana.com/tx/${encodeURIComponent(stage.evidence.transaction)}?cluster=devnet`
+                : null);
+            if (href) {
+                const link = document.createElement('a');
+                link.href = href; link.target = '_blank'; link.rel = 'noopener'; link.textContent = 'Verify ↗';
+                copy.append(link);
+            }
+        } else {
+            const pending = document.createElement('small');
+            pending.textContent = stage.status === 'current' ? 'Open for action' : 'No public evidence yet';
+            copy.append(pending);
+        }
+        item.append(marker, copy);
+        list.append(item);
+    });
+}
+
+async function hydrateProposalPossibilityTimeline(proposalAccount, proposalId, createdAt = null) {
+    const card = document.querySelector(`[data-proposal-timeline="${proposalAccount}"]`);
+    if (!card || !window.ProposalPossibilityTimeline?.build) return;
+    const base = typeof window.getBackendBase === 'function'
+        ? window.getBackendBase().replace(/\/$/, '')
+        : 'https://api.urbangametheory.xyz';
+    let events = typeof allActivityEvents === 'function' ? allActivityEvents() : [];
+    let oracleEvents = [];
+    const [activityResult, oracleResult] = await Promise.allSettled([
+        fetch(`${base}/agent/activity?limit=200`).then(response => response.ok ? response.json() : Promise.reject(new Error(`activity returned ${response.status}`))),
+        fetch(`${base}/oracle/events?subject=${encodeURIComponent(proposalAccount)}&limit=10`).then(response => response.ok ? response.json() : Promise.reject(new Error(`oracle returned ${response.status}`)))
+    ]);
+    if (activityResult.status === 'fulfilled') {
+        const live = Array.isArray(activityResult.value?.events) ? activityResult.value.events : [];
+        events = window.AgentActionEngine?.mergeActivities
+            ? window.AgentActionEngine.mergeActivities(events, live)
+            : [...events, ...live];
+    }
+    if (oracleResult.status === 'fulfilled') {
+        oracleEvents = Array.isArray(oracleResult.value?.events) ? oracleResult.value.events : [];
+    }
+    renderProposalPossibilityTimeline(card, window.ProposalPossibilityTimeline.build({
+        proposalId, proposalAccount, createdAt, events, oracleEvents
+    }));
+}
 
 function marketSideLabel(side) {
     return Number(side) === 1 ? 'YES' : 'NO';

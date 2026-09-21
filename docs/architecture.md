@@ -95,6 +95,6 @@ claim—rather than another oracle architecture layer.
 | Public oracle routes | `backend/routes/land-events.js` |
 | Solana programs and IDLs | `blockchain/solana/programs/`, `blockchain/solana/idl/` |
 | Browser market and support clients | `frontend/js/solana/market-client.js`, `frontend/js/solana/pledge-client.js` |
-| Judge surfaces | `frontend/hackathon-demo.html`, `frontend/actor-explorer.html`, `frontend/hackathon-deck.html` |
+| Judge surfaces | `frontend/hackathon-demo.html`, `frontend/actor-explorer.html`, `frontend/deck.html` |
 
 See [`protocol.md`](protocol.md) for identifiers, schemas, adapter rules, and trust assumptions.

@@ -12,6 +12,7 @@
         "test:coverage": "vitest run --coverage",
         "demo:x402": "node scripts/x402-demo.mjs",
         "demo:oracle-fact": "node scripts/oracle-fact-demo.mjs",
+        "audit:hackathon": "node scripts/hackathon-proof-audit.mjs",
         "sync:land-events": "node scripts/sync-land-events.mjs",
         "smoke:prod:parcels": "node scripts/smoke-production-bbox.mjs",
         "plan-yield": "PGHOST=${PGHOST:-localhost} node scripts/plan-yield.js"

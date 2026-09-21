@@ -3975,11 +3975,18 @@
 
 .welcome-demo-link {
     display: inline-block;
-    margin-bottom: 18px;
     color: #176a4b;
     font-size: 14px;
     font-weight: 700;
     text-underline-offset: 3px;
+}
+
+.welcome-hackathon-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    margin-bottom: 18px;
 }
 
 .welcome-modal-content .welcome-identity-prompt {

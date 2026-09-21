@@ -54,7 +54,20 @@
       "required": ["kind", "permissionless"],
       "properties": {
         "kind": { "type": "string", "minLength": 1 },
-        "permissionless": { "type": "boolean" }
+        "permissionless": { "type": "boolean" },
+        "evidencePolicy": {
+          "type": "object",
+          "properties": {
+            "threshold": { "type": "integer", "minimum": 1 },
+            "requiredAttesterKinds": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "challengeWindowSeconds": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        }
       },
       "additionalProperties": true
     },
