@@ -308,7 +308,8 @@ describe('agent quickstart docs', () => {
         X402_NETWORK: 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
         X402_FACILITATOR_URL: 'https://x402.org/facilitator',
         X402_PAY_TO: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ',
-        X402_PRICE_PROPOSAL: '$0.05'
+        X402_PRICE_PROPOSAL: '$0.05',
+        X402_PRICE_ORACLE_FACT: '$0.01'
     };
 
     it('GET /docs/agents renders the quickstart with the live price and base URL substituted', async () => {
@@ -318,7 +319,9 @@ describe('agent quickstart docs', () => {
         expect(res.headers['content-type']).toMatch(/text\/html/);
         expect(res.text).toContain('<title>Agent quickstart');
         expect(res.text).toContain('$0.05');
+        expect(res.text).toContain('$0.01');
         expect(res.text).toContain('https://api.example.test/agent/proposals');
+        expect(res.text).toContain('https://api.example.test/agent/oracle/facts');
         expect(res.text).toContain('4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU');
         expect(res.text).not.toContain('$(base)');
         expect(res.text).not.toContain('$(price)');
@@ -343,9 +346,13 @@ describe('agent quickstart docs', () => {
             network: X402_ENV.X402_NETWORK,
             payTo: X402_ENV.X402_PAY_TO,
             priceProposal: '$0.05',
+            oracleFactsEnabled: true,
+            priceOracleFact: '$0.01',
             paymentFlow: 'upfront'
         });
         expect(res.body.endpoints.submit).toBe('https://api.example.test/agent/proposals');
+        expect(res.body.endpoints.oracleFact).toContain('/agent/oracle/facts?subject=');
+        expect(res.body.endpoints.oracleFactDiscovery).toContain('resource=oracle-facts');
         expect(res.body.market.programId).toMatch(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/);
         expect(res.body.proposalSupport).toMatchObject({
             programId: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/),
@@ -373,8 +380,19 @@ describe('agent quickstart docs', () => {
                 recipeHash: expect.stringMatching(/^[0-9a-f]{64}$/),
                 attestation: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/),
                 evidenceHash: expect.stringMatching(/^[0-9a-f]{64}$/),
-                yesStakeAtomic: '10000', noStakeAtomic: '10000', payoutAtomic: '20000', decimals: 6
+                yesStakeAtomic: '10000', noStakeAtomic: '10000', payoutAtomic: '20000', decimals: 6,
+                chronology: expect.objectContaining({
+                    classification: 'retrospective_integration', prospective: false,
+                    marketOrderValid: true, attestationAfterClose: false
+                })
             })
+        });
+        expect(res.body.oracle.externalMarket.prospectiveProof).toMatchObject({
+            status: 'runner_ready',
+            recipeId: 'court-parcel-operation-v2',
+            recipe: expect.stringContaining('/oracle/recipes/court-parcel-operation-v2'),
+            temporalGuard: expect.stringContaining('sourceObservedAt'),
+            requirement: expect.stringContaining('register the V2 SAS schema')
         });
         expect(res.body.market.externalResolution).toMatchObject({
             status: 'live_devnet', account: 'ExternalMarket',

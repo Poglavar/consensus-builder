@@ -1,11 +1,11 @@
-// Public, read-only proof that the paid proposal resource is present in the hosted x402 Bazaar.
+// Public, read-only proof that one of our paid resources is present in the hosted x402 Bazaar.
 // Credentials stay server-side; callers receive the exact matching catalog record and a short cache.
 
 import { createCdpFacilitatorClient } from '@coinbase/cdp-sdk/x402';
 import { HTTPFacilitatorClient } from '@x402/core/server';
 import { withBazaar } from '@x402/extensions/bazaar';
 import { findBazaarListing } from '../agents/x402-demo.js';
-import { readX402Config } from '../utils/x402-payment.js';
+import { readX402Config, readX402OracleConfig } from '../utils/x402-payment.js';
 
 const CACHE_MS = 5 * 60 * 1000;
 
@@ -30,20 +30,25 @@ export function setupAgentDiscoveryRoute(app, {
     now = () => Date.now(),
     cacheMs = CACHE_MS
 } = {}) {
-    let cached = null;
+    const cache = new Map();
 
     app.get('/agent/discovery', async (req, res) => {
-        const config = readX402Config(env);
-        const endpoint = `${publicBase(req, env)}/agent/proposals`;
+        const resource = req.query.resource || 'proposals';
+        if (!['proposals', 'oracle-facts'].includes(resource)) {
+            return res.status(400).json({ error: 'resource must be proposals or oracle-facts' });
+        }
+        const config = resource === 'oracle-facts' ? readX402OracleConfig(env) : readX402Config(env);
+        const endpoint = `${publicBase(req, env)}/agent/${resource === 'oracle-facts' ? 'oracle/facts' : 'proposals'}`;
         if (!config.enabled) {
             return res.json({
-                state: 'unconfigured', endpoint, verifiedAt: null,
+                state: 'unconfigured', resource, endpoint, verifiedAt: null,
                 facilitatorUrl: config.facilitatorUrl,
                 missing: config.missing
             });
         }
 
         const current = now();
+        const cached = cache.get(resource);
         if (cached && current - cached.checkedAt < cacheMs) {
             return res.json({ ...cached.payload, cached: true });
         }
@@ -65,6 +70,7 @@ export function setupAgentDiscoveryRoute(app, {
         }
         const payload = {
             state: result.state,
+            resource,
             endpoint,
             verifiedAt: new Date(current).toISOString(),
             facilitatorUrl: config.facilitatorUrl,
@@ -76,7 +82,7 @@ export function setupAgentDiscoveryRoute(app, {
             error: result.error || null,
             cached: false
         };
-        cached = { checkedAt: current, payload };
+        cache.set(resource, { checkedAt: current, payload });
         return res.json(payload);
     });
 }

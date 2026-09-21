@@ -35,15 +35,16 @@ module.exports = {
       AI_SCENE_COOLDOWN_MS: 20000,        // at most one render per IP per 20s
       AI_SCENE_QUOTA_MAX: 10,             // at most 10 successful renders per IP...
       AI_SCENE_QUOTA_WINDOW_MS: 86400000, // ...per rolling 24h
-      // --- Agents functionality for UGT: x402 pay-to-post gate on POST /agent/proposals ---
-      // These four values are public (network id, facilitator, treasury pubkey, price). The CDP
+      // --- Agents functionality for UGT: x402 paid proposal and verified-fact gates ---
+      // These values are public (network id, facilitator, treasury pubkey, prices). The CDP
       // API key id + secret stay in the server-local .env. With any required value unset the route
       // answers 503 and nothing is charged. Devnet for the hackathon. The price is a commit, never
       // a hand edit.
       X402_NETWORK: 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
       X402_FACILITATOR_URL: 'https://api.cdp.coinbase.com/platform/v2/x402',
       X402_PAY_TO: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ',
-      X402_PRICE_PROPOSAL: '$0.05'
+      X402_PRICE_PROPOSAL: '$0.05',
+      X402_PRICE_ORACLE_FACT: '$0.01'
     },
     error_file: '/root/code/consensus-builder/backend/logs/err.log',
     out_file: '/root/code/consensus-builder/backend/logs/out.log',

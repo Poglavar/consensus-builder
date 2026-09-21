@@ -10,6 +10,8 @@ import {
     isAgentPath,
     isCdpFacilitatorUrl,
     readX402Config,
+    readX402OracleConfig,
+    X402_ORACLE_ENV_NAMES,
     X402_ENV_NAMES
 } from '../utils/x402-payment.js';
 
@@ -17,7 +19,8 @@ const FULL_ENV = {
     X402_NETWORK: 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
     X402_FACILITATOR_URL: 'https://x402.org/facilitator',
     X402_PAY_TO: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ',
-    X402_PRICE_PROPOSAL: '$0.05'
+    X402_PRICE_PROPOSAL: '$0.05',
+    X402_PRICE_ORACLE_FACT: '$0.01'
 };
 
 describe('readX402Config', () => {
@@ -63,7 +66,18 @@ describe('readX402Config', () => {
 
     it('reads exactly the documented variable names', () => {
         expect(X402_ENV_NAMES).toEqual(['X402_NETWORK', 'X402_FACILITATOR_URL', 'X402_PAY_TO', 'X402_PRICE_PROPOSAL']);
+        expect(X402_ORACLE_ENV_NAMES).toEqual(['X402_NETWORK', 'X402_FACILITATOR_URL', 'X402_PAY_TO', 'X402_PRICE_ORACLE_FACT']);
         expect(CDP_CREDENTIAL_ENV_NAMES).toEqual(['CDP_API_KEY_ID', 'CDP_API_KEY_SECRET']);
+    });
+
+    it('configures oracle facts independently from proposal pricing', () => {
+        const configured = readX402OracleConfig(FULL_ENV);
+        expect(configured).toMatchObject({ enabled: true, priceOracleFact: '$0.01' });
+
+        const missing = readX402OracleConfig({ ...FULL_ENV, X402_PRICE_ORACLE_FACT: ' ' });
+        expect(missing.enabled).toBe(false);
+        expect(missing.missing).toEqual(['X402_PRICE_ORACLE_FACT']);
+        expect(missing.priceOracleFact).toBeNull();
     });
 });
 

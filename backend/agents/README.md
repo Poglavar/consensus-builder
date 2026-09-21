@@ -122,7 +122,7 @@ A batch that has not finished inside `awaitMs` is not an error — `runPickBatch
 | `AGENT_PROPOSAL_FEE_USDC` | `run-policy.js` | conservative x402 fee used in the pre-signing plan; default 0.05 USDC |
 | `AGENT_SUPPORT_USDC_CAP` | `support-run.mjs` | maximum amount of its one daily support action; safe default 0.25 USDC |
 | `PGHOST` / `PGPORT` / `PGUSER` / `PGPASSWORD` / `PGDATABASE` | `parcel-source.js` (via the pool the caller passes) | the shared `geodata` database |
-| `X402_*`, `CDP_API_KEY_ID`, `CDP_API_KEY_SECRET` | `routes/agent-proposals.js` | the hosted-CDP pay-to-post gate; see the design doc §WS1 |
+| `X402_*`, `CDP_API_KEY_ID`, `CDP_API_KEY_SECRET` | `routes/agent-proposals.js`, `routes/agent-oracle-facts.js` | hosted-CDP pay-to-propose and paid verified-fact gates; see the agent quickstart |
 
 ## Tests
 

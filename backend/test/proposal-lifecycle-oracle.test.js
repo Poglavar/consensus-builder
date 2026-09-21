@@ -4,6 +4,7 @@
 import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { PublicKey } from '@solana/web3.js';
 import { describe, expect, it } from 'vitest';
 import { encodeBase58, loadIdls } from '../solana/tx-decoder.js';
 import {
@@ -29,6 +30,26 @@ function proposalAccount(status) {
         u32(1), u32(parcel.length), parcel,
         Buffer.from([0]), u32(uri.length), uri, Buffer.from([1, status])
     ]);
+}
+
+function cancellationTransaction() {
+    const discriminator = createHash('sha256').update('global:cancel_and_refund').digest().subarray(0, 8);
+    return {
+        slot: 10,
+        blockTime: 1_789_895_600,
+        meta: { err: null, fee: 5000, preTokenBalances: [], postTokenBalances: [], innerInstructions: [] },
+        transaction: {
+            signatures: ['tx-cancel'],
+            message: {
+                accountKeys: [
+                    { pubkey: OWNER, signer: true, writable: true },
+                    { pubkey: PROPOSAL, signer: false, writable: true },
+                    { pubkey: PROGRAM, signer: false, writable: false }
+                ],
+                instructions: [{ programId: PROGRAM, accounts: [PROPOSAL, OWNER], data: encodeBase58(discriminator) }]
+            }
+        }
+    };
 }
 
 describe('proposal lifecycle oracle', () => {
@@ -82,26 +103,68 @@ describe('proposal lifecycle oracle', () => {
     });
 
     it('anchors cancellation only to the matching successful program instruction', () => {
-        const discriminator = createHash('sha256').update('global:cancel_and_refund').digest().subarray(0, 8);
-        const raw = {
-            slot: 10,
-            blockTime: 1_789_895_600,
-            meta: { err: null, fee: 5000, preTokenBalances: [], postTokenBalances: [], innerInstructions: [] },
-            transaction: {
-                signatures: ['tx-cancel'],
-                message: {
-                    accountKeys: [
-                        { pubkey: OWNER, signer: true, writable: true },
-                        { pubkey: PROPOSAL, signer: false, writable: true },
-                        { pubkey: PROGRAM, signer: false, writable: false }
-                    ],
-                    instructions: [{ programId: PROGRAM, accounts: [PROPOSAL, OWNER], data: encodeBase58(discriminator) }]
-                }
-            }
-        };
+        const raw = cancellationTransaction();
         const idls = loadIdls(path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../blockchain/solana/idl'));
         expect(sourceForProposal([{ signature: 'tx-cancel', raw }], PROPOSAL, STATUS_CANCELLED, idls))
             .toMatchObject({ signature: 'tx-cancel' });
         expect(sourceForProposal([{ signature: 'tx-cancel', raw }], PROPOSAL, STATUS_EXECUTED, idls)).toBeNull();
+    });
+
+    it('atomically persists verified events and reconciles the proposal read model', async () => {
+        const calls = [];
+        const pool = {
+            query: async (sql, params = []) => {
+                calls.push({ sql, params });
+                if (sql.includes('SELECT DISTINCT')) return { rows: [{ proposal_account: PROPOSAL }] };
+                if (sql.includes('consensus.solana_transaction')) {
+                    return { rows: [{
+                        signature: 'tx-cancel', slot: 10, block_time: 1_789_895_600,
+                        raw: cancellationTransaction()
+                    }] };
+                }
+                if (sql.includes('WITH inserted_event')) return { rows: [{ inserted: 1, reconciled: 1 }] };
+                throw new Error(`unexpected query: ${sql}`);
+            }
+        };
+        const connection = {
+            getMultipleAccountsInfo: async () => [{
+                owner: new PublicKey(PROGRAM),
+                data: proposalAccount(STATUS_CANCELLED)
+            }]
+        };
+
+        const result = await syncProposalLifecycleEvents({ pool, connection });
+
+        expect(result).toMatchObject({ terminal: 1, inserted: 1, reconciled: 1, missingEvidence: [] });
+        const persistence = calls.find(call => call.sql.includes('WITH inserted_event'));
+        expect(persistence.sql).toMatch(/INSERT INTO consensus\.land_event[\s\S]*UPDATE proposal/);
+        expect(persistence.sql).toMatch(/proposal_data = CASE[\s\S]*jsonb_set/);
+        expect(persistence.params.at(-1)).toBe('Cancelled');
+        expect(persistence.params[3]).toBe(PROPOSAL);
+    });
+
+    it('does not reconcile the proposal read model during a dry run', async () => {
+        const calls = [];
+        const pool = {
+            query: async (sql, params = []) => {
+                calls.push({ sql, params });
+                if (sql.includes('SELECT DISTINCT')) return { rows: [{ proposal_account: PROPOSAL }] };
+                return { rows: [{
+                    signature: 'tx-cancel', slot: 10, block_time: 1_789_895_600,
+                    raw: cancellationTransaction()
+                }] };
+            }
+        };
+        const connection = {
+            getMultipleAccountsInfo: async () => [{
+                owner: new PublicKey(PROGRAM),
+                data: proposalAccount(STATUS_CANCELLED)
+            }]
+        };
+
+        const result = await syncProposalLifecycleEvents({ pool, connection, dryRun: true });
+
+        expect(result).toMatchObject({ terminal: 1, inserted: 0, reconciled: 0, dryRun: true });
+        expect(calls.some(call => call.sql.includes('UPDATE proposal'))).toBe(false);
     });
 });

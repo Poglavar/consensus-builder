@@ -10,7 +10,8 @@ const env = {
     X402_NETWORK: 'solana:devnet',
     X402_FACILITATOR_URL: 'https://facilitator.example.test',
     X402_PAY_TO: 'Treasury111111111111111111111111111111111',
-    X402_PRICE_PROPOSAL: '$0.05'
+    X402_PRICE_PROPOSAL: '$0.05',
+    X402_PRICE_ORACLE_FACT: '$0.01'
 };
 
 function appFor(options) {
@@ -28,12 +29,27 @@ describe('GET /agent/discovery', () => {
             .get('/agent/discovery');
         expect(res.status).toBe(200);
         expect(res.body).toMatchObject({
-            state: 'listed', endpoint: 'https://api.example.test/agent/proposals',
+            state: 'listed', resource: 'proposals', endpoint: 'https://api.example.test/agent/proposals',
             verifiedAt: '2026-09-20T10:00:00.000Z', cached: false
         });
         expect(JSON.stringify(res.body)).not.toContain('API_KEY');
         expect(lookup).toHaveBeenCalledWith(expect.objectContaining({
             submitUrl: 'https://api.example.test/agent/proposals', network: 'solana:devnet'
+        }));
+    });
+
+    it('verifies the paid oracle fact resource independently', async () => {
+        const lookup = vi.fn().mockResolvedValue({
+            state: 'listed', total: 1, listing: { resource: 'https://api.example.test/agent/oracle/facts' }
+        });
+        const res = await request(appFor({ env, lookup, now: () => Date.parse('2026-09-20T10:00:00Z') }))
+            .get('/agent/discovery?resource=oracle-facts');
+        expect(res.body).toMatchObject({
+            state: 'listed', resource: 'oracle-facts',
+            endpoint: 'https://api.example.test/agent/oracle/facts'
+        });
+        expect(lookup).toHaveBeenCalledWith(expect.objectContaining({
+            submitUrl: 'https://api.example.test/agent/oracle/facts', network: 'solana:devnet'
         }));
     });
 
@@ -52,6 +68,13 @@ describe('GET /agent/discovery', () => {
         const res = await request(appFor({ env: {}, lookup })).get('/agent/discovery');
         expect(res.body.state).toBe('unconfigured');
         expect(res.body.missing).toContain('X402_NETWORK');
+        expect(lookup).not.toHaveBeenCalled();
+    });
+
+    it('rejects unknown resource selectors', async () => {
+        const lookup = vi.fn();
+        const res = await request(appFor({ env, lookup })).get('/agent/discovery?resource=unknown');
+        expect(res.status).toBe(400);
         expect(lookup).not.toHaveBeenCalled();
     });
 

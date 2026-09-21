@@ -10,6 +10,7 @@ blockchain/solana/.anchor
 e2e/playwright-report/
 e2e/test-results/
 test-results/
+blockchain/solana/.prospective-external-market.private.json
 
 # wrangler local cache (account id, build artifacts) — tooling state, not source
 .wrangler/

@@ -9,7 +9,6 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 import {
     Connection, Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction
@@ -24,9 +23,9 @@ import {
     COURT_ATTESTER,
     COURT_CREDENTIAL,
     COURT_SCHEMA,
-    MARKET_PROGRAM_ID,
-    SAS_PROGRAM_ID
+    MARKET_PROGRAM_ID
 } from '../../../backend/oracle/court-parcel-operation.js';
+import { assertCourtAttestation, decodeCourtAttestation } from '../../../backend/oracle/sas-court-attestation.js';
 import { sendAndConfirmPolling } from '../../../backend/agents/solana-send.js';
 
 const require = createRequire(import.meta.url);
@@ -44,7 +43,6 @@ const USDC_MINT = new PublicKey(
 );
 const AMOUNT = 10_000n; // 0.01 devnet USDC on each side.
 const CLOSE_DELAY_SECONDS = 75;
-const SAS_ATTESTATION_DISCRIMINATOR = 2;
 
 function expandHome(value) {
     return value.startsWith('~/') ? path.join(os.homedir(), value.slice(2)) : value;
@@ -54,57 +52,8 @@ function loadKeypair(file) {
     return Keypair.fromSecretKey(Uint8Array.from(JSON.parse(fs.readFileSync(expandHome(file), 'utf8'))));
 }
 
-function hashHex(value) {
-    return createHash('sha256').update(value).digest('hex');
-}
-
 function explorer(signature) {
     return `https://explorer.solana.com/tx/${signature}?cluster=devnet`;
-}
-
-function readBorshString(data, state) {
-    if (state.offset + 4 > data.length) throw new Error('truncated SAS string length');
-    const length = data.readUInt32LE(state.offset);
-    state.offset += 4;
-    if (state.offset + length > data.length) throw new Error('truncated SAS string value');
-    const value = new TextDecoder('utf-8', { fatal: true })
-        .decode(data.subarray(state.offset, state.offset + length));
-    state.offset += length;
-    return value;
-}
-
-function decodeCourtAttestation(info) {
-    if (!info) throw new Error(`SAS attestation ${ATTESTATION.toBase58()} does not exist`);
-    if (!info.owner.equals(new PublicKey(SAS_PROGRAM_ID))) throw new Error('attestation is not owned by SAS');
-    const data = Buffer.from(info.data);
-    if (data.length < 141 || data[0] !== SAS_ATTESTATION_DISCRIMINATOR) {
-        throw new Error('account is not a supported SAS attestation');
-    }
-    const credential = new PublicKey(data.subarray(33, 65));
-    const schema = new PublicKey(data.subarray(65, 97));
-    const payloadLength = data.readUInt32LE(97);
-    const payloadEnd = 101 + payloadLength;
-    const recordEnd = payloadEnd + 40;
-    if (recordEnd > data.length) throw new Error('truncated SAS attestation record');
-    const authority = new PublicKey(data.subarray(payloadEnd, payloadEnd + 32));
-    const expiry = data.readBigInt64LE(payloadEnd + 32);
-    const payload = data.subarray(101, payloadEnd);
-    const state = { offset: 0 };
-    const fields = {
-        parcelUid: readBorshString(payload, state),
-        decisionUuid: readBorshString(payload, state),
-        operation: readBorshString(payload, state),
-        decisionLink: readBorshString(payload, state)
-    };
-    if (state.offset !== payload.length) throw new Error('SAS payload has unexpected trailing fields');
-    return { credential, schema, authority, expiry, fields, accountHash: hashHex(data) };
-}
-
-function assertCourtEvidence(evidence) {
-    if (!evidence.credential.equals(new PublicKey(COURT_CREDENTIAL))) throw new Error('unexpected SAS credential');
-    if (!evidence.schema.equals(new PublicKey(COURT_SCHEMA))) throw new Error('unexpected SAS schema');
-    if (!evidence.authority.equals(new PublicKey(COURT_ATTESTER))) throw new Error('unexpected SAS issuer');
-    if (evidence.expiry <= BigInt(Math.floor(Date.now() / 1000))) throw new Error('SAS attestation has expired');
 }
 
 function commitment(recipe, name) {
@@ -153,8 +102,12 @@ async function main() {
     const connection = new Connection(RPC_URL, 'confirmed');
     const owner = loadKeypair(process.env.SOLANA_KEYPAIR || '~/.config/solana/id.json');
     const attestationInfo = await connection.getAccountInfo(ATTESTATION, 'confirmed');
-    const evidence = decodeCourtAttestation(attestationInfo);
-    assertCourtEvidence(evidence);
+    const evidence = decodeCourtAttestation(attestationInfo, { address: ATTESTATION.toBase58() });
+    assertCourtAttestation(evidence, {
+        credential: COURT_CREDENTIAL,
+        schema: COURT_SCHEMA,
+        attester: COURT_ATTESTER
+    });
 
     const closesAt = Math.floor(Date.now() / 1000) + CLOSE_DELAY_SECONDS;
     const noOperation = evidence.fields.operation === 'no_court_operation'

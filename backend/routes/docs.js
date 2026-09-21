@@ -2,9 +2,10 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { marked } from 'marked';
-import { readX402Config } from '../utils/x402-payment.js';
+import { readX402Config, readX402OracleConfig } from '../utils/x402-payment.js';
 import { EVENT_TYPE as LAND_EVENT_TYPE, RECIPE_ID as LAND_RECIPE_ID } from '../oracle/proposal-lifecycle.js';
-import { COURT_RECIPE_ID } from '../oracle/court-parcel-operation.js';
+import { COURT_RECIPE_ID, COURT_RECIPE_V2_ID } from '../oracle/court-parcel-operation.js';
+import { classifyExternalMarketChronology } from '../oracle/external-market-chronology.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -184,9 +185,11 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
     app.get('/docs/agents', (req, res) => {
         try {
             const x402 = readX402Config(env);
+            const oracleX402 = readX402OracleConfig(env);
             const markdown = fs.readFileSync(path.join(__dirname, 'docs-agents.md'), 'utf8')
                 .replace(/\$\(base\)/g, docsBaseUrl(req))
                 .replace(/\$\(price\)/g, x402.priceProposal || '(price not configured on this server)')
+                .replace(/\$\(oraclePrice\)/g, oracleX402.priceOracleFact || '(price not configured on this server)')
                 .replace(/\$\(network\)/g, x402.network || 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1')
                 .replace(/\$\(marketProgram\)/g, marketProgramId())
                 .replace(/\$\(pledgeProgram\)/g, pledgeProgramId())
@@ -204,6 +207,7 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
         try {
             const schema = JSON.parse(fs.readFileSync(path.join(__dirname, 'agent-recipe-schema.json'), 'utf8'));
             const x402 = readX402Config(env);
+            const oracleX402 = readX402OracleConfig(env);
             const base = docsBaseUrl(req);
             res.json({
                 docs: `${base}/docs/agents`,
@@ -214,12 +218,16 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     facilitatorUrl: x402.facilitatorUrl,
                     payTo: x402.payTo,
                     priceProposal: x402.priceProposal,
+                    oracleFactsEnabled: oracleX402.enabled,
+                    priceOracleFact: oracleX402.priceOracleFact,
                     paymentFlow: 'upfront',
                     usdcMint: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU'
                 },
                 endpoints: {
                     submit: `${base}/agent/proposals`,
                     discovery: `${base}/agent/discovery`,
+                    oracleFactDiscovery: `${base}/agent/discovery?resource=oracle-facts`,
+                    oracleFact: `${base}/agent/oracle/facts?subject={proposalAccount}&market={marketAccount}`,
                     read: `${base}/proposals/{id}`,
                     listByAuthor: `${base}/proposals/summary?city={city}&author={wallet}`,
                     listByParcel: `${base}/proposals?parcel_id={cadastreParcelId}`,
@@ -260,7 +268,24 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                             yesStakeAtomic: '10000',
                             noStakeAtomic: '10000',
                             payoutAtomic: '20000',
-                            decimals: 6
+                            decimals: 6,
+                            chronology: classifyExternalMarketChronology({
+                                marketCreatedAt: 1790001502,
+                                yesStakeAt: 1790001504,
+                                noStakeAt: 1790001507,
+                                marketClosesAt: 1790001574,
+                                evidenceCreatedAt: 1778592577,
+                                resolvedAt: 1790001575,
+                                claimedAt: 1790001577
+                            })
+                        },
+                        prospectiveProof: {
+                            status: 'runner_ready',
+                            script: 'blockchain/solana/scripts/prospective-external-market.mjs',
+                            recipeId: COURT_RECIPE_V2_ID,
+                            recipe: `${base}/oracle/recipes/${COURT_RECIPE_V2_ID}?parcelUid={parcelUid}&yesOperation={yesOperation}&noOperation={noOperation}&closesAt={unixSeconds}&schema={v2SchemaAccount}`,
+                            temporalGuard: 'proposal_market requires market close <= sourceObservedAt <= resolution time',
+                            requirement: 'register the V2 SAS schema, upgrade the market program, then issue and settle a post-close attestation'
                         }
                     }
                 },

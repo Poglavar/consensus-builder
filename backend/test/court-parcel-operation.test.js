@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import {
     buildCourtParcelOperationRecipe,
+    buildCourtParcelOperationRecipeV2,
     COURT_ATTESTER,
     COURT_CREDENTIAL,
     COURT_SCHEMA,
@@ -53,11 +54,32 @@ describe('court parcel operation recipe', () => {
         expect(externalMarketAddress(second.hash)).not.toBe(externalMarketAddress(first.hash));
     });
 
+    it('builds a V2 recipe whose source time is enforced against the market clock', () => {
+        const schema = '11111111111111111111111111111111';
+        const recipe = buildCourtParcelOperationRecipeV2({ ...input, schema });
+        expect(recipe).toMatchObject({
+            id: 'court-parcel-operation-v2',
+            version: 2,
+            verification: {
+                kind: 'sas_court_parcel_operation_v2',
+                schema,
+                payloadFields: ['parcelUid', 'decisionUuid', 'operation', 'decisionLink', 'sourceObservedAt'],
+                temporalIntegrity: {
+                    sourceObservedAtField: 'sourceObservedAt',
+                    minimum: 'market_closes_at',
+                    maximum: 'resolution_time',
+                    enforcedBy: 'proposal_market'
+                }
+            }
+        });
+        expect(recipe.hash).not.toBe(buildCourtParcelOperationRecipe(input).hash);
+    });
+
     it('rejects ambiguous, missing and malformed inputs', () => {
         expect(() => buildCourtParcelOperationRecipe({ ...input, noOperation: 'transfer' })).toThrow(/must differ/);
         expect(() => buildCourtParcelOperationRecipe({ ...input, parcelUid: '' })).toThrow(/parcelUid is required/);
         expect(() => buildCourtParcelOperationRecipe({ ...input, closesAt: 'tomorrow' })).toThrow(/Unix timestamp/);
+        expect(() => buildCourtParcelOperationRecipeV2({ ...input, schema: 'nope' })).toThrow(/Solana public key/);
         expect(() => externalMarketAddress('sha256:nope')).toThrow(/32 bytes/);
     });
 });
-

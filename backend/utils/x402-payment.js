@@ -12,6 +12,7 @@ export const CDP_FACILITATOR_URL = 'https://api.cdp.coinbase.com/platform/v2/x40
 // that was meant to be mainnet (or the reverse). Missing names are reported so the 503 says what
 // to set.
 export const X402_ENV_NAMES = ['X402_NETWORK', 'X402_FACILITATOR_URL', 'X402_PAY_TO', 'X402_PRICE_PROPOSAL'];
+export const X402_ORACLE_ENV_NAMES = ['X402_NETWORK', 'X402_FACILITATOR_URL', 'X402_PAY_TO', 'X402_PRICE_ORACLE_FACT'];
 export const CDP_CREDENTIAL_ENV_NAMES = ['CDP_API_KEY_ID', 'CDP_API_KEY_SECRET'];
 
 export function isCdpFacilitatorUrl(value) {
@@ -24,10 +25,10 @@ export function isCdpFacilitatorUrl(value) {
     }
 }
 
-export function readX402Config(env = process.env) {
+function readRouteConfig(env, envNames, priceName, priceKey) {
     const values = {};
     const missing = [];
-    for (const name of X402_ENV_NAMES) {
+    for (const name of envNames) {
         const raw = env[name];
         const value = typeof raw === 'string' ? raw.trim() : '';
         if (!value) missing.push(name);
@@ -47,8 +48,16 @@ export function readX402Config(env = process.env) {
         facilitatorUrl: values.X402_FACILITATOR_URL,
         usesCdp,
         payTo: values.X402_PAY_TO,
-        priceProposal: values.X402_PRICE_PROPOSAL
+        [priceKey]: values[priceName]
     };
+}
+
+export function readX402Config(env = process.env) {
+    return readRouteConfig(env, X402_ENV_NAMES, 'X402_PRICE_PROPOSAL', 'priceProposal');
+}
+
+export function readX402OracleConfig(env = process.env) {
+    return readRouteConfig(env, X402_ORACLE_ENV_NAMES, 'X402_PRICE_ORACLE_FACT', 'priceOracleFact');
 }
 
 // Requests under /agent/ are authenticated by payment, so the browser-origin gate and the per-IP

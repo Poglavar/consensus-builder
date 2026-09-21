@@ -86,6 +86,22 @@ stores the recipe digest, close time, SAS program/credential/schema trust set, i
 commitments to the parcel UID and two operation strings. These duplicate the security-sensitive
 recipe fields intentionally: settlement does not depend on the API remaining available.
 
+The prospective V2 declaration additionally requires the newly registered SAS schema account:
+
+```text
+GET /oracle/recipes/court-parcel-operation-v2
+    ?parcelUid=<HR parcel uid>
+    &yesOperation=<exact SAS operation>
+    &noOperation=<exact SAS operation>
+    &closesAt=<Unix seconds>
+    &schema=<CourtParcelOperationV2 SAS account>
+```
+
+V2 appends `int64 sourceObservedAt` to the four V1 fields. The market program accepts both shapes
+for compatibility with existing markets, but whenever that fifth field is present it requires
+`market.closesAt <= sourceObservedAt <= resolution time`. A V2 schema cannot issue a four-field
+payload, so a V2 market cannot bypass the temporal check.
+
 Materialized evidence follows the matching event envelope:
 
 ```json
@@ -144,9 +160,9 @@ Adapters must obey these invariants:
    events disclose only the minimum evidence allowed by that source.
 
 The current `proposal-lifecycle-v1` module predates a generic loader and directly exports equivalent
-recipe, collection, and verification helpers. `court-parcel-operation-v1` is the first concrete
-external adapter and matches the fixed parser in `ExternalMarket`; dynamic adapter loading is not
-implemented.
+recipe, collection, and verification helpers. `court-parcel-operation-v1` is the live concrete
+external adapter; `court-parcel-operation-v2` adds the source-time contract needed for prospective
+markets. Both match the fixed parser in `ExternalMarket`; dynamic adapter loading is not implemented.
 
 ## Security and trust assumptions
 
@@ -157,8 +173,10 @@ implemented.
 - The new `ExternalMarket` code trusts Solana consensus, the SAS program, one committed credential,
   schema and issuer, plus the exact parcel/operation mapping in the hashed recipe. Any caller can
   resolve, but cannot select the outcome; the attestation payload selects it.
-- External trading closes before resolution. Only a live, unexpired SAS attestation with the exact
-  four-string court schema is accepted. The program records its address and full-account SHA-256.
+- External trading closes before resolution. Only a live, unexpired SAS attestation under the
+  market's exact schema is accepted. Existing V1 markets accept the four-string court payload. V2
+  adds `sourceObservedAt`; the upgraded source enforces that it is not earlier than market close or
+  later than resolution. The program records the evidence address and full-account SHA-256.
 - An app-level `Expired` label is not terminal on-chain. Until execution or cancellation, market
   stakes can remain locked indefinitely because the program has no deadline.
 - Donations move devnet USDC into program escrow immediately; cancellation or expiry lets each
@@ -207,8 +225,18 @@ resolution, court-oracle aggregate health, SAS attestations, and public program/
 
 **Live on devnet:** `ExternalMarket`, direct SAS account verification, canonical court recipe
 endpoint, checked-in IDL and browser codec. The first market accepted 0.01 USDC on each outcome,
-resolved from the committed SAS evidence, and paid 0.02 USDC to the winner.
+resolved from the committed SAS evidence, and paid 0.02 USDC to the winner. Its public chronology
+correctly classifies it as retrospective because the attestation existed before the market.
 
-**Next:** surface the external market proof in the Demo Center, offer verified oracle facts to agents
-over x402, then generalize the fixed court payload parser into versioned permit/imagery/OSM adapters
-and define challenge rules for sources that are not already authoritative public records.
+**Live API:** agents can buy a recipe-bound proposal lifecycle fact over x402. Availability and
+integrity are checked before charging; the paid response packages the public source-hashed event,
+exact recipe and verification checks. Bazaar discovery declares its query and output contracts.
+
+**Code-ready, not yet live:** the V2 recipe, two-phase runner, attestation parser and market guard
+commit the court source-publication time and reject pre-close or future evidence. A real proof still
+requires registering the V2 SAS schema, upgrading the devnet market program, teaching the dedicated
+court attester to issue V2, then waiting for a genuinely later court record.
+
+**Next:** complete those operational V2 steps, then generalize the fixed parser into
+permit/imagery/OSM adapters and define challenge rules for sources that are not already authoritative
+public records.

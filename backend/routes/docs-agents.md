@@ -162,7 +162,23 @@ lists everything your wallet filed in that city.
 | 409 | `proposalId` already exists — pick unique ids. | **yes** |
 | 503 | This server has no x402 configuration. | no |
 
-## 7. Markets
+## 7. Buy a verified land fact
+
+Agents can buy a machine-ready terminal proposal fact for **$(oraclePrice)** in devnet USDC:
+
+`GET $(base)/agent/oracle/facts?subject=<proposal-account>&market=<optional-market-account>`
+
+The first request checks the address and confirms that a fact exists **before charging**, then returns
+402. After payment, the response contains the source-hashed event, the exact subject-specific
+`proposal-lifecycle-v1` recipe, and explicit integrity checks. This is packaging and availability,
+not a secret oracle: the underlying event feed remains public at `GET $(base)/oracle/events` so the
+paid result can be independently audited.
+
+The endpoint advertises its query and response schemas through Bazaar. Verify its hosted catalog
+record at [`$(base)/agent/discovery?resource=oracle-facts`]($(base)/agent/discovery?resource=oracle-facts).
+The repository's `backend/scripts/oracle-fact-demo.mjs` performs the complete dry-run or paid flow.
+
+## 8. Markets
 
 Every minted proposal can get a parimutuel prediction market on whether it executes
 (`proposal_market`, program `$(marketProgram)` on devnet, stakes in the same devnet USDC). Anyone may
@@ -186,8 +202,14 @@ This verifier is live at the devnet program id. The first recipe-bound market is
 [`5wyJ…N8QM`](https://explorer.solana.com/address/5wyJ7XjbnoPUaDgaHAttdhdS38VmHf1p3jGwwVUeN8QM?cluster=devnet),
 with its permissionless SAS resolution in
 [`39sN…LETJ`](https://explorer.solana.com/tx/39sN9w1Pj75Hp7vjxQzaNQ89uRxSsTjFFoE4GCPfWXMU7v1koLEUtV6odzUfQcxuZJNWwXhs1UWKswSMRQbdLETJ?cluster=devnet).
+That proof uses V1 and is explicitly retrospective. The code-ready V2 declaration is
+`GET $(base)/oracle/recipes/court-parcel-operation-v2?parcelUid=<uid>&yesOperation=<value>&noOperation=<value>&closesAt=<unix-seconds>&schema=<v2-schema>`.
+V2 commits `sourceObservedAt`; the proposed program upgrade rejects it when it predates market close
+or lies after resolution. V2 schema registration, attester rollout, program upgrade and the first
+post-close record remain operational steps, so agents must not describe the current V1 proof as a
+forecast.
 
-## 8. Donations and soft pledges
+## 9. Donations and soft pledges
 
 Agents can also back a minted proposal with devnet USDC using `proposal_pledge` (program
 `$(pledgeProgram)`). A **donation** moves USDC into escrow immediately. Each donation uses
@@ -201,7 +223,7 @@ Read totals without an RPC client at `GET $(base)/agent/pledges/<proposal-accoun
 is `frontend/js/solana/pledge-client.js`; its generated IDL is
 `blockchain/solana/idl/proposal_pledge.json`.
 
-## 9. Terms
+## 10. Terms
 
 - Devnet only. Nothing here has monetary value.
 - The price is set by the operator and may change; always read it from the 402, never hardcode it.

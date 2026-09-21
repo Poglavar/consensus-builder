@@ -7,10 +7,12 @@ import { PublicKey } from '@solana/web3.js';
 import { canonicalJson, sha256 } from './proposal-lifecycle.js';
 
 export const COURT_RECIPE_ID = 'court-parcel-operation-v1';
+export const COURT_RECIPE_V2_ID = 'court-parcel-operation-v2';
 export const COURT_EVENT_TYPE = 'court_parcel_operation';
 export const SAS_PROGRAM_ID = '22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG';
 export const COURT_CREDENTIAL = '6fibS3XSgE7c4XDSFUuArBcmnD8bN26XNpjZTC8bBbcY';
-export const COURT_SCHEMA = '2SdzCg62opMYbEfE4wcwUWYghA7n8GdAmkCC192FbUy9';
+export const COURT_SCHEMA_V1 = '2SdzCg62opMYbEfE4wcwUWYghA7n8GdAmkCC192FbUy9';
+export const COURT_SCHEMA = COURT_SCHEMA_V1;
 export const COURT_ATTESTER = 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ';
 export const MARKET_PROGRAM_ID = 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB';
 
@@ -39,12 +41,23 @@ function unixSeconds(value) {
     return Number(parsed);
 }
 
-export function buildCourtParcelOperationRecipe({
+function publicKey(value, label) {
+    const text = requiredText(value, label, 44);
+    try {
+        return new PublicKey(text).toBase58();
+    } catch {
+        throw new Error(`${label} must be a Solana public key`);
+    }
+}
+
+function buildRecipe({
     parcelUid,
     yesOperation,
     noOperation,
-    closesAt
-} = {}) {
+    closesAt,
+    schema,
+    version
+}) {
     const subject = requiredText(parcelUid, 'parcelUid');
     const yes = requiredText(yesOperation, 'yesOperation');
     const no = requiredText(noOperation, 'noOperation');
@@ -55,9 +68,10 @@ export function buildCourtParcelOperationRecipe({
         yesValueHash: `sha256:${hashText(yes)}`,
         noValueHash: `sha256:${hashText(no)}`
     };
+    const v2 = version === 2;
     const body = {
-        id: COURT_RECIPE_ID,
-        version: 1,
+        id: v2 ? COURT_RECIPE_V2_ID : COURT_RECIPE_ID,
+        version,
         question: `Which committed court operation is attested for parcel ${subject}?`,
         eventType: COURT_EVENT_TYPE,
         subject: { chain: 'solana:devnet', parcelUid: subject },
@@ -68,12 +82,14 @@ export function buildCourtParcelOperationRecipe({
         }],
         outcomes: { [yes]: 'YES', [no]: 'NO' },
         verification: {
-            kind: 'sas_court_parcel_operation_v1',
+            kind: `sas_court_parcel_operation_v${version}`,
             permissionless: true,
             sasProgram: SAS_PROGRAM_ID,
             credential: COURT_CREDENTIAL,
-            schema: COURT_SCHEMA,
-            payloadFields: ['parcelUid', 'decisionUuid', 'operation', 'decisionLink'],
+            schema,
+            payloadFields: v2
+                ? ['parcelUid', 'decisionUuid', 'operation', 'decisionLink', 'sourceObservedAt']
+                : ['parcelUid', 'decisionUuid', 'operation', 'decisionLink'],
             subjectField: 'parcelUid',
             outcomeField: 'operation',
             closesAt: closeTime,
@@ -82,7 +98,23 @@ export function buildCourtParcelOperationRecipe({
             commitments
         }
     };
+    if (v2) {
+        body.verification.temporalIntegrity = {
+            sourceObservedAtField: 'sourceObservedAt',
+            minimum: 'market_closes_at',
+            maximum: 'resolution_time',
+            enforcedBy: 'proposal_market'
+        };
+    }
     return { ...body, hash: `sha256:${sha256(canonicalJson(body))}` };
+}
+
+export function buildCourtParcelOperationRecipe(input = {}) {
+    return buildRecipe({ ...input, schema: COURT_SCHEMA_V1, version: 1 });
+}
+
+export function buildCourtParcelOperationRecipeV2({ schema, ...input } = {}) {
+    return buildRecipe({ ...input, schema: publicKey(schema, 'schema'), version: 2 });
 }
 
 export function externalMarketAddress(recipeHash) {

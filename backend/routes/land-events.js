@@ -6,7 +6,9 @@ import fs from 'node:fs';
 import { buildProposalLifecycleRecipe, EVENT_TYPE, RECIPE_ID } from '../oracle/proposal-lifecycle.js';
 import {
     buildCourtParcelOperationRecipe,
+    buildCourtParcelOperationRecipeV2,
     COURT_RECIPE_ID,
+    COURT_RECIPE_V2_ID,
     externalMarketAddress
 } from '../oracle/court-parcel-operation.js';
 
@@ -118,6 +120,21 @@ export function setupLandEventsRoute(app, pool) {
                 yesOperation: req.query.yesOperation,
                 noOperation: req.query.noOperation,
                 closesAt: req.query.closesAt
+            });
+            return res.json({ recipe, marketAccount: externalMarketAddress(recipe.hash) });
+        } catch (error) {
+            return res.status(400).json({ error: error.message });
+        }
+    });
+
+    app.get(`/oracle/recipes/${COURT_RECIPE_V2_ID}`, (req, res) => {
+        try {
+            const recipe = buildCourtParcelOperationRecipeV2({
+                parcelUid: req.query.parcelUid,
+                yesOperation: req.query.yesOperation,
+                noOperation: req.query.noOperation,
+                closesAt: req.query.closesAt,
+                schema: req.query.schema
             });
             return res.json({ recipe, marketAccount: externalMarketAddress(recipe.hash) });
         } catch (error) {

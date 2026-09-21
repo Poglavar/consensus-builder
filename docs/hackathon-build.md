@@ -94,7 +94,8 @@ curl 'http://localhost:3000/oracle/events?limit=5'
 ```
 
 x402 settlement additionally requires the `X402_*` and hosted CDP facilitator variables described
-by `/docs/agents`; agent signing requires a dedicated low-value devnet keypair. Neither is required
+by `/docs/agents`; `X402_PRICE_ORACLE_FACT` independently prices verified-fact reads (`$0.01` on the
+hackathon deployment). Agent signing requires a dedicated low-value devnet keypair. Neither is required
 for unit tests or dry-run planning. The repository never contains production or persona keys.
 
 ## 5. Inspect or dry-run an agent
@@ -152,5 +153,37 @@ node blockchain/solana/scripts/external-market-lifecycle.mjs
 
 The redacted dry run checks the SAS account owner, credential, schema, issuer, expiry and payload
 shape, then derives the exact market commitments. `--live` additionally creates a fresh two-sided
-0.02 devnet-USDC market, waits for its close, resolves it and claims the winning pool. It intentionally
-does not print the parcel, decision, operation, legal-record link or credential-bearing RPC URL.
+0.02 devnet-USDC integration market, waits for its close, resolves it and claims the winning pool.
+Because that runner starts from an existing attestation, it is not a prospective forecast. It
+intentionally does not print the parcel, decision, operation, legal-record link or
+credential-bearing RPC URL.
+
+For a temporally honest market, use the separate two-phase runner. The open phase does not accept or
+read an attestation:
+
+```bash
+PROSPECTIVE_PARCEL_UID='…' \
+PROSPECTIVE_YES_OPERATION='…' \
+PROSPECTIVE_NO_OPERATION='…' \
+PROSPECTIVE_CLOSES_AT='2026-09-30T18:00:00Z' \
+PROSPECTIVE_COURT_SCHEMA='<CourtParcelOperationV2 SAS account>' \
+PROSPECTIVE_BETTOR_KEYPAIR='…' \
+node blockchain/solana/scripts/prospective-external-market.mjs --open
+```
+
+Add `--live` only after reviewing the redacted plan. It creates the market and two stakes, then
+writes a gitignored mode-0600 state file. After close, provide a newly issued attestation:
+
+```bash
+PROSPECTIVE_ATTESTATION='…' \
+PROSPECTIVE_BETTOR_KEYPAIR='…' \
+node blockchain/solana/scripts/prospective-external-market.mjs --settle
+```
+
+The runner requires the five-field `CourtParcelOperationV2` schema and refuses settlement unless
+both its committed `sourceObservedAt` and the attestation's first Solana transaction are at or after
+market close. The proposed program upgrade independently enforces
+`market.closesAt <= sourceObservedAt <= resolution time` on-chain. Before a live run, register that
+V2 SAS schema under the existing court credential, upgrade `proposal_market`, and update the
+dedicated court attester to publish the official source timestamp as an `int64` Unix second. These
+operational steps are still pending; the existing live settlement remains a retrospective V1 proof.

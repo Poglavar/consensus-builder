@@ -972,7 +972,17 @@
     {
       "code": 6024,
       "name": "InvalidEvidencePayload",
-      "msg": "The attestation payload does not match CourtParcelOperationV1"
+      "msg": "The attestation payload does not match CourtParcelOperationV1 or V2"
+    },
+    {
+      "code": 6025,
+      "name": "EvidencePredatesMarketClose",
+      "msg": "The source record was observed before this market closed"
+    },
+    {
+      "code": 6026,
+      "name": "EvidenceFromFuture",
+      "msg": "The source-observation timestamp is in the future"
     }
   ],
   "types": [

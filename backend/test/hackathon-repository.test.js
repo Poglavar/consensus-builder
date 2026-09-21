@@ -47,4 +47,26 @@ describe('hackathon repository documentation', () => {
         expect(protocol).toContain('Evidence adapter interface');
         expect(protocol).toContain('Security and trust assumptions');
     });
+
+    it('ships an honest two-phase runner for prospective evidence', () => {
+        const runner = read('blockchain/solana/scripts/prospective-external-market.mjs');
+        expect(runner).toContain("choose exactly one phase: --open or --settle");
+        expect(runner).toContain('firstAddressTime');
+        expect(runner).toContain('buildCourtParcelOperationRecipeV2');
+        expect(runner).toContain('assertProspectiveChronology');
+        expect(read('docs/hackathon-build.md')).toContain('market.closesAt <= sourceObservedAt <= resolution time');
+        const program = read('blockchain/solana/programs/proposal_market/src/lib.rs');
+        expect(program).toContain('validate_source_chronology(evidence.source_observed_at, market.closes_at, now)');
+        expect(program).toContain('EvidencePredatesMarketClose');
+    });
+
+    it('ships a paid, discoverable and independently auditable oracle-fact capability', () => {
+        const route = read('backend/routes/agent-oracle-facts.js');
+        expect(route).toContain("AGENT_ORACLE_FACTS_PATH = '/agent/oracle/facts'");
+        expect(route).toContain('declareDiscoveryExtension');
+        expect(route).toMatch(/parseFactQuery,\s*loadVerifiedFact\(pool\),\s*gate,/);
+        expect(read('backend/ecosystem.config.cjs')).toContain("X402_PRICE_ORACLE_FACT: '$0.01'");
+        expect(read('backend/routes/docs-agents.md')).toContain('/agent/discovery?resource=oracle-facts');
+        expect(read('backend/scripts/oracle-fact-demo.mjs')).toContain('inspect → pay → verify → discover');
+    });
 });

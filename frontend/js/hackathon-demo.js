@@ -25,7 +25,8 @@
     }
 
     function buildDemoModel({
-        runs = [], events = [], docs = {}, discovery = null, oracleEvents = [], publicRecords = null, errors = {},
+        runs = [], events = [], docs = {}, discovery = null, oracleDiscovery = null,
+        oracleEvents = [], publicRecords = null, errors = {},
         now = new Date().toISOString()
     } = {}) {
         const latestAlgorithm = newest(runs, run => run.controller === 'algorithm' && (run.role || 'proposer') === 'proposer');
@@ -38,10 +39,13 @@
             && ageHours(latestAlgorithm.updatedAt || latestAlgorithm.finishedAt, now) <= 36);
         const x402 = docs.x402 || {};
         const discoveryListed = discovery?.state === 'listed';
+        const oracleDiscoveryListed = oracleDiscovery?.state === 'listed';
         const latestOracle = newest(oracleEvents, event => event.eventType === 'proposal_lifecycle');
         const external = docs.oracle?.externalMarket || {};
         const externalLive = external.status === 'live_devnet' && external.proofMarket && external.proofResolution;
         const externalProof = external.proof || {};
+        const externalChronology = externalProof.chronology || {};
+        const externalProspective = externalChronology.classification === 'prospective';
         return {
             generatedAt: now,
             x402: {
@@ -59,6 +63,21 @@
                 submitUrl: docs.endpoints?.submit || null,
                 discoveryUrl: docs.endpoints?.discovery || null,
                 listing: discovery?.listing || null
+            },
+            oracleFacts: {
+                tone: errors.oracleDiscovery ? 'error' : oracleDiscoveryListed ? 'success' : 'waiting',
+                label: errors.oracleDiscovery ? 'Oracle-fact discovery unavailable'
+                    : oracleDiscoveryListed ? 'Paid verified facts listed in Bazaar'
+                        : x402.oracleFactsEnabled ? 'Paid fact endpoint ready; listing unverified' : 'Paid fact endpoint not configured',
+                detail: errors.oracleDiscovery ? errors.oracleDiscovery
+                    : oracleDiscoveryListed
+                        ? `${x402.priceOracleFact || 'price unknown'} per fact · exact catalog resource verified ${oracleDiscovery.verifiedAt || ''}`.trim()
+                        : x402.oracleFactsEnabled
+                            ? `${x402.priceOracleFact || 'price unknown'} per fact · ${oracleDiscovery?.state || 'no catalog result'}`
+                            : 'Agents can still audit the free event feed; paid recipe-bound bundles await x402 configuration.',
+                endpoint: docs.endpoints?.oracleFact || null,
+                discoveryUrl: docs.endpoints?.oracleFactDiscovery || null,
+                listing: oracleDiscovery?.listing || null
             },
             algorithm: latestAlgorithm ? {
                 tone: algorithmFresh ? 'success' : 'waiting',
@@ -106,12 +125,19 @@
             },
             externalMarket: externalLive ? {
                 tone: 'success',
-                label: 'Court evidence settled a two-sided market',
-                detail: '0.01 USDC on YES + 0.01 USDC on NO · permissionless SAS resolution · 0.02 USDC claimed',
+                label: externalProspective
+                    ? 'A prospective court market settled from later evidence'
+                    : 'Court evidence settled a two-sided integration proof',
+                detail: externalProspective
+                    ? 'The source record and attestation arrived after trading closed · 0.02 USDC claimed'
+                    : 'Retrospective evidence · 0.01 USDC on each side · permissionless resolution · 0.02 USDC claimed',
                 market: external.proofMarket,
                 resolution: external.proofResolution,
                 claim: external.proofClaim || null,
-                proof: externalProof
+                proof: externalProof,
+                prospective: externalProspective,
+                chronology: externalChronology,
+                nextProof: external.prospectiveProof || null
             } : {
                 tone: 'waiting',
                 label: 'External market proof unavailable',
@@ -178,14 +204,35 @@
 
         const story = node(doc, 'section', null, 'hd-story');
         const storyCopy = node(doc, 'div', null, 'hd-story-copy');
-        storyCopy.append(node(doc, 'span', 'HYPERSTITION · ONE FUTURE, END TO END', 'hd-eyebrow'));
-        storyCopy.append(node(doc, 'h2', 'A possible land future became a verifiable market'));
-        storyCopy.append(node(doc, 'p', 'The market committed its question before settlement. Two wallets backed competing outcomes. A public court attestation selected the result, any wallet could resolve it, and the winner claimed the pool.'));
+        storyCopy.append(node(doc, 'span', model.externalMarket.prospective
+            ? 'PROSPECTIVE MARKET · VERIFIED CHRONOLOGY'
+            : 'RETROSPECTIVE INTEGRATION · LIVE DEVNET', 'hd-eyebrow'));
+        storyCopy.append(node(doc, 'h2', model.externalMarket.prospective
+            ? 'A possible land future became a verified outcome'
+            : 'A public land fact completed the market loop'));
+        storyCopy.append(node(doc, 'p', model.externalMarket.prospective
+            ? 'The market and both stakes existed before the source record. After close, a public court attestation selected the result, any wallet could resolve it, and the winner claimed the pool.'
+            : 'This first proof exercises recipe commitment, two-sided staking, permissionless public-record resolution and payout. Its attestation predates the market, so it proves the integration—not yet a prediction.'));
         const storyLinks = node(doc, 'div', null, 'hd-links');
         if (model.externalMarket.market) storyLinks.append(link(doc, 'Open market account ↗', `https://explorer.solana.com/address/${encodeURIComponent(model.externalMarket.market)}?cluster=devnet`));
         if (model.externalMarket.resolution) storyLinks.append(link(doc, 'Verify resolution ↗', `https://explorer.solana.com/tx/${encodeURIComponent(model.externalMarket.resolution)}?cluster=devnet`));
         if (model.externalMarket.claim) storyLinks.append(link(doc, 'Verify payout ↗', `https://explorer.solana.com/tx/${encodeURIComponent(model.externalMarket.claim)}?cluster=devnet`));
         storyCopy.append(storyLinks);
+        const chronology = model.externalMarket.chronology;
+        if (chronology?.timestamps) {
+            const proofOrder = node(doc, 'dl', null, 'hd-proof-order');
+            [
+                ['Evidence first seen', chronology.timestamps.evidenceCreatedAt],
+                ['Market opened', chronology.timestamps.marketCreatedAt],
+                ['Trading closed', chronology.timestamps.marketClosesAt],
+                ['Market resolved', chronology.timestamps.resolvedAt]
+            ].forEach(([label, value]) => {
+                const row = node(doc, 'div');
+                row.append(node(doc, 'dt', label), node(doc, 'dd', value ? new Date(value).toLocaleString() : 'Not available'));
+                proofOrder.append(row);
+            });
+            storyCopy.append(proofOrder, node(doc, 'p', chronology.reason, 'hd-proof-reason'));
+        }
         const storyFlow = node(doc, 'ol', null, 'hd-story-flow');
         [
             ['01', 'Imagined', 'A parcel future becomes a falsifiable question.'],
@@ -207,6 +254,13 @@
             { label: 'View discovery record ↗', href: model.x402.discoveryUrl || `${apiBase}/agent/discovery` },
             { label: 'Agent recipe JSON ↗', href: `${apiBase}/docs/agents.json` },
             { label: 'Quickstart ↗', href: `${apiBase}/docs/agents` }
+        ]);
+        addCard(cards, 'Paid oracle facts', model.oracleFacts, [
+            { label: 'View fact discovery ↗', href: model.oracleFacts.discoveryUrl || `${apiBase}/agent/discovery?resource=oracle-facts` },
+            model.oracle.event?.subject?.id
+                ? { label: 'Request this fact ↗', href: `${apiBase}/agent/oracle/facts?subject=${encodeURIComponent(model.oracle.event.subject.id)}` }
+                : {},
+            { label: 'Audit free event feed ↗', href: `${apiBase}/oracle/events` }
         ]);
         addCard(cards, 'Daily proposer', model.algorithm, model.algorithm.run ? [
             { label: 'Run record ↗', href: `${apiBase}/agent/runs/${encodeURIComponent(model.algorithm.run.id)}` }
@@ -269,12 +323,13 @@
         const list = node(doc, 'ol');
         [
             ['Inspect the exact live x402 Bazaar discovery record.', model.x402.discoveryUrl || `${apiBase}/agent/discovery`],
+            ['Inspect the paid verified-fact capability and its Bazaar schema.', model.oracleFacts.discoveryUrl || `${apiBase}/agent/discovery?resource=oracle-facts`],
             ['Open the latest live actor, rationale, cost and transaction evidence.', '/actor-explorer.html'],
             ['Open a proposal in read-only Details; Counterpropose creates the editable clone.', model.evidence.latestProposalId ? `/proposals/${encodeURIComponent(model.evidence.latestProposalId)}` : '/'],
             ['Compare funded donation with a revocable soft pledge, using the same wallet UI.', model.evidence.latestProposalId ? `/proposals/${encodeURIComponent(model.evidence.latestProposalId)}` : '/'],
             ['Inspect the prediction market’s hashed oracle recipe and market account.', model.evidence.latestProposalId ? `/proposals/${encodeURIComponent(model.evidence.latestProposalId)}` : '/'],
             ['Verify the external court oracle’s aggregate health and public SAS schema.', `${apiBase}/oracle/public-records/summary`],
-            ['Follow the live court-attestation market from resolution to USDC claim.', model.externalMarket.resolution ? `https://explorer.solana.com/tx/${encodeURIComponent(model.externalMarket.resolution)}?cluster=devnet` : `${apiBase}/docs/agents.json`],
+            ['Follow the live retrospective court-attestation proof from resolution to USDC claim.', model.externalMarket.resolution ? `https://explorer.solana.com/tx/${encodeURIComponent(model.externalMarket.resolution)}?cluster=devnet` : `${apiBase}/docs/agents.json`],
             ['Open a source-hashed proposal lifecycle event and its Solana transaction.', `${apiBase}/oracle/events`]
         ].forEach(([label, href]) => {
             const item = node(doc, 'li'); item.append(link(doc, label, href)); list.append(item);
@@ -289,7 +344,7 @@
         const boundary = node(doc, 'section', null, 'hd-flow hd-boundary');
         boundary.append(node(doc, 'span', 'HONEST BOUNDARY', 'hd-eyebrow'));
         boundary.append(node(doc, 'h2', 'One authoritative source is live; broader geography still needs corroboration'));
-        boundary.append(node(doc, 'p', 'The live external market verifies one fixed Croatian court SAS schema and trusted issuer. Permit, imagery, news and OSM adapters—and challenge rules for sources that are easier to manipulate—remain future work. Everything shown here uses devnet assets with no monetary value.'));
+        boundary.append(node(doc, 'p', 'The live external market verifies the V1 Croatian court SAS schema and trusted issuer. A V2 source-time guard is code-ready but still needs schema registration, attester rollout, a program upgrade, and a genuinely later court record. Permit, imagery, news and OSM adapters—and challenge rules for sources that are easier to manipulate—remain future work. Everything shown here uses devnet assets with no monetary value.'));
         element.append(boundary);
 
         const readiness = node(doc, 'section', null, 'hd-flow hd-readiness');
@@ -330,6 +385,7 @@
             activity: `${base}/agent/activity?limit=150`,
             docs: `${base}/docs/agents.json`,
             discovery: `${base}/agent/discovery`,
+            oracleDiscovery: `${base}/agent/discovery?resource=oracle-facts`,
             oracle: `${base}/oracle/events?limit=25`,
             publicRecords: `${base}/oracle/public-records/summary`
         };
@@ -356,6 +412,7 @@
             events: values.activity?.events || [],
             docs: values.docs || {},
             discovery: values.discovery || null,
+            oracleDiscovery: values.oracleDiscovery || null,
             oracleEvents: values.oracle?.events || [],
             publicRecords: values.publicRecords || null,
             errors

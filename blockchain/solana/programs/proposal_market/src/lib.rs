@@ -250,6 +250,7 @@ pub mod proposal_market {
         require_keys_eq!(evidence.authority, market.trusted_attester, MarketError::UntrustedAttester);
         require!(evidence.expiry > now, MarketError::ExpiredEvidence);
         require!(evidence.subject_hash == market.subject_hash, MarketError::WrongEvidenceSubject);
+        validate_source_chronology(evidence.source_observed_at, market.closes_at, now)?;
 
         let outcome = if evidence.value_hash == market.yes_value_hash {
             SIDE_YES
@@ -386,6 +387,7 @@ struct SasCourtEvidence {
     expiry: i64,
     subject_hash: [u8; 32],
     value_hash: [u8; 32],
+    source_observed_at: Option<i64>,
     account_hash: [u8; 32],
 }
 
@@ -412,14 +414,27 @@ fn parse_sas_court_evidence(data: &[u8]) -> Result<SasCourtEvidence> {
     );
 
     // CourtParcelOperationV1: string parcelUid, string decisionUuid, string operation,
-    // string decisionLink. Only the committed subject and outcome value affect resolution.
+    // string decisionLink.
+    // CourtParcelOperationV2 appends int64 sourceObservedAt. The schema account bound into the
+    // market determines which payload SAS can issue; accepting both shapes keeps already-created
+    // V1 markets resolvable while V2 markets gain an on-chain temporal-integrity check.
     let payload = &data[101..payload_end];
     let mut offset = 0usize;
     let parcel_uid = read_borsh_string(payload, &mut offset)?;
     let _decision_uuid = read_borsh_string(payload, &mut offset)?;
     let operation = read_borsh_string(payload, &mut offset)?;
     let _decision_link = read_borsh_string(payload, &mut offset)?;
-    require!(offset == payload.len(), MarketError::InvalidEvidencePayload);
+    let source_observed_at = if offset == payload.len() {
+        None
+    } else {
+        let timestamp_end = offset.checked_add(8).ok_or(MarketError::InvalidEvidencePayload)?;
+        require!(timestamp_end == payload.len(), MarketError::InvalidEvidencePayload);
+        let timestamp = i64::from_le_bytes(
+            payload[offset..timestamp_end].try_into().map_err(|_| error!(MarketError::InvalidEvidencePayload))?
+        );
+        require!(timestamp > 0, MarketError::InvalidEvidencePayload);
+        Some(timestamp)
+    };
 
     Ok(SasCourtEvidence {
         credential,
@@ -428,8 +443,17 @@ fn parse_sas_court_evidence(data: &[u8]) -> Result<SasCourtEvidence> {
         expiry,
         subject_hash: hash(parcel_uid).to_bytes(),
         value_hash: hash(operation).to_bytes(),
+        source_observed_at,
         account_hash: hash(&data).to_bytes(),
     })
+}
+
+fn validate_source_chronology(source_observed_at: Option<i64>, closes_at: i64, now: i64) -> Result<()> {
+    if let Some(observed_at) = source_observed_at {
+        require!(observed_at >= closes_at, MarketError::EvidencePredatesMarketClose);
+        require!(observed_at <= now, MarketError::EvidenceFromFuture);
+    }
+    Ok(())
 }
 
 fn read_borsh_string<'a>(bytes: &'a [u8], offset: &mut usize) -> Result<&'a [u8]> {
@@ -714,8 +738,12 @@ pub enum MarketError {
     WrongEvidenceSubject,
     #[msg("The attestation value maps to neither committed outcome")]
     UnsupportedEvidenceValue,
-    #[msg("The attestation payload does not match CourtParcelOperationV1")]
+    #[msg("The attestation payload does not match CourtParcelOperationV1 or V2")]
     InvalidEvidencePayload,
+    #[msg("The source record was observed before this market closed")]
+    EvidencePredatesMarketClose,
+    #[msg("The source-observation timestamp is in the future")]
+    EvidenceFromFuture,
 }
 
 #[cfg(test)]
@@ -730,12 +758,23 @@ mod tests {
     }
 
     fn sas_attestation(parcel_uid: &str, operation: &str) -> (Vec<u8>, Pubkey, Pubkey, Pubkey) {
+        sas_attestation_with_source_time(parcel_uid, operation, None)
+    }
+
+    fn sas_attestation_with_source_time(
+        parcel_uid: &str,
+        operation: &str,
+        source_observed_at: Option<i64>,
+    ) -> (Vec<u8>, Pubkey, Pubkey, Pubkey) {
         let credential = Pubkey::new_from_array([4; 32]);
         let schema = Pubkey::new_from_array([5; 32]);
         let authority = Pubkey::new_from_array([6; 32]);
         let mut payload = Vec::new();
         for value in [parcel_uid, "decision-42", operation, "https://court.example/42"] {
             payload.extend_from_slice(&borsh_string(value));
+        }
+        if let Some(timestamp) = source_observed_at {
+            payload.extend_from_slice(&timestamp.to_le_bytes());
         }
         let mut data = vec![0; 101];
         data[0] = SAS_ATTESTATION_DISCRIMINATOR;
@@ -777,7 +816,22 @@ mod tests {
         assert_eq!(evidence.expiry, 2_000_000_000);
         assert_eq!(evidence.subject_hash, hash(b"HR-335347-1208/3").to_bytes());
         assert_eq!(evidence.value_hash, hash(b"transfer").to_bytes());
+        assert_eq!(evidence.source_observed_at, None);
         assert_eq!(evidence.account_hash, hash(&data).to_bytes());
+    }
+
+    #[test]
+    fn parses_v2_source_time_and_enforces_prospective_chronology() {
+        let (data, _, _, _) = sas_attestation_with_source_time(
+            "HR-335347-1208/3",
+            "transfer",
+            Some(1_900_000_100),
+        );
+        let evidence = parse_sas_court_evidence(&data).unwrap();
+        assert_eq!(evidence.source_observed_at, Some(1_900_000_100));
+        assert!(validate_source_chronology(evidence.source_observed_at, 1_900_000_000, 1_900_000_200).is_ok());
+        assert!(validate_source_chronology(evidence.source_observed_at, 1_900_000_101, 1_900_000_200).is_err());
+        assert!(validate_source_chronology(evidence.source_observed_at, 1_900_000_000, 1_900_000_099).is_err());
     }
 
     #[test]

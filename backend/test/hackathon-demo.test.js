@@ -6,14 +6,25 @@ const demo = require('../../frontend/js/hackathon-demo.js');
 
 describe('hackathon demo evidence model', () => {
     const docs = {
-        x402: { enabled: true, priceProposal: '$0.05', network: 'solana:devnet', facilitatorUrl: 'https://facilitator' },
-        endpoints: { submit: 'https://api.example/agent/proposals' },
+        x402: {
+            enabled: true, priceProposal: '$0.05', oracleFactsEnabled: true, priceOracleFact: '$0.01',
+            network: 'solana:devnet', facilitatorUrl: 'https://facilitator'
+        },
+        endpoints: {
+            submit: 'https://api.example/agent/proposals',
+            oracleFact: 'https://api.example/agent/oracle/facts?subject={proposalAccount}',
+            oracleFactDiscovery: 'https://api.example/agent/discovery?resource=oracle-facts'
+        },
         market: { programId: 'market-program' }, proposalSupport: { programId: 'support-program' },
         oracle: {
             externalMarket: {
                 status: 'live_devnet', proofMarket: 'external-market',
                 proofResolution: 'resolution-transaction', proofClaim: 'claim-transaction',
-                proof: { recipeHash: 'aa'.repeat(32), yesStakeAtomic: '10000' }
+                proof: {
+                    recipeHash: 'aa'.repeat(32), yesStakeAtomic: '10000',
+                    chronology: { classification: 'retrospective_integration', prospective: false }
+                },
+                prospectiveProof: { status: 'runner_ready' }
             }
         }
     };
@@ -33,6 +44,22 @@ describe('hackathon demo evidence model', () => {
     it('does not call hosted-facilitator configuration a verified catalog listing', () => {
         const model = demo.buildDemoModel({ docs, discovery: { state: 'not-listed' } });
         expect(model.x402).toMatchObject({ tone: 'waiting', label: 'Hosted facilitator configured; listing unverified' });
+    });
+
+    it('tracks paid oracle-fact discovery separately from proposal discovery', () => {
+        const model = demo.buildDemoModel({
+            docs,
+            discovery: { state: 'listed' },
+            oracleDiscovery: {
+                state: 'listed', verifiedAt: '2026-09-21T12:01:00Z',
+                listing: { resource: 'https://api.example/agent/oracle/facts' }
+            }
+        });
+        expect(model.oracleFacts).toMatchObject({
+            tone: 'success',
+            label: 'Paid verified facts listed in Bazaar',
+            detail: expect.stringContaining('$0.01 per fact')
+        });
     });
 
     it('surfaces a terminal land event as source-backed oracle evidence', () => {
@@ -62,12 +89,18 @@ describe('hackathon demo evidence model', () => {
         const model = demo.buildDemoModel({ docs });
         expect(model.externalMarket).toEqual({
             tone: 'success',
-            label: 'Court evidence settled a two-sided market',
-            detail: expect.stringContaining('0.02 USDC claimed'),
+            label: 'Court evidence settled a two-sided integration proof',
+            detail: expect.stringContaining('Retrospective evidence'),
             market: 'external-market',
             resolution: 'resolution-transaction',
             claim: 'claim-transaction',
-            proof: { recipeHash: 'aa'.repeat(32), yesStakeAtomic: '10000' }
+            proof: {
+                recipeHash: 'aa'.repeat(32), yesStakeAtomic: '10000',
+                chronology: { classification: 'retrospective_integration', prospective: false }
+            },
+            prospective: false,
+            chronology: { classification: 'retrospective_integration', prospective: false },
+            nextProof: { status: 'runner_ready' }
         });
     });
 

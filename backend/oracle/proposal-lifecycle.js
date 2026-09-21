@@ -1,5 +1,6 @@
 // Deterministic land-event oracle for proposal terminal state. It snapshots the Solana proposal
-// account, anchors the observation to the terminal transaction, and publishes a hashed recipe.
+// account, anchors the observation to the terminal transaction, publishes a hashed recipe, and
+// reconciles the proposal read model from that verified event.
 
 import { createHash } from 'node:crypto';
 import path from 'node:path';
@@ -132,19 +133,54 @@ function sourceForProposal(rows, proposalAccount, status, idls) {
     return null;
 }
 
-async function writeEvent(pool, event) {
+function lifecycleStatusForOutcome(outcome) {
+    if (outcome === 'executed') return 'Executed';
+    if (outcome === 'cancelled') return 'Cancelled';
+    throw new Error(`unsupported proposal lifecycle outcome: ${outcome}`);
+}
+
+async function writeEventAndReconcileProposal(pool, event) {
+    const lifecycleStatus = lifecycleStatusForOutcome(event.outcome);
     const result = await pool.query(`
-        INSERT INTO consensus.land_event
-            (event_id, event_type, subject_type, subject_id, outcome, source_url, source_hash,
-             source_observed_at, attester, transaction_signature, evidence)
-        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11::jsonb)
-        ON CONFLICT (event_id) DO NOTHING
+        WITH inserted_event AS (
+            INSERT INTO consensus.land_event
+                (event_id, event_type, subject_type, subject_id, outcome, source_url, source_hash,
+                 source_observed_at, attester, transaction_signature, evidence)
+            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11::jsonb)
+            ON CONFLICT (event_id) DO NOTHING
+            RETURNING 1
+        ), reconciled_proposals AS (
+            UPDATE proposal
+            SET lifecycle_status = $12,
+                proposal_data = CASE
+                    WHEN proposal_data IS NULL
+                        THEN jsonb_build_object('lifecycleStatus', $12::text)
+                    WHEN jsonb_typeof(proposal_data) = 'object'
+                        THEN jsonb_set(proposal_data, '{lifecycleStatus}', to_jsonb($12::text), true)
+                    ELSE proposal_data
+                END,
+                updated_at = NOW()
+            WHERE COALESCE(
+                onchain_data->>'proposalId',
+                proposal_data #>> '{onchain,proposalId}',
+                proposal_data #>> '{onchainData,proposalId}'
+            ) = $4
+              AND lifecycle_status IS DISTINCT FROM $12
+            RETURNING 1
+        )
+        SELECT
+            (SELECT COUNT(*)::integer FROM inserted_event) AS inserted,
+            (SELECT COUNT(*)::integer FROM reconciled_proposals) AS reconciled
     `, [
         event.id, event.eventType, event.subjectType, event.subjectId, event.outcome,
         event.source.accountUrl, event.source.hash, event.observedAt, event.attester.address,
-        event.source.transaction, JSON.stringify({ source: event.source, ...event.evidence })
+        event.source.transaction, JSON.stringify({ source: event.source, ...event.evidence }),
+        lifecycleStatus
     ]);
-    return result.rowCount || 0;
+    return {
+        inserted: Number(result.rows?.[0]?.inserted || 0),
+        reconciled: Number(result.rows?.[0]?.reconciled || 0)
+    };
 }
 
 export async function syncProposalLifecycleEvents({ pool, connection, dryRun = false, onProgress = () => {} } = {}) {
@@ -193,6 +229,7 @@ export async function syncProposalLifecycleEvents({ pool, connection, dryRun = f
     const events = [];
     const missingEvidence = [];
     let inserted = 0;
+    let reconciled = 0;
     for (let index = 0; index < terminal.length; index += 1) {
         const item = terminal[index];
         const source = sourceForProposal(transactions.rows, item.proposalAccount, item.status, idls);
@@ -206,9 +243,13 @@ export async function syncProposalLifecycleEvents({ pool, connection, dryRun = f
                 slot: source.slot
             });
             events.push(event);
-            if (!dryRun) inserted += await writeEvent(pool, event);
+            if (!dryRun) {
+                const persisted = await writeEventAndReconcileProposal(pool, event);
+                inserted += persisted.inserted;
+                reconciled += persisted.reconciled;
+            }
         }
-        onProgress({ phase: 'events', done: index + 1, total: terminal.length, inserted });
+        onProgress({ phase: 'events', done: index + 1, total: terminal.length, inserted, reconciled });
     }
     return {
         scanned: accounts.length,
@@ -216,9 +257,10 @@ export async function syncProposalLifecycleEvents({ pool, connection, dryRun = f
         terminal: terminal.length,
         events,
         inserted,
+        reconciled,
         missingEvidence,
         dryRun
     };
 }
 
-export { canonicalJson, sha256, sourceForProposal };
+export { canonicalJson, lifecycleStatusForOutcome, sha256, sourceForProposal };

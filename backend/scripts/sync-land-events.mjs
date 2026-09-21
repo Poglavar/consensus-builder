@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Restartable proposal-lifecycle oracle materializer. It reads stored Solana transactions, polls
-// known proposal accounts, and inserts each immutable terminal event at most once.
+// known proposal accounts, inserts each immutable terminal event at most once, and reconciles the
+// proposal API's lifecycle from that verified event.
 
 import dotenv from 'dotenv';
 dotenv.config({ quiet: true });

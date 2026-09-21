@@ -16,10 +16,11 @@ describe('hackathon pitch deck page', () => {
 
     it('shows the external resolver and first settlement as live', () => {
         expect(html).toContain('The core loop already runs');
-        expect(html).toContain('External verifier live; first court-resolved USDC market settled.');
+        expect(html).toContain('External verifier and paid recipe-bound oracle facts live.');
         expect(html).toContain('Court SAS → market outcome → USDC payout');
+        expect(html).toContain('V2 source-time guard for prospective evidence');
         expect(html).toContain('The future can mobilize action. It cannot declare itself true.');
-        expect(html).toContain('Expose paid oracle facts to agents over x402');
+        expect(html).toContain('Add permit and imagery evidence adapters');
     });
 
     it('links directly to live judge evidence', () => {

@@ -81,6 +81,34 @@ describe('land-event routes', () => {
         expect(ambiguous.body.error).toMatch(/must differ/);
     });
 
+    it('declares a V2 court recipe with an on-chain source-time policy', async () => {
+        const schema = '11111111111111111111111111111111';
+        const res = await request(appFor({ query: vi.fn() }))
+            .get('/oracle/recipes/court-parcel-operation-v2')
+            .query({
+                parcelUid: 'HR-335347-1208/3',
+                yesOperation: 'transfer',
+                noOperation: 'no_event',
+                closesAt: '1790000000',
+                schema
+            });
+        expect(res.status).toBe(200);
+        expect(res.body.recipe).toMatchObject({
+            id: 'court-parcel-operation-v2',
+            version: 2,
+            verification: {
+                schema,
+                kind: 'sas_court_parcel_operation_v2',
+                temporalIntegrity: {
+                    minimum: 'market_closes_at',
+                    maximum: 'resolution_time',
+                    enforcedBy: 'proposal_market'
+                }
+            }
+        });
+        expect(res.body.marketAccount).toMatch(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/);
+    });
+
     it('reads bounded events and preserves source timestamps and hashes', async () => {
         const pool = { query: vi.fn().mockResolvedValue({ rows: [{
             event_id: 'event-1', event_type: 'proposal_lifecycle', subject_type: 'proposal',

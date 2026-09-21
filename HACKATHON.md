@@ -128,8 +128,20 @@ git diff 3ee1855...colosseum-worlds-fair
     deployed market layout is unchanged. Source, IDL, browser codec, public recipe endpoint, and
     parser/contract tests are complete. The compatible upgrade and first economic lifecycle are live
     on devnet.
+23. **Temporal-integrity proof** — public metadata now classifies the first court settlement honestly
+    as a retrospective integration proof because its attestation predates the market. A guarded
+    two-phase runner opens and stakes a market without reading any attestation. The V2 recipe and
+    parser append the official `sourceObservedAt`, and the market guard requires both that timestamp
+    and the attestation's first transaction to follow market close. Rust and API contract tests are
+    complete; V2 schema registration, court-attester rollout, program upgrade and the first genuinely
+    later court record are still required for the live prospective proof.
+24. **Paid oracle facts over x402** — `GET /agent/oracle/facts` checks that a verified terminal fact
+    exists before asking for payment, then sells a machine-ready bundle containing the source-hashed
+    event, its subject-specific recipe, and explicit integrity checks for 0.01 devnet USDC. The route
+    declares query/output schemas through Bazaar and has its own hosted-catalog proof endpoint. The
+    underlying event feed remains free so buyers can independently audit what they received.
 
-### Live external-market proof
+### Live external-market integration proof
 
 - Program upgrade: [`66WW…RDeg`](https://explorer.solana.com/tx/66WWKcHj7x6FXmtoKhkBP1oQobJZNq8YJP9Brx5dFgSmMuLQ1hGpNWgGdwwkrFJuUfyJE7QJRVZx1gZ7ouWGRDeg?cluster=devnet)
 - Recipe-bound market: [`5wyJ…N8QM`](https://explorer.solana.com/address/5wyJ7XjbnoPUaDgaHAttdhdS38VmHf1p3jGwwVUeN8QM?cluster=devnet)
@@ -140,6 +152,10 @@ git diff 3ee1855...colosseum-worlds-fair
 The proof publishes commitments and transaction addresses, not the decoded parcel, decision, or
 legal text. The market stores the complete SAS account hash
 `6a2dcae7…b04eac789`, so the submitted evidence remains independently verifiable.
+The attestation first appeared on-chain in May 2026, before this market opened in September 2026.
+Accordingly this is labelled a **retrospective integration proof**: it proves recipe binding,
+two-sided staking, deterministic resolution and payout, but not forecasting. The prospective runner
+below rejects that ordering.
 
 ## Pre-existing platform foundations
 
@@ -160,7 +176,8 @@ states come from public evidence rather than a scripted success screen.
    action beside algorithmic and LLM actions in the same Activity explorer.
 5. Resolve the lifecycle by releasing an executed proposal or refunding a cancelled/expired one.
 6. Verify the court oracle's aggregate health and public SAS schema, then open the live external
-   market, its two-sided stakes, permissionless resolution, and winning claim linked above.
+   market integration proof, its two-sided stakes, permissionless resolution, chronology
+   classification, and winning claim linked above.
 
 If a live dependency is slow, use the Demo Center's retry button. The resettable fallback is the
 map's **Game → Enable game mode → New Game** flow; it clears browser-local simulation state only.
