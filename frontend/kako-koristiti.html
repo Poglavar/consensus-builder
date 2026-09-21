@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<!-- Glavni vodič na hrvatskom: objašnjava "prvo gradiš, pa predlažeš" tijek rada, paletu
-     Izgradi, skice, prikaze i dijeljenje. Ostali kako-koristiti-*.html vodiči razrađuju
+<!-- Glavni vodič na hrvatskom: objašnjava aktualni tijek "prvo gradiš, pa predlažeš", paletu
+     Izgradi, životni ciklus objekata, prikaze i dijeljenje. Ostali kako-koristiti-*.html vodiči razrađuju
      pojedine alate. Engleski parnjak: how-to-use.html. -->
 <html lang="hr">
 
@@ -25,9 +25,10 @@
             </a>
             <a href="#tijek" class="back-link"><i class="fas fa-route"></i> Tijek rada</a>
             <a href="#paleta" class="back-link"><i class="fas fa-shapes"></i> Paleta „Izgradi”</a>
-            <a href="#skice" class="back-link"><i class="fas fa-pen-ruler"></i> Skice</a>
+            <a href="#objekti" class="back-link"><i class="fas fa-layer-group"></i> Prijedlozi i varijante</a>
             <a href="#prikazi" class="back-link"><i class="fas fa-cube"></i> Prikazi</a>
             <a href="#dijeljenje" class="back-link"><i class="fas fa-share-nodes"></i> Dijeljenje</a>
+            <a href="roadmap.html" class="back-link"><i class="fas fa-compass"></i> Plan razvoja</a>
         </div>
         <div class="lang-switch">
             <a href="kako-koristiti.html" class="is-current">HR</a>
@@ -37,13 +38,19 @@
 
     <main class="main-content">
         <div class="container">
-            <div class="intro">
-                <h2>Prvo gradiš, pa predlažeš</h2>
-                <p>
-                    Consensus Builder radi kao gradograditeljska igra. Ne počinješ ispunjavanjem obrasca — počinješ
-                    tako da odabereš zemljište i nešto na njemu <strong>izgradiš</strong>. Tek kad dizajn izgleda kako
-                    želiš, upisuješ uvjete i od njega nastaje prijedlog o kojem drugi mogu odlučivati.
-                </p>
+            <div class="intro intro-with-visual">
+                <div class="intro-copy">
+                    <span class="eyebrow">Ideja u jednoj minuti</span>
+                    <h2>Nacrtaj promjenu, zatim gradi konsenzus</h2>
+                    <p>
+                        Consensus Builder radi kao gradograditeljska igra. Odaberi stvarne čestice i postavi moguću
+                        promjenu na kartu — primjerice blok, park, cestu ili vlasničku ponudu. Dovršeni dizajn postaje
+                        primijenjeni lokalni prijedlog koji možeš pregledati, granati, usporediti i podijeliti.
+                    </p>
+                    <a class="primary-link" href="index.html?lang=hr"><i class="fas fa-map"></i> Otvori kartu</a>
+                </div>
+                <img src="images/site-intro-parcels.webp"
+                    alt="Iste čestice prije i nakon prijedloga gradskog bloka">
             </div>
 
             <section id="tijek">
@@ -64,20 +71,20 @@
                     <i class="fas fa-chevron-right flow-arrow"></i>
                     <div class="flow-step">
                         <i class="fas fa-pen-ruler"></i>
-                        <strong>Dizajniraj</strong>
-                        <span>Uredi oblik i parametre</span>
+                        <strong>Pregledaj</strong>
+                        <span>Provjeri prijedlog u kontekstu</span>
                     </div>
                     <i class="fas fa-chevron-right flow-arrow"></i>
                     <div class="flow-step">
                         <i class="fas fa-file-signature"></i>
-                        <strong>Uvjeti</strong>
-                        <span>Naziv, opis, ponuda, vlasništvo</span>
+                        <strong>Razgranaj</strong>
+                        <span>Promijeni dizajn ili uvjete</span>
                     </div>
                     <i class="fas fa-chevron-right flow-arrow"></i>
                     <div class="flow-step">
                         <i class="fas fa-share-nodes"></i>
                         <strong>Podijeli</strong>
-                        <span>Primijeni, pregledaj i pošalji</span>
+                        <span>Pošalji prijedlog ili cijeli plan</span>
                     </div>
                 </div>
 
@@ -107,21 +114,22 @@
                     </li>
 
                     <li class="step">
-                        <h3>Klikni alat u paleti „Izgradi”</h3>
+                        <h3>Izgradi — zahvat se odmah pojavljuje na karti</h3>
                         <p>
-                            Svaki alat te odmah vodi u svoj dizajner — nema međukoraka. Zgrade, reparcelacija i
-                            slobodna forma otvaraju uređivač; <span class="ui-label">Park</span>,
-                            <span class="ui-label">Trg</span> i <span class="ui-label">Jezero</span> primjenjuju se
-                            jednim klikom. Cijeli popis alata je <a href="#paleta">u sljedećem odjeljku</a>.
+                            Odaberi alat u paleti <span class="ui-label">Izgradi</span>. Zgrade i reparcelacija otvaraju
+                            dizajner; <span class="ui-label">Park</span>, <span class="ui-label">Trg</span> i
+                            <span class="ui-label">Jezero</span> rade jednim klikom. Ceste i pruge pokreću se svojim
+                            alatima za crtanje. Kad završiš, stvara se lokalni prijedlog koji je već primijenjen na
+                            kartu — nema zasebnog koraka „primijeni”.
                         </p>
                     </li>
 
                     <li class="step">
-                        <h3>Dizajniraj zahvat</h3>
+                        <h3>Pregledaj prijedlog u kontekstu</h3>
                         <p>
-                            U uređivaču mijenjaš oblik, tipologiju, katnost i ostale parametre. Rezultat vidiš na karti
-                            dok radiš. Kad si zadovoljan, potvrdi dizajn — najčešće gumbom
-                            <span class="ui-label">Gotovo</span>.
+                            Dovršeni prijedlog ne mijenja se izravno: otvori ga da pregledaš rezultat, promijeniš prikaz,
+                            podijeliš ga ili odabereš <span class="ui-label">Makni s karte</span> bez brisanja. U
+                            uređivaču ispod oblikuješ geometriju prije potvrde ili nakon otvaranja nove varijante.
                         </p>
                         <figure class="howto-shot">
                             <div class="shot-frame">
@@ -135,31 +143,30 @@
                     </li>
 
                     <li class="step">
-                        <h3>Upiši uvjete prijedloga</h3>
+                        <h3>Razgranaj prijedlog za promjenu dizajna ili uvjeta</h3>
                         <p>
-                            Nakon dizajna otvara se prozor <span class="ui-label">Kreiraj prijedlog</span>. Ovdje ide
-                            ono što dizajn ne može reći: <span class="ui-label">Naziv</span>,
-                            <span class="ui-label">Opis</span>, <span class="ui-label">Ponuda</span> i tko prima
-                            vlasništvo. Pod <span class="ui-label">Opcije</span> možeš dodati uvjetnost, rok isteka,
-                            opadanje ponude ili polog.
+                            Odaberi <span class="ui-label">Razgranaj prijedlog</span> kako bi dobio uređivu kopiju.
+                            Promijeni geometriju, naziv, opis, ponudu, vlasništvo, uvjete, rok isteka ili polog, pa stvori
+                            zamjenski prijedlog. Izvor ostaje netaknut, zato se varijante mogu usporediti.
                         </p>
                         <figure class="howto-shot">
                             <div class="shot-frame">
                                 <img src="images/howto/hub-03-uvjeti.png"
-                                    alt="Prozor Kreiraj prijedlog s poljima za uvjete"
+                                    alt="Prozor Prijedlog za uređivu varijantu s poljima vlasništva i uvjeta"
                                     onerror="this.style.display='none'">
                                 <span class="shot-pending"><i class="fas fa-camera"></i> Snimka zaslona uskoro</span>
                             </div>
-                            <figcaption>„Kreiraj prijedlog” dolazi <em>nakon</em> dizajna, ne prije.</figcaption>
+                            <figcaption>Nova varijanta prenosi dizajn i dopušta izmjenu njegovih uvjeta.</figcaption>
                         </figure>
                     </li>
 
                     <li class="step">
-                        <h3>Primijeni i pregledaj</h3>
+                        <h3>Pregledaj i podijeli rezultat</h3>
                         <p>
-                            Prijedlog postoji, ali karta se ne mijenja dok ga izričito ne primijeniš. U detaljima
-                            prijedloga klikni <span class="ui-label">Primijeni na kartu</span>, pa ga pogledaj u
-                            <a href="kako-koristiti-prikazi.html">3D-u</a> prije nego što ga podijeliš.
+                            Prebaci se između 2D-a i <a href="kako-koristiti-prikazi.html">3D-a</a>, a u gradovima koji
+                            ih podržavaju koristi realistični prikaz i šetnju. Jedan prijedlog dijeli se iz njegovih
+                            detalja; za kompoziciju primijeni željeni skup i odaberi
+                            <span class="ui-label">Podijeli cijeli plan</span>.
                         </p>
                     </li>
                 </ol>
@@ -228,9 +235,8 @@
 
                 <div class="callout note">
                     <i class="fas fa-road"></i>
-                    <strong>Ceste i pruge nisu u paleti.</strong> Nalaze se odmah pored nje, kao
-                    <span class="ui-label">Iscrtaj cestu</span> i <span class="ui-label">Iscrtaj prugu</span>, jer se ne
-                    grade <em>na</em> česticama nego ih presijecaju.
+                    <strong>Ceste, pruge i stanice čine skupinu Prijevoz.</strong> Nalaze se izvan alata za čestice jer
+                    se crtaju preko karte i mogu presijecati čestice.
                     <a href="kako-koristiti-cesta.html">Vodič za ceste i pruge →</a>
                 </div>
 
@@ -242,24 +248,33 @@
                 </div>
             </section>
 
-            <section id="skice" class="guide-section">
-                <h2>3. Skice</h2>
-                <p>
-                    Dizajn koji nisi dovršio ne gubi se. Sprema se kao <span class="ui-label">Skica</span> i čeka te u
-                    popisu skica — možeš ga nastaviti kasnije, uređivati ili odbaciti.
-                </p>
-                <p>
-                    Uređivač skice ima kartice <span class="ui-label">Dizajn</span>,
-                    <span class="ui-label">Čestice</span>, <span class="ui-label">Vlasništvo</span>,
-                    <span class="ui-label">Uvjeti</span> i <span class="ui-label">Detalji</span>, pa svaki dio
-                    prijedloga možeš dorađivati odvojeno. <span class="ui-label">Pregledaj promjene</span> pokazuje što
-                    se točno mijenja, a <span class="ui-label">Stvori prijedlog</span> ga objavljuje.
-                </p>
+            <section id="objekti" class="guide-section">
+                <h2>3. Prijedlozi, varijante i planovi</h2>
+                <p>Ta tri pojma važno je razlikovati dok istražuješ alternative.</p>
+                <div class="guide-cards basics-grid lifecycle-grid">
+                    <article class="guide-card">
+                        <div class="card-icon"><i class="fas fa-pen-ruler"></i></div>
+                        <h3>Prijedlog</h3>
+                        <p>Dovršavanje zgrade, ceste ili javnog prostora stvara lokalni prijedlog i primjenjuje ga na
+                            kartu. Njegov spremljeni zapis ne mijenja se izravno.</p>
+                    </article>
+                    <article class="guide-card">
+                        <div class="card-icon"><i class="fas fa-file-signature"></i></div>
+                        <h3>Varijanta</h3>
+                        <p>Uređiva kopija za promjenu dizajna ili uvjeta. Spremanje stvara novi zamjenski prijedlog, a
+                            izvorni ostaje netaknut.</p>
+                    </article>
+                    <article class="guide-card">
+                        <div class="card-icon"><i class="fas fa-layer-group"></i></div>
+                        <h3>Plan</h3>
+                        <p>Uređeni skup prijedloga primijenjenih na kartu. Dijeljenje plana čuva tu kompoziciju i njezine
+                            ovisnosti.</p>
+                    </article>
+                </div>
                 <div class="callout note">
-                    <i class="fas fa-lock"></i>
-                    Objavljeni prijedlog je <strong>nepromjenjiv</strong>. Objava iz skice stvara novi prijedlog —
-                    izvorni se ne mijenja niti briše. Zato je uređivanje uvijek stvaranje nove verzije, a ne prepravak
-                    stare.
+                    <i class="fas fa-cloud-arrow-up"></i>
+                    Lokalni rad živi u ovom pregledniku. Dijeljenje učitava zapise potrebne za poveznicu na poslužitelj;
+                    neobvezna objava na lancu stvara nepromjenjiv javni zapis.
                 </div>
             </section>
 
@@ -323,8 +338,8 @@
                     <article class="guide-card">
                         <div class="card-icon"><i class="fas fa-clone"></i></div>
                         <h3>Druga varijanta</h3>
-                        <p>Želiš isprobati alternativu? Kopiraj prijedlog u novi umjesto da izgubiš postojeći — oba
-                            ostaju usporediva.</p>
+                        <p>Želiš isprobati alternativu? Izradi novu varijantu prijedloga ili stvori zamjenski. Objavljeni
+                            izvornik ostaje netaknut dok novu verziju možeš mijenjati.</p>
                     </article>
                 </div>
             </section>
@@ -364,9 +379,8 @@
 
             <div class="callout tip final-tip">
                 <i class="fas fa-lightbulb"></i>
-                Zapamti redoslijed: <strong>odaberi → izgradi → dizajniraj → uvjeti → primijeni → podijeli</strong>.
-                Ako te nešto zbunjuje, gotovo uvijek je razlog to što zahvat pokušavaš opisati prije nego što si ga
-                izgradio.
+                Zapamti redoslijed: <strong>odaberi → izgradi → pregledaj → razgranaj po potrebi → podijeli</strong>.
+                Dovršeni dizajn postaje primijenjeni prijedlog; izmjene uvijek stvaraju novi prijedlog.
             </div>
         </div>
     </main>

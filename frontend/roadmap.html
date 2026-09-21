@@ -1,576 +1,194 @@
 <!DOCTYPE html>
-<html>
+<!-- Living product roadmap. It uses capability horizons instead of release dates so the page
+     describes what users can rely on now and the problems the project intends to solve next. -->
+<html lang="en">
 
 <head>
-    <title>Consensus Builder - Roadmap</title>
+    <title>Roadmap — Consensus Builder</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Favicon -->
     <link rel="icon" type="image/png" href="images/consensus-builder-logo-2.png" />
-
-    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="vendor/fontawesome-6.4.0/css/all.min.css">
-
     <link rel="stylesheet" href="index.css" />
-
-    <style>
-        /* Reset and base styles */
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow-y: auto;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
-        }
-
-        /* Layout */
-        body {
-            display: flex;
-            height: 100vh;
-        }
-
-        /* Left Sidebar */
-        .sidebar {
-            width: 280px;
-            min-width: 280px;
-            background: linear-gradient(135deg, #2193b0, #6dd5ed);
-            color: white;
-            padding: 30px 20px;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-            box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-
-        .sidebar img {
-            height: 60px;
-            margin-bottom: 15px;
-        }
-
-        .sidebar h1 {
-            margin: 0 0 30px 0;
-            font-size: 24px;
-            font-weight: 600;
-            line-height: 1.3;
-        }
-
-        .back-link {
-            color: white;
-            text-decoration: none;
-            padding: 12px 24px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 5px;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 500;
-        }
-
-        .back-link:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.6);
-        }
-
-        /* Main content */
-        .main-content {
-            flex: 1;
-            overflow-y: auto;
-            background-color: #f8f9fa;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 40px 20px 60px 20px;
-            min-height: 100%;
-        }
-
-        .intro {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-
-        .intro h2 {
-            font-size: 24px;
-            color: #2193b0;
-            margin-bottom: 10px;
-        }
-
-        .intro p {
-            font-size: 16px;
-            color: #666;
-            max-width: 600px;
-            margin: 0 auto;
-            line-height: 1.6;
-        }
-
-        /* Timeline */
-        .timeline {
-            position: relative;
-            margin: 40px 0;
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 50%;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-            background: linear-gradient(to bottom, #2193b0, #6dd5ed);
-            transform: translateX(-50%);
-        }
-
-        .timeline-item {
-            display: flex;
-            margin-bottom: 40px;
-            position: relative;
-        }
-
-        .timeline-item:nth-child(odd) {
-            flex-direction: row;
-        }
-
-        .timeline-item:nth-child(even) {
-            flex-direction: row-reverse;
-        }
-
-        .timeline-content {
-            background: white;
-            border-radius: 8px;
-            padding: 25px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: calc(50% - 80px);
-            position: relative;
-        }
-
-        .timeline-item:nth-child(odd) .timeline-content {
-            margin-right: 80px;
-        }
-
-        .timeline-item:nth-child(even) .timeline-content {
-            margin-left: 80px;
-        }
-
-        .timeline-content::before {
-            content: '';
-            position: absolute;
-            top: 30px;
-            width: 0;
-            height: 0;
-            border-style: solid;
-        }
-
-        .timeline-item:nth-child(odd) .timeline-content::before {
-            right: -20px;
-            border-width: 20px 0 20px 20px;
-            border-color: transparent transparent transparent white;
-        }
-
-        .timeline-item:nth-child(even) .timeline-content::before {
-            left: -20px;
-            border-width: 20px 20px 20px 0;
-            border-color: transparent white transparent transparent;
-        }
-
-        .timeline-date {
-            position: absolute;
-            top: 20px;
-            background: white;
-            color: #2193b0;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 14px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            white-space: nowrap;
-            border: 2px solid #2193b0;
-        }
-
-        /* Alternate timeline dates to left and right */
-        .timeline-item:nth-child(odd) .timeline-date {
-            left: calc(50% + 30px);
-            transform: translateX(0);
-        }
-
-        .timeline-item:nth-child(even) .timeline-date {
-            right: calc(50% + 30px);
-            transform: translateX(0);
-        }
-
-        .feature-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .feature-description {
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-
-        .feature-tags {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .tag {
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .tag.completed {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .tag.in-progress {
-            background-color: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-        }
-
-        .tag.planned {
-            background-color: #e2e3e5;
-            color: #495057;
-            border: 1px solid #ced4da;
-        }
-
-        .status-icon {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .status-icon.completed {
-            background-color: #28a745;
-            color: white;
-        }
-
-        .status-icon.in-progress {
-            background-color: #ffc107;
-            color: white;
-        }
-
-        .status-icon.planned {
-            background-color: #6c757d;
-            color: white;
-        }
-
-        /* Responsive design */
-        @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-                height: auto;
-            }
-
-            .sidebar {
-                width: 100%;
-                min-width: auto;
-                padding: 20px;
-            }
-
-            .sidebar h1 {
-                font-size: 20px;
-                margin-bottom: 20px;
-            }
-
-            .main-content {
-                flex: none;
-            }
-
-            .timeline::before {
-                left: 30px;
-            }
-
-            .timeline-item {
-                flex-direction: row !important;
-            }
-
-            .timeline-content {
-                width: calc(100% - 100px);
-                margin-left: 80px !important;
-                margin-right: 0 !important;
-            }
-
-            .timeline-content::before {
-                left: -20px !important;
-                border-width: 20px 20px 20px 0 !important;
-                border-color: transparent white transparent transparent !important;
-            }
-
-            .timeline-date {
-                left: 60px !important;
-                right: auto !important;
-                transform: translateX(0) !important;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="css/howto.css" />
+    <link rel="stylesheet" href="css/roadmap.css" />
 </head>
 
 <body>
-    <!-- Left Sidebar -->
-    <div class="sidebar">
-        <img src="images/consensus-builder-logo.png" alt="Consensus Builder Logo">
-        <h1>Consensus Builder Roadmap</h1>
-        <a href="index.html" class="back-link">
-            <i class="fas fa-arrow-left"></i>
-            Back to App
-        </a>
-    </div>
+    <aside class="sidebar">
+        <img src="images/consensus-builder-logo.png" alt="Consensus Builder logo">
+        <h1>Product roadmap</h1>
+        <nav class="sidebar-links" aria-label="Roadmap navigation">
+            <a href="index.html?lang=en" class="back-link"><i class="fas fa-arrow-left"></i> Back to the app</a>
+            <a href="how-to-use.html" class="back-link"><i class="fas fa-book-open"></i> How to use</a>
+            <a href="#now" class="back-link"><i class="fas fa-circle-check"></i> Now</a>
+            <a href="#next" class="back-link"><i class="fas fa-arrow-right"></i> Next</a>
+            <a href="#later" class="back-link"><i class="fas fa-binoculars"></i> Later</a>
+        </nav>
+    </aside>
 
-    <!-- Main content -->
-    <div class="main-content">
-        <div class="container">
-            <div class="intro">
-                <h2>Development Roadmap</h2>
-                <p>
-                    What's been built so far, what's in development, and what's the vision for the future.
-                </p>
-            </div>
+    <main class="main-content">
+        <div class="container roadmap-container">
+            <header class="intro intro-with-visual roadmap-hero">
+                <div class="intro-copy">
+                    <span class="eyebrow">A living direction, not a promise calendar</span>
+                    <h2>From drawing a possibility to coordinating a real change</h2>
+                    <p>
+                        Consensus Builder already lets people compose changes on real parcels and share the result.
+                        The next work is about making those plans easier to trust, compare and carry into real
+                        decisions. The order below follows product maturity rather than fixed delivery dates.
+                    </p>
+                    <a class="primary-link" href="how-to-use.html"><i class="fas fa-play"></i> Try the current flow</a>
+                </div>
+                <img src="images/site-intro-parcels.webp"
+                    alt="The same parcels before and after a proposed city block">
+            </header>
 
-            <div class="timeline">
-                <!-- Completed Features -->
-                <div class="timeline-item">
-                    <div class="timeline-date">Oct 2024</div>
-                    <div class="timeline-content">
-                        <div class="feature-title">
-                            <div class="status-icon completed">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            Basic Parcel Ingest and Visualization
-                        </div>
-                        <div class="feature-description">
-                            A system to find and ingest geodata for various cities of the world.Interactive map with
-                            parcel boundaries, clickable parcels showing detailed information
-                            including
-                            area, estimated market price, and geometric analysis.
-                        </div>
-                        <div class="feature-tags">
-                            <span class="tag completed">Completed</span>
-                        </div>
+            <section class="roadmap-legend" aria-label="Roadmap status legend">
+                <span><i class="fas fa-circle-check"></i><strong>Now</strong> available in the product</span>
+                <span><i class="fas fa-arrow-right"></i><strong>Next</strong> active product direction</span>
+                <span><i class="fas fa-binoculars"></i><strong>Later</strong> longer-term ambition</span>
+            </section>
+
+            <section id="now" class="roadmap-section">
+                <div class="roadmap-heading">
+                    <span class="roadmap-kicker is-now">Now</span>
+                    <div>
+                        <h2>A working urban proposal sandbox</h2>
+                        <p>These capabilities are present today, although data coverage and advanced views vary by city.</p>
                     </div>
                 </div>
+                <div class="roadmap-grid">
+                    <article class="roadmap-card">
+                        <i class="fas fa-map"></i>
+                        <h3>Real cadastral ground</h3>
+                        <p>Explore parcel geometry and available ownership context across several city datasets, with
+                            city-specific coordinate systems and source coverage.</p>
+                    </article>
+                    <article class="roadmap-card">
+                        <i class="fas fa-shapes"></i>
+                        <h3>Draw-first proposals</h3>
+                        <p>Build blocks, houses, freeform buildings, parks, squares, lakes, roads, tracks and land
+                            readjustments directly on the map before adding formal terms.</p>
+                    </article>
+                    <article class="roadmap-card">
+                        <i class="fas fa-code-branch"></i>
+                        <h3>Reversible plan composition</h3>
+                        <p>Edit local objects, park them off-map, apply alternatives and preserve dependencies as a plan
+                            changes the parcel fabric.</p>
+                    </article>
+                    <article class="roadmap-card">
+                        <i class="fas fa-cube"></i>
+                        <h3>2D, 3D and real context</h3>
+                        <p>Inspect the same intervention as a map, spatial model, photorealistic context or pedestrian
+                            view where that mode is supported.</p>
+                    </article>
+                    <article class="roadmap-card">
+                        <i class="fas fa-share-nodes"></i>
+                        <h3>Portable proposals and plans</h3>
+                        <p>Publish and share a single proposal or an ordered multi-proposal plan through replayable
+                            links, with server-backed records for the shared content.</p>
+                    </article>
+                    <article class="roadmap-card">
+                        <i class="fas fa-link"></i>
+                        <h3>Optional verifiable records</h3>
+                        <p>Experimental wallet and chain-backed paths can make proposals, ownership and activity
+                            independently verifiable without making them a prerequisite for drawing.</p>
+                    </article>
+                </div>
+            </section>
 
-                <div class="timeline-item">
-                    <div class="timeline-date">Nov 2024</div>
-                    <div class="timeline-content">
-                        <div class="feature-title">
-                            <div class="status-icon completed">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            Road Detection & Management
-                        </div>
-                        <div class="feature-description">
-                            Automatic road detection from OpenStreetMap data and other public sources, manual road
-                            drawing tools, road width
-                            analysis. Government road plan integration.
-                        </div>
-                        <div class="feature-tags">
-                            <span class="tag completed">Completed</span>
-                        </div>
+            <section id="next" class="roadmap-section">
+                <div class="roadmap-heading">
+                    <span class="roadmap-kicker is-next">Next</span>
+                    <div>
+                        <h2>Make serious plans easier to understand and trust</h2>
+                        <p>The near-term direction is reliability and legibility, especially for large shared plans.</p>
                     </div>
                 </div>
+                <div class="priority-list">
+                    <article>
+                        <span>01</span>
+                        <div>
+                            <h3>Reliable large-plan replay</h3>
+                            <p>Harden loading, ordering and ground reconstruction so complex plans with many parcels,
+                                roads and dependent proposals open consistently from a link.</p>
+                        </div>
+                    </article>
+                    <article>
+                        <span>02</span>
+                        <div>
+                            <h3>Clear comparison and consequences</h3>
+                            <p>Show what a proposal adds, removes, costs and enables, then make competing variants easy
+                                to compare without requiring users to understand the data model.</p>
+                        </div>
+                    </article>
+                    <article>
+                        <span>03</span>
+                        <div>
+                            <h3>Better city-specific rules and evidence</h3>
+                            <p>Connect proposals to planning rules, existing buildings and better source provenance, and
+                                make unavailable or uncertain data explicit.</p>
+                        </div>
+                    </article>
+                    <article>
+                        <span>04</span>
+                        <div>
+                            <h3>A coherent consent and funding flow</h3>
+                            <p>Bring owners, supporters, offers, conditions and acceptance into one understandable path
+                                from an exploratory design to a proposal that stakeholders can act on.</p>
+                        </div>
+                    </article>
+                </div>
+            </section>
 
-                <div class="timeline-item">
-                    <div class="timeline-date">Nov 2024</div>
-                    <div class="timeline-content">
-                        <div class="feature-title">
-                            <div class="status-icon completed">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            Introduce Parcel Blocks
-                        </div>
-                        <div class="feature-description">
-                            Algorithms to automatically group parcels into blocks based on road boundaries. Allow the
-                            creation of block proposals (urban rules, squares, buildings, parks...)
-                        </div>
-                        <div class="feature-tags">
-                            <span class="tag completed">Completed</span>
-                        </div>
+            <section id="later" class="roadmap-section">
+                <div class="roadmap-heading">
+                    <span class="roadmap-kicker is-later">Later</span>
+                    <div>
+                        <h2>Coordination beyond the drawing tool</h2>
+                        <p>Longer-term work depends on the proposal and consent foundations becoming dependable first.</p>
                     </div>
                 </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-date">Dec 2024</div>
-                    <div class="timeline-content">
-                        <div class="feature-title">
-                            <div class="status-icon completed">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            Proposal System
-                        </div>
-                        <div class="feature-description">
-                            Complete proposal creation and management system with multi-parcel selection, proposal
-                            creation,
-                            visualization, storage. Basic proposal types supported.
-                        </div>
-                        <div class="feature-tags">
-                            <span class="tag completed">Completed</span>
-                        </div>
-                    </div>
+                <div class="roadmap-grid roadmap-grid-later">
+                    <article class="roadmap-card">
+                        <i class="fas fa-stamp"></i>
+                        <h3>Real-world attestations</h3>
+                        <p>Let relevant parties attach verifiable claims, approvals and evidence to a proposal without
+                            collapsing every city into one governance model.</p>
+                    </article>
+                    <article class="roadmap-card">
+                        <i class="fas fa-people-group"></i>
+                        <h3>Collaborative decision rooms</h3>
+                        <p>Give communities a focused place to compare variants, surface disagreements and understand
+                            what would be required for a proposal to proceed.</p>
+                    </article>
+                    <article class="roadmap-card">
+                        <i class="fas fa-robot"></i>
+                        <h3>Agent-assisted coordination</h3>
+                        <p>Use agents to discover opportunities, assemble candidate plans and explain trade-offs while
+                            keeping authorship, evidence and final decisions visible to people.</p>
+                    </article>
                 </div>
+            </section>
 
-                <div class="timeline-item">
-                    <div class="timeline-date">Feb 2025</div>
-                    <div class="timeline-content">
-                        <div class="feature-title">
-                            <div class="status-icon completed">
-                                <i class="fas fa-calendar"></i>
-                            </div>
-                            Proposal Sharing & Export
-                        </div>
-                        <div class="feature-description">
-                            Support different types of proposal sharing: share proposals via URL-encoded data, save data
-                            as JSON, upload to server and share a link.
-                        </div>
-                        <div class="feature-tags">
-                            <span class="tag completed">Completed</span>
-                        </div>
-                    </div>
+            <section class="roadmap-principles">
+                <span class="eyebrow">What stays constant</span>
+                <h2>Four product principles</h2>
+                <div>
+                    <p><strong>Grounded:</strong> start from the actual parcels and available evidence.</p>
+                    <p><strong>Visual:</strong> show the change before asking people to read its terms.</p>
+                    <p><strong>Reversible:</strong> make alternatives cheap to try and easy to compare.</p>
+                    <p><strong>Consent-aware:</strong> record who is affected and what acceptance would require.</p>
                 </div>
+            </section>
 
-                <div class="timeline-item">
-                    <div class="timeline-date">June 2025</div>
-                    <div class="timeline-content">
-                        <div class="feature-title">
-                            <div class="status-icon completed">
-                                <i class="fas fa-calendar"></i>
-                            </div>
-                            Blockchain integration
-                        </div>
-                        <div class="feature-description">
-                            Write smart contracts, deploy them to blockchain, make it possible to connect to UI with a
-                            blockchain wallet and load parcel and proposal data from the blockchain. Make it possible to
-                            mint proposals as NFTs on the blockchain.
-                        </div>
-                        <div class="feature-tags">
-                            <span class="tag completed">Completed</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-date">Dec 2025</div>
-                    <div class="timeline-content">
-                        <div class="feature-title">
-                            <div class="status-icon in-progress">
-                                <i class="fas fa-calendar"></i>
-                            </div>
-                            Additional proposal types, additional proposal features and additional cities support
-                        </div>
-                        <div class="feature-description">
-                            Add support for additional proposal types, additional proposal features and additional
-                            cities support. Add support for Buenos Aires, Argentina, and Belgrade, Serbia.
-                        </div>
-                        <div class="feature-tags">
-                            <span class="tag in-progress">In Progress</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-date">Dec 2025</div>
-                    <div class="timeline-content">
-                        <div class="feature-title">
-                            <div class="status-icon in-progress">
-                                <i class="fas fa-calendar"></i>
-                            </div>
-                            Rework the road/track proposal system
-                        </div>
-                        <div class="feature-description">
-                            Rework the road/track proposal system to support robust thousand-parcel-level proposals with
-                            site upload and sharing.
-                        </div>
-                        <div class="feature-tags">
-                            <span class="tag in-progress">In Progress</span>
-                        </div>
-                    </div>
-                </div>
-
-
-                <div class="timeline-item">
-                    <div class="timeline-date">Feb 2026</div>
-                    <div class="timeline-content">
-                        <div class="feature-title">
-                            <div class="status-icon planned">
-                                <i class="fas fa-calendar"></i>
-                            </div>
-                            Deeper integration with Attestify.Network
-                        </div>
-                        <div class="feature-description">
-                            Integrate more with the <a href="https://attestify.network"
-                                target="_blank"></a>Attestify.Network</a> to make real claims on proposals viable, and
-                            thus
-                            creating
-                            proposals more attractive.
-                        </div>
-                        <div class="feature-tags">
-                            <span class="tag planned">Planned</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-date">Mar 2026</div>
-                    <div class="timeline-content">
-                        <div class="feature-title">
-                            <div class="status-icon planned">
-                                <i class="fas fa-calendar"></i>
-                            </div>
-                            Additional cities support, marketing and community building
-                        </div>
-                        <div class="feature-description">
-                            Roll out support for additional cities to the system. Build a community around the project,
-                            market to potential users.
-                        </div>
-                        <div class="feature-tags">
-                            <span class="tag planned">Planned</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-date">Jun 2026</div>
-                    <div class="timeline-content">
-                        <div class="feature-title">
-                            <div class="status-icon planned">
-                                <i class="fas fa-calendar"></i>
-                            </div>
-                            AI-aided urban coordination
-                        </div>
-                        <div class="feature-description">
-                            AI-aided urban development, especially for places where cadastral data is not available.
-                            AI-aided detection of existing parcels, roads and buildings. AI-aided proposal creation and
-                            evaluation. Autonomous AI agents for proposal opportunity discovery.
-                        </div>
-                        <div class="feature-tags">
-                            <span class="tag planned">Planned</span>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+            <p class="roadmap-note">
+                This roadmap is intentionally not dated. Priorities can change when work on real cities exposes a more
+                important bottleneck, and the page should be updated when that direction changes.
+            </p>
         </div>
-    </div>
+    </main>
 </body>
 
 </html>

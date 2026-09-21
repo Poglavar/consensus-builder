@@ -1,0 +1,221 @@
+/* Roadmap-specific capability horizons layered on the shared editorial guide shell. */
+
+.roadmap-container {
+    max-width: 1040px;
+}
+
+.roadmap-hero {
+    margin-bottom: 24px;
+}
+
+.roadmap-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 64px;
+}
+
+.roadmap-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(255, 253, 249, 0.78);
+    border: 1px solid var(--guide-line);
+    color: var(--guide-muted);
+    font-size: 13px;
+}
+
+.roadmap-legend i {
+    color: var(--guide-blue);
+}
+
+.roadmap-section {
+    scroll-margin-top: 24px;
+    margin: 0 0 76px;
+}
+
+.roadmap-heading {
+    display: grid;
+    grid-template-columns: 86px minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+    margin-bottom: 24px;
+}
+
+.roadmap-heading h2,
+.roadmap-principles h2 {
+    margin: 0 0 8px;
+    color: var(--guide-ink);
+    font-size: clamp(24px, 3vw, 34px);
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+}
+
+.roadmap-heading p {
+    margin: 0;
+    max-width: 700px;
+    color: var(--guide-muted);
+    line-height: 1.6;
+}
+
+.roadmap-kicker {
+    display: inline-flex;
+    justify-content: center;
+    padding: 7px 10px;
+    border-radius: 999px;
+    color: white;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.roadmap-kicker.is-now {
+    background: #2f795b;
+}
+
+.roadmap-kicker.is-next {
+    background: var(--guide-blue);
+}
+
+.roadmap-kicker.is-later {
+    background: #6a617c;
+}
+
+.roadmap-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.roadmap-card {
+    padding: 22px;
+    border: 1px solid var(--guide-line);
+    border-radius: 16px;
+    background: var(--guide-paper);
+    box-shadow: 0 8px 24px rgba(42, 52, 55, 0.055);
+}
+
+.roadmap-card > i {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    margin-bottom: 18px;
+    border-radius: 12px;
+    background: #dfeef1;
+    color: var(--guide-blue);
+}
+
+.roadmap-card h3,
+.priority-list h3 {
+    margin: 0 0 8px;
+    color: var(--guide-ink);
+    font-size: 17px;
+}
+
+.roadmap-card p,
+.priority-list p {
+    margin: 0;
+    color: var(--guide-muted);
+    font-size: 14px;
+    line-height: 1.58;
+}
+
+.priority-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.priority-list article {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 14px;
+    padding: 22px;
+    border-radius: 16px;
+    background: var(--guide-blue-dark);
+    color: white;
+}
+
+.priority-list article > span {
+    color: var(--guide-yellow);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+}
+
+.priority-list h3 {
+    color: white;
+}
+
+.priority-list p {
+    color: #cbd8dc;
+}
+
+.roadmap-grid-later {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.roadmap-principles {
+    padding: 32px;
+    border-radius: 20px;
+    background: #eadcae;
+    color: var(--guide-ink);
+}
+
+.roadmap-principles > div {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 28px;
+    margin-top: 20px;
+}
+
+.roadmap-principles p {
+    margin: 0;
+    line-height: 1.55;
+}
+
+.roadmap-note {
+    max-width: 720px;
+    margin: 20px auto 0;
+    color: var(--guide-muted);
+    font-size: 13px;
+    line-height: 1.55;
+    text-align: center;
+}
+
+@media (max-width: 900px) {
+    .roadmap-grid,
+    .roadmap-grid-later {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .roadmap-legend {
+        margin-bottom: 46px;
+    }
+
+    .roadmap-heading {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .roadmap-kicker {
+        justify-self: start;
+    }
+
+    .roadmap-grid,
+    .roadmap-grid-later,
+    .priority-list,
+    .roadmap-principles > div {
+        grid-template-columns: 1fr;
+    }
+
+    .roadmap-principles {
+        padding: 24px 20px;
+    }
+}
