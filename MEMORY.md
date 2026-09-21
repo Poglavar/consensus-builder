@@ -374,3 +374,6 @@
 - 2026-09-22: **Prospective resolution is an hourly idempotent operator job.** It reuses the market's
   court-oracle creator and algorithmic-persona bettor keys, records an atomic outcome sentinel, and
   mutates devnet only after the close when matching post-close evidence exists.
+- 2026-09-22: **The scheduled evidence path is live and monitored.** Its first resumed production
+  run completed 30 new V2 attestations (35 V2 and 92 Solana court attestations total); fixed-nonce
+  exponential RPC retries make ambiguous submission responses idempotent.

@@ -257,7 +257,7 @@ permit, imagery and OSM collectors are not yet connected.
 **Live V2 evidence path:** the V2 recipe, two-phase runner, attestation parser and market guard commit
 the court source-publication time and reject pre-close or future evidence. The V2 SAS schema is
 registered, the devnet market program is upgraded, the dedicated court attester is deployed, and
-five source-timed attestations now prove the scraper → strict interpreter → SAS path. Market
+35 source-timed attestations now prove the scraper → strict interpreter → SAS path. Market
 `Atps…kaNQ` was then opened and staked on both sides with a 2026-09-22 21:00 UTC close. The earlier
 attestations cannot resolve it; only a matching record officially published after that close can.
 

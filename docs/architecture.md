@@ -82,7 +82,7 @@ attestation rather than supplied by the caller.
 
 That path is live on devnet. V1 has a complete two-sided market, permissionless SAS settlement and
 winner claim. The V2 schema, source-timed court attester and upgraded market chronology guard are
-also live; five V2 attestations prove the scraper → interpreter → SAS path. A separate two-sided V2
+also live; 35 V2 attestations prove the scraper → interpreter → SAS path. A separate two-sided V2
 market (`Atps…kaNQ`) is open with a 2026-09-22 21:00 UTC close committed before any qualifying future
 evidence. The remaining proof is intentionally temporal: wait for a genuinely later matching court
 record before settling it.

@@ -135,7 +135,7 @@ git diff 3ee1855...colosseum-worlds-fair
     two-phase runner opens and stakes a market without reading any attestation. The V2 recipe and
     parser append the official `sourceObservedAt`, and the market guard requires both that timestamp
     and the attestation's first transaction to follow market close. Rust and API contract tests are
-    complete. The V2 schema, upgraded verifier and court-attester rollout are live, with five
+    complete. The V2 schema, upgraded verifier and court-attester rollout are live, with 35
     source-timed devnet attestations proving the ingestion path. A new V2 market is open and staked
     on both sides before qualifying evidence; only a genuinely later matching record—one published
     after its committed close—remains for the prospective settlement proof.
