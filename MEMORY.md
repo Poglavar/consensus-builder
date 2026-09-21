@@ -371,3 +371,6 @@
   NO received 0.01 devnet USDC before its 2026-09-22 21:00 UTC close. Its private state is mode-0600
   on the operator host. Pre-existing V2 attestations are ineligible by construction; settlement must
   wait for a matching official record whose `sourceObservedAt` and first SAS transaction are later.
+- 2026-09-22: **Prospective resolution is an hourly idempotent operator job.** It reuses the market's
+  court-oracle creator and algorithmic-persona bettor keys, records an atomic outcome sentinel, and
+  mutates devnet only after the close when matching post-close evidence exists.

@@ -215,6 +215,7 @@ market close. The deployed devnet program independently enforces
 stores the official source timestamp and the dedicated attester can publish it as an `int64` Unix
 second. The first live V2 market is `Atps3gg4ZCvDMtbosTK5Evrb1PAwY2shUBvkzjihkaNQ`; both outcomes
 were staked before its 2026-09-22 21:00 UTC close. The remaining step is necessarily temporal: wait
-for a matching court record officially published after it closes, then run the settle phase. The
-existing settled market remains an honest retrospective V1 integration proof until that later record
-exists.
+for a matching court record officially published after it closes. The opt-in production schedules
+then run deterministic court interpretation and V2 attestation at 22:15 UTC and the idempotent
+resolver hourly at `:45`; each writes an atomic outcome record for the central monitor. The existing
+settled market remains an honest retrospective V1 integration proof until that later record exists.

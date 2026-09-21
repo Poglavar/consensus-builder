@@ -1,6 +1,6 @@
-// Opt-in PM2 schedule for the autonomous hackathon persona. Starting this file runs once
-// immediately, then daily at 02:00 UTC. Secrets stay in backend/.env and the signing key stays at
-// the persona's keypairPath; deploy-backend.sh deliberately restarts only the API app.
+// Opt-in PM2 schedules for the autonomous hackathon actors, land-event materializer, and the live
+// prospective-market resolver. Secrets stay in backend/.env or protected key files; deploy-backend.sh
+// deliberately restarts only the API app, so operators activate these jobs separately.
 module.exports = {
   apps: [{
     name: 'consensus-builder-agents',
@@ -57,6 +57,27 @@ module.exports = {
     },
     error_file: '/root/code/consensus-builder/backend/logs/agents-error.log',
     out_file: '/root/code/consensus-builder/backend/logs/agents.log',
+    merge_logs: true,
+    time: true
+  }, {
+    name: 'consensus-builder-prospective-resolver',
+    script: 'blockchain/solana/scripts/prospective-external-market.mjs',
+    args: '--settle --live',
+    cwd: '/root/code/consensus-builder',
+    exec_mode: 'fork',
+    instances: 1,
+    autorestart: false,
+    cron_restart: '45 * * * *',
+    kill_timeout: 900000,
+    env: {
+      NODE_ENV: 'production',
+      SOLANA_KEYPAIR: '/root/.config/solana/court-oracle.json',
+      PROSPECTIVE_BETTOR_KEYPAIR: '/root/.config/solana/ugt-persona-01.json',
+      PROSPECTIVE_MARKET_STATE: '/root/.config/solana/ugt-prospective-court-v2.json',
+      PROSPECTIVE_RUN_STATS: '/root/code/consensus-builder/backend/logs/prospective-resolver-stats.json'
+    },
+    error_file: '/root/code/consensus-builder/backend/logs/prospective-resolver-error.log',
+    out_file: '/root/code/consensus-builder/backend/logs/prospective-resolver.log',
     merge_logs: true,
     time: true
   }]

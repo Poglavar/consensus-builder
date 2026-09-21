@@ -60,4 +60,34 @@ describe('daily algorithmic agent schedule', () => {
             merge_logs: true
         });
     });
+
+    it('checks the live prospective market hourly with its original two signers', () => {
+        const resolver = apps.find(item => item.name === 'consensus-builder-prospective-resolver');
+        expect(resolver).toMatchObject({
+            script: 'blockchain/solana/scripts/prospective-external-market.mjs',
+            args: '--settle --live',
+            cwd: '/root/code/consensus-builder',
+            instances: 1,
+            autorestart: false,
+            cron_restart: '45 * * * *',
+            merge_logs: true,
+            env: {
+                SOLANA_KEYPAIR: '/root/.config/solana/court-oracle.json',
+                PROSPECTIVE_BETTOR_KEYPAIR: '/root/.config/solana/ugt-persona-01.json',
+                PROSPECTIVE_MARKET_STATE: '/root/.config/solana/ugt-prospective-court-v2.json',
+                PROSPECTIVE_RUN_STATS: '/root/code/consensus-builder/backend/logs/prospective-resolver-stats.json'
+            }
+        });
+    });
+
+    it('records a machine-readable outcome for every prospective resolver run', () => {
+        const source = fs.readFileSync(
+            new URL('../../blockchain/solana/scripts/prospective-external-market.mjs', import.meta.url),
+            'utf8'
+        );
+        expect(source).toContain("job: 'prospective-market-resolver'");
+        expect(source).toContain("runStatus: 'completed'");
+        expect(source).toContain("runStatus: 'failed'");
+        expect(source).toContain('fs.renameSync(tempFile, RUN_STATS_FILE)');
+    });
 });

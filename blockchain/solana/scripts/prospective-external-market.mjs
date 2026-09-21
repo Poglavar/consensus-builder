@@ -40,6 +40,34 @@ marketClient.configure({ web3: { Connection, Keypair, PublicKey, SystemProgram, 
 const RPC_URL = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
 const USDC_MINT = new PublicKey(process.env.EXTERNAL_MARKET_STAKE_MINT || '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU');
 const STATE_FILE = path.resolve(process.env.PROSPECTIVE_MARKET_STATE || '.prospective-external-market.private.json');
+const RUN_STATS_FILE = process.env.PROSPECTIVE_RUN_STATS
+    ? path.resolve(process.env.PROSPECTIVE_RUN_STATS)
+    : null;
+const RUN_STARTED_AT = new Date().toISOString();
+
+function writeRunStats(result) {
+    if (!RUN_STATS_FILE) return;
+    fs.mkdirSync(path.dirname(RUN_STATS_FILE), { recursive: true });
+    const tempFile = `${RUN_STATS_FILE}.${process.pid}.tmp`;
+    fs.writeFileSync(tempFile, `${JSON.stringify({
+        version: 1,
+        job: 'prospective-market-resolver',
+        runStatus: result.runStatus,
+        startedAt: RUN_STARTED_AT,
+        endedAt: new Date().toISOString(),
+        phase: result.phase || null,
+        readiness: result.readiness || null,
+        market: result.market || null,
+        closesAt: result.closesAt || null,
+        error: result.error || null
+    }, null, 2)}\n`, { mode: 0o600 });
+    fs.renameSync(tempFile, RUN_STATS_FILE);
+}
+
+function emitResult(payload) {
+    writeRunStats({ runStatus: 'completed', ...payload });
+    console.log(JSON.stringify(payload, null, 2));
+}
 
 function required(value, label) {
     const text = typeof value === 'string' ? value.trim() : '';
@@ -192,7 +220,7 @@ async function openMarket(connection, live) {
         version: 2, phase: live ? 'opening' : 'plan', market: market.toBase58(), recipe,
         privateRecipe, stakePerSideAtomic: amount.toString(), transactions: {}
     };
-    if (!live) return console.log(JSON.stringify(publicState(planned), null, 2));
+    if (!live) return emitResult(publicState(planned));
     if (fs.existsSync(STATE_FILE)) throw new Error(`state file already exists: ${STATE_FILE}`);
 
     const owner = loadKeypair(process.env.SOLANA_KEYPAIR || '~/.config/solana/id.json', 'SOLANA_KEYPAIR');
@@ -236,27 +264,27 @@ async function openMarket(connection, live) {
         timestamps: { marketCreatedAt: createdAt, yesStakeAt, noStakeAt }
     };
     writeState(state);
-    console.log(JSON.stringify(publicState(state), null, 2));
+    emitResult(publicState(state));
 }
 
 async function settleMarket(connection, live) {
     const state = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8'));
     const now = Math.floor(Date.now() / 1000);
-    if (state.phase === 'settled') return console.log(JSON.stringify(publicState(state), null, 2));
+    if (state.phase === 'settled') return emitResult(publicState(state));
     if (state.phase !== 'open') throw new Error(`market state is ${state.phase}, expected open`);
     if (now < state.recipe.verification.closesAt) {
-        return console.log(JSON.stringify({
+        return emitResult({
             ...publicState(state), readiness: 'market_open',
             secondsUntilClose: state.recipe.verification.closesAt - now
-        }, null, 2));
+        });
     }
 
     const schema = new PublicKey(state.recipe.verification.schema);
     const selection = await discoverEvidence(connection, state, schema);
     if (selection.status === 'waiting') {
-        return console.log(JSON.stringify({
+        return emitResult({
             ...publicState(state), phase: 'awaiting_evidence', readiness: 'no_matching_post_close_attestation'
-        }, null, 2));
+        });
     }
     if (selection.status === 'conflict') {
         throw new Error('conflicting post-close attestations map to both market outcomes');
@@ -277,11 +305,11 @@ async function settleMarket(connection, live) {
     };
     const preflight = classifyExternalMarketChronology(chronologyInput);
     assertProspectiveChronology(chronologyInput);
-    if (!live) return console.log(JSON.stringify({
+    if (!live) return emitResult({
         ...publicState(state), phase: 'settlement-plan', chronology: preflight,
         evidence: { address: selected.address, hash: `sha256:${evidence.accountHash}` },
         eligibleEvidenceCount: selection.eligible.length
-    }, null, 2));
+    });
 
     const owner = loadKeypair(process.env.SOLANA_KEYPAIR || '~/.config/solana/id.json', 'SOLANA_KEYPAIR');
     const bettor = loadKeypair(process.env.PROSPECTIVE_BETTOR_KEYPAIR, 'PROSPECTIVE_BETTOR_KEYPAIR');
@@ -311,7 +339,7 @@ async function settleMarket(connection, live) {
     state.outcome = outcome === marketClient.constants.SIDE_YES ? 'YES' : 'NO';
     state.evidence = { address: attestation.toBase58(), hash: `sha256:${evidence.accountHash}` };
     writeState(state);
-    console.log(JSON.stringify(publicState(state), null, 2));
+    emitResult(publicState(state));
 }
 
 async function main() {
@@ -325,6 +353,7 @@ async function main() {
 }
 
 main().catch(error => {
+    writeRunStats({ runStatus: 'failed', error: error?.message || String(error) });
     console.error(error?.stack || error);
     process.exit(1);
 });
