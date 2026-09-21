@@ -80,10 +80,11 @@ hash, YES/NO operation hashes and close time. Resolution is permissionless and r
 attestation address and hash of its complete account bytes. The outcome is derived from the
 attestation rather than supplied by the caller.
 
-That path is code-complete and tested, not live: the program id shown above still runs the earlier
-binary until it is upgraded. The next proof is therefore operational—upgrade on devnet, create one
-market from a declared recipe, stake both sides, settle it from a genuine court attestation, and
-claim—rather than another oracle architecture layer.
+That path is live on devnet. V1 has a complete two-sided market, permissionless SAS settlement and
+winner claim. The V2 schema, source-timed court attester and upgraded market chronology guard are
+also live; five V2 attestations prove the scraper → interpreter → SAS path. Those records predate a
+new market close, so the remaining proof is intentionally temporal: open a market first and wait for
+a genuinely later matching court record before settling it.
 
 ## Source map
 

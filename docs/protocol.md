@@ -254,12 +254,13 @@ query and output contracts.
 classes, equivocation/conflict detection and challenge windows. The proposal fact endpoint uses it;
 permit, imagery and OSM collectors are not yet connected.
 
-**Code-ready, not yet live:** the V2 recipe, two-phase runner, attestation parser and market guard
-commit the court source-publication time and reject pre-close or future evidence. A real proof still
-requires registering the V2 SAS schema, upgrading the devnet market program, teaching the dedicated
-court attester to issue V2, then waiting for a genuinely later court record.
+**Live V2 evidence path:** the V2 recipe, two-phase runner, attestation parser and market guard commit
+the court source-publication time and reject pre-close or future evidence. The V2 SAS schema is
+registered, the devnet market program is upgraded, the dedicated court attester is deployed, and
+five source-timed attestations now prove the scraper → strict interpreter → SAS path. They are not a
+prospective settlement because their official publication times predate a new market close.
 
-**Next:** complete the operational V2 steps for the first genuinely prospective court market, then
+**Next:** open and complete the first genuinely prospective court market from a later record, then
 package the existing proposal, funding, market and verified-fact contracts for more autonomous agent
 clients and cities. Additional public-record and sensing adapters are deliberately deferred; they
 can enter later through the existing adapter contract and Lens evaluator.

@@ -30,7 +30,10 @@ function fixtures(overrides = {}) {
             id: 'event-1', eventType: 'proposal_lifecycle', outcome: 'cancelled', recordedAt: '2026-09-21T11:30:00Z',
             source: { hash: `sha256:${'a'.repeat(64)}`, transaction: 'oracle-transaction' }
         }] },
-        '/oracle/public-records/summary': { attestations: 57, decisions: 27, schemaId: 'schema' },
+        '/oracle/public-records/summary': {
+            attestations: 62, decisions: 29, schemaId: 'schema',
+            v2: { status: 'live_devnet', attestations: 5 }
+        },
         ...overrides
     };
 }

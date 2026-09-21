@@ -86,13 +86,14 @@ describe('hackathon demo evidence model', () => {
         const model = demo.buildDemoModel({
             docs,
             publicRecords: {
-                attestations: 57, decisions: 28, parcels: 55,
+                attestations: 62, decisions: 29, parcels: 60,
+                v2: { status: 'live_devnet', attestations: 5 },
                 schemaUrl: 'https://explorer.solana.com/address/schema?cluster=devnet'
             }
         });
         expect(model.publicRecords).toMatchObject({
-            tone: 'success', label: '57 court attestations on Solana',
-            detail: expect.stringContaining('privacy-preserving aggregate')
+            tone: 'success', label: '62 court attestations on Solana',
+            detail: expect.stringContaining('5 source-timed V2')
         });
         expect(model.oracle).toMatchObject({ tone: 'waiting', event: null });
     });

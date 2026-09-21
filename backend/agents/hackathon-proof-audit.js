@@ -107,9 +107,13 @@ export async function auditHackathonProof({
         check('proposal_lifecycle_oracle', Boolean(lifecycle),
             'A source-hashed terminal proposal event is publicly auditable',
             lifecycle ? { eventId: lifecycle.id, outcome: lifecycle.outcome, transaction: lifecycle.source.transaction } : errors.oracleEvents || null),
-        check('court_attestations', Boolean(records?.attestations > 0 && records?.schemaId),
-            'The Croatian court bridge reports public devnet attestations and schema',
-            records ? { attestations: records.attestations, decisions: records.decisions, schemaId: records.schemaId } : errors.publicRecords || null),
+        check('court_attestations', Boolean(records?.attestations > 0 && records?.schemaId
+            && records?.v2?.status === 'live_devnet' && records?.v2?.attestations > 0),
+            'The Croatian court bridge reports public devnet attestations and live source-timed V2 evidence',
+            records ? {
+                attestations: records.attestations, decisions: records.decisions,
+                schemaId: records.schemaId, v2Attestations: records.v2?.attestations || 0
+            } : errors.publicRecords || null),
         check('external_market_lifecycle', Boolean(external?.status === 'live_devnet'
             && external.proofMarket && external.proofResolution && external.proofClaim
             && externalProof.create && externalProof.yesStake && externalProof.noStake),

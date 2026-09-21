@@ -5,6 +5,7 @@ import express from 'express';
 import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
 import { setupLandEventsRoute } from '../routes/land-events.js';
+import { COURT_SCHEMA_V2 } from '../oracle/court-parcel-operation.js';
 
 const PROPOSAL = 'Gsvt6nMhsvfrEDgvcqZDzPKZhhqACFEi3mueMxQNQ6UT';
 const MARKET = 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB';
@@ -86,22 +87,20 @@ describe('land-event routes', () => {
     });
 
     it('declares a V2 court recipe with an on-chain source-time policy', async () => {
-        const schema = '11111111111111111111111111111111';
         const res = await request(appFor({ query: vi.fn() }))
             .get('/oracle/recipes/court-parcel-operation-v2')
             .query({
                 parcelUid: 'HR-335347-1208/3',
                 yesOperation: 'transfer',
                 noOperation: 'no_event',
-                closesAt: '1790000000',
-                schema
+                closesAt: '1790000000'
             });
         expect(res.status).toBe(200);
         expect(res.body.recipe).toMatchObject({
             id: 'court-parcel-operation-v2',
             version: 2,
             verification: {
-                schema,
+                schema: COURT_SCHEMA_V2,
                 kind: 'sas_court_parcel_operation_v2',
                 temporalIntegrity: {
                     minimum: 'market_closes_at',
@@ -140,18 +139,21 @@ describe('land-event routes', () => {
 
     it('exposes privacy-preserving public-record oracle health and the public SAS schema', async () => {
         const pool = { query: vi.fn().mockResolvedValue({ rows: [{
-            attestations: 57, parcels: 55, decisions: 28,
-            schema_id: 'schema-account', latest_attestation_at: '2026-05-12T13:30:13Z'
+            attestations: 62, parcels: 60, decisions: 29,
+            schema_id: 'schema-account', latest_attestation_at: '2026-09-21T20:40:00Z',
+            schemas: [{ schemaId: 'G747jAqNr6ZwBiNAdeW1Bc4PWQH7arfvq5cjDXDcSoMG', attestations: 5 }]
         }] }) };
         const res = await request(appFor(pool)).get('/oracle/public-records/summary');
         expect(res.status).toBe(200);
         expect(res.body).toMatchObject({
             source: 'Croatian judiciary e-Oglasna archive',
             chain: 'solana:devnet', schemaId: 'schema-account',
-            attestations: 57, parcels: 55, decisions: 28,
+            attestations: 62, parcels: 60, decisions: 29,
+            v2: { status: 'live_devnet', attestations: 5, sourceTimestamped: true },
             marketIntegration: expect.stringContaining('live on devnet')
         });
         expect(res.body.schemaUrl).toContain('/address/schema-account?cluster=devnet');
+        expect(res.body.v2.schemaUrl).toContain('/address/G747jAqNr6ZwBiNAdeW1Bc4PWQH7arfvq5cjDXDcSoMG?cluster=devnet');
         expect(res.body).not.toHaveProperty('events');
         expect(res.body).not.toHaveProperty('decisionUuid');
         expect(pool.query.mock.calls[0][0]).toMatch(/FROM court\.attestation/);

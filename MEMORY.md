@@ -361,3 +361,9 @@
   official `sourceObservedAt`; `proposal_market` `GDYn…UYDRB` was upgraded in tx `5rxy…KfQG` to enforce
   `market close <= source time <= resolution`. The honest remaining proof is a later matching record,
   not a synthetic attestation or a relabelled retrospective market.
+- 2026-09-21: **Source-timed court evidence is now live.** The isolated hackathon scraper preserves
+  official e-Oglasna publication timestamps; the court oracle has a strict zero-cost interpreter and
+  a per-extractor processing ledger instead of null-parcel placeholders. A bounded production pass
+  produced 35 private parcel facts from two unambiguous decisions and five V2 SAS attestations on
+  devnet. These prove scraper → interpreter → attester, but remain retrospective until a market is
+  opened before a later matching public record appears.

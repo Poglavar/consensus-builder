@@ -9,6 +9,7 @@ import {
     buildCourtParcelOperationRecipeV2,
     COURT_RECIPE_ID,
     COURT_RECIPE_V2_ID,
+    COURT_SCHEMA_V2,
     externalMarketAddress
 } from '../oracle/court-parcel-operation.js';
 
@@ -48,16 +49,32 @@ export function setupLandEventsRoute(app, pool) {
     app.get('/oracle/public-records/summary', async (_req, res) => {
         try {
             const { rows } = await pool.query(`
+                WITH filtered AS (
+                    SELECT schema_id, parcel_uid, decision_uuid, created_at
+                    FROM court.attestation
+                    WHERE chain = 'solana-devnet'
+                ), by_schema AS (
+                    SELECT schema_id, count(*)::int AS attestations,
+                           max(created_at) AS latest_attestation_at
+                    FROM filtered
+                    GROUP BY schema_id
+                )
                 SELECT count(*)::int AS attestations,
                        count(DISTINCT parcel_uid)::int AS parcels,
                        count(DISTINCT decision_uuid)::int AS decisions,
                        min(schema_id) AS schema_id,
-                       max(created_at) AS latest_attestation_at
-                FROM court.attestation
-                WHERE chain = 'solana-devnet'
+                       max(created_at) AS latest_attestation_at,
+                       (SELECT COALESCE(json_agg(json_build_object(
+                           'schemaId', schema_id,
+                           'attestations', attestations,
+                           'latestAttestationAt', latest_attestation_at
+                       ) ORDER BY schema_id), '[]'::json) FROM by_schema) AS schemas
+                FROM filtered
             `);
             const row = rows[0] || {};
             const schemaId = row.schema_id || null;
+            const schemas = Array.isArray(row.schemas) ? row.schemas : [];
+            const v2Row = schemas.find(item => item.schemaId === COURT_SCHEMA_V2);
             return res.json({
                 source: 'Croatian judiciary e-Oglasna archive',
                 evidence: 'parcel-level court-decision attestations',
@@ -67,11 +84,19 @@ export function setupLandEventsRoute(app, pool) {
                 schemaUrl: schemaId
                     ? `https://explorer.solana.com/address/${encodeURIComponent(schemaId)}?cluster=devnet`
                     : null,
+                schemas,
+                v2: {
+                    status: v2Row ? 'live_devnet' : 'awaiting_first_attestation',
+                    schemaId: COURT_SCHEMA_V2,
+                    schemaUrl: `https://explorer.solana.com/address/${COURT_SCHEMA_V2}?cluster=devnet`,
+                    attestations: Number(v2Row?.attestations || 0),
+                    sourceTimestamped: true
+                },
                 attestations: Number(row.attestations || 0),
                 parcels: Number(row.parcels || 0),
                 decisions: Number(row.decisions || 0),
                 latestAttestationAt: row.latest_attestation_at || null,
-                marketIntegration: 'recipe-bound market verifier and first court-SAS settlement are live on devnet'
+                marketIntegration: 'recipe-bound market verifier, V1 settlement and source-timed V2 attestations are live on devnet'
             });
         } catch (error) {
             console.error('GET /oracle/public-records/summary failed', error);

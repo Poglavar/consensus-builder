@@ -235,12 +235,12 @@ This verifier is live at the devnet program id. The first recipe-bound market is
 [`5wyJ…N8QM`](https://explorer.solana.com/address/5wyJ7XjbnoPUaDgaHAttdhdS38VmHf1p3jGwwVUeN8QM?cluster=devnet),
 with its permissionless SAS resolution in
 [`39sN…LETJ`](https://explorer.solana.com/tx/39sN9w1Pj75Hp7vjxQzaNQ89uRxSsTjFFoE4GCPfWXMU7v1koLEUtV6odzUfQcxuZJNWwXhs1UWKswSMRQbdLETJ?cluster=devnet).
-That proof uses V1 and is explicitly retrospective. The code-ready V2 declaration is
-`GET $(base)/oracle/recipes/court-parcel-operation-v2?parcelUid=<uid>&yesOperation=<value>&noOperation=<value>&closesAt=<unix-seconds>&schema=<v2-schema>`.
-V2 commits `sourceObservedAt`; the proposed program upgrade rejects it when it predates market close
-or lies after resolution. V2 schema registration, attester rollout, program upgrade and the first
-post-close record remain operational steps, so agents must not describe the current V1 proof as a
-forecast.
+That proof uses V1 and is explicitly retrospective. The live V2 declaration is
+`GET $(base)/oracle/recipes/court-parcel-operation-v2?parcelUid=<uid>&yesOperation=<value>&noOperation=<value>&closesAt=<unix-seconds>`.
+V2 commits `sourceObservedAt`; the deployed program rejects it when it predates market close or lies
+after resolution. The registered schema and dedicated attester have issued five source-timed V2
+attestations. These prove the evidence pipeline, not a forecast: the first post-close matching record
+is still required before agents may call the prospective settlement complete.
 
 ## 9. Donations and soft pledges
 

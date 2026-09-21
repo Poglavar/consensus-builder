@@ -128,7 +128,7 @@
             publicRecords: publicRecords?.attestations > 0 ? {
                 tone: 'success',
                 label: `${publicRecords.attestations} court attestations on Solana`,
-                detail: `${publicRecords.decisions} decisions · ${publicRecords.parcels} parcel facts · privacy-preserving aggregate`,
+                detail: `${publicRecords.decisions} decisions · ${publicRecords.parcels} parcel facts · ${publicRecords.v2?.attestations || 0} source-timed V2 · privacy-preserving aggregate`,
                 summary: publicRecords
             } : {
                 tone: errors.publicRecords ? 'error' : 'waiting',

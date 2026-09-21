@@ -297,6 +297,10 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                         },
                         prospectiveProof: {
                             status: 'awaiting_post_close_evidence',
+                            attestationStatus: 'live_devnet',
+                            v2Attestations: 5,
+                            proofAttestation: 'AoF7DacKAkH3YcuWFp6vgYkVUspT8whmX1WWfWVUabFe',
+                            proofTransaction: '5rRaRysV8hNmNDXiMoXGpLYNEFZxRZrQk6uQxG1A1cHwEjMEJcVUG4zn1QPZkBKhBX8dLMipjWFrswzqE1HMa9Ta',
                             script: 'blockchain/solana/scripts/prospective-external-market.mjs',
                             recipeId: COURT_RECIPE_V2_ID,
                             recipe: `${base}/oracle/recipes/${COURT_RECIPE_V2_ID}?parcelUid={parcelUid}&yesOperation={yesOperation}&noOperation={noOperation}&closesAt={unixSeconds}`,

@@ -395,6 +395,10 @@ describe('agent quickstart docs', () => {
         });
         expect(res.body.oracle.externalMarket.prospectiveProof).toMatchObject({
             status: 'awaiting_post_close_evidence',
+            attestationStatus: 'live_devnet',
+            v2Attestations: 5,
+            proofAttestation: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/),
+            proofTransaction: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{64,88}$/),
             recipeId: 'court-parcel-operation-v2',
             recipe: expect.stringContaining('/oracle/recipes/court-parcel-operation-v2'),
             schema: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/),

@@ -135,8 +135,9 @@ git diff 3ee1855...colosseum-worlds-fair
     two-phase runner opens and stakes a market without reading any attestation. The V2 recipe and
     parser append the official `sourceObservedAt`, and the market guard requires both that timestamp
     and the attestation's first transaction to follow market close. Rust and API contract tests are
-    complete; V2 schema registration, court-attester rollout, program upgrade and the first genuinely
-    later court record are still required for the live prospective proof.
+    complete. The V2 schema, upgraded verifier and court-attester rollout are live, with five
+    source-timed devnet attestations proving the ingestion path. Only a genuinely later record—one
+    published after a new market closes—remains for the prospective settlement proof.
 24. **Paid oracle facts over x402** — `GET /agent/oracle/facts` checks that a verified terminal fact
     exists before asking for payment, then sells a machine-ready bundle containing the source-hashed
     event, its subject-specific recipe, and explicit integrity checks for 0.01 devnet USDC. The route
