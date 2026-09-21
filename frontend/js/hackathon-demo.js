@@ -49,7 +49,35 @@
         const mcpTools = docs.mcp?.tools || [];
         const mcpComplete = ['ugt_submit_proposal', 'ugt_pledge', 'ugt_donate', 'ugt_forecast', 'ugt_buy_verified_fact']
             .every(name => mcpTools.includes(name));
+        const proofChecks = [
+            {
+                label: 'Proposal capability',
+                status: errors.discovery ? 'error' : discoveryListed ? 'success' : 'waiting'
+            },
+            {
+                label: 'Agent proposal on-chain',
+                status: algorithmFresh && Boolean(proposalEvent?.transaction) ? 'success' : 'waiting'
+            },
+            {
+                label: 'Support on-chain',
+                status: latestSupporter?.status === 'done' && Boolean(latestSupporter.support?.signature) ? 'success' : 'waiting'
+            },
+            {
+                label: 'Court evidence',
+                status: publicRecords?.v2?.attestations > 0 ? 'success' : errors.publicRecords ? 'error' : 'waiting'
+            },
+            {
+                label: 'Two-sided market',
+                status: external?.prospectiveProof?.market ? 'success' : 'waiting'
+            },
+            {
+                label: 'Fact discovery',
+                status: errors.oracleDiscovery ? 'error' : oracleDiscoveryListed ? 'success' : 'waiting'
+            }
+        ];
+
         return {
+            proofChecks,
             generatedAt: now,
             x402: {
                 tone: errors.discovery ? 'error' : discoveryListed ? 'success' : 'waiting',
@@ -71,7 +99,7 @@
                 tone: errors.oracleDiscovery ? 'error' : oracleDiscoveryListed ? 'success' : 'waiting',
                 label: errors.oracleDiscovery ? 'Oracle-fact discovery unavailable'
                     : oracleDiscoveryListed ? 'Paid verified facts listed in Bazaar'
-                        : x402.oracleFactsEnabled ? 'Paid fact endpoint ready; listing unverified' : 'Paid fact endpoint not configured',
+                        : x402.oracleFactsEnabled ? 'Paid fact live; Bazaar indexing pending' : 'Paid fact endpoint not configured',
                 detail: errors.oracleDiscovery ? errors.oracleDiscovery
                     : oracleDiscoveryListed
                         ? `${x402.priceOracleFact || 'price unknown'} per fact · exact catalog resource verified ${oracleDiscovery.verifiedAt || ''}`.trim()
@@ -271,6 +299,18 @@
         story.append(storyCopy, storyFlow);
         element.append(story);
 
+        const proofStrip = node(doc, 'section', null, 'hd-proof-strip');
+        proofStrip.setAttribute('aria-label', 'Live public proof status');
+        model.proofChecks.forEach(check => {
+            const item = node(doc, 'article', null, `hd-proof-check is-${check.status}`);
+            item.append(
+                node(doc, 'span', check.status === 'success' ? 'VERIFIED' : check.status === 'error' ? 'ERROR' : 'PENDING'),
+                node(doc, 'strong', check.label)
+            );
+            proofStrip.append(item);
+        });
+        element.append(proofStrip);
+
         const cards = node(doc, 'section', null, 'hd-grid');
         addCard(cards, 'x402', model.x402, [
             { label: 'View discovery record ↗', href: model.x402.discoveryUrl || `${apiBase}/agent/discovery` },
@@ -353,21 +393,18 @@
         thesis.append(thesisGrid);
         element.append(thesis);
 
-        const flow = node(doc, 'section', null, 'hd-flow');
-        flow.append(node(doc, 'h2', 'Five-minute judge path'));
+        const flow = node(doc, 'section', null, 'hd-flow hd-judge-path');
+        flow.id = 'judge-path';
+        flow.append(node(doc, 'span', 'JUDGE MODE · ONE POSSIBLE CITY', 'hd-eyebrow'));
+        flow.append(node(doc, 'h2', 'Follow a parcel future from imagination to evidence'));
         const list = node(doc, 'ol');
         [
-            ['Inspect the exact live x402 Bazaar discovery record.', model.x402.discoveryUrl || `${apiBase}/agent/discovery`],
-            ['Inspect the shared MCP tools an outside agent can call.', `${apiBase}/docs/agents.json`],
-            ['Inspect the paid verified-fact capability and its Bazaar schema.', model.oracleFacts.discoveryUrl || `${apiBase}/agent/discovery?resource=oracle-facts`],
-            ['Open the latest live actor, rationale, cost and transaction evidence.', '/actor-explorer.html'],
-            ['Open a proposal in read-only Details; Counterpropose creates the editable clone.', model.evidence.latestProposalId ? `/proposals/${encodeURIComponent(model.evidence.latestProposalId)}` : '/'],
-            ['Compare funded donation with a revocable soft pledge, using the same wallet UI.', model.evidence.latestProposalId ? `/proposals/${encodeURIComponent(model.evidence.latestProposalId)}` : '/'],
-            ['Inspect the prediction market’s hashed oracle recipe and market account.', model.evidence.latestProposalId ? `/proposals/${encodeURIComponent(model.evidence.latestProposalId)}` : '/'],
-            ['Verify the external court oracle’s aggregate health and public SAS schema.', `${apiBase}/oracle/public-records/summary`],
-            ['Follow the live retrospective court-attestation proof from resolution to USDC claim.', model.externalMarket.resolution ? `https://explorer.solana.com/tx/${encodeURIComponent(model.externalMarket.resolution)}?cluster=devnet` : `${apiBase}/docs/agents.json`],
-            ['Inspect the open two-sided V2 market awaiting a genuinely later court record.', model.externalMarket.nextProof?.market ? `https://explorer.solana.com/address/${encodeURIComponent(model.externalMarket.nextProof.market)}?cluster=devnet` : `${apiBase}/docs/agents.json`],
-            ['Open a source-hashed proposal lifecycle event and its Solana transaction.', `${apiBase}/oracle/events`]
+            ['Imagine: open the parcel map and inspect a possible change.', '/?reduceMotion=1'],
+            ['Propose: inspect a live agent-authored proposal in read-only Details.', model.evidence.latestProposalId ? `/proposals/${encodeURIComponent(model.evidence.latestProposalId)}` : '/'],
+            ['Back: compare an unconditional donation with a revocable pledge.', model.evidence.latestProposalId ? `/proposals/${encodeURIComponent(model.evidence.latestProposalId)}` : '/'],
+            ['Forecast: inspect the open, two-sided, recipe-bound market.', model.externalMarket.nextProof?.market ? `https://explorer.solana.com/address/${encodeURIComponent(model.externalMarket.nextProof.market)}?cluster=devnet` : `${apiBase}/docs/agents.json`],
+            ['Attest: verify the court oracle’s source-timed SAS evidence.', `${apiBase}/oracle/public-records/summary`],
+            ['Resolve: follow the proven market outcome through its USDC payout.', model.externalMarket.resolution ? `https://explorer.solana.com/tx/${encodeURIComponent(model.externalMarket.resolution)}?cluster=devnet` : `${apiBase}/docs/agents.json`]
         ].forEach(([label, href]) => {
             const item = node(doc, 'li'); item.append(link(doc, label, href)); list.append(item);
         });

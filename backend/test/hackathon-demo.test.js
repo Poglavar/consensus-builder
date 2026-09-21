@@ -46,11 +46,13 @@ describe('hackathon demo evidence model', () => {
         expect(model.algorithm).toMatchObject({ tone: 'success', label: 'Fresh deterministic run completed' });
         expect(model.x402.tone).toBe('success');
         expect(model.evidence).toMatchObject({ latestProposalId: 'p1', latestTransaction: 'tx1' });
+        expect(model.proofChecks).toContainEqual({ label: 'Proposal capability', status: 'success' });
     });
 
     it('does not call hosted-facilitator configuration a verified catalog listing', () => {
         const model = demo.buildDemoModel({ docs, discovery: { state: 'not-listed' } });
         expect(model.x402).toMatchObject({ tone: 'waiting', label: 'Hosted facilitator configured; listing unverified' });
+        expect(model.oracleFacts).toMatchObject({ tone: 'waiting', label: 'Paid fact live; Bazaar indexing pending' });
     });
 
     it('tracks paid oracle-fact discovery separately from proposal discovery', () => {

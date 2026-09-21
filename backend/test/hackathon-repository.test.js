@@ -54,6 +54,8 @@ describe('hackathon repository documentation', () => {
         expect(runner).toContain('firstAddressTime');
         expect(runner).toContain('buildCourtParcelOperationRecipeV2');
         expect(runner).toContain('assertProspectiveChronology');
+        expect(runner).toContain('discoverEvidence');
+        expect(runner).toContain("readiness: 'no_matching_post_close_attestation'");
         expect(read('docs/hackathon-build.md')).toContain('market.closesAt <= sourceObservedAt <= resolution time');
         const program = read('blockchain/solana/programs/proposal_market/src/lib.rs');
         expect(program).toContain('validate_source_chronology(evidence.source_observed_at, market.closes_at, now)');

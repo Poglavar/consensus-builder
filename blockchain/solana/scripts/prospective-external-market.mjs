@@ -19,6 +19,7 @@ import {
     classifyExternalMarketChronology
 } from '../../../backend/oracle/external-market-chronology.js';
 import { assertCourtAttestation, decodeCourtAttestation } from '../../../backend/oracle/sas-court-attestation.js';
+import { selectProspectiveCourtEvidence } from '../../../backend/oracle/prospective-evidence.js';
 import { sendAndConfirmPolling } from '../../../backend/agents/solana-send.js';
 
 // Resolve chain-only packages from blockchain/solana's own package boundary. Production operator
@@ -111,6 +112,50 @@ async function firstAddressTime(connection, address) {
     return { signature: oldest.signature, blockTime: oldest.blockTime };
 }
 
+async function verifiedCandidate(connection, address, schema) {
+    const evidence = decodeCourtAttestation(
+        await connection.getAccountInfo(address, 'confirmed'),
+        { address: address.toBase58() }
+    );
+    assertCourtAttestation(evidence, {
+        credential: COURT_CREDENTIAL,
+        schema,
+        attester: COURT_ATTESTER,
+        requireSourceTime: true
+    });
+    const firstSeen = await firstAddressTime(connection, address);
+    return {
+        address: address.toBase58(), evidence,
+        firstSeenAt: firstSeen.blockTime, firstSeenSignature: firstSeen.signature
+    };
+}
+
+async function discoverEvidence(connection, state, schema) {
+    const supplied = process.env.PROSPECTIVE_ATTESTATION?.trim();
+    let candidates = [];
+    if (supplied) {
+        candidates = [await verifiedCandidate(connection, new PublicKey(supplied), schema)];
+    } else {
+        const accounts = await connection.getProgramAccounts(new PublicKey(state.recipe.verification.sasProgram), {
+            commitment: 'confirmed',
+            filters: [
+                { memcmp: { offset: 33, bytes: COURT_CREDENTIAL } },
+                { memcmp: { offset: 65, bytes: schema.toBase58() } }
+            ]
+        });
+        candidates = (await Promise.all(accounts.map(async account => {
+            try { return await verifiedCandidate(connection, account.pubkey, schema); } catch { return null; }
+        }))).filter(Boolean);
+    }
+    return selectProspectiveCourtEvidence({
+        candidates,
+        parcelUid: state.privateRecipe.parcelUid,
+        yesOperation: state.privateRecipe.yesOperation,
+        noOperation: state.privateRecipe.noOperation,
+        closesAt: state.recipe.verification.closesAt
+    });
+}
+
 function publicState(state) {
     return {
         version: state.version,
@@ -196,28 +241,32 @@ async function openMarket(connection, live) {
 
 async function settleMarket(connection, live) {
     const state = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8'));
+    const now = Math.floor(Date.now() / 1000);
+    if (state.phase === 'settled') return console.log(JSON.stringify(publicState(state), null, 2));
     if (state.phase !== 'open') throw new Error(`market state is ${state.phase}, expected open`);
-    const attestation = new PublicKey(required(process.env.PROSPECTIVE_ATTESTATION, 'PROSPECTIVE_ATTESTATION'));
-    const evidence = decodeCourtAttestation(
-        await connection.getAccountInfo(attestation, 'confirmed'),
-        { address: attestation.toBase58() }
-    );
-    const schema = new PublicKey(state.recipe.verification.schema);
-    assertCourtAttestation(evidence, {
-        credential: COURT_CREDENTIAL,
-        schema,
-        attester: COURT_ATTESTER,
-        requireSourceTime: true
-    });
-    if (evidence.fields.parcelUid !== state.privateRecipe.parcelUid) throw new Error('attestation subject does not match the committed parcel');
-    if (![state.privateRecipe.yesOperation, state.privateRecipe.noOperation].includes(evidence.fields.operation)) {
-        throw new Error('attestation operation maps to neither committed outcome');
+    if (now < state.recipe.verification.closesAt) {
+        return console.log(JSON.stringify({
+            ...publicState(state), readiness: 'market_open',
+            secondsUntilClose: state.recipe.verification.closesAt - now
+        }, null, 2));
     }
-    const firstEvidence = await firstAddressTime(connection, attestation);
+
+    const schema = new PublicKey(state.recipe.verification.schema);
+    const selection = await discoverEvidence(connection, state, schema);
+    if (selection.status === 'waiting') {
+        return console.log(JSON.stringify({
+            ...publicState(state), phase: 'awaiting_evidence', readiness: 'no_matching_post_close_attestation'
+        }, null, 2));
+    }
+    if (selection.status === 'conflict') {
+        throw new Error('conflicting post-close attestations map to both market outcomes');
+    }
+    const selected = selection.selected;
+    const attestation = new PublicKey(selected.address);
+    const evidence = selected.evidence;
+    const firstEvidence = { signature: selected.firstSeenSignature, blockTime: selected.firstSeenAt };
     const sourceObservedAt = evidence.fields.sourceObservedAt;
     const sourceTimeCommitted = true;
-    const now = Math.floor(Date.now() / 1000);
-    if (now < state.recipe.verification.closesAt) throw new Error('market is still open');
     const chronologyInput = {
         ...state.timestamps,
         marketClosesAt: state.recipe.verification.closesAt,
@@ -228,7 +277,11 @@ async function settleMarket(connection, live) {
     };
     const preflight = classifyExternalMarketChronology(chronologyInput);
     assertProspectiveChronology(chronologyInput);
-    if (!live) return console.log(JSON.stringify({ ...publicState(state), phase: 'settlement-plan', chronology: preflight }, null, 2));
+    if (!live) return console.log(JSON.stringify({
+        ...publicState(state), phase: 'settlement-plan', chronology: preflight,
+        evidence: { address: selected.address, hash: `sha256:${evidence.accountHash}` },
+        eligibleEvidenceCount: selection.eligible.length
+    }, null, 2));
 
     const owner = loadKeypair(process.env.SOLANA_KEYPAIR || '~/.config/solana/id.json', 'SOLANA_KEYPAIR');
     const bettor = loadKeypair(process.env.PROSPECTIVE_BETTOR_KEYPAIR, 'PROSPECTIVE_BETTOR_KEYPAIR');

@@ -13,6 +13,8 @@ describe('hackathon pitch deck page', () => {
         expect(html.match(/data-slide="\d"/g)).toHaveLength(7);
         expect(html).toContain('Hyperstition');
         expect(html).toContain('Markets for possible cities');
+        expect(html).toContain('Possible cities lack a common path to reality');
+        expect(html).not.toContain('no shared market');
         expect(html).toContain('Scale the evidence market');
         expect(html).toContain('js/hackathon-deck.js?v=1');
     });

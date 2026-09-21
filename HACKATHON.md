@@ -203,5 +203,10 @@ states come from public evidence rather than a scripted success screen.
    market integration proof, its two-sided stakes, permissionless resolution, chronology
    classification, and winning claim linked above.
 
+The prospective runner is safe to schedule with `--settle`: before close it reports the remaining
+time; afterward it discovers matching V2 SAS attestations and remains a no-op until one was both
+published and attested after close. Conflicting outcome evidence fails closed. Only `--live` can
+submit the resolution and claim transactions.
+
 If a live dependency is slow, use the Demo Center's retry button. The resettable fallback is the
 map's **Game → Enable game mode → New Game** flow; it clears browser-local simulation state only.
