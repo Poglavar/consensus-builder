@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<!-- Main guide in English: explains the "build first, propose second" workflow, the Build
-     palette, drafts, views and sharing. The other how-to-use-*.html guides go deeper on
+<!-- Main guide in English: explains the current draw-first workflow, the Build
+     palette, object lifecycle, views and sharing. The other how-to-use-*.html guides go deeper on
      individual tools. Croatian counterpart: kako-koristiti.html. -->
 <html lang="en">
 
@@ -25,9 +25,10 @@
             </a>
             <a href="#workflow" class="back-link"><i class="fas fa-route"></i> The workflow</a>
             <a href="#palette" class="back-link"><i class="fas fa-shapes"></i> The “Build” palette</a>
-            <a href="#drafts" class="back-link"><i class="fas fa-pen-ruler"></i> Drafts</a>
+            <a href="#objects" class="back-link"><i class="fas fa-layer-group"></i> Proposals &amp; forks</a>
             <a href="#views" class="back-link"><i class="fas fa-cube"></i> Views</a>
             <a href="#sharing" class="back-link"><i class="fas fa-share-nodes"></i> Sharing</a>
+            <a href="roadmap.html" class="back-link"><i class="fas fa-compass"></i> Roadmap</a>
         </div>
         <div class="lang-switch">
             <a href="kako-koristiti.html">HR</a>
@@ -37,13 +38,19 @@
 
     <main class="main-content">
         <div class="container">
-            <div class="intro">
-                <h2>Build first, propose second</h2>
-                <p>
-                    Consensus Builder works like a city-building game. You don't start by filling in a form — you start
-                    by picking land and <strong>building</strong> something on it. Only once the design looks the way
-                    you want it do you write the terms, and that turns it into a proposal other people can decide on.
-                </p>
+            <div class="intro intro-with-visual">
+                <div class="intro-copy">
+                    <span class="eyebrow">The idea in one minute</span>
+                    <h2>Draw the change, then build consent</h2>
+                    <p>
+                        Consensus Builder works like a city-building game. Pick real parcels and place a possible
+                        change on the map — for example, a block, park, road or ownership offer. Finishing the design
+                        creates an applied local proposal that you can inspect, fork, compare and share.
+                    </p>
+                    <a class="primary-link" href="index.html?lang=en"><i class="fas fa-map"></i> Open the map</a>
+                </div>
+                <img src="images/site-intro-parcels.webp"
+                    alt="The same parcels before and after a proposed city block">
             </div>
 
             <section id="workflow">
@@ -64,20 +71,20 @@
                     <i class="fas fa-chevron-right flow-arrow"></i>
                     <div class="flow-step">
                         <i class="fas fa-pen-ruler"></i>
-                        <strong>Design</strong>
-                        <span>Shape it, tune the parameters</span>
+                        <strong>Inspect</strong>
+                        <span>See the proposal in context</span>
                     </div>
                     <i class="fas fa-chevron-right flow-arrow"></i>
                     <div class="flow-step">
                         <i class="fas fa-file-signature"></i>
-                        <strong>Terms</strong>
-                        <span>Name, description, offer, ownership</span>
+                        <strong>Fork</strong>
+                        <span>Change the design or its terms</span>
                     </div>
                     <i class="fas fa-chevron-right flow-arrow"></i>
                     <div class="flow-step">
                         <i class="fas fa-share-nodes"></i>
                         <strong>Share</strong>
-                        <span>Apply it, look at it, send it</span>
+                        <span>Send one proposal or a whole plan</span>
                     </div>
                 </div>
 
@@ -108,21 +115,22 @@
                     </li>
 
                     <li class="step">
-                        <h3>Click a tool in the “Build” palette</h3>
+                        <h3>Build — it appears on the map immediately</h3>
                         <p>
-                            Every tool drops you straight into its designer — no intermediate step. Buildings, land
-                            readjustment and freeform open an editor; <span class="ui-label">Park</span>,
-                            <span class="ui-label">Square</span> and <span class="ui-label">Lake</span> are applied in
-                            a single click. The full list of tools is <a href="#palette">in the next section</a>.
+                            Choose a tool from the <span class="ui-label">Build</span> palette. Buildings and land
+                            readjustment open a designer; <span class="ui-label">Park</span>,
+                            <span class="ui-label">Square</span> and <span class="ui-label">Lake</span> are one-click
+                            actions. Roads and tracks start from their drawing controls. When you finish, a local
+                            proposal is created and applied to the map — there is no separate “apply” step.
                         </p>
                     </li>
 
                     <li class="step">
-                        <h3>Design it</h3>
+                        <h3>Inspect the proposal in context</h3>
                         <p>
-                            In the editor you change the shape, the typology, the number of floors and the rest of the
-                            parameters. You see the result on the map as you work. When you're happy, confirm the design
-                            — usually with <span class="ui-label">Done</span>.
+                            The finished proposal is read-only: open it to review the result, switch views, share it, or
+                            <span class="ui-label">Unapply</span> it without deleting it. The design editor shown below
+                            is where you shape geometry before confirming it, or after opening a fork for revision.
                         </p>
                         <figure class="howto-shot">
                             <div class="shot-frame">
@@ -136,31 +144,29 @@
                     </li>
 
                     <li class="step">
-                        <h3>Write the terms</h3>
+                        <h3>Fork it to change the design or terms</h3>
                         <p>
-                            Once the design is done, the <span class="ui-label">Create Proposal</span> window opens.
-                            This is where everything the design can't say goes: <span class="ui-label">Name</span>,
-                            <span class="ui-label">Description</span>, <span class="ui-label">Offer</span>, and who
-                            receives ownership. Under <span class="ui-label">Options</span> you can add conditionality,
-                            an expiry, offer decay or a deposit.
+                            Choose <span class="ui-label">Fork proposal</span> to make an editable copy. Change the
+                            geometry, name, description, offer, ownership, conditions, expiry or deposit, then create a
+                            replacement proposal. The source stays unchanged, so alternatives remain comparable.
                         </p>
                         <figure class="howto-shot">
                             <div class="shot-frame">
                                 <img src="images/howto/hub-03-uvjeti.png"
-                                    alt="The Create Proposal window with the fields for the terms"
+                                    alt="The Proposal window for an editable fork, with ownership and term fields"
                                     onerror="this.style.display='none'">
                                 <span class="shot-pending"><i class="fas fa-camera"></i> Screenshot coming soon</span>
                             </div>
-                            <figcaption>“Create Proposal” comes <em>after</em> the design, not before it.</figcaption>
+                            <figcaption>A fork carries the design forward while letting you revise its terms.</figcaption>
                         </figure>
                     </li>
 
                     <li class="step">
-                        <h3>Apply it and look at it</h3>
+                        <h3>Inspect and share the result</h3>
                         <p>
-                            The proposal exists, but the map doesn't change until you explicitly apply it. In the
-                            proposal details, click <span class="ui-label">Apply to map</span>, then look at it in
-                            <a href="how-to-use-views.html">3D</a> before you share it.
+                            Switch between 2D and <a href="how-to-use-views.html">3D</a>, or use realistic and walk
+                            views where the city supports them. Share one proposal from its details, or apply the set
+                            you want and use <span class="ui-label">Share entire plan</span> to send the composition.
                         </p>
                     </li>
                 </ol>
@@ -219,14 +225,18 @@
                                 <td><i class="fas fa-water"></i>Lake</td>
                                 <td>A body of water across the selected parcels. The parcels must be contiguous.</td>
                             </tr>
+                            <tr>
+                                <td><i class="fas fa-handshake"></i>Offer</td>
+                                <td>Purchase or ownership terms without a new physical object on the map.</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
 
                 <div class="callout note">
                     <i class="fas fa-road"></i>
-                    <strong>Roads, tracks and stations share the Transport group.</strong> Road and Track sit in their
-                    own framed family because they aren't built <em>on</em> parcels — they cut through them.
+                    <strong>Roads, tracks and stations share the Transport group.</strong> They sit outside the parcel
+                    tools because they are drawn across the map and can cut through parcels.
                     <a href="how-to-use-road.html">Roads and tracks guide →</a>
                 </div>
 
@@ -244,24 +254,33 @@
                 </div>
             </section>
 
-            <section id="drafts" class="guide-section">
-                <h2>3. Drafts</h2>
-                <p>
-                    A design you didn't finish is not lost. It is saved as a <span class="ui-label">Draft</span> and
-                    waits for you in the drafts list — resume it later, edit it, or discard it.
-                </p>
-                <p>
-                    The draft editor has <span class="ui-label">Design</span>,
-                    <span class="ui-label">Parcels</span>, <span class="ui-label">Ownership</span>,
-                    <span class="ui-label">Terms</span> and <span class="ui-label">Details</span> tabs, so you can work
-                    on each part of the proposal separately. <span class="ui-label">Review changes</span> shows you
-                    exactly what changes, and <span class="ui-label">Create proposal</span> publishes it.
-                </p>
+            <section id="objects" class="guide-section">
+                <h2>3. Proposals, forks and plans</h2>
+                <p>These are the three pieces to keep straight while you explore alternatives.</p>
+                <div class="guide-cards basics-grid lifecycle-grid">
+                    <article class="guide-card">
+                        <div class="card-icon"><i class="fas fa-pen-ruler"></i></div>
+                        <h3>Proposal</h3>
+                        <p>Finishing a building, road or public-space design creates a local proposal and applies it to
+                            the map. Its saved record is read-only.</p>
+                    </article>
+                    <article class="guide-card">
+                        <div class="card-icon"><i class="fas fa-file-signature"></i></div>
+                        <h3>Fork</h3>
+                        <p>An editable copy used to revise the design or its terms. Saving it creates a new replacement;
+                            the source proposal stays unchanged.</p>
+                    </article>
+                    <article class="guide-card">
+                        <div class="card-icon"><i class="fas fa-layer-group"></i></div>
+                        <h3>Plan</h3>
+                        <p>The ordered set of applied proposals on your map. Sharing the plan preserves that composition
+                            and its dependencies.</p>
+                    </article>
+                </div>
                 <div class="callout note">
-                    <i class="fas fa-lock"></i>
-                    A published proposal is <strong>immutable</strong>. Publishing from a draft creates a new proposal —
-                    the original is neither changed nor deleted. Editing is therefore always a matter of creating a new
-                    version, never of patching the old one.
+                    <i class="fas fa-cloud-arrow-up"></i>
+                    Local work lives in this browser. Sharing uploads the proposal records needed by the link; optional
+                    chain publication creates an immutable public record.
                 </div>
             </section>
 
@@ -325,8 +344,8 @@
                     <article class="guide-card">
                         <div class="card-icon"><i class="fas fa-clone"></i></div>
                         <h3>A second variant</h3>
-                        <p>Want to try an alternative? Copy the proposal into a new one instead of losing the existing
-                            one — both stay around, side by side.</p>
+                        <p>Want to try an alternative? Fork the proposal or create a replacement. The published original
+                            stays intact while the new version can evolve.</p>
                     </article>
                 </div>
             </section>
@@ -365,9 +384,8 @@
 
             <div class="callout tip final-tip">
                 <i class="fas fa-lightbulb"></i>
-                Remember the order: <strong>select → build → design → terms → apply → share</strong>. When something
-                confuses you, it is almost always because you are trying to describe an intervention before you have
-                built it.
+                Remember the order: <strong>select → build → inspect → fork if needed → share</strong>. Finishing a
+                design creates an applied proposal; revisions always become a new proposal.
             </div>
         </div>
     </main>

@@ -1,5 +1,242 @@
 /* ========== Modals ========== */
 
+/* First-visit concept explainer; intentionally independent from the username welcome flow. */
+.site-intro-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 14500;
+    display: grid;
+    place-items: center;
+    padding: clamp(14px, 3vw, 34px);
+    overflow-y: auto;
+    background:
+        radial-gradient(circle at 18% 12%, rgba(48, 129, 184, 0.22), transparent 42%),
+        rgba(8, 20, 34, 0.76);
+    backdrop-filter: blur(7px);
+}
+
+.site-intro-overlay[hidden] {
+    display: none;
+}
+
+.site-intro-card {
+    position: relative;
+    box-sizing: border-box;
+    width: min(1040px, 100%);
+    max-height: min(820px, calc(100dvh - 28px));
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
+    background: #f8fbfd;
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    border-radius: 24px;
+    box-shadow: 0 30px 90px rgba(4, 16, 29, 0.42);
+    color: #10283c;
+}
+
+.site-intro-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.92);
+    color: #18384f;
+    border-color: rgba(24, 56, 79, 0.16);
+    box-shadow: 0 5px 18px rgba(15, 36, 52, 0.12);
+}
+
+.site-intro-visual {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(30px, 5vw, 64px) clamp(18px, 3vw, 38px) 30px;
+    overflow: hidden;
+    background:
+        linear-gradient(145deg, rgba(219, 237, 245, 0.92), rgba(235, 244, 235, 0.96)),
+        repeating-linear-gradient(30deg, transparent 0 18px, rgba(25, 75, 101, 0.03) 18px 19px);
+}
+
+.site-intro-visual img {
+    width: 116%;
+    max-width: none;
+    height: auto;
+    margin-left: -8%;
+    filter: drop-shadow(0 20px 22px rgba(20, 52, 67, 0.18));
+}
+
+.site-intro-visual-labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.site-intro-visual-labels span {
+    padding: 7px 12px;
+    border: 1px solid rgba(24, 56, 79, 0.14);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.82);
+    color: #37566a;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.site-intro-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(48px, 6vw, 72px) clamp(28px, 5vw, 56px) clamp(34px, 5vw, 52px);
+}
+
+.site-intro-eyebrow {
+    margin: 0 0 10px;
+    color: #24759d;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.site-intro-copy h1 {
+    margin: 0;
+    color: #10283c;
+    font-size: clamp(29px, 4vw, 43px);
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+}
+
+.site-intro-lead {
+    margin: 18px 0 0;
+    color: #506879;
+    font-size: 15px;
+    line-height: 1.58;
+}
+
+.site-intro-steps {
+    display: grid;
+    gap: 14px;
+    margin: 24px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.site-intro-steps li {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+}
+
+.site-intro-step-number {
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    border-radius: 9px;
+    background: #dbeef6;
+    color: #17678e;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.site-intro-steps strong,
+.site-intro-steps small {
+    display: block;
+}
+
+.site-intro-steps strong {
+    color: #17394f;
+    font-size: 14px;
+    line-height: 1.25;
+}
+
+.site-intro-steps small {
+    margin-top: 3px;
+    color: #647885;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.site-intro-cta {
+    align-self: flex-start;
+    min-width: 170px;
+    margin-top: 20px;
+    padding: 11px 24px;
+    border-radius: 999px;
+}
+
+.site-intro-reopen {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+body.site-intro-open {
+    overflow: hidden;
+}
+
+@media (max-width: 760px) {
+    .site-intro-overlay {
+        place-items: start center;
+        padding: 8px;
+    }
+
+    .site-intro-card {
+        max-height: calc(100dvh - 16px);
+        overflow-y: auto;
+        grid-template-columns: 1fr;
+        border-radius: 18px;
+    }
+
+    .site-intro-visual {
+        min-height: 198px;
+        padding: 32px 14px 14px;
+    }
+
+    .site-intro-visual img {
+        width: 106%;
+        margin-left: -3%;
+    }
+
+    .site-intro-copy {
+        padding: 24px 24px 26px;
+    }
+
+    .site-intro-copy h1 {
+        font-size: clamp(28px, 9vw, 38px);
+    }
+
+    .site-intro-lead {
+        margin-top: 14px;
+    }
+
+    .site-intro-steps {
+        gap: 11px;
+        margin-top: 18px;
+    }
+
+    .site-intro-cta {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .site-intro-overlay.is-open .site-intro-card {
+        animation: site-intro-enter 240ms ease-out both;
+    }
+
+    @keyframes site-intro-enter {
+        from { opacity: 0; transform: translateY(12px) scale(0.985); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+}
+
 /* Fixed text slots keep fetching/applying progress from moving the centered card. */
 .proposal-load-overlay {
     position: fixed;

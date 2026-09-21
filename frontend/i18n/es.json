@@ -673,8 +673,8 @@
             "telegramLabel": "Telegram",
             "aboutTitle": "Acerca de",
             "aboutParagraph": "Urban Game Theory es un mercado para cambios reales del suelo: personas y agentes proponen, financian y pronostican cambios en parcelas reales, mientras los registros públicos resuelven qué ocurrió. Abre la <a href=\"/hackathon-demo.html\">demo en vivo del hackathon</a>, lee la <a href=\"/deck.html\">presentación</a> o consulta <a href=\"roadmap.html\" target=\"_blank\">la hoja de ruta</a>.",
-            "instructionsTitle": "Instrucciones",
-            "instructionsParagraph": "El paradigma clave es la <strong>Propuesta</strong>. En esta plataforma cualquiera puede crear propuestas e interactuar con las de otros. Las propuestas afectan parcelas y tienen propietarios; esos propietarios pueden decidir si aceptar las propuestas.<br><br>¡Hay muchos tipos de propuestas! La más simple y común es una <strong>Propuesta de compra</strong>, que ofrece pagar por la propiedad de parcelas. Pero también hay <strong>Propuestas de edificación</strong> que proponen Reglas Urbanas para bloques de parcelas, <strong>Propuestas de carreteras</strong> que proponen nuevas carreteras o vías férreas que atraviesan parcelas (creando nuevos bloques de parcelas), propuestas de <strong>Reparcelación</strong> que remodelan parcelas pero mantienen las participaciones de propiedad, y más.<br><br>Las propuestas inicialmente las financia su autor, pero cualquiera puede impulsarlas enviándoles dinero, aumentando la probabilidad de que los propietarios las acepten. Las propuestas vienen en sabores: pueden ser condicionales, expirar, estar totalmente financiadas o no. Tanto los bienes públicos (parques, plazas, carreteras...) como el desarrollo privado pueden usar esta infraestructura.<br><br>Para ver cómo podría funcionar, inicia el modo Juego y observa cómo los agentes crean y aceptan propuestas. Para algo más serio, conecta tu billetera de Ethereum, explora las parcelas acuñadas en tu ciudad de interés, crea propuestas on-chain para ellas y mira qué sucede.",
+            "instructionsTitle": "Empieza aquí",
+            "instructionsParagraph": "<strong>Dibuja el cambio y después construye consenso.</strong> Al terminar un diseño se crea una propuesta local ya aplicada. Examínala, retírala del mapa, compártela o crea una variante editable cuando deban cambiar el diseño o las condiciones. Lee la <a href=\"how-to-use.html\" target=\"_blank\">guía paso a paso</a> o consulta qué funciona hoy y qué viene después en la <a href=\"roadmap.html\" target=\"_blank\">hoja de ruta</a>.",
             "advancedTitle": "Opciones avanzadas",
             "debugToggle": "Habilitar modo depuración",
             "wipeDataButton": "Borrar TODOS los datos locales",
@@ -1254,6 +1254,22 @@
             "title": "Novedades",
             "closeLabel": "Cerrar",
             "nextButton": "Siguiente"
+        },
+        "siteIntro": {
+            "open": "Cómo funciona Consensus Builder",
+            "close": "Cerrar introducción",
+            "before": "Parcelas existentes",
+            "after": "Manzana propuesta",
+            "eyebrow": "Las ciudades cambian parcela a parcela",
+            "title": "Da forma a una ciudad en la que podamos ponernos de acuerdo",
+            "lead": "Consensus Builder convierte ideas sobre el suelo y el desarrollo en propuestas que las personas afectadas pueden ver, comparar, apoyar y aceptar.",
+            "groundTitle": "Empieza por el territorio real",
+            "groundBody": "Explora parcelas catastrales, edificios, calles y propiedad.",
+            "proposeTitle": "Haz visible el cambio",
+            "proposeBody": "Propón, por ejemplo, una manzana urbana sobre esas parcelas, o añade edificios, calles, parques o nuevos límites parcelarios.",
+            "consentTitle": "Construye consenso",
+            "consentBody": "Comparte la propuesta, suma apoyo o financiación y deja que decidan los propietarios.",
+            "cta": "Explorar el mapa"
         },
         "welcome": {
             "kicker": "Urban Game Theory",

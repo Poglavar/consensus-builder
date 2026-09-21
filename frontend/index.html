@@ -962,35 +962,19 @@
                             Open the <a href="/hackathon-demo.html">live hackathon demo</a>, read the
                             <a href="/deck.html">pitch deck</a>, or see <a href="roadmap.html" target="_blank">the roadmap</a>.
                         </p>
+                        <button type="button" class="btn btn-secondary site-intro-reopen" data-site-intro-open>
+                            <i class="fas fa-map" aria-hidden="true"></i>
+                            <span data-i18n-key="modal.siteIntro.open">How Consensus Builder works</span>
+                        </button>
                     </div>
                     <hr>
                     <div class="info-subsection">
-                        <h4 data-i18n-key="sidebar.info.instructionsTitle">Instructions</h4>
-                        <p>
-                            <a href="kako-koristiti.html" target="_blank"><i class="fas fa-book-open"></i>
-                                Upute za korištenje — kako izraditi prijedlog</a>
-                        </p>
+                        <h4 data-i18n-key="sidebar.info.instructionsTitle">Start here</h4>
                         <p data-i18n-key="sidebar.info.instructionsParagraph" data-i18n-attr="html">
-                            The key paradigm is the <strong>Proposal</strong>. On this platform anyone can create
-                            proposals and interact with proposals of others. Proposals affect parcels and they have
-                            owners, those owners can decide whether to accept proposals.<br><br>There are many different
-                            types of proposals! The simplest and most common is a <strong>Purchase proposal</strong>,
-                            which offers to pay for ownership of parcels. But there are also <strong>Building
-                                proposals</strong>
-                            which propose Urban Rules for Parcel Blocks, <strong>Road proposals</strong> which propose
-                            new
-                            roads or rail cutting through parcels (thus creating new Parcel Blocks),
-                            <strong>Reparcellization</strong> proposals which reshape parcels but keep ownership shares,
-                            and more. <br><br>Proposals are initially funded by their author but can be boosted by
-                            anyone
-                            who sends money to them, increasing the likelihood of acceptance by owners. Proposals come
-                            in flavours: they can be conditional, expiring, fully funded or not. Both public goods
-                            (parks, squares, roads...) and private development can use this infrastructure.<br><br>To
-                            get
-                            a feel how it could play out, start the Game mode and see how Agents create and accept
-                            proposals. To get more serious, connect your Ethereum wallet, explore the parcels in your
-                            city of interest that have been minted, create on-chain proposals for them, and see what
-                            happens!
+                            <strong>Build first, propose second.</strong> New designs appear on the map immediately, so
+                            you can edit, park, compare and share them before adding formal terms. Read the
+                            <a href="how-to-use.html" target="_blank">step-by-step guide</a>, or see what works today
+                            and what comes next on the <a href="roadmap.html" target="_blank">roadmap</a>.
                         </p>
                     </div>
                     <hr>
@@ -1483,6 +1467,7 @@
             'js/parcels/activity-listener.js',
             'js/map-core.js',
             'js/user-management.js',
+            'js/site-intro.js',
             'js/sidebar-management.js',
             'js/parcels/parcel-id.js',
             'js/parcels/state.js',
@@ -1905,6 +1890,63 @@
 
     <!-- Vertex-click toolbar for government plan area monitor creation -->
 
+
+    <!-- First-visit explanation of the site's proposal and consent model. -->
+    <div id="site-intro-modal" class="site-intro-overlay" hidden>
+        <section class="site-intro-card" role="dialog" aria-modal="true" aria-labelledby="site-intro-title"
+            aria-describedby="site-intro-lead">
+            <button type="button" class="site-intro-close close-circle-btn close-circle-btn--lg"
+                data-site-intro-close aria-label="Close introduction" title="Close introduction"
+                data-i18n-key="modal.siteIntro.close" data-i18n-attr="aria-label,title">&times;</button>
+
+            <div class="site-intro-visual" aria-hidden="true">
+                <img src="images/site-intro-parcels.webp" alt="" width="1400" height="700">
+                <div class="site-intro-visual-labels">
+                    <span data-i18n-key="modal.siteIntro.before">Existing parcels</span>
+                    <span data-i18n-key="modal.siteIntro.after">Proposed block</span>
+                </div>
+            </div>
+
+            <div class="site-intro-copy">
+                <p class="site-intro-eyebrow" data-i18n-key="modal.siteIntro.eyebrow">Cities change parcel by parcel</p>
+                <h1 id="site-intro-title" data-i18n-key="modal.siteIntro.title">Shape a city people can agree on</h1>
+                <p id="site-intro-lead" class="site-intro-lead" data-i18n-key="modal.siteIntro.lead">
+                    Consensus Builder turns land and development ideas into proposals that the people they affect can
+                    see, compare, support, and accept.
+                </p>
+
+                <ol class="site-intro-steps">
+                    <li>
+                        <span class="site-intro-step-number">1</span>
+                        <span>
+                            <strong data-i18n-key="modal.siteIntro.groundTitle">Start with the real ground</strong>
+                            <small data-i18n-key="modal.siteIntro.groundBody">Explore cadastral parcels, buildings,
+                                streets, and ownership.</small>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="site-intro-step-number">2</span>
+                        <span>
+                            <strong data-i18n-key="modal.siteIntro.proposeTitle">Make change visible</strong>
+                            <small data-i18n-key="modal.siteIntro.proposeBody">Propose, for example, a city block over
+                                those parcels—or add buildings, roads, parks, or new parcel boundaries.</small>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="site-intro-step-number">3</span>
+                        <span>
+                            <strong data-i18n-key="modal.siteIntro.consentTitle">Build consent</strong>
+                            <small data-i18n-key="modal.siteIntro.consentBody">Share the proposal, add support or
+                                funding, and let owners decide.</small>
+                        </span>
+                    </li>
+                </ol>
+
+                <button type="button" class="btn btn-action site-intro-cta" data-site-intro-close
+                    data-i18n-key="modal.siteIntro.cta">Explore the map</button>
+            </div>
+        </section>
+    </div>
 
     <!-- Version History Modal -->
     <div id="version-modal" class="version-modal" aria-hidden="true" tabindex="-1">

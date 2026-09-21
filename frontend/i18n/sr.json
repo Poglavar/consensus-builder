@@ -681,8 +681,8 @@
             "telegramLabel": "Telegram",
             "aboutTitle": "O projektu",
             "aboutParagraph": "Urban Game Theory je tržište za stvarne promene zemljišta: ljudi i agenti predlažu, finansiraju i prognoziraju promene na stvarnim parcelama, dok javni registri potvrđuju šta se zaista dogodilo. Otvorite <a href=\"/hackathon-demo.html\">demonstraciju uživo</a>, pročitajte <a href=\"/deck.html\">prezentaciju</a> ili pogledajte <a href=\"roadmap.html\" target=\"_blank\">plan razvoja</a>.",
-            "instructionsTitle": "Uputstvo",
-            "instructionsParagraph": "Ključni paradigm je <strong>Predlog</strong>. Na ovoj platformi svako može da pravi predloge i da učestvuje u predlozima drugih. Predlozi utiču na parcele i imaju vlasnike; ti vlasnici odlučuju da li će ih prihvatiti.<br><br>Postoji mnogo različitih tipova predloga! Najjednostavniji i najčešći je <strong>Predlog kupovine</strong> koji nudi plaćanje za vlasništvo nad parcelama. Tu su i <strong>Predlozi gradnje</strong> koji predlažu urbane uslove za blokove parcela, <strong>Predlozi puteva</strong> koji predlažu nove puteve ili pruge koje seku parcele (praveći nove blokove parcela), <strong>Predlozi reparcelacije</strong> koji preoblikuju parcele ali zadržavaju vlasničke udele, i još toga.<br><br>Predloge u početku finansira njihov autor, ali ih svako može pojačati slanjem novca, čime raste verovatnoća da ih vlasnici prihvate. Predlozi dolaze u raznim varijantama: mogu biti uslovni, sa istekom, potpuno finansirani ili ne. I javna dobra (parkovi, trgovi, putevi...) i privatni razvoj mogu koristiti ovu infrastrukturu.<br><br>Da vidiš kako to može izgledati, pokreni režim Igre i gledaj kako agenti prave i prihvataju predloge. Za ozbiljniji pristup, poveži svoj Ethereum novčanik, istraži mintovane parcele u gradu koji te zanima, kreiraj on-chain predloge za njih i vidi šta se događa!",
+            "instructionsTitle": "Počni ovde",
+            "instructionsParagraph": "<strong>Nacrtaj promenu, zatim gradi konsenzus.</strong> Završeni dizajn stvara primenjeni lokalni predlog. Pregledaj ga, skloni sa mape, podeli ili napravi izmenjivu varijantu kada želiš da promeniš dizajn ili uslove. Pročitaj <a href=\"kako-koristiti.html\" target=\"_blank\">vodič korak po korak</a> ili pogledaj šta radi danas i šta sledi u <a href=\"roadmap.html\" target=\"_blank\">planu razvoja</a>.",
             "advancedTitle": "Napredne opcije",
             "debugToggle": "Uključi režim za otklanjanje grešaka",
             "wipeDataButton": "Obriši SVE lokalne podatke",
@@ -1211,6 +1211,22 @@
             "title": "Šta je novo",
             "closeLabel": "Zatvori",
             "nextButton": "Dalje"
+        },
+        "siteIntro": {
+            "open": "Kako funkcioniše Consensus Builder",
+            "close": "Zatvori uvod",
+            "before": "Postojeće parcele",
+            "after": "Predloženi blok",
+            "eyebrow": "Grad se menja parcelu po parcelu",
+            "title": "Oblikujte grad oko kog ljudi mogu da se dogovore",
+            "lead": "Consensus Builder pretvara ideje o zemljištu i razvoju u predloge koje ljudi na koje utiču mogu da vide, uporede, podrže i prihvate.",
+            "groundTitle": "Počnite od stvarnog prostora",
+            "groundBody": "Istražite katastarske parcele, zgrade, ulice i vlasništvo.",
+            "proposeTitle": "Učinite promenu vidljivom",
+            "proposeBody": "Predložite, na primer, gradski blok na tim parcelama — ili dodajte zgrade, puteve, parkove ili nove granice parcela.",
+            "consentTitle": "Izgradite saglasnost",
+            "consentBody": "Podelite predlog, dodajte podršku ili sredstva i prepustite odluku vlasnicima.",
+            "cta": "Otvorite mapu"
         },
         "welcome": {
             "kicker": "Urban Game Theory",
