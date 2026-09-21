@@ -21,7 +21,7 @@ describe('hackathon pitch deck page', () => {
         expect(html).toContain('The core loop already runs');
         expect(html).toContain('External verifier and paid recipe-bound oracle facts live.');
         expect(html).toContain('Court SAS → market outcome → USDC payout');
-        expect(html).toContain('Activate V2 and run the first genuinely prospective court market');
+        expect(html).toContain('Settle the first genuinely prospective court market from a later public record');
         expect(html).toContain('The future can mobilize action. It cannot declare itself true.');
         expect(html).toContain('11 MCP tools');
         expect(html).toContain('MCP action surface');

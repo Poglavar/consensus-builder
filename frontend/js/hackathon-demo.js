@@ -143,7 +143,7 @@
                     : 'Court evidence settled a two-sided integration proof',
                 detail: externalProspective
                     ? 'The source record and attestation arrived after trading closed · 0.02 USDC claimed'
-                    : 'Retrospective evidence · 0.01 USDC on each side · permissionless resolution · 0.02 USDC claimed',
+                    : 'Retrospective payout proven · V2 schema and on-chain chronology guard now live · awaiting the first post-close court record',
                 market: external.proofMarket,
                 resolution: external.proofResolution,
                 claim: external.proofClaim || null,
@@ -371,7 +371,7 @@
         const boundary = node(doc, 'section', null, 'hd-flow hd-boundary');
         boundary.append(node(doc, 'span', 'HONEST BOUNDARY', 'hd-eyebrow'));
         boundary.append(node(doc, 'h2', 'One authoritative source is live; broader geography still needs corroboration'));
-        boundary.append(node(doc, 'p', 'The live external market verifies the V1 Croatian court SAS schema and trusted issuer. A V2 source-time guard and reusable Lens evaluator—with thresholds, conflict detection, and challenge windows—are code-ready. V2 still needs schema registration, attester rollout, a program upgrade, and a genuinely later court record; permit, imagery, news and OSM collectors remain future work. Everything shown here uses devnet assets with no monetary value.'));
+        boundary.append(node(doc, 'p', 'The live external market verifies the Croatian court SAS issuer. The V2 schema and source-time guard are now registered and deployed on devnet; the remaining proof is necessarily prospective: open a market first, then wait for a genuinely later public record. The reusable Lens evaluator is code-ready, while permit, imagery, news and OSM collectors remain future work. Everything shown here uses devnet assets with no monetary value.'));
         element.append(boundary);
 
         const readiness = node(doc, 'section', null, 'hd-flow hd-readiness');

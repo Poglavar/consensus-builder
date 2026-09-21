@@ -19,6 +19,7 @@ import {
     buildCourtParcelOperationRecipeV2,
     COURT_ATTESTER,
     COURT_CREDENTIAL,
+    COURT_SCHEMA_V2,
     MARKET_PROGRAM_ID
 } from '../../../backend/oracle/court-parcel-operation.js';
 import {
@@ -66,7 +67,7 @@ function closeTime() {
     return numeric;
 }
 
-function schemaAddress(value) {
+function schemaAddress(value = COURT_SCHEMA_V2) {
     try {
         return new PublicKey(required(value, 'PROSPECTIVE_COURT_SCHEMA'));
     } catch {
@@ -129,7 +130,7 @@ function writeState(state) {
 
 async function openMarket(connection, live) {
     const closesAt = closeTime();
-    const schema = schemaAddress(process.env.PROSPECTIVE_COURT_SCHEMA);
+    const schema = schemaAddress(process.env.PROSPECTIVE_COURT_SCHEMA || COURT_SCHEMA_V2);
     const privateRecipe = {
         parcelUid: required(process.env.PROSPECTIVE_PARCEL_UID, 'PROSPECTIVE_PARCEL_UID'),
         yesOperation: required(process.env.PROSPECTIVE_YES_OPERATION, 'PROSPECTIVE_YES_OPERATION'),

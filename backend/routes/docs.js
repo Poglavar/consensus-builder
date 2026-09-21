@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import { marked } from 'marked';
 import { readX402Config, readX402OracleConfig } from '../utils/x402-payment.js';
 import { EVENT_TYPE as LAND_EVENT_TYPE, RECIPE_ID as LAND_RECIPE_ID } from '../oracle/proposal-lifecycle.js';
-import { COURT_RECIPE_ID, COURT_RECIPE_V2_ID } from '../oracle/court-parcel-operation.js';
+import { COURT_RECIPE_ID, COURT_RECIPE_V2_ID, COURT_SCHEMA_V2 } from '../oracle/court-parcel-operation.js';
 import { classifyExternalMarketChronology } from '../oracle/external-market-chronology.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -296,12 +296,16 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                             })
                         },
                         prospectiveProof: {
-                            status: 'runner_ready',
+                            status: 'awaiting_post_close_evidence',
                             script: 'blockchain/solana/scripts/prospective-external-market.mjs',
                             recipeId: COURT_RECIPE_V2_ID,
-                            recipe: `${base}/oracle/recipes/${COURT_RECIPE_V2_ID}?parcelUid={parcelUid}&yesOperation={yesOperation}&noOperation={noOperation}&closesAt={unixSeconds}&schema={v2SchemaAccount}`,
+                            recipe: `${base}/oracle/recipes/${COURT_RECIPE_V2_ID}?parcelUid={parcelUid}&yesOperation={yesOperation}&noOperation={noOperation}&closesAt={unixSeconds}`,
+                            schema: COURT_SCHEMA_V2,
+                            schemaUrl: `https://explorer.solana.com/address/${COURT_SCHEMA_V2}?cluster=devnet`,
+                            schemaRegistration: '3JqgCCCeM8Duf8mVtYbi5reZQBZvZ1QZPQojTpV9LKDWjsMq8rXLw56c2mhdP3WLraPx1SUednLwqpuwFhhzwQpa',
+                            marketProgramUpgrade: '5rxykVhB775kvWzNvoJTjL2GxgKKkTKBywQcoDwQNEZW3shCjUHTBQsjxjwDtqLKbPpUxds8Rot5qbvcMUwsKfQG',
                             temporalGuard: 'proposal_market requires market close <= sourceObservedAt <= resolution time',
-                            requirement: 'register the V2 SAS schema, upgrade the market program, then issue and settle a post-close attestation'
+                            requirement: 'open a market before its evidence exists, then issue and settle a source-timed post-close attestation'
                         }
                     }
                 },

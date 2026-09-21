@@ -194,7 +194,6 @@ PROSPECTIVE_PARCEL_UID='…' \
 PROSPECTIVE_YES_OPERATION='…' \
 PROSPECTIVE_NO_OPERATION='…' \
 PROSPECTIVE_CLOSES_AT='2026-09-30T18:00:00Z' \
-PROSPECTIVE_COURT_SCHEMA='<CourtParcelOperationV2 SAS account>' \
 PROSPECTIVE_BETTOR_KEYPAIR='…' \
 node blockchain/solana/scripts/prospective-external-market.mjs --open
 ```
@@ -210,8 +209,10 @@ node blockchain/solana/scripts/prospective-external-market.mjs --settle
 
 The runner requires the five-field `CourtParcelOperationV2` schema and refuses settlement unless
 both its committed `sourceObservedAt` and the attestation's first Solana transaction are at or after
-market close. The proposed program upgrade independently enforces
-`market.closesAt <= sourceObservedAt <= resolution time` on-chain. Before a live run, register that
-V2 SAS schema under the existing court credential, upgrade `proposal_market`, and update the
-dedicated court attester to publish the official source timestamp as an `int64` Unix second. These
-operational steps are still pending; the existing live settlement remains a retrospective V1 proof.
+market close. The deployed devnet program independently enforces
+`market.closesAt <= sourceObservedAt <= resolution time` on-chain. The registered V2 schema is
+`G747jAqNr6ZwBiNAdeW1Bc4PWQH7arfvq5cjDXDcSoMG`, and the runner uses it by default. The scraper now
+stores the official source timestamp and the dedicated attester can publish it as an `int64` Unix
+second. The remaining step is necessarily temporal: open a market, then wait for a matching court
+record published after it closes. The existing settled market remains an honest retrospective V1
+integration proof until that later record exists.

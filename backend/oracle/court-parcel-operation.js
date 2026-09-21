@@ -12,6 +12,7 @@ export const COURT_EVENT_TYPE = 'court_parcel_operation';
 export const SAS_PROGRAM_ID = '22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG';
 export const COURT_CREDENTIAL = '6fibS3XSgE7c4XDSFUuArBcmnD8bN26XNpjZTC8bBbcY';
 export const COURT_SCHEMA_V1 = '2SdzCg62opMYbEfE4wcwUWYghA7n8GdAmkCC192FbUy9';
+export const COURT_SCHEMA_V2 = 'G747jAqNr6ZwBiNAdeW1Bc4PWQH7arfvq5cjDXDcSoMG';
 export const COURT_SCHEMA = COURT_SCHEMA_V1;
 export const COURT_ATTESTER = 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ';
 export const MARKET_PROGRAM_ID = 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB';
@@ -113,8 +114,10 @@ export function buildCourtParcelOperationRecipe(input = {}) {
     return buildRecipe({ ...input, schema: COURT_SCHEMA_V1, version: 1 });
 }
 
-export function buildCourtParcelOperationRecipeV2({ schema, ...input } = {}) {
-    return buildRecipe({ ...input, schema: publicKey(schema, 'schema'), version: 2 });
+export function buildCourtParcelOperationRecipeV2({ schema = COURT_SCHEMA_V2, ...input } = {}) {
+    const selected = publicKey(schema, 'schema');
+    if (selected !== COURT_SCHEMA_V2) throw new Error('schema must be the registered CourtParcelOperationV2 schema');
+    return buildRecipe({ ...input, schema: selected, version: 2 });
 }
 
 export function externalMarketAddress(recipeHash) {

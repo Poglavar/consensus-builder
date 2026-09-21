@@ -357,3 +357,7 @@
   hash, YES/NO operation hashes and close time, then lets anyone resolve from a matching unexpired
   court attestation account. Deployed to devnet 2026-09-21 (`66WW…RDeg`); first live two-sided market
   `5wyJ…N8QM` resolved permissionlessly from SAS (`39sN…LETJ`) and paid its winner (`2Ht5…RNzJ`).
+- 2026-09-21: **Prospective V2 trust path is active on devnet.** Court schema `G747…SoMG` appends the
+  official `sourceObservedAt`; `proposal_market` `GDYn…UYDRB` was upgraded in tx `5rxy…KfQG` to enforce
+  `market close <= source time <= resolution`. The honest remaining proof is a later matching record,
+  not a synthetic attestation or a relabelled retrospective market.

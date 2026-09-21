@@ -28,7 +28,7 @@ describe('hackathon demo evidence model', () => {
                     recipeHash: 'aa'.repeat(32), yesStakeAtomic: '10000',
                     chronology: { classification: 'retrospective_integration', prospective: false }
                 },
-                prospectiveProof: { status: 'runner_ready' }
+                prospectiveProof: { status: 'awaiting_post_close_evidence' }
             }
         }
     };
@@ -102,7 +102,7 @@ describe('hackathon demo evidence model', () => {
         expect(model.externalMarket).toEqual({
             tone: 'success',
             label: 'Court evidence settled a two-sided integration proof',
-            detail: expect.stringContaining('Retrospective evidence'),
+            detail: expect.stringContaining('V2 schema and on-chain chronology guard now live'),
             market: 'external-market',
             resolution: 'resolution-transaction',
             claim: 'claim-transaction',
@@ -112,7 +112,7 @@ describe('hackathon demo evidence model', () => {
             },
             prospective: false,
             chronology: { classification: 'retrospective_integration', prospective: false },
-            nextProof: { status: 'runner_ready' }
+            nextProof: { status: 'awaiting_post_close_evidence' }
         });
     });
 

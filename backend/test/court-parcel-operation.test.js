@@ -6,6 +6,7 @@ import {
     COURT_ATTESTER,
     COURT_CREDENTIAL,
     COURT_SCHEMA,
+    COURT_SCHEMA_V2,
     externalMarketAddress,
     MARKET_PROGRAM_ID,
     SAS_PROGRAM_ID
@@ -55,14 +56,13 @@ describe('court parcel operation recipe', () => {
     });
 
     it('builds a V2 recipe whose source time is enforced against the market clock', () => {
-        const schema = '11111111111111111111111111111111';
-        const recipe = buildCourtParcelOperationRecipeV2({ ...input, schema });
+        const recipe = buildCourtParcelOperationRecipeV2(input);
         expect(recipe).toMatchObject({
             id: 'court-parcel-operation-v2',
             version: 2,
             verification: {
                 kind: 'sas_court_parcel_operation_v2',
-                schema,
+                schema: COURT_SCHEMA_V2,
                 payloadFields: ['parcelUid', 'decisionUuid', 'operation', 'decisionLink', 'sourceObservedAt'],
                 temporalIntegrity: {
                     sourceObservedAtField: 'sourceObservedAt',
@@ -80,6 +80,7 @@ describe('court parcel operation recipe', () => {
         expect(() => buildCourtParcelOperationRecipe({ ...input, parcelUid: '' })).toThrow(/parcelUid is required/);
         expect(() => buildCourtParcelOperationRecipe({ ...input, closesAt: 'tomorrow' })).toThrow(/Unix timestamp/);
         expect(() => buildCourtParcelOperationRecipeV2({ ...input, schema: 'nope' })).toThrow(/Solana public key/);
+        expect(() => buildCourtParcelOperationRecipeV2({ ...input, schema: '11111111111111111111111111111111' })).toThrow(/registered/);
         expect(() => externalMarketAddress('sha256:nope')).toThrow(/32 bytes/);
     });
 });
