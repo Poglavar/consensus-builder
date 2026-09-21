@@ -32,6 +32,13 @@ function keyOf(byte) {
 const PROPOSAL = keyOf(7);
 const STAKE_MINT = keyOf(11);
 const WALLET = keyOf(23);
+const CREDENTIAL = keyOf(29);
+const SCHEMA = keyOf(31);
+const ATTESTATION = keyOf(37);
+const RECIPE_HASH = '11'.repeat(32);
+const SUBJECT_HASH = '22'.repeat(32);
+const YES_HASH = '33'.repeat(32);
+const NO_HASH = '44'.repeat(32);
 
 function idlInstruction(name) {
     const found = IDL.instructions.find(ix => ix.name === name);
@@ -69,13 +76,13 @@ describe('discriminators', () => {
     }
 
     it('matches sha256("global:<name>") for every instruction', () => {
-        for (const name of ['create_market', 'stake', 'resolve', 'claim']) {
+        for (const name of ['create_market', 'create_external_market', 'stake', 'stake_external', 'resolve', 'resolve_external', 'claim', 'claim_external']) {
             expect(bytesOf(market.IX_DISCRIMINATORS[name]), name).toEqual(anchorDiscriminator('global', name));
         }
     });
 
     it('matches sha256("account:<Name>") for every account', () => {
-        for (const name of ['Market', 'Position']) {
+        for (const name of ['ExternalMarket', 'Market', 'Position']) {
             expect(bytesOf(market.ACCOUNT_DISCRIMINATORS[name]), name).toEqual(anchorDiscriminator('account', name));
         }
     });
@@ -112,6 +119,16 @@ describe('PDA derivation', () => {
 
     it('accepts a PublicKey instance as well as a base58 string', () => {
         expect(market.getMarketPda(new PublicKey(PROPOSAL))[0].toBase58()).toBe(market.getMarketPda(PROPOSAL)[0].toBase58());
+    });
+
+    it('derives an external market solely from ["external_market", recipeHash]', () => {
+        const [pda, bump] = market.getExternalMarketPda(`sha256:${RECIPE_HASH}`);
+        const [expected, expectedBump] = PublicKey.findProgramAddressSync(
+            [Buffer.from('external_market'), Buffer.from(RECIPE_HASH, 'hex')],
+            new PublicKey(market.constants.PROGRAM_ID)
+        );
+        expect([pda.toBase58(), bump]).toEqual([expected.toBase58(), expectedBump]);
+        expect(() => market.getExternalMarketPda('not-a-hash')).toThrow(/32-byte hash/);
     });
 
     it('derives the position PDA from ["position", market, owner, [side]]', () => {
@@ -267,6 +284,75 @@ describe('buildStakeIx', () => {
     });
 });
 
+describe('external market instruction builders', () => {
+    const create = () => market.buildCreateExternalMarketIx({
+        recipeHash: `sha256:${RECIPE_HASH}`,
+        subjectHash: SUBJECT_HASH,
+        yesValueHash: YES_HASH,
+        noValueHash: NO_HASH,
+        trustedAttester: WALLET,
+        closesAt: 1728000000n,
+        stakeMint: STAKE_MINT,
+        credential: CREDENTIAL,
+        schema: SCHEMA,
+        creator: WALLET
+    });
+
+    it('builds create_external_market in IDL account and argument order', () => {
+        const ix = create();
+        expect(actualFlags(ix, idlFlags('create_external_market').map(a => a.name)))
+            .toEqual(idlFlags('create_external_market'));
+        const [marketPda] = market.getExternalMarketPda(RECIPE_HASH);
+        expect(ix.keys.map(key => key.pubkey.toBase58())).toEqual([
+            marketPda.toBase58(), STAKE_MINT, market.getVaultAddress(marketPda, STAKE_MINT).toBase58(),
+            CREDENTIAL, SCHEMA, WALLET, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID,
+            market.constants.SYSTEM_PROGRAM_ID
+        ]);
+        const data = bytesOf(ix.data);
+        expect(data).toHaveLength(8 + 32 * 5 + 8);
+        expect(data.slice(0, 8)).toEqual(bytesOf(market.IX_DISCRIMINATORS.create_external_market));
+        expect(data.slice(8, 40)).toEqual(bytesOf(Buffer.from(RECIPE_HASH, 'hex')));
+        expect(data.slice(40, 72)).toEqual(bytesOf(Buffer.from(SUBJECT_HASH, 'hex')));
+        expect(data.slice(72, 104)).toEqual(bytesOf(Buffer.from(YES_HASH, 'hex')));
+        expect(data.slice(104, 136)).toEqual(bytesOf(Buffer.from(NO_HASH, 'hex')));
+        expect(data.slice(136, 168)).toEqual(bytesOf(new PublicKey(WALLET).toBytes()));
+        expect(new DataView(ix.data.buffer, ix.data.byteOffset).getBigInt64(168, true)).toBe(1728000000n);
+    });
+
+    it('builds stake, resolve and claim against the external PDA', () => {
+        const [marketPda] = market.getExternalMarketPda(RECIPE_HASH);
+        const stake = market.buildStakeExternalIx({
+            recipeHash: RECIPE_HASH, stakeMint: STAKE_MINT, staker: WALLET, side: SIDE_YES, amount: 50n
+        });
+        expect(actualFlags(stake, idlFlags('stake_external').map(a => a.name))).toEqual(idlFlags('stake_external'));
+        expect(stake.keys[0].pubkey.toBase58()).toBe(marketPda.toBase58());
+        expect(bytesOf(stake.data).slice(0, 8)).toEqual(bytesOf(market.IX_DISCRIMINATORS.stake_external));
+
+        const resolve = market.buildResolveExternalIx({ recipeHash: RECIPE_HASH, attestation: ATTESTATION, schema: SCHEMA });
+        expect(actualFlags(resolve, idlFlags('resolve_external').map(a => a.name))).toEqual(idlFlags('resolve_external'));
+        expect(resolve.keys.map(key => key.pubkey.toBase58())).toEqual([marketPda.toBase58(), ATTESTATION, SCHEMA]);
+
+        const claim = market.buildClaimExternalIx({
+            recipeHash: RECIPE_HASH, stakeMint: STAKE_MINT, claimer: WALLET, side: SIDE_YES
+        });
+        expect(actualFlags(claim, idlFlags('claim_external').map(a => a.name))).toEqual(idlFlags('claim_external'));
+        expect(claim.keys[0].pubkey.toBase58()).toBe(marketPda.toBase58());
+    });
+
+    it('rejects malformed commitments and out-of-range timestamps', () => {
+        expect(() => market.buildCreateExternalMarketIx({
+            recipeHash: '00', subjectHash: SUBJECT_HASH, yesValueHash: YES_HASH, noValueHash: NO_HASH,
+            trustedAttester: WALLET, closesAt: 1, stakeMint: STAKE_MINT,
+            credential: CREDENTIAL, schema: SCHEMA, creator: WALLET
+        })).toThrow(/32-byte hash/);
+        expect(() => market.buildCreateExternalMarketIx({
+            recipeHash: RECIPE_HASH, subjectHash: SUBJECT_HASH, yesValueHash: YES_HASH, noValueHash: NO_HASH,
+            trustedAttester: WALLET, closesAt: 1n << 63n, stakeMint: STAKE_MINT,
+            credential: CREDENTIAL, schema: SCHEMA, creator: WALLET
+        })).toThrow(/i64/);
+    });
+});
+
 describe('buildResolveIx', () => {
     it('carries market(w) and proposal in IDL order with no args', () => {
         const ix = market.buildResolveIx({ proposal: PROPOSAL });
@@ -331,6 +417,53 @@ function encodePositionAccount({ marketPda, owner, side, amount, claimed, bump, 
     return out;
 }
 
+function encodeExternalMarketAccount(over = {}) {
+    const value = {
+        stakeMint: STAKE_MINT,
+        vault: WALLET,
+        recipeHash: RECIPE_HASH,
+        subjectHash: SUBJECT_HASH,
+        yesValueHash: YES_HASH,
+        noValueHash: NO_HASH,
+        credential: CREDENTIAL,
+        schema: SCHEMA,
+        trustedAttester: WALLET,
+        yesPool: 25n,
+        noPool: 75n,
+        closesAt: 1728000000n,
+        resolved: true,
+        outcome: SIDE_YES,
+        evidence: ATTESTATION,
+        evidenceHash: '55'.repeat(32),
+        resolvedAt: 1728000123n,
+        bump: 252,
+        ...over
+    };
+    const out = new Uint8Array(market.EXTERNAL_MARKET_SIZE);
+    out.set(Uint8Array.from(value.discriminator || market.ACCOUNT_DISCRIMINATORS.ExternalMarket), 0);
+    let offset = 8;
+    for (const key of [value.stakeMint, value.vault]) {
+        out.set(new PublicKey(key).toBytes(), offset); offset += 32;
+    }
+    for (const hex of [value.recipeHash, value.subjectHash, value.yesValueHash, value.noValueHash]) {
+        out.set(Buffer.from(hex, 'hex'), offset); offset += 32;
+    }
+    for (const key of [value.credential, value.schema, value.trustedAttester]) {
+        out.set(new PublicKey(key).toBytes(), offset); offset += 32;
+    }
+    const view = new DataView(out.buffer);
+    view.setBigUint64(offset, value.yesPool, true); offset += 8;
+    view.setBigUint64(offset, value.noPool, true); offset += 8;
+    view.setBigInt64(offset, value.closesAt, true); offset += 8;
+    out[offset++] = value.resolved ? 1 : 0;
+    out[offset++] = value.outcome;
+    out.set(new PublicKey(value.evidence).toBytes(), offset); offset += 32;
+    out.set(Buffer.from(value.evidenceHash, 'hex'), offset); offset += 32;
+    view.setBigInt64(offset, value.resolvedAt, true); offset += 8;
+    out[offset] = value.bump;
+    return out;
+}
+
 describe('decodeMarket', () => {
     const fixture = {
         proposal: PROPOSAL, stakeMint: STAKE_MINT, vault: WALLET,
@@ -360,6 +493,39 @@ describe('decodeMarket', () => {
 
     it('rejects a truncated account', () => {
         expect(() => market.decodeMarket(encodeMarketAccount(fixture).slice(0, market.MARKET_SIZE - 1))).toThrow(/expected at least/);
+    });
+});
+
+describe('decodeExternalMarket', () => {
+    it('pins the full account size and round-trips all settlement commitments', () => {
+        expect(market.EXTERNAL_MARKET_SIZE).toBe(395);
+        expect(market.decodeExternalMarket(encodeExternalMarketAccount())).toEqual({
+            stakeMint: STAKE_MINT,
+            vault: WALLET,
+            recipeHash: RECIPE_HASH,
+            subjectHash: SUBJECT_HASH,
+            yesValueHash: YES_HASH,
+            noValueHash: NO_HASH,
+            credential: CREDENTIAL,
+            schema: SCHEMA,
+            trustedAttester: WALLET,
+            yesPool: 25n,
+            noPool: 75n,
+            closesAt: 1728000000n,
+            resolved: true,
+            outcome: SIDE_YES,
+            evidence: ATTESTATION,
+            evidenceHash: '55'.repeat(32),
+            resolvedAt: 1728000123n,
+            bump: 252
+        });
+    });
+
+    it('rejects a legacy discriminator and truncated data', () => {
+        expect(() => market.decodeExternalMarket(encodeExternalMarketAccount({
+            discriminator: market.ACCOUNT_DISCRIMINATORS.Market
+        }))).toThrow(/discriminator/);
+        expect(() => market.decodeExternalMarket(encodeExternalMarketAccount().slice(0, 394))).toThrow(/expected at least/);
     });
 });
 

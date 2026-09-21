@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://api.urbangametheory.xyz/oracle/recipe.schema.json",
+  "title": "Urban Game Theory resolution recipe",
+  "description": "A content-addressed declaration of which evidence and attesters resolve a subject-specific question.",
+  "type": "object",
+  "required": [
+    "id",
+    "version",
+    "question",
+    "eventType",
+    "subject",
+    "trustedAttesters",
+    "outcomes",
+    "verification",
+    "hash"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*-v[1-9][0-9]*$"
+    },
+    "version": { "type": "integer", "minimum": 1 },
+    "question": { "type": "string", "minLength": 1 },
+    "eventType": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "subject": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": true
+    },
+    "trustedAttesters": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["kind", "address"],
+        "properties": {
+          "kind": { "type": "string", "minLength": 1 },
+          "address": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": true
+      }
+    },
+    "outcomes": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "type": "string", "minLength": 1 }
+    },
+    "verification": {
+      "type": "object",
+      "required": ["kind", "permissionless"],
+      "properties": {
+        "kind": { "type": "string", "minLength": 1 },
+        "permissionless": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

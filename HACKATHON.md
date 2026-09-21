@@ -26,6 +26,14 @@ git diff --stat 3ee1855...colosseum-worlds-fair
 git diff 3ee1855...colosseum-worlds-fair
 ```
 
+## Documentation and reproducibility
+
+- [`readme.md`](readme.md) — product thesis, live judge links, repository map, and quick verification
+- [`docs/architecture.md`](docs/architecture.md) — concise current architecture and deployment boundary
+- [`docs/hackathon-build.md`](docs/hackathon-build.md) — checkout, install, test, local-view, and optional Solana build instructions
+- [`docs/protocol.md`](docs/protocol.md) — program IDs, IDLs and schemas, evidence adapter contract, and security/trust assumptions
+- [`LICENSE`](LICENSE) — Apache License 2.0
+
 ## Built for the hackathon
 
 1. **Agent proposal market** — a Solana parimutuel market program, client, IDL, and localnet tests.
@@ -106,9 +114,26 @@ git diff 3ee1855...colosseum-worlds-fair
     that does not touch public proposals or on-chain records.
 21. **Privacy-preserving public-record oracle bridge** — the public API reports aggregate health for
     the existing Croatian court oracle and links its public Solana Attestation Service schema without
-    republishing decision identifiers, parties, quotes, or parcel identifiers. The Demo Center keeps
-    this external evidence feed separate from the current ProposalNFT lifecycle resolver and labels
-    recipe-bound external resolution as the remaining protocol gap.
+    republishing decision identifiers, parties, quotes, or parcel identifiers.
+22. **Recipe-bound external resolver** — a new `ExternalMarket` account commits the recipe hash,
+    SAS credential and schema, trusted issuer, parcel hash, YES/NO operation hashes, and close time
+    before trading. After close, anyone can submit the matching SAS account; the program parses the
+    public payload, derives the outcome, and records the evidence address and byte hash. The legacy
+    deployed market layout is unchanged. Source, IDL, browser codec, public recipe endpoint, and
+    parser/contract tests are complete. The compatible upgrade and first economic lifecycle are live
+    on devnet.
+
+### Live external-market proof
+
+- Program upgrade: [`66WW…RDeg`](https://explorer.solana.com/tx/66WWKcHj7x6FXmtoKhkBP1oQobJZNq8YJP9Brx5dFgSmMuLQ1hGpNWgGdwwkrFJuUfyJE7QJRVZx1gZ7ouWGRDeg?cluster=devnet)
+- Recipe-bound market: [`5wyJ…N8QM`](https://explorer.solana.com/address/5wyJ7XjbnoPUaDgaHAttdhdS38VmHf1p3jGwwVUeN8QM?cluster=devnet)
+- Two-sided stakes: [YES](https://explorer.solana.com/tx/fvSPdGu3DTpJ9MNpQX5iFw8MyjFkqmrdKjoSn9LfbXEYtAPjJTQT7vLcc1HDvicEZTcDwsw55MG7KKCaSUg7bnE?cluster=devnet) and [NO](https://explorer.solana.com/tx/4nVnKJAFnPfqk6fPqa1cK6GQVQxSzZFd9tmWUAaZE79ZVRKZqyfWhawPy1SenkfctLpormsKXKY2GJLSQLiQp7M4?cluster=devnet), 0.01 devnet USDC each
+- Permissionless SAS resolution: [`39sN…LETJ`](https://explorer.solana.com/tx/39sN9w1Pj75Hp7vjxQzaNQ89uRxSsTjFFoE4GCPfWXMU7v1koLEUtV6odzUfQcxuZJNWwXhs1UWKswSMRQbdLETJ?cluster=devnet)
+- Winning 0.02 USDC claim: [`2Ht5…RNzJ`](https://explorer.solana.com/tx/2Ht5ZdVHZuFdEu5PkhkQxqNjoPQSBM9jeGaWKPiWzpLjbWtahP5bhKh3offRcvKDVN6JBFMy6piozWnEExy3RNzJ?cluster=devnet)
+
+The proof publishes commitments and transaction addresses, not the decoded parcel, decision, or
+legal text. The market stores the complete SAS account hash
+`6a2dcae7…b04eac789`, so the submitted evidence remains independently verifiable.
 
 ## Pre-existing platform foundations
 
@@ -128,8 +153,8 @@ states come from public evidence rather than a scripted success screen.
 4. Donate or pledge devnet USDC, inspect the distinct escrow/commitment states, and find the human
    action beside algorithmic and LLM actions in the same Activity explorer.
 5. Resolve the lifecycle by releasing an executed proposal or refunding a cancelled/expired one.
-6. Verify the court oracle's aggregate health and public SAS schema, then open the market's separate
-   `proposal-lifecycle-v1` recipe and matching source-hashed on-chain lifecycle event.
+6. Verify the court oracle's aggregate health and public SAS schema, then open the live external
+   market, its two-sided stakes, permissionless resolution, and winning claim linked above.
 
 If a live dependency is slow, use the Demo Center's retry button. The resettable fallback is the
 map's **Game → Enable game mode → New Game** flow; it clears browser-local simulation state only.

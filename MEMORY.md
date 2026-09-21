@@ -352,3 +352,8 @@
 - 2026-09-20: **Hackathon product thesis.** Urban Game Theory is a market for real-world land change: humans and agents propose, fund and forecast changes to real parcels, while public records resolve what happened; court-derived public APIs stay aggregate-only unless a deliberate privacy review approves parcel-level disclosure.
   Donations move USDC into refundable escrow now; pledges remain revocable and unfunded until the
   pledger chooses to fulfil after execution.
+- 2026-09-21: **External markets verify SAS directly.** Keep deployed `Market` accounts unchanged;
+  add a recipe-hash-derived `ExternalMarket` that commits the SAS credential/schema/issuer, parcel
+  hash, YES/NO operation hashes and close time, then lets anyone resolve from a matching unexpired
+  court attestation account. Deployed to devnet 2026-09-21 (`66WW…RDeg`); first live two-sided market
+  `5wyJ…N8QM` resolved permissionlessly from SAS (`39sN…LETJ`) and paid its winner (`2Ht5…RNzJ`).

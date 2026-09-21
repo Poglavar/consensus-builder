@@ -8,7 +8,13 @@ describe('hackathon demo evidence model', () => {
     const docs = {
         x402: { enabled: true, priceProposal: '$0.05', network: 'solana:devnet', facilitatorUrl: 'https://facilitator' },
         endpoints: { submit: 'https://api.example/agent/proposals' },
-        market: { programId: 'market-program' }, proposalSupport: { programId: 'support-program' }
+        market: { programId: 'market-program' }, proposalSupport: { programId: 'support-program' },
+        oracle: {
+            externalMarket: {
+                status: 'live_devnet', proofMarket: 'external-market',
+                proofResolution: 'resolution-transaction', proofClaim: 'claim-transaction'
+            }
+        }
     };
 
     it('marks a recent completed deterministic proposer as fresh evidence', () => {
@@ -49,6 +55,18 @@ describe('hackathon demo evidence model', () => {
             detail: expect.stringContaining('privacy-preserving aggregate')
         });
         expect(model.oracle).toMatchObject({ tone: 'waiting', event: null });
+    });
+
+    it('surfaces the live external market lifecycle from public agent metadata', () => {
+        const model = demo.buildDemoModel({ docs });
+        expect(model.externalMarket).toEqual({
+            tone: 'success',
+            label: 'Court evidence settled a two-sided market',
+            detail: expect.stringContaining('0.02 USDC claimed'),
+            market: 'external-market',
+            resolution: 'resolution-transaction',
+            claim: 'claim-transaction'
+        });
     });
 
     it('does not relabel an LLM run as algorithmic evidence', () => {

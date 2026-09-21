@@ -6,6 +6,7 @@
 // parcel_nft accounts, so this crate stays on the workspace's single anchor-lang version.
 
 use anchor_lang::prelude::*;
+use anchor_lang::solana_program::hash::hash;
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
 
@@ -14,6 +15,11 @@ declare_id!("GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB");
 /// The proposal_nft program whose Proposal accounts markets are opened on (same id on localnet
 /// and devnet, see Anchor.toml).
 pub const PROPOSAL_NFT_PROGRAM_ID: Pubkey = pubkey!("3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg");
+
+/// Solana Attestation Service program used by the court oracle on devnet. External markets do not
+/// trust an API response: they parse an account owned by this program and pin its credential,
+/// schema, issuer, parcel and outcome value against commitments made before staking starts.
+pub const SAS_PROGRAM_ID: Pubkey = pubkey!("22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG");
 
 /// Account discriminator of proposal_nft::Proposal (sha256("account:Proposal")[..8], as in the IDL).
 pub const PROPOSAL_DISCRIMINATOR: [u8; 8] = [26, 94, 189, 187, 116, 136, 53, 33];
@@ -27,7 +33,12 @@ pub const SIDE_NO: u8 = 0;
 pub const SIDE_YES: u8 = 1;
 
 pub const MARKET_SEED: &[u8] = b"market";
+pub const EXTERNAL_MARKET_SEED: &[u8] = b"external_market";
 pub const POSITION_SEED: &[u8] = b"position";
+
+pub const SAS_CREDENTIAL_DISCRIMINATOR: u8 = 0;
+pub const SAS_SCHEMA_DISCRIMINATOR: u8 = 1;
+pub const SAS_ATTESTATION_DISCRIMINATOR: u8 = 2;
 
 #[program]
 pub mod proposal_market {
@@ -141,6 +152,155 @@ pub mod proposal_market {
         )?;
         Ok(())
     }
+
+    /// Open a market whose resolution rule is committed before trading. The recipe document lives
+    /// off-chain, but its sha256 digest and every security-sensitive input are stored on-chain.
+    /// `subject_hash` is sha256(parcelUid); the outcome hashes are sha256(operation) values from the
+    /// court oracle's SAS schema.
+    pub fn create_external_market(
+        ctx: Context<CreateExternalMarket>,
+        recipe_hash: [u8; 32],
+        subject_hash: [u8; 32],
+        yes_value_hash: [u8; 32],
+        no_value_hash: [u8; 32],
+        trusted_attester: Pubkey,
+        closes_at: i64,
+    ) -> Result<()> {
+        require!(recipe_hash != [0; 32], MarketError::EmptyCommitment);
+        require!(subject_hash != [0; 32], MarketError::EmptyCommitment);
+        require!(yes_value_hash != no_value_hash, MarketError::AmbiguousOutcomes);
+        require!(closes_at > Clock::get()?.unix_timestamp, MarketError::InvalidCloseTime);
+        validate_sas_schema(&ctx.accounts.credential, &ctx.accounts.schema)?;
+
+        let market = &mut ctx.accounts.market;
+        market.stake_mint = ctx.accounts.stake_mint.key();
+        market.vault = ctx.accounts.vault.key();
+        market.recipe_hash = recipe_hash;
+        market.subject_hash = subject_hash;
+        market.yes_value_hash = yes_value_hash;
+        market.no_value_hash = no_value_hash;
+        market.credential = ctx.accounts.credential.key();
+        market.schema = ctx.accounts.schema.key();
+        market.trusted_attester = trusted_attester;
+        market.yes_pool = 0;
+        market.no_pool = 0;
+        market.closes_at = closes_at;
+        market.resolved = false;
+        market.outcome = SIDE_NO;
+        market.evidence = Pubkey::default();
+        market.evidence_hash = [0; 32];
+        market.resolved_at = 0;
+        market.bump = ctx.bumps.market;
+        Ok(())
+    }
+
+    /// Stake on a recipe-bound market. Trading closes before evidence can settle the outcome, so a
+    /// transaction cannot observe the evidence and then place a risk-free stake in the same slot.
+    pub fn stake_external(ctx: Context<StakeExternal>, side: u8, amount: u64) -> Result<()> {
+        require!(side == SIDE_YES || side == SIDE_NO, MarketError::InvalidSide);
+        require!(amount > 0, MarketError::ZeroAmount);
+        require!(!ctx.accounts.market.resolved, MarketError::MarketResolved);
+        require!(Clock::get()?.unix_timestamp < ctx.accounts.market.closes_at, MarketError::MarketClosed);
+
+        token::transfer(
+            CpiContext::new(
+                ctx.accounts.token_program.to_account_info(),
+                Transfer {
+                    from: ctx.accounts.staker_token_account.to_account_info(),
+                    to: ctx.accounts.vault.to_account_info(),
+                    authority: ctx.accounts.staker.to_account_info(),
+                },
+            ),
+            amount,
+        )?;
+
+        let market_key = ctx.accounts.market.key();
+        let position = &mut ctx.accounts.position;
+        if position.amount == 0 {
+            position.market = market_key;
+            position.owner = ctx.accounts.staker.key();
+            position.side = side;
+            position.claimed = false;
+            position.bump = ctx.bumps.position;
+        }
+        position.amount = position.amount.checked_add(amount).ok_or(MarketError::MathOverflow)?;
+
+        let market = &mut ctx.accounts.market;
+        if side == SIDE_YES {
+            market.yes_pool = market.yes_pool.checked_add(amount).ok_or(MarketError::MathOverflow)?;
+        } else {
+            market.no_pool = market.no_pool.checked_add(amount).ok_or(MarketError::MathOverflow)?;
+        }
+        Ok(())
+    }
+
+    /// Permissionless resolution from a real SAS account. The outcome is derived from the
+    /// attestation payload rather than accepted as a caller argument.
+    pub fn resolve_external(ctx: Context<ResolveExternal>) -> Result<()> {
+        let market = &mut ctx.accounts.market;
+        require!(!market.resolved, MarketError::MarketResolved);
+        let now = Clock::get()?.unix_timestamp;
+        require!(now >= market.closes_at, MarketError::MarketStillOpen);
+
+        require_keys_eq!(ctx.accounts.schema.key(), market.schema, MarketError::WrongEvidenceSchema);
+        validate_sas_schema_data(&ctx.accounts.schema, &market.credential)?;
+        let evidence = read_sas_court_evidence(&ctx.accounts.attestation)?;
+        require_keys_eq!(evidence.credential, market.credential, MarketError::WrongEvidenceCredential);
+        require_keys_eq!(evidence.schema, market.schema, MarketError::WrongEvidenceSchema);
+        require_keys_eq!(evidence.authority, market.trusted_attester, MarketError::UntrustedAttester);
+        require!(evidence.expiry > now, MarketError::ExpiredEvidence);
+        require!(evidence.subject_hash == market.subject_hash, MarketError::WrongEvidenceSubject);
+
+        let outcome = if evidence.value_hash == market.yes_value_hash {
+            SIDE_YES
+        } else if evidence.value_hash == market.no_value_hash {
+            SIDE_NO
+        } else {
+            return err!(MarketError::UnsupportedEvidenceValue);
+        };
+
+        market.resolved = true;
+        market.outcome = outcome;
+        market.evidence = ctx.accounts.attestation.key();
+        market.evidence_hash = evidence.account_hash;
+        market.resolved_at = now;
+
+        emit!(ExternalMarketResolved {
+            market: market.key(),
+            recipe_hash: market.recipe_hash,
+            evidence: market.evidence,
+            evidence_hash: market.evidence_hash,
+            outcome,
+            resolved_at: now,
+        });
+        Ok(())
+    }
+
+    pub fn claim_external(ctx: Context<ClaimExternal>) -> Result<()> {
+        let market = &ctx.accounts.market;
+        require!(market.resolved, MarketError::MarketNotResolved);
+        require!(!ctx.accounts.position.claimed, MarketError::AlreadyClaimed);
+
+        let position = &ctx.accounts.position;
+        let payout = payout_amount(position.side, position.amount, market.yes_pool, market.no_pool, market.outcome)?;
+        require!(payout > 0, MarketError::NothingToClaim);
+        ctx.accounts.position.claimed = true;
+
+        let seeds: &[&[u8]] = &[EXTERNAL_MARKET_SEED, market.recipe_hash.as_ref(), &[market.bump]];
+        token::transfer(
+            CpiContext::new_with_signer(
+                ctx.accounts.token_program.to_account_info(),
+                Transfer {
+                    from: ctx.accounts.vault.to_account_info(),
+                    to: ctx.accounts.claimer_token_account.to_account_info(),
+                    authority: ctx.accounts.market.to_account_info(),
+                },
+                &[seeds],
+            ),
+            payout,
+        )?;
+        Ok(())
+    }
 }
 
 /// Parimutuel payout, in u128 so `amount * total` cannot overflow. Floors, so the sum of all
@@ -190,6 +350,100 @@ fn read_proposal_status(proposal: &AccountInfo, expected: Option<&Pubkey>) -> Re
     Ok(head.status)
 }
 
+fn validate_sas_schema(credential: &AccountInfo, schema: &AccountInfo) -> Result<()> {
+    require_keys_eq!(*credential.owner, SAS_PROGRAM_ID, MarketError::InvalidSasAccount);
+    let credential_data = credential.try_borrow_data()?;
+    require!(credential_data.first() == Some(&SAS_CREDENTIAL_DISCRIMINATOR), MarketError::InvalidSasAccount);
+    validate_sas_schema_data(schema, &credential.key())
+}
+
+fn validate_sas_schema_data(schema: &AccountInfo, expected_credential: &Pubkey) -> Result<()> {
+    require_keys_eq!(*schema.owner, SAS_PROGRAM_ID, MarketError::InvalidSasAccount);
+    let schema_data = schema.try_borrow_data()?;
+    validate_sas_schema_bytes(&schema_data, expected_credential)
+}
+
+fn validate_sas_schema_bytes(schema_data: &[u8], expected_credential: &Pubkey) -> Result<()> {
+    require!(schema_data.len() >= 33 && schema_data[0] == SAS_SCHEMA_DISCRIMINATOR, MarketError::InvalidSasAccount);
+    let embedded_credential = Pubkey::new_from_array(
+        schema_data[1..33].try_into().map_err(|_| error!(MarketError::InvalidSasAccount))?
+    );
+    require_keys_eq!(embedded_credential, *expected_credential, MarketError::WrongEvidenceCredential);
+    // Schema layout: discriminator, credential, then four u32-sized byte vectors, isPaused, version.
+    let mut offset = 33usize;
+    for _ in 0..4 {
+        read_borsh_string(&schema_data, &mut offset).map_err(|_| error!(MarketError::InvalidSasAccount))?;
+    }
+    require!(offset + 2 <= schema_data.len(), MarketError::InvalidSasAccount);
+    require!(schema_data[offset] == 0, MarketError::SchemaPaused);
+    Ok(())
+}
+
+struct SasCourtEvidence {
+    credential: Pubkey,
+    schema: Pubkey,
+    authority: Pubkey,
+    expiry: i64,
+    subject_hash: [u8; 32],
+    value_hash: [u8; 32],
+    account_hash: [u8; 32],
+}
+
+fn read_sas_court_evidence(attestation: &AccountInfo) -> Result<SasCourtEvidence> {
+    require_keys_eq!(*attestation.owner, SAS_PROGRAM_ID, MarketError::InvalidSasAccount);
+    let data = attestation.try_borrow_data()?;
+    parse_sas_court_evidence(&data)
+}
+
+fn parse_sas_court_evidence(data: &[u8]) -> Result<SasCourtEvidence> {
+    // discriminator + nonce + credential + schema + data length + authority + expiry
+    require!(data.len() >= 141 && data[0] == SAS_ATTESTATION_DISCRIMINATOR, MarketError::InvalidSasAccount);
+    let credential = Pubkey::new_from_array(data[33..65].try_into().map_err(|_| error!(MarketError::InvalidSasAccount))?);
+    let schema = Pubkey::new_from_array(data[65..97].try_into().map_err(|_| error!(MarketError::InvalidSasAccount))?);
+    let payload_len = u32::from_le_bytes(data[97..101].try_into().map_err(|_| error!(MarketError::InvalidSasAccount))?) as usize;
+    let payload_end = 101usize.checked_add(payload_len).ok_or(MarketError::InvalidSasAccount)?;
+    let record_end = payload_end.checked_add(40).ok_or(MarketError::InvalidSasAccount)?;
+    require!(record_end <= data.len(), MarketError::InvalidSasAccount);
+    let authority = Pubkey::new_from_array(
+        data[payload_end..payload_end + 32].try_into().map_err(|_| error!(MarketError::InvalidSasAccount))?
+    );
+    let expiry = i64::from_le_bytes(
+        data[payload_end + 32..record_end].try_into().map_err(|_| error!(MarketError::InvalidSasAccount))?
+    );
+
+    // CourtParcelOperationV1: string parcelUid, string decisionUuid, string operation,
+    // string decisionLink. Only the committed subject and outcome value affect resolution.
+    let payload = &data[101..payload_end];
+    let mut offset = 0usize;
+    let parcel_uid = read_borsh_string(payload, &mut offset)?;
+    let _decision_uuid = read_borsh_string(payload, &mut offset)?;
+    let operation = read_borsh_string(payload, &mut offset)?;
+    let _decision_link = read_borsh_string(payload, &mut offset)?;
+    require!(offset == payload.len(), MarketError::InvalidEvidencePayload);
+
+    Ok(SasCourtEvidence {
+        credential,
+        schema,
+        authority,
+        expiry,
+        subject_hash: hash(parcel_uid).to_bytes(),
+        value_hash: hash(operation).to_bytes(),
+        account_hash: hash(&data).to_bytes(),
+    })
+}
+
+fn read_borsh_string<'a>(bytes: &'a [u8], offset: &mut usize) -> Result<&'a [u8]> {
+    let length_end = offset.checked_add(4).ok_or(MarketError::InvalidEvidencePayload)?;
+    require!(length_end <= bytes.len(), MarketError::InvalidEvidencePayload);
+    let length = u32::from_le_bytes(
+        bytes[*offset..length_end].try_into().map_err(|_| error!(MarketError::InvalidEvidencePayload))?
+    ) as usize;
+    let value_end = length_end.checked_add(length).ok_or(MarketError::InvalidEvidencePayload)?;
+    require!(value_end <= bytes.len(), MarketError::InvalidEvidencePayload);
+    *offset = value_end;
+    Ok(&bytes[length_end..value_end])
+}
+
 #[account]
 #[derive(InitSpace)]
 pub struct Market {
@@ -200,6 +454,29 @@ pub struct Market {
     pub no_pool: u64,
     pub resolved: bool,
     pub outcome: u8,
+    pub bump: u8,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct ExternalMarket {
+    pub stake_mint: Pubkey,
+    pub vault: Pubkey,
+    pub recipe_hash: [u8; 32],
+    pub subject_hash: [u8; 32],
+    pub yes_value_hash: [u8; 32],
+    pub no_value_hash: [u8; 32],
+    pub credential: Pubkey,
+    pub schema: Pubkey,
+    pub trusted_attester: Pubkey,
+    pub yes_pool: u64,
+    pub no_pool: u64,
+    pub closes_at: i64,
+    pub resolved: bool,
+    pub outcome: u8,
+    pub evidence: Pubkey,
+    pub evidence_hash: [u8; 32],
+    pub resolved_at: i64,
     pub bump: u8,
 }
 
@@ -294,6 +571,99 @@ pub struct Claim<'info> {
     pub token_program: Program<'info, Token>,
 }
 
+#[derive(Accounts)]
+#[instruction(recipe_hash: [u8; 32])]
+pub struct CreateExternalMarket<'info> {
+    #[account(
+        init,
+        payer = creator,
+        space = 8 + ExternalMarket::INIT_SPACE,
+        seeds = [EXTERNAL_MARKET_SEED, recipe_hash.as_ref()],
+        bump
+    )]
+    pub market: Box<Account<'info, ExternalMarket>>,
+    pub stake_mint: Account<'info, Mint>,
+    #[account(
+        init,
+        payer = creator,
+        associated_token::mint = stake_mint,
+        associated_token::authority = market
+    )]
+    pub vault: Account<'info, TokenAccount>,
+    /// CHECK: owner, discriminator and key embedded in schema are checked in the handler.
+    pub credential: UncheckedAccount<'info>,
+    /// CHECK: owner, discriminator and embedded credential are checked in the handler.
+    pub schema: UncheckedAccount<'info>,
+    #[account(mut)]
+    pub creator: Signer<'info>,
+    pub token_program: Program<'info, Token>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+#[instruction(side: u8)]
+pub struct StakeExternal<'info> {
+    #[account(mut, seeds = [EXTERNAL_MARKET_SEED, market.recipe_hash.as_ref()], bump = market.bump)]
+    pub market: Box<Account<'info, ExternalMarket>>,
+    #[account(
+        init_if_needed,
+        payer = staker,
+        space = 8 + Position::INIT_SPACE,
+        seeds = [POSITION_SEED, market.key().as_ref(), staker.key().as_ref(), &[side]],
+        bump
+    )]
+    pub position: Box<Account<'info, Position>>,
+    #[account(mut, address = market.vault)]
+    pub vault: Account<'info, TokenAccount>,
+    #[account(mut, token::mint = market.stake_mint, token::authority = staker)]
+    pub staker_token_account: Account<'info, TokenAccount>,
+    #[account(mut)]
+    pub staker: Signer<'info>,
+    pub token_program: Program<'info, Token>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct ResolveExternal<'info> {
+    #[account(mut, seeds = [EXTERNAL_MARKET_SEED, market.recipe_hash.as_ref()], bump = market.bump)]
+    pub market: Box<Account<'info, ExternalMarket>>,
+    /// CHECK: SAS owner, discriminator and complete relevant payload are checked in the handler.
+    pub attestation: UncheckedAccount<'info>,
+    /// CHECK: key, SAS owner, credential relation, layout and paused state are checked in handler.
+    pub schema: UncheckedAccount<'info>,
+}
+
+#[derive(Accounts)]
+pub struct ClaimExternal<'info> {
+    #[account(seeds = [EXTERNAL_MARKET_SEED, market.recipe_hash.as_ref()], bump = market.bump)]
+    pub market: Box<Account<'info, ExternalMarket>>,
+    #[account(
+        mut,
+        seeds = [POSITION_SEED, market.key().as_ref(), claimer.key().as_ref(), &[position.side]],
+        bump = position.bump,
+        has_one = market @ MarketError::InvalidPosition,
+        constraint = position.owner == claimer.key() @ MarketError::InvalidPosition
+    )]
+    pub position: Box<Account<'info, Position>>,
+    #[account(mut, address = market.vault)]
+    pub vault: Account<'info, TokenAccount>,
+    #[account(mut, token::mint = market.stake_mint, token::authority = claimer)]
+    pub claimer_token_account: Account<'info, TokenAccount>,
+    pub claimer: Signer<'info>,
+    pub token_program: Program<'info, Token>,
+}
+
+#[event]
+pub struct ExternalMarketResolved {
+    pub market: Pubkey,
+    pub recipe_hash: [u8; 32],
+    pub evidence: Pubkey,
+    pub evidence_hash: [u8; 32],
+    pub outcome: u8,
+    pub resolved_at: i64,
+}
+
 #[error_code]
 pub enum MarketError {
     #[msg("The proposal account is not a proposal_nft Proposal (or not this market's)")]
@@ -318,11 +688,110 @@ pub enum MarketError {
     MathOverflow,
     #[msg("The position does not belong to this market and claimer")]
     InvalidPosition,
+    #[msg("The market commitment cannot be empty")]
+    EmptyCommitment,
+    #[msg("YES and NO cannot commit to the same evidence value")]
+    AmbiguousOutcomes,
+    #[msg("The market close time must be in the future")]
+    InvalidCloseTime,
+    #[msg("Trading on this market has closed")]
+    MarketClosed,
+    #[msg("The market is still open for trading")]
+    MarketStillOpen,
+    #[msg("The supplied account is not a valid SAS account")]
+    InvalidSasAccount,
+    #[msg("The attestation was issued under a different credential")]
+    WrongEvidenceCredential,
+    #[msg("The attestation uses a different schema")]
+    WrongEvidenceSchema,
+    #[msg("The attestation issuer is not in this market's Lens")]
+    UntrustedAttester,
+    #[msg("The attestation has expired")]
+    ExpiredEvidence,
+    #[msg("The attestation schema is paused")]
+    SchemaPaused,
+    #[msg("The attestation is about a different subject")]
+    WrongEvidenceSubject,
+    #[msg("The attestation value maps to neither committed outcome")]
+    UnsupportedEvidenceValue,
+    #[msg("The attestation payload does not match CourtParcelOperationV1")]
+    InvalidEvidencePayload,
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn borsh_string(value: &str) -> Vec<u8> {
+        let mut bytes = Vec::with_capacity(4 + value.len());
+        bytes.extend_from_slice(&(value.len() as u32).to_le_bytes());
+        bytes.extend_from_slice(value.as_bytes());
+        bytes
+    }
+
+    fn sas_attestation(parcel_uid: &str, operation: &str) -> (Vec<u8>, Pubkey, Pubkey, Pubkey) {
+        let credential = Pubkey::new_from_array([4; 32]);
+        let schema = Pubkey::new_from_array([5; 32]);
+        let authority = Pubkey::new_from_array([6; 32]);
+        let mut payload = Vec::new();
+        for value in [parcel_uid, "decision-42", operation, "https://court.example/42"] {
+            payload.extend_from_slice(&borsh_string(value));
+        }
+        let mut data = vec![0; 101];
+        data[0] = SAS_ATTESTATION_DISCRIMINATOR;
+        data[33..65].copy_from_slice(credential.as_ref());
+        data[65..97].copy_from_slice(schema.as_ref());
+        data[97..101].copy_from_slice(&(payload.len() as u32).to_le_bytes());
+        data.extend_from_slice(&payload);
+        data.extend_from_slice(authority.as_ref());
+        data.extend_from_slice(&2_000_000_000i64.to_le_bytes());
+        (data, credential, schema, authority)
+    }
+
+    fn sas_schema(credential: &Pubkey, paused: bool) -> Vec<u8> {
+        let mut data = vec![SAS_SCHEMA_DISCRIMINATOR];
+        data.extend_from_slice(credential.as_ref());
+        for value in ["CourtParcelOperation", "Court decision parcel operation", "layout", "fields"] {
+            data.extend_from_slice(&borsh_string(value));
+        }
+        data.push(u8::from(paused));
+        data.push(1);
+        data
+    }
+
+    #[test]
+    fn accepts_active_sas_schema_and_rejects_paused_or_wrong_credential() {
+        let credential = Pubkey::new_from_array([4; 32]);
+        assert!(validate_sas_schema_bytes(&sas_schema(&credential, false), &credential).is_ok());
+        assert!(validate_sas_schema_bytes(&sas_schema(&credential, true), &credential).is_err());
+        assert!(validate_sas_schema_bytes(&sas_schema(&credential, false), &Pubkey::new_unique()).is_err());
+    }
+
+    #[test]
+    fn parses_and_hashes_the_court_sas_payload_used_for_resolution() {
+        let (data, credential, schema, authority) = sas_attestation("HR-335347-1208/3", "transfer");
+        let evidence = parse_sas_court_evidence(&data).unwrap();
+        assert_eq!(evidence.credential, credential);
+        assert_eq!(evidence.schema, schema);
+        assert_eq!(evidence.authority, authority);
+        assert_eq!(evidence.expiry, 2_000_000_000);
+        assert_eq!(evidence.subject_hash, hash(b"HR-335347-1208/3").to_bytes());
+        assert_eq!(evidence.value_hash, hash(b"transfer").to_bytes());
+        assert_eq!(evidence.account_hash, hash(&data).to_bytes());
+    }
+
+    #[test]
+    fn rejects_truncated_or_schema_extended_sas_payloads() {
+        let (mut truncated, _, _, _) = sas_attestation("HR-335347-1208/3", "transfer");
+        truncated.truncate(truncated.len() - 45);
+        assert!(parse_sas_court_evidence(&truncated).is_err());
+
+        let (mut extended, _, _, _) = sas_attestation("HR-335347-1208/3", "transfer");
+        let payload_len = u32::from_le_bytes(extended[97..101].try_into().unwrap()) as usize;
+        extended[97..101].copy_from_slice(&((payload_len + 1) as u32).to_le_bytes());
+        extended.insert(101 + payload_len, 0);
+        assert!(parse_sas_court_evidence(&extended).is_err());
+    }
 
     #[test]
     fn winners_split_the_whole_pot_pro_rata() {

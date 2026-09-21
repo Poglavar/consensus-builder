@@ -31,9 +31,18 @@ anchor deploy
 # Call proposal_nft::initialize with program authority
 ```
 
-## Program IDs
+## Devnet program IDs
 
-Update `Anchor.toml` and `declare_id!()` in each program after first deploy to use the actual program IDs.
+| Program | Address | IDL |
+|---|---|---|
+| `parcel_nft` | `4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1` | [`idl/parcel_nft.json`](idl/parcel_nft.json) |
+| `proposal_nft` | `3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg` | [`idl/proposal_nft.json`](idl/proposal_nft.json) |
+| `proposal_market` | `GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB` | [`idl/proposal_market.json`](idl/proposal_market.json) |
+| `proposal_pledge` | `1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g` | [`idl/proposal_pledge.json`](idl/proposal_pledge.json) |
+
+The same IDs are pinned in `Anchor.toml`, each program's `declare_id!()`, the generated IDLs, and
+`frontend/contracts/addresses.json`. Backend contract tests fail when those copies diverge. See
+[`docs/protocol.md`](../../docs/protocol.md) for roles, Explorer links, recipe schemas, and trust assumptions.
 
 ## Program ids and `anchor keys sync` — do NOT run it here
 
@@ -48,4 +57,13 @@ time: `anchor deploy --program-name proposal_market --provider.cluster devnet`.
 
 `proposal_market` (`GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB`) reads `proposal_nft` accounts by a
 mirrored prefix struct; `idl/proposal_market.json` is the checked-in copy of `target/idl/` after a
-build, like the other two.
+build, like the other two. The same program source now also defines `ExternalMarket`, which leaves
+the legacy account layout untouched and verifies court-oracle SAS accounts owned by
+`22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG`. That compatible upgrade went live on 2026-09-21;
+the first two-sided court-resolved market and its transaction proof are linked from
+[`HACKATHON.md`](../../HACKATHON.md#live-external-market-proof).
+
+Run `scripts/external-market-lifecycle.mjs` without arguments for a redacted, read-only validation
+of the live SAS evidence. Pass `--live` only when intentionally creating another devnet market and
+submitting the low-value two-sided settlement lifecycle. The runner never prints decoded legal
+payload fields or a credential-bearing RPC URL.

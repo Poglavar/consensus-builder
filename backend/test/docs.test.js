@@ -361,6 +361,20 @@ describe('agent quickstart docs', () => {
             deadline: null
         });
         expect(res.body.market.resolution.expired).toMatch(/not terminal/);
+        expect(res.body.oracle.schema).toBe('https://api.example.test/oracle/recipe.schema.json');
+        expect(res.body.oracle.externalMarket).toMatchObject({
+            status: 'live_devnet',
+            recipeId: 'court-parcel-operation-v1',
+            verification: expect.stringContaining('direct SAS account'),
+            proofMarket: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/),
+            proofResolution: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{64,88}$/),
+            proofClaim: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{64,88}$/),
+            proof: { yesStakeAtomic: '10000', noStakeAtomic: '10000', payoutAtomic: '20000', decimals: 6 }
+        });
+        expect(res.body.market.externalResolution).toMatchObject({
+            status: 'live_devnet', account: 'ExternalMarket',
+            proofMarket: res.body.oracle.externalMarket.proofMarket
+        });
         expect(res.body.docs).toBe('https://api.example.test/docs/agents');
     });
 

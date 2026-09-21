@@ -74,6 +74,292 @@
       "args": []
     },
     {
+      "name": "claim_external",
+      "discriminator": [
+        135,
+        245,
+        206,
+        49,
+        254,
+        63,
+        81,
+        125
+      ],
+      "accounts": [
+        {
+          "name": "market",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  120,
+                  116,
+                  101,
+                  114,
+                  110,
+                  97,
+                  108,
+                  95,
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market.recipe_hash",
+                "account": "ExternalMarket"
+              }
+            ]
+          },
+          "relations": [
+            "position"
+          ]
+        },
+        {
+          "name": "position",
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "claimer_token_account",
+          "writable": true
+        },
+        {
+          "name": "claimer",
+          "signer": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "create_external_market",
+      "docs": [
+        "Open a market whose resolution rule is committed before trading. The recipe document lives",
+        "off-chain, but its sha256 digest and every security-sensitive input are stored on-chain.",
+        "`subject_hash` is sha256(parcelUid); the outcome hashes are sha256(operation) values from the",
+        "court oracle's SAS schema."
+      ],
+      "discriminator": [
+        62,
+        5,
+        239,
+        100,
+        231,
+        180,
+        207,
+        151
+      ],
+      "accounts": [
+        {
+          "name": "market",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  120,
+                  116,
+                  101,
+                  114,
+                  110,
+                  97,
+                  108,
+                  95,
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "recipe_hash"
+              }
+            ]
+          }
+        },
+        {
+          "name": "stake_mint"
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "market"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "stake_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "credential"
+        },
+        {
+          "name": "schema"
+        },
+        {
+          "name": "creator",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "recipe_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "subject_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "yes_value_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "no_value_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "trusted_attester",
+          "type": "pubkey"
+        },
+        {
+          "name": "closes_at",
+          "type": "i64"
+        }
+      ]
+    },
+    {
       "name": "create_market",
       "docs": [
         "Open the (single) market for a proposal. Only an Active proposal can get a market: a",
@@ -277,6 +563,65 @@
       "args": []
     },
     {
+      "name": "resolve_external",
+      "docs": [
+        "Permissionless resolution from a real SAS account. The outcome is derived from the",
+        "attestation payload rather than accepted as a caller argument."
+      ],
+      "discriminator": [
+        249,
+        185,
+        122,
+        59,
+        58,
+        200,
+        8,
+        245
+      ],
+      "accounts": [
+        {
+          "name": "market",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  120,
+                  116,
+                  101,
+                  114,
+                  110,
+                  97,
+                  108,
+                  95,
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market.recipe_hash",
+                "account": "ExternalMarket"
+              }
+            ]
+          }
+        },
+        {
+          "name": "attestation"
+        },
+        {
+          "name": "schema"
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "stake",
       "docs": [
         "Stake `amount` of the market's token on `side` (1 = YES the proposal executes, 0 = NO it",
@@ -358,9 +703,109 @@
           "type": "u64"
         }
       ]
+    },
+    {
+      "name": "stake_external",
+      "docs": [
+        "Stake on a recipe-bound market. Trading closes before evidence can settle the outcome, so a",
+        "transaction cannot observe the evidence and then place a risk-free stake in the same slot."
+      ],
+      "discriminator": [
+        79,
+        123,
+        254,
+        250,
+        71,
+        224,
+        209,
+        221
+      ],
+      "accounts": [
+        {
+          "name": "market",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  120,
+                  116,
+                  101,
+                  114,
+                  110,
+                  97,
+                  108,
+                  95,
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "market.recipe_hash",
+                "account": "ExternalMarket"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position",
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "staker_token_account",
+          "writable": true
+        },
+        {
+          "name": "staker",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "side",
+          "type": "u8"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
     }
   ],
   "accounts": [
+    {
+      "name": "ExternalMarket",
+      "discriminator": [
+        8,
+        9,
+        221,
+        140,
+        146,
+        117,
+        86,
+        65
+      ]
+    },
     {
       "name": "Market",
       "discriminator": [
@@ -385,6 +830,21 @@
         64,
         247,
         208
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "ExternalMarketResolved",
+      "discriminator": [
+        43,
+        154,
+        95,
+        75,
+        210,
+        213,
+        166,
+        26
       ]
     }
   ],
@@ -443,9 +903,226 @@
       "code": 6010,
       "name": "InvalidPosition",
       "msg": "The position does not belong to this market and claimer"
+    },
+    {
+      "code": 6011,
+      "name": "EmptyCommitment",
+      "msg": "The market commitment cannot be empty"
+    },
+    {
+      "code": 6012,
+      "name": "AmbiguousOutcomes",
+      "msg": "YES and NO cannot commit to the same evidence value"
+    },
+    {
+      "code": 6013,
+      "name": "InvalidCloseTime",
+      "msg": "The market close time must be in the future"
+    },
+    {
+      "code": 6014,
+      "name": "MarketClosed",
+      "msg": "Trading on this market has closed"
+    },
+    {
+      "code": 6015,
+      "name": "MarketStillOpen",
+      "msg": "The market is still open for trading"
+    },
+    {
+      "code": 6016,
+      "name": "InvalidSasAccount",
+      "msg": "The supplied account is not a valid SAS account"
+    },
+    {
+      "code": 6017,
+      "name": "WrongEvidenceCredential",
+      "msg": "The attestation was issued under a different credential"
+    },
+    {
+      "code": 6018,
+      "name": "WrongEvidenceSchema",
+      "msg": "The attestation uses a different schema"
+    },
+    {
+      "code": 6019,
+      "name": "UntrustedAttester",
+      "msg": "The attestation issuer is not in this market's Lens"
+    },
+    {
+      "code": 6020,
+      "name": "ExpiredEvidence",
+      "msg": "The attestation has expired"
+    },
+    {
+      "code": 6021,
+      "name": "SchemaPaused",
+      "msg": "The attestation schema is paused"
+    },
+    {
+      "code": 6022,
+      "name": "WrongEvidenceSubject",
+      "msg": "The attestation is about a different subject"
+    },
+    {
+      "code": 6023,
+      "name": "UnsupportedEvidenceValue",
+      "msg": "The attestation value maps to neither committed outcome"
+    },
+    {
+      "code": 6024,
+      "name": "InvalidEvidencePayload",
+      "msg": "The attestation payload does not match CourtParcelOperationV1"
     }
   ],
   "types": [
+    {
+      "name": "ExternalMarket",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "stake_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "recipe_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "subject_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "yes_value_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "no_value_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "credential",
+            "type": "pubkey"
+          },
+          {
+            "name": "schema",
+            "type": "pubkey"
+          },
+          {
+            "name": "trusted_attester",
+            "type": "pubkey"
+          },
+          {
+            "name": "yes_pool",
+            "type": "u64"
+          },
+          {
+            "name": "no_pool",
+            "type": "u64"
+          },
+          {
+            "name": "closes_at",
+            "type": "i64"
+          },
+          {
+            "name": "resolved",
+            "type": "bool"
+          },
+          {
+            "name": "outcome",
+            "type": "u8"
+          },
+          {
+            "name": "evidence",
+            "type": "pubkey"
+          },
+          {
+            "name": "evidence_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "resolved_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ExternalMarketResolved",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "recipe_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "evidence",
+            "type": "pubkey"
+          },
+          {
+            "name": "evidence_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "outcome",
+            "type": "u8"
+          },
+          {
+            "name": "resolved_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
     {
       "name": "Market",
       "type": {

@@ -89,18 +89,21 @@ describe('the checked-in proposal_market IDL matches the program source', () => 
         expect(addresses['solana-devnet'].ProposalMarket).toBe(declared);
     });
 
-    it('exposes exactly the four instructions and two accounts with Anchor-formula discriminators', () => {
-        expect(marketIdl.instructions.map(i => i.name).sort()).toEqual(['claim', 'create_market', 'resolve', 'stake']);
+    it('exposes legacy and external-evidence instructions with Anchor-formula discriminators', () => {
+        expect(marketIdl.instructions.map(i => i.name).sort()).toEqual([
+            'claim', 'claim_external', 'create_external_market', 'create_market',
+            'resolve', 'resolve_external', 'stake', 'stake_external'
+        ]);
         for (const ix of marketIdl.instructions) {
             expect(ix.discriminator).toEqual(anchorDiscriminator('global', ix.name));
         }
-        expect(marketIdl.accounts.map(a => a.name).sort()).toEqual(['Market', 'Position']);
+        expect(marketIdl.accounts.map(a => a.name).sort()).toEqual(['ExternalMarket', 'Market', 'Position']);
         for (const account of marketIdl.accounts) {
             expect(account.discriminator).toEqual(anchorDiscriminator('account', account.name));
         }
     });
 
-    it('lays out Market and Position exactly as the client decoder expects', () => {
+    it('lays out legacy and external markets exactly as the client decoders expect', () => {
         const fields = name => marketIdl.types.find(t => t.name === name).type.fields.map(f => [f.name, f.type]);
         expect(fields('Market')).toEqual([
             ['proposal', 'pubkey'], ['stake_mint', 'pubkey'], ['vault', 'pubkey'],
@@ -108,6 +111,15 @@ describe('the checked-in proposal_market IDL matches the program source', () => 
         ]);
         expect(fields('Position')).toEqual([
             ['market', 'pubkey'], ['owner', 'pubkey'], ['side', 'u8'], ['amount', 'u64'], ['claimed', 'bool'], ['bump', 'u8']
+        ]);
+        expect(fields('ExternalMarket')).toEqual([
+            ['stake_mint', 'pubkey'], ['vault', 'pubkey'],
+            ['recipe_hash', { array: ['u8', 32] }], ['subject_hash', { array: ['u8', 32] }],
+            ['yes_value_hash', { array: ['u8', 32] }], ['no_value_hash', { array: ['u8', 32] }],
+            ['credential', 'pubkey'], ['schema', 'pubkey'], ['trusted_attester', 'pubkey'],
+            ['yes_pool', 'u64'], ['no_pool', 'u64'], ['closes_at', 'i64'],
+            ['resolved', 'bool'], ['outcome', 'u8'], ['evidence', 'pubkey'],
+            ['evidence_hash', { array: ['u8', 32] }], ['resolved_at', 'i64'], ['bump', 'u8']
         ]);
     });
 });

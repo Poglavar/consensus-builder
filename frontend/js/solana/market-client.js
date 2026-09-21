@@ -14,12 +14,17 @@
     // against both the IDL file and sha256("global:<name>") / sha256("account:<Name>").
     const IX_DISCRIMINATORS = Object.freeze({
         create_market: Object.freeze([103, 226, 97, 235, 200, 188, 251, 254]),
+        create_external_market: Object.freeze([62, 5, 239, 100, 231, 180, 207, 151]),
         stake: Object.freeze([206, 176, 202, 18, 200, 209, 179, 108]),
+        stake_external: Object.freeze([79, 123, 254, 250, 71, 224, 209, 221]),
         resolve: Object.freeze([246, 150, 236, 206, 108, 63, 58, 10]),
-        claim: Object.freeze([62, 198, 214, 193, 213, 159, 108, 210])
+        resolve_external: Object.freeze([249, 185, 122, 59, 58, 200, 8, 245]),
+        claim: Object.freeze([62, 198, 214, 193, 213, 159, 108, 210]),
+        claim_external: Object.freeze([135, 245, 206, 49, 254, 63, 81, 125])
     });
 
     const ACCOUNT_DISCRIMINATORS = Object.freeze({
+        ExternalMarket: Object.freeze([8, 9, 221, 140, 146, 117, 86, 65]),
         Market: Object.freeze([219, 190, 213, 55, 0, 227, 198, 154]),
         Position: Object.freeze([170, 188, 143, 228, 122, 64, 247, 208])
     });
@@ -28,18 +33,22 @@
         SIDE_NO: 0,
         SIDE_YES: 1,
         PROGRAM_ID: 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB',
+        SAS_PROGRAM_ID: '22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG',
         TOKEN_PROGRAM_ID: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
         ASSOCIATED_TOKEN_PROGRAM_ID: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
         SYSTEM_PROGRAM_ID: '11111111111111111111111111111111'
     });
 
     const MARKET_SEED = 'market';
+    const EXTERNAL_MARKET_SEED = 'external_market';
     const POSITION_SEED = 'position';
 
     const PUBKEY_BYTES = 32;
     const DISCRIMINATOR_BYTES = 8;
     // 8 disc + 3 pubkeys + 2 u64 + bool + u8 + u8, matching Market::INIT_SPACE.
     const MARKET_SIZE = DISCRIMINATOR_BYTES + 3 * PUBKEY_BYTES + 8 + 8 + 1 + 1 + 1;
+    // 8 disc + nine 32-byte commitments/keys + pools + close + status + evidence + hash + time + bump.
+    const EXTERNAL_MARKET_SIZE = DISCRIMINATOR_BYTES + 9 * PUBKEY_BYTES + 8 + 8 + 8 + 1 + 1 + PUBKEY_BYTES + 32 + 8 + 1;
     // 8 disc + 2 pubkeys + u8 + u64 + bool + u8, matching Position::INIT_SPACE.
     const POSITION_SIZE = DISCRIMINATOR_BYTES + 2 * PUBKEY_BYTES + 1 + 8 + 1 + 1;
 
@@ -147,8 +156,45 @@
         return out;
     }
 
+    function toI64(value, label) {
+        const name = label || 'value';
+        let parsed;
+        if (typeof value === 'bigint') parsed = value;
+        else if (typeof value === 'number' && Number.isSafeInteger(value)) parsed = BigInt(value);
+        else if (typeof value === 'string' && /^-?\d+$/.test(value.trim())) parsed = BigInt(value.trim());
+        else throw new Error(`${name} must be a bigint, safe integer number or integer string`);
+        if (parsed < -(1n << 63n) || parsed > (1n << 63n) - 1n) throw new Error(`${name} does not fit in an i64`);
+        return parsed;
+    }
+
+    function encodeI64(value) {
+        const out = new Uint8Array(8);
+        new DataView(out.buffer).setBigInt64(0, value, true);
+        return out;
+    }
+
     function readU64(bytes, offset) {
         return new DataView(bytes.buffer, bytes.byteOffset + offset, 8).getBigUint64(0, true);
+    }
+
+    function readI64(bytes, offset) {
+        return new DataView(bytes.buffer, bytes.byteOffset + offset, 8).getBigInt64(0, true);
+    }
+
+    function toHash32(value, label) {
+        const name = label || 'hash';
+        if (typeof value === 'string') {
+            const hex = value.trim().replace(/^sha256:/i, '');
+            if (!/^[0-9a-f]{64}$/i.test(hex)) throw new Error(`${name} must be a 32-byte hash or 64 hex characters`);
+            return Uint8Array.from(hex.match(/../g).map(byte => Number.parseInt(byte, 16)));
+        }
+        const bytes = toBytes(value, name);
+        if (bytes.length !== 32) throw new Error(`${name} must contain exactly 32 bytes`);
+        return Uint8Array.from(bytes);
+    }
+
+    function hashHex(bytes) {
+        return Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
     }
 
     function discriminatorBytes(table, name) {
@@ -169,6 +215,14 @@
         const proposalKey = toPublicKey(proposal, 'proposal');
         return web3.PublicKey.findProgramAddressSync(
             [utf8(MARKET_SEED), proposalKey.toBytes()],
+            programKey(programId)
+        );
+    }
+
+    function getExternalMarketPda(recipeHash, programId) {
+        const web3 = resolveWeb3();
+        return web3.PublicKey.findProgramAddressSync(
+            [utf8(EXTERNAL_MARKET_SEED), toHash32(recipeHash, 'recipeHash')],
             programKey(programId)
         );
     }
@@ -235,6 +289,44 @@
         return instruction(opts.programId, keys, discriminatorBytes(IX_DISCRIMINATORS, 'create_market'));
     }
 
+    function buildCreateExternalMarketIx(options) {
+        const opts = options || {};
+        const recipeHash = toHash32(opts.recipeHash, 'recipeHash');
+        const subjectHash = toHash32(opts.subjectHash, 'subjectHash');
+        const yesValueHash = toHash32(opts.yesValueHash, 'yesValueHash');
+        const noValueHash = toHash32(opts.noValueHash, 'noValueHash');
+        const trustedAttester = toPublicKey(opts.trustedAttester, 'trustedAttester');
+        const closesAt = toI64(opts.closesAt, 'closesAt');
+        const stakeMint = toPublicKey(opts.stakeMint, 'stakeMint');
+        const credential = toPublicKey(opts.credential, 'credential');
+        const schema = toPublicKey(opts.schema, 'schema');
+        const creator = toPublicKey(opts.creator, 'creator');
+        const [market] = getExternalMarketPda(recipeHash, opts.programId);
+        const vault = getVaultAddress(market, stakeMint);
+        const web3 = resolveWeb3();
+        const keys = [
+            meta(market, false, true),
+            meta(stakeMint, false, false),
+            meta(vault, false, true),
+            meta(credential, false, false),
+            meta(schema, false, false),
+            meta(creator, true, true),
+            meta(toPublicKey(constants.TOKEN_PROGRAM_ID), false, false),
+            meta(toPublicKey(constants.ASSOCIATED_TOKEN_PROGRAM_ID), false, false),
+            meta(web3.SystemProgram.programId, false, false)
+        ];
+        const data = concatBytes([
+            discriminatorBytes(IX_DISCRIMINATORS, 'create_external_market'),
+            recipeHash,
+            subjectHash,
+            yesValueHash,
+            noValueHash,
+            trustedAttester.toBytes(),
+            encodeI64(closesAt)
+        ]);
+        return instruction(opts.programId, keys, data);
+    }
+
     function buildStakeIx(options) {
         const opts = options || {};
         const proposal = toPublicKey(opts.proposal, 'proposal');
@@ -268,6 +360,33 @@
         return instruction(opts.programId, keys, data);
     }
 
+    function buildStakeExternalIx(options) {
+        const opts = options || {};
+        const recipeHash = toHash32(opts.recipeHash, 'recipeHash');
+        const stakeMint = toPublicKey(opts.stakeMint, 'stakeMint');
+        const staker = toPublicKey(opts.staker, 'staker');
+        const side = normalizeSide(opts.side);
+        const amount = toU64(opts.amount, 'amount');
+        if (amount === 0n) throw new Error('amount must be positive');
+        const [market] = getExternalMarketPda(recipeHash, opts.programId);
+        const [position] = getPositionPda(market, staker, side, opts.programId);
+        const vault = getVaultAddress(market, stakeMint);
+        const web3 = resolveWeb3();
+        return instruction(opts.programId, [
+            meta(market, false, true),
+            meta(position, false, true),
+            meta(vault, false, true),
+            meta(getAssociatedTokenAddress(staker, stakeMint), false, true),
+            meta(staker, true, true),
+            meta(toPublicKey(constants.TOKEN_PROGRAM_ID), false, false),
+            meta(web3.SystemProgram.programId, false, false)
+        ], concatBytes([
+            discriminatorBytes(IX_DISCRIMINATORS, 'stake_external'),
+            Uint8Array.from([side]),
+            encodeU64(amount)
+        ]));
+    }
+
     function buildResolveIx(options) {
         const opts = options || {};
         const proposal = toPublicKey(opts.proposal, 'proposal');
@@ -277,6 +396,16 @@
             meta(proposal, false, false)
         ];
         return instruction(opts.programId, keys, discriminatorBytes(IX_DISCRIMINATORS, 'resolve'));
+    }
+
+    function buildResolveExternalIx(options) {
+        const opts = options || {};
+        const [market] = getExternalMarketPda(opts.recipeHash, opts.programId);
+        return instruction(opts.programId, [
+            meta(market, false, true),
+            meta(toPublicKey(opts.attestation, 'attestation'), false, false),
+            meta(toPublicKey(opts.schema, 'schema'), false, false)
+        ], discriminatorBytes(IX_DISCRIMINATORS, 'resolve_external'));
     }
 
     function buildClaimIx(options) {
@@ -300,6 +429,24 @@
         return instruction(opts.programId, keys, discriminatorBytes(IX_DISCRIMINATORS, 'claim'));
     }
 
+    function buildClaimExternalIx(options) {
+        const opts = options || {};
+        const recipeHash = toHash32(opts.recipeHash, 'recipeHash');
+        const stakeMint = toPublicKey(opts.stakeMint, 'stakeMint');
+        const claimer = toPublicKey(opts.claimer, 'claimer');
+        const side = normalizeSide(opts.side);
+        const [market] = getExternalMarketPda(recipeHash, opts.programId);
+        const [position] = getPositionPda(market, claimer, side, opts.programId);
+        return instruction(opts.programId, [
+            meta(market, false, false),
+            meta(position, false, true),
+            meta(getVaultAddress(market, stakeMint), false, true),
+            meta(getAssociatedTokenAddress(claimer, stakeMint), false, true),
+            meta(claimer, true, false),
+            meta(toPublicKey(constants.TOKEN_PROGRAM_ID), false, false)
+        ], discriminatorBytes(IX_DISCRIMINATORS, 'claim_external'));
+    }
+
     function readPubkey(bytes, offset) {
         return toPublicKey(bytes.slice(offset, offset + PUBKEY_BYTES), 'pubkey').toBase58();
     }
@@ -318,6 +465,36 @@
         const outcome = bytes[offset]; offset += 1;
         const bump = bytes[offset];
         return { proposal, stakeMint, vault, yesPool, noPool, resolved, outcome, bump };
+    }
+
+    function decodeExternalMarket(dataBytes) {
+        const bytes = toBytes(dataBytes, 'external market account data');
+        if (bytes.length < EXTERNAL_MARKET_SIZE) throw new Error(`external market account is ${bytes.length} bytes, expected at least ${EXTERNAL_MARKET_SIZE}`);
+        if (!matchesDiscriminator(bytes, ACCOUNT_DISCRIMINATORS.ExternalMarket)) throw new Error('account is not a proposal_market ExternalMarket (discriminator mismatch)');
+        let offset = DISCRIMINATOR_BYTES;
+        const stakeMint = readPubkey(bytes, offset); offset += PUBKEY_BYTES;
+        const vault = readPubkey(bytes, offset); offset += PUBKEY_BYTES;
+        const recipeHash = hashHex(bytes.slice(offset, offset + 32)); offset += 32;
+        const subjectHash = hashHex(bytes.slice(offset, offset + 32)); offset += 32;
+        const yesValueHash = hashHex(bytes.slice(offset, offset + 32)); offset += 32;
+        const noValueHash = hashHex(bytes.slice(offset, offset + 32)); offset += 32;
+        const credential = readPubkey(bytes, offset); offset += PUBKEY_BYTES;
+        const schema = readPubkey(bytes, offset); offset += PUBKEY_BYTES;
+        const trustedAttester = readPubkey(bytes, offset); offset += PUBKEY_BYTES;
+        const yesPool = readU64(bytes, offset); offset += 8;
+        const noPool = readU64(bytes, offset); offset += 8;
+        const closesAt = readI64(bytes, offset); offset += 8;
+        const resolved = bytes[offset] === 1; offset += 1;
+        const outcome = bytes[offset]; offset += 1;
+        const evidence = readPubkey(bytes, offset); offset += PUBKEY_BYTES;
+        const evidenceHash = hashHex(bytes.slice(offset, offset + 32)); offset += 32;
+        const resolvedAt = readI64(bytes, offset); offset += 8;
+        const bump = bytes[offset];
+        return {
+            stakeMint, vault, recipeHash, subjectHash, yesValueHash, noValueHash,
+            credential, schema, trustedAttester, yesPool, noPool, closesAt,
+            resolved, outcome, evidence, evidenceHash, resolvedAt, bump
+        };
     }
 
     function decodePosition(dataBytes) {
@@ -340,6 +517,14 @@
         const info = await connection.getAccountInfo(market);
         if (!info || !info.data) return null;
         return decodeMarket(info.data);
+    }
+
+    async function readExternalMarket(connection, recipeHash, programId) {
+        if (!connection || typeof connection.getAccountInfo !== 'function') throw new Error('a solana connection is required');
+        const [market] = getExternalMarketPda(recipeHash, programId);
+        const info = await connection.getAccountInfo(market);
+        if (!info || !info.data) return null;
+        return decodeExternalMarket(info.data);
     }
 
     async function readPosition(connection, proposal, owner, side, programId) {
@@ -394,19 +579,27 @@
         IX_DISCRIMINATORS,
         ACCOUNT_DISCRIMINATORS,
         MARKET_SIZE,
+        EXTERNAL_MARKET_SIZE,
         POSITION_SIZE,
         configure,
         getMarketPda,
+        getExternalMarketPda,
         getPositionPda,
         getVaultAddress,
         getAssociatedTokenAddress,
         buildCreateMarketIx,
+        buildCreateExternalMarketIx,
         buildStakeIx,
+        buildStakeExternalIx,
         buildResolveIx,
+        buildResolveExternalIx,
         buildClaimIx,
+        buildClaimExternalIx,
         decodeMarket,
+        decodeExternalMarket,
         decodePosition,
         readMarket,
+        readExternalMarket,
         readPosition,
         payoutAmount,
         impliedProbability,

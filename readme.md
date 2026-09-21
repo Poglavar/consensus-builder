@@ -1,55 +1,74 @@
-Urban Game Theory -- Toolkit for Collaborative Urban Planning
-https://urbangametheory.xyz
+# Urban Game Theory
 
-This is a toolkit for collaborative urban planning.
+> A market for real-world land change: humans and agents propose, fund, and forecast changes to
+> exact parcels, while public records resolve what actually happened.
 
-The design goal is to use crypto tools and learnings to create a tool that allows users to collaboratively plan and design their urban spaces.
+Urban Game Theory connects four workflows that are normally separate—mapping, proposals, funding,
+and prediction markets—through one canonical parcel identity. Humans, deterministic agents, and
+LLM-controlled agents use the same proposal, wallet, and activity interfaces.
 
-The application is a very light web application with optional and minimal use of its own backend server.
+This branch contains the submission for the **Colosseum Crypto World's Fair 2026**. Urban Game
+Theory predates the event; [`HACKATHON.md`](HACKATHON.md) identifies the exact baseline, commits,
+and features built during the hackathon.
 
-Reconstructed real plans and built projects live in [`rekonstrukcije/`](rekonstrukcije/). That directory preserves their source geometry and provenance while expressing the reconstructed urban form through the same proposal model used by the app.
+## Start here
 
-Terminology notes:
+- [Live pitch deck](https://urbangametheory.xyz/hackathon-deck.html)
+- [Five-minute demo center](https://urbangametheory.xyz/hackathon-demo.html)
+- [Agent/x402 quickstart](https://api.urbangametheory.xyz/docs/agents)
+- [Unified human and agent activity](https://urbangametheory.xyz/actor-explorer.html)
+- [Hackathon diff](https://github.com/Poglavar/consensus-builder/compare/3ee1855...colosseum-worlds-fair)
 
-- A key concept is a Proposal
-- Plans are (unordered) collections of proposals
-- Parcel is a geographically bounded piece of land
-  - all land is covered in parcels
-  - parcels never overlap
-  - parcels have owners
-- A Block is a group of parcels fully enclosed by public-access roads or track (corridor) with vehicular access. Within the block exist only footpaths (bicycles too?). A very large block will have various internal crosspaths, but if these are not through-traffic it is still a block. If you can pass through a block on a public access road it is actually two blocks, not one, even if from the air it looks like a block otherwise.
-- Parcels do not (directly) descend from parcels, but from proposals. Proposals do not (directly) descend from proposals, but from parcels.
-- Parcels have ancestor/descendant proposals
-- Proposals have parent/child parcels
+## What the hackathon build adds
 
-List of UI objects.
+- x402-paid, Bazaar-discoverable proposal submission for agents;
+- Solana devnet programs for proposal prediction markets, donations, and soft pledges;
+- one activity model for people, deterministic controllers, and LLM controllers;
+- a deterministic land-event oracle with hashed resolution recipes and source-linked evidence;
+- a privacy-preserving bridge to parcel-level Croatian court attestations;
+- a recipe-bound external market verifier for those public SAS attestations; and
+- read-only proposal review plus safe Counterpropose/Fork flows.
 
-- modal: takes over the input, is large (most of screen), lots of functionality
-- dialog: takes over the input, is small, little functionality, can be alert only
-- panel: a UI element that takes only a part of the screen and doesn't take over the input
+The deployed prediction market resolves from either ProposalNFT terminal state or a recipe-bound
+external evidence account. On 2026-09-21 the external verifier completed its first funded devnet
+lifecycle from a real Croatian court SAS attestation: both outcomes were staked, an unrelated wallet
+resolved the market permissionlessly, and the winning position claimed the pool. The public proof is
+recorded in [`HACKATHON.md`](HACKATHON.md#live-external-market-proof).
 
-Modals:
+## Repository guide
 
-- Agent Details
-- Proposal List
+| Path | Purpose |
+|---|---|
+| [`frontend/`](frontend/) | Parcel map, proposal UI, wallet flows, pitch, demo, and actor explorer |
+| [`backend/`](backend/) | Public API, x402 gate, agent runtime, activity ledger, and land-event oracle |
+| [`blockchain/solana/`](blockchain/solana/) | Anchor programs, generated IDLs, clients, and lifecycle scripts |
+| [`docs/architecture.md`](docs/architecture.md) | Current system diagram and implemented versus next boundaries |
+| [`docs/hackathon-build.md`](docs/hackathon-build.md) | Reproducible install, test, local-view, and demo instructions |
+| [`docs/protocol.md`](docs/protocol.md) | Program IDs, schemas, recipe and adapter contracts, and trust assumptions |
+| [`HACKATHON.md`](HACKATHON.md) | Reviewable hackathon scope and proof links |
 
-Panels:
+## Quick verification
 
-- Parcel Info
-- Proposal Details
-- Block Info
-- Sidebar
+```sh
+git clone --branch colosseum-worlds-fair https://github.com/Poglavar/consensus-builder.git
+cd consensus-builder/backend
+npm ci
+npm test
+```
 
-Dialogs:
+The frontend is static and has no compilation step. See
+[`docs/hackathon-build.md`](docs/hackathon-build.md) for the focused hackathon test set, local
+serving, optional Solana build, and requirements for running the database-backed API.
 
-- Share proposal dialog
-- Mint parcels as NFTs dialog
+## Security status
 
-Object lifecycle (the SimCity model):
+This is devnet software and has not received an independent security audit. Devnet SOL and USDC
+have no monetary value. Program IDs prove which deployments the demo uses; they do not imply that
+the programs are immutable or production-safe. Read the complete
+[security and trust assumptions](docs/protocol.md#security-and-trust-assumptions) before reusing the
+protocol.
 
-- Drawing or clicking a Build tool creates an APPLIED object on the map immediately — auto-named, no dialogs. What is on the map IS the draft: it stays editable (geometry, cross-section, width) until it is proposed.
-- Objects can be Unapplied (kept in the proposals list, removed from the map), edited in place, or deleted. Unapplied proposals render nowhere except as a preview when selected.
-- Entry points: the Build palette on the parcel info panel (Block, Row houses, Freeform, Detached, Reparcel, Park, Square, Lake, Offer) for parcel-scoped types; R for roads, T for tracks. Park/square/lake are one click — their geometry is the selection's union.
-- "Create proposal" on an object opens the terms dialog (offer, expiry, minting). Submitting absorbs the unminted source object so exactly one thing remains; minted proposals are immutable and stay behind as superseded.
-- Roads are authored formations: one proposal may contain several centerline stretches, including disconnected stretches left by a taking or an edge removal. Editing creates one replacement snapshot and never absorbs, splits, or rewrites another road. The full derived corridor polygon is both the taking and cutting geometry; level tunnels take the surface too.
-- Roads built through applied parks/squares/lakes cut them at render time only: the structure remains ONE proposal and heals if the road moves or is removed.
+## License
+
+Except where an individual file or third-party component says otherwise, this repository is
+licensed under the [Apache License 2.0](LICENSE).

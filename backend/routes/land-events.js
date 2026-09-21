@@ -2,7 +2,15 @@
 // prediction market. Event production is a separate restartable CLI, never a side effect of GET.
 
 import { PublicKey } from '@solana/web3.js';
+import fs from 'node:fs';
 import { buildProposalLifecycleRecipe, EVENT_TYPE, RECIPE_ID } from '../oracle/proposal-lifecycle.js';
+import {
+    buildCourtParcelOperationRecipe,
+    COURT_RECIPE_ID,
+    externalMarketAddress
+} from '../oracle/court-parcel-operation.js';
+
+const RECIPE_SCHEMA = JSON.parse(fs.readFileSync(new URL('../oracle/recipe.schema.json', import.meta.url), 'utf8'));
 
 function limitOf(value) {
     const parsed = Number(value);
@@ -33,6 +41,8 @@ function eventFromRow(row) {
 }
 
 export function setupLandEventsRoute(app, pool) {
+    app.get('/oracle/recipe.schema.json', (_req, res) => res.json(RECIPE_SCHEMA));
+
     app.get('/oracle/public-records/summary', async (_req, res) => {
         try {
             const { rows } = await pool.query(`
@@ -59,7 +69,7 @@ export function setupLandEventsRoute(app, pool) {
                 parcels: Number(row.parcels || 0),
                 decisions: Number(row.decisions || 0),
                 latestAttestationAt: row.latest_attestation_at || null,
-                marketIntegration: 'external evidence feed exists; proposal markets do not consume it yet'
+                marketIntegration: 'recipe-bound market verifier and first court-SAS settlement are live on devnet'
             });
         } catch (error) {
             console.error('GET /oracle/public-records/summary failed', error);
@@ -99,6 +109,20 @@ export function setupLandEventsRoute(app, pool) {
         if (!proposalAccount) return res.status(400).json({ error: 'proposal must be a Solana address' });
         if (req.query.market && !marketAccount) return res.status(400).json({ error: 'market must be a Solana address' });
         return res.json({ recipe: buildProposalLifecycleRecipe({ proposalAccount, marketAccount }) });
+    });
+
+    app.get(`/oracle/recipes/${COURT_RECIPE_ID}`, (req, res) => {
+        try {
+            const recipe = buildCourtParcelOperationRecipe({
+                parcelUid: req.query.parcelUid,
+                yesOperation: req.query.yesOperation,
+                noOperation: req.query.noOperation,
+                closesAt: req.query.closesAt
+            });
+            return res.json({ recipe, marketAccount: externalMarketAddress(recipe.hash) });
+        } catch (error) {
+            return res.status(400).json({ error: error.message });
+        }
     });
 }
 

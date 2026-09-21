@@ -16,6 +16,17 @@ function appFor(pool) {
 }
 
 describe('land-event routes', () => {
+    it('serves the machine-readable recipe contract', async () => {
+        const res = await request(appFor({ query: vi.fn() })).get('/oracle/recipe.schema.json');
+        expect(res.status).toBe(200);
+        expect(res.body).toMatchObject({
+            $schema: 'https://json-schema.org/draft/2020-12/schema',
+            title: 'Urban Game Theory resolution recipe',
+            required: expect.arrayContaining(['trustedAttesters', 'verification', 'hash'])
+        });
+        expect(res.body.properties.hash.pattern).toBe('^sha256:[a-f0-9]{64}$');
+    });
+
     it('ships an idempotent, source-timestamped event table owned by geo_user', () => {
         const ddl = fs.readFileSync(new URL('../routes/land-events-ddl.sql', import.meta.url), 'utf8');
         expect(ddl).toMatch(/CREATE TABLE IF NOT EXISTS consensus\.land_event/);
@@ -35,6 +46,39 @@ describe('land-event routes', () => {
             outcomes: { executed: 'YES', cancelled: 'NO' }
         });
         expect(res.body.recipe.hash).toMatch(/^sha256:/);
+    });
+
+    it('returns a court recipe and deterministic external-market address', async () => {
+        const res = await request(appFor({ query: vi.fn() }))
+            .get('/oracle/recipes/court-parcel-operation-v1')
+            .query({
+                parcelUid: 'HR-335347-1208/3',
+                yesOperation: 'transfer',
+                noOperation: 'no_event',
+                closesAt: '1790000000'
+            });
+        expect(res.status).toBe(200);
+        expect(res.body.recipe).toMatchObject({
+            id: 'court-parcel-operation-v1',
+            subject: { parcelUid: 'HR-335347-1208/3' },
+            outcomes: { transfer: 'YES', no_event: 'NO' },
+            verification: { kind: 'sas_court_parcel_operation_v1', permissionless: true }
+        });
+        expect(res.body.recipe.hash).toMatch(/^sha256:[a-f0-9]{64}$/);
+        expect(res.body.marketAccount).toMatch(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/);
+    });
+
+    it('rejects incomplete or ambiguous court recipes', async () => {
+        const missing = await request(appFor({ query: vi.fn() }))
+            .get('/oracle/recipes/court-parcel-operation-v1');
+        expect(missing.status).toBe(400);
+        expect(missing.body.error).toMatch(/parcelUid/);
+
+        const ambiguous = await request(appFor({ query: vi.fn() }))
+            .get('/oracle/recipes/court-parcel-operation-v1')
+            .query({ parcelUid: 'HR-x', yesOperation: 'same', noOperation: 'same', closesAt: '1790000000' });
+        expect(ambiguous.status).toBe(400);
+        expect(ambiguous.body.error).toMatch(/must differ/);
     });
 
     it('reads bounded events and preserves source timestamps and hashes', async () => {
@@ -73,7 +117,7 @@ describe('land-event routes', () => {
             source: 'Croatian judiciary e-Oglasna archive',
             chain: 'solana:devnet', schemaId: 'schema-account',
             attestations: 57, parcels: 55, decisions: 28,
-            marketIntegration: expect.stringContaining('do not consume')
+            marketIntegration: expect.stringContaining('live on devnet')
         });
         expect(res.body.schemaUrl).toContain('/address/schema-account?cluster=devnet');
         expect(res.body).not.toHaveProperty('events');

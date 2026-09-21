@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import { marked } from 'marked';
 import { readX402Config } from '../utils/x402-payment.js';
 import { EVENT_TYPE as LAND_EVENT_TYPE, RECIPE_ID as LAND_RECIPE_ID } from '../oracle/proposal-lifecycle.js';
+import { COURT_RECIPE_ID } from '../oracle/court-parcel-operation.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -228,6 +229,7 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                 },
                 oracle: {
                     eventType: LAND_EVENT_TYPE,
+                    schema: `${base}/oracle/recipe.schema.json`,
                     events: `${base}/oracle/events?subject={proposalAccount}`,
                     recipeId: LAND_RECIPE_ID,
                     recipe: `${base}/oracle/recipes/${LAND_RECIPE_ID}?proposal={proposalAccount}&market={marketAccount}`,
@@ -238,7 +240,17 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                         source: 'Croatian judiciary e-Oglasna archive',
                         attestation: 'Solana Attestation Service on devnet',
                         privacy: 'aggregate-only from this API; parcel-level legal records remain in the dedicated oracle boundary',
-                        marketIntegration: 'not yet consumed by the proposal-market program'
+                        marketIntegration: 'ExternalMarket verifier and first court-SAS settlement are live on devnet'
+                    },
+                    externalMarket: {
+                        status: 'live_devnet',
+                        recipeId: COURT_RECIPE_ID,
+                        recipe: `${base}/oracle/recipes/${COURT_RECIPE_ID}?parcelUid={parcelUid}&yesOperation={yesOperation}&noOperation={noOperation}&closesAt={unixSeconds}`,
+                        verification: 'permissionless direct SAS account parsing; outcome is derived from the committed operation mapping',
+                        proofMarket: '5wyJ7XjbnoPUaDgaHAttdhdS38VmHf1p3jGwwVUeN8QM',
+                        proofResolution: '39sN9w1Pj75Hp7vjxQzaNQ89uRxSsTjFFoE4GCPfWXMU7v1koLEUtV6odzUfQcxuZJNWwXhs1UWKswSMRQbdLETJ',
+                        proofClaim: '2Ht5ZdVHZuFdEu5PkhkQxqNjoPQSBM9jeGaWKPiWzpLjbWtahP5bhKh3offRcvKDVN6JBFMy6piozWnEExy3RNzJ',
+                        proof: { yesStakeAtomic: '10000', noStakeAtomic: '10000', payoutAtomic: '20000', decimals: 6 }
                     }
                 },
                 market: {
@@ -253,7 +265,13 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                         oracleRecipe: LAND_RECIPE_ID
                     },
                     idl: 'blockchain/solana/idl/proposal_market.json',
-                    client: 'frontend/js/solana/market-client.js'
+                    client: 'frontend/js/solana/market-client.js',
+                    externalResolution: {
+                        status: 'live_devnet',
+                        account: 'ExternalMarket',
+                        oracleRecipe: COURT_RECIPE_ID,
+                        proofMarket: '5wyJ7XjbnoPUaDgaHAttdhdS38VmHf1p3jGwwVUeN8QM'
+                    }
                 },
                 proposalSupport: {
                     programId: pledgeProgramId(),

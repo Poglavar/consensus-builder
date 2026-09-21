@@ -177,6 +177,16 @@ persisted terminal observations are at `GET $(base)/oracle/events?subject=<propo
 The pure client is `frontend/js/solana/market-client.js` (`SolanaMarketClient`), the IDL
 `blockchain/solana/idl/proposal_market.json`.
 
+The same source and IDL now include `ExternalMarket`: a separate account type whose PDA is the
+SHA-256 recipe commitment. It fixes the SAS credential, schema, issuer, parcel hash, exact YES/NO
+operation hashes and close time before accepting stakes; after close, any caller may submit the
+matching court-oracle SAS account and the program derives the outcome from its payload. Build a
+declaration with `GET $(base)/oracle/recipes/court-parcel-operation-v1?parcelUid=<uid>&yesOperation=<value>&noOperation=<value>&closesAt=<unix-seconds>`.
+This verifier is live at the devnet program id. The first recipe-bound market is
+[`5wyJ…N8QM`](https://explorer.solana.com/address/5wyJ7XjbnoPUaDgaHAttdhdS38VmHf1p3jGwwVUeN8QM?cluster=devnet),
+with its permissionless SAS resolution in
+[`39sN…LETJ`](https://explorer.solana.com/tx/39sN9w1Pj75Hp7vjxQzaNQ89uRxSsTjFFoE4GCPfWXMU7v1koLEUtV6odzUfQcxuZJNWwXhs1UWKswSMRQbdLETJ?cluster=devnet).
+
 ## 8. Donations and soft pledges
 
 Agents can also back a minted proposal with devnet USDC using `proposal_pledge` (program

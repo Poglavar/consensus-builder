@@ -39,6 +39,8 @@
         const x402 = docs.x402 || {};
         const discoveryListed = discovery?.state === 'listed';
         const latestOracle = newest(oracleEvents, event => event.eventType === 'proposal_lifecycle');
+        const external = docs.oracle?.externalMarket || {};
+        const externalLive = external.status === 'live_devnet' && external.proofMarket && external.proofResolution;
         return {
             generatedAt: now,
             x402: {
@@ -100,6 +102,21 @@
                 label: errors.publicRecords ? 'Public-record oracle unavailable' : 'Waiting for external land evidence',
                 detail: errors.publicRecords || 'The court oracle publishes parcel-level SAS attestations; this app republishes only aggregate health and its public schema.',
                 summary: publicRecords
+            },
+            externalMarket: externalLive ? {
+                tone: 'success',
+                label: 'Court evidence settled a two-sided market',
+                detail: '0.01 USDC on YES + 0.01 USDC on NO · permissionless SAS resolution · 0.02 USDC claimed',
+                market: external.proofMarket,
+                resolution: external.proofResolution,
+                claim: external.proofClaim || null
+            } : {
+                tone: 'waiting',
+                label: 'External market proof unavailable',
+                detail: 'The public agent metadata did not return a verified devnet market and resolution transaction.',
+                market: null,
+                resolution: null,
+                claim: null
             },
             oracle: latestOracle ? {
                 tone: 'success',
@@ -178,6 +195,17 @@
                 ? { label: 'Solana attestation schema ↗', href: model.publicRecords.summary.schemaUrl }
                 : {}
         ]);
+        addCard(cards, 'External market settlement', model.externalMarket, [
+            model.externalMarket.market
+                ? { label: 'Market account ↗', href: `https://explorer.solana.com/address/${encodeURIComponent(model.externalMarket.market)}?cluster=devnet` }
+                : {},
+            model.externalMarket.resolution
+                ? { label: 'SAS resolution ↗', href: `https://explorer.solana.com/tx/${encodeURIComponent(model.externalMarket.resolution)}?cluster=devnet` }
+                : {},
+            model.externalMarket.claim
+                ? { label: 'Winning claim ↗', href: `https://explorer.solana.com/tx/${encodeURIComponent(model.externalMarket.claim)}?cluster=devnet` }
+                : {}
+        ]);
         addCard(cards, 'Market resolution', model.oracle, [
             { label: 'Oracle events ↗', href: `${apiBase}/oracle/events` },
             model.oracle.event?.source?.transactionUrl
@@ -216,6 +244,7 @@
             ['Compare funded donation with a revocable soft pledge, using the same wallet UI.', model.evidence.latestProposalId ? `/proposals/${encodeURIComponent(model.evidence.latestProposalId)}` : '/'],
             ['Inspect the prediction market’s hashed oracle recipe and market account.', model.evidence.latestProposalId ? `/proposals/${encodeURIComponent(model.evidence.latestProposalId)}` : '/'],
             ['Verify the external court oracle’s aggregate health and public SAS schema.', `${apiBase}/oracle/public-records/summary`],
+            ['Follow the live court-attestation market from resolution to USDC claim.', model.externalMarket.resolution ? `https://explorer.solana.com/tx/${encodeURIComponent(model.externalMarket.resolution)}?cluster=devnet` : `${apiBase}/docs/agents.json`],
             ['Open a source-hashed proposal lifecycle event and its Solana transaction.', `${apiBase}/oracle/events`]
         ].forEach(([label, href]) => {
             const item = node(doc, 'li'); item.append(link(doc, label, href)); list.append(item);
@@ -229,8 +258,8 @@
 
         const boundary = node(doc, 'section', null, 'hd-flow hd-boundary');
         boundary.append(node(doc, 'span', 'HONEST BOUNDARY', 'hd-eyebrow'));
-        boundary.append(node(doc, 'h2', 'External evidence is live; external market resolution is next'));
-        boundary.append(node(doc, 'p', 'Today the market resolves from the proposal program’s Executed/Cancelled state. The court oracle is a separate live Solana Attestation Service feed. The remaining protocol gap is binding a market to a declared external evidence recipe without exposing personal legal data.'));
+        boundary.append(node(doc, 'h2', 'One authoritative source is live; broader geography still needs corroboration'));
+        boundary.append(node(doc, 'p', 'The live external market verifies one fixed Croatian court SAS schema and trusted issuer. Permit, imagery, news and OSM adapters—and challenge rules for sources that are easier to manipulate—remain future work. Everything shown here uses devnet assets with no monetary value.'));
         element.append(boundary);
 
         const readiness = node(doc, 'section', null, 'hd-flow hd-readiness');
