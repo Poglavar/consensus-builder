@@ -11,8 +11,7 @@
 set -euo pipefail
 
 # ---- Configuration ----
-SERVER='root@67.205.138.129'
-SSH_KEY="$HOME/.ssh/id_ed25519"
+SSH_HOST="${SSH_HOST:-do}"
 BRANCH="${BRANCH:-main}"
 REPO_URL='https://github.com/Poglavar/consensus-builder.git'   # HTTPS: no server deploy key needed
 REMOTE_REPO='/opt/consensus-builder'                           # server-side clone (deploy-only)
@@ -29,7 +28,7 @@ if [ -f "$SCRIPT_DIR/.env" ]; then
 fi
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
-ssh_server() { ssh -o StrictHostKeyChecking=accept-new -i "$SSH_KEY" "$SERVER" "$@"; }
+ssh_server() { ssh -o StrictHostKeyChecking=accept-new "$SSH_HOST" "$@"; }
 
 echo -e "${GREEN}🚀 Deploying frontend via server-side git pull...${NC}"
 
@@ -43,7 +42,7 @@ fi
 # ---- SSH connectivity ----
 echo -e "${YELLOW}🔍 Testing SSH connection...${NC}"
 if ! ssh_server 'echo ok' >/dev/null 2>&1; then
-    echo -e "${RED}❌ Error: cannot SSH to $SERVER (check $SSH_KEY).${NC}"; exit 1
+    echo -e "${RED}❌ Error: cannot SSH to $SSH_HOST (check your SSH configuration).${NC}"; exit 1
 fi
 echo -e "${GREEN}✅ SSH connection successful${NC}"
 
