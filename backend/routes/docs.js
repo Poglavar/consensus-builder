@@ -235,6 +235,22 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     urbanRules: `${base}/urban-rules?coordinates={lng},{lat}`,
                     buildingFootprints: `${base}/buildings/footprints`
                 },
+                mcp: {
+                    transport: 'stdio',
+                    source: 'backend/agents/mcp-server.mjs',
+                    command: 'cd backend && npm run mcp',
+                    liveActionsEnabledByDefault: false,
+                    liveGuard: 'UGT_MCP_LIVE=1 plus confirm=true; all writes use Solana devnet',
+                    tools: [
+                        'ugt_capabilities', 'ugt_list_proposals', 'ugt_activity', 'ugt_support_status',
+                        'ugt_oracle_events', 'ugt_inspect_verified_fact', 'ugt_buy_verified_fact',
+                        'ugt_submit_proposal', 'ugt_pledge', 'ugt_donate', 'ugt_forecast'
+                    ],
+                    sharedAdapters: [
+                        'x402 proposal client', 'x402 verified-fact client',
+                        'proposal pledge client', 'proposal donation client', 'proposal market client'
+                    ]
+                },
                 oracle: {
                     eventType: LAND_EVENT_TYPE,
                     schema: `${base}/oracle/recipe.schema.json`,

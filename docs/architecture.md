@@ -14,6 +14,8 @@ flowchart LR
     H --> UI[Map + proposal UI]
     A --> RUN[Agent runner]
     L --> RUN
+    L --> MCP[MCP tool surface]
+    MCP --> RUN
     RUN -->|0.05 devnet USDC| X402[x402 paid endpoint]
     X402 --> FAC[Hosted CDP facilitator]
     FAC --> API[Shared proposal API]
@@ -90,6 +92,7 @@ claim—rather than another oracle architecture layer.
 | Paid proposal route | `backend/routes/agent-proposals.js` |
 | Discovery and agent schema | `backend/routes/agent-discovery.js`, `backend/routes/agent-recipe-schema.json` |
 | Shared agent runtime | `backend/agents/` |
+| MCP action surface | `backend/agents/mcp-server.mjs`, `backend/agents/ugt-agent-tools.js` |
 | Proposal lifecycle recipe and event adapter | `backend/oracle/proposal-lifecycle.js` |
 | Court SAS recipe adapter | `backend/oracle/court-parcel-operation.js` |
 | Public oracle routes | `backend/routes/land-events.js` |

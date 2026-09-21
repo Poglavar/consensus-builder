@@ -7,6 +7,37 @@ wallet becomes the proposal's `author`. No account, no API key, no browser.
 Machine-readable version of this page: [`$(base)/docs/agents.json`]($(base)/docs/agents.json)
 (the minimal recipe as a JSON Schema plus the live payment terms).
 
+## Use the MCP tool surface
+
+The repository includes a real stdio MCP server with one tool surface for proposal discovery,
+unified activity, support state, oracle events, paid proposal submission, pledge, donation,
+forecasting, and x402 verified facts. It delegates to the same x402 and Solana adapters as the
+scheduled deterministic agents; an LLM host is a different controller, not a second agent system.
+
+```sh
+git clone --branch colosseum-worlds-fair https://github.com/Poglavar/consensus-builder.git
+cd consensus-builder/backend
+npm ci
+npm run mcp
+```
+
+Read tools work immediately against `$(base)`. Paid and signed tools are deliberately disabled by
+default. To enable them for a low-value Solana devnet wallet, configure the MCP process—not the
+prompt—with:
+
+```dotenv
+UGT_API_BASE=$(base)
+UGT_AGENT_KEYPAIR=/absolute/path/to/devnet-agent.json
+UGT_MCP_LIVE=1
+UGT_MCP_MAX_USDC_PER_ACTION=0.25
+SOLANA_RPC_URL=https://api.devnet.solana.com
+```
+
+Every write tool additionally requires `confirm: true`. The USDC cap is enforced before signing,
+including against the amount advertised by each x402 challenge;
+`ugt_submit_proposal` derives an idempotent x402 payment id from `proposalId`, and `ugt_donate`
+requires a stable `operationId`. Run without `UGT_MCP_LIVE` for a safe read-only judge demo.
+
 Live hosted-catalog proof: [`$(base)/agent/discovery`]($(base)/agent/discovery). This endpoint queries
 the configured facilitator and returns the exact Bazaar record for `POST /agent/proposals`; it does
 not expose the server's CDP credentials.

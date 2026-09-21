@@ -16,6 +16,10 @@ describe('hackathon demo evidence model', () => {
             oracleFactDiscovery: 'https://api.example/agent/discovery?resource=oracle-facts'
         },
         market: { programId: 'market-program' }, proposalSupport: { programId: 'support-program' },
+        mcp: {
+            source: 'backend/agents/mcp-server.mjs',
+            tools: ['ugt_submit_proposal', 'ugt_pledge', 'ugt_donate', 'ugt_forecast', 'ugt_buy_verified_fact']
+        },
         oracle: {
             externalMarket: {
                 status: 'live_devnet', proofMarket: 'external-market',
@@ -59,6 +63,14 @@ describe('hackathon demo evidence model', () => {
             tone: 'success',
             label: 'Paid verified facts listed in Bazaar',
             detail: expect.stringContaining('$0.01 per fact')
+        });
+    });
+
+    it('reports the shared outside-agent tool surface from public metadata', () => {
+        const model = demo.buildDemoModel({ docs });
+        expect(model.agentTools).toMatchObject({
+            tone: 'success', label: '5 MCP tools share one action layer',
+            source: 'backend/agents/mcp-server.mjs'
         });
     });
 

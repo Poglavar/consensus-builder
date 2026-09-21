@@ -353,6 +353,12 @@ describe('agent quickstart docs', () => {
         expect(res.body.endpoints.submit).toBe('https://api.example.test/agent/proposals');
         expect(res.body.endpoints.oracleFact).toContain('/agent/oracle/facts?subject=');
         expect(res.body.endpoints.oracleFactDiscovery).toContain('resource=oracle-facts');
+        expect(res.body.mcp).toMatchObject({
+            transport: 'stdio', source: 'backend/agents/mcp-server.mjs', liveActionsEnabledByDefault: false
+        });
+        expect(res.body.mcp.tools).toEqual(expect.arrayContaining([
+            'ugt_submit_proposal', 'ugt_pledge', 'ugt_donate', 'ugt_forecast', 'ugt_buy_verified_fact'
+        ]));
         expect(res.body.market.programId).toMatch(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/);
         expect(res.body.proposalSupport).toMatchObject({
             programId: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/),

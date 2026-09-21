@@ -88,4 +88,15 @@ describe('hackathon repository documentation', () => {
         expect(script).toContain('result.status !== \'verified\'');
         expect(read('docs/hackathon-build.md')).toContain('npm run audit:hackathon');
     });
+
+    it('ships one guarded MCP action surface over the existing agent adapters', () => {
+        const server = read('backend/agents/mcp-server.mjs');
+        const tools = read('backend/agents/ugt-agent-tools.js');
+        for (const name of ['ugt_submit_proposal', 'ugt_pledge', 'ugt_donate', 'ugt_forecast', 'ugt_buy_verified_fact']) {
+            expect(server).toContain(name);
+        }
+        expect(tools).toContain("live actions are disabled; set UGT_MCP_LIVE=1");
+        expect(tools).toContain('UGT_MCP_MAX_USDC_PER_ACTION');
+        expect(read('backend/routes/docs-agents.md')).toContain('npm run mcp');
+    });
 });

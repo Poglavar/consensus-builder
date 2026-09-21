@@ -80,6 +80,7 @@ async function main() {
         const discoveryResponse = await fetch(discoveryUrl, { headers: { accept: 'application/json' } });
         result.payer = client.payerAddress;
         result.payment = paid.receipt;
+        result.extensionResponses = paid.extensionResponses;
         result.fact = {
             eventId: paid.body.fact.id,
             outcome: paid.body.fact.outcome,
@@ -94,6 +95,7 @@ async function main() {
     console.log(`challenge   ${result.challenge.amountAtomic} atomic · ${result.challenge.network} · Bazaar ${result.challenge.bazaarMethod}`);
     if (result.dryRun) return console.log('dry run     no payment signed');
     console.log(`settlement  ${result.payment?.transaction || 'missing receipt'}`);
+    console.log(`bazaar      ${result.extensionResponses?.bazaar?.status || 'no facilitator status'}`);
     console.log(`fact        ${result.fact.outcome} · ${result.fact.eventId}`);
     console.log(`recipe      ${result.fact.recipeHash}`);
     console.log(`catalog     ${result.discovery?.state || 'unknown'}`);

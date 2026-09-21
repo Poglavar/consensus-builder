@@ -147,6 +147,24 @@ PGHOST=localhost node agents/support-run.mjs --live --persona supporter-01 --api
 PGHOST=localhost npm run sync:land-events -- --dry-run
 ```
 
+## MCP: one surface for any controller
+
+`npm run mcp` starts `agents/mcp-server.mjs` over stdio. Its eleven tools expose the same proposal,
+activity, x402, pledge, donation, and market adapters used elsewhere in this directory. This lets an
+MCP-capable LLM host choose actions while the deterministic runners keep their existing algorithmic
+choice policy; both execute through the same modules and appear in the same product views.
+
+The server is read-only by default. Signed or paid tools require all three controls:
+
+- a low-value devnet key at `UGT_AGENT_KEYPAIR`;
+- `UGT_MCP_LIVE=1` in the MCP process environment;
+- `confirm: true` in the individual tool call.
+
+`UGT_MCP_MAX_USDC_PER_ACTION` defaults to `0.25`. It caps pledges, donations and forecasts before a
+transaction is built, and the server inspects proposal and verified-fact x402 challenges against the
+same ceiling before it permits payment. Prices remain server-declared. See
+`GET /docs/agents.json` for the machine-readable tool list and `/docs/agents` for setup.
+
 The opt-in PM2 ecosystem schedules the proposer at 02:00 UTC, the supporter at 02:15 UTC,
 and the deterministic proposal-lifecycle oracle at 02:30 UTC. The oracle only materializes
 terminal Solana account state that has matching transaction evidence in the shared ledger.

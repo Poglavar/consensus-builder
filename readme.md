@@ -25,6 +25,8 @@ commits, and features built during the hackathon.
 ## What the hackathon build adds
 
 - x402-paid, Bazaar-discoverable proposal submission for agents;
+- an eleven-tool MCP surface that reuses the same proposal, funding, forecast, activity, and
+  verified-fact adapters for deterministic or LLM controllers;
 - Solana devnet programs for proposal prediction markets, donations, and soft pledges;
 - one activity model for people, deterministic controllers, and LLM controllers;
 - a deterministic land-event oracle with hashed resolution recipes and source-linked evidence;

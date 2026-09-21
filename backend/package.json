@@ -12,6 +12,7 @@
         "test:coverage": "vitest run --coverage --pool=threads --maxWorkers=4",
         "demo:x402": "node scripts/x402-demo.mjs",
         "demo:oracle-fact": "node scripts/oracle-fact-demo.mjs",
+        "mcp": "node agents/mcp-server.mjs",
         "audit:hackathon": "node scripts/hackathon-proof-audit.mjs",
         "sync:land-events": "node scripts/sync-land-events.mjs",
         "smoke:prod:parcels": "node scripts/smoke-production-bbox.mjs",
@@ -20,6 +21,7 @@
     "dependencies": {
         "@anthropic-ai/sdk": "^0.126.0",
         "@coinbase/cdp-sdk": "^1.56.0",
+        "@modelcontextprotocol/server": "^2.0.0",
         "@solana/kit": "^5.5.1",
         "@solana/web3.js": "^1.99.0",
         "@turf/turf": "^6.5.0",
@@ -37,10 +39,12 @@
         "express-rate-limit": "^8.7.0",
         "helmet": "^8.3.0",
         "marked": "^16.4.2",
-        "pg": "^8.23.0"
+        "pg": "^8.23.0",
+        "zod": "^4.6.5"
     },
     "devDependencies": {
         "@babel/parser": "^7.29.9",
+        "@modelcontextprotocol/client": "^2.0.0",
         "@vitest/coverage-v8": "^4.1.11",
         "nodemon": "^3.1.14",
         "supertest": "^7.0.0",

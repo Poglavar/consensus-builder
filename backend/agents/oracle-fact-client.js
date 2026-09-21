@@ -7,6 +7,16 @@ import { wrapFetchWithPayment, x402Client } from '@x402/fetch';
 import { decodePaymentRequiredHeader, decodePaymentResponseHeader } from '@x402/core/http';
 import { ExactSvmScheme } from '@x402/svm';
 
+function decodeExtensionResponsesHeader(value) {
+    if (!value) return null;
+    try {
+        const decoded = JSON.parse(Buffer.from(value, 'base64').toString('utf8'));
+        return decoded && typeof decoded === 'object' && !Array.isArray(decoded) ? decoded : null;
+    } catch {
+        return null;
+    }
+}
+
 export function oracleFactUrl(baseUrl, proposalAccount, marketAccount = null) {
     if (!baseUrl) throw new Error('baseUrl is required');
     if (!proposalAccount) throw new Error('proposalAccount is required');
@@ -31,7 +41,8 @@ async function parsedResponse(response) {
     return {
         status: response.status,
         body,
-        receipt: receiptHeader ? decodePaymentResponseHeader(receiptHeader) : null
+        receipt: receiptHeader ? decodePaymentResponseHeader(receiptHeader) : null,
+        extensionResponses: decodeExtensionResponsesHeader(response.headers.get('extension-responses'))
     };
 }
 

@@ -29,7 +29,10 @@ describe('paid oracle fact client', () => {
             status: 200,
             headers: {
                 'content-type': 'application/json',
-                'payment-response': encodePaymentResponseHeader(receipt)
+                'payment-response': encodePaymentResponseHeader(receipt),
+                'extension-responses': Buffer.from(JSON.stringify({
+                    bazaar: { status: 'processing' }
+                })).toString('base64')
             }
         }));
 
@@ -40,11 +43,25 @@ describe('paid oracle fact client', () => {
         expect(result).toMatchObject({
             status: 200,
             body: { verification: { status: 'verified' } },
-            receipt
+            receipt,
+            extensionResponses: { bazaar: { status: 'processing' } }
         });
         expect(paidFetch).toHaveBeenCalledWith(
             `https://api.example.test/agent/oracle/facts?subject=${PROPOSAL}`,
             { headers: { accept: 'application/json' } }
         );
+    });
+
+    it('ignores malformed facilitator extension responses without losing the paid fact', async () => {
+        const paidFetch = vi.fn(async () => new Response('{}', {
+            status: 200,
+            headers: { 'extension-responses': 'not-base64-json' }
+        }));
+
+        const result = await buyOracleFact({
+            baseUrl: 'https://api.example.test', proposalAccount: PROPOSAL, paidFetch
+        });
+
+        expect(result.extensionResponses).toBeNull();
     });
 });

@@ -156,6 +156,12 @@ git diff 3ee1855...colosseum-worlds-fair
     activity envelopes used by humans and agents with the proposal lifecycle oracle. Proposed,
     backed, forecast and resolved stages stay visibly pending until matching public evidence exists,
     and every transaction-backed stage links to Solana Explorer.
+28. **One MCP action surface for outside agents** — a standards-based stdio server exposes eleven
+    proposal, activity, funding, forecast, and verified-fact tools. It calls the existing x402 and
+    Solana signer adapters rather than introducing a second runtime, so deterministic and LLM
+    controllers differ only in how they choose actions. Reads are safe by default; devnet writes
+    require an external low-value key, an explicit process-level live switch, per-call confirmation,
+    and a pre-signing USDC cap.
 
 ### Live external-market integration proof
 

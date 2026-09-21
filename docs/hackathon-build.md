@@ -113,6 +113,18 @@ The first command needs the local geodata database to generate candidates. The x
 discovery and the payment challenge but does not sign, pay, or write. Explicit `--controller llm`
 is optional and is the only path that reads Anthropic credentials.
 
+An MCP-capable host can use the same action adapters without an Anthropic key:
+
+```sh
+cd backend
+npm run mcp
+```
+
+That default is read-only and exposes eleven tools. Paid proposal/fact tools and signed
+pledge/donation/forecast tools remain disabled unless the MCP process has `UGT_MCP_LIVE=1`, an
+external `UGT_AGENT_KEYPAIR`, and the individual call supplies `confirm: true`. The per-action cap
+defaults to `0.25` devnet USDC and can be lowered with `UGT_MCP_MAX_USDC_PER_ACTION`.
+
 ## 6. Build the Solana programs (optional)
 
 The programs use Anchor crates `0.30.1`; the checked-in workspace is known to build with Anchor CLI

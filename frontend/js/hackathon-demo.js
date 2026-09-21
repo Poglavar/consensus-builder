@@ -46,6 +46,9 @@
         const externalProof = external.proof || {};
         const externalChronology = externalProof.chronology || {};
         const externalProspective = externalChronology.classification === 'prospective';
+        const mcpTools = docs.mcp?.tools || [];
+        const mcpComplete = ['ugt_submit_proposal', 'ugt_pledge', 'ugt_donate', 'ugt_forecast', 'ugt_buy_verified_fact']
+            .every(name => mcpTools.includes(name));
         return {
             generatedAt: now,
             x402: {
@@ -78,6 +81,14 @@
                 endpoint: docs.endpoints?.oracleFact || null,
                 discoveryUrl: docs.endpoints?.oracleFactDiscovery || null,
                 listing: oracleDiscovery?.listing || null
+            },
+            agentTools: mcpComplete ? {
+                tone: 'success', label: `${mcpTools.length} MCP tools share one action layer`,
+                detail: 'Proposal, pledge, donation, forecast and verified-fact actions delegate to the same x402 and Solana adapters as deterministic agents.',
+                source: docs.mcp?.source || null
+            } : {
+                tone: 'waiting', label: 'Agent tool package unavailable',
+                detail: 'The public manifest did not report the complete shared MCP action surface.', source: null
             },
             algorithm: latestAlgorithm ? {
                 tone: algorithmFresh ? 'success' : 'waiting',
@@ -264,6 +275,13 @@
                 : {},
             { label: 'Audit free event feed ↗', href: `${apiBase}/oracle/events` }
         ]);
+        addCard(cards, 'Agent tool surface', model.agentTools, [
+            { label: 'MCP setup ↗', href: `${apiBase}/docs/agents` },
+            { label: 'Machine manifest ↗', href: `${apiBase}/docs/agents.json` },
+            model.agentTools.source
+                ? { label: 'Source ↗', href: `https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/${model.agentTools.source}` }
+                : {}
+        ]);
         addCard(cards, 'Daily proposer', model.algorithm, model.algorithm.run ? [
             { label: 'Run record ↗', href: `${apiBase}/agent/runs/${encodeURIComponent(model.algorithm.run.id)}` }
         ] : []);
@@ -331,6 +349,7 @@
         const list = node(doc, 'ol');
         [
             ['Inspect the exact live x402 Bazaar discovery record.', model.x402.discoveryUrl || `${apiBase}/agent/discovery`],
+            ['Inspect the shared MCP tools an outside agent can call.', `${apiBase}/docs/agents.json`],
             ['Inspect the paid verified-fact capability and its Bazaar schema.', model.oracleFacts.discoveryUrl || `${apiBase}/agent/discovery?resource=oracle-facts`],
             ['Open the latest live actor, rationale, cost and transaction evidence.', '/actor-explorer.html'],
             ['Open a proposal in read-only Details; Counterpropose creates the editable clone.', model.evidence.latestProposalId ? `/proposals/${encodeURIComponent(model.evidence.latestProposalId)}` : '/'],
