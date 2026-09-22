@@ -13,7 +13,7 @@
     <meta name="twitter:title" content="Hyperstition: Markets for Possible Cities" />
     <meta name="twitter:description" content="Urban Game Theory's Colosseum World’s Fair build, by Consensus Builder." />
     <link rel="icon" href="favicon.ico" />
-    <link rel="stylesheet" href="css/hackathon-deck.css?v=6" />
+    <link rel="stylesheet" href="css/hackathon-deck.css?v=7" />
 </head>
 <body>
     <a class="deck-skip" href="#slide-1">Skip to the pitch</a>
@@ -179,22 +179,48 @@
         <section class="pitch-slide pitch-slide--light" id="slide-6" data-slide="6" aria-labelledby="slide-6-title">
             <div class="pitch-heading">
                 <h2 id="slide-6-title">Public records decide what happened</h2>
-                <p>The narrative can mobilize reality. The LLM can extract evidence. Neither becomes the judge.</p>
+                <p>The market declares its evidence rule before anyone stakes. An LLM may extract facts, but only matching public evidence can settle the outcome.</p>
             </div>
-            <div class="trust-flow" aria-label="Resolution architecture">
-                <article><b>Humans + agents</b><span>propose · donate · pledge · stake</span></article>
-                <article><b>Parcel market</b><span>proposal · funding · forecast</span></article>
-                <article class="is-gap"><b>Evidence recipe</b><span>declared before trading</span></article>
-                <article class="is-final"><b>Permissionless resolution</b><span>anyone applies the published rule</span></article>
+            <div class="verification-flow" aria-label="Three-step resolution architecture">
+                <article>
+                    <small>01 · Declare</small>
+                    <strong>Write the resolution recipe</strong>
+                    <span>Name the proposal, parcels, accepted source, and outcome test before trading.</span>
+                </article>
+                <article>
+                    <small>02 · Observe</small>
+                    <strong>Public evidence arrives</strong>
+                    <span>On-chain proposal state or a source-hashed court record shows what happened.</span>
+                </article>
+                <article>
+                    <small>03 · Verify + settle</small>
+                    <strong>Anyone can apply the rule</strong>
+                    <span>Matching evidence resolves YES or NO; the program pays the winning forecasters.</span>
+                </article>
             </div>
-            <div class="attesters">
-                <small>Live verification stack</small>
-                <ul><li>Proposal state</li><li>Court SAS</li><li>Recipe-bound Lens</li><li>Permissionless verifier</li></ul>
+            <div class="live-verification" aria-labelledby="live-verification-title">
+                <div class="live-verification__heading">
+                    <small id="live-verification-title">Live on Solana Devnet</small>
+                    <strong>Two evidence paths. One explicit settlement rule.</strong>
+                </div>
+                <div class="live-verification__columns" aria-hidden="true">
+                    <span>Evidence source</span><span>What is verified</span><span>Market resolved</span>
+                </div>
+                <article>
+                    <b>Proposal state</b>
+                    <span>Executed or cancelled ProposalNFT account</span>
+                    <strong>Proposal-state market</strong>
+                </article>
+                <article>
+                    <b>Court SAS</b>
+                    <span>Source-hashed Croatian court attestation</span>
+                    <strong>Court-linked market</strong>
+                </article>
             </div>
-            <div class="now-next">
-                <p><small>Live now</small><strong>Proposal-state market + court SAS feed</strong></p>
-                <p><small>Live integration proof</small><strong>Court SAS → market outcome → USDC payout</strong></p>
-                <p><small>Agent-ready</small><strong>11 MCP tools · propose · fund · forecast · verify</strong></p>
+            <div class="verification-proof">
+                <small>End-to-end proof</small>
+                <strong>Court attestation → recipe check → market outcome → USDC payout</strong>
+                <span>The same verification flow is available to humans and agents through the shared MCP interface.</span>
             </div>
         </section>
 
