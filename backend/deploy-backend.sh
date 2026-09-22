@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Deploy the consensus-builder backend to the `do` server: the server syncs the
-# selected branch (main by default), reinstalls deps, and restarts the PM2 process, then
+# selected branch (main by default), reinstalls deps, and reloads the PM2 process, then
 # a public smoke test confirms the API is healthy. (Migrated from the old
 # rsync-based flow to Git sync; the repo is cloned at $DEPLOY_DIR on the server.)
 
@@ -39,16 +39,16 @@ git checkout -B "${BRANCH}" "origin/${BRANCH}"
 echo "Installing dependencies (npm ci)..."
 npm ci
 
-echo "Restarting PM2 process..."
+echo "Reloading PM2 process without dropping connections..."
 mkdir -p logs
 export RELEASE_SHA="$(git rev-parse HEAD)"
-# Restart FROM THE ECOSYSTEM FILE, not by process name. `pm2 restart <name>` reuses the config PM2
+# Reload FROM THE ECOSYSTEM FILE, not by process name. `pm2 reload <name>` reuses the config PM2
 # saved when the app was first started, so a change to `env:` in ecosystem.config.cjs is silently
 # ignored — the deploy reports success and the process keeps the old environment. (That is exactly
 # how PUBLIC_API_BASE_URL stayed unset after being added: deploy "succeeded", env unchanged.)
 # Passing the file makes PM2 re-read it, and --update-env applies the result.
-# Idempotent: `pm2 restart <file>` starts the app if it is not running yet.
-pm2 restart ecosystem.config.cjs --only "${PM2_APP}" --update-env
+# `startOrReload` is idempotent and uses PM2's zero-downtime reload when the app exists.
+pm2 startOrReload ecosystem.config.cjs --only "${PM2_APP}" --update-env
 pm2 save
 pm2 status
 

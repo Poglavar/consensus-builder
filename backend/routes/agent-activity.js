@@ -1,7 +1,164 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { PublicKey } from '@solana/web3.js';
+import { buildAddressBook } from '../solana/address-book.js';
+import { decodeParsedTransaction, loadIdls } from '../solana/tx-decoder.js';
+import { formatAtomicAmount } from '../utils/x402-payment.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const CHAIN_ACTIONS = Object.freeze({
+    mint_and_fund: 'create',
+    accept_proposal: 'accept',
+    withdraw_acceptance: 'withdrawAcceptance',
+    cancel_and_refund: 'cancel',
+    create_market: 'createMarket',
+    stake: 'stake',
+    resolve: 'resolve',
+    claim: 'claim',
+    donate: 'donate',
+    refund_donation: 'refundMyDonations',
+    release_donations: 'releaseDonations',
+    set_pledge: 'pledge',
+    revoke_pledge: 'revokePledge',
+    fulfill_pledge: 'fulfillPledge',
+    void_pledge: 'voidPledge'
+});
+const ACTIVITY_PROGRAMS = new Set(['proposal_nft', 'proposal_market', 'proposal_pledge']);
+
+function readPersonas() {
+    try {
+        return JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'agents', 'personas.json'), 'utf8'));
+    } catch {
+        return { personas: [] };
+    }
+}
+
 function asLimit(value) {
     const parsed = Number(value);
     if (!Number.isInteger(parsed) || parsed < 1) return 100;
     return Math.min(parsed, 250);
+}
+
+function accountFor(instruction, role) {
+    return instruction?.accounts?.find(account => account.role === role)?.address || null;
+}
+
+export function proposalAccountIndex(rows = []) {
+    const index = new Map();
+    for (const row of rows) {
+        const account = row.proposal_account;
+        if (!account || !row.proposal_id) continue;
+        index.set(account, String(row.proposal_id));
+        try {
+            const market = PublicKey.findProgramAddressSync(
+                [Buffer.from('market'), new PublicKey(account).toBuffer()],
+                new PublicKey('GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB')
+            )[0].toBase58();
+            index.set(market, String(row.proposal_id));
+        } catch { /* invalid legacy account: keep the public proposal usable */ }
+    }
+    return index;
+}
+
+function activityActor(decoded, instruction, book) {
+    const wallet = instruction.accounts?.find(account => account.signer)?.address
+        || decoded.feePayer?.address
+        || null;
+    const entry = wallet ? book?.entryFor?.(wallet) : null;
+    const persona = entry?.persona || null;
+    return {
+        id: wallet || 'chain-actor',
+        name: persona || decoded.feePayer?.label || wallet || 'Chain actor',
+        kind: persona ? 'agent' : 'human',
+        controller: persona ? 'algorithm' : 'human',
+        wallet
+    };
+}
+
+function x402Event(decoded, row, book) {
+    if (!book?.feePayer || decoded.feePayer?.address !== book.feePayer) return null;
+    const payment = decoded.amounts?.find(amount => amount.kind === 'token'
+        && amount.from?.owner?.address && amount.to?.owner?.address === book.treasury);
+    if (!payment) return null;
+    const wallet = payment.from.owner.address;
+    const entry = book.entryFor?.(wallet);
+    const persona = entry?.persona || null;
+    const actor = {
+        id: wallet, name: persona || payment.from.owner.label || wallet,
+        kind: persona ? 'agent' : 'human', controller: persona ? 'algorithm' : 'human', wallet
+    };
+    return {
+        id: `chain:${decoded.signature}:x402`, source: 'live', actor,
+        action: { type: 'x402Payment', amount: payment.amount, asset: payment.symbol || payment.mint },
+        entity: null, ok: decoded.status !== 'failed', message: decoded.summary,
+        transaction: decoded.signature, occurredAt: decoded.time || null,
+        recordedAt: decoded.time || row.created_at || null,
+        provenance: { source: 'solana_transaction', slot: decoded.slot, program: 'spl-token', instruction: 'transfer' }
+    };
+}
+
+function chainAction(instruction, proposalId) {
+    const type = CHAIN_ACTIONS[instruction.action];
+    const action = { type };
+    if (proposalId) action.proposalId = proposalId;
+    if (instruction.action === 'stake') action.side = Number(instruction.args?.side) === 1 ? 'yes' : 'no';
+    if (instruction.args?.amount != null && ['stake', 'donate', 'set_pledge'].includes(instruction.action)) {
+        action.amount = formatAtomicAmount(String(instruction.args.amount), 6);
+    }
+    if (instruction.args?.parcel_id) action.parcelId = instruction.args.parcel_id;
+    return action;
+}
+
+/** Project confirmed program instructions into the same actor/action envelope as agent runs. */
+export function chainEvents(rows = [], {
+    book,
+    idls,
+    proposalIdsByAccount = new Map(),
+    decode = decodeParsedTransaction
+} = {}) {
+    const events = [];
+    for (const row of rows) {
+        const decoded = decode(row.raw, { book, idls });
+        if (!decoded?.signature) continue;
+        const relevant = (decoded.instructions || []).filter(instruction =>
+            !instruction.inner
+            && ACTIVITY_PROGRAMS.has(instruction.program?.name)
+            && CHAIN_ACTIONS[instruction.action]
+        );
+        relevant.forEach((instruction, instructionIndex) => {
+            const proposalAccount = accountFor(instruction, 'proposal');
+            const marketAccount = accountFor(instruction, 'market');
+            const proposalId = proposalIdsByAccount.get(proposalAccount)
+                || proposalIdsByAccount.get(marketAccount)
+                || proposalAccount
+                || marketAccount
+                || null;
+            const actor = activityActor(decoded, instruction, book);
+            const action = chainAction(instruction, proposalId);
+            events.push({
+                id: `chain:${decoded.signature}:${instruction.index ?? instructionIndex}:${action.type}`,
+                source: 'live',
+                actor,
+                action,
+                entity: proposalId ? { type: 'proposal', id: proposalId } : null,
+                ok: decoded.status !== 'failed',
+                message: `${actor.name} submitted ${action.type}${proposalId ? ` for proposal ${proposalId}` : ''}.`,
+                transaction: decoded.signature,
+                occurredAt: decoded.time || null,
+                recordedAt: decoded.time || row.created_at || null,
+                provenance: {
+                    source: 'solana_transaction',
+                    slot: decoded.slot,
+                    program: instruction.program?.address || null,
+                    instruction: instruction.action
+                }
+            });
+        });
+        const payment = x402Event(decoded, row, book);
+        if (payment) events.push(payment);
+    }
+    return events;
 }
 
 function controllerOf(summary = {}) {
@@ -164,11 +321,15 @@ function runDetail(row, costs = []) {
     };
 }
 
-export function setupAgentActivityRoute(app, pool) {
+export function setupAgentActivityRoute(app, pool, {
+    env = process.env,
+    book = buildAddressBook({ env, personas: readPersonas() }),
+    idls = loadIdls(path.join(__dirname, '..', '..', 'blockchain', 'solana', 'idl'))
+} = {}) {
     app.get('/agent/activity', async (req, res) => {
         try {
             const limit = asLimit(req.query.limit);
-            const [runs, proposals] = await Promise.all([
+            const [runs, proposals, transactions, proposalAccounts] = await Promise.all([
                 pool.query(
                     `SELECT run_id, persona, mode, status, stage, summary, started_at, updated_at
                        FROM consensus.agent_run
@@ -186,9 +347,31 @@ export function setupAgentActivityRoute(app, pool) {
                       ORDER BY created_at DESC
                       LIMIT $1`,
                     [limit]
+                ),
+                pool.query(
+                    `SELECT signature, slot, block_time, raw, created_at
+                       FROM consensus.solana_transaction
+                      WHERE cluster = 'devnet'
+                      ORDER BY block_time DESC NULLS LAST, slot DESC
+                      LIMIT $1`,
+                    [limit]
+                ),
+                pool.query(
+                    `SELECT proposal_id,
+                            COALESCE(onchain_data->>'proposalId',
+                                     proposal_data #>> '{onchain,proposalId}',
+                                     proposal_data #>> '{onchainData,proposalId}') AS proposal_account
+                       FROM proposal
+                      WHERE COALESCE(onchain_data->>'proposalId',
+                                     proposal_data #>> '{onchain,proposalId}',
+                                     proposal_data #>> '{onchainData,proposalId}') IS NOT NULL`
                 )
             ]);
+            const chain = chainEvents(transactions.rows, {
+                book, idls, proposalIdsByAccount: proposalAccountIndex(proposalAccounts.rows)
+            });
             const events = mergeEvents(
+                chain,
                 runs.rows.flatMap(runEvents),
                 proposals.rows.flatMap(proposalEvents)
             ).slice(-limit);

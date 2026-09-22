@@ -65,8 +65,8 @@ git fetch --prune origin
 git reset --hard "origin/$BRANCH"
 git checkout -B "$BRANCH" "origin/$BRANCH" >/dev/null 2>&1
 git reset --hard "origin/$BRANCH"
-COMMIT=$(git rev-parse --short HEAD)
-echo "✅ Repo at origin/$BRANCH ($COMMIT)"
+COMMIT=$(git rev-parse HEAD)
+echo "✅ Repo at origin/$BRANCH (${COMMIT:0:7})"
 
 # Build token for cache busting. Counter lives outside the repo so reset --hard never wipes it;
 # seed it from the local counter on first run.
@@ -78,12 +78,14 @@ elif [ "${SEED:-0}" -gt 0 ] 2>/dev/null; then
 fi
 counter=$((current + 1)); echo "$counter" > "$COUNTER_FILE"
 BUILD_ID="deploy-$counter"; TS=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-python3 - "$REMOTE_REPO/frontend/js/build-info.js" "$REMOTE_REPO/frontend/index.html" "$BUILD_ID" "$counter" "$TS" <<'PY'
+python3 - "$REMOTE_REPO/frontend/js/build-info.js" "$REMOTE_REPO/frontend/index.html" \
+    "$REMOTE_REPO/frontend/release.json" "$BUILD_ID" "$counter" "$TS" "$COMMIT" <<'PY'
 import sys
 from pathlib import Path
-paths = [Path(sys.argv[1]), Path(sys.argv[2])]
-rep = {'__BUILD_ID__': sys.argv[3], '__BUILD_NUMBER__': sys.argv[4],
-       '__BUILD_GENERATED_AT__': sys.argv[5], '__BUILD_CACHE_TOKEN__': sys.argv[3]}
+paths = [Path(sys.argv[1]), Path(sys.argv[2]), Path(sys.argv[3])]
+rep = {'__BUILD_ID__': sys.argv[4], '__BUILD_NUMBER__': sys.argv[5],
+       '__BUILD_GENERATED_AT__': sys.argv[6], '__BUILD_CACHE_TOKEN__': sys.argv[4],
+       '__RELEASE_COMMIT__': sys.argv[7]}
 for p in paths:
     if not p.exists():
         continue

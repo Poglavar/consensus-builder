@@ -41,10 +41,48 @@ function fixtures(overrides = {}) {
         },
         '/hackathon/proof.json': {
             hackathon: { branch: 'colosseum-worlds-fair' },
-            publicProof: { prospectiveMarket: `${BASE}/oracle/markets/prospective/status` }
+            releaseArtifacts: {
+                backend: { commit: 'release-sha' },
+                frontend: { manifest: 'https://urbangametheory.xyz/release.json' },
+                programs: ['pledge', 'market'].map((name, index) => ({
+                    name, programDataAddress: `program-data-${index}`,
+                    lastDeployedSlot: 500000000 + index, binarySha256: `${index + 1}`.repeat(64)
+                }))
+            },
+            publicProof: {
+                prospectiveMarket: `${BASE}/oracle/markets/prospective/status`,
+                operations: `${BASE}/hackathon/operations.json`,
+                canonicalCase: `${BASE}/hackathon/cases/golden-case`
+            }
+        },
+        '/hackathon/cases/golden-case': {
+            id: 'golden-case', state: 'in_progress',
+            proposal: { account: 'proposal-account' }, parcelSet: { parcelCount: 3 },
+            branches: {
+                support: { donations: { totalUsdc: '0.05' }, pledges: { activeUsdc: '0.10', pledgeCount: '1' } },
+                forecast: { yesUsdc: '0.01', noUsdc: '0.01' }
+            },
+            activity: [
+                { action: { type: 'create' }, transaction: 'create' },
+                { action: { type: 'publish' }, transaction: 'publish' },
+                { action: { type: 'donate' }, transaction: 'donate' },
+                { action: { type: 'pledge' }, transaction: 'pledge' },
+                { action: { type: 'stake', side: 'yes' }, transaction: 'yes' },
+                { action: { type: 'stake', side: 'no' }, transaction: 'no' }
+            ],
+            stages: [
+                { id: 'decision', state: 'pending' }, { id: 'evidence', state: 'pending' },
+                { id: 'resolution', state: 'pending' }, { id: 'settlement', state: 'blocked' }
+            ],
+            progress: { complete: 3, total: 7 }, transactions: [{}, {}, {}, {}, {}, {}]
         },
         '/oracle/markets/prospective/status': {
             state: 'open', market: 'prospective-market', resolver: { lastRun: { endedAt: '2026-09-21T11:45:00Z' } }
+        },
+        '/hackathon/operations.json': {
+            status: 'healthy', jobs: ['proposer', 'supporter', 'land-oracle', 'prospective-resolver'].map(role => ({
+                role, status: 'completed', freshness: { state: 'fresh' }
+            }))
         },
         ...overrides
     };
@@ -66,8 +104,8 @@ describe('public hackathon proof audit', () => {
             baseUrl: BASE, fetchImpl, now: Date.parse('2026-09-21T12:00:00Z')
         });
         expect(result.status).toBe('verified');
-        expect(result.summary).toEqual({ pass: 11, warn: 0, fail: 0 });
-        expect(fetchImpl).toHaveBeenCalledTimes(9);
+        expect(result.summary).toEqual({ pass: 15, warn: 2, fail: 0 });
+        expect(fetchImpl).toHaveBeenCalledTimes(11);
         expect(result.checks.find(item => item.id === 'deterministic_supporter')).toMatchObject({
             status: 'pass', evidence: { proposalId: 'p1', transaction: 'supporter-transaction' }
         });
@@ -91,7 +129,46 @@ describe('public hackathon proof audit', () => {
             baseUrl: BASE, fetchImpl: fetchFor(data), now: Date.parse('2026-09-21T12:00:00Z')
         });
         expect(result.status).toBe('verified');
-        expect(result.summary).toEqual({ pass: 10, warn: 1, fail: 0 });
+        expect(result.summary).toEqual({ pass: 14, warn: 3, fail: 0 });
+    });
+
+    it('requires a payout and strictly ordered public proof once the prospective market settles', async () => {
+        const settlement = {
+            outcome: 'YES',
+            evidence: { address: 'evidence-account', hash: `sha256:${'b'.repeat(64)}` },
+            transactions: { evidenceFirstSeen: 'first-seen-tx', resolution: 'resolve-tx', claim: 'claim-tx' },
+            chronology: {
+                classification: 'prospective', prospective: true, marketOrderValid: true,
+                sourceTimeVerified: true, sourceAfterClose: true,
+                timestamps: {
+                    marketCreatedAt: '2026-09-22T19:00:00Z', yesStakeAt: '2026-09-22T19:01:00Z',
+                    noStakeAt: '2026-09-22T19:02:00Z', marketClosesAt: '2026-09-22T21:00:00Z',
+                    sourceObservedAt: '2026-09-22T21:10:00Z', evidenceCreatedAt: '2026-09-22T21:20:00Z',
+                    resolvedAt: '2026-09-22T21:30:00Z', claimedAt: '2026-09-22T21:31:00Z'
+                },
+                transactionSlots: { evidenceFirstSeen: 100, resolution: 110, claim: 111 }
+            }
+        };
+        const complete = fixtures({
+            '/oracle/markets/prospective/status': {
+                state: 'settled', market: 'prospective-market', closesAt: '2026-09-22T21:00:00Z',
+                transactions: { create: 'create-tx', yesStake: 'yes-tx', noStake: 'no-tx' }, settlement
+            }
+        });
+        const result = await auditHackathonProof({ baseUrl: BASE, fetchImpl: fetchFor(complete), now: Date.parse('2026-09-22T22:00:00Z') });
+        expect(result.status).toBe('verified');
+        expect(result.checks.find(item => item.id === 'prospective_settlement_proof')).toMatchObject({ status: 'pass' });
+
+        const missingPayout = structuredClone(complete);
+        missingPayout['/oracle/markets/prospective/status'].settlement.transactions.claim = null;
+        const incomplete = await auditHackathonProof({ baseUrl: BASE, fetchImpl: fetchFor(missingPayout), now: Date.parse('2026-09-22T22:00:00Z') });
+        expect(incomplete.status).toBe('incomplete');
+        expect(incomplete.checks.find(item => item.id === 'prospective_settlement_proof')).toMatchObject({ status: 'fail' });
+
+        const sameSecond = structuredClone(complete);
+        sameSecond['/oracle/markets/prospective/status'].settlement.chronology.timestamps.claimedAt = '2026-09-22T21:30:00Z';
+        const slotOrdered = await auditHackathonProof({ baseUrl: BASE, fetchImpl: fetchFor(sameSecond), now: Date.parse('2026-09-22T22:00:00Z') });
+        expect(slotOrdered.checks.find(item => item.id === 'prospective_settlement_proof')).toMatchObject({ status: 'pass' });
     });
 
     it('requires an exact normalized resource URL', () => {

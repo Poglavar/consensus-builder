@@ -14,7 +14,10 @@
         "demo:oracle-fact": "node scripts/oracle-fact-demo.mjs",
         "mcp": "node agents/mcp-server.mjs",
         "audit:hackathon": "node scripts/hackathon-proof-audit.mjs",
-        "demo:judge": "node scripts/judge-demo.mjs",
+    "demo:judge": "node scripts/judge-demo.mjs",
+        "demo:case": "node agents/canonical-case-run.mjs --dry-run",
+        "demo:case:live": "node agents/canonical-case-run.mjs --live",
+        "demo:cold-start": "node examples/independent-x402-client.mjs",
         "sync:land-events": "node scripts/sync-land-events.mjs",
         "smoke:prod:parcels": "node scripts/smoke-production-bbox.mjs",
         "plan-yield": "PGHOST=${PGHOST:-localhost} node scripts/plan-yield.js"

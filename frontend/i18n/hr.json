@@ -930,6 +930,18 @@
                 "conditionalHint": "Svi vlasnici moraju prihvatiti prije isplate",
                 "partialHint": "Isplata se izvršava kako vlasnici prihvaćaju"
             },
+            "parcelSet": {
+                "eyebrow": "Kanonski skup čestica",
+                "title": "Prijedlozi na ovom zemljištu",
+                "summary": "{{count}} stvarnih čestica sidri ovaj prijedlog. {{exact}} alternativa koristi isti skup, a {{overlap}} se s njim preklapa.",
+                "noRelated": "{{count}} stvarnih čestica sidri ovaj prijedlog. Nijedan drugi prijedlog trenutačno ne upućuje na ovo zemljište.",
+                "hash": "Identitet skupa",
+                "relationSame": "Isti skup čestica",
+                "relationContains": "Obuhvaća cijeli ovaj skup",
+                "relationInside": "Unutar ovog skupa čestica",
+                "relationOverlap": "Preklapajuće zemljište",
+                "sharedCount": "{{shared}} od {{count}} zajedničkih čestica"
+            },
             "actions": {
                 "apply": "Primijeni na kartu",
                 "applying": "Primjenjivanje...",

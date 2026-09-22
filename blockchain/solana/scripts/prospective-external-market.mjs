@@ -50,7 +50,7 @@ function writeRunStats(result) {
     fs.mkdirSync(path.dirname(RUN_STATS_FILE), { recursive: true });
     const tempFile = `${RUN_STATS_FILE}.${process.pid}.tmp`;
     fs.writeFileSync(tempFile, `${JSON.stringify({
-        version: 1,
+        version: 2,
         job: 'prospective-market-resolver',
         runStatus: result.runStatus,
         startedAt: RUN_STARTED_AT,
@@ -59,6 +59,17 @@ function writeRunStats(result) {
         readiness: result.readiness || null,
         market: result.market || null,
         closesAt: result.closesAt || null,
+        outcome: result.outcome || null,
+        evidence: result.evidence || null,
+        chronology: result.chronology || null,
+        transactions: result.transactions ? {
+            create: result.transactions.create || null,
+            yesStake: result.transactions.yesStake || null,
+            noStake: result.transactions.noStake || null,
+            evidenceFirstSeen: result.transactions.evidenceFirstSeen || null,
+            resolve: result.transactions.resolve || null,
+            claim: result.transactions.claim || null
+        } : null,
         error: result.error || null
     }, null, 2)}\n`, { mode: 0o600 });
     fs.renameSync(tempFile, RUN_STATS_FILE);
@@ -117,13 +128,17 @@ async function send(connection, transaction, signers) {
     return sendAndConfirmPolling(connection, transaction, signers, { commitment: 'confirmed' });
 }
 
-async function transactionTime(connection, signature) {
+async function transactionStamp(connection, signature) {
     for (let attempt = 0; attempt < 12; attempt += 1) {
         const tx = await connection.getTransaction(signature, { commitment: 'confirmed', maxSupportedTransactionVersion: 0 });
-        if (tx?.blockTime) return tx.blockTime;
+        if (tx?.blockTime && Number.isSafeInteger(tx.slot)) return { blockTime: tx.blockTime, slot: tx.slot };
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
     throw new Error(`transaction ${signature} has no confirmed block time`);
+}
+
+async function transactionTime(connection, signature) {
+    return (await transactionStamp(connection, signature)).blockTime;
 }
 
 async function firstAddressTime(connection, address) {
@@ -137,7 +152,7 @@ async function firstAddressTime(connection, address) {
         before = oldest.signature;
     }
     if (!oldest?.blockTime) throw new Error(`cannot establish first on-chain time for ${address.toBase58()}`);
-    return { signature: oldest.signature, blockTime: oldest.blockTime };
+    return { signature: oldest.signature, blockTime: oldest.blockTime, slot: oldest.slot };
 }
 
 async function verifiedCandidate(connection, address, schema) {
@@ -196,6 +211,8 @@ function publicState(state) {
         stakePerSideAtomic: state.stakePerSideAtomic,
         transactions: state.transactions,
         chronology: state.chronology || null,
+        outcome: state.phase === 'settled' ? state.outcome || null : null,
+        evidence: state.phase === 'settled' ? state.evidence || null : null,
         redacted: ['parcelUid', 'yesOperation', 'noOperation', 'decisionUuid', 'decisionLink', 'rpcUrl']
     };
 }
@@ -322,20 +339,27 @@ async function settleMarket(connection, live) {
     const claim = await send(connection, new Transaction().add(marketClient.buildClaimExternalIx({
         recipeHash: state.recipe.hash, stakeMint: USDC_MINT, claimer: winner.publicKey, side: outcome
     })), [winner]);
-    const [resolvedAt, claimedAt] = await Promise.all([
-        transactionTime(connection, resolve), transactionTime(connection, claim)
+    const [resolvedStamp, claimedStamp] = await Promise.all([
+        transactionStamp(connection, resolve), transactionStamp(connection, claim)
     ]);
     state.phase = 'settled';
     state.transactions = { ...state.transactions, evidenceFirstSeen: firstEvidence.signature, resolve, claim };
-    state.chronology = classifyExternalMarketChronology({
+    state.chronology = {
+        ...classifyExternalMarketChronology({
         ...state.timestamps,
         marketClosesAt: state.recipe.verification.closesAt,
         evidenceCreatedAt: firstEvidence.blockTime,
         sourceObservedAt,
         sourceTimeCommitted,
-        resolvedAt,
-        claimedAt
-    });
+        resolvedAt: resolvedStamp.blockTime,
+        claimedAt: claimedStamp.blockTime
+        }),
+        transactionSlots: {
+            evidenceFirstSeen: firstEvidence.slot,
+            resolution: resolvedStamp.slot,
+            claim: claimedStamp.slot
+        }
+    };
     state.outcome = outcome === marketClient.constants.SIDE_YES ? 'YES' : 'NO';
     state.evidence = { address: attestation.toBase58(), hash: `sha256:${evidence.accountHash}` };
     writeState(state);

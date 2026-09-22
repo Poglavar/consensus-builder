@@ -17,9 +17,23 @@ describe('hackathon public proof routes', () => {
         expect(res.body).toMatchObject({
             title: 'Hyperstition: Markets for Possible Cities',
             hackathon: { branch: 'colosseum-worlds-fair', baselineCommit: '3ee1855', releaseCommit: 'abc123' },
+            releaseArtifacts: {
+                backend: { commit: 'abc123' },
+                frontend: { manifest: 'https://urbangametheory.xyz/release.json' },
+                programs: [
+                    { name: 'ProposalPledge', lastDeployedSlot: 501062795, binarySha256: '153709638e5355871dc0c138ed7f002ec3e31b58d9ecc8e700294786efa2a811' },
+                    { name: 'ProposalMarket', lastDeployedSlot: 502071612, binarySha256: '9055f2da2e7289020343856aa3c5f8abc1eff96607281472cb53624bd503d1ba' }
+                ]
+            },
             publicProof: {
                 manifest: 'https://api.example.test/hackathon/proof.json',
-                prospectiveMarket: 'https://api.example.test/oracle/markets/prospective/status'
+                prospectiveMarket: 'https://api.example.test/oracle/markets/prospective/status',
+                operations: 'https://api.example.test/hackathon/operations.json',
+                canonicalCase: 'https://api.example.test/hackathon/cases/hackathon-golden-borovje-2026',
+                independentX402: {
+                    kind: 'clean_room_verified_fact_purchase', amountAtomic: '10000',
+                    transaction: '3T7mg2f5FRk6uFND6eyRKrS5VyHviizk4vmPqB1zxVJbmnz4f1nxaMjXxGi4XEh8JMMesPXNbaaCNzgFQxRxTGPn'
+                }
             }
         });
         expect(res.body.hackathonPrograms).toHaveLength(2);
@@ -50,5 +64,40 @@ describe('hackathon public proof routes', () => {
             expect(body).not.toContain(`"${privateField}":`);
         }
     });
-});
 
+    it('publishes complete redacted settlement evidence when the prospective run succeeds', () => {
+        const status = buildProspectiveMarketStatus({
+            now: Date.parse('2026-09-22T22:00:00Z'),
+            runStats: {
+                job: 'prospective-market-resolver', runStatus: 'completed', market: PROSPECTIVE_MARKET.market,
+                phase: 'settled', readiness: null, outcome: 'NO',
+                evidence: { address: 'evidence-account', hash: `sha256:${'c'.repeat(64)}`, decisionUuid: 'private' },
+                transactions: { evidenceFirstSeen: 'first-seen', resolve: 'resolution', claim: 'claim' },
+                chronology: {
+                    classification: 'prospective', prospective: true, marketOrderValid: true,
+                    attestationAfterClose: true, sourceTimeVerified: true, sourceAfterClose: true,
+                    timestamps: {
+                        marketCreatedAt: '2026-09-22T19:00:00Z', yesStakeAt: '2026-09-22T19:01:00Z',
+                        noStakeAt: '2026-09-22T19:02:00Z', lastStakeAt: '2026-09-22T19:02:00Z',
+                        marketClosesAt: '2026-09-22T21:00:00Z', sourceObservedAt: '2026-09-22T21:10:00Z',
+                        evidenceCreatedAt: '2026-09-22T21:20:00Z', resolvedAt: '2026-09-22T21:30:00Z',
+                        claimedAt: '2026-09-22T21:31:00Z'
+                    },
+                    transactionSlots: { evidenceFirstSeen: 100, resolution: 110, claim: 111 },
+                    reason: 'ordered proof'
+                }
+            }
+        });
+        expect(status).toMatchObject({
+            state: 'settled', settlement: {
+                outcome: 'NO', evidence: { address: 'evidence-account', hash: `sha256:${'c'.repeat(64)}` },
+                transactions: { evidenceFirstSeen: 'first-seen', resolution: 'resolution', claim: 'claim' },
+                chronology: {
+                    classification: 'prospective', prospective: true,
+                    transactionSlots: { evidenceFirstSeen: 100, resolution: 110, claim: 111 }
+                }
+            }
+        });
+        expect(JSON.stringify(status)).not.toContain('"decisionUuid":');
+    });
+});

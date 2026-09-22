@@ -15,6 +15,7 @@ function baseUrl(req, env) {
 export function buildHackathonProofManifest({ apiBase, env = process.env } = {}) {
     const base = String(apiBase || '').replace(/\/$/, '');
     const repository = 'https://github.com/Poglavar/consensus-builder';
+    const canonicalCaseId = env.HACKATHON_CASE_ID || 'hackathon-golden-borovje-2026';
     return {
         version: 1,
         title: 'Hyperstition: Markets for Possible Cities',
@@ -31,6 +32,34 @@ export function buildHackathonProofManifest({ apiBase, env = process.env } = {})
             repository: `${repository}/tree/colosseum-worlds-fair`,
             scopeDocument: `${repository}/blob/colosseum-worlds-fair/HACKATHON.md`
         },
+        releaseArtifacts: {
+            backend: {
+                component: 'consensus-builder-api',
+                commit: env.RELEASE_SHA || env.GIT_COMMIT || null
+            },
+            frontend: {
+                component: 'urbangametheory-frontend',
+                manifest: 'https://urbangametheory.xyz/release.json'
+            },
+            programs: [{
+                name: 'ProposalPledge',
+                network: 'solana:devnet',
+                address: ADDRESSES.ProposalPledge,
+                programDataAddress: 'EtV7ufG6U5SSPsdhQe1TByPJR8mqPpFgV15KQNbNSyZQ',
+                lastDeployedSlot: 501062795,
+                binarySha256: '153709638e5355871dc0c138ed7f002ec3e31b58d9ecc8e700294786efa2a811',
+                upgradeAuthority: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ'
+            }, {
+                name: 'ProposalMarket',
+                network: 'solana:devnet',
+                address: ADDRESSES.ProposalMarket,
+                programDataAddress: 'AGmZusPm3FuiPkgMBY5dG1ZMfXKptqDjG3aMrgTpqhx7',
+                lastDeployedSlot: 502071612,
+                binarySha256: '9055f2da2e7289020343856aa3c5f8abc1eff96607281472cb53624bd503d1ba',
+                upgradeAuthority: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ'
+            }],
+            verifiedAt: '2026-09-22'
+        },
         surfaces: {
             pitch: 'https://urbangametheory.xyz/deck.html',
             demo: 'https://urbangametheory.xyz/hackathon-demo.html',
@@ -43,8 +72,20 @@ export function buildHackathonProofManifest({ apiBase, env = process.env } = {})
             agentCapabilities: `${base}/docs/agents.json`,
             proposalDiscovery: `${base}/agent/discovery`,
             oracleFactDiscovery: `${base}/agent/discovery?resource=oracle-facts`,
+            independentX402: {
+                kind: 'clean_room_verified_fact_purchase',
+                payer: 'FoPmPhKE6bykLoumQSvygZCSJYLkxBfsqjE3ybMvSjYs',
+                amountAtomic: '10000',
+                transaction: '3T7mg2f5FRk6uFND6eyRKrS5VyHviizk4vmPqB1zxVJbmnz4f1nxaMjXxGi4XEh8JMMesPXNbaaCNzgFQxRxTGPn',
+                transactionUrl: 'https://explorer.solana.com/tx/3T7mg2f5FRk6uFND6eyRKrS5VyHviizk4vmPqB1zxVJbmnz4f1nxaMjXxGi4XEh8JMMesPXNbaaCNzgFQxRxTGPn?cluster=devnet',
+                clientSource: `${repository}/blob/colosseum-worlds-fair/backend/examples/independent-x402-client.mjs`,
+                verifiedEvent: 'solana:devnet:proposal_lifecycle:B3C1ZtyigkffSnNAeZMjnmHc3M7CxK7bYeeC4JD7oSGg:cancelled',
+                sourceHash: 'sha256:93555c3d2eee8b8d2a1939af11597bd0c50a18aac047fa9b142a3202bdadddda'
+            },
             courtOracle: `${base}/oracle/public-records/summary`,
             prospectiveMarket: `${base}/oracle/markets/prospective/status`,
+            canonicalCase: `${base}/hackathon/cases/${encodeURIComponent(canonicalCaseId)}`,
+            operations: `${base}/hackathon/operations.json`,
             activity: `${base}/agent/activity?limit=200`,
             runs: `${base}/agent/runs?limit=50`
         },

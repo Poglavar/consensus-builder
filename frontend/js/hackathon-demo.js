@@ -26,7 +26,7 @@
 
     function buildDemoModel({
         runs = [], events = [], docs = {}, discovery = null, oracleDiscovery = null,
-        oracleEvents = [], publicRecords = null, prospectiveMarket = null, proofManifest = null, errors = {},
+        oracleEvents = [], publicRecords = null, prospectiveMarket = null, proofManifest = null, canonicalCase = null, errors = {},
         now = new Date().toISOString()
     } = {}) {
         const latestAlgorithm = newest(runs, run => run.controller === 'algorithm' && (run.role || 'proposer') === 'proposer');
@@ -38,6 +38,7 @@
         const algorithmFresh = Boolean(latestAlgorithm && latestAlgorithm.status === 'done'
             && ageHours(latestAlgorithm.updatedAt || latestAlgorithm.finishedAt, now) <= 36);
         const x402 = docs.x402 || {};
+        const independentX402 = proofManifest?.publicProof?.independentX402 || null;
         const discoveryListed = discovery?.state === 'listed';
         const oracleDiscoveryListed = oracleDiscovery?.state === 'listed';
         const latestOracle = newest(oracleEvents, event => event.eventType === 'proposal_lifecycle');
@@ -56,6 +57,9 @@
             stakes: { yes: 0.01, no: 0.01, pool: 0.02 },
             resolver: { cadence: 'hourly at minute 45', lastRun: null }
         } : null;
+        const prospectiveSettlement = prospective?.settlement || null;
+        const prospectiveSettled = prospective?.state === 'settled'
+            && prospectiveSettlement?.chronology?.classification === 'prospective';
         const prospectiveError = errors.prospective;
         const mcpTools = docs.mcp?.tools || [];
         const mcpComplete = ['ugt_submit_proposal', 'ugt_pledge', 'ugt_donate', 'ugt_forecast', 'ugt_buy_verified_fact']
@@ -109,17 +113,19 @@
             oracleFacts: {
                 tone: errors.oracleDiscovery ? 'error' : oracleDiscoveryListed ? 'success' : 'waiting',
                 label: errors.oracleDiscovery ? 'Oracle-fact discovery unavailable'
-                    : oracleDiscoveryListed ? 'Paid verified facts listed in Bazaar'
+                    : oracleDiscoveryListed && independentX402?.transaction ? 'Independent agent discovered, paid and verified a fact'
+                        : oracleDiscoveryListed ? 'Paid verified facts listed in Bazaar'
                         : x402.oracleFactsEnabled ? 'Paid fact live; Bazaar indexing pending' : 'Paid fact endpoint not configured',
                 detail: errors.oracleDiscovery ? errors.oracleDiscovery
                     : oracleDiscoveryListed
-                        ? `${x402.priceOracleFact || 'price unknown'} per fact · exact catalog resource verified ${oracleDiscovery.verifiedAt || ''}`.trim()
+                        ? `${x402.priceOracleFact || 'price unknown'} per fact · exact catalog resource verified ${oracleDiscovery.verifiedAt || ''}${independentX402?.transaction ? ' · second project wallet settled through a clean-room client' : ''}`.trim()
                         : x402.oracleFactsEnabled
                             ? `${x402.priceOracleFact || 'price unknown'} per fact · ${oracleDiscovery?.state || 'no catalog result'}`
                             : 'Agents can still audit the free event feed; paid recipe-bound bundles await x402 configuration.',
                 endpoint: docs.endpoints?.oracleFact || null,
                 discoveryUrl: docs.endpoints?.oracleFactDiscovery || null,
-                listing: oracleDiscovery?.listing || null
+                listing: oracleDiscovery?.listing || null,
+                independentProof: independentX402
             },
             agentTools: mcpComplete ? {
                 tone: 'success', label: `${mcpTools.length} MCP tools share one action layer`,
@@ -191,14 +197,27 @@
                 recipeHash: prospective.recipeHash || null,
                 closesAt: prospective.closesAt || null,
                 stakes: prospective.stakes || null,
-                resolver: prospective.resolver || null
+                resolver: prospective.resolver || null,
+                settlement: prospectiveSettlement
             } : {
                 tone: prospectiveError ? 'error' : 'waiting', state: 'unavailable',
                 label: prospectiveError ? 'Prospective market status unavailable' : 'Prospective market not declared',
                 detail: prospectiveError || 'No public prospective-market evidence was returned.',
                 market: null, marketUrl: null, recipeHash: null, closesAt: null, stakes: null, resolver: null
             },
-            externalMarket: externalLive ? {
+            externalMarket: prospectiveSettled ? {
+                tone: 'success',
+                label: 'A prospective court market settled from later evidence',
+                detail: 'The source record and attestation arrived after trading closed · the winning devnet USDC position was claimed',
+                market: prospective.market,
+                resolution: prospectiveSettlement.transactions?.resolution || null,
+                claim: prospectiveSettlement.transactions?.claim || null,
+                evidence: prospectiveSettlement.evidence || null,
+                proof: prospectiveSettlement,
+                prospective: true,
+                chronology: prospectiveSettlement.chronology,
+                nextProof: null
+            } : externalLive ? {
                 tone: 'success',
                 label: externalProspective
                     ? 'A prospective court market settled from later evidence'
@@ -214,6 +233,7 @@
                 proof: externalProof,
                 prospective: externalProspective,
                 chronology: externalChronology,
+                evidence: externalProof.evidence || null,
                 nextProof: external.prospectiveProof || null
             } : {
                 tone: 'waiting',
@@ -222,6 +242,7 @@
                 market: null,
                 resolution: null,
                 claim: null,
+                evidence: null,
                 proof: {}
             },
             oracle: latestOracle ? {
@@ -239,6 +260,19 @@
             },
             errors,
             proofManifest,
+            canonicalCase: canonicalCase ? {
+                tone: canonicalCase.state === 'complete' ? 'success' : 'waiting',
+                state: canonicalCase.state || 'unknown',
+                label: canonicalCase.proposal?.name || canonicalCase.id || 'Canonical case',
+                detail: `${canonicalCase.parcelSet?.parcelCount || 0} real cadastral parcel${canonicalCase.parcelSet?.parcelCount === 1 ? '' : 's'} · ${canonicalCase.progress?.complete || 0}/${canonicalCase.progress?.total || 0} independently verified stages`,
+                case: canonicalCase
+            } : {
+                tone: errors.canonicalCase ? 'error' : 'waiting',
+                state: errors.canonicalCase ? 'unavailable' : 'pending',
+                label: errors.canonicalCase ? 'Canonical case unavailable' : 'Canonical case pending',
+                detail: errors.canonicalCase || 'No aggregate case record was returned.',
+                case: null
+            },
             latestLlm
         };
     }
@@ -289,21 +323,60 @@
         liveCopy.append(liveHead, node(doc, 'h2', live.label), node(doc, 'p', live.detail, 'hd-muted'));
         const liveLinks = node(doc, 'div', null, 'hd-links');
         if (live.marketUrl) liveLinks.append(link(doc, 'Inspect market account ↗', live.marketUrl));
+        if (live.settlement?.evidence?.address) liveLinks.append(link(doc, 'Inspect resolving evidence ↗', `https://explorer.solana.com/address/${encodeURIComponent(live.settlement.evidence.address)}?cluster=devnet`));
+        if (live.settlement?.transactions?.resolution) liveLinks.append(link(doc, 'Verify resolution ↗', `https://explorer.solana.com/tx/${encodeURIComponent(live.settlement.transactions.resolution)}?cluster=devnet`));
+        if (live.settlement?.transactions?.claim) liveLinks.append(link(doc, 'Verify payout ↗', `https://explorer.solana.com/tx/${encodeURIComponent(live.settlement.transactions.claim)}?cluster=devnet`));
         liveLinks.append(link(doc, 'Live resolver status ↗', `${apiBase}/oracle/markets/prospective/status`));
         liveLinks.append(link(doc, 'Hackathon proof manifest ↗', `${apiBase}/hackathon/proof.json`));
         liveCopy.append(liveLinks);
         const liveFacts = node(doc, 'dl', null, 'hd-live-market__facts');
-        [
+        const liveRows = [
             ['Market', live.market || 'Unavailable'],
             ['Pool', live.stakes ? `${live.stakes.pool} devnet USDC` : 'Unavailable'],
             ['Trading close', live.closesAt ? new Date(live.closesAt).toLocaleString() : 'Unavailable'],
             ['Recipe', live.recipeHash || 'Unavailable'],
             ['Last resolver check', live.resolver?.lastRun?.endedAt ? new Date(live.resolver.lastRun.endedAt).toLocaleString() : 'Awaiting public run ledger']
-        ].forEach(([label, value]) => {
+        ];
+        if (live.settlement?.chronology?.timestamps) liveRows.push(
+            ['Source publication', new Date(live.settlement.chronology.timestamps.sourceObservedAt).toLocaleString()],
+            ['Evidence first seen', new Date(live.settlement.chronology.timestamps.evidenceCreatedAt).toLocaleString()],
+            ['Payout claimed', new Date(live.settlement.chronology.timestamps.claimedAt).toLocaleString()]
+        );
+        liveRows.forEach(([label, value]) => {
             const row = node(doc, 'div'); row.append(node(doc, 'dt', label), node(doc, 'dd', value)); liveFacts.append(row);
         });
         liveMarket.append(liveCopy, liveFacts);
         element.append(liveMarket);
+
+        const canonical = model.canonicalCase;
+        const canonicalSection = node(doc, 'section', null, `hd-case is-${canonical.tone}`);
+        const canonicalHead = node(doc, 'div', null, 'hd-case__head');
+        const canonicalCopy = node(doc, 'div');
+        canonicalCopy.append(
+            node(doc, 'span', 'CANONICAL CASE · ONE INSPECTABLE GRAPH', 'hd-eyebrow'),
+            node(doc, 'h2', canonical.label),
+            node(doc, 'p', canonical.detail, 'hd-muted')
+        );
+        const canonicalLinks = node(doc, 'div', null, 'hd-links');
+        if (canonical.case?.links?.map) canonicalLinks.append(link(doc, 'Open parcel set + read-only Details', canonical.case.links.map));
+        if (canonical.case?.links?.self) canonicalLinks.append(link(doc, 'Inspect aggregate JSON ↗', canonical.case.links.self));
+        canonicalCopy.append(canonicalLinks);
+        canonicalHead.append(canonicalCopy, node(doc, 'span', String(canonical.state || 'unknown').replaceAll('_', ' ').toUpperCase(), 'hd-pill'));
+        canonicalSection.append(canonicalHead);
+        if (canonical.case?.stages?.length) {
+            const caseGraph = node(doc, 'ol', null, 'hd-case__graph');
+            canonical.case.stages.forEach(item => {
+                const entry = node(doc, 'li', null, `is-${item.state}`);
+                entry.append(
+                    node(doc, 'span', String(item.state || 'pending').toUpperCase()),
+                    node(doc, 'strong', item.label),
+                    node(doc, 'small', item.detail)
+                );
+                caseGraph.append(entry);
+            });
+            canonicalSection.append(caseGraph, node(doc, 'p', 'Support, forecasting and owner action can begin in parallel. Evidence authorizes resolution; resolution unlocks payout or refund.', 'hd-proof-reason'));
+        }
+        element.append(canonicalSection);
 
         const story = node(doc, 'section', null, 'hd-story');
         const storyCopy = node(doc, 'div', null, 'hd-story-copy');
@@ -318,6 +391,7 @@
             : 'This first proof exercises recipe commitment, two-sided staking, permissionless public-record resolution and payout. Its attestation predates the market, so it proves the integration—not yet a prediction.'));
         const storyLinks = node(doc, 'div', null, 'hd-links');
         if (model.externalMarket.market) storyLinks.append(link(doc, 'Open market account ↗', `https://explorer.solana.com/address/${encodeURIComponent(model.externalMarket.market)}?cluster=devnet`));
+        if (model.externalMarket.evidence?.address) storyLinks.append(link(doc, 'Inspect evidence ↗', `https://explorer.solana.com/address/${encodeURIComponent(model.externalMarket.evidence.address)}?cluster=devnet`));
         if (model.externalMarket.resolution) storyLinks.append(link(doc, 'Verify resolution ↗', `https://explorer.solana.com/tx/${encodeURIComponent(model.externalMarket.resolution)}?cluster=devnet`));
         if (model.externalMarket.claim) storyLinks.append(link(doc, 'Verify payout ↗', `https://explorer.solana.com/tx/${encodeURIComponent(model.externalMarket.claim)}?cluster=devnet`));
         storyCopy.append(storyLinks);
@@ -325,10 +399,14 @@
         if (chronology?.timestamps) {
             const proofOrder = node(doc, 'dl', null, 'hd-proof-order');
             [
-                ['Evidence first seen', chronology.timestamps.evidenceCreatedAt],
                 ['Market opened', chronology.timestamps.marketCreatedAt],
+                ['YES stake', chronology.timestamps.yesStakeAt],
+                ['NO stake', chronology.timestamps.noStakeAt],
                 ['Trading closed', chronology.timestamps.marketClosesAt],
-                ['Market resolved', chronology.timestamps.resolvedAt]
+                ['Source publication', chronology.timestamps.sourceObservedAt],
+                ['Evidence first seen', chronology.timestamps.evidenceCreatedAt],
+                ['Market resolved', chronology.timestamps.resolvedAt],
+                ['Payout claimed', chronology.timestamps.claimedAt]
             ].forEach(([label, value]) => {
                 const row = node(doc, 'div');
                 row.append(node(doc, 'dt', label), node(doc, 'dd', value ? new Date(value).toLocaleString() : 'Not available'));
@@ -382,7 +460,10 @@
             model.oracle.event?.subject?.id
                 ? { label: 'Request this fact ↗', href: `${apiBase}/agent/oracle/facts?subject=${encodeURIComponent(model.oracle.event.subject.id)}` }
                 : {},
-            { label: 'Audit free event feed ↗', href: `${apiBase}/oracle/events` }
+            { label: 'Audit free event feed ↗', href: `${apiBase}/oracle/events` },
+            model.oracleFacts.independentProof?.transactionUrl
+                ? { label: 'Verify independent payment ↗', href: model.oracleFacts.independentProof.transactionUrl }
+                : {}
         ]);
         addCard(cards, 'Agent tool surface', model.agentTools, [
             { label: 'MCP setup ↗', href: `${apiBase}/docs/agents` },
@@ -460,8 +541,8 @@
         const list = node(doc, 'ol');
         [
             ['Imagine: open the parcel map and inspect a possible change.', '/?reduceMotion=1'],
-            ['Propose: inspect a live agent-authored proposal in read-only Details.', model.evidence.latestProposalId ? `/proposals/${encodeURIComponent(model.evidence.latestProposalId)}` : '/'],
-            ['Back: compare an unconditional donation with a revocable pledge.', model.evidence.latestProposalId ? `/proposals/${encodeURIComponent(model.evidence.latestProposalId)}` : '/'],
+            ['Propose: inspect a live agent-authored proposal in read-only Details.', model.canonicalCase.case?.links?.map || (model.evidence.latestProposalId ? `/proposals/${encodeURIComponent(model.evidence.latestProposalId)}` : '/')],
+            ['Back: compare an unconditional donation with a revocable pledge.', model.canonicalCase.case?.links?.map || (model.evidence.latestProposalId ? `/proposals/${encodeURIComponent(model.evidence.latestProposalId)}` : '/')],
             ['Forecast: inspect the open, two-sided, recipe-bound market.', model.externalMarket.nextProof?.market ? `https://explorer.solana.com/address/${encodeURIComponent(model.externalMarket.nextProof.market)}?cluster=devnet` : `${apiBase}/docs/agents.json`],
             ['Attest: verify the court oracle’s source-timed SAS evidence.', `${apiBase}/oracle/public-records/summary`],
             ['Resolve: follow the proven market outcome through its USDC payout.', model.externalMarket.resolution ? `https://explorer.solana.com/tx/${encodeURIComponent(model.externalMarket.resolution)}?cluster=devnet` : `${apiBase}/docs/agents.json`]
@@ -534,6 +615,13 @@
             if (result.status === 'fulfilled') values[key] = result.value;
             else errors[key] = result.reason?.message || String(result.reason);
         });
+        const caseUrl = values.proofManifest?.publicProof?.canonicalCase
+            || `${base}/hackathon/cases/hackathon-golden-borovje-2026`;
+        try {
+            values.canonicalCase = await fetchJson(caseUrl);
+        } catch (error) {
+            errors.canonicalCase = error?.message || String(error);
+        }
         return { values, errors };
     }
 
@@ -553,6 +641,7 @@
             publicRecords: values.publicRecords || null,
             prospectiveMarket: values.prospective || null,
             proofManifest: values.proofManifest || null,
+            canonicalCase: values.canonicalCase || null,
             errors
         }), { apiBase: base });
     }

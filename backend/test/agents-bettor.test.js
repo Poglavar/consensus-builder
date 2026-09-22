@@ -48,6 +48,18 @@ function marketAccount({ proposal, stakeMint, vault, yesPool = 0n, noPool = 0n, 
     return { data };
 }
 
+function positionAccount({ market, owner, side, amount, claimed = false, bump = 254 }) {
+    const data = Buffer.alloc(marketClient.POSITION_SIZE);
+    Buffer.from(marketClient.ACCOUNT_DISCRIMINATORS.Position).copy(data, 0);
+    new PublicKey(market).toBuffer().copy(data, 8);
+    new PublicKey(owner).toBuffer().copy(data, 40);
+    data.writeUInt8(side, 72);
+    data.writeBigUInt64LE(amount, 73);
+    data.writeUInt8(claimed ? 1 : 0, 81);
+    data.writeUInt8(bump, 82);
+    return { data };
+}
+
 function stubbedChain(accountFor) {
     const reads = [];
     const sends = [];
@@ -162,6 +174,25 @@ describe('ensureMarketAndStake', () => {
         const [yesPosition] = marketClient.getPositionPda(marketPda, owner.publicKey, SIDE_YES);
         expect(result.positionPda).toBe(noPosition.toBase58());
         expect(result.positionPda).not.toBe(yesPosition.toBase58());
+    });
+
+    it('treats amount as an idempotent target when requested', async () => {
+        const owner = Keypair.generate();
+        const [marketPda] = marketClient.getMarketPda(PROPOSAL_PDA);
+        const [positionPda] = marketClient.getPositionPda(marketPda, owner.publicKey, SIDE_YES);
+        const vault = marketClient.getVaultAddress(marketPda, USDC_DEVNET);
+        const market = marketAccount({ proposal: PROPOSAL_PDA, stakeMint: USDC_DEVNET, vault, yesPool: 10000n });
+        const position = positionAccount({ market: marketPda, owner: owner.publicKey, side: SIDE_YES, amount: 10000n });
+        const { connection, sendAndConfirm, sends } = stubbedChain(pubkey => pubkey.toBase58() === positionPda.toBase58() ? position : market);
+
+        const result = await ensureMarketAndStake({
+            connection, ownerKeypair: owner, proposalPda: PROPOSAL_PDA,
+            stakeMint: USDC_DEVNET, side: SIDE_YES, amountAtomic: 10000n,
+            targetAmount: true, sendAndConfirm
+        });
+
+        expect(sends).toHaveLength(0);
+        expect(result).toMatchObject({ replayed: true, stakeSignature: null, positionPda: positionPda.toBase58() });
     });
 
     it('refuses a stake it cannot send: bad amount, missing keypair, unknown side', async () => {

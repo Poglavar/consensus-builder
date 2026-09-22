@@ -11,6 +11,11 @@ import { buyOracleFact, createOracleFactClient, fetchOracleFactChallenge } from 
 import { ensurePledgeBookAndSet } from './pledger.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import { createPaidClient, fetchChallenge, paymentIdForProposal, postAgentProposal } from './x402-client.js';
+import {
+    acceptProposal, cancelProposal, claimExternalMarket, claimProposalMarket, fulfillPledge,
+    refundDonation, releaseDonations, resolveExternalMarket, resolveProposalMarket, revokePledge,
+    voidPledge
+} from './lifecycle-actions.js';
 
 const DEFAULT_API_BASE = 'https://api.urbangametheory.xyz';
 const DEFAULT_RPC_URL = 'https://api.devnet.solana.com';
@@ -103,6 +108,17 @@ export function createUrbanGameTheoryTools({
         ensurePledgeBookAndSet,
         ensureDonationEscrowAndDonate,
         ensureMarketAndStake,
+        acceptProposal,
+        cancelProposal,
+        refundDonation,
+        revokePledge,
+        voidPledge,
+        releaseDonations,
+        fulfillPledge,
+        resolveProposalMarket,
+        claimProposalMarket,
+        resolveExternalMarket,
+        claimExternalMarket,
         sendAndConfirmPolling,
         ...dependencies
     };
@@ -221,6 +237,105 @@ export function createUrbanGameTheoryTools({
             return impl.ensureMarketAndStake({
                 connection, ownerKeypair: keypair, proposalPda: proposalAccount,
                 stakeMint: USDC_DEVNET, side: SIDE[normalizedSide], amountAtomic,
+                sendAndConfirm: impl.sendAndConfirmPolling
+            });
+        },
+
+        async cancel({ proposalAccount, confirm } = {}) {
+            requireLive(confirm);
+            const { keypair, connection } = signer();
+            return impl.cancelProposal({
+                connection, ownerKeypair: keypair, proposalAccount,
+                sendAndConfirm: impl.sendAndConfirmPolling
+            });
+        },
+
+        async accept({ proposalAccount, parcelId, confirm } = {}) {
+            requireLive(confirm);
+            const { keypair, connection } = signer();
+            return impl.acceptProposal({
+                connection, accepterKeypair: keypair, proposalAccount, parcelId,
+                sendAndConfirm: impl.sendAndConfirmPolling
+            });
+        },
+
+        async refundDonation({ proposalAccount, operationId, confirm } = {}) {
+            requireLive(confirm);
+            const { keypair, connection } = signer();
+            return impl.refundDonation({
+                connection, donorKeypair: keypair, proposalAccount, operationId,
+                sendAndConfirm: impl.sendAndConfirmPolling
+            });
+        },
+
+        async voidPledge({ proposalAccount, pledger, confirm } = {}) {
+            requireLive(confirm);
+            const { keypair, connection } = signer();
+            return impl.voidPledge({
+                connection, feePayerKeypair: keypair, proposalAccount, pledger,
+                sendAndConfirm: impl.sendAndConfirmPolling
+            });
+        },
+
+        async revokePledge({ proposalAccount, confirm } = {}) {
+            requireLive(confirm);
+            const { keypair, connection } = signer();
+            return impl.revokePledge({
+                connection, pledgerKeypair: keypair, proposalAccount,
+                sendAndConfirm: impl.sendAndConfirmPolling
+            });
+        },
+
+        async releaseDonations({ proposalAccount, confirm } = {}) {
+            requireLive(confirm);
+            const { keypair, connection } = signer();
+            return impl.releaseDonations({
+                connection, releaserKeypair: keypair, proposalAccount,
+                sendAndConfirm: impl.sendAndConfirmPolling
+            });
+        },
+
+        async fulfillPledge({ proposalAccount, confirm } = {}) {
+            requireLive(confirm);
+            const { keypair, connection } = signer();
+            return impl.fulfillPledge({
+                connection, pledgerKeypair: keypair, proposalAccount,
+                sendAndConfirm: impl.sendAndConfirmPolling
+            });
+        },
+
+        async resolve({ proposalAccount, confirm } = {}) {
+            requireLive(confirm);
+            const { keypair, connection } = signer();
+            return impl.resolveProposalMarket({
+                connection, resolverKeypair: keypair, proposalAccount,
+                sendAndConfirm: impl.sendAndConfirmPolling
+            });
+        },
+
+        async claim({ proposalAccount, side, confirm } = {}) {
+            requireLive(confirm);
+            const { keypair, connection } = signer();
+            return impl.claimProposalMarket({
+                connection, claimerKeypair: keypair, proposalAccount, side,
+                sendAndConfirm: impl.sendAndConfirmPolling
+            });
+        },
+
+        async resolveExternal({ recipeHash, attestation, confirm } = {}) {
+            requireLive(confirm);
+            const { keypair, connection } = signer();
+            return impl.resolveExternalMarket({
+                connection, resolverKeypair: keypair, recipeHash, attestation,
+                sendAndConfirm: impl.sendAndConfirmPolling
+            });
+        },
+
+        async claimExternal({ recipeHash, side, confirm } = {}) {
+            requireLive(confirm);
+            const { keypair, connection } = signer();
+            return impl.claimExternalMarket({
+                connection, claimerKeypair: keypair, recipeHash, side,
                 sendAndConfirm: impl.sendAndConfirmPolling
             });
         }

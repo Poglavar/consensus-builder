@@ -7,6 +7,7 @@ import { createUrbanGameTheoryTools } from './ugt-agent-tools.js';
 const proposalAccount = z.string().min(32).describe('Solana ProposalNFT account address');
 const amountUsdc = z.string().regex(/^\d+(\.\d{1,6})?$/).describe('Exact devnet USDC decimal string, for example "0.05"');
 const confirmation = z.literal(true).describe('Explicitly authorize this paid or signed devnet action');
+const recipeHash = z.string().regex(/^(sha256:)?[0-9a-fA-F]{64}$/).describe('Committed 32-byte external-market recipe hash');
 
 function jsonSafe(value) {
     return JSON.parse(JSON.stringify(value, (_key, item) => typeof item === 'bigint' ? item.toString() : item));
@@ -125,6 +126,78 @@ export function createUrbanGameTheoryMcpServer({ env = process.env, fetchImpl, t
         inputSchema: z.object({ proposalAccount, side: z.enum(['yes', 'no']), amountUsdc, confirm: confirmation }),
         annotations: PAID_NON_IDEMPOTENT
     }, handler(args => actions.forecast(args)));
+
+    server.registerTool('ugt_cancel_proposal', {
+        title: 'Cancel an owned proposal',
+        description: 'Cancel an active proposal as its on-chain owner. Safe retries read the terminal state first.',
+        inputSchema: z.object({ proposalAccount, confirm: confirmation }), annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.cancel(args)));
+
+    server.registerTool('ugt_accept_proposal', {
+        title: 'Accept a proposal for one parcel',
+        description: 'Accept an active proposal as the on-chain owner of one included cadastral parcel.',
+        inputSchema: z.object({ proposalAccount, parcelId: z.string().min(1), confirm: confirmation }),
+        annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.accept(args)));
+
+    server.registerTool('ugt_refund_donation', {
+        title: 'Refund a donation',
+        description: 'Refund this wallet’s identified donation after proposal cancellation or expiry.',
+        inputSchema: z.object({ proposalAccount, operationId: z.string().min(1), confirm: confirmation }),
+        annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.refundDonation(args)));
+
+    server.registerTool('ugt_void_pledge', {
+        title: 'Void a terminal pledge',
+        description: 'Permissionlessly void an active soft pledge after proposal cancellation or expiry.',
+        inputSchema: z.object({ proposalAccount, pledger: z.string().min(32).optional(), confirm: confirmation }),
+        annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.voidPledge(args)));
+
+    server.registerTool('ugt_revoke_pledge', {
+        title: 'Revoke an active pledge',
+        description: 'Revoke this wallet’s unfunded soft pledge while the proposal remains active.',
+        inputSchema: z.object({ proposalAccount, confirm: confirmation }), annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.revokePledge(args)));
+
+    server.registerTool('ugt_release_donations', {
+        title: 'Release executed-proposal donations',
+        description: 'Permissionlessly release escrowed donations to the captured beneficiary after execution.',
+        inputSchema: z.object({ proposalAccount, confirm: confirmation }), annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.releaseDonations(args)));
+
+    server.registerTool('ugt_fulfill_pledge', {
+        title: 'Fulfill an executed-proposal pledge',
+        description: 'Transfer this wallet’s pledged devnet USDC to the captured beneficiary after execution.',
+        inputSchema: z.object({ proposalAccount, confirm: confirmation }), annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.fulfillPledge(args)));
+
+    server.registerTool('ugt_resolve_market', {
+        title: 'Resolve a proposal market',
+        description: 'Permissionlessly resolve a market from the proposal account’s terminal state.',
+        inputSchema: z.object({ proposalAccount, confirm: confirmation }), annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.resolve(args)));
+
+    server.registerTool('ugt_claim_market', {
+        title: 'Claim market winnings',
+        description: 'Claim this wallet’s winning position or empty-winning-pool refund.',
+        inputSchema: z.object({ proposalAccount, side: z.enum(['yes', 'no']), confirm: confirmation }),
+        annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.claim(args)));
+
+    server.registerTool('ugt_resolve_external_market', {
+        title: 'Resolve an external-evidence market',
+        description: 'Permissionlessly submit a matching SAS attestation to a recipe-bound external market after close.',
+        inputSchema: z.object({ recipeHash, attestation: z.string().min(32), confirm: confirmation }),
+        annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.resolveExternal(args)));
+
+    server.registerTool('ugt_claim_external_market', {
+        title: 'Claim external-market winnings',
+        description: 'Claim this wallet’s winning external-market position or empty-winning-pool refund.',
+        inputSchema: z.object({ recipeHash, side: z.enum(['yes', 'no']), confirm: confirmation }),
+        annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.claimExternal(args)));
 
     return server;
 }

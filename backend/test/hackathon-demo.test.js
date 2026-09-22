@@ -71,6 +71,21 @@ describe('hackathon demo evidence model', () => {
         });
     });
 
+    it('surfaces the clean-room second-wallet x402 proof from the public manifest', () => {
+        const model = demo.buildDemoModel({
+            docs,
+            oracleDiscovery: { state: 'listed', listing: { resource: 'https://api.example/agent/oracle/facts' } },
+            proofManifest: { publicProof: { independentX402: {
+                transaction: 'independent-payment', transactionUrl: 'https://explorer/independent-payment'
+            } } }
+        });
+        expect(model.oracleFacts).toMatchObject({
+            tone: 'success', label: 'Independent agent discovered, paid and verified a fact',
+            independentProof: { transaction: 'independent-payment' }
+        });
+        expect(model.oracleFacts.detail).toContain('clean-room client');
+    });
+
     it('reports the shared outside-agent tool surface from public metadata', () => {
         const model = demo.buildDemoModel({ docs });
         expect(model.agentTools).toMatchObject({
@@ -118,6 +133,7 @@ describe('hackathon demo evidence model', () => {
             },
             prospective: false,
             chronology: { classification: 'retrospective_integration', prospective: false },
+            evidence: null,
             nextProof: {
                 status: 'market_open_awaiting_post_close_evidence',
                 market: 'prospective-market', closesAt: '2026-09-22T21:00:00.000Z'
@@ -142,6 +158,34 @@ describe('hackathon demo evidence model', () => {
         expect(model.proofChecks).toContainEqual({ label: 'Two-sided market', status: 'success' });
     });
 
+    it('promotes a settled prospective run to the main verified story automatically', () => {
+        const settlement = {
+            outcome: 'YES', evidence: { address: 'evidence-account', hash: `sha256:${'d'.repeat(64)}` },
+            transactions: { evidenceFirstSeen: 'first-seen', resolution: 'resolution-v2', claim: 'claim-v2' },
+            chronology: {
+                classification: 'prospective', prospective: true,
+                timestamps: {
+                    marketCreatedAt: '2026-09-22T19:00:00Z', yesStakeAt: '2026-09-22T19:01:00Z',
+                    noStakeAt: '2026-09-22T19:02:00Z', marketClosesAt: '2026-09-22T21:00:00Z',
+                    sourceObservedAt: '2026-09-22T21:10:00Z', evidenceCreatedAt: '2026-09-22T21:20:00Z',
+                    resolvedAt: '2026-09-22T21:30:00Z', claimedAt: '2026-09-22T21:31:00Z'
+                }
+            }
+        };
+        const model = demo.buildDemoModel({
+            docs,
+            prospectiveMarket: {
+                state: 'settled', market: 'prospective-market', marketUrl: 'https://explorer/market',
+                closesAt: '2026-09-22T21:00:00Z', stakes: { pool: 0.02 }, settlement
+            }
+        });
+        expect(model.prospectiveMarket).toMatchObject({ state: 'settled', settlement });
+        expect(model.externalMarket).toMatchObject({
+            prospective: true, market: 'prospective-market', resolution: 'resolution-v2',
+            claim: 'claim-v2', evidence: { address: 'evidence-account' }
+        });
+    });
+
     it('does not relabel an LLM run as algorithmic evidence', () => {
         const model = demo.buildDemoModel({
             now: '2026-09-21T12:00:00Z', docs,
@@ -164,6 +208,23 @@ describe('hackathon demo evidence model', () => {
         expect(model.supporter).toMatchObject({
             tone: 'success', detail: 'supporter-01 · pledge · proposal p2',
             transaction: 'support-tx', proposalId: 'p2'
+        });
+    });
+
+    it('presents one aggregate case without treating partial branches as complete', () => {
+        const model = demo.buildDemoModel({
+            docs,
+            canonicalCase: {
+                id: 'golden-case', state: 'in_progress',
+                proposal: { name: 'Three-parcel courtyard' },
+                parcelSet: { parcelCount: 3 }, progress: { complete: 2, total: 7 },
+                stages: [{ id: 'forecast', label: 'Forecast', state: 'partial', detail: 'YES only.' }],
+                links: { map: 'https://site.example/proposals/golden-case', self: 'https://api.example/hackathon/cases/golden-case' }
+            }
+        });
+        expect(model.canonicalCase).toMatchObject({
+            tone: 'waiting', state: 'in_progress', label: 'Three-parcel courtyard',
+            detail: '3 real cadastral parcels · 2/7 independently verified stages'
         });
     });
 });

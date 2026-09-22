@@ -552,6 +552,86 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </button>
     `;
 
+    const parcelSetRelationsHtml = (() => {
+        const relationApi = (typeof window !== 'undefined') ? window.ParcelSetRelations : null;
+        if (!relationApi || typeof relationApi.findParcelSetRelations !== 'function') return '';
+
+        const activeProposal = fullProposal || proposal;
+        const canonicalIds = relationApi.normalizeParcelIds(activeProposal);
+        if (!canonicalIds.length) return '';
+
+        let allProposals = [];
+        try {
+            allProposals = (typeof proposalStorage !== 'undefined'
+                && typeof proposalStorage.getAllProposals === 'function')
+                ? proposalStorage.getAllProposals()
+                : [];
+        } catch (error) {
+            console.warn('[showProposalInfo] Could not enumerate parcel-set alternatives:', error);
+        }
+        const relations = relationApi.findParcelSetRelations(activeProposal, allProposals, { limit: 12 });
+        const exactCount = relations.filter(relation => relation.kind === 'same').length;
+        const overlapCount = relations.length - exactCount;
+        const setHash = typeof activeProposal?.parcelSet?.setHash === 'string'
+            ? activeProposal.parcelSet.setHash
+            : '';
+        const shortHash = setHash ? `${setHash.slice(0, 13)}…${setHash.slice(-6)}` : '';
+        const summary = relations.length
+            ? tProposal(
+                'panel.proposal.parcelSet.summary',
+                '{{count}} real parcels anchor this proposal. {{exact}} alternatives use the same set and {{overlap}} overlap it.',
+                { count: canonicalIds.length, exact: exactCount, overlap: overlapCount }
+            )
+            : tProposal(
+                'panel.proposal.parcelSet.noRelated',
+                '{{count}} real parcels anchor this proposal. No other proposal currently references this land.',
+                { count: canonicalIds.length }
+            );
+        const relationLabels = {
+            same: tProposal('panel.proposal.parcelSet.relationSame', 'Same parcel set'),
+            'contains-target': tProposal('panel.proposal.parcelSet.relationContains', 'Includes this whole set'),
+            'inside-target': tProposal('panel.proposal.parcelSet.relationInside', 'Inside this parcel set'),
+            overlap: tProposal('panel.proposal.parcelSet.relationOverlap', 'Overlapping land')
+        };
+        const rows = relations.map(relation => {
+            const candidate = relation.proposal || {};
+            const candidateId = safeAgentText(relation.proposalId);
+            const title = safeAgentText(candidate.title || candidate.name || relation.proposalId);
+            const author = candidate.author ? safeAgentText(candidate.author) : '';
+            const shared = safeAgentText(tProposal(
+                'panel.proposal.parcelSet.sharedCount',
+                '{{shared}} of {{count}} parcels shared',
+                { shared: relation.sharedCount, count: relation.targetCount }
+            ));
+            const lifecycle = typeof getProposalLifecycleLabel === 'function'
+                ? safeAgentText(getProposalLifecycleLabel(getProposalLifecycleKey(candidate)))
+                : '';
+            return `
+                <button type="button" class="proposal-parcel-set-relation" data-related-proposal-id="${candidateId}">
+                    <span class="proposal-parcel-set-relation-main">
+                        <strong>${title}</strong>
+                        <small>${safeAgentText(relationLabels[relation.kind])} · ${shared}${author ? ` · ${author}` : ''}</small>
+                    </span>
+                    ${lifecycle ? `<span class="proposal-parcel-set-relation-state">${lifecycle}</span>` : ''}
+                    <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                </button>`;
+        }).join('');
+
+        return `
+            <section class="proposal-parcel-set-card" aria-label="${safeAgentText(tProposal('panel.proposal.parcelSet.title', 'Proposals on this land'))}">
+                <div class="proposal-parcel-set-head">
+                    <div>
+                        <div class="proposal-funding-eyebrow">${safeAgentText(tProposal('panel.proposal.parcelSet.eyebrow', 'Canonical parcel set'))}</div>
+                        <h3>${safeAgentText(tProposal('panel.proposal.parcelSet.title', 'Proposals on this land'))}</h3>
+                    </div>
+                    <span class="proposal-parcel-set-count">${canonicalIds.length}</span>
+                </div>
+                <p>${safeAgentText(summary)}</p>
+                ${shortHash ? `<div class="proposal-parcel-set-hash" title="${safeAgentText(setHash)}"><span>${safeAgentText(tProposal('panel.proposal.parcelSet.hash', 'Set identity'))}</span><code>${safeAgentText(shortHash)}</code></div>` : ''}
+                ${rows ? `<div class="proposal-parcel-set-relations">${rows}</div>` : ''}
+            </section>`;
+    })();
+
     // Build expiry countdown HTML if proposal has an expiry set and is not executed
     let expiryCountdownHtml = '';
     if (proposal.expiresAt && getLifecycleStatus(proposal) !== 'Executed') {
@@ -674,6 +754,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 </div>` : ''}
                 ${proposalEnsHtml ? `<div class="proposal-ens-row" style="text-align: center; margin-top: 4px;">${proposalEnsHtml}</div>` : ''}
             </div>
+            ${parcelSetRelationsHtml}
             ${agentProvenanceHtml}
             ${isSolanaPledgeProposal ? `<section class="proposal-possibility-card" data-proposal-timeline="${nftInfo.tokenId}" aria-label="Proposal timeline">
                 <div class="proposal-funding-head">
@@ -1067,6 +1148,13 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 window.__claimsUi.injectProposalBreadcrumb(detailsContent, fullProposal || proposal);
             }
         } catch (_) { }
+        detailsContent?.querySelectorAll('[data-related-proposal-id]').forEach(button => {
+            button.addEventListener('click', () => {
+                const relatedProposalId = button.dataset.relatedProposalId;
+                if (!relatedProposalId || typeof focusProposalDetails !== 'function') return;
+                focusProposalDetails(relatedProposalId, { centerOnProposal: true, showDetails: true });
+            });
+        });
         // Lazy append remaining ancestor parcels
         setupLazyList('proposal-parent-parcels-list', parentParcelItemsRemaining, renderAncestorParcelItem);
         // Lazy append remaining descendant parcels

@@ -34,13 +34,13 @@ New oracle sources and more elaborate AI should come only after that.
 | Agent proposal runtime | Live | Deterministic daily proposer and an earlier LLM-controlled run both minted, paid, published, and forecast on devnet |
 | Proposal support | Live | `ProposalPledge` program, human wallet UI, agent adapters, refundable donation lifecycle, revocable soft pledges, live supporter pledge |
 | Prediction markets | Live | `ProposalMarket`, human and agent staking, two-sided pools, resolution, claims, empty-winning-pool refunds |
-| Proposal-state oracle | Live but narrow | One public source-hashed terminal event currently exists; its source transaction and account hash are independently inspectable |
+| Proposal-state oracle | Live but narrow | The canonical case now has a public source-hashed terminal event; its source transaction and account hash are independently inspectable |
 | Court oracle | Live | 92 total devnet attestations, including 35 source-timestamped V2 attestations from 29 decisions |
 | External court market | Live integration proof | Two-sided V1 market settled permissionlessly from SAS evidence and paid the winner; chronology is honestly labelled retrospective |
 | Prospective court market | Open, not yet complete | Both sides staked before the `2026-09-22 21:00 UTC` close; hourly resolver is healthy and rejects pre-close evidence |
 | Shared actor/activity model | Implemented | Browser simulation, deterministic agents, LLM agents, and wallet actions use one activity envelope and explorer |
-| Public activity proof | Partial | Nine live public events exist, but all nine are agent events; there is no confirmed human event or donation in the public feed yet |
-| MCP action surface | Useful but incomplete | Eleven tools cover reads, proposals, pledge, donation, forecast, and verified facts; terminal owner/resolution/claim actions are missing |
+| Public activity proof | Partial | The canonical case contributes eleven transaction-backed agent events, including donation, pledge, both forecast sides, resolution, refund, void and claim; a confirmed human-wallet event is still missing |
+| MCP action surface | Complete for current programs | Twenty-two tools cover reads, paid proposals/facts, acceptance, pledge, donation, forecast, cancellation, active revoke, refund, void, execution-side release/fulfilment, and proposal- plus external-market resolution and claims |
 | Judge surfaces | Live | Deck, Demo Center, actor explorer, proof manifest, public audit command, program IDs, schemas, architecture, trust assumptions, Apache-2.0 license |
 | Operations | Mostly live | Proposer, supporter, lifecycle materializer, court pipeline, and prospective resolver are scheduled; central monitoring covers proposer, court pipeline, and resolver only |
 
@@ -62,6 +62,14 @@ New oracle sources and more elaborate AI should come only after that.
 ## Ordered next steps
 
 ### 1. Complete the genuinely prospective court-market proof
+
+Progress on 2026-09-22: the market remains honestly open until its committed 21:00 UTC close. The
+resolver and court schedules are installed and fresh. The resolver now writes a redacted V2
+settlement artifact containing the evidence address/hash, source and first-seen times, resolution,
+claim, and outcome; the public status endpoint, Demo Center, and audit consume it automatically.
+The audit permits the experiment to remain pending, but after `settled` it fails unless the full
+ordering and payout are present. The qualifying later court record itself remains external and
+cannot be manufactured.
 
 This is the strongest remaining claim and is time-dependent. Preserve the current market and let
 the existing schedule do its work; do not manufacture a matching record or weaken the recipe.
@@ -87,6 +95,19 @@ say that the protocol and guard are live while the first independent future even
 
 ### 2. Build one canonical end-to-end demo case
 
+Progress on 2026-09-22: a generic `/hackathon/cases/:id` aggregate now derives one proposal's
+canonical parcel-set hash, actor activity, donations/pledges, YES/NO pools, lifecycle state,
+source-hashed events, resolution and settlement state. The Demo Center renders that graph and links
+straight to the parcel set in read-only proposal Details. Support, forecasts and owner action are
+explicit parallel branches; the response never marks a missing stage complete. The new canonical
+Borovje case is live across three cadastral parcels: the existing deterministic personas minted and
+paid for it, donated 0.05 devnet USDC, pledged 0.10, and staked 0.01 on each of YES and NO. The
+proposer then cancelled it; the lifecycle materializer emitted a source-hashed event, a second actor
+resolved the market NO, the donation was refunded, the pledge was voided and the winning NO position
+was claimed. The aggregate derives all seven stages as complete and eleven transaction-backed
+actions are visible in the shared public activity feed. The code and public manifest are ready;
+deployment is the only remaining publication step for this milestone.
+
 Create a single “golden case” that a judge can follow without assembling five unrelated accounts.
 It should be a real parcel **set**, even if the initial set contains only a few parcels.
 
@@ -110,11 +131,19 @@ state. Use it to power one Demo Center case card and one deep link that opens th
 read-only proposal Details on the map.
 
 Done when: a new reviewer can start from one URL and inspect every stage, actor, transaction, and
-pending/completed state without consulting `HACKATHON.md`.
+pending/completed state without consulting `HACKATHON.md`. **Functionally complete; awaiting the
+next requested deployment.**
 
 ### 3. Fill the public human-and-agent activity matrix
 
-The UI supports a neutral actor model, but the public feed currently proves only agent activity.
+Progress on 2026-09-22: the public feed now projects confirmed instructions from the existing
+Solana transaction mirror into the same neutral activity envelope as agent-run events. The pledge
+program is now a watched address, so donations and pledges by previously unknown wallets are
+classified as human actions from their chain signer instead of relying on a browser claim. Richer
+run provenance wins deduplication when the signer is a configured persona. A real human-wallet
+transaction is still needed to complete the public proof matrix after deployment.
+
+The UI supports a neutral actor model, but the currently deployed public feed proves only agent activity.
 Exercise and preserve at least this matrix on devnet:
 
 | Actor | Required public actions |
@@ -125,17 +154,26 @@ Exercise and preserve at least this matrix on devnet:
 | LLM-controlled agent | propose or choose support through the same deterministic executors |
 | Resolver | attest/resolve and claim or refund |
 
-Record all confirmed wallet actions through the same activity envelope. Extend the public audit so
-it requires at least one human event, one donation, one pledge, both forecast sides, and one terminal
-resolution/claim event. Keep actor/controller provenance in Details, not as separate product silos.
+Record all confirmed wallet actions through the same activity envelope. The public audit now reports
+an explicit advisory matrix until it finds transaction-backed human support and forecasting, an
+algorithmic actor, an LLM actor, and terminal resolver activity. Promote that advisory to required
+once a real human-wallet proof exists. Keep actor/controller provenance in Details, not as separate
+product silos.
 
 Done when: the Activity explorer visibly demonstrates humans, algorithms, and an LLM controller
 using the same actions, with transaction links for every money-moving event.
 
 ### 4. Complete the shared lifecycle action surface
 
-The current MCP surface stops at proposing, supporting, and forecasting. Add the terminal operations
-needed to complete a lifecycle without falling back to bespoke scripts:
+Progress on 2026-09-22: the shared signer adapters and MCP now cover the complete lifecycle of the
+currently deployed programs. In addition to cancellation, refund, void, proposal-market resolution
+and claim, they now expose parcel-owner acceptance, active pledge revocation, permissionless donation
+release, pledge fulfilment, external-market SAS resolution and external-market claim. The adapters
+read chain state first, reject a wrong owner/position signer before signing, and make terminal retries
+idempotent. Confirmed instructions flow into the shared activity envelope through the transaction
+mirror added in step 3.
+
+The action surface now traverses both execution and cancellation branches without bespoke scripts:
 
 - inspect owner requirements and accept a proposal as a parcel owner;
 - cancel an eligible proposal;
@@ -150,12 +188,24 @@ per-call confirmation, enforce role/ownership checks before signing, cap value, 
 activity record. Do not introduce another agent backend.
 
 Done when: a deterministic policy, an MCP-hosted LLM, and a human wallet can all traverse the same
-lifecycle using shared adapters.
+lifecycle using shared adapters. **Implementation complete; a human-wallet proof and deployment are
+still required for the full public demonstration.**
 
 ### 5. Prove cold-start use by an independent agent and wallet
 
-Both Bazaar resources currently have one unique payer. Run a clean-room client that imports no
-internal UGT modules and learns the flow only from public discovery and schemas.
+Progress on 2026-09-22: `backend/examples/independent-x402-client.mjs` imports no UGT module. It
+found the verified-fact resource through the public hosted-Bazaar proof, decoded and capped the
+advertised challenge, paid 0.01 devnet USDC from the separate supporter wallet, decoded the x402
+receipt, and matched the purchased event and source hash against the free public event feed. The
+settlement is transaction
+`3T7mg2f5FRk6uFND6eyRKrS5VyHviizk4vmPqB1zxVJbmnz4f1nxaMjXxGi4XEh8JMMesPXNbaaCNzgFQxRxTGPn`.
+The public manifest and Demo Center now carry that proof. The transaction-backed activity projector
+also recognizes generic facilitator-paid x402 transfers. Coinbase's cached listing still showed its
+pre-purchase one-payer metric immediately afterward; confirm the catalog refresh before marking the
+unique-payer criterion complete.
+
+Both Bazaar resources previously reported one unique payer. Preserve this clean-room proof and, if
+needed, repeat it with an outside participant rather than another internal runner.
 
 It should:
 
@@ -169,9 +219,22 @@ It should:
 Prefer an outside hackathon participant or agent framework. If that is unavailable, use a separate
 minimal client repository and wallet so the proof is still independent of the internal runner.
 
-Done when: Bazaar reports at least two unique payers and the demo links the independent call.
+Done when: Bazaar reports at least two unique payers and the demo links the independent call. **The
+call and demo proof are complete; the hosted quality counter is awaiting refresh.**
 
 ### 6. Make parcel sets a first-class product object
+
+Progress on 2026-09-22: the canonical parcel-set builder is now shared by the proposal serializer
+and the hackathon aggregate instead of living only in the demo case. Every full and summary proposal
+API record receives sorted canonical IDs, jurisdiction, inferred authority, reference time, optional
+geometry hash, parcel count and a deterministic set hash. The identity hash deliberately excludes
+reference time so competing proposals over the same cadastral set group together; capture time
+remains explicit metadata. Existing `cadastreParcelIds` stays intact for backward compatibility.
+Counterpropose already copies that full cadastral set. Proposal Details now shows the stable set
+identity, exact same-set alternatives, containing/contained/partial overlaps and shared-parcel counts;
+selecting an alternative reuses the same read-only Details and whole-set map highlight. The comparison
+logic rejects cross-jurisdiction local-ID collisions and is covered without a browser. An explicit
+"fork with changed land set" authoring action remains.
 
 The protocol already carries arrays of cadastral parcels, but the product still often speaks and
 links as if one parcel were the unit. Introduce a canonical parcel-set identity containing:
@@ -191,6 +254,19 @@ the same parcel set differ?” without inspecting raw JSON.
 
 ### 7. Close operations and release-proof gaps
 
+Progress on 2026-09-22: the land-event materializer now writes an atomic redacted run-stat artifact
+on every success or failure, including scanned/terminal/event/insert/reconcile/missing-evidence
+counters; a zero-work run is successful only with an explicit successful verdict, while persistent
+missing evidence fails it. `/hackathon/operations.json` combines that artifact with proposer and
+supporter checkpoints and the prospective resolver status, applies daily/hourly freshness windows,
+and exposes no credentials or private court matching data. The public audit consumes this endpoint
+as an advisory check until the schedules are redeployed and central monitoring is registered. The
+proof manifest now separates the backend release commit, a frontend `/release.json` stamped with its
+own commit/build number, and the two mutable devnet deployments. ProposalPledge and ProposalMarket
+are pinned to their public ProgramData addresses, last deployment slots and binaries read back from
+Solana and SHA-256 hashed on 2026-09-22; this identifies deployed code without claiming a reproducible
+source build.
+
 Add central outcome monitoring for the two scheduled jobs not currently registered:
 
 - `consensus-builder-supporter` at 02:15 UTC; and
@@ -202,12 +278,14 @@ runs valid when their explicit verdict is successful.
 
 Also:
 
-- distinguish API/backend commit, frontend commit/build, and deployed program version in the public
-  proof manifest—the current API correctly reports its backend release SHA, but a frontend-only
-  release advances the branch without changing that value;
-- publish schedule freshness and last successful outcome in one redacted operations endpoint;
-- make the public audit check monitoring freshness rather than only the underlying data; and
-- correct stale documentation that still describes the agent monitor as inactive.
+- **Implemented, deployment pending:** distinguish API/backend commit, frontend commit/build, and
+  deployed program identity in the public proof manifest and frontend release artifact;
+- **Implemented, deployment pending:** publish schedule freshness and last successful outcome in one
+  redacted operations endpoint;
+- **Implemented as advisory, promotion pending:** make the public audit check monitoring freshness
+  rather than only the underlying data; and
+- **Implemented:** correct stale documentation that described the active proposer monitor as
+  inactive while clearly leaving supporter and land-oracle central registration pending.
 
 Done when: every scheduled stage can fail independently and produce a visible, actionable verdict.
 

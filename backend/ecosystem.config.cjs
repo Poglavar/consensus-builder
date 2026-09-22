@@ -3,9 +3,15 @@ module.exports = {
     name: 'consensus-builder-api',
     script: 'server.js',
     cwd: '/root/code/consensus-builder/backend',
-    exec_mode: 'fork',
+    // Cluster mode is required for PM2's zero-downtime reload. One steady-state
+    // worker preserves the service's current memory and rate-limit behaviour;
+    // PM2 only overlaps old/new workers while a release is being activated.
+    exec_mode: 'cluster',
+    instances: 1,
     autorestart: true,
     watch: false,
+    kill_timeout: 15000,
+    listen_timeout: 10000,
     max_memory_restart: '1G',
     env: {
       NODE_ENV: 'production',

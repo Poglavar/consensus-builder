@@ -900,6 +900,18 @@
                 "conditionalHint": "All owners must accept before payout",
                 "partialHint": "Payout released as each owner accepts"
             },
+            "parcelSet": {
+                "eyebrow": "Canonical parcel set",
+                "title": "Proposals on this land",
+                "summary": "{{count}} real parcels anchor this proposal. {{exact}} alternatives use the same set and {{overlap}} overlap it.",
+                "noRelated": "{{count}} real parcels anchor this proposal. No other proposal currently references this land.",
+                "hash": "Set identity",
+                "relationSame": "Same parcel set",
+                "relationContains": "Includes this whole set",
+                "relationInside": "Inside this parcel set",
+                "relationOverlap": "Overlapping land",
+                "sharedCount": "{{shared}} of {{count}} parcels shared"
+            },
             "actions": {
                 "apply": "Apply to map",
                 "applying": "Applying...",

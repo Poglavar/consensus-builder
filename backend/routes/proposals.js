@@ -882,6 +882,7 @@ export function setupProposalsRoute(app, pool) {
                     lifecycleStatus: proposal.lifecycleStatus,
                     createdAt: proposal.createdAt || null,
                     cadastreParcelIds: Array.isArray(row.cadastre_parcel_ids) ? row.cadastre_parcel_ids : null,
+                    parcelSet: proposal.parcelSet,
                     screenshotUrl: proposal.screenshotUrl || null,
                     onchain: row.onchain_data && typeof row.onchain_data === 'object' && !Array.isArray(row.onchain_data)
                         ? row.onchain_data

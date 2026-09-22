@@ -31,7 +31,18 @@ function stubTools() {
         submitProposal: vi.fn(async () => ({ status: 201 })),
         pledge: vi.fn(async () => ({ signature: 'pledge-tx' })),
         donate: vi.fn(async () => ({ signature: 'donate-tx' })),
-        forecast: vi.fn(async () => ({ stakeSignature: 'stake-tx' }))
+        forecast: vi.fn(async () => ({ stakeSignature: 'stake-tx' })),
+        accept: vi.fn(async () => ({ signature: 'accept-tx' })),
+        cancel: vi.fn(async () => ({ signature: 'cancel-tx' })),
+        refundDonation: vi.fn(async () => ({ signature: 'refund-tx' })),
+        voidPledge: vi.fn(async () => ({ signature: 'void-tx' })),
+        revokePledge: vi.fn(async () => ({ signature: 'revoke-tx' })),
+        releaseDonations: vi.fn(async () => ({ signature: 'release-tx' })),
+        fulfillPledge: vi.fn(async () => ({ signature: 'fulfill-tx' })),
+        resolve: vi.fn(async () => ({ signature: 'resolve-tx' })),
+        claim: vi.fn(async () => ({ signature: 'claim-tx' })),
+        resolveExternal: vi.fn(async () => ({ signature: 'external-resolve-tx' })),
+        claimExternal: vi.fn(async () => ({ signature: 'external-claim-tx' }))
     };
 }
 
@@ -44,7 +55,11 @@ describe('Urban Game Theory MCP server', () => {
         expect(names).toEqual([
             'ugt_capabilities', 'ugt_list_proposals', 'ugt_activity', 'ugt_support_status',
             'ugt_oracle_events', 'ugt_inspect_verified_fact', 'ugt_buy_verified_fact',
-            'ugt_submit_proposal', 'ugt_pledge', 'ugt_donate', 'ugt_forecast'
+            'ugt_submit_proposal', 'ugt_pledge', 'ugt_donate', 'ugt_forecast',
+            'ugt_cancel_proposal', 'ugt_accept_proposal', 'ugt_refund_donation', 'ugt_void_pledge',
+            'ugt_revoke_pledge', 'ugt_release_donations', 'ugt_fulfill_pledge',
+            'ugt_resolve_market', 'ugt_claim_market',
+            'ugt_resolve_external_market', 'ugt_claim_external_market'
         ]);
         expect(response.tools.find(tool => tool.name === 'ugt_activity').annotations.readOnlyHint).toBe(true);
         expect(response.tools.find(tool => tool.name === 'ugt_donate').annotations.destructiveHint).toBe(true);

@@ -120,9 +120,9 @@ cd backend
 npm run mcp
 ```
 
-That default is read-only and exposes eleven tools. Paid proposal/fact tools and signed
-pledge/donation/forecast tools remain disabled unless the MCP process has `UGT_MCP_LIVE=1`, an
-external `UGT_AGENT_KEYPAIR`, and the individual call supplies `confirm: true`. The per-action cap
+That default is read-only and exposes twenty-two tools. Paid proposal/fact tools and every signed
+proposal, support, forecast and settlement tool remain disabled unless the MCP process has
+`UGT_MCP_LIVE=1`, an external `UGT_AGENT_KEYPAIR`, and the individual call supplies `confirm: true`. The per-action cap
 defaults to `0.25` devnet USDC and can be lowered with `UGT_MCP_MAX_USDC_PER_ACTION`.
 
 ## 6. Build the Solana programs (optional)
@@ -150,6 +150,18 @@ start from the warning and instructions in [`blockchain/solana/README.md`](../bl
 
 The safest judge path is the deployed [Demo Center](https://urbangametheory.xyz/hackathon-demo.html).
 
+The Demo Center's canonical-case card reads `/hackathon/cases/:proposalId`. To preview the
+deterministic multi-parcel live-case plan without signing or writing anything:
+
+```bash
+cd backend
+npm run demo:case
+```
+
+`npm run demo:case:live` is the explicit devnet execution path. It uses the existing proposer and
+supporter keypairs, database checkpoint ledger, x402 client, donation/pledge adapters and market
+adapter; retries do not mint, pay, donate, pledge or target-stake twice after a recorded checkpoint.
+
 For a bounded, read-only command-line walkthrough of the same public evidence:
 
 ```bash
@@ -157,9 +169,10 @@ cd backend
 npm run demo:judge
 ```
 
-The machine-readable scope is `/hackathon/proof.json`; the privacy-preserving prospective resolver
-state is `/oracle/markets/prospective/status`. Neither endpoint exposes the private parcel recipe,
-wallets, credentials or RPC configuration.
+The machine-readable scope is `/hackathon/proof.json`; scheduled outcome/freshness evidence is
+`/hackathon/operations.json`; and the privacy-preserving prospective resolver state is
+`/oracle/markets/prospective/status`. None exposes the private parcel recipe, wallets, credentials
+or RPC configuration.
 It links the Bazaar discovery record, paid agent proof, proposal and support transactions, market
 state, unified activity, hashed recipe, and court-oracle aggregate. Missing dependencies remain
 visibly pending.
@@ -171,9 +184,13 @@ cd backend
 npm run audit:hackathon -- --url https://api.urbangametheory.xyz
 ```
 
-The audit reads seven unauthenticated endpoints, requires exact Bazaar resource matches, and exits
-non-zero when any required proof is absent. Add `--json` for a machine-readable report. It signs no
-transactions and reads neither local keys nor private database state.
+The audit reads eleven unauthenticated endpoints, including the manifest-selected canonical case,
+requires exact Bazaar resource matches, and exits
+non-zero when any required proof is absent. A pending prospective market passes honestly; once its
+state becomes `settled`, missing payout evidence or an ordering other than `market + both stakes <
+close <= source publication <= attestation first seen <= resolution < claim` fails the audit. Add
+`--json` for a machine-readable report. It signs no transactions and reads neither local keys nor
+private database state.
 
 For a single proposal, open read-only **Details** on the map. The **From possible future to public
 fact** timeline merges the public activity feed and proposal-lifecycle oracle into proposed, backed,
@@ -230,3 +247,8 @@ for a matching court record officially published after it closes. The opt-in pro
 then run deterministic court interpretation and V2 attestation at 22:15 UTC and the idempotent
 resolver hourly at `:45`; each writes an atomic outcome record for the central monitor. The existing
 settled market remains an honest retrospective V1 integration proof until that later record exists.
+On successful prospective settlement, the resolver's mode-0600 run-stat file stores only the
+redacted public proof: outcome, evidence address/hash, first-attestation transaction, resolution,
+claim, and ordered timestamps. `/oracle/markets/prospective/status` projects those fields into the
+public Demo Center; the parcel, operation values, decision identifier/link, wallets, and RPC remain
+private.

@@ -20,6 +20,7 @@ async function call(cfg, path, { method = 'POST', body, raw } = {}) {
         Authorization: `Bearer ${token}`,
       },
       body: raw ? body : body ? JSON.stringify(body) : undefined,
+      signal: AbortSignal.timeout(cfg.requestTimeoutMs || 10_000),
     });
     if (res.status === 401 && attempt === 0) continue; // token expired -> refresh + retry
     const text = await res.text();

@@ -53,7 +53,8 @@ module.exports = {
     cron_restart: '30 2 * * *',
     kill_timeout: 900000,
     env: {
-      NODE_ENV: 'production'
+      NODE_ENV: 'production',
+      LAND_ORACLE_RUN_STATS: '/root/code/consensus-builder/backend/logs/land-oracle-stats.json'
     },
     error_file: '/root/code/consensus-builder/backend/logs/agents-error.log',
     out_file: '/root/code/consensus-builder/backend/logs/agents.log',

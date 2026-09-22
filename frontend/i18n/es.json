@@ -947,6 +947,18 @@
                 "conditionalHint": "Todos los propietarios deben aceptar antes del pago",
                 "partialHint": "El pago se libera conforme cada propietario acepta"
             },
+            "parcelSet": {
+                "eyebrow": "Conjunto catastral canónico",
+                "title": "Propuestas sobre este terreno",
+                "summary": "{{count}} parcelas reales anclan esta propuesta. {{exact}} alternativas usan el mismo conjunto y {{overlap}} se solapan con él.",
+                "noRelated": "{{count}} parcelas reales anclan esta propuesta. Ninguna otra propuesta hace referencia actualmente a este terreno.",
+                "hash": "Identidad del conjunto",
+                "relationSame": "Mismo conjunto de parcelas",
+                "relationContains": "Incluye todo este conjunto",
+                "relationInside": "Dentro de este conjunto",
+                "relationOverlap": "Terreno solapado",
+                "sharedCount": "{{shared}} de {{count}} parcelas compartidas"
+            },
             "actions": {
                 "apply": "Aplicar al mapa",
                 "applying": "Aplicando...",

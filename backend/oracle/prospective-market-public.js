@@ -27,6 +27,11 @@ function finiteTime(value) {
     return Number.isFinite(parsed) ? new Date(parsed).toISOString() : null;
 }
 
+function positiveInteger(value) {
+    const number = Number(value);
+    return Number.isSafeInteger(number) && number > 0 ? number : null;
+}
+
 function safeLastRun(runStats) {
     if (!runStats || runStats.job !== 'prospective-market-resolver') return null;
     if (runStats.market && runStats.market !== PROSPECTIVE_MARKET.market) return null;
@@ -39,8 +44,54 @@ function safeLastRun(runStats) {
     };
 }
 
+function safeSettlement(runStats) {
+    if (!runStats || runStats.phase !== 'settled') return null;
+    const transactions = runStats.transactions || {};
+    const evidence = runStats.evidence || {};
+    const chronology = runStats.chronology || {};
+    if (chronology.classification !== 'prospective' || chronology.prospective !== true) return null;
+    return {
+        outcome: ['YES', 'NO'].includes(runStats.outcome) ? runStats.outcome : null,
+        evidence: {
+            address: typeof evidence.address === 'string' ? evidence.address : null,
+            hash: /^sha256:[a-f0-9]{64}$/.test(evidence.hash || '') ? evidence.hash : null
+        },
+        transactions: {
+            evidenceFirstSeen: typeof transactions.evidenceFirstSeen === 'string' ? transactions.evidenceFirstSeen : null,
+            resolution: typeof transactions.resolve === 'string' ? transactions.resolve : null,
+            claim: typeof transactions.claim === 'string' ? transactions.claim : null
+        },
+        chronology: {
+            classification: 'prospective',
+            prospective: true,
+            marketOrderValid: chronology.marketOrderValid === true,
+            attestationAfterClose: chronology.attestationAfterClose === true,
+            sourceTimeVerified: chronology.sourceTimeVerified === true,
+            sourceAfterClose: chronology.sourceAfterClose === true,
+            timestamps: {
+                marketCreatedAt: finiteTime(chronology.timestamps?.marketCreatedAt),
+                yesStakeAt: finiteTime(chronology.timestamps?.yesStakeAt),
+                noStakeAt: finiteTime(chronology.timestamps?.noStakeAt),
+                lastStakeAt: finiteTime(chronology.timestamps?.lastStakeAt),
+                marketClosesAt: finiteTime(chronology.timestamps?.marketClosesAt),
+                sourceObservedAt: finiteTime(chronology.timestamps?.sourceObservedAt),
+                evidenceCreatedAt: finiteTime(chronology.timestamps?.evidenceCreatedAt),
+                resolvedAt: finiteTime(chronology.timestamps?.resolvedAt),
+                claimedAt: finiteTime(chronology.timestamps?.claimedAt)
+            },
+            transactionSlots: {
+                evidenceFirstSeen: positiveInteger(chronology.transactionSlots?.evidenceFirstSeen),
+                resolution: positiveInteger(chronology.transactionSlots?.resolution),
+                claim: positiveInteger(chronology.transactionSlots?.claim)
+            },
+            reason: typeof chronology.reason === 'string' ? chronology.reason : null
+        }
+    };
+}
+
 export function buildProspectiveMarketStatus({ runStats = null, now = Date.now() } = {}) {
     const lastRun = safeLastRun(runStats);
+    const settlement = safeSettlement(runStats);
     const afterClose = Number(now) >= Date.parse(PROSPECTIVE_MARKET.closesAt);
     let state = afterClose ? 'checking_evidence' : 'open';
     if (lastRun?.status === 'failed') state = 'resolver_error';
@@ -66,6 +117,7 @@ export function buildProspectiveMarketStatus({ runStats = null, now = Date.now()
             decimals: PROSPECTIVE_MARKET.decimals
         },
         transactions: PROSPECTIVE_MARKET.transactions,
+        settlement,
         resolver: {
             schedule: '45 * * * *',
             cadence: 'hourly at minute 45',
@@ -98,4 +150,3 @@ export function readProspectiveMarketStatus({
     }
     return buildProspectiveMarketStatus({ runStats, now });
 }
-

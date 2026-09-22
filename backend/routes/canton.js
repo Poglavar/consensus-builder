@@ -6,13 +6,23 @@ import { ledgerEnd } from '../canton/ledger.js';
 import { listProposalsForParty, listSalesForParty, createProposal, acceptProposal, allocateDemoParty, listParcelCounts } from '../canton/proposals.js';
 import { ccviewParty } from '../canton/ccview.js';
 
+export function sendCantonUnavailable(res, operation, error) {
+  // Keep the upstream response (which may contain OAuth/provider detail) in
+  // server logs, not in the public API response.
+  console.error(`[canton] ${operation} failed:`, error);
+  return res.status(503).json({
+    error: 'Canton ledger is temporarily unavailable',
+    code: 'canton_unavailable',
+  });
+}
+
 export function setupCantonRoute(app) {
   // Connectivity check — confirms token exchange + Ledger API reachability.
   app.get('/canton/ledger-end', async (_req, res) => {
     try {
       res.json({ offset: await ledgerEnd() });
     } catch (e) {
-      res.status(502).json({ error: String(e.message || e) });
+      sendCantonUnavailable(res, 'ledger-end', e);
     }
   });
 
@@ -22,7 +32,7 @@ export function setupCantonRoute(app) {
     try {
       res.json({ party, proposals: await listProposalsForParty(party) });
     } catch (e) {
-      res.status(502).json({ error: String(e.message || e) });
+      sendCantonUnavailable(res, 'proposals-list', e);
     }
   });
 
@@ -32,7 +42,7 @@ export function setupCantonRoute(app) {
     try {
       res.json({ party, sales: await listSalesForParty(party) });
     } catch (e) {
-      res.status(502).json({ error: String(e.message || e) });
+      sendCantonUnavailable(res, 'sales-list', e);
     }
   });
 
@@ -44,7 +54,7 @@ export function setupCantonRoute(app) {
     try {
       res.json(await createProposal({ parcelId, price, buyer, owner, lens, imageUri }));
     } catch (e) {
-      res.status(502).json({ error: String(e.message || e) });
+      sendCantonUnavailable(res, 'proposal-create', e);
     }
   });
 
@@ -55,7 +65,7 @@ export function setupCantonRoute(app) {
     try {
       res.json(await acceptProposal(req.params.cid, owner));
     } catch (e) {
-      res.status(502).json({ error: String(e.message || e) });
+      sendCantonUnavailable(res, 'proposal-accept', e);
     }
   });
 
@@ -64,7 +74,7 @@ export function setupCantonRoute(app) {
     try {
       res.json(await allocateDemoParty((req.body || {}).hint));
     } catch (e) {
-      res.status(502).json({ error: String(e.message || e) });
+      sendCantonUnavailable(res, 'party-allocate', e);
     }
   });
 
@@ -74,7 +84,7 @@ export function setupCantonRoute(app) {
     try {
       res.json({ counts: await listParcelCounts() });
     } catch (e) {
-      res.status(502).json({ error: String(e.message || e) });
+      sendCantonUnavailable(res, 'parcel-counts', e);
     }
   });
 
@@ -84,7 +94,7 @@ export function setupCantonRoute(app) {
     try {
       res.json(await ccviewParty(req.params.party));
     } catch (e) {
-      res.status(502).json({ error: String(e.message || e) });
+      sendCantonUnavailable(res, 'ccview', e);
     }
   });
 }

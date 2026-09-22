@@ -56,6 +56,17 @@ describe('shared Urban Game Theory agent tools', () => {
         await expect(tools.pledge({ proposalAccount: 'abc', amountUsdc: '0.01', confirm: true })).rejects.toThrow('live actions are disabled');
         await expect(tools.donate({ proposalAccount: 'abc', amountUsdc: '0.01', operationId: 'once', confirm: true })).rejects.toThrow('live actions are disabled');
         await expect(tools.forecast({ proposalAccount: 'abc', side: 'yes', amountUsdc: '0.01', confirm: true })).rejects.toThrow('live actions are disabled');
+        await expect(tools.cancel({ proposalAccount: 'abc', confirm: true })).rejects.toThrow('live actions are disabled');
+        await expect(tools.accept({ proposalAccount: 'abc', parcelId: 'HR-1', confirm: true })).rejects.toThrow('live actions are disabled');
+        await expect(tools.refundDonation({ proposalAccount: 'abc', operationId: 'once', confirm: true })).rejects.toThrow('live actions are disabled');
+        await expect(tools.voidPledge({ proposalAccount: 'abc', confirm: true })).rejects.toThrow('live actions are disabled');
+        await expect(tools.revokePledge({ proposalAccount: 'abc', confirm: true })).rejects.toThrow('live actions are disabled');
+        await expect(tools.releaseDonations({ proposalAccount: 'abc', confirm: true })).rejects.toThrow('live actions are disabled');
+        await expect(tools.fulfillPledge({ proposalAccount: 'abc', confirm: true })).rejects.toThrow('live actions are disabled');
+        await expect(tools.resolve({ proposalAccount: 'abc', confirm: true })).rejects.toThrow('live actions are disabled');
+        await expect(tools.claim({ proposalAccount: 'abc', side: 'no', confirm: true })).rejects.toThrow('live actions are disabled');
+        await expect(tools.resolveExternal({ recipeHash: 'a'.repeat(64), attestation: 'abc', confirm: true })).rejects.toThrow('live actions are disabled');
+        await expect(tools.claimExternal({ recipeHash: 'a'.repeat(64), side: 'yes', confirm: true })).rejects.toThrow('live actions are disabled');
     });
 
     it('routes pledge, donation and forecast through the existing signer adapters with a hard cap', async () => {
@@ -84,6 +95,32 @@ describe('shared Urban Game Theory agent tools', () => {
         expect(ensurePledgeBookAndSet.mock.calls[0][0].amountAtomic).toBe(50000n);
         expect(ensureDonationEscrowAndDonate.mock.calls[0][0]).toMatchObject({ amountAtomic: 60000n, operationId: 'agent:donate:1' });
         expect(ensureMarketAndStake.mock.calls[0][0]).toMatchObject({ amountAtomic: 70000n, side: 0 });
+    });
+
+    it('routes both terminal branches and external markets through shared signer adapters', async () => {
+        const dependencies = Object.fromEntries([
+            'acceptProposal', 'revokePledge', 'releaseDonations', 'fulfillPledge',
+            'resolveExternalMarket', 'claimExternalMarket'
+        ].map(name => [name, vi.fn(async () => ({ signature: `${name}-tx` }))]));
+        const tools = createUrbanGameTheoryTools({
+            env: { UGT_MCP_LIVE: '1', UGT_AGENT_KEYPAIR: keypairFile() },
+            fetchImpl: vi.fn(), createConnection: () => ({ getAccountInfo: vi.fn() }),
+            dependencies: { ...dependencies, sendAndConfirmPolling: vi.fn() }
+        });
+
+        await tools.accept({ proposalAccount: 'proposal', parcelId: 'HR-1', confirm: true });
+        await tools.revokePledge({ proposalAccount: 'proposal', confirm: true });
+        await tools.releaseDonations({ proposalAccount: 'proposal', confirm: true });
+        await tools.fulfillPledge({ proposalAccount: 'proposal', confirm: true });
+        await tools.resolveExternal({ recipeHash: 'a'.repeat(64), attestation: 'attestation', confirm: true });
+        await tools.claimExternal({ recipeHash: 'a'.repeat(64), side: 'yes', confirm: true });
+
+        expect(dependencies.acceptProposal).toHaveBeenCalledWith(expect.objectContaining({ proposalAccount: 'proposal', parcelId: 'HR-1' }));
+        expect(dependencies.revokePledge).toHaveBeenCalledWith(expect.objectContaining({ proposalAccount: 'proposal' }));
+        expect(dependencies.releaseDonations).toHaveBeenCalledWith(expect.objectContaining({ proposalAccount: 'proposal' }));
+        expect(dependencies.fulfillPledge).toHaveBeenCalledWith(expect.objectContaining({ proposalAccount: 'proposal' }));
+        expect(dependencies.resolveExternalMarket).toHaveBeenCalledWith(expect.objectContaining({ recipeHash: 'a'.repeat(64), attestation: 'attestation' }));
+        expect(dependencies.claimExternalMarket).toHaveBeenCalledWith(expect.objectContaining({ recipeHash: 'a'.repeat(64), side: 'yes' }));
     });
 
     it('uses proposal ids as stable x402 payment identifiers', async () => {

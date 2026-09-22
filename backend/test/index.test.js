@@ -556,7 +556,36 @@ describe('startServer', () => {
         expect(listenSpy).toHaveBeenCalled();
         expect(listenMock.mock.calls[0][0]).toBe('4567');
         expect(consoleSpy).toHaveBeenCalledWith('Backend listening on port 4567');
-        expect(server).toEqual({ close: expect.any(Function) });
+        expect(server).toEqual(expect.objectContaining({
+            close: expect.any(Function),
+            gracefulShutdown: expect.any(Function)
+        }));
+    });
+
+    it('drains HTTP requests before closing the database pool', async () => {
+        const events = [];
+        const close = vi.fn((callback) => {
+            events.push('server');
+            callback();
+        });
+        const pool = createMockPool();
+        pool.end = vi.fn(async () => events.push('pool'));
+        vi.spyOn(express.application, 'listen').mockImplementation((_port, callback) => {
+            callback();
+            return { close };
+        });
+        vi.spyOn(console, 'log').mockImplementation(() => { });
+
+        const server = startServer({
+            env: { API_PORT: '4567', USE_CORS_ALLOWLIST: 'false' },
+            pool
+        });
+
+        await server.gracefulShutdown();
+
+        expect(close).toHaveBeenCalledOnce();
+        expect(pool.end).toHaveBeenCalledOnce();
+        expect(events).toEqual(['server', 'pool']);
     });
 
     it('defaults the server port to 3000', () => {

@@ -248,7 +248,12 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     tools: [
                         'ugt_capabilities', 'ugt_list_proposals', 'ugt_activity', 'ugt_support_status',
                         'ugt_oracle_events', 'ugt_inspect_verified_fact', 'ugt_buy_verified_fact',
-                        'ugt_submit_proposal', 'ugt_pledge', 'ugt_donate', 'ugt_forecast'
+                        'ugt_submit_proposal', 'ugt_pledge', 'ugt_donate', 'ugt_forecast',
+                        'ugt_cancel_proposal', 'ugt_accept_proposal', 'ugt_refund_donation',
+                        'ugt_void_pledge', 'ugt_revoke_pledge', 'ugt_release_donations',
+                        'ugt_fulfill_pledge',
+                        'ugt_resolve_market', 'ugt_claim_market',
+                        'ugt_resolve_external_market', 'ugt_claim_external_market'
                     ],
                     sharedAdapters: [
                         'x402 proposal client', 'x402 verified-fact client',

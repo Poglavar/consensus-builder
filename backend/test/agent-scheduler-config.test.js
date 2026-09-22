@@ -57,8 +57,12 @@ describe('daily algorithmic agent schedule', () => {
             instances: 1,
             autorestart: false,
             cron_restart: '30 2 * * *',
-            merge_logs: true
+            merge_logs: true,
+            env: { LAND_ORACLE_RUN_STATS: '/root/code/consensus-builder/backend/logs/land-oracle-stats.json' }
         });
+        const source = fs.readFileSync(new URL('../scripts/sync-land-events.mjs', import.meta.url), 'utf8');
+        expect(source).toContain('buildLandOracleRunStats');
+        expect(source).toContain('writeRunStatsAtomic');
     });
 
     it('checks the live prospective market hourly with its original two signers', () => {

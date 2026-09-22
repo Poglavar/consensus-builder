@@ -17,6 +17,17 @@ The canonical address book is [`frontend/contracts/addresses.json`](../frontend/
 mirrored in [`blockchain/solana/Anchor.toml`](../blockchain/solana/Anchor.toml), each program's
 `declare_id!`, and the generated IDLs. Contract tests fail when these representations diverge.
 
+The public hackathon manifest also pins the exact mutable devnet deployments inspected on
+2026-09-22, rather than treating a stable program address as a version:
+
+| Program | ProgramData | Last deployed slot | Deployed binary SHA-256 |
+|---|---|---:|---|
+| ProposalPledge | `EtV7…SyZQ` | `501062795` | `15370963…a2a811` |
+| ProposalMarket | `AGmZ…qhx7` | `502071612` | `9055f2da…3d1ba` |
+
+Both remain upgradeable by `AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ`. These hashes identify
+what devnet executed; they do not claim a reproducible source-to-binary build or an audited program.
+
 The devnet USDC mint used by the demo is
 [`4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU`](https://explorer.solana.com/address/4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU?cluster=devnet).
 

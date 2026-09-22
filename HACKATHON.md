@@ -155,17 +155,43 @@ git diff 3ee1855...colosseum-worlds-fair
     contracts a judge or outside agent can see and verifies exact Bazaar listings, recent algorithmic
     proposer and supporter actions, a source-hashed lifecycle event, court-attestation health, and
     the two-sided external-market payout. Required failures produce a non-zero exit code; chronology
-    metadata is reported separately so a retrospective proof cannot masquerade as a forecast.
+    metadata is reported separately so a retrospective proof cannot masquerade as a forecast. If
+    the live prospective market settles, the same audit requires its evidence hash and address,
+    first-attestation transaction, resolution, claim, and strict timestamp ordering.
 27. **One proposal-to-reality timeline** — read-only proposal Details now combines the same neutral
     activity envelopes used by humans and agents with the proposal lifecycle oracle. Proposed,
     backed, forecast and resolved stages stay visibly pending until matching public evidence exists,
     and every transaction-backed stage links to Solana Explorer.
-28. **One MCP action surface for outside agents** — a standards-based stdio server exposes eleven
+28. **One MCP action surface for outside agents** — a standards-based stdio server exposes twenty-two
     proposal, activity, funding, forecast, and verified-fact tools. It calls the existing x402 and
     Solana signer adapters rather than introducing a second runtime, so deterministic and LLM
     controllers differ only in how they choose actions. Reads are safe by default; devnet writes
     require an external low-value key, an explicit process-level live switch, per-call confirmation,
     and a pre-signing USDC cap.
+29. **Clean-room x402 consumer proof** — an example client imports only the public x402 and Solana
+    SDKs, discovers the paid verified-fact resource through the hosted Bazaar proof, enforces its own
+    payment cap, and independently checks the purchased bundle against the free event feed. A second
+    low-value project wallet settled 0.01 devnet USDC in
+    [`3T7m…TGPn`](https://explorer.solana.com/tx/3T7mg2f5FRk6uFND6eyRKrS5VyHviizk4vmPqB1zxVJbmnz4f1nxaMjXxGi4XEh8JMMesPXNbaaCNzgFQxRxTGPn?cluster=devnet)
+    and verified the canonical case's source hash without importing an internal client.
+30. **Canonical parcel-set identity** — every serialized proposal now carries a stable hash over its
+    jurisdiction, cadastral authority and sorted real parcel IDs, plus capture/reference time and an
+    optional geometry hash. The canonical case consumes the same builder, so “same land, competing
+    possible futures” is a queryable product identity rather than deck language.
+31. **Same-land proposal comparison** — read-only Proposal Details presents the canonical set identity
+    and groups exact-set competitors, containing or contained sets, and partial overlaps with shared
+    parcel counts. Choosing an alternative reuses the same whole-set map highlight and Details flow;
+    cross-jurisdiction local parcel-number collisions are explicitly excluded.
+32. **Outcome-based operations proof** — the land-event materializer writes an atomic success/failure
+    artifact with event counters, and `/hackathon/operations.json` combines it with proposer/supporter
+    checkpoints and resolver outcomes under explicit freshness windows. The public audit reads that
+    redacted endpoint, so a running PM2 process alone is never presented as proof that a scheduled job
+    succeeded.
+33. **Unambiguous release identity** — the backend manifest reports its deployed Git commit, the
+    frontend deploy publishes its own commit and cache-busted build number at `/release.json`, and
+    each mutable devnet program is identified by ProgramData address, last deployment slot and the
+    SHA-256 of the binary read back from Solana. This avoids presenting one branch SHA as if it
+    described three independently deployed artifacts.
 
 ### Live external-market integration proof
 
@@ -197,8 +223,23 @@ states come from public evidence rather than a scripted success screen.
 
 The same proof is available without the UI: `cd backend && npm run demo:judge` audits the public
 contracts and prints the judge path. `/hackathon/proof.json` declares the branch, baseline, programs,
-surfaces and trust boundary; `/oracle/markets/prospective/status` publishes only the prospective
-market commitment and resolver health, with parcel and operator details explicitly redacted.
+surfaces and trust boundary; `/hackathon/operations.json` publishes redacted scheduler outcomes and
+freshness; `/oracle/markets/prospective/status` publishes the prospective market
+commitment and resolver health while pending. After settlement it also publishes the redacted
+evidence address/hash, ordered source and chain timestamps, resolution, and claim, while keeping
+parcel and operator details private.
+
+`/hackathon/cases/:proposalId` composes one proposal into a read-only, data-derived graph of its
+parcel-set identity, actors, support, forecast pools, lifecycle decision, oracle evidence,
+resolution and settlement. The graph keeps parallel actions parallel and leaves absent stages
+explicitly pending, blocked or unavailable.
+
+The canonical Borovje case anchors three real cadastral parcels. The two existing deterministic
+personas minted and paid for the proposal, funded its donation escrow, recorded a revocable pledge,
+and staked both YES and NO. Its owner then cancelled it, the lifecycle materializer published a
+source-hashed event, another actor resolved the market NO, the donation was refunded, the pledge
+was voided and the winning NO position was claimed. The aggregate therefore derives all seven
+stages from public data rather than presenting a scripted success state.
 
 1. Discover the paid proposal capability through the x402/Bazaar metadata.
 2. Run an agent proposal through payment, persistence, and its on-chain transaction link.

@@ -1,7 +1,10 @@
 import express from 'express';
 import request from 'supertest';
 import { describe, expect, it } from 'vitest';
-import { controllerOf, proposalEvents, runDetail, runEvents, setupAgentActivityRoute } from '../routes/agent-activity.js';
+import {
+    chainEvents, controllerOf, proposalAccountIndex, proposalEvents, runDetail, runEvents,
+    setupAgentActivityRoute
+} from '../routes/agent-activity.js';
 
 const row = {
     run_id: '2026-09-20-densifier-01', persona: 'densifier-01', status: 'done', stage: 'staked',
@@ -16,6 +19,57 @@ const row = {
 };
 
 describe('agent activity', () => {
+    it('projects confirmed chain actions from an unfamiliar wallet as human activity', () => {
+        const proposalAccount = '11111111111111111111111111111111';
+        const wallet = '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM';
+        const index = proposalAccountIndex([{ proposal_id: 'public-proposal', proposal_account: proposalAccount }]);
+        const [event] = chainEvents([{ raw: {}, created_at: '2026-09-22T08:00:01Z' }], {
+            book: { entryFor: () => null },
+            proposalIdsByAccount: index,
+            decode: () => ({
+                signature: 'donation-tx', slot: 42, time: '2026-09-22T08:00:00Z', status: 'success',
+                feePayer: { address: wallet, label: null },
+                instructions: [{
+                    index: 0, inner: false,
+                    program: { name: 'proposal_pledge', address: 'support-program' },
+                    action: 'donate', args: { amount: '50000' },
+                    accounts: [
+                        { role: 'proposal', address: proposalAccount },
+                        { role: 'donor', address: wallet, signer: true }
+                    ]
+                }]
+            })
+        });
+        expect(event).toMatchObject({
+            source: 'live', actor: { id: wallet, kind: 'human', controller: 'human', wallet },
+            action: { type: 'donate', proposalId: 'public-proposal', amount: '0.05' },
+            entity: { type: 'proposal', id: 'public-proposal' }, transaction: 'donation-tx',
+            provenance: { source: 'solana_transaction', slot: 42, instruction: 'donate' }
+        });
+    });
+
+    it('projects facilitator-paid treasury transfers as neutral x402 activity', () => {
+        const wallet = '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM';
+        const book = { feePayer: 'facilitator', treasury: 'treasury', entryFor: () => null };
+        const [event] = chainEvents([{ raw: {} }], {
+            book,
+            decode: () => ({
+                signature: 'paid-tx', slot: 43, time: '2026-09-22T09:21:00Z', status: 'success',
+                feePayer: { address: 'facilitator' }, instructions: [], summary: 'x402 settlement',
+                amounts: [{
+                    kind: 'token', amount: '0.01', symbol: 'USDC',
+                    from: { owner: { address: wallet, label: null } },
+                    to: { owner: { address: 'treasury' } }
+                }]
+            })
+        });
+        expect(event).toMatchObject({
+            actor: { id: wallet, kind: 'human' },
+            action: { type: 'x402Payment', amount: '0.01', asset: 'USDC' },
+            transaction: 'paid-tx'
+        });
+    });
+
     it('projects runner checkpoints into the shared activity schema', () => {
         const events = runEvents(row);
         expect(events).toHaveLength(4);

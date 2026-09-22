@@ -33,6 +33,49 @@ function check(id, ok, label, evidence = null, severity = 'required') {
     return { id, status: ok ? 'pass' : severity === 'required' ? 'fail' : 'warn', label, evidence };
 }
 
+function validateProspectiveSettlement(status) {
+    if (status?.state !== 'settled') return { valid: true, pending: true };
+    const settlement = status.settlement;
+    const timestamps = settlement?.chronology?.timestamps || {};
+    const marketCreated = time(timestamps.marketCreatedAt);
+    const yesStake = time(timestamps.yesStakeAt);
+    const noStake = time(timestamps.noStakeAt);
+    const closes = time(timestamps.marketClosesAt);
+    const sourceObserved = time(timestamps.sourceObservedAt);
+    const firstSeen = time(timestamps.evidenceCreatedAt);
+    const resolved = time(timestamps.resolvedAt);
+    const claimed = time(timestamps.claimedAt);
+    const resolutionSlot = Number(settlement?.chronology?.transactionSlots?.resolution || 0);
+    const claimSlot = Number(settlement?.chronology?.transactionSlots?.claim || 0);
+    const resolutionBeforeClaim = resolved < claimed
+        || (resolved === claimed && Number.isSafeInteger(resolutionSlot) && Number.isSafeInteger(claimSlot)
+            && resolutionSlot > 0 && resolutionSlot < claimSlot);
+    const valid = Boolean(
+        settlement?.chronology?.classification === 'prospective'
+        && settlement.chronology.prospective === true
+        && settlement.chronology.marketOrderValid === true
+        && settlement.chronology.sourceTimeVerified === true
+        && settlement.chronology.sourceAfterClose === true
+        && marketCreated > 0 && yesStake > 0 && noStake > 0
+        && Math.max(marketCreated, yesStake, noStake) < closes
+        && time(status.closesAt) === closes
+        && closes <= sourceObserved
+        && sourceObserved <= firstSeen
+        && firstSeen <= resolved
+        && resolutionBeforeClaim
+        && ['YES', 'NO'].includes(settlement?.outcome)
+        && status?.transactions?.create
+        && status?.transactions?.yesStake
+        && status?.transactions?.noStake
+        && settlement?.evidence?.address
+        && /^sha256:[a-f0-9]{64}$/.test(settlement?.evidence?.hash || '')
+        && settlement?.transactions?.evidenceFirstSeen
+        && settlement?.transactions?.resolution
+        && settlement?.transactions?.claim
+    );
+    return { valid, pending: false, settlement };
+}
+
 async function readJson(fetchImpl, url) {
     const response = await fetchImpl(url, { headers: { accept: 'application/json' } });
     const body = await response.text();
@@ -61,7 +104,8 @@ export async function auditHackathonProof({
         oracleEvents: '/oracle/events?limit=25',
         publicRecords: '/oracle/public-records/summary',
         proofManifest: '/hackathon/proof.json',
-        prospectiveStatus: '/oracle/markets/prospective/status'
+        prospectiveStatus: '/oracle/markets/prospective/status',
+        operations: '/hackathon/operations.json'
     };
     const entries = Object.entries(paths);
     const settled = await Promise.allSettled(entries.map(([, path]) => readJson(fetchImpl, `${base}${path}`)));
@@ -72,6 +116,16 @@ export async function auditHackathonProof({
         if (result.status === 'fulfilled') values[key] = result.value;
         else errors[key] = result.reason instanceof Error ? result.reason.message : String(result.reason);
     });
+    const canonicalCaseUrl = values.proofManifest?.publicProof?.canonicalCase;
+    if (canonicalCaseUrl) {
+        try {
+            values.canonicalCase = await readJson(fetchImpl, canonicalCaseUrl);
+        } catch (error) {
+            errors.canonicalCase = error instanceof Error ? error.message : String(error);
+        }
+    } else {
+        errors.canonicalCase = 'proof manifest does not declare publicProof.canonicalCase';
+    }
 
     const expectedProposal = `${base}/agent/proposals`;
     const expectedFact = `${base}/agent/oracle/facts`;
@@ -86,12 +140,44 @@ export async function auditHackathonProof({
     const supporterSignature = supporter?.support?.signature || null;
     const supporterAction = supporter && newest(events, event => event.runId === supporter.id
         && event.action?.type === supporter.support?.type && Boolean(event.transaction));
+    const activityMatrix = {
+        humanSupport: events.some(event => event.actor?.kind === 'human'
+            && ['donate', 'pledge'].includes(event.action?.type) && Boolean(event.transaction)),
+        humanForecast: events.some(event => event.actor?.kind === 'human'
+            && event.action?.type === 'stake' && ['yes', 'no'].includes(String(event.action?.side || '').toLowerCase())
+            && Boolean(event.transaction)),
+        algorithm: events.some(event => event.actor?.controller === 'algorithm' && Boolean(event.transaction)),
+        llm: events.some(event => event.actor?.controller === 'llm' && Boolean(event.transaction)),
+        resolver: events.some(event => ['resolve', 'claim', 'refundMyDonations', 'releaseDonations'].includes(event.action?.type)
+            && Boolean(event.transaction))
+    };
     const external = values.docs?.oracle?.externalMarket;
     const externalProof = external?.proof || {};
     const lifecycle = newest(values.oracleEvents?.events, event => event.eventType === 'proposal_lifecycle'
         && /^sha256:[a-f0-9]{64}$/.test(event.source?.hash || '') && Boolean(event.source?.transaction));
     const records = values.publicRecords;
     const chronology = externalProof.chronology;
+    const prospectiveSettlement = validateProspectiveSettlement(values.prospectiveStatus);
+    const canonical = values.canonicalCase;
+    const canonicalActivities = canonical?.activity || [];
+    const canonicalAction = (type, side = null) => canonicalActivities.some(event => event.action?.type === type
+        && (side === null || String(event.action?.side || '').toLowerCase() === side)
+        && Boolean(event.transaction));
+    const canonicalSupport = canonical?.branches?.support || {};
+    const canonicalForecast = canonical?.branches?.forecast || {};
+    const canonicalSetup = Boolean(
+        canonical?.parcelSet?.parcelCount >= 2
+        && canonical?.proposal?.account
+        && Number(canonicalSupport.donations?.totalUsdc) > 0
+        && (Number(canonicalSupport.pledges?.pledgeCount) > 0 || canonicalAction('pledge'))
+        && Number(canonicalForecast.yesUsdc) > 0
+        && Number(canonicalForecast.noUsdc) > 0
+        && canonicalAction('create') && canonicalAction('publish')
+        && canonicalAction('donate') && canonicalAction('pledge')
+        && canonicalAction('stake', 'yes') && canonicalAction('stake', 'no')
+    );
+    const canonicalTerminal = ['decision', 'evidence', 'resolution', 'settlement']
+        .every(id => canonical?.stages?.find(item => item.id === id)?.state === 'complete');
 
     const checks = [
         check('proposal_bazaar', exactResource(values.proposalDiscovery, expectedProposal),
@@ -131,9 +217,36 @@ export async function auditHackathonProof({
             transactions: external.prospectiveProof.transactions
         } : errors.docs || null),
         check('public_proof_manifest', Boolean(values.proofManifest?.hackathon?.branch === 'colosseum-worlds-fair'
-            && values.proofManifest?.publicProof?.prospectiveMarket === `${base}/oracle/markets/prospective/status`),
+            && values.proofManifest?.publicProof?.prospectiveMarket === `${base}/oracle/markets/prospective/status`
+            && values.proofManifest?.publicProof?.operations === `${base}/hackathon/operations.json`
+            && Boolean(values.proofManifest?.publicProof?.canonicalCase)),
         'Hackathon scope and public evidence links are machine-readable',
         values.proofManifest?.hackathon || errors.proofManifest || null),
+        check('release_artifact_identity', Boolean(
+            values.proofManifest?.releaseArtifacts?.backend?.commit
+            && values.proofManifest?.releaseArtifacts?.frontend?.manifest
+            && values.proofManifest?.releaseArtifacts?.programs?.length >= 2
+            && values.proofManifest.releaseArtifacts.programs.every(program =>
+                Number.isSafeInteger(program.lastDeployedSlot)
+                && /^[a-f0-9]{64}$/.test(program.binarySha256 || '')
+                && Boolean(program.programDataAddress)
+            )
+        ),
+        'Backend, frontend build and mutable Solana deployments have distinct public identities',
+        values.proofManifest?.releaseArtifacts || errors.proofManifest || null, 'advisory'),
+        check('canonical_case_setup', canonicalSetup,
+            'One plural parcel case proves paid proposal, donation, pledge and both forecast sides',
+            canonical ? {
+                id: canonical.id, parcelCount: canonical.parcelSet?.parcelCount || 0,
+                progress: canonical.progress, transactions: canonical.transactions?.length || 0
+            } : errors.canonicalCase || null),
+        check('canonical_case_terminal', canonicalTerminal,
+            'The canonical case also proves decision, evidence, resolution and settlement',
+            canonical ? { id: canonical.id, state: canonical.state, stages: canonical.stages } : errors.canonicalCase || null,
+            'advisory'),
+        check('human_agent_activity_matrix', Object.values(activityMatrix).every(Boolean),
+            'Humans, deterministic and LLM agents, and a resolver share one transaction-backed activity stream',
+            activityMatrix, 'advisory'),
         check('prospective_resolver_status', Boolean(values.prospectiveStatus?.market === external?.prospectiveProof?.market
             && ['open', 'checking_evidence', 'awaiting_evidence', 'settled'].includes(values.prospectiveStatus?.state)),
         'The prospective market exposes a redacted live resolver state',
@@ -142,6 +255,20 @@ export async function auditHackathonProof({
             state: values.prospectiveStatus.state,
             lastCheck: values.prospectiveStatus.resolver?.lastRun?.endedAt || null
         } : errors.prospectiveStatus || null),
+        check('scheduled_operations_freshness', values.operations?.status === 'healthy'
+            && Array.isArray(values.operations?.jobs)
+            && values.operations.jobs.length >= 4
+            && values.operations.jobs.every(job => job.status === 'completed' && job.freshness?.state === 'fresh'),
+        'Scheduled proposer, supporter, land oracle and resolver publish fresh successful outcomes',
+        values.operations?.jobs || errors.operations || null, 'advisory'),
+        check('prospective_settlement_proof', prospectiveSettlement.valid,
+            prospectiveSettlement.pending
+                ? 'The genuinely prospective settlement remains honestly pending'
+                : 'The prospective payout publishes a complete, correctly ordered proof',
+            prospectiveSettlement.pending ? {
+                state: values.prospectiveStatus?.state || null,
+                closesAt: values.prospectiveStatus?.closesAt || null
+            } : prospectiveSettlement.settlement),
         check('chronology_label', Boolean(chronology?.classification),
             'The external-market proof publishes its evidence chronology classification',
             chronology?.classification || errors.docs || null, 'advisory')
@@ -161,4 +288,4 @@ export async function auditHackathonProof({
     };
 }
 
-export { cleanBase, exactResource };
+export { cleanBase, exactResource, validateProspectiveSettlement };

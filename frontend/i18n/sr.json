@@ -930,6 +930,18 @@
                 "conditionalHint": "Svi vlasnici moraju da prihvate pre isplate",
                 "partialHint": "Isplata se vrši kako vlasnici prihvataju"
             },
+            "parcelSet": {
+                "eyebrow": "Kanonski skup parcela",
+                "title": "Predlozi na ovom zemljištu",
+                "summary": "{{count}} stvarnih parcela vezuje ovaj predlog za prostor. {{exact}} alternativa koristi isti skup, a {{overlap}} se sa njim preklapa.",
+                "noRelated": "{{count}} stvarnih parcela vezuje ovaj predlog za prostor. Nijedan drugi predlog trenutno ne upućuje na ovo zemljište.",
+                "hash": "Identitet skupa",
+                "relationSame": "Isti skup parcela",
+                "relationContains": "Obuhvata ceo ovaj skup",
+                "relationInside": "Unutar ovog skupa parcela",
+                "relationOverlap": "Zemljište koje se preklapa",
+                "sharedCount": "{{shared}} od {{count}} zajedničkih parcela"
+            },
             "actions": {
                 "apply": "Primeni na mapu",
                 "applying": "Primenjivanje...",

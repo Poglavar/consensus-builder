@@ -1,4 +1,5 @@
 import { effectiveLifecycleStatus } from './lifecycle.js';
+import { buildParcelSet } from './parcel-set.js';
 import { createRequire } from 'node:module';
 
 const requireCjs = createRequire(import.meta.url);
@@ -190,6 +191,12 @@ export function serializeProposalRow(row, options = {}) {
     // against (rethink-proposals.md §9/§12 step 2, D5).
     proposal.ownershipFlow = choose(row.ownership_flow, proposal.ownershipFlow ?? null);
     proposal.cadastreFrame = choose(row.cadastre_frame, proposal.cadastreFrame ?? null);
+    proposal.parcelSet = buildParcelSet({
+        parcelIds: proposal.cadastreParcelIds || [],
+        jurisdiction: proposal.city || 'unknown',
+        referenceAt: proposal.cadastreFrame?.capturedAt || proposal.createdAt || null,
+        geometryHash: proposal.cadastreFrame?.geometryHash || null
+    });
     proposal.acceptedParcelIds = choose(row.accepted_parcel_ids, proposal.acceptedParcelIds);
     proposal.ownerAcceptances = choose(row.owner_acceptances, proposal.ownerAcceptances);
     proposal.roadProposal = choose(row.road_proposal, proposal.roadProposal);

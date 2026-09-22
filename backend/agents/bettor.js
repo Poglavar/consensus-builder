@@ -47,7 +47,8 @@ async function send(connection, instruction, signer, sendAndConfirm) {
  * Create the proposal's market if it does not exist yet, then stake on it.
  *
  * @param {{ connection: object, ownerKeypair: object, proposalPda: string, stakeMint: string,
- *           side: number, amountAtomic: bigint, programId?: string, sendAndConfirm?: Function }} options
+ *           side: number, amountAtomic: bigint, targetAmount?: boolean,
+ *           programId?: string, sendAndConfirm?: Function }} options
  * @returns {Promise<{ marketPda: string, created: boolean, createSignature: string|null,
  *                     stakeSignature: string, positionPda: string }>}
  */
@@ -58,6 +59,7 @@ export async function ensureMarketAndStake({
     stakeMint,
     side,
     amountAtomic,
+    targetAmount = false,
     programId,
     sendAndConfirm = web3.sendAndConfirmTransaction
 } = {}) {
@@ -81,7 +83,20 @@ export async function ensureMarketAndStake({
         created = true;
     }
 
-    const stakeIx = marketClient.buildStakeIx({ proposal: proposalPda, stakeMint, staker: owner, side, amount: amountAtomic, programId });
+    let stakeAmount = amountAtomic;
+    if (targetAmount && existing) {
+        const position = await marketClient.readPosition(connection, proposalPda, owner, side, programId);
+        const current = position?.amount || 0n;
+        if (current >= amountAtomic) {
+            return {
+                marketPda: marketPda.toBase58(), created, createSignature,
+                stakeSignature: null, positionPda: positionPda.toBase58(), replayed: true
+            };
+        }
+        stakeAmount = amountAtomic - current;
+    }
+
+    const stakeIx = marketClient.buildStakeIx({ proposal: proposalPda, stakeMint, staker: owner, side, amount: stakeAmount, programId });
     const stakeSignature = await send(connection, stakeIx, ownerKeypair, sendAndConfirm);
 
     return {
@@ -89,6 +104,7 @@ export async function ensureMarketAndStake({
         created,
         createSignature,
         stakeSignature,
-        positionPda: positionPda.toBase58()
+        positionPda: positionPda.toBase58(),
+        ...(targetAmount ? { replayed: false } : {})
     };
 }

@@ -41,6 +41,8 @@ import { setupAgentDiscoveryRoute } from './routes/agent-discovery.js';
 import { setupAgentOracleFactsRoute } from './routes/agent-oracle-facts.js';
 import { setupLandEventsRoute } from './routes/land-events.js';
 import { setupHackathonProofRoute } from './routes/hackathon-proof.js';
+import { setupHackathonCasesRoute } from './routes/hackathon-cases.js';
+import { setupHackathonOperationsRoute } from './routes/hackathon-operations.js';
 import { setupTransactionsRoute } from './routes/transactions.js';
 import { isAgentPath } from './utils/x402-payment.js';
 import { setupRoadCorridorRoute } from './routes/road-corridor.js';
@@ -402,6 +404,8 @@ export function createApp({
     setupAgentOracleFactsRoute(app, activePool, { env }); // paid, discoverable recipe-bound oracle facts
     setupLandEventsRoute(app, activePool); // deterministic proposal lifecycle events + recipe declarations
     setupHackathonProofRoute(app, { env }); // public hackathon scope plus redacted prospective resolver status
+    setupHackathonCasesRoute(app, activePool, { env }); // one data-derived proposal → support/forecast/evidence graph
+    setupHackathonOperationsRoute(app, activePool, { env }); // redacted scheduled-job outcomes and freshness
     setupTransactionsRoute(app, activePool); // devnet transaction explorer, derived from the chain
     setupRoadCorridorRoute(app, activePool);
     setupReparcellizationRoute(app);
@@ -424,8 +428,22 @@ export function createApp({
 
 export function startServer({ env = process.env, pool } = {}) {
     const port = env.API_PORT || 3000;
-    const { app } = createApp({ env, pool });
-    return app.listen(port, () => {
+    const { app, pool: activePool } = createApp({ env, pool });
+    const server = app.listen(port, () => {
         console.log(`Backend listening on port ${port}`);
     });
+
+    // PM2's zero-downtime reload waits for the old worker to stop accepting new
+    // connections. Keep the database pool alive until existing HTTP requests
+    // drain, then release it before the worker exits.
+    server.gracefulShutdown = async () => {
+        await new Promise((resolve, reject) => {
+            server.close((error) => error ? reject(error) : resolve());
+        });
+        if (typeof activePool?.end === 'function') {
+            await activePool.end();
+        }
+    };
+
+    return server;
 }

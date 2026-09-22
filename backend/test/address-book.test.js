@@ -43,7 +43,7 @@ describe('deriveAssociatedTokenAddress', () => {
 });
 
 describe('buildAddressBook', () => {
-    it('labels our three programs', () => {
+    it('labels our four programs', () => {
         const book = makeBook();
 
         expect(book.labelFor('4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1')).toEqual({
@@ -54,6 +54,7 @@ describe('buildAddressBook', () => {
         });
         expect(book.labelFor('3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg').label).toBe('proposal_nft program');
         expect(book.labelFor('GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB').label).toBe('proposal_market program');
+        expect(book.labelFor('1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g').label).toBe('proposal_pledge program');
     });
 
     it('labels the solana system programs', () => {
@@ -170,6 +171,7 @@ describe('watchedAddresses', () => {
             '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1',
             '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg',
             'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB',
+            '1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g',
             TREASURY,
             TREASURY_USDC,
             PERSONA_WALLET,

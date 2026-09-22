@@ -42,6 +42,15 @@ daily `$0` choice, executes one pledge/donation/market action through the existi
 and writes the same `consensus.agent_run` and activity envelope. The initial `supporter-01` policy
 uses a soft pledge, so it produces real signed evidence without requiring a funded USDC transfer.
 
+`canonical-case-run.mjs` is a manual, resumable demonstration over those same modules. It uses the
+configured proposer and supporter to mint one small real parcel set, pay the x402 endpoint, donate,
+pledge, and forecast both YES and NO. Each action is checkpointed in `consensus.agent_run` and
+appears through the shared activity envelope; it is not scheduled and does not introduce another
+agent runtime. Preview it with `npm run demo:case`; execute only on devnet with
+`npm run demo:case:live`.
+After the setup is publicly inspected, add `-- --terminal` to cancel the case, resolve its NO
+market outcome, refund the donation, void the unfunded pledge and claim the winning position.
+
 Both this runner and the browser simulation use `frontend/js/agent-action-engine.js`. A controller
 (`human`, `algorithm`, or `llm`) chooses an action, the registered deterministic handler executes
 it, and the engine emits the same actor/action/entity/activity envelope. The browser Activity view
@@ -149,7 +158,7 @@ PGHOST=localhost npm run sync:land-events -- --dry-run
 
 ## MCP: one surface for any controller
 
-`npm run mcp` starts `agents/mcp-server.mjs` over stdio. Its eleven tools expose the same proposal,
+`npm run mcp` starts `agents/mcp-server.mjs` over stdio. Its twenty-two tools expose the same proposal,
 activity, x402, pledge, donation, and market adapters used elsewhere in this directory. This lets an
 MCP-capable LLM host choose actions while the deterministic runners keep their existing algorithmic
 choice policy; both execute through the same modules and appear in the same product views.
@@ -200,12 +209,16 @@ After the dedicated low-value devnet key exists at the persona's `keypairPath` a
 cd /root/code/consensus-builder/backend
 pm2 start agents/ecosystem.config.cjs --only consensus-builder-agents
 pm2 start agents/ecosystem.config.cjs --only consensus-builder-supporter
+pm2 start agents/ecosystem.config.cjs --only consensus-builder-land-oracle
 pm2 save
 ```
 
-The `UGT Agent Runner` entry already present in `alerts-server-telegram/bot-list.json` remains
-inactive until the first scheduled run completes. Its outcome check should then be enabled against
-`consensus.agent_run`; process logs alone are not proof that a proposal run finished.
+The proposer is covered by the active `UGT Agent Runner` outcome check in
+`alerts-server-telegram/bot-list.json`. The supporter and land oracle still need their own central
+registry entries. Until those are added, `/hackathon/operations.json` exposes their redacted latest
+outcome and freshness: supporter evidence comes from `consensus.agent_run`, and the land oracle
+writes `logs/land-oracle-stats.json` atomically only after deriving its complete verdict. Process
+status or a recent log line alone is not proof that either job finished successfully.
 
 Candidate discovery repairs malformed imported parcel, building-footprint and urban-rule polygons
 with `ST_MakeValid` before topology operations. This keeps one invalid source geometry from aborting

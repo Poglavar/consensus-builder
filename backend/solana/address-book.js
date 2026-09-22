@@ -5,12 +5,13 @@
 
 import { PublicKey } from '@solana/web3.js';
 
-// Our three Anchor programs on devnet. Kept here (not read from the IDLs) so the book stands
+// Our four Anchor programs on devnet. Kept here (not read from the IDLs) so the book stands
 // alone — the decoder matches instruction data against the IDLs, the book only names things.
 export const OUR_PROGRAMS = Object.freeze([
     { address: '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1', name: 'parcel_nft', label: 'parcel_nft program' },
     { address: '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg', name: 'proposal_nft', label: 'proposal_nft program' },
-    { address: 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB', name: 'proposal_market', label: 'proposal_market program' }
+    { address: 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB', name: 'proposal_market', label: 'proposal_market program' },
+    { address: '1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g', name: 'proposal_pledge', label: 'proposal_pledge program' }
 ]);
 
 // Solana's own programs. These are never watched (every transaction on the cluster touches them);
