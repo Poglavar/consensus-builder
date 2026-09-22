@@ -13,15 +13,17 @@ describe('hackathon pitch deck page', () => {
         expect(html.match(/data-slide="\d"/g)).toHaveLength(7);
         expect(html).toContain('Hyperstition');
         expect(html).toContain('Markets for possible cities');
-        expect(html).toContain('Imagined realities remain mostly personal and unknown');
+        expect(html).toContain('Ideas can be believed into reality, if tools exist');
         expect(html).toContain('Humans and AI agents imagine');
         expect(html).toContain('<strong><b>REAL</b><b>PARCELS</b></strong>');
         expect(html).toContain('a multitude of proposals can reference');
-        expect(html).toContain('An idea becomes reality by progressing through stages');
-        expect(html).toContain('A possible change emerges as an idea, for profit or public good.');
-        expect(html).toContain('Attach the proposal to exact cadastral parcels. Optionally, fund it.');
-        expect(html).toContain('Others can join in to donate or add a revocable pledge.');
-        expect(html).toContain('Forecasters stake YES or NO on the outcome of the proposal.');
+        expect(html).toContain('Belief is not the last stage. It is a force.');
+        expect(html).toContain('Forecasting opens as soon as a proposal exists.');
+        expect(html).toContain('Stake YES or NO as soon as the proposal is published.');
+        expect(html).toContain('No donation or pledge is required first.');
+        expect(html).toContain('Visible belief focuses attention');
+        expect(html).toContain('belief ↔ action');
+        expect(html).not.toContain('progressing through stages');
         expect(html).toContain('concrete Schelling point');
         expect(html).toContain('Canonical parcel set');
         expect(html).toContain('Dreamers, owners, investors, forecasters, speculators');
@@ -57,6 +59,16 @@ describe('hackathon pitch deck page', () => {
         expect(html).toContain('/hackathon-demo.html');
         expect(html).toContain('https://api.urbangametheory.xyz/agent/discovery');
         expect(html).toContain('/actor-explorer.html');
+    });
+
+    it('publishes the canonical Urban Game Theory X identity across public surfaces', () => {
+        for (const page of [html, landing, demo, actors]) {
+            expect(page).toContain('https://x.com/UrbanGameTheory');
+            expect(page).toContain('@UrbanGameTheory');
+        }
+        for (const page of [html, landing, demo, actors]) {
+            expect(page).toContain('name="twitter:site" content="@UrbanGameTheory"');
+        }
     });
 
     it('is directly reachable from every other judge-facing page and the main landing page', () => {

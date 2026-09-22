@@ -3,6 +3,8 @@
 
 **An Urban Game Theory project by Consensus Builder · Colosseum World's Fair 2026**
 
+Follow the project on X: [@UrbanGameTheory](https://x.com/UrbanGameTheory)
+
 Urban Game Theory is a long-running project. This branch isolates the work built for the
 Colosseum World's Fair hackathon so it can be reviewed independently of the existing city,
 parcel, ownership, proposal-rendering, and Lens foundations.

@@ -31,6 +31,9 @@ describe('hackathon repository documentation', () => {
         }
         expect(read('docs/architecture.md')).toContain('```mermaid');
         expect(read('docs/hackathon-build.md')).toContain('npm ci');
+        expect(readme).toContain('https://x.com/UrbanGameTheory');
+        expect(read('HACKATHON.md')).toContain('@UrbanGameTheory');
+        expect(read('backend/routes/hackathon-proof.js')).toContain("handle: '@UrbanGameTheory'");
     });
 
     it('documents every deployed program and a machine-readable recipe schema', () => {

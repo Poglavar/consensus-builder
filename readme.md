@@ -20,6 +20,7 @@ commits, and features built during the hackathon.
 - [Five-minute demo center](https://urbangametheory.xyz/hackathon-demo.html)
 - [Agent/x402 quickstart](https://api.urbangametheory.xyz/docs/agents)
 - [Unified human and agent activity](https://urbangametheory.xyz/actor-explorer.html)
+- [Follow @UrbanGameTheory on X](https://x.com/UrbanGameTheory)
 - [Hackathon diff](https://github.com/Poglavar/consensus-builder/compare/3ee1855...colosseum-worlds-fair)
 
 ## What the hackathon build adds

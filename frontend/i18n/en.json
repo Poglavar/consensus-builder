@@ -649,6 +649,7 @@
             "title": "Information",
             "contactTitle": "Contact",
             "telegramLabel": "Telegram",
+            "xLabel": "X",
             "aboutTitle": "About",
             "aboutParagraph": "<strong>Hyperstition: Markets for Possible Cities</strong> is Urban Game Theory's hackathon build by Consensus Builder. Humans and agents imagine, propose, fund and forecast changes to real parcels; public records decide which possible futures became real. Open the <a href=\"/hackathon-demo.html\">live hackathon demo</a>, read the <a href=\"/deck.html\">pitch deck</a>, or see <a href=\"roadmap.html\" target=\"_blank\">the roadmap</a>.",
             "instructionsTitle": "Start here",

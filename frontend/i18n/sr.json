@@ -679,6 +679,7 @@
             "title": "Informacije",
             "contactTitle": "Kontakt",
             "telegramLabel": "Telegram",
+            "xLabel": "X",
             "aboutTitle": "O projektu",
             "aboutParagraph": "Urban Game Theory je tržište za stvarne promene zemljišta: ljudi i agenti predlažu, finansiraju i prognoziraju promene na stvarnim parcelama, dok javni registri potvrđuju šta se zaista dogodilo. Otvorite <a href=\"/hackathon-demo.html\">demonstraciju uživo</a>, pročitajte <a href=\"/deck.html\">prezentaciju</a> ili pogledajte <a href=\"roadmap.html\" target=\"_blank\">plan razvoja</a>.",
             "instructionsTitle": "Počni ovde",

@@ -20,6 +20,9 @@ export function buildHackathonProofManifest({ apiBase, env = process.env } = {})
         title: 'Hyperstition: Markets for Possible Cities',
         product: 'Urban Game Theory by Consensus Builder',
         thesis: 'Humans and agents propose, fund and forecast changes to real parcels, while public records resolve what actually happened.',
+        social: {
+            x: { handle: '@UrbanGameTheory', url: 'https://x.com/UrbanGameTheory' }
+        },
         hackathon: {
             event: 'Colosseum World’s Fair 2026',
             branch: 'colosseum-worlds-fair',
@@ -74,4 +77,3 @@ export function setupHackathonProofRoute(app, { env = process.env, statusReader 
         res.json(statusReader({ env }));
     });
 }
-
