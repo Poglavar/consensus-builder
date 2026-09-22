@@ -47,8 +47,29 @@ export RELEASE_SHA="$(git rev-parse HEAD)"
 # ignored — the deploy reports success and the process keeps the old environment. (That is exactly
 # how PUBLIC_API_BASE_URL stayed unset after being added: deploy "succeeded", env unchanged.)
 # Passing the file makes PM2 re-read it, and --update-env applies the result.
-# `startOrReload` is idempotent and uses PM2's zero-downtime reload when the app exists.
-pm2 startOrReload ecosystem.config.cjs --only "${PM2_APP}" --update-env
+# PM2 cannot change an already-registered process from fork to cluster mode via
+# reload alone. Do that migration once; every later deploy takes the rolling
+# reload path. This deliberately causes one brief restart during the migration
+# instead of silently remaining in fork mode forever.
+CURRENT_EXEC_MODE="$(pm2 jlist | node -e '
+let input = "";
+process.stdin.on("data", chunk => { input += chunk; });
+process.stdin.on("end", () => {
+  const name = process.argv[1];
+  const app = JSON.parse(input).find(item => item.name === name);
+  process.stdout.write(app?.pm2_env?.exec_mode || "missing");
+});
+' "${PM2_APP}")"
+
+if [[ "${CURRENT_EXEC_MODE}" == "fork_mode" ]]; then
+    echo "Migrating ${PM2_APP} from fork mode to cluster mode (one-time restart)..."
+    pm2 delete "${PM2_APP}"
+    pm2 start ecosystem.config.cjs --only "${PM2_APP}" --update-env
+else
+    # Idempotent: starts a missing app and uses a zero-downtime reload for a
+    # registered cluster-mode app.
+    pm2 startOrReload ecosystem.config.cjs --only "${PM2_APP}" --update-env
+fi
 pm2 save
 pm2 status
 
