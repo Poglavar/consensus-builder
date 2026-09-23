@@ -51,12 +51,11 @@
     // value is click-to-copy. (HTML string; click handler is the global below.)
     function ensNameLineHtml(name) {
         if (!name) return '';
-        const safe = name.replace(/'/g, "\\'");
         return '<div class="ens-name-line">'
             + `<a class="ens-name-chip" href="${ensAppUrl(name)}" target="_blank"`
             + ` rel="noopener noreferrer" title="View ${name} on the ENS app">ENS ↗</a>`
             + `<span class="ens-name-value" title="${name} — click to copy"`
-            + ` onclick="copyEnsName('${safe}', this)">${name}</span></div>`;
+            + ` onclick="copyEnsName(${inlineJsArg(name)}, this)">${name}</span></div>`;
     }
 
     global.parcelToSlug = parcelToSlug;

@@ -1936,6 +1936,13 @@ const multiParcelSelection = {
             renderParcelProposalActions();
         }
 
+        // Flows that watch the selection (the land-fork bar) listen for this instead of polling.
+        try {
+            document.dispatchEvent(new CustomEvent('multi-parcel-selection-change', {
+                detail: { ids: Array.from(this.selectedParcels), isActive: this.isActive }
+            }));
+        } catch (_) { }
+
         if (this.isActive) {
             const panel = document.getElementById('parcel-info-panel');
             if (panel && panel.classList.contains('visible')) {

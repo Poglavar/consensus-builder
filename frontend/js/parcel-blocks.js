@@ -1553,7 +1553,7 @@ function buildBlockProposalListItem(proposal) {
     const typeLabel = isRoadProposal ? 'Road' : isBuildingProposal ? 'Building' : isStructureProposal ? (proposal.structureProposal.kind ? proposal.structureProposal.kind.charAt(0).toUpperCase() + proposal.structureProposal.kind.slice(1) : 'Structure') : '';
 
     return `
-        <div class="proposal-list-item" data-proposal-id="${proposal.proposalId}" onclick="handleBlockProposalClick('${proposal.proposalId}')" style="border-left: 4px solid ${color};">
+        <div class="proposal-list-item" data-proposal-id="${proposal.proposalId}" onclick="handleBlockProposalClick(${inlineJsArg(proposal.proposalId)})" style="border-left: 4px solid ${color};">
             <div class="proposal-list-header">
                 <div class="proposal-color-dot" style="background-color: ${color};"></div>
                 <div class="proposal-list-title">${safeTitle}${typeLabel ? ` (${typeLabel})` : ''}</div>
@@ -1663,7 +1663,7 @@ function renderBlockProposalsTab(blockName) {
     const createButtonLabel = tBlock('panel.block.proposals.create', {}, 'Create Proposal');
     const createButtonHtml = blockName ? `
         <div class="block-proposals-actions">
-            <button type="button" class="btn btn-proposal" onclick="createProposalFromBlock('${blockName}')">
+            <button type="button" class="btn btn-proposal" onclick="createProposalFromBlock(${inlineJsArg(blockName)})">
                 ${createButtonLabel}
             </button>
         </div>

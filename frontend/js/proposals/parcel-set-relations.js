@@ -1,3 +1,5 @@
+// Canonical parcel-set relations between proposals (same / contains / inside / overlap) and the
+// land-fork lineage a counterproposal records when its parcel set differs from its origin's.
 (function (global) {
     'use strict';
 
@@ -92,7 +94,80 @@
             .filter(Boolean);
     }
 
-    const api = { proposalKey, normalizeParcelIds, jurisdictionOf, classifyParcelSetRelation, findParcelSetRelations, proposalIdsForParcelSet };
+    // How a fork's parcel set relates to its origin's, phrased from the ORIGIN's point of view via
+    // classifyParcelSetRelation(origin, fork): 'contains-target' there means the fork includes the
+    // whole origin set. Renamed here so a stored lineage reads without knowing which side was target.
+    const FORK_RELATION_BY_KIND = {
+        same: 'same',
+        'contains-target': 'contains-origin',
+        'inside-target': 'inside-origin',
+        overlap: 'overlap'
+    };
+
+    function describeLandFork(origin, forkParcelIds) {
+        const originIds = normalizeParcelIds(origin);
+        const forkIds = normalizeParcelIds({ cadastreParcelIds: forkParcelIds });
+        if (!originIds.length || !forkIds.length) return null;
+        const relation = classifyParcelSetRelation(origin, { cadastreParcelIds: forkIds });
+        const sharedCount = relation ? relation.sharedCount : 0;
+        const kind = relation ? FORK_RELATION_BY_KIND[relation.kind] : 'disjoint';
+        return {
+            relation: kind,
+            sameSet: kind === 'same',
+            originCount: originIds.length,
+            forkCount: forkIds.length,
+            sharedCount,
+            addedCount: forkIds.length - sharedCount,
+            removedCount: originIds.length - sharedCount
+        };
+    }
+
+    // The lineage a published counterproposal records when it sits on different land than its
+    // origin. An identical set returns null: that is a plain counterproposal, nothing to record.
+    function buildLandForkLineage(origin, forkParcelIds) {
+        const description = describeLandFork(origin, forkParcelIds);
+        const originProposalId = proposalKey(origin);
+        if (!description || description.sameSet || !originProposalId) return null;
+        const originSetHash = typeof origin?.parcelSet?.setHash === 'string' && origin.parcelSet.setHash
+            ? origin.parcelSet.setHash
+            : null;
+        return {
+            originProposalId,
+            originSetHash,
+            relation: description.relation,
+            originParcelCount: description.originCount,
+            sharedParcelCount: description.sharedCount,
+            addedParcelCount: description.addedCount,
+            removedParcelCount: description.removedCount
+        };
+    }
+
+    // The i18n key + params that describe a land-fork lineage (or a live description) in words.
+    function landForkSummaryMessage(lineage) {
+        if (!lineage || typeof lineage !== 'object') return null;
+        const relation = lineage.relation;
+        const params = {
+            origin: Number(lineage.originParcelCount ?? lineage.originCount) || 0,
+            shared: Number(lineage.sharedParcelCount ?? lineage.sharedCount) || 0,
+            added: Number(lineage.addedParcelCount ?? lineage.addedCount) || 0,
+            removed: Number(lineage.removedParcelCount ?? lineage.removedCount) || 0
+        };
+        const messages = {
+            same: ['panel.proposal.landFork.relationSame', 'Same parcels as the original'],
+            'contains-origin': ['panel.proposal.landFork.relationContains', 'All {{origin}} original parcels plus {{added}} more'],
+            'inside-origin': ['panel.proposal.landFork.relationInside', '{{shared}} of the {{origin}} original parcels'],
+            overlap: ['panel.proposal.landFork.relationOverlap', '{{shared}} parcels shared with the original, {{added}} added, {{removed}} removed'],
+            disjoint: ['panel.proposal.landFork.relationDisjoint', 'No parcels in common with the original']
+        };
+        const entry = messages[relation];
+        if (!entry) return null;
+        return { key: entry[0], fallback: entry[1], params };
+    }
+
+    const api = {
+        proposalKey, normalizeParcelIds, jurisdictionOf, classifyParcelSetRelation, findParcelSetRelations,
+        proposalIdsForParcelSet, describeLandFork, buildLandForkLineage, landForkSummaryMessage
+    };
     global.ParcelSetRelations = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

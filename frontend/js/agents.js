@@ -2006,7 +2006,7 @@ function renderProposalListItem(proposalId) {
     const typeBadge = typeLabel ? `<span class="proposal-type-pill">${typeLabel}</span>` : '';
     const offerAmount = `<span class="proposal-offer-amount">${offerAmountLabel}</span>`;
     const offerCurrency = offerCurrencyLabel ? `<span class="proposal-offer-currency">${offerCurrencyLabel}</span>` : '';
-    return `<div class="proposal-list-item proposal-clickable" data-proposal-id="${proposalId}" onclick="focusOnProposal('${proposalId}')">${displayTitle} (${displayId}) ${typeBadge} ${badge} ${chainBadge} ${offerAmount} ${offerCurrency}</div>`;
+    return `<div class="proposal-list-item proposal-clickable" data-proposal-id="${proposalId}" onclick="focusOnProposal(${inlineJsArg(proposalId)})">${displayTitle} (${displayId}) ${typeBadge} ${badge} ${chainBadge} ${offerAmount} ${offerCurrency}</div>`;
 }
 
 /**
@@ -2810,7 +2810,7 @@ function renderParcelItem(parcel) {
     const proposalBadge = parcel.proposalCount > 0
         ? `<span class="proposal-status is-minted">${countLabel}</span>`
         : '';
-    return `<div class="proposal-item parcel-item" onclick="focusOnParcelFromAgent('${parcel.id}')">
+    return `<div class="proposal-item parcel-item" onclick="focusOnParcelFromAgent(${inlineJsArg(parcel.id)})">
         ${parcelLabel} ${proposalBadge}
     </div>`;
 }
@@ -2844,7 +2844,7 @@ function renderProposalItem(proposalId) {
         const offerInfo = getAgentProposalOfferDisplay(proposal);
         const offerAmount = `<span class="proposal-offer-amount">${offerInfo.amountLabel}</span>`;
         const offerCurrency = offerInfo.currencyLabel ? `<span class="proposal-offer-currency">${offerInfo.currencyLabel}</span>` : '';
-        return `<div class="proposal-item agent-dialog-proposal-item ${colorClass}" ${colorStyle} onclick="focusOnProposal('${resolvedId}')">
+        return `<div class="proposal-item agent-dialog-proposal-item ${colorClass}" ${colorStyle} onclick="focusOnProposal(${inlineJsArg(resolvedId)})">
             <span class="agent-dialog-proposal-primary">${displayTitle} (${displayId})</span>
             <span class="agent-dialog-proposal-meta">
                 ${typeBadge}
@@ -2896,7 +2896,7 @@ function renderPendingProposalItem(proposalId) {
         const offerAmount = `<span class="proposal-offer-amount">${offerInfo.amountLabel}</span>`;
         const offerCurrency = offerInfo.currencyLabel ? `<span class="proposal-offer-currency">${offerInfo.currencyLabel}</span>` : '';
 
-        return `<div class="proposal-item agent-dialog-proposal-item ${colorClass} ${unseenClass}" ${colorStyle} onclick="viewPendingProposal('${resolvedId}')">
+        return `<div class="proposal-item agent-dialog-proposal-item ${colorClass} ${unseenClass}" ${colorStyle} onclick="viewPendingProposal(${inlineJsArg(resolvedId)})">
             <span class="agent-dialog-proposal-primary">${unseenIndicator}${displayTitle} (${displayId})</span>
             <span class="agent-dialog-proposal-meta">
                 ${typeBadge}

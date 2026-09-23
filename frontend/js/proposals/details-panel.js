@@ -201,7 +201,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         const removedDataAttr = isRemoved ? 'data-parcel-removed="true"' : '';
 
         return `
-            <div class="proposal-parcel-item" data-parcel-id="${parcelId}" ${removedDataAttr} ${geometryDataAttr} onclick="handleProposalParcelClick('${parcelId}', event)" style="display: flex; flex-direction: column; gap:6px; padding: 8px; border: 1px solid #ddd; margin-bottom: 5px; border-radius: 4px; cursor: pointer; ${hasAccepted ? 'background-color: #f8fff8;' : ''} ${isRemoved ? 'opacity: 0.7;' : ''}" title="${parcelTooltip}">
+            <div class="proposal-parcel-item" data-parcel-id="${parcelId}" ${removedDataAttr} ${geometryDataAttr} onclick="handleProposalParcelClick(${inlineJsArg(parcelId)}, event)" style="display: flex; flex-direction: column; gap:6px; padding: 8px; border: 1px solid #ddd; margin-bottom: 5px; border-radius: 4px; cursor: pointer; ${hasAccepted ? 'background-color: #f8fff8;' : ''} ${isRemoved ? 'opacity: 0.7;' : ''}" title="${parcelTooltip}">
                 <div class="parcel-info" style="display: flex; align-items: center; justify-content: space-between;">
                     <div style="display:flex; align-items:center; gap:8px;">
                         ${ownerAvatarHtml}
@@ -377,8 +377,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             ? 'data-default-action="true" aria-keyshortcuts="Enter"'
             : '';
         const handler = appliedState
-            ? `removeProposalFromMap('${proposalKey}')`
-            : (isDisabled ? null : `applyProposalToMap('${proposalKey}')`);
+            ? `removeProposalFromMap(${inlineJsArg(proposalKey)})`
+            : (isDisabled ? null : `applyProposalToMap(${inlineJsArg(proposalKey)})`);
         const disabledStyle = 'cursor: not-allowed; opacity: 0.55; pointer-events: none; background-color: #d1d5db; border-color: #cbd5e1; color: #555;';
         const enabledStyle = '';
         const disabledAttrs = isDisabled
@@ -405,17 +405,29 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const forkButtonHtml = proposalKey
         ? `
         <button class="btn btn-primary btn-counterpropose-proposal"
-            onclick="proposeExistingProposal('${proposalKey}')"
+            onclick="proposeExistingProposal(${inlineJsArg(proposalKey)})"
             title="${tProposal('panel.proposal.actions.counterproposeHint', 'Create an editable copy. The proposal you are viewing stays unchanged.')}"
             aria-label="${tProposal('panel.proposal.actions.counterproposeHint', 'Create an editable copy. The proposal you are viewing stays unchanged.')}">
             <i class="fas fa-code-branch"></i> ${tProposal('panel.proposal.actions.counterpropose', 'Fork proposal')}
         </button>
     `
         : '';
+    // Same counterproposal fork, but the parcel set is edited on the map before the create dialog.
+    const landForkHint = tProposal('panel.proposal.actions.forkChangedLandHint', 'Fork with changed land set: add or remove parcels on the map, then create the counterproposal. The proposal you are viewing stays unchanged.');
+    const landForkButtonHtml = (proposalKey && typeof forkProposalWithChangedLand === 'function')
+        ? `
+        <button class="btn btn-outline-primary btn-fork-changed-land"
+            onclick="forkProposalWithChangedLand(${inlineJsArg(proposalKey)})"
+            title="${safeAgentText(landForkHint)}"
+            aria-label="${safeAgentText(landForkHint)}">
+            <i class="fas fa-object-ungroup"></i> ${tProposal('panel.proposal.actions.forkChangedLand', 'Fork with changed land')}
+        </button>
+    `
+        : '';
 
     const buyOfferProposal = fullProposal || proposal;
     const buyButtonHtml = (typeof isProposalOpenSaleOffer === 'function' && isProposalOpenSaleOffer(buyOfferProposal))
-        ? `<button type="button" class="btn btn-success proposal-buy-btn" onclick="claimSaleOffer('${buyOfferProposal.proposalId || ''}')">🤝 ${tProposal('panel.proposal.buy.button', 'Buy')}</button>`
+        ? `<button type="button" class="btn btn-success proposal-buy-btn" onclick="claimSaleOffer(${inlineJsArg(buyOfferProposal.proposalId || '')})">🤝 ${tProposal('panel.proposal.buy.button', 'Buy')}</button>`
         : '';
 
     // "Drive this track" — opens the external 3D tram sim in a new tab with the
@@ -433,7 +445,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const isDrivableTrack = corridorIsTrack(drivePlan);
     const driveButtonHtml = (driveWalkConfig && driveWalkConfig.url && isDrivableTrack && driveSerialId && proposalKey)
         ? `
-        <button type="button" class="btn btn-outline-primary btn-drive-proposal" onclick="driveTrackProposalIn3DSim('${proposalKey}')">
+        <button type="button" class="btn btn-outline-primary btn-drive-proposal" onclick="driveTrackProposalIn3DSim(${inlineJsArg(proposalKey)})">
             🚋 ${tProposal('panel.proposal.actions.drive', 'Drive')}
         </button>
     `
@@ -445,13 +457,13 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const supportButtonHtml = (action) => {
         const supportButtons = {
             connect: `<button type="button" class="btn btn-outline-primary btn-connect-proposal-support" onclick="handleWalletButtonClick()">${tProposal('panel.proposal.support.connect', 'Connect Solana wallet')}</button>`,
-            donate: `<button type="button" class="btn btn-outline-primary btn-donate-proposal" onclick="openProposalBoostDialog('${proposalKey}', 'donate')">🎁 ${tProposal('panel.proposal.support.donate', 'Donate USDC')}</button>`,
-            pledge: `<button type="button" class="btn btn-outline-primary btn-pledge-proposal" onclick="openProposalBoostDialog('${proposalKey}', 'pledge')">💪 ${tProposal('panel.proposal.boost.send', 'Pledge USDC')}</button>`,
-            revokePledge: `<button type="button" class="btn btn-outline-secondary" onclick="settleProposalSupport('${proposalKey}', 'revokePledge')">${tProposal('panel.proposal.support.revoke', 'Revoke my pledge')}</button>`,
-            releaseDonations: `<button type="button" class="btn btn-outline-primary" onclick="settleProposalSupport('${proposalKey}', 'releaseDonations')">${tProposal('panel.proposal.support.release', 'Release donations')}</button>`,
-            fulfillPledge: `<button type="button" class="btn btn-outline-primary" onclick="settleProposalSupport('${proposalKey}', 'fulfillPledge')">${tProposal('panel.proposal.support.fulfill', 'Fulfill my pledge')}</button>`,
-            refundMyDonations: `<button type="button" class="btn btn-outline-primary" onclick="settleProposalSupport('${proposalKey}', 'refundMyDonations')">${tProposal('panel.proposal.support.refund', 'Refund my donations')}</button>`,
-            voidPledge: `<button type="button" class="btn btn-outline-secondary" onclick="settleProposalSupport('${proposalKey}', 'voidPledge')">${tProposal('panel.proposal.support.void', 'Clear my pledge')}</button>`
+            donate: `<button type="button" class="btn btn-outline-primary btn-donate-proposal" onclick="openProposalBoostDialog(${inlineJsArg(proposalKey)}, 'donate')">🎁 ${tProposal('panel.proposal.support.donate', 'Donate USDC')}</button>`,
+            pledge: `<button type="button" class="btn btn-outline-primary btn-pledge-proposal" onclick="openProposalBoostDialog(${inlineJsArg(proposalKey)}, 'pledge')">💪 ${tProposal('panel.proposal.boost.send', 'Pledge USDC')}</button>`,
+            revokePledge: `<button type="button" class="btn btn-outline-secondary" onclick="settleProposalSupport(${inlineJsArg(proposalKey)}, 'revokePledge')">${tProposal('panel.proposal.support.revoke', 'Revoke my pledge')}</button>`,
+            releaseDonations: `<button type="button" class="btn btn-outline-primary" onclick="settleProposalSupport(${inlineJsArg(proposalKey)}, 'releaseDonations')">${tProposal('panel.proposal.support.release', 'Release donations')}</button>`,
+            fulfillPledge: `<button type="button" class="btn btn-outline-primary" onclick="settleProposalSupport(${inlineJsArg(proposalKey)}, 'fulfillPledge')">${tProposal('panel.proposal.support.fulfill', 'Fulfill my pledge')}</button>`,
+            refundMyDonations: `<button type="button" class="btn btn-outline-primary" onclick="settleProposalSupport(${inlineJsArg(proposalKey)}, 'refundMyDonations')">${tProposal('panel.proposal.support.refund', 'Refund my donations')}</button>`,
+            voidPledge: `<button type="button" class="btn btn-outline-secondary" onclick="settleProposalSupport(${inlineJsArg(proposalKey)}, 'voidPledge')">${tProposal('panel.proposal.support.void', 'Clear my pledge')}</button>`
         };
         return supportButtons[action] || '';
     };
@@ -476,6 +488,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const primaryActionsHtml = `
         <div class="proposal-actions proposal-actions-group">
             ${forkButtonHtml}
+            ${landForkButtonHtml}
             ${mapActionButtonHtml ? mapActionButtonHtml : ''}
             ${proposalSupportButtonsHtml}
             ${shareButtonHtml}
@@ -508,9 +521,17 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         const safeId = typeof escapeHtml === 'function' ? escapeHtml(String(copiedFromId)) : String(copiedFromId);
         const basedOnLabel = tProposal('panel.proposal.basedOn', 'Based on');
         const inner = sourceExists
-            ? `<a href="#" class="proposal-based-on-link" onclick="event.preventDefault(); focusProposalDetails('${safeId}');">${safeLabel} <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i></a>`
+            ? `<a href="#" class="proposal-based-on-link" onclick="event.preventDefault(); focusProposalDetails(${inlineJsArg(copiedFromId)});">${safeLabel} <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i></a>`
             : `<span class="proposal-based-on-name">${safeLabel}</span>`;
         copiedFromHtml = `<div class="proposal-based-on-row">${basedOnLabel}: ${inner}</div>`;
+        // A land fork names how its parcels relate to the origin's, instead of a bare "Based on".
+        const landFork = (fullProposal && fullProposal.landFork) || proposal.landFork || null;
+        const landForkMessage = landFork && window.ParcelSetRelations?.landForkSummaryMessage?.(landFork);
+        if (landForkMessage) {
+            const forkedLabel = tProposal('panel.proposal.landFork.forkedFrom', 'Forked on different land from');
+            const relationText = safeAgentText(tProposal(landForkMessage.key, landForkMessage.fallback, landForkMessage.params));
+            copiedFromHtml = `<div class="proposal-based-on-row proposal-land-fork-row">${safeAgentText(forkedLabel)}: ${inner}<div class="proposal-land-fork-relation">${relationText}</div></div>`;
+        }
     }
 
     const proposalDisplayId = proposal.proposalId ? String(proposal.proposalId) : null;
@@ -536,7 +557,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const lensButtonHtml = hasProposalLens ? `
         <button type="button"
             class="lens-pattern-button proposal-lens-button"
-            onclick="openProposalLens('${lensProposalId}')"
+            onclick="openProposalLens(${inlineJsArg(lensProposalId)})"
             title="${safeLensButtonLabel}"
             aria-label="${safeLensButtonLabel}"
             ${lensPatternUrl ? `style="background-image: url(&quot;${lensPatternUrl}&quot;);"` : ''}>
@@ -889,7 +910,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             const isFromMeProposal = resolveProposalGoalKey(proposal, null) === 'ownership-transfer-from-me';
             const acceptTransferLabel = tProposal('panel.proposal.acceptTransfer.buttonLabel', 'Accept ownership transfer');
             const acceptTransferButtonHtml = isFromMeProposal
-                ? `<button type="button" class="offer-boost-button" title="${acceptTransferLabel}" aria-label="${acceptTransferLabel}" onclick="openAcceptOwnershipTransferDialog('${proposal.proposalId || ''}')">🤝</button>`
+                ? `<button type="button" class="offer-boost-button" title="${acceptTransferLabel}" aria-label="${acceptTransferLabel}" onclick="openAcceptOwnershipTransferDialog(${inlineJsArg(proposal.proposalId || '')})">🤝</button>`
                 : '';
 
             if (hasDecay) {
@@ -1778,7 +1799,7 @@ function renderProposalMarketCard(card, proposalAccount, lifecycle, summary) {
             ? (lifecycleModel.canOpen ? '<button type="button" class="btn btn-outline-primary" onclick="handleWalletButtonClick()">Connect Solana wallet</button>' : `<span class="proposal-market-muted">${safeAgentText(lifecycleModel.next)}</span>`)
             : !lifecycleModel.canOpen
                 ? `<span class="proposal-market-muted">${safeAgentText(lifecycleModel.next)}</span>`
-                : `<button type="button" class="btn btn-outline-primary" onclick="settleProposalMarket('${proposalAccount}', 'createMarket')">Open market</button>`;
+                : `<button type="button" class="btn btn-outline-primary" onclick="settleProposalMarket(${inlineJsArg(proposalAccount)}, 'createMarket')">Open market</button>`;
         return;
     }
     if (state) state.textContent = lifecycleModel.state;
@@ -1798,16 +1819,16 @@ function renderProposalMarketCard(card, proposalAccount, lifecycle, summary) {
         return;
     }
     if (model.resolved) {
-        controls.innerHTML = model.claimSides.map(side => `<button type="button" class="btn btn-success" onclick="settleProposalMarket('${proposalAccount}', 'claim', ${side === 'yes' ? 1 : 0})">Claim ${side.toUpperCase()}</button>`).join('')
+        controls.innerHTML = model.claimSides.map(side => `<button type="button" class="btn btn-success" onclick="settleProposalMarket(${inlineJsArg(proposalAccount)}, 'claim', ${side === 'yes' ? 1 : 0})">Claim ${side.toUpperCase()}</button>`).join('')
             || '<span class="proposal-market-muted">No claimable position.</span>';
         return;
     }
     if (lifecycleModel.canResolve) {
-        controls.innerHTML = `<button type="button" class="btn btn-outline-secondary" onclick="settleProposalMarket('${proposalAccount}', 'resolve')">Resolve ${lifecycleModel.expectedOutcome.toUpperCase()} from proposal status</button>`;
+        controls.innerHTML = `<button type="button" class="btn btn-outline-secondary" onclick="settleProposalMarket(${inlineJsArg(proposalAccount)}, 'resolve')">Resolve ${lifecycleModel.expectedOutcome.toUpperCase()} from proposal status</button>`;
     } else if (lifecycleModel.canStake) {
         controls.innerHTML = `
-            <button type="button" class="btn btn-market-yes" onclick="openProposalMarketStakeDialog('${proposalAccount}', 1)">Stake YES</button>
-            <button type="button" class="btn btn-market-no" onclick="openProposalMarketStakeDialog('${proposalAccount}', 0)">Stake NO</button>`;
+            <button type="button" class="btn btn-market-yes" onclick="openProposalMarketStakeDialog(${inlineJsArg(proposalAccount)}, 1)">Stake YES</button>
+            <button type="button" class="btn btn-market-no" onclick="openProposalMarketStakeDialog(${inlineJsArg(proposalAccount)}, 0)">Stake NO</button>`;
     } else {
         controls.innerHTML = `<span class="proposal-market-muted">${safeAgentText(lifecycleModel.next)}</span>`;
     }
@@ -1960,7 +1981,7 @@ function openProposalBoostDialog(idOrHash = null, supportKind = 'pledge') {
                     </select>
                 </div>
                 <div class="proposal-boost-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px;">
-                    <button type="button" class="btn proposal-boost-send" data-support-submit style="min-width:100px; width:120px;" onclick="submitProposalBoost('${boostKey}')">${sendLabel}</button>
+                    <button type="button" class="btn proposal-boost-send" data-support-submit style="min-width:100px; width:120px;" onclick="submitProposalBoost(${inlineJsArg(boostKey)})">${sendLabel}</button>
                     <div class="proposal-boost-status" id="proposalBoostStatus" aria-live="polite" style="font-size:12px; text-align:center; min-height:18px;"></div>
                 </div>
             </div>

@@ -1,6 +1,7 @@
 # Hackathon next steps
 
 What's left, roughly in priority order. Each item says why it matters, what it buys, and how big it is.
+Last updated 2026-09-23, after deploying `97122e6` and upgrading both devnet programs.
 
 ## Must do for the submission
 
@@ -16,42 +17,45 @@ Leave the open market alone. When a matching court record arrives, the hourly re
 - **Payoff:** very high if a record arrives in time. If none does, it stays visibly pending, which is still honest.
 - **Effort:** minimal. Only monitoring; never fake a record or loosen the rule.
 
-### 3. Confirm Bazaar shows two unique payers
-Check that Coinbase's catalog has picked up the independent-client purchase. If it hasn't, ideally get an outside participant or agent to make one call.
-- **Why:** with only one payer, the discovery demand looks self-generated.
+### 3. Get an outside payer for paid proposals
+The verified-facts listing now reports 2 unique payers; the paid-proposal listing still reports 1 (every call came from project personas). A second project wallet would only be self-dealing under another name, so this needs an outside participant or agent to publish one paid proposal.
+- **Why:** with one payer, demand for paid proposals looks self-generated.
 - **Payoff:** medium.
-- **Effort:** trivial to check. Getting an outside payer depends on other people.
+- **Effort:** trivial once someone outside is willing; out of our hands until then.
 
 ## Do if time remains
 
 ### 4. Judge path and submission package
-- Put the canonical case first in the Demo Center.
 - Record a 90–150 s demo: discovery → action → shared timeline → evidence → payout.
-- Add a short "before vs. built here" comparison against baseline `3ee1855`.
 - Do one run from a fresh browser and wallet with no operator knowledge.
 - Freeze the URLs, run every suite, and capture a final proof manifest.
 - **Why:** judges spend minutes, not hours; a clear first path decides how much they actually see.
 - **Payoff:** high.
-- **Effort:** medium. About a day, mostly the video and the dry run.
+- **Effort:** medium. About half a day: the video and the dry run need a person; the rest is a final re-run.
 
 ### 5. Remaining contract and release evidence
-- Publish IDL checksums next to the binary hashes and upgrade authority already in the proof manifest.
-- Make program builds reproducible if the tooling allows.
+- Verified builds with `solana-verify`: rebuild both programs in the official Docker image, redeploy from that build, and register the verification so explorers show a "Verified build" badge. Needs ~6 SOL of temporary buffer rent; slow on an arm64 Mac, because the image is x86-only.
 - Decide whether `void_pledge` and `release_donations` should stay callable by anyone. Funds only go to the stored beneficiary or owner, but this is a design choice worth stating.
 - Keep "unaudited, devnet only" prominent.
 - **Why:** a reviewer should be able to link source → deployed program → tests without trusting the operator.
 - **Payoff:** medium for the hackathon, required before anything beyond devnet.
-- **Effort:** medium. About a day.
+- **Effort:** medium. Half a day, mostly build time.
 
-### 6. "Fork with changed land set" action
-Counterpropose currently always inherits the exact parcel set; add an explicit action that forks the proposal onto a changed set.
-- **Why:** it is the last missing piece for first-class parcel sets.
+### 6. Decide how land forks relate to their original
+"Fork with changed land" is built and live, but it still behaves like a counterproposal: the submit button says "Create replacement proposal", and applying a fork parks the original even when the land barely overlaps. Designs (parks, buildings) also carry their geometry over unchanged instead of being re-fitted to the new parcels.
+- **Why:** a fork on different land is arguably a competing proposal, not a replacement; parking the original may surprise its author.
+- **Payoff:** medium. It makes competing proposals over overlapping land coherent.
+- **Effort:** small once decided; the lineage record (`landFork`) already carries the relation and counts.
+
+### 7. Fix the flaky rate-limit test
+`backend/test/write-rate-limit-exemptions.test.js` fails intermittently with `ECONNRESET`/`socket hang up`, even when run alone; the failing case changes between runs.
+- **Why:** a suite that is red at random trains everyone to ignore red.
 - **Payoff:** low to medium.
-- **Effort:** small to medium.
+- **Effort:** small. Likely the test's own request burst; reuse one agent/keep-alive or serialise the requests.
 
 ## After the hackathon
 
-### 7. More evidence sources
+### 8. More evidence sources
 Add them through the existing adapter contract, in this order:
 1. permit/register source;
 2. imagery or building-footprint change;

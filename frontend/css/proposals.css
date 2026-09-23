@@ -259,6 +259,78 @@
     font-size: 10px;
 }
 
+.proposal-land-fork-relation {
+    margin-top: 2px;
+    color: #475569;
+}
+
+/* "Fork with changed land set": floating bar while the parcel set is edited on the map. */
+.land-fork-bar {
+    position: fixed;
+    left: 50%;
+    bottom: 16px;
+    transform: translateX(-50%);
+    z-index: 2100;
+    width: min(460px, calc(100vw - 32px));
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 14px;
+    background: #fff;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18);
+    font-size: 13px;
+    color: #1e293b;
+}
+
+.land-fork-bar-title {
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.land-fork-bar-hint,
+.land-fork-bar-status {
+    color: #475569;
+}
+
+.land-fork-bar-status {
+    font-weight: 600;
+}
+
+.land-fork-bar-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.land-fork-bar-actions .btn {
+    min-height: 36px;
+}
+
+/* The multi-parcel panel offers unrelated create actions; the bar is the only exit while forking. */
+body.land-fork-editing #parcel-info-panel {
+    display: none;
+}
+
+.land-fork-notice {
+    margin: 0 0 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1e3a8a;
+    font-size: 13px;
+}
+
+.land-fork-notice--same {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    color: #334155;
+}
+
 .proposal-id-row {
     display: inline-flex;
     align-items: center;

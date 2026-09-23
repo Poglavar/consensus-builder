@@ -1,5 +1,8 @@
 // Contract tests for the public hackathon manifest and privacy-preserving market status route.
 
+import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
 import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
 import { setupHackathonProofRoute } from '../routes/hackathon-proof.js';
@@ -40,6 +43,20 @@ describe('hackathon public proof routes', () => {
         expect(res.body.builtForHackathon).toEqual(expect.arrayContaining([
             expect.stringContaining('x402'), expect.stringContaining('prospective market')
         ]));
+    });
+
+    it('pins each program IDL checksum to the checked-in IDL file', async () => {
+        const app = createRouteApp(setupHackathonProofRoute, {
+            env: { PUBLIC_API_BASE_URL: 'https://api.example.test', RELEASE_SHA: 'abc123' },
+            statusReader: () => buildProspectiveMarketStatus({ now: Date.parse('2026-09-22T20:00:00Z') })
+        });
+        const { body } = await request(app).get('/hackathon/proof.json');
+        const files = { ProposalPledge: 'proposal_pledge.json', ProposalMarket: 'proposal_market.json' };
+        for (const program of body.releaseArtifacts.programs) {
+            const bytes = fs.readFileSync(path.join(import.meta.dirname, '..', '..', 'blockchain', 'solana', 'idl', files[program.name]));
+            expect(program.idlSha256, program.name).toBe(crypto.createHash('sha256').update(bytes).digest('hex'));
+            expect(program.idlAddress, program.name).toMatch(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/);
+        }
     });
 
     it('exposes live resolver health without private parcel or wallet state', async () => {

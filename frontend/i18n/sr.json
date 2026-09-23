@@ -969,7 +969,9 @@
                 "propose": "Predloži",
                 "editDetails": "Detalji",
                 "counterpropose": "Kopiraj predlog",
-                "counterproposeHint": "Napravite protivpredlog kao kopiju koju možete uređivati. Predlog koji gledate ostaje nepromenjen."
+                "counterproposeHint": "Napravite protivpredlog kao kopiju koju možete uređivati. Predlog koji gledate ostaje nepromenjen.",
+                "forkChangedLand": "Kopiraj na drugim parcelama",
+                "forkChangedLandHint": "Kopija sa promenjenim skupom parcela: dodajte ili uklonite parcele na mapi, zatim napravite kontrapredlog. Predlog koji gledate ostaje nepromenjen."
             },
             "expiry": {
                 "expired": "Predlog je istekao",
@@ -1082,6 +1084,24 @@
                 "flowDiscover": "API dostupan agentima",
                 "flowPay": "Plaćanje putem x402",
                 "flowStore": "Sačuvani predlog"
+            },
+            "landFork": {
+                "forkedFrom": "Kopija na drugim parcelama od",
+                "relationSame": "Iste parcele kao original",
+                "relationContains": "Sve {{origin}} originalne parcele i još {{added}}",
+                "relationInside": "{{shared}} od {{origin}} originalnih parcela",
+                "relationOverlap": "{{shared}} parcela zajedničko sa originalom, {{added}} dodato, {{removed}} uklonjeno",
+                "relationDisjoint": "Nema zajedničkih parcela sa originalom",
+                "sameSetNote": "Ovo će biti običan kontrapredlog.",
+                "selectedCount": "Izabrano parcela: {{count}}",
+                "emptySelection": "Izaberite bar jednu parcelu.",
+                "cancel": "Otkaži",
+                "continue": "Nastavi",
+                "barTitle": "Kopija „{{name}}” sa promenjenim parcelama",
+                "barHint": "Kliknite parcele na mapi da ih dodate ili uklonite.",
+                "dialogSame": "Iste parcele kao „{{name}}” — čuva se kao običan kontrapredlog.",
+                "dialogChanged": "Kopija „{{name}}” na drugim parcelama",
+                "noLand": "Ovaj predlog nema skup parcela iz kog bi se kopirao."
             }
         },
         "block": {

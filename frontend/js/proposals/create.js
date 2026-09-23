@@ -693,6 +693,18 @@ async function createProposal() {
             }
             proposal.proposalDraftId = publishingDraftId;
             proposal.proposalDraftRevision = draft?.revision ?? source.revision ?? null;
+            // A counterproposal whose land differs from its origin's is a land fork: record the
+            // origin set it departed from. Decided from the authored parcels, not from which button
+            // started it, so an unchanged set stays a plain counterproposal with no landFork.
+            const relationApi = window.ParcelSetRelations;
+            const originSnapshot = draft?.sourceSnapshot || null;
+            if (immutableSourceId && originSnapshot && relationApi && typeof relationApi.buildLandForkLineage === 'function') {
+                const landFork = relationApi.buildLandForkLineage(
+                    { ...originSnapshot, proposalId: String(immutableSourceId) },
+                    authoredCadastreParcelIds
+                );
+                if (landFork) proposal.landFork = landFork;
+            }
         }
 
         // "Ownership transfer from me" proposals are automatically accepted but not funded

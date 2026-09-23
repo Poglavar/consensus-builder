@@ -9,7 +9,9 @@ describe('proposal details authoring contract', () => {
     it('labels cloning as Counterpropose / Fork instead of presenting it as Details', () => {
         expect(detailsSource).toContain("panel.proposal.actions.counterpropose");
         expect(detailsSource).toContain("panel.proposal.actions.counterproposeHint");
-        expect(detailsSource).toContain("onclick=\"proposeExistingProposal('${proposalKey}')\"");
+        expect(detailsSource).toContain('onclick="proposeExistingProposal(${inlineJsArg(proposalKey)})"');
+        // No proposal id may be pasted raw into an inline handler; see inlineJsArg in shared-utils.js.
+        expect(detailsSource).not.toMatch(/on(click|change|input)="[^"]*'\$\{/);
         expect(detailsSource).not.toContain('class="btn btn-primary btn-propose-proposal"');
     });
 

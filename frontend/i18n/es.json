@@ -986,7 +986,9 @@
                 "propose": "Proponer",
                 "editDetails": "Detalles",
                 "counterpropose": "Duplicar propuesta",
-                "counterproposeHint": "Crea una contrapropuesta como copia editable. La propuesta que estás viendo no cambia."
+                "counterproposeHint": "Crea una contrapropuesta como copia editable. La propuesta que estás viendo no cambia.",
+                "forkChangedLand": "Duplicar con otro terreno",
+                "forkChangedLandHint": "Duplicar con otro conjunto de parcelas: añade o quita parcelas en el mapa y luego crea la contrapropuesta. La propuesta que estás viendo no cambia."
             },
             "expiry": {
                 "expired": "Propuesta caducada",
@@ -1099,6 +1101,24 @@
                 "flowDiscover": "API detectable",
                 "flowPay": "Pago x402",
                 "flowStore": "Propuesta almacenada"
+            },
+            "landFork": {
+                "forkedFrom": "Duplicada en otro terreno a partir de",
+                "relationSame": "Las mismas parcelas que la original",
+                "relationContains": "Las {{origin}} parcelas originales y {{added}} más",
+                "relationInside": "{{shared}} de las {{origin}} parcelas originales",
+                "relationOverlap": "{{shared}} parcelas en común con la original, {{added}} añadidas, {{removed}} quitadas",
+                "relationDisjoint": "Ninguna parcela en común con la original",
+                "sameSetNote": "Será una contrapropuesta normal.",
+                "selectedCount": "{{count}} parcelas seleccionadas",
+                "emptySelection": "Selecciona al menos una parcela.",
+                "cancel": "Cancelar",
+                "continue": "Continuar",
+                "barTitle": "Duplicar «{{name}}» con otro terreno",
+                "barHint": "Haz clic en las parcelas del mapa para añadirlas o quitarlas.",
+                "dialogSame": "Mismo terreno que «{{name}}»: se guarda como contrapropuesta normal.",
+                "dialogChanged": "Duplicado de «{{name}}» en otro terreno",
+                "noLand": "Esta propuesta no tiene un conjunto de parcelas del que duplicar."
             }
         },
         "block": {

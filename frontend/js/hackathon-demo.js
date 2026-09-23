@@ -281,7 +281,11 @@
         const configured = root?.document?.querySelector?.('meta[name="consensus-api-base"]')?.content;
         if (configured) return String(configured).replace(/\/$/, '');
         const host = root?.location?.hostname || '';
-        return host === 'localhost' || host === '127.0.0.1' ? 'http://localhost:3000' : 'https://api.urbangametheory.xyz';
+        const local = host === 'localhost' || host === '127.0.0.1';
+        // dev.sh starts each worktree's backend on its own port and passes it as ?backend=; localhost only.
+        const override = local ? new URLSearchParams(root?.location?.search || '').get('backend') : null;
+        if (override && /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(override)) return override;
+        return local ? 'http://localhost:3000' : 'https://api.urbangametheory.xyz';
     }
 
     function node(doc, tag, value, className = '') {
@@ -346,7 +350,6 @@
             const row = node(doc, 'div'); row.append(node(doc, 'dt', label), node(doc, 'dd', value)); liveFacts.append(row);
         });
         liveMarket.append(liveCopy, liveFacts);
-        element.append(liveMarket);
 
         const canonical = model.canonicalCase;
         const canonicalSection = node(doc, 'section', null, `hd-case is-${canonical.tone}`);
@@ -378,7 +381,8 @@
             });
             canonicalSection.append(caseGraph, node(doc, 'p', 'Support, forecasting and owner action can begin in parallel. Evidence authorizes resolution; resolution unlocks payout or refund.', 'hd-proof-reason'));
         }
-        element.append(canonicalSection);
+        // The canonical case leads: one proposal a judge can follow end to end before any detail.
+        element.append(canonicalSection, liveMarket);
 
         const story = node(doc, 'section', null, 'hd-story');
         const storyCopy = node(doc, 'div', null, 'hd-story-copy');

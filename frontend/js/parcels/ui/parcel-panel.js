@@ -276,9 +276,9 @@
         let blockHtml;
         if (blockName) {
             if (isBuenosAires) {
-                blockHtml = `<span class="block-tag" onclick="selectBuenosAiresBlock('${parcelId}')" style="cursor: pointer; background-color: #007bff; color: white; padding: 2px 8px; border-radius: 12px;">${blockName}</span>`;
+                blockHtml = `<span class="block-tag" onclick="selectBuenosAiresBlock(${inlineJsArg(parcelId)})" style="cursor: pointer; background-color: #007bff; color: white; padding: 2px 8px; border-radius: 12px;">${blockName}</span>`;
             } else {
-                blockHtml = `<span class="block-tag" onclick="highlightAndCenterBlock('${blockName}')" style="cursor: pointer; background-color: #007bff; color: white; padding: 2px 8px; border-radius: 12px;">${blockName}</span>`;
+                blockHtml = `<span class="block-tag" onclick="highlightAndCenterBlock(${inlineJsArg(blockName)})" style="cursor: pointer; background-color: #007bff; color: white; padding: 2px 8px; border-radius: 12px;">${blockName}</span>`;
             }
         } else {
             // The detect ACTION lives in the "Select multiple parcels" group at the top of the
@@ -568,7 +568,7 @@
                     </div>
                 `;
                 return `
-                    <div class="proposal-item" onclick="showProposalDetails('${proposal.proposalId}', '${parcelId}')" style="cursor: pointer;">
+                    <div class="proposal-item" onclick="showProposalDetails(${inlineJsArg(proposal.proposalId)}, ${inlineJsArg(parcelId)})" style="cursor: pointer;">
                         ${thumbHtml ? `<div class="proposal-item-row">${thumbHtml}${proposalBody}</div>` : proposalBody}
                     </div>
                 `;
@@ -639,7 +639,7 @@
             ${adLink ? `
             <div class="parcel-ad-dialog" id="parcel-ad-dialog" data-ad-link="${adLink}" style="display:none;">
                 <button class="parcel-info-btn parcel-builder-button"
-                    onclick="window.open('${adLink}', '_blank', 'noopener,noreferrer'); return false;">
+                    onclick="window.open(${inlineJsArg(adLink)}, '_blank', 'noopener,noreferrer'); return false;">
                     <i class="fas fa-shopping-cart" aria-hidden="true"></i>
                     <span data-i18n-key="panel.parcel.marketplace">${tParcel('panel.parcel.marketplace', {}, 'Marketplace')}</span>
                 </button>

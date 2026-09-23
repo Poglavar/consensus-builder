@@ -969,7 +969,9 @@
                 "propose": "Predloži",
                 "editDetails": "Detalji",
                 "counterpropose": "Kopiraj prijedlog",
-                "counterproposeHint": "Izradite protuprijedlog kao kopiju koju možete uređivati. Prijedlog koji gledate ostaje nepromijenjen."
+                "counterproposeHint": "Izradite protuprijedlog kao kopiju koju možete uređivati. Prijedlog koji gledate ostaje nepromijenjen.",
+                "forkChangedLand": "Kopiraj na drugim česticama",
+                "forkChangedLandHint": "Kopija s promijenjenim skupom čestica: dodajte ili uklonite čestice na karti, zatim izradite protuprijedlog. Prijedlog koji gledate ostaje nepromijenjen."
             },
             "expiry": {
                 "expired": "Prijedlog je istekao",
@@ -1082,6 +1084,24 @@
                 "flowDiscover": "API dostupan agentima",
                 "flowPay": "Plaćanje putem x402",
                 "flowStore": "Spremljeni prijedlog"
+            },
+            "landFork": {
+                "forkedFrom": "Kopija na drugim česticama od",
+                "relationSame": "Iste čestice kao izvornik",
+                "relationContains": "Sve {{origin}} izvorne čestice i još {{added}}",
+                "relationInside": "{{shared}} od {{origin}} izvornih čestica",
+                "relationOverlap": "{{shared}} čestica zajedničko s izvornikom, {{added}} dodano, {{removed}} uklonjeno",
+                "relationDisjoint": "Nema zajedničkih čestica s izvornikom",
+                "sameSetNote": "Ovo će biti običan protuprijedlog.",
+                "selectedCount": "Odabrano čestica: {{count}}",
+                "emptySelection": "Odaberite barem jednu česticu.",
+                "cancel": "Odustani",
+                "continue": "Nastavi",
+                "barTitle": "Kopija „{{name}}” s promijenjenim česticama",
+                "barHint": "Kliknite čestice na karti da ih dodate ili uklonite.",
+                "dialogSame": "Iste čestice kao „{{name}}” — sprema se kao običan protuprijedlog.",
+                "dialogChanged": "Kopija „{{name}}” na drugim česticama",
+                "noLand": "Ovaj prijedlog nema skup čestica iz kojeg bi se kopirao."
             }
         },
         "block": {

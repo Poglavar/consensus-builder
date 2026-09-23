@@ -209,6 +209,21 @@ Accordingly this is labelled a **retrospective integration proof**: it proves re
 two-sided staking, deterministic resolution and payout, but not forecasting. The prospective runner
 below rejects that ordering.
 
+## Before vs. built here
+
+Measured against baseline `3ee1855`: 57 commits, 283 files, +45,718 / −3,889 lines
+(`git diff --shortstat 3ee1855...colosseum-worlds-fair`).
+
+| Area | Before `3ee1855` | Built on this branch |
+|---|---|---|
+| Solana programs | `parcel_nft` and `proposal_nft` (parcels and proposals as on-chain records) | `proposal_market` (proposal and court-evidence markets) and `proposal_pledge` (refundable donations, revocable pledges); +1,398 program lines |
+| Contract tests | Anchor suites for the two existing programs | Market and pledge suites, including wrong-owner, wrong-mint, account-substitution and pre-created-vault cases (110 local-validator tests) |
+| Paying to act | None | x402 pay-to-propose and paid verified facts, both listed on the hosted Bazaar |
+| Agents | None | Deterministic and LLM-controlled personas, a supporter, an MCP tool surface over the same executors, and cost-ledgered runs (`backend/agents`, +4,768 lines) |
+| Evidence and resolution | Lens trust concept and EVM (EAS) ownership-attestation scripts; nothing resolved a market | Proposal-lifecycle oracle, court attestations (SAS), recipe-bound resolution, and a genuinely prospective court market |
+| Activity and proof | Local game log for the simulation | One activity format and explorer for humans, algorithms and LLMs; public proof manifest, operations endpoint, canonical case page, and public audit command |
+| Tests overall | Existing backend suite | +10,438 lines of backend tests across 80 files |
+
 ## Pre-existing platform foundations
 
 The underlying cadastral map and parcel fabric, proposal editor and 3D visualization, ownership

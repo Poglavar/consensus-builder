@@ -23,6 +23,14 @@ function escapeHtml(value) {
     }
 }
 
+// A value passed as a string argument inside an inline on* handler. HTML-escaping alone is not
+// enough: the browser decodes entities in the attribute before running the JavaScript, so a quote
+// in a proposal id (the API accepts any printable id) would end the string and inject code.
+// JSON.stringify makes a JS string literal; escaping then keeps it inside the attribute.
+function inlineJsArg(value) {
+    return escapeHtml(JSON.stringify(String(value ?? '')));
+}
+
 function deepClone(value) {
     try {
         if (value === undefined) return undefined;
@@ -74,6 +82,7 @@ function stableStringify(value) {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         escapeHtml,
+        inlineJsArg,
         deepClone,
         deepCloneArray,
         ensureArrayOfStrings,

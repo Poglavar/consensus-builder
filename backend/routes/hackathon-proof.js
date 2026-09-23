@@ -48,6 +48,9 @@ export function buildHackathonProofManifest({ apiBase, env = process.env } = {})
                 programDataAddress: 'EtV7ufG6U5SSPsdhQe1TByPJR8mqPpFgV15KQNbNSyZQ',
                 lastDeployedSlot: 503098918,
                 binarySha256: '649c6fda6c9cc2bd5e224772ca562dfb6576a2f46ca46498ad271f5bf39d053c',
+                // On-chain Anchor IDL account; its decoded JSON equals blockchain/solana/idl/proposal_pledge.json.
+                idlAddress: '4PJBp5KWgY1S55dCLAHqzD2jSmFwZFWUTZBj9JYVZb7X',
+                idlSha256: '5a76b112e55762a3dc7e555ea69caf880c7569e7c09b36deade36d72d0a891e9',
                 upgradeAuthority: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ'
             }, {
                 name: 'ProposalMarket',
@@ -56,6 +59,9 @@ export function buildHackathonProofManifest({ apiBase, env = process.env } = {})
                 programDataAddress: 'AGmZusPm3FuiPkgMBY5dG1ZMfXKptqDjG3aMrgTpqhx7',
                 lastDeployedSlot: 503099080,
                 binarySha256: '3039d28d7ea30161d418f0ac02924e97085b902d0d420e6d3cd0197d8ba91c0e',
+                // On-chain Anchor IDL account; its decoded JSON equals blockchain/solana/idl/proposal_market.json.
+                idlAddress: '66R6QbYprREJcxd2saTTEWmMUPpyx6ixx2KtBCDYGMJZ',
+                idlSha256: '38a6d44d2d1bdcbffcd9aeb72e8152bb674521582ee58c3be6a5162f3c4262e8',
                 upgradeAuthority: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ'
             }],
             verifiedAt: '2026-09-23'

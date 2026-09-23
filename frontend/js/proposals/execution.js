@@ -776,7 +776,7 @@ function openAcceptOwnershipTransferDialog(idOrHash = null) {
                     <span class="accept-transfer-amount-value" style="font-size:20px; font-weight:600; color:#2e7d32;">${formattedAmount}</span>
                 </div>
                 <div class="proposal-boost-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px;">
-                    <button type="button" class="btn proposal-boost-send" style="min-width:100px; width:120px;" onclick="submitAcceptOwnershipTransfer('${proposal.proposalId || ''}')">${fundLabel}</button>
+                    <button type="button" class="btn proposal-boost-send" style="min-width:100px; width:120px;" onclick="submitAcceptOwnershipTransfer(${inlineJsArg(proposal.proposalId || '')})">${fundLabel}</button>
                     <div class="accept-transfer-status" id="acceptTransferStatus" aria-live="polite" style="font-size:12px; text-align:center; min-height:18px;"></div>
                 </div>
             </div>

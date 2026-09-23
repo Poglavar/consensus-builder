@@ -939,7 +939,9 @@
                 "propose": "Propose",
                 "editDetails": "Details",
                 "counterpropose": "Fork proposal",
-                "counterproposeHint": "Counterpropose by creating an editable copy. The proposal you are viewing stays unchanged."
+                "counterproposeHint": "Counterpropose by creating an editable copy. The proposal you are viewing stays unchanged.",
+                "forkChangedLand": "Fork with changed land",
+                "forkChangedLandHint": "Fork with changed land set: add or remove parcels on the map, then create the counterproposal. The proposal you are viewing stays unchanged."
             },
             "expiry": {
                 "expired": "Proposal Expired",
@@ -1071,6 +1073,24 @@
                 "flowDiscover": "Discoverable API",
                 "flowPay": "x402 payment",
                 "flowStore": "Stored proposal"
+            },
+            "landFork": {
+                "forkedFrom": "Forked on different land from",
+                "relationSame": "Same parcels as the original",
+                "relationContains": "All {{origin}} original parcels plus {{added}} more",
+                "relationInside": "{{shared}} of the {{origin}} original parcels",
+                "relationOverlap": "{{shared}} parcels shared with the original, {{added}} added, {{removed}} removed",
+                "relationDisjoint": "No parcels in common with the original",
+                "sameSetNote": "This will be a plain counterproposal.",
+                "selectedCount": "{{count}} parcels selected",
+                "emptySelection": "Select at least one parcel.",
+                "cancel": "Cancel",
+                "continue": "Continue",
+                "barTitle": "Fork “{{name}}” with changed land",
+                "barHint": "Click parcels on the map to add or remove them.",
+                "dialogSame": "Same land as “{{name}}” — this is saved as a plain counterproposal.",
+                "dialogChanged": "Fork of “{{name}}” on different land",
+                "noLand": "This proposal has no parcel set to fork from."
             }
         },
         "block": {

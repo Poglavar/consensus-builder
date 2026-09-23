@@ -764,6 +764,178 @@
         return stageProposalDraftForPublishing(draft.id);
     }
 
+    // "Fork with changed land set": the same counterproposal draft, but the origin's parcels are
+    // first seeded as an editable map selection. A floating bar tracks how the edited set relates
+    // to the origin's; Continue writes the selection into the draft and opens the ordinary create
+    // dialog. create.js decides from the authored parcels whether a landFork lineage is recorded.
+    let landForkSession = null;
+
+    function landForkOriginIds(proposal) {
+        return global.ParcelSetRelations?.normalizeParcelIds?.(proposal) || [];
+    }
+
+    function describeLandForkSelection(origin) {
+        const api = global.ParcelSetRelations;
+        const fabric = global.LiveParcelFabric;
+        const liveIds = typeof global.getCurrentParcelSelectionContext === 'function'
+            ? global.getCurrentParcelSelectionContext().ids
+            : [];
+        if (!api || !fabric || typeof fabric.cadastreIdsForParcelIds !== 'function' || !liveIds.length) {
+            return { liveIds, description: null };
+        }
+        let cadastreIds = [];
+        try { cadastreIds = fabric.cadastreIdsForParcelIds(liveIds); } catch (error) {
+            console.warn('[LandFork] Could not project the selection onto cadastral ids', error);
+        }
+        return { liveIds, description: api.describeLandFork(origin, cadastreIds) };
+    }
+
+    function landForkSummaryText(description) {
+        const message = global.ParcelSetRelations?.landForkSummaryMessage?.(description);
+        if (!message) return '';
+        const relation = tDraft(message.key, message.fallback, message.params);
+        if (description.sameSet) {
+            return `${relation}. ${tDraft('panel.proposal.landFork.sameSetNote', 'This will be a plain counterproposal.')}`;
+        }
+        return relation;
+    }
+
+    function renderLandForkBar() {
+        const session = landForkSession;
+        const bar = session?.bar;
+        if (!bar) return;
+        const { liveIds, description } = describeLandForkSelection(session.origin);
+        const status = bar.querySelector('[data-land-fork-status]');
+        const count = tDraft('panel.proposal.landFork.selectedCount', '{{count}} parcels selected', { count: liveIds.length });
+        if (status) {
+            status.textContent = liveIds.length
+                ? [count, landForkSummaryText(description)].filter(Boolean).join(' · ')
+                : tDraft('panel.proposal.landFork.emptySelection', 'Select at least one parcel.');
+        }
+        const next = bar.querySelector('[data-land-fork-action="continue"]');
+        if (next) next.disabled = !liveIds.length;
+    }
+
+    function endLandForkSession({ discardDraft = false } = {}) {
+        const session = landForkSession;
+        if (!session) return;
+        landForkSession = null;
+        global.document?.removeEventListener('multi-parcel-selection-change', renderLandForkBar);
+        session.bar?.remove();
+        global.document?.body?.classList.remove('land-fork-editing');
+        if (discardDraft) {
+            try { global.releaseEditorSeededMultiSelection?.(); } catch (_) { }
+            // Only a draft this flow created is thrown away; a resumed earlier draft is the user's.
+            if (session.createdDraft) global.proposalDraftStore?.deleteDraft?.(session.draftId);
+        }
+    }
+
+    async function continueLandFork() {
+        const session = landForkSession;
+        if (!session) return false;
+        const { liveIds } = describeLandForkSelection(session.origin);
+        if (!liveIds.length) {
+            renderLandForkBar();
+            return false;
+        }
+        const store = global.proposalDraftStore;
+        store.updateDraft(session.draftId, { fields: { selectedParcelIds: liveIds.map(String) } }, { coalesceKey: 'land-fork-selection' });
+        const draftId = session.draftId;
+        const origin = session.origin;
+        endLandForkSession();
+        const staged = await stageProposalDraftForPublishing(draftId);
+        if (staged) showLandForkDialogNotice(origin);
+        return staged;
+    }
+
+    // One line at the top of the create dialog saying what land the fork ends up on.
+    function showLandForkDialogNotice(origin) {
+        const body = global.document?.querySelector('.create-proposal-modal .proposal-modal-body');
+        if (!body) return;
+        const { description } = describeLandForkSelection(origin);
+        if (!description) return;
+        const notice = global.document.createElement('div');
+        notice.className = `land-fork-notice${description.sameSet ? ' land-fork-notice--same' : ''}`;
+        const originName = origin?.title || origin?.name || landForkOriginIdLabel(origin);
+        notice.textContent = description.sameSet
+            ? tDraft('panel.proposal.landFork.dialogSame', 'Same land as “{{name}}” — this is saved as a plain counterproposal.', { name: originName })
+            : `${tDraft('panel.proposal.landFork.dialogChanged', 'Fork of “{{name}}” on different land', { name: originName })}: ${landForkSummaryText(description)}`;
+        body.prepend(notice);
+    }
+
+    function landForkOriginIdLabel(origin) {
+        return global.ParcelSetRelations?.proposalKey?.(origin) || '';
+    }
+
+    async function forkProposalWithChangedLand(proposalIdOrHash) {
+        if (typeof global.requirePersonalizedUser === 'function' && global.requirePersonalizedUser()) return null;
+        const proposal = proposalById(proposalIdOrHash);
+        if (!proposal) return null;
+        if (rejectRetiredProposalGoal(proposal)) return null;
+        if (!landForkOriginIds(proposal).length) {
+            return reportGeometryEditFailure(
+                tDraft('panel.proposal.landFork.noLand', 'This proposal has no parcel set to fork from.'),
+                proposalIdOrHash
+            );
+        }
+        endLandForkSession({ discardDraft: true });
+        const store = global.proposalDraftStore;
+        const sourceKey = typeof global.getProposalKey === 'function' ? global.getProposalKey(proposal) : (proposal.proposalId || proposal.id);
+        const existing = sourceKey ? store.findDraftForSource(String(sourceKey), proposal.city || undefined) : null;
+        const draft = store.createDraftFromProposal(proposal, { activate: true });
+        if (!draft) return null;
+        try { if (typeof global.hideProposalDetailsPanel === 'function') global.hideProposalDetailsPanel(); } catch (_) { }
+        closeProposalEditorShell();
+        const selection = await global.prepareProposalDraftParcelSelection?.(draft);
+        if (!selection?.layers?.length) {
+            if (!existing) store.deleteDraft(draft.id);
+            return reportGeometryEditFailure(
+                tDraft('proposalDrafts.errors.parcelsUnavailable', 'The draft parcels are not available in the current city.'),
+                selection?.unresolvedIds
+            );
+        }
+
+        const doc = global.document;
+        const bar = doc.createElement('div');
+        bar.className = 'land-fork-bar';
+        bar.setAttribute('role', 'region');
+        const originName = proposal.title || proposal.name || String(sourceKey || '');
+        bar.setAttribute('aria-label', tDraft('panel.proposal.landFork.barTitle', 'Fork “{{name}}” with changed land', { name: originName }));
+        const title = doc.createElement('strong');
+        title.className = 'land-fork-bar-title';
+        title.textContent = tDraft('panel.proposal.landFork.barTitle', 'Fork “{{name}}” with changed land', { name: originName });
+        const hint = doc.createElement('span');
+        hint.className = 'land-fork-bar-hint';
+        hint.textContent = tDraft('panel.proposal.landFork.barHint', 'Click parcels on the map to add or remove them.');
+        const status = doc.createElement('span');
+        status.className = 'land-fork-bar-status';
+        status.setAttribute('data-land-fork-status', '');
+        status.setAttribute('aria-live', 'polite');
+        const actions = doc.createElement('div');
+        actions.className = 'land-fork-bar-actions';
+        const cancel = doc.createElement('button');
+        cancel.type = 'button';
+        cancel.className = 'btn btn-outline-secondary';
+        cancel.dataset.landForkAction = 'cancel';
+        cancel.textContent = tDraft('panel.proposal.landFork.cancel', 'Cancel');
+        cancel.addEventListener('click', () => endLandForkSession({ discardDraft: true }));
+        const next = doc.createElement('button');
+        next.type = 'button';
+        next.className = 'btn btn-primary';
+        next.dataset.landForkAction = 'continue';
+        next.textContent = tDraft('panel.proposal.landFork.continue', 'Continue');
+        next.addEventListener('click', () => { continueLandFork(); });
+        actions.append(cancel, next);
+        bar.append(title, hint, status, actions);
+        doc.body.appendChild(bar);
+        doc.body.classList.add('land-fork-editing');
+
+        landForkSession = { draftId: draft.id, origin: proposal, bar, createdDraft: !existing };
+        doc.addEventListener('multi-parcel-selection-change', renderLandForkBar);
+        renderLandForkBar();
+        return draft;
+    }
+
     function createNewProposalDraft(options = {}) {
         const context = typeof global.getCurrentParcelSelectionContext === 'function'
             ? global.getCurrentParcelSelectionContext()
@@ -1609,6 +1781,7 @@
     global.editProposal = editProposal;
     global.editProposalAsReplacement = editProposal;
     global.proposeExistingProposal = proposeExistingProposal;
+    global.forkProposalWithChangedLand = forkProposalWithChangedLand;
     global.editProposalGeometry = editProposalGeometry;
     global.canEditProposalGeometry = canEditProposalGeometry;
     global.startInstantProposalDesign = startInstantProposalDesign;

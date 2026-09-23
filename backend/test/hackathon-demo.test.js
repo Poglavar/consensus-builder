@@ -228,3 +228,18 @@ describe('hackathon demo evidence model', () => {
         });
     });
 });
+
+describe('hackathon demo API base', () => {
+    const withLocation = (location, fn) => {
+        const previous = globalThis.location;
+        globalThis.location = location;
+        try { return fn(); } finally { globalThis.location = previous; }
+    };
+
+    it('follows dev.sh ?backend= on localhost, but never off localhost or to a foreign host', () => {
+        expect(withLocation({ hostname: 'localhost', search: '?backend=http://localhost:4680' }, demo.backendBase)).toBe('http://localhost:4680');
+        expect(withLocation({ hostname: 'localhost', search: '' }, demo.backendBase)).toBe('http://localhost:3000');
+        expect(withLocation({ hostname: 'localhost', search: '?backend=https://evil.example' }, demo.backendBase)).toBe('http://localhost:3000');
+        expect(withLocation({ hostname: 'urbangametheory.xyz', search: '?backend=http://localhost:4680' }, demo.backendBase)).toBe('https://api.urbangametheory.xyz');
+    });
+});

@@ -201,3 +201,28 @@ describe('buildCityQueryParam', () => {
         }, () => buildCityQueryParam())).toBe('');
     });
 });
+
+const utils = require('../../frontend/js/shared-utils.js');
+
+describe('inlineJsArg', () => {
+    // What the browser does with onclick="f(ARG)": decode entities, then run the text as JavaScript.
+    const decodeAttribute = text => text.replace(/&(quot|#39|lt|gt|amp);/g, (_m, name) => ({ quot: '"', '#39': "'", lt: '<', gt: '>', amp: '&' })[name]);
+    const runHandler = arg => {
+        let injected = false;
+        const received = new Function('f', 'mark', `return f(${decodeAttribute(arg)})`)(value => value, () => { injected = true; });
+        return { received, injected };
+    };
+
+    it('keeps hostile proposal ids a single string argument, never code', () => {
+        for (const id of ["x'+mark()+'", 'x"+mark()+"', "x');mark();('", 'x");mark();("', 'a\\\'b', '</button><img src=x onerror=mark()>', "it's", '42']) {
+            const arg = utils.inlineJsArg(id);
+            expect(arg).not.toMatch(/["'<>]/);
+            expect(runHandler(arg)).toEqual({ received: id, injected: false });
+        }
+    });
+
+    it('shows why HTML-escaping alone was not enough', () => {
+        const escapedOnly = `'${utils.escapeHtml("x'+mark()+'")}'`;
+        expect(runHandler(escapedOnly).injected).toBe(true);
+    });
+});

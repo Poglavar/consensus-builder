@@ -29,6 +29,14 @@ Both remain upgradeable by `AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ`. These
 what devnet executed; they do not claim a reproducible source-to-binary build or an audited program.
 The 2026-09-23 upgrades (commit `361cf41`) made every market and donation vault `init_if_needed`, so
 pre-creating a vault's predictable token account can no longer block a proposal's donations or market.
+Live proof (`blockchain/solana/scripts/vault-precreate-proof.mjs --live`): a second wallet
+[pre-created both vaults](https://explorer.solana.com/tx/4fHgCF6HrUseRUAcY4DKF6J3FAZprzzAA2oXkNZg3JmFcvQcsJHS8X9yjP3dZc1NzesaXYHiLuZCKZ5hwKNgaSUv?cluster=devnet)
+of a fresh proposal, then its owner still opened the
+[donation escrow](https://explorer.solana.com/tx/3zVdTx1PBAobY9YhpMLuQwAVNuyr37EcjJGDFFp6opx9xo1iBUVr4q95rMMwqCisvKhpLSDQTeamKYjfBmbdxKBX?cluster=devnet)
+and the [market](https://explorer.solana.com/tx/398Z39Qmps26Z9iV4rn3K9RGHaD2ysZadLu5KeAgywAuga6ScpEPGNVT8DCcnDYrFemXy2ANb9tPqWSZfnAvm89j?cluster=devnet).
+Both programs also publish their current Anchor IDL on-chain (ProposalPledge `4PJB…Zb7X`,
+ProposalMarket `66R6…MJZ`); `anchor idl fetch <program> --provider.cluster devnet` returns JSON equal
+to `blockchain/solana/idl/*.json`, whose SHA-256s the manifest pins as `idlSha256`.
 
 The devnet USDC mint used by the demo is
 [`4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU`](https://explorer.solana.com/address/4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU?cluster=devnet).
