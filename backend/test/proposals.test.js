@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import request from 'supertest';
 import { createMockPool } from './helpers/mock-pool.js';
 import { createTestApp } from './helpers/create-app.js';
-import { normalizeCityCode } from '../routes/proposals.js';
+import { hashEditToken, normalizeCityCode } from '../routes/proposals.js';
 import { generateAndStoreProposalThumbnail } from '../thumbnails/proposal-thumbnail.js';
 import {
     validProposalBody,
@@ -357,8 +357,10 @@ describe('POST /proposals', () => {
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[7]).toBe('Active');
-        expect(insertParams).toHaveLength(38);
-        expect(insertParams.slice(36)).toEqual([null, null]);
+        expect(insertParams).toHaveLength(39);
+        // Free route: no x402 payment id / request hash; the last param is the edit-token hash.
+        expect(insertParams.slice(36, 38)).toEqual([null, null]);
+        expect(insertParams[38]).toMatch(/^[0-9a-f]{64}$/);
         expect(pool.getCalls()[0].sql).not.toMatch(/\bapplied\b/);
         expect(JSON.parse(insertParams[24])).toEqual({ width: 6 });
         expect(JSON.parse(insertParams[32])).not.toHaveProperty('applied');
@@ -487,7 +489,7 @@ describe('POST /proposals', () => {
         expect(pool.getCalls()).toHaveLength(0);
     });
 
-    it('serializes only non-empty collections and nested proposal objects into insert params', async () => {
+    it('serializes only non-empty collections and nested proposal objects into insert params (acceptances are never taken from the uploader)', async () => {
         pool.setResults([insertResult(), updateResult()]);
 
         const res = await request(app)
@@ -508,8 +510,13 @@ describe('POST /proposals', () => {
 
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[21]).toBe(JSON.stringify(['HR-1234-5678', 'HR-1234-5679']));
-        expect(insertParams[22]).toBe(JSON.stringify(['HR-1234-5678']));
-        expect(insertParams[23]).toBe(JSON.stringify({ 'HR-1234-5678': 'accepted' }));
+        // Consent claims are dropped on upload: the column AND the proposal_data copy the serializer
+        // would otherwise fall back to.
+        expect(insertParams[22]).toBeNull();
+        expect(insertParams[23]).toBeNull();
+        const stored = JSON.parse(insertParams[32]);
+        expect(stored).not.toHaveProperty('acceptedParcelIds');
+        expect(stored).not.toHaveProperty('ownerAcceptances');
         expect(insertParams[24]).toBe(JSON.stringify({ width: 5, type: 'primary' }));
         expect(insertParams[25]).toBe(JSON.stringify({ height: 12 }));
         expect(insertParams[26]).toBe(JSON.stringify({ floors: 3 }));
@@ -653,16 +660,26 @@ describe('POST /proposals', () => {
         expect(res.body).toEqual({ error: 'id must be a string or number.' });
     });
 
-    it('accepts numeric identifiers and prefers onchain over onchainData aliases', async () => {
+    it('refuses a purely numeric proposal id: that namespace belongs to row ids', async () => {
+        const res = await request(app)
+            .post('/proposals')
+            .send({ id: 17, type: 'parcel', cadastreParcelIds: ['HR-1'] });
+
+        expect(res.status).toBe(400);
+        expect(res.body.error).toMatch(/numeric/);
+        expect(pool.getCalls()).toHaveLength(0);
+    });
+
+    it('accepts numeric-typed identifiers and prefers onchain over onchainData aliases', async () => {
         pool.setResults([
-            insertResult({ proposal_id: '17' }),
+            insertResult({ proposal_id: '17.5' }),
             updateResult(),
         ]);
 
         const res = await request(app)
             .post('/proposals')
             .send({
-                id: 17,
+                id: 17.5,
                 type: 'parcel',
                 cadastreParcelIds: ['HR-1'],
                 onchainData: { contract: '0xabc' },
@@ -671,7 +688,7 @@ describe('POST /proposals', () => {
 
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
-        expect(insertParams[0]).toBe('17');
+        expect(insertParams[0]).toBe('17.5');
         expect(insertParams[30]).toBe(JSON.stringify({ contract: '0xdef' }));
     });
 });
@@ -696,15 +713,21 @@ describe('POST /proposals/batch', () => {
         expect(pool.getCalls()[0].params).toEqual([['proposal-a', 'missing', 'proposal-b']]);
     });
 
-    it('prefers an exact public proposal id over an equal database id', async () => {
+    // Plans and share links carry ROW ids, so a numeric id that is also some other row's legacy
+    // proposal_id resolves to the row with that id — in either database order.
+    it.each([
+        ['row-id match first', true],
+        ['proposal-id match first', false]
+    ])('prefers the row id over an equal legacy proposal_id (%s)', async (_label, rowIdFirst) => {
         const databaseIdMatch = proposalDbRow({ id: 1, proposal_id: 'different-public-id' });
         const publicIdMatch = proposalDbRow({ id: 9, proposal_id: '1' });
-        pool.setResult({ rows: [databaseIdMatch, publicIdMatch], rowCount: 2 });
+        const rows = rowIdFirst ? [databaseIdMatch, publicIdMatch] : [publicIdMatch, databaseIdMatch];
+        pool.setResult({ rows, rowCount: 2 });
 
         const res = await request(app).post('/proposals/batch').send({ ids: [1] });
 
         expect(res.status).toBe(200);
-        expect(res.body.items[0].proposal).toMatchObject({ id: 9, proposalId: '1' });
+        expect(res.body.items[0].proposal).toMatchObject({ id: 1, proposalId: 'different-public-id' });
     });
 
     it('validates a non-empty bounded identifier list', async () => {
@@ -1236,7 +1259,8 @@ describe('GET /proposals/summary', () => {
 
         expect(res.status).toBe(200);
         expect(res.body.proposals[0].agent).toEqual(agent);
-        expect(pool.getCalls()[0].sql).toMatch(/proposal_data->'agent' AS agent/);
+        // Served only for rows with a settled x402 payment, never for a client-written stamp.
+        expect(pool.getCalls()[0].sql).toMatch(/CASE WHEN agent_payment_id IS NOT NULL THEN proposal_data->'agent' END AS agent/);
     });
 
     it('includes the minted proposal account so autonomous supporters need no full-record scan', async () => {
@@ -1672,16 +1696,21 @@ describe('normalizeCityCode', () => {
 
 // PATCH /proposals/:id/name — a rename is a label change and nothing else. It exists because the
 // only other way to change a name was to re-upload the whole proposal, which would rewrite geometry
-// and ownership stamps that have already been consented to.
+// and ownership stamps that have already been consented to. Authorization (the edit token) is
+// covered in proposal-edit-auth.test.js; these requests carry the right token.
 describe('PATCH /proposals/:id/name', () => {
+    const TOKEN = 'uploader-token';
+    const authorized = (row = { id: 966 }) => ({ rows: [{ ...row, edit_token_hash: hashEditToken(TOKEN) }], rowCount: 1 });
+
     it('writes the new name to both name and title', async () => {
-        pool.setResult({
+        pool.setResults([authorized(), {
             rows: [{ id: 966, proposal_id: 'c2-1ffqanv1ljpso7', name: 'Block 4237-K7QM', title: 'Block 4237-K7QM' }],
             rowCount: 1
-        });
+        }]);
 
         const res = await request(app)
             .patch('/proposals/966/name')
+            .set('X-Proposal-Edit-Token', TOKEN)
             .send({ name: 'Block 4237-K7QM' });
 
         expect(res.status).toBe(200);
@@ -1696,31 +1725,35 @@ describe('PATCH /proposals/:id/name', () => {
         // in some views and leave the old name in others.
         const call = pool.getCalls().at(-1);
         expect(call.sql).toMatch(/SET\s+name = \$1,\s*\n\s*title = \$1/);
-        expect(call.params).toEqual(['Block 4237-K7QM', '966']);
+        // Keyed by the resolved primary key and the checked hash — never by the ambiguous :id.
+        expect(call.sql).toContain('WHERE id = $2 AND edit_token_hash = $3');
+        expect(call.params).toEqual(['Block 4237-K7QM', 966, hashEditToken(TOKEN)]);
     });
 
     it('accepts the string proposal id as well as the serial one', async () => {
-        pool.setResult({
+        pool.setResults([authorized(), {
             rows: [{ id: 966, proposal_id: 'c2-1ffqanv1ljpso7', name: 'Block 4237-K7QM', title: 'Block 4237-K7QM' }],
             rowCount: 1
-        });
+        }]);
 
         const res = await request(app)
             .patch('/proposals/c2-1ffqanv1ljpso7/name')
+            .set('X-Proposal-Edit-Token', TOKEN)
             .send({ name: 'Block 4237-K7QM' });
 
         expect(res.status).toBe(200);
-        expect(pool.getCalls().at(-1).params[1]).toBe('c2-1ffqanv1ljpso7');
+        expect(pool.getCalls()[0].params).toEqual(['c2-1ffqanv1ljpso7']);
+        expect(pool.getCalls().at(-1).params[1]).toBe(966);
     });
 
     it('refuses an empty or whitespace-only name', async () => {
-        const empty = await request(app).patch('/proposals/966/name').send({ name: '' });
+        const empty = await request(app).patch('/proposals/966/name').set('X-Proposal-Edit-Token', TOKEN).send({ name: '' });
         expect(empty.status).toBe(400);
 
-        const blank = await request(app).patch('/proposals/966/name').send({ name: '   ' });
+        const blank = await request(app).patch('/proposals/966/name').set('X-Proposal-Edit-Token', TOKEN).send({ name: '   ' });
         expect(blank.status).toBe(400);
 
-        const missing = await request(app).patch('/proposals/966/name').send({});
+        const missing = await request(app).patch('/proposals/966/name').set('X-Proposal-Edit-Token', TOKEN).send({});
         expect(missing.status).toBe(400);
 
         // Nothing reached the database.
@@ -1730,7 +1763,10 @@ describe('PATCH /proposals/:id/name', () => {
     it('404s for a proposal that is not there', async () => {
         pool.setResult({ rows: [], rowCount: 0 });
 
-        const res = await request(app).patch('/proposals/999999/name').send({ name: 'Block 1-AAAA' });
+        const res = await request(app)
+            .patch('/proposals/999999/name')
+            .set('X-Proposal-Edit-Token', TOKEN)
+            .send({ name: 'Block 1-AAAA' });
 
         expect(res.status).toBe(404);
         expect(res.body.error).toBe('Proposal not found');

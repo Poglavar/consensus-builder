@@ -1,3 +1,4 @@
+import { MAX_CELL_BBOX_KM2, wgs84BboxAreaKm2 } from '../utils/helpers.js';
 import { buildOwnershipSummary } from './parcels.js';
 
 const MAX_LIMIT = 5000;
@@ -259,6 +260,10 @@ export function setupParcelLjRoute(app, pool) {
                 error: 'Invalid bbox. Expected minLon,minLat,maxLon,maxLat in WGS84.'
             });
         }
+        // Callers ask per 500 m grid cell; a bbox the size of a city (or the world) is not the app.
+        if (bbox && wgs84BboxAreaKm2(bbox.minLon, bbox.minLat, bbox.maxLon, bbox.maxLat) > MAX_CELL_BBOX_KM2) {
+            return res.status(400).json({ error: `bbox too large (max ${MAX_CELL_BBOX_KM2} km²).` });
+        }
 
         const eidParcela = parseParcelId(parcelIdParam) || eidParam;
         if (parcelIdParam && !parseParcelId(parcelIdParam)) {
@@ -332,13 +337,20 @@ export function setupParcelLjRoute(app, pool) {
             sql += ' ORDER BY ko_id, st_parcele';
         }
 
-        if (limit && queryType !== 'parcel') {
-            params.push(limit);
+        // Always bounded: without ?limit this used to return every matching row (a world bbox or
+        // a bare filter returned the whole table, raw features included). One extra row tells us
+        // whether the answer was cut short.
+        // Key lookups (queryType 'parcel') name their rows and stay unlimited.
+        const effectiveLimit = queryType === 'parcel' ? Infinity : (limit || MAX_LIMIT);
+        if (queryType !== 'parcel') {
+            params.push(effectiveLimit + 1);
             sql += ` LIMIT $${params.length}`;
         }
 
         try {
-            const { rows } = await pool.query(sql, params);
+            const { rows: fetched } = await pool.query(sql, params);
+            const truncated = fetched.length > effectiveLimit;
+            const rows = truncated ? fetched.slice(0, effectiveLimit) : fetched;
             if (!rows.length) {
                 return res.status(404).json({ error: 'No parcels found for the provided filters.' });
             }
@@ -363,6 +375,7 @@ export function setupParcelLjRoute(app, pool) {
                     bbox: hasBbox ? `${bbox.minLon},${bbox.minLat},${bbox.maxLon},${bbox.maxLat}` : undefined,
                     limit: limit || undefined
                 },
+                truncated,
                 features
             });
         } catch (error) {

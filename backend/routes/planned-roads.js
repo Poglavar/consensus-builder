@@ -1,17 +1,25 @@
-import { parseBboxParam, getExistingRoadUnion, POSTGIS_SRID } from '../utils/helpers.js';
+import { parseBboxParam, getExistingRoadUnion, POSTGIS_SRID, MAX_VIEW_BBOX_KM2 } from '../utils/helpers.js';
+
+// Hard ceiling on features per response. The bbox cap bounds the area; this bounds the payload
+// when that area is dense. `truncated: true` tells the caller the list is not the whole answer.
+export const MAX_PLANNED_ROAD_FEATURES = 5000;
 
 export function setupPlannedRoadRoute(app, pool) {
     app.get('/planned-road', async (req, res) => {
-        const bboxParts = parseBboxParam(req.query.bbox);
-        if (req.query.bbox && !bboxParts) {
+        // A bbox is required: the frontend always sends its map view, and without one this unioned
+        // every road parcel in the city on an anonymous GET while holding a pooled client.
+        const bboxParts = parseBboxParam(typeof req.query.bbox === 'string' ? req.query.bbox : '');
+        if (!bboxParts) {
             return res.status(400).json({ error: 'Invalid bbox. Expected minX,minY,maxX,maxY in EPSG:3765.' });
         }
+        const areaKm2 = ((bboxParts[2] - bboxParts[0]) * (bboxParts[3] - bboxParts[1])) / 1e6;
+        if (areaKm2 > MAX_VIEW_BBOX_KM2) {
+            return res.status(400).json({ error: `bbox too large (${Math.round(areaKm2)} km², max ${MAX_VIEW_BBOX_KM2} km²). Zoom in.` });
+        }
 
-        const hasBbox = Array.isArray(bboxParts);
-        const bboxParams = hasBbox ? bboxParts : [0, 0, 0, 0];
-
-        const client = await pool.connect();
+        let client;
         try {
+            client = await pool.connect();
             const existingRoadUnion = await getExistingRoadUnion(client, bboxParts);
 
             const sql = `
@@ -94,19 +102,23 @@ export function setupPlannedRoadRoute(app, pool) {
                         'source', source
                     ) AS props,
                     ST_AsGeoJSON(geom)::json AS geometry
-                FROM filtered;
+                FROM filtered
+                LIMIT $7;
             `;
 
             const params = [
-                bboxParams[0],
-                bboxParams[1],
-                bboxParams[2],
-                bboxParams[3],
-                hasBbox,
-                existingRoadUnion
+                bboxParts[0],
+                bboxParts[1],
+                bboxParts[2],
+                bboxParts[3],
+                true,
+                existingRoadUnion,
+                MAX_PLANNED_ROAD_FEATURES + 1
             ];
 
-            const { rows } = await client.query(sql, params);
+            const { rows: fetchedRows } = await client.query(sql, params);
+            const truncated = fetchedRows.length > MAX_PLANNED_ROAD_FEATURES;
+            const rows = truncated ? fetchedRows.slice(0, MAX_PLANNED_ROAD_FEATURES) : fetchedRows;
             const features = rows
                 .map(row => {
                     if (!row || !row.geometry) return null;
@@ -126,12 +138,12 @@ export function setupPlannedRoadRoute(app, pool) {
                 })
                 .filter(Boolean);
 
-            res.json({ type: 'FeatureCollection', features });
+            res.json({ type: 'FeatureCollection', features, truncated });
         } catch (err) {
             console.error('Error in /planned-road:', err);
             res.status(500).json({ error: 'Internal server error' });
         } finally {
-            client.release();
+            client?.release();
         }
     });
 }

@@ -37,9 +37,11 @@ async function loadProposal(pool, id) {
                    ELSE 'Active'
                END AS lifecycle_status,
                created_at, expires_at, cadastre_parcel_ids, onchain_data,
-               proposal_data->'agent' AS agent
+               CASE WHEN agent_payment_id IS NOT NULL THEN proposal_data->'agent' END AS agent
           FROM proposal
          WHERE proposal_id = $1 OR id::text = $1
+         -- Row id wins over a colliding frontend proposal_id (same precedence as GET /proposals/:id).
+         ORDER BY (id::text = $1) DESC
          LIMIT 1
     `, [id]);
     const row = rows[0];
@@ -73,7 +75,7 @@ async function loadActivity(pool, proposalId) {
                    COALESCE(name, title, proposal_data->>'name', proposal_data->>'title') AS display_name,
                    proposal_data->'agent' AS agent, created_at, updated_at
               FROM proposal
-             WHERE proposal_id = $1 AND proposal_data ? 'agent'
+             WHERE proposal_id = $1 AND proposal_data ? 'agent' AND agent_payment_id IS NOT NULL
              LIMIT 1
         `, [proposalId])
     ]);

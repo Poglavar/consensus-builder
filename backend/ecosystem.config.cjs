@@ -54,7 +54,12 @@ module.exports = {
       X402_FACILITATOR_URL: 'https://api.cdp.coinbase.com/platform/v2/x402',
       X402_PAY_TO: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ',
       X402_PRICE_PROPOSAL: '$0.05',
-      X402_PRICE_ORACLE_FACT: '$0.01'
+      X402_PRICE_ORACLE_FACT: '$0.01',
+      // --- Canton chain option: DISABLED ---
+      // Its OAuth client is rejected by the token endpoint (invalid_grant; 132/132 requests failed
+      // in one week), so /canton/* is not registered at all and nothing calls the token endpoint.
+      // Flip to 'true' (here, versioned) once the credentials work again; the code is intact.
+      CANTON_ENABLED: 'false'
     },
     error_file: '/root/code/consensus-builder/backend/logs/err.log',
     out_file: '/root/code/consensus-builder/backend/logs/out.log',

@@ -6,6 +6,8 @@ import { setupAssetsRoute } from '../routes/assets.js';
 import { createRouteApp } from './helpers/create-route-app.js';
 
 let app;
+// A real PNG signature + IHDR start: uploads are sniffed, so the old 'hello' payload is refused now.
+const PNG_DATA_URL = `data:image/png;base64,${Buffer.from('89504e470d0a1a0a0000000d49484452', 'hex').toString('base64')}`;
 let writeFileSpy;
 
 beforeEach(() => {
@@ -53,7 +55,7 @@ describe('POST /assets/upload', () => {
         const res = await request(app)
             .post('/assets/upload')
             .send({
-                imageData: 'data:image/png;base64,aGVsbG8='
+                imageData: PNG_DATA_URL
             });
 
         expect(res.status).toBe(400);
@@ -64,7 +66,7 @@ describe('POST /assets/upload', () => {
         const res = await request(app)
             .post('/assets/upload')
             .send({
-                imageData: 'data:image/png;base64,aGVsbG8=',
+                imageData: PNG_DATA_URL,
                 metadata: []
             });
 
@@ -76,7 +78,7 @@ describe('POST /assets/upload', () => {
         const res = await request(app)
             .post('/assets/upload')
             .send({
-                imageData: 'data:image/png;base64,aGVsbG8=',
+                imageData: PNG_DATA_URL,
                 metadata: { name: 'Proposal Asset' },
                 injected: true
             });
@@ -90,7 +92,7 @@ describe('POST /assets/upload', () => {
             .post('/assets/upload')
             .send({
                 fileName: 'bad\u0000name',
-                imageData: 'data:image/png;base64,aGVsbG8=',
+                imageData: PNG_DATA_URL,
                 metadata: { name: 'Proposal Asset' }
             });
 
@@ -101,7 +103,7 @@ describe('POST /assets/upload', () => {
             .post('/assets/upload')
             .send({
                 fileName: 'a'.repeat(256),
-                imageData: 'data:image/png;base64,aGVsbG8=',
+                imageData: PNG_DATA_URL,
                 metadata: { name: 'Proposal Asset' }
             });
 
@@ -129,7 +131,7 @@ describe('POST /assets/upload', () => {
         const res = await request(app)
             .post('/assets/upload')
             .send({
-                imageData: 'data:image/png;base64,aGVsbG8=',
+                imageData: PNG_DATA_URL,
                 metadata: { name: 'Broken asset' }
             });
 
@@ -137,13 +139,12 @@ describe('POST /assets/upload', () => {
         expect(res.body).toEqual({ error: 'Failed to store uploaded assets.' });
     });
 
-    it('stores image and metadata and returns upload urls', async () => {
+    it('stores image and metadata under one random base and returns upload urls', async () => {
         const res = await request(app)
             .post('/assets/upload')
-            .set('host', 'example.test')
             .send({
                 fileName: 'proposal-asset',
-                imageData: 'data:image/png;base64,aGVsbG8=',
+                imageData: PNG_DATA_URL,
                 metadata: {
                     name: 'Proposal Asset',
                     properties: {
@@ -153,45 +154,46 @@ describe('POST /assets/upload', () => {
             });
 
         expect(res.status).toBe(200);
+        const [, base] = res.body.imageUrl.match(/^\/uploads\/images\/(proposal-asset-[0-9a-f]{12})\.png$/) || [];
+        expect(base).toBeTruthy();
         expect(res.body).toEqual({
-            imageUri: 'http://example.test/uploads/images/proposal-asset.png',
-            imageUrl: 'http://example.test/uploads/images/proposal-asset.png',
-            imageGatewayUrl: 'http://example.test/uploads/images/proposal-asset.png',
-            uploadedImageUrl: 'http://example.test/uploads/images/proposal-asset.png',
-            metadataUri: 'http://example.test/uploads/metadata/proposal-asset.json',
-            metadataUrl: 'http://example.test/uploads/metadata/proposal-asset.json',
-            metadataGatewayUrl: 'http://example.test/uploads/metadata/proposal-asset.json'
+            imageUri: `/uploads/images/${base}.png`,
+            imageUrl: `/uploads/images/${base}.png`,
+            imageGatewayUrl: `/uploads/images/${base}.png`,
+            uploadedImageUrl: `/uploads/images/${base}.png`,
+            metadataUri: `/uploads/metadata/${base}.json`,
+            metadataUrl: `/uploads/metadata/${base}.json`,
+            metadataGatewayUrl: `/uploads/metadata/${base}.json`
         });
 
         expect(writeFileSpy).toHaveBeenCalledTimes(2);
-        expect(writeFileSpy.mock.calls[0][0]).toBe(path.resolve('uploads/images/proposal-asset.png'));
-        expect(writeFileSpy.mock.calls[1][0]).toBe(path.resolve('uploads/metadata/proposal-asset.json'));
+        expect(writeFileSpy.mock.calls[0][0]).toBe(path.resolve(`uploads/images/${base}.png`));
+        expect(writeFileSpy.mock.calls[0][2]).toEqual({ flag: 'wx' });
+        expect(writeFileSpy.mock.calls[1][0]).toBe(path.resolve(`uploads/metadata/${base}.json`));
+        expect(writeFileSpy.mock.calls[1][2]).toEqual({ encoding: 'utf8', flag: 'wx' });
         const savedMetadata = JSON.parse(writeFileSpy.mock.calls[1][1]);
-        expect(savedMetadata.image).toBe('http://example.test/uploads/images/proposal-asset.png');
-        expect(savedMetadata.properties.uploadedImageUrl).toBe('http://example.test/uploads/images/proposal-asset.png');
+        expect(savedMetadata.image).toBe(`/uploads/images/${base}.png`);
+        expect(savedMetadata.properties.uploadedImageUrl).toBe(`/uploads/images/${base}.png`);
         expect(savedMetadata.properties.kind).toBe('proposal');
     });
 
     it('sanitizes uploaded file names before writing files', async () => {
         const res = await request(app)
             .post('/assets/upload')
-            .set('host', 'example.test')
             .send({
                 fileName: '../../Escape Folder',
-                imageData: 'data:image/png;base64,aGVsbG8=',
+                imageData: PNG_DATA_URL,
                 metadata: {
                     name: 'Proposal Asset'
                 }
             });
 
         expect(res.status).toBe(200);
-        expect(writeFileSpy.mock.calls[0][0]).toBe(path.resolve('uploads/images/escape-folder.png'));
-        expect(writeFileSpy.mock.calls[1][0]).toBe(path.resolve('uploads/metadata/escape-folder.json'));
-        expect(res.body.imageUrl).toBe('http://example.test/uploads/images/escape-folder.png');
-        expect(res.body.metadataUrl).toBe('http://example.test/uploads/metadata/escape-folder.json');
+        expect(writeFileSpy.mock.calls[0][0]).toMatch(new RegExp(`^${path.resolve('uploads/images')}/escape-folder-[0-9a-f]{12}\\.png$`));
+        expect(writeFileSpy.mock.calls[1][0]).toMatch(new RegExp(`^${path.resolve('uploads/metadata')}/escape-folder-[0-9a-f]{12}\\.json$`));
     });
 
-    it('uses fallback names, preserves external_url, and respects forwarded https protocol', async () => {
+    it('uses fallback names, preserves external_url, and ignores Host / forwarded protocol', async () => {
         app.enable('trust proxy');
 
         const res = await request(app)
@@ -200,7 +202,7 @@ describe('POST /assets/upload', () => {
             .set('X-Forwarded-Proto', 'https')
             .send({
                 fileName: '!!!',
-                imageData: 'data:image;base64,aGVsbG8=',
+                imageData: PNG_DATA_URL.replace('image/png', 'image'),
                 metadata: {
                     name: 'Proposal Asset',
                     external_url: 'https://example.test/original'
@@ -208,11 +210,11 @@ describe('POST /assets/upload', () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.body.imageUrl).toMatch(/^https:\/\/example\.test\/uploads\/images\/road-proposal-.*\.png$/);
-        expect(res.body.metadataUrl).toMatch(/^https:\/\/example\.test\/uploads\/metadata\/road-proposal-.*\.json$/);
+        expect(res.body.imageUrl).toMatch(/^\/uploads\/images\/image-.*\.png$/);
+        expect(res.body.metadataUrl).toMatch(/^\/uploads\/metadata\/image-.*\.json$/);
 
         const savedMetadata = JSON.parse(writeFileSpy.mock.calls[1][1]);
-        expect(savedMetadata.image).toMatch(/^https:\/\/example\.test\/uploads\/images\/road-proposal-.*\.png$/);
+        expect(savedMetadata.image).toBe(res.body.imageUrl);
         expect(savedMetadata.image_url).toBe(savedMetadata.image);
         expect(savedMetadata.external_url).toBe('https://example.test/original');
         expect(savedMetadata.properties.uploadedImageUrl).toBe(savedMetadata.image);
@@ -224,7 +226,7 @@ describe('POST /assets/upload', () => {
             .set('host', 'example.test')
             .send({
                 fileName: 'proposal-asset',
-                imageData: 'data:image/png;base64,aGVsbG8=',
+                imageData: PNG_DATA_URL,
                 metadata: {
                     name: 'Proposal Asset',
                     properties: []
@@ -235,7 +237,7 @@ describe('POST /assets/upload', () => {
 
         const savedMetadata = JSON.parse(writeFileSpy.mock.calls[1][1]);
         expect(savedMetadata.properties).toEqual({
-            uploadedImageUrl: 'http://example.test/uploads/images/proposal-asset.png'
+            uploadedImageUrl: res.body.imageUrl
         });
     });
 });

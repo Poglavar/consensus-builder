@@ -139,7 +139,7 @@ describe('GET /parcel-ba', () => {
             bbox: undefined,
             limit: 2
         });
-        expect(pool.getCalls()[0].params).toEqual(['002', 2]);
+        expect(pool.getCalls()[0].params).toEqual(['002', 3]);
     });
 
     it('supports section and block queries without parcel filters', async () => {
@@ -178,7 +178,7 @@ describe('GET /parcel-ba', () => {
             bbox: undefined,
             limit: 2
         });
-        expect(pool.getCalls()[0].params).toEqual(['002', '062', 2]);
+        expect(pool.getCalls()[0].params).toEqual(['002', '062', 3]);
     });
 
     it('uses SQL ownership json strings when they are valid', async () => {
@@ -255,7 +255,7 @@ describe('GET /parcel-ba', () => {
         expect(res.body.query.type).toBe('bbox');
         expect(res.body.query.limit).toBe(2);
         expect(res.body.features[0].properties.ownershipList).toHaveLength(1);
-        expect(pool.getCalls()[0].params).toEqual([-58.4, -34.61, -58.39, -34.6, 2]);
+        expect(pool.getCalls()[0].params).toEqual([-58.4, -34.61, -58.39, -34.6, 3]);
     });
 
     it('still returns parcels when batch ownership enrichment fails', async () => {

@@ -71,6 +71,10 @@ CREATE TABLE IF NOT EXISTS proposal (
     agent_payment_id VARCHAR(128),
     agent_request_hash VARCHAR(64),
 
+    -- sha256 (hex) of the edit token POST /proposals returns once. The PATCH routes (name,
+    -- screenshot, epoch) require the token. NULL = created before tokens existed: not editable.
+    edit_token_hash VARCHAR(64),
+
     -- Full proposal data as JSONB (for complete reconstruction)
     -- This stores the entire proposal object as it exists in the frontend
     proposal_data JSONB NOT NULL,
@@ -88,6 +92,9 @@ CREATE TABLE IF NOT EXISTS proposal (
         AND proposal_data->'cadastreParcelIds' = cadastre_parcel_ids
     )
 );
+
+-- Idempotent column additions for installs created from an older version of this file.
+ALTER TABLE proposal ADD COLUMN IF NOT EXISTS edit_token_hash VARCHAR(64);
 
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_proposal_city ON proposal(city);
@@ -111,6 +118,7 @@ COMMENT ON COLUMN proposal.proposal_data IS 'Complete proposal definition used f
 COMMENT ON COLUMN proposal.screenshot_url IS 'Static map screenshot URL used as the proposal thumbnail in lists and cards';
 COMMENT ON COLUMN proposal.agent_payment_id IS 'Stable x402 payment-identifier used to replay a completed agent submission without settling again';
 COMMENT ON COLUMN proposal.agent_request_hash IS 'SHA-256 of the accepted request JSON bound to agent_payment_id';
+COMMENT ON COLUMN proposal.edit_token_hash IS 'SHA-256 (hex) of the one-time edit token returned by POST /proposals; required by the PATCH routes. NULL = legacy row, not editable via the API';
 
 -- Migration for existing installs (table name is `proposal` on the live server):
 -- ALTER TABLE proposal ADD COLUMN IF NOT EXISTS screenshot_url VARCHAR(2000);

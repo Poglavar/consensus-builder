@@ -140,7 +140,7 @@ describe('GET /parcel-lj', () => {
         expect(res.body.query.type).toBe('all');
         expect(res.body.query.ko_id).toBe('1');
         expect(res.body.query.limit).toBe(2);
-        expect(pool.getCalls()[0].params).toEqual(['1', 2]);
+        expect(pool.getCalls()[0].params).toEqual(['1', 3]);
     });
 
     it('supports ko_id and st_parcele parcel lookups', async () => {

@@ -523,11 +523,29 @@ describe('createApp', () => {
 
         expect(errorLayer).toBeTruthy();
 
-        errorLayer.handle(new Error('boom'), {}, res, vi.fn());
+        errorLayer.handle(new Error('boom'), { method: 'GET', originalUrl: '/x' }, res, vi.fn());
 
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({ error: 'Internal server error' });
-        expect(consoleSpy).toHaveBeenCalledWith('Unhandled error:', expect.any(Error));
+        expect(consoleSpy).toHaveBeenCalledWith(expect.stringMatching(/^\[.+\] Unhandled error in GET \/x:$/), expect.any(Error));
+    });
+
+    it('keeps an exposed 4xx status from the global error handler without logging it as a crash', async () => {
+        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+        const { app } = createApp({
+            env: { USE_CORS_ALLOWLIST: 'false' },
+            pool: createMockPool()
+        });
+        const stack = app._router?.stack || [];
+        const errorLayer = [...stack].reverse().find((layer) => typeof layer.handle === 'function' && layer.handle.length === 4);
+        const res = { status: vi.fn().mockReturnThis(), json: vi.fn().mockReturnThis() };
+        const clientError = Object.assign(new Error('bad param'), { status: 400, expose: true });
+
+        errorLayer.handle(clientError, { method: 'GET', originalUrl: '/x' }, res, vi.fn());
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({ error: 'bad param' });
+        expect(consoleSpy).not.toHaveBeenCalled();
     });
 
 });

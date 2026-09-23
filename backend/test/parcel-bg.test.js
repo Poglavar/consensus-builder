@@ -167,7 +167,7 @@ describe('GET /parcel-bg', () => {
         expect(res.status).toBe(200);
         expect(res.body.query.type).toBe('bbox');
         expect(res.body.query.limit).toBe(2);
-        expect(pool.getCalls()[0].params).toEqual([20.4, 44.79, 20.41, 44.8, 2]);
+        expect(pool.getCalls()[0].params).toEqual([20.4, 44.79, 20.41, 44.8, 3]);
     });
 });
 

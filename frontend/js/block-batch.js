@@ -214,21 +214,36 @@
 
     // A name is a label, so it is PATCHed on its own. Re-uploading the proposal would rewrite
     // geometry and stamps that have already been consented to, to change a string.
+    //
+    // The server only renames for the uploader: the PATCH carries the edit token this browser got
+    // from POST /proposals (server-sync.js). Without one — someone else's upload, or a record from
+    // before tokens — the server copy is left alone and only the local name changes; the return
+    // value says so, so the summary can count it instead of reading as a clean rename.
     async function renameProposalRecord(entry) {
         const serverId = entry.serverId ?? (/^\d+$/.test(String(entry.proposalId || '')) ? entry.proposalId : null);
+        let server = 'none';
         if (serverId !== null && serverId !== undefined && typeof global.resolveBackendBaseUrl === 'function') {
-            const response = await fetch(
-                `${global.resolveBackendBaseUrl()}/proposals/${encodeURIComponent(serverId)}/name`,
-                {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: entry.to })
-                }
-            );
-            if (!response.ok) throw new Error(`PATCH name: HTTP ${response.status}`);
+            const editToken = typeof global.getProposalEditToken === 'function'
+                ? global.getProposalEditToken(serverId)
+                : null;
+            if (!editToken) {
+                server = 'no-edit-token';
+            } else {
+                const response = await fetch(
+                    `${global.resolveBackendBaseUrl()}/proposals/${encodeURIComponent(serverId)}/name`,
+                    {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json', 'X-Proposal-Edit-Token': editToken },
+                        body: JSON.stringify({ name: entry.to })
+                    }
+                );
+                if (!response.ok) throw new Error(`PATCH name: HTTP ${response.status}`);
+                server = 'renamed';
+            }
         }
         const stored = global.proposalStorage?.setProposalName?.(entry.proposalId, entry.to);
         if (!stored) throw new Error('local storage refused the rename');
+        return { server };
     }
 
     /**
@@ -239,12 +254,14 @@
         const plan = planBlockRenames();
         const renamed = [];
         const failed = [];
+        const localOnly = [];
 
         for (const entry of plan.targets) {
             if (!entry.to) continue;
             try {
-                await renameProposalRecord(entry);
+                const outcome = await renameProposalRecord(entry);
                 renamed.push(entry);
+                if (outcome.server === 'no-edit-token') localOnly.push(entry);
             } catch (error) {
                 failed.push({ ...entry, detail: String((error && error.message) || error) });
             }
@@ -257,11 +274,14 @@
         // failure is loud even though the loop kept going.
         console.log(`[rename] renamed ${renamed.length}, failed ${failed.length}, skipped ${plan.blocked.length}`);
         failed.forEach(entry => console.error(`[rename] FAILED ${entry.from}: ${entry.detail}`));
+        localOnly.forEach(entry => console.warn(
+            `[rename] ${entry.from}: renamed locally only — this browser holds no edit token for server proposal ${entry.serverId ?? entry.proposalId}`
+        ));
         plan.blocked.forEach(entry => console.warn(`[rename] skipped ${entry.from}: ${entry.reason}`));
         if (typeof global.updateStatus === 'function') {
             global.updateStatus(`Renamed ${renamed.length} block(s); ${failed.length} failed, ${plan.blocked.length} skipped.`);
         }
-        return { renamed, failed, skipped: plan.blocked };
+        return { renamed, failed, skipped: plan.blocked, localOnly };
     }
 
     // What already stands on the ground. A proposal's cadastral declaration is deliberately broader

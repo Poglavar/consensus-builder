@@ -338,9 +338,10 @@ describe('PATCH /proposals/epochs', () => {
     });
 
     it('piše sve odjednom, jednim UPDATE-om preko unnest', () => {
-        expect(handler).toContain('unnest($1::text[])');
+        expect(handler).toContain('unnest($1::int[])');
         expect(handler).toContain('unnest($2::int[])');
-        expect(handler).toContain('WHERE p.proposal_id = v.id OR p.id::text = v.id');
+        // Po primarnom ključu i provjerenom hashu tokena — ponašanje je u proposal-edit-auth.test.js.
+        expect(handler).toContain('WHERE p.id = v.id AND p.edit_token_hash = v.token_hash');
     });
 
     it('provjerava SVAKI unos, da jedan loš ne uđe s 299 dobrih', () => {
@@ -351,7 +352,7 @@ describe('PATCH /proposals/epochs', () => {
 
     it('ograničava veličinu zahtjeva i vraća što nije našao', () => {
         expect(handler).toContain('entries.length > 2000');
-        expect(handler).toContain('const missing = ids.filter(id => !matched.has(id));');
-        expect(handler).toContain('requested: ids.length, updated: updated.length, missing');
+        expect(handler).toContain('missing.push(request.id)');
+        expect(handler).toContain('requested: requests.length, updated: updated.length, missing, forbidden');
     });
 });

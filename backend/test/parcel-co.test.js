@@ -97,7 +97,7 @@ describe('GET /parcel-co', () => {
             offset: 3
         });
         expect(res.body.features[0].properties.ownershipList).toHaveLength(2);
-        expect(pool.getCalls()[0].params).toEqual([-105, 38.99, -104.99, 39, 2, 3]);
+        expect(pool.getCalls()[0].params).toEqual([-105, 38.99, -104.99, 39, 3, 3]);
     });
 });
 

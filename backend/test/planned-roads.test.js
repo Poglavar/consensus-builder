@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
-import { setupPlannedRoadRoute } from '../routes/planned-roads.js';
+import { setupPlannedRoadRoute, MAX_PLANNED_ROAD_FEATURES } from '../routes/planned-roads.js';
 import { createRouteApp } from './helpers/create-route-app.js';
 
 function createPlannedRoadPool(resultRows = []) {
@@ -64,12 +64,30 @@ describe('GET /planned-road', () => {
         expect(res.body).toEqual({ error: 'Internal server error' });
     });
 
-    it('supports requests without bbox filters', async () => {
+    it('requires a bbox — no city-wide union on an anonymous GET', async () => {
         const res = await request(app).get('/planned-road');
 
+        expect(res.status).toBe(400);
+        expect(pool.calls).toHaveLength(0);
+    });
+
+    it('refuses a bbox larger than a zoomed-out map view', async () => {
+        // 30 km × 30 km = 900 km², over the 400 km² view cap.
+        const res = await request(app).get('/planned-road?bbox=450000,5050000,480000,5080000');
+
+        expect(res.status).toBe(400);
+        expect(res.body.error).toMatch(/bbox too large/);
+        expect(pool.calls).toHaveLength(0);
+    });
+
+    it('caps the feature count server-side and says when it truncated', async () => {
+        const res = await request(app).get('/planned-road?bbox=1,2,3,4');
+
         expect(res.status).toBe(200);
-        expect(res.body.features).toHaveLength(1);
-        expect(pool.calls.at(-1).params[4]).toBe(false);
+        const last = pool.calls.at(-1);
+        expect(last.sql).toMatch(/LIMIT \$7/);
+        expect(last.params[6]).toBe(MAX_PLANNED_ROAD_FEATURES + 1);
+        expect(res.body.truncated).toBe(false);
     });
 
     it('clips planned road geometry to the viewport and avoids serializing the source geom into props', async () => {

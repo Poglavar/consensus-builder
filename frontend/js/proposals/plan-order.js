@@ -186,9 +186,17 @@
         return null;
     }
 
+    // A server record's createdAt is when the SERVER received it (it no longer trusts the client's
+    // clock); the time the author created it locally travels as authoredAt. Replay order is
+    // authoring order, so authoredAt wins when present — local records have only createdAt, which
+    // is their authoring time, so both sides of a share order the same way.
+    function formationTime(record) {
+        return Date.parse(record && (record.authoredAt || record.createdAt)) || 0;
+    }
+
     function compareFormationOrder(a, b) {
-        const at = Date.parse(a && a.createdAt) || 0;
-        const bt = Date.parse(b && b.createdAt) || 0;
+        const at = formationTime(a);
+        const bt = formationTime(b);
         if (at !== bt) return at - bt;
         const ai = numericRecordId(a);
         const bi = numericRecordId(b);

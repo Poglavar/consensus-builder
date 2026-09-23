@@ -131,7 +131,7 @@ describe('helpers', () => {
                 .mockRejectedValueOnce(missingTable)
         };
 
-        await expect(getExistingRoadUnion(client, null)).resolves.toBeNull();
+        await expect(getExistingRoadUnion(client, [1, 2, 3, 4])).resolves.toBeNull();
     });
 
     it('rethrows non-ignorable errors from road union lookup', async () => {
@@ -139,6 +139,12 @@ describe('helpers', () => {
             query: vi.fn().mockRejectedValue(new Error('database offline'))
         };
 
-        await expect(getExistingRoadUnion(client, null)).rejects.toThrow('database offline');
+        await expect(getExistingRoadUnion(client, [1, 2, 3, 4])).rejects.toThrow('database offline');
+    });
+
+    it('refuses to union road parcels without a bbox (no city-wide mode)', async () => {
+        const client = { query: vi.fn() };
+        await expect(getExistingRoadUnion(client, null)).rejects.toThrow('requires a bbox');
+        expect(client.query).not.toHaveBeenCalled();
     });
 });

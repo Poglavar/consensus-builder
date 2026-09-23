@@ -2,6 +2,32 @@
 // Get 3D building geometry using local PostGIS spatial query
 // No external ArcGIS dependency - uses gdi_building_footprint for spatial lookup
 // and gdi_building_3d for the actual 3D geometry (both keyed by the same object_id)
+import { MAX_CELL_BBOX_KM2, wgs84BboxAreaKm2 } from '../utils/helpers.js';
+
+// Full LOD2 shapes are heavy, so a lookup is bounded twice: by the extent of the query geometry and
+// by a row ceiling (`truncated: true` in the response when it bites).
+export const MAX_OBJECTS = 500;
+
+function geometryExtent(geometry) {
+    const rings = geometry.type === 'MultiPolygon' ? geometry.coordinates.flat() : geometry.coordinates;
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    for (const ring of rings) {
+        for (const [x, y] of ring) {
+            if (x < minX) minX = x;
+            if (y < minY) minY = y;
+            if (x > maxX) maxX = x;
+            if (y > maxY) maxY = y;
+        }
+    }
+    return { minX, minY, maxX, maxY };
+}
+
+function extentAreaKm2(extent, srid) {
+    return srid === 4326
+        ? wgs84BboxAreaKm2(extent.minX, extent.minY, extent.maxX, extent.maxY)
+        : ((extent.maxX - extent.minX) * (extent.maxY - extent.minY)) / 1e6;
+}
+
 function isFinitePosition(position) {
     return Array.isArray(position)
         && position.length >= 2
@@ -35,7 +61,7 @@ export function setupObjectRoute(app, pool) {
     app.get('/objects', async (req, res) => {
         try {
             const geometryParam = req.query.geometry;
-            if (!geometryParam) {
+            if (typeof geometryParam !== 'string' || !geometryParam) {
                 return res.status(400).json({ error: 'Missing required parameter: geometry' });
             }
 
@@ -86,6 +112,11 @@ export function setupObjectRoute(app, pool) {
                 }
             }
 
+            const areaKm2 = extentAreaKm2(geometryExtent(geometry), sourceSRID);
+            if (!(areaKm2 <= MAX_CELL_BBOX_KM2)) {
+                return res.status(400).json({ error: `Geometry extent too large (max ${MAX_CELL_BBOX_KM2} km²).` });
+            }
+
             // Use local PostGIS spatial query instead of external ArcGIS API
             // Join gdi_building_footprint (spatial lookup) with gdi_building_3d (3D geometry)
             const sql = `
@@ -102,9 +133,12 @@ export function setupObjectRoute(app, pool) {
                         3765
                     )
                 )
+                LIMIT $3
             `;
 
-            const { rows } = await pool.query(sql, [JSON.stringify(geometry), sourceSRID]);
+            const { rows: fetched } = await pool.query(sql, [JSON.stringify(geometry), sourceSRID, MAX_OBJECTS + 1]);
+            const truncated = fetched.length > MAX_OBJECTS;
+            const rows = truncated ? fetched.slice(0, MAX_OBJECTS) : fetched;
 
             if (!rows.length) {
                 return res.status(404).json({ error: 'No 3D objects found for the given geometry.' });
@@ -122,7 +156,8 @@ export function setupObjectRoute(app, pool) {
 
             res.json({
                 type: 'FeatureCollection',
-                features
+                features,
+                truncated
             });
 
         } catch (err) {

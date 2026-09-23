@@ -5,6 +5,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { embeddableStatic } from './utils/embeddable-static.js';
+import { uploadStaticHeaders } from './utils/upload-static-headers.js';
 import rateLimit from 'express-rate-limit';
 import pkg from 'pg';
 import path from 'path';
@@ -54,6 +55,7 @@ import { setupEnsRoute } from './routes/ens.js';
 import { setupEnsPlansRoute } from './routes/ens-plans.js';
 import { setupCantonRoute } from './routes/canton.js';
 import { setupAiSceneRoute } from './routes/ai-scene.js';
+import { forwardAsyncErrors } from './utils/async-routes.js';
 
 const { Pool } = pkg;
 
@@ -201,12 +203,27 @@ function attachSqlLogging(pool, runQueryWithLogging) {
 // what the largest plan here costs to publish in one go.
 export const WRITE_RATE_LIMIT = 600;
 
+// /parcels/under is exempt from the WRITE budget (it is a read; a fabric replay asks once per applied
+// formation — see RATE_LIMIT_EXEMPT_POST_PATHS below), but it is an expensive PostGIS read over a
+// body of up to 15 MB, so it gets its own, much larger, budget instead of none at all.
+export const PARCELS_UNDER_RATE_LIMIT = 3000;
+
+// Canton is off unless explicitly enabled: its OAuth client is currently rejected (invalid_grant)
+// and every /canton/* request failed. Disabled means the routes are not registered at all, so
+// nothing can reach the token endpoint. The code stays intact for re-enabling.
+export function isCantonEnabled(env = process.env) {
+    return String(env.CANTON_ENABLED || '').trim().toLowerCase() === 'true';
+}
+
 export function createApp({
     env = process.env,
     pool: providedPool,
-    writeRateLimit = WRITE_RATE_LIMIT
+    writeRateLimit = WRITE_RATE_LIMIT,
+    parcelsUnderRateLimit = PARCELS_UNDER_RATE_LIMIT
 } = {}) {
-    const app = express();
+    // Before ANY route or middleware is registered: every async handler's rejection goes to the
+    // error handler below instead of becoming an unhandled rejection that exits the process.
+    const app = forwardAsyncErrors(express());
     const requestContext = new AsyncLocalStorage();
     const isDevEnv = (env.ENVIRONMENT || '').toLowerCase() === 'dev';
     const activePool = attachSqlLogging(
@@ -346,8 +363,18 @@ export function createApp({
         '/parcels/under',
         '/proposals/batch'
     ]);
+    const parcelsUnderRateLimiter = rateLimit({
+        windowMs: 15 * 60 * 1000,
+        max: parcelsUnderRateLimit,
+        standardHeaders: true,
+        legacyHeaders: false,
+        message: { error: 'Too many requests, please try again later.' }
+    });
     app.use((req, res, next) => {
         if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
+            if (req.method === 'POST' && req.path === '/parcels/under') {
+                return parcelsUnderRateLimiter(req, res, next);
+            }
             // /agent/* pays per request, so the payment is the limiter (design decision, not an oversight).
             if (req.method === 'POST' && (RATE_LIMIT_EXEMPT_POST_PATHS.has(req.path) || isAgentPath(req.path))) {
                 return next();
@@ -358,10 +385,11 @@ export function createApp({
     });
     // Served files are embedded by other origins (the frontend host, dev ports, crawlers); helmet's
     // same-origin resource policy blocked every cross-origin <img> of them. See utils/embeddable-static.js.
+    // uploadStaticHeaders: nosniff everywhere, and non-image/model/JSON files only as downloads.
     const uploadsRoot = path.resolve('uploads');
-    app.use('/uploads', embeddableStatic, express.static(uploadsRoot));
-    app.use('/metadata', embeddableStatic, express.static(path.join(uploadsRoot, 'metadata')));
-    app.use('/images', embeddableStatic, express.static(path.join(uploadsRoot, 'images')));
+    app.use('/uploads', embeddableStatic, uploadStaticHeaders, express.static(uploadsRoot));
+    app.use('/metadata', embeddableStatic, uploadStaticHeaders, express.static(path.join(uploadsRoot, 'metadata')));
+    app.use('/images', embeddableStatic, uploadStaticHeaders, express.static(path.join(uploadsRoot, 'images')));
 
     app.use((req, res, next) => {
         if (!isDevEnv || req.method !== 'GET') {
@@ -414,19 +442,53 @@ export function createApp({
     setupAreaMonitorsRoute(app, activePool);
     setupEnsRoute(app, activePool);
     setupEnsPlansRoute(app, activePool);
-    setupCantonRoute(app); // Canton chain option — no DB pool needed (talks to Ledger API)
+    if (isCantonEnabled(env)) {
+        setupCantonRoute(app); // Canton chain option — no DB pool needed (talks to Ledger API)
+    } else {
+        console.log(`[${new Date().toISOString()}] Canton disabled (CANTON_ENABLED is not 'true'); /canton/* routes not registered.`);
+    }
     setupAiSceneRoute(app, activePool); // AI photorealistic scene render + shared-render persistence (ai_scene)
 
-    // Global error handler — catches unhandled errors from routes/middleware
-    app.use((err, _req, res, _next) => {
-        console.error('Unhandled error:', err);
+    // Global error handler — catches errors thrown or rejected by routes/middleware (async ones
+    // arrive here via forwardAsyncErrors). A 4xx that says it is safe to expose (HttpError, or a
+    // body-parser error such as malformed JSON / 413) keeps its status and message; anything else
+    // is logged in full and answered as a generic 500.
+    app.use((err, req, res, next) => {
+        const status = Number(err?.status || err?.statusCode);
+        const isClientError = Number.isInteger(status) && status >= 400 && status < 500;
+        if (!isClientError) {
+            console.error(`[${new Date().toISOString()}] Unhandled error in ${req.method} ${req.originalUrl || req.url}:`, err);
+        }
+        // Headers already out: Express's default handler aborts the connection, which is the only
+        // honest thing left to do with a half-sent response.
+        if (res.headersSent) return next(err);
+        if (isClientError) {
+            return res.status(status).json({ error: err.expose !== false && err.message ? err.message : 'Bad request' });
+        }
         res.status(500).json({ error: 'Internal server error' });
     });
 
     return { app, pool: activePool };
 }
 
+// Last line of defence for a promise nobody awaited (a fire-and-forget outside any request). Route
+// handlers no longer produce these — forwardAsyncErrors sends their rejections to the error
+// handler — so anything logged here is a real bug to fix: it is logged loudly, with a timestamp and
+// the full stack, and counted. The process stays up: one stray rejection must not take every
+// in-flight request down with it (Node's default since v15 is to exit).
+let unhandledRejectionCount = 0;
+export function installUnhandledRejectionLogger(target = process) {
+    if (target.__cbUnhandledRejectionLogger) return;
+    target.__cbUnhandledRejectionLogger = true;
+    target.on('unhandledRejection', (reason) => {
+        unhandledRejectionCount += 1;
+        const detail = reason instanceof Error ? (reason.stack || reason.message) : reason;
+        console.error(`[${new Date().toISOString()}] UNHANDLED REJECTION #${unhandledRejectionCount}:`, detail);
+    });
+}
+
 export function startServer({ env = process.env, pool } = {}) {
+    installUnhandledRejectionLogger();
     const port = env.API_PORT || 3000;
     const { app, pool: activePool } = createApp({ env, pool });
     const server = app.listen(port, () => {

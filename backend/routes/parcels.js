@@ -51,6 +51,7 @@ export function buildOwnershipDetailBatchQuery() {
 }
 
 import { createRequire } from 'node:module';
+import { wgs84BboxAreaKm2 } from '../utils/helpers.js';
 const require = createRequire(import.meta.url);
 // The owner classifier and its keyword lists live in the frontend module, and the backend loads
 // THAT copy so the two cannot drift — they had (GRAD TROGIR read 'government' via the API and
@@ -640,6 +641,56 @@ const FOOTPRINT_SUBDIVIDE_VERTICES = 32;
 // A geometry that touches more ground than this is a mistake, not a proposal. Refused loudly rather
 // than served slowly, because the client would have to ingest every one of them.
 const MAX_PARCELS_UNDER = 5000;
+// Input bounds for /parcels/under, checked BEFORE any SQL. ST_MakeValid and ST_Subdivide run on the
+// raw input ahead of the parcel-count cap, so an oversized body (up to the 15 MB JSON limit) used to
+// cost the database its full price before anything could refuse it. A replay batches ~20 footprints
+// (corridors included) into one MultiPolygon, so the vertex cap is generous; the extent cap is
+// several cities wide. Only the two projections the app actually sends are accepted.
+export const MAX_UNDER_VERTICES = 200000;
+export const MAX_UNDER_EXTENT_KM2 = 2500;
+const PARCELS_UNDER_SRIDS = new Set([4326, 3765]);
+
+// Returns an error message, or null when the footprint is safe to hand to PostGIS.
+export function checkUnderFootprint(geometry, srid) {
+    if (!PARCELS_UNDER_SRIDS.has(srid)) {
+        return `Unsupported srid ${srid}; expected one of ${[...PARCELS_UNDER_SRIDS].join(', ')}.`;
+    }
+    const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
+    if (!Array.isArray(polygons) || !polygons.length) return 'Geometry has no coordinates.';
+    let vertices = 0;
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    for (const rings of polygons) {
+        if (!Array.isArray(rings) || !rings.length) return 'Geometry has an empty polygon.';
+        for (const ring of rings) {
+            if (!Array.isArray(ring) || ring.length < 4) return 'Every ring needs at least 4 positions.';
+            vertices += ring.length;
+            if (vertices > MAX_UNDER_VERTICES) {
+                return `Geometry has more than ${MAX_UNDER_VERTICES} vertices; split the request.`;
+            }
+            for (const position of ring) {
+                const x = Array.isArray(position) ? position[0] : undefined;
+                const y = Array.isArray(position) ? position[1] : undefined;
+                if (typeof x !== 'number' || !Number.isFinite(x) || typeof y !== 'number' || !Number.isFinite(y)) {
+                    return 'Geometry coordinates must be finite numbers.';
+                }
+                if (x < minX) minX = x;
+                if (y < minY) minY = y;
+                if (x > maxX) maxX = x;
+                if (y > maxY) maxY = y;
+            }
+        }
+    }
+    if (srid === 4326 && (minX < -180 || maxX > 180 || minY < -90 || maxY > 90)) {
+        return 'WGS84 coordinates out of range.';
+    }
+    const extentKm2 = srid === 4326
+        ? wgs84BboxAreaKm2(minX, minY, maxX, maxY)
+        : ((maxX - minX) * (maxY - minY)) / 1e6;
+    if (extentKm2 > MAX_UNDER_EXTENT_KM2) {
+        return `Geometry extent ${Math.round(extentKm2)} km² exceeds ${MAX_UNDER_EXTENT_KM2} km²; split the request.`;
+    }
+    return null;
+}
 
 export function setupParcelsRoute(app, pool) {
     // POST /parcels/under  { geometry: <GeoJSON Polygon|MultiPolygon>, srid?: 4326, parcelsOnly?: bool }
@@ -671,8 +722,12 @@ export function setupParcelsRoute(app, pool) {
             if (!['Polygon', 'MultiPolygon'].includes(geometry.type)) {
                 return res.status(400).json({ error: `Unsupported geometry type ${geometry.type}; expected Polygon or MultiPolygon.` });
             }
-            const srid = Number.isFinite(Number(body.srid)) ? Number(body.srid) : 4326;
+            const srid = body.srid === undefined || body.srid === null ? 4326 : Number(body.srid);
             const parcelsOnly = body.parcelsOnly === true;
+            const footprintError = checkUnderFootprint(geometry, srid);
+            if (footprintError) {
+                return res.status(400).json({ error: footprintError });
+            }
 
             // ST_MakeValid because an authored footprint is not guaranteed to be OGC-valid, and an
             // invalid geometry makes ST_Subdivide throw rather than return fewer parcels.
@@ -698,7 +753,7 @@ export function setupParcelsRoute(app, pool) {
                         'HR-' || p.maticni_broj_ko || '-' || p.broj_cestice AS parcelid,
                         ST_AsGeoJSON(ST_Transform(p.geom, 4326))::json AS geometry,
                         ST_Area(ST_Transform(p.geom, 4326)::geography) AS calculated_area,
-                        ST_Area(ST_Transform(ST_Intersection(p.geom, i.g), 4326)::geography) AS taken_m2,
+                        ST_Area(ST_Transform(ST_Intersection(ST_MakeValid(p.geom), i.g), 4326)::geography) AS taken_m2,
                         pd.details AS ownership_details
                     FROM parcel p
                     JOIN hit ON hit.cestica_id = p.cestica_id
@@ -720,7 +775,7 @@ export function setupParcelsRoute(app, pool) {
                     -- floor the client's own overlap rules use, so the two agree on what is touched.
                     (SELECT COALESCE(json_agg(r), '[]'::json) FROM rows r WHERE r.taken_m2 > 0.25) AS rows,
                     (SELECT ST_Area(ST_Transform(g, 4326)::geography) FROM input) AS footprint_m2,
-                    (SELECT COALESCE(ST_Area(ST_Union(ST_Intersection(p.geom, i.g))) / NULLIF(max(ST_Area(i.g)), 0), 0)
+                    (SELECT COALESCE(ST_Area(ST_Union(ST_Intersection(ST_MakeValid(p.geom), i.g))) / NULLIF(max(ST_Area(i.g)), 0), 0)
                        FROM parcel p JOIN hit ON hit.cestica_id = p.cestica_id, input i) AS coverage
             `;
 
@@ -1134,21 +1189,21 @@ export function setupParcelsRoute(app, pool) {
             });
         }
 
-        const numericParcelId = await resolveParcelIdToCesticaId(pool, parcelId);
-        if (!numericParcelId) {
-            return res.status(404).json({ error: 'Parcel not found.' });
-        }
-
-        const targetExists = await pool.query(
-            'SELECT 1 FROM parcel WHERE cestica_id = $1 AND current = true LIMIT 1',
-            [numericParcelId]
-        );
-
-        if (!targetExists.rows.length) {
-            return res.status(404).json({ error: 'Parcel not found.' });
-        }
-
         try {
+            const numericParcelId = await resolveParcelIdToCesticaId(pool, parcelId);
+            if (!numericParcelId) {
+                return res.status(404).json({ error: 'Parcel not found.' });
+            }
+
+            const targetExists = await pool.query(
+                'SELECT 1 FROM parcel WHERE cestica_id = $1 AND current = true LIMIT 1',
+                [numericParcelId]
+            );
+
+            if (!targetExists.rows.length) {
+                return res.status(404).json({ error: 'Parcel not found.' });
+            }
+
             const neighbourSql = `
                 WITH target AS (
                     SELECT geom

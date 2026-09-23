@@ -153,15 +153,23 @@ let sequence;
 let facilitator;
 let app;
 let idempotencyRows;
+let takenProposalIds;
+
+const PROPOSAL_ID_CHECK = 'SELECT 1 FROM proposal WHERE proposal_id = $1';
 
 beforeEach(() => {
     pool = createMockPool();
     idempotencyRows = [];
+    takenProposalIds = new Set();
     const realQuery = pool.query.bind(pool);
     pool.query = (sql, params) => {
         sequence.push('db');
         if (sql.includes('WHERE agent_payment_id = $1')) {
             return Promise.resolve({ rows: idempotencyRows, rowCount: idempotencyRows.length });
+        }
+        if (sql.includes(PROPOSAL_ID_CHECK)) {
+            const rows = takenProposalIds.has(params[0]) ? [{ '?column?': 1 }] : [];
+            return Promise.resolve({ rows, rowCount: rows.length });
         }
         return realQuery(sql, params);
     };
@@ -240,8 +248,9 @@ describe(`POST ${AGENT_PROPOSALS_PATH} — paid`, () => {
         // Settlement receipt echoed to the client by the middleware.
         expect(res.headers['payment-response']).toBeTruthy();
 
-        // Upfront flow: settle, THEN the two DB writes of the create handler. No separate verify.
-        expect(sequence).toEqual(['db', 'settle', 'db', 'db']);
+        // Upfront flow: idempotency + proposal-id checks, settle, THEN the two DB writes of the
+        // create handler. No separate verify.
+        expect(sequence).toEqual(['db', 'db', 'settle', 'db', 'db']);
         expect(facilitator.settle.mock.calls[0][0].extensions.bazaar.info.input.method).toBe('POST');
         expect(facilitator.settle.mock.calls[0][0].extensions['payment-identifier'].info.id).toBe(PAYMENT_ID);
 
@@ -393,15 +402,57 @@ describe(`POST ${AGENT_PROPOSALS_PATH} — paid`, () => {
         const res = await request(app).post(AGENT_PROPOSALS_PATH).set('PAYMENT-SIGNATURE', header).send(agentBody());
 
         expect(res.status).toBe(402);
-        expect(sequence).toEqual(['db', 'settle']);
+        expect(sequence).toEqual(['db', 'db', 'settle']);
         expect(pool.getCalls()).toHaveLength(0);
     });
 
-    it('still reports a duplicate proposal id as 409 after settlement', async () => {
+    // Everything the create handler would 400 on is refused BEFORE the gate: previously the
+    // facilitator settled first and the handler's 400 left the payer charged with no row written.
+    it.each([
+        ['empty cadastreParcelIds', { cadastreParcelIds: [] }],
+        ['duplicate cadastral ids', { cadastreParcelIds: ['HR-1234-5678', 'HR-1234-5678'] }],
+        ['padded cadastral ids', { cadastreParcelIds: [' HR-1234-5678'] }],
+        ['a generated parcel id', { cadastreParcelIds: ['HR-1234-5678#p1'] }],
+        ['ownershipFlow outside scope', { ownershipFlow: [{ parcelId: 'HR-9', cededM2: 5, destination: 'public' }] }],
+        ['a retired land declaration', { parentParcelIds: ['HR-1234-5678'] }],
+        ['an unknown lifecycle', { lifecycleStatus: 'Approved' }],
+        ['a purely numeric proposalId', { proposalId: '51' }],
+        ['no type', { type: '' }],
+        ['an offer the column cannot hold', { offer: 1e15 }]
+    ])('refuses %s with 400 before settling, even with a payment attached', async (_label, override) => {
+        const header = await payFor(app, agentBody());
+        sequence.length = 0;
+        const invalid = agentBody(override);
+
+        const res = await request(app).post(AGENT_PROPOSALS_PATH).set('PAYMENT-SIGNATURE', header).send(invalid);
+
+        expect(res.status).toBe(400);
+        expect(res.body.error).toBeTruthy();
+        expect(facilitator.settle).not.toHaveBeenCalled();
+        expect(sequence).toEqual([]);
+        expect(pool.getCalls()).toHaveLength(0);
+    });
+
+    it('refuses a proposal id that is already taken at the settle hook, before any USDC moves', async () => {
+        takenProposalIds.add('test-proposal-001');
+        const header = await payFor(app, agentBody());
+        sequence.length = 0;
+
+        const res = await request(app).post(AGENT_PROPOSALS_PATH).set('PAYMENT-SIGNATURE', header).send(agentBody());
+
+        expect(res.status).toBe(402);
+        expect(paymentError(res)).toBe('proposal_id_taken');
+        expect(res.body.message).toMatch(/test-proposal-001 already exists/);
+        expect(facilitator.settle).not.toHaveBeenCalled();
+        expect(pool.getCalls()).toHaveLength(0);
+    });
+
+    it('still reports a duplicate proposal id as 409 when it is taken between the check and the insert', async () => {
         const dup = Object.assign(new Error('duplicate key'), { code: '23505', detail: 'Key (proposal_id)=(test-proposal-001) already exists.' });
         pool.query = async (sql) => {
             sequence.push('db');
             if (sql.includes('WHERE agent_payment_id = $1')) return { rows: [], rowCount: 0 };
+            if (sql.includes(PROPOSAL_ID_CHECK)) return { rows: [], rowCount: 0 };
             throw dup;
         };
         const header = await payFor(app, agentBody());

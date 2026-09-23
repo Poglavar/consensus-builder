@@ -8,7 +8,7 @@
 import { randomBytes } from 'crypto';
 import { createRequire } from 'node:module';
 import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
-import { saveImageBuffer } from '../utils/image-store.js';
+import { saveImageBuffer, sniffImageType } from '../utils/image-store.js';
 
 // The canonical prompt template is the SAME pure function the UI uses, required rather than copied
 // so the two can never drift (backend/test/ai-scene-prompt.test.js already loads it this way).
@@ -21,8 +21,8 @@ const XAI_EDITS_ENDPOINT = 'https://api.x.ai/v1/images/edits';
 const FAL_RUN_ENDPOINT = 'https://fal.run';
 
 // Short URL-safe slug for a shared render: /proposals/:id?scene=<slug>. Lowercase base36 on
-// purpose — saveImageBuffer lowercases the on-disk filename, so a mixed-case slug could let two
-// distinct scenes collide to the same image file. Lowercase-only keeps slug == filename base.
+// purpose — saveImageBuffer lowercases the on-disk filename. The file is `scene-<slug>-<random>.<ext>`
+// (never overwritten); the DB stores the returned imagePath, so nothing derives the name from the slug.
 const SLUG_ALPHABET = 'abcdefghijklmnopqrstuvwxyz0123456789';
 function makeSlug(len = 12) {
     const bytes = randomBytes(len);
@@ -232,16 +232,6 @@ function classifyProviderError(message) {
 // Hard ceiling on a single decoded image. The 15mb express body limit is not a real cap here: it
 // bounds the request, not what we forward to a paid model or write to disk.
 const MAX_IMAGE_BYTES = Number(process.env.AI_SCENE_MAX_IMAGE_BYTES) || 6 * 1024 * 1024;
-
-// Sniff the real bytes rather than trusting the declared data-URL mime: the payload must actually
-// be an image, so arbitrary base64 can't be posted through us onto disk or into a model.
-function sniffImageType(buf) {
-    if (!Buffer.isBuffer(buf) || buf.length < 12) return null;
-    if (buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47) return 'image/png';
-    if (buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) return 'image/jpeg';
-    if (buf.toString('ascii', 0, 4) === 'RIFF' && buf.toString('ascii', 8, 12) === 'WEBP') return 'image/webp';
-    return null;
-}
 
 // Parse a data URL (or bare base64) and PROVE it is an image within the size cap.
 // Returns { mimeType, data, buffer } on success, or { error } describing why not.
@@ -493,8 +483,7 @@ export function setupAiSceneRoute(app, pool) {
             const safePrompt = typeof prompt === 'string' ? prompt.slice(0, MAX_SAVE_PROMPT_CHARS) : null;
 
             const slug = makeSlug();
-            const extension = (decoded.mimeType.split('/')[1] || 'png');
-            const { imagePath } = saveImageBuffer(decoded.buffer, `scene-${slug}`, extension);
+            const { imagePath } = saveImageBuffer(decoded.buffer, `scene-${slug}`);
 
             await pool.query(
                 // Store the RELATIVE path, never an absolute URL — the origin is resolved per request

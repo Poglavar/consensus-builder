@@ -18,7 +18,12 @@ import {
 import { ExactSvmScheme } from '@x402/svm/exact/server';
 import { decodeTransactionFromPayload, getTokenPayerFromTransaction } from '@x402/svm';
 import { readFileSync } from 'node:fs';
-import { createProposalCreateHandler, proposalCreateBodyValidator } from './proposals.js';
+import {
+    createProposalCreateHandler,
+    precheckProposalCreate,
+    proposalCreateBodyValidator,
+    proposalCreatePrecheck
+} from './proposals.js';
 import {
     buildAgentStamp,
     formatAtomicAmount,
@@ -72,7 +77,11 @@ export const AGENT_PROPOSALS_DISCOVERY = declareDiscoveryExtension({
                 id: { type: 'integer' },
                 proposalId: { type: 'string' },
                 createdAt: { type: 'string', description: 'ISO 8601 creation timestamp.' },
-                screenshotUrl: { type: ['string', 'null'] }
+                screenshotUrl: { type: ['string', 'null'] },
+                editToken: {
+                    type: 'string',
+                    description: 'Returned once on first creation (not on an idempotent replay). Send it as the X-Proposal-Edit-Token header to rename or re-bucket the proposal.'
+                }
             },
             additionalProperties: false
         }
@@ -83,6 +92,15 @@ export const AGENT_PROPOSALS_DISCOVERY = declareDiscoveryExtension({
 // request it wraps, and that is the only bridge between "payment settled" and the route handler.
 function expressRequestOf(context) {
     return context?.transportContext?.request?.adapter?.req ?? null;
+}
+
+// The upfront flow settles before the handler, so a proposal_id that is already taken must be
+// found here: afterwards the insert's 409 would come with the payer already charged.
+async function proposalIdTaken(pool, proposalId) {
+    const result = await pool.query(`
+        SELECT 1 FROM proposal WHERE proposal_id = $1 LIMIT 1
+    `, [proposalId]);
+    return result.rows.length > 0;
 }
 
 async function findProposalByPaymentId(pool, paymentId) {
@@ -217,6 +235,34 @@ export function setupAgentProposalsRoute(app, pool, { env = process.env, facilit
                 };
             }
 
+            // Not a replay: the request must be one the handler will accept. The body checks ran as
+            // middleware before the challenge; they run again here because this is the last moment
+            // before USDC moves, and the proposal_id may have been taken since the 402.
+            const precheck = precheckProposalCreate(req);
+            if (!precheck.ok) {
+                return { abort: true, reason: 'invalid_proposal', message: precheck.error };
+            }
+            if (precheck.value.proposalId) {
+                let taken;
+                try {
+                    taken = await proposalIdTaken(pool, precheck.value.proposalId);
+                } catch (error) {
+                    console.error('[agent-proposals] proposal id lookup failed:', error);
+                    return {
+                        abort: true,
+                        reason: 'proposal_id_check_unavailable',
+                        message: 'The proposal id could not be checked; no payment was settled.'
+                    };
+                }
+                if (taken) {
+                    return {
+                        abort: true,
+                        reason: 'proposal_id_taken',
+                        message: `A proposal with id ${precheck.value.proposalId} already exists; choose another proposalId. No payment was settled.`
+                    };
+                }
+            }
+
             req.x402PaymentId = paymentId;
             req.x402RequestHash = requestHash;
             req.x402PayerFromTransaction = payer;
@@ -253,7 +299,9 @@ export function setupAgentProposalsRoute(app, pool, { env = process.env, facilit
                 price: config.priceProposal,
                 // Settle before the handler: the row is written only after the USDC moved, and the
                 // settlement signature is stored on it. The cost of the choice: a request that fails
-                // inside the handler after settlement has still paid.
+                // inside the handler after settlement has still paid — which is why every refusal the
+                // handler can make without the database runs first (proposalCreatePrecheck, and again
+                // with the proposal_id check in onBeforeSettle).
                 extra: { paymentFlow: 'upfront' }
             },
             description: 'Store one proposal on Urban Game Theory (paid, per submission).',
@@ -302,11 +350,13 @@ export function setupAgentProposalsRoute(app, pool, { env = process.env, facilit
         return res.status(201).json(req.x402Replay);
     };
 
-    // Validation runs BEFORE the gate so a malformed body is refused for free (400); the payer is
-    // bound AFTER it because only settlement knows who paid.
+    // Validation runs BEFORE the gate so a malformed body is refused for free (400) — the same
+    // checks the create handler applies, shared rather than copied; the payer is bound AFTER it
+    // because only settlement knows who paid.
     app.post(
         AGENT_PROPOSALS_PATH,
         proposalCreateBodyValidator,
+        proposalCreatePrecheck,
         gate,
         bindPaidAuthor,
         returnIdempotentReplay,

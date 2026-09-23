@@ -1,7 +1,8 @@
 // Proposals API endpoints
-// POST /proposals - Store a proposal and get back an id
-// GET /proposals/:id - Get a proposal by proposal_id (unique globally)
+// POST /proposals - Store a proposal and get back an id (+ a one-time edit token)
+// GET /proposals/:id - Get a proposal by row id (numeric) or proposal_id, row id first
 
+import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { createJsonBodyValidator, validators } from '../utils/request-validation.js';
 import { generateAndStoreProposalThumbnail } from '../thumbnails/proposal-thumbnail.js';
 import { publicApiBaseUrl } from '../utils/public-base-url.js';
@@ -29,6 +30,62 @@ const MAX_TYPE_LENGTH = 50;
 const MAX_STATUS_LENGTH = 50;
 const MAX_CURRENCY_LENGTH = 10;
 const MAX_DISBURSEMENT_MODE_LENGTH = 50;
+const MAX_MONEY = 999999999999; // NUMERIC(20, 8) holds 12 integer digits
+
+// List endpoints return whole rows; an uncapped ?limit= is a one-request table dump. The summary cap
+// stays above the largest city's proposal count because the share dialog asks for count+50 in one
+// call and falls back to per-proposal checks when the list comes back short.
+export const MAX_SUMMARY_LIMIT = 1000;
+export const MAX_PARCEL_PROPOSALS_LIMIT = 200;
+
+// ---------------------------------------------------------------------------------------------
+// Edit tokens. A proposal's mutable labels (name, thumbnail, epoch) may only be changed by whoever
+// uploaded it. POST /proposals hands back a random token once and stores only its sha256; every
+// PATCH must present the token in this header. Rows created before tokens existed have a NULL hash
+// and are therefore immutable through the API.
+// ---------------------------------------------------------------------------------------------
+export const EDIT_TOKEN_HEADER = 'X-Proposal-Edit-Token';
+
+export function hashEditToken(token) {
+    return createHash('sha256').update(String(token)).digest('hex');
+}
+
+function newEditToken() {
+    const token = randomBytes(32).toString('base64url');
+    return { token, hash: hashEditToken(token) };
+}
+
+export function editTokenMatches(token, storedHash) {
+    if (typeof token !== 'string' || !token || token.length > 256) return false;
+    if (typeof storedHash !== 'string' || !/^[0-9a-f]{64}$/.test(storedHash)) return false;
+    const presented = Buffer.from(hashEditToken(token), 'hex');
+    const stored = Buffer.from(storedHash, 'hex');
+    return presented.length === stored.length && timingSafeEqual(presented, stored);
+}
+
+function readEditToken(req) {
+    const raw = req.get(EDIT_TOKEN_HEADER);
+    return typeof raw === 'string' && raw.trim() ? raw.trim() : null;
+}
+
+// ---------------------------------------------------------------------------------------------
+// Single-row addressing. The frontend's share links, list labels ("#51") and plan ids are the
+// database ROW id; proposal_id is the uploader's own identifier (a content fingerprint such as
+// "c2-…" from the browser, an operation id from agents). Legacy rows exist whose proposal_id is a
+// bare number equal to ANOTHER row's id (prod: row 45 has proposal_id "51"), so "proposal_id = $1
+// OR id::text = $1" can match two rows and the database picked one arbitrarily. The row id wins;
+// proposal_id is the fallback. New numeric proposal_ids are refused at create, so the two
+// namespaces cannot collide again.
+// ---------------------------------------------------------------------------------------------
+function oneProposalByIdClause(placeholder) {
+    return `WHERE (proposal_id = ${placeholder} OR id::text = ${placeholder})
+                ORDER BY (id::text = ${placeholder}) DESC
+                LIMIT 1`;
+}
+
+function isReservedNumericProposalId(value) {
+    return typeof value === 'string' && /^\d+$/.test(value);
+}
 
 // The frontend sends short city codes (frontend/js/city-config.js CITY_QUERY_MAP) but proposals are
 // stored under the full city id. Every code the frontend can produce must map, or that city's
@@ -222,19 +279,21 @@ export const proposalCreateBodyValidator = createJsonBodyValidator({
         type: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_TYPE_LENGTH, label: 'type', disallowControlChars: true })) },
         status: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_STATUS_LENGTH, label: 'status', disallowControlChars: true })) },
         lifecycleStatus: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_STATUS_LENGTH, label: 'lifecycleStatus', disallowControlChars: true })) },
-        offer: { required: false, validate: validators.optional(validators.finiteNumber({ label: 'offer' })) },
+        // Bounds match the columns (NUMERIC(20,8), INTEGER): an out-of-range value must be a 400 here,
+        // not a DB error after a paid submission has already settled.
+        offer: { required: false, validate: validators.optional(validators.finiteNumber({ label: 'offer', min: -MAX_MONEY, max: MAX_MONEY })) },
         offerCurrency: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_CURRENCY_LENGTH, label: 'offerCurrency', disallowControlChars: true })) },
         offer_currency: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_CURRENCY_LENGTH, label: 'offer_currency', disallowControlChars: true })) },
-        budget: { required: false, validate: validators.optional(validators.finiteNumber({ label: 'budget' })) },
+        budget: { required: false, validate: validators.optional(validators.finiteNumber({ label: 'budget', min: -MAX_MONEY, max: MAX_MONEY })) },
         budgetCurrency: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_CURRENCY_LENGTH, label: 'budgetCurrency', disallowControlChars: true })) },
         budget_currency: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_CURRENCY_LENGTH, label: 'budget_currency', disallowControlChars: true })) },
         createdAt: { required: false, validate: validators.optional(validators.date({ label: 'createdAt' })) },
         expiresAt: { required: false, validate: validators.optional(validators.date({ label: 'expiresAt' })) },
         decayEnabled: { required: false, validate: validators.optional(validators.boolean({ label: 'decayEnabled' }), { nullValue: false }) },
-        decayPercent: { required: false, validate: validators.optional(validators.finiteNumber({ label: 'decayPercent', integer: true })) },
-        decayDurationMs: { required: false, validate: validators.optional(validators.finiteNumber({ label: 'decayDurationMs', integer: true })) },
+        decayPercent: { required: false, validate: validators.optional(validators.finiteNumber({ label: 'decayPercent', integer: true, min: 0, max: 1000 })) },
+        decayDurationMs: { required: false, validate: validators.optional(validators.finiteNumber({ label: 'decayDurationMs', integer: true, min: 0, max: Number.MAX_SAFE_INTEGER })) },
         depositEnabled: { required: false, validate: validators.optional(validators.boolean({ label: 'depositEnabled' }), { nullValue: false }) },
-        depositPercent: { required: false, validate: validators.optional(validators.finiteNumber({ label: 'depositPercent', integer: true })) },
+        depositPercent: { required: false, validate: validators.optional(validators.finiteNumber({ label: 'depositPercent', integer: true, min: 0, max: 1000 })) },
         isConditional: { required: false, validate: validators.optional(validators.boolean({ label: 'isConditional' }), { nullValue: false }) },
         disbursementMode: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_DISBURSEMENT_MODE_LENGTH, label: 'disbursementMode', disallowControlChars: true })) },
         // The proposal's one and only durable land declaration.
@@ -324,43 +383,140 @@ const proposalScreenshotPatchValidator = createJsonBodyValidator({
 // The create handler is shared by the free POST /proposals and the paid POST /agent/proposals
 // (routes/agent-proposals.js): one persistence path, two front doors. It closes over nothing but
 // the pool, so a caller that has already bound the author (the x402 payer) gets identical behaviour.
+// Everything a create request can be refused for without touching the database, as one pure
+// function. The free route runs it inside the handler; the paid route ALSO runs it as middleware in
+// front of the x402 gate, so a body the handler would 400 is refused before any USDC settles —
+// otherwise the payer is charged and no row is written (and a retry cannot recover the payment).
+// Returns { ok: true, value } or { ok: false, status, error }.
+export function precheckProposalCreate(req) {
+    const fail = error => ({ ok: false, status: 400, error });
+    const body = req.body;
+    if (!body || typeof body !== 'object' || Array.isArray(body) || !req.validatedBody) {
+        return fail('Proposal body must be a JSON object.');
+    }
+    const legacyDeclaration = findLegacyCadastreDeclaration(body);
+    if (legacyDeclaration) {
+        return fail(`${legacyDeclaration.path} is retired. Send the proposal's land once in cadastreParcelIds.`);
+    }
+    const nonCadastralParent = findNonCadastralParentDeclaration(body);
+    if (nonCadastralParent) {
+        return fail(`${nonCadastralParent.path} names land outside cadastreParcelIds: ${nonCadastralParent.id}.`);
+    }
+    // The server enforces the flat transport contract even if an older client sends
+    // cached children, formation data, demolition scans or proposal ancestry.
+    const validated = stripLocalProposalState(req.validatedBody);
+
+    const explicitProposalId = validated.proposalId ?? validated.id ?? validated.proposal_id ?? null;
+    if (isReservedNumericProposalId(explicitProposalId)) {
+        return fail('proposalId must not be purely numeric: numeric ids are the server\'s row ids.');
+    }
+    const type = validated.type ?? null;
+    if (!type) return fail('type is required.');
+
+    const lifecycleResult = resolveIncomingLifecycleStatus(validated);
+    if (!lifecycleResult.ok) return fail(lifecycleResult.error);
+
+    const cadastreParcelIds = validated.cadastreParcelIds ?? [];
+    if (!cadastreParcelIds.length) {
+        return fail('cadastreParcelIds must contain the proposal\'s cadastral land.');
+    }
+    const rawCadastreParcelIds = body.cadastreParcelIds;
+    if (!Array.isArray(rawCadastreParcelIds)
+        || rawCadastreParcelIds.some((id, index) => id !== cadastreParcelIds[index])) {
+        return fail('cadastreParcelIds must contain exact, unpadded strings.');
+    }
+    if (new Set(cadastreParcelIds).size !== cadastreParcelIds.length) {
+        return fail('cadastreParcelIds must not contain duplicates.');
+    }
+    const generatedAnchor = cadastreParcelIds.find(isDerivedParcelDeclaration);
+    if (generatedAnchor) {
+        return fail(`cadastreParcelIds must contain original cadastral ids; found generated parcel ${generatedAnchor}.`);
+    }
+    const ownershipFlow = validated.ownershipFlow ?? [];
+    const cadastreSet = new Set(cadastreParcelIds.map(String));
+    const flowOutsideScope = ownershipFlow.find(entry => !cadastreSet.has(String(entry.parcelId)));
+    if (flowOutsideScope) {
+        return fail(`ownershipFlow parcel ${flowOutsideScope.parcelId} is outside cadastreParcelIds.`);
+    }
+    return {
+        ok: true,
+        value: {
+            validated,
+            proposalId: explicitProposalId,
+            type,
+            lifecycleStatus: lifecycleResult.value,
+            cadastreParcelIds,
+            ownershipFlow
+        }
+    };
+}
+
+export function proposalCreatePrecheck(req, res, next) {
+    const result = precheckProposalCreate(req);
+    if (!result.ok) return res.status(result.status).json({ error: result.error });
+    return next();
+}
+
+// Claims a free upload cannot prove, removed before storage (the record is otherwise stored as
+// sent). `agent` is the paid-agent stamp — only the x402 route may write it. Owner acceptances and
+// an Executed lifecycle assert that OTHER people consented / land changed hands; the browser's
+// values are a local simulation, and on-chain proposals get their real lifecycle from the oracle
+// (oracle/proposal-lifecycle.js), which keys on onchain.proposalId. Returns what was dropped.
+function dropUnprovableClaims(proposal, { paid }) {
+    const dropped = [];
+    if (!paid && proposal.agent !== undefined) {
+        delete proposal.agent;
+        dropped.push('agent');
+    }
+    if (Array.isArray(proposal.acceptedParcelIds) && proposal.acceptedParcelIds.length) dropped.push('acceptedParcelIds');
+    if (proposal.ownerAcceptances && typeof proposal.ownerAcceptances === 'object'
+        && Object.keys(proposal.ownerAcceptances).length) dropped.push('ownerAcceptances');
+    delete proposal.acceptedParcelIds;
+    delete proposal.ownerAcceptances;
+    return dropped;
+}
+
 export function createProposalCreateHandler(pool) {
     return async (req, res) => {
         try {
-            const legacyDeclaration = findLegacyCadastreDeclaration(req.body);
-            if (legacyDeclaration) {
-                return res.status(400).json({
-                    error: `${legacyDeclaration.path} is retired. Send the proposal's land once in cadastreParcelIds.`
-                });
-            }
-            const nonCadastralParent = findNonCadastralParentDeclaration(req.body);
-            if (nonCadastralParent) {
-                return res.status(400).json({
-                    error: `${nonCadastralParent.path} names land outside cadastreParcelIds: ${nonCadastralParent.id}.`
-                });
-            }
-            // The server enforces the flat transport contract even if an older client sends
-            // cached children, formation data, demolition scans or proposal ancestry.
+            const precheck = precheckProposalCreate(req);
+            if (!precheck.ok) return res.status(precheck.status).json({ error: precheck.error });
+            const { validated, type, cadastreParcelIds, ownershipFlow } = precheck.value;
             const proposal = stripLocalProposalState(req.body);
-            const validated = stripLocalProposalState(req.validatedBody);
+            const paid = Boolean(req.x402Payment);
+            const droppedClaims = dropUnprovableClaims(proposal, { paid });
 
             const city = normalizeCityCode(validated.city) || null;
-            const proposalId = validated.proposalId ?? validated.id ?? validated.proposal_id ?? `local-${Date.now()}`;
+            const proposalId = precheck.value.proposalId ?? `local-${Date.now()}`;
             const name = validated.name ?? null;
             const title = validated.title ?? validated.name ?? null;
             const description = validated.description ?? null;
             const author = validated.author ?? null;
-            const type = validated.type ?? null;
-            const lifecycleResult = resolveIncomingLifecycleStatus(validated);
-            if (!lifecycleResult.ok) {
-                return res.status(400).json({ error: lifecycleResult.error });
+            let lifecycleStatus = precheck.value.lifecycleStatus;
+            if (lifecycleStatus === 'Executed') {
+                lifecycleStatus = 'Active';
+                delete proposal.executedAt;
+                droppedClaims.push('lifecycleStatus:Executed');
             }
-            const lifecycleStatus = lifecycleResult.value;
             const offer = validated.offer ?? null;
             const offerCurrency = validated.offerCurrency ?? validated.offer_currency ?? null;
             const budget = validated.budget ?? null;
             const budgetCurrency = validated.budgetCurrency ?? validated.budget_currency ?? null;
-            const createdAt = validated.createdAt || new Date();
+            // The server's clock is the record's creation time: a client value let any upload
+            // backdate itself in lists, "created" dates and the created-desc sort.
+            //
+            // The browser's own time is still needed, and is kept as authoredAt: plan replay orders
+            // formations by when they were AUTHORED (plan-order.js reads authoredAt before
+            // createdAt), a plan is usually uploaded long after and in list order, and an edited
+            // road deliberately inherits its source's time to keep its replay slot (road-drawing.js).
+            // It is the author's claim about their own record, never later than receipt.
+            const createdAt = new Date();
+            const claimedAuthoredAt = [req.body.authoredAt, validated.createdAt]
+                .map(value => (value === undefined || value === null || value === '' ? null : new Date(value)))
+                .find(value => value && Number.isFinite(value.getTime())) || null;
+            const authoredAt = claimedAuthoredAt && claimedAuthoredAt.getTime() <= createdAt.getTime()
+                ? claimedAuthoredAt.toISOString()
+                : null;
             const expiresAt = validated.expiresAt ?? null;
             const decayEnabled = validated.decayEnabled ?? false;
             const decayPercent = validated.decayPercent ?? null;
@@ -370,40 +526,7 @@ export function createProposalCreateHandler(pool) {
             const isConditional = validated.isConditional ?? false;
             const disbursementMode = validated.disbursementMode ?? null;
 
-            const cadastreParcelIds = validated.cadastreParcelIds ?? [];
-            if (!cadastreParcelIds.length) {
-                return res.status(400).json({
-                    error: 'cadastreParcelIds must contain the proposal\'s cadastral land.'
-                });
-            }
-            const rawCadastreParcelIds = req.body.cadastreParcelIds;
-            if (rawCadastreParcelIds.some((id, index) => id !== cadastreParcelIds[index])) {
-                return res.status(400).json({
-                    error: 'cadastreParcelIds must contain exact, unpadded strings.'
-                });
-            }
-            if (new Set(cadastreParcelIds).size !== cadastreParcelIds.length) {
-                return res.status(400).json({
-                    error: 'cadastreParcelIds must not contain duplicates.'
-                });
-            }
-            const generatedAnchor = cadastreParcelIds.find(isDerivedParcelDeclaration);
-            if (generatedAnchor) {
-                return res.status(400).json({
-                    error: `cadastreParcelIds must contain original cadastral ids; found generated parcel ${generatedAnchor}.`
-                });
-            }
-            const ownershipFlow = validated.ownershipFlow ?? [];
-            const cadastreSet = new Set(cadastreParcelIds.map(String));
-            const flowOutsideScope = ownershipFlow.find(entry => !cadastreSet.has(String(entry.parcelId)));
-            if (flowOutsideScope) {
-                return res.status(400).json({
-                    error: `ownershipFlow parcel ${flowOutsideScope.parcelId} is outside cadastreParcelIds.`
-                });
-            }
             const cadastreFrame = validated.cadastreFrame ?? null;
-            const acceptedParcelIds = validated.acceptedParcelIds ?? [];
-            const ownerAcceptances = validated.ownerAcceptances ?? {};
 
             const roadProposal = validated.roadProposal ?? null;
             const buildingProposal = validated.buildingProposal ?? null;
@@ -443,7 +566,18 @@ export function createProposalCreateHandler(pool) {
                 }
             }
 
-            const proposalData = stripLocalProposalState({ ...proposal, lifecycleStatus, reparcellization });
+            const proposalData = stripLocalProposalState({
+                ...proposal,
+                lifecycleStatus,
+                reparcellization,
+                createdAt: createdAt.toISOString(),
+                ...(authoredAt ? { authoredAt } : {})
+            });
+            if (!authoredAt) delete proposalData.authoredAt;
+            if (droppedClaims.length) {
+                console.warn(`[POST proposals ${proposalId}] dropped unprovable client claims: ${droppedClaims.join(', ')}`);
+            }
+            const editToken = newEditToken();
             const storedRoadProposal = proposalData.roadProposal ?? null;
             const storedBuildingProposal = proposalData.buildingProposal ?? null;
             const storedStructureProposal = proposalData.structureProposal ?? null;
@@ -462,7 +596,7 @@ export function createProposalCreateHandler(pool) {
                     road_proposal, building_proposal, structure_proposal, reparcellization,
                     lens, bounds, onchain_data, screenshot_url, proposal_data,
                     ownership_flow, cadastre_frame, epoch_year,
-                    agent_payment_id, agent_request_hash
+                    agent_payment_id, agent_request_hash, edit_token_hash
                 ) VALUES (
                     $1, $2, $3, $4, $5, $6, $7,
                     $8,
@@ -475,7 +609,7 @@ export function createProposalCreateHandler(pool) {
                     $25, $26, $27, $28,
                     $29, $30, $31, $32, $33,
                     $34, $35, $36,
-                    $37, $38
+                    $37, $38, $39
                 )
                 RETURNING id, proposal_id, created_at
             `;
@@ -489,8 +623,8 @@ export function createProposalCreateHandler(pool) {
                 depositEnabled, depositPercent,
                 isConditional, disbursementMode,
                 cadastreParcelIds.length ? JSON.stringify(cadastreParcelIds) : null,
-                acceptedParcelIds.length ? JSON.stringify(acceptedParcelIds) : null,
-                Object.keys(ownerAcceptances).length ? JSON.stringify(ownerAcceptances) : null,
+                null, // accepted_parcel_ids: consent is never taken from the uploader (dropUnprovableClaims)
+                null, // owner_acceptances: likewise
                 storedRoadProposal ? JSON.stringify(storedRoadProposal) : null,
                 storedBuildingProposal ? JSON.stringify(storedBuildingProposal) : null,
                 storedStructureProposal ? JSON.stringify(storedStructureProposal) : null,
@@ -504,7 +638,8 @@ export function createProposalCreateHandler(pool) {
                 cadastreFrame ? JSON.stringify(cadastreFrame) : null,
                 epochYear,
                 agentPaymentId,
-                agentRequestHash
+                agentRequestHash,
+                editToken.hash
             ];
 
             const result = await pool.query(sql, params);
@@ -563,7 +698,10 @@ export function createProposalCreateHandler(pool) {
                 id: dbId,
                 proposalId: inserted.proposal_id,
                 createdAt: inserted.created_at,
-                screenshotUrl: screenshotUrl || generatedScreenshotUrl || null
+                screenshotUrl: screenshotUrl || generatedScreenshotUrl || null,
+                // Returned exactly once; only its hash is stored. Send it back in the
+                // X-Proposal-Edit-Token header to rename, re-thumbnail or re-bucket this proposal.
+                editToken: editToken.token
             });
         } catch (err) {
             console.error('Error in POST /proposals:', err);
@@ -637,7 +775,7 @@ export function setupProposalsRoute(app, pool) {
         cadastre_parcel_ids, ownership_flow, cadastre_frame,
         accepted_parcel_ids, owner_acceptances,
         road_proposal, building_proposal, structure_proposal, reparcellization,
-        lens, bounds, onchain_data, screenshot_url, epoch_year, proposal_data`;
+        lens, bounds, onchain_data, screenshot_url, epoch_year, agent_payment_id, proposal_data`;
 
     // ORDER BY only over columns the summary actually carries. Computed sorts the client offers
     // (area, parcel count, acceptance ratio) need per-row geometry/JSONB work the list endpoint
@@ -677,7 +815,7 @@ export function setupProposalsRoute(app, pool) {
             goal,
             q,
             sort,
-            limit: Number.isFinite(limit) && limit > 0 ? limit : 100,
+            limit: Number.isFinite(limit) && limit > 0 ? Math.min(limit, MAX_SUMMARY_LIMIT) : 100,
             offset: Number.isFinite(offset) && offset >= 0 ? offset : 0
         };
     };
@@ -848,7 +986,9 @@ export function setupProposalsRoute(app, pool) {
                 cadastre_parcel_ids,
                 COALESCE(screenshot_url, onchain_data->>'imageUrl') AS screenshot_url,
                 onchain_data,
-                proposal_data->'agent' AS agent,
+                -- Paid-ness is a fact about the row (a settled x402 payment), not about what the body
+                -- said: an agent stamp on a row without a payment id is never served.
+                CASE WHEN agent_payment_id IS NOT NULL THEN proposal_data->'agent' END AS agent,
                 epoch_year,
                 COUNT(*) OVER() AS total_count
             FROM proposal`,
@@ -920,7 +1060,7 @@ export function setupProposalsRoute(app, pool) {
             const sql = `
                 SELECT id, proposal_id, updated_at, created_at
                 FROM proposal
-                WHERE proposal_id = $1 OR id::text = $1
+                ${oneProposalByIdClause('$1')}
             `;
 
             const result = await pool.query(sql, [idParam]);
@@ -1007,9 +1147,9 @@ export function setupProposalsRoute(app, pool) {
                 WHERE proposal_id = ANY($1::text[]) OR id::text = ANY($1::text[])
             `, [ids]);
 
-            // A proposal_id is the public identity and wins if a requested numeric string happens
-            // to equal another row's database id. That is the same intended priority as the single
-            // endpoint, made deterministic for a set response.
+            // The row id wins if a requested numeric string also equals another row's proposal_id —
+            // plans and share links carry row ids. Same precedence as the single-row endpoints
+            // (oneProposalByIdClause), made deterministic for a set response.
             const byProposalId = new Map();
             const byDatabaseId = new Map();
             for (const row of result.rows) {
@@ -1019,7 +1159,7 @@ export function setupProposalsRoute(app, pool) {
                 if (row.id !== undefined && row.id !== null) byDatabaseId.set(String(row.id), row);
             }
             const items = ids.map(id => {
-                const row = byProposalId.get(id) || byDatabaseId.get(id) || null;
+                const row = byDatabaseId.get(id) || byProposalId.get(id) || null;
                 if (!row) return { id, proposal: null };
                 try {
                     return { id, proposal: serializeProposalRow(row) };
@@ -1046,7 +1186,7 @@ export function setupProposalsRoute(app, pool) {
             const sql = `
                 SELECT ${FULL_PROPOSAL_COLUMNS}
                 FROM proposal
-                WHERE proposal_id = $1 OR id::text = $1
+                ${oneProposalByIdClause('$1')}
             `;
 
             const result = await pool.query(sql, [idParam]);
@@ -1071,7 +1211,7 @@ export function setupProposalsRoute(app, pool) {
             const filters = parseFilters(req);
             if (filters.lifecycleError) return res.status(400).json({ error: filters.lifecycleError });
             const city = filters.city;
-            const limit = filters.limit;
+            const limit = Math.min(filters.limit, MAX_PARCEL_PROPOSALS_LIMIT);
             const offset = filters.offset;
 
             if (!parcelId) {
@@ -1101,7 +1241,7 @@ export function setupProposalsRoute(app, pool) {
                     offer, offer_currency, budget, budget_currency,
                     created_at, expires_at, updated_at,
                     cadastre_parcel_ids, ownership_flow,
-                    onchain_data, screenshot_url, epoch_year, proposal_data
+                    onchain_data, screenshot_url, epoch_year, agent_payment_id, proposal_data
                 FROM proposal
                 WHERE ${clauses.join(' AND ')}
                 ORDER BY created_at DESC
@@ -1130,22 +1270,51 @@ export function setupProposalsRoute(app, pool) {
         }
     });
 
+    // Every PATCH below changes a shared record, so it must come from whoever uploaded it: the
+    // X-Proposal-Edit-Token issued by POST /proposals. The Origin check in front of the API is
+    // not authorization — a non-browser client sets any Origin it likes.
+    //
+    // Resolves the ONE row :id addresses (row id first, see oneProposalByIdClause) and checks the
+    // token against it. Returns the row, or answers 403/404 itself and returns null.
+    async function authorizeProposalEdit(req, res) {
+        const token = readEditToken(req);
+        if (!token) {
+            res.status(403).json({ error: `${EDIT_TOKEN_HEADER} header is required to change a proposal.` });
+            return null;
+        }
+        const result = await pool.query(`
+                SELECT id, edit_token_hash
+                FROM proposal
+                ${oneProposalByIdClause('$1')}
+            `, [req.params.id]);
+        const row = result.rows[0];
+        if (!row) {
+            res.status(404).json({ error: 'Proposal not found' });
+            return null;
+        }
+        if (!editTokenMatches(token, row.edit_token_hash)) {
+            res.status(403).json({ error: 'The edit token does not match this proposal.' });
+            return null;
+        }
+        return row;
+    }
+
     app.patch('/proposals/:id/screenshot', proposalScreenshotPatchValidator, async (req, res) => {
         try {
-            const idParam = req.params.id;
-            if (!idParam) {
-                return res.status(400).json({ error: 'Invalid proposal id. Must be provided.' });
-            }
             const { screenshotUrl } = req.validatedBody;
+            const target = await authorizeProposalEdit(req, res);
+            if (!target) return;
 
+            // Keyed by the primary key AND the hash just checked, so the write lands on exactly the
+            // row that was authorized.
             const sql = `
                 UPDATE proposal
                 SET screenshot_url = $1,
                     updated_at = CURRENT_TIMESTAMP
-                WHERE proposal_id = $2 OR id::text = $2
+                WHERE id = $2 AND edit_token_hash = $3
                 RETURNING id, proposal_id, screenshot_url
             `;
-            const result = await pool.query(sql, [screenshotUrl, idParam]);
+            const result = await pool.query(sql, [screenshotUrl, target.id, target.edit_token_hash]);
             if (result.rows.length === 0) {
                 return res.status(404).json({ error: 'Proposal not found' });
             }
@@ -1161,18 +1330,15 @@ export function setupProposalsRoute(app, pool) {
         }
     });
 
-    // Postavlja/briše epoch bucket prijedloga (vremenska crta plana). Isti
-    // adresni oblik kao screenshot patch: server id ILI proposal_id.
+    // Rename a proposal in place (same addressing and authorization as the screenshot patch).
     app.patch('/proposals/:id/name', proposalNamePatchValidator, async (req, res) => {
         try {
-            const idParam = req.params.id;
-            if (!idParam) {
-                return res.status(400).json({ error: 'Invalid proposal id. Must be provided.' });
-            }
             const name = req.validatedBody.name.trim();
             if (!name) {
                 return res.status(400).json({ error: 'name is required.' });
             }
+            const target = await authorizeProposalEdit(req, res);
+            if (!target) return;
 
             // name and title are kept in step because the UI reads `title || name` — leaving one
             // behind would rename the proposal in some lists and not in others.
@@ -1181,10 +1347,10 @@ export function setupProposalsRoute(app, pool) {
                 SET name = $1,
                     title = $1,
                     updated_at = CURRENT_TIMESTAMP
-                WHERE proposal_id = $2 OR id::text = $2
+                WHERE id = $2 AND edit_token_hash = $3
                 RETURNING id, proposal_id, name, title
             `;
-            const result = await pool.query(sql, [name, idParam]);
+            const result = await pool.query(sql, [name, target.id, target.edit_token_hash]);
             if (result.rows.length === 0) {
                 return res.status(404).json({ error: 'Proposal not found' });
             }
@@ -1208,53 +1374,92 @@ export function setupProposalsRoute(app, pool) {
     // limiter: a distribution over 300 proposals died on 429 after the first hundred, leaving the
     // plan half-assigned with no indication of where it stopped.
     //
-    // One statement, so the whole distribution lands or none of it does — a half-applied epoch plan
-    // is worse than an unassigned one, because it looks assigned.
+    // Body: { epochs: [{ id, epochYear, editToken }] } — id is a row id or proposal_id (row id
+    // first), editToken the one POST /proposals returned for that proposal. Only entries whose token
+    // matches are written, in one statement; the rest are named back as `forbidden` or `missing`
+    // rather than failing the whole plan, because a plan routinely mixes your uploads with other
+    // people's. Nothing authorized at all → 403.
     app.patch('/proposals/epochs', async (req, res) => {
         try {
             const entries = Array.isArray(req.body && req.body.epochs) ? req.body.epochs : null;
             if (!entries || !entries.length) {
-                return res.status(400).json({ error: 'epochs must be a non-empty array of { id, epochYear }.' });
+                return res.status(400).json({ error: 'epochs must be a non-empty array of { id, epochYear, editToken }.' });
             }
             if (entries.length > 2000) {
                 return res.status(400).json({ error: 'epochs is capped at 2000 entries per request.' });
             }
 
-            const ids = [];
-            const years = [];
+            const requests = [];
             for (const entry of entries) {
                 const id = entry && entry.id !== undefined && entry.id !== null ? String(entry.id).trim() : '';
                 if (!id) return res.status(400).json({ error: 'Every entry needs an id.' });
                 const raw = entry.epochYear;
                 // null clears the bucket; anything else must be a year in range. Validated per entry
                 // rather than trusted, because one bad value would otherwise ride in with 299 good ones.
+                let year = null;
                 if (raw !== null && raw !== undefined) {
-                    const year = Number(raw);
+                    year = Number(raw);
                     if (!Number.isInteger(year) || year < 2026 || year > 2966) {
                         return res.status(400).json({ error: `epochYear for ${id} must be an integer 2026-2966, or null.` });
                     }
-                    years.push(year);
-                } else {
-                    years.push(null);
                 }
-                ids.push(id);
+                const editToken = typeof entry.editToken === 'string' ? entry.editToken.trim() : '';
+                requests.push({ id, year, editToken });
             }
 
+            const ids = Array.from(new Set(requests.map(request => request.id)));
+            const found = await pool.query(`
+                SELECT id, proposal_id, edit_token_hash
+                FROM proposal
+                WHERE proposal_id = ANY($1::text[]) OR id::text = ANY($1::text[])
+            `, [ids]);
+            const byDatabaseId = new Map();
+            const byProposalId = new Map();
+            for (const row of found.rows) {
+                byDatabaseId.set(String(row.id), row);
+                if (row.proposal_id !== null && row.proposal_id !== undefined) byProposalId.set(String(row.proposal_id), row);
+            }
+
+            // Which ids matched nothing / were not authorized, named rather than counted: a silent
+            // shortfall is how an epoch plan comes to be missing exactly the proposals nobody checked.
+            const missing = [];
+            const forbidden = [];
+            const yearByRowId = new Map();
+            for (const request of requests) {
+                const row = byDatabaseId.get(request.id) || byProposalId.get(request.id) || null;
+                if (!row) { missing.push(request.id); continue; }
+                if (!editTokenMatches(request.editToken, row.edit_token_hash)) { forbidden.push(request.id); continue; }
+                yearByRowId.set(Number(row.id), { year: request.year, hash: row.edit_token_hash });
+            }
+            if (!yearByRowId.size) {
+                const status = forbidden.length ? 403 : 200;
+                return res.status(status).json({
+                    ...(forbidden.length ? { error: 'No entry carried a matching edit token.' } : {}),
+                    requested: requests.length, updated: 0, missing, forbidden, proposals: []
+                });
+            }
+
+            const rowIds = [];
+            const years = [];
+            const hashes = [];
+            for (const [rowId, { year, hash }] of yearByRowId) {
+                rowIds.push(rowId);
+                years.push(year);
+                hashes.push(hash);
+            }
             const sql = `
                 UPDATE proposal p
                 SET epoch_year = v.epoch_year,
                     updated_at = CURRENT_TIMESTAMP
-                FROM (SELECT unnest($1::text[]) AS id, unnest($2::int[]) AS epoch_year) AS v
-                WHERE p.proposal_id = v.id OR p.id::text = v.id
+                FROM (
+                    SELECT unnest($1::int[]) AS id, unnest($2::int[]) AS epoch_year, unnest($3::text[]) AS token_hash
+                ) AS v
+                WHERE p.id = v.id AND p.edit_token_hash = v.token_hash
                 RETURNING p.id, p.proposal_id, p.epoch_year
             `;
-            const result = await pool.query(sql, [ids, years]);
+            const result = await pool.query(sql, [rowIds, years, hashes]);
             const updated = result.rows.map(row => ({ id: row.id, proposalId: row.proposal_id, epochYear: row.epoch_year }));
-            const matched = new Set(updated.flatMap(row => [String(row.id), String(row.proposalId)]));
-            // Which ids matched nothing, named rather than counted: a silent shortfall is how an
-            // epoch plan comes to be missing exactly the proposals nobody thought to check.
-            const missing = ids.filter(id => !matched.has(id));
-            res.json({ requested: ids.length, updated: updated.length, missing, proposals: updated });
+            res.json({ requested: requests.length, updated: updated.length, missing, forbidden, proposals: updated });
         } catch (err) {
             console.error('Error in PATCH /proposals/epochs:', err);
             res.status(500).json({ error: 'Internal server error' });
@@ -1263,20 +1468,18 @@ export function setupProposalsRoute(app, pool) {
 
     app.patch('/proposals/:id/epoch', proposalEpochPatchValidator, async (req, res) => {
         try {
-            const idParam = req.params.id;
-            if (!idParam) {
-                return res.status(400).json({ error: 'Invalid proposal id. Must be provided.' });
-            }
             const { epochYear } = req.validatedBody;
+            const target = await authorizeProposalEdit(req, res);
+            if (!target) return;
 
             const sql = `
                 UPDATE proposal
                 SET epoch_year = $1,
                     updated_at = CURRENT_TIMESTAMP
-                WHERE proposal_id = $2 OR id::text = $2
+                WHERE id = $2 AND edit_token_hash = $3
                 RETURNING id, proposal_id, epoch_year
             `;
-            const result = await pool.query(sql, [epochYear, idParam]);
+            const result = await pool.query(sql, [epochYear, target.id, target.edit_token_hash]);
             if (result.rows.length === 0) {
                 return res.status(404).json({ error: 'Proposal not found' });
             }

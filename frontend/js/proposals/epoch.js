@@ -1,7 +1,7 @@
 // proposals/epoch.js — epoch buckets for the plan timeline ("Kumulativno do godine").
 // A proposal may carry epochYear (e.g. 2035/2045/2055): which stage of the plan's
 // growth it belongs to. Deliberately PRESENTATION metadata: apply order stays
-// created_at via plan-order.js, and the timeline never applies or unapplies
+// authoring time (authoredAt/createdAt) via plan-order.js, and the timeline never applies or unapplies
 // anything itself — it filters the list cumulatively and reports the diff
 // against the current applied state, so the user stays the one pressing apply.
 // Pure logic is DOM-free and exported for node tests; the DOM/net helpers hang
@@ -199,20 +199,34 @@
         return select.value === '' || select.value === 'custom' ? null : parseEpochYear(select.value);
     }
 
-    /** PATCH na server (ako je prijedlog uploadan) + lokalna pohrana. */
+    function serverIdOf(proposal) {
+        return proposal.serverProposalId
+            ?? (typeof proposal.id === 'number' ? proposal.id : null)
+            ?? (/^\d+$/.test(String(proposal.id || '')) ? proposal.id : null);
+    }
+
+    // The edit token POST /proposals gave THIS browser for that upload (server-sync.js). A server
+    // proposal without one is someone else's (a shared plan, a download) or predates tokens: its
+    // server epoch is not ours to change, so the epoch stays a local view setting — no request, no
+    // error. Before tokens, any viewer's card menu re-bucketed the shared record for everyone.
+    function editTokenFor(serverId) {
+        if (serverId === null || serverId === undefined) return null;
+        return typeof getProposalEditToken === 'function' ? getProposalEditToken(serverId) : null;
+    }
+
+    /** PATCH na server (ako je prijedlog uploadan S OVOG preglednika) + lokalna pohrana. */
     // `render: false` lets a batch write many epochs and redraw the list once at the end; the card
     // menu leaves it alone and keeps redrawing after its single change.
     async function setEpoch(proposal, year, options = {}) {
         const g = parseEpochYear(year);
-        const serverId = proposal.serverProposalId
-            ?? (typeof proposal.id === 'number' ? proposal.id : null)
-            ?? (/^\d+$/.test(String(proposal.id || '')) ? proposal.id : null);
+        const serverId = serverIdOf(proposal);
+        const editToken = editTokenFor(serverId);
         // skipServer: the caller already sent this epoch, in a batch. Without it a bulk run writes
         // every epoch twice — once in the batch and once here — which is what the batch was for.
-        if (serverId !== null && !options.skipServer && typeof resolveBackendBaseUrl === 'function') {
+        if (serverId !== null && editToken && !options.skipServer && typeof resolveBackendBaseUrl === 'function') {
             const resp = await fetch(`${resolveBackendBaseUrl()}/proposals/${encodeURIComponent(serverId)}/epoch`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'X-Proposal-Edit-Token': editToken },
                 body: JSON.stringify({ epochYear: g })
             });
             if (!resp.ok) throw new Error(`PATCH epoch: HTTP ${resp.status}`);
@@ -256,11 +270,12 @@
         if (typeof resolveBackendBaseUrl !== 'function' || typeof fetch !== 'function') return null;
         const epochs = [];
         plan.forEach(entry => {
-            const proposal = entry.proposal;
-            const serverId = proposal.serverProposalId
-                ?? (typeof proposal.id === 'number' ? proposal.id : null)
-                ?? (/^\d+$/.test(String(proposal.id || '')) ? proposal.id : null);
-            if (serverId !== null && serverId !== undefined) epochs.push({ id: String(serverId), epochYear: entry.year });
+            const serverId = serverIdOf(entry.proposal);
+            // Only our own uploads go to the server; the rest are bucketed locally (see editTokenFor).
+            const editToken = editTokenFor(serverId);
+            if (serverId !== null && serverId !== undefined && editToken) {
+                epochs.push({ id: String(serverId), epochYear: entry.year, editToken });
+            }
         });
         if (!epochs.length) return null;
 
@@ -274,6 +289,9 @@
             const payload = await response.json();
             (payload.missing || []).forEach(id => failed.push({
                 proposal: id, year: null, reason: 'no such proposal on the server'
+            }));
+            (payload.forbidden || []).forEach(id => failed.push({
+                proposal: id, year: null, reason: 'the server refused this browser\'s edit token'
             }));
             return null;
         } catch (error) {

@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import { randomUUID } from 'crypto';
 import { createJsonBodyValidator, isPlainObject, validators } from '../utils/request-validation.js';
 import { publicFileUrl } from '../utils/public-base-url.js';
+import { sniffImageType, uniqueFileBase } from '../utils/image-store.js';
 
 const UPLOAD_ROOT = path.resolve('uploads');
 const IMAGE_DIR = path.join(UPLOAD_ROOT, 'images');
@@ -19,15 +19,25 @@ function ensureDirectories() {
     });
 }
 
-function sanitizeFileName(raw, fallbackPrefix) {
-    const base = (raw || '').toString().trim();
-    const safe = base
-        .toLowerCase()
-        .replace(/[^a-z0-9-_]/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '');
-    if (safe) return safe;
-    return `${fallbackPrefix}-${Date.now()}-${randomUUID()}`;
+const IMAGE_EXTENSIONS = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' };
+
+// Identify a glTF 2.0 model from its bytes: binary .glb starts with the ASCII magic "glTF"; a
+// self-contained .gltf is a JSON object with an `asset` block. Anything else is refused — the
+// declared data-URL mime and the client's file name are never trusted for type or extension.
+function sniffModelType(buf) {
+    if (!Buffer.isBuffer(buf) || buf.length < 12) return null;
+    if (buf.toString('ascii', 0, 4) === 'glTF') return { ext: 'glb', contentType: 'model/gltf-binary' };
+    const text = buf.toString('utf8').replace(/^\uFEFF/, '').trimStart();
+    if (!text.startsWith('{')) return null;
+    try {
+        const parsed = JSON.parse(text);
+        if (isPlainObject(parsed) && isPlainObject(parsed.asset)) {
+            return { ext: 'gltf', contentType: 'model/gltf+json' };
+        }
+    } catch {
+        return null;
+    }
+    return null;
 }
 
 const imageUploadBodyValidator = createJsonBodyValidator({
@@ -122,17 +132,19 @@ export function setupFileStorageRoutes(app) {
                 return res.status(400).json({ error: 'modelData must be a base64-encoded data URL.' });
             }
 
-            const contentType = matches[1] || 'model/gltf-binary';
             const buffer = Buffer.from(matches[2], 'base64');
             if (!buffer.length) {
                 return res.status(400).json({ error: 'Decoded model data is empty.' });
             }
 
             // Only glb/gltf are supported; .gltf must be self-contained (embedded buffers).
-            const requestedExt = (fileName || '').toLowerCase().endsWith('.gltf') ? 'gltf' : 'glb';
-            const safeName = sanitizeFileName(fileName, 'model');
-            const finalFileName = `${safeName}-${randomUUID().slice(0, 8)}.${requestedExt}`;
-            fs.writeFileSync(path.join(MODEL_DIR, finalFileName), buffer);
+            const model = sniffModelType(buffer);
+            if (!model) {
+                return res.status(400).json({ error: 'modelData must be a glTF 2.0 model (.glb or self-contained .gltf).' });
+            }
+            const { contentType } = model;
+            const finalFileName = `${uniqueFileBase(fileName, 'model')}.${model.ext}`;
+            fs.writeFileSync(path.join(MODEL_DIR, finalFileName), buffer, { flag: 'wx' });
 
             // The pinned public base when there is one, the served path alone otherwise — never
             // the request's Host, which is whatever port today's dev backend happens to use.
@@ -154,20 +166,19 @@ export function setupFileStorageRoutes(app) {
                 return res.status(400).json({ error: 'imageData must be a base64-encoded data URL.' });
             }
 
-            const contentType = matches[1] || 'application/octet-stream';
-            const base64Payload = matches[2];
-            const buffer = Buffer.from(base64Payload, 'base64');
+            const buffer = Buffer.from(matches[2], 'base64');
             if (!buffer.length) {
                 return res.status(400).json({ error: 'Decoded image data is empty.' });
             }
 
-            const fallbackName = sanitizeFileName(fileName, 'image');
-            const extension = (() => {
-                const subtype = contentType.split('/')[1] || 'png';
-                return subtype.split('+')[0] || 'png';
-            })();
-            const finalFileName = `${fallbackName}.${extension}`;
-            fs.writeFileSync(path.join(IMAGE_DIR, finalFileName), buffer);
+            // Type and extension come from the real bytes, never the declared mime: a declared
+            // text/html or image/svg+xml used to be stored as .html/.svg and served from our origin.
+            const contentType = sniffImageType(buffer);
+            if (!contentType) {
+                return res.status(400).json({ error: 'imageData must be a PNG, JPEG or WEBP image.' });
+            }
+            const finalFileName = `${uniqueFileBase(fileName, 'image')}.${IMAGE_EXTENSIONS[contentType]}`;
+            fs.writeFileSync(path.join(IMAGE_DIR, finalFileName), buffer, { flag: 'wx' });
 
             const imageUrl = publicFileUrl(`/images/${finalFileName}`);
 
@@ -185,12 +196,13 @@ export function setupFileStorageRoutes(app) {
     app.post('/metadata', metadataUploadBodyValidator, (req, res) => {
         try {
             const { metadata: metadataObject, fileName } = req.validatedBody;
-            const safeName = sanitizeFileName(fileName, 'metadata');
-            const finalFileName = safeName.endsWith('.json') ? safeName : `${safeName}.json`;
+            // Random suffix + `wx`: metadata that minted tokens point to can never be overwritten.
+            const baseName = String(fileName || '').replace(/\.json$/i, '');
+            const finalFileName = `${uniqueFileBase(baseName, 'metadata')}.json`;
             fs.writeFileSync(
                 path.join(METADATA_DIR, finalFileName),
                 JSON.stringify(metadataObject, null, 2),
-                'utf8'
+                { encoding: 'utf8', flag: 'wx' }
             );
 
             const metadataUrl = publicFileUrl(`/metadata/${finalFileName}`);

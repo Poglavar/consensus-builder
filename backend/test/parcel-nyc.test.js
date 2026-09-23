@@ -50,6 +50,7 @@ describe('GET /parcel-nyc', () => {
                 limit: undefined,
                 offset: undefined
             },
+            truncated: false,
             features: []
         });
     });
@@ -140,7 +141,7 @@ describe('GET /parcel-nyc', () => {
             offset: 3
         });
         expect(res.body.features[0].properties.ownershipList).toHaveLength(1);
-        expect(pool.getCalls()[0].params).toEqual([-73.9, 40.69, -73.89, 40.7, 2, 3]);
+        expect(pool.getCalls()[0].params).toEqual([-73.9, 40.69, -73.89, 40.7, 3, 3]);
     });
 });
 

@@ -5,6 +5,43 @@ export const POSTGIS_SRID = 3765;
 // ArcGIS API configuration
 export const ARCGIS_BASE_URL = 'https://services8.arcgis.com/Usi0jGQwMmBUpFjr/arcgis/rest/services/ZG3D_2022_3d_model_GZ/FeatureServer/0/query';
 
+// An error that carries its own HTTP status. The global error handler answers `status` + message
+// for 4xx (instead of a blanket 500), so a validation helper can throw from anywhere in a handler.
+export class HttpError extends Error {
+    constructor(status, message) {
+        super(message);
+        this.name = 'HttpError';
+        this.status = status;
+        this.expose = status < 500;
+    }
+}
+
+// A single query-string value, trimmed. Express parses `?a=1&a=2` into an ARRAY and `?a[b]=1` into
+// an object, so `(req.query.a || '').trim()` throws on either — and an async handler that throws
+// used to take the whole process down. A repeated or nested parameter is the caller's mistake: 400.
+export function queryString(query, name) {
+    const value = query?.[name];
+    if (value === undefined || value === null) return '';
+    if (typeof value !== 'string') {
+        throw new HttpError(400, `Query parameter "${name}" must be given once, as a plain value.`);
+    }
+    return value.trim();
+}
+
+// Approximate area of a WGS84 bbox in km² (equirectangular at the mid latitude — plenty for a cap).
+export function wgs84BboxAreaKm2(minLon, minLat, maxLon, maxLat) {
+    const midLatRad = ((minLat + maxLat) / 2) * Math.PI / 180;
+    const widthKm = Math.abs(maxLon - minLon) * 111.32 * Math.cos(midLatRad);
+    const heightKm = Math.abs(maxLat - minLat) * 110.57;
+    return widthKm * heightKm;
+}
+
+// Viewport-sized reads. The frontend asks for its map view (planned roads, road parcels — z13 on a
+// large screen is ~370 km²) or for 500 m grid cells (city parcel sources), so anything bigger is
+// not the app asking. Row caps back these up: a bbox inside the cap can still be dense.
+export const MAX_VIEW_BBOX_KM2 = 400;
+export const MAX_CELL_BBOX_KM2 = 100;
+
 export function parseBboxParam(raw) {
     if (!raw) return null;
     const parts = String(raw).split(',').map(v => Number(v.trim()));
@@ -114,9 +151,14 @@ export async function queryFeatureService(geometry, baseUrl, options = {}) {
     return Array.isArray(json.features) ? json.features : [];
 }
 
+// Union of existing road parcels inside a (required) EPSG:3765 bbox. There is deliberately no
+// "whole city" mode: unioning every road parcel city-wide held a pooled client for the length of a
+// city-sized ST_UnaryUnion on any anonymous GET.
 export async function getExistingRoadUnion(client, bboxParts) {
-    const hasBbox = Array.isArray(bboxParts) && bboxParts.length === 4;
-    const params = hasBbox ? [...bboxParts, true] : [0, 0, 0, 0, false];
+    if (!Array.isArray(bboxParts) || bboxParts.length !== 4) {
+        throw new Error('getExistingRoadUnion requires a bbox [minX, minY, maxX, maxY].');
+    }
+    const params = [...bboxParts];
 
     // Primary source: road_parcel_classification materialized view (scoring-based)
     const sql = `
@@ -124,7 +166,7 @@ export async function getExistingRoadUnion(client, bboxParts) {
         FROM road_parcel_classification r
         WHERE r.classification = 'road'
           AND r.geom IS NOT NULL
-          AND (NOT $5::boolean OR r.geom && ST_MakeEnvelope($1,$2,$3,$4, ${POSTGIS_SRID}))
+          AND r.geom && ST_MakeEnvelope($1,$2,$3,$4, ${POSTGIS_SRID})
     `;
 
     try {
@@ -146,7 +188,7 @@ export async function getExistingRoadUnion(client, bboxParts) {
         FROM dgu_road_usage d
         WHERE d.current = true
           AND d.geom IS NOT NULL
-          AND (NOT $5::boolean OR d.geom && ST_MakeEnvelope($1,$2,$3,$4, ${POSTGIS_SRID}))
+          AND d.geom && ST_MakeEnvelope($1,$2,$3,$4, ${POSTGIS_SRID})
     `;
 
     try {

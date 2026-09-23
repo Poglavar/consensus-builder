@@ -904,8 +904,6 @@ function showUploadProposalModal(proposal) {
             uploadButton.style.opacity = '1';
             uploadButton.style.cursor = 'pointer';
 
-            enforceUploadAncestryGate();
-
             if (typeof showEphemeralMessage === 'function') {
                 showEphemeralMessage(error.message || tShare('uploadError', 'Failed to upload proposal. Please try again.'), 5000, 'error');
             }

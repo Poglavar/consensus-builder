@@ -324,6 +324,45 @@ function mapGoalToBackendType(goalKey) {
     }
 }
 
+// Edit tokens: POST /proposals returns one per upload (only its hash is stored server-side), and
+// every PATCH of that proposal (name, epoch, thumbnail) must present it in X-Proposal-Edit-Token.
+// Kept in localStorage keyed by the server ROW id — beside the record's serverProposalId, but never
+// inside the record, so a token cannot leak through a JSON download, a share payload, a re-upload
+// or mint metadata. Same pattern as the named-plan tokens (cb_plan_token_<slug>). A proposal this
+// browser did not upload has no token here, and callers must treat it as read-only on the server.
+const PROPOSAL_EDIT_TOKEN_PREFIX = 'cb_proposal_edit_token_';
+const PROPOSAL_EDIT_TOKEN_HEADER = 'X-Proposal-Edit-Token';
+
+function rememberProposalEditToken(serverProposalId, token) {
+    const id = serverProposalId === undefined || serverProposalId === null ? '' : String(serverProposalId);
+    if (!/^\d+$/.test(id) || typeof token !== 'string' || !token) return false;
+    try {
+        localStorage.setItem(PROPOSAL_EDIT_TOKEN_PREFIX + id, token);
+        return true;
+    } catch (error) {
+        console.warn(`[proposal ${id}] could not store the edit token; this proposal will not be editable on the server`, error);
+        return false;
+    }
+}
+
+function getProposalEditToken(serverProposalId) {
+    const id = serverProposalId === undefined || serverProposalId === null ? '' : String(serverProposalId);
+    if (!/^\d+$/.test(id)) return null;
+    try {
+        return localStorage.getItem(PROPOSAL_EDIT_TOKEN_PREFIX + id) || null;
+    } catch (_) {
+        return null;
+    }
+}
+
+if (typeof window !== 'undefined') {
+    window.ProposalEditTokens = {
+        header: PROPOSAL_EDIT_TOKEN_HEADER,
+        remember: rememberProposalEditToken,
+        get: getProposalEditToken
+    };
+}
+
 function syncProposalWithServerId(proposal, serverProposalId) {
     if (!serverProposalId || typeof proposalStorage === 'undefined') return null;
     const oldProposalId = proposal.proposalId;
@@ -515,6 +554,8 @@ async function uploadProposalToServer(proposal) {
 
         const result = await response.json();
         const serverProposalId = result && result.id ? String(result.id) : String(result.proposalId);
+        // Returned once; without it this browser cannot rename or re-bucket its own upload later.
+        if (result && result.editToken) rememberProposalEditToken(serverProposalId, result.editToken);
         syncProposalWithServerId(proposal, serverProposalId);
         return { ok: true, id: result.id, proposalId: serverProposalId };
     } catch (error) {
@@ -652,6 +693,8 @@ if (typeof module !== 'undefined' && module.exports) {
         buildCityQueryParam,
         normalizeServerProposalSummary,
         prepareProposalForImport,
+        rememberProposalEditToken,
+        getProposalEditToken,
         rateLimitRetrySeconds,
         uploadRateLimitMessage
     };

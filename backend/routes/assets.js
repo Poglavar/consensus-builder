@@ -3,20 +3,13 @@ import path from 'path';
 import { createJsonBodyValidator, isPlainObject, validators } from '../utils/request-validation.js';
 import {
     saveImageBuffer,
-    sanitizeFileName,
     decodeImageDataUrl,
     ensureImageDirectories,
     METADATA_DIR
 } from '../utils/image-store.js';
+import { publicFileUrl } from '../utils/public-base-url.js';
 
-const STATIC_PROPOSAL_IMAGE_URL = 'https://urbangametheory.xyz/images/consensus-builder-logo.png';
 const MAX_FILE_NAME_LENGTH = 255;
-
-function resolveBaseUrl(req) {
-    const protocol = req.protocol;
-    const host = req.get('host');
-    return `${protocol}://${host}`;
-}
 
 const assetsUploadBodyValidator = createJsonBodyValidator({
     schema: {
@@ -63,14 +56,19 @@ export function setupAssetsRoute(app) {
             if (!decoded.buffer.length) {
                 return res.status(400).json({ error: 'Decoded image data is empty.' });
             }
+            if (!decoded.contentType) {
+                return res.status(400).json({ error: 'imageData must be a PNG, JPEG or WEBP image.' });
+            }
 
-            const safeBase = sanitizeFileName(fileName, 'road-proposal');
-            const metadataFilename = `${safeBase}.json`;
-            const { imagePath } = saveImageBuffer(decoded.buffer, safeBase, decoded.extension);
+            // saveImageBuffer picks the extension from the sniffed bytes and appends a random id; the
+            // metadata file reuses that exact base, so neither can be named (and overwritten) by a client.
+            const { fileName: imageFileName, imagePath } = saveImageBuffer(decoded.buffer, fileName || 'road-proposal');
+            const metadataFilename = `${imageFileName.replace(/\.[a-z]+$/, '')}.json`;
 
-            const baseUrl = resolveBaseUrl(req);
-            const uploadedImageUrl = `${baseUrl}${imagePath}`;
-            const imageUrl = uploadedImageUrl || STATIC_PROPOSAL_IMAGE_URL;
+            // Pinned public base (or the bare path) — never the request's Host header, which the
+            // client controls and which would otherwise be baked into metadata that minted tokens point to.
+            const uploadedImageUrl = publicFileUrl(imagePath);
+            const imageUrl = uploadedImageUrl;
             const existingProperties = isPlainObject(metadata.properties)
                 ? metadata.properties
                 : {};
@@ -84,9 +82,13 @@ export function setupAssetsRoute(app) {
                     uploadedImageUrl
                 }
             };
-            fs.writeFileSync(path.join(METADATA_DIR, metadataFilename), JSON.stringify(metadataToSave, null, 2), 'utf8');
+            fs.writeFileSync(
+                path.join(METADATA_DIR, metadataFilename),
+                JSON.stringify(metadataToSave, null, 2),
+                { encoding: 'utf8', flag: 'wx' }
+            );
 
-            const metadataUrl = `${baseUrl}/uploads/metadata/${metadataFilename}`;
+            const metadataUrl = publicFileUrl(`/uploads/metadata/${metadataFilename}`);
 
             res.json({
                 imageUri: imageUrl,

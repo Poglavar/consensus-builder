@@ -371,6 +371,9 @@ export function setupAgentActivityRoute(app, pool, {
                             created_at, updated_at
                        FROM proposal
                       WHERE proposal_data ? 'agent'
+                        -- Only a paid x402 row may present itself as agent activity; the stamp in
+                        -- proposal_data is client-supplied on older free-route rows.
+                        AND agent_payment_id IS NOT NULL
                       ORDER BY created_at DESC
                       LIMIT $1`,
                     [window]
