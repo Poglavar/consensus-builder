@@ -21,8 +21,8 @@ describe('hackathon public proof routes', () => {
                 backend: { commit: 'abc123' },
                 frontend: { manifest: 'https://urbangametheory.xyz/release.json' },
                 programs: [
-                    { name: 'ProposalPledge', lastDeployedSlot: 501062795, binarySha256: '153709638e5355871dc0c138ed7f002ec3e31b58d9ecc8e700294786efa2a811' },
-                    { name: 'ProposalMarket', lastDeployedSlot: 502071612, binarySha256: '9055f2da2e7289020343856aa3c5f8abc1eff96607281472cb53624bd503d1ba' }
+                    { name: 'ProposalPledge', lastDeployedSlot: 503098918, binarySha256: '649c6fda6c9cc2bd5e224772ca562dfb6576a2f46ca46498ad271f5bf39d053c' },
+                    { name: 'ProposalMarket', lastDeployedSlot: 503099080, binarySha256: '3039d28d7ea30161d418f0ac02924e97085b902d0d420e6d3cd0197d8ba91c0e' }
                 ]
             },
             publicProof: {

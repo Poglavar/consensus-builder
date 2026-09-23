@@ -18,15 +18,17 @@ mirrored in [`blockchain/solana/Anchor.toml`](../blockchain/solana/Anchor.toml),
 `declare_id!`, and the generated IDLs. Contract tests fail when these representations diverge.
 
 The public hackathon manifest also pins the exact mutable devnet deployments inspected on
-2026-09-22, rather than treating a stable program address as a version:
+2026-09-23, rather than treating a stable program address as a version:
 
 | Program | ProgramData | Last deployed slot | Deployed binary SHA-256 |
 |---|---|---:|---|
-| ProposalPledge | `EtV7…SyZQ` | `501062795` | `15370963…a2a811` |
-| ProposalMarket | `AGmZ…qhx7` | `502071612` | `9055f2da…3d1ba` |
+| ProposalPledge | `EtV7…SyZQ` | `503098918` | `649c6fda…9d053c` |
+| ProposalMarket | `AGmZ…qhx7` | `503099080` | `3039d28d…ba91c0e` |
 
 Both remain upgradeable by `AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ`. These hashes identify
 what devnet executed; they do not claim a reproducible source-to-binary build or an audited program.
+The 2026-09-23 upgrades (commit `361cf41`) made every market and donation vault `init_if_needed`, so
+pre-creating a vault's predictable token account can no longer block a proposal's donations or market.
 
 The devnet USDC mint used by the demo is
 [`4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU`](https://explorer.solana.com/address/4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU?cluster=devnet).
