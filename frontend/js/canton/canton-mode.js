@@ -5,6 +5,8 @@
 // user-management.js reflects/opens this. See feature-daml.md §13.
 (function () {
     'use strict';
+    // Canton is switched off (environment.js CANTON_ENABLED): define nothing, request nothing.
+    if (window.CANTON_ENABLED !== true) return;
 
     const ACTIVE_KEY = 'canton.active';
     const PARTY_KEY = 'canton.party';

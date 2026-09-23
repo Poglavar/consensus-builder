@@ -161,6 +161,10 @@ function isCantonModeActive() {
     return !!(window.CantonMode && typeof window.CantonMode.isActive === 'function' && window.CantonMode.isActive());
 }
 const CANTON_CHAIN_OPTION = { chainIdHex: 'canton', chainIdDec: null, label: 'Canton (DevNet)', tooltip: 'Canton DevNet — custodial, no wallet needed', isKnownNetwork: true };
+// The Canton network option is offered only while the feature is on (environment.js CANTON_ENABLED).
+function cantonChainOptions() {
+    return (window.CANTON_ENABLED === true && window.CantonMode) ? [CANTON_CHAIN_OPTION] : [];
+}
 
 function getNoNetworkChainOption() {
     return {
@@ -534,6 +538,12 @@ function showAvatarOptions() {
 function setupWelcomeModalLanguagePicker() {
     const modal = document.getElementById('welcome-modal');
     if (!modal) return;
+    // The modal is set up on every open; drop the previous open's listeners first, or the toggle
+    // gets one click handler per open and a second open toggles twice (menu never shows).
+    if (typeof modal.__welcomeLanguagePickerCleanup === 'function') {
+        try { modal.__welcomeLanguagePickerCleanup(); } catch (_) { }
+        modal.__welcomeLanguagePickerCleanup = null;
+    }
 
     const switcher = modal.querySelector('[data-language-switcher]');
     if (!switcher) return;
@@ -546,45 +556,27 @@ function setupWelcomeModalLanguagePicker() {
     const flagByLang = { en: '🌐', es: '🇪🇸', sr: '🇷🇸', hr: '🇭🇷' };
     const getFlag = (lang) => flagByLang[lang] || '🌐';
 
-    // Determine initial language: user's stored language or city's default
-    let initialLang = 'en';
-
-    // First, check if user has a stored language preference
-    const LANGUAGE_STORAGE_KEY = 'cb_language';
-    let storedLang = null;
+    // Initial language: the user's pick this session, else an explicit ?lang=, else the saved
+    // preference, else the city default (i18n.resolveSessionLanguage owns that order). Opening this
+    // modal used to reset to saved-or-city-default and so discarded ?lang= (NYC → en).
+    let cityDefault = null;
     try {
-        if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.getItem === 'function') {
-            storedLang = PersistentStorage.getItem(LANGUAGE_STORAGE_KEY);
+        const cityManager = typeof window !== 'undefined' && window.CityConfigManager ? window.CityConfigManager : null;
+        if (cityManager && typeof cityManager.getCurrentCityConfig === 'function') {
+            const cityConfig = cityManager.getCurrentCityConfig();
+            cityDefault = (cityConfig && cityConfig.language && cityConfig.language.default) || null;
         }
     } catch (_) { /* ignore */ }
 
-    if (storedLang) {
-        // User has a stored language preference, use it
-        initialLang = storedLang;
-    } else {
-        // No stored language, use city's default
-        try {
-            const cityManager = typeof window !== 'undefined' && window.CityConfigManager ? window.CityConfigManager : null;
-            if (cityManager && typeof cityManager.getCurrentCityConfig === 'function') {
-                const cityConfig = cityManager.getCurrentCityConfig();
-                if (cityConfig && cityConfig.language && cityConfig.language.default) {
-                    initialLang = cityConfig.language.default;
-                }
-            }
-        } catch (_) { /* ignore */ }
-    }
-
-    // Get current language from i18n API to see what's actually set
     const currentLang = (i18nApi && typeof i18nApi.getLanguage === 'function') ? i18nApi.getLanguage() : 'en';
-
-    // If we determined a different language than what's currently set, update it
+    let initialLang = (i18nApi && typeof i18nApi.resolveSessionLanguage === 'function')
+        ? i18nApi.resolveSessionLanguage(cityDefault)
+        : currentLang;
     if (initialLang !== currentLang && i18nApi && typeof i18nApi.setLanguage === 'function') {
         try {
-            i18nApi.setLanguage(initialLang);
-        } catch (_) { /* ignore */ }
-    } else {
-        // Use current language if no change needed
-        initialLang = currentLang;
+            // Not a user choice, so nothing is saved.
+            initialLang = i18nApi.setLanguage(initialLang, { persist: false });
+        } catch (_) { initialLang = currentLang; }
     }
 
     const setExpanded = (expanded) => {
@@ -615,7 +607,7 @@ function setupWelcomeModalLanguagePicker() {
         if (!selectedLang) return;
 
         if (i18nApi && typeof i18nApi.setLanguage === 'function') {
-            i18nApi.setLanguage(selectedLang);
+            i18nApi.setLanguage(selectedLang, { userChoice: true });
         }
         setActive(selectedLang);
         setExpanded(false);
@@ -1831,7 +1823,7 @@ async function getAvailableChainOptions() {
             { chainIdHex: 'solana-devnet', chainIdDec: null, label: 'Solana Devnet', tooltip: 'Solana Devnet', isKnownNetwork: true },
             { chainIdHex: 'solana-mainnet-beta', chainIdDec: null, label: 'Solana Mainnet', tooltip: 'Solana Mainnet', isKnownNetwork: true }
         ];
-        return [getNoNetworkChainOption(), ...solanaOptions, CANTON_CHAIN_OPTION];
+        return [getNoNetworkChainOption(), ...solanaOptions, ...cantonChainOptions()];
     }
 
     const options = new Map();
@@ -1891,7 +1883,7 @@ async function getAvailableChainOptions() {
 
     const sorted = Array.from(options.values()).sort((a, b) => a.label.localeCompare(b.label));
     sorted.unshift(getNoNetworkChainOption()); // Leaving every network must always be possible.
-    sorted.push(CANTON_CHAIN_OPTION); // Canton is always available (no wallet needed)
+    sorted.push(...cantonChainOptions()); // Canton needs no wallet, so it is listed whenever enabled
     return sorted;
 }
 

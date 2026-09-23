@@ -69,6 +69,10 @@
 
         const targetLang = cityConfig.language.default;
         const i18n = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
+        // An explicit ?lang= in the URL outranks the city default for the session.
+        if (i18n && typeof i18n.getUrlLanguage === 'function' && i18n.getUrlLanguage()) {
+            return;
+        }
         if (i18n && typeof i18n.getLanguage === 'function' && i18n.getLanguage() === targetLang) {
             return;
         }

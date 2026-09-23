@@ -519,6 +519,98 @@ body.land-fork-editing #parcel-info-panel {
     flex: 1 1 calc(50% - 12px);
 }
 
+/* Phone-only "Filters" toggle row (button + result count). Hidden on desktop, where the filters are
+   always shown; on the bottom sheet the filters fold behind it so the list keeps the height. */
+.proposal-filters-toggle-row {
+    display: none;
+}
+
+.proposal-filters-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid #cdd4de;
+    background: #fff;
+    color: #334;
+    border-radius: 16px;
+    padding: 5px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.proposal-filters-badge {
+    min-width: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: #0b4f91;
+    color: #fff;
+    font-size: 11px;
+    line-height: 18px;
+    text-align: center;
+}
+
+.proposal-filters-chevron {
+    font-size: 10px;
+    transition: transform 0.2s ease;
+}
+
+.proposal-filters-toggle[aria-expanded="true"] .proposal-filters-chevron {
+    transform: rotate(180deg);
+}
+
+.proposal-filters-toggle-count {
+    font-size: 12px;
+    color: #667085;
+}
+
+@media (max-width: 768px) {
+    .proposal-filters-toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 8px 14px;
+        background-color: #fafbfc;
+        border-bottom: 1px solid #eee;
+        flex-shrink: 0;
+    }
+
+    /* The count lives in the toggle row here. */
+    .proposal-list-count {
+        display: none;
+    }
+
+    .proposal-list-controls {
+        gap: 8px;
+        padding: 10px 14px;
+        flex-shrink: 0;
+    }
+
+    .proposal-list-controls.is-collapsed {
+        display: none;
+    }
+
+    .proposal-filter-group {
+        min-width: 0;
+    }
+
+    .proposal-source-toggle {
+        gap: 6px;
+        padding: 8px 10px 0;
+        flex-shrink: 0;
+    }
+
+    .proposal-source-btn {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+
+    .proposal-list-modal-body {
+        min-height: 0;
+    }
+}
+
 .proposal-filter-group label {
     font-size: 12px;
     font-weight: 600;

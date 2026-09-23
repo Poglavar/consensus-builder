@@ -4,6 +4,8 @@
 // stay private to stakeholders. See feature-daml.md §13.
 (function (global) {
     'use strict';
+    // Canton is switched off (environment.js CANTON_ENABLED): define nothing, request nothing.
+    if (global.CANTON_ENABLED !== true) return;
 
     // The backend base. data-source.js already resolves this for every environment — including the
     // `?backend=` override that dev.sh passes so a worktree talks to its own backend — so defer to it.

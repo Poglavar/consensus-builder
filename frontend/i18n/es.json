@@ -1691,7 +1691,8 @@
                         "reparcellization": "Reparcelaciones",
                         "parcel": "Propuestas de parcela",
                         "other": "Otros"
-                    }
+                    },
+                    "toggle": "Filtros"
                 },
                 "resultCountWord": "mostrados",
                 "sources": {

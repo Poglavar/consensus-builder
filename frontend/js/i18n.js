@@ -56,6 +56,9 @@
     };
 
     let currentLanguage = FALLBACK_LANGUAGE;
+    // Set once the user picks a language in a switcher. Until then an explicit ?lang= in the URL
+    // outranks the saved preference and any city default for the whole page session.
+    let userChoseLanguage = false;
     let readyResolve;
     const ready = new Promise(resolve => { readyResolve = resolve; });
 
@@ -238,8 +241,9 @@
     }
 
     function setLanguage(lang, options = {}) {
-        const { persist = true, apply = true } = options;
+        const { persist = true, apply = true, userChoice = false } = options;
         const normalized = normalizeLanguage(lang) || FALLBACK_LANGUAGE;
+        if (userChoice) userChoseLanguage = true;
         const changed = normalized !== currentLanguage;
         currentLanguage = normalized;
 
@@ -256,6 +260,13 @@
             });
         }
         return currentLanguage;
+    }
+
+    // The language a surface should settle on when it is not reacting to a pick: the user's pick
+    // this session, else an explicit ?lang=, else the saved preference, else the city default.
+    function resolveSessionLanguage(cityDefault) {
+        if (userChoseLanguage) return currentLanguage;
+        return readUrlLanguage() || readStoredLanguage() || normalizeLanguage(cityDefault) || currentLanguage;
     }
 
     function getLanguage() {
@@ -297,7 +308,8 @@
 
     storageReady.then(() => {
         const storedLanguage = readStoredLanguage();
-        if (storedLanguage && storedLanguage !== currentLanguage) {
+        // An explicit ?lang= already chose the language; a saved preference must not undo it.
+        if (!readUrlLanguage() && storedLanguage && storedLanguage !== currentLanguage) {
             setLanguage(storedLanguage, { persist: false });
         } else {
             applyTranslations();
@@ -316,6 +328,8 @@
         t: translate,
         setLanguage,
         getLanguage,
+        getUrlLanguage: readUrlLanguage,
+        resolveSessionLanguage,
         registerTranslations,
         applyTranslations,
         onChange,

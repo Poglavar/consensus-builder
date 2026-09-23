@@ -286,8 +286,28 @@ function renderProposalListModal() {
     const statusFilterLabel = t('modal.roadWidth.proposalList.filters.status', 'Status');
     const appliedFilterLabel = t('modal.roadWidth.proposalList.filters.applied', 'Applied');
 
+    // Phones: the list is a half-height bottom sheet, and seven filter fields left the list itself
+    // ~30-60px. There the filters fold behind a toggle (collapsed by default, showing how many are
+    // active); the CSS only honours the collapse at the sheet breakpoint, so desktop is unchanged.
+    const resultCountText = `${chosen.sorted.length} ${t('modal.roadWidth.proposalList.resultCountWord', 'shown')}`;
+
+    const activeFilterCount = countActiveProposalListFilters(proposalListState);
+    const filtersOpen = proposalListState.filtersOpen === true;
+    const filtersToggleLabel = t('modal.roadWidth.proposalList.filters.toggle', 'Filters');
+    const filtersToggleHtml = `
+        <div class="proposal-filters-toggle-row">
+            <button type="button" class="proposal-filters-toggle" aria-expanded="${filtersOpen ? 'true' : 'false'}" aria-controls="proposal-list-controls">
+                <i class="fas fa-sliders-h" aria-hidden="true"></i>
+                <span data-i18n-key="modal.roadWidth.proposalList.filters.toggle">${escapeHtml(filtersToggleLabel)}</span>
+                ${activeFilterCount ? `<span class="proposal-filters-badge">${activeFilterCount}</span>` : ''}
+                <i class="fas fa-chevron-down proposal-filters-chevron" aria-hidden="true"></i>
+            </button>
+            <span class="proposal-filters-toggle-count">${escapeHtml(resultCountText)}</span>
+        </div>
+    `;
+
     const controlsHtml = `
-        <div class="proposal-list-controls">
+        <div class="proposal-list-controls${filtersOpen ? '' : ' is-collapsed'}" id="proposal-list-controls">
             <div class="proposal-filter-group">
                 <select id="proposal-filter-type" aria-label="${escapeHtml(modalStrings.filters.goal)}">
                     ${goalOptions.map(option => `
@@ -353,8 +373,6 @@ function renderProposalListModal() {
         });
     };
 
-    const resultCountText = `${chosen.sorted.length} ${t('modal.roadWidth.proposalList.resultCountWord', 'shown')}`;
-
     // A live-search re-render replaces innerHTML, destroying the focused filter field. Remember which
     // field held focus and its caret so we can restore both afterwards, so typing never loses the
     // field. On the open action, showAllProposalsModal sets a one-shot autofocus flag (honored here
@@ -375,6 +393,7 @@ function renderProposalListModal() {
             </div>
             ${sourceToggleHtml}
             ${blockchainCantonNote}
+            ${filtersToggleHtml}
             ${controlsHtml}
             <div class="proposal-list-count">${escapeHtml(resultCountText)}</div>
             <div class="proposal-list-modal-body">
@@ -488,6 +507,18 @@ function renderProposalListModal() {
         });
     }
 
+    const filtersToggle = modal.querySelector('.proposal-filters-toggle');
+    if (filtersToggle) {
+        // Toggled in place (not re-rendered) so the open state costs no rebuild; the state flag
+        // carries it across the next render.
+        filtersToggle.addEventListener('click', () => {
+            proposalListState.filtersOpen = !(proposalListState.filtersOpen === true);
+            filtersToggle.setAttribute('aria-expanded', proposalListState.filtersOpen ? 'true' : 'false');
+            const controls = modal.querySelector('.proposal-list-controls');
+            if (controls) controls.classList.toggle('is-collapsed', !proposalListState.filtersOpen);
+        });
+    }
+
     const sortSelect = modal.querySelector('#proposal-sort');
     if (sortSelect) {
         sortSelect.addEventListener('change', event => {
@@ -586,7 +617,8 @@ async function showAllProposalsModal() {
     // rest of the screen, and request search-box autofocus (honored inside the render, which may be
     // deferred until i18n is ready).
     if (wasHidden) {
-        proposalListState.autofocusSearch = true;
+        // Not on phones/touch: focusing the search there pops the on-screen keyboard over the list.
+        proposalListState.autofocusSearch = shouldAutofocusProposalListSearch(window);
         // Enter proposal browse mode: the map stays live (pan/zoom) but only proposals are clickable
         // (see onParcelClick + the tail of selectAndHighlightProposal).
         window.proposalListBrowseMode = true;
@@ -2217,4 +2249,33 @@ function showSharedPayloadInspector(payload) {
             resolve(null);
         }
     });
+}
+
+// Number of list filters that currently narrow the result (sort order is not a filter). Shown on
+// the phone Filters toggle so a collapsed filter panel never silently hides proposals.
+function countActiveProposalListFilters(listState) {
+    const st = listState || {};
+    let count = 0;
+    if (st.filterType && st.filterType !== 'all') count++;
+    if (st.lifecycleFilter && st.lifecycleFilter !== 'all') count++;
+    if (st.appliedFilter && st.appliedFilter !== 'all') count++;
+    if (String(st.authorFilter || '').trim()) count++;
+    if (String(st.searchText || '').trim()) count++;
+    return count;
+}
+
+// Autofocus the search box only with a real keyboard on a wide screen: on touch or narrow
+// viewports focusing it opens the on-screen keyboard, which covers the bottom-sheet list.
+function shouldAutofocusProposalListSearch(win) {
+    try {
+        if (!win || typeof win.matchMedia !== 'function') return false;
+        return !win.matchMedia('(max-width: 768px), (pointer: coarse)').matches;
+    } catch (_) {
+        return false;
+    }
+}
+
+// Node-only: lets backend tests exercise the pure helpers above. Inert in the browser.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { countActiveProposalListFilters, shouldAutofocusProposalListSearch };
 }

@@ -16,6 +16,13 @@
         if (typeof window.STORAGE_PROVIDER === 'undefined') {
             window.STORAGE_PROVIDER = 'ipfs';
         }
+        // Canton (DAML) chain option. Off: the backend does not register /canton/*, so the canton/*
+        // modules do not load their globals — no requests, no warnings, no Canton network option or
+        // badges. Every consumer already null-checks those globals. Set true (here, or before this
+        // script runs) to bring the whole feature back; the code is kept intact for that.
+        if (typeof window.CANTON_ENABLED === 'undefined') {
+            window.CANTON_ENABLED = false;
+        }
         // Walrus aggregator used to resolve walrus://<blobId> for display. Defaults to public testnet.
         if (typeof window.WALRUS_AGGREGATOR_URL === 'undefined') {
             window.WALRUS_AGGREGATOR_URL = 'https://aggregator.walrus-testnet.walrus.space';

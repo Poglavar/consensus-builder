@@ -1648,7 +1648,8 @@
                         "reparcellization": "Reparcelacija",
                         "parcel": "Prijedlozi parcela",
                         "other": "Ostalo"
-                    }
+                    },
+                    "toggle": "Filtri"
                 },
                 "resultCountWord": "prikazano",
                 "sources": {

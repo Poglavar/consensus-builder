@@ -1709,7 +1709,7 @@ function setupAgentDialogLanguageSwitcher(modal) {
         if (!selectedLang) return;
 
         if (i18nApi && typeof i18nApi.setLanguage === 'function') {
-            i18nApi.setLanguage(selectedLang);
+            i18nApi.setLanguage(selectedLang, { userChoice: true });
         }
         setActive(selectedLang);
         setExpanded(false);

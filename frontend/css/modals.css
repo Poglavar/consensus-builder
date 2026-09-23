@@ -4446,20 +4446,20 @@ body.site-intro-open {
     outline-offset: 2px;
 }
 
+/* The options open as an in-flow row beside the toggle, not a dropdown below it: the picker sits
+   near the bottom of a scrolling modal, and on phones (375x740) an absolutely positioned list was
+   clipped by the modal, so the last option (Croatian) could not be tapped. In flow, nothing clips. */
 .welcome-language-picker .language-menu {
-    position: absolute;
-    top: 44px;
-    left: 0;
+    position: static;
     display: none;
-    flex-direction: column;
-    gap: 6px;
-    padding: 8px;
+    flex-direction: row;
+    gap: 4px;
+    margin-left: 8px;
+    padding: 3px;
     background: #ffffff;
     border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
-    z-index: 5;
-    min-width: 68px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
 }
 
 .welcome-language-picker.is-open .language-menu {
@@ -4467,8 +4467,8 @@ body.site-intro-open {
 }
 
 .welcome-language-picker .language-option {
-    width: 100%;
-    height: 38px;
+    width: 44px;
+    height: 32px;
     border-radius: 8px;
     border: 1px solid transparent;
     background: transparent;

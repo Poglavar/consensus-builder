@@ -1692,7 +1692,8 @@
                         "reparcellization": "Land readjustment",
                         "parcel": "Parcel proposals",
                         "other": "Other"
-                    }
+                    },
+                    "toggle": "Filters"
                 },
                 "resultCountWord": "shown",
                 "sources": {

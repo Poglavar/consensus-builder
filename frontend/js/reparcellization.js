@@ -5,7 +5,8 @@
         || typeof reparcellizationUiState.resolveOwnerDisplayName !== 'function'
         || typeof reparcellizationUiState.normalizePlotOwners !== 'function'
         || typeof reparcellizationUiState.plotIsAssigned !== 'function'
-        || typeof reparcellizationUiState.readjustmentInputFeatures !== 'function') {
+        || typeof reparcellizationUiState.readjustmentInputFeatures !== 'function'
+        || typeof reparcellizationUiState.newPlotOwnerHtml !== 'function') {
         console.error('[reparcellization] UI state helpers are unavailable.');
         return;
     }
@@ -14,7 +15,11 @@
         resolveOwnerDisplayName,
         normalizePlotOwners,
         plotIsAssigned,
-        readjustmentInputFeatures
+        readjustmentInputFeatures,
+        safePlanColor,
+        ownerLegendCellHtml,
+        cashOfferInputHtml,
+        newPlotOwnerHtml
     } = reparcellizationUiState;
 
     function liveReparcellizationFeature(parcelOrId) {
@@ -900,7 +905,7 @@
             table.appendChild(thead);
             const tbody = document.createElement('tbody');
             ownerShares.forEach((entry, index) => {
-                const color = entry.color || pickOwnerColor(entry.ownerKey, index);
+                const color = safePlanColor(entry.color, pickOwnerColor(entry.ownerKey, index));
                 entry.color = color;
                 const ledger = computeOwnerLedger(entry);
                 // Balance sign: + owner receives surplus land and pays, − owner is compensated.
@@ -911,11 +916,11 @@
                 const cashOffer = getCashOffer(entry.ownerKey, ledger);
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><span class="legend-color" style="background:${color}"></span> ${entry.displayName}</td>
+                    <td>${ownerLegendCellHtml(entry, color)}</td>
                     <td class="area-cell">${formatLedgerMetric(ledger.contributed)}</td>
                     <td class="area-cell">${formatLedgerMetric(ledger.assigned)}</td>
                     <td class="area-cell ${balClass}">${balSign}${formatLedgerMetric(ledger.cashBalance)}</td>
-                    <td class="cash-offer-cell"><input type="number" class="cash-offer-input" min="0" step="1" data-owner-key="${entry.ownerKey}" value="${Math.round(cashOffer)}"></td>`;
+                    <td class="cash-offer-cell">${cashOfferInputHtml(entry.ownerKey, cashOffer)}</td>`;
                 tbody.appendChild(tr);
             });
             table.appendChild(tbody);
@@ -951,11 +956,10 @@
                 const owners = Array.isArray(slice.owners) && slice.owners.length
                     ? slice.owners
                     : [{ displayName: slice.displayName, color: slice.color }];
-                const ownerHtml = owners.map(o => {
-                    const needsBorder = o.ownerKey === PUBLIC_LAND_KEY || (o.color || '').toLowerCase() === '#ffffff';
-                    const swatchStyle = `background:${o.color || '#ccc'}` + (needsBorder ? ';border:1px solid #9ca3af' : '');
-                    return `<span class="newplot-owner"><span class="legend-color" style="${swatchStyle}"></span>${o.displayName || t('reparcellization.modal.unassigned', 'Unassigned')}</span>`;
-                }).join('');
+                const unassignedLabel = t('reparcellization.modal.unassigned', 'Unassigned');
+                const ownerHtml = owners
+                    .map(o => newPlotOwnerHtml(o, { publicKey: PUBLIC_LAND_KEY, unassignedLabel }))
+                    .join('');
                 const tr = document.createElement('tr');
                 tr.className = 'reparcel-newplot-row';
                 tr.innerHTML = `
@@ -1060,7 +1064,7 @@
             tr.className = 'reparcel-oldplot-row';
             const area = computeFeatureArea(feature);
             tr.innerHTML = `
-                <td class="plot-cell"><strong>${escapeForCell(inputParcelLabel(feature))}</strong></td>
+                <td class="plot-cell"><strong>${escapeHtml(inputParcelLabel(feature))}</strong></td>
                 <td class="area-cell">${formatArea(area)}</td>`;
             tr.addEventListener('mouseenter', () => highlightInputParcel(feature, true));
             tr.addEventListener('mouseleave', () => highlightInputParcel(feature, false));
@@ -1076,12 +1080,6 @@
                 { shown: features.length, declared });
             state.oldPlotsListEl.appendChild(note);
         }
-    }
-
-    function escapeForCell(value) {
-        return String(value == null ? '' : value).replace(/[&<>"']/g, ch => (
-            { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]
-        ));
     }
 
     function computeRingCentroidAndAreaXY(ringXY) {
@@ -1322,16 +1320,19 @@
         return polygons
             .filter(polygon => polygon && polygon.geometry)
             .map(polygon => {
-                const ownerKey = polygon.ownerKey || '';
-                const displayName = polygon.displayName || t('reparcellization.modal.unassigned', 'Unassigned');
-                const color = polygon.color || '#cccccc';
+                // A shared plan is untrusted input: keys/names are coerced to strings (escaped at
+                // every render) and colours must be hex literals, since they land in style="".
+                const ownerKey = polygon.ownerKey ? String(polygon.ownerKey) : '';
+                const displayName = polygon.displayName ? String(polygon.displayName) : t('reparcellization.modal.unassigned', 'Unassigned');
+                const color = safePlanColor(polygon.color, '#cccccc');
                 return {
                     ownerKey,
                     displayName,
                     percent: Number.isFinite(Number(polygon.percent)) ? Number(polygon.percent) : 0,
                     color,
                     geometry: JSON.parse(JSON.stringify(polygon.geometry)),
-                    owners: normalizePlotOwners({ ...polygon, ownerKey, displayName, color }),
+                    owners: normalizePlotOwners({ ...polygon, ownerKey, displayName, color })
+                        .map(owner => ({ ...owner, color: safePlanColor(owner.color, color) })),
                     source: polygon.source || 'manual'
                 };
             });
@@ -2017,7 +2018,7 @@
 
     function eraseTooltipFor(group) {
         const nameOf = index => plotLabel(index);
-        return escapeForCell(t('reparcellization.modal.eraseTooltip',
+        return escapeHtml(t('reparcellization.modal.eraseTooltip',
             'Erase this boundary — {{a}} and {{b}} become one plot',
             { a: nameOf(group.plots[0]), b: nameOf(group.plots[1]) }));
     }
@@ -2418,7 +2419,7 @@
         try {
             L.popup({ className: 'reparcel-node-popup-wrap', closeButton: true, autoPan: true })
                 .setLatLng([node.coord[1], node.coord[0]])
-                .setContent(`<div class="reparcel-node-popup"><div class="reparcel-node-popup__hint">${escapeForCell(message)}</div></div>`)
+                .setContent(`<div class="reparcel-node-popup"><div class="reparcel-node-popup__hint">${escapeHtml(message)}</div></div>`)
                 .openOn(state.map);
         } catch (_) { /* a popup that will not open must not break the handle */ }
     }
@@ -3011,7 +3012,7 @@
                     const ownerNames = Array.isArray(slice.owners) && slice.owners.length
                         ? slice.owners.map(o => o.displayName).join(', ')
                         : slice.displayName;
-                    layer.bindTooltip(ownerNames, { sticky: true, className: 'reparcel-slice-tooltip' });
+                    layer.bindTooltip(escapeHtml(ownerNames), { sticky: true, className: 'reparcel-slice-tooltip' });
                 }
                 layerIndex++;
             });
@@ -3331,7 +3332,7 @@
             interactive: showing,
             onEachFeature: showing
                 ? (feature, layer) => {
-                    layer.bindTooltip(inputParcelLabel(feature), { direction: 'center', className: 'reparcel-oldplot-tip' });
+                    layer.bindTooltip(escapeHtml(inputParcelLabel(feature)), { direction: 'center', className: 'reparcel-oldplot-tip' });
                     layer.on('mouseover', () => layer.setStyle({ weight: 3, fillOpacity: 0.6 }));
                     layer.on('mouseout', () => layer.setStyle({ weight: 2, fillOpacity: 0.45 }));
                 }
@@ -3406,7 +3407,7 @@
                     if (typeof idx === 'number') {
                         layer.__reparcelSliceIndex = idx;
                         const owners = feature.properties.ownerNames || feature.properties.displayName;
-                        layer.bindTooltip(owners, { sticky: true, className: 'reparcel-slice-tooltip' });
+                        layer.bindTooltip(escapeHtml(owners), { sticky: true, className: 'reparcel-slice-tooltip' });
                         layer.on('click', (e) => {
                             // While drawing, let the click reach the map so vertices can be
                             // placed over existing plots; don't swallow it for assignment. While
