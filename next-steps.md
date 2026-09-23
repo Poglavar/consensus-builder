@@ -47,15 +47,9 @@ The verified-facts listing now reports 2 unique payers; the paid-proposal listin
 - **Payoff:** medium. It makes competing proposals over overlapping land coherent.
 - **Effort:** small once decided; the lineage record (`landFork`) already carries the relation and counts.
 
-### 7. Fix the flaky rate-limit test
-`backend/test/write-rate-limit-exemptions.test.js` fails intermittently with `ECONNRESET`/`socket hang up`, even when run alone; the failing case changes between runs.
-- **Why:** a suite that is red at random trains everyone to ignore red.
-- **Payoff:** low to medium.
-- **Effort:** small. Likely the test's own request burst; reuse one agent/keep-alive or serialise the requests.
-
 ## After the hackathon
 
-### 8. More evidence sources
+### 7. More evidence sources
 Add them through the existing adapter contract, in this order:
 1. permit/register source;
 2. imagery or building-footprint change;

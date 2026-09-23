@@ -12,6 +12,7 @@
 // checks a genuine write is still limited — an exemption that leaked to every POST would be worse
 // than the bug.
 
+import http from 'node:http';
 import { describe, it, expect } from 'vitest';
 import request from 'supertest';
 import { createApp, WRITE_RATE_LIMIT } from '../index.js';
@@ -36,11 +37,25 @@ function app() {
 // forgets the header never reaches the thing under test — and an assertion of "no 429" would then
 // pass on a wall of 403s. Every request here carries an allowed origin, and every test asserts the
 // requests were actually served.
-async function hammer(server, path, body, times) {
+//
+// One listening server per burst, over one keep-alive connection. Handing supertest a bare express
+// app makes it start and stop a fresh HTTP server for EVERY request; at WRITE_RATE_LIMIT (600) that
+// is ~3,600 listen/close cycles per run, and roughly one request in a couple of thousand was reset
+// against a closing server (ECONNRESET / "socket hang up") — half of all runs failed, on a random
+// test each time, on an idle machine.
+async function hammer(expressApp, path, body, times) {
+    const server = http.createServer(expressApp);
+    await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+    const agent = new http.Agent({ keepAlive: true, maxSockets: 1 });
     const codes = [];
-    for (let i = 0; i < times; i += 1) {
-        const res = await request(server).post(path).send(body).set('Origin', 'http://localhost:5583');
-        codes.push(res.status);
+    try {
+        for (let i = 0; i < times; i += 1) {
+            const res = await request(server).post(path).agent(agent).send(body).set('Origin', 'http://localhost:5583');
+            codes.push(res.status);
+        }
+    } finally {
+        agent.destroy();
+        await new Promise(resolve => server.close(resolve));
     }
     return codes;
 }
