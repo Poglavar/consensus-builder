@@ -114,42 +114,78 @@
         if (!query) return true;
         const haystack = [
             event.actor?.name, event.actor?.id, event.actor?.wallet,
-            event.action?.type, event.entity?.id, event.message, event.text,
+            event.action?.type, event.entity?.id, event.message, event.messageHtml,
             event.transaction, event.runId, event.model, event.batchId
         ].filter(Boolean).join(' ').toLocaleLowerCase();
         return haystack.includes(String(query).trim().toLocaleLowerCase());
     }
 
-    function matchesActivity(event, filter = 'all') {
+    // The explorer's whole filter vocabulary. Every surface (map dialog, per-agent log, deep links)
+    // speaks this one shape; `proposalIds` is how a parcel set is expressed, because events reference
+    // proposals and the caller resolves which proposals share a set.
+    const EMPTY_ACTIVITY_FILTER = Object.freeze({
+        source: 'combined', kind: 'all', controller: 'all', action: 'all', status: 'all',
+        actorId: null, proposalId: null, runId: null, parcelSet: null, proposalIds: null, query: ''
+    });
+
+    function activityProposalId(event) {
+        if (event?.entity?.type === 'proposal' && event.entity.id) return String(event.entity.id);
+        return event?.action?.proposalId ? String(event.action.proposalId) : null;
+    }
+
+    function matchesActivity(event, filter = {}) {
         if (!event) return false;
-        if (typeof filter === 'string') {
-            if (filter === 'all') return true;
-            if (filter === 'live' || filter === 'simulation') return event.source === filter;
-            if (filter === 'human' || filter === 'agent' || filter === 'system') return event.actor?.kind === filter;
-            if (filter === 'algorithm' || filter === 'llm') return event.actor?.controller === filter;
-            if (filter === 'success') return event.ok !== false;
-            if (filter === 'failed') return event.ok === false;
-            return event.action?.type === filter;
-        }
-        const source = filter.source || 'all';
-        const actor = filter.actor || filter.controller || 'all';
-        const action = filter.action || 'all';
-        const status = filter.status || 'all';
-        if (source !== 'all' && event.source !== source) return false;
-        if (actor !== 'all') {
-            if (actor === 'human' || actor === 'agent' || actor === 'system') {
-                if (event.actor?.kind !== actor) return false;
-            } else if (event.actor?.controller !== actor) return false;
-        }
-        if (action !== 'all' && event.action?.type !== action) return false;
-        if (status === 'success' && event.ok === false) return false;
-        if (status === 'failed' && event.ok !== false) return false;
-        return includesQuery(event, filter.query);
+        const f = { ...EMPTY_ACTIVITY_FILTER, ...filter };
+        if (f.source !== 'combined' && event.source !== f.source) return false;
+        if (f.kind !== 'all' && event.actor?.kind !== f.kind) return false;
+        if (f.controller !== 'all' && event.actor?.controller !== f.controller) return false;
+        if (f.action !== 'all' && event.action?.type !== f.action) return false;
+        if (f.status === 'success' && event.ok === false) return false;
+        if (f.status === 'failed' && event.ok !== false) return false;
+        if (f.actorId && String(event.actor?.id) !== String(f.actorId)) return false;
+        if (f.proposalId && activityProposalId(event) !== String(f.proposalId)) return false;
+        if (f.runId && String(event.runId || '') !== String(f.runId)) return false;
+        if (Array.isArray(f.proposalIds) && !f.proposalIds.includes(activityProposalId(event))) return false;
+        return includesQuery(event, f.query);
+    }
+
+    // `?activity=<dimension>:<value>` deep links into the explorer, e.g. proposal:abc or actor:wallet.
+    const LINK_DIMENSIONS = Object.freeze({ actor: 'actorId', proposal: 'proposalId', run: 'runId', parcelSet: 'parcelSet' });
+
+    function parseActivityLink(value) {
+        const text = typeof value === 'string' ? value : '';
+        const separator = text.indexOf(':');
+        const field = LINK_DIMENSIONS[text.slice(0, separator)];
+        const id = text.slice(separator + 1);
+        return separator > 0 && field && id ? { [field]: id } : null;
+    }
+
+    function activityLinkFor(dimension, id) {
+        if (!LINK_DIMENSIONS[dimension] || id === null || id === undefined || id === '') throw new Error(`unsupported activity link ${dimension}`);
+        return `activity=${encodeURIComponent(`${dimension}:${id}`)}`;
+    }
+
+    // Live, simulation and combined are adapters behind one load(); the explorer never branches on
+    // where events came from. A failing adapter is reported, not silently treated as "no activity".
+    // `context` (the active filter) lets an adapter narrow its own query, e.g. server-side scope.
+    function createActivitySource(adapters = {}) {
+        return {
+            async load(source = 'combined', context = {}) {
+                const names = source === 'combined' ? Object.keys(adapters) : [source];
+                const failures = [];
+                const lists = await Promise.all(names.map(async name => {
+                    if (typeof adapters[name] !== 'function') throw new Error(`unknown activity source ${name}`);
+                    try { return await adapters[name](context); }
+                    catch (error) { failures.push({ source: name, error: error.message }); return []; }
+                }));
+                return { events: mergeActivities(...lists), failures };
+            }
+        };
     }
 
     function mergeActivities(...lists) {
         const byId = new Map();
-        lists.flat().filter(Boolean).forEach(event => byId.set(event.id || `${event.recordedAt}:${event.message || event.text}`, event));
+        lists.flat().filter(Boolean).forEach(event => byId.set(event.id || `${event.recordedAt}:${event.message || event.messageHtml}`, event));
         return Array.from(byId.values()).sort((left, right) => {
             const a = Date.parse(left.recordedAt || left.occurredAt || 0) || 0;
             const b = Date.parse(right.recordedAt || right.occurredAt || 0) || 0;
@@ -157,5 +193,8 @@
         });
     }
 
-    return { normalizeActor, normalizeAction, createActivityEvent, createEngine, matchesActivity, mergeActivities };
+    return {
+        EMPTY_ACTIVITY_FILTER, activityLinkFor, activityProposalId, createActivityEvent, createActivitySource, createEngine,
+        matchesActivity, mergeActivities, normalizeAction, normalizeActor, parseActivityLink
+    };
 });

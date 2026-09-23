@@ -56,7 +56,7 @@ function fixtures(overrides = {}) {
             }
         },
         '/hackathon/cases/golden-case': {
-            id: 'golden-case', state: 'in_progress',
+            id: 'golden-case', state: 'complete',
             proposal: { account: 'proposal-account' }, parcelSet: { parcelCount: 3 },
             branches: {
                 support: { donations: { totalUsdc: '0.05' }, pledges: { activeUsdc: '0.10', pledgeCount: '1' } },
@@ -70,11 +70,9 @@ function fixtures(overrides = {}) {
                 { action: { type: 'stake', side: 'yes' }, transaction: 'yes' },
                 { action: { type: 'stake', side: 'no' }, transaction: 'no' }
             ],
-            stages: [
-                { id: 'decision', state: 'pending' }, { id: 'evidence', state: 'pending' },
-                { id: 'resolution', state: 'pending' }, { id: 'settlement', state: 'blocked' }
-            ],
-            progress: { complete: 3, total: 7 }, transactions: [{}, {}, {}, {}, {}, {}]
+            stages: ['proposal', 'support', 'forecast', 'decision', 'evidence', 'resolution', 'settlement']
+                .map(id => ({ id, state: 'complete' })),
+            progress: { complete: 7, total: 7 }, transactions: [{}, {}, {}, {}, {}, {}]
         },
         '/oracle/markets/prospective/status': {
             state: 'open', market: 'prospective-market', resolver: { lastRun: { endedAt: '2026-09-21T11:45:00Z' } }
@@ -104,7 +102,7 @@ describe('public hackathon proof audit', () => {
             baseUrl: BASE, fetchImpl, now: Date.parse('2026-09-21T12:00:00Z')
         });
         expect(result.status).toBe('verified');
-        expect(result.summary).toEqual({ pass: 15, warn: 2, fail: 0 });
+        expect(result.summary).toEqual({ pass: 16, warn: 1, fail: 0 });
         expect(fetchImpl).toHaveBeenCalledTimes(11);
         expect(result.checks.find(item => item.id === 'deterministic_supporter')).toMatchObject({
             status: 'pass', evidence: { proposalId: 'p1', transaction: 'supporter-transaction' }
@@ -122,6 +120,24 @@ describe('public hackathon proof audit', () => {
         expect(result.checks.find(item => item.id === 'oracle_fact_bazaar').status).toBe('fail');
     });
 
+    it('fails the proof when a deployed release, terminal case or scheduled job regresses', async () => {
+        const staleJobs = fixtures()['/hackathon/operations.json'].jobs.map((job, index) => index === 2
+            ? { ...job, freshness: { state: 'stale' } } : job);
+        const openCase = { ...fixtures()['/hackathon/cases/golden-case'], stages: [{ id: 'decision', state: 'pending' }] };
+        const cases = [
+            ['scheduled_operations_freshness', { '/hackathon/operations.json': { status: 'degraded', jobs: staleJobs } }],
+            ['canonical_case_terminal', { '/hackathon/cases/golden-case': openCase }],
+            ['release_artifact_identity', { '/hackathon/proof.json': { ...fixtures()['/hackathon/proof.json'], releaseArtifacts: null } }]
+        ];
+        for (const [id, override] of cases) {
+            const result = await auditHackathonProof({
+                baseUrl: BASE, fetchImpl: fetchFor(fixtures(override)), now: Date.parse('2026-09-21T12:00:00Z')
+            });
+            expect(result.status, id).toBe('incomplete');
+            expect(result.checks.find(item => item.id === id).status, id).toBe('fail');
+        }
+    });
+
     it('reports chronology metadata as advisory while preserving the proven lifecycle', async () => {
         const data = fixtures();
         delete data['/docs/agents.json'].oracle.externalMarket.proof.chronology;
@@ -129,7 +145,7 @@ describe('public hackathon proof audit', () => {
             baseUrl: BASE, fetchImpl: fetchFor(data), now: Date.parse('2026-09-21T12:00:00Z')
         });
         expect(result.status).toBe('verified');
-        expect(result.summary).toEqual({ pass: 14, warn: 3, fail: 0 });
+        expect(result.summary).toEqual({ pass: 15, warn: 2, fail: 0 });
     });
 
     it('requires a payout and strictly ordered public proof once the prospective market settles', async () => {

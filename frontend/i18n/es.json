@@ -957,7 +957,9 @@
                 "relationContains": "Incluye todo este conjunto",
                 "relationInside": "Dentro de este conjunto",
                 "relationOverlap": "Terreno solapado",
-                "sharedCount": "{{shared}} de {{count}} parcelas compartidas"
+                "sharedCount": "{{shared}} de {{count}} parcelas compartidas",
+                "activityProposal": "Actividad de esta propuesta",
+                "activityLand": "Actividad en este terreno"
             },
             "actions": {
                 "apply": "Aplicar al mapa",
@@ -2033,7 +2035,6 @@
                     "picked": "Seleccionado: {{title}}",
                     "pickedOnMap": "Seleccionado: {{title}} — {{parcel}}",
                     "pickedNotInPlan": "Esa propuesta no está en este plan.",
-
                     "filterLabel": "Resaltar en el mapa",
                     "filterAll": "Todas",
                     "filterUploaded": "Subidas",
@@ -3074,14 +3075,54 @@
             "block_seed_not_fully_visible": "No se puede formar la manzana: la parcela seleccionada se sale del borde de la vista. La detección solo sigue parcelas totalmente visibles, así que aleja el zoom hasta que quepa y pulsa Detectar manzana otra vez.",
             "block_seed_unresolved": "No se pudo leer el identificador de la parcela seleccionada, así que no hay desde dónde formar la manzana.",
             "block_multiselect_unavailable": "La selección múltiple no está disponible, y una manzana se entrega como una selección de varias parcelas.",
-            "block_multiselect_off": "No se pudo activar la selección múltiple, y una manzana se entrega como una selección de varias parcelas."
+            "block_multiselect_off": "No se pudo activar la selección múltiple, y una manzana se entrega como una selección de varias parcelas.",
+            "activity_no_parcel_set": "Esta propuesta no tiene cargado un conjunto canónico de parcelas."
         }
     },
     "gameDialogs": {
         "log": {
-            "title": "Registro del juego",
-            "closeAria": "Cerrar registro del juego",
-            "empty": "Aún no hay eventos del juego. Inicia el juego para ver las actividades de los agentes."
+            "title": "Actividad",
+            "closeAria": "Cerrar actividad",
+            "empty": "Aún no hay eventos del juego. Inicia el juego para ver las actividades de los agentes.",
+            "viewsAria": "Vista de actividad",
+            "viewEvents": "Eventos",
+            "viewActors": "Actores",
+            "kindAria": "Tipo de actor",
+            "kindAll": "Todos",
+            "kindHuman": "Personas",
+            "kindAgent": "Agentes",
+            "kindSystem": "Sistema",
+            "controllerAria": "Controlador",
+            "controllerAll": "Cualquier controlador",
+            "controllerHuman": "Humano",
+            "controllerAlgorithm": "Algoritmo",
+            "controllerLlm": "LLM",
+            "clearScope": "Quitar filtro",
+            "scopeActor": "Actor: {{id}}",
+            "scopeProposal": "Propuesta: {{id}}",
+            "scopeParcelSet": "Terreno: {{id}}",
+            "scopeRun": "Ejecución: {{id}}",
+            "sourceFailed": "No se pudo cargar: {{sources}}",
+            "count": "{{count}} eventos",
+            "noMatch": "Aún no hay actividad que coincida.",
+            "row": {
+                "turn": "Turno {{turn}}",
+                "openProposal": "Abrir propuesta",
+                "transaction": "Transacción ↗",
+                "source": "Fuente: {{value}}",
+                "controller": "Controlador: {{value}}",
+                "action": "Acción: {{value}}",
+                "resultSuccess": "Resultado: éxito",
+                "resultFailed": "Resultado: fallido",
+                "scopeProposal": "Toda la actividad de esta propuesta",
+                "scopeLand": "Toda la actividad en este terreno",
+                "actorFallback": "Actor",
+                "details": "Detalles",
+                "actor": "Actor:",
+                "model": "Modelo:",
+                "run": "Ejecución",
+                "batch": "Lote"
+            }
         },
         "agents": {
             "title": "Estadísticas de agentes",

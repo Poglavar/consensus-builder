@@ -48,9 +48,9 @@ describe('hackathon pitch deck page', () => {
     it('shows the external resolver and first settlement as live', () => {
         expect(html).toContain('The full core loop is live on Solana Devnet');
         expect(html).toContain('External verifier and paid recipe-bound oracle facts live.');
-        expect(html).toContain('Court SAS → market outcome → USDC payout');
+        expect(html).toContain('Court attestation → recipe check → market outcome → USDC payout');
         expect(html).toContain('Settle the first genuinely prospective court market from a later public record');
-        expect(html).toContain('11 MCP tools');
+        expect(html).toContain('shared MCP interface');
         expect(html).toContain('MCP action surface');
         expect(html).toContain('more cities and autonomous agent clients');
     });

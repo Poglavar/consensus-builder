@@ -29,7 +29,7 @@ describe('unified agent action engine', () => {
         expect(engineApi.normalizeActor({ id: 'u1', name: 'Dana', userControlled: true })).toMatchObject({
             id: 'u1', name: 'Dana', kind: 'human', controller: 'human'
         });
-        expect(engineApi.matchesActivity({ source: 'live', actor: { kind: 'human' } }, 'human')).toBe(true);
+        expect(engineApi.matchesActivity({ source: 'live', actor: { kind: 'human' } }, { kind: 'human' })).toBe(true);
     });
 
     it('does not label HTTP failures as successful activity', () => {
@@ -63,10 +63,43 @@ describe('unified agent action engine', () => {
             actor: { id: 'wallet-1', name: 'Densifier', controller: 'llm', wallet: 'wallet-1' },
             action: { type: 'stake', proposalId: 'proposal-42' }, outcome: { ok: true, transaction: 'tx-1' }, source: 'live'
         });
-        expect(engineApi.matchesActivity(event, { source: 'live', actor: 'llm', action: 'stake', status: 'success', query: 'proposal-42' })).toBe(true);
+        expect(engineApi.matchesActivity(event, { source: 'live', kind: 'agent', controller: 'llm', action: 'stake', status: 'success', query: 'proposal-42' })).toBe(true);
         expect(engineApi.matchesActivity(event, { source: 'simulation' })).toBe(false);
-        expect(engineApi.matchesActivity(event, { actor: 'algorithm' })).toBe(false);
+        expect(engineApi.matchesActivity(event, { controller: 'algorithm' })).toBe(false);
+        expect(engineApi.matchesActivity(event, { kind: 'human' })).toBe(false);
         expect(engineApi.matchesActivity(event, { status: 'failed' })).toBe(false);
-        expect(engineApi.matchesActivity(event, 'llm')).toBe(true);
+        expect(engineApi.matchesActivity(event, {})).toBe(true);
+    });
+
+    it('filters by actor, proposal, run and parcel set', () => {
+        const event = { source: 'live', actor: { id: 'w1', kind: 'agent', controller: 'llm' }, action: { type: 'pledge', proposalId: 'p1' }, runId: 'run-9' };
+        expect(engineApi.matchesActivity(event, { actorId: 'w1', proposalId: 'p1', runId: 'run-9' })).toBe(true);
+        expect(engineApi.matchesActivity(event, { actorId: 'w2' })).toBe(false);
+        expect(engineApi.matchesActivity(event, { proposalId: 'p2' })).toBe(false);
+        expect(engineApi.matchesActivity(event, { runId: 'run-1' })).toBe(false);
+        expect(engineApi.matchesActivity(event, { proposalIds: ['p0', 'p1'] })).toBe(true);
+        expect(engineApi.matchesActivity(event, { proposalIds: [] })).toBe(false);
+    });
+
+    it('round-trips explorer deep links and rejects unknown dimensions', () => {
+        const link = engineApi.activityLinkFor('proposal', 'agent demo/1');
+        expect(link).toBe('activity=proposal%3Aagent%20demo%2F1');
+        expect(engineApi.parseActivityLink(new URLSearchParams(link).get('activity'))).toEqual({ proposalId: 'agent demo/1' });
+        expect(engineApi.parseActivityLink('run:r1')).toEqual({ runId: 'r1' });
+        expect(engineApi.parseActivityLink('wallet:x')).toBeNull();
+        expect(engineApi.parseActivityLink('proposal:')).toBeNull();
+        expect(() => engineApi.activityLinkFor('wallet', 'x')).toThrow();
+    });
+
+    it('loads live, simulation and combined through one source contract and reports failures', async () => {
+        const source = engineApi.createActivitySource({
+            simulation: () => [{ id: 's1', recordedAt: '2026-01-01T00:00:00Z' }],
+            live: async () => [{ id: 'l1', recordedAt: '2026-01-02T00:00:00Z' }, { id: 's1', recordedAt: '2026-01-01T00:00:00Z' }]
+        });
+        expect((await source.load('simulation')).events.map(event => event.id)).toEqual(['s1']);
+        expect((await source.load('combined')).events.map(event => event.id)).toEqual(['s1', 'l1']);
+        const broken = engineApi.createActivitySource({ simulation: () => [{ id: 's1' }], live: async () => { throw new Error('HTTP 502'); } });
+        expect(await broken.load('combined')).toEqual({ events: [{ id: 's1' }], failures: [{ source: 'live', error: 'HTTP 502' }] });
+        await expect(broken.load('chain')).rejects.toThrow('unknown activity source chain');
     });
 });

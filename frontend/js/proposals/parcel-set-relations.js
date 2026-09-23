@@ -83,7 +83,16 @@
             .slice(0, limit);
     }
 
-    const api = { proposalKey, normalizeParcelIds, jurisdictionOf, classifyParcelSetRelation, findParcelSetRelations };
+    // Every proposal id over one canonical parcel set, so activity can be filtered by land, not proposal.
+    function proposalIdsForParcelSet(proposals, setHash) {
+        if (typeof setHash !== 'string' || !setHash) return [];
+        return (Array.isArray(proposals) ? proposals : [])
+            .filter(proposal => proposal?.parcelSet?.setHash === setHash)
+            .map(proposalKey)
+            .filter(Boolean);
+    }
+
+    const api = { proposalKey, normalizeParcelIds, jurisdictionOf, classifyParcelSetRelation, findParcelSetRelations, proposalIdsForParcelSet };
     global.ParcelSetRelations = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

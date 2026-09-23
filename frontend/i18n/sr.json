@@ -940,7 +940,9 @@
                 "relationContains": "Obuhvata ceo ovaj skup",
                 "relationInside": "Unutar ovog skupa parcela",
                 "relationOverlap": "Zemljište koje se preklapa",
-                "sharedCount": "{{shared}} od {{count}} zajedničkih parcela"
+                "sharedCount": "{{shared}} od {{count}} zajedničkih parcela",
+                "activityProposal": "Aktivnost na ovom predlogu",
+                "activityLand": "Aktivnost na ovom zemljištu"
             },
             "actions": {
                 "apply": "Primeni na mapu",
@@ -1991,7 +1993,6 @@
                     "picked": "Izabrano: {{title}}",
                     "pickedOnMap": "Izabrano: {{title}} — {{parcel}}",
                     "pickedNotInPlan": "Taj predlog nije u ovom planu.",
-
                     "filterLabel": "Istakni na mapi",
                     "filterAll": "Sve",
                     "filterUploaded": "Poslato",
@@ -3060,14 +3061,54 @@
             "block_seed_not_fully_visible": "Blok nije moguće složiti: sama izabrana parcela izlazi izvan ivice prikaza. Traženje bloka prati samo parcele koje su u celosti vidljive, pa odzumiraj dok parcela ne stane u prikaz i onda ponovo pritisni Otkrij blok.",
             "block_seed_unresolved": "Nije moguće pročitati ID izabrane parcele pa nema iz čega izgraditi blok.",
             "block_multiselect_unavailable": "Višestruki izbor nije dostupan, a blok se isporučuje kao izbor više parcela.",
-            "block_multiselect_off": "Višestruki izbor nije mogao da se uključi, a blok se isporučuje kao izbor više parcela."
+            "block_multiselect_off": "Višestruki izbor nije mogao da se uključi, a blok se isporučuje kao izbor više parcela.",
+            "activity_no_parcel_set": "Ovaj predlog nema učitan kanonski skup parcela."
         }
     },
     "gameDialogs": {
         "log": {
-            "title": "Dnevnik igre",
-            "closeAria": "Zatvori dnevnik igre",
-            "empty": "Još nema događaja u igri. Pokreni igru da vidiš aktivnosti agenata."
+            "title": "Aktivnost",
+            "closeAria": "Zatvori aktivnost",
+            "empty": "Još nema događaja u igri. Pokreni igru da vidiš aktivnosti agenata.",
+            "viewsAria": "Prikaz aktivnosti",
+            "viewEvents": "Događaji",
+            "viewActors": "Akteri",
+            "kindAria": "Vrsta aktera",
+            "kindAll": "Svi",
+            "kindHuman": "Ljudi",
+            "kindAgent": "Agenti",
+            "kindSystem": "Sistem",
+            "controllerAria": "Upravljač",
+            "controllerAll": "Bilo koji upravljač",
+            "controllerHuman": "Čovek",
+            "controllerAlgorithm": "Algoritam",
+            "controllerLlm": "LLM",
+            "clearScope": "Ukloni suženje",
+            "scopeActor": "Akter: {{id}}",
+            "scopeProposal": "Predlog: {{id}}",
+            "scopeParcelSet": "Zemljište: {{id}}",
+            "scopeRun": "Pokretanje: {{id}}",
+            "sourceFailed": "Nije moguće učitati: {{sources}}",
+            "count": "Događaja: {{count}}",
+            "noMatch": "Još nema odgovarajućih aktivnosti.",
+            "row": {
+                "turn": "Potez {{turn}}",
+                "openProposal": "Otvori predlog",
+                "transaction": "Transakcija ↗",
+                "source": "Izvor: {{value}}",
+                "controller": "Upravljač: {{value}}",
+                "action": "Radnja: {{value}}",
+                "resultSuccess": "Ishod: uspeh",
+                "resultFailed": "Ishod: neuspeh",
+                "scopeProposal": "Sva aktivnost na ovom predlogu",
+                "scopeLand": "Sva aktivnost na ovom zemljištu",
+                "actorFallback": "Akter",
+                "details": "Detalji",
+                "actor": "Akter:",
+                "model": "Model:",
+                "run": "Pokretanje",
+                "batch": "Serija"
+            }
         },
         "agents": {
             "title": "Statistika agenata",

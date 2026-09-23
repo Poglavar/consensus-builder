@@ -263,6 +263,30 @@ function proposalEvents(row) {
     }];
 }
 
+// Scope filters for /agent/activity (actor, source, action, proposal, run). Chain events are decoded
+// in JS, so filtering happens after projection; a filtered request scans a wider, still bounded,
+// window per source and reports it, so a client can tell "none in the window" from "none at all".
+export const ACTIVITY_SCAN_WINDOW = 1000;
+const ACTIVITY_FILTER_FIELDS = ['actor', 'source', 'action', 'proposal', 'run'];
+
+export function activityFilters(query = {}) {
+    const filters = {};
+    for (const field of ACTIVITY_FILTER_FIELDS) {
+        const value = typeof query[field] === 'string' ? query[field].trim() : '';
+        if (value) filters[field] = value.slice(0, 200);
+    }
+    return filters;
+}
+
+export function matchesActivityFilters(event, filters) {
+    if (filters.actor && ![event.actor?.id, event.actor?.wallet, event.actor?.name].includes(filters.actor)) return false;
+    if (filters.source && event.source !== filters.source) return false;
+    if (filters.action && event.action?.type !== filters.action) return false;
+    if (filters.proposal && ![event.entity?.type === 'proposal' ? event.entity.id : null, event.action?.proposalId].includes(filters.proposal)) return false;
+    if (filters.run && event.runId !== filters.run) return false;
+    return true;
+}
+
 function mergeEvents(...lists) {
     const byAction = new Map();
     lists.flat().forEach(event => {
@@ -329,13 +353,16 @@ export function setupAgentActivityRoute(app, pool, {
     app.get('/agent/activity', async (req, res) => {
         try {
             const limit = asLimit(req.query.limit);
+            const filters = activityFilters(req.query);
+            const filtered = Object.keys(filters).length > 0;
+            const window = filtered ? ACTIVITY_SCAN_WINDOW : limit;
             const [runs, proposals, transactions, proposalAccounts] = await Promise.all([
                 pool.query(
                     `SELECT run_id, persona, mode, status, stage, summary, started_at, updated_at
                        FROM consensus.agent_run
                       ORDER BY updated_at DESC
                       LIMIT $1`,
-                    [limit]
+                    [window]
                 ),
                 pool.query(
                     `SELECT proposal_id,
@@ -346,7 +373,7 @@ export function setupAgentActivityRoute(app, pool, {
                       WHERE proposal_data ? 'agent'
                       ORDER BY created_at DESC
                       LIMIT $1`,
-                    [limit]
+                    [window]
                 ),
                 pool.query(
                     `SELECT signature, slot, block_time, raw, created_at
@@ -354,7 +381,7 @@ export function setupAgentActivityRoute(app, pool, {
                       WHERE cluster = 'devnet'
                       ORDER BY block_time DESC NULLS LAST, slot DESC
                       LIMIT $1`,
-                    [limit]
+                    [window]
                 ),
                 pool.query(
                     `SELECT proposal_id,
@@ -374,8 +401,11 @@ export function setupAgentActivityRoute(app, pool, {
                 chain,
                 runs.rows.flatMap(runEvents),
                 proposals.rows.flatMap(proposalEvents)
-            ).slice(-limit);
-            res.json({ events, count: events.length, source: 'live' });
+            ).filter(event => matchesActivityFilters(event, filters)).slice(-limit);
+            res.json({
+                events, count: events.length, source: 'live',
+                ...(filtered ? { filters, scanWindow: ACTIVITY_SCAN_WINDOW } : {})
+            });
         } catch (error) {
             console.error('GET /agent/activity failed', error);
             res.status(500).json({ error: 'Failed to read agent activity' });

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { backendBase, buildActorProfiles, eventDetail, filterEvents, runCostTotal } = require('../../frontend/js/actor-explorer.js');
+const { activityRowHtml, backendBase, buildActorProfiles, eventDetail, eventsInvolvingActor, filterEvents, runCostTotal } = require('../../frontend/js/actor-explorer.js');
 
 const events = [
     { id: 'human-pledge', actor: { id: 'person-1', name: 'Dana', kind: 'human', controller: 'human' }, action: { type: 'pledge' }, entity: { type: 'proposal', id: 'p1' }, transaction: 'human-tx', recordedAt: '2026-09-20T10:00:00Z' },
@@ -33,5 +33,44 @@ describe('actor explorer view model', () => {
 
     it('uses the public API host when the standalone explorer has no app runtime', () => {
         expect(backendBase()).toBe('https://api.urbangametheory.xyz');
+    });
+
+    it('renders human, algorithmic and LLM rows identically until Details is opened', () => {
+        const shared = { source: 'live', message: 'Acted.', action: { type: 'donate' }, entity: { type: 'proposal', id: 'p1' }, transaction: 'tx-1', occurredAt: '2026-09-20T10:00:00Z' };
+        const rows = events.slice(0, 3).map(event => activityRowHtml({ ...shared, actor: event.actor }));
+        const beforeDetails = rows.map(row => row.split('<details')[0]);
+        expect(new Set(beforeDetails).size).toBe(1);
+        expect(rows[2]).toMatch(/<details[^]*Controller: llm/);
+        rows.forEach(row => expect(row).not.toMatch(/user-action|data-actor-kind/));
+    });
+
+    it('escapes live messages but keeps app-authored simulation markup and its turn', () => {
+        const live = activityRowHtml({ source: 'live', message: '<img src=x onerror=alert(1)>', actor: { name: 'X' }, action: { type: 'donate' } });
+        expect(live).toContain('&lt;img src=x');
+        const simulation = activityRowHtml({ source: 'simulation', turn: 4, occurredAt: '2024-01-02T00:00:00Z', messageHtml: '<a class="agent-link-clickable" data-agent-id="a1">Ana</a> pledged' });
+        expect(simulation).toContain('<a class="agent-link-clickable" data-agent-id="a1">Ana</a> pledged');
+        expect(simulation).toContain('Turn 4 · ');
+    });
+
+    it('localizes row labels through the host translator and interpolates English fallbacks', () => {
+        const event = { source: 'simulation', turn: 3, occurredAt: '2024-01-02T00:00:00Z', messageHtml: 'x', entity: { type: 'proposal', id: 'p1' }, actor: { id: 'a1' }, action: { type: 'donate' } };
+        expect(activityRowHtml(event)).toContain('Turn 3 · ');
+        const seen = [];
+        const row = activityRowHtml(event, { translate: (key, _fallback, params) => { seen.push(key); return `[${key}${params?.turn ?? ''}]`; } });
+        expect(row).toContain('[gameDialogs.log.row.turn3]');
+        expect(row).toContain('[gameDialogs.log.row.openProposal]');
+        expect(row).not.toMatch(/Open proposal|All activity on this land|>Details</);
+        expect(seen).toEqual(expect.arrayContaining(['gameDialogs.log.row.scopeLand', 'gameDialogs.log.row.details']));
+    });
+
+    it('selects events performed by an actor or linking to them', () => {
+        const local = [
+            { id: 'own', actor: { id: 'a1' }, action: { type: 'create' } },
+            { id: 'mention', actor: { id: 'a2' }, action: { type: 'accept' }, messageHtml: 'Bo accepted <a data-agent-id="a1">Ana</a>' },
+            { id: 'prefix', actor: { id: 'a2' }, action: { type: 'accept' }, messageHtml: '<a data-agent-id="a10">Al</a>' },
+            { id: 'other', actor: { id: 'a3' }, action: { type: 'donate' } }
+        ];
+        expect(eventsInvolvingActor(local, 'a1').map(event => event.id)).toEqual(['own', 'mention']);
+        expect(eventsInvolvingActor(local, '')).toEqual([]);
     });
 });

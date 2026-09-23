@@ -359,6 +359,8 @@
         );
         const canonicalLinks = node(doc, 'div', null, 'hd-links');
         if (canonical.case?.links?.map) canonicalLinks.append(link(doc, 'Open parcel set + read-only Details', canonical.case.links.map));
+        // Same `?activity=proposal:<id>` deep link the map explorer parses (AgentActionEngine.parseActivityLink).
+        if (canonical.case?.id) canonicalLinks.append(link(doc, 'Every actor and action in the explorer', `/?activity=${encodeURIComponent(`proposal:${canonical.case.id}`)}`));
         if (canonical.case?.links?.self) canonicalLinks.append(link(doc, 'Inspect aggregate JSON ↗', canonical.case.links.self));
         canonicalCopy.append(canonicalLinks);
         canonicalHead.append(canonicalCopy, node(doc, 'span', String(canonical.state || 'unknown').replaceAll('_', ' ').toUpperCase(), 'hd-pill'));

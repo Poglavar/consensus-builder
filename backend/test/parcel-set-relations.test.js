@@ -6,7 +6,8 @@ const require = createRequire(import.meta.url);
 const {
     classifyParcelSetRelation,
     findParcelSetRelations,
-    normalizeParcelIds
+    normalizeParcelIds,
+    proposalIdsForParcelSet
 } = require('../../frontend/js/proposals/parcel-set-relations.js');
 
 const proposal = (proposalId, parcelIds, setHash = null) => ({
@@ -16,6 +17,13 @@ const proposal = (proposalId, parcelIds, setHash = null) => ({
 });
 
 describe('proposal parcel-set relations', () => {
+    it('lists every proposal over one canonical set hash and nothing for a missing hash', () => {
+        const proposals = [proposal('a', ['1', '2'], 'sha256:x'), proposal('b', ['2', '1'], 'sha256:x'), proposal('c', ['1'], 'sha256:y'), proposal('d', ['1', '2'])];
+        expect(proposalIdsForParcelSet(proposals, 'sha256:x')).toEqual(['a', 'b']);
+        expect(proposalIdsForParcelSet(proposals, '')).toEqual([]);
+        expect(proposalIdsForParcelSet(null, 'sha256:x')).toEqual([]);
+    });
+
     it('normalizes legacy cadastral ids without mutating the proposal', () => {
         const source = proposal('a', ['HR-3', 'HR-1', 'HR-3']);
         expect(normalizeParcelIds(source)).toEqual(['HR-1', 'HR-3']);

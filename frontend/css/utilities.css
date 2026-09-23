@@ -2437,7 +2437,6 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     .version-modal-close,
     .agent-dialog-modal-close,
     .game-log-modal-close,
-    .agents-stats-modal-close,
     .descendants-close,
     #blockify-close,
     #single-building-close) {
@@ -2474,7 +2473,6 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     .version-modal-close,
     .agent-dialog-modal-close,
     .game-log-modal-close,
-    .agents-stats-modal-close,
     .descendants-close,
     #blockify-close,
     #single-building-close):hover {
@@ -2495,7 +2493,6 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     .version-modal-close,
     .agent-dialog-modal-close,
     .game-log-modal-close,
-    .agents-stats-modal-close,
     .descendants-close,
     #blockify-close,
     #single-building-close):active {
@@ -2514,7 +2511,6 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     .version-modal-close,
     .agent-dialog-modal-close,
     .game-log-modal-close,
-    .agents-stats-modal-close,
     .descendants-close,
     #blockify-close,
     #single-building-close):focus-visible {

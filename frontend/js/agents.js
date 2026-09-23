@@ -3091,54 +3091,23 @@ function focusOnProposal(proposalId) {
 }
 
 /**
- * Get filtered game log entries for a specific agent
+ * Recent activity by or involving one agent, rendered with the shared activity row.
  * @param {string} agentId - The agent ID to filter for
  * @returns {string} HTML string of filtered log entries
  */
 function getAgentLogEntries(agentId) {
-    // Check if gameState and gameLog are available
-    if (typeof gameState === 'undefined' || !gameState.gameLog || gameState.gameLog.length === 0) {
-        return '<div class="empty-log">No log entries yet. Start the game to see this agent\'s activities.</div>';
-    }
-
-    // Get the agent name for filtering
-    const agent = agentStorage.getAgent(agentId);
-    if (!agent) {
-        return '<div class="empty-log">Agent not found.</div>';
-    }
-
-    // Filter log entries that mention this specific agent
-    // Look for entries that contain the agent's name or ID
-    const agentLogEntries = gameState.gameLog.filter(entry => {
-        // Handle both old string format and new object format
-        const entryText = typeof entry === 'string' ? entry : entry.text;
-
-        // Check if the entry contains the agent's name or ID
-        return entryText.includes(`data-agent-id="${agentId}"`) ||
-            entryText.includes(agent.name) ||
-            entryText.includes(`Agent ${agentId}`);
-    });
-
-    if (agentLogEntries.length === 0) {
+    const events = typeof allActivityEvents === 'function' ? allActivityEvents() : [];
+    const agentEvents = window.ActorExplorer.eventsInvolvingActor(events, agentId);
+    if (agentEvents.length === 0) {
         return '<div class="empty-log">No activities recorded for this agent yet.</div>';
     }
 
     // Return the last 20 entries (most recent first)
-    const recentEntries = agentLogEntries.slice(-20).reverse();
-
+    const recentEntries = agentEvents.slice(-20).reverse();
     return `
         <div class="agent-log-content">
-            ${recentEntries.map(entry => {
-        // Handle both old string format and new object format
-        const entryText = typeof entry === 'string' ? entry : entry.text;
-        const isUserAction = typeof entry === 'object' && entry.isUserAction;
-        const cssClass = isUserAction ? 'agent-log-entry user-action' : 'agent-log-entry';
-        return `<div class="${cssClass}">${entryText}</div>`;
-    }).join('')}
-            ${agentLogEntries.length > 20 ?
-            `<div class="agent-log-more">... and ${agentLogEntries.length - 20} older entries</div>` :
-            ''
-        }
+            ${recentEntries.map(event => window.ActorExplorer.activityRowHtml(event, { translate: translateGameText })).join('')}
+            ${agentEvents.length > 20 ? `<div class="agent-log-more">... and ${agentEvents.length - 20} older entries</div>` : ''}
         </div>
     `;
 }
@@ -3148,7 +3117,7 @@ function getAgentLogEntries(agentId) {
  */
 function setupAgentLogClickListeners() {
     // Handle agent links in agent log
-    document.querySelectorAll('.agent-log-entry .agent-link-clickable').forEach(link => {
+    document.querySelectorAll('.agent-log-content .agent-link-clickable').forEach(link => {
         link.addEventListener('click', function (e) {
             e.preventDefault();
             const agentId = this.getAttribute('data-agent-id');
@@ -3161,7 +3130,7 @@ function setupAgentLogClickListeners() {
     });
 
     // Handle proposal links in agent log
-    document.querySelectorAll('.agent-log-entry .proposal-link-clickable').forEach(link => {
+    document.querySelectorAll('.agent-log-content .proposal-link-clickable').forEach(link => {
         link.addEventListener('click', function (e) {
             e.preventDefault();
             const proposalIdOrHash = this.getAttribute('data-proposal-id') || this.getAttribute('data-proposal-hash');
@@ -3172,7 +3141,7 @@ function setupAgentLogClickListeners() {
     });
 
     // Handle parcel links in agent log
-    document.querySelectorAll('.agent-log-entry .parcel-link-clickable').forEach(link => {
+    document.querySelectorAll('.agent-log-content .parcel-link-clickable').forEach(link => {
         link.addEventListener('click', function (e) {
             e.preventDefault();
             const parcelId = this.getAttribute('data-parcel-id');

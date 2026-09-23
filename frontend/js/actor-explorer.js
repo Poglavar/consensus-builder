@@ -125,6 +125,66 @@
         };
     }
 
+    function escapeHtml(value) {
+        return string(value).replace(/[&<>"']/g, character => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        })[character]);
+    }
+
+    // One activity row for every surface. Rows look identical for humans, algorithms and LLMs; who or
+    // what acted is provenance and only appears once Details is opened. Simulation `messageHtml` is
+    // app-authored markup (agent/proposal/parcel links); every other field is escaped.
+    // `translate(key, fallback, params)` lets the map localize labels; the standalone page has no i18n.
+    function activityRowHtml(event = {}, { translate = (_key, fallback, params = {}) => fallback.replace(/\{\{(\w+)\}\}/g, (_m, name) => string(params[name])) } = {}) {
+        const tr = (key, fallback, params) => translate(`gameDialogs.log.row.${key}`, fallback, params);
+        const body = event.source === 'simulation' && event.messageHtml
+            ? event.messageHtml
+            : escapeHtml(event.message || `${event.actor?.name || 'Someone'} ${event.action?.type || 'acted'}.`);
+        const when = isoTime(event.occurredAt);
+        const turn = event.source === 'simulation' && event.turn !== null && event.turn !== undefined ? `${escapeHtml(tr('turn', 'Turn {{turn}}', { turn: event.turn }))} · ` : '';
+        const timestamp = when ? `<time datetime="${when}">${turn}${escapeHtml(formatWhen(when))}</time>` : '';
+        const proposalLink = event.entity?.type === 'proposal' && event.entity.id
+            ? `<a href="#" data-proposal-id="${escapeHtml(event.entity.id)}" class="proposal-link proposal-link-clickable">${escapeHtml(tr('openProposal', 'Open proposal'))}</a>`
+            : '';
+        const transactionLink = event.transaction
+            ? `<a href="https://explorer.solana.com/tx/${encodeURIComponent(event.transaction)}?cluster=devnet" target="_blank" rel="noopener">${escapeHtml(tr('transaction', 'Transaction ↗'))}</a>`
+            : '';
+        const details = [
+            tr('source', 'Source: {{value}}', { value: event.source || 'unknown' }),
+            tr('controller', 'Controller: {{value}}', { value: event.actor?.controller || 'unknown' }),
+            tr('action', 'Action: {{value}}', { value: event.action?.type || 'unknown' }),
+            event.ok === false ? tr('resultFailed', 'Result: failed') : tr('resultSuccess', 'Result: success')
+        ].map(escapeHtml).join(' · ');
+        // Scope buttons drill into actor → proposal → parcel set → run; the host explorer handles them.
+        const scope = (field, value, label) => value
+            ? `<button type="button" class="activity-scope-link" data-activity-scope="${field}" data-activity-value="${escapeHtml(value)}">${escapeHtml(label)}</button>`
+            : '';
+        const proposalId = event.entity?.type === 'proposal' && event.entity.id ? event.entity.id : event.action?.proposalId;
+        const actorDetails = [event.actor?.wallet, event.actor?.id].filter(Boolean).map(escapeHtml).join(' · ');
+        const actorScope = scope('actorId', event.actor?.id, event.actor?.name || event.actor?.id || tr('actorFallback', 'Actor'));
+        const entityDetails = event.entity?.id ? `<span>${escapeHtml(event.entity.type || 'entity')}: ${escapeHtml(event.entity.id)}</span>` : '';
+        const proposalScope = proposalId
+            ? `<span>${scope('proposalId', proposalId, tr('scopeProposal', 'All activity on this proposal'))}${scope('parcelSetOf', proposalId, tr('scopeLand', 'All activity on this land'))}</span>`
+            : '';
+        const modelDetails = event.model
+            ? `<span>${escapeHtml(tr('model', 'Model:'))} ${escapeHtml(event.model)}${Number.isFinite(event.modelCostUsd) ? ` · $${escapeHtml(event.modelCostUsd.toFixed(4))}` : ''}</span>`
+            : '';
+        return `<article class="log-entry activity-entry${event.ok === false ? ' is-failed' : ''}" data-source="${escapeHtml(event.source)}">
+        <div class="activity-entry-main">${body}</div>
+        <div class="activity-entry-links">${timestamp}${proposalLink}${transactionLink}</div>
+        <details class="activity-entry-meta"><summary>${escapeHtml(tr('details', 'Details'))}</summary><span>${details}</span><span>${escapeHtml(tr('actor', 'Actor:'))} ${actorScope}${actorDetails ? ` · ${actorDetails}` : ''}</span>${entityDetails}${proposalScope}${modelDetails}${event.runId ? `<span>${escapeHtml(tr('run', 'Run'))} ${scope('runId', event.runId, event.runId)}</span>` : ''}${event.batchId ? `<span>${escapeHtml(tr('batch', 'Batch'))} ${escapeHtml(event.batchId)}</span>` : ''}</details>
+    </article>`;
+    }
+
+    // Events an actor performed, plus simulation events whose markup links to that actor.
+    function eventsInvolvingActor(events, actorId) {
+        const id = string(actorId);
+        if (!id) return [];
+        const link = `data-agent-id="${id}"`;
+        return (events || []).filter(event => string(event?.actor?.id) === id
+            || (typeof event?.messageHtml === 'string' && event.messageHtml.includes(link)));
+    }
+
     function runCostTotal(run = {}) {
         return (Array.isArray(run.costs) ? run.costs : []).reduce((sum, cost) => sum + (Number(cost.usd) || 0), 0);
     }
@@ -288,5 +348,5 @@
         else start();
     }
 
-    return { ACTION_LABELS, actorKey, backendBase, buildActorProfiles, eventDetail, filterEvents, mount, newestFirst, normalizeEvent, runCostTotal };
+    return { ACTION_LABELS, activityRowHtml, actorKey, backendBase, buildActorProfiles, eventDetail, eventsInvolvingActor, filterEvents, mount, newestFirst, normalizeEvent, runCostTotal };
 });

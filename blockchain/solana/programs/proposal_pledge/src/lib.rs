@@ -236,6 +236,9 @@ fn sub(left: u64, right: u64) -> Result<u64> {
     left.checked_sub(right).ok_or_else(|| error!(SupportError::MathOverflow))
 }
 
+// Only `owner` and `status` are read; the leading fields exist to advance the Borsh
+// cursor and keep their real names so the backend layout tests can pin them to proposal_nft.
+#[allow(dead_code)]
 #[derive(AnchorDeserialize)]
 struct ProposalHead {
     pub proposal_id: u64,
@@ -298,7 +301,9 @@ pub struct CreateDonationEscrow<'info> {
     /// CHECK: verified by read_proposal.
     pub proposal: UncheckedAccount<'info>,
     #[account(address = DEVNET_USDC_MINT @ SupportError::InvalidMint)] pub mint: Box<Account<'info, Mint>>,
-    #[account(init, payer = creator, associated_token::mint = mint, associated_token::authority = escrow)]
+    // init_if_needed: the vault ATA's address is predictable, so anyone can create it first; `init`
+    // would then fail forever and block donations. Anchor still verifies mint and authority.
+    #[account(init_if_needed, payer = creator, associated_token::mint = mint, associated_token::authority = escrow)]
     pub vault: Box<Account<'info, TokenAccount>>,
     #[account(mut)] pub creator: Signer<'info>,
     pub token_program: Program<'info, Token>, pub associated_token_program: Program<'info, AssociatedToken>,

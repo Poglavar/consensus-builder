@@ -233,7 +233,7 @@ export async function auditHackathonProof({
             )
         ),
         'Backend, frontend build and mutable Solana deployments have distinct public identities',
-        values.proofManifest?.releaseArtifacts || errors.proofManifest || null, 'advisory'),
+        values.proofManifest?.releaseArtifacts || errors.proofManifest || null),
         check('canonical_case_setup', canonicalSetup,
             'One plural parcel case proves paid proposal, donation, pledge and both forecast sides',
             canonical ? {
@@ -242,8 +242,7 @@ export async function auditHackathonProof({
             } : errors.canonicalCase || null),
         check('canonical_case_terminal', canonicalTerminal,
             'The canonical case also proves decision, evidence, resolution and settlement',
-            canonical ? { id: canonical.id, state: canonical.state, stages: canonical.stages } : errors.canonicalCase || null,
-            'advisory'),
+            canonical ? { id: canonical.id, state: canonical.state, stages: canonical.stages } : errors.canonicalCase || null),
         check('human_agent_activity_matrix', Object.values(activityMatrix).every(Boolean),
             'Humans, deterministic and LLM agents, and a resolver share one transaction-backed activity stream',
             activityMatrix, 'advisory'),
@@ -260,7 +259,7 @@ export async function auditHackathonProof({
             && values.operations.jobs.length >= 4
             && values.operations.jobs.every(job => job.status === 'completed' && job.freshness?.state === 'fresh'),
         'Scheduled proposer, supporter, land oracle and resolver publish fresh successful outcomes',
-        values.operations?.jobs || errors.operations || null, 'advisory'),
+        values.operations?.jobs || errors.operations || null),
         check('prospective_settlement_proof', prospectiveSettlement.valid,
             prospectiveSettlement.pending
                 ? 'The genuinely prospective settlement remains honestly pending'

@@ -910,7 +910,9 @@
                 "relationContains": "Includes this whole set",
                 "relationInside": "Inside this parcel set",
                 "relationOverlap": "Overlapping land",
-                "sharedCount": "{{shared}} of {{count}} parcels shared"
+                "sharedCount": "{{shared}} of {{count}} parcels shared",
+                "activityProposal": "Activity on this proposal",
+                "activityLand": "Activity on this land"
             },
             "actions": {
                 "apply": "Apply to map",
@@ -2034,7 +2036,6 @@
                     "picked": "Selected {{title}}",
                     "pickedOnMap": "Selected {{title}} — {{parcel}}",
                     "pickedNotInPlan": "That proposal is not in this plan.",
-
                     "filterLabel": "Highlight on the map",
                     "filterAll": "All",
                     "filterUploaded": "Uploaded",
@@ -3046,14 +3047,54 @@
             "block_seed_not_fully_visible": "Cannot form the block: the selected parcel itself runs past the edge of the view. Block detection only follows parcels that are entirely visible, so zoom out until this parcel fits, then press Detect block again.",
             "block_seed_unresolved": "Could not read the selected parcel’s id, so there is nothing to grow a block from.",
             "block_multiselect_unavailable": "Multi-select is unavailable, and a block is delivered as a multi-parcel selection.",
-            "block_multiselect_off": "Multi-select could not be turned on, and a block is delivered as a multi-parcel selection."
+            "block_multiselect_off": "Multi-select could not be turned on, and a block is delivered as a multi-parcel selection.",
+            "activity_no_parcel_set": "This proposal has no canonical parcel set loaded."
         }
     },
     "gameDialogs": {
         "log": {
-            "title": "Game Log",
-            "closeAria": "Close game log",
-            "empty": "No game events yet. Start the game to see agent activities."
+            "title": "Activity",
+            "closeAria": "Close activity",
+            "empty": "No game events yet. Start the game to see agent activities.",
+            "viewsAria": "Activity view",
+            "viewEvents": "Events",
+            "viewActors": "Actors",
+            "kindAria": "Actor type",
+            "kindAll": "Everyone",
+            "kindHuman": "People",
+            "kindAgent": "Agents",
+            "kindSystem": "System",
+            "controllerAria": "Controller",
+            "controllerAll": "Any controller",
+            "controllerHuman": "Human",
+            "controllerAlgorithm": "Algorithm",
+            "controllerLlm": "LLM",
+            "clearScope": "Clear scope",
+            "scopeActor": "Actor: {{id}}",
+            "scopeProposal": "Proposal: {{id}}",
+            "scopeParcelSet": "Land: {{id}}",
+            "scopeRun": "Run: {{id}}",
+            "sourceFailed": "Could not load: {{sources}}",
+            "count": "{{count}} events",
+            "noMatch": "No matching activity yet.",
+            "row": {
+                "turn": "Turn {{turn}}",
+                "openProposal": "Open proposal",
+                "transaction": "Transaction ↗",
+                "source": "Source: {{value}}",
+                "controller": "Controller: {{value}}",
+                "action": "Action: {{value}}",
+                "resultSuccess": "Result: success",
+                "resultFailed": "Result: failed",
+                "scopeProposal": "All activity on this proposal",
+                "scopeLand": "All activity on this land",
+                "actorFallback": "Actor",
+                "details": "Details",
+                "actor": "Actor:",
+                "model": "Model:",
+                "run": "Run",
+                "batch": "Batch"
+            }
         },
         "agents": {
             "title": "Agent Statistics",

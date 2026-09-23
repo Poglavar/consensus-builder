@@ -326,6 +326,9 @@ pub fn payout_amount(side: u8, amount: u64, yes_pool: u64, no_pool: u64, outcome
 /// The prefix of proposal_nft::Proposal up to and including `status`. Borsh reads sequentially,
 /// so the fields after `status` need not be mirrored. Field order MUST match
 /// programs/proposal_nft/src/lib.rs (a backend test pins the two files to each other).
+// Only `status` is read; the leading fields exist to advance the Borsh
+// cursor and keep their real names so the backend layout tests can pin them to proposal_nft.
+#[allow(dead_code)]
 #[derive(AnchorDeserialize)]
 struct ProposalHead {
     pub proposal_id: u64,
@@ -528,8 +531,10 @@ pub struct CreateMarket<'info> {
     /// CHECK: a proposal_nft Proposal; owner, discriminator and status are verified in the handler.
     pub proposal: UncheckedAccount<'info>,
     pub stake_mint: Account<'info, Mint>,
+    // init_if_needed: the vault ATA's address is predictable, so anyone can create it first; `init`
+    // would then fail forever and block the market. Anchor still verifies mint and authority.
     #[account(
-        init,
+        init_if_needed,
         payer = creator,
         associated_token::mint = stake_mint,
         associated_token::authority = market
@@ -607,8 +612,10 @@ pub struct CreateExternalMarket<'info> {
     )]
     pub market: Box<Account<'info, ExternalMarket>>,
     pub stake_mint: Account<'info, Mint>,
+    // init_if_needed: the vault ATA's address is predictable, so anyone can create it first; `init`
+    // would then fail forever and block the market. Anchor still verifies mint and authority.
     #[account(
-        init,
+        init_if_needed,
         payer = creator,
         associated_token::mint = stake_mint,
         associated_token::authority = market

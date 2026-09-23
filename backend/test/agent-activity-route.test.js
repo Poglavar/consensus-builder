@@ -2,8 +2,8 @@ import express from 'express';
 import request from 'supertest';
 import { describe, expect, it } from 'vitest';
 import {
-    chainEvents, controllerOf, proposalAccountIndex, proposalEvents, runDetail, runEvents,
-    setupAgentActivityRoute
+    ACTIVITY_SCAN_WINDOW, activityFilters, chainEvents, controllerOf, matchesActivityFilters, proposalAccountIndex,
+    proposalEvents, runDetail, runEvents, setupAgentActivityRoute
 } from '../routes/agent-activity.js';
 
 const row = {
@@ -103,6 +103,36 @@ describe('agent activity', () => {
         expect(response.body.count).toBe(4);
         expect(calls[0].params).toEqual([250]);
         expect(calls[1].params).toEqual([250]);
+    });
+
+    it('filters by actor, action, proposal and run over a wider bounded window', async () => {
+        const calls = [];
+        const pool = {
+            query: async (sql, params) => {
+                calls.push({ sql, params });
+                return { rows: sql.includes('consensus.agent_run') ? [row] : [] };
+            }
+        };
+        const app = express();
+        setupAgentActivityRoute(app, pool);
+        const all = (await request(app).get('/agent/activity')).body.events;
+        const stakes = await request(app).get('/agent/activity?action=stake&proposal=agent-p1&run=2026-09-20-densifier-01');
+        expect(stakes.status).toBe(200);
+        expect(stakes.body.events.length).toBeGreaterThan(0);
+        expect(stakes.body.events.length).toBeLessThan(all.length);
+        expect(stakes.body.events.every(event => event.action.type === 'stake')).toBe(true);
+        expect(stakes.body).toMatchObject({ filters: { action: 'stake', proposal: 'agent-p1' }, scanWindow: ACTIVITY_SCAN_WINDOW });
+        expect(calls.at(-2).params).toEqual([ACTIVITY_SCAN_WINDOW]);
+        expect((await request(app).get('/agent/activity?proposal=other')).body.count).toBe(0);
+        expect((await request(app).get('/agent/activity?source=simulation')).body.count).toBe(0);
+    });
+
+    it('matches actors by id, wallet or name and ignores empty filters', () => {
+        const event = { source: 'live', actor: { id: 'a1', wallet: 'w1', name: 'Mira' }, action: { type: 'pledge', proposalId: 'p1' }, runId: 'r1' };
+        for (const actor of ['a1', 'w1', 'Mira']) expect(matchesActivityFilters(event, { actor })).toBe(true);
+        expect(matchesActivityFilters(event, { actor: 'x' })).toBe(false);
+        expect(matchesActivityFilters(event, { proposal: 'p1' })).toBe(true);
+        expect(activityFilters({ actor: '  ', action: ' stake ', unknown: 'x' })).toEqual({ action: 'stake' });
     });
 
     it('projects already-published x402 agent proposals into live activity', () => {

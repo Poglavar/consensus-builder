@@ -7,6 +7,7 @@ import { SystemProgram, Keypair, PublicKey } from "@solana/web3.js";
 import {
     ASSOCIATED_TOKEN_PROGRAM_ID,
     TOKEN_PROGRAM_ID,
+    createAssociatedTokenAccountIdempotent,
     createMint,
     getAccount,
     getAssociatedTokenAddressSync,
@@ -354,6 +355,20 @@ describe("proposal_market", () => {
             const market = await program.account.market.fetch(executedMarket);
             expect(market.proposal.toBase58()).to.equal(executedProposal.toBase58());
             expect(market.resolved).to.be.false;
+        });
+
+        it("still opens a market when someone pre-created its vault ATA", async () => {
+            // The vault address is predictable and anyone may create an ATA for any owner; with `init`
+            // this pre-creation blocked the market forever, `init_if_needed` accepts the existing vault.
+            const { proposalPDA: griefed } = await mintProposal(["HR-mkt-grief"], false);
+            const attacker = Keypair.generate();
+            await airdrop(provider.connection, attacker.publicKey);
+            await createAssociatedTokenAccountIdempotent(
+                provider.connection, attacker, stakeMint, findMarketPDA(griefed), {}, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, true
+            );
+            const { market, vault } = await createMarket(griefed);
+            expect((await program.account.market.fetch(market)).vault.toBase58()).to.equal(vault.toBase58());
+            expect((await getAccount(provider.connection, vault)).owner.toBase58()).to.equal(market.toBase58());
         });
     });
 

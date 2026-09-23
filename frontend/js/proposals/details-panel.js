@@ -629,6 +629,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <p>${safeAgentText(summary)}</p>
                 ${shortHash ? `<div class="proposal-parcel-set-hash" title="${safeAgentText(setHash)}"><span>${safeAgentText(tProposal('panel.proposal.parcelSet.hash', 'Set identity'))}</span><code>${safeAgentText(shortHash)}</code></div>` : ''}
                 ${rows ? `<div class="proposal-parcel-set-relations">${rows}</div>` : ''}
+                <div class="proposal-parcel-set-activity">
+                    <button type="button" class="activity-scope-link" data-activity-scope="proposalId" data-activity-value="${safeAgentText(relationApi.proposalKey(activeProposal))}">${safeAgentText(tProposal('panel.proposal.parcelSet.activityProposal', 'Activity on this proposal'))}</button>
+                    ${setHash ? `<button type="button" class="activity-scope-link" data-activity-scope="parcelSet" data-activity-value="${safeAgentText(setHash)}">${safeAgentText(tProposal('panel.proposal.parcelSet.activityLand', 'Activity on this land'))}</button>` : ''}
+                </div>
             </section>`;
     })();
 
