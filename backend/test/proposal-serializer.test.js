@@ -3,9 +3,21 @@ import {
     assertCanonicalProposalRow,
     findLegacyCadastreDeclaration,
     findNonCadastralParentDeclaration,
+    isInvalidRecordError,
+    PROPOSAL_RECORD_INVALID,
+    PROPOSAL_RECORD_INVALID_MESSAGE,
     serializeProposalRow,
     stripLocalProposalState
 } from '../proposals/serializer.js';
+
+function rejectionOf(row) {
+    try {
+        assertCanonicalProposalRow(row);
+    } catch (error) {
+        return error;
+    }
+    throw new Error('expected the row to be rejected');
+}
 
 describe('proposal API serializer', () => {
     it('removes browser-local applied state from root and nested payloads', () => {
@@ -75,16 +87,43 @@ describe('proposal API serializer', () => {
     });
 
     it('rejects full database rows with missing, conflicting, or generated cadastral identity', () => {
-        expect(() => assertCanonicalProposalRow({ cadastre_parcel_ids: null }))
-            .toThrow(/cadastre_parcel_ids is required/);
-        expect(() => assertCanonicalProposalRow({
+        expect(rejectionOf({ cadastre_parcel_ids: null }).detail)
+            .toMatch(/cadastre_parcel_ids is required/);
+        expect(rejectionOf({
             cadastre_parcel_ids: ['HR-1'],
             proposal_data: { cadastreParcelIds: ['HR-2'] }
-        })).toThrow(/conflicts/);
-        expect(() => assertCanonicalProposalRow({
+        }).detail).toMatch(/conflicts/);
+        expect(rejectionOf({
             cadastre_parcel_ids: ['HR-1#piece'],
             proposal_data: { cadastreParcelIds: ['HR-1#piece'] }
-        })).toThrow(/generated id/);
+        }).detail).toMatch(/generated id/);
+    });
+
+    it('tells a person the record is too old, and keeps the technical reason for the log', () => {
+        const error = rejectionOf({
+            cadastre_parcel_ids: ['HR-1'],
+            proposal_data: { cadastreParcelIds: ['HR-1'], parentParcelIds: ['HR-1'] }
+        });
+        expect(isInvalidRecordError(error)).toBe(true);
+        expect(error.status).toBe(422);
+        expect(error.code).toBe(PROPOSAL_RECORD_INVALID);
+        expect(error.message).toBe(PROPOSAL_RECORD_INVALID_MESSAGE);
+        expect(error.message).not.toMatch(/parentParcelIds|record/i);
+        expect(error.detail).toBe('Invalid proposal record: parentParcelIds is a retired parcel declaration.');
+    });
+
+    it('never serves the archived legacy provenance of a migrated record', () => {
+        const proposal = serializeProposalRow({
+            id: 8,
+            cadastre_parcel_ids: ['HR-1'],
+            proposal_data: {
+                cadastreParcelIds: ['HR-1'],
+                title: 'Park',
+                legacy: { 'legacy-parcel-declarations-v1': { fields: [] } }
+            }
+        });
+        expect(proposal.title).toBe('Park');
+        expect(proposal).not.toHaveProperty('legacy');
     });
 
     it('serves one clean authored building geometry', () => {

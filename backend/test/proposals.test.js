@@ -5,6 +5,7 @@ import { createMockPool } from './helpers/mock-pool.js';
 import { createTestApp } from './helpers/create-app.js';
 import { hashEditToken, normalizeCityCode } from '../routes/proposals.js';
 import { generateAndStoreProposalThumbnail } from '../thumbnails/proposal-thumbnail.js';
+import { defaultThumbnailQueue } from '../thumbnails/thumbnail-queue.js';
 import {
     validProposalBody,
     insertResult,
@@ -82,7 +83,7 @@ describe('POST /proposals', () => {
         expect(res.body.error).toMatch(/Internal server error/);
     });
 
-    it('renders a thumbnail on upload and stores it on the proposal', async () => {
+    it('renders a thumbnail after the upload (off the request path) and stores it on the proposal', async () => {
         vi.mocked(generateAndStoreProposalThumbnail).mockResolvedValue({
             url: 'http://api.test/uploads/images/proposal-thumb-1-123.png',
             fileName: 'proposal-thumb-1-123.png',
@@ -97,7 +98,11 @@ describe('POST /proposals', () => {
             .send(validProposalBody());
 
         expect(res.status).toBe(201);
-        expect(res.body.screenshotUrl).toBe('http://api.test/uploads/images/proposal-thumb-1-123.png');
+        // The response does not wait for the render; the row gets the URL when it is ready.
+        expect(res.body.screenshotUrl).toBeNull();
+        const log = vi.spyOn(console, 'log').mockImplementation(() => {});
+        await defaultThumbnailQueue().onIdle();
+        log.mockRestore();
 
         const screenshotUpdate = pool.getCalls().find(call => call.sql.includes('SET screenshot_url'));
         expect(screenshotUpdate).toBeTruthy();
@@ -120,19 +125,26 @@ describe('POST /proposals', () => {
         expect(res.body).toHaveProperty('id', 1);
         expect(res.body).toHaveProperty('proposalId', 'test-proposal-001');
         expect(res.body.screenshotUrl).toBeNull();
+        const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+        await defaultThumbnailQueue().onIdle();
+        error.mockRestore();
+        expect(generateAndStoreProposalThumbnail).toHaveBeenCalledTimes(1);
         expect(pool.getCalls().some(call => call.sql.includes('SET screenshot_url'))).toBe(false);
     });
 
-    it('does not re-render when the client already supplied a screenshot url', async () => {
+    it('does not keep a gateway screenshot url: it is not our store, so the server renders its own', async () => {
         pool.setResults([insertResult(), updateResult()]);
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
         const res = await request(app)
             .post('/proposals')
             .send(validProposalBody({ screenshotUrl: 'https://gateway.pinata.cloud/ipfs/abc' }));
+        warn.mockRestore();
 
         expect(res.status).toBe(201);
-        expect(res.body.screenshotUrl).toBe('https://gateway.pinata.cloud/ipfs/abc');
-        expect(generateAndStoreProposalThumbnail).not.toHaveBeenCalled();
+        expect(res.body.screenshotUrl).toBeNull();
+        await defaultThumbnailQueue().onIdle();
+        expect(generateAndStoreProposalThumbnail).toHaveBeenCalledTimes(1);
     });
 
     it('returns 409 on duplicate proposal_id', async () => {
@@ -282,7 +294,8 @@ describe('POST /proposals', () => {
                 .send({ type: 'parcel', cadastreParcelIds: ['HR-1'] });
 
             expect(res.status).toBe(201);
-            expect(pool.getCalls()[0].params[0]).toBe('local-1700000000000');
+            // Random suffix: two id-less uploads in the same millisecond must not collide.
+            expect(pool.getCalls()[0].params[0]).toMatch(/^local-1700000000000-[0-9a-f]{8}$/);
         } finally {
             Date.now = originalNow;
         }

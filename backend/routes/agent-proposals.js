@@ -19,6 +19,7 @@ import { ExactSvmScheme } from '@x402/svm/exact/server';
 import { decodeTransactionFromPayload, getTokenPayerFromTransaction } from '@x402/svm';
 import { readFileSync } from 'node:fs';
 import {
+    PROPOSAL_ID_LOCK_NAMESPACE,
     createProposalCreateHandler,
     precheckProposalCreate,
     proposalCreateBodyValidator,
@@ -96,11 +97,56 @@ function expressRequestOf(context) {
 
 // The upfront flow settles before the handler, so a proposal_id that is already taken must be
 // found here: afterwards the insert's 409 would come with the payer already charged.
-async function proposalIdTaken(pool, proposalId) {
-    const result = await pool.query(`
+async function proposalIdTaken(db, proposalId) {
+    const result = await db.query(`
         SELECT 1 FROM proposal WHERE proposal_id = $1 LIMIT 1
     `, [proposalId]);
     return result.rows.length > 0;
+}
+
+// A "not taken" answer is only worth something if nobody can take the id between the check and the
+// insert — and settlement (a network round trip to the facilitator) sits in between. Two concurrent
+// paid requests for one new id both passed the check, both settled, and the loser got a 409 with its
+// USDC gone. So the id is RESERVED before the check: an exclusive session-level advisory lock on
+// (PROPOSAL_ID_LOCK_NAMESPACE, hashtext(id)), held on a dedicated connection until the response has
+// been sent. The create handler inserts on that same connection (req.proposalWriteClient); every
+// other insert takes the shared side with a try-lock and backs off (routes/proposals.js). A request
+// that cannot get the lock is refused before settlement. Returns null when the id is held.
+async function reserveProposalId(pool, proposalId) {
+    const client = await pool.connect();
+    const onError = (err) => console.error(`[${new Date().toISOString()}] [agent-proposals] reservation connection for ${proposalId} failed:`, err.message);
+    if (typeof client.on === 'function') client.on('error', onError);
+    let released = false;
+    const release = async () => {
+        if (released) return;
+        released = true;
+        if (typeof client.off === 'function') client.off('error', onError);
+        try {
+            await client.query('SELECT pg_advisory_unlock($1, hashtext($2::varchar))', [PROPOSAL_ID_LOCK_NAMESPACE, proposalId]);
+            client.release();
+        } catch (err) {
+            // Destroying the connection ends the session, which drops its advisory locks.
+            client.release(err);
+        }
+    };
+    try {
+        const result = await client.query(
+            'SELECT pg_try_advisory_lock($1, hashtext($2::varchar)) AS locked',
+            [PROPOSAL_ID_LOCK_NAMESPACE, proposalId]
+        );
+        if (!result.rows[0]?.locked) {
+            released = true;
+            if (typeof client.off === 'function') client.off('error', onError);
+            client.release();
+            return null;
+        }
+    } catch (err) {
+        released = true;
+        if (typeof client.off === 'function') client.off('error', onError);
+        client.release(err);
+        throw err;
+    }
+    return { client, release };
 }
 
 async function findProposalByPaymentId(pool, paymentId) {
@@ -242,11 +288,16 @@ export function setupAgentProposalsRoute(app, pool, { env = process.env, facilit
             if (!precheck.ok) {
                 return { abort: true, reason: 'invalid_proposal', message: precheck.error };
             }
+            // Without an explicit proposalId the handler generates a random one: nothing to reserve.
             if (precheck.value.proposalId) {
+                const proposalId = precheck.value.proposalId;
+                let reservation;
                 let taken;
                 try {
-                    taken = await proposalIdTaken(pool, precheck.value.proposalId);
+                    reservation = await reserveProposalId(pool, proposalId);
+                    taken = reservation ? await proposalIdTaken(reservation.client, proposalId) : false;
                 } catch (error) {
+                    if (reservation) await reservation.release();
                     console.error('[agent-proposals] proposal id lookup failed:', error);
                     return {
                         abort: true,
@@ -254,12 +305,33 @@ export function setupAgentProposalsRoute(app, pool, { env = process.env, facilit
                         message: 'The proposal id could not be checked; no payment was settled.'
                     };
                 }
+                if (!reservation) {
+                    return {
+                        abort: true,
+                        reason: 'proposal_id_in_flight',
+                        message: `Another request is creating proposal ${proposalId} right now; retry, or choose another proposalId. No payment was settled.`
+                    };
+                }
                 if (taken) {
+                    await reservation.release();
                     return {
                         abort: true,
                         reason: 'proposal_id_taken',
-                        message: `A proposal with id ${precheck.value.proposalId} already exists; choose another proposalId. No payment was settled.`
+                        message: `A proposal with id ${proposalId} already exists; choose another proposalId. No payment was settled.`
                     };
+                }
+                // Held through settlement and the insert; let go once the response is out, however
+                // it ends (201, a failed settlement's 402, an error, a dropped connection).
+                req.proposalWriteClient = reservation.client;
+                const releaseReservation = () => {
+                    reservation.release().catch(err => console.error('[agent-proposals] releasing proposal id reservation failed:', err));
+                };
+                if (req.res) {
+                    req.res.once('finish', releaseReservation);
+                    req.res.once('close', releaseReservation);
+                } else {
+                    await reservation.release();
+                    return { abort: true, reason: 'no_request_context', message: 'The payment could not be tied to a request.' };
                 }
             }
 

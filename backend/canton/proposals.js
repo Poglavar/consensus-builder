@@ -17,6 +17,19 @@ const PUBLIC_HINT = 'CantonPublic';
 const PUBLIC_FILE = new URL('./.public-party.json', import.meta.url);
 let publicPartyCache = null;
 
+// The public party id if it is already known (env override or the local cache file), WITHOUT
+// allocating one — for callers that must never cause a ledger write, such as the read routes'
+// "is this the public party?" check.
+export async function knownPublicParty(cfg = cantonConfig()) {
+  if (cfg.publicParty) return cfg.publicParty;
+  if (publicPartyCache) return publicPartyCache;
+  try {
+    const saved = JSON.parse(await readFile(PUBLIC_FILE, 'utf8'));
+    if (saved && saved.party) { publicPartyCache = saved.party; return publicPartyCache; }
+  } catch (_) { /* no local cache yet */ }
+  return null;
+}
+
 async function getPublicParty(cfg = cantonConfig()) {
   if (cfg.publicParty) return cfg.publicParty;          // explicit override wins
   if (publicPartyCache) return publicPartyCache;

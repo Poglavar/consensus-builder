@@ -21,6 +21,43 @@ function parseProposalIds(value) {
 // never loaded can never be detected and so can never be demolished (see corridor-tunnel.js).
 const BUILDING_BBOX_LIMIT = 4000;
 
+// Buildings mostly (>= 90 %) inside one parcel. gdi_building_footprint holds invalid rings (344 on
+// prod, 2026-09, e.g. "Hole lies outside shell"), and ST_Intersection on those throws a GEOS
+// TopologyException that 500'd the whole request. Area math therefore runs on ST_MakeValid'd
+// polygons (CollectionExtract drops the line/point debris MakeValid can emit, which would also
+// make ST_Intersection reject a GeometryCollection), while the join keeps the RAW geoms so the
+// GiST index still drives it. NULLIF guards the ratio against a zero-area footprint.
+// Areas are geodesic: footprint_area is returned as an absolute m², measured the way the browser
+// measures (WGS84 ellipsoid via turf), not in projected metres.
+export const PARCEL_BUILDINGS_SQL = `
+    SELECT
+        bf.object_id,
+        bf.metadata,
+        bf.source,
+        ST_AsGeoJSON(bf.geom)::json AS geometry,
+        a.footprint_area,
+        a.intersection_area,
+        a.intersection_area / NULLIF(a.footprint_area, 0) AS containment_ratio,
+        p.cestica_id,
+        p.broj_cestice
+    FROM parcel p
+    JOIN gdi_building_footprint bf
+      ON bf.geom && p.geom
+     AND ST_Intersects(p.geom, bf.geom)
+    CROSS JOIN LATERAL (
+        SELECT ST_CollectionExtract(ST_MakeValid(p.geom), 3) AS parcel_geom,
+               ST_CollectionExtract(ST_MakeValid(bf.geom), 3) AS building_geom
+    ) v
+    CROSS JOIN LATERAL (
+        SELECT ST_Area(ST_Transform(v.building_geom, 4326)::geography) AS footprint_area,
+               ST_Area(ST_Transform(ST_Intersection(v.parcel_geom, v.building_geom), 4326)::geography) AS intersection_area
+    ) a
+    WHERE p.cestica_id = $1
+      AND p.current
+      AND a.intersection_area / NULLIF(a.footprint_area, 0) >= 0.9
+    ORDER BY containment_ratio DESC, bf.object_id
+`;
+
 export function setupBuildingsRoute(app, pool) {
     // Per-city 3D building source registry (Zagreb mesh table, NYC live footprints, …).
     const buildingProviders = createBuildingProviders(pool);
@@ -58,41 +95,28 @@ export function setupBuildingsRoute(app, pool) {
                 return res.status(400).json({ error: `Unknown source '${source}'. Expected 'gdi' or 'dgu'.` });
             }
 
+            if (cesticaId !== undefined && !/^\d{1,18}$/.test(String(cesticaId))) {
+                return res.status(400).json({ error: 'Invalid cestica_id. Expected a numeric parcel id.' });
+            }
+
             if (cesticaId) {
                 // Buildings inside a parcel: GDI footprints, the working set.
-                const sql = `
-                    SELECT
-                        bf.*,
-                        ST_AsGeoJSON(bf.geom)::json AS geometry,
-                        -- Geodesic: footprint_area is returned to the client as an absolute m²,
-                        -- so it must be measured the same way the browser measures (WGS84
-                        -- ellipsoid via turf), not in projected metres.
-                        ST_Area(ST_Transform(bf.geom, 4326)::geography) AS footprint_area,
-                        ST_Area(ST_Transform(ST_Intersection(p.geom, bf.geom), 4326)::geography) AS intersection_area,
-                        CASE
-                            WHEN ST_Area(bf.geom) > 0 THEN ST_Area(ST_Transform(ST_Intersection(p.geom, bf.geom), 4326)::geography) / ST_Area(ST_Transform(bf.geom, 4326)::geography)
-                            ELSE 0
-                        END AS containment_ratio,
-                        p.CESTICA_ID,
-                        p.BROJ_CESTICE
-                    FROM gdi_building_footprint bf
-                    CROSS JOIN parcel p
-                    WHERE p.CESTICA_ID = $1
-                    AND ST_Intersects(p.geom, bf.geom)
-                    AND ST_Area(ST_Transform(ST_Intersection(p.geom, bf.geom), 4326)::geography) / ST_Area(ST_Transform(bf.geom, 4326)::geography) >= 0.9
-                    ORDER BY containment_ratio DESC
-                `;
+                const { rows } = await pool.query(PARCEL_BUILDINGS_SQL, [cesticaId]);
 
-                const { rows } = await pool.query(sql, [cesticaId]);
-
+                // Explicit columns only: `bf.*` used to ship the raw hex `geom` alongside the
+                // GeoJSON, and `row.CESTICA_ID` (pg lowercases unquoted names) spread undefined
+                // over the real cestica_id.
                 const features = rows.map(row => ({
                     type: 'Feature',
                     properties: {
-                        ...row,
+                        object_id: row.object_id,
+                        metadata: row.metadata,
+                        source: row.source,
                         footprint_area: row.footprint_area,
+                        intersection_area: row.intersection_area,
                         containment_ratio: row.containment_ratio,
-                        cestica_id: row.CESTICA_ID,
-                        broj_cestice: row.BROJ_CESTICE
+                        cestica_id: row.cestica_id,
+                        broj_cestice: row.broj_cestice
                     },
                     geometry: row.geometry
                 }));

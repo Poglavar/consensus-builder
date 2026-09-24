@@ -5,12 +5,17 @@
 // the same way the client used to. Uses node-canvas (same Canvas 2D API as the browser), NOT a
 // headless browser and NOT leaflet-image — no live Leaflet map is involved anywhere in this path.
 import { createCanvas, loadImage } from 'canvas';
+import { defaultTileSource } from './tile-source.js';
 
 const DEFAULT_TILE_URL = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
 const TILE_SIZE = 256;
 const DEFAULT_STITCH_ZOOM = 19;
 const MAX_STITCH_TILES_PER_AXIS = 6; // Target max ~36 tiles (6x6)
-const MAX_TILES = 100;
+// Hard per-thumbnail cap. The zoom search below goes down to MIN_STITCH_ZOOM so a large proposal
+// gets a coarser picture instead of more tiles; only a frame that still exceeds this is refused.
+// (It was 100 with a floor of z14: a district-sized road fetched 64 tiles per upload.)
+const MAX_TILES = MAX_STITCH_TILES_PER_AXIS * MAX_STITCH_TILES_PER_AXIS;
+const MIN_STITCH_ZOOM = 10;
 const DEFAULT_TILE_TIMEOUT_MS = 8000;
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -226,7 +231,7 @@ export function computeStitchFrame(options = {}) {
     latMin -= padLat;
     latMax += padLat;
 
-    const effectiveZoom = computeBestZoomForBbox(lngMin, lngMax, latMin, latMax, maxTilesPerAxis, 14, zoom);
+    const effectiveZoom = computeBestZoomForBbox(lngMin, lngMax, latMin, latMax, maxTilesPerAxis, MIN_STITCH_ZOOM, zoom);
 
     const xMin = lngToTileX(lngMin, effectiveZoom);
     const xMax = lngToTileX(lngMax, effectiveZoom);
@@ -301,22 +306,12 @@ function drawBadge(ctx, badge) {
     ctx.restore();
 }
 
-async function fetchTileImage(url, timeoutMs = DEFAULT_TILE_TIMEOUT_MS) {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
-    try {
-        const response = await fetch(url, {
-            signal: controller.signal,
-            headers: { 'User-Agent': 'consensus-builder-thumbnailer' }
-        });
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
-        const buffer = Buffer.from(await response.arrayBuffer());
-        return await loadImage(buffer);
-    } finally {
-        clearTimeout(timer);
-    }
+// Tiles come through the shared tile source: on-disk cache first, and at most N network fetches in
+// flight across the whole process (thumbnails/tile-source.js).
+async function fetchTileImage(tileSource, { template, z, x, y, timeoutMs = DEFAULT_TILE_TIMEOUT_MS }) {
+    const url = expandTileUrl(template, x, y, z);
+    const bytes = await tileSource.getTileBytes({ template, z, x, y, url, timeoutMs });
+    return loadImage(bytes);
 }
 
 /**
@@ -329,6 +324,7 @@ async function fetchTileImage(url, timeoutMs = DEFAULT_TILE_TIMEOUT_MS) {
  * @param {number} [options.zoom=19] - maximum zoom; lowered automatically to cap the tile count
  * @param {Object} [options.badge] - { text } goal badge drawn top-left
  * @param {string} [options.parcelLabel] - label drawn at the polygon's centre
+ * @param {Object} [options.tileSource] - cache + fetch cap (thumbnails/tile-source.js); defaults to the shared one
  * @returns {Promise<{ buffer: Buffer, frame: Object, tiles: { loaded: number, failed: number } }>}
  */
 export async function renderProposalThumbnail(options = {}) {
@@ -336,7 +332,8 @@ export async function renderProposalThumbnail(options = {}) {
         tileUrl = DEFAULT_TILE_URL,
         parcelLabel = null,
         badge = null,
-        tileTimeoutMs = DEFAULT_TILE_TIMEOUT_MS
+        tileTimeoutMs = DEFAULT_TILE_TIMEOUT_MS,
+        tileSource = defaultTileSource()
     } = options;
 
     const frame = computeStitchFrame(options);
@@ -354,11 +351,10 @@ export async function renderProposalThumbnail(options = {}) {
     const tilePromises = [];
     for (let ty = yMin; ty <= yMax; ty++) {
         for (let tx = xMin; tx <= xMax; tx++) {
-            const url = expandTileUrl(tileUrl, tx, ty, zoom);
             const dx = (tx - xMin) * TILE_SIZE;
             const dy = (ty - yMin) * TILE_SIZE;
             tilePromises.push(
-                fetchTileImage(url, tileTimeoutMs)
+                fetchTileImage(tileSource, { template: tileUrl, z: zoom, x: tx, y: ty, timeoutMs: tileTimeoutMs })
                     .then(img => {
                         ctx.drawImage(img, dx, dy, TILE_SIZE, TILE_SIZE);
                         loaded++;
@@ -464,4 +460,4 @@ export async function renderProposalThumbnail(options = {}) {
     };
 }
 
-export { DEFAULT_TILE_URL, TILE_SIZE, MAX_STITCH_TILES_PER_AXIS };
+export { DEFAULT_TILE_URL, TILE_SIZE, MAX_STITCH_TILES_PER_AXIS, MAX_TILES };

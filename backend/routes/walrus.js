@@ -4,6 +4,7 @@
 
 import { createJsonBodyValidator, validators } from '../utils/request-validation.js';
 import { putBlob } from '../storage/walrus.js';
+import { createUploadRateLimiter, decodeUploadImage, validateNftMetadata } from '../utils/nft-asset-upload.js';
 
 const MAX_FILE_NAME_LENGTH = 255;
 
@@ -36,23 +37,24 @@ const walrusUploadBodyValidator = createJsonBodyValidator({
     }
 });
 
+// Stores on OUR Walrus publisher budget; restricted to exactly what the mint flows send (a sniffed
+// image + NFT metadata, size-capped, per-IP rate limited) — see utils/nft-asset-upload.js.
 export function setupWalrusRoute(app) {
-    app.post('/walrus/upload', walrusUploadBodyValidator, async (req, res) => {
+    const uploadRateLimiter = createUploadRateLimiter();
+    app.post('/walrus/upload', uploadRateLimiter, walrusUploadBodyValidator, async (req, res) => {
         try {
             const { imageData, metadata } = req.validatedBody;
 
-            const matches = imageData.match(/^data:(.+);base64,(.+)$/);
-            if (!matches || matches.length < 3) {
-                return res.status(400).json({ error: 'imageData must be a base64 data URL.' });
+            const image = decodeUploadImage(imageData);
+            if (image.error) {
+                return res.status(400).json({ error: image.error });
+            }
+            const metadataError = validateNftMetadata(metadata);
+            if (metadataError) {
+                return res.status(400).json({ error: metadataError });
             }
 
-            const base64Payload = matches[2];
-            const imageBuffer = Buffer.from(base64Payload, 'base64');
-            if (!imageBuffer.length) {
-                return res.status(400).json({ error: 'Decoded image data is empty.' });
-            }
-
-            const imageUpload = await putBlob(imageBuffer);
+            const imageUpload = await putBlob(image.buffer);
 
             // Point the metadata at the stored image (canonical walrus:// + browser gateway URL).
             const enrichedMetadata = { ...metadata };

@@ -30,12 +30,17 @@ describe('GET /buildings', () => {
     it('returns buildings for a parcel id query', async () => {
         pool.setResult({
             rows: [{
-                id: 7,
+                object_id: 7,
+                metadata: null,
+                source: 'gdi',
+                geom: '0106000020B50E0000',
                 geometry: { type: 'Polygon', coordinates: [[[15.9, 45.79], [15.91, 45.79], [15.91, 45.78], [15.9, 45.79]]] },
                 footprint_area: 12,
+                intersection_area: 11.4,
                 containment_ratio: 0.95,
-                CESTICA_ID: 123,
-                BROJ_CESTICE: '7396'
+                // node-postgres returns unquoted identifiers lowercased
+                cestica_id: 123,
+                broj_cestice: '7396'
             }],
             rowCount: 1
         });
@@ -47,6 +52,31 @@ describe('GET /buildings', () => {
         expect(res.body.count).toBe(1);
         expect(res.body.features[0].properties.cestica_id).toBe(123);
         expect(res.body.features[0].properties.containment_ratio).toBe(0.95);
+        expect(res.body.features[0].properties.broj_cestice).toBe('7396');
+        expect(res.body.features[0].properties.object_id).toBe(7);
+        expect(res.body.features[0].properties).not.toHaveProperty('geom');
+    });
+
+    it('parcel query survives invalid footprints: MakeValid inside area math, raw geoms in the join', async () => {
+        pool.setResult({ rows: [], rowCount: 0 });
+        await request(app).get('/buildings?cestica_id=21486692');
+        const sql = pool.getCalls()[0].sql;
+        expect(sql).not.toMatch(/bf\.\*/);
+        // every ST_Intersection argument is a made-valid geometry, never a raw column
+        const intersections = [...sql.matchAll(/ST_Intersection\(([^)]*)\)/g)].map(m => m[1]);
+        expect(intersections.length).toBeGreaterThan(0);
+        for (const args of intersections) expect(args).not.toMatch(/\b(p|bf)\.geom\b/);
+        expect(sql).toMatch(/ST_MakeValid\(bf\.geom\)/);
+        expect(sql).toMatch(/ST_MakeValid\(p\.geom\)/);
+        expect(sql).toMatch(/bf\.geom && p\.geom/);
+        expect(sql).toMatch(/NULLIF\(a\.footprint_area, 0\)/);
+        expect(pool.getCalls()[0].params).toEqual(['21486692']);
+    });
+
+    it('rejects a non-numeric cestica_id instead of a pg cast error', async () => {
+        const res = await request(app).get('/buildings?cestica_id=abc');
+        expect(res.status).toBe(400);
+        expect(pool.getCalls()).toHaveLength(0);
     });
 
     it('returns 500 when the building query fails', async () => {

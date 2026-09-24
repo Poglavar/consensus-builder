@@ -2,6 +2,9 @@ import { MAX_CELL_BBOX_KM2, wgs84BboxAreaKm2 } from '../utils/helpers.js';
 import { normalizePossessionSheets, buildOwnershipSummary, pickOwnershipFields } from './parcels.js';
 
 const MAX_LIMIT = 5000;
+// Pages come from one grid cell (bbox capped at MAX_CELL_BBOX_KM2), so a deep offset is never the
+// app paging — it is a caller walking the table. Reject it rather than scan-and-discard.
+export const MAX_OFFSET = 50000;
 
 const SRID_WGS84 = 4326;
 
@@ -113,6 +116,17 @@ function parseLimit(rawValue) {
     }
 
     return Math.min(parsed, MAX_LIMIT);
+}
+
+// Returns 0 for absent, a non-negative integer, or NaN for invalid input (caller answers 400).
+function parseOffset(rawValue) {
+    if (rawValue === undefined || rawValue === null || rawValue === '') {
+        return 0;
+    }
+    if (typeof rawValue !== 'string' || !/^\d+$/.test(rawValue.trim())) {
+        return Number.NaN;
+    }
+    return Number.parseInt(rawValue.trim(), 10);
 }
 
 function parseBbox(rawValue) {
@@ -250,6 +264,13 @@ export function setupParcelBaRoute(app, pool) {
         const block = typeof req.query.block === 'string' ? req.query.block.trim() : '';
         const parcel = typeof req.query.parcel === 'string' ? req.query.parcel.trim() : '';
         const limit = parseLimit(req.query.limit);
+        const offset = parseOffset(req.query.offset);
+        if (!Number.isFinite(offset)) {
+            return res.status(400).json({ error: 'Invalid offset. Expected a non-negative integer.' });
+        }
+        if (offset > MAX_OFFSET) {
+            return res.status(400).json({ error: `offset too large (max ${MAX_OFFSET}).` });
+        }
         const bboxRaw = typeof req.query.bbox === 'string' ? req.query.bbox.trim() : '';
         const bbox = parseBbox(bboxRaw);
 
@@ -386,8 +407,10 @@ export function setupParcelBaRoute(app, pool) {
             sql += ` WHERE ${whereClauses.join(' AND ')}`;
         }
 
+        // smp is the primary key: the tiebreaker makes the order total, so offset pages never
+        // overlap or skip rows (block+parcel alone repeats across sections in a bbox query).
         if (queryType !== 'parcel') {
-            sql += ' ORDER BY block, parcel';
+            sql += ' ORDER BY block, parcel, smp';
         }
 
         // Always bounded: without ?limit this used to return every matching row (a world bbox or
@@ -398,6 +421,12 @@ export function setupParcelBaRoute(app, pool) {
         if (queryType !== 'parcel') {
             params.push(effectiveLimit + 1);
             sql += ` LIMIT $${params.length}`;
+            // The frontend pages a cell with offset=startIndex while `returned === count`; ignoring
+            // offset handed it page 0 forever whenever a cell held exactly `count` rows.
+            if (offset > 0) {
+                params.push(offset);
+                sql += ` OFFSET $${params.length}`;
+            }
         }
 
         try {
@@ -435,7 +464,8 @@ export function setupParcelBaRoute(app, pool) {
                     block: block || undefined,
                     parcel: parcel || undefined,
                     bbox: hasBbox ? `${bbox.minLon},${bbox.minLat},${bbox.maxLon},${bbox.maxLat}` : undefined,
-                    limit: limit || undefined
+                    limit: limit || undefined,
+                    offset: offset || undefined
                 },
                 truncated,
                 features

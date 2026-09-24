@@ -379,3 +379,37 @@ describe('GET /parcel-ba/:smp/ownership', () => {
         expect(res.body.possessionSheets[0].possessors[0].name).toBe('Unknown owner');
     });
 });
+describe('GET /parcel-ba offset paging', () => {
+    const baRow = (smp) => ({
+        smp, section: '002', block: '062', parcel: smp.slice(-3), area: 100,
+        geometry: { type: 'Polygon', coordinates: [[[-58.4, -34.6], [-58.39, -34.6], [-58.39, -34.61], [-58.4, -34.6]]] },
+        information_basic: {}, information_technical: {}, property_horizontal: null, doors: null,
+        date_added: null, date_updated: null, ownership_list_json: null, ownership_type: null
+    });
+
+    it('passes offset through to SQL with a total order, so the frontend pager advances', async () => {
+        pool.setResults([{ rows: [baRow('002-062-003')], rowCount: 1 }, { rows: [], rowCount: 0 }]);
+
+        const res = await request(app).get('/parcel-ba?bbox=-58.4,-34.61,-58.39,-34.6&limit=2&offset=2');
+
+        expect(res.status).toBe(200);
+        const { sql, params } = pool.getCalls()[0];
+        expect(sql).toMatch(/ORDER BY block, parcel, smp\s+LIMIT \$5 OFFSET \$6/);
+        expect(params).toEqual([-58.4, -34.61, -58.39, -34.6, 3, 2]);
+        expect(res.body.query.offset).toBe(2);
+    });
+
+    it('omits OFFSET for the first page', async () => {
+        pool.setResults([{ rows: [baRow('002-062-000')], rowCount: 1 }, { rows: [], rowCount: 0 }]);
+        await request(app).get('/parcel-ba?bbox=-58.4,-34.61,-58.39,-34.6&limit=2&offset=0');
+        expect(pool.getCalls()[0].sql).not.toMatch(/OFFSET/);
+    });
+
+    it('rejects invalid and over-cap offsets without querying', async () => {
+        const bad = await request(app).get('/parcel-ba?bbox=-58.4,-34.61,-58.39,-34.6&offset=-5');
+        expect(bad.status).toBe(400);
+        const huge = await request(app).get('/parcel-ba?bbox=-58.4,-34.61,-58.39,-34.6&offset=50001');
+        expect(huge.status).toBe(400);
+        expect(pool.getCalls()).toHaveLength(0);
+    });
+});

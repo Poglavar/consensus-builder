@@ -22,6 +22,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { assertReconstructionGeoJSONRoundTrip } from '../proposals/reconstruction-geojson.js';
 import { assertCorridorReconstructionGeoJSONRoundTrip } from '../proposals/corridor-reconstruction-geojson.js';
 import { assertStructureReconstructionGeoJSONRoundTrip } from '../proposals/structure-reconstruction-geojson.js';
+import { canonicalSeedRecord } from './lib/canonical-seed-record.mjs';
 
 dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
 
@@ -845,7 +846,9 @@ async function buildNeighbourhood(pool, config) {
     };
 }
 
-async function upsertProposal(pool, proposal) {
+async function upsertProposal(pool, authored) {
+    // Same projection as the API write path; throws before writing if the row would be unreadable.
+    const proposal = canonicalSeedRecord(authored);
     const { rows } = await pool.query(`
         INSERT INTO public.proposal (
             proposal_id, city, name, title, description, author, type,
@@ -890,7 +893,7 @@ async function upsertProposal(pool, proposal) {
         proposal.lifecycleStatus,
         proposal.createdAt,
         proposal.updatedAt,
-        JSON.stringify(proposal.parentParcelIds || []),
+        null, // ancestor_parcel_ids is retired; cadastre_parcel_ids is the declaration
         JSON.stringify(proposal.cadastreParcelIds || []),
         proposal.roadProposal ? JSON.stringify(proposal.roadProposal) : null,
         proposal.buildingProposal ? JSON.stringify(proposal.buildingProposal) : null,

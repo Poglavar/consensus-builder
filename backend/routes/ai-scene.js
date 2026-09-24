@@ -189,13 +189,46 @@ function buildCanonicalPrompt(rawSummary) {
 
 const normalizePrompt = (p) => String(p || '').replace(/\s+/g, ' ').trim();
 
-async function spentSoFarUsd(pool) {
-    const r = await pool.query('SELECT COALESCE(SUM(cost_usd), 0) AS total FROM ai_scene_spend');
-    return Number(r.rows[0].total) || 0;
+// Budget ledger: reserve → settle | release.
+//
+// Checking the running total and recording the spend as two separate steps let concurrent renders
+// all read the same pre-render total, all pass, and together overshoot BUDGET_USD. Now the check
+// and the write are one step under a transaction-scoped advisory lock: the reservation row is the
+// estimate, inserted only if spent + estimate still fits. The provider call happens OUTSIDE the
+// lock; afterwards the row is settled to the real cost (or deleted when the call failed). A process
+// that dies mid-call leaves the estimate on the ledger — over-counting, never under-counting.
+const BUDGET_LOCK_KEY = 0x41495343; // 'AISC' — any constant unique to this ledger
+
+export async function reserveBudget(pool, model, estUsd, budgetUsd = BUDGET_USD) {
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+        await client.query('SELECT pg_advisory_xact_lock($1)', [BUDGET_LOCK_KEY]);
+        // A fresh statement after the lock, so its snapshot sees every reservation committed by
+        // whoever held the lock before us.
+        const r = await client.query(
+            `INSERT INTO ai_scene_spend (model, cost_usd)
+             SELECT $1, $2
+             WHERE (SELECT COALESCE(SUM(cost_usd), 0) FROM ai_scene_spend) + $2 <= $3
+             RETURNING id`,
+            [model, estUsd, budgetUsd]
+        );
+        await client.query('COMMIT');
+        return r.rows.length ? { id: r.rows[0].id } : null;
+    } catch (err) {
+        await client.query('ROLLBACK').catch(() => {});
+        throw err;
+    } finally {
+        client.release();
+    }
 }
 
-async function recordSpend(pool, model, costUsd) {
-    await pool.query('INSERT INTO ai_scene_spend (model, cost_usd) VALUES ($1, $2)', [model, costUsd]);
+export async function settleBudget(pool, reservationId, costUsd) {
+    await pool.query('UPDATE ai_scene_spend SET cost_usd = $2 WHERE id = $1', [reservationId, costUsd]);
+}
+
+export async function releaseBudget(pool, reservationId) {
+    await pool.query('DELETE FROM ai_scene_spend WHERE id = $1', [reservationId]);
 }
 
 // Rate limits on the paid render endpoint (env-overridable for prod tuning). A short cooldown throttles
@@ -205,8 +238,11 @@ const RENDER_COOLDOWN_MS = Number(process.env.AI_SCENE_COOLDOWN_MS) || 20_000;
 const RENDER_QUOTA_WINDOW_MS = Number(process.env.AI_SCENE_QUOTA_WINDOW_MS) || 24 * 60 * 60 * 1000;
 const RENDER_QUOTA_MAX = Number(process.env.AI_SCENE_QUOTA_MAX) || 10;
 
-// True client IP behind Cloudflare -> nginx: CF-Connecting-IP is the real visitor; req.ip would be
-// the proxy, bucketing everyone together. Falls back to req.ip in dev where the header is absent.
+// Client IP for the per-IP cooldown/quota. This is req.ip, NOT the CF-Connecting-IP header: the
+// header is client-controlled, so anyone reaching the origin directly could forge a fresh value per
+// request and reset the paid render quota at will. nginx rewrites the connecting address from
+// CF-Connecting-IP only for Cloudflare's ranges (set_real_ip_from + real_ip_header), and the app
+// trusts exactly that one proxy hop (index.js: trust proxy 1), so req.ip is the real visitor.
 //
 // The address is then reduced to a bucket by ipKeyGenerator rather than used raw. An IPv6 visitor is
 // routinely handed a whole /56, so keying on the full /128 lets one person present a fresh address
@@ -214,10 +250,7 @@ const RENDER_QUOTA_MAX = Number(process.env.AI_SCENE_QUOTA_MAX) || 10;
 // expensive half, since every render past it is a real charge to the image provider. IPv4 keys are
 // returned unchanged, so nothing about existing limits moves.
 export function clientIp(req) {
-    const header = req.headers?.['cf-connecting-ip'];
-    const declared = Array.isArray(header) ? header[0] : header;
-    // CF sends one address, but a misconfigured proxy chain can append; the client's own is first.
-    const address = String(declared || '').split(',')[0].trim() || req.ip;
+    const address = String(req.ip || '').trim();
     return address ? ipKeyGenerator(address) : 'unknown';
 }
 
@@ -621,25 +654,6 @@ export function setupAiSceneRoute(app, pool) {
             effectivePrompt = prompt;
         }
 
-        // Lifetime budget ceiling, checked BEFORE spending. Fails closed: if the ledger can't be
-        // read we refuse rather than risk spending past the cap.
-        if (pool) {
-            let spent;
-            try {
-                spent = await spentSoFarUsd(pool);
-            } catch (err) {
-                console.error(`[${new Date().toISOString()}] ai-scene: budget check failed — ${err.message}`);
-                return res.status(503).json({ error: 'Cannot verify the render budget right now.', code: 'budget_check_failed' });
-            }
-            if (spent >= BUDGET_USD) {
-                console.warn(`[${new Date().toISOString()}] ai-scene: budget exhausted ($${spent.toFixed(4)} of $${BUDGET_USD})`);
-                return res.status(402).json({
-                    error: `The image generation budget ($${BUDGET_USD}) has been used up.`,
-                    code: 'budget_exhausted'
-                });
-            }
-        }
-
         // Optional second image: a grayscale height map (black = ground, white = tallest) that pins
         // exact building heights. Passed to every provider as a second reference image. Absent is
         // fine; present-but-invalid is rejected rather than silently dropped.
@@ -648,6 +662,27 @@ export function setupAiSceneRoute(app, pool) {
             parsedHeight = parseImageInput(heightMap);
             if (parsedHeight.error) {
                 return res.status(400).json({ error: `Invalid "heightMap": ${parsedHeight.error}.`, code: 'bad_request' });
+            }
+        }
+
+        // Lifetime budget ceiling: reserve this render's estimate BEFORE spending, atomically (see
+        // reserveBudget). Fails closed: if the ledger can't be written we refuse rather than risk
+        // spending past the cap. Placed after all input validation so a bad request never holds a
+        // reservation.
+        let reservation = null;
+        if (pool) {
+            try {
+                reservation = await reserveBudget(pool, model, cfg.estUsd);
+            } catch (err) {
+                console.error(`[${new Date().toISOString()}] ai-scene: budget reservation failed — ${err.message}`);
+                return res.status(503).json({ error: 'Cannot verify the render budget right now.', code: 'budget_check_failed' });
+            }
+            if (!reservation) {
+                console.warn(`[${new Date().toISOString()}] ai-scene: budget exhausted (a $${cfg.estUsd} render would exceed $${BUDGET_USD})`);
+                return res.status(402).json({
+                    error: `The image generation budget ($${BUDGET_USD}) has been used up.`,
+                    code: 'budget_exhausted'
+                });
             }
         }
 
@@ -660,10 +695,11 @@ export function setupAiSceneRoute(app, pool) {
                 model, cfg, apiKey, parsed, parsedHeight, effectivePrompt, controller.signal
             );
 
-            // Record the spend before responding, so the ledger can't miss a paid call.
-            if (pool) {
-                try { await recordSpend(pool, model, result.costUsd); }
-                catch (err) { console.error(`[${new Date().toISOString()}] ai-scene: FAILED to record spend $${result.costUsd} — ${err.message}`); }
+            // Settle the reservation to the real cost before responding. If this write fails the
+            // estimate stays on the ledger, so the call is still counted (just not exactly).
+            if (reservation) {
+                try { await settleBudget(pool, reservation.id, result.costUsd); }
+                catch (err) { console.error(`[${new Date().toISOString()}] ai-scene: FAILED to settle spend #${reservation.id} to $${result.costUsd} (estimate $${cfg.estUsd} kept) — ${err.message}`); }
             }
 
             console.log(`[${new Date().toISOString()}] ai-scene: ${model} ok in ${Date.now() - startedAt}ms, ` +
@@ -685,6 +721,13 @@ export function setupAiSceneRoute(app, pool) {
             const msg = aborted ? `timed out after ${timeoutMs / 1000}s` : err.message;
             const code = aborted ? 'timeout' : classifyProviderError(msg);
             console.error(`[${new Date().toISOString()}] ai-scene: ${model} failed (${code}) — ${msg}`);
+            // The provider refused, so nothing was billed: give the reservation back. A timeout is
+            // different — we aborted our side, but the provider may still have finished and charged,
+            // so the estimate stays on the ledger.
+            if (reservation && !aborted) {
+                try { await releaseBudget(pool, reservation.id); }
+                catch (releaseErr) { console.error(`[${new Date().toISOString()}] ai-scene: FAILED to release spend #${reservation.id} — ${releaseErr.message}`); }
+            }
             // no_funds is our config problem, not the client's — 502 keeps it a server-side failure,
             // but the code lets the UI show a specific "temporarily unavailable" message.
             return res.status(aborted ? 504 : 502).json({ error: `Image generation failed: ${msg}`, code });

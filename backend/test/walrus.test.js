@@ -68,7 +68,7 @@ describe('POST /walrus/upload', () => {
     it('rejects missing metadata objects', async () => {
         const res = await request(app)
             .post('/walrus/upload')
-            .send({ imageData: 'data:image/png;base64,aGVsbG8=' });
+            .send({ imageData: 'data:image/png;base64,iVBORw0KGgoAAAAAAAAAAAAAAAAAAAAA' });
 
         expect(res.status).toBe(400);
         expect(res.body).toEqual({ error: 'metadata object is required.' });
@@ -78,7 +78,7 @@ describe('POST /walrus/upload', () => {
         const res = await request(app)
             .post('/walrus/upload')
             .send({
-                imageData: 'data:image/png;base64,aGVsbG8=',
+                imageData: 'data:image/png;base64,iVBORw0KGgoAAAAAAAAAAAAAAAAAAAAA',
                 metadata: { name: 'Parcel NFT' },
                 injected: true
             });
@@ -105,7 +105,7 @@ describe('POST /walrus/upload', () => {
 
         const res = await request(app)
             .post('/walrus/upload')
-            .send({ imageData: 'data:image/png;base64,aGVsbG8=', metadata: { name: 'Parcel NFT' } });
+            .send({ imageData: 'data:image/png;base64,iVBORw0KGgoAAAAAAAAAAAAAAAAAAAAA', metadata: { name: 'Parcel NFT' } });
 
         expect(res.status).toBe(500);
         expect(res.body).toEqual({ error: 'Failed to upload assets to Walrus.' });
@@ -116,7 +116,7 @@ describe('POST /walrus/upload', () => {
 
         const res = await request(app)
             .post('/walrus/upload')
-            .send({ imageData: 'data:image/png;base64,aGVsbG8=', metadata: { name: 'Parcel NFT' } });
+            .send({ imageData: 'data:image/png;base64,iVBORw0KGgoAAAAAAAAAAAAAAAAAAAAA', metadata: { name: 'Parcel NFT' } });
 
         expect(res.status).toBe(500);
         expect(res.body).toEqual({ error: 'Failed to upload assets to Walrus.' });
@@ -132,7 +132,7 @@ describe('POST /walrus/upload', () => {
             .post('/walrus/upload')
             .send({
                 fileName: 'parcel.png',
-                imageData: 'data:image/png;base64,aGVsbG8=',
+                imageData: 'data:image/png;base64,iVBORw0KGgoAAAAAAAAAAAAAAAAAAAAA',
                 metadata: { name: 'Parcel NFT' }
             });
 
@@ -163,7 +163,7 @@ describe('POST /walrus/upload', () => {
 
         const res = await request(app)
             .post('/walrus/upload')
-            .send({ imageData: 'data:image/png;base64,aGVsbG8=', metadata: { name: 'Parcel NFT' } });
+            .send({ imageData: 'data:image/png;base64,iVBORw0KGgoAAAAAAAAAAAAAAAAAAAAA', metadata: { name: 'Parcel NFT' } });
 
         expect(res.status).toBe(200);
         expect(res.body.metadataUri).toBe('walrus://metaBlob');
@@ -181,7 +181,7 @@ describe('POST /walrus/upload', () => {
         await request(app)
             .post('/walrus/upload')
             .send({
-                imageData: 'data:image/png;base64,aGVsbG8=',
+                imageData: 'data:image/png;base64,iVBORw0KGgoAAAAAAAAAAAAAAAAAAAAA',
                 metadata: { name: 'Parcel NFT', external_url: 'https://example.com/parcels/1' }
             });
 
@@ -204,7 +204,7 @@ describe('POST /walrus/upload', () => {
 
         await request(app)
             .post('/walrus/upload')
-            .send({ imageData: 'data:image/png;base64,aGVsbG8=', metadata: { name: 'Parcel NFT' } });
+            .send({ imageData: 'data:image/png;base64,iVBORw0KGgoAAAAAAAAAAAAAAAAAAAAA', metadata: { name: 'Parcel NFT' } });
 
         const [imageUrl] = fetchMock.mock.calls[0];
         expect(imageUrl).toContain('permanent=true');

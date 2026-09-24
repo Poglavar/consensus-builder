@@ -46,11 +46,16 @@ function sameIdSet(left, right) {
 // map this code to 422 with the reason, and list routes skip the row and report it, so one
 // unmigrated record never turns a whole plan or city list into "HTTP 500".
 export const PROPOSAL_RECORD_INVALID = 'proposal-record-invalid';
+// What a person is told. The technical reason (which field, which id) is on `error.detail` for
+// logs and the console; it means nothing to a visitor opening an old share link.
+export const PROPOSAL_RECORD_INVALID_MESSAGE =
+    'This proposal was made with an older version of the site and can no longer be opened.';
 
-function invalidRecord(message) {
-    const error = new Error(message);
+function invalidRecord(detail) {
+    const error = new Error(PROPOSAL_RECORD_INVALID_MESSAGE);
     error.code = PROPOSAL_RECORD_INVALID;
     error.status = 422;
+    error.detail = detail;
     return error;
 }
 
@@ -221,6 +226,10 @@ export function serializeProposalRow(row, options = {}) {
     if (Object.prototype.hasOwnProperty.call(row, 'agent_payment_id') && !present(row.agent_payment_id)) {
         delete proposal.agent;
     }
+    // Server-held provenance of fields a migration retired (scripts/migrate-legacy-parcel-
+    // declarations.mjs). It stays in the row so the migration is reversible, but it is not part
+    // of the proposal and must never be served, forked or re-published by a client.
+    delete proposal.legacy;
 
     return stripLocalProposalState(proposal);
 }

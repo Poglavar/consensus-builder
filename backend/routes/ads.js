@@ -145,7 +145,7 @@ export function setupAdsRoute(app, pool) {
                     ap.ad_url AS ad_parcel_url,
                     ap.ai_model,
                     ap.ai_prompt,
-                    ap.ai_response,
+                    ap.processing_result,
                     ap.parcel_score,
                     ap.updated_at AS ad_parcel_updated_at,
                     ap.updated_by AS ad_parcel_updated_by,
@@ -197,7 +197,7 @@ export function setupAdsRoute(app, pool) {
                     ad_url: row.ad_parcel_url,
                     ai_model: row.ai_model,
                     ai_prompt: row.ai_prompt,
-                    ai_response: row.ai_response,
+                    processing_result: row.processing_result,
                     parcel_score: row.parcel_score,
                     updated_at: row.ad_parcel_updated_at,
                     updated_by: row.ad_parcel_updated_by

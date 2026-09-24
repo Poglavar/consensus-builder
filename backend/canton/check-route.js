@@ -37,7 +37,9 @@ const main = async () => {
   setupCantonRoute(app);
   const server = await new Promise((resolve) => { const s = app.listen(0, () => resolve(s)); });
   const base = `http://localhost:${server.address().port}`;
-  const get = async (p) => { const r = await fetch(`${base}${p}`); return { status: r.status, body: await r.json() }; };
+  // Seeded parties are not the public party, so reading them needs the admin token (routes/canton.js).
+  const adminHeaders = process.env.CANTON_ADMIN_TOKEN ? { 'x-canton-admin-token': process.env.CANTON_ADMIN_TOKEN } : {};
+  const get = async (p) => { const r = await fetch(`${base}${p}`, { headers: adminHeaders }); return { status: r.status, body: await r.json() }; };
 
   try {
     const end = await get('/canton/ledger-end');

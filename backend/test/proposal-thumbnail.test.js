@@ -154,11 +154,11 @@ describe('computeStitchFrame', () => {
             [15.90, 45.75]
         ]];
         const frame = computeStitchFrame({ polygon: wide, polygonOrder: 'lnglat', padding: 0.05, zoom: 19 });
-        // Nothing fits the 6-tile budget here, so it bottoms out at the zoom floor (14) — same as the
-        // browser did. The hard cap that matters is the tile count, which stays well under the limit.
-        expect(frame.zoom).toBe(14);
-        expect(frame.tilesX * frame.tilesY).toBe(64);
-        expect(frame.tilesX * frame.tilesY).toBeLessThanOrEqual(100);
+        // At z14 this is an 8x8 grid (64 tiles per upload). The zoom search now continues below z14
+        // until the frame fits the 6x6 budget, so the per-thumbnail cap is 36 tiles.
+        expect(frame.zoom).toBe(13);
+        expect(frame.tilesX).toBeLessThanOrEqual(6);
+        expect(frame.tilesY).toBeLessThanOrEqual(6);
     });
 
     it('rejects a polygon that is not a polygon', () => {

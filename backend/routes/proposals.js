@@ -3,9 +3,11 @@
 // GET /proposals/:id - Get a proposal by row id (numeric) or proposal_id, row id first
 
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { createJsonBodyValidator, validators } from '../utils/request-validation.js';
-import { generateAndStoreProposalThumbnail } from '../thumbnails/proposal-thumbnail.js';
+import { defaultThumbnailQueue } from '../thumbnails/thumbnail-queue.js';
 import { publicApiBaseUrl } from '../utils/public-base-url.js';
+import { imageFileExists } from '../utils/image-store.js';
 import { canonicalizeLifecycleStatus, resolveIncomingLifecycleStatus } from '../proposals/lifecycle.js';
 import {
     findLegacyCadastreDeclaration,
@@ -17,10 +19,6 @@ import {
 import { isInvalidRecordError } from '../proposals/serializer.js';
 import { recomputeCorridorStats } from './road-corridor.js';
 import { validateReparcellizationShares } from './reparcellization.js';
-
-// Rendering a thumbnail means fetching ~10-40 basemap tiles. That is normally under a second, but it
-// is a third party on the request path, so it gets a hard deadline: an upload must never hang on it.
-const THUMBNAIL_DEADLINE_MS = 20000;
 
 const MAX_PROPOSAL_ID_LENGTH = 255;
 const MAX_CITY_LENGTH = 100;
@@ -45,6 +43,11 @@ export const MAX_PARCEL_PROPOSALS_LIMIT = 200;
 // and are therefore immutable through the API.
 // ---------------------------------------------------------------------------------------------
 export const EDIT_TOKEN_HEADER = 'X-Proposal-Edit-Token';
+
+// First key of the two-key advisory lock on a proposal_id (second key: hashtext(proposal_id)). A
+// fixed namespace keeps these locks from colliding with any other advisory-lock user of the database.
+// Shared with routes/agent-proposals.js, which takes the exclusive side.
+export const PROPOSAL_ID_LOCK_NAMESPACE = 480402;
 
 export function hashEditToken(token) {
     return createHash('sha256').update(String(token)).digest('hex');
@@ -119,27 +122,82 @@ function resolveThumbnailBaseUrl() {
     return publicApiBaseUrl();
 }
 
-async function generateProposalThumbnailForRequest(pool, proposal, { city, proposalId, req }) {
-    const render = generateAndStoreProposalThumbnail(pool, proposal, {
-        city,
-        proposalId,
-        baseUrl: resolveThumbnailBaseUrl(req)
-    });
+// ---------------------------------------------------------------------------------------------
+// Thumbnails a client may set. screenshot_url (and onchain_data.imageUrl, which the lists fall back
+// to) is rendered as an <img> in every visitor's proposal list, so a free upload must not be able to
+// point it anywhere it likes (a tracking pixel, someone else's content, a URL that later changes).
+// Accepted: an IMAGE this API itself stored — /uploads/images/<file> or /images/<file> (the same
+// directory, see index.js), as a bare path or under the pinned PUBLIC_API_BASE_URL origin — and only
+// when that file actually exists. /metadata/ and the rest of /uploads/ (JSON, models) are not
+// thumbnails. Anything else is dropped and the server renders its own (thumbnails/thumbnail-queue.js).
+// ---------------------------------------------------------------------------------------------
+const OWN_STORE_IMAGE_PATH = /^\/(?:uploads\/images|images)\/([A-Za-z0-9_-][A-Za-z0-9._-]*)$/;
 
-    let timer = null;
-    const deadline = new Promise((_, reject) => {
-        timer = setTimeout(
-            () => reject(new Error(`Thumbnail render exceeded ${THUMBNAIL_DEADLINE_MS}ms`)),
-            THUMBNAIL_DEADLINE_MS
-        );
-        if (typeof timer.unref === 'function') timer.unref();
-    });
-
-    try {
-        return await Promise.race([render, deadline]);
-    } finally {
-        if (timer) clearTimeout(timer);
+export function isOwnStoreImageUrl(value, { fileExists = imageFileExists } = {}) {
+    if (typeof value !== 'string') return false;
+    const raw = value.trim();
+    if (!raw) return false;
+    let pathname;
+    if (raw.startsWith('/')) {
+        if (raw.startsWith('//')) return false; // protocol-relative: another host
+        pathname = raw;
+    } else {
+        const base = publicApiBaseUrl();
+        if (!base) return false;
+        let url;
+        let baseUrl;
+        try {
+            url = new URL(raw);
+            baseUrl = new URL(base);
+        } catch {
+            return false;
+        }
+        if (url.origin !== baseUrl.origin || url.username || url.password || url.search || url.hash) return false;
+        const prefix = baseUrl.pathname.replace(/\/+$/, '');
+        if (prefix && !url.pathname.startsWith(`${prefix}/`)) return false;
+        pathname = url.pathname.slice(prefix.length);
     }
+    const match = OWN_STORE_IMAGE_PATH.exec(pathname);
+    return Boolean(match && fileExists(match[1]));
+}
+
+// ---------------------------------------------------------------------------------------------
+// Authors. There is no login: an author is a free-text display name ("Guest 3780", a chosen
+// username — what the frontend sends, see user-management.js getCurrentUsername). Two kinds of
+// author string are also IDENTITIES that other parts of the app treat as verified: a wallet address
+// (the paid agent route binds author to the settled payer; supporter agents and the actor explorer
+// key on it) and a server agent persona (backend/agents/personas.json, by name or wallet). The free
+// route cannot prove either, so it does not store them: such an author becomes NULL (row and
+// proposal_data) and the drop is logged with the other unprovable claims. Ordinary display names
+// pass untouched. A client-supplied onchain.owner is no proof either — the free route never checks
+// the chain — so it grants no exception. Only POST /agent/proposals, where x402 settlement proves the
+// wallet, stores a wallet as author.
+// ---------------------------------------------------------------------------------------------
+const EVM_ADDRESS = /^0x[0-9a-fA-F]{40}$/;
+const BASE58_ADDRESS = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+
+function loadPersonaIdentities() {
+    try {
+        const doc = JSON.parse(readFileSync(new URL('../agents/personas.json', import.meta.url), 'utf8'));
+        const personas = Array.isArray(doc?.personas) ? doc.personas : [];
+        return new Set(personas
+            .flatMap(persona => [persona?.name, persona?.id, persona?.wallet])
+            .filter(value => typeof value === 'string' && value.trim())
+            .map(value => value.trim().toLowerCase()));
+    } catch (err) {
+        console.warn(`[proposals] could not read agents/personas.json (${err.message}); persona authors are not reserved`);
+        return new Set();
+    }
+}
+const PERSONA_IDENTITIES = loadPersonaIdentities();
+
+export function isReservedAuthorIdentity(author) {
+    if (typeof author !== 'string') return false;
+    const value = author.trim();
+    if (!value) return false;
+    return EVM_ADDRESS.test(value)
+        || BASE58_ADDRESS.test(value)
+        || PERSONA_IDENTITIES.has(value.toLowerCase());
 }
 
 function validateIdentifierField(fieldLabel) {
@@ -462,11 +520,35 @@ export function proposalCreatePrecheck(req, res, next) {
 // an Executed lifecycle assert that OTHER people consented / land changed hands; the browser's
 // values are a local simulation, and on-chain proposals get their real lifecycle from the oracle
 // (oracle/proposal-lifecycle.js), which keys on onchain.proposalId. Returns what was dropped.
+//
+// Also dropped on the free route: an author that is a wallet address or agent persona (see
+// isReservedAuthorIdentity) and any client thumbnail that is not an image in our own store (see
+// isOwnStoreImageUrl) — screenshotUrl/screenshot_url and onchain(Data).imageUrl alike, since the
+// lists and the serializer fall back from one to the other. The paid route gets the same
+// thumbnail rule (a payment buys a row, not the right to hotlink into everyone's list).
 function dropUnprovableClaims(proposal, { paid }) {
     const dropped = [];
     if (!paid && proposal.agent !== undefined) {
         delete proposal.agent;
         dropped.push('agent');
+    }
+    if (!paid && isReservedAuthorIdentity(proposal.author)) {
+        delete proposal.author;
+        dropped.push('author');
+    }
+    for (const key of ['screenshotUrl', 'screenshot_url']) {
+        if (proposal[key] !== undefined && proposal[key] !== null && !isOwnStoreImageUrl(proposal[key])) {
+            delete proposal[key];
+            dropped.push(key);
+        }
+    }
+    for (const key of ['onchain', 'onchainData']) {
+        const onchain = proposal[key];
+        if (onchain && typeof onchain === 'object' && onchain.imageUrl !== undefined && onchain.imageUrl !== null
+            && !isOwnStoreImageUrl(onchain.imageUrl)) {
+            delete onchain.imageUrl;
+            dropped.push(`${key}.imageUrl`);
+        }
     }
     if (Array.isArray(proposal.acceptedParcelIds) && proposal.acceptedParcelIds.length) dropped.push('acceptedParcelIds');
     if (proposal.ownerAcceptances && typeof proposal.ownerAcceptances === 'object'
@@ -487,11 +569,13 @@ export function createProposalCreateHandler(pool) {
             const droppedClaims = dropUnprovableClaims(proposal, { paid });
 
             const city = normalizeCityCode(validated.city) || null;
-            const proposalId = precheck.value.proposalId ?? `local-${Date.now()}`;
+            // Random suffix: two id-less uploads in the same millisecond must not collide.
+            const proposalId = precheck.value.proposalId ?? `local-${Date.now()}-${randomBytes(4).toString('hex')}`;
             const name = validated.name ?? null;
             const title = validated.title ?? validated.name ?? null;
             const description = validated.description ?? null;
-            const author = validated.author ?? null;
+            // Read from the sanitized copy: dropUnprovableClaims has removed a reserved author.
+            const author = typeof proposal.author === 'string' ? proposal.author : null;
             let lifecycleStatus = precheck.value.lifecycleStatus;
             if (lifecycleStatus === 'Executed') {
                 lifecycleStatus = 'Active';
@@ -535,8 +619,10 @@ export function createProposalCreateHandler(pool) {
 
             const lens = validated.lens ?? null;
             const bounds = validated.bounds ?? null;
-            const onchainData = validated.onchain ?? validated.onchainData ?? null;
-            const screenshotUrl = validated.screenshotUrl ?? validated.screenshot_url ?? null;
+            // Sanitized copies (dropUnprovableClaims): a foreign thumbnail is already gone from these.
+            const onchainData = proposal.onchain ?? proposal.onchainData ?? null;
+            const clientScreenshot = proposal.screenshotUrl ?? proposal.screenshot_url ?? null;
+            const screenshotUrl = typeof clientScreenshot === 'string' ? clientScreenshot.trim() : null;
             const epochYear = validated.epochYear ?? null;
             const agentPaymentId = req.x402Payment?.id ?? null;
             const agentRequestHash = req.x402Payment?.requestHash ?? null;
@@ -583,6 +669,13 @@ export function createProposalCreateHandler(pool) {
             const storedStructureProposal = proposalData.structureProposal ?? null;
             const storedReparcellization = proposalData.reparcellization ?? null;
 
+            // INSERT … SELECT … WHERE lock: the row is written only if no PAID request is between
+            // its proposal_id check and its insert for the same id. The paid route holds an
+            // exclusive session advisory lock on that id from before settlement until its response
+            // (agent-proposals.js reserveProposalId) and runs this statement on that same session,
+            // where its own lock never conflicts. Any other writer's shared try-lock fails, the
+            // statement inserts nothing, and it answers 409 — so a free upload (or a second paid
+            // request) can never take an id a payer has already been charged for.
             const sql = `
                 INSERT INTO proposal (
                     proposal_id, city, name, title, description, author, type,
@@ -597,7 +690,8 @@ export function createProposalCreateHandler(pool) {
                     lens, bounds, onchain_data, screenshot_url, proposal_data,
                     ownership_flow, cadastre_frame, epoch_year,
                     agent_payment_id, agent_request_hash, edit_token_hash
-                ) VALUES (
+                )
+                SELECT
                     $1, $2, $3, $4, $5, $6, $7,
                     $8,
                     $9, $10, $11, $12,
@@ -610,7 +704,7 @@ export function createProposalCreateHandler(pool) {
                     $29, $30, $31, $32, $33,
                     $34, $35, $36,
                     $37, $38, $39
-                )
+                WHERE pg_try_advisory_xact_lock_shared(${PROPOSAL_ID_LOCK_NAMESPACE}, hashtext($1::varchar))
                 RETURNING id, proposal_id, created_at
             `;
 
@@ -642,8 +736,17 @@ export function createProposalCreateHandler(pool) {
                 editToken.hash
             ];
 
-            const result = await pool.query(sql, params);
+            // The paid route passes the session that holds the proposal_id lock.
+            const db = req.proposalWriteClient ?? pool;
+            const result = await db.query(sql, params);
             const inserted = result.rows[0];
+            if (!inserted) {
+                console.warn(`[POST proposals ${proposalId}] refused: a paid submission for this proposal_id is in flight`);
+                return res.status(409).json({
+                    error: 'Proposal with this ID is being created by another request',
+                    proposalId
+                });
+            }
             const dbId = inserted.id;
 
             const updateSql = `
@@ -663,42 +766,33 @@ export function createProposalCreateHandler(pool) {
                     )
                 WHERE id = $1
             `;
-            await pool.query(updateSql, [dbId]);
+            await db.query(updateSql, [dbId]);
 
-            // Thumbnails are rendered here, on the server, so that every uploaded proposal has one —
-            // the old client-side capture only ran for whoever happened to have the proposal open in
-            // the right city with tiles loaded, which is why almost nothing had a thumbnail.
+            // Thumbnails are rendered on the server, so that every uploaded proposal has one — the
+            // old client-side capture only ran for whoever happened to have the proposal open in the
+            // right city with tiles loaded, which is why almost nothing had a thumbnail.
             //
-            // This runs AFTER the insert has committed and can never fail the upload: a proposal
-            // whose picture cannot be drawn is still a proposal. On failure we log loudly and return
-            // the proposal without a screenshotUrl; the backfill script can pick it up later.
-            let generatedScreenshotUrl = null;
+            // The render is QUEUED, not awaited: the response goes out now and screenshot_url is
+            // filled in when the picture is ready (lists re-read it). It never fails the upload; a
+            // render that fails, is shed by a full queue or dies with the process leaves
+            // screenshot_url NULL for scripts/backfill-proposal-thumbnails.mjs. A client screenshot
+            // that survived dropUnprovableClaims is already one of our own images: nothing to render.
             if (!screenshotUrl) {
-                try {
-                    const result = await generateProposalThumbnailForRequest(pool, proposalData, {
-                        city,
-                        proposalId: dbId,
-                        req
-                    });
-                    if (result) {
-                        await pool.query(
-                            `UPDATE proposal SET screenshot_url = $1 WHERE id = $2 AND screenshot_url IS NULL`,
-                            [result.url, dbId]
-                        );
-                        generatedScreenshotUrl = result.url;
-                        console.log(`[proposal ${dbId}] thumbnail rendered: ${result.url} ` +
-                            `(zoom ${result.frame.zoom}, ${result.tiles.loaded}/${result.tiles.total} tiles, ${result.bytes} bytes)`);
-                    }
-                } catch (thumbErr) {
-                    console.error(`[proposal ${dbId}] THUMBNAIL GENERATION FAILED (proposal was still created):`, thumbErr);
-                }
+                defaultThumbnailQueue().enqueue({
+                    pool,
+                    proposal: proposalData,
+                    city,
+                    proposalId: dbId,
+                    baseUrl: resolveThumbnailBaseUrl()
+                });
             }
 
             res.status(201).json({
                 id: dbId,
                 proposalId: inserted.proposal_id,
                 createdAt: inserted.created_at,
-                screenshotUrl: screenshotUrl || generatedScreenshotUrl || null,
+                // null while the server thumbnail renders; GET /proposals/:id serves it once ready.
+                screenshotUrl: screenshotUrl || null,
                 // Returned exactly once; only its hash is stored. Send it back in the
                 // X-Proposal-Edit-Token header to rename, re-thumbnail or re-bucket this proposal.
                 editToken: editToken.token
@@ -1007,7 +1101,7 @@ export function setupProposalsRoute(app, pool) {
                     });
                 } catch (err) {
                     if (!isInvalidRecordError(err)) throw err;
-                    invalid.push({ id: row.id, proposalId: row.proposal_id, error: err.message });
+                    invalid.push({ id: row.id, proposalId: row.proposal_id, error: err.message, detail: err.detail });
                     return null;
                 }
                 return {
@@ -1033,7 +1127,7 @@ export function setupProposalsRoute(app, pool) {
                     epochYear: proposal.epochYear ?? null
                 };
             }).filter(Boolean);
-            if (invalid.length) console.warn(`GET /proposals/summary: skipped ${invalid.length} non-canonical record(s)`, invalid.map(entry => entry.id));
+            if (invalid.length) console.warn(`GET /proposals/summary: skipped ${invalid.length} non-canonical record(s)`, invalid.map(entry => `${entry.id}: ${entry.detail || entry.error}`));
 
             const totalCount = result.rows.length > 0 && result.rows[0].total_count !== undefined
                 ? parseInt(result.rows[0].total_count, 10)
@@ -1165,8 +1259,8 @@ export function setupProposalsRoute(app, pool) {
                     return { id, proposal: serializeProposalRow(row) };
                 } catch (err) {
                     if (!isInvalidRecordError(err)) throw err;
-                    console.warn(`POST /proposals/batch: ${id}: ${err.message}`);
-                    return { id, proposal: null, error: err.message, code: err.code };
+                    console.warn(`POST /proposals/batch: ${id}: ${err.detail || err.message}`);
+                    return { id, proposal: null, error: err.message, code: err.code, detail: err.detail };
                 }
             });
             res.json({ items, count: items.filter(item => item.proposal).length });
@@ -1197,8 +1291,8 @@ export function setupProposalsRoute(app, pool) {
             res.json(serializeProposalRow(result.rows[0]));
         } catch (err) {
             if (isInvalidRecordError(err)) {
-                console.warn(`GET /proposals/${req.params.id}: ${err.message}`);
-                return res.status(422).json({ error: err.message, code: err.code });
+                console.warn(`GET /proposals/${req.params.id}: ${err.detail || err.message}`);
+                return res.status(422).json({ error: err.message, code: err.code, detail: err.detail });
             }
             console.error('Error in GET /proposals/:id:', err);
             res.status(500).json({ error: 'Internal server error' });
@@ -1257,11 +1351,11 @@ export function setupProposalsRoute(app, pool) {
                     return serializeProposalRow(row);
                 } catch (err) {
                     if (!isInvalidRecordError(err)) throw err;
-                    invalid.push({ id: row.id, proposalId: row.proposal_id, error: err.message });
+                    invalid.push({ id: row.id, proposalId: row.proposal_id, error: err.message, detail: err.detail });
                     return null;
                 }
             }).filter(Boolean);
-            if (invalid.length) console.warn(`GET /proposals?parcel_id: skipped ${invalid.length} non-canonical record(s)`, invalid.map(entry => entry.id));
+            if (invalid.length) console.warn(`GET /proposals?parcel_id: skipped ${invalid.length} non-canonical record(s)`, invalid.map(entry => `${entry.id}: ${entry.detail || entry.error}`));
 
             res.json({ proposals, count: proposals.length, limit, offset, parcelId, ...(invalid.length ? { invalid } : {}) });
         } catch (err) {
@@ -1301,7 +1395,14 @@ export function setupProposalsRoute(app, pool) {
 
     app.patch('/proposals/:id/screenshot', proposalScreenshotPatchValidator, async (req, res) => {
         try {
-            const { screenshotUrl } = req.validatedBody;
+            const screenshotUrl = req.validatedBody.screenshotUrl.trim();
+            // Same rule as POST: the edit token proves who uploaded the row, not that the picture
+            // every visitor's list will load is ours.
+            if (!isOwnStoreImageUrl(screenshotUrl)) {
+                return res.status(400).json({
+                    error: 'screenshotUrl must be an image stored by this API (/uploads/images/<file>); upload it via /assets/upload first.'
+                });
+            }
             const target = await authorizeProposalEdit(req, res);
             if (!target) return;
 

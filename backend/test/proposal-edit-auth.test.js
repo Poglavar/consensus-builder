@@ -3,8 +3,10 @@
 // capped list limits. Route-level, against a mock pool; the id-collision tests use a tiny
 // table-backed fake that applies the WHERE/ORDER BY/LIMIT the route sends, so a query without an
 // explicit precedence returns whatever row the "heap" holds first — exactly the prod bug.
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
+import fs from 'node:fs';
 import request from 'supertest';
+import { saveImageBuffer } from '../utils/image-store.js';
 import { createMockPool } from './helpers/mock-pool.js';
 import { createTestApp } from './helpers/create-app.js';
 import { validProposalBody, insertResult, updateResult, proposalDbRow, summaryDbRow } from './helpers/fixtures.js';
@@ -125,11 +127,23 @@ describe('POST /proposals drops claims the free route cannot prove', () => {
 });
 
 describe('PATCH routes require the edit token', () => {
+    // A screenshot PATCH must name an image in our own store (routes/proposals.js isOwnStoreImageUrl),
+    // so the fixture is a real file there, as /assets/upload would have written it.
+    const ownImage = saveImageBuffer(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 13]), 'edit-auth-test');
+    afterAll(() => fs.rmSync(ownImage.absolutePath, { force: true }));
     const routes = [
         ['name', '/proposals/7/name', { name: 'New name' }],
-        ['screenshot', '/proposals/7/screenshot', { screenshotUrl: 'https://evil.example/x.png' }],
+        ['screenshot', '/proposals/7/screenshot', { screenshotUrl: ownImage.imagePath }],
         ['epoch', '/proposals/7/epoch', { epochYear: 2045 }]
     ];
+
+    it('screenshot: a URL outside our store → 400 without touching the database, even with the right token', async () => {
+        const res = await request(app).patch('/proposals/7/screenshot').set(HEADER, TOKEN)
+            .send({ screenshotUrl: 'https://evil.example/x.png' });
+
+        expect(res.status).toBe(400);
+        expect(pool.getCalls()).toHaveLength(0);
+    });
 
     it.each(routes)('%s: no token → 403 without touching the database', async (_label, path, body) => {
         const res = await request(app).patch(path).send(body);

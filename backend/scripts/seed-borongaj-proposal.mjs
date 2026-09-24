@@ -9,6 +9,7 @@ import { dirname, resolve } from 'node:path';
 import pg from 'pg';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { assertReconstructionGeoJSONRoundTrip } from '../proposals/reconstruction-geojson.js';
+import { canonicalSeedRecord } from './lib/canonical-seed-record.mjs';
 
 dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
 await import('../../frontend/js/building-density-stats.js');
@@ -357,7 +358,9 @@ export async function constructBorongajProposal() {
     return { proposal, stats, buildings };
 }
 
-async function upsertProposal(pool, proposal) {
+async function upsertProposal(pool, authored) {
+    // Same projection as the API write path; throws before writing if the row would be unreadable.
+    const proposal = canonicalSeedRecord(authored);
     const result = await pool.query(`
         INSERT INTO public.proposal (
             proposal_id, city, name, title, description, author, type,
@@ -396,7 +399,7 @@ async function upsertProposal(pool, proposal) {
         proposal.type,
         proposal.lifecycleStatus,
         proposal.createdAt,
-        JSON.stringify(proposal.parentParcelIds),
+        null, // ancestor_parcel_ids is retired; cadastre_parcel_ids is the declaration
         JSON.stringify(proposal.cadastreParcelIds),
         JSON.stringify(proposal.buildingProposal),
         JSON.stringify(proposal.bounds),

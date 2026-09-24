@@ -27,6 +27,7 @@ import pg from 'pg';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { reconstructionGeoJSONToProposal } from '../proposals/reconstruction-geojson.js';
 import { assertCorridorReconstructionGeoJSONRoundTrip } from '../proposals/corridor-reconstruction-geojson.js';
+import { canonicalSeedRecord } from './lib/canonical-seed-record.mjs';
 
 dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
 
@@ -709,7 +710,9 @@ async function analyseProject(pool, archived) {
     };
 }
 
-async function upsertRoadProposal(pool, proposal) {
+async function upsertRoadProposal(pool, authored) {
+    // Same projection as the API write path; throws before writing if the row would be unreadable.
+    const proposal = canonicalSeedRecord(authored);
     const { rows } = await pool.query(`
         INSERT INTO public.proposal (
             proposal_id, city, name, title, description, author, type,
@@ -748,7 +751,7 @@ async function upsertRoadProposal(pool, proposal) {
         proposal.type,
         proposal.lifecycleStatus,
         proposal.createdAt,
-        JSON.stringify(proposal.parentParcelIds),
+        null, // ancestor_parcel_ids is retired; cadastre_parcel_ids is the declaration
         JSON.stringify(proposal.cadastreParcelIds),
         JSON.stringify(proposal.roadProposal),
         JSON.stringify(proposal.bounds),

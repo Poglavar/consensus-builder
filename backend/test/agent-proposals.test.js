@@ -154,16 +154,57 @@ let facilitator;
 let app;
 let idempotencyRows;
 let takenProposalIds;
+let advisoryLocks;   // lock key → session holding it (exclusive side), as Postgres would track it
+let lockEvents;
 
 const PROPOSAL_ID_CHECK = 'SELECT 1 FROM proposal WHERE proposal_id = $1';
+
+// Session-aware stand-in for Postgres advisory locks: pool.query is session 0, every connect() is a
+// new session. A session never conflicts with its own lock, exactly like the real lock manager.
+function advisoryLockAnswer(sql, params, session) {
+    if (sql.includes('pg_try_advisory_lock(')) {
+        const key = `${params[0]}:${params[1]}`;
+        const holder = advisoryLocks.get(key);
+        const locked = holder === undefined || holder === session;
+        if (locked) advisoryLocks.set(key, session);
+        lockEvents.push(locked ? `lock:${session}` : `busy:${session}`);
+        return { rows: [{ locked }], rowCount: 1 };
+    }
+    if (sql.includes('pg_advisory_unlock(')) {
+        const key = `${params[0]}:${params[1]}`;
+        if (advisoryLocks.get(key) === session) advisoryLocks.delete(key);
+        lockEvents.push(`unlock:${session}`);
+        return { rows: [{ pg_advisory_unlock: true }], rowCount: 1 };
+    }
+    return null;
+}
+
+// The free/paid INSERT … WHERE pg_try_advisory_xact_lock_shared(ns, hashtext($1)): nothing is
+// inserted when ANOTHER session holds the exclusive side for that proposal_id.
+function sharedLockBlocksInsert(sql, params, session) {
+    if (!sql.includes('INSERT INTO proposal') || !sql.includes('pg_try_advisory_xact_lock_shared')) return false;
+    const namespace = /pg_try_advisory_xact_lock_shared\((\d+)/.exec(sql)[1];
+    const holder = advisoryLocks.get(`${namespace}:${params[0]}`);
+    return holder !== undefined && holder !== session;
+}
 
 beforeEach(() => {
     pool = createMockPool();
     idempotencyRows = [];
     takenProposalIds = new Set();
+    advisoryLocks = new Map();
+    lockEvents = [];
+    let nextSession = 1;
     const realQuery = pool.query.bind(pool);
-    pool.query = (sql, params) => {
+    pool.connect = async () => {
+        const session = nextSession++;
+        return { query: (sql, params) => pool.query(sql, params, session), release() {}, on() {}, off() {} };
+    };
+    pool.query = (sql, params, session = 0) => {
+        const lockAnswer = advisoryLockAnswer(sql, params, session);
+        if (lockAnswer) return Promise.resolve(lockAnswer);
         sequence.push('db');
+        if (sharedLockBlocksInsert(sql, params, session)) return Promise.resolve({ rows: [], rowCount: 0 });
         if (sql.includes('WHERE agent_payment_id = $1')) {
             return Promise.resolve({ rows: idempotencyRows, rowCount: idempotencyRows.length });
         }
@@ -449,7 +490,9 @@ describe(`POST ${AGENT_PROPOSALS_PATH} — paid`, () => {
 
     it('still reports a duplicate proposal id as 409 when it is taken between the check and the insert', async () => {
         const dup = Object.assign(new Error('duplicate key'), { code: '23505', detail: 'Key (proposal_id)=(test-proposal-001) already exists.' });
-        pool.query = async (sql) => {
+        pool.query = async (sql, params, session = 0) => {
+            const lockAnswer = advisoryLockAnswer(sql, params, session);
+            if (lockAnswer) return lockAnswer;
             sequence.push('db');
             if (sql.includes('WHERE agent_payment_id = $1')) return { rows: [], rowCount: 0 };
             if (sql.includes(PROPOSAL_ID_CHECK)) return { rows: [], rowCount: 0 };
@@ -463,6 +506,122 @@ describe(`POST ${AGENT_PROPOSALS_PATH} — paid`, () => {
 
         expect(res.status).toBe(409);
         expect(res.body.error).toMatch(/already exists/);
+    });
+});
+
+function deferred() {
+    let resolve;
+    const promise = new Promise(res => { resolve = res; });
+    return { promise, resolve };
+}
+
+// Makes the mock behave like the real table for these tests: the unique index on proposal_id, and
+// the pre-settle "taken" check seeing rows inserted by an earlier request.
+function withProposalTable() {
+    const inner = pool.query;
+    const insertedIds = new Set();
+    let nextId = 1;
+    pool.query = async (sql, params, session = 0) => {
+        if (sql.includes('INSERT INTO proposal') && !sharedLockBlocksInsert(sql, params, session)) {
+            sequence.push('db');
+            if (insertedIds.has(params[0])) {
+                throw Object.assign(new Error('duplicate key'), { code: '23505', detail: `Key (proposal_id)=(${params[0]}) already exists.` });
+            }
+            insertedIds.add(params[0]);
+            return { rows: [{ id: nextId++, proposal_id: params[0], created_at: new Date() }], rowCount: 1 };
+        }
+        if (sql.includes(PROPOSAL_ID_CHECK) && insertedIds.has(params[0])) {
+            sequence.push('db');
+            return { rows: [{ '?column?': 1 }], rowCount: 1 };
+        }
+        return inner(sql, params, session);
+    };
+    return insertedIds;
+}
+
+// Holds every settlement open until released, so a second request can arrive mid-settlement.
+function holdSettlement() {
+    const started = deferred();
+    const release = deferred();
+    facilitator.settle.mockImplementation(async () => {
+        sequence.push('settle');
+        started.resolve();
+        await release.promise;
+        return { success: true, transaction: TX, network: NETWORK, payer: agent.address };
+    });
+    return { started, release };
+}
+
+describe(`POST ${AGENT_PROPOSALS_PATH} — concurrent requests for one proposal id`, () => {
+    it('settles exactly one of two concurrent paid requests; the other is refused before any USDC moves', async () => {
+        const insertedIds = withProposalTable();
+        const settlement = holdSettlement();
+        const body = agentBody();
+        const headerA = await payFor(app, body, { paymentId: 'proposal_aaaaaaaaaaaaaaaa' });
+        const headerB = await payFor(app, body, { paymentId: 'proposal_bbbbbbbbbbbbbbbb' });
+        const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+        const first = request(app).post(AGENT_PROPOSALS_PATH).set('PAYMENT-SIGNATURE', headerA).send(body).then(r => r);
+        await settlement.started.promise; // A has passed every check and is settling
+        const second = request(app).post(AGENT_PROPOSALS_PATH).set('PAYMENT-SIGNATURE', headerB).send(body)
+            .then(r => { settlement.release.resolve(); return r; });
+        // Old behaviour: B also reaches settlement. Let both finish so the test reports instead of hanging.
+        vi.waitFor(() => expect(facilitator.settle).toHaveBeenCalledTimes(2), { timeout: 2000 })
+            .then(() => settlement.release.resolve(), () => {});
+        const [a, b] = await Promise.all([first, second]);
+        error.mockRestore();
+
+        expect(facilitator.settle).toHaveBeenCalledTimes(1);
+        expect(a.status).toBe(201);
+        expect(b.status).toBe(402);
+        expect(paymentError(b)).toBe('proposal_id_in_flight');
+        expect([...insertedIds]).toEqual(['test-proposal-001']);
+        // The reservation is let go once A's response is out.
+        await vi.waitFor(() => expect(advisoryLocks.size).toBe(0));
+    });
+
+    it('a free upload of the same id during a paid settlement gets 409, and the payer still gets the row', async () => {
+        const insertedIds = withProposalTable();
+        const settlement = holdSettlement();
+        const body = agentBody();
+        const header = await payFor(app, body);
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+        const paid = request(app).post(AGENT_PROPOSALS_PATH).set('PAYMENT-SIGNATURE', header).send(body).then(r => r);
+        await settlement.started.promise;
+        const free = await request(app).post('/proposals').send(validProposalBody());
+        settlement.release.resolve();
+        const paidRes = await paid;
+        warn.mockRestore();
+
+        expect(free.status).toBe(409);
+        expect(paidRes.status).toBe(201);
+        expect(paidRes.body.proposalId).toBe('test-proposal-001');
+        expect([...insertedIds]).toEqual(['test-proposal-001']);
+    });
+
+    it('releases the reservation when settlement fails', async () => {
+        facilitator.settle.mockImplementationOnce(async () => {
+            sequence.push('settle');
+            return { success: false, errorReason: 'insufficient_funds', transaction: '', network: NETWORK };
+        });
+        const header = await payFor(app, agentBody());
+
+        const res = await request(app).post(AGENT_PROPOSALS_PATH).set('PAYMENT-SIGNATURE', header).send(agentBody());
+
+        expect(res.status).toBe(402);
+        expect(lockEvents[0]).toMatch(/^lock:/);
+        await vi.waitFor(() => expect(advisoryLocks.size).toBe(0));
+    });
+
+    it('releases the reservation when the id turns out to be taken', async () => {
+        takenProposalIds.add('test-proposal-001');
+        const header = await payFor(app, agentBody());
+
+        const res = await request(app).post(AGENT_PROPOSALS_PATH).set('PAYMENT-SIGNATURE', header).send(agentBody());
+
+        expect(paymentError(res)).toBe('proposal_id_taken');
+        expect(advisoryLocks.size).toBe(0);
     });
 });
 

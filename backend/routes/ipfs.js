@@ -1,7 +1,8 @@
 const PINATA_FILE_ENDPOINT = 'https://api.pinata.cloud/pinning/pinFileToIPFS';
 const PINATA_JSON_ENDPOINT = 'https://api.pinata.cloud/pinning/pinJSONToIPFS';
 
-import { createJsonBodyValidator, isPlainObject, validators } from '../utils/request-validation.js';
+import { createJsonBodyValidator, validators } from '../utils/request-validation.js';
+import { createUploadRateLimiter, decodeUploadImage, validateNftMetadata } from '../utils/nft-asset-upload.js';
 
 const MAX_FILE_NAME_LENGTH = 255;
 
@@ -114,29 +115,32 @@ const ipfsUploadBodyValidator = createJsonBodyValidator({
     }
 });
 
+// This route pins on OUR Pinata account and used to be an open relay (origin check only, 15 MB of
+// anything). It now takes exactly what the mint flows send — see utils/nft-asset-upload.js.
 export function setupIpfsRoute(app) {
-    app.post('/ipfs/upload', ipfsUploadBodyValidator, async (req, res) => {
+    const uploadRateLimiter = createUploadRateLimiter();
+    app.post('/ipfs/upload', uploadRateLimiter, ipfsUploadBodyValidator, async (req, res) => {
         try {
             const { imageData, metadata, fileName } = req.validatedBody;
 
-            const matches = imageData.match(/^data:(.+);base64,(.+)$/);
-            if (!matches || matches.length < 3) {
-                return res.status(400).json({ error: 'imageData must be a base64 data URL.' });
+            const image = decodeUploadImage(imageData);
+            if (image.error) {
+                return res.status(400).json({ error: image.error });
+            }
+            const metadataError = validateNftMetadata(metadata);
+            if (metadataError) {
+                return res.status(400).json({ error: metadataError });
             }
 
-            const contentType = matches[1];
-            const base64Payload = matches[2];
-            const imageBuffer = Buffer.from(base64Payload, 'base64');
-            if (!imageBuffer.length) {
-                return res.status(400).json({ error: 'Decoded image data is empty.' });
-            }
-
-            const safeFileName = (fileName && String(fileName).trim()) || `road-proposal-${Date.now()}.png`;
+            // The extension follows the sniffed bytes, never the client's name or declared mime.
+            const baseName = ((fileName && String(fileName).trim()) || `road-proposal-${Date.now()}`)
+                .replace(/\.[A-Za-z0-9]{1,5}$/, '');
+            const safeFileName = `${baseName}.${image.extension}`;
 
             const imageUpload = await uploadImageToPinata({
-                buffer: imageBuffer,
+                buffer: image.buffer,
                 fileName: safeFileName,
-                contentType
+                contentType: image.contentType
             });
 
             const enrichedMetadata = { ...metadata };
