@@ -165,6 +165,8 @@
         applyBasemap: applyBasemap,
         initBasemapSelector: initBasemapSelector,
         getTileLoadingStats: getTileLoadingStats,
-        getStoredBasemapKey: getStoredBasemapKey
+        getStoredBasemapKey: getStoredBasemapKey,
+        // 256px raster for thumbnail stitching (map-screenshot.js assumes 256px tiles).
+        THUMBNAIL_TILE_URL: 'https://api.maptiler.com/maps/basic-v2/256/{z}/{x}/{y}.png?key=' + MAPTILER_API_KEY
     };
 })(typeof window !== 'undefined' ? window : globalThis);

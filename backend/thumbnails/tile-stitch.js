@@ -7,7 +7,14 @@
 import { createCanvas, loadImage } from 'canvas';
 import { defaultTileSource } from './tile-source.js';
 
-const DEFAULT_TILE_URL = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
+// MapTiler basic-v2 raster at 256px, the same style as the site's MapTiler basemap. Carto began
+// stamping keyless tiles with "API KEY REQUIRED" (seen 2026-09), which was baked into every
+// thumbnail. The key is public (the browser basemap ships it); prod sets it in ecosystem.config.cjs.
+function defaultTileUrl() {
+    const key = process.env.MAPTILER_API_KEY;
+    if (!key) throw new Error('MAPTILER_API_KEY is not set: proposal thumbnails have no basemap tile source.');
+    return `https://api.maptiler.com/maps/basic-v2/256/{z}/{x}/{y}.png?key=${encodeURIComponent(key)}`;
+}
 const TILE_SIZE = 256;
 const DEFAULT_STITCH_ZOOM = 19;
 const MAX_STITCH_TILES_PER_AXIS = 6; // Target max ~36 tiles (6x6)
@@ -329,7 +336,7 @@ async function fetchTileImage(tileSource, { template, z, x, y, timeoutMs = DEFAU
  */
 export async function renderProposalThumbnail(options = {}) {
     const {
-        tileUrl = DEFAULT_TILE_URL,
+        tileUrl = defaultTileUrl(),
         parcelLabel = null,
         badge = null,
         tileTimeoutMs = DEFAULT_TILE_TIMEOUT_MS,
@@ -460,4 +467,4 @@ export async function renderProposalThumbnail(options = {}) {
     };
 }
 
-export { DEFAULT_TILE_URL, TILE_SIZE, MAX_STITCH_TILES_PER_AXIS, MAX_TILES };
+export { defaultTileUrl, TILE_SIZE, MAX_STITCH_TILES_PER_AXIS, MAX_TILES };

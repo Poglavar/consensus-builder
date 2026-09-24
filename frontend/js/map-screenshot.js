@@ -6,7 +6,13 @@
 
     let leafletImageLoaded = typeof globalScope.leafletImage === 'function';
     let leafletImageLoading = false;
-    const DEFAULT_TILE_URL = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
+    // MapTiler basic-v2 (256px) from basemap.js. Carto began stamping keyless tiles with
+    // "API KEY REQUIRED" (seen 2026-09), which ended up baked into every thumbnail.
+    function defaultTileUrl() {
+        const url = globalScope.BasemapManager && globalScope.BasemapManager.THUMBNAIL_TILE_URL;
+        if (!url) throw new Error('Thumbnail tile source unavailable: BasemapManager.THUMBNAIL_TILE_URL is not set.');
+        return url;
+    }
     const TILE_SIZE = 256;
     const DEFAULT_STITCH_ZOOM = 19;
     const MAX_STITCH_TILES_PER_AXIS = 6; // Target max ~36 tiles (6x6)
@@ -133,7 +139,7 @@
             latMin,
             latMax,
             zoom = DEFAULT_STITCH_ZOOM,
-            tileUrl = DEFAULT_TILE_URL,
+            tileUrl = defaultTileUrl(),
             polygons = [],
             label = null,
             badge = null
@@ -432,7 +438,7 @@
                 padding: options.padding,
                 parcelPolygonsCount: options.parcelPolygons?.length,
                 zoom: options.zoom,
-                tileUrl: options.tileUrl || DEFAULT_TILE_URL,
+                tileUrl: options.tileUrl || defaultTileUrl(),
                 polygonOrder: options.polygonOrder || 'auto',
                 fitToPolygonOnly: !!options.fitToPolygonOnly
             });
@@ -442,7 +448,7 @@
             polygon,
             bounds = null,
             padding = 0.05,
-            tileUrl = DEFAULT_TILE_URL,
+            tileUrl = defaultTileUrl(),
             parcelPolygons = [],
             neighbours = [],
             parcelLabel = null,
@@ -963,7 +969,7 @@
             polygon,
             bounds = null,
             padding = 0.05,
-            tileUrl = DEFAULT_TILE_URL,
+            tileUrl = defaultTileUrl(),
             tileOptions = {},
             parcelPolygons = [],
             neighbours = [],
@@ -1147,7 +1153,7 @@
             bounds = null,
             padding = 0.05,
             size = 512,
-            tileUrl = DEFAULT_TILE_URL,
+            tileUrl = defaultTileUrl(),
             tileOptions = {},
             parcelPolygons = [],
             neighbours = [],

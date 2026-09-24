@@ -26,6 +26,9 @@ module.exports = {
       // origin as that proposal's screenshot_url. It is a public URL, not a secret, so it lives
       // here (versioned, deployed) rather than in a hand-edited .env.
       PUBLIC_API_BASE_URL: 'https://api.urbangametheory.xyz',
+      // Basemap tiles for server-rendered proposal thumbnails (thumbnails/tile-stitch.js). Public
+      // key — the browser basemap (frontend/js/basemap.js) ships the same one.
+      MAPTILER_API_KEY: 'kps68PDVgfwEhLNACcHe',
       // --- AI scene render (paid, per-image) ---
       // The model is pinned server-side: /ai-scene/render ignores whatever model the client sends
       // and always uses this one, and /ai-scene/models reports it so the UI greys out the picker.
