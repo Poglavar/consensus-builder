@@ -2334,7 +2334,8 @@
                 "missingFields": "Unesi autora, naziv i valjanu ponudu.",
                 "missingParcels": "Nedostaju parcele ili geometrija za ovaj prijedlog.",
                 "couldNotDetermineParcels": "Nije moguće odrediti parcele za ovaj blok.",
-                "parcelsNotContiguous": "Parcele nisu povezane"
+                "parcelsNotContiguous": "Parcele nisu povezane",
+                "undeclaredParcels": "Geometrija ovog prijedloga leži na česticama koje nisu odabrane ({{count}}): {{list}}. Odaberi i njih ili zadrži geometriju unutar odabranih čestica."
             },
             "walletNotConnected": {
                 "message": "Niste povezani s novčanikom, pa ne možete mintati prijedloge na lancu.",

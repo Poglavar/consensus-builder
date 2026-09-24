@@ -788,7 +788,15 @@ async function createProposal() {
                 const selectedRoadParcelIds = (Array.isArray(roadDrawingContext.parcelIds) ? roadDrawingContext.parcelIds : selectedLiveParcelIds)
                     .map(id => id && id.toString ? id.toString() : String(id))
                     .filter(Boolean);
-                const roadCadastreParcelIds = liveFabric.cadastreIdsForParcelIds(selectedRoadParcelIds);
+                // The parcels the drawing tool found, extended by every loaded cadastral parcel the
+                // corridor polygon covers — including streets already under an applied road, which
+                // the tool's live query skips (corridor pieces) but this road still takes.
+                const roadCadastreParcelIds = typeof window.__cadastreAncestry?.declarationCoveringFootprint === 'function'
+                    ? window.__cadastreAncestry.declarationCoveringFootprint({
+                        cadastreParcelIds: liveFabric.cadastreIdsForParcelIds(selectedRoadParcelIds),
+                        roadProposal: { definition: { polygon: roadDrawingContext.polygon } }
+                    })
+                    : liveFabric.cadastreIdsForParcelIds(selectedRoadParcelIds);
 
                 const centerlinePoints = Array.isArray(roadDrawingContext.centerline)
                     ? roadDrawingContext.centerline
@@ -1010,6 +1018,13 @@ async function createProposal() {
 
             if (!proposal.geometry) proposal.geometry = {};
             proposal.geometry.buildings = buildingFeatures;
+            // "Based on existing buildings" keeps each real footprint whole, and the server returns
+            // any building at least half inside the block — so one can stand partly on a neighbour
+            // or street parcel. That land is genuinely under the proposal: declare it.
+            if (pendingBuildingContext.parameters?.mode === 'existing'
+                && typeof window.__cadastreAncestry?.declarationCoveringFootprint === 'function') {
+                proposal.cadastreParcelIds = window.__cadastreAncestry.declarationCoveringFootprint(proposal);
+            }
             const blockMassing = resolvedTypology === 'block'
                 ? safeClone(pendingBuildingContext.blockMassing)
                 : null;
@@ -1897,14 +1912,19 @@ function buildUploadReadyProposal(proposal) {
     if (!proposal) return null;
     const uploadProposal = { ...proposal };
 
-    // The complete selected cadastral scope was stamped at creation. Publishing validates its
-    // current immutable geometry coverage but never re-enumerates it from output geometry: a block
-    // may intentionally include parcels on which no building could be generated.
+    // The complete selected cadastral scope was stamped at creation. Publishing never shrinks it to
+    // the output geometry (a block may intentionally include parcels on which no building could be
+    // generated), and refuses geometry lying on parcels outside it — except a corridor, which takes
+    // every parcel its polygon covers (publishDeclaration).
     if (!window.__cadastreAncestry
-        || typeof window.__cadastreAncestry.validateCadastreParcelIds !== 'function') {
+        || typeof window.__cadastreAncestry.validateCadastreParcelIds !== 'function'
+        || typeof window.__cadastreAncestry.publishDeclaration !== 'function') {
         throw new Error('Cannot publish: cadastral geometry resolution is unavailable.');
     }
-    uploadProposal.cadastreParcelIds = window.__cadastreAncestry.validateCadastreParcelIds(uploadProposal);
+    uploadProposal.cadastreParcelIds = window.__cadastreAncestry.validateCadastreParcelIds({
+        ...uploadProposal,
+        cadastreParcelIds: window.__cadastreAncestry.publishDeclaration(uploadProposal)
+    });
 
     // The ownership flow (§9/§12 step 2) and the frame it was measured against (D5), stamped at the
     // same moment and for the same reason as cadastreParcelIds. The effect hash is derived from the

@@ -17,6 +17,7 @@ import {
     stripLocalProposalState
 } from '../proposals/serializer.js';
 import { isInvalidRecordError } from '../proposals/serializer.js';
+import { checkDeclaredParcels } from '../proposals/footprint.js';
 import { recomputeCorridorStats } from './road-corridor.js';
 import { validateReparcellizationShares } from './reparcellization.js';
 
@@ -515,6 +516,39 @@ export function proposalCreatePrecheck(req, res, next) {
     return next();
 }
 
+// The land rule, which needs the cadastre: every parcel the proposal's own geometry covers by >= 1 m²
+// must be in cadastreParcelIds (declared parcels with no geometry on them are fine — a whole-block
+// selection). Returns null when the body passes, or the { status, body } refusal. A lookup failure
+// refuses too (503): the paid route runs this BEFORE settlement and must never let an unchecked body
+// through to a payment.
+async function refuseUndeclaredParcels(pool, req) {
+    const precheck = precheckProposalCreate(req);
+    if (!precheck.ok) return { status: precheck.status, body: { error: precheck.error } };
+    let result;
+    try {
+        result = await checkDeclaredParcels(pool, precheck.value.validated, precheck.value.cadastreParcelIds);
+    } catch (error) {
+        console.error('[proposals] declared-parcel check failed:', error);
+        return { status: 503, body: { error: 'The proposal\'s parcels could not be checked; nothing was stored or charged. Try again.' } };
+    }
+    if (result.ok) return null;
+    return {
+        status: 400,
+        body: { error: result.error, code: result.code, ...(result.parcels ? { parcels: result.parcels } : {}) }
+    };
+}
+
+// Middleware form, placed in front of the x402 gate on the paid route. It stamps the request so the
+// create handler, which runs after settlement, does not query the same body twice.
+export function createProposalParcelPrecheck(pool) {
+    return async (req, res, next) => {
+        const refusal = await refuseUndeclaredParcels(pool, req);
+        if (refusal) return res.status(refusal.status).json(refusal.body);
+        req.proposalParcelsChecked = true;
+        return next();
+    };
+}
+
 // Claims a free upload cannot prove, removed before storage (the record is otherwise stored as
 // sent). `agent` is the paid-agent stamp — only the x402 route may write it. Owner acceptances and
 // an Executed lifecycle assert that OTHER people consented / land changed hands; the browser's
@@ -563,6 +597,10 @@ export function createProposalCreateHandler(pool) {
         try {
             const precheck = precheckProposalCreate(req);
             if (!precheck.ok) return res.status(precheck.status).json({ error: precheck.error });
+            if (!req.proposalParcelsChecked) {
+                const refusal = await refuseUndeclaredParcels(pool, req);
+                if (refusal) return res.status(refusal.status).json(refusal.body);
+            }
             const { validated, type, cadastreParcelIds, ownershipFlow } = precheck.value;
             const proposal = stripLocalProposalState(req.body);
             const paid = Boolean(req.x402Payment);

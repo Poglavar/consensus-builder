@@ -2327,7 +2327,8 @@
                 "missingFields": "Please provide author, name, and a valid offer.",
                 "missingParcels": "Missing parcels or geometry for this proposal.",
                 "couldNotDetermineParcels": "Could not determine parcels for this block.",
-                "parcelsNotContiguous": "Parcels not contiguous"
+                "parcelsNotContiguous": "Parcels not contiguous",
+                "undeclaredParcels": "This proposal's geometry lies on {{count}} parcel(s) you did not select: {{list}}. Select them too, or keep the geometry inside the selected parcels."
             },
             "walletNotConnected": {
                 "message": "You are not connected with a wallet, so you can't mint proposals on chain.",

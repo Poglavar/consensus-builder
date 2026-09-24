@@ -21,6 +21,7 @@ import { readFileSync } from 'node:fs';
 import {
     PROPOSAL_ID_LOCK_NAMESPACE,
     createProposalCreateHandler,
+    createProposalParcelPrecheck,
     precheckProposalCreate,
     proposalCreateBodyValidator,
     proposalCreatePrecheck
@@ -429,6 +430,8 @@ export function setupAgentProposalsRoute(app, pool, { env = process.env, facilit
         AGENT_PROPOSALS_PATH,
         proposalCreateBodyValidator,
         proposalCreatePrecheck,
+        // Geometry on undeclared parcels is refused here, for free, before any USDC can settle.
+        createProposalParcelPrecheck(pool),
         gate,
         bindPaidAuthor,
         returnIdempotentReplay,

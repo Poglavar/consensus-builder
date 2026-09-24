@@ -12,7 +12,9 @@
 (function (global) {
     'use strict';
 
-    const MIN_CADASTRE_COVERAGE = 0.95;
+    // Same floor as the API (backend/proposals/footprint.js MIN_PARCEL_OVERLAP_M2): below 1 m² an
+    // overlap is boundary noise, not ground the proposal lies on.
+    const MIN_PARCEL_OVERLAP_M2 = 1;
 
     const planOrder = () => (global && global.__planOrder)
         ? global.__planOrder
@@ -76,11 +78,59 @@
         }
     }
 
+    function translate(key, fallback, params) {
+        const i18n = global && global.i18n;
+        if (i18n && typeof i18n.t === 'function') {
+            const translated = i18n.t(key, params);
+            if (translated && translated !== key) return translated;
+        }
+        return String(fallback).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, name) => (
+            Object.prototype.hasOwnProperty.call(params || {}, name) ? String(params[name]) : match
+        ));
+    }
+
+    // Loaded ORIGINAL cadastral parcels the footprint covers by >= MIN_PARCEL_OVERLAP_M2 that are not
+    // declared, largest overlap first. Publish loads the ground under the footprint first
+    // (server-sync ensurePublishGroundLoaded), and the API re-checks against the full cadastre.
+    function undeclaredParcelsUnder(footprint, declaredIds) {
+        const api = planOrder();
+        if (!api || !footprint) return [];
+        const declared = new Set((declaredIds || []).map(String));
+        const t = global.turf;
+        const box = t && typeof t.bbox === 'function' ? t.bbox(footprint) : null;
+        return api.computeBaseAncestry(footprint, loadedCadastreParcels(box), { minAreaM2: MIN_PARCEL_OVERLAP_M2 })
+            .filter(hit => !declared.has(String(hit.id)));
+    }
+
+    // For tools whose geometry legitimately takes land beyond what was clicked (a road corridor
+    // drawn across neighbours): the declaration extended by every loaded parcel the footprint
+    // covers by >= 1 m². Declared ids keep their order; covered ones follow, largest first.
+    function declarationCoveringFootprint(proposal) {
+        const api = planOrder();
+        const declared = Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds.map(String) : [];
+        const footprint = api && proposal ? api.footprintOf(proposal) : null;
+        if (!footprint) return declared;
+        return declared.concat(undeclaredParcelsUnder(footprint, declared).map(hit => String(hit.id)));
+    }
+
+    // The declaration a record is published with. A corridor (road or track, drawn or from a
+    // government plan) takes every parcel its polygon covers, and its polygon can legitimately grow
+    // after the parcels were picked (node drags, width/profile edits, a plan polygon wider than the
+    // viewport selection, cadastral streets already under an applied road). Every other typology
+    // publishes exactly what its author selected.
+    function publishDeclaration(proposal) {
+        const declared = Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds.map(String) : [];
+        return proposal && proposal.roadProposal ? declarationCoveringFootprint(proposal) : declared;
+    }
+
     // Validate the proposal's already-authored cadastral declaration. Selection projects live
     // parcel ids to this flat set once, when the proposal is created. Publishing must preserve that
     // exact scope (including selected block parcels without a generated building), never silently
-    // replace it with whichever parcels happen to intersect the output geometry today.
-    function validateCadastreParcelIds(proposal, options) {
+    // replace it with whichever parcels happen to intersect the output geometry today. The rule is
+    // strict in one direction only: geometry may not lie on an undeclared parcel (>= 1 m²), while a
+    // declared parcel with no geometry on it is allowed. The API applies the same rule
+    // (backend/proposals/footprint.js), so this gate is the early, explainable copy of it.
+    function validateCadastreParcelIds(proposal) {
         const api = planOrder();
         const t = (typeof global.turf !== 'undefined' && global.turf) ? global.turf : null;
         if (!api || !t || !proposal) {
@@ -116,15 +166,17 @@
             error.missingIds = missing;
             throw error;
         }
-        const resolved = repository.coverageOf(footprint, { ids: declared });
-        const coverage = resolved.coverage;
-        const minimum = Number.isFinite(Number(options?.minCoverage))
-            ? Number(options.minCoverage)
-            : MIN_CADASTRE_COVERAGE;
-        if (!resolved.ids.length || coverage < minimum) {
-            const error = new Error(`Cannot publish: loaded cadastral parcels cover only ${Math.round(coverage * 100)}% of the proposal footprint (95% required).`);
-            error.code = 'cadastre-coverage-insufficient';
-            error.coverage = coverage;
+        const undeclared = undeclaredParcelsUnder(footprint, declared);
+        if (undeclared.length) {
+            const list = undeclared.map(hit => hit.id).join(', ');
+            const error = new Error(translate(
+                'modal.createProposal.errors.undeclaredParcels',
+                'This proposal\'s geometry lies on {{count}} parcel(s) you did not select: {{list}}. Select them too, or keep the geometry inside the selected parcels.',
+                { count: undeclared.length, list }
+            ));
+            error.code = 'undeclared-parcels';
+            error.undeclaredParcelIds = undeclared.map(hit => hit.id);
+            error.parcels = undeclared;
             throw error;
         }
         console.debug(`[cadastre-ancestry] validated ${declared.length} declared cadastral parcel(s) for `
@@ -157,9 +209,12 @@
     }
 
     const api = {
-        MIN_CADASTRE_COVERAGE,
+        MIN_PARCEL_OVERLAP_M2,
         loadedCadastreParcels,
         loadedCadastreCoverage,
+        undeclaredParcelsUnder,
+        declarationCoveringFootprint,
+        publishDeclaration,
         validateCadastreParcelIds,
         computeOwnershipFlow
     };

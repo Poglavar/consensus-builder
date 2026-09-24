@@ -98,15 +98,56 @@ describe('validateCadastreParcelIds', () => {
         expect(ancestry.validateCadastreParcelIds(proposal)).toEqual(['HR-1-1']);
     });
 
-    it('refuses when retained cadastre covers less than 95% of the footprint', async () => {
-        repository = repositoryWith([A]);
-        globalThis.CadastralParcelRepository = repository;
-        await repository.ensureIds(['HR-1-1']);
+    it('refuses geometry that spills onto an undeclared parcel, naming the parcel', () => {
         const proposal = {
             cadastreParcelIds: ['HR-1-1'],
-            structureProposal: { geometry: square('footprint', 16.000, 46.000, 16.002, 46.001).geometry }
+            structureProposal: { geometry: square('footprint', 16.000, 46.000, 16.0015, 46.001).geometry }
         };
-        expect(() => ancestry.validateCadastreParcelIds(proposal)).toThrow(/cover only 50%/);
+        let error = null;
+        try { ancestry.validateCadastreParcelIds(proposal); } catch (caught) { error = caught; }
+        expect(error).not.toBeNull();
+        expect(error.code).toBe('undeclared-parcels');
+        expect(error.undeclaredParcelIds).toEqual(['HR-1-2']);
+        expect(error.message).toMatch(/1 parcel\(s\) you did not select: HR-1-2/);
+    });
+
+    it('allows a declared parcel with no geometry on it (a whole-block selection)', () => {
+        const proposal = {
+            cadastreParcelIds: ['HR-1-1', 'HR-1-2'],
+            structureProposal: { geometry: square('inner', 16.0002, 46.0002, 16.0008, 46.0008).geometry }
+        };
+        expect(ancestry.validateCadastreParcelIds(proposal)).toEqual(['HR-1-1', 'HR-1-2']);
+    });
+
+    it('ignores a boundary sliver under 1 m² and ground with no cadastral parcel at all', () => {
+        // ~0.9 m² into HR-1-2 along the shared edge, and a strip south of both parcels (no cadastre).
+        const sliver = square('sliver', 16.0003, 45.9999, 16.0010001, 46.001).geometry;
+        const proposal = { cadastreParcelIds: ['HR-1-1'], structureProposal: { geometry: sliver } };
+        expect(ancestry.validateCadastreParcelIds(proposal)).toEqual(['HR-1-1']);
+    });
+
+    it('publishes a corridor with every parcel it covers, and every other typology exactly as selected', () => {
+        const spill = square('spill', 16.000, 46.000, 16.0015, 46.001).geometry;
+        expect(ancestry.publishDeclaration({
+            cadastreParcelIds: ['HR-1-1'],
+            roadProposal: { definition: { polygon: spill } }
+        })).toEqual(['HR-1-1', 'HR-1-2']);
+        const park = { cadastreParcelIds: ['HR-1-1'], structureProposal: { geometry: spill } };
+        expect(ancestry.publishDeclaration(park)).toEqual(['HR-1-1']);
+        expect(() => ancestry.validateCadastreParcelIds({ ...park, cadastreParcelIds: ancestry.publishDeclaration(park) }))
+            .toThrow(/HR-1-2/);
+    });
+
+    it('extends a declaration by the parcels its geometry covers, for tools that legitimately take them', () => {
+        const proposal = {
+            cadastreParcelIds: ['HR-1-1'],
+            roadProposal: { definition: { polygon: square('road', 16.000, 46.000, 16.0015, 46.001).geometry } }
+        };
+        expect(ancestry.declarationCoveringFootprint(proposal)).toEqual(['HR-1-1', 'HR-1-2']);
+        expect(ancestry.validateCadastreParcelIds({
+            ...proposal,
+            cadastreParcelIds: ancestry.declarationCoveringFootprint(proposal)
+        })).toEqual(['HR-1-1', 'HR-1-2']);
     });
 
     it('refuses records without authored geometry instead of trusting the declaration alone', () => {

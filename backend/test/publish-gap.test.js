@@ -104,10 +104,10 @@ describe('the command that paints it', () => {
         expect(src).toContain('m²');
     });
 
-    it('is loaded by the page, and the refusal names it', () => {
+    // The 95% coverage refusal that used to name this command was replaced (2026-09-24) by the strict
+    // undeclared-parcel rule, which names the parcels itself; the command stays a console aid.
+    it('is loaded by the page', () => {
         expect(readFileSync(new URL('../../frontend/index.html', import.meta.url), 'utf8'))
             .toContain("'js/publish-gap-debug.js'");
-        expect(readFileSync(new URL('../../frontend/js/proposals/server-sync.js', import.meta.url), 'utf8'))
-            .toContain("whereIsThePublishGap('${id}')");
     });
 });

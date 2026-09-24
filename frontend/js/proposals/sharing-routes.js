@@ -267,7 +267,10 @@ function buildSharedProposalsPayload(appliedProposals) {
         // parcel parents or children from runtime output; those pieces belong to LiveParcelFabric.
         const candidate = deepClone(proposal);
         candidate.goal = resolveProposalGoalKey(proposal) || proposal.goal || null;
-        candidate.cadastreParcelIds = ancestryApi.validateCadastreParcelIds(proposal);
+        // A corridor publishes every parcel its polygon covers; others exactly their selection.
+        candidate.cadastreParcelIds = ancestryApi.validateCadastreParcelIds(typeof ancestryApi.publishDeclaration === 'function'
+            ? { ...proposal, cadastreParcelIds: ancestryApi.publishDeclaration(proposal) }
+            : proposal);
         candidate.ownershipFlow = typeof ancestryApi.computeOwnershipFlow === 'function'
             ? ancestryApi.computeOwnershipFlow(proposal)
             : (Array.isArray(proposal.ownershipFlow) ? deepCloneArray(proposal.ownershipFlow) : []);

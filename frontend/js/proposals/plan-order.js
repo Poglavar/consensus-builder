@@ -52,30 +52,24 @@
         }
     }
 
+    const footprintPartsApi = () => (global && global.__footprintParts)
+        ? global.__footprintParts
+        : (typeof require === 'function' ? require('./footprint-parts.js') : null);
+
     // A proposal's own footprint, from whichever geometry its typology carries. Pure GeoJSON in/out.
+    // WHICH parts count is defined once in footprint-parts.js (shared with the API and migrations);
+    // this only unions them, rebuilding a centreline-only road with the exact corridor builder.
     function footprintOf(proposal) {
         const t = T();
-        if (!t || !proposal) return null;
-        const polys = [];
-        const push = g => {
-            if (!g) return;
-            const geom = g.type === 'Feature' ? g.geometry : g;
-            if (geom && /Polygon/.test(geom.type || '')) polys.push(t.feature(geom));
-        };
-
-        if (proposal.reparcellization && Array.isArray(proposal.reparcellization.polygons)) {
-            proposal.reparcellization.polygons.forEach(p => push(p && p.geometry));
+        const partsApi = footprintPartsApi();
+        if (!t || !proposal || !partsApi) return null;
+        const parts = partsApi.footprintParts(proposal);
+        if (parts.invalid) return null;
+        const polys = parts.polygons.map(geometry => t.feature(geometry));
+        if (parts.centerline) {
+            const corridor = corridorFootprintFromCenterline(parts.centerline.definition);
+            if (corridor) polys.push(corridor);
         }
-        const definition = proposal.roadProposal && proposal.roadProposal.definition;
-        if (definition && definition.polygon) push(definition.polygon);
-        else if (definition) push(corridorFootprintFromCenterline(definition));
-        if (proposal.structureProposal && proposal.structureProposal.geometry) push(proposal.structureProposal.geometry);
-        // A readjustment's authored polygons are its complete footprint. `proposal.geometry` was
-        // formerly an apply-time union of whatever live pool it happened to consume; including it
-        // made replay depend on historical fabric rather than the published plan.
-        if (!proposal.reparcellization && proposal.geometry && /Polygon/.test(proposal.geometry.type || '')) push(proposal.geometry);
-        if (proposal.buildingGeometry) push(proposal.buildingGeometry);
-        if (proposal.geometry && Array.isArray(proposal.geometry.buildings)) proposal.geometry.buildings.forEach(push);
 
         if (!polys.length) return null;
         let acc = polys[0];

@@ -251,7 +251,10 @@ describe('road footprints', () => {
         const square = turf.polygon([[[15.96, 45.80], [15.96, 45.801], [15.961, 45.801], [15.961, 45.80], [15.96, 45.80]]]);
         globalThis.corridorSurfaceFootprintForDefinition = () => square.geometry;
         try {
-            const fp = planOrder.footprintOf({ roadProposal: { definition: { width: 10, points: [] } } });
+            const fp = planOrder.footprintOf({ roadProposal: { definition: {
+                width: 10,
+                points: [{ lat: 45.8005, lng: 15.96 }, { lat: 45.8005, lng: 15.961 }]
+            } } });
             expect(turf.area(fp)).toBeCloseTo(turf.area(square), 0);
         } finally {
             delete globalThis.corridorSurfaceFootprintForDefinition;

@@ -1,18 +1,22 @@
-// Classifier/transform contract of scripts/migrate-legacy-parcel-declarations.mjs: which stored rows
-// may be migrated, which are refused, and proof that a migration is exactly reversible.
+// Classifier/transform contract of scripts/migrate-legacy-parcel-declarations.mjs under the
+// geometry-supported-declaration rule: which rows are re-declared, which are refused, what is
+// archived, and proof that a migration is exactly reversible.
 import { describe, expect, it } from 'vitest';
 import { isDeepStrictEqual } from 'node:util';
 import {
     MIGRATION_ID,
+    MIGRATION_RULE,
     WRITABLE_COLUMNS,
     classifyLegacyRow,
+    geometrySupportedDeclaration,
     hasRecordedConsent,
     parseArgs,
     restoreLegacyParcelDeclarations
 } from '../scripts/migrate-legacy-parcel-declarations.mjs';
 import { assertCanonicalProposalRow, serializeProposalRow } from '../proposals/serializer.js';
 
-const roster = (parcelId, extra = {}) => ({
+const box = (w, s, e, n) => ({ type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] });
+const snapshot = (parcelId, extra = {}) => ({
     owners: { [`parcel:${parcelId}:owner:x`]: { key: `parcel:${parcelId}:owner:x`, displayName: 'X', shareText: '100%' } },
     acceptedBy: {},
     ownerOrder: [`parcel:${parcelId}:owner:x`],
@@ -20,170 +24,162 @@ const roster = (parcelId, extra = {}) => ({
     ...extra
 });
 
-// Shape of prod row #56 (a 2026-07 park): every declaration names the column's set, and the owner
-// roster is keyed by a browser-generated piece id with nobody having accepted.
-function legacyPark(overrides = {}) {
-    const ids = ['HR-335649-371/1'];
-    const acceptances = {
-        'HR-335649-371/1#p-4gfqa0cv0u-5': roster('HR-335649-371/1#p-4gfqa0cv0u-5')
-    };
+// Shape of prod row #64 (UPU Borovje building): the legacy "selection" 1791/25 is only the id prefix
+// of the readjustment piece; the building actually stands on 1791/69, which the July backfill put in
+// the column next to the prefix.
+function borovjeBuilding(overrides = {}) {
+    const column = ['HR-335550-1791/69', 'HR-335550-1791/25'];
+    const piece = 'HR-335550-1791/25#p-upu-borovje-parcelacija-20';
     return {
-        id: 56,
-        cadastre_parcel_ids: ids.slice(),
-        ancestor_parcel_ids: ids.slice(),
+        id: 64,
+        type: 'building',
+        cadastre_parcel_ids: column.slice(),
+        ancestor_parcel_ids: column.slice(),
         accepted_parcel_ids: null,
         ownership_flow: null,
-        owner_acceptances: JSON.parse(JSON.stringify(acceptances)),
+        owner_acceptances: { [piece]: snapshot(piece) },
         road_proposal: null,
-        building_proposal: null,
+        structure_proposal: null,
         reparcellization: null,
-        structure_proposal: { kind: 'park', parentParcelIds: ids.slice() },
+        building_proposal: { parentParcelIds: ['HR-335550-1791/25'], ancestorKey: 'HR-335550-1791/25', typologyType: 'single' },
         proposal_data: {
-            title: 'Park 1307-1306',
-            parentParcelIds: ids.slice(),
-            structureProposal: { kind: 'park', parentParcelIds: ids.slice() },
-            ownerAcceptances: JSON.parse(JSON.stringify(acceptances))
+            title: 'UPU Borovje – zgrada M1-11',
+            parentParcelIds: ['HR-335550-1791/25'],
+            buildingProposal: { parentParcelIds: ['HR-335550-1791/25'], ancestorKey: 'HR-335550-1791/25', typologyType: 'single' },
+            geometry: { buildings: [{ type: 'Feature', properties: {}, geometry: box(16.0, 45.8, 16.0005, 45.8003) }] },
+            ownerAcceptances: { [piece]: snapshot(piece) }
         },
         ...overrides
     };
 }
-
+// 1791/25 only touches the building; 1791/69 carries it; 1813/8 is a real spill the backfill missed.
+const OVERLAPS = [
+    { id: 'HR-335550-1791/69', parcelAreaM2: 58226, overlapM2: 2310.3 },
+    { id: 'HR-335550-1813/8', parcelAreaM2: 900, overlapM2: 14.2 },
+    { id: 'HR-335550-1791/25', parcelAreaM2: 1092, overlapM2: 0 },
+    { id: 'HR-335550-1791/30', parcelAreaM2: 929, overlapM2: 0.4 }
+];
 const applyUpdates = (row, result) => ({ ...row, ...result.updates });
 
+describe('geometrySupportedDeclaration', () => {
+    it('keeps covered declared parcels in order, adds covered ones by overlap, drops the rest', () => {
+        expect(geometrySupportedDeclaration(['HR-a', 'HR-b', 'HR-c'], [
+            { id: 'HR-c', overlapM2: 5 },
+            { id: 'HR-d', overlapM2: 2 },
+            { id: 'HR-e', overlapM2: 40 },
+            { id: 'HR-a', overlapM2: 0.99 }
+        ])).toEqual({ ids: ['HR-c', 'HR-e', 'HR-d'], kept: ['HR-c'], added: ['HR-e', 'HR-d'], dropped: ['HR-a', 'HR-b'] });
+    });
+});
+
 describe('migrate-legacy-parcel-declarations classifier', () => {
-    it('migrates a row whose retired declarations equal cadastre_parcel_ids, and the API can then read it', () => {
-        const row = legacyPark();
+    it('re-declares a row as the parcels its geometry covers (drop + add), and the API can then read it', () => {
+        const row = borovjeBuilding();
         expect(() => assertCanonicalProposalRow(row)).toThrow();
 
-        const result = classifyLegacyRow(row, { now: '2026-09-24T00:00:00.000Z' });
+        const result = classifyLegacyRow(row, { overlaps: OVERLAPS, now: '2026-09-24T00:00:00.000Z' });
         expect(result.class).toBe('migratable');
         const migrated = applyUpdates(row, result);
 
-        expect(migrated.cadastre_parcel_ids).toEqual(row.cadastre_parcel_ids);
+        expect(migrated.cadastre_parcel_ids).toEqual(['HR-335550-1791/69', 'HR-335550-1813/8']);
+        expect(migrated.proposal_data.cadastreParcelIds).toEqual(migrated.cadastre_parcel_ids);
         expect(migrated.ancestor_parcel_ids).toBeNull();
         expect(migrated.proposal_data.parentParcelIds).toBeUndefined();
-        expect(migrated.structure_proposal.parentParcelIds).toBeUndefined();
-        expect(migrated.structure_proposal.kind).toBe('park');
+        expect(migrated.building_proposal).toEqual({ typologyType: 'single' });
         expect(migrated.owner_acceptances).toEqual({});
-        expect(migrated.proposal_data.cadastreParcelIds).toEqual(['HR-335649-371/1']);
 
         const provenance = migrated.proposal_data.legacy[MIGRATION_ID];
-        expect(provenance.migratedAt).toBe('2026-09-24T00:00:00.000Z');
-        expect(provenance.removed.map(field => [field.container, field.path.join('.')])).toEqual(expect.arrayContaining([
-            ['proposal_data', 'parentParcelIds'],
-            ['proposal_data', 'structureProposal.parentParcelIds'],
-            ['structure_proposal', 'parentParcelIds'],
-            ['ancestor_parcel_ids', ''],
-            ['owner_acceptances', 'HR-335649-371/1#p-4gfqa0cv0u-5'],
-            ['proposal_data', 'ownerAcceptances.HR-335649-371/1#p-4gfqa0cv0u-5']
-        ]));
+        expect(provenance).toMatchObject({
+            rule: MIGRATION_RULE,
+            migratedAt: '2026-09-24T00:00:00.000Z',
+            approximateFootprint: false,
+            footprintSources: ['geometry.buildings'],
+            previousCadastreParcelIds: ['HR-335550-1791/69', 'HR-335550-1791/25'],
+            addedParcelIds: ['HR-335550-1813/8'],
+            droppedParcelIds: ['HR-335550-1791/25'],
+            overlapM2: { 'HR-335550-1791/69': 2310.3, 'HR-335550-1813/8': 14.2, 'HR-335550-1791/25': 0 }
+        });
+        expect(provenance.sourceChecksum).toMatch(/^[0-9a-f]{64}$/);
 
-        expect(() => assertCanonicalProposalRow(migrated)).not.toThrow();
         const served = serializeProposalRow(migrated);
-        expect(served.cadastreParcelIds).toEqual(['HR-335649-371/1']);
+        expect(served.cadastreParcelIds).toEqual(['HR-335550-1791/69', 'HR-335550-1813/8']);
         expect(served).not.toHaveProperty('legacy');
     });
 
     it('is exactly reversible from the provenance block alone', () => {
-        const row = legacyPark();
-        const migrated = applyUpdates(row, classifyLegacyRow(row));
+        const row = borovjeBuilding();
+        const migrated = applyUpdates(row, classifyLegacyRow(row, { overlaps: OVERLAPS }));
         const restored = restoreLegacyParcelDeclarations(migrated);
         WRITABLE_COLUMNS.forEach(column => {
             expect(isDeepStrictEqual(restored[column] ?? null, row[column] ?? null), column).toBe(true);
         });
     });
 
-    it('is idempotent: a migrated row is canonical and yields no further updates', () => {
-        const row = legacyPark();
-        const migrated = applyUpdates(row, classifyLegacyRow(row));
-        expect(classifyLegacyRow(migrated).class).toBe('canonical');
+    it('restores a pre-existing proposal_data.cadastreParcelIds exactly as well', () => {
+        const row = borovjeBuilding();
+        row.proposal_data.cadastreParcelIds = ['HR-335550-1791/25'];
+        const migrated = applyUpdates(row, classifyLegacyRow(row, { overlaps: OVERLAPS }));
+        expect(migrated.proposal_data.cadastreParcelIds).toEqual(['HR-335550-1791/69', 'HR-335550-1813/8']);
+        expect(restoreLegacyParcelDeclarations(migrated).proposal_data).toEqual(row.proposal_data);
     });
 
-    it('archives retired building bookkeeping and reparcellization owner-share piece ids', () => {
-        const ids = ['HR-1-1', 'HR-1-2'];
-        const row = legacyPark({
-            owner_acceptances: null,
-            structure_proposal: null,
-            building_proposal: {
-                parentParcelIds: ids.slice(),
-                parentParcelNumbers: [{ id: 'HR-1-1', number: '1' }],
-                ancestorKey: 'HR-1-1|HR-1-2',
-                ineligibleParcels: [{ parcelId: 'HR-1-2#p-a-1', reason: 'too small' }]
-            },
-            reparcellization: {
-                parentParcelIds: ids.slice(),
-                parcelIds: ids.slice(),
-                ownerShares: [{ ownerKey: 'lot-1', percent: 1, parcelIds: ['HR-1-1#p-b-1'] }]
-            },
-            cadastre_parcel_ids: ids.slice(),
-            ancestor_parcel_ids: ids.slice(),
-            proposal_data: { title: 'Block', parentParcelIds: ids.slice() }
-        });
-        const result = classifyLegacyRow(row);
-        expect(result.class).toBe('migratable');
-        const migrated = applyUpdates(row, result);
-        expect(migrated.building_proposal).toEqual({ ineligibleParcels: [{ reason: 'too small' }] });
-        expect(migrated.reparcellization).toEqual({ ownerShares: [{ ownerKey: 'lot-1', percent: 1 }] });
-        const restored = restoreLegacyParcelDeclarations(migrated);
-        expect(restored.building_proposal).toEqual(row.building_proposal);
-        expect(restored.reparcellization).toEqual(row.reparcellization);
+    it('is idempotent: a migrated row is canonical afterwards', () => {
+        const row = borovjeBuilding();
+        const migrated = applyUpdates(row, classifyLegacyRow(row, { overlaps: OVERLAPS }));
+        expect(classifyLegacyRow(migrated, { overlaps: OVERLAPS }).class).toBe('canonical');
     });
 
-    it('refuses a row whose legacy selection is narrower than cadastre_parcel_ids (the 60 prod rows)', () => {
-        const row = legacyPark({
-            cadastre_parcel_ids: ['HR-335550-1791/69', 'HR-335550-1791/25'],
-            ancestor_parcel_ids: ['HR-335550-1791/69', 'HR-335550-1791/25'],
-            proposal_data: { title: 'UPU Borovje', parentParcelIds: ['HR-335550-1791/25'] },
-            structure_proposal: { kind: 'park', parentParcelIds: ['HR-335550-1791/25'] },
+    it('marks a centreline-only road as an approximate footprint', () => {
+        const row = borovjeBuilding({
+            type: 'road',
+            building_proposal: null,
+            road_proposal: { definition: { width: 8, points: [{ lat: 45.8, lng: 16.0 }, { lat: 45.8003, lng: 16.0005 }] }, parentParcelIds: ['HR-335550-1791/25'] },
+            proposal_data: { title: 'Road', parentParcelIds: ['HR-335550-1791/25'] },
             owner_acceptances: null
         });
-        const result = classifyLegacyRow(row);
-        expect(result.class).toBe('ambiguous');
-        expect(result.updates).toBeUndefined();
-        expect(result.reasons).toEqual(expect.arrayContaining([
-            expect.objectContaining({ code: 'legacy-declaration-disagrees', relation: 'subset', path: 'proposal_data.parentParcelIds' })
-        ]));
+        const result = classifyLegacyRow(row, { overlaps: OVERLAPS });
+        expect(result.class).toBe('migratable');
+        const provenance = applyUpdates(row, result).proposal_data.legacy[MIGRATION_ID];
+        expect(provenance.approximateFootprint).toBe(true);
+        expect(provenance.footprintSources[0]).toMatch(/centreline/);
     });
 
-    it('refuses to drop an out-of-set acceptance that records consent', () => {
-        const pieceId = 'HR-335649-371/1#p-4gfqa0cv0u-5';
-        const consented = roster(pieceId, { acceptedOwnerKeys: [`parcel:${pieceId}:owner:x`] });
-        const row = legacyPark({
-            owner_acceptances: { [pieceId]: consented },
-            proposal_data: { title: 'Park', parentParcelIds: ['HR-335649-371/1'], ownerAcceptances: { [pieceId]: consented } }
+    it('refuses a row whose footprint cannot be rebuilt or covers no parcel by 1 m²', () => {
+        const noGeometry = borovjeBuilding({ proposal_data: { title: 'x', parentParcelIds: ['HR-335550-1791/25'] } });
+        expect(classifyLegacyRow(noGeometry, { overlaps: [] })).toMatchObject({
+            class: 'refused', reasons: [expect.objectContaining({ code: 'footprint-unavailable' })]
         });
-        const result = classifyLegacyRow(row);
-        expect(result.class).toBe('ambiguous');
+        const touchOnly = classifyLegacyRow(borovjeBuilding(), { overlaps: [{ id: 'HR-335550-1791/25', overlapM2: 0.3 }] });
+        expect(touchOnly).toMatchObject({ class: 'refused', reasons: [expect.objectContaining({ code: 'geometry-covers-no-parcel' })] });
+        expect(touchOnly.updates).toBeUndefined();
+    });
+
+    it('refuses to drop an ownership snapshot outside the new declaration that records consent', () => {
+        const piece = 'HR-335550-1791/25#p-upu-borovje-parcelacija-20';
+        const consented = snapshot(piece, { acceptedOwnerKeys: [`parcel:${piece}:owner:x`] });
+        const row = borovjeBuilding({ owner_acceptances: { [piece]: consented } });
+        const result = classifyLegacyRow(row, { overlaps: OVERLAPS });
+        expect(result.class).toBe('refused');
         expect(result.reasons.map(reason => reason.code)).toContain('consent-outside-declaration');
     });
 
-    it('treats unknown acceptance shapes as possible consent', () => {
-        expect(hasRecordedConsent(roster('HR-1-1'))).toBe(false);
-        expect(hasRecordedConsent(roster('HR-1-1', { acceptedBy: { 'owner:x': '2026-01-01' } }))).toBe(true);
+    it('refuses accepted parcels or ownership flow outside the new declaration', () => {
+        const accepted = classifyLegacyRow(borovjeBuilding({ accepted_parcel_ids: ['HR-335550-1791/25'] }), { overlaps: OVERLAPS });
+        expect(accepted.reasons.map(reason => reason.code)).toContain('acceptance-outside-declaration');
+        const flow = classifyLegacyRow(borovjeBuilding({ ownership_flow: [{ parcelId: 'HR-9-9', cededM2: 1 }] }), { overlaps: OVERLAPS });
+        expect(flow.reasons.map(reason => reason.code)).toContain('ownership-flow-outside-declaration');
+    });
+
+    it('treats unknown snapshot shapes as possible consent', () => {
+        expect(hasRecordedConsent(snapshot('HR-1-1'))).toBe(false);
+        expect(hasRecordedConsent(snapshot('HR-1-1', { acceptedBy: { 'owner:x': '2026-01-01' } }))).toBe(true);
         expect(hasRecordedConsent('yes')).toBe(true);
         expect(hasRecordedConsent({ owners: {}, acceptedOwnerKeys: 'x' })).toBe(true);
     });
 
-    it('refuses generated ids in a legacy declaration, accepted ids outside the set, and unknown parcels', () => {
-        const generated = legacyPark({ proposal_data: { parentParcelIds: ['HR-335649-371/1#p-a-1'] }, owner_acceptances: null, structure_proposal: null });
-        expect(classifyLegacyRow(generated).reasons.map(reason => reason.code)).toContain('legacy-declaration-generated-ids');
-
-        const accepted = legacyPark({ accepted_parcel_ids: ['HR-9-9'] });
-        expect(classifyLegacyRow(accepted).reasons.map(reason => reason.code)).toContain('acceptance-outside-declaration');
-
-        const synthetic = classifyLegacyRow(legacyPark(), { parcelExists: () => false });
-        expect(synthetic.class).toBe('ambiguous');
-        expect(synthetic.reasons[0]).toMatchObject({ code: 'declared-parcel-unknown', ids: ['HR-335649-371/1'] });
-    });
-
-    it('classifies a row with no valid cadastre_parcel_ids as unrecoverable', () => {
-        expect(classifyLegacyRow(legacyPark({ cadastre_parcel_ids: null })).class).toBe('unrecoverable');
-        expect(classifyLegacyRow(legacyPark({ cadastre_parcel_ids: ['HR-1-1#p-x-1'] })).class).toBe('unrecoverable');
-    });
-
     it('leaves already-readable rows alone', () => {
         const row = { id: 1, cadastre_parcel_ids: ['HR-1-1'], proposal_data: { cadastreParcelIds: ['HR-1-1'] } };
-        expect(classifyLegacyRow(row)).toMatchObject({ class: 'canonical' });
+        expect(classifyLegacyRow(row, { overlaps: [] })).toMatchObject({ class: 'canonical' });
     });
 });
 

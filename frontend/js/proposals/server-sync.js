@@ -472,42 +472,24 @@ function uploadRateLimitMessage(retryAfterSeconds) {
 }
 
 async function uploadProposalToServer(proposal) {
-    // Publish measures the footprint against the cadastre the browser has LOADED, and refuses below
-    // 95%. That is the right question and the wrong source: pan away from a road and its parcels
-    // are no longer on the map, so a perfectly publishable proposal was refused for having been
-    // scrolled past. Apply stopped depending on that when it started asking CadastralParcelRepository
-    // for the ground under a footprint; publish asks the same service here before the gate runs.
-    //
-    // Ground that is genuinely absent — an existing street with no cadastral parcel under it — is
-    // still absent after the fetch, and the gate still refuses it. That refusal is correct.
+    // Publish checks the footprint against the cadastre the browser has LOADED: every parcel the
+    // geometry lies on must be declared. Pan away from a road and its parcels are no longer on the
+    // map, so load the ground under the footprint here before the gate runs. If loading fails the
+    // gate may see fewer parcels than exist; the API re-checks against the full cadastre and
+    // refuses with `undeclared-parcels`, so a failed load can never publish an undeclared take.
     const ground = await ensurePublishGroundLoaded(proposal);
+    if (ground && !ground.ok) {
+        console.warn('[uploadProposalToServer] publishing with partially loaded ground; the server re-checks parcels');
+    }
 
     let uploadProposal;
     try {
         uploadProposal = buildUploadReadyProposal(proposal);
     } catch (gateError) {
-        // The §15a publish gate refused — a non-flat record is the author's error to see, not
-        // something to heal into shape.
-        //
-        // But "the cadastre covers only N% of this footprint" has two very different causes, and
-        // the number alone cannot tell them apart: ground that is genuinely absent, or ground the
-        // browser failed to FETCH. A swallowed fetch failure reads as the first and sends the
-        // author looking for a hole in their road that is not there.
-        if (gateError && gateError.code === 'cadastre-coverage-insufficient') {
-            if (ground && !ground.ok) {
-                const detail = (ground.error && ground.error.message) ? ` (${ground.error.message})` : '';
-                return {
-                    ok: false,
-                    message: `${gateError.message} The cadastre under this proposal could not be loaded${detail}`
-                        + ', so this is a loading failure rather than missing ground. Try again.'
-                };
-            }
-            // A percentage cannot be argued with. Name the command that paints the missing ground.
-            const id = proposal && (proposal.proposalId || proposal.id);
-            return {
-                ok: false,
-                message: `${gateError.message} Run whereIsThePublishGap('${id}') in the console to see the holes on the map.`
-            };
+        // The §15a publish gate refused — a non-flat record, or geometry on parcels the author did
+        // not declare, is the author's error to see, not something to heal into shape.
+        if (gateError && gateError.code === 'undeclared-parcels') {
+            console.warn('[uploadProposalToServer] geometry lies on undeclared parcels', gateError.parcels);
         }
         return { ok: false, message: gateError.message || 'This proposal cannot be published.' };
     }
@@ -546,6 +528,22 @@ async function uploadProposalToServer(proposal) {
                 };
             }
 
+            // The API's land rule (every parcel under the geometry must be declared) found parcels
+            // the browser gate could not see; say which, in the user's language.
+            if (errorBody && errorBody.code === 'undeclared-parcels' && Array.isArray(errorBody.parcels)) {
+                console.warn('[uploadProposalToServer] server: geometry lies on undeclared parcels', errorBody.parcels);
+                const list = errorBody.parcels.map(parcel => parcel && parcel.id).filter(Boolean).join(', ');
+                const fallback = `This proposal's geometry lies on ${errorBody.parcels.length} parcel(s) you did not select: ${list}. Select them too, or keep the geometry inside the selected parcels.`;
+                let message = fallback;
+                try {
+                    const key = 'modal.createProposal.errors.undeclaredParcels';
+                    const translated = window.i18n && typeof window.i18n.t === 'function'
+                        ? window.i18n.t(key, { count: errorBody.parcels.length, list })
+                        : null;
+                    if (translated && translated !== key) message = translated;
+                } catch (_) { /* English fallback */ }
+                return { ok: false, message };
+            }
             const errorMessage = errorBody && errorBody.error
                 ? errorBody.error
                 : 'Failed to upload proposal. Please try again.';

@@ -2378,7 +2378,8 @@
                 "missingFields": "Proporciona autor, nombre y una oferta válida.",
                 "missingParcels": "Faltan parcelas o geometría para esta propuesta.",
                 "couldNotDetermineParcels": "No se pudieron determinar las parcelas para este bloque.",
-                "parcelsNotContiguous": "Las parcelas no son contiguas"
+                "parcelsNotContiguous": "Las parcelas no son contiguas",
+                "undeclaredParcels": "La geometría de esta propuesta ocupa {{count}} parcela(s) que no seleccionaste: {{list}}. Selecciónalas también o mantén la geometría dentro de las parcelas seleccionadas."
             },
             "walletNotConnected": {
                 "message": "No estás conectado con una billetera, por lo que no puedes acuñar propuestas en cadena.",
