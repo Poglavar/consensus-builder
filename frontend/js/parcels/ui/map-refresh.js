@@ -72,9 +72,11 @@
             global.originalOnParcelClick = global.onParcelClick;
         }
 
-        const fetchParcels = fetchApi.fetchParcelData || global.fetchParcelData;
+        // The reported variant surfaces a failed fetch (status + console) instead of leaving an
+        // unhandled rejection behind this fire-and-forget call.
+        const fetchParcels = fetchApi.fetchParcelDataReported || global.fetchParcelDataReported;
         if (typeof fetchParcels === 'function') {
-            fetchParcels();
+            fetchParcels(undefined, 'map-refresh.setupMap');
         }
         if (typeof global.loadBuildings === 'function') {
             global.loadBuildings();

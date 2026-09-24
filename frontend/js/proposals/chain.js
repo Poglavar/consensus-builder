@@ -136,6 +136,12 @@ async function fetchLensFromChain(proposal) {
     try {
         if (!proposal || !proposal.onchain || !proposal.onchain.proposalId) return [];
         const chainId = proposal.onchain.chainId || (typeof normalizeChainId === 'function' ? normalizeChainId(window?.DEFAULT_CHAIN_ID) : null);
+        // Lens is an EVM ProposalNFT field; the Solana program stores none (SolanaChainDataLoader
+        // parses proposals with lens: []), so never hand a Solana cluster id to the EVM provider.
+        const chainKey = String(chainId || '').toLowerCase();
+        if (proposal.chainType === 'solana' || proposal.onchain.chainType === 'solana' || chainKey === 'solana' || chainKey.startsWith('solana-')) {
+            return [];
+        }
         let contractAddress = proposal.onchain.contractAddress || null;
         if (!contractAddress && typeof window !== 'undefined' && window.ChainDataLoader && typeof window.ChainDataLoader.resolveContractAddress === 'function') {
             contractAddress = await window.ChainDataLoader.resolveContractAddress(chainId, 'ProposalNFT');

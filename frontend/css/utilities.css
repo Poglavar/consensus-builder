@@ -37,6 +37,17 @@
     width: 100%;
 }
 
+/* Destructive OK in showStyledConfirm({ destructive: true }): a quiet red secondary, never the
+   blue primary — the safe choice carries the primary style instead. */
+.cb-confirm-buttons .cb-confirm-destructive {
+    color: #b42318;
+    border: 1px solid #f1b5ae;
+    background: #fff;
+}
+.cb-confirm-buttons .cb-confirm-destructive:hover {
+    background: #fef3f2;
+}
+
 .dev-badge {
     display: none;
     height: 20px;

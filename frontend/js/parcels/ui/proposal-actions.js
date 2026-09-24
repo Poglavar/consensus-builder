@@ -9,7 +9,7 @@
             const api = global.i18n;
             if (api && typeof api.t === 'function') {
                 const translated = api.t(key, params || {});
-                if (translated !== undefined && translated !== null) {
+                if (translated !== undefined && translated !== null && translated !== key) {
                     return translated;
                 }
             }

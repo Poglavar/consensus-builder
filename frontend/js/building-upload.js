@@ -28,7 +28,7 @@
     function t(key, fallback, params = {}) {
         const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
         if (api && typeof api.t === 'function') {
-            try { return api.t(key, params); } catch (_) { /* fall through */ }
+            try { const translated = api.t(key, params); if (translated !== key) return translated; } catch (_) { /* fall through */ }
         }
         return String(fallback).replace(/\{\{\s*(\w+)\s*\}\}/g, (m, k) =>
             Object.prototype.hasOwnProperty.call(params, k) ? params[k] : m);

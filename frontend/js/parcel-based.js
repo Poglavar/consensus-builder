@@ -94,7 +94,7 @@
     function translateParcelBasedText(key, fallback, params = {}) {
         const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
         if (api && typeof api.t === 'function') {
-            return api.t(key, params);
+            { const translated = api.t(key, params); if (translated !== key) return translated; }
         }
         return formatParcelBasedText(fallback, params);
     }

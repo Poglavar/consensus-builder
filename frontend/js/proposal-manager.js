@@ -265,7 +265,9 @@ async function _runProposalMutationBoundary(manager, kind, proposalId, options, 
         proposalStore,
         agentStore: agents,
         storage,
-        fabric: mutatesMap ? browserRoot.LiveParcelFabric : null
+        fabric: mutatesMap ? browserRoot.LiveParcelFabric : null,
+        // undefined → the coordinator's PARCEL_MUTATION_TIMEOUT_MS (or a window override).
+        timeoutMs: options && options.mutationTimeoutMs
     });
 }
 
@@ -401,7 +403,9 @@ function _createForeignIndexAllocator(fabric) {
             if (!fabric) {
                 throw new Error('Derived parcel identity allocation requires a parcel mutation draft.');
             }
-            fabric.list().forEach(scan);
+            // Only pieces anchored to `base` can match, and the fabric indexes exactly that. A full
+            // list() here deep-cloned every feature once per new key — O(keys × fabric size).
+            fabric.entriesForCadastre([base], { includeCorridors: true }).forEach(scan);
             next.set(key, max + 1);
         }
         const value = next.get(key);

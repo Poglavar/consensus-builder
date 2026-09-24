@@ -11,8 +11,24 @@
     const COLLECTION_NAMES = Object.freeze([
         'parks', 'squares', 'lakes', 'transitStations', 'proposedBuildings'
     ]);
+    // Deadline for the pre-commit phase (operation body + fabric prepare). A body that never
+    // settles — a hung ground fetch — used to block every later mutation in the FIFO forever.
+    // Generous on purpose: a 661-parcel corridor apply once profiled at 47 s. Override per call
+    // with `overrides.timeoutMs` (ProposalManager: `options.mutationTimeoutMs`) or globally with
+    // `window.PARCEL_MUTATION_TIMEOUT_MS`.
+    const PARCEL_MUTATION_TIMEOUT_MS = 120000;
     let mutationSequence = 1;
     let mutationTail = Promise.resolve();
+
+    function positiveMs(value) {
+        return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : null;
+    }
+
+    function resolveTimeoutMs(overrides, runtime) {
+        return positiveMs(overrides?.timeoutMs)
+            ?? positiveMs(runtime?.PARCEL_MUTATION_TIMEOUT_MS)
+            ?? PARCEL_MUTATION_TIMEOUT_MS;
+    }
 
     function clone(value) {
         if (value === undefined || value === null) return value;
@@ -210,6 +226,33 @@
         let durableCommitted = false;
         let published = false;
 
+        // Cancellation token. Once the deadline fires this mutation is dead: the fabric draft is
+        // rolled back (its writes then throw `live-fabric-mutation-inactive`), `signal` aborts,
+        // afterCommit refuses, and execute() has already rejected — so a body that resolves late
+        // has nothing left that could publish or persist its drafts.
+        const timeoutMs = resolveTimeoutMs(overrides, dependencies.runtime);
+        const abortController = typeof AbortController === 'function' ? new AbortController() : null;
+        let timeoutError = null;
+        let deadlineTimer = null;
+        const deadline = new Promise((_, reject) => {
+            deadlineTimer = setTimeout(() => {
+                const kind = meta?.kind || 'unknown';
+                timeoutError = new Error(`Parcel mutation "${kind}" did not settle within ${timeoutMs} ms; it was rolled back and the mutation queue moved on.`);
+                timeoutError.code = 'parcel-mutation-timeout';
+                timeoutError.timeoutMs = timeoutMs;
+                timeoutError.meta = { ...(meta || {}) };
+                console.error(`[${new Date().toISOString()}] [ParcelMutation] ${timeoutError.message}`, timeoutError.meta);
+                try { fabricMutation?.rollback?.(); } catch (_) { /* the rejection below is the failure */ }
+                try { abortController?.abort(timeoutError); } catch (_) { /* best-effort signal */ }
+                reject(timeoutError);
+            }, timeoutMs);
+        });
+        const withinDeadline = work => Promise.race([work, deadline]);
+        const stopDeadline = () => {
+            if (deadlineTimer !== null) clearTimeout(deadlineTimer);
+            deadlineTimer = null;
+        };
+
         const context = Object.freeze({
             meta: Object.freeze({ ...(meta || {}) }),
             proposals: proposalDraft,
@@ -217,23 +260,31 @@
             fabric: fabricMutation,
             storage: storageDraft,
             collections: collectionDraft.draft,
+            signal: abortController ? abortController.signal : null,
+            get cancelled() { return timeoutError !== null; },
             afterCommit(callback) {
                 if (typeof callback !== 'function') throw new TypeError('afterCommit requires a function.');
+                if (timeoutError) throw timeoutError;
                 afterCommitCallbacks.push(callback);
             }
         });
 
         try {
-            const result = await operation(context);
+            const result = await withinDeadline(Promise.resolve().then(() => operation(context)));
             if (result === false) {
+                stopDeadline();
                 fabricMutation?.rollback?.();
                 return false;
             }
 
             if (fabricMutation) {
-                await fabricMutation.prepare();
+                await withinDeadline(fabricMutation.prepare());
                 preparedFabric = true;
             }
+            // Past this point the change is durable-bound. An IndexedDB write cannot be withdrawn,
+            // so the deadline does not race it (a late durable commit would diverge from memory).
+            stopDeadline();
+            if (timeoutError) throw timeoutError;
 
             addSerializedChange(serializeStore(dependencies.proposalStore, proposalDraft), storageDraft);
             addSerializedChange(serializeStore(dependencies.agentStore, agentDraft), storageDraft);
@@ -283,6 +334,7 @@
             }
             throw error;
         } finally {
+            stopDeadline();
             if (preparedFabric && !published) {
                 try { fabricMutation?.rollback?.(); } catch (_) { }
             }

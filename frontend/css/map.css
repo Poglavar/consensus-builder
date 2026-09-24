@@ -840,6 +840,28 @@ body.three-mode-active #agent-bubbles-container {
     pointer-events: none;
 }
 
+/* ...except on phones, where the hamburger and the Guest pill are the ONLY way to the sidebar
+   (proposals), wallet and language — hiding them trapped a mobile user in 3D. The pill moves left
+   of the 3D view's settings gear (top-right, ~34px wide at right 16px). */
+@media (max-width: 768px) {
+    body.three-mode-active #toggle-sidebar-mobile {
+        display: flex !important;
+        pointer-events: auto;
+    }
+    body.three-mode-active #username-display {
+        display: flex !important;
+        pointer-events: auto;
+        right: 58px;
+        max-width: calc(100vw - 58px - 60px);
+    }
+    /* The expanded 3D settings panel takes the whole top edge; step aside until it folds back
+       to its gear (which stays the way to close it). Photo view hides the panel inline. */
+    body.three-mode-active:has(#three-container .three-mode-ui-panel:not(.collapsed):not([style*="display: none"])) #toggle-sidebar-mobile,
+    body.three-mode-active:has(#three-container .three-mode-ui-panel:not(.collapsed):not([style*="display: none"])) #username-display {
+        display: none !important;
+    }
+}
+
 
 /* Position zoom box below username bubble */
 /* removed zoom-info-control */

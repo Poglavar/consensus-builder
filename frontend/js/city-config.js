@@ -1033,6 +1033,12 @@
             okBtn.type = 'button';
             okBtn.className = 'btn btn-action';
             okBtn.textContent = options.okText || 'OK';
+            // A destructive confirm ("Discard") must not be the inviting blue primary: the safe
+            // choice (cancel / keep editing) becomes the primary and the OK reads as destructive.
+            if (options.destructive) {
+                okBtn.className = 'btn btn-secondary cb-confirm-destructive';
+                cancelBtn.className = 'btn btn-action';
+            }
 
             function cleanup(result) {
                 if (overlay && overlay.parentNode) {

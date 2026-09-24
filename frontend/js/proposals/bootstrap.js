@@ -147,14 +147,29 @@ try {
     }
 } catch (_) { }
 
-if (typeof window !== 'undefined') {
-    window.addEventListener('load', () => {
-        setTimeout(() => handleProposalRouteFromUrl(), 100);
-        setTimeout(() => handleSingleProposalShareFromUrl(), 200);
-        setTimeout(() => handleSharedProposalsFromUrl(), 250);
-        setTimeout(() => { try { syncProposalsIndicator(); } catch (_) { } }, 300);
-        setTimeout(() => handleStandalone3DModeFromUrl(), 500);
+// URL-driven entry points run once the app has booted (all scripts loaded + initializeMapCore done,
+// see whenAppBooted in map-core.js) — previously fixed 100–500 ms sleeps after `load`. Same order as
+// before; each is isolated so one failing route cannot stop the others.
+if (typeof window !== 'undefined' && typeof window.whenAppBooted === 'function') {
+    window.whenAppBooted().then(() => {
+        const run = (label, fn) => {
+            try {
+                const result = fn();
+                if (result && typeof result.catch === 'function') {
+                    result.catch(error => console.error(`[${new Date().toISOString()}] [proposals/bootstrap] ${label} failed`, error));
+                }
+            } catch (error) {
+                console.error(`[${new Date().toISOString()}] [proposals/bootstrap] ${label} failed`, error);
+            }
+        };
+        run('proposal route', () => handleProposalRouteFromUrl());
+        run('single proposal share', () => handleSingleProposalShareFromUrl());
+        run('shared proposals', () => handleSharedProposalsFromUrl());
+        run('proposals indicator', () => syncProposalsIndicator());
+        run('standalone 3D mode', () => handleStandalone3DModeFromUrl());
     });
+} else if (typeof window !== 'undefined') {
+    console.error(`[${new Date().toISOString()}] [proposals/bootstrap] whenAppBooted is missing (map-core.js not loaded); URL routes will not run.`);
 }
 
 if (typeof document !== 'undefined' && !setupMultiParcelHighlightListeners()) {

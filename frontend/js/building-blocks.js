@@ -135,7 +135,7 @@ function formatBuildingText(template, params = {}) {
 function translateBuildingText(key, fallback, params = {}) {
     const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
     if (api && typeof api.t === 'function') {
-        return api.t(key, params);
+        { const translated = api.t(key, params); if (translated !== key) return translated; }
     }
     return formatBuildingText(fallback, params);
 }
@@ -1922,6 +1922,7 @@ function showBlockifyModal() {
         // Add event listeners
         document.getElementById('blockify-close').addEventListener('click', requestCloseBlockifyModal);
         document.addEventListener('keydown', handleBlockifyKeydown);
+        blockifyDesignChanges().start(document);
         const doneButton = document.getElementById('btn-blockify-done');
         if (doneButton) {
             doneButton.addEventListener('click', saveBlockifyDesignForProposal);
@@ -2312,6 +2313,19 @@ function syncBlockifyControlsFromState() {
     syncBlockMinHeightSlider();
 }
 
+// Did the user change the design since the dialog opened? The auto-generated first design is not
+// a change, so closing an untouched editor does not ask to "discard" it.
+let blockifyDesignChangeTracker = null;
+function blockifyDesignChanges() {
+    if (!blockifyDesignChangeTracker) {
+        blockifyDesignChangeTracker = window.DesignChangeTracker.createDesignChangeTracker({
+            signature: () => window.DesignChangeTracker.featuresSignature(
+                [generatedBuildingFeature].concat(Array.isArray(generatedBuildingFeatures) ? generatedBuildingFeatures : []))
+        });
+    }
+    return blockifyDesignChangeTracker;
+}
+
 // Is there a generated design in the editor right now?
 function blockifyHasGeneratedDesign() {
     return !!generatedBuildingFeature
@@ -2323,7 +2337,9 @@ function blockifyHasGeneratedDesign() {
 // the design would be lost, so ask first; declining keeps the editor open.
 async function requestCloseBlockifyModal() {
     if (typeof window !== 'undefined' && typeof window.confirmDiscardProposalDesignSession === 'function') {
-        const proceed = await window.confirmDiscardProposalDesignSession({ hasDesign: blockifyHasGeneratedDesign() });
+        const proceed = await window.confirmDiscardProposalDesignSession({
+            hasDesign: blockifyHasGeneratedDesign() && blockifyDesignChanges().changed()
+        });
         if (!proceed) return;
     }
     closeBlockifyModal();
@@ -2342,6 +2358,7 @@ function handleBlockifyKeydown(event) {
 function closeBlockifyModal(options = {}) {
     const { preservePending = false } = options;
     document.removeEventListener('keydown', handleBlockifyKeydown);
+    if (blockifyDesignChangeTracker) blockifyDesignChangeTracker.stop();
     blockifyPendingVertexActionIndex = null;
     clearGapWingHandles();
     if (blockifyMapResizeObserver) {

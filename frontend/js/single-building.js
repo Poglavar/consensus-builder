@@ -154,7 +154,7 @@
     const translateSingleBuildingText = (key, fallback, params = {}) => {
         const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
         if (api && typeof api.t === 'function') {
-            return api.t(key, params);
+            { const translated = api.t(key, params); if (translated !== key) return translated; }
         }
         return formatSingleBuildingText(fallback, params);
     };
@@ -1499,10 +1499,22 @@
     // The X / Esc path. Closing NEVER saves — only "Done" (confirmSingleBuilding) does. When the
     // editor is running a commit-on-confirm session (a geometry edit, or a Build-palette creation)
     // the design would be lost, so ask first; declining keeps the editor open.
+    // Did the user change the design since the dialog opened? Untouched → close without asking.
+    let singleBuildingDesignChangeTracker = null;
+    function singleBuildingDesignChanges() {
+        if (!singleBuildingDesignChangeTracker) {
+            singleBuildingDesignChangeTracker = window.DesignChangeTracker.createDesignChangeTracker({
+                signature: () => window.DesignChangeTracker.featuresSignature(
+                    buildingEntries.map(entry => entry && entry.feature)) + '|' + currentGroundTreatment + '|' + currentTakeWholeParcels
+            });
+        }
+        return singleBuildingDesignChangeTracker;
+    }
+
     async function requestCloseSingleBuildingModal() {
         if (typeof window !== 'undefined' && typeof window.confirmDiscardProposalDesignSession === 'function') {
             const proceed = await window.confirmDiscardProposalDesignSession({
-                hasDesign: buildingEntries.some(entry => entry && entry.feature)
+                hasDesign: buildingEntries.some(entry => entry && entry.feature) && singleBuildingDesignChanges().changed()
             });
             if (!proceed) return;
         }
@@ -1524,6 +1536,7 @@
     function closeSingleBuildingModal(options = {}) {
         const { preservePending = false } = options;
         document.removeEventListener('keydown', handleSingleBuildingKeydown);
+        if (singleBuildingDesignChangeTracker) singleBuildingDesignChangeTracker.stop();
         handleRectDragEnd();
         singlePendingVertexActionIndex = null;
         destroySinglePolygonEditor();
@@ -2112,6 +2125,7 @@
 
             document.getElementById('single-building-close').addEventListener('click', requestCloseSingleBuildingModal);
             document.addEventListener('keydown', handleSingleBuildingKeydown);
+            singleBuildingDesignChanges().start(document);
             document.getElementById('single-building-confirm').addEventListener('click', confirmSingleBuilding);
 
             const hSlider = document.getElementById('single-height-slider');

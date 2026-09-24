@@ -131,13 +131,21 @@
         }
     }
 
-    async function handleParcelRouteFromUrl(attempt = 0) {
+    // Runs after app boot (whenAppBooted, map-core.js): every dependency below is a classic script
+    // that defines its global at evaluation, so one missing now is a load failure to report, not
+    // something that polling would ever fix.
+    function reportParcelRouteFailure(parcelId, message) {
+        console.error(`[${new Date().toISOString()}] [handleParcelRouteFromUrl] cannot open parcel ${parcelId}: ${message}`);
+        global.updateStatus?.(`Could not open parcel ${parcelId}: ${message}`);
+    }
+
+    async function handleParcelRouteFromUrl() {
         const parcelId = parseParcelIdFromUrl();
         if (!parcelId) return;
 
         const cityManager = global.CityConfigManager;
         if (!cityManager || typeof cityManager.getCurrentCityId !== 'function') {
-            if (attempt < 20) setTimeout(() => handleParcelRouteFromUrl(attempt + 1), 200);
+            reportParcelRouteFailure(parcelId, 'city configuration did not load.');
             return;
         }
 
@@ -170,7 +178,7 @@
             || !fabric || typeof fabric.get !== 'function'
             || !presenter || typeof presenter.resolveLiveLayers !== 'function'
             || typeof selectParcel !== 'function') {
-            if (attempt < 40) setTimeout(() => handleParcelRouteFromUrl(attempt + 1), 250);
+            reportParcelRouteFailure(parcelId, 'parcel modules did not load.');
             return;
         }
 
@@ -186,7 +194,7 @@
             // parcels so the grid stays visible — see selection.js).
             selectParcel(resolvedId);
         } catch (error) {
-            console.error('[handleParcelRouteFromUrl] failed to open parcel', parcelId, error && error.message);
+            reportParcelRouteFailure(parcelId, (error && error.message) || String(error));
         }
     }
 
@@ -202,9 +210,9 @@
 
     // Guarded so a node `require` of this file (for the unit tests) doesn't blow up on a global with
     // no addEventListener — the browser path is unchanged.
-    if (typeof global.addEventListener === 'function') {
-        global.addEventListener('load', () => {
-            setTimeout(() => handleParcelRouteFromUrl(), 150);
-        });
+    if (typeof global.whenAppBooted === 'function') {
+        global.whenAppBooted().then(() => handleParcelRouteFromUrl());
+    } else if (typeof global.addEventListener === 'function') {
+        console.error(`[${new Date().toISOString()}] [parcels/route] whenAppBooted is missing (map-core.js not loaded); /parcel/ route not handled.`);
     }
 })(typeof window !== 'undefined' ? window : globalThis);

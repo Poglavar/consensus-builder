@@ -369,12 +369,36 @@
             });
             global.updateStatus?.(result.cached
                 ? 'Cadastral ground already loaded.'
-                : `Loaded ${result.features.length} cadastral parcels.`);
+                : (() => {
+                    const count = result.features.length;
+                    const key = 'status.messages.loaded_cadastral_parcels';
+                    const text = global.i18n?.t?.(key, { count });
+                    return text && text !== key ? text : `Loaded ${count} cadastral parcels.`;
+                })());
             return result;
         } finally {
             global._fetchParcelDataInProgress = false;
             global.ParcelsState?.setIsFetchingParcels?.(false);
         }
+    }
+
+    // A failed ground fetch must be visible, never an unhandled rejection. Callers that do not
+    // await the fetch (boot, visibility toggles, data-source switch) go through
+    // fetchParcelDataReported, which reports and resolves null; awaiting callers may reuse the
+    // reporter in their own catch.
+    function reportParcelFetchFailure(error, source) {
+        const message = error && error.message ? error.message : String(error || 'unknown error');
+        console.error(`[${new Date().toISOString()}] [ParcelFetch] cadastral ground failed to load (${source || 'unknown caller'}): ${message}`, error);
+        global.updateStatus?.(`Cadastral ground failed to load: ${message}`);
+    }
+
+    function fetchParcelDataReported(customBounds, source) {
+        return Promise.resolve()
+            .then(() => fetchParcelData(customBounds))
+            .catch(error => {
+                reportParcelFetchFailure(error, source);
+                return null;
+            });
     }
 
     async function refreshParcelDataWithBusyState(customBounds) {
@@ -386,6 +410,8 @@
     }
 
     global.fetchParcelData = fetchParcelData;
+    global.fetchParcelDataReported = fetchParcelDataReported;
+    global.reportParcelFetchFailure = reportParcelFetchFailure;
     global.refreshParcelDataWithBusyState = refreshParcelDataWithBusyState;
     global.buildParcelFilterXml = buildParcelFilterXml;
     global.escapeXmlValue = escapeXmlValue;

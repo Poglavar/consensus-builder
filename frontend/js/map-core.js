@@ -879,6 +879,35 @@ function setupMapEventHandlers() {
 }
 
 // Initialize map core functionality
+// App boot readiness. Resolves once every classic script has run (window `load`) AND
+// initializeMapCore() has finished (index.html defers it behind PersistentStorage.ready). URL route
+// handlers wait on this instead of fixed 100–1500 ms sleeps after `load`. A boot that never
+// completes is reported loudly after APP_BOOT_WATCHDOG_MS rather than waited on silently.
+(function installAppBootReadiness() {
+    const APP_BOOT_WATCHDOG_MS = 30000;
+    let markReady = null;
+    const mapCoreReady = new Promise(resolve => { markReady = resolve; });
+    const windowLoaded = document.readyState === 'complete'
+        ? Promise.resolve()
+        : new Promise(resolve => window.addEventListener('load', resolve, { once: true }));
+    const booted = Promise.all([windowLoaded, mapCoreReady]).then(() => undefined);
+    let reported = false;
+    const watchdog = setTimeout(() => {
+        reported = true;
+        console.error(`[${new Date().toISOString()}] [map-core] App boot did not complete within ${APP_BOOT_WATCHDOG_MS} ms (load: ${document.readyState}, map core ready: ${!!window.__mapCoreReady}); URL routes are still waiting.`);
+    }, APP_BOOT_WATCHDOG_MS);
+    booted.then(() => {
+        clearTimeout(watchdog);
+        if (reported) console.info(`[${new Date().toISOString()}] [map-core] App boot completed late.`);
+        window.dispatchEvent(new Event('appBooted'));
+    });
+    window.__markMapCoreReady = () => {
+        window.__mapCoreReady = true;
+        markReady();
+    };
+    window.whenAppBooted = () => booted;
+})();
+
 function initializeMapCore() {
     // Set up event handlers
     setupMapEventHandlers();
@@ -908,13 +937,13 @@ function initializeMapCore() {
 
     // Initial load only if within zoom range and not in proposal deep-link mode
     const shouldSkipInitialFetch = (typeof window !== 'undefined' && window.skipParcelFetchUntilProposalLoaded);
-    if (!shouldSkipInitialFetch && typeof fetchParcelData === 'function') {
+    if (!shouldSkipInitialFetch && typeof fetchParcelDataReported === 'function') {
         const within = isZoomWithinParcelRange();
         if (typeof updateParcelsCheckboxByZoom === 'function') {
             try { updateParcelsCheckboxByZoom(within); } catch (_) { }
         }
         if (within) {
-            fetchParcelData();
+            fetchParcelDataReported(undefined, 'initial map load');
         } else if (typeof updateStatus === 'function') {
             updateStatus('Parcels disabled at this zoom');
         }
@@ -930,6 +959,7 @@ function initializeMapCore() {
         }, 80);
     }
 
+    window.__markMapCoreReady();
 }
 
 // Update map dimensions display

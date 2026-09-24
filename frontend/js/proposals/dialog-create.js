@@ -1,5 +1,9 @@
 // proposals/dialog-create.js — extracted from proposals.js (behavior-preserving relocation).
 
+// How long the create dialog's preview may take to load its tiles before that is reported as a
+// failure (the screenshot capture then proceeds anyway; it fetches its own tiles).
+const PROPOSAL_PREVIEW_TILE_TIMEOUT_MS = 10000;
+
 function clearProposalPreviewLayers() {
     const groups = ensureProposalOverlayGroups();
     if (groups.preview) groups.preview.clearLayers();
@@ -1057,56 +1061,43 @@ function showProposalDialog(overrides = null) {
                         return capturePromise;
                     };
 
-                    // Wait for map to be ready and tiles to load
-                    let waitForMapAttempts = 0;
-                    const waitForMapAndCapture = () => {
-                        waitForMapAttempts++;
-                        const map = previewWrapper._leafletPreviewMap;
-                        if (!map) {
-                            if (waitForMapAttempts > 100) {
-                                console.error('[proposal-modal] Gave up waiting for map after 100 attempts');
-                                return;
-                            }
-                            // Map not set yet, try again shortly
-                            setTimeout(waitForMapAndCapture, 100);
-                            return;
-                        }
-
-                        // Find tile layer and wait for it to load
-                        let tileLayer = null;
-                        map.eachLayer(layer => {
-                            if (layer._url && !tileLayer) {
-                                tileLayer = layer;
-                            }
+                    // Capture once the preview's tiles have loaded. renderPolygonPreview builds
+                    // its Leaflet map synchronously, so the map either exists now or never will;
+                    // the capture itself stitches tiles independently of the preview DOM, so the
+                    // tile layer's own `load` event is the only readiness signal worth waiting on.
+                    const previewMap = previewWrapper._leafletPreviewMap;
+                    let tileLayer = null;
+                    if (previewMap) {
+                        previewMap.eachLayer(layer => {
+                            if (layer._url && !tileLayer) tileLayer = layer;
                         });
-
-                        if (tileLayer) {
-                            // Listen for tile load completion
-                            let captured = false;
-                            const onLoad = () => {
-                                if (captured) return;
-                                captured = true;
-                                tileLayer.off('load', onLoad);
-                                // Small delay after load event to ensure rendering is complete
-                                setTimeout(captureScreenshot, 300);
-                            };
-                            tileLayer.on('load', onLoad);
-                            // Timeout fallback - capture after 4 seconds regardless
-                            setTimeout(() => {
-                                if (!captured) {
-                                    captured = true;
-                                    tileLayer.off('load', onLoad);
-                                    captureScreenshot();
-                                }
-                            }, 4000);
-                        } else {
-                            // No tile layer found, just wait and capture
-                            setTimeout(captureScreenshot, 2000);
-                        }
-                    };
-
-                    // Start waiting for map
-                    setTimeout(waitForMapAndCapture, 50);
+                    } else {
+                        console.error(`[${new Date().toISOString()}] [proposal-modal] Preview map was not created; screenshot not captured.`);
+                    }
+                    if (previewMap && !tileLayer) {
+                        captureScreenshot();
+                    } else if (tileLayer && typeof tileLayer.isLoading === 'function' && !tileLayer.isLoading()
+                        && Object.keys(tileLayer._tiles || {}).length > 0) {
+                        captureScreenshot();
+                    } else if (tileLayer) {
+                        let settled = false;
+                        let stallTimer = null;
+                        const finish = () => {
+                            if (settled) return;
+                            settled = true;
+                            tileLayer.off('load', finish);
+                            if (stallTimer !== null) clearTimeout(stallTimer);
+                            captureScreenshot();
+                        };
+                        tileLayer.on('load', finish);
+                        // Loud failure only: tiles that never finish loading are reported, then
+                        // the capture (which fetches its own tiles) is attempted anyway.
+                        stallTimer = setTimeout(() => {
+                            if (settled) return;
+                            console.error(`[${new Date().toISOString()}] [proposal-modal] Preview tiles did not finish loading within ${PROPOSAL_PREVIEW_TILE_TIMEOUT_MS} ms; capturing anyway.`);
+                            finish();
+                        }, PROPOSAL_PREVIEW_TILE_TIMEOUT_MS);
+                    }
                 } catch (error) {
                     console.warn('Failed to render proposal screenshot preview', error);
                     screenshotContainer.innerHTML = '';

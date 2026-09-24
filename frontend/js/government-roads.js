@@ -2901,6 +2901,57 @@
         }
     }
 
+    function planI18n(key, fallback, params) {
+        const api = window.i18n;
+        if (api && typeof api.t === 'function') {
+            const text = api.t(key, params || {});
+            if (text && text !== key) return text;
+        }
+        return fallback;
+    }
+
+    function isBackendPlanSource() {
+        const dataSource = getCurrentDataSource();
+        return dataSource === 'localhost' || dataSource === 'api.urbangametheory.xyz';
+    }
+
+    // Mirrors backend/routes/planned-roads.js: area of the EPSG:3765 bbox we would send.
+    function isPlanViewTooLargeForBackend(bounds) {
+        if (!isBackendPlanSource()) return false;
+        const limit = window.ViewBboxLimit;
+        if (!limit) throw new Error('view-bbox-limit.js is not loaded; cannot guard /planned-road.');
+        const area = limit.metricBboxAreaKm2(getBboxFromBounds(bounds));
+        // No usable bbox is also a guaranteed 400, and zooming is what produces a usable one.
+        return area === null || limit.isViewTooLarge(area);
+    }
+
+    let planZoomRetryHandler = null;
+
+    function disarmPlanZoomRetry() {
+        if (planZoomRetryHandler && window.map && typeof window.map.off === 'function') {
+            window.map.off('moveend', planZoomRetryHandler);
+        }
+        planZoomRetryHandler = null;
+    }
+
+    // One moveend listener while the plan is on but the view is too big; it fetches on the first
+    // view the backend will accept, and removes itself when the toggle is turned off.
+    function armPlanZoomRetry() {
+        if (planZoomRetryHandler || !window.map || typeof window.map.on !== 'function') return;
+        planZoomRetryHandler = () => {
+            const toggle = document.getElementById('showGovernmentRoadPlan');
+            if (!toggle || !toggle.checked) {
+                disarmPlanZoomRetry();
+                return;
+            }
+            const bounds = getActiveMapBounds();
+            if (!bounds || isPlanViewTooLargeForBackend(bounds)) return;
+            disarmPlanZoomRetry();
+            drawGovernmentRoadPlan();
+        };
+        window.map.on('moveend', planZoomRetryHandler);
+    }
+
     async function drawGovernmentRoadPlan(options) {
         const opts = Object.assign({ forceRefetch: false, skipStatus: false }, options || {});
         if (isFetchingGovernmentPlan) {
@@ -2923,6 +2974,19 @@
             }
             return;
         }
+
+        // The backend 400s a view over MAX_VIEW_BBOX_KM2, so don't ask: tell the user to zoom
+        // in and fetch once they have. Not clearGovernmentRoadPlanLayer() — that unchecks the toggle.
+        if (isPlanViewTooLargeForBackend(bounds)) {
+            armPlanZoomRetry();
+            if (!opts.skipStatus && typeof window.updateStatus === 'function') {
+                window.updateStatus(planI18n('status.messages.zoom_in_to_see_government_road_plan',
+                    'Zoom in to see the government road plan.'));
+            }
+            window.dispatchEvent(new CustomEvent('governmentPlanLoaded', { detail: { featureCount: 0, tooLarge: true } }));
+            return;
+        }
+        disarmPlanZoomRetry();
 
         if (!opts.skipStatus && typeof window.updateStatus === 'function') {
             window.updateStatus('Fetching government road plan...');
@@ -3047,6 +3111,7 @@
                 if (planCheckbox.checked) {
                     drawGovernmentRoadPlan();
                 } else {
+                    disarmPlanZoomRetry();
                     clearGovernmentRoadPlanLayer();
                     if (typeof window.updateStatus === 'function') {
                         window.updateStatus('Government road plan hidden.');

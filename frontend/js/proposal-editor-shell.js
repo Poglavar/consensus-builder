@@ -1257,7 +1257,8 @@
             `${tDraft('proposalDrafts.discardDesign.title', 'Discard this design?')}\n${tDraft('proposalDrafts.discardDesign.body', 'Closing the editor throws away the changes you made here. Use Done to keep them.')}`,
             {
                 okText: tDraft('proposalDrafts.discardDesign.confirm', 'Discard'),
-                cancelText: tDraft('proposalDrafts.discardDesign.cancel', 'Keep editing')
+                cancelText: tDraft('proposalDrafts.discardDesign.cancel', 'Keep editing'),
+                destructive: true
             }
         );
     }

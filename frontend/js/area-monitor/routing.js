@@ -187,17 +187,18 @@
     function handleRouteOnLoad() {
         const monitorId = parseMonitorRoute();
         if (monitorId) {
-            // Delay to let map and parcels initialize
-            setTimeout(() => loadMonitor(monitorId, { fitBounds: true }), 1500);
+            // loadMonitor only needs the booted map (its overlay fetches its own geometries), so
+            // wait for app boot rather than a fixed 1.5 s after `load`.
+            loadMonitor(monitorId, { fitBounds: true });
         }
     }
 
-    // Listen for areaMonitorCreated to load the new monitor
+    // Listen for areaMonitorCreated to load the new monitor. The creator pushes the monitor URL
+    // before dispatching, so there is nothing to wait for.
     global.addEventListener('areaMonitorCreated', (e) => {
         const monitor = e.detail;
         if (monitor && monitor.id) {
-            // Small delay for URL to update
-            setTimeout(() => loadMonitor(monitor.id, { fitBounds: true }), 300);
+            loadMonitor(monitor.id, { fitBounds: true });
         }
     });
 
@@ -212,11 +213,11 @@
         }
     });
 
-    // Init on page load
-    if (document.readyState === 'complete') {
-        handleRouteOnLoad();
+    // Init once the app has booted (all scripts loaded + map core initialised; map-core.js).
+    if (typeof global.whenAppBooted === 'function') {
+        global.whenAppBooted().then(handleRouteOnLoad);
     } else {
-        global.addEventListener('load', handleRouteOnLoad);
+        console.error(`[${new Date().toISOString()}] [area-monitor] whenAppBooted is missing (map-core.js not loaded); monitor route not handled.`);
     }
 
     // Public API

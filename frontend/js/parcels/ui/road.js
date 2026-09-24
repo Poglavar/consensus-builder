@@ -5,7 +5,12 @@
         if (typeof global.tParcel === 'function') {
             return global.tParcel(...args);
         }
-        const [key, , fallback = ''] = args;
+        const [key, params = {}, fallback = ''] = args;
+        const api = global.i18n;
+        if (api && typeof api.t === 'function') {
+            const translated = api.t(key, params || {});
+            if (translated && translated !== key) return translated;
+        }
         return fallback || key || '';
     };
 

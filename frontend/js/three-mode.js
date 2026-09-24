@@ -567,7 +567,7 @@
     function threeI18n(key, fallback, params) {
         const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
         if (api && typeof api.t === 'function') {
-            try { return api.t(key, params || {}); } catch (_) { /* fall through */ }
+            try { const translated = api.t(key, params || {}); if (translated !== key) return translated; } catch (_) { /* fall through */ }
         }
         return fallback;
     }
@@ -5922,11 +5922,17 @@
         try {
             const sidebar = document.getElementById('sidebar');
             if (!sidebar) return;
-            const buildingsSection = document.querySelector('.accordion-section[data-section="buildings"]');
+            // Stay usable in 3D: the Buildings section (drives the 3D layers), Proposals (browsing
+            // them is how you navigate the 3D city), and the sidebar toggles themselves — the mobile
+            // hamburger lives inside #sidebar, and disabling it left no way to open the sidebar.
+            const keptSections = ['buildings', 'proposals']
+                .map(key => document.querySelector(`.accordion-section[data-section="${key}"]`))
+                .filter(Boolean);
             const interactive = sidebar.querySelectorAll('input, button, select, textarea');
             interactive.forEach(el => {
-                const inBuildings = buildingsSection && el.closest('.accordion-section') === buildingsSection;
-                if (!inBuildings) {
+                const kept = keptSections.includes(el.closest('.accordion-section'))
+                    || el.id === 'toggle-sidebar-mobile' || el.id === 'toggle-sidebar-desktop';
+                if (!kept) {
                     if (!el.disabled) el.setAttribute('data-three-disabled', '1');
                     el.disabled = true;
                 }
@@ -6016,8 +6022,13 @@
             const el = document.createElement('div');
             el.className = 'three-view-hint';
             el.setAttribute('role', 'status');
-            el.textContent = threeI18n('threeMode.hints.viewAngle',
-                'Press Ctrl (or Cmd) and drag to change the view angle');
+            // Touch: one finger pans, two fingers are DOLLY_ROTATE (three-snapshot-navigation.js),
+            // so moving two fingers together tilts/turns the view — there is no Ctrl to press.
+            const coarsePointer = typeof window.matchMedia === 'function'
+                && window.matchMedia('(pointer: coarse)').matches;
+            el.textContent = coarsePointer
+                ? threeI18n('threeMode.hints.viewAngleTouch', 'Drag with two fingers to change the view angle')
+                : threeI18n('threeMode.hints.viewAngle', 'Press Ctrl (or Cmd) and drag to change the view angle');
             host.appendChild(el);
             viewAngleHintHideTimer = setTimeout(hideViewAngleHint, VIEW_ANGLE_HINT_VISIBLE_MS);
         }, VIEW_ANGLE_HINT_DELAY_MS);

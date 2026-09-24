@@ -1041,7 +1041,7 @@ function formatStringUM(template, params = {}) {
 function translateUM(key, fallback, params = {}) {
     const api = getI18nApiUM();
     if (api && typeof api.t === 'function') {
-        return api.t(key, params);
+        { const translated = api.t(key, params); if (translated !== key) return translated; }
     }
     return formatStringUM(fallback, params);
 }

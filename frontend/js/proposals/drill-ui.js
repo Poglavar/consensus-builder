@@ -165,6 +165,7 @@
 
     let panelEl = null;
     let currentStack = [];
+    let currentSelectedRef = null;
     let repositionWired = false;
 
     function ensurePanel() {
@@ -387,7 +388,19 @@
 
         el.classList.add('visible');
         currentStack = stack;
+        currentSelectedRef = selectedRef;
         positionPanel();
+    }
+
+    // Labels are baked in at render time, so a language switch re-renders the open panel.
+    function rerenderForLanguage() {
+        if (panelEl && panelEl.classList.contains('visible') && currentStack.length) {
+            renderPanel(currentStack, currentSelectedRef);
+        }
+    }
+    if (typeof window !== 'undefined') {
+        if (window.i18n && typeof window.i18n.onChange === 'function') window.i18n.onChange(rerenderForLanguage);
+        if (typeof window.addEventListener === 'function') window.addEventListener('i18n:translationsLoaded', rerenderForLanguage);
     }
 
     function markSelected(entry) {

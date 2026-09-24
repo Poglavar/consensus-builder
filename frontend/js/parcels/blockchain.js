@@ -1,12 +1,15 @@
 (function (global) {
     'use strict';
 
+    // Public, keyless RPC defaults so read-only checks (parcel NFT status, lens) work on prod without
+    // any page-level override. Same endpoints as wallet-connection.js DEFAULT_RPC_MAP and
+    // chain-data-loader.js; CLAIM_RPC_URLS / PARCEL_NFT_RPC_URLS globals still take precedence.
     const PARCEL_CLAIM_RPC_FALLBACKS = {
         '1': null,
         '5': null,
-        '11155111': null,
-        '84532': null,
-        '8453': null,
+        '11155111': 'https://rpc.sepolia.org',
+        '84532': 'https://sepolia.base.org',
+        '8453': 'https://mainnet.base.org',
         // Provide a dev default for local hardhat/anvil
         '31337': 'http://127.0.0.1:8545'
     };

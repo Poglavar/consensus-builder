@@ -378,12 +378,10 @@
                 updateStatus(`Data source set to: ${newValue}. Cleared all local data.`);
             }
 
-            try {
-                if (typeof fetchParcelData === 'function') {
-                    fetchParcelData();
-                }
-            } catch (error) {
-                console.warn('Error fetching parcel data after data source switch', error);
+            // fetchParcelData is async: a try/catch here never saw its rejection. The reported
+            // wrapper puts the failure in the status bar and console instead.
+            if (typeof fetchParcelDataReported === 'function') {
+                fetchParcelDataReported(undefined, 'data source switch');
             }
         });
     }

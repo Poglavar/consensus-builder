@@ -1281,7 +1281,7 @@ function formatString(template, params = {}) {
 function translateText(key, fallback, params = {}) {
     const api = getI18nApi();
     if (api && typeof api.t === 'function') {
-        return api.t(key, params);
+        { const translated = api.t(key, params); if (translated !== key) return translated; }
     }
     return formatString(fallback, params);
 }

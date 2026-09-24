@@ -4864,9 +4864,15 @@ body.site-intro-open {
         display: contents;
     }
     
+    /* The container is the scroller here (~2500px of content), so the header — title and × —
+       sticks to its top instead of scrolling away and leaving only "Done" at the bottom. Above the
+       Leaflet map's panes/controls (z 400–1000), which share this stacking context. */
     #blockify-header {
         order: 1;
         flex: 0 0 auto;
+        position: sticky;
+        top: 0;
+        z-index: 1100;
     }
     
     /* The 2D map and 3D preview both capture touch (pan/zoom), so the page can only be scrolled by
@@ -4953,6 +4959,9 @@ body.site-intro-open {
     #single-building-header {
         order: 1;
         flex: 0 0 auto;
+        position: sticky; /* same as #blockify-header: × stays reachable while scrolling */
+        top: 0;
+        z-index: 1100;
     }
     
     #single-building-map-wrap {

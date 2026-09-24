@@ -210,7 +210,10 @@
         "logout": "Log Out",
         "unknown": "Unknown",
         "unknownOwner": "Unknown owner",
-        "userFallback": "User"
+        "userFallback": "User",
+        "close": "Close",
+        "cancel": "Cancel",
+        "download": "Download"
     },
     "proposals": {
         "contiguityDisabledReason": "Disabled because the parcels in the proposal are not contiguous",
@@ -228,6 +231,13 @@
             "closeLabel": "Close",
             "mapAriaLabel": "Designation map",
             "done": "Done"
+        },
+        "copy": {
+            "wrongCity": "This proposal was created in another city. Switch to that city, then try again.",
+            "parcelsUnavailable": "Could not load this proposal's cadastral ground. Try again once it is on the map."
+        },
+        "recovery": {
+            "offer": "Proposals you made {{when}} could not be saved, because the app was open in another tab at the time ({{count}}).\n\nRestore them now?"
         }
     },
     "wallet": {
@@ -265,7 +275,8 @@
                 "memory": "Create in memory",
                 "bodyConnected": "A wallet is connected. Use it to mint on-chain or create an in-memory proposal?"
             }
-        }
+        },
+        "selectNetwork": "Select network"
     },
     "cityToken": {
         "title": "City token",
@@ -866,7 +877,11 @@
                 "checking": "Checking NFT status...",
                 "missingIdentifier": "Parcel identifier unavailable.",
                 "chainSuffix": " ({{chain}})",
-                "tokenSuffix": " • Token {{token}}"
+                "tokenSuffix": " • Token {{token}}",
+                "checkFailedRetry": "Couldn't check NFT status on {{chain}}. Click to try again.",
+                "checkFailedRetryNoChain": "Couldn't check NFT status. Click to try again.",
+                "multiReady": "Ready to mint selected parcels. Mint will check on press.",
+                "viewOnExplorer": "View on explorer"
             },
             "dossier": {
                 "channel": {
@@ -884,7 +899,9 @@
                 "takes": "Takes {{area}} m² of this parcel → {{destination}}",
                 "remainder": "Proposed formations take {{taken}} m²; you keep {{kept}} m².",
                 "remainderSplit": "Proposed formations take {{taken}} m²; you keep {{kept}} m² in {{count}} separate pieces ({{pieces}} m²)."
-            }
+            },
+            "mintTooltip": "Mint the parcel NFT",
+            "closeAria": "Close parcel info panel"
         },
         "proposal": {
             "title": "Proposal Details",
@@ -941,7 +958,8 @@
                 "counterpropose": "Fork proposal",
                 "counterproposeHint": "Counterpropose by creating an editable copy. The proposal you are viewing stays unchanged.",
                 "forkChangedLand": "Fork with changed land",
-                "forkChangedLandHint": "Fork with changed land set: add or remove parcels on the map, then create the counterproposal. The proposal you are viewing stays unchanged."
+                "forkChangedLandHint": "Fork with changed land set: add or remove parcels on the map, then create the counterproposal. The proposal you are viewing stays unchanged.",
+                "apply_disabled_for_type": "Apply is disabled for this proposal type."
             },
             "expiry": {
                 "expired": "Proposal Expired",
@@ -954,7 +972,8 @@
                 "accept": "Accept",
                 "undo": "Undo",
                 "accepted": "Accepted",
-                "pending": "Pending"
+                "pending": "Pending",
+                "recipient": "recipient"
             },
             "voting": {
                 "voteYes": "Vote yes",
@@ -1023,6 +1042,8 @@
                 "oracleTitle": "Oracle recipe",
                 "oracleLoading": "Loading proposal-lifecycle-v1…",
                 "recipeLink": "Recipe declaration ↗",
+                "copyHash": "Copy hash",
+                "hashCopied": "Copied",
                 "eventLink": "Source event ↗",
                 "finalVerifier": "The Solana program remains the final verifier."
             },
@@ -1041,14 +1062,17 @@
                 "executed": "Executed",
                 "minted": "Minted",
                 "inMemory": "In-memory",
-                "acceptedNotFunded": "Accepted (Not funded)"
+                "acceptedNotFunded": "Accepted (Not funded)",
+                "viewOnExplorer": "View on explorer",
+                "mintedHint": "Minted on-chain"
             },
             "loading": "Loading proposal details...",
             "rendering": "Rendering proposal details...",
             "sections": {
                 "cadastralParcels": "Cadastral parcels:",
                 "generatedParcels": "Generated parcels:",
-                "proposalTypeFallback": "proposal"
+                "proposalTypeFallback": "proposal",
+                "ownershipStats": "Ownership & Acquisition Stats"
             },
             "parcels": {
                 "label": "Parcel {{id}}",
@@ -1091,6 +1115,19 @@
                 "dialogSame": "Same land as “{{name}}” — this is saved as a plain counterproposal.",
                 "dialogChanged": "Fork of “{{name}}” on different land",
                 "noLand": "This proposal has no parcel set to fork from."
+            },
+            "buy": {
+                "button": "Buy"
+            },
+            "stats": {
+                "individualOwners": "Individual Owners:",
+                "ownedByIndividuals": "Owned by Individuals:",
+                "ownedByCompanies": "Owned by Companies:",
+                "ownedByGovernment": "Owned by Government:",
+                "ownedByInstitution": "Owned by Institution:",
+                "ownershipMixed": "Ownership Mixed:",
+                "totalMarketPrice": "Total Market Price:",
+                "totalAcquiringDifficulty": "Total Acquiring Difficulty:"
             }
         },
         "block": {
@@ -1246,7 +1283,8 @@
             "ownerLabel": "Owner: {{owner}}",
             "explorer": "View on Explorer",
             "detailsButton": "Details",
-            "openFailed": "Unable to open proposal details."
+            "openFailed": "Unable to open proposal details.",
+            "authorLabel": "Author: {{author}}"
         },
         "track": {
             "speedPickerTitle": "Choose Track Speed",
@@ -1512,7 +1550,9 @@
             },
             "measuredAgainst": "Measured against",
             "measuredFallback": "nothing shown — measuring against GDI",
-            "lockedControl": "Not available while the cross-section is open — apply or cancel first"
+            "lockedControl": "Not available while the cross-section is open — apply or cancel first",
+            "ceilingOver": "Wider than fits here ({{max}} m) without a new demolition — open the Corridor tab to see how it could fit",
+            "ceilingTitle": "The widest this road fits here without a new demolition; it may need to be moved (see the Corridor tab)"
         },
         "corridorDraft": {
             "title": "Unsaved drawing draft",
@@ -1693,7 +1733,24 @@
                         "parcel": "Parcel proposals",
                         "other": "Other"
                     },
-                    "toggle": "Filters"
+                    "toggle": "Filters",
+                    "goal": "Goal",
+                    "goals": {
+                        "all": "All goals",
+                        "station": "Transit station",
+                        "roadTrack": "Road/Track",
+                        "road-track": "Road/Track",
+                        "buildings": "Buildings",
+                        "single": "Single building",
+                        "park": "Park",
+                        "square": "Square",
+                        "lake": "Lake",
+                        "urbanRule": "Urban rule",
+                        "urban-rule": "Urban rule",
+                        "reparcellization": "Reparcellization",
+                        "row": "Row",
+                        "other": "Other"
+                    }
                 },
                 "resultCountWord": "shown",
                 "sources": {
@@ -1801,7 +1858,9 @@
                     "cumulative": "Cumulative to {year}.",
                     "toApply": "to apply: {n}",
                     "toUnapply": "to remove: {n}"
-                }
+                },
+                "syncBlockchain": "Refresh from blockchain",
+                "syncBlockchainNoWallet": "Connect a wallet to sync from the blockchain"
             },
             "proposalChoice": {
                 "title": "Choose Proposal",
@@ -2015,6 +2074,7 @@
                     "applyRemaining": "Apply remaining",
                     "replacedConflicting": "Replaced {{count}} proposal(s) on the same parcels: {{list}}",
                     "notFoundOnServer": "Not found on server",
+                    "recordOutdated": "This proposal was made with an older version of the site and can no longer be opened.",
                     "partiallyAppliedTitle": "Partially Applied",
                     "partiallyAppliedMessage": "{{applied}} of {{total}} proposals in this plan are already applied. Would you like to add the remaining {{remaining}}?",
                     "continueAdding": "Continue adding",
@@ -2066,7 +2126,8 @@
                 "checkingProposals": "Checking {{done}}/{{total}} proposals on the server...",
                 "listingProposals": "Listing {{done}}/{{total}} proposals...",
                 "drawingProposals": "Drawing {{done}}/{{total}} proposals on the map...",
-                "preparingPlan": "Preparing plan..."
+                "preparingPlan": "Preparing plan...",
+                "uploadExplainer": "To share a proposal with others, you first need to upload it to the server"
             },
             "sharedInspector": {
                 "author": "Author:",
@@ -2190,7 +2251,8 @@
                     "submitted": "✔️ geometry submitted",
                     "auto": "Algorithmic geometry will be generated",
                     "copied": "Geometry copied from \"{name}\"",
-                    "copiedEditable": "Geometry copied from \"{name}\" — press Edit to adjust it"
+                    "copiedEditable": "Geometry copied from \"{name}\" — press Edit to adjust it",
+                    "drawing": "Geometry created by drawing"
                 }
             },
             "reparcellization": {
@@ -2296,7 +2358,10 @@
                 "offchain": "Off-chain (this browser only)",
                 "mintsOn": "Mints on",
                 "noWalletTooltip": "No wallet connected; the proposal stays in this browser."
-            }
+            },
+            "proposal_type_no_longer_available": "Merge / Decide Later is no longer available. Use Land readjustment.",
+            "titleLake": "Create Lake Proposal",
+            "typeLake": "Lake"
         },
         "unapplyTour": {
             "titleUnapply": "Un-apply “{{title}}”",
@@ -2319,6 +2384,11 @@
             "titleReform": "Re-forming “{{title}}”",
             "messageReform": "Saving this layout changes the shape of plots that other proposals already stand on. Those proposals will be un-applied — plots you did not change keep theirs. Click an item to see it.",
             "confirmReform": "Un-apply and save"
+        },
+        "common": {
+            "close": "Close",
+            "cancel": "Cancel",
+            "ok": "OK"
         }
     },
     "blockify": {
@@ -2536,7 +2606,8 @@
                 "excludedBelowMinPlot": "Smaller than the minimum plot size — it has to be merged with a neighbour before anything can be built here.",
                 "excludedNoRoom": "The setback leaves no room to build on this plot.",
                 "excludedCannotMeet": "Too small to meet the minimum this rule compels — the rule contradicts itself here."
-            }
+            },
+            "generatedSummaryExcluded": "Generated {{count}} building(s) · {{excluded}} parcel(s) excluded by the rule"
         }
     },
     "reparcellization": {
@@ -2776,6 +2847,7 @@
             },
             "fetching_data": "Fetching data...",
             "fetching_government_road_plan": "Fetching government road plan...",
+            "zoom_in_to_see_government_road_plan": "Zoom in to see the government road plan.",
             "preparing_government_plan_summary": {
                 "one": "Preparing government plan{{descriptor}}: {{count}} plan point…",
                 "few": "Preparing government plan{{descriptor}}: {{count}} plan points…",
@@ -2964,7 +3036,12 @@
             "using_cached_osm_road_data": "Using cached OSM road data",
             "waiting_for_parcel_merge_to_complete_before_applying_the_government_road_plan": "Waiting for parcel merge to complete before applying the government road plan…",
             "parcel_data_still_merging_before_government_plan": "Parcel data is still merging. We will apply the government road plan as soon as the map finishes updating.",
-            "zoom_in_further_to_apply_the_government_road_plan": "Zoom in further to apply the government road plan."
+            "zoom_in_further_to_apply_the_government_road_plan": "Zoom in further to apply the government road plan.",
+            "saved_reparcellization_layout_to_the_proposal": "Saved reparcellization layout for this proposal.",
+            "loaded_cadastral_parcels": {
+                "one": "Loaded {{count}} cadastral parcel.",
+                "other": "Loaded {{count}} cadastral parcels."
+            }
         }
     },
     "city": {
@@ -3069,7 +3146,9 @@
             "block_seed_unresolved": "Could not read the selected parcel’s id, so there is nothing to grow a block from.",
             "block_multiselect_unavailable": "Multi-select is unavailable, and a block is delivered as a multi-parcel selection.",
             "block_multiselect_off": "Multi-select could not be turned on, and a block is delivered as a multi-parcel selection.",
-            "activity_no_parcel_set": "This proposal has no canonical parcel set loaded."
+            "activity_no_parcel_set": "This proposal has no canonical parcel set loaded.",
+            "blockchain_mint_wallet_prompt": "Blockchain minting is available but no wallet is connected. Would you like to connect a wallet to mint this proposal on-chain?",
+            "failed_to_create_proposal": "Failed to create proposal."
         }
     },
     "gameDialogs": {
@@ -3322,7 +3401,8 @@
             "note": "You are viewing the real 3D scene this AI image was made from."
         },
         "hints": {
-            "viewAngle": "Press Ctrl (or Cmd) and drag to change the view angle"
+            "viewAngle": "Press Ctrl (or Cmd) and drag to change the view angle",
+            "viewAngleTouch": "Drag with two fingers to change the view angle"
         }
     },
     "structureEditor": {

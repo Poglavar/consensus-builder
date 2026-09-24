@@ -164,7 +164,7 @@
 
     function t(key, fallback, params = {}) {
         if (i18nApi && typeof i18nApi.t === 'function') {
-            return i18nApi.t(key, params);
+            { const translated = i18nApi.t(key, params); if (translated !== key) return translated; }
         }
         return formatTemplate(fallback || '', params);
     }

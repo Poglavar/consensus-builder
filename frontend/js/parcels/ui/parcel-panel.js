@@ -102,6 +102,13 @@
                 hideParcelInfoPanel();
             });
             closeButton.dataset.parcelPanelBound = 'true';
+            // index.html ships an English aria-label; hand it to the i18n attribute pass so every
+            // later language change re-translates it too.
+            closeButton.setAttribute('data-i18n-key', 'panel.parcel.closeAria');
+            closeButton.setAttribute('data-i18n-attr', 'aria-label,title');
+            if (global.i18n && typeof global.i18n.applyTranslations === 'function') {
+                global.i18n.applyTranslations(closeButton);
+            }
         }
 
         const minimizeButton = panel.querySelector('#parcel-info-minimize');
@@ -511,7 +518,7 @@
 
                 const proposalTypeKey = (typeof global.getProposalDisplayType === 'function') ? global.getProposalDisplayType(proposal) : (goalKey || 'other');
                 const proposalTypeLabel = tParcel(
-                    `modal.roadProposal.proposalList.typeLabels.${proposalTypeKey}`,
+                    `modal.roadWidth.proposalList.typeLabels.${proposalTypeKey}`,
                     {},
                     typeof global.formatProposalTypeLabel === 'function' ? global.formatProposalTypeLabel(proposalTypeKey) : (proposalTypeKey || proposalFallbackTitle)
                 );

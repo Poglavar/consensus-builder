@@ -1537,6 +1537,20 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
 // other city, or the user chose to stay and the route was dropped. Never blocks on legacy proposals
 // that predate the `city` stamp, nor on a server that cannot be reached — those fall through to the
 // existing behaviour rather than stranding the user on a dialog.
+// The reason shown in the plan result for a proposal the server refused. A record the server can no
+// longer read (422 `proposal-record-invalid`) gets a plain-language sentence; which field made it
+// unreadable is for the console only, never the visitor.
+function describeSharedProposalFetchFailure(id, payload) {
+    const technical = String((payload && (payload.detail || payload.error)) || '');
+    if (payload && payload.code === 'proposal-record-invalid') {
+        console.warn(`[shared-plan] proposal ${id} is unreadable on the server:`, technical);
+        const tShare = getShareI18nHelper();
+        return tShare('plan.recordOutdated',
+            'This proposal was made with an older version of the site and can no longer be opened.');
+    }
+    return technical;
+}
+
 async function fetchSharedProposalBatch(ids, backendBase) {
     const requested = Array.from(new Set((Array.isArray(ids) ? ids : [])
         .map(id => String(id || '').trim()).filter(Boolean)));
@@ -1563,7 +1577,8 @@ async function fetchSharedProposalBatch(ids, backendBase) {
             if (item.proposal) records.set(id, item.proposal);
             else {
                 missing.add(id);
-                if (item.error) errors.set(id, String(item.error));
+                const reason = describeSharedProposalFetchFailure(id, item);
+                if (reason) errors.set(id, reason);
             }
         });
         return { records, missing, errors, supported: requested.every(id => seen.has(id)), requests: 1 };
@@ -2135,7 +2150,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                             reason = tShare('plan.notFoundOnServer', 'Not found on server');
                         } else {
                             let serverMessage = '';
-                            try { serverMessage = String((await response.json())?.error || ''); } catch (_) { serverMessage = ''; }
+                            try { serverMessage = describeSharedProposalFetchFailure(id, await response.json()); } catch (_) { serverMessage = ''; }
                             reason = serverMessage
                                 || `HTTP ${response.status}${response.statusText ? ` ${response.statusText}` : ''}`.trim();
                         }

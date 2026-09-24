@@ -1757,6 +1757,7 @@
             'js/polygon-geometry-editor.js',
             'js/building-density-stats.js',
             'js/blockify-map-fit.js',
+            'js/design-change-tracker.js',
             'js/ineligible-block-parts.js',
             'js/building-blocks.js',
             'js/single-building-geometry.js',
@@ -1764,6 +1765,7 @@
             'js/building-upload.js',
             'js/row-house.js',
             'js/parcel-based.js',
+            'js/view-bbox-limit.js',
             'js/government-roads.js?v=20260404b'
         ]);
     </script>
@@ -1795,8 +1797,9 @@
             let promise = null;
             return function ensure3DModeStack() {
                 if (!promise) {
+                    var failedPaths = [];
                     promise = window.whenThreeReady().then((threeOk) => new Promise((resolve) => {
-                        if (!threeOk) { resolve(false); return; }
+                        if (!threeOk) { failedPaths.push('three (ESM import)'); resolve(false); return; }
                         var paths = [
                             'js/building-height.js',
                             'js/proposals/gain.js',
@@ -1815,15 +1818,20 @@
                             'js/photoreal-ground.js',
                             'js/photoreal-seam.js',
                             'js/photoreal-protect.js',
+                            'js/photoreal-attribution.js',
                             'js/photoreal-mode.js',
                             'js/ai-scene-frustum.js',
                             'js/ai-scene.js',
                             'js/ai-scene-follow.js'
                         ];
                         var remaining = paths.length;
+                        // A script that fails to load must not count as loaded: model/photo
+                        // modes would then start against missing globals and fail later, far
+                        // from the cause. Any failure resolves the whole stack false.
                         var done = function () {
                             remaining -= 1;
                             if (remaining > 0) return;
+                            if (failedPaths.length) { resolve(false); return; }
                             window.__threeModeStackReady = true;
                             resolve(true);
                         };
@@ -1832,10 +1840,21 @@
                             tag.src = appendBuildToken(path);
                             tag.async = false;
                             tag.onload = done;
-                            tag.onerror = done;
+                            tag.onerror = function () { failedPaths.push(path); done(); };
                             document.head.appendChild(tag);
                         });
-                    }));
+                    })).then(function (ok) {
+                        // Reported here, once, so every caller (mode buttons, URL entry,
+                        // proposals/core.js) surfaces the same message. Not retried: the
+                        // scripts that did load cannot be re-evaluated safely; a reload can.
+                        if (!ok) {
+                            console.error('[' + new Date().toISOString() + '] [3D] 3D view failed to load; failed: ' + failedPaths.join(', '));
+                            if (typeof window.updateStatus === 'function') {
+                                window.updateStatus('3D view failed to load. Reload the page to try again.');
+                            }
+                        }
+                        return ok;
+                    });
                 }
                 return promise;
             };

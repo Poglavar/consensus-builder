@@ -156,3 +156,42 @@ body.realistic-mode-active #mode-walk-toggle {
     from { opacity: 0; transform: translate(-50%, 6px); }
     to { opacity: 1; transform: translate(-50%, 0); }
 }
+
+/* Google Photorealistic 3D Tiles attribution (Map Tiles API policy): the Google logo plus the
+   per-tile data copyrights, bottom-right just above the Leaflet attribution line (the lower-left
+   holds the mode buttons, scale bar and status line). Text wraps rather than truncates — every
+   credit must stay readable. */
+#three-container .photoreal-attribution {
+    position: absolute;
+    right: 4px;
+    bottom: 22px;
+    z-index: 6;
+    display: none;
+    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 6px;
+    max-width: min(560px, calc(100% - 12px));
+    pointer-events: none;
+}
+#three-container .photoreal-attribution.visible {
+    display: flex;
+}
+#three-container .photoreal-attribution-logo {
+    flex: 0 0 auto;
+    width: 66px;
+    height: 26px;
+    color: #fff;
+    font: 700 14px/26px system-ui, sans-serif; /* alt-text fallback if the logo can't load */
+}
+#three-container .photoreal-attribution-text {
+    min-width: 0;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.45);
+    color: #fff;
+    font: 500 10px/1.3 system-ui, sans-serif;
+    overflow-wrap: anywhere;
+}
+#three-container .photoreal-attribution-text:empty {
+    display: none;
+}

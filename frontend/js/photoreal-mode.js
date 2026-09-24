@@ -116,6 +116,12 @@
     let fpsEl = null;
     let seatDebugEl = null;
     let coverEl = null; // opaque loading cover hiding the abstract 3D during a URL-driven rw entry
+    // Google logo + aggregated per-tile copyrights (Map Tiles API policy: on screen while tiles show).
+    let attributionEl = null;
+    let attributionTextEl = null;
+    let attributionDirty = false;
+    let attributionLastMs = 0;
+    const ATTRIBUTION_REFRESH_MS = 1000; // tile visibility churns per frame while streaming
     let fpsFrames = 0;
     let fpsSinceS = 0;
     const loadedTileScenes = new Set();
@@ -212,11 +218,47 @@
         if (active && loading !== show) setPhotorealLoading(show);
     }
 
+    // Built once per entry; later refreshes only touch the text node, and only when it changed.
+    function ensureAttributionEl() {
+        const host = containerEl();
+        if (!host) return null;
+        if (!attributionEl) {
+            attributionEl = document.createElement('div');
+            attributionEl.className = 'photoreal-attribution';
+            const logo = document.createElement('img');
+            logo.className = 'photoreal-attribution-logo';
+            logo.src = 'https://maps.gstatic.com/mapfiles/api-3/images/google_white5_hdpi.png';
+            logo.alt = 'Google';
+            logo.width = 66;
+            logo.height = 26;
+            attributionTextEl = document.createElement('span');
+            attributionTextEl.className = 'photoreal-attribution-text';
+            attributionEl.appendChild(logo);
+            attributionEl.appendChild(attributionTextEl);
+            host.appendChild(attributionEl);
+        }
+        return attributionEl;
+    }
+
+    function refreshAttribution(nowMs) {
+        attributionDirty = false;
+        attributionLastMs = nowMs;
+        const el = ensureAttributionEl();
+        if (!el || !tiles) return;
+        const helper = window.PhotorealAttribution;
+        if (!helper) throw new Error('photoreal-attribution.js is not loaded; cannot show Google attribution.');
+        const text = helper.attributionText(tiles.getAttributions());
+        if (attributionTextEl.textContent !== text) attributionTextEl.textContent = text;
+        const show = !!(tiles.group && tiles.group.visible) && tiles.visibleTiles && tiles.visibleTiles.size > 0;
+        if (el.classList.contains('visible') !== show) el.classList.toggle('visible', show);
+    }
+
     function removeUiElements() {
-        [statusEl, loaderEl, fpsEl, seatDebugEl, coverEl].forEach(function (el) {
+        [statusEl, loaderEl, fpsEl, seatDebugEl, coverEl, attributionEl].forEach(function (el) {
             if (el) { try { el.remove(); } catch (_) { } }
         });
         statusEl = loaderEl = loaderTextEl = fpsEl = seatDebugEl = coverEl = null;
+        attributionEl = attributionTextEl = null;
     }
 
     // ---- seating (port of the sim's lockTrackHeightOnce) ----
@@ -2053,6 +2095,7 @@
     }
 
     function onTileVisibilityChange(ev) {
+        attributionDirty = true; // copyrights follow the visible tile set; refreshed throttled in onFrame
         if (!ev || !ev.visible || !ev.scene || !grounded) return;
         scheduleTileSeamCaps(ev.scene);
         scheduleSettledTerrainRefresh('tile-became-visible');
@@ -2206,6 +2249,9 @@
             }
         }
         if (grounded && coverEl) hideCover(); // composed scene is up — drop the loading cover
+        if ((attributionDirty || !attributionEl) && now - attributionLastMs >= ATTRIBUTION_REFRESH_MS) {
+            refreshAttribution(now);
+        }
         if (fpsEl) {
             fpsFrames += 1;
             fpsSinceS += dtS;
@@ -2243,10 +2289,19 @@
             internals = (typeof window.getThreeModeInternals === 'function') ? window.getThreeModeInternals() : null;
             if (!internals) {
                 // 3D mode may still be booting (URL-driven entry): wait for its ready signal.
-                await new Promise(function (resolve) {
-                    const onReady = function () { window.removeEventListener('threeModeReady', onReady); resolve(); };
+                // The timeout is a loud failure, never a stand-in for "ready".
+                await new Promise(function (resolve, reject) {
+                    let timer = null;
+                    const onReady = function () {
+                        window.removeEventListener('threeModeReady', onReady);
+                        clearTimeout(timer);
+                        resolve();
+                    };
                     window.addEventListener('threeModeReady', onReady);
-                    setTimeout(function () { window.removeEventListener('threeModeReady', onReady); resolve(); }, 15000);
+                    timer = setTimeout(function () {
+                        window.removeEventListener('threeModeReady', onReady);
+                        reject(new Error('3D mode did not signal threeModeReady within 15 s'));
+                    }, 15000);
                 });
                 internals = (typeof window.getThreeModeInternals === 'function') ? window.getThreeModeInternals() : null;
             }
@@ -2533,6 +2588,7 @@
         setBuiltVisible: function (v) {
             builtVisible = !!v;
             if (tiles && grounded) tiles.group.visible = builtVisible;
+            attributionDirty = true; // the credit follows the mesh on and off
         },
         // Whether proposed-building footprints join the carve (roads/parks/demolitions always do).
         setCarveProposedBuildings: function (v) {

@@ -1561,6 +1561,22 @@ function bindProposalSupportWalletRefresh() {
     ['connect', 'disconnect', 'accountsChanged'].forEach(event => window.solanaWalletManager.on(event, refresh));
 }
 
+// The panel's buttons and labels are rendered once through tProposal(); re-render the open panel
+// when the language changes so nothing stays in the previous language.
+function rerenderProposalDetailsForLanguage() {
+    const panel = document.getElementById('proposal-details-panel');
+    const content = document.getElementById('proposal-details-content');
+    if (!panel?.classList.contains('visible') || !currentProposalDetailsContext) return;
+    showProposalInfo(currentProposalDetailsContext, null, { scrollTop: content?.scrollTop || 0 });
+}
+
+if (typeof window !== 'undefined') {
+    if (window.i18n && typeof window.i18n.onChange === 'function') {
+        window.i18n.onChange(rerenderProposalDetailsForLanguage);
+    }
+    window.addEventListener('i18n:translationsLoaded', rerenderProposalDetailsForLanguage);
+}
+
 function resolveProposalForBoost(idOrHash) {
     if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.findProposalByIdOrHash === 'function') {
         const found = proposalStorage.findProposalByIdOrHash(idOrHash);
@@ -1696,6 +1712,41 @@ function hydrateProposalMarketCard(proposalAccount, lifecycle) {
         });
 }
 
+// Oracle text carries 64-hex sha256 digests that can't wrap; render each as an ellipsized chip
+// (full value in the title) with a copy button, so the card never overflows.
+const PROPOSAL_HASH_PATTERN = /((?:sha256:)?[0-9a-f]{32,})/i;
+
+function renderProposalOracleText(node, text, t) {
+    node.replaceChildren();
+    String(text || '').split(PROPOSAL_HASH_PATTERN).forEach((part, index) => {
+        if (!part) return;
+        if (index % 2 === 0) { node.append(document.createTextNode(part)); return; }
+        const chip = document.createElement('span');
+        chip.className = 'proposal-hash-chip';
+        const code = document.createElement('code');
+        code.textContent = part;
+        code.title = part;
+        const copy = document.createElement('button');
+        copy.type = 'button';
+        copy.className = 'proposal-hash-copy';
+        const copyLabel = t('panel.proposal.market.copyHash', 'Copy hash');
+        copy.title = copyLabel;
+        copy.setAttribute('aria-label', copyLabel);
+        copy.innerHTML = '<i class="fas fa-copy" aria-hidden="true"></i>';
+        copy.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(part);
+                copy.title = t('panel.proposal.market.hashCopied', 'Copied');
+                copy.classList.add('is-copied');
+            } catch (error) {
+                console.error(`[${new Date().toISOString()}] [oracle] copy hash failed:`, error);
+            }
+        });
+        chip.append(code, copy);
+        node.append(chip);
+    });
+}
+
 async function hydrateProposalMarketOracle(card, proposalAccount, marketAccount) {
     const state = card?.querySelector('[data-market="oracle-state"]');
     const recipeLink = card?.querySelector('[data-market="recipe-link"]');
@@ -1715,7 +1766,7 @@ async function hydrateProposalMarketOracle(card, proposalAccount, marketAccount)
         const [{ recipe }, eventPayload] = await Promise.all([recipeResponse.json(), eventResponse.json()]);
         const event = Array.isArray(eventPayload.events) ? eventPayload.events[0] || null : null;
         const model = window.ProposalMarketView.oracleEvidence(recipe, event);
-        state.textContent = `${model.label}. ${model.detail}`;
+        renderProposalOracleText(state, `${model.label}. ${model.detail}`, t);
         card.dataset.oracleTone = model.tone;
         const eventUrl = event?.source?.transactionUrl || event?.source?.url || null;
         if (eventLink && eventUrl) { eventLink.href = eventUrl; eventLink.hidden = false; }

@@ -21,7 +21,7 @@
     function translateParcelText(key, fallback, params = {}) {
         const api = (typeof global !== 'undefined' && global.i18n) ? global.i18n : null;
         if (api && typeof api.t === 'function') {
-            return api.t(key, params);
+            { const translated = api.t(key, params); if (translated !== key) return translated; }
         }
         return formatParcelText(fallback, params);
     }

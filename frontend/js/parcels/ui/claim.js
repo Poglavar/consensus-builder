@@ -9,7 +9,7 @@
             const api = global.i18n;
             if (api && typeof api.t === 'function') {
                 const translated = api.t(key, params || {});
-                if (translated !== undefined && translated !== null) {
+                if (translated !== undefined && translated !== null && translated !== key) {
                     return translated;
                 }
             }
@@ -261,9 +261,18 @@
         }
         // Always use the chain if we have it - we attempted to check on this chain
         const chainParam = cachedChain ? { chain: cachedChain } : {};
-        const retryMessage = cachedChain
-            ? tParcel('panel.parcel.nft.notFoundRetry', chainParam, 'NFT not found. Click to check again.')
-            : tParcel('panel.parcel.nft.statusUnknown', {}, 'NFT status: Not checked yet.');
+        // "Not found" is only said when the chain answered that the parcel has no token. When the
+        // check itself could not run (no RPC, RPC down, wrong contract), say so — never imply absence.
+        let retryMessage;
+        if (state === 'error') {
+            retryMessage = cachedChain
+                ? tParcel('panel.parcel.nft.checkFailedRetry', chainParam, `Couldn't check NFT status on ${cachedChain}. Click to try again.`)
+                : tParcel('panel.parcel.nft.checkFailedRetryNoChain', {}, "Couldn't check NFT status. Click to try again.");
+        } else {
+            retryMessage = cachedChain
+                ? tParcel('panel.parcel.nft.notFoundRetry', chainParam, 'NFT not found. Click to check again.')
+                : tParcel('panel.parcel.nft.statusUnknown', {}, 'NFT status: Not checked yet.');
+        }
         const retryTooltip = tParcel('panel.parcel.nft.retryTooltip', {}, 'Click to check NFT status again');
         const resolvedMessage = message || tParcel('panel.parcel.nft.statusUnknown', {}, 'NFT status: Not checked yet.');
 
@@ -360,7 +369,7 @@
                     link.target = '_blank';
                     link.rel = 'noopener noreferrer';
                     link.textContent = messageText;
-                    link.title = 'View on explorer';
+                    link.title = tParcel('panel.parcel.nft.viewOnExplorer', {}, 'View on explorer');
                     messageContent = link;
                 }
             }
@@ -442,7 +451,10 @@
 
         const isMultiActive = global.multiParcelSelection && global.multiParcelSelection.isActive;
         if (isMultiActive) {
-            setParcelMintStatusIndicator('Ready to mint selected parcels. Mint will check on press.', 'neutral');
+            setParcelMintStatusIndicator(
+                tParcel('panel.parcel.nft.multiReady', {}, 'Ready to mint selected parcels. Mint will check on press.'),
+                'neutral'
+            );
             return null;
         }
 
@@ -1024,11 +1036,10 @@
         } catch (error) {
             const isExpectedMissing = isParcelTokenMissingError(error)
                 || (error && typeof error.message === 'string' && /ParcelNFT:\s*Parcel does not exist/i.test(error.message));
+            // Only the contract's own "Parcel does not exist" revert proves absence. A network error,
+            // timeout or unrelated revert means the check did not run — surface it as an error.
             if (!isExpectedMissing) {
-                console.info('Parcel token lookup reverted; treating as not minted.', {
-                    parcelId,
-                    error
-                });
+                throw error;
             }
             const sentinel = new Error('TOKEN_NOT_MINTED');
             sentinel.cause = error;
@@ -2276,6 +2287,47 @@
         anchor.click();
         global.document.body.removeChild(anchor);
     });
+
+    // index.html's Tools-tab buttons translate their text through data-i18n-key, but their tooltips
+    // are plain title attributes; set those here, and re-render the status line (its text is set from
+    // JS without a data-i18n-key) whenever the language changes.
+    function localizeToolsTab() {
+        const doc = global.document;
+        if (!doc) return;
+        const titles = [
+            ['mintAndClaimButton', 'panel.parcel.mintTooltip', 'Mint the parcel NFT'],
+            ['claimButton', 'panel.parcel.claimExistingTooltip', 'Claim existing parcel NFT'],
+            ['parcelBuilderButton', 'panel.parcel.builderTooltip', 'Open Parcel Builder']
+        ];
+        titles.forEach(([id, key, fallback]) => {
+            const el = doc.getElementById(id);
+            if (el) el.title = tParcel(key, {}, fallback);
+        });
+    }
+
+    function handleToolsTabLanguageChange() {
+        localizeToolsTab();
+        const toolsTab = global.document ? global.document.getElementById('tools-tab') : null;
+        if (toolsTab && toolsTab.classList.contains('active')) {
+            triggerParcelToolsTabActivated(false);
+        } else if (!currentParcelMintStatusCache && !currentParcelMintStatusPromise) {
+            resetParcelMintStatusState();
+        }
+    }
+
+    if (global.i18n && typeof global.i18n.onChange === 'function') {
+        global.i18n.onChange(handleToolsTabLanguageChange);
+    }
+    if (typeof global.addEventListener === 'function') {
+        global.addEventListener('i18n:translationsLoaded', handleToolsTabLanguageChange);
+    }
+    if (global.document && typeof global.document.addEventListener === 'function') {
+        if (global.document.readyState === 'loading') {
+            global.document.addEventListener('DOMContentLoaded', localizeToolsTab);
+        } else {
+            localizeToolsTab();
+        }
+    }
 
     global.ParcelsUIClaim = {
         getParcelMintStatusElement,

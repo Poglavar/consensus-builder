@@ -210,7 +210,10 @@
         "logout": "Cerrar sesión",
         "unknown": "Desconocido",
         "unknownOwner": "Propietario desconocido",
-        "userFallback": "Usuario"
+        "userFallback": "Usuario",
+        "close": "Cerrar",
+        "cancel": "Cancelar",
+        "download": "Descargar"
     },
     "proposals": {
         "contiguityDisabledReason": "Deshabilitado porque las parcelas de la propuesta no son contiguas",
@@ -228,6 +231,13 @@
             "closeLabel": "Cerrar",
             "mapAriaLabel": "Mapa de designación",
             "done": "Listo"
+        },
+        "copy": {
+            "wrongCity": "Esta propuesta se creó en otra ciudad. Cambia a esa ciudad e inténtalo de nuevo.",
+            "parcelsUnavailable": "No se pudo cargar el terreno catastral de esta propuesta. Inténtalo de nuevo cuando esté en el mapa."
+        },
+        "recovery": {
+            "offer": "Las propuestas que hiciste {{when}} no se pudieron guardar porque la aplicación estaba abierta en otra pestaña ({{count}}).\n\n¿Restaurarlas ahora?"
         }
     },
     "wallet": {
@@ -265,7 +275,8 @@
                 "title": "Elige cómo crear",
                 "useConnected": "Usar billetera conectada"
             }
-        }
+        },
+        "selectNetwork": "Seleccionar red"
     },
     "cityToken": {
         "title": "Token de la ciudad",
@@ -913,7 +924,11 @@
                 "checking": "Comprobando estado NFT...",
                 "missingIdentifier": "Identificador de parcela no disponible.",
                 "chainSuffix": " ({{chain}})",
-                "tokenSuffix": " • Token {{token}}"
+                "tokenSuffix": " • Token {{token}}",
+                "checkFailedRetry": "No se pudo comprobar el estado del NFT en {{chain}}. Haz clic para reintentar.",
+                "checkFailedRetryNoChain": "No se pudo comprobar el estado del NFT. Haz clic para reintentar.",
+                "multiReady": "Parcelas seleccionadas listas para acuñar. El estado se comprueba al acuñar.",
+                "viewOnExplorer": "Ver en el explorador"
             },
             "dossier": {
                 "channel": {
@@ -931,7 +946,9 @@
                 "takes": "Toma {{area}} m² de esta parcela → {{destination}}",
                 "remainder": "Las formaciones propuestas toman {{taken}} m²; usted conserva {{kept}} m².",
                 "remainderSplit": "Las formaciones propuestas toman {{taken}} m²; usted conserva {{kept}} m² en {{count}} piezas separadas ({{pieces}} m²)."
-            }
+            },
+            "mintTooltip": "Acuñar el NFT de la parcela",
+            "closeAria": "Cerrar el panel de información de la parcela"
         },
         "proposal": {
             "title": "Detalles de la propuesta",
@@ -988,7 +1005,8 @@
                 "counterpropose": "Duplicar propuesta",
                 "counterproposeHint": "Crea una contrapropuesta como copia editable. La propuesta que estás viendo no cambia.",
                 "forkChangedLand": "Duplicar con otro terreno",
-                "forkChangedLandHint": "Duplicar con otro conjunto de parcelas: añade o quita parcelas en el mapa y luego crea la contrapropuesta. La propuesta que estás viendo no cambia."
+                "forkChangedLandHint": "Duplicar con otro conjunto de parcelas: añade o quita parcelas en el mapa y luego crea la contrapropuesta. La propuesta que estás viendo no cambia.",
+                "apply_disabled_for_type": "Aplicar está desactivado para este tipo de propuesta."
             },
             "expiry": {
                 "expired": "Propuesta caducada",
@@ -1001,7 +1019,8 @@
                 "accept": "Aceptar",
                 "undo": "Deshacer",
                 "accepted": "Aceptada",
-                "pending": "Pendiente"
+                "pending": "Pendiente",
+                "recipient": "destinatario"
             },
             "voting": {
                 "voteYes": "Votar sí",
@@ -1045,12 +1064,24 @@
                 "summary": "USDC aportados:",
                 "loading": "Cargando…",
                 "none": "0 USDC · aún sin aportantes",
-                "unavailable": "No disponible"
+                "unavailable": "No disponible",
+                "onchain": "Apoyo en la cadena",
+                "donations": "Donaciones",
+                "pledges": "Compromisos",
+                "connect": "Conecta una billetera de Solana para ver tu apoyo.",
+                "proposalExplorer": "Cuenta de la propuesta",
+                "programExplorer": "Programa de financiación",
+                "donationMeaningTitle": "Donación",
+                "donationMeaning": "mueve USDC a un depósito en garantía ahora; es reembolsable si la propuesta se cancela o vence.",
+                "pledgeMeaningTitle": "Compromiso",
+                "pledgeMeaning": "es un compromiso público revocable; no se mueve USDC hasta que lo cumplas tras la ejecución."
             },
             "market": {
                 "oracleTitle": "Receta del oráculo",
                 "oracleLoading": "Cargando proposal-lifecycle-v1…",
                 "recipeLink": "Declaración de la receta ↗",
+                "copyHash": "Copiar hash",
+                "hashCopied": "Copiado",
                 "eventLink": "Evento fuente ↗",
                 "finalVerifier": "El programa de Solana sigue siendo el verificador final."
             },
@@ -1069,14 +1100,17 @@
                 "executed": "Ejecutada",
                 "minted": "Acuñada",
                 "inMemory": "En memoria",
-                "acceptedNotFunded": "Aceptada (Sin fondos)"
+                "acceptedNotFunded": "Aceptada (Sin fondos)",
+                "viewOnExplorer": "Ver en el explorador",
+                "mintedHint": "Acuñada en la cadena"
             },
             "loading": "Cargando detalles de la propuesta...",
             "rendering": "Renderizando detalles de la propuesta...",
             "sections": {
                 "cadastralParcels": "Parcelas catastrales:",
                 "generatedParcels": "Parcelas generadas:",
-                "proposalTypeFallback": "propuesta"
+                "proposalTypeFallback": "propuesta",
+                "ownershipStats": "Estadísticas de propiedad y adquisición"
             },
             "parcels": {
                 "label": "Parcela {{id}}",
@@ -1119,6 +1153,28 @@
                 "dialogSame": "Mismo terreno que «{{name}}»: se guarda como contrapropuesta normal.",
                 "dialogChanged": "Duplicado de «{{name}}» en otro terreno",
                 "noLand": "Esta propuesta no tiene un conjunto de parcelas del que duplicar."
+            },
+            "buy": {
+                "button": "Comprar"
+            },
+            "stats": {
+                "individualOwners": "Propietarios individuales:",
+                "ownedByIndividuals": "Propiedad de particulares:",
+                "ownedByCompanies": "Propiedad de empresas:",
+                "ownedByGovernment": "Propiedad del Estado:",
+                "ownedByInstitution": "Propiedad de instituciones:",
+                "ownershipMixed": "Propiedad mixta:",
+                "totalMarketPrice": "Precio de mercado total:",
+                "totalAcquiringDifficulty": "Dificultad total de adquisición:"
+            },
+            "support": {
+                "connect": "Conectar billetera de Solana",
+                "donate": "Donar USDC",
+                "revoke": "Revocar mi compromiso",
+                "release": "Liberar las donaciones al titular de la propuesta",
+                "fulfill": "Cumplir mi compromiso",
+                "refund": "Reembolsar mis donaciones",
+                "void": "Anular mi compromiso"
             }
         },
         "block": {
@@ -1276,7 +1332,8 @@
             "ownerLabel": "Propietario: {{owner}}",
             "explorer": "Ver en el explorador",
             "detailsButton": "Detalles",
-            "openFailed": "No se pudieron abrir los detalles de la propuesta."
+            "openFailed": "No se pudieron abrir los detalles de la propuesta.",
+            "authorLabel": "Autor: {{author}}"
         },
         "track": {
             "speedPickerTitle": "Elegir velocidad de vía",
@@ -1332,7 +1389,11 @@
             "submit": "Comenzar",
             "takeoverMessage": "Tomar control del agente {{agentLink}} (Sí/No)",
             "takeoverSuccess": "¡Bienvenido de nuevo, {{agentName}}! Has retomado el control de tu agente.",
-            "takeoverLog": "{{agentName}} inició sesión y tomó el control de su agente."
+            "takeoverLog": "{{agentName}} inició sesión y tomó el control de su agente.",
+            "flowImagine": "Imagina",
+            "flowBack": "Apoya",
+            "flowAttest": "Certifica",
+            "flowRealize": "Hazlo realidad"
         },
         "logout": {
             "title": "Cerrar sesión",
@@ -1540,7 +1601,9 @@
             },
             "measuredAgainst": "Medido contra",
             "measuredFallback": "no se muestra nada — se mide contra GDI",
-            "lockedControl": "No disponible mientras la sección esté abierta — aplica o cancela primero"
+            "lockedControl": "No disponible mientras la sección esté abierta — aplica o cancela primero",
+            "ceilingOver": "Más ancho de lo que cabe aquí ({{max}} m) sin una nueva demolición: abre la pestaña Corredor para ver cómo podría caber",
+            "ceilingTitle": "El ancho máximo que cabe aquí para esta vía sin una nueva demolición; quizá haya que desplazarla (ver la pestaña Corredor)"
         },
         "corridorDraft": {
             "title": "Borrador de trazado sin guardar",
@@ -1692,7 +1755,24 @@
                         "parcel": "Propuestas de parcela",
                         "other": "Otros"
                     },
-                    "toggle": "Filtros"
+                    "toggle": "Filtros",
+                    "goal": "Objetivo",
+                    "goals": {
+                        "all": "Todos los objetivos",
+                        "station": "Estación de transporte",
+                        "roadTrack": "Carretera/Vía férrea",
+                        "road-track": "Carretera/Vía férrea",
+                        "buildings": "Edificios",
+                        "single": "Edificio único",
+                        "park": "Parque",
+                        "square": "Plaza",
+                        "lake": "Lago",
+                        "urbanRule": "Regla urbana",
+                        "urban-rule": "Regla urbana",
+                        "reparcellization": "Reparcelación",
+                        "row": "Hilera",
+                        "other": "Otro"
+                    }
                 },
                 "resultCountWord": "mostrados",
                 "sources": {
@@ -1800,7 +1880,9 @@
                     "cumulative": "Acumulado hasta {year}.",
                     "toApply": "por aplicar: {n}",
                     "toUnapply": "por quitar: {n}"
-                }
+                },
+                "syncBlockchain": "Actualizar desde la blockchain",
+                "syncBlockchainNoWallet": "Conecta una billetera para sincronizar desde la blockchain"
             },
             "proposalChoice": {
                 "title": "Elegir propuesta",
@@ -2014,6 +2096,7 @@
                     "applyRemaining": "Aplicar restantes",
                     "replacedConflicting": "Se reemplazaron {{count}} propuesta(s) en las mismas parcelas: {{list}}",
                     "notFoundOnServer": "No encontrado en el servidor",
+                    "recordOutdated": "Esta propuesta se creó con una versión anterior del sitio y ya no se puede abrir.",
                     "partiallyAppliedTitle": "Parcialmente aplicado",
                     "partiallyAppliedMessage": "{{applied}} de {{total}} propuestas en este plan ya están aplicadas. ¿Desea agregar las {{remaining}} restantes?",
                     "continueAdding": "Continuar agregando",
@@ -2065,7 +2148,8 @@
                 "checkingProposals": "Verificando {{done}}/{{total}} propuestas en el servidor...",
                 "listingProposals": "Listando {{done}}/{{total}} propuestas...",
                 "drawingProposals": "Dibujando {{done}}/{{total}} propuestas en el mapa...",
-                "preparingPlan": "Preparando el plan..."
+                "preparingPlan": "Preparando el plan...",
+                "uploadExplainer": "Para compartir una propuesta con otros, primero debes subirla al servidor"
             },
             "sharedInspector": {
                 "author": "Autor:",
@@ -2218,7 +2302,8 @@
                     "submitted": "✔️ geometría enviada",
                     "auto": "La geometría se generará algorítmicamente",
                     "copied": "Geometría copiada de \"{name}\"",
-                    "copiedEditable": "Geometría copiada de \"{name}\": pulsa Editar para ajustarla"
+                    "copiedEditable": "Geometría copiada de \"{name}\": pulsa Editar para ajustarla",
+                    "drawing": "Geometría creada dibujando"
                 }
             },
             "reparcellization": {
@@ -2324,7 +2409,10 @@
                 "offchain": "Fuera de la cadena (solo en este navegador)",
                 "mintsOn": "Se acuña en",
                 "noWalletTooltip": "No hay ninguna cartera conectada; la propuesta se queda en este navegador."
-            }
+            },
+            "proposal_type_no_longer_available": "Fusionar / Decidir después ya no está disponible. Usa la reparcelación.",
+            "titleLake": "Crear propuesta de lago",
+            "typeLake": "Lago"
         },
         "unapplyTour": {
             "titleUnapply": "Desaplicar «{{title}}»",
@@ -2347,6 +2435,11 @@
             "titleReform": "Reformando «{{title}}»",
             "messageReform": "Guardar este trazado cambia la forma de parcelas sobre las que ya se apoyan otras propuestas. Esas propuestas se desaplicarán; las parcelas que no cambiaste conservan las suyas. Haz clic en un elemento para verlo.",
             "confirmReform": "Desaplicar y guardar"
+        },
+        "common": {
+            "close": "Cerrar",
+            "cancel": "Cancelar",
+            "ok": "Aceptar"
         }
     },
     "blockify": {
@@ -2564,7 +2657,8 @@
                 "excludedBelowMinPlot": "Menor que la superficie mínima de parcela — hay que fusionarla con una vecina antes de poder construir aquí.",
                 "excludedNoRoom": "Tras el retiro no queda espacio para construir en esta parcela.",
                 "excludedCannotMeet": "Demasiado pequeña para cumplir el mínimo que obliga esta norma — la norma se contradice aquí."
-            }
+            },
+            "generatedSummaryExcluded": "Se generaron {{count}} edificio(s) · {{excluded}} parcela(s) excluida(s) por la regla"
         }
     },
     "reparcellization": {
@@ -2799,6 +2893,7 @@
             },
             "fetching_data": "Obteniendo datos...",
             "fetching_government_road_plan": "Obteniendo el plan vial gubernamental...",
+            "zoom_in_to_see_government_road_plan": "Acerca el mapa para ver el plan vial gubernamental.",
             "preparing_government_plan_summary": {
                 "one": "Preparando plan gubernamental{{descriptor}}: {{count}} punto del plan…",
                 "few": "Preparando plan gubernamental{{descriptor}}: {{count}} puntos del plan…",
@@ -2992,7 +3087,12 @@
             "fetched_roads_from_openstreetmap": "Se obtuvieron {{count}} vías de OpenStreetMap",
             "geometry_based_dgu_detection_complete": "Detección DGU basada en geometría completada. Se marcaron {{count}} parcelas como vías.",
             "gup_detection_complete": "Detección GUP completada. Se marcaron {{count}} parcelas como vías.",
-            "road_detection_complete_with_names": "Detección de vías completada. Se encontraron {{count}} parcelas viales y se asignaron nombres."
+            "road_detection_complete_with_names": "Detección de vías completada. Se encontraron {{count}} parcelas viales y se asignaron nombres.",
+            "saved_reparcellization_layout_to_the_proposal": "Diseño de reparcelación guardado para esta propuesta.",
+            "loaded_cadastral_parcels": {
+                "one": "Se cargó {{count}} parcela catastral.",
+                "other": "Se cargaron {{count}} parcelas catastrales."
+            }
         }
     },
     "city": {
@@ -3097,7 +3197,9 @@
             "block_seed_unresolved": "No se pudo leer el identificador de la parcela seleccionada, así que no hay desde dónde formar la manzana.",
             "block_multiselect_unavailable": "La selección múltiple no está disponible, y una manzana se entrega como una selección de varias parcelas.",
             "block_multiselect_off": "No se pudo activar la selección múltiple, y una manzana se entrega como una selección de varias parcelas.",
-            "activity_no_parcel_set": "Esta propuesta no tiene cargado un conjunto canónico de parcelas."
+            "activity_no_parcel_set": "Esta propuesta no tiene cargado un conjunto canónico de parcelas.",
+            "blockchain_mint_wallet_prompt": "La acuñación en blockchain está disponible, pero no hay ninguna billetera conectada. ¿Quieres conectar una billetera para acuñar esta propuesta en la cadena?",
+            "failed_to_create_proposal": "No se pudo crear la propuesta."
         }
     },
     "gameDialogs": {
@@ -3350,7 +3452,8 @@
             "note": "Estás viendo la escena 3D real a partir de la cual se creó esta imagen de IA."
         },
         "hints": {
-            "viewAngle": "Mantén Ctrl (o Cmd) y arrastra para cambiar el ángulo de vista"
+            "viewAngle": "Mantén Ctrl (o Cmd) y arrastra para cambiar el ángulo de vista",
+            "viewAngleTouch": "Arrastra con dos dedos para cambiar el ángulo de vista"
         }
     },
     "structureEditor": {

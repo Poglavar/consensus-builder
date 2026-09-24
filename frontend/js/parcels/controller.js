@@ -51,7 +51,10 @@
             // is already retained and joins an existing request when another consumer got there first.
             global.fetchParcelData(bounds)
                 .then(function () { global.ParcelPresenter?.restoreSelectionStyles?.(); })
-                .catch(function (error) { console.error('[ParcelFetchController] cadastral ground unavailable', error); });
+                .catch(function (error) {
+                    if (typeof global.reportParcelFetchFailure === 'function') global.reportParcelFetchFailure(error, 'map move');
+                    else console.error('[' + new Date().toISOString() + '] [ParcelFetchController] cadastral ground unavailable', error);
+                });
         }, debounceMs);
 
         if (typeof global.updateVisibleParcelsCount === 'function') {

@@ -392,6 +392,17 @@ function highlightParcelHover(parcelId, options = {}) {
     }
 }
 
+// Status-bar line for a selected proposal, pluralised per language (hr/sr need one/few/other).
+function selectedProposalStatusText(proposal) {
+    const count = (proposal.cadastreParcelIds || []).length;
+    const title = proposal.title || '';
+    const tProposal = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
+    const fallback = `Selected proposal "{{title}}" (contains {{count}} ${count === 1 ? 'parcel' : 'parcels'})`;
+    return tProposal
+        ? tProposal('status.messages.selected_proposal_summary', fallback, { title, count })
+        : fallback.replace('{{title}}', title).replace('{{count}}', String(count));
+}
+
 function highlightProposalHover(proposal, options = {}) {
     const features = collectProposalHighlightFeatures(proposal, options);
     if (features.length > 0) {
@@ -745,7 +756,7 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
         } else {
             hideProposalDetailsPanel();
         }
-        updateStatus(`Selected proposal "${proposal.title}" (contains ${(proposal.cadastreParcelIds || []).length} parcels)`);
+        updateStatus(selectedProposalStatusText(proposal));
         // If the same proposal remains selected (common when clicking Apply/Remove inside the panel),
         // we still need to (re)apply overlays when its applied/unapplied state changes.
         // In particular, after "Remove from map" the proposal becomes unapplied and should show blue fill + dashed road geometry.
@@ -783,7 +794,7 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
     }
 
     // Update status
-    updateStatus(`Selected proposal "${proposal.title}" (contains ${(proposal.cadastreParcelIds || []).length} parcels)`);
+    updateStatus(selectedProposalStatusText(proposal));
 
     // If we will center the map, suppress overlay reapplication during movement
     if (shouldCenter && !isCameraMovementSuppressed()) {
