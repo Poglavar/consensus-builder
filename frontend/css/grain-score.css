@@ -7,7 +7,9 @@
     display: none !important;
 }
 
-.grain-score-button {
+/* `.btn.` — the button also carries .btn, whose blue background in utilities.css loads after this
+   file and won at equal specificity, turning the cream card blue with its brown hint unreadable. */
+.btn.grain-score-button {
     display: grid;
     grid-template-columns: 46px minmax(0, 1fr);
     align-items: center;
@@ -23,7 +25,7 @@
     text-align: left;
 }
 
-.grain-score-button:hover:not(:disabled) {
+.btn.grain-score-button:hover:not(:disabled) {
     background: #fff8e9;
     border-color: #a3312a;
     color: #17232b;

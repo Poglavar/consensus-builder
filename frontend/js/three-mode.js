@@ -341,6 +341,8 @@
     // Proposal isolation: showing a whole proposal (all its parcels + their buildings) at once,
     // reached via the [show] button in the parcel panel. null = not isolating a proposal.
     let isolatedProposalId = null;
+    // Room around isolated ground when the camera frames it (1 = the diagonal touches the edges).
+    const ISOLATION_FRAME_MARGIN = 1.5;
     let isolationResetEl = null;
     // Top-centre "Single parcel view [×]" banner: says the scene is filtered and how to leave.
     let isolationBannerEl = null;
@@ -685,10 +687,29 @@
                 renderValueAndGain(panel);
             });
         }
+        const closeBtn = panel.querySelector('[data-role="close-panel"]');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                if (isolatedParcelId !== null || isolatedProposalId !== null) clearIsolation();
+                else hideParcelInfoPanel();
+            });
+        }
         renderValueAndGain(panel);
         panel.style.display = '';
         // Mark an info box as open so CSS can cover the overlapping floating status on mobile.
         try { document.body.classList.add('three-info-open'); } catch (_) { }
+    }
+
+    // Title row with the panel's own way out. On a phone the isolation pill is out of reach of the
+    // thumb and the panel is the thing in front of you; closing it leaves the isolated view, which
+    // is what the panel describes.
+    function panelTitleHtml(titleHtml) {
+        const aria = escapeHtml(threeI18n('threeMode.isolation.exitAria', 'Exit this view'));
+        return `
+            <div class="parcel-panel-title-row">
+                <div class="parcel-panel-title">${titleHtml}</div>
+                <button type="button" class="parcel-panel-close" data-role="close-panel" aria-label="${aria}" title="${aria}">&times;</button>
+            </div>`;
     }
 
     // The Built/Proposed volume + floor-area rows shared by both panels.
@@ -741,7 +762,7 @@
             </div>` : '';
 
         panel.innerHTML = `
-            <div class="parcel-panel-title">${L.title} ${escapeHtml(String(parcelId))}</div>
+            ${panelTitleHtml(`${L.title} ${escapeHtml(String(parcelId))}`)}
             ${proposalRow}
             ${metricsTableHtml(L, m.builtVolume, m.proposedVolume, m.builtFloorArea, m.proposedFloorArea)}
         `;
@@ -773,7 +794,7 @@
 
         const L = panelLabels();
         panel.innerHTML = `
-            <div class="parcel-panel-title">${L.proposalHeading}</div>
+            ${panelTitleHtml(L.proposalHeading)}
             <div class="parcel-panel-proposal-name">${escapeHtml(proposalDisplayTitle(proposal))}</div>
             <div class="parcel-panel-subnote">${L.parcelsLabel}: ${parcelCount}</div>
             ${metricsTableHtml(L, builtVolume, proposedVolume, builtFloorArea, proposedFloorArea)}
@@ -833,7 +854,34 @@
         updateParcelInfoPanel(parcelId);
         const pf = getParcelFeatureById(parcelId);
         applyIsolationVisibility(new Set([String(parcelId)]), pf ? [pf] : []);
+        frameIsolatedFeatures(pf ? [pf] : []);
         notifyIsolationChanged();
+    }
+
+    // Isolation hides the whole city around the chosen ground, so leaving the camera where it was
+    // left a lone speck mid-screen — on a phone, a few pixels above the info panel. Keep the
+    // current heading and tilt, and move in (or out) until the isolated ground fills the view.
+    function frameIsolatedFeatures(features) {
+        try {
+            if (!features.length || typeof turf === 'undefined' || !camera) return;
+            const view = getGeoCameraView();
+            if (!view) return;
+            const bbox = turf.bbox(turf.featureCollection(features));
+            if (!bbox.every(Number.isFinite)) return;
+            const diagonalM = turf.distance([bbox[0], bbox[1]], [bbox[2], bbox[3]], { units: 'meters' });
+            const vFov = THREE.MathUtils.degToRad(camera.fov);
+            const hFov = 2 * Math.atan(Math.tan(vFov / 2) * camera.aspect);
+            const fov = Math.min(vFov, hFov);
+            const range = Math.max(40, ((diagonalM / 2) / Math.tan(fov / 2)) * ISOLATION_FRAME_MARGIN);
+            applyGeoCameraView({
+                ...view,
+                targetLng: (bbox[0] + bbox[2]) / 2,
+                targetLat: (bbox[1] + bbox[3]) / 2,
+                range
+            });
+        } catch (error) {
+            console.warn(`[${new Date().toISOString()}] [three-mode] could not frame the isolated view`, error);
+        }
     }
 
     // Hide everything except the parcels (and their buildings) belonging to a whole proposal.
@@ -850,6 +898,7 @@
         const feats = [];
         idSet.forEach(id => { const f = getParcelFeatureById(id); if (f) feats.push(f); });
         applyIsolationVisibility(idSet, feats);
+        frameIsolatedFeatures(feats);
         notifyIsolationChanged();
     }
 

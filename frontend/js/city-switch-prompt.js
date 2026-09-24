@@ -113,6 +113,11 @@
         const currentCityId = manager.getCurrentCityId();
         if (requestedCityId === currentCityId) return false;
 
+        // Either answer ends this route here (reload into the other city, or drop the link), so
+        // the "Fetching proposal" card has nothing left to report — and left up, it showed through
+        // behind this dialog as a second, half-hidden modal.
+        if (typeof global.hideProposalLoadOverlay === 'function') global.hideProposalLoadOverlay();
+
         const follow = await askUser(manager.getCityLabel(currentCityId), manager.getCityLabel(requestedCityId));
         if (follow) {
             await manager.switchCity(requestedCityId);

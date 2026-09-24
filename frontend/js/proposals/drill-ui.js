@@ -167,6 +167,8 @@
     let currentStack = [];
     let currentSelectedRef = null;
     let repositionWired = false;
+    // Bottom of the phone top bar (menu button, Guest pill: 10px + 42px) plus one gap.
+    const PHONE_TOP_CLEARANCE = 62;
 
     function ensurePanel() {
         if (panelEl && document.body.contains(panelEl)) return panelEl;
@@ -185,11 +187,34 @@
                 if (!neighbour) return;
                 if (typeof ResizeObserver === 'function') new ResizeObserver(positionPanel).observe(neighbour);
                 if (typeof MutationObserver === 'function') {
-                    new MutationObserver(positionPanel).observe(neighbour, { attributes: true, attributeFilter: ['class'] });
+                    new MutationObserver(onNeighbourChanged).observe(neighbour, { attributes: true, attributeFilter: ['class'] });
                 }
             });
         }
         return panelEl;
+    }
+
+    // The stack describes what one of its neighbours is showing, so it cannot outlive both of them.
+    // Many flows hide the parcel panel by pulling its class directly (the editors do, on open)
+    // instead of going through hideIfNothingSelected — watching the panels themselves covers every
+    // one of them. Runs from the observer, i.e. after the flow that changed the class has finished,
+    // so a panel that is hidden and re-shown in the same task never takes the stack down with it.
+    function onNeighbourChanged() {
+        if (panelEl && panelEl.classList.contains('visible')) {
+            const shown = id => {
+                const el = document.getElementById(id);
+                return !!(el && el.classList.contains('visible'));
+            };
+            if (!shown('proposal-details-panel') && !shown('parcel-info-panel')) {
+                hidePanel();
+                return;
+            }
+        }
+        positionPanel();
+    }
+
+    function isPhoneLayout() {
+        try { return !!(global.matchMedia && global.matchMedia('(max-width: 768px)').matches); } catch (_) { return false; }
     }
 
     // Middle slot of the right dock: below the proposal card, above the parcel panel, one
@@ -198,7 +223,8 @@
     function positionPanel() {
         if (!panelEl) return;
         const gap = 10;
-        let top = gap;
+        // On a phone the top edge is the menu button + Guest pill row; the stack starts below it.
+        let top = isPhoneLayout() ? PHONE_TOP_CLEARANCE : gap;
         let bottomLimit = window.innerHeight - gap;
         try {
             const details = document.getElementById('proposal-details-panel');
@@ -386,6 +412,8 @@
             el.appendChild(row);
         });
 
+        // One row says nothing the parcel/proposal panel's own header does not; phones hide it.
+        el.classList.toggle('is-single', stack.length === 1 && !el.querySelector('.drill-stack-parcel-btn'));
         el.classList.add('visible');
         currentStack = stack;
         currentSelectedRef = selectedRef;

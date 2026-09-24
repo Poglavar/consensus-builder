@@ -2020,10 +2020,16 @@
                 'modal.singleBuilding.surroundingsInfo',
                 'One choice for the whole parcel area around every building in this proposal. Existing buildings on these parcels are cleared either way.'
             ),
-            infoText: translateSingleBuildingText(
-                'modal.singleBuilding.infoText',
-                'Drag the footprint to move it. Drag a vertex to reshape it, click an edge to add a vertex, or select a vertex and use the trash button or Delete/Backspace to remove it. The building must remain fully within the block.'
-            )
+            // A touch screen has no Delete key to press — its variant names only the trash button.
+            infoText: (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(pointer: coarse)').matches)
+                ? translateSingleBuildingText(
+                    'modal.singleBuilding.infoTextTouch',
+                    'Drag the footprint to move it. Drag a vertex to reshape it, tap an edge to add a vertex, or select a vertex and use the trash button to remove it. The building must remain fully within the block.'
+                )
+                : translateSingleBuildingText(
+                    'modal.singleBuilding.infoText',
+                    'Drag the footprint to move it. Drag a vertex to reshape it, click an edge to add a vertex, or select a vertex and use the trash button or Delete/Backspace to remove it. The building must remain fully within the block.'
+                )
         };
 
         if (!singleModal) {
@@ -2111,7 +2117,7 @@
                         <p class="parameter-info-text">${modalText.parcelInfo}</p>
                     </div>
                     <div class="parameter-group">
-                        <button id="single-building-geojson-upload" class="btn btn-secondary" type="button" style="width:100%;">${modalText.uploadGeojsonLabel}</button>
+                        <button id="single-building-geojson-upload" class="btn btn-secondary" type="button" style="width:100%; margin-left:0; margin-right:0; box-sizing:border-box;">${modalText.uploadGeojsonLabel}</button>
                         <input id="single-building-geojson-input" type="file" accept=".geojson,.json,application/geo+json,application/json" hidden>
                     </div>
                     <p class="parameter-info-text">${modalText.infoText}</p>

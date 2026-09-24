@@ -130,12 +130,24 @@ function isTrackParcelLayer(layer) {
     return liveBlockFeatureForLayer(layer)?.properties?.isTrack === true || Boolean(layer?._trackStyle);
 }
 
+// The area a block may be grown through. Normally the viewport — the ground there is loaded — but
+// the Detect button widens it (and loads the wider ground first) when a block runs past the screen
+// edge, which on a phone is nearly every block: at the zoom where parcels are shown one block does
+// not fit, and zooming out far enough to fit it hides the parcels.
+let blockSearchBoundsOverride = null;
+const BLOCK_SEARCH_MAX_EXPANSIONS = 3;
+const BLOCK_SEARCH_EXPANSION_PAD = 0.6; // each step: 2.2x the span of the previous one
+
+function blockSearchBounds() {
+    return blockSearchBoundsOverride || map.getBounds();
+}
+
 function visibleLiveBlockLayers(includeCorridors = true) {
     const services = liveBlockServices();
     if (!services || typeof map === 'undefined' || !map || typeof map.getBounds !== 'function') return [];
     let features;
     try {
-        features = services.fabric.queryBounds(map.getBounds(), { includeCorridors: true });
+        features = services.fabric.queryBounds(blockSearchBounds(), { includeCorridors: true });
     } catch (_) {
         return [];
     }
@@ -323,7 +335,7 @@ function isParcelFullyVisible(parcel) {
     try {
         const geom = liveBlockFeatureForLayer(parcel)?.geometry;
         if (!geom) return false;
-        const bounds = map.getBounds();
+        const bounds = blockSearchBounds();
         if (geom.type === 'Polygon') {
             // All rings' vertices must be within bounds
             return geom.coordinates.every(ring => Array.isArray(ring) && ring.every(coord => bounds.contains([coord[1], coord[0]])));
@@ -520,7 +532,7 @@ function buildNeighborMapFromEdges(parcels) {
     // fabric — never proposal records or rendered strips — so block consumers see one current
     // ground truth and do not care how that ground was produced.
     const corridorBarriers = services.fabric
-        .queryBounds(map.getBounds(), { includeCorridors: true })
+        .queryBounds(blockSearchBounds(), { includeCorridors: true })
         .filter(feature => isCorridorParcel(parcelIdFromLayer(feature)))
         .map(feature => ({
             id: parcelIdFromLayer(feature),
@@ -1852,13 +1864,41 @@ function clearRejectionLabels() {
     }
 }
 
+// A block grown through wider ground can reach past the screen edge. Bring it into view — but never
+// zoom out past the level where parcels are drawn, or the selection would vanish with them.
+function revealBlockParcels(blockParcels) {
+    try {
+        const bounds = computeCombinedBounds(blockParcels);
+        if (!bounds || !bounds.isValid() || map.getBounds().contains(bounds)) return;
+        // The parcel sheet (a bottom sheet on phones) covers the lower part of the map; fit above it.
+        let sheetCover = 0;
+        const sheet = document.getElementById('parcel-info-panel');
+        if (sheet && sheet.classList.contains('visible')) {
+            const mapRect = map.getContainer().getBoundingClientRect();
+            const sheetRect = sheet.getBoundingClientRect();
+            if (sheetRect.left - mapRect.left < mapRect.width / 2) sheetCover = Math.max(0, mapRect.bottom - sheetRect.top);
+        }
+        const topLeft = L.point(20, 20);
+        const bottomRight = L.point(20, 20 + sheetCover);
+        const minZoom = (typeof parcelFetchZoomMin === 'number') ? parcelFetchZoomMin : null;
+        const fitZoom = map.getBoundsZoom(bounds, false, topLeft.add(bottomRight));
+        if (minZoom === null || fitZoom >= minZoom) {
+            map.fitBounds(bounds, { paddingTopLeft: topLeft, paddingBottomRight: bottomRight });
+        } else {
+            map.panTo(bounds.getCenter());
+        }
+    } catch (error) {
+        console.warn(`[${new Date().toISOString()}] [blockDetection] could not bring the block into view`, error);
+    }
+}
+
 // Floodfill the current block and add all member parcels to multi-select without entering block mode.
 // A whole-block suggestion replaces its one-parcel source selection; the explicit Detect button
 // remains additive so users can deliberately collect more than one block.
 function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
     const button = document.querySelector('button[onclick="animateFloodfillFromSelected()"]');
 
-    const run = () => {
+    const run = async () => {
         const services = liveBlockServices();
         if (!services) {
             return failBlockDetection(tBlock('alerts.messages.block_parcels_not_loaded', {},
@@ -1926,16 +1966,40 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
                 'This is a road or track parcel. A block is the land BETWEEN corridors — start from a parcel inside one.'));
         }
 
-        const nonCorridorParcels = getVisibleNonCorridorParcels();
-
-        if (nonCorridorParcels.length === 0) {
+        if (getVisibleNonCorridorParcels().length === 0) {
             return failBlockDetection(tBlock('alerts.messages.block_no_parcels_in_view', {},
                 'There are no ordinary parcels in view to build a block from — only roads and tracks.'));
         }
 
-        const { neighborMap } = buildNeighborMapFromEdges(nonCorridorParcels);
-        const blockParcels = [];
-        const floodResult = floodfillBlock(seedParcel, blockParcels, neighborMap);
+        // Grow the block inside the viewport first. When it runs past the edge, widen the search
+        // area, load the ground there, and try again — the completeness rule is unchanged (every
+        // member must lie wholly inside ground that is loaded), only the area it is checked against
+        // grows. Bounded so a block that is really a whole district still stops and explains.
+        const flood = () => {
+            const { neighborMap } = buildNeighborMapFromEdges(getVisibleNonCorridorParcels());
+            const parcels = [];
+            return { parcels, result: floodfillBlock(seedParcel, parcels, neighborMap) };
+        };
+        let attempt = flood();
+        const repository = window.CadastralParcelRepository;
+        let searchBounds = map.getBounds();
+        for (let expansion = 0; expansion < BLOCK_SEARCH_MAX_EXPANSIONS; expansion++) {
+            if (attempt.result && attempt.result.isValid) break;
+            if (!repository || typeof repository.ensureBounds !== 'function') break;
+            searchBounds = searchBounds.pad(BLOCK_SEARCH_EXPANSION_PAD);
+            try {
+                await repository.ensureBounds(searchBounds);
+                // Roads bound blocks: without their classification the fill would run down them.
+                if (typeof window.fetchCuratedRoadParcels === 'function') await window.fetchCuratedRoadParcels(searchBounds);
+            } catch (error) {
+                console.warn(`[${new Date().toISOString()}] [blockDetection] loading wider ground failed`, error);
+                break;
+            }
+            blockSearchBoundsOverride = searchBounds;
+            try { attempt = flood(); } finally { blockSearchBoundsOverride = null; }
+        }
+        const blockParcels = attempt.parcels;
+        const floodResult = attempt.result;
         const isValid = !!(floodResult && floodResult.isValid);
 
         if (!isValid || blockParcels.length === 0) {
@@ -1990,6 +2054,8 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
         if (typeof multiParcelSelection.updateUI === 'function') {
             multiParcelSelection.updateUI();
         }
+
+        revealBlockParcels(blockParcels);
 
         if (typeof updateStatus === 'function') {
             const label = addedCount === 1 ? 'parcel' : 'parcels';

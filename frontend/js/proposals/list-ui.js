@@ -727,7 +727,6 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         const isUnsaved = !isMinted && !serialProposalId;
         const classes = ['proposal-list-item'];
 
-        if (metrics.isApplied) classes.push('is-applied');
         if (isExecuted) classes.push('is-executed');
         if (isUnsaved) classes.push('is-unsaved');
         if (proposalHighlightState.activeProposalId === proposalId || proposalListState.selectedId === proposalId) {
@@ -735,16 +734,23 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         }
         if (currentProposalPreviewId === proposalId) classes.push('is-previewing');
 
-        const classAttr = classes.join(' ');
         const safeTitle = escapeHtml(proposal.title || untitledLabel);
         const safeAuthor = escapeHtml(metrics.author || unknownAuthor);
 
-        // Determine applied status
-        const appliedState = typeof isProposalApplied === 'function' ? isProposalApplied(proposal) : metrics.isApplied;
+        // Determine applied status. "Applied" is a fact about this map, so a server row that this
+        // browser holds a copy of reports its LOCAL copy — the server summary never carries it, and
+        // the same proposal read "Applied" in the Local tab and "Not applied" in the Server tab.
+        const localCopy = isServerSource && typeof findLocalCopyOfServerProposal === 'function'
+            ? findLocalCopyOfServerProposal(proposal)
+            : null;
+        const appliedSubject = localCopy || proposal;
+        const appliedState = typeof isProposalApplied === 'function' ? isProposalApplied(appliedSubject) : metrics.isApplied;
         const appliedLabel = appliedState
             ? t('modal.roadWidth.proposalList.labels.applied', 'Applied')
             : t('modal.roadWidth.proposalList.labels.notApplied', 'Not Applied');
         const appliedClass = appliedState ? 'applied' : 'not-applied';
+        if (appliedState) classes.push('is-applied');
+        const classAttr = classes.join(' ');
 
         // Determine disbursement mode (conditional/partial)
         const disbursementModeRaw = (proposal.disbursementMode || '').toLowerCase();

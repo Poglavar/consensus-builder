@@ -1389,6 +1389,7 @@
             "uploadOutside": "The uploaded polygon does not overlap this block in a usable way.",
             "uploadError": "Could not read that file.",
             "infoText": "Drag the footprint to move it. Drag a vertex to reshape it, click an edge to add a vertex, or select a vertex and use the trash button or Delete/Backspace to remove it. The building must remain fully within the block.",
+            "infoTextTouch": "Drag the footprint to move it. Drag a vertex to reshape it, tap an edge to add a vertex, or select a vertex and use the trash button to remove it. The building must remain fully within the block.",
             "parcelLabel": "Building parcel",
             "parcelFootprint": "Footprint parcel",
             "parcelWhole": "Take the whole parcels",
@@ -2050,6 +2051,7 @@
                     "noUploadedHint": "Upload at least one proposal to enable sharing.",
                     "alreadyAppliedTitle": "Plan Already Applied",
                     "alreadyAppliedMessage": "This shared plan is already applied to the map.",
+                    "goneFromServer": "Proposal {{ids}} is no longer on the server. Only your local copy is left, so this link will not open for anyone else.",
                     "alreadyAppliedWithOthersTitle": "Plan Already Applied",
                     "alreadyAppliedWithOthersMessage": {
                         "one": "This shared plan is already on the map, along with {{count}} other proposal.",

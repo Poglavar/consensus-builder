@@ -1303,10 +1303,12 @@ function curatedRoadsAvailable() {
     catch (_) { return false; }
 }
 
-async function fetchCuratedRoadParcels() {
+// `bounds` defaults to the view; block detection passes the wider ground it has just loaded, whose
+// roads must be known before a flood fill may cross it.
+async function fetchCuratedRoadParcels(bounds) {
     const ground = window.CadastralParcelRepository;
     if (!ground?.ensureRoadIds || !curatedRoadsAvailable() || typeof map === 'undefined' || !map) return 0;
-    const result = await ground.ensureRoadIds(map.getBounds());
+    const result = await ground.ensureRoadIds(bounds || map.getBounds());
     let added = 0;
     result.ids.forEach(parcelId => {
         if (!isRoadParcel(parcelId)) {

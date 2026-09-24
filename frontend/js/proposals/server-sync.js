@@ -70,12 +70,22 @@ function normalizeServerProposalSummary(raw, cityCode) {
     };
 }
 
-function isServerProposalDownloaded(summary) {
+// The local copy of a server proposal, if this browser holds one (downloaded, or the original the
+// server row was uploaded from). State that is about THIS map — applied or not — lives on it.
+function findLocalCopyOfServerProposal(summary) {
     if (!summary || typeof proposalStorage === 'undefined' || typeof proposalStorage.getProposal !== 'function') {
-        return false;
+        return null;
     }
     const candidates = [summary.serverProposalId, summary.proposalId, summary.id];
-    return candidates.some(key => key && proposalStorage.getProposal(key));
+    for (const key of candidates) {
+        const local = key ? proposalStorage.getProposal(key) : null;
+        if (local) return local;
+    }
+    return null;
+}
+
+function isServerProposalDownloaded(summary) {
+    return !!findLocalCopyOfServerProposal(summary);
 }
 
 function resetServerProposalCache(cityCode) {

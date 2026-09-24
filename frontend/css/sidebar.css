@@ -511,6 +511,9 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
     border: none;
     width: 100%;
     text-align: left;
+    /* Some headers are <button>s (Measurement, Info) and others <div>s; a button does not inherit
+       the font, so those two rendered at the UA's 13.33px beside their 16px siblings. */
+    font: inherit;
     font-weight: 600;
     display: flex;
     align-items: center;
@@ -848,10 +851,12 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
     }
     
     /* Sidebar content mobile optimizations */
+    /* Height follows the title + AI badge stack (~50px of content): at a fixed 50px with no
+       vertical padding the title sat flush against the top edge of the screen. */
     .sidebar-header {
-        height: 50px;
-        min-height: 50px;
-        padding: 0 52px 0 12px; /* Extra right padding to accommodate floating toggle */
+        height: auto;
+        min-height: 56px;
+        padding: 6px 52px 6px 12px; /* Extra right padding to accommodate floating toggle */
         gap: 8px; /* Space between title, avatars, and toggle */
     }
     

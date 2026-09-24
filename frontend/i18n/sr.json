@@ -2,15 +2,15 @@
     "densityStats": {
         "title": "Pokazatelji geometrije",
         "parcelArea": "Površina parcele",
-        "footprint": "Tlocrtna površina zgrada",
+        "footprint": "Površina osnove zgrada",
         "siteCoverage": "Izgrađenost (kig)",
         "gbp": "GBP (nadzemno)",
         "kin": "kin",
-        "floorHeightHint": "Proračun iz nacrtanih tlocrta i visine ÷ {{height}} m po etaži."
+        "floorHeightHint": "Proračun iz nacrtanih osnova i visine ÷ {{height}} m po etaži."
     },
     "multitab": {
         "warning": "Aplikacija je već otvorena u drugoj kartici. Da se sačuvani predlozi ne izgube, promene u ovoj kartici neće biti sačuvane — zatvorite ostale kartice i ponovo učitajte ovu za uređivanje.",
-        "notSaved": "Prijedlog NIJE spremljen i izgubit će se pri ponovnom učitavanju stranice."
+        "notSaved": "Predlog NIJE sačuvan i biće izgubljen pri ponovnom učitavanju stranice."
     },
     "proposalDrafts": {
         "title": "Nacrti",
@@ -121,8 +121,8 @@
                 "invalid-centerline": "Koridor zahteva ispravan segment sa dve tačke.",
                 "invalid-width": "Postavite širinu koridora veću od nule.",
                 "preview-pending": "Obuhvat koridora će se obnoviti pri otvaranju Dizajna.",
-                "missing-building": "Napravite bar jedan tlocrt zgrade.",
-                "invalid-building": "Tlocrt zgrade nije ispravan.",
+                "missing-building": "Napravite bar jednu osnovu zgrade.",
+                "invalid-building": "Osnova zgrade nije ispravna.",
                 "missing-polygons": "Dodajte bar jednu zamensku parcelu.",
                 "invalid-polygon": "Svaka zamenska parcela zahteva ispravan poligon.",
                 "overlapping-polygons": "Zamenske parcele se preklapaju.",
@@ -269,7 +269,7 @@
             },
             "walletChoice": {
                 "title": "Izaberi način kreiranja",
-                "body": "Nema povezanog novčanika. Možeš se povezati za mintovanje na lancu ili nastaviti sa prijedlogom u memoriji.",
+                "body": "Nema povezanog novčanika. Možeš se povezati za mintovanje na lancu ili nastaviti sa predlogom u memoriji.",
                 "connect": "Poveži novčanik",
                 "memory": "Kreiraj u memoriji",
                 "bodyConnected": "Novčanik je povezan. Koristiti ga za kovanje na lancu ili napraviti predlog u memoriji?",
@@ -676,7 +676,7 @@
             "listOtherMonitors": "Lista ostalih monitora",
             "subscribeTitle": "Pretplatite se na obaveštenja",
             "subscribePlaceholder": "vaš@email.com",
-            "subscribeHint": "Uskoro — obaveštenja e-poštom pri promeni vlasništva (uključuje i obaveštenja ako čestica u oblasti bude stavljena na prodaju)"
+            "subscribeHint": "Uskoro — obaveštenja e-poštom pri promeni vlasništva (uključuje i obaveštenja ako parcela u oblasti bude stavljena na prodaju)"
         },
         "measurement": {
             "title": "Merenje",
@@ -1285,7 +1285,7 @@
     "modal": {
         "walletChoice": {
             "title": "Izaberi način kreiranja",
-            "body": "Nema povezanog novčanika. Možeš se povezati za mintovanje na lancu ili nastaviti sa prijedlogom u memoriji.",
+            "body": "Nema povezanog novčanika. Možeš se povezati za mintovanje na lancu ili nastaviti sa predlogom u memoriji.",
             "connect": "Poveži novčanik",
             "useConnected": "Koristi povezani novčanik",
             "memory": "Kreiraj u memoriji",
@@ -1381,21 +1381,22 @@
             "confirm": "Gotovo",
             "parametersTitle": "Parametri",
             "heightLabel": "Visina (m):",
-            "rotationLabel": "Zakreni tlocrt",
+            "rotationLabel": "Rotiraj osnovu",
             "rotateCounterclockwiseLabel": "Zakreni 5 stepeni suprotno od kazaljke na satu",
             "rotateClockwiseLabel": "Zakreni 5 stepeni u smeru kazaljke na satu",
             "deleteVertexLabel": "Obriši izabrani vrh",
-            "vertexLabel": "Vrh tlocrta",
-            "surroundingsLabel": "Okoliš",
-            "surroundingsNone": "Ostavi kako jest",
+            "vertexLabel": "Teme osnove",
+            "surroundingsLabel": "Okruženje",
+            "surroundingsNone": "Ostavi kako jeste",
             "surroundingsPaved": "Popločano",
             "surroundingsGreen": "Zelenilo",
-            "surroundingsInfo": "Jedan izbor za cijelu površinu čestica oko svih zgrada u ovom prijedlogu. Postojeće zgrade na tim česticama uklanjaju se u svakom slučaju.",
+            "surroundingsInfo": "Jedan izbor za celu površinu parcela oko svih zgrada u ovom predlogu. Postojeće zgrade na tim parcelama uklanjaju se u svakom slučaju.",
             "uploadGeojsonLabel": "Učitaj GeoJSON",
             "uploadNoPolygon": "U datoteci nije pronađen upotrebljiv poligon.",
             "uploadOutside": "Učitani poligon se ne preklapa s ovim blokom na upotrebljiv način.",
             "uploadError": "Datoteku nije moguće pročitati.",
-            "infoText": "Prevuci tlocrt za promenu položaja. Prevuci teme za promenu oblika, klikni ivicu za dodavanje temena ili izaberi teme pa ga obriši dugmetom kante ili tasterom Delete/Backspace. Zgrada mora ostati unutar bloka.",
+            "infoText": "Prevuci osnovu za promenu položaja. Prevuci teme za promenu oblika, klikni ivicu za dodavanje temena ili izaberi teme pa ga obriši dugmetom kante ili tasterom Delete/Backspace. Zgrada mora ostati unutar bloka.",
+            "infoTextTouch": "Prevuci osnovu za promenu položaja. Prevuci teme za promenu oblika, dodirni ivicu za dodavanje temena ili izaberi teme pa ga obriši dugmetom kante. Zgrada mora ostati unutar bloka.",
             "parcelLabel": "Parcela zgrade",
             "parcelFootprint": "Parcela po osnovi",
             "parcelWhole": "Uzmi cele parcele",
@@ -2027,6 +2028,7 @@
                     "noUploadedHint": "Otpremi makar jedan predlog da bi omogućio deljenje.",
                     "alreadyAppliedTitle": "Plan je već primenjen",
                     "alreadyAppliedMessage": "Ovaj deljeni plan je već primenjen na mapu.",
+                    "goneFromServer": "Predlog {{ids}} više nije na serveru. Ostala je samo tvoja lokalna kopija, pa se ovaj link nikome drugom neće otvoriti.",
                     "alreadyAppliedWithOthersTitle": "Plan je već primenjen",
                     "alreadyAppliedWithOthersMessage": {
                         "one": "Ovaj deljeni plan je već na mapi, zajedno sa još {{count}} predlogom.",
@@ -2552,7 +2554,7 @@
                 "width": "Širina (m):",
                 "height": "Visina (m):",
                 "chamfer": "Skošenje (m):",
-                "rotation": "Zakreni tlocrt",
+                "rotation": "Rotiraj osnovu",
                 "circumference": "Obim (m):",
                 "area": "Površina (m²):",
                 "volume": "Zapremina (m³):",
@@ -2564,7 +2566,7 @@
                 "minPlotArea": "Najmanja površina parcele (m²):"
             },
             "helper": {
-                "adjust": "Prevuci tlocrt za promenu položaja. Prevuci temena za promenu oblika, klikni ivicu za dodavanje temena ili izaberi teme da ga ukloniš.",
+                "adjust": "Prevuci osnovu za promenu položaja. Prevuci temena za promenu oblika, klikni ivicu za dodavanje temena ili izaberi teme da ga ukloniš.",
                 "dimensions": "Dužina je paralelna sa najdužom stranicom parcele. Širina je upravna.",
                 "chamfer": "Skošenje seče uglove pod uglom od 45°."
             },
@@ -2574,7 +2576,7 @@
             "uploadNoPolygon": "U datoteci nije pronađen upotrebljiv poligon.",
             "uploadOutside": "Učitani poligon se ne preklapa s ovim parcelama na upotrebljiv način.",
             "uploadError": "Datoteku nije moguće pročitati.",
-            "vertexLabel": "Vrh tlocrta",
+            "vertexLabel": "Teme osnove",
             "deleteVertexLabel": "Obriši izabrani vrh",
             "messages": {
                 "generatedSummary": "Niz kuća generisan (dužina: {{length}}m, širina: {{width}}m, visina: {{height}}m)",
@@ -3174,11 +3176,11 @@
             "road_source_incorporated": "Primenjen je spojeni put, a ‘{{name}}’ je uklonjen sa mape.",
             "road_source_included_in_replacement": "Ovaj put je uključen u ‘{{name}}’. Uklonite spojeni put sa mape pre nego što primenite ovaj.",
             "block_needs_a_seed_parcel": "Prvo izaberi parcelu — blok se traži šireći se od parcele na kojoj jesi.",
-            "block_neighbour_not_fully_visible": "Blok nije moguće složiti: parcela {{id}} pripada bloku, ali izlazi izvan ivice prikaza. Traženje bloka prati samo parcele koje su u celosti vidljive — odzumiraj dok ceo blok ne stane u prikaz pa ponovo pritisni Otkrij blok.",
+            "block_neighbour_not_fully_visible": "Blok nije moguće složiti: parcela {{id}} pripada bloku, ali izlazi izvan ivice prikaza. Traženje bloka prati samo parcele koje su u celosti vidljive — odzumiraj dok ceo blok ne stane u prikaz pa ponovo pritisni Detektuj blok.",
             "block_no_parcels_in_view": "U prikazu nema običnih parcela od kojih bi se složio blok — samo putevi i pruge.",
             "block_parcels_not_loaded": "Parcele se još učitavaju — sačekaj da se mapa smiri pa pokušaj ponovo.",
             "block_seed_is_corridor": "Ovo je parcela puta ili pruge. Blok je zemljište IZMEĐU koridora — kreni od parcele unutar njega.",
-            "block_seed_not_fully_visible": "Blok nije moguće složiti: sama izabrana parcela izlazi izvan ivice prikaza. Traženje bloka prati samo parcele koje su u celosti vidljive, pa odzumiraj dok parcela ne stane u prikaz i onda ponovo pritisni Otkrij blok.",
+            "block_seed_not_fully_visible": "Blok nije moguće složiti: sama izabrana parcela izlazi izvan ivice prikaza. Traženje bloka prati samo parcele koje su u celosti vidljive, pa odzumiraj dok parcela ne stane u prikaz i onda ponovo pritisni Detektuj blok.",
             "block_seed_unresolved": "Nije moguće pročitati ID izabrane parcele pa nema iz čega izgraditi blok.",
             "block_multiselect_unavailable": "Višestruki izbor nije dostupan, a blok se isporučuje kao izbor više parcela.",
             "block_multiselect_off": "Višestruki izbor nije mogao da se uključi, a blok se isporučuje kao izbor više parcela.",

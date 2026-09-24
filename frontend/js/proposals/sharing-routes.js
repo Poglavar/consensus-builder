@@ -1966,26 +1966,25 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                     failed: []
                 };
             }
-            // Resolve via onClose so dismissing the modal (×, Escape, overlay click)
-            // does not leave this promise — and the whole route handler — hanging.
-            await new Promise(resolve => {
-                showSimpleShareModal({
-                    title: tShare('plan.alreadyAppliedTitle', 'Plan Already Applied'),
-                    body: `<p>${tShare('plan.alreadyAppliedMessage', 'This shared plan is already applied to the map.')}</p>`,
-                    actions: [
-                        {
-                            label: tShare('plan.showMe', 'Show me'),
-                            primary: true,
-                            onClick: () => { focusOnAppliedProposals(focusId); }
-                        },
-                        {
-                            label: t('modal.common.ok', 'OK'),
-                            primary: false
-                        }
-                    ],
-                    onClose: () => resolve()
-                });
-            });
+            // Nothing to decide, so no dialog: the camera is already on it (above). A note says
+            // why nothing was applied, and a link that asks for 3D goes straight there — the
+            // "Show me / OK" dialog was one more thing to dismiss on every reload of the link.
+            // Applied here from a LOCAL copy — but the batch fetch above asked the server too. A row
+            // that has since been deleted still opens fine in this browser and nowhere else; the
+            // link looks shareable and is not. Say so instead of letting that be discovered by
+            // whoever it is sent to.
+            const goneFromServer = uniqueIncomingIds.filter(id => /^\d+$/.test(id) && batchRecords.missing.has(id));
+            if (goneFromServer.length && typeof showEphemeralMessage === 'function') {
+                console.warn(`[${new Date().toISOString()}] [handleSharedPlanRoute] linked proposals no longer on the server:`, goneFromServer);
+                showEphemeralMessage(tShare('plan.goneFromServer',
+                    'Proposal {{ids}} is no longer on the server. Only your local copy is left, so this link will not open for anyone else.',
+                    { ids: goneFromServer.map(id => `#${id}`).join(', ') }), 10000, 'warning');
+            } else if (typeof showEphemeralMessage === 'function') {
+                showEphemeralMessage(tShare('plan.alreadyAppliedMessage', 'This shared plan is already applied to the map.'), 4000, 'info');
+            }
+            if (urlRequests3D) {
+                try { url3DModeHandled = true; enterUrlDrivenViewWhenReady(getFocusProposalIds()); } catch (_) { }
+            }
             return { applied: [], skipped: incomingAlreadyApplied, failed: [] };
         }
 
@@ -2321,12 +2320,14 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         };
 
         const bodyLines = [];
+        let rebasedCount = 0;
         if (applied.length > 0) {
             const appliedItems = renderList(applied, item => `<li>${escape(item.label || formatSharedProposalLabel(null, item.id))}</li>`);
             bodyLines.push(`<p>${tShare('plan.appliedCountDetailed', 'Applied {{count}} proposals:', {
                 count: applied.length
             })}</p>${appliedItems}`);
             const rebased = collectRebasedSharedProposals(applied.map(item => item.id));
+            rebasedCount = rebased.length;
             if (rebased.length) {
                 bodyLines.push(`<p class="shared-plan-rebased">${tShare('rebased',
                     '{{count}} of them take different ground here than when published: {{titles}} (details in the console).', {
@@ -2406,10 +2407,14 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
             }
         }
 
-        const summaryHasIssues = failed.length > 0;
+        // A dialog only when there is something to read: a failure, or proposals that landed on
+        // different ground than they were published on. A clean apply is already on screen (framed,
+        // details open) — a modal saying so was one more thing to dismiss, and on a phone it stacked
+        // over the city-switch dialog that opened the link.
+        const summaryHasIssues = failed.length > 0 || rebasedCount > 0;
         const showSummaryModal = !options.suppressSummary
             && bodyLines.length > 0
-            && (summaryHasIssues || !wants3DFromUrl);
+            && summaryHasIssues;
 
         let planSummaryModal = null;
         if (showSummaryModal) {
@@ -2466,8 +2471,8 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
                     } catch (_) { }
                 }
             });
-        } else if ((applied.length > 0 || skipped.length > 0) && wants3DFromUrl && typeof showEphemeralMessage === 'function') {
-            // Clean-enough apply, auto-advancing into 3D: lightweight feedback instead of a modal.
+        } else if (!options.suppressSummary && (applied.length > 0 || skipped.length > 0) && typeof showEphemeralMessage === 'function') {
+            // Clean apply: lightweight feedback instead of a modal.
             const bits = [];
             const appliedOrPresent = applied.length + skipped.length;
             if (appliedOrPresent > 0) {
@@ -2480,6 +2485,8 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
 
         // No dialog shown -> honor URL-driven 3D immediately after focusing.
         if (!planSummaryModal) {
+            // The same rescue the dialog's Close runs: re-frame when the fit above found no bounds.
+            try { if (lastProposalId) frameAppliedProposals(lastProposalId); } catch (_) { }
             try {
                 if (wants3DFromUrl && !url3DModeHandled) {
                     url3DModeHandled = true;

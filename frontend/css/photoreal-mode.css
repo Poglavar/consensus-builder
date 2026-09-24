@@ -152,6 +152,12 @@ body.realistic-mode-active #mode-walk-toggle {
     animation: three-view-hint-in 220ms ease-out;
 }
 
+/* In photo view the Google logo and credits sit at the bottom right and must stay visible (Map
+   Tiles policy); on a phone the centred hint reached over them. Lift it clear of the credit line. */
+#three-container:has(.photoreal-attribution.visible) .three-view-hint {
+    bottom: 64px;
+}
+
 @keyframes three-view-hint-in {
     from { opacity: 0; transform: translate(-50%, 6px); }
     to { opacity: 1; transform: translate(-50%, 0); }

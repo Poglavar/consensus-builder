@@ -47,6 +47,14 @@ body.sidebar-collapsed {
     --map-mode-stack-left: 10px;
 }
 
+/* The left edge the stack owns: its offset, a 40px button and a 10px gap. On phones every bottom
+   sheet starts right of this, so no panel is ever drawn over (or under) the buttons. Declared on
+   body, not :root — a var() resolves where it is declared, so on :root it would keep the
+   sidebar-open offset after body.sidebar-collapsed moved the stack. */
+body {
+    --map-mode-strip: calc(var(--map-mode-stack-left) + 50px);
+}
+
 #mode-2d-toggle.map-mode-toggle,
 #mode-3d-toggle.map-mode-toggle,
 #cadastre-view-toggle.map-mode-toggle {
@@ -78,6 +86,19 @@ body.sidebar-collapsed {
    same variable, and slides to the window edge when the sidebar collapses. */
 .leaflet-bottom.leaflet-left .leaflet-control-scale {
     margin-left: var(--map-mode-stack-left);
+}
+
+/* The scale bar measures the flat 2D map. Over the perspective model/photo views it is simply
+   wrong (a metre near the camera is not a metre at the horizon), so it goes while they are up. */
+body.three-mode-active .leaflet-control-scale {
+    display: none;
+}
+
+/* Phones: a bottom sheet runs under the scale bar's spot; the sheet wins the corner. */
+@media (max-width: 768px) {
+    body:has(.info-panel.right-dock-panel.visible) .leaflet-control-scale {
+        display: none;
+    }
 }
 /* Slot 1 — the bottom of the lower-left mode stack (see the ladder at the top of this file). It
    used to sit at 240 and drew over the walk button; the official cadastre is the frame the other
@@ -332,12 +353,39 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
     color: #2d3748;
 }
 
+#three-container .three-mode-parcel-panel .parcel-panel-title-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
 #three-container .three-mode-parcel-panel .parcel-panel-title {
+    flex: 1;
+    min-width: 0;
     font-weight: 700;
     font-size: 13px;
-    margin-bottom: 8px;
     color: #1a202c;
     word-break: break-word;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-close {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    margin: -4px -4px 0 0;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.08);
+    color: #2d3748;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-close:hover {
+    background: rgba(0, 0, 0, 0.16);
 }
 
 /* "Proposal: <name> [show]" row in the parcel panel, and the proposal name in the
@@ -516,16 +564,29 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
 
 /* On phones there is no horizontal room for the parcel panel (top-left) and the
    Built/Both/Planned controls (top-right) side by side, so the panel docks to the
-   bottom of the 3D view instead. The right inset keeps it clear of the 2D/walk
-   toggle buttons that sit along the right edge. */
+   bottom of the 3D view instead. It starts right of the mode-button strip on the LEFT
+   edge (--map-mode-strip) — it used to leave its gap on the right, for buttons that had
+   long since moved, and the buttons sat on top of its first column of text. */
 @media (max-width: 768px) {
     #three-container .three-mode-parcel-panel {
         top: auto;
         bottom: 12px;
-        left: 12px;
-        right: 64px;
+        left: var(--map-mode-strip);
+        right: 12px;
         width: auto;
         max-width: 360px;
+    }
+
+    /* The top edge belongs to the menu button, the Guest pill and the settings gear. The
+       isolation pill takes the row under them instead of sliding beneath the Guest pill. */
+    #three-container .three-mode-isolation-banner {
+        top: 62px;
+    }
+
+    /* The expanded settings panel owns the whole top of the view; the pill waits until it
+       folds back to its gear. */
+    #three-container:has(.three-mode-ui-panel:not(.collapsed):not([style*="display: none"])) .three-mode-isolation-banner {
+        display: none !important;
     }
 
     /* The bottom-docked parcel/proposal panel overlaps the floating status message
@@ -1258,9 +1319,18 @@ body.three-mode-active #agent-bubbles-container {
     white-space: nowrap;
 }
 
+/* Phones: the stack takes a full-width row under the top bar (drill-ui.js sets top below the menu
+   button and Guest pill). At 200px in the top-right corner it lay over the Guest pill and cut the
+   parcel number to "7160…". A single row repeats the header of the sheet below, so it stays hidden. */
 @media (max-width: 768px) {
     #drill-stack-panel {
-        width: 200px;
+        left: 10px;
+        right: 10px;
+        width: auto;
+    }
+
+    #drill-stack-panel.is-single {
+        display: none;
     }
 }
 

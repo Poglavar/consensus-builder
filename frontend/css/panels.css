@@ -37,8 +37,10 @@
 }
 
 @media (max-width: 768px) {
+    /* Width comes from the insets (see the .info-panel bottom-sheet rule in utilities.css): the
+       sheet runs from the mode-button strip on the left to the right edge. */
     :root {
-        --right-dock-width: 100%;
+        --right-dock-width: auto;
         --right-dock-gap: 0px;
     }
 

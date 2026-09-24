@@ -432,10 +432,31 @@ body.land-fork-editing #parcel-info-panel {
         right: 0;
         bottom: 0;
         width: 100%;
-        height: 50vh;
-        max-height: 50vh;
+        /* 70%: at half the screen the header, source tabs and filter row left room for about one
+           card. The top 30% keeps the map (and the selected proposal on it) in view. */
+        height: 70dvh;
+        max-height: 70dvh;
         border-radius: 12px 12px 0 0;
         box-shadow: 0 -8px 24px rgba(15, 30, 45, 0.22);
+    }
+
+    /* Open filters push the list down by a whole form; the sheet grows so the results stay usable
+       (it was ~60px of list under the filters). */
+    .proposal-list-modal-content:has(.proposal-list-controls:not(.is-collapsed)) {
+        height: 90dvh;
+        max-height: 90dvh;
+    }
+
+    /* The title gets its own line: squeezed next to the number, status pill and action button it
+       was cut to "Block 2109…", dropping exactly the part that tells sibling proposals apart. */
+    .proposal-card-head {
+        flex-wrap: wrap;
+    }
+
+    .proposal-list-item--compact .proposal-list-title {
+        flex: 1 1 calc(100% - 28px);
+        white-space: normal;
+        overflow-wrap: anywhere;
     }
 }
 
@@ -606,8 +627,24 @@ body.land-fork-editing #parcel-info-panel {
         font-size: 12px;
     }
 
+    /* The body (15px, from the shared modal group in game.css) and the tab content (20px) each
+       padded the cards in, leaving a 300px-wide card on a 370px phone. */
     .proposal-list-modal-body {
         min-height: 0;
+    }
+
+    .proposal-list-modal-content .proposal-list-modal-body {
+        padding: 0;
+    }
+
+    .proposal-list-modal-body .proposal-tab-content {
+        padding: 10px;
+    }
+
+    /* A wallet address as author is one unbreakable 44-character word: let it break. */
+    .proposal-card-sub span {
+        overflow-wrap: anywhere;
+        min-width: 0;
     }
 }
 
@@ -2543,6 +2580,18 @@ textarea.proposal-description-input {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+/* Phones: the card starts right of the mode buttons, so a half-row is ~125px. The generic mobile
+   .btn padding (16px a side) left ~70px for icon + label and cut "Fork proposal" to "Fork prop…";
+   tighter padding, and a label that wraps to a second line rather than losing its end. */
+@media (max-width: 768px) {
+    .proposal-actions-group button {
+        padding: 8px 6px;
+        white-space: normal;
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+    }
 }
 
 @media (min-width: 769px) {

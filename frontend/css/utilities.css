@@ -2551,6 +2551,14 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
         box-sizing: border-box;
     }
 
+    /* The docked sheets (parcel, proposal, road) start right of the lower-left mode buttons.
+       Full width, they covered the 2D/3D/photo buttons — the way to switch view was buried under
+       the very panel that describes what you would switch to. */
+    .info-panel.right-dock-panel {
+        left: var(--map-mode-strip) !important;
+        border-radius: 12px 0 0 0;
+    }
+
     /* Legacy full-bleed width for the info panels that are NOT part of the right dock. The dock's
        four panels take their width from .right-dock-panel alone — if this rule still matched them,
        its !important would silently win over --right-dock-width and the shared token would be a lie. */
@@ -2572,11 +2580,21 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 
 #proposal-details-panel.is-minimized,
 #proposal-details-panel.visible.is-minimized {
-    bottom: auto !important;
     height: auto !important;
     max-height: none !important;
     min-height: 0 !important;
     overflow: hidden;
+}
+
+/* Desktop only: the panel is pinned top AND bottom there, so a collapsed one lets go of the bottom
+   and shrinks to its header at the top. On phones it is a bottom sheet with no top — releasing the
+   bottom as well left it with neither, and it jumped to the top edge over the menu button and the
+   Guest pill. */
+@media (min-width: 769px) {
+    #proposal-details-panel.is-minimized,
+    #proposal-details-panel.visible.is-minimized {
+        bottom: auto !important;
+    }
 }
 
 @media (max-width: 768px) {
