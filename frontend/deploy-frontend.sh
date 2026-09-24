@@ -147,11 +147,15 @@ echo -e "${YELLOW}☁️  Purging Cloudflare cache...${NC}"
 if [[ -n "${CF_ZONE_ID:-}" && -n "${CF_API_KEY:-}" ]]; then
     cf_result=$(curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/purge_cache" \
         -H "Authorization: Bearer ${CF_API_KEY}" -H "Content-Type: application/json" \
-        --data '{"purge_everything":true}')
+        --data '{"purge_everything":true}' || true)   # a curl failure lands in the failure branch below, not a silent set -e exit
     if echo "$cf_result" | python3 -c "import sys,json; sys.exit(0 if json.load(sys.stdin).get('success') else 1)" 2>/dev/null; then
         echo -e "${GREEN}✅ Cloudflare cache purged${NC}"
     else
-        echo -e "${RED}❌ Cloudflare purge failed: $cf_result${NC}"
+        # Exit non-zero: the docroot is live but Cloudflare may keep serving the old assets, so the
+        # deploy is NOT complete. Re-run the purge (or the whole deploy) once the cause is fixed.
+        echo -e "${RED}❌ Cloudflare purge failed: $cf_result${NC}" >&2
+        echo -e "${RED}❌ Frontend files are deployed, but the edge cache was not purged — deploy NOT complete.${NC}" >&2
+        exit 1
     fi
 else
     echo -e "${YELLOW}⚠️  CF_ZONE_ID / CF_API_KEY not set in .env — skipping Cloudflare purge${NC}"

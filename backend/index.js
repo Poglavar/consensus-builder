@@ -39,6 +39,7 @@ import { setupAgentProposalsRoute } from './routes/agent-proposals.js';
 import { setupAgentPledgesRoute } from './routes/agent-pledges.js';
 import { setupAgentActivityRoute } from './routes/agent-activity.js';
 import { setupAgentDiscoveryRoute } from './routes/agent-discovery.js';
+import { setupWellKnownRoutes } from './routes/well-known.js';
 import { setupAgentOracleFactsRoute } from './routes/agent-oracle-facts.js';
 import { setupLandEventsRoute } from './routes/land-events.js';
 import { setupHackathonProofRoute } from './routes/hackathon-proof.js';
@@ -417,6 +418,7 @@ export function createApp({
     setupOsmRoadRoute(app, activePool);
     setupUrbanRulesRoute(app, activePool);
     setupLandUsesRoute(app, activePool);
+    setupWellKnownRoutes(app, { env }); // /.well-known/x402, llms.txt, openapi.json, robots.txt; must precede docs (/agents.json aliases /docs/agents.json)
     setupDocsRoute(app, activePool);
     setupIpfsRoute(app);
     setupWalrusRoute(app);
