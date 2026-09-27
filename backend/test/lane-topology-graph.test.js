@@ -97,6 +97,22 @@ describe('deterministic OSM lane graph', () => {
         expect(problem.message.toLowerCase()).not.toContain('reverse');
     });
 
+    it("treats an unqualified roundabout as one-way but respects oneway=no", () => {
+        const coordinates = [[15.96, 45.80], [15.961, 45.80]];
+        const implied = LaneTopologyGraph.build([
+            way(1444296790, coordinates, { highway: "tertiary", junction: "roundabout", lanes: "2" }, [100, 101])
+        ], BUILD_OPTIONS);
+        expect(implied.lanes).toHaveLength(2);
+        expect(implied.lanes.every(lane => lane.direction === "forward")).toBe(true);
+
+        const explicitTwoWay = LaneTopologyGraph.build([
+            way(1444296791, coordinates, {
+                highway: "tertiary", junction: "roundabout", oneway: "no", lanes: "2"
+            }, [200, 201])
+        ], BUILD_OPTIONS);
+        expect(explicitTwoWay.lanes.map(lane => lane.direction).sort()).toEqual(["backward", "forward"]);
+    });
+
     it('prefers detailed directional counts but exposes a contradictory total', () => {
         const graph = LaneTopologyGraph.build([
             way(779283872, [[15.95291, 45.78573], [15.95280, 45.78557]], {
@@ -171,6 +187,21 @@ describe('deterministic OSM lane graph', () => {
             expect(lanes.map(lane => lane.type)).toEqual(['bus', 'driving']);
             expect(lanes.map(lane => lane.access)).toEqual(['psv', 'yes']);
         });
+    });
+
+    it('inherits way-level access unless lane or motor-vehicle tags override it', () => {
+        const build = tags => LaneTopologyGraph.build([way(1, [[15.96, 45.80], [15.961, 45.80]], {
+            highway: 'service', lanes: '2', oneway: 'yes', ...tags
+        })], BUILD_OPTIONS).lanes.sort((left, right) => left.ordinal - right.ordinal);
+
+        expect(build({ access: 'no' }).map(lane => lane.access)).toEqual(['no', 'no']);
+        expect(build({ access: 'no', 'access:lanes': 'yes|no' })
+            .map(lane => lane.access)).toEqual(['yes', 'no']);
+        expect(build({ access: 'no', motor_vehicle: 'yes' })
+            .map(lane => lane.access)).toEqual(['yes', 'yes']);
+        const psv = build({ access: 'no', 'psv:lanes': 'designated|no' });
+        expect(psv.map(lane => lane.access)).toEqual(['psv', 'no']);
+        expect(psv.map(lane => lane.type)).toEqual(['bus', 'driving']);
     });
 
     it('is independent of input way order', () => {

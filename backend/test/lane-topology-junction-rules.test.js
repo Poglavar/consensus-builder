@@ -148,6 +148,25 @@ describe('deterministic junction rules', () => {
         expect(surviving).toContainEqual({ from: '2', to: '3' });
     });
 
+    it('does not queue an approach whose every exit is prohibited', () => {
+        const graph = LaneTopologyGraph.build(tJunction(), {
+            ...BUILD_OPTIONS,
+            restrictions: [
+                restriction(900, 'no_straight_on', 1, 2),
+                restriction(901, 'no_right_turn', 1, 3)
+            ]
+        });
+        const problem = graph.problems.find(entry => entry.type === 'unresolved_intersection');
+
+        expect(problem.openApproaches).toEqual([
+            expect.objectContaining({ reason: 'no_legal_exit' })
+        ]);
+        expect(problem.decidable).toBe(false);
+        expect(JunctionRules.decisionSurface(graph.nodes.find(node => node.id === 'osm-node:100'),
+            graph.lanes, problem.openApproaches)).toBe(0);
+        expect(junctionConnections(graph)).toHaveLength(4);
+    });
+
     it('keeps only the mandatory movement, and says the restriction decided it', () => {
         const graph = LaneTopologyGraph.build(tJunction(), {
             ...BUILD_OPTIONS,
@@ -162,6 +181,63 @@ describe('deterministic junction rules', () => {
         expect(fromWest[0].reason).toContain('only_straight_on');
         // The other two approaches keep both their movements: the restriction names only this one.
         expect(junctionConnections(graph)).toHaveLength(5);
+    });
+
+    it.each(['no', 'private'])('does not make a public turn into or out of an access=%s arm', access => {
+        const graph = LaneTopologyGraph.build(tJunction({
+            west: { access }
+        }), BUILD_OPTIONS);
+        const centre = junctionConnections(graph);
+        const lanes = new Map(graph.lanes.map(lane => [lane.id, lane]));
+
+        expect(graph.lanes.filter(lane => lane.sourceWayId === '1')
+            .every(lane => lane.access === access)).toBe(true);
+        expect(centre).toHaveLength(2);
+        expect(centre.every(connection => lanes.get(connection.fromLaneId).access !== access
+            && lanes.get(connection.toLaneId).access !== access)).toBe(true);
+        expect(graph.problems.filter(problem => problem.type === 'unresolved_intersection'))
+            .toHaveLength(0);
+    });
+
+    it('keeps a public road continuous around a sharp bend beside a private spur', () => {
+        // The bearing baseline reaches past the first bend and makes this look like a U-turn.
+        // Both public sections are one OSM way, and they are each other's sole public exit.
+        const bend = [EAST, CENTRE, [15.9801, 45.7999], [15.981, 45.7999]];
+        const graph = LaneTopologyGraph.build([
+            way(4, bend, TWO_WAY, [20, 100, 21, 22]),
+            way(5, [CENTRE, NORTH], { ...TWO_WAY, access: 'private' }, [100, 30])
+        ], BUILD_OPTIONS);
+        const lanes = new Map(graph.lanes.map(lane => [lane.id, lane]));
+        const connections = junctionConnections(graph);
+
+        expect(connections).toHaveLength(2);
+        expect(connections.every(connection => connection.type === 'continue'
+            && lanes.get(connection.fromLaneId).sourceWayId === '4'
+            && lanes.get(connection.toLaneId).sourceWayId === '4')).toBe(true);
+        expect(graph.problems.filter(problem => problem.type === 'unresolved_intersection'))
+            .toHaveLength(0);
+
+        // Way identity matters: a separate road making the same hairpin is still uncertain.
+        const separateWays = LaneTopologyGraph.build([
+            way(4, bend.slice(0, 2), TWO_WAY, [20, 100]),
+            way(6, bend.slice(1), TWO_WAY, [100, 21, 22]),
+            way(5, [CENTRE, NORTH], { ...TWO_WAY, access: 'private' }, [100, 30])
+        ], BUILD_OPTIONS);
+        expect(junctionConnections(separateWays)).toHaveLength(0);
+        expect(separateWays.problems.some(problem => problem.type === 'unresolved_intersection'))
+            .toBe(true);
+    });
+
+    it('can assign movements for authorised conditional vehicle access', () => {
+        const graph = LaneTopologyGraph.build(tJunction({
+            west: { motor_vehicle: 'permit' }
+        }), BUILD_OPTIONS);
+        const permitted = graph.lanes.filter(lane => lane.sourceWayId === '1');
+
+        expect(permitted.every(lane => lane.access === 'permit')).toBe(true);
+        expect(junctionConnections(graph)).toHaveLength(6);
+        expect(graph.problems.filter(problem => problem.type === 'unresolved_intersection'))
+            .toHaveLength(0);
     });
 
     it('narrows a single-lane approach to what turn:lanes permits', () => {
@@ -730,6 +806,19 @@ describe('decisionSurface', () => {
         ];
         expect(JunctionRules.decisionSurface(node, lanes, null)).toBe(4);
         expect(JunctionRules.decisionSurface(node, lanes, [{ sectionId: 'A' }])).toBe(2);
+    });
+
+    it('excludes a legally blocked approach while retaining other open approaches', () => {
+        const lanes = [
+            lane('inA', 'x', 'n', 'A'),
+            lane('inB', 'y', 'n', 'B'),
+            lane('outC', 'n', 'z', 'C'),
+            lane('outD', 'n', 'w', 'D')
+        ];
+        expect(JunctionRules.decisionSurface(node, lanes, [
+            { sectionId: 'A', reason: 'no_legal_exit' },
+            { sectionId: 'B', reason: 'receiving_lane_undetermined' }
+        ])).toBe(2);
     });
 
     it('ignores lanes that do not touch the node', () => {

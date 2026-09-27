@@ -81,8 +81,9 @@
             <div class="eyebrow">Nearest to finished</div>
             <ol id="nearly"></ol>
         </div>
-        <p class="note">Derived, not stored: the deterministic layer is a function of the OSM snapshot,
-        so this is regenerated rather than kept. Refresh it with
+        <p class="note">Snapshot from 27 September 2026. Coverage combines the deterministic OSM-derived
+        layer with saved candidate solutions; those candidates are not canonically promoted. Refresh the
+        snapshot against the intended API and database with
         <code>node backend/scripts/topology-coverage.js --format json &gt; frontend/topology/coverage.json</code>.</p>
         <p id="error"></p>
     </aside>

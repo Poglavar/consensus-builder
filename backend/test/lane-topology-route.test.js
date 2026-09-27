@@ -158,6 +158,42 @@ describe('lane-topology manager API', () => {
         expect(pool.calls).toHaveLength(0);
     });
 
+    it('rejects malformed, duplicate, or oversized target lists before building', async () => {
+        const requestBody = {
+            provider: 'codex', bbox: [15.961, 45.797, 15.963, 45.799]
+        };
+        for (const targetNodeIds of [[], ['osm-node:11', 'osm-node:11'],
+            ['coordinate:11'], ['osm-node:0'], Array.from({ length: 26 }, (_, i) => `osm-node:${i + 1}`)]) {
+            const response = await request(app).post('/lane-topology/process')
+                .send({ ...requestBody, targetNodeIds }).expect(400);
+            expect(response.body.error).toContain('targetNodeIds');
+        }
+        expect(pool.calls).toHaveLength(0);
+    });
+
+    it('rejects a well-formed target that is not unresolved in the built graph', async () => {
+        const routePool = fakePool();
+        const originalQuery = routePool.query;
+        routePool.query = async (sql, params) => {
+            if (sql.includes('INSERT INTO public.lane_topology_solution')) {
+                return { rows: [{ id: 10, created_at: new Date() }] };
+            }
+            return originalQuery(sql, params);
+        };
+        const routeApp = createRouteApp(setupLaneTopologyRoute, routePool, {
+            cliEnabled: true,
+            roadsFetchImpl: fakeRoadsApi(),
+            spawnSyncImpl: () => ({ status: 0, stdout: 'test-cli 1.0', stderr: '' })
+        });
+        const response = await request(routeApp).post('/lane-topology/process').send({
+            provider: 'codex', bbox: [15.961, 45.797, 15.963, 45.799],
+            targetNodeIds: ['osm-node:999999']
+        }).expect(400);
+        expect(response.body.error).toContain('unresolved nodes in this bbox');
+        expect(routePool.calls.some(call => call.sql.includes('INSERT INTO public.lane_topology_job')))
+            .toBe(false);
+    });
+
     it('rejects imagery recognition when a zoomed-out crop cannot resolve lane markings', async () => {
         const response = await request(app)
             .post('/lane-topology/process')
@@ -334,7 +370,8 @@ describe('lane-topology manager API', () => {
                         page.push({
                             id: index + 1, city: 'zagreb', area_key: `k${index}`, status: 'candidate',
                             source_kind: 'claude', selected_bbox: [15.9, 45.8, 15.91, 45.81],
-                            total_count: String(count), problem_counts: {}, stats: {}
+                            total_count: String(count), problem_counts: {},
+                            error_problem_keys: index === 0 ? ['problem:stored'] : [], stats: {}
                         });
                     }
                     return { rows: page };
@@ -350,6 +387,7 @@ describe('lane-topology manager API', () => {
             expect(response.body.solutions).toHaveLength(100);
             expect(response.body.total).toBe(124);
             expect(response.body.hasMore).toBe(true);
+            expect(response.body.solutions[0].errorProblemKeys).toEqual(['problem:stored']);
         });
 
         it('serves the tail through offset, and closes the list at the end', async () => {
@@ -363,6 +401,25 @@ describe('lane-topology manager API', () => {
             // The 24 the old cap hid — ids 101..124, invisible to every report.
             expect(response.body.solutions[0].id).toBe(101);
             expect(response.body.solutions.at(-1).id).toBe(124);
+        });
+
+        it('returns persisted error keys with solution details', async () => {
+            const pool = {
+                async query(sql) {
+                    if (!sql.includes('FROM public.lane_topology_solution s WHERE s.id=$1')) {
+                        return { rows: [] };
+                    }
+                    return { rows: [{
+                        id: 7, city: 'zagreb', area_key: 'k7', status: 'candidate',
+                        source_kind: 'codex', selected_bbox: [15.9, 45.8, 15.91, 45.81],
+                        stats: {}, graph: { problems: [] }, error_problem_keys: ['problem:persisted']
+                    }] };
+                }
+            };
+            const detailApp = createRouteApp(setupLaneTopologyRoute, pool, {});
+            const response = await request(detailApp).get('/lane-topology/solutions/7').expect(200);
+            expect(response.body.solution.errorProblemKeys).toEqual(['problem:persisted']);
+            expect(response.body.solution.graph).toEqual({ problems: [] });
         });
 
         it('pages until the list is complete rather than trusting one response', async () => {

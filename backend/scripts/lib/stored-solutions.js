@@ -23,6 +23,65 @@ function overlaps(a, b) {
         && a[0] < b[2] && a[2] > b[0] && a[1] < b[3] && a[3] > b[1];
 }
 
+function errorKeys(solution) {
+    if (!Array.isArray(solution?.errorProblemKeys)) return null;
+    return new Set(solution.errorProblemKeys);
+}
+
+function countRestrictionViolations(graph) {
+    const reported = graph?.stats?.turnRestrictions?.violations
+        ?? graph?.graph?.stats?.turnRestrictions?.violations;
+    const value = Number(reported);
+    return reported != null && Number.isFinite(value) ? value : 0;
+}
+
+function isUnsafeComparedWithParent(solution, parent) {
+    const childErrors = errorKeys(solution);
+    const parentErrors = errorKeys(parent);
+    const parentMissing = missingIncomingAssignmentKeys(parent.graph);
+    // Graph JSON in older solutions can disagree with persisted problem rows. Compare the rows'
+    // distinct identities, while failing closed if either persisted list is unavailable.
+    return !childErrors || !parentErrors
+        || [...childErrors].some(key => !parentErrors.has(key))
+        || countRestrictionViolations(solution) > countRestrictionViolations(parent)
+        || [...missingIncomingAssignmentKeys(solution.graph)]
+            .some(key => !parentMissing.has(key));
+}
+
+function isDrivableIncomingLane(lane) {
+    return lane?.type === 'driving'
+        && lane?.direction !== 'both'
+        && !['no', 'private'].includes(lane?.access)
+        && typeof lane?.toNode === 'string';
+}
+
+function missingIncomingAssignmentKeys(graph) {
+    const nodes = new Map((graph?.nodes || []).map(node => [node.id, node]));
+    const assigned = new Set((graph?.connections || []).map(connection => connection?.fromLaneId));
+    const missing = new Set();
+    (graph?.lanes || []).forEach(lane => {
+        if (lane?.type === 'driving' && lane?.direction === 'both'
+            && !['no', 'private'].includes(lane?.access)) {
+            // A two-way centre lane has no directed counterpart to leave the junction. A model
+            // connecting the ordinary lanes cannot by itself resolve this lane's usage.
+            [lane.fromNode, lane.toNode].forEach(nodeId => {
+                if (Number(nodes.get(nodeId)?.degree) >= 3) {
+                    missing.add(`${nodeId}|centre:${lane.id}`);
+                }
+            });
+            return;
+        }
+        const node = nodes.get(lane?.toNode);
+        if (Number(node?.degree) < 3 || !isDrivableIncomingLane(lane)) return;
+        if (!assigned.has(lane.id)) missing.add(`${node.id}|${lane.id}`);
+    });
+    return missing;
+}
+
+function nodesWithMissingIncomingAssignments(graph) {
+    return new Set([...missingIncomingAssignmentKeys(graph)].map(key => key.split('|')[0]));
+}
+
 // Every page of the solution list, in order. Throws rather than returning a short list: a caller
 // that cannot tell "all of them" from "the first hundred" is the bug this replaces.
 export async function listAllSolutions({ api, city = 'zagreb', bbox, fetchImpl = fetch, log }) {
@@ -75,12 +134,26 @@ export async function settledNodeIndex({ api, city = 'zagreb', bbox, fetchImpl =
             const response = await fetchImpl(`${base}/lane-topology/solutions/${solution.id}`,
                 { signal: AbortSignal.timeout(60_000) });
             if (!response.ok) continue;
-            const graph = (await response.json()).solution?.graph;
+            const stored = (await response.json()).solution;
+            const graph = stored?.graph;
             if (!graph) continue;
+            if (stored.parentId != null) {
+                const parentResponse = await fetchImpl(`${base}/lane-topology/solutions/${stored.parentId}`,
+                    { signal: AbortSignal.timeout(60_000) });
+                // A missing parent means the safety comparison cannot be made. Do not credit an
+                // answer whose regression status is unknowable.
+                if (!parentResponse.ok) continue;
+                const parent = (await parentResponse.json()).solution;
+                if (!parent?.graph || isUnsafeComparedWithParent(stored, parent)) continue;
+            }
             consulted += 1;
+            // A model may connect lanes yet explicitly report a node-level topology error.
+            // Such a junction still needs work, even if its unresolved note was removed.
             const stillOpen = new Set((graph.problems || [])
-                .filter(problem => problem.type === 'unresolved_intersection')
+                .filter(problem => problem.type === 'unresolved_intersection'
+                    || problem.severity === 'error')
                 .flatMap(problem => problem.nodeIds || []));
+            nodesWithMissingIncomingAssignments(graph).forEach(nodeId => stillOpen.add(nodeId));
             (graph.connections || []).forEach(connection => {
                 if (!stillOpen.has(connection.nodeId)) settled.add(connection.nodeId);
             });

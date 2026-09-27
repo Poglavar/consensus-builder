@@ -34,6 +34,7 @@ function fanInGraph() {
             sectionId,
             fromNode,
             toNode,
+            type: 'driving',
             geometry: { type: 'LineString', coordinates }
         })),
         connections: [],
@@ -45,7 +46,8 @@ function fanInGraph() {
 // crop now has, and the one the patch contract has to survive.
 function partlySolvedGraph() {
     const lane = (id, sectionId, fromNode, toNode, coordinates) => ({
-        id, sectionId, fromNode, toNode, geometry: { type: 'LineString', coordinates }
+        id, sectionId, fromNode, toNode, type: 'driving',
+        geometry: { type: 'LineString', coordinates }
     });
     return {
         schemaVersion: 1,
@@ -86,12 +88,36 @@ function partlySolvedGraph() {
     };
 }
 
+function twoOpenNodesGraph() {
+    const graph = partlySolvedGraph();
+    graph.nodes.push({ id: 'osm-node:101', degree: 3 }, { id: 'osm-node:102', degree: 3 });
+    for (const [nodeId, index] of [['osm-node:101', 0], ['osm-node:102', 1]]) {
+        const x = 4 + index * 3;
+        graph.sections.push({ id: `open-in-${index}` }, { id: `open-out-${index}` });
+        graph.lanes.push({
+            id: `open-in-${index}`, sectionId: `open-in-${index}`, fromNode: `start-${index}`,
+            toNode: nodeId, type: 'driving',
+            geometry: { type: 'LineString', coordinates: [[x, 0], [x + 1, 0]] }
+        }, {
+            id: `open-out-${index}`, sectionId: `open-out-${index}`, fromNode: nodeId,
+            toNode: `end-${index}`, type: 'driving',
+            geometry: { type: 'LineString', coordinates: [[x + 1, 0], [x + 2, 0]] }
+        });
+        graph.problems.push({
+            id: `problem:unresolved:${nodeId}`, type: 'unresolved_intersection',
+            nodeIds: [nodeId], openApproaches: [{ sectionId: `open-in-${index}` }]
+        });
+    }
+    return graph;
+}
+
 // One junction node with two approaches: the rules settled the one arriving on s5 and left the one
 // arriving on s2 open. This is what partial resolution produces, and the patch has to honour it —
 // a node with connections is no longer proof that the node is finished.
 function partiallyOpenGraph(openApproaches = [{ sectionId: 's2', name: 'Ilica', reason: 'multi_lane_approach_without_turn_lanes' }]) {
     const lane = (id, sectionId, fromNode, toNode, coordinates) => ({
-        id, sectionId, fromNode, toNode, geometry: { type: 'LineString', coordinates }
+        id, sectionId, fromNode, toNode, type: 'driving',
+        geometry: { type: 'LineString', coordinates }
     });
     return {
         schemaVersion: 1,
@@ -127,6 +153,40 @@ function partiallyOpenGraph(openApproaches = [{ sectionId: 's2', name: 'Ilica', 
 }
 
 describe('lane-topology partial resolution', () => {
+    it('keeps a multi-lane approach open until every incoming lane has a movement', () => {
+        const graph = partiallyOpenGraph();
+        graph.lanes.push({
+            ...graph.lanes[0], id: 'lane:in:s2:second',
+            geometry: { type: 'LineString', coordinates: [[0, 0.1], [1, 0.1]] }
+        });
+        const one = applyRecognitionPatch({
+            connections: [{ fromLaneId: 'lane:in:s2', toLaneId: 'lane:out:s3', type: 'turn' }],
+            problems: []
+        }, graph, 'codex');
+        expect(one.problems.find(problem => problem.type === 'unresolved_intersection')
+            ?.openApproaches).toHaveLength(1);
+
+        const both = applyRecognitionPatch({
+            connections: [
+                { fromLaneId: 'lane:in:s2', toLaneId: 'lane:out:s3', type: 'turn' },
+                { fromLaneId: 'lane:in:s2:second', toLaneId: 'lane:out:s4', type: 'turn' }
+            ], problems: []
+        }, graph, 'codex');
+        expect(both.problems.some(problem => problem.type === 'unresolved_intersection'))
+            .toBe(false);
+    });
+
+    it('does not close a node by ignoring its two-way centre lane', () => {
+        const graph = partiallyOpenGraph();
+        graph.lanes.push({ ...graph.lanes[0], id: 'lane:centre', direction: 'both' });
+        const result = applyRecognitionPatch({
+            connections: [{ fromLaneId: 'lane:in:s2', toLaneId: 'lane:out:s3', type: 'turn' }],
+            problems: []
+        }, graph, 'codex');
+        expect(result.problems.some(problem => problem.type === 'unresolved_intersection'))
+            .toBe(true);
+    });
+
     it('accepts a movement on the open approach and refuses one on a settled approach', () => {
         const applied = applyRecognitionPatch({
             connections: [
@@ -208,6 +268,7 @@ describe('lane-topology partial resolution', () => {
 
         expect(prompt).toContain('"openApproaches":[{"section":"s2","street":"Ilica"');
         expect(prompt).toContain('only traffic ARRIVING on those sections is undecided');
+        expect(prompt).toContain('EVERY public incoming driving lane');
     });
 });
 
@@ -280,6 +341,54 @@ describe('lane-topology recognition contract', () => {
 });
 
 describe('lane-topology CLI provider boundary', () => {
+    it('limits a patch to the selected unresolved node and leaves its neighbor open', () => {
+        const graph = twoOpenNodesGraph();
+        const patch = {
+            connections: [
+                { fromLaneId: 'open-in-0', toLaneId: 'open-out-0', type: 'continue' },
+                { fromLaneId: 'open-in-1', toLaneId: 'open-out-1', type: 'continue' }
+            ],
+            problems: [
+                { id: 'model:target', nodeIds: ['osm-node:101'], message: 'Target evidence' },
+                { id: 'model:neighbor', nodeIds: ['osm-node:102'], message: 'Neighbor evidence' },
+                { id: 'model:unscoped', message: 'No node given' }
+            ]
+        };
+        const result = applyRecognitionPatch(patch, graph, 'claude', {
+            targetNodeIds: ['osm-node:101']
+        });
+        expect(result.connections.filter(connection => connection.nodeId === 'osm-node:101')).toHaveLength(1);
+        expect(result.connections.filter(connection => connection.nodeId === 'osm-node:102')).toHaveLength(0);
+        expect(result.problems.some(problem => problem.id === 'problem:unresolved:osm-node:101')).toBe(false);
+        expect(result.problems).toContainEqual(graph.problems.find(problem =>
+            problem.id === 'problem:unresolved:osm-node:102'));
+        expect(result.problems.some(problem => problem.id === 'model:target')).toBe(true);
+        expect(result.problems.some(problem => problem.id === 'model:neighbor'
+            || problem.id === 'model:unscoped')).toBe(false);
+        expect(result.connections).toContainEqual(graph.connections[0]);
+
+        const prompt = buildRecognitionPrompt({ deterministicGraph: graph, targetNodeIds: ['osm-node:101'] });
+        expect(prompt).toContain('targetNodeIds: ["osm-node:101"]');
+        expect(prompt).toContain('"nodeId":"osm-node:101"');
+        expect(prompt).not.toContain('"nodeId":"osm-node:102"');
+    });
+
+    it('keeps the existing all-open-nodes behavior when targets are omitted', () => {
+        const graph = twoOpenNodesGraph();
+        const result = applyRecognitionPatch({
+            connections: [
+                { fromLaneId: 'open-in-0', toLaneId: 'open-out-0' },
+                { fromLaneId: 'open-in-1', toLaneId: 'open-out-1' }
+            ],
+            problems: [{ id: 'model:unscoped', message: 'General finding' }]
+        }, graph);
+        expect(result.connections.filter(connection => connection.nodeId.startsWith('osm-node:')))
+            .toHaveLength(2);
+        expect(result.problems.some(problem => problem.type === 'unresolved_intersection'
+            && problem.nodeIds?.[0]?.startsWith('osm-node:'))).toBe(false);
+        expect(result.problems.some(problem => problem.id === 'model:unscoped')).toBe(true);
+    });
+
     it('refuses to hand a crop to a text-only model', async () => {
         expect(modelAcceptsImagery('opus')).toBe(true);
         expect(modelAcceptsImagery('gpt-5.3-codex-spark')).toBe(false);
@@ -908,5 +1017,27 @@ describe('an approach whose movement was dropped', () => {
         expect(open, 'the junction must not be closed by a movement that was thrown away').toBeTruthy();
         expect(open.openApproaches.map(a => a.sectionId)).toEqual(['s2']);
         expect(result.problems.some(p => p.type === 'malformed_movements')).toBe(true);
+    });
+});
+
+describe('error-marked junctions', () => {
+    it('retains the unresolved node when a model reports a topology error there', () => {
+        const graph = partlySolvedGraph();
+        const result = applyRecognitionPatch({
+            connections: [{
+                fromLaneId: 'lane:section:osm:12:0:A:B:forward:0',
+                toLaneId: 'lane:section:osm:13:0:B:y:forward:0',
+                type: 'turn'
+            }],
+            problems: [{
+                type: 'nonbinary_transition',
+                severity: 'error',
+                nodeIds: ['B'],
+                message: 'Lane split still needs a staged binary event.'
+            }]
+        }, graph, 'codex');
+        expect(result.connections.some(connection => connection.nodeId === 'B')).toBe(true);
+        expect(result.problems.some(problem => problem.type === 'unresolved_intersection'
+            && problem.nodeIds.includes('B'))).toBe(true);
     });
 });

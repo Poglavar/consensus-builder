@@ -130,6 +130,10 @@
         const value = String(tags?.oneway ?? '').trim().toLowerCase();
         if (value === 'yes' || value === 'true' || value === '1') return 'forward';
         if (value === '-1' || value === 'reverse') return 'backward';
+        // OSM defines roundabouts as one-way unless an explicit oneway tag says otherwise.
+        // Older mapping often omits the redundant oneway=yes, so treating that as two-way invents
+        // a reverse-flow lane at every entry.
+        if (!value && String(tags?.junction ?? '').trim().toLowerCase() === 'roundabout') return 'forward';
         return null;
     }
 
@@ -160,7 +164,8 @@
     }
 
     function deriveLaneCounts(tags) {
-        const oneway = tags.oneway === 'yes' || tags.oneway === '1' || tags.oneway === '-1';
+        const direction = onewayDirection(tags);
+        const oneway = direction !== null;
         const totalTagged = parsePositiveInt(tags.lanes);
         const forwardTagged = parsePositiveInt(tags['lanes:forward']);
         const backwardTagged = parsePositiveInt(tags['lanes:backward']);
@@ -174,7 +179,7 @@
             if (backwardTagged !== null) backward = backwardTagged;
             const available = Math.max(0, (totalTagged ?? defaultTotal) - bothTagged);
             if (forward === undefined && backward === undefined) {
-                forward = oneway && tags.oneway !== '-1' ? available : Math.ceil(available / 2);
+                forward = oneway && direction !== 'backward' ? available : Math.ceil(available / 2);
                 backward = available - forward;
             } else if (forward === undefined) {
                 forward = Math.max(0, available - backward);
@@ -184,8 +189,8 @@
         } else {
             const total = totalTagged ?? defaultTotal;
             if (oneway) {
-                forward = tags.oneway === '-1' ? 0 : total;
-                backward = tags.oneway === '-1' ? total : 0;
+                forward = direction === 'backward' ? 0 : total;
+                backward = direction === 'backward' ? total : 0;
             } else {
                 forward = Math.ceil(total / 2);
                 backward = total - forward;
@@ -398,8 +403,11 @@
 
         ordered.forEach((lane, index) => {
             lane.ordinal = index;
-            lane.access = access[index] || 'yes';
-            lane.psv = psv[index] || null;
+            // A way-level prohibition applies to every lane unless lane-specific (or more
+            // specific motor-vehicle) access overrides it.
+            lane.access = access[index] || tags.motorcar || tags.motor_vehicle
+                || tags.vehicle || tags.access || 'yes';
+            lane.psv = psv[index] || tags.psv || null;
             lane.turn = turns[index] || null;
             lane.change = changes[index] || null;
             lane.embeddedRail = tokenHasRail(embedded[index]) || tokenHasRail(railway[index]);
@@ -484,7 +492,7 @@
         }
 
         const hasOpposingLanes = counts.oneway
-            && ((section.tags.oneway === '-1' ? counts.forward : counts.backward) > 0);
+            && ((onewayDirection(section.tags) === 'backward' ? counts.forward : counts.backward) > 0);
         if (hasOpposingLanes) {
             const exception = section.tags['oneway:psv'] === 'no'
                 || section.tags['oneway:bus'] === 'no'

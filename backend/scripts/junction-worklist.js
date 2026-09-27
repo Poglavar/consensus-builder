@@ -17,6 +17,7 @@ import { settledNodeIndex } from './lib/stored-solutions.js';
 const require = createRequire(import.meta.url);
 const LaneTopologyJunctions = require('../../frontend/js/lane-topology-junctions.js');
 const LaneTopologyGraph = require('../../frontend/js/lane-topology-graph.js');
+const JunctionRules = require('../../frontend/js/lane-topology-junction-rules.js');
 const CorridorProfile = require('../../frontend/js/corridor-profile.js');
 const OsmProfile = require('../../frontend/js/osm-profile.js');
 
@@ -70,20 +71,10 @@ function centerBbox([lat, lng], radiusM) {
     return [lng - dLng, lat - dLat, lng + dLng, lat + dLat];
 }
 
-// Candidate movements still open at one node: every lane of a still-open approach against every arm
-// it could leave by. Approaches the rules already settled are not work and must not inflate the
-// ranking — counting them put junctions above others by a margin that was already decided.
-// An empty openApproaches means the whole node is open.
+// Use the same decision surface as the graph builder and citywide coverage. In particular, a
+// legally blocked approach is a visible finding but not a movement to send to a model.
 function decisionSurface(node, graph, open) {
-    const lanes = graph.lanes.filter(lane => lane.fromNode === node.id || lane.toNode === node.id);
-    const openSections = open && open.length ? new Set(open.map(entry => entry.sectionId)) : null;
-    const incoming = lanes.filter(lane => lane.toNode === node.id
-        && (!openSections || openSections.has(lane.sectionId)));
-    const exitArms = new Set(lanes.filter(lane => lane.fromNode === node.id).map(lane => lane.sectionId));
-    return incoming.reduce((total, lane) => total + Math.max(0, exitArms.size - (
-        // Its own arm is not an exit for it: that would be the U-turn.
-        exitArms.has(lane.sectionId) ? 1 : 0
-    )), 0);
+    return JunctionRules.decisionSurface(node, graph.lanes, open);
 }
 
 async function rank(args) {

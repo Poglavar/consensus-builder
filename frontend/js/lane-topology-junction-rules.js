@@ -232,8 +232,14 @@
 
     // A bus lane is not interchangeable with a general one, so pairing an arm by order would put
     // through traffic into it. One restricted lane in a multi-lane arm forfeits the whole node.
+    function generalDrivingLane(lane) {
+        // A permit/destination/delivery condition limits who may drive, not the lane geometry.
+        // Keep that access value on the lane while still assigning its physical movements.
+        return lane.type === 'driving' && !['no', 'private', 'psv'].includes(lane.access);
+    }
+
     function ordinaryLanes(lanes) {
-        return lanes.every(lane => lane.type === 'driving' && lane.access === 'yes');
+        return lanes.every(generalDrivingLane);
     }
 
     // Which lane of the exit arm a set of turning lanes enters.
@@ -251,7 +257,7 @@
     // What is left is a genuine choice: which lane a lone through movement leaves empty, or which
     // pair merges when more lanes turn than can receive them. Those belong to recognition.
     function receivingLanes(turning, exit, category) {
-        const candidates = exit.filter(lane => lane.type === 'driving' && lane.access === 'yes');
+        const candidates = exit.filter(generalDrivingLane);
         if (!candidates.length) return null;
         // More lanes turning than can receive them is a merge inside the junction, and which pair
         // merges is exactly the thing a count cannot say.
@@ -278,7 +284,7 @@
     function mergeAssignment(approaches, exits, headingOf) {
         if (exits.size !== 1) return null;
         const [exitSectionId, exitLanes] = [...exits.entries()][0];
-        const candidates = exitLanes.filter(lane => lane.type === 'driving' && lane.access === 'yes');
+        const candidates = exitLanes.filter(generalDrivingLane);
         if (!candidates.length) return null;
         const departing = headingOf(exitLanes[0], false);
         if (departing === null) return null;
@@ -395,13 +401,19 @@
     // Only the open approaches count. The rest were settled by the rules and a consumer must not
     // reopen them.
     function decisionSurface(node, lanes, openApproaches) {
-        const touching = (lanes || []).filter(lane => lane.fromNode === node.id
-            || lane.toNode === node.id);
+        const touching = (lanes || []).filter(lane => !['no', 'private'].includes(lane.access)
+            && (lane.fromNode === node.id || lane.toNode === node.id));
         const openSections = openApproaches?.length
             ? new Set(openApproaches.map(entry => entry.sectionId))
             : null;
+        // Restrictions can leave an approach with no legal exit. It is still a topology finding,
+        // but there is no lane movement for a model to decide.
+        const noLegalExit = new Set((openApproaches || [])
+            .filter(entry => entry.reason === 'no_legal_exit')
+            .map(entry => entry.sectionId));
         const incoming = touching.filter(lane => lane.toNode === node.id
-            && (!openSections || openSections.has(lane.sectionId)));
+            && (!openSections || openSections.has(lane.sectionId))
+            && !noLegalExit.has(lane.sectionId));
         const exitArms = new Set(touching.filter(lane => lane.fromNode === node.id)
             .map(lane => lane.sectionId));
         // Arriving on an arm, you may leave by any OTHER arm; going back the way you came is a
@@ -427,7 +439,8 @@
         if (sectionIds.length > MAX_RESOLVABLE_ARMS) return { declined: 'arms_over_cap' };
         if (sectionIds.length < 3) return { declined: 'fewer_than_three_arms' };
 
-        const lanes = sectionIds.flatMap(sectionId => lanesBySection.get(sectionId) || []);
+        const lanes = sectionIds.flatMap(sectionId => lanesBySection.get(sectionId) || [])
+            .filter(lane => !['no', 'private'].includes(lane.access));
         const touching = lanes.filter(lane => lane.fromNode === node.id || lane.toNode === node.id);
         // A `lanes:both_ways` centre lane belongs to neither approach; who may use it to turn is a
         // judgement, not a count.
@@ -441,7 +454,8 @@
         const approaches = new Map();
         const exits = new Map();
         sectionIds.forEach(sectionId => {
-            const own = (lanesBySection.get(sectionId) || []);
+            const own = (lanesBySection.get(sectionId) || [])
+                .filter(lane => !['no', 'private'].includes(lane.access));
             const arriving = leftToRight(own.filter(lane => lane.toNode === node.id));
             const leaving = leftToRight(own.filter(lane => lane.fromNode === node.id));
             if (arriving.length) approaches.set(sectionId, arriving);
@@ -511,29 +525,44 @@
             // are applied here so a forbidden arm cannot win the straight-on slot from the arm that
             // traffic actually continues into.
             const reachable = [];
+            let restrictionFiltered = false;
             for (const [toSectionId, exit] of exits) {
                 if (toSectionId === fromSectionId) continue; // the U-turn back down the arm
                 const departing = headingAtNode(exit[0].geometry.coordinates, false);
                 if (departing === null) { undecidable = 'degenerate_arm_heading'; break; }
                 const relative = relativeTurnDegrees(arriving, departing);
-                // Two arms that leave in opposite directions are a hairpin, not a junction movement.
-                if (classifyTurn(relative) === 'reverse') continue;
-
                 const toWayId = wayOf(toSectionId);
+                // A long bearing chord can see the far side of a tight bend and call the road's
+                // own continuation a U-turn. Preserve it when it is the only public exit other
+                // than the incoming arm; the OSM way itself supplies the continuity evidence.
+                const sameWayContinuation = !!toWayId && toWayId === fromWayId
+                    && [...exits.keys()].filter(id => id !== fromSectionId).length === 1;
+                if (classifyTurn(relative) === 'reverse' && !sameWayContinuation) continue;
                 if (rules.some(rule => isProhibitive(rule)
                     && rule.fromWayId === fromWayId && rule.toWayId === toWayId)) {
                     evidence.restrictions += 1;
+                    restrictionFiltered = true;
                     continue;
                 }
                 if (only && only.toWayId !== toWayId) {
                     evidence.restrictions += 1;
+                    restrictionFiltered = true;
                     continue;
                 }
-                reachable.push({ toSectionId, exit, relative, toWayId });
+                reachable.push({ toSectionId, exit, relative, toWayId, sameWayContinuation });
             }
             if (undecidable) { leaveOpen(undecidable); continue; }
+            if (!reachable.length && restrictionFiltered) {
+                leaveOpen('no_legal_exit');
+                continue;
+            }
 
             const graded = assignCategories(reachable);
+            graded.forEach(candidate => {
+                if (candidate.sameWayContinuation && candidate.category === 'reverse') {
+                    candidate.category = 'through';
+                }
+            });
             const { allowed, ambiguous } = armAssignment(approach, graded);
             if (ambiguous) { leaveOpen('ambiguous_arm_for_turn'); continue; }
 

@@ -36,7 +36,7 @@
         const finished = tiles.filter(tile => !tile.open).length;
         return [
             [totals.junctions.toLocaleString('en'), 'junctions'],
-            [`${settledPct}%`, 'settled by the rules'],
+            [`${settledPct}%`, 'settled by rules or saved solutions'],
             [totals.movements.toLocaleString('en'), 'decisions left'],
             [`${finished}/${tiles.length}`, 'tiles finished']
         ].map(([figure, label]) => `<div><span class="figure">${figure}</span><span>${label}</span></div>`).join('');

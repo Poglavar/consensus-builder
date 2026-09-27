@@ -40,6 +40,7 @@ const DRIVEABLE_HIGHWAYS = [
 const MAX_FEATURES = 5000;
 const MAX_BBOX_SPAN_DEG = 0.08;
 const MAX_RECOGNITION_GSD_M = 0.35;
+const MAX_TARGET_NODES = 25;
 const MAX_WIDTH_ANALYSIS_GSD_M = 0.2;
 const DEFAULT_LIMIT = 30;
 const MAX_LIMIT = 100;
@@ -456,6 +457,9 @@ function serializedSolution(row, includeGraph = false) {
         coverage: row.coverage || null,
         stats: row.stats || {},
         problemCounts: row.problem_counts || {},
+        // Persisted problem keys are the stable safety identity for parent comparisons. Old graph
+        // JSON may contain regenerated IDs that differ from the rows stored with the solution.
+        errorProblemKeys: Array.isArray(row.error_problem_keys) ? row.error_problem_keys : null,
         createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at,
         updatedAt: row.updated_at instanceof Date ? row.updated_at.toISOString() : row.updated_at
     };
@@ -565,6 +569,7 @@ async function executeRecognitionJob(pool, job, evidence, deterministicSolution,
             },
             osmWays: evidence.features,
             deterministicGraph: deterministicSolution.graph,
+            ...(job.targetNodeIds ? { targetNodeIds: job.targetNodeIds } : {}),
             imagery: imagery?.metadata || null,
             // The rules refuse to emit a movement OSM forbids; a patch has to be held to the same
             // rule, or the model quietly reintroduces the violations the builder was built to avoid.
@@ -1019,7 +1024,9 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
                         'error', count(p.id) FILTER (WHERE p.severity='error'),
                         'warning', count(p.id) FILTER (WHERE p.severity='warning'),
                         'info', count(p.id) FILTER (WHERE p.severity='info')
-                    ) AS problem_counts
+                    ) AS problem_counts,
+                    COALESCE(array_agg(DISTINCT p.problem_key) FILTER (WHERE p.severity='error'),
+                        ARRAY[]::text[]) AS error_problem_keys
                  FROM public.lane_topology_solution s
                  LEFT JOIN public.lane_topology_problem p ON p.solution_id=s.id
                  WHERE s.city=$1 ${spatial}
@@ -1046,7 +1053,11 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
         try {
             await ensureSchema(pool);
             const { rows } = await pool.query(
-                `SELECT s.*, ST_AsGeoJSON(s.coverage)::json AS coverage
+                `SELECT s.*, ST_AsGeoJSON(s.coverage)::json AS coverage,
+                    COALESCE((SELECT array_agg(DISTINCT p.problem_key)
+                        FROM public.lane_topology_problem p
+                        WHERE p.solution_id=s.id AND p.severity='error'),
+                        ARRAY[]::text[]) AS error_problem_keys
                  FROM public.lane_topology_solution s WHERE s.id=$1`,
                 [req.params.id]
             );
@@ -1104,6 +1115,15 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
         if (!bbox) {
             return res.status(400).json({ error: `Invalid WGS84 bbox; maximum span is ${MAX_BBOX_SPAN_DEG}°.` });
         }
+        const targetNodeIds = req.body?.targetNodeIds;
+        if (targetNodeIds !== undefined && (!Array.isArray(targetNodeIds)
+            || targetNodeIds.length < 1 || targetNodeIds.length > MAX_TARGET_NODES
+            || targetNodeIds.some(id => typeof id !== 'string' || !/^osm-node:[1-9]\d*$/.test(id))
+            || new Set(targetNodeIds).size !== targetNodeIds.length)) {
+            return res.status(400).json({
+                error: `targetNodeIds must be 1–${MAX_TARGET_NODES} unique OSM node IDs (osm-node:<positive integer>).`
+            });
+        }
         const city = String(req.body?.city || 'zagreb').slice(0, 64);
         const imagerySourceKey = req.body?.imagerySource
             ? String(req.body.imagerySource)
@@ -1126,6 +1146,17 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
             const { evidence, solution: deterministicSolution } = await buildDeterministicSolution(
                 pool, bbox, city, req.body?.baseSolutionId || null, options
             );
+            if (targetNodeIds) {
+                const unresolved = new Set(deterministicSolution.graph.problems
+                    .filter(problem => problem.type === 'unresolved_intersection')
+                    .flatMap(problem => problem.nodeIds || []));
+                const invalid = targetNodeIds.filter(id => !unresolved.has(id));
+                if (invalid.length) {
+                    return res.status(400).json({
+                        error: `targetNodeIds must be unresolved nodes in this bbox: ${invalid.join(', ')}.`
+                    });
+                }
+            }
             const areaKey = bboxAreaKey(city, bbox);
             const { rows } = await pool.query(
                 `INSERT INTO public.lane_topology_job
@@ -1140,7 +1171,8 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
                     JSON.stringify({
                         sourceWays: evidence.features.length,
                         deterministicStats: deterministicSolution.graph.stats,
-                        imagerySource: imagerySourceKey
+                        imagerySource: imagerySourceKey,
+                        ...(targetNodeIds ? { targetNodeIds } : {})
                     })
                 ]
             );
@@ -1150,7 +1182,8 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
                 city,
                 bbox,
                 model: req.body?.model ? String(req.body.model).slice(0, 128) : null,
-                imagerySourceKey
+                imagerySourceKey,
+                ...(targetNodeIds ? { targetNodeIds } : {})
             };
             queueMicrotask(() => executeRecognitionJob(
                 pool, job, evidence, deterministicSolution, options

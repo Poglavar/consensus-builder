@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { createRequire } from 'node:module';
 import { normalizeImageryObservations } from './imagery-observations.js';
 
-export const TOPOLOGY_PROMPT_VERSION = 'lane-topology-v11';
+export const TOPOLOGY_PROMPT_VERSION = 'lane-topology-v12';
 // The same question about the same crop, but not at the same speed, so not the same ceiling.
 //
 // 15 minutes came from codex, whose runs average 222 s and whose slowest measured junction was
@@ -252,7 +252,9 @@ export function providerAvailability(provider, spawnSyncImpl = spawnSync) {
 }
 
 export function buildRecognitionPrompt(input) {
-    const targets = recognitionTargets(input?.deterministicGraph);
+    const targetSet = input?.targetNodeIds ? new Set(input.targetNodeIds) : null;
+    const targets = recognitionTargets(input?.deterministicGraph)
+        .filter(target => !targetSet || targetSet.has(target.nodeId));
     const evidence = input?.deterministicGraph
         ? { ...input, deterministicGraph: withLaneHandles(input.deterministicGraph) }
         : input;
@@ -266,6 +268,9 @@ export function buildRecognitionPrompt(input) {
         'The server creates connection IDs, node IDs, and geometry from the referenced lane endpoints.',
         '',
         'Work:',
+        ...(targetSet ? [`- This run is limited to targetNodeIds: ${JSON.stringify(input.targetNodeIds)}. `
+            + 'Return connections and problems only for these nodes; give every problem a nodeIds '
+            + 'array containing only target nodes. Leave every other node open.'] : []),
         targets.length
             ? '- Decide the lane-to-lane movements at these junction nodes, and only these. Where '
                 + 'openApproaches is given, only traffic ARRIVING on those sections is undecided — the '
@@ -297,6 +302,10 @@ export function buildRecognitionPrompt(input) {
         '- Do not measure lane widths. A separate width analysis owns that measurement at a higher imagery resolution; record only the structure you can see.',
         '- Only record visible evidence. Omit occluded or guessed geometry and explain uncertainty as a problem instead.',
         '- Retain unresolved ambiguity as a problem with severity and evidence. Do not hallucinate missing connections.',
+        '- Before closing an approach, account for EVERY public incoming driving lane on it. Each '
+            + 'must have at least one accepted outgoing movement; if any lane remains uncertain, '
+            + 'keep that approach unresolved and explain why in a node-scoped problem. Do not '
+            + 'invent a movement merely to make the count complete.',
         '- Every connection must reference lane IDs present in graph.lanes.',
         '- A movement runs from a lane that ENDS at the junction node into a lane that STARTS there: '
             + 'fromLaneId must be a lane whose toNode is that node, and toLaneId a lane whose '
@@ -660,6 +669,7 @@ export function applyRecognitionPatch(patch, deterministicGraph, provider = 'mod
         throw new Error('Provider returned an incomplete topology decision patch.');
     }
     const laneList = deterministicGraph.lanes || [];
+    const targetSet = context.targetNodeIds ? new Set(context.targetNodeIds) : null;
     const laneById = new Map(laneList.map(lane => [lane.id, lane]));
     const sectionById = new Map((deterministicGraph.sections || []).map(section => [section.id, section]));
     // A handle is an index into graph.lanes; a full id still resolves, so an older provider's
@@ -778,14 +788,37 @@ export function applyRecognitionPatch(patch, deterministicGraph, provider = 'mod
         }
         return !derivedNodes.has(connection.nodeId);
     };
-    const accepted = permitted.filter(isOpen);
+    const accepted = permitted.filter(connection =>
+        (!targetSet || targetSet.has(connection.nodeId)) && isOpen(connection));
     const overreach = permitted.length - accepted.length;
-    const answeredApproaches = new Set(accepted.map(connection => (
-        `${connection.nodeId}|${laneById.get(connection.fromLaneId)?.sectionId}`
-    )));
-    const answeredNodes = new Set(accepted.map(connection => connection.nodeId));
+    // A model can answer one lane on a multi-lane approach and omit its neighbour. That is a
+    // partial answer, not evidence that the entire approach (or node) is settled.
+    const assignedFrom = new Set([...(deterministicGraph.connections || []), ...accepted]
+        .map(connection => connection.fromLaneId));
+    const requiredIncoming = (nodeId, sectionId) => laneList.filter(lane =>
+        lane.toNode === nodeId && (!sectionId || lane.sectionId === sectionId)
+        && lane.type === 'driving' && lane.direction !== 'both'
+        && !['no', 'private'].includes(lane.access));
+    const allIncomingAssigned = (nodeId, sectionId) => {
+        // A centre lane marked for both directions has no directed outgoing counterpart in this
+        // graph. Ordinary lane connections cannot settle its use at the junction.
+        if (laneList.some(lane => lane.direction === 'both'
+            && (lane.fromNode === nodeId || lane.toNode === nodeId)
+            && (!sectionId || lane.sectionId === sectionId))) return false;
+        const required = requiredIncoming(nodeId, sectionId);
+        return required.length > 0 && required.every(lane => assignedFrom.has(lane.id));
+    };
+    const answeredApproaches = new Set(accepted.flatMap(connection => {
+        const sectionId = laneById.get(connection.fromLaneId)?.sectionId;
+        return sectionId && allIncomingAssigned(connection.nodeId, sectionId)
+            ? [`${connection.nodeId}|${sectionId}`] : [];
+    }));
+    const answeredNodes = new Set(accepted.filter(connection =>
+        allIncomingAssigned(connection.nodeId)).map(connection => connection.nodeId));
 
-    const modelProblems = patch.problems.map((problem, index) => ({
+    const modelProblems = patch.problems.filter(problem => !targetSet
+        || (Array.isArray(problem?.nodeIds) && problem.nodeIds.length > 0
+            && problem.nodeIds.every(nodeId => targetSet.has(nodeId)))).map((problem, index) => ({
         ...problem,
         id: String(problem?.id || `problem:${provider}:${index}`),
         type: String(problem?.type || 'model_uncertainty'),
@@ -798,12 +831,19 @@ export function applyRecognitionPatch(patch, deterministicGraph, provider = 'mod
     // the "unresolved" note on every junction it has now answered. Same id means the model's version
     // wins, so re-emitting a problem restates it rather than duplicating it.
     const byId = new Map();
+    const errorNodes = new Set(modelProblems.filter(problem => problem.severity === 'error')
+        .flatMap(problem => problem.nodeIds || []));
     (deterministicGraph.problems || []).forEach(problem => {
         if (problem.type !== 'unresolved_intersection') {
             byId.set(problem.id, problem);
             return;
         }
         const nodeIds = problem.nodeIds || [];
+        if (nodeIds.some(nodeId => errorNodes.has(nodeId))) {
+            // A connected node still needs work when the model reports a physical topology error.
+            byId.set(problem.id, problem);
+            return;
+        }
         const listed = problem.openApproaches || [];
         if (!listed.length) {
             // Whole node was open: answering it at all closes it, as before.
@@ -821,7 +861,11 @@ export function applyRecognitionPatch(patch, deterministicGraph, provider = 'mod
             ? problem
             : { ...problem, openApproaches: stillOpen });
     });
-    modelProblems.forEach(problem => byId.set(problem.id, problem));
+    modelProblems.forEach(problem => {
+        // A model cannot overwrite an unrelated deterministic finding by reusing its ID.
+        if (targetSet && byId.has(problem.id)) return;
+        byId.set(problem.id, problem);
+    });
     if (refused) {
         byId.set(`problem:${provider}:restricted-movements`, {
             id: `problem:${provider}:restricted-movements`,
@@ -857,7 +901,7 @@ export function applyRecognitionPatch(patch, deterministicGraph, provider = 'mod
     const problems = [...byId.values()];
     const fanOut = new Map();
     const fanIn = new Map();
-    connections.filter(connection => connection.type !== 'turn').forEach(connection => {
+    (targetSet ? accepted : connections).filter(connection => connection.type !== 'turn').forEach(connection => {
         if (!fanOut.has(connection.fromLaneId)) fanOut.set(connection.fromLaneId, []);
         if (!fanIn.has(connection.toLaneId)) fanIn.set(connection.toLaneId, []);
         fanOut.get(connection.fromLaneId).push(connection);
@@ -969,7 +1013,8 @@ export async function runCliTopologyProvider(provider, input, options = {}) {
         try {
             graph = applyRecognitionPatch(parsed.patch, input.deterministicGraph, provider, {
                 imagery: input.imagery,
-                restrictions: input.restrictions
+                restrictions: input.restrictions,
+                targetNodeIds: input.targetNodeIds
             });
         } catch (error) {
             // The job record keeps `error.outputTail` in preference to the stack, so without this

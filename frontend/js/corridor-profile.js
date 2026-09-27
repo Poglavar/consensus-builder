@@ -783,13 +783,16 @@ function corridorProfileFromOsmTags(tags, fallbackWidth) {
     }
     if (!source.highway && !(taggedWidth > 0)) return null;
 
-    const oneway = source.oneway === 'yes' || source.oneway === '-1';
+    // junction=roundabout is implicitly one-way in OSM, unless oneway is explicitly no.
+    const onewayValue = String(source.oneway ?? '').trim().toLowerCase();
+    const oneway = onewayValue === 'yes' || onewayValue === '-1'
+        || (!onewayValue && String(source.junction ?? '').trim().toLowerCase() === 'roundabout');
     const defaultLanes = oneway || OSM_SINGLE_LANE_HIGHWAYS.has(source.highway) ? 1 : 2;
     const laneCount = Math.max(1, parseInt(source.lanes, 10) || defaultLanes);
     const taggedForward = parseInt(source['lanes:forward'], 10);
     const forwardCount = Number.isFinite(taggedForward)
         ? taggedForward
-        : (oneway ? (source.oneway === '-1' ? 0 : laneCount) : Math.ceil(laneCount / 2));
+        : (oneway ? (onewayValue === '-1' ? 0 : laneCount) : Math.ceil(laneCount / 2));
 
     const left = [];
     const right = [];
