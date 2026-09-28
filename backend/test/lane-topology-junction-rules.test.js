@@ -122,12 +122,45 @@ describe('deterministic junction rules', () => {
             .toBe(false);
     });
 
-    it('declines a junction with a two-way centre lane', () => {
+    it('emits a tagged centre-lane movement but leaves a distinct receiving-lane choice open', () => {
         const graph = LaneTopologyGraph.build(tJunction({
-            east: { lanes: '3', 'lanes:forward': '1', 'lanes:backward': '1', 'lanes:both_ways': '1' }
+            west: {
+                lanes: '3', 'lanes:forward': '1', 'lanes:backward': '1', 'lanes:both_ways': '1',
+                'turn:lanes:forward': 'through', 'turn:lanes:both_ways': 'right'
+            }
         }), BUILD_OPTIONS);
+        const centre = graph.lanes.filter(lane => lane.centreLane);
+        const connections = junctionConnections(graph);
+        const fromCentre = connections.filter(connection => centre.some(lane => lane.id === connection.fromLaneId));
 
-        expect(junctionConnections(graph)).toHaveLength(0);
+        // The profile still has three strips. The traffic graph has directional incidences for the
+        // single centre strip, and only its eastbound incidence reaches this particular node.
+        expect(graph.sections.find(section => section.sourceWayId === '1').profile.strips
+            .filter(strip => strip.type === 'driving' || strip.type === 'bus')).toHaveLength(3);
+        expect(centre).toHaveLength(2);
+        expect(new Set(centre.map(lane => lane.physicalLaneId)).size).toBe(1);
+        expect(fromCentre).toHaveLength(1);
+        expect(graph.lanes.find(lane => lane.id === fromCentre[0].fromLaneId).direction).toBe('forward');
+        expect(graph.lanes.find(lane => lane.id === fromCentre[0].toLaneId).sourceWayId).toBe('3');
+        // A traveller arriving from the east still has two plausible westbound receiving lanes:
+        // the normal lane and the same physical centre strip in its opposite direction. The
+        // deterministic rules must surface that as work, not settle it by counting the strip twice.
+        expect(graph.problems).toContainEqual(expect.objectContaining({
+            type: 'unresolved_intersection',
+            openApproaches: [expect.objectContaining({ reason: 'receiving_lane_undetermined' })]
+        }));
+        expect(graph.stats.partialIntersections).toBe(1);
+    });
+
+    it('keeps an untagged centre-lane approach open instead of pretending its direction is decided', () => {
+        const graph = LaneTopologyGraph.build(tJunction({
+            west: { lanes: '3', 'lanes:forward': '1', 'lanes:backward': '1', 'lanes:both_ways': '1' }
+        }), BUILD_OPTIONS);
+        const problem = graph.problems.find(entry => entry.type === 'unresolved_intersection');
+
+        expect(problem.openApproaches).toContainEqual(expect.objectContaining({
+            reason: 'multi_lane_approach_without_turn_lanes'
+        }));
         expect(graph.stats.resolvedIntersections).toBe(0);
     });
 

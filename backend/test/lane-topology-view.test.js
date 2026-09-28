@@ -277,6 +277,32 @@ describe('paintableSections', () => {
             .map(entry => entry.section.id)).not.toContain('minor');
     });
 
+    it('separates the two displayed directions of one centre strip without changing its physical identity', () => {
+        const graph = {
+            nodes: [], connections: [],
+            lanes: [
+                {
+                    id: 'centre:forward', direction: 'forward', centreLane: true, physicalLaneId: 'physical:centre',
+                    fromNode: 'a', toNode: 'b',
+                    geometry: { type: 'LineString', coordinates: [[15.96, 45.8], [15.962, 45.8]] }
+                },
+                {
+                    id: 'centre:backward', direction: 'backward', centreLane: true, physicalLaneId: 'physical:centre',
+                    fromNode: 'b', toNode: 'a',
+                    geometry: { type: 'LineString', coordinates: [[15.962, 45.8], [15.96, 45.8]] }
+                }
+            ]
+        };
+        const display = LaneTopologyView.buildDisplayGraph(graph);
+
+        expect(display.lanes.map(lane => lane.physicalLaneId)).toEqual(['physical:centre', 'physical:centre']);
+        expect(display.lanes.every(lane => lane.displayPortal.displayDirectionOffsetM === .7)).toBe(true);
+        expect(display.lanes.map(lane => lane.displayPortal.displayArrowFraction)).toEqual([.25, .25]);
+        expect(display.lanes[0].geometry.coordinates[0][1])
+            .not.toBeCloseTo(display.lanes[1].geometry.coordinates.at(-1)[1], 10);
+        expect(graph.lanes[0].geometry.coordinates[0][1]).toBe(45.8);
+    });
+
     it('survives a graph with no sections', () => {
         expect(LaneTopologyView.paintableSections(null)).toEqual([]);
         expect(LaneTopologyView.paintableSections({})).toEqual([]);

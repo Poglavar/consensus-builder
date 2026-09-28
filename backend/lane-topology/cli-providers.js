@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { createRequire } from 'node:module';
 import { normalizeImageryObservations } from './imagery-observations.js';
 
-export const TOPOLOGY_PROMPT_VERSION = 'lane-topology-v13';
+export const TOPOLOGY_PROMPT_VERSION = 'lane-topology-v14';
 // The same question about the same crop, but not at the same speed, so not the same ceiling.
 //
 // 15 minutes came from codex, whose runs average 222 s and whose slowest measured junction was
@@ -317,6 +317,9 @@ export function buildRecognitionPrompt(input) {
             + 'target, and no other pairing is possible.',
         '- A two-way street contributes one lane arriving at the node and one leaving it. They differ '
             + 'only in direction, and the arriving one is never a valid destination.',
+        '- A shared centre strip is represented by two directed lanes with the same physicalLaneId. '
+            + 'They are opposite uses of one painted strip: decide each direction from its own endpoint, '
+            + 'and do not treat it as two separate physical lanes.',
         '- Keep stable IDs from the deterministic graph whenever the same entity survives.',
         '',
         `Prompt version: ${TOPOLOGY_PROMPT_VERSION}`,
@@ -800,14 +803,9 @@ export function applyRecognitionPatch(patch, deterministicGraph, provider = 'mod
         .map(connection => connection.fromLaneId));
     const requiredIncoming = (nodeId, sectionId) => laneList.filter(lane =>
         lane.toNode === nodeId && (!sectionId || lane.sectionId === sectionId)
-        && lane.type === 'driving' && lane.direction !== 'both'
+        && lane.type === 'driving'
         && !['no', 'private'].includes(lane.access));
     const allIncomingAssigned = (nodeId, sectionId) => {
-        // A centre lane marked for both directions has no directed outgoing counterpart in this
-        // graph. Ordinary lane connections cannot settle its use at the junction.
-        if (laneList.some(lane => lane.direction === 'both'
-            && (lane.fromNode === nodeId || lane.toNode === nodeId)
-            && (!sectionId || lane.sectionId === sectionId))) return false;
         const required = requiredIncoming(nodeId, sectionId);
         return required.length > 0 && required.every(lane => assignedFrom.has(lane.id));
     };

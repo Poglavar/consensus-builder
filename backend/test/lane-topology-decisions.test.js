@@ -577,6 +577,36 @@ describe('the decision queue', () => {
                 { received: readBack.received });
             expect(laneById.get(movement.toLaneId).ordinal).toBe(2);
         });
+
+        it('restores legacy ordinary ordinals beside a distinct directed centre-lane key', () => {
+            const decision = {
+                approach: { lanes: [
+                    { id: 'ordinary', ordinal: 0, laneKey: 0, direction: 'forward' },
+                    {
+                        id: 'centre', ordinal: 1, laneKey: 'centre:1:forward',
+                        direction: 'forward', centreLane: true
+                    }
+                ] },
+                exits: [{ sectionId: 'exit', wayId: '2', relativeDeg: 0 }]
+            };
+            const stored = Decisions.toStoredAssignment(decision, {
+                ordinary: ['exit'], centre: ['exit']
+            }, {
+                '0->2': 2,
+                'centre:1:forward->2': 'centre:1:backward'
+            });
+
+            expect(stored.lanes.map(lane => lane.ordinal)).toEqual([0, 'centre:1:forward']);
+            expect(stored.received).toEqual({
+                '0->2': 2,
+                'centre:1:forward->2': 'centre:1:backward'
+            });
+            expect(Decisions.fromStoredAssignment(decision, stored)).toMatchObject({
+                assignment: { ordinary: ['exit'], centre: ['exit'] },
+                missing: [],
+                received: stored.received
+            });
+        });
     });
 
     describe('walking a distance along an arm', () => {

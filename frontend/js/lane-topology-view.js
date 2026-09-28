@@ -310,23 +310,49 @@
         return setbacks;
     }
 
+    // This alters only the review drawing. The topology still has one physical centre strip; its
+    // two travel incidences need separate, clickable traces and arrows so one cannot hide the other.
+    function offsetDisplayCoordinates(coordinates, offsetM) {
+        if (!offsetM || !Array.isArray(coordinates) || coordinates.length < 2) return coordinates;
+        const projection = localProjection(coordinates);
+        const projected = coordinates.map(point => projection.project(point));
+        return projected.map((point, index) => {
+            const before = projected[Math.max(0, index - 1)];
+            const after = projected[Math.min(projected.length - 1, index + 1)];
+            const [dx, dy] = normalize([after[0] - before[0], after[1] - before[1]]);
+            return projection.unproject([point[0] - dy * offsetM, point[1] + dx * offsetM]);
+        });
+    }
+
     function buildDisplayGraph(graph) {
         if (!graph) return null;
         const setbacks = junctionSetbacks(graph);
         const lanes = (graph.lanes || []).map(lane => {
             const startSetbackM = setbacks.get(lane.fromNode) || 0;
             const endSetbackM = setbacks.get(lane.toNode) || 0;
-            const coordinates = trimCoordinates(
+            const trimmed = trimCoordinates(
                 coordinatesOf(lane),
                 startSetbackM,
                 endSetbackM
             );
+            // 0.22 m looked separate in raw coordinates but merged into one hit target at normal
+            // review zoom. Keep each trace inside its physical strip while making both directions
+            // independently readable and clickable.
+            const halfLaneWidth = Math.max(0, (Number(lane.width) || 3) / 2 - .2);
+            const displayDirectionOffsetM = lane.centreLane ? Math.min(.7, halfLaneWidth) : 0;
+            const coordinates = offsetDisplayCoordinates(trimmed, displayDirectionOffsetM);
             return {
                 ...lane,
                 geometry: { ...lane.geometry, coordinates },
                 displayPortal: {
                     startSetbackM,
-                    endSetbackM
+                    endSetbackM,
+                    displayDirectionOffsetM,
+                    displayArrowFraction: lane.centreLane
+                        // Backward geometry is reversed, so the same fraction places its arrow
+                        // at the opposite physical quarter of the strip.
+                        ? .25
+                        : .57
                 }
             };
         });

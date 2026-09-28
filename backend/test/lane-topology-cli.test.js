@@ -176,15 +176,66 @@ describe('lane-topology partial resolution', () => {
             .toBe(false);
     });
 
-    it('does not close a node by ignoring its two-way centre lane', () => {
+    it('requires the directed centre-lane incidence before closing its approach', () => {
         const graph = partiallyOpenGraph();
-        graph.lanes.push({ ...graph.lanes[0], id: 'lane:centre', direction: 'both' });
-        const result = applyRecognitionPatch({
+        const inbound = {
+            ...graph.lanes[0], id: 'lane:centre:forward', physicalLaneId: 'physical:centre',
+            centreLane: true
+        };
+        const outbound = {
+            ...graph.lanes[0], id: 'lane:centre:backward', physicalLaneId: 'physical:centre',
+            centreLane: true, fromNode: 'osm-node:B', toNode: 'w',
+            geometry: { type: 'LineString', coordinates: [[1, 0], [0, 0]] }
+        };
+        graph.lanes.push(inbound, outbound);
+        const one = applyRecognitionPatch({
             connections: [{ fromLaneId: 'lane:in:s2', toLaneId: 'lane:out:s3', type: 'turn' }],
             problems: []
         }, graph, 'codex');
-        expect(result.problems.some(problem => problem.type === 'unresolved_intersection'))
+        expect(one.problems.some(problem => problem.type === 'unresolved_intersection'))
             .toBe(true);
+
+        const both = applyRecognitionPatch({
+            connections: [
+                { fromLaneId: 'lane:in:s2', toLaneId: 'lane:out:s3', type: 'turn' },
+                { fromLaneId: 'lane:centre:forward', toLaneId: 'lane:out:s4', type: 'turn' }
+            ],
+            problems: []
+        }, graph, 'codex');
+        expect(both.problems.some(problem => problem.type === 'unresolved_intersection')).toBe(false);
+
+        // The reverse incidence shares paint with the first lane but terminates at a different
+        // node. It cannot be substituted for the incoming centre-lane decision.
+        expect(() => applyRecognitionPatch({
+            connections: [{ fromLaneId: 'lane:centre:backward', toLaneId: 'lane:out:s3', type: 'turn' }],
+            problems: []
+        }, graph, 'codex')).toThrow('do not share a directed endpoint');
+    });
+
+    it('applies an OSM turn restriction to a centre-lane incidence by its physical way', () => {
+        const graph = partiallyOpenGraph();
+        graph.lanes.push({
+            ...graph.lanes[0], id: 'lane:centre:forward', physicalLaneId: 'physical:centre',
+            centreLane: true
+        });
+        const result = applyRecognitionPatch({
+            connections: [{ fromLaneId: 'lane:centre:forward', toLaneId: 'lane:out:s3', type: 'turn' }],
+            problems: []
+        }, graph, 'codex', {
+            restrictions: [{
+                osm_id: 71,
+                restriction: 'no_left_turn',
+                members: [
+                    { role: 'from', type: 'way', ref: '12' },
+                    { role: 'via', type: 'node', ref: 'B' },
+                    { role: 'to', type: 'way', ref: '13' }
+                ]
+            }]
+        });
+
+        expect(result.connections.some(connection => connection.source === 'codex')).toBe(false);
+        expect(result.problems.some(problem => problem.type === 'movements_against_restrictions')).toBe(true);
+        expect(result.problems.some(problem => problem.type === 'unresolved_intersection')).toBe(true);
     });
 
     it('accepts a movement on the open approach and refuses one on a settled approach', () => {

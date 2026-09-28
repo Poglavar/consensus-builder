@@ -124,7 +124,20 @@
     }
 
     function orderedLanes(lanes) {
-        return lanes.slice().sort((a, b) => (a.ordinal || 0) - (b.ordinal || 0));
+        return lanes.slice().sort((a, b) => laneOrdinal(a) - laneOrdinal(b));
+    }
+
+    // `ordinal` remains the stable ordinary-lane identity. A shared centre strip gets a separate
+    // traffic incidence, so manual ordering must use its physical travel position instead.
+    function laneOrdinal(lane) {
+        return lane?.travelOrdinal ?? lane?.ordinal ?? 0;
+    }
+
+    // Stored decisions historically identify ordinary lanes by numeric ordinal. A centre strip has
+    // two directed incidences at the same physical position, so it needs a durable key of its own.
+    function laneKey(lane) {
+        if (lane?.centreLane) return `centre:${lane.stripIndex}:${lane.direction}`;
+        return lane?.ordinal ?? 0;
     }
 
     // The arms this approach could reach, labelled exactly as the rules label them — including the
@@ -164,10 +177,11 @@
                 relativeDeg: Math.round(candidate.relative * 10) / 10,
                 lanes: candidate.exit.map(lane => ({
                     id: lane.id,
-                    ordinal: lane.ordinal,
+                    ordinal: laneOrdinal(lane),
+                    laneKey: laneKey(lane),
                     type: lane.type,
                     access: lane.access,
-                    side: laneSide(lane.ordinal, candidate.exit.length)
+                    side: laneSide(laneOrdinal(lane), candidate.exit.length)
                 }))
             };
             exit.label = exitLabel(exit);
@@ -216,12 +230,13 @@
                 highway: section.highway || null,
                 lanes: approachLanes.map(lane => ({
                     id: lane.id,
-                    ordinal: lane.ordinal,
+                    ordinal: laneOrdinal(lane),
+                    laneKey: laneKey(lane),
                     direction: lane.direction,
                     type: lane.type,
                     access: lane.access,
                     turn: lane.turn || null,
-                    side: laneSide(lane.ordinal, approachLanes.length)
+                    side: laneSide(laneOrdinal(lane), approachLanes.length)
                 }))
             },
             exits,
@@ -398,7 +413,7 @@
         const exitById = new Map(decision.exits.map(exit => [exit.sectionId, exit]));
         const stored = {
             lanes: decision.approach.lanes.map(lane => ({
-                ordinal: lane.ordinal,
+                ordinal: lane.laneKey ?? lane.ordinal,
                 direction: lane.direction || null,
                 exits: (assignment?.[lane.id] || [])
                     .map(sectionId => exitById.get(sectionId))
@@ -408,7 +423,9 @@
         };
         // Which lane of the arm each movement enters, when somebody said. Ordinals both sides, for
         // the same reason the arms are way ids: a lane id does not survive an edit next door.
-        const entries = Object.entries(received || {}).filter(([, ordinal]) => Number.isInteger(ordinal));
+        const entries = Object.entries(received || {}).filter(([, key]) => (
+            Number.isInteger(key) || typeof key === 'string'
+        ));
         if (entries.length) stored.received = Object.fromEntries(entries);
         return stored;
     }
@@ -431,15 +448,15 @@
         const received = { ...(stored?.received || {}) };
         const byOrdinal = new Map((stored?.lanes || []).map(lane => [lane.ordinal, lane.exits || []]));
         decision.approach.lanes.forEach(lane => {
-            const wanted = byOrdinal.get(lane.ordinal);
+            const wanted = byOrdinal.get(lane.laneKey ?? lane.ordinal);
             if (!wanted) {
-                missing.push(`Lane ${lane.ordinal + 1} was not part of the stored answer.`);
+                missing.push(`Lane ${laneOrdinal(lane) + 1} was not part of the stored answer.`);
                 assignment[lane.id] = [];
                 return;
             }
             assignment[lane.id] = wanted.map(entry => {
                 const exit = matchExit(decision.exits, entry);
-                if (!exit) missing.push(`Lane ${lane.ordinal + 1} pointed at an arm that is no longer here.`);
+                if (!exit) missing.push(`Lane ${laneOrdinal(lane) + 1} pointed at an arm that is no longer here.`);
                 return exit?.sectionId;
             }).filter(Boolean);
         });
@@ -564,7 +581,7 @@
                 .filter(lane => (assignment?.[lane.id] || []).includes(exit.sectionId))
                 .map(lane => lanesById.get(lane.id))
                 .filter(Boolean)
-                .sort((a, b) => (a.ordinal || 0) - (b.ordinal || 0));
+                .sort((a, b) => laneOrdinal(a) - laneOrdinal(b));
             if (!turning.length) return;
             const exitLanes = orderedLanes(
                 (index.lanesBySection.get(exit.sectionId) || [])
@@ -575,13 +592,14 @@
             if (candidates.length < 2) return;
             turning.forEach(lane => {
                 questions.push({
-                    key: `${lane.ordinal}->${exit.wayId}`,
-                    laneOrdinal: lane.ordinal,
-                    laneSide: laneSide(lane.ordinal, decision.approach.lanes.length),
+                    key: `${laneKey(lane)}->${exit.wayId}`,
+                    laneOrdinal: laneOrdinal(lane),
+                    laneSide: laneSide(laneOrdinal(lane), decision.approach.lanes.length),
                     exit,
                     candidates: candidates.map(candidate => ({
-                        ordinal: candidate.ordinal,
-                        side: laneSide(candidate.ordinal, candidates.length)
+                        ordinal: laneOrdinal(candidate),
+                        laneKey: String(laneKey(candidate)),
+                        side: laneSide(laneOrdinal(candidate), candidates.length)
                     }))
                 });
             });
@@ -636,7 +654,7 @@
                 .filter(lane => (assignment[lane.id] || []).includes(exit.sectionId))
                 .map(lane => lanesById.get(lane.id))
                 .filter(Boolean)
-                .sort((a, b) => (a.ordinal || 0) - (b.ordinal || 0));
+                .sort((a, b) => laneOrdinal(a) - laneOrdinal(b));
             if (!turning.length) return;
             const exitLanes = orderedLanes(
                 (index.lanesBySection.get(exit.sectionId) || [])
@@ -646,8 +664,8 @@
             // at the picture. Keyed by lane and arm, and given as an ordinal so the choice survives
             // the lane ids being renamed by an edit next door.
             const chosen = turning
-                .map(lane => received?.[`${lane.ordinal}->${exit.wayId}`])
-                .map(ordinal => exitLanes.find(lane => lane.ordinal === ordinal));
+                .map(lane => received?.[`${laneKey(lane)}->${exit.wayId}`])
+                .map(key => exitLanes.find(lane => String(laneKey(lane)) === String(key)));
             if (chosen.length && chosen.every(Boolean)) {
                 emit(turning, chosen, exit, false);
                 return;

@@ -470,7 +470,8 @@
             const coordinates = visual.lane.geometry?.coordinates || [];
             visual.arrow = null;
             if (coordinates.length < 2 || screenLength(coordinates) < 42) return;
-            const marker = arrowMarker(coordinates, laneColor(visual.lane), 'topology-arrow-icon--lane', .57);
+            const marker = arrowMarker(coordinates, laneColor(visual.lane), 'topology-arrow-icon--lane',
+                visual.lane.displayPortal?.displayArrowFraction ?? .57);
             if (!marker) return;
             marker.addTo(visuals.laneArrowGroup);
             visual.arrow = marker;

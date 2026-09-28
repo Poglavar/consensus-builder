@@ -76,7 +76,7 @@
             stored: new Map(),      // decisionKey -> the saved record
             current: null,          // the decision being answered
             assignment: {},         // laneId -> [exit sectionId]
-            received: {},           // "laneOrdinal->exitWayId" -> receiving lane ordinal
+            received: {},           // "laneKey->exitWayId" -> receiving lane key
             saving: false
         };
 
@@ -387,9 +387,9 @@
             const rows = questions.map(question => {
                 const picked = state.received[question.key];
                 const buttons = question.candidates.map(candidate => `
-                    <button type="button" class="arm-chip arm-chip--lane${picked === candidate.ordinal ? ' arm-chip--on' : ''}"
-                        data-receive="${escapeHtml(question.key)}" data-ordinal="${candidate.ordinal}"
-                        aria-pressed="${picked === candidate.ordinal}"
+                    <button type="button" class="arm-chip arm-chip--lane${String(picked) === String(candidate.laneKey) ? ' arm-chip--on' : ''}"
+                        data-receive="${escapeHtml(question.key)}" data-ordinal="${escapeHtml(String(candidate.laneKey))}"
+                        aria-pressed="${String(picked) === String(candidate.laneKey)}"
                         title="${escapeHtml(candidate.side)}">${candidate.ordinal + 1}</button>`).join('');
                 return `<div class="lane-row">
                     <span class="lane-row__name"><b>${question.laneOrdinal + 1}</b>
@@ -397,7 +397,7 @@
                     <span class="lane-row__arms">${buttons}</span>
                 </div>`;
             }).join('');
-            const undecided = questions.filter(question => !Number.isInteger(state.received[question.key])).length;
+            const undecided = questions.filter(question => state.received[question.key] === undefined).length;
             return `<div class="decision-card__sub">
                     <h4>Which lane of the arm does it enter?</h4>
                     <p>Lane 1 is the leftmost of the receiving arm.${undecided
@@ -493,7 +493,8 @@
             card.querySelectorAll('[data-receive]').forEach(button => {
                 button.addEventListener('click', () => {
                     const key = button.dataset.receive;
-                    const ordinal = Number(button.dataset.ordinal);
+                    const rawOrdinal = button.dataset.ordinal;
+                    const ordinal = /^\d+$/.test(rawOrdinal) ? Number(rawOrdinal) : rawOrdinal;
                     // Tapping the chosen one again clears it, back to the rule's own pairing.
                     if (state.received[key] === ordinal) delete state.received[key];
                     else state.received[key] = ordinal;

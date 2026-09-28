@@ -227,7 +227,8 @@
     // turn:lanes in, and the order movements must preserve because lanes cannot cross inside a
     // junction. `ordinal` already carries it for both directions; this only makes the reliance plain.
     function leftToRight(lanes) {
-        return lanes.slice().sort((a, b) => (a.ordinal || 0) - (b.ordinal || 0));
+        return lanes.slice().sort((a, b) => (a.travelOrdinal ?? a.ordinal ?? 0)
+            - (b.travelOrdinal ?? b.ordinal ?? 0));
     }
 
     // A bus lane is not interchangeable with a general one, so pairing an arm by order would put
@@ -448,9 +449,6 @@
         const lanes = sectionIds.flatMap(sectionId => lanesBySection.get(sectionId) || [])
             .filter(lane => !['no', 'private'].includes(lane.access));
         const touching = lanes.filter(lane => lane.fromNode === node.id || lane.toNode === node.id);
-        // A `lanes:both_ways` centre lane belongs to neither approach; who may use it to turn is a
-        // judgement, not a count.
-        if (touching.some(lane => lane.direction === 'both')) return { declined: 'two_way_centre_lane' };
         if (!touching.some(lane => lane.toNode === node.id)
             || !touching.some(lane => lane.fromNode === node.id)) {
             return { declined: 'no_incoming_or_no_outgoing' };

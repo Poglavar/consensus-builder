@@ -174,6 +174,38 @@ describe('deterministic OSM lane graph', () => {
         }));
     });
 
+    it('models a two-way centre lane as two travel incidences on one physical strip', () => {
+        const graph = LaneTopologyGraph.build([
+            way(779283873, [[15.95291, 45.78573], [15.95280, 45.78557]], {
+                highway: 'secondary', lanes: '3',
+                'lanes:forward': '1', 'lanes:backward': '1', 'lanes:both_ways': '1',
+                'turn:lanes:both_ways': 'left'
+            }, [200, 201])
+        ], BUILD_OPTIONS);
+        const centre = graph.lanes.filter(lane => lane.centreLane);
+        const physicalStrips = graph.sections[0].profile.strips
+            .filter(strip => strip.type === 'driving' || strip.type === 'bus');
+
+        expect(physicalStrips).toHaveLength(3);
+        expect(physicalStrips.filter(strip => strip.direction === 'both')).toHaveLength(1);
+        expect(centre).toHaveLength(2);
+        expect(centre.map(lane => lane.direction).sort()).toEqual(['backward', 'forward']);
+        expect(new Set(centre.map(lane => lane.physicalLaneId)).size).toBe(1);
+        expect(centre.every(lane => lane.turn === 'left')).toBe(true);
+        // Ordinary lane IDs retain their pre-centre ordinals; rules use travelOrdinal when the
+        // physical strip has to sit between them.
+        expect(graph.lanes.filter(lane => !lane.centreLane).map(lane => lane.id).sort())
+            .toEqual([
+                'lane:section:osm:779283873:0:osm-node:200:osm-node:201:backward:0',
+                'lane:section:osm:779283873:0:osm-node:200:osm-node:201:forward:0'
+            ]);
+        expect(centre.map(lane => lane.travelOrdinal).sort()).toEqual([0, 0]);
+        expect(graph.lanes.filter(lane => !lane.centreLane).map(lane => lane.travelOrdinal).sort())
+            .toEqual([1, 1]);
+        expect(centre.map(lane => lane.geometry.coordinates[0]).sort((a, b) => a[0] - b[0]))
+            .toEqual([[15.9528, 45.78557], [15.95291, 45.78573]]);
+    });
+
     // Every lane-wise OSM key (turn:lanes, psv:lanes, access:lanes, …) drops its :forward/:backward
     // suffix on a one-way street, because with one direction of travel there is nothing to
     // disambiguate. Reading only the suffixed form threw away the turn assignment on 14 of the 15

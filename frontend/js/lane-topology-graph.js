@@ -390,19 +390,18 @@
         return sections.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
     }
 
-    function applyLaneEvidence(lanes, tags, direction) {
+    function applyLaneEvidence(lanes, tags, direction, predicate = () => true, tagDirection = direction) {
         const ordered = lanes
-            .filter(lane => lane.direction === direction)
+            .filter(lane => lane.direction === direction && predicate(lane))
             .sort((a, b) => direction === 'backward' ? b.stripIndex - a.stripIndex : a.stripIndex - b.stripIndex);
-        const access = splitLaneTokens(tags, 'access:lanes', direction);
-        const psv = splitLaneTokens(tags, 'psv:lanes', direction);
-        const turns = splitLaneTokens(tags, 'turn:lanes', direction);
-        const changes = splitLaneTokens(tags, 'change:lanes', direction);
-        const embedded = splitLaneTokens(tags, 'embedded_rails:lanes', direction);
-        const railway = splitLaneTokens(tags, 'railway:lanes', direction);
+        const access = splitLaneTokens(tags, 'access:lanes', tagDirection);
+        const psv = splitLaneTokens(tags, 'psv:lanes', tagDirection);
+        const turns = splitLaneTokens(tags, 'turn:lanes', tagDirection);
+        const changes = splitLaneTokens(tags, 'change:lanes', tagDirection);
+        const embedded = splitLaneTokens(tags, 'embedded_rails:lanes', tagDirection);
+        const railway = splitLaneTokens(tags, 'railway:lanes', tagDirection);
 
         ordered.forEach((lane, index) => {
-            lane.ordinal = index;
             // A way-level prohibition applies to every lane unless lane-specific (or more
             // specific motor-vehicle) access overrides it.
             lane.access = access[index] || tags.motorcar || tags.motor_vehicle
@@ -417,6 +416,24 @@
                 lane.access = 'psv';
             }
         });
+    }
+
+    // `ordinal` is part of ordinary lane IDs and of stored human decisions. Centre incidences must
+    // never renumber those lanes just because they share the cross-section.
+    function assignLaneOrdinals(lanes, direction, predicate = () => true) {
+        lanes
+            .filter(lane => lane.direction === direction && predicate(lane))
+            .sort((a, b) => direction === 'backward' ? b.stripIndex - a.stripIndex : a.stripIndex - b.stripIndex)
+            .forEach((lane, index) => { lane.ordinal = index; });
+    }
+
+    // Rules still need the physical left-to-right order across ordinary and centre incidences.
+    // This deliberately has a new name: it is not a durable ordinary-lane ordinal.
+    function assignTravelOrdinals(lanes, direction) {
+        lanes
+            .filter(lane => lane.direction === direction)
+            .sort((a, b) => direction === 'backward' ? b.stripIndex - a.stripIndex : a.stripIndex - b.stripIndex)
+            .forEach((lane, index) => { lane.travelOrdinal = index; });
     }
 
 
@@ -517,10 +534,18 @@
             profileForTags(section.tags, counts, options), section, options, problems
         );
         const spans = stripSpans(profile);
+        // A `lanes:both_ways` strip is one piece of asphalt, but it has two directed endpoint
+        // incidences. Keep that distinction explicit: `physicalLaneId` identifies the one strip
+        // in the cross-section, while the forward/backward records identify traffic travelling on
+        // it. Junction connections must use the latter; rendering can still group by the former.
         const lanes = spans
             .filter(span => span.type === 'driving' || span.type === 'bus')
-            .map(span => {
-                const direction = span.direction || 'both';
+            .flatMap(span => {
+                const physicalDirection = span.direction || 'both';
+                const directions = physicalDirection === 'both'
+                    ? ['forward', 'backward']
+                    : [physicalDirection];
+                return directions.map(direction => {
                 const travelCoordinates = direction === 'backward'
                     ? offsetCoordinates(section.coordinates, span.offset).reverse()
                     : offsetCoordinates(section.coordinates, span.offset);
@@ -532,7 +557,11 @@
                     sourceWayId: section.sourceWayId,
                     stripIndex: span.index,
                     ordinal: 0,
+                    travelOrdinal: 0,
                     direction,
+                    physicalDirection,
+                    physicalLaneId: `lane:${section.id}:${physicalDirection}:${span.index}`,
+                    centreLane: physicalDirection === 'both',
                     type: span.type,
                     width: span.width,
                     offset: span.offset,
@@ -545,14 +574,27 @@
                     toNode,
                     geometry: { type: 'LineString', coordinates: travelCoordinates }
                 };
+                });
             });
-        ['forward', 'backward', 'both'].forEach(direction => applyLaneEvidence(lanes, section.tags, direction));
+        // A centre lane's tags have their own OSM namespace. Applying `turn:lanes:forward` to
+        // it would silently claim that a normal carriageway marking controls the shared strip.
+        ['forward', 'backward'].forEach(direction => applyLaneEvidence(lanes, section.tags, direction,
+            lane => !lane.centreLane));
+        ['forward', 'backward'].forEach(direction => applyLaneEvidence(lanes, section.tags, direction,
+            lane => lane.centreLane, 'both_ways'));
+        ['forward', 'backward'].forEach(direction => {
+            assignLaneOrdinals(lanes, direction, lane => !lane.centreLane);
+            assignTravelOrdinals(lanes, direction);
+        });
         lanes.forEach(lane => {
-            lane.id = `lane:${section.id}:${lane.direction}:${lane.ordinal}`;
+            lane.id = lane.centreLane
+                ? `lane:${section.id}:both:${lane.stripIndex}:${lane.direction}`
+                : `lane:${section.id}:${lane.direction}:${lane.ordinal}`;
             const span = spans.find(candidate => candidate.index === lane.stripIndex);
             if (span) {
                 span.type = lane.type;
-                span.direction = lane.direction;
+                // Do not overwrite a physical centre strip with the last directional record.
+                span.direction = lane.physicalDirection;
                 span.embeddedRail = lane.embeddedRail;
                 span.access = lane.access;
             }
@@ -595,8 +637,8 @@
         if (sectionIds.length !== 2 || (node.degree !== 2 && !options.publicPassThrough)) return;
         const lanes = sectionIds.flatMap(sectionId => lanesBySection.get(sectionId) || [])
             .filter(lane => !options.publicPassThrough || !['no', 'private'].includes(lane.access));
-        const incoming = lanes.filter(lane => lane.toNode === node.id && lane.direction !== 'both');
-        const outgoing = lanes.filter(lane => lane.fromNode === node.id && lane.direction !== 'both');
+        const incoming = lanes.filter(lane => lane.toNode === node.id);
+        const outgoing = lanes.filter(lane => lane.fromNode === node.id);
         if (!incoming.length && !outgoing.length) return;
 
         const candidates = [];
