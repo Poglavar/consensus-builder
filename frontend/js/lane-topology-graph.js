@@ -590,10 +590,11 @@
         );
     }
 
-    function connectSimpleNode(node, sectionsById, lanesBySection, connections, problems) {
-        const sectionIds = [...new Set(node.sectionIds)];
-        if (sectionIds.length !== 2 || node.degree !== 2) return;
-        const lanes = sectionIds.flatMap(sectionId => lanesBySection.get(sectionId) || []);
+    function connectSimpleNode(node, sectionsById, lanesBySection, connections, problems, options = {}) {
+        const sectionIds = options.sectionIds || [...new Set(node.sectionIds)];
+        if (sectionIds.length !== 2 || (node.degree !== 2 && !options.publicPassThrough)) return;
+        const lanes = sectionIds.flatMap(sectionId => lanesBySection.get(sectionId) || [])
+            .filter(lane => !options.publicPassThrough || !['no', 'private'].includes(lane.access));
         const incoming = lanes.filter(lane => lane.toNode === node.id && lane.direction !== 'both');
         const outgoing = lanes.filter(lane => lane.fromNode === node.id && lane.direction !== 'both');
         if (!incoming.length && !outgoing.length) return;
@@ -732,6 +733,27 @@
         return [...nodes.values()].sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
     }
 
+    // A private driveway can split a public OSM way into two atomic sections and make its node
+    // look like a three-arm junction. Its turn:lanes tags may describe the next real intersection,
+    // not a turn into the private driveway. Preserve the same-way public continuation without
+    // assigning any public movement to the private arm.
+    function publicPassThroughSections(node, sectionsById, lanesBySection, restrictionsByNode) {
+        if (node.degree < 3) return null;
+        const publicIds = [...new Set(node.sectionIds)].filter(sectionId =>
+            (lanesBySection.get(sectionId) || []).some(lane =>
+                !['no', 'private'].includes(lane.access)));
+        if (publicIds.length !== 2 || publicIds.length === new Set(node.sectionIds).size) return null;
+        const [first, second] = publicIds.map(id => sectionsById.get(id));
+        if (!first?.sourceWayId || first.sourceWayId !== second?.sourceWayId) return null;
+        const sequential = (first.endNode === node.id && second.startNode === node.id)
+            || (second.endNode === node.id && first.startNode === node.id);
+        if (!sequential) return null;
+        const wayId = String(first.sourceWayId);
+        if ((restrictionsByNode.get(node.id) || []).some(rule =>
+            rule.fromWayId === wayId || rule.toWayId === wayId)) return null;
+        return publicIds;
+    }
+
     function boundsOf(features) {
         const coordinates = features.flatMap(feature => feature.coordinates);
         if (!coordinates.length) return null;
@@ -769,16 +791,29 @@
         const nodes = graphNodes(sections);
         const connections = [];
         const sectionsById = new Map(sections.map(section => [section.id, section]));
-        nodes.forEach(node => connectSimpleNode(node, sectionsById, lanesBySection, connections, problems));
+        const rules = junctionRulesModule();
+        const restrictionsByNode = rules.indexRestrictions(options.restrictions);
+        const publicPassThroughNodes = new Set();
+        nodes.forEach(node => {
+            const publicSections = publicPassThroughSections(
+                node, sectionsById, lanesBySection, restrictionsByNode
+            );
+            if (publicSections) {
+                const previousConnectionCount = connections.length;
+                connectSimpleNode(node, sectionsById, lanesBySection, connections, problems,
+                    { sectionIds: publicSections, publicPassThrough: true });
+                if (connections.length > previousConnectionCount) publicPassThroughNodes.add(node.id);
+            } else {
+                connectSimpleNode(node, sectionsById, lanesBySection, connections, problems);
+            }
+        });
 
         // A junction with one lane per direction on every arm has no lane assignment to decide, so
         // it is settled here rather than queued for recognition. Everything the rules decline stays
         // unresolved, and that residue IS the recognition queue.
-        const rules = junctionRulesModule();
-        const restrictionsByNode = rules.indexRestrictions(options.restrictions);
-        let resolvedIntersections = 0;
+        let resolvedIntersections = publicPassThroughNodes.size;
         let partialIntersections = 0;
-        nodes.filter(node => node.degree > 2).forEach(node => {
+        nodes.filter(node => node.degree > 2 && !publicPassThroughNodes.has(node.id)).forEach(node => {
             const outcome = rules.resolveNode(node, { sectionsById, lanesBySection, restrictionsByNode });
             connections.push(...(outcome.connections || []));
             const open = outcome.open || [];

@@ -45,6 +45,47 @@ describe('deterministic OSM lane graph', () => {
         expect(graph.problems).toHaveLength(0);
     });
 
+    it('continues a public way past a private driveway without treating it as a junction', () => {
+        const graph = LaneTopologyGraph.build([
+            way(288718266, [[15.98, 45.80], [15.981, 45.80], [15.982, 45.80]], {
+                highway: 'secondary', oneway: 'yes', lanes: '2', 'turn:lanes': 'left|right'
+            }, [10, 20, 30]),
+            way(386193525, [[15.981, 45.80], [15.981, 45.801]], {
+                highway: 'service', service: 'parking_aisle', access: 'private'
+            }, [20, 40])
+        ], BUILD_OPTIONS);
+
+        const atDriveway = graph.connections.filter(connection => connection.nodeId === 'osm-node:20');
+        expect(atDriveway).toHaveLength(2);
+        expect(atDriveway.every(connection => connection.type === 'continue')).toBe(true);
+        expect(atDriveway.every(connection => {
+            const from = graph.lanes.find(lane => lane.id === connection.fromLaneId);
+            const to = graph.lanes.find(lane => lane.id === connection.toLaneId);
+            return from.sourceWayId === '288718266' && to.sourceWayId === '288718266'
+                && from.stripIndex === to.stripIndex;
+        })).toBe(true);
+        expect(graph.problems.some(problem => problem.type === 'unresolved_intersection'
+            && problem.nodeIds?.includes('osm-node:20'))).toBe(false);
+    });
+
+    it('does not bypass a destination-access side road as if it were private', () => {
+        const graph = LaneTopologyGraph.build([
+            way(1, [[15.98, 45.80], [15.981, 45.80], [15.982, 45.80]], {
+                highway: 'secondary', oneway: 'yes', lanes: '2', 'turn:lanes': 'left|right'
+            }, [10, 20, 30]),
+            way(2, [[15.981, 45.80], [15.981, 45.801]], {
+                highway: 'service', access: 'destination'
+            }, [20, 40])
+        ], BUILD_OPTIONS);
+
+        const atJunction = graph.connections.filter(connection => connection.nodeId === 'osm-node:20');
+        expect(atJunction.some(connection => {
+            const from = graph.lanes.find(lane => lane.id === connection.fromLaneId);
+            const to = graph.lanes.find(lane => lane.id === connection.toLaneId);
+            return from.sourceWayId === '2' || to.sourceWayId === '2';
+        })).toBe(true);
+    });
+
     it('represents one added lane as a binary split', () => {
         const graph = LaneTopologyGraph.build([
             way(1, [[15.96, 45.80], [15.961, 45.80]], {

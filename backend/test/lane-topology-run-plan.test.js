@@ -6,7 +6,27 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const LaneTopologyRunPlan = require('../../frontend/js/lane-topology-run-plan.js');
 
-const { buildRunPlan, evidenceForBbox, featureBbox } = LaneTopologyRunPlan;
+const { buildRunPlan, evidenceForBbox, featureBbox, chooseImagerySource } = LaneTopologyRunPlan;
+
+describe('chooseImagerySource', () => {
+    const sources = [
+        { key: 'dgu', role: 'fallback', bounds: [13, 42, 19, 47] },
+        { key: 'city', role: 'primary', bounds: [15.76, 45.60, 16.27, 45.99] }
+    ];
+
+    it('prefers city coverage when the whole crop fits', () => {
+        expect(chooseImagerySource(sources, [15.9, 45.8, 16, 45.9]).key).toBe('city');
+    });
+
+    it('uses nationwide coverage when the crop crosses the city edge', () => {
+        expect(chooseImagerySource(sources, [15.75, 45.8, 15.77, 45.9]).key).toBe('dgu');
+        expect(chooseImagerySource(sources, [15.63, 45.65, 15.64, 45.66]).key).toBe('dgu');
+    });
+
+    it('returns no source outside all advertised bounds', () => {
+        expect(chooseImagerySource(sources, [12, 45, 12.1, 45.1])).toBeNull();
+    });
+});
 
 function way(id, coordinates) {
     return {

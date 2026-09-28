@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { createRequire } from 'node:module';
 import { normalizeImageryObservations } from './imagery-observations.js';
 
-export const TOPOLOGY_PROMPT_VERSION = 'lane-topology-v12';
+export const TOPOLOGY_PROMPT_VERSION = 'lane-topology-v13';
 // The same question about the same crop, but not at the same speed, so not the same ceiling.
 //
 // 15 minutes came from codex, whose runs average 222 s and whose slowest measured junction was
@@ -294,6 +294,9 @@ export function buildRecognitionPrompt(input) {
         '- Respect oneway, access, PSV, tram, turn-lane and restriction evidence.',
         '- When orthophoto evidence is attached, inspect orthophoto.jpg before deciding physical continuations, tapers, splits or merges.',
         '- The orthophoto is north-up and spatially registered by the imagery metadata in the evidence package.',
+        ...(input?.imagery?.source?.key === 'dgu_dof_lidar_2022_2023'
+            ? ['- The DGU orthophoto has a translucent GEOPORTAL watermark. Ignore the watermark when tracing road markings and describe obscured details as uncertain.']
+            : []),
         '- Treat imagery as physical evidence from its capture date, not as proof of current legal access or turn permissions.',
         '- Record visible physical geometry in imagery_observations. Use normalized image coordinates [x,y] from 0 to 1, with [0,0] at the top-left.',
         '- Supported observation kinds: road_edge, lane_divider, median_edge, stop_line, taper_start, merge_point and split_point.',

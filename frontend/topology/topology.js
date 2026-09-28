@@ -72,6 +72,7 @@
         selectedOsmLayer: null,
         providerInfo: null,
         runDialog: { provider: null, bbox: null, plan: null },
+        imagerySources: [],
         imagerySource: null,
         imageryTileLayer: null,
         requestedSolutionId: initialSolutionId,
@@ -209,10 +210,35 @@
             && bbox[1] < bounds[3] && bbox[3] > bounds[1];
     }
 
+    function selectImagerySource(bbox) {
+        const source = window.LaneTopologyRunPlan.chooseImagerySource(state.imagerySources, bbox);
+        if (source?.key === state.imagerySource?.key) return source;
+        state.imagerySource = source;
+        layers.imagery.clearLayers();
+        state.imageryTileLayer = null;
+        if (!source) return null;
+        const extent = source.bounds;
+        state.imageryTileLayer = L.tileLayer.wms(source.wmsUrl, {
+            pane: 'topology-imagery',
+            layers: source.wmsLayer,
+            version: '1.1.1',
+            format: 'image/jpeg',
+            transparent: false,
+            maxZoom: 22,
+            attribution: source.attribution,
+            opacity: .9,
+            ...(Array.isArray(extent)
+                ? { bounds: L.latLngBounds([extent[1], extent[0]], [extent[3], extent[2]]) }
+                : {})
+        }).addTo(layers.imagery);
+        return source;
+    }
+
     async function updateImageryStatus() {
         const status = element('imagery-status');
+        selectImagerySource(viewportBbox());
         if (!state.imagerySource) {
-            status.textContent = 'Orthophoto source unavailable.';
+            status.textContent = 'No orthophoto source covers this area.';
             status.classList.add('is-error');
             return;
         }
@@ -249,29 +275,8 @@
     async function loadImagerySources() {
         try {
             const body = await api('/lane-topology/imagery/sources');
-            state.imagerySource = (body.sources || []).find(source => source.role === 'primary')
-                || body.sources?.[0]
-                || null;
-            layers.imagery.clearLayers();
-            if (!state.imagerySource) throw new Error('No orthophoto source is configured.');
-            const extent = state.imagerySource.bounds;
-            state.imageryTileLayer = L.tileLayer.wms(state.imagerySource.wmsUrl, {
-                pane: 'topology-imagery',
-                layers: state.imagerySource.wmsLayer,
-                version: '1.1.1',
-                format: 'image/jpeg',
-                transparent: false,
-                maxZoom: 22,
-                attribution: state.imagerySource.attribution,
-                opacity: .9,
-                // Outside its extent this WMS returns a SOLID WHITE image rather than an error or
-                // anything transparent, so an opaque layer of it blanks the map — which is what
-                // 900 m west of the coverage edge looked like: everything gone, no message.
-                // Leaflet skips tiles outside `bounds`, so the basemap simply shows through.
-                ...(Array.isArray(extent)
-                    ? { bounds: L.latLngBounds([extent[1], extent[0]], [extent[3], extent[2]]) }
-                    : {})
-            }).addTo(layers.imagery);
+            state.imagerySources = body.sources || [];
+            if (!state.imagerySources.length) throw new Error('No orthophoto source is configured.');
             await updateImageryStatus();
             applyLayerVisibility();
         } catch (error) {
@@ -1646,16 +1651,17 @@
         const provider = state.runDialog.provider;
         const bbox = state.runDialog.bbox;
         if (!provider || !bbox) return;
-        const attachImagery = element('run-dialog-imagery').checked && !!state.imagerySource;
-        element('run-dialog-imagery-note').textContent = state.imagerySource
-            ? state.imagerySource.label
+        const source = window.LaneTopologyRunPlan.chooseImagerySource(state.imagerySources, bbox);
+        const attachImagery = element('run-dialog-imagery').checked && !!source;
+        element('run-dialog-imagery-note').textContent = source
+            ? source.label
             : 'No orthophoto source configured.';
 
         let crop = null;
         if (attachImagery) {
             try {
                 const body = await api(
-                    `/lane-topology/imagery/crop-spec?source=${encodeURIComponent(state.imagerySource.key)}`
+                    `/lane-topology/imagery/crop-spec?source=${encodeURIComponent(source.key)}`
                     + `&bbox=${encodeURIComponent(bbox.join(','))}`
                 );
                 crop = body.crop;
@@ -1679,7 +1685,7 @@
             parentSolution: state.currentSolution
                 ? { id: state.currentSolution.id, sourceKind: state.currentSolution.sourceKind }
                 : null,
-            imagery: attachImagery ? state.imagerySource : null,
+            imagery: attachImagery ? source : null,
             crop,
             maxRecognitionGsdM: MAX_RECOGNITION_GSD_M,
             providerAvailable: !!(state.providerInfo?.enabled && availability?.available),

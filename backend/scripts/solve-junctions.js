@@ -311,17 +311,21 @@ async function existingSolution(base, args, bbox) {
 
 // The crop is attached per junction, so a fused junction too wide for the GSD budget loses its
 // imagery instead of failing the whole junction — OSM-only is a worse answer, not no answer.
-async function imageryForBbox(base, args, bbox) {
+export async function imageryForBbox(base, args, bbox) {
     if (!args.imagery) return null;
-    try {
-        const body = await api(base, `/lane-topology/imagery/crop-spec?source=${encodeURIComponent(args.imagery)}`
-            + `&bbox=${bbox.join(',')}`);
-        const gsd = Number(body?.crop?.effectiveGsdM);
-        if (Number.isFinite(gsd) && gsd <= MAX_RECOGNITION_GSD_M) return args.imagery;
-        return null;
-    } catch (_) {
-        return null;
+    const sources = args.imagery === 'zagreb_cdof_2022'
+        ? [args.imagery, 'dgu_dof_lidar_2022_2023'] : [args.imagery];
+    for (const source of sources) {
+        try {
+            const body = await api(base, `/lane-topology/imagery/crop-spec?source=${encodeURIComponent(source)}`
+                + `&bbox=${bbox.join(',')}`);
+            const gsd = Number(body?.crop?.effectiveGsdM);
+            return Number.isFinite(gsd) && gsd <= MAX_RECOGNITION_GSD_M ? source : null;
+        } catch (error) {
+            if (!String(error.message).includes('→ 404:')) return null;
+        }
     }
+    return null;
 }
 
 const sleep = ms => new Promise(resolve => { setTimeout(resolve, ms); });

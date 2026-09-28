@@ -486,6 +486,20 @@ describe('lane-topology CLI provider boundary', () => {
         expect(prompt).toContain('Do not re-emit sections');
     });
 
+    it('warns about the DGU watermark only when that orthophoto is attached', () => {
+        const graph = { sections: [], nodes: [], lanes: [], connections: [], problems: [] };
+        const dgu = buildRecognitionPrompt({
+            deterministicGraph: graph,
+            imagery: { source: { key: 'dgu_dof_lidar_2022_2023' } }
+        });
+        const city = buildRecognitionPrompt({
+            deterministicGraph: graph,
+            imagery: { source: { key: 'zagreb_cdof_2022' } }
+        });
+        expect(dgu).toContain('translucent GEOPORTAL watermark');
+        expect(city).not.toContain('translucent GEOPORTAL watermark');
+    });
+
     // Width is measured by the separate local-CV analysis at a higher imagery resolution. A
     // recognition run that also measures widths gives the same quantity two producers and no
     // adjudication rule, so the prompt must not ask for it at all.

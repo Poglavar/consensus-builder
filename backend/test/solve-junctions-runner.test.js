@@ -7,7 +7,7 @@
 // summary "1 failed". The cost of getting this wrong is someone re-running work that is already in
 // the database — or, worse, believing the area is less complete than it is.
 import { afterEach, describe, expect, it } from 'vitest';
-import { QUOTA_PATTERN, classifyJunctions, jobTimeoutFor, manualReviewKeys, setApiImpl, solveJunction, withRetry } from '../scripts/solve-junctions.js';
+import { QUOTA_PATTERN, classifyJunctions, imageryForBbox, jobTimeoutFor, manualReviewKeys, setApiImpl, solveJunction, withRetry } from '../scripts/solve-junctions.js';
 import { PROVIDER_TIMEOUT_MS } from '../lane-topology/cli-providers.js';
 
 const ARGS = {
@@ -40,6 +40,18 @@ function fakeApi({ readBack }) {
 }
 
 afterEach(() => setApiImpl(null));
+
+it('uses DGU imagery when the city orthophoto does not cover a junction crop', async () => {
+    const requested = [];
+    setApiImpl(async (_base, path) => {
+        requested.push(path);
+        if (path.includes('source=zagreb_cdof_2022')) throw new Error('GET crop-spec → 404: no imagery here');
+        return { crop: { effectiveGsdM: 0.25 } };
+    });
+    const source = await imageryForBbox('http://api', { imagery: 'zagreb_cdof_2022' }, BBOX);
+    expect(source).toBe('dgu_dof_lidar_2022_2023');
+    expect(requested).toHaveLength(2);
+});
 
 describe('a junction whose summary cannot be read', () => {
     it('is still solved, and says which solution holds the answer', async () => {

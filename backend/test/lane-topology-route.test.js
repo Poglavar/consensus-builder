@@ -353,6 +353,16 @@ describe('lane-topology manager API', () => {
             .get('/lane-topology/imagery/crop-spec?bbox=15.7519,45.6730,15.7539,45.6745')
             .expect(404);
         expect(spec.body.error).toContain('no imagery here');
+
+        const partial = await request(app)
+            .get('/lane-topology/imagery/crop-spec?bbox=15.7600,45.6730,15.7700,45.6800')
+            .expect(404);
+        expect(partial.body.error).toContain('no imagery here');
+
+        const fallback = await request(app)
+            .get('/lane-topology/imagery/crop-spec?source=dgu_dof_lidar_2022_2023&bbox=15.7600,45.6730,15.7700,45.6800')
+            .expect(200);
+        expect(fallback.body.crop.source.key).toBe('dgu_dof_lidar_2022_2023');
     });
 
     // The page cap used to be silent: asking for 500 returned the newest 100 and said nothing, so

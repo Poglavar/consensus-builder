@@ -14,7 +14,7 @@ import {
     imageryCropSpec,
     publicImagerySource,
     resolveImagerySource,
-    withinImageryCoverage
+    coversImageryBbox
 } from '../lane-topology/imagery.js';
 import {
     LANE_WIDTH_ALGORITHM_VERSION,
@@ -659,7 +659,7 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
         // Outside its extent this WMS answers 200 with a solid white image. Passing that on would
         // hand a recognition run a blank photograph, which it would describe rather than reject —
         // a confident answer about nothing is far worse than a missing crop.
-        if (!withinImageryCoverage(source, bbox)) {
+        if (!coversImageryBbox(source, bbox)) {
             return res.status(404).json({
                 error: `${source.label} has no imagery here; its coverage is `
                     + `${source.bounds.join(',')}.`
@@ -691,7 +691,7 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
         }
         const source = resolveImagerySource(req.query.source || 'zagreb_cdof_2022');
         if (!source) return res.status(400).json({ error: 'Unknown orthophoto source.' });
-        if (!withinImageryCoverage(source, bbox)) {
+        if (!coversImageryBbox(source, bbox)) {
             return res.status(404).json({
                 error: `${source.label} has no imagery here; its coverage is `
                     + `${source.bounds.join(',')}.`
@@ -1132,7 +1132,11 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
             return res.status(400).json({ error: 'Unknown orthophoto source.' });
         }
         if (imagerySourceKey) {
-            const crop = imageryCropSpec(resolveImagerySource(imagerySourceKey), bbox, {
+            const source = resolveImagerySource(imagerySourceKey);
+            if (!coversImageryBbox(source, bbox)) {
+                return res.status(400).json({ error: `${source.label} does not cover the whole crop.` });
+            }
+            const crop = imageryCropSpec(source, bbox, {
                 maxDimension: options.imageryMaxDimension
             });
             if (crop.effectiveGsdM > MAX_RECOGNITION_GSD_M) {

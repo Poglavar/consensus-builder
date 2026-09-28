@@ -436,7 +436,13 @@
         if ((node?.degree || 0) < 3) return { declined: 'not_a_junction' };
 
         const sectionIds = [...new Set(node.sectionIds || [])];
-        if (sectionIds.length > MAX_RESOLVABLE_ARMS) return { declined: 'arms_over_cap' };
+        // Private and explicitly closed arms are visible OSM geometry, but they do not enlarge
+        // the public movement problem. Two private service links pushed an ordinary five-arm
+        // junction past this cap.
+        const publicSectionIds = sectionIds.filter(sectionId =>
+            (lanesBySection.get(sectionId) || []).some(lane =>
+                !['no', 'private'].includes(lane.access)));
+        if (publicSectionIds.length > MAX_RESOLVABLE_ARMS) return { declined: 'arms_over_cap' };
         if (sectionIds.length < 3) return { declined: 'fewer_than_three_arms' };
 
         const lanes = sectionIds.flatMap(sectionId => lanesBySection.get(sectionId) || [])

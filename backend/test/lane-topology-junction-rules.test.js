@@ -199,6 +199,25 @@ describe('deterministic junction rules', () => {
             .toHaveLength(0);
     });
 
+    it('does not count private arms against the public junction arm cap', () => {
+        const privateSpurs = [
+            [15.979, 45.801], [15.981, 45.801],
+            [15.979, 45.799], [15.981, 45.799]
+        ].map((point, index) => way(10 + index, [CENTRE, point], {
+            highway: 'service', access: 'private'
+        }, [100, 40 + index]));
+        const graph = LaneTopologyGraph.build([...tJunction(), ...privateSpurs], BUILD_OPTIONS);
+        const lanes = new Map(graph.lanes.map(lane => [lane.id, lane]));
+
+        expect(graph.nodes.find(node => node.id === 'osm-node:100').degree).toBe(7);
+        expect(junctionConnections(graph)).toHaveLength(6);
+        expect(junctionConnections(graph).every(connection =>
+            lanes.get(connection.fromLaneId).access !== 'private'
+            && lanes.get(connection.toLaneId).access !== 'private')).toBe(true);
+        expect(graph.problems.some(problem => problem.type === 'unresolved_intersection'
+            && problem.declineReason === 'arms_over_cap')).toBe(false);
+    });
+
     it('keeps a public road continuous around a sharp bend beside a private spur', () => {
         // The bearing baseline reaches past the first bend and makes this look like a U-turn.
         // Both public sections are one OSM way, and they are each other's sole public exit.

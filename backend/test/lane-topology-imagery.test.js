@@ -3,6 +3,7 @@ import {
     LANE_IMAGERY_SOURCES,
     fetchImageryCrop,
     imageryCropSpec,
+    coversImageryBbox,
     withinImageryCoverage,
     publicImagerySource,
     resolveImagerySource
@@ -20,6 +21,27 @@ describe('lane topology orthophoto evidence', () => {
             nativeGsdM: 0.15,
             wmsLayer: 'ZG_CDOF2022'
         }));
+    });
+
+    it('offers DGU orthophoto evidence for junctions west of the city crop', () => {
+        const source = resolveImagerySource('dgu_dof_lidar_2022_2023');
+        const cvetkovacka = [15.63886466, 45.65876054, 15.64014994, 45.65965886];
+        const spec = imageryCropSpec(source, cvetkovacka);
+        const url = new URL(spec.url);
+
+        expect(publicImagerySource(source)).toEqual(expect.objectContaining({
+            capturedAt: '2022–2023',
+            nativeGsdM: 0.25,
+            wmsLayer: 'OI.OrthoimageCoverage',
+            coverage: 'croatia',
+            role: 'fallback'
+        }));
+        expect(withinImageryCoverage(LANE_IMAGERY_SOURCES.zagreb_cdof_2022, cvetkovacka)).toBe(false);
+        expect(withinImageryCoverage(source, cvetkovacka)).toBe(true);
+        expect(coversImageryBbox(source, cvetkovacka)).toBe(true);
+        expect(url.hostname).toBe('geoportal.dgu.hr');
+        expect(url.searchParams.get('LAYERS')).toBe('OI.OrthoimageCoverage');
+        expect(spec.effectiveGsdM).toBeCloseTo(0.25, 2);
     });
 
     it('requests a north-up, bounded WMS crop and reports its effective resolution', () => {
@@ -95,8 +117,10 @@ describe('lane topology orthophoto evidence', () => {
 
         it('accepts one inside it, and one that merely overlaps the edge', () => {
             expect(withinImageryCoverage(source, [15.9780, 45.8070, 15.9800, 45.8085])).toBe(true);
+            expect(coversImageryBbox(source, [15.9780, 45.8070, 15.9800, 45.8085])).toBe(true);
             // Straddling the western edge still has imagery in part of it.
             expect(withinImageryCoverage(source, [15.7600, 45.6730, 15.7700, 45.6800])).toBe(true);
+            expect(coversImageryBbox(source, [15.7600, 45.6730, 15.7700, 45.6800])).toBe(false);
         });
 
         it('does not gate a source that declares no extent', () => {

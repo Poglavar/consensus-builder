@@ -21,6 +21,22 @@ export const LANE_IMAGERY_SOURCES = Object.freeze({
         // A rectangle is the outer bound, not the shape: the data follows the city's
         // administrative outline, so inside this box imagery is possible, never guaranteed.
         bounds: Object.freeze([15.7643127, 45.6055652, 16.2692342, 45.9855807])
+    }),
+    dgu_dof_lidar_2022_2023: Object.freeze({
+        key: 'dgu_dof_lidar_2022_2023',
+        label: 'DGU LiDAR orthophoto 2022–2023',
+        capturedAt: '2022–2023',
+        nativeGsdM: 0.25,
+        // Anonymous nationwide WMS from the DGU Geoportal. Its GetCapabilities advertises
+        // OI.OrthoimageCoverage and the bounds below; the returned image has a GEOPORTAL
+        // watermark, which must not be mistaken for a road marking.
+        // https://geoportal.dgu.hr/cms/en/data-and-services/
+        url: 'https://geoportal.dgu.hr/services/inspire/orthophoto_lidar_2022_2023/wms',
+        layer: 'OI.OrthoimageCoverage',
+        attribution: 'Ortofoto: Državna geodetska uprava',
+        role: 'fallback',
+        coverage: 'croatia',
+        bounds: Object.freeze([13.41104434, 42.33152803, 19.23748473, 46.56150289])
     })
 });
 
@@ -30,6 +46,13 @@ export function withinImageryCoverage(source, bbox) {
     if (!Array.isArray(bounds) || !Array.isArray(bbox) || bbox.length !== 4) return true;
     const [west, south, east, north] = bbox;
     return west < bounds[2] && east > bounds[0] && south < bounds[3] && north > bounds[1];
+}
+
+export function coversImageryBbox(source, bbox) {
+    const bounds = source?.bounds;
+    if (!Array.isArray(bounds) || !Array.isArray(bbox) || bbox.length !== 4) return true;
+    return bbox[0] >= bounds[0] && bbox[1] >= bounds[1]
+        && bbox[2] <= bounds[2] && bbox[3] <= bounds[3];
 }
 
 function radians(value) {

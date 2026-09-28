@@ -24,6 +24,15 @@
         return Number.isFinite(west) ? [west, south, east, north] : null;
     }
 
+    function chooseImagerySource(sources, bbox) {
+        if (!Array.isArray(sources) || !Array.isArray(bbox) || bbox.length !== 4) return null;
+        const ordered = [...sources].sort((a, b) => (a.role === 'primary' ? 0 : 1)
+            - (b.role === 'primary' ? 0 : 1));
+        return ordered.find(source => !Array.isArray(source.bounds)
+            || (bbox[0] >= source.bounds[0] && bbox[1] >= source.bounds[1]
+                && bbox[2] <= source.bounds[2] && bbox[3] <= source.bounds[3])) || null;
+    }
+
     // Mirrors the backend's `geom && ST_MakeEnvelope(...)`: a way is in scope when it INTERSECTS the
     // bbox. The client holds evidence for a padded area, so previewing without this overstates the run.
     function evidenceForBbox(evidence, bbox) {
@@ -134,5 +143,5 @@
         };
     }
 
-    return { buildRunPlan, evidenceForBbox, featureBbox };
+    return { buildRunPlan, evidenceForBbox, featureBbox, chooseImagerySource };
 });
