@@ -60,6 +60,11 @@
             prompt: 'Which way can each lane go?',
             why: 'The lane tags and the turn restrictions here contradict each other, so nothing was emitted.'
         },
+        unassigned_incoming_lane: {
+            kind: 'lane_exits',
+            prompt: 'Which way can each lane go?',
+            why: 'At least one incoming driving lane has no supported exit, so this approach remains open.'
+        },
         two_way_centre_lane: {
             kind: 'unsupported',
             prompt: 'Centre-lane junction',

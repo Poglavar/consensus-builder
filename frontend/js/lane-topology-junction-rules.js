@@ -619,6 +619,10 @@
             // An approach that can reach nothing means the tags and the restrictions contradict each
             // other or the geometry. That is a finding, not a settled approach.
             if (!decided.length) { leaveOpen('approach_reaches_nothing'); continue; }
+            if (approach.some(lane => !decided.some(connection => connection.fromLaneId === lane.id))) {
+                leaveOpen('unassigned_incoming_lane');
+                continue;
+            }
             connections.push(...decided);
         }
 

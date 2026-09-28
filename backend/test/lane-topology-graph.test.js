@@ -84,6 +84,9 @@ describe('deterministic OSM lane graph', () => {
             const to = graph.lanes.find(lane => lane.id === connection.toLaneId);
             return from.sourceWayId === '2' || to.sourceWayId === '2';
         })).toBe(true);
+        expect(graph.problems.some(problem => problem.type === 'unresolved_intersection'
+            && problem.nodeIds?.includes('osm-node:20')
+            && problem.openApproaches?.some(entry => entry.reason === 'unassigned_incoming_lane'))).toBe(true);
     });
 
     it('represents one added lane as a binary split', () => {

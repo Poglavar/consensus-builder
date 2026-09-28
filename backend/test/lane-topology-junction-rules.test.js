@@ -304,7 +304,7 @@ describe('deterministic junction rules', () => {
     // token says which movement each lane makes and lanes cannot cross inside the junction.
     describe('multi-lane approaches named by turn:lanes', () => {
         // West approach is one-way east with three lanes: left, through, through-or-right.
-        // Ilica continues east with two lanes; Frankopanska heads south with one.
+        // Ilica continues east with two lanes; Frankopanska heads south and a side street north.
         function taggedApproach(turn, eastTags = {}) {
             return [
                 way(1, [[15.9787, 45.8], CENTRE], {
@@ -315,7 +315,10 @@ describe('deterministic junction rules', () => {
                 }, [100, 20]),
                 way(3, [CENTRE, [15.98, 45.799]], {
                     highway: 'residential', name: 'Frankopanska', oneway: 'yes', lanes: '1'
-                }, [100, 30])
+                }, [100, 30]),
+                way(4, [CENTRE, [15.98, 45.801]], {
+                    highway: 'residential', name: 'North side street', oneway: 'yes', lanes: '1'
+                }, [100, 40])
             ];
         }
 
@@ -324,11 +327,22 @@ describe('deterministic junction rules', () => {
             const connections = junctionConnections(graph);
 
             expect(graph.stats.resolvedIntersections).toBe(1);
-            // Two through lanes into the two-lane continuation, one right into Frankopanska.
-            // The left token names a movement with no arm to make it, so it contributes nothing.
+            // Two through lanes into the continuation, plus one lane to each side street.
             expect(connections.filter(connection => connection.type === 'continue')).toHaveLength(2);
-            expect(connections.filter(connection => connection.type === 'turn')).toHaveLength(1);
+            expect(connections.filter(connection => connection.type === 'turn')).toHaveLength(2);
             expect(connections.every(connection => connection.reason.includes('turn:lanes names it'))).toBe(true);
+        });
+
+        it('keeps an approach open if a tagged lane has no matching exit', () => {
+            const graph = LaneTopologyGraph.build(
+                taggedApproach('left|through|through;right').slice(0, 3), BUILD_OPTIONS
+            );
+            expect(junctionConnections(graph).filter(connection =>
+                graph.lanes.find(lane => lane.id === connection.fromLaneId)?.sourceWayId === '1'))
+                .toHaveLength(0);
+            expect(graph.problems.some(problem => problem.type === 'unresolved_intersection'
+                && problem.openApproaches?.some(entry => entry.reason === 'unassigned_incoming_lane')))
+                .toBe(true);
         });
 
         it('pairs the through lanes in order, so no movement crosses another', () => {
