@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:121",
+  "queueRank": 121,
+  "name": "Owerri",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "centerLatLon": [
+    5.68742511130826,
+    7.03813104830766
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://landonline.lagosstate.gov.ng/",
+      "observation": "Reused from Lagos research: state land portal is account-oriented; Nigeria has no open national parcel layer found."
+    },
+    {
+      "url": "https://osgof.gov.ng/cadastral-legal-surveys/",
+      "observation": "Office of the Surveyor General of the Federation cadastral survey page (HTTP 200); describes surveys, no open polygon service."
+    },
+    {
+      "url": "https://imostate.gov.ng",
+      "observation": "Imo State government site (HTTP 200); no parcel/GIS service link found."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://imostate.gov.ng",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "homepage only"
+    },
+    {
+      "url": "https://imogis.gov.ng",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "guessed GIS host unreachable"
+    },
+    {
+      "url": "https://opendata.arcgis.com/api/v3/datasets?q=Imo%20State%20land",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "only unrelated datasets (boundaries, waterways, health); no parcels"
+    },
+    {
+      "url": "https://data.grid3.org",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "GRID3 Nigeria data hub; settlement/building layers, not cadastre"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Imo State land registry; none online found",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "State land-administration systems may hold parcels but no anonymous polygon service was found; several guessed hosts unreachable so the negative is modest.",
+  "nextStep": "Look for state Bureau of Lands/GIS portals with documented feature services; same approach as Lagos."
+}

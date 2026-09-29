@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:118",
+  "queueRank": 118,
+  "name": "Antananarivo",
+  "country": "Madagascar",
+  "countryCode": "MG",
+  "centerLatLon": [
+    -18.8651082509313,
+    47.5377709219744
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "http://www.observatoire-foncier.mg/article-121/",
+      "observation": "Observatoire du foncier Madagascar article (from search) on cadastre work; Malagasy land offices keep parcel data in PLOF software (Plan Local d'Occupation Fonciere) per secondary sources; no open service seen."
+    },
+    {
+      "url": "https://www.foncier-developpement.fr/wp-content/uploads/rapport-daudit-sur-le-foncier-a-madagascar.pdf",
+      "observation": "Audit report noting incomplete land information and cadastre coverage."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://foncier.gov.mg",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed"
+    },
+    {
+      "url": "https://mataf.gov.mg",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed"
+    },
+    {
+      "url": "http://www.observatoire-foncier.mg/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed"
+    },
+    {
+      "url": "https://opendata.arcgis.com/api/v3/datasets?q=parcelles%20Antananarivo",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "only unrelated third-party datasets (no Antananarivo parcels)"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "No national or city online parcel service identified",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "All .mg hosts tried were unreachable from this client; that is not proof of absence.",
+  "nextStep": "Retry official land-administration hosts later; look for a PLOF/guichet foncier public map."
+}
