@@ -1,0 +1,211 @@
+{
+ "type": "FeatureCollection",
+ "crs": {
+  "type": "name",
+  "properties": {
+   "name": "urn:ogc:def:crs:EPSG::4326"
+  }
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "id": "vw_ZEISPiciUsoSolo.fid--4062f12e_18c10e44e8a_-2930",
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        -38.57192899,
+        -3.76007205
+       ],
+       [
+        -38.57194785,
+        -3.76010846
+       ],
+       [
+        -38.57194502,
+        -3.76011033
+       ],
+       [
+        -38.57197963,
+        -3.76017556
+       ],
+       [
+        -38.57198274,
+        -3.76017351
+       ],
+       [
+        -38.57208401,
+        -3.7601082
+       ],
+       [
+        -38.57214996,
+        -3.76006339
+       ],
+       [
+        -38.57215347,
+        -3.76005478
+       ],
+       [
+        -38.5721571,
+        -3.76004587
+       ],
+       [
+        -38.57202045,
+        -3.76001066
+       ],
+       [
+        -38.57195704,
+        -3.76005493
+       ],
+       [
+        -38.57192899,
+        -3.76007205
+       ]
+      ]
+     ]
+    ]
+   },
+   "geometry_name": "geom",
+   "properties": {
+    "id": 1,
+    "area_lote": 239.01,
+    "fonte": "UFC",
+    "ano_ref": "2019",
+    "epsg_codif": "EPSG: 31984 (SIRGAS 2000 - UTM 24S); Codifica\u00e7\u00e3o: UTF-8",
+    "testada": null,
+    "pavimentos": null,
+    "patrimonio": null,
+    "uso_solo": null
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "vw_ZEISPiciUsoSolo.fid--4062f12e_18c10e44e8a_-292f",
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        -38.57290986,
+        -3.76030847
+       ],
+       [
+        -38.57288941,
+        -3.760262
+       ],
+       [
+        -38.57264656,
+        -3.76038679
+       ],
+       [
+        -38.5726444,
+        -3.7603879
+       ],
+       [
+        -38.57256055,
+        -3.76043099
+       ],
+       [
+        -38.5725847,
+        -3.76047495
+       ],
+       [
+        -38.57264437,
+        -3.76044336
+       ],
+       [
+        -38.57264653,
+        -3.76044221
+       ],
+       [
+        -38.57280793,
+        -3.76035675
+       ],
+       [
+        -38.57290986,
+        -3.76030847
+       ]
+      ]
+     ]
+    ]
+   },
+   "geometry_name": "geom",
+   "properties": {
+    "id": 2,
+    "area_lote": 219.61,
+    "fonte": "UFC",
+    "ano_ref": "2019",
+    "epsg_codif": "EPSG: 31984 (SIRGAS 2000 - UTM 24S); Codifica\u00e7\u00e3o: UTF-8",
+    "testada": null,
+    "pavimentos": null,
+    "patrimonio": null,
+    "uso_solo": null
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "vw_ZEISPiciUsoSolo.fid--4062f12e_18c10e44e8a_-292e",
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        -38.57215347,
+        -3.76005478
+       ],
+       [
+        -38.57214996,
+        -3.76006339
+       ],
+       [
+        -38.57208401,
+        -3.7601082
+       ],
+       [
+        -38.57198274,
+        -3.76017351
+       ],
+       [
+        -38.57201606,
+        -3.7602364
+       ],
+       [
+        -38.57201609,
+        -3.76023626
+       ],
+       [
+        -38.5721762,
+        -3.76012707
+       ],
+       [
+        -38.57219031,
+        -3.76006271
+       ],
+       [
+        -38.57215347,
+        -3.76005478
+       ]
+      ]
+     ]
+    ]
+   },
+   "geometry_name": "geom",
+   "properties": {
+    "id": 3,
+    "area_lote": 183.71,
+    "fonte": "UFC",
+    "ano_ref": "2019",
+    "epsg_codif": "EPSG: 31984 (SIRGAS 2000 - UTM 24S); Codifica\u00e7\u00e3o: UTF-8",
+    "testada": null,
+    "pavimentos": null,
+    "patrimonio": null,
+    "uso_solo": null
+   }
+  }
+ ],
+ "_note": "first 3 of 5370 features from the downloaded ZEIS Pici lots GeoJSON"
+}

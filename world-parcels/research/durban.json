@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:153",
+  "queueRank": 153,
+  "name": "Durban",
+  "country": "South Africa",
+  "countryCode": "ZA",
+  "centerLatLon": [
+    -29.6451663770183,
+    30.7347684823797
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_city_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "za-giscoe-erven",
+    "requestUrl": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1/query?where=1%3D1&geometry=%7B%22xmin%22%3A30.9%2C%22ymin%22%3A-29.86%2C%22xmax%22%3A30.902%2C%22ymax%22%3A-29.858%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CSG21KEY%2CPROPTYPE%2CMaj_Rgn_Nme&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      30.9,
+      -29.86,
+      30.902,
+      -29.858
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "SG21KEY",
+    "responseFile": "durban-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true"
+  },
+  "source": {
+    "sourceId": "za-giscoe-erven",
+    "name": "South Africa Cadastre (Erven layer), GISCOE",
+    "operator": "Esri South Africa (GISCOE); underlying data is the Chief Surveyor-General national cadastral layer (per its service description; provenance not confirmed)",
+    "scope": "South Africa erven (claimed); verified around Johannesburg and now Durban",
+    "endpoint": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1",
+    "method": "GET ArcGIS query",
+    "responseFormat": "Esri JSON",
+    "crs": "EPSG:4326 (outSR)",
+    "reuseStatus": "not reviewed; third-party hosted copy, terms and currency unknown"
+  },
+  "portalsFound": [
+    {
+      "url": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer",
+      "observation": "Same service verified for Johannesburg (see johannesburg.json)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1/query?where=1%3D1&geometry=%7B%22xmin%22%3A30.9%2C%22ymin%22%3A-29.86%2C%22xmax%22%3A30.902%2C%22ymax%22%3A-29.858%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CSG21KEY%2CPROPTYPE%2CMaj_Rgn_Nme&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "3 erf polygons, closed rings, central Durban (eThekwini) bbox; verification"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "South Africa erven",
+    "verifiedOpenScope": "three erven in central Durban plus prior Johannesburg samples",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Third-party hosted copy of the national cadastre; terms, currency and completeness unknown. The UN city point (30.73E, -29.65) is north-west of the tested bbox; the bbox lies within the eThekwini metro. Two regions sampled from the same source, but national completeness/official status unconfirmed.",
+  "nextStep": "Confirm the official CSG/NGI source and licence; test a bbox at the exact UN centre point."
+}

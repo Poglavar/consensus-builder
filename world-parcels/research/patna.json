@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:141",
+  "queueRank": 141,
+  "name": "Patna",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    25.5970203089431,
+    85.1397184130161
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/",
+      "observation": "Bihar Bhu-Naksha (NIC): 302 redirect to viewer; no documented open parcel API; covers rural mauza cadastral maps per search results (urban Patna coverage unconfirmed)."
+    },
+    {
+      "url": "https://biharbhumi.bihar.gov.in/",
+      "observation": "Bihar land records portal (Dept. of Revenue and Land Reforms); reported by prior probe as a stub page."
+    },
+    {
+      "url": "https://bhunaksha.nic.in/bhunaksha/userguide.jsp",
+      "observation": "NIC Bhu-Naksha user guide (HTTP 200); viewer documentation only."
+    },
+    {
+      "url": "https://stategisportal.nic.in/stategisportal/Home/Map/10",
+      "observation": "Bihar State GIS portal via BharatMaps (from search); TLS chain error from this environment."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/",
+      "method": "GET",
+      "httpStatus": 302,
+      "contentType": "text/html;charset=UTF-8",
+      "assessment": "redirect only"
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/bhunaksha/",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html;charset=ISO-8859-1",
+      "assessment": "not found"
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/bhunaksha/ScalarDatahandler?OP=5&state=10",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html;charset=ISO-8859-1",
+      "assessment": "not found"
+    },
+    {
+      "url": "https://stategisportal.nic.in/stategisportal/Home/Map/10",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS verification failed (self-signed chain); not bypassed"
+    },
+    {
+      "url": "https://bhuvan.nrsc.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection failure"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Bihar rural cadastral maps (Bhu-Naksha); urban Patna parcel coverage unconfirmed",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Bhu-Naksha exposes internal viewer endpoints requiring session/parameters; terms for automated access not read. Same limitation as the Hajipur record.",
+  "nextStep": "Inspect Bhu-Naksha viewer flow and terms for permitted access; check Patna Municipal Corporation property GIS."
+}
