@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>World parcel source coverage</title>
+  <style>
+    :root { color-scheme: light; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f4f4f1; color: #1d2926; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    header { padding: 26px clamp(18px, 3vw, 44px) 18px; border-bottom: 1px solid #d8ddda; background: #fff; }
+    h1 { font-size: clamp(25px, 3vw, 38px); letter-spacing: -.045em; margin: 0 0 8px; }
+    header p { color: #5a6560; font-size: 14px; line-height: 1.5; margin: 0; max-width: 760px; }
+    main { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 18px; padding: 18px clamp(18px, 3vw, 44px) 24px; max-width: 1800px; margin: auto; }
+    .panel { background: #fff; border: 1px solid #d8ddda; border-radius: 15px; overflow: hidden; }
+    .map-top { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; padding: 16px 18px; border-bottom: 1px solid #e4e8e5; }
+    .map-top strong { font-size: 14px; }
+    .legend { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; font-size: 12px; color: #58645e; }
+    .legend span { display: inline-flex; gap: 6px; align-items: center; }
+    .key { width: 10px; height: 10px; border-radius: 50%; display: inline-block; background: #279462; }
+    .key.red { background: #d1524e; }
+    .key.country { width: 14px; border-radius: 2px; background: #b8dec9; border: 1px solid #279462; }
+    .map-wrap { padding: 16px; background: #fafbf9; }
+    svg { display: block; width: 100%; height: auto; aspect-ratio: 1200 / 505; }
+    .country { fill: #e7e9e6; stroke: #a7ada8; stroke-width: .8; vector-effect: non-scaling-stroke; }
+    .country.nationwide { fill: #b8dec9; stroke: #609c77; }
+    .city { cursor: pointer; stroke: #fff; stroke-width: 2; vector-effect: non-scaling-stroke; }
+    .city.verified { fill: #23895c; }
+    .city.unverified { fill: #cf504c; }
+    .city:hover, .city:focus, .city.selected { stroke: #26352c; stroke-width: 2.5; outline: none; }
+    .map-note { color: #65716b; font-size: 12px; line-height: 1.45; margin: 0; padding: 0 18px 17px; }
+    .sidebar-head { padding: 17px 17px 13px; border-bottom: 1px solid #e4e8e5; }
+    .sidebar-head h2 { font-size: 16px; margin: 0 0 7px; }
+    .counts { color: #66716b; font-size: 12px; }
+    .list { max-height: min(68vh, 660px); overflow: auto; }
+    .city-row { width: 100%; display: grid; grid-template-columns: 26px minmax(0, 1fr) 10px; align-items: start; gap: 8px; padding: 12px 16px; background: #fff; border: 0; border-bottom: 1px solid #edf0ed; color: inherit; text-align: left; cursor: pointer; font: inherit; }
+    .city-row:hover, .city-row:focus-visible, .city-row.selected { background: #f1f5f1; outline: none; }
+    .rank { color: #8a948d; font-size: 11px; padding-top: 3px; }
+    .city-row strong { font-size: 13px; display: block; }
+    .city-row small { display: block; color: #68746d; font-size: 11px; line-height: 1.35; margin-top: 3px; }
+    .row-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 4px; background: #cf504c; }
+    .row-dot.verified { background: #23895c; }
+    .detail { padding: 17px; border-top: 1px solid #e4e8e5; min-height: 95px; font-size: 12px; line-height: 1.5; color: #526057; }
+    .detail strong { display: block; color: #1d2926; font-size: 13px; margin-bottom: 5px; }
+    a { color: #28674a; }
+    footer { padding: 0 clamp(18px, 3vw, 44px) 26px; max-width: 1800px; margin: auto; color: #69736c; font-size: 11px; line-height: 1.5; }
+    .error { color: #a93b35; padding: 30px; }
+    @media (max-width: 900px) { main { grid-template-columns: 1fr; } .list { max-height: 300px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>World parcel source coverage</h1>
+    <p>Research progress for the largest urban areas in the UN World Urbanization Prospects 2025 queue. Green cities have a real HTTP 200 response with parcel polygons. Red cities have been attempted without a verified parcel sample, including promising sources that still need testing.</p>
+  </header>
+  <main>
+    <section class="panel" aria-label="World coverage map">
+      <div class="map-top">
+        <strong>Verified samples and research attempts</strong>
+        <div class="legend" aria-label="Map legend">
+          <span><i class="key"></i> Verified city sample</span>
+          <span><i class="key red"></i> Tried, no verified sample</span>
+          <span><i class="key country"></i> Verified nationwide source</span>
+        </div>
+      </div>
+      <div class="map-wrap"><svg id="map" viewBox="0 0 1200 505" role="img" aria-label="World map with researched cities marked"></svg></div>
+      <p class="map-note">A city marker proves only a sample, not full city coverage. A country turns green only after a national source has been independently verified and entered in the registry.</p>
+    </section>
+    <aside class="panel" aria-label="Researched cities">
+      <div class="sidebar-head"><h2>Researched cities</h2><div class="counts" id="counts">Loading registry…</div></div>
+      <div class="list" id="city-list"></div>
+      <div class="detail" id="detail">Select a city to see its evidence.</div>
+    </aside>
+  </main>
+  <footer>Country outlines: <a href="https://www.naturalearthdata.com/about/terms-of-use/">Natural Earth 1:110m</a>, public domain. City coordinates: <a href="https://www.geonames.org/">GeoNames</a>. <a href="./registry.json">Parcel registry</a> and per-city JSON evidence are kept alongside this page.</footer>
+  <script>
+    const NS = 'http://www.w3.org/2000/svg';
+    const WIDTH = 1200;
+    const HEIGHT = 505;
+    const TOP_LAT = 85;
+    const BOTTOM_LAT = -60;
+    const x = lon => (lon + 180) * WIDTH / 360;
+    const y = lat => (TOP_LAT - lat) * HEIGHT / (TOP_LAT - BOTTOM_LAT);
+    const el = (name, attrs = {}) => {
+      const node = document.createElementNS(NS, name);
+      for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, String(value));
+      return node;
+    };
+    function ringPath(ring) {
+      let path = '';
+      let previous = null;
+      for (const [lon, lat] of ring) {
+        if (lat < BOTTOM_LAT - 15) continue;
+        const command = !previous || Math.abs(lon - previous) > 180 ? 'M' : 'L';
+        path += `${command}${x(lon).toFixed(1)},${y(lat).toFixed(1)}`;
+        previous = lon;
+      }
+      return path + 'Z';
+    }
+    function geometryPath(geometry) {
+      const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
+      return polygons.map(polygon => polygon.map(ringPath).join('')).join('');
+    }
+    function hasSample(city, research) {
+      const sample = research?.verifiedParcelResponse;
+      return city.sourceIds.length > 0 && sample?.httpStatus === 200 && sample.parcelRecordCount > 0;
+    }
+    const statusText = {
+      verified_sample_partial_coverage: 'Parcel sample verified; coverage is partial or unproven',
+      verified_sample_city_scope: 'Parcel sample verified; source claims city scope',
+      no_verified_sample_candidate_countrywide: 'Nationwide source candidate; parcel response unverified',
+      no_verified_sample_candidate_citywide: 'Citywide source candidate; parcel response unverified',
+      temporarily_unavailable: 'Source unavailable during this research pass',
+      no_verified_open_endpoint_after_attempts: 'No open parcel response verified after attempts'
+    };
+    async function main() {
+      const [registry, countries] = await Promise.all([
+        fetch('./registry.json').then(response => { if (!response.ok) throw Error('Registry unavailable'); return response.json(); }),
+        fetch('./countries.geojson').then(response => { if (!response.ok) throw Error('Country borders unavailable'); return response.json(); })
+      ]);
+      const svg = document.getElementById('map');
+      const cityList = document.getElementById('city-list');
+      const detail = document.getElementById('detail');
+      const researched = [...registry.cities].sort((a, b) => a.researchOrder - b.researchOrder);
+      const research = await Promise.all(researched.map(city => fetch(`./${city.researchFile}`).then(response => response.ok ? response.json() : null).catch(() => null)));
+      const nationwide = new Set((registry.countryCoverage || []).filter(item => item.status === 'verified_countrywide' && item.evidenceFile).map(item => item.countryCode));
+      const borders = el('g');
+      for (const feature of countries.features) {
+        if (feature.properties.ISO_A2 === 'AQ') continue;
+        const code = feature.properties.ISO_A2;
+        const path = el('path', {d: geometryPath(feature.geometry), class: `country${nationwide.has(code) ? ' nationwide' : ''}`});
+        path.append(el('title'));
+        path.lastChild.textContent = feature.properties.NAME || 'Country';
+        borders.append(path);
+      }
+      svg.append(borders);
+      const dots = el('g');
+      let verifiedCount = 0;
+      const selection = [];
+      researched.forEach((city, index) => {
+        const verified = hasSample(city, research[index]);
+        if (verified) verifiedCount += 1;
+        const dot = el('circle', {cx: x(city.centerLatLon[1]), cy: y(city.centerLatLon[0]), r: 5.8, class: `city ${verified ? 'verified' : 'unverified'}`, tabindex: 0, role: 'button', 'aria-label': `${city.name}, ${city.country}: ${verified ? 'verified parcel sample' : 'no verified parcel sample'}`});
+        dot.append(el('title'));
+        dot.lastChild.textContent = `${city.name}, ${city.country}: ${statusText[city.parcelStatus] || city.parcelStatus}`;
+        dots.append(dot);
+        const row = document.createElement('button');
+        row.type = 'button';
+        row.className = 'city-row';
+        const rank = document.createElement('span'); rank.className = 'rank'; rank.textContent = String(city.researchOrder).padStart(2, '0');
+        const label = document.createElement('span');
+        const strong = document.createElement('strong'); strong.textContent = city.name;
+        const small = document.createElement('small'); small.textContent = `${city.country} · ${statusText[city.parcelStatus] || city.parcelStatus}`;
+        label.append(strong, small);
+        const indicator = document.createElement('i'); indicator.className = `row-dot${verified ? ' verified' : ''}`;
+        row.append(rank, label, indicator);
+        cityList.append(row);
+        const select = () => {
+          for (const item of selection) { item.dot.classList.remove('selected'); item.row.classList.remove('selected'); }
+          dot.classList.add('selected'); row.classList.add('selected');
+          row.scrollIntoView({block: 'nearest', behavior: 'smooth'});
+          detail.replaceChildren();
+          const heading = document.createElement('strong'); heading.textContent = `${city.name}, ${city.country}`;
+          const state = document.createElement('div'); state.textContent = statusText[city.parcelStatus] || city.parcelStatus;
+          const note = document.createElement('div');
+          const coverage = research[index]?.coverageAssessment;
+          note.textContent = coverage ? `Source scope: ${coverage.claimedScope}. Verified open scope: ${coverage.verifiedOpenScope}.` : 'Evidence file unavailable.';
+          const link = document.createElement('a'); link.href = `./${city.researchFile}`; link.textContent = 'Open research evidence';
+          detail.append(heading, state, note, link);
+        };
+        dot.addEventListener('click', select);
+        dot.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); select(); } });
+        row.addEventListener('click', select);
+        selection.push({dot, row});
+      });
+      svg.append(dots);
+      document.getElementById('counts').textContent = `${researched.length} researched · ${verifiedCount} verified samples · ${researched.length - verifiedCount} without a verified sample · ${nationwide.size} verified nationwide`;
+    }
+    main().catch(error => {
+      document.querySelector('.map-wrap').innerHTML = `<p class="error">Could not load the local map data. Serve the repository with <code>python3 -m http.server</code>, then open <code>/world-parcels/coverage.html</code>.</p>`;
+      document.getElementById('counts').textContent = error.message;
+    });
+  </script>
+</body>
+</html>

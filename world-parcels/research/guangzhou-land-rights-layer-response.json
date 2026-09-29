@@ -1,0 +1,206 @@
+{
+ "currentVersion": 10.5,
+ "id": 0,
+ "name": "QSLY",
+ "type": "Feature Layer",
+ "description": "",
+ "geometryType": "esriGeometryPoint",
+ "sourceSpatialReference": {
+  "wkid": 4490,
+  "latestWkid": 4490
+ },
+ "copyrightText": "",
+ "parentLayer": null,
+ "subLayers": [],
+ "minScale": 0,
+ "maxScale": 0,
+ "drawingInfo": {
+  "renderer": {
+   "type": "simple",
+   "symbol": {
+    "type": "esriSMS",
+    "style": "esriSMSCircle",
+    "color": [
+     115,
+     0,
+     0,
+     255
+    ],
+    "size": 4,
+    "angle": 0,
+    "xoffset": 0,
+    "yoffset": 0,
+    "outline": {
+     "color": [
+      0,
+      0,
+      0,
+      255
+     ],
+     "width": 1
+    }
+   },
+   "label": "",
+   "description": ""
+  },
+  "transparency": 0,
+  "labelingInfo": null
+ },
+ "defaultVisibility": true,
+ "extent": {
+  "xmin": 113.03087283500008,
+  "ymin": 22.615747098000043,
+  "xmax": 113.88688714200009,
+  "ymax": 23.80809048100008,
+  "spatialReference": {
+   "wkid": 4490,
+   "latestWkid": 4490
+  }
+ },
+ "hasAttachments": false,
+ "htmlPopupType": "esriServerHTMLPopupTypeAsHTMLText",
+ "displayField": "CQZH",
+ "typeIdField": null,
+ "fields": [
+  {
+   "name": "OBJECTID_1",
+   "type": "esriFieldTypeOID",
+   "alias": "OBJECTID_1",
+   "domain": null
+  },
+  {
+   "name": "Shape",
+   "type": "esriFieldTypeGeometry",
+   "alias": "Shape",
+   "domain": null
+  },
+  {
+   "name": "OBJECTID",
+   "type": "esriFieldTypeInteger",
+   "alias": "OBJECTID",
+   "domain": null
+  },
+  {
+   "name": "CQZH",
+   "type": "esriFieldTypeString",
+   "alias": "CQZH",
+   "length": 50,
+   "domain": null
+  },
+  {
+   "name": "MJ",
+   "type": "esriFieldTypeDouble",
+   "alias": "MJ",
+   "domain": null
+  },
+  {
+   "name": "QLLX",
+   "type": "esriFieldTypeString",
+   "alias": "QLLX",
+   "length": 20,
+   "domain": null
+  },
+  {
+   "name": "SYRMC",
+   "type": "esriFieldTypeString",
+   "alias": "SYRMC",
+   "length": 100,
+   "domain": null
+  },
+  {
+   "name": "SYRZJH",
+   "type": "esriFieldTypeString",
+   "alias": "SYRZJH",
+   "length": 50,
+   "domain": null
+  },
+  {
+   "name": "SYRZJHLX",
+   "type": "esriFieldTypeString",
+   "alias": "SYRZJHLX",
+   "length": 50,
+   "domain": null
+  },
+  {
+   "name": "ZDLYLX",
+   "type": "esriFieldTypeString",
+   "alias": "ZDLYLX",
+   "length": 20,
+   "domain": null
+  },
+  {
+   "name": "objectidCopy",
+   "type": "esriFieldTypeString",
+   "alias": "objectidCopy",
+   "length": 50,
+   "domain": null
+  },
+  {
+   "name": "ZDDM",
+   "type": "esriFieldTypeString",
+   "alias": "ZDDM",
+   "length": 19,
+   "domain": null
+  },
+  {
+   "name": "BDCDYH",
+   "type": "esriFieldTypeString",
+   "alias": "BDCDYH",
+   "length": 29,
+   "domain": null
+  },
+  {
+   "name": "ZL",
+   "type": "esriFieldTypeString",
+   "alias": "ZL",
+   "length": 200,
+   "domain": null
+  },
+  {
+   "name": "QLRLX",
+   "type": "esriFieldTypeString",
+   "alias": "QLRLX",
+   "length": 10,
+   "domain": null
+  }
+ ],
+ "indexes": [
+  {
+   "name": "FDO_OBJECTID_1",
+   "fields": "OBJECTID_1",
+   "isAscending": true,
+   "isUnique": true,
+   "description": ""
+  },
+  {
+   "name": "FDO_Shape",
+   "fields": "Shape",
+   "isAscending": true,
+   "isUnique": false,
+   "description": ""
+  }
+ ],
+ "relationships": [],
+ "canModifyLayer": true,
+ "canScaleSymbols": false,
+ "hasLabels": false,
+ "capabilities": "Map,Query,Data",
+ "maxRecordCount": 1000,
+ "supportsStatistics": true,
+ "supportsAdvancedQueries": true,
+ "supportedQueryFormats": "JSON, AMF, geoJSON",
+ "ownershipBasedAccessControlForFeatures": {"allowOthersToQuery": true},
+ "useStandardizedQueries": true,
+ "advancedQueryCapabilities": {
+  "useStandardizedQueries": true,
+  "supportsStatistics": true,
+  "supportsOrderBy": true,
+  "supportsDistinct": true,
+  "supportsPagination": true,
+  "supportsTrueCurve": true,
+  "supportsReturningQueryExtent": true,
+  "supportsQueryWithDistance": true,
+  "supportsSqlExpression": false
+ },
+ "supportsDatumTransformation": true
+}

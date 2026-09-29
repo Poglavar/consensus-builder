@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:1566083",
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {"url": "https://opendata.hcmgis.vn/", "observation": "City GIS center advertises 73 downloadable layers, but a secure direct connection failed certificate hostname validation; no cadastral layer or parcel list was verified."},
+    {"url": "https://gisapi.tphcm.gov.vn/en/Home/Help", "observation": "Official map JavaScript API requires registration and an authentication key; documented polygon drawing is not cadastral data retrieval."},
+    {"url": "https://dost.hochiminhcity.gov.vn/tin-tuc-khcn/tphcm-xay-dung-he-thong-metadata-cho-kho-du-lieu-thong-tin-di-ly/", "observation": "City GIS center reports storing land-parcel boundary layers among many internal GIS layers, without establishing open parcel API access."}
+  ],
+  "requests": [
+    {"url": "https://opendata.hcmgis.vn/", "method": "GET", "httpStatus": null, "error": "TLS certificate hostname mismatch; connection not bypassed", "parcelRecordCount": null}
+  ],
+  "coverageAssessment": {"claimedScope": "Ho Chi Minh City GIS holdings; exact public parcel extent unknown", "verifiedOpenScope": "none", "countrywideVerified": false},
+  "remainingUncertainty": "The open catalog may contain some cadastral geography, but neither its layers nor rights could be safely inspected; municipal holdings do not prove Vietnam-wide coverage.",
+  "nextStep": "Revisit the catalog after the certificate is fixed, find a cadastral layer, and test a bounded city-area feature response."
+}

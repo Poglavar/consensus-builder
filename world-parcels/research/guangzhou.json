@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:1809858",
+  "checkedAt": "2026-09-28T19:01:52Z",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {
+      "url": "https://ghzyj.gz.gov.cn/sjb/yw/bdcdj/newyhyshjzt/ggcx/sjal/content/post_9539951.html",
+      "observation": "Guangzhou's planning bureau states that anyone may view a cadastral map by certificate number or location, including several land-right types. This describes public lookup access, not a reusable polygon feed."
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/guangzhou/smartgzsky/Map/Djcx",
+      "observation": "Official public cadastral map. Its JavaScript names ArcGIS services for state construction land-use rights, collective land ownership, collective construction land-use rights, and land-right sources."
+    },
+    {
+      "url": "https://data.gz.gov.cn/mapService.html",
+      "observation": "Guangzhou public-data map-service catalog; no cadastral parcel polygon layer verified in this pass."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://guangdong.tianditu.gov.cn/guangzhou/smartgzsky/Map/Djcx",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "parcelRecordCount": null,
+      "observation": "Interactive map HTML only."
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/guangzhou/smartgzsky/Scripts/djcx/djcxjs.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/javascript",
+      "parcelRecordCount": null,
+      "observation": "Public map JavaScript identifies four land-right service URLs; no parcel response in the script itself."
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/guangzhou/ServiceAccess/MapService/%E5%9B%BD%E6%9C%89%E5%BB%BA%E8%AE%BE%E7%94%A8%E5%9C%B0%E4%BD%BF%E7%94%A8%E6%9D%83/1e85e146b0728d2fb3a5312c75089400/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain;charset=utf-8",
+      "responseFile": "guangzhou-state-land-layer-response.json",
+      "parcelRecordCount": null,
+      "observation": "Layer metadata reports esriGeometryPoint, not polygon."
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/guangzhou/ServiceAccess/MapService/%E9%9B%86%E4%BD%93%E5%9C%9F%E5%9C%B0%E6%89%80%E6%9C%89%E6%9D%83/1e85e146b0728d2fb3a5312c75089400/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain;charset=utf-8",
+      "responseFile": "guangzhou-collective-land-layer-response.json",
+      "parcelRecordCount": null,
+      "observation": "Layer metadata reports esriGeometryPoint, not polygon."
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/guangzhou/ServiceAccess/MapService/%E9%9B%86%E4%BD%93%E5%BB%BA%E8%AE%BE%E7%94%A8%E5%9C%B0%E4%BD%BF%E7%94%A8%E6%9D%83/1e85e146b0728d2fb3a5312c75089400/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain;charset=utf-8",
+      "responseFile": "guangzhou-collective-construction-layer-response.json",
+      "parcelRecordCount": null,
+      "observation": "Layer metadata reports esriGeometryPoint, not polygon."
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/guangzhou/ServiceAccess/MapService/QSLY_4490/1e85e146b0728d2fb3a5312c75089400/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain;charset=utf-8",
+      "responseFile": "guangzhou-land-rights-layer-response.json",
+      "parcelRecordCount": null,
+      "observation": "Layer metadata reports esriGeometryPoint, not polygon."
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/guangzhou/ServiceAccess/MapService/%E5%9B%BD%E6%9C%89%E5%BB%BA%E8%AE%BE%E7%94%A8%E5%9C%B0%E4%BD%BF%E7%94%A8%E6%9D%83/1e85e146b0728d2fb3a5312c75089400/0/query",
+      "method": "GET",
+      "query": {
+        "where": "1=1",
+        "geometry": "113.26,23.12,113.27,23.14",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": "4326",
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": "OBJECTID,ZDDM,BDCID",
+        "resultRecordCount": "5",
+        "returnGeometry": "true",
+        "f": "json"
+      },
+      "httpStatus": 500,
+      "contentType": "text/html;charset=UTF-8",
+      "responseText": "<h1>查询图层信息失败!</h1>",
+      "parcelRecordCount": null
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/guangzhou/ServiceAccess/MapService/%E5%9B%BD%E6%9C%89%E5%BB%BA%E8%AE%BE%E7%94%A8%E5%9C%B0%E4%BD%BF%E7%94%A8%E6%9D%83/1e85e146b0728d2fb3a5312c75089400/0/query",
+      "method": "GET",
+      "query": {
+        "where": "1=1",
+        "outFields": "OBJECTID,ZDDM,BDCID",
+        "resultRecordCount": "1",
+        "returnGeometry": "true",
+        "f": "pjson"
+      },
+      "httpStatus": 500,
+      "contentType": "text/html;charset=UTF-8",
+      "responseText": "<h1>查询图层信息失败!</h1>",
+      "parcelRecordCount": null
+    }
+  ],
+  "remainingUncertainty": "The official map exposes parcel-related point layers, but no nonempty parcel query or polygon geometry has been verified. Parcel-map images shown in the UI do not establish reusable boundary coordinates. Other unpublished services may exist.",
+  "nextStep": "Inspect whether the public map has a separate polygon/feature endpoint under documented terms. Do not treat the four point layers as drawable cadastral parcels."
+}

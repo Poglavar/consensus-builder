@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:1796236",
+  "checkedAt": "2026-09-28T18:57:10Z",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {
+      "url": "https://ghzyj.sh.gov.cn/bdcgl/index.html",
+      "observation": "Shanghai Municipal Bureau of Planning and Natural Resources has a cadastral-map query link, but the linked service redirects through government account login. Its other public data links describe notices and statistics, not a parcel geometry dataset."
+    },
+    {
+      "url": "https://zwdt.sh.gov.cn/govPortals/bsfw/item/3621e368-5106-45b8-a420-cbb8e073e6bc",
+      "observation": "Official map-based real-estate query can display a selected building's registration information and parcel map. This is an interactive lookup, not evidence of an open parcel-list feed."
+    },
+    {
+      "url": "https://data.sh.gov.cn/view/",
+      "observation": "Shanghai public-data platform was checked for parcel/land-register datasets; direct retrieval returned HTTP 412 and no parcel endpoint was verified."
+    },
+    {
+      "url": "https://shanghai.tianditu.gov.cn/",
+      "observation": "Public geographic base-map and data API portal; no cadastral parcel-list layer identified in this pass."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://ghzyj.sh.gov.cn/bdcgl/index.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "parcelRecordCount": null,
+      "observation": "HTML links 地籍图查询 (cadastral map query) to a government login URL."
+    },
+    {
+      "url": "https://zwdtuser.sh.gov.cn/uc/login/login.jsp?redirect_uri=https://biz.ghzyj.sh.gov.cn/bdcdj/forwardHouseStateQuery",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "parcelRecordCount": null,
+      "observation": "HTML contains personal/corporate login and account-password controls, not parcel features."
+    },
+    {
+      "url": "https://data.sh.gov.cn/view/",
+      "method": "GET",
+      "httpStatus": 412,
+      "contentType": "text/html; charset=utf-8",
+      "parcelRecordCount": null,
+      "observation": "Public-data portal request rejected; no dataset response was returned."
+    }
+  ],
+  "remainingUncertainty": "Shanghai maintains cadastral maps and offers individual property-map queries, but an openly reusable bulk or bounded parcel geometry endpoint was not found. The data portal's HTTP 412 may be access protection, not proof that no relevant dataset exists.",
+  "nextStep": "Search the public-data catalog through an authorized interface and check whether the planning bureau publishes a licensed parcel layer separate from its account-based query."
+}

@@ -1,0 +1,496 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-09-28",
+  "queueSource": "https://population.un.org/wup/",
+  "sources": [
+    {
+      "sourceId": "bd-dlrs-bds-sheets",
+      "name": "Bangladesh DLRS online land-record survey sheets",
+      "operator": "Department of Land Records and Surveys, Bangladesh",
+      "countryCode": "BD",
+      "scope": "Surveyed mouzas available through the official selector; coverage is incomplete and must be checked per mouza",
+      "endpoint": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+      "method": "POST",
+      "responseFormat": "GeoJSON FeatureCollection",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_nonempty_sample",
+      "reuseStatus": "terms_unconfirmed",
+      "verifiedCityIds": [
+        "geonames:1185241"
+      ],
+      "evidenceFile": "research/dhaka.json"
+    },
+    {
+      "sourceId": "jp-moj-esri-touki-2023",
+      "name": "MOJ registry-map polygons converted by Esri Japan",
+      "operator": "Esri Japan, derived from Ministry of Justice registry maps",
+      "countryCode": "JP",
+      "scope": "Tokyo 23 wards plus selected Aichi and Fukuoka areas; only the Tokyo sample is verified here",
+      "endpoint": "https://services.arcgis.com/wlVTGRSYTzAbjjiC/ArcGIS/rest/services/touki/FeatureServer/5/query",
+      "method": "GET",
+      "responseFormat": "ArcGIS Feature JSON",
+      "crs": "EPSG:4326 requested output; hosted layer uses EPSG:2444",
+      "verificationStatus": "verified_nonempty_sample",
+      "reuseStatus": "underlying_MOJ_data_open_subject_to_terms;_hosted_derivative_terms_unconfirmed",
+      "sourceDataDateTokyo": "2023-02-09",
+      "verifiedCityIds": [
+        "geonames:1850147"
+      ],
+      "evidenceFile": "research/tokyo.json"
+    },
+    {
+      "sourceId": "br-sp-urbis-lotes-fiscais",
+      "name": "São Paulo municipal fiscal lots",
+      "operator": "Prefeitura do Município de São Paulo / CODATA",
+      "countryCode": "BR",
+      "scope": "São Paulo municipality only; downloaded GeoJSON response is capped at 50,000 of 1,688,215 reported features",
+      "endpoint": "https://dadosabertos.urbis.prefeitura.sp.gov.br/dataset/053f9a1f-0a01-44d3-8a25-aac520a00071/resource/c13fbaf6-c598-4fed-8751-222a34e00133/download/lotes_fiscais.geojson",
+      "method": "GET",
+      "responseFormat": "GeoJSON FeatureCollection",
+      "crs": "EPSG:31983",
+      "verificationStatus": "verified_nonempty_sample_incomplete_export",
+      "reuseStatus": "CC_BY_SA_4_0",
+      "verifiedCityIds": [
+        "geonames:3448439"
+      ],
+      "evidenceFile": "research/sao-paulo.json"
+    },
+    {
+      "sourceId": "us-nyc-dof-digital-tax-map",
+      "name": "New York City Digital Tax Map tax-lot polygons",
+      "operator": "New York City Department of Finance",
+      "countryCode": "US",
+      "scope": "New York City five boroughs; wider metro area and United States excluded",
+      "endpoint": "https://services6.arcgis.com/yG5s3afENB5iO9fj/ArcGIS/rest/services/DTM_ETL_DAILY_view/FeatureServer/0/query",
+      "method": "GET",
+      "responseFormat": "ArcGIS Feature JSON",
+      "crs": "EPSG:4326 requested output; hosted layer uses EPSG:3857",
+      "verificationStatus": "verified_nonempty_sample",
+      "reuseStatus": "terms_to_review",
+      "verifiedCityIds": [
+        "geonames:5128581"
+      ],
+      "evidenceFile": "research/new-york-city.json"
+    },
+    {
+      "sourceId": "jp-moj-geospatial-2026",
+      "name": "MOJ registry-map 2026 polygons converted by Geospatial Information Center",
+      "operator": "Geospatial Information Center / AIGID, derived from Japan Ministry of Justice",
+      "countryCode": "JP",
+      "scope": "Municipality and ward packages across Japan, public-coordinate sheets only; only Osaka Chuo ward sampled here",
+      "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/27/aigid-moj-27128/27128_%E5%A4%A7%E9%98%AA%E5%B8%82%E4%B8%AD%E5%A4%AE%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%996%E7%B3%BB_%E7%AD%86R_2026.geojson",
+      "method": "GET",
+      "responseFormat": "GeoJSON FeatureCollection",
+      "crs": "OGC:CRS84, converted from JGD2011 source",
+      "verificationStatus": "verified_nonempty_sample_partial_coverage",
+      "reuseStatus": "CC_BY_catalog;_source_terms_to_review",
+      "verifiedCityIds": [
+        "geonames:1853909"
+      ],
+      "evidenceFile": "research/osaka.json"
+    }
+  ],
+  "countryCoverage": [],
+  "cities": [
+    {
+      "cityId": "geonames:1642911",
+      "name": "Jakarta",
+      "country": "Indonesia",
+      "countryCode": "ID",
+      "centerLatLon": [
+        -6.21462,
+        106.84513
+      ],
+      "citySource": "https://www.geonames.org/1642911/jakarta.html",
+      "researchOrder": 1,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/jakarta.json"
+    },
+    {
+      "cityId": "geonames:1185241",
+      "name": "Dhaka",
+      "country": "Bangladesh",
+      "countryCode": "BD",
+      "centerLatLon": [
+        23.7104,
+        90.40744
+      ],
+      "citySource": "https://www.geonames.org/1185241/dhaka.html",
+      "researchOrder": 2,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "bd-dlrs-bds-sheets"
+      ],
+      "researchFile": "research/dhaka.json"
+    },
+    {
+      "cityId": "geonames:1850147",
+      "name": "Tokyo",
+      "country": "Japan",
+      "countryCode": "JP",
+      "centerLatLon": [
+        35.6895,
+        139.69171
+      ],
+      "citySource": "https://www.geonames.org/1850147/tokyo.html",
+      "researchOrder": 3,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "jp-moj-esri-touki-2023"
+      ],
+      "researchFile": "research/tokyo.json"
+    },
+    {
+      "cityId": "geonames:1261481",
+      "name": "New Delhi",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        28.62137,
+        77.2148
+      ],
+      "citySource": "https://www.geonames.org/1261481/new-delhi.html",
+      "researchOrder": 4,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/new-delhi.json"
+    },
+    {
+      "cityId": "geonames:1796236",
+      "name": "Shanghai",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        31.22222,
+        121.45806
+      ],
+      "citySource": "https://www.geonames.org/1796236/shanghai.html",
+      "researchOrder": 5,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/shanghai.json"
+    },
+    {
+      "cityId": "geonames:1809858",
+      "name": "Guangzhou",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        23.11667,
+        113.25
+      ],
+      "citySource": "https://www.geonames.org/1809858/guangzhou.html",
+      "researchOrder": 6,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/guangzhou.json"
+    },
+    {
+      "cityId": "geonames:360630",
+      "name": "Al-Qahirah (Cairo)",
+      "country": "Egypt",
+      "countryCode": "EG",
+      "centerLatLon": [
+        30.06263,
+        31.24967
+      ],
+      "citySource": "https://www.geonames.org/360630/cairo.html",
+      "researchOrder": 7,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/cairo.json"
+    },
+    {
+      "cityId": "geonames:1701668",
+      "name": "Manila",
+      "country": "Philippines",
+      "countryCode": "PH",
+      "centerLatLon": [
+        14.6042,
+        120.9822
+      ],
+      "citySource": "https://www.geonames.org/1701668/manila.html",
+      "researchOrder": 8,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/manila.json"
+    },
+    {
+      "cityId": "geonames:1275004",
+      "name": "Kolkata",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        22.56263,
+        88.36304
+      ],
+      "citySource": "https://www.geonames.org/1275004/kolkata.html",
+      "researchOrder": 9,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/kolkata.json"
+    },
+    {
+      "cityId": "geonames:1835848",
+      "name": "Seoul",
+      "country": "South Korea",
+      "countryCode": "KR",
+      "centerLatLon": [
+        37.566,
+        126.9784
+      ],
+      "citySource": "https://www.geonames.org/1835848/seoul.html",
+      "researchOrder": 10,
+      "parcelStatus": "no_verified_sample_candidate_countrywide",
+      "sourceIds": [],
+      "researchFile": "research/seoul.json"
+    },
+    {
+      "cityId": "geonames:1174872",
+      "name": "Karachi",
+      "country": "Pakistan",
+      "countryCode": "PK",
+      "centerLatLon": [
+        24.8608,
+        67.0104
+      ],
+      "citySource": "https://www.geonames.org/1174872/karachi.html",
+      "researchOrder": 11,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/karachi.json"
+    },
+    {
+      "cityId": "geonames:1275339",
+      "name": "Mumbai",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        19.07283,
+        72.88261
+      ],
+      "citySource": "https://www.geonames.org/1275339/mumbai.html",
+      "researchOrder": 12,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/mumbai.json"
+    },
+    {
+      "cityId": "geonames:3448439",
+      "name": "São Paulo",
+      "country": "Brazil",
+      "countryCode": "BR",
+      "centerLatLon": [
+        -23.5475,
+        -46.63611
+      ],
+      "citySource": "https://www.geonames.org/3448439/sao-paulo.html",
+      "researchOrder": 13,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "br-sp-urbis-lotes-fiscais"
+      ],
+      "researchFile": "research/sao-paulo.json"
+    },
+    {
+      "cityId": "geonames:1609350",
+      "name": "Bangkok",
+      "country": "Thailand",
+      "countryCode": "TH",
+      "centerLatLon": [
+        13.753979,
+        100.501444
+      ],
+      "citySource": "https://www.geonames.org/1609350/bangkok.html",
+      "researchOrder": 14,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/bangkok.json"
+    },
+    {
+      "cityId": "geonames:3530597",
+      "name": "Mexico City",
+      "country": "Mexico",
+      "countryCode": "MX",
+      "centerLatLon": [
+        19.42847,
+        -99.12766
+      ],
+      "citySource": "https://www.geonames.org/3530597/mexico-city.html",
+      "researchOrder": 15,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "sourceIds": [],
+      "researchFile": "research/mexico-city.json"
+    },
+    {
+      "cityId": "geonames:1816670",
+      "name": "Beijing",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        39.9075,
+        116.39723
+      ],
+      "citySource": "https://www.geonames.org/1816670/beijing.html",
+      "researchOrder": 16,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/beijing.json"
+    },
+    {
+      "cityId": "geonames:1172451",
+      "name": "Lahore",
+      "country": "Pakistan",
+      "countryCode": "PK",
+      "centerLatLon": [
+        31.557996,
+        74.350713
+      ],
+      "citySource": "https://www.geonames.org/1172451/lahore.html",
+      "researchOrder": 17,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/lahore.json"
+    },
+    {
+      "cityId": "geonames:745044",
+      "name": "Istanbul",
+      "country": "Türkiye",
+      "countryCode": "TR",
+      "centerLatLon": [
+        41.01384,
+        28.94966
+      ],
+      "citySource": "https://www.geonames.org/745044/istanbul.html",
+      "researchOrder": 18,
+      "parcelStatus": "no_verified_sample_candidate_countrywide",
+      "sourceIds": [],
+      "researchFile": "research/istanbul.json"
+    },
+    {
+      "cityId": "geonames:524901",
+      "name": "Moscow",
+      "country": "Russia",
+      "countryCode": "RU",
+      "centerLatLon": [
+        55.75204,
+        37.61781
+      ],
+      "citySource": "https://www.geonames.org/524901/moscow.html",
+      "researchOrder": 19,
+      "parcelStatus": "no_verified_sample_candidate_countrywide",
+      "sourceIds": [],
+      "researchFile": "research/moscow.json"
+    },
+    {
+      "cityId": "geonames:1566083",
+      "name": "Ho Chi Minh City",
+      "country": "Vietnam",
+      "countryCode": "VN",
+      "centerLatLon": [
+        10.82302,
+        106.62965
+      ],
+      "citySource": "https://www.geonames.org/1566083/ho-chi-minh-city.html",
+      "researchOrder": 20,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/ho-chi-minh-city.json"
+    },
+    {
+      "cityId": "geonames:3435910",
+      "name": "Buenos Aires",
+      "country": "Argentina",
+      "countryCode": "AR",
+      "centerLatLon": [
+        -34.61315,
+        -58.37723
+      ],
+      "citySource": "https://www.geonames.org/3435910/buenos-aires.html",
+      "researchOrder": 21,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "sourceIds": [],
+      "researchFile": "research/buenos-aires.json"
+    },
+    {
+      "cityId": "geonames:5128581",
+      "name": "New York City",
+      "country": "United States",
+      "countryCode": "US",
+      "centerLatLon": [
+        40.71427,
+        -74.00597
+      ],
+      "citySource": "https://www.geonames.org/5128581/new-york-city.html",
+      "researchOrder": 22,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "us-nyc-dof-digital-tax-map"
+      ],
+      "researchFile": "research/new-york-city.json"
+    },
+    {
+      "cityId": "geonames:1795565",
+      "name": "Shenzhen",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        22.54554,
+        114.0683
+      ],
+      "citySource": "https://www.geonames.org/1795565/shenzhen.html",
+      "researchOrder": 23,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "sourceIds": [],
+      "researchFile": "research/shenzhen.json"
+    },
+    {
+      "cityId": "geonames:1277333",
+      "name": "Bengaluru",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        12.97194,
+        77.59369
+      ],
+      "citySource": "https://www.geonames.org/1277333/bengaluru.html",
+      "researchOrder": 24,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/bengaluru.json"
+    },
+    {
+      "cityId": "geonames:1853909",
+      "name": "Osaka",
+      "country": "Japan",
+      "countryCode": "JP",
+      "centerLatLon": [
+        34.69379,
+        135.50107
+      ],
+      "citySource": "https://www.geonames.org/1853909/osaka.html",
+      "researchOrder": 25,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "jp-moj-geospatial-2026"
+      ],
+      "researchFile": "research/osaka.json"
+    },
+    {
+      "cityId": "geonames:2332459",
+      "name": "Lagos",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "centerLatLon": [
+        6.45407,
+        3.39467
+      ],
+      "citySource": "https://www.geonames.org/2332459/lagos.html",
+      "researchOrder": 26,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/lagos.json"
+    }
+  ]
+}

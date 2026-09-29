@@ -341,3 +341,4 @@
   by its account discriminator. `GET /proposals` needs `parcel_id`; filtered lists are `/proposals/summary`.
   `routes/urban-rules.js` returns no variables for the 2025 GUP (NULL `short_name`; join on `title`).
 
+- 2026-09-28: World-parcel expansion starts with a separate city gazetteer and a sequential, evidence-backed parcel-source registry (`world-parcels.md`); a source is verified only by HTTP 200 plus a nonempty parcel list, and Jakarta remains researching until that request is captured.

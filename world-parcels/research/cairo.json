@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:360630",
+  "checkedAt": "2026-09-28",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {"url": "https://www.esa.gov.eg/benya.aspx", "observation": "Egyptian Survey Authority describes a national property database and secure base map, but publishes no parcel-list endpoint on this page."},
+    {"url": "https://www.esa.gov.eg/", "observation": "Official survey authority offers maps and surveying services; no open Cairo cadastral polygon feed identified."},
+    {"url": "https://geoportal.mwri.gov.eg/portal", "observation": "Government ArcGIS geoportal; no public Cairo cadastral parcel layer identified in the catalog search."}
+  ],
+  "requests": [
+    {"url": "https://www.esa.gov.eg/benya.aspx", "method": "GET", "httpStatus": 200, "contentType": "text/html; charset=utf-8", "parcelRecordCount": null, "observation": "Project description, not parcel records."}
+  ],
+  "coverageAssessment": {"claimedScope": "national database described", "verifiedOpenScope": "none", "countrywideVerified": false},
+  "remainingUncertainty": "The ESA database may hold nationwide cadastral data, but public access, coordinates, and reuse rights were not established.",
+  "nextStep": "Seek an ESA public parcel service or licensed export and test a small Cairo-area request."
+}

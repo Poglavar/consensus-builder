@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:1609350",
+  "checkedAt": "2026-09-28",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {"url": "https://data.go.th/dataset/mapland-parcel", "observation": "Thailand Department of Lands publishes a nationwide land-parcel search API listing, but it requires prior permission and Consumer-Key/Consumer Secret authentication; individual access may also require ThaiD/OpenID. No anonymous parcel-list response established."},
+    {"url": "https://www.dol.go.th/landmap/home/", "observation": "Department of Lands parcel-map center links viewing services but does not show an anonymous bulk polygon API."},
+    {"url": "https://district.bangkok.go.th/SEDPortal/bangkok-map/", "observation": "Bangkok GIS lists administrative boundaries and land use, not verified cadastral parcel polygons."},
+    {"url": "https://mapportal.ldd.go.th/arcgis/rest/services/Hosted/BKK_gdb/FeatureServer/0", "observation": "Public polygon layer is explicitly Bangkok land use (Landuse_bkk), not cadastral parcels; excluded."}
+  ],
+  "requests": [
+    {"url": "https://data.go.th/dataset/mapland-parcel", "method": "GET", "httpStatus": null, "error": "DNS resolution failed in direct request; official indexed catalog was inspected", "parcelRecordCount": null}
+  ],
+  "coverageAssessment": {"claimedScope": "Department of Lands service may search parcels nationally, subject to permission and credentials", "verifiedOpenScope": "none", "countrywideVerified": false},
+  "remainingUncertainty": "A nationwide database exists, but open anonymous reuse and bounded parcel-list access are unverified; land-use polygons are not parcels.",
+  "nextStep": "Check whether Department of Lands offers a public polygon export or credentialed license suitable for the app."
+}
