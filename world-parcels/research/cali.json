@@ -1,86 +1,514 @@
 {
-  "schemaVersion": 1,
-  "cityId": "queue:184",
-  "queueRank": 184,
-  "name": "Cali",
-  "country": "Colombia",
-  "countryCode": "CO",
-  "centerLatLon": [
-    3.43291280476524,
-    -76.5206016723112
-  ],
-  "checkedAt": "2026-09-29",
-  "status": "verified_sample_city_scope",
-  "verifiedParcelResponse": {
-    "sourceId": "co-cali-idesc-cat-bas-terrenos",
-    "requestUrl": "https://ws-idesc.cali.gov.co/geoserver/catastro/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=catastro:cat_bas_terrenos&count=3&outputFormat=application/json&bbox=3.4325,-76.5225,3.4335,-76.5210,urn:ogc:def:crs:EPSG::4326&srsName=EPSG:4326",
-    "method": "GET",
-    "httpStatus": 200,
-    "contentType": "application/json;charset=UTF-8",
-    "spatialTestAreaLonLat": [
-      -76.5225,
-      3.4325,
-      -76.521,
-      3.4335
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "id": "cat_bas_terrenos.619228",
+            "geometry": {
+                "type": "MultiPolygon",
+                "coordinates": [
+                    [
+                        [
+                            [
+                                -76.52230233,
+                                3.43279949
+                            ],
+                            [
+                                -76.52230167,
+                                3.43274342
+                            ],
+                            [
+                                -76.52232416,
+                                3.43274366
+                            ],
+                            [
+                                -76.52240425,
+                                3.43274452
+                            ],
+                            [
+                                -76.52242802,
+                                3.43274477
+                            ],
+                            [
+                                -76.52244242,
+                                3.43274493
+                            ],
+                            [
+                                -76.52244513,
+                                3.43275668
+                            ],
+                            [
+                                -76.5224466,
+                                3.43276305
+                            ],
+                            [
+                                -76.52245505,
+                                3.43279968
+                            ],
+                            [
+                                -76.52245643,
+                                3.43280403
+                            ],
+                            [
+                                -76.52241118,
+                                3.43280269
+                            ],
+                            [
+                                -76.52239862,
+                                3.43280232
+                            ],
+                            [
+                                -76.52239621,
+                                3.43280225
+                            ],
+                            [
+                                -76.52239499,
+                                3.43280222
+                            ],
+                            [
+                                -76.52233475,
+                                3.43280044
+                            ],
+                            [
+                                -76.52232482,
+                                3.43280015
+                            ],
+                            [
+                                -76.52232479,
+                                3.43280015
+                            ],
+                            [
+                                -76.52230233,
+                                3.43279949
+                            ]
+                        ]
+                    ]
+                ]
+            },
+            "geometry_name": "the_geom",
+            "properties": {
+                "id": 166533,
+                "id_predio": 447991,
+                "depapred": "76",
+                "munipred": "001",
+                "sector": "00",
+                "comuna": "10",
+                "barrio": "15",
+                "idbarrio": "1015",
+                "nom_barrio": "San Cristobal",
+                "manzana": "0004",
+                "terreno": "0028",
+                "condicion": "0",
+                "edifpred": "00",
+                "pisopred": "00",
+                "predio": "0000",
+                "npn": "760010100101500040028000000000",
+                "conexion_c": "101500040028",
+                "conexion": "101500040028",
+                "numepred": "I007600280000",
+                "direpred": "CL 19 # 24 B - 34",
+                "cminpred": null,
+                "last_edite": "2026-02-19Z",
+                "codigo_dan": "0110000400280000",
+                "tipo_avalu": "01",
+                "destinacio": "A",
+                "uso_princi": "RESIDENCIAL",
+                "n_construc": 1,
+                "zona_fisi1": "82104421013",
+                "zona_econ1": 34,
+                "zona_fisi2": null,
+                "zona_econ2": null,
+                "total_pis1": 1,
+                "uso_id1": 12,
+                "area_cons1": 74,
+                "total_pis2": null,
+                "uso_id2": null,
+                "area_cons2": null,
+                "shape_area": 103.90764351,
+                "shape_leng": 45.7336059306,
+                "url": "https://idesc.cali.gov.co/servicios/planoteca/planos.php?id_predio=447991",
+                "uso_suelo": "https://www.cali.gov.co/tramites/uso-de-suelo/consulta/760010100101500040028000000000"
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "cat_bas_terrenos.619210",
+            "geometry": {
+                "type": "MultiPolygon",
+                "coordinates": [
+                    [
+                        [
+                            [
+                                -76.52230158,
+                                3.4327363
+                            ],
+                            [
+                                -76.52230087,
+                                3.43267604
+                            ],
+                            [
+                                -76.52231271,
+                                3.43267617
+                            ],
+                            [
+                                -76.52231815,
+                                3.43267623
+                            ],
+                            [
+                                -76.52232337,
+                                3.43267629
+                            ],
+                            [
+                                -76.52232355,
+                                3.43267629
+                            ],
+                            [
+                                -76.52233236,
+                                3.43267639
+                            ],
+                            [
+                                -76.5223352,
+                                3.43267643
+                            ],
+                            [
+                                -76.52235936,
+                                3.4326767
+                            ],
+                            [
+                                -76.5223752,
+                                3.43267688
+                            ],
+                            [
+                                -76.52239356,
+                                3.43267708
+                            ],
+                            [
+                                -76.52239985,
+                                3.43267716
+                            ],
+                            [
+                                -76.52242685,
+                                3.43267746
+                            ],
+                            [
+                                -76.52243068,
+                                3.43269408
+                            ],
+                            [
+                                -76.5224308,
+                                3.43269461
+                            ],
+                            [
+                                -76.52243721,
+                                3.43272236
+                            ],
+                            [
+                                -76.52243766,
+                                3.4327243
+                            ],
+                            [
+                                -76.52244137,
+                                3.43274039
+                            ],
+                            [
+                                -76.52244242,
+                                3.43274493
+                            ],
+                            [
+                                -76.52242802,
+                                3.43274477
+                            ],
+                            [
+                                -76.52240425,
+                                3.43274452
+                            ],
+                            [
+                                -76.52232416,
+                                3.43274366
+                            ],
+                            [
+                                -76.52230167,
+                                3.43274342
+                            ],
+                            [
+                                -76.52230158,
+                                3.4327363
+                            ]
+                        ]
+                    ]
+                ]
+            },
+            "geometry_name": "the_geom",
+            "properties": {
+                "id": 756608,
+                "id_predio": 447574,
+                "depapred": "76",
+                "munipred": "001",
+                "sector": "00",
+                "comuna": "10",
+                "barrio": "15",
+                "idbarrio": "1015",
+                "nom_barrio": "San Cristobal",
+                "manzana": "0004",
+                "terreno": "0029",
+                "condicion": "0",
+                "edifpred": "00",
+                "pisopred": "00",
+                "predio": "0000",
+                "npn": "760010100101500040029000000000",
+                "conexion_c": "101500040029",
+                "conexion": "101500040029",
+                "numepred": "I007600290000",
+                "direpred": "CL 19 # 24 B - 42",
+                "cminpred": null,
+                "last_edite": "2026-02-19Z",
+                "codigo_dan": "0110000400290000",
+                "tipo_avalu": "01",
+                "destinacio": "A",
+                "uso_princi": "RESIDENCIAL",
+                "n_construc": 1,
+                "zona_fisi1": "82104421013",
+                "zona_econ1": 34,
+                "zona_fisi2": null,
+                "zona_econ2": null,
+                "total_pis1": 1,
+                "uso_id1": 12,
+                "area_cons1": 73,
+                "total_pis2": null,
+                "uso_id2": null,
+                "area_cons2": null,
+                "shape_area": 110.343282876,
+                "shape_leng": 44.7928002461,
+                "url": "https://idesc.cali.gov.co/servicios/planoteca/planos.php?id_predio=447574",
+                "uso_suelo": "https://www.cali.gov.co/tramites/uso-de-suelo/consulta/760010100101500040029000000000"
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "cat_bas_terrenos.621853",
+            "geometry": {
+                "type": "MultiPolygon",
+                "coordinates": [
+                    [
+                        [
+                            [
+                                -76.52230114,
+                                3.43262127
+                            ],
+                            [
+                                -76.52230118,
+                                3.43261274
+                            ],
+                            [
+                                -76.5223076,
+                                3.43261309
+                            ],
+                            [
+                                -76.52231301,
+                                3.43261339
+                            ],
+                            [
+                                -76.52231603,
+                                3.43261338
+                            ],
+                            [
+                                -76.52232076,
+                                3.43261354
+                            ],
+                            [
+                                -76.52232367,
+                                3.43261364
+                            ],
+                            [
+                                -76.52232615,
+                                3.43261373
+                            ],
+                            [
+                                -76.52233267,
+                                3.43261395
+                            ],
+                            [
+                                -76.52233545,
+                                3.43261405
+                            ],
+                            [
+                                -76.52236908,
+                                3.4326152
+                            ],
+                            [
+                                -76.5223755,
+                                3.43261542
+                            ],
+                            [
+                                -76.52237775,
+                                3.4326155
+                            ],
+                            [
+                                -76.52238611,
+                                3.43261579
+                            ],
+                            [
+                                -76.52241009,
+                                3.43261661
+                            ],
+                            [
+                                -76.52241231,
+                                3.43262309
+                            ],
+                            [
+                                -76.52241373,
+                                3.43262725
+                            ],
+                            [
+                                -76.52241643,
+                                3.43263511
+                            ],
+                            [
+                                -76.52241842,
+                                3.43264093
+                            ],
+                            [
+                                -76.52241902,
+                                3.43264352
+                            ],
+                            [
+                                -76.52242113,
+                                3.43265267
+                            ],
+                            [
+                                -76.52242141,
+                                3.43265389
+                            ],
+                            [
+                                -76.52242267,
+                                3.43265933
+                            ],
+                            [
+                                -76.52242398,
+                                3.43266502
+                            ],
+                            [
+                                -76.52242416,
+                                3.4326658
+                            ],
+                            [
+                                -76.52242427,
+                                3.43266627
+                            ],
+                            [
+                                -76.52242685,
+                                3.43267746
+                            ],
+                            [
+                                -76.52239985,
+                                3.43267716
+                            ],
+                            [
+                                -76.52239356,
+                                3.43267708
+                            ],
+                            [
+                                -76.5223752,
+                                3.43267688
+                            ],
+                            [
+                                -76.52235936,
+                                3.4326767
+                            ],
+                            [
+                                -76.5223352,
+                                3.43267643
+                            ],
+                            [
+                                -76.52233236,
+                                3.43267639
+                            ],
+                            [
+                                -76.52232355,
+                                3.43267629
+                            ],
+                            [
+                                -76.52232337,
+                                3.43267629
+                            ],
+                            [
+                                -76.52231815,
+                                3.43267623
+                            ],
+                            [
+                                -76.52231271,
+                                3.43267617
+                            ],
+                            [
+                                -76.52230087,
+                                3.43267604
+                            ],
+                            [
+                                -76.52230109,
+                                3.43263132
+                            ],
+                            [
+                                -76.52230114,
+                                3.43262127
+                            ]
+                        ]
+                    ]
+                ]
+            },
+            "geometry_name": "the_geom",
+            "properties": {
+                "id": 637009,
+                "id_predio": 448026,
+                "depapred": "76",
+                "munipred": "001",
+                "sector": "00",
+                "comuna": "10",
+                "barrio": "15",
+                "idbarrio": "1015",
+                "nom_barrio": "San Cristobal",
+                "manzana": "0004",
+                "terreno": "0055",
+                "condicion": "0",
+                "edifpred": "00",
+                "pisopred": "00",
+                "predio": "0000",
+                "npn": "760010100101500040055000000000",
+                "conexion_c": "101500040055",
+                "conexion": "101500040055",
+                "numepred": "I007600550000",
+                "direpred": "CL 19 # 24 B - 58",
+                "cminpred": null,
+                "last_edite": "2026-02-19Z",
+                "codigo_dan": "0110000400550000",
+                "tipo_avalu": "01",
+                "destinacio": "A",
+                "uso_princi": "RESIDENCIAL",
+                "n_construc": 1,
+                "zona_fisi1": "82104421013",
+                "zona_econ1": 34,
+                "zona_fisi2": null,
+                "zona_econ2": null,
+                "total_pis1": 4,
+                "uso_id1": 3,
+                "area_cons1": 250,
+                "total_pis2": null,
+                "uso_id2": null,
+                "area_cons2": null,
+                "shape_area": 89.8378933959,
+                "shape_leng": 40.1390805103,
+                "url": "https://idesc.cali.gov.co/servicios/planoteca/planos.php?id_predio=448026",
+                "uso_suelo": "https://www.cali.gov.co/tramites/uso-de-suelo/consulta/760010100101500040055000000000"
+            }
+        }
     ],
-    "parcelRecordCount": 3,
-    "recordListPath": "features",
-    "geometryType": "MultiPolygon",
-    "closedRings": true,
-    "idField": "id_predio (also npn, the 30-digit national predial number)",
-    "responseFile": "cali-parcel-response.json",
-    "pagination": "WFS 2.0 count=3; numberMatched=118 in the test box; use startIndex for paging"
-  },
-  "source": {
-    "sourceId": "co-cali-idesc-cat-bas-terrenos",
-    "name": "IDESC Cali GeoServer, layer catastro:cat_bas_terrenos (cadastral land parcels)",
-    "operator": "Alcaldia de Santiago de Cali (IDESC / Infraestructura de Datos Espaciales de Santiago de Cali)",
-    "scope": "Santiago de Cali municipality",
-    "endpoint": "https://ws-idesc.cali.gov.co/geoserver/catastro/ows",
-    "method": "GET WFS 2.0.0 GetFeature",
-    "responseFormat": "GeoJSON (application/json)",
-    "crs": "EPSG:4326 (srsName requested)",
-    "reuseStatus": "WFS capabilities state Fees NONE and AccessConstraints NONE; the datos.cali.gov.co CKAN entries for other IDESC layers list cc-by / cc-by-sa. The licence of this specific layer was not confirmed."
-  },
-  "portalsFound": [
-    {
-      "url": "https://ws-idesc.cali.gov.co/geoserver/ows?service=WFS&request=GetCapabilities",
-      "observation": "Official Cali IDESC GeoServer WFS capabilities (200, ~500 KB) list catastro:cat_bas_terrenos, cat_bas_manzanas and cat_bas_construcciones."
-    },
-    {
-      "url": "https://datos.cali.gov.co/",
-      "observation": "Cali open-data CKAN; catalogues IDESC WMS/WFS layers with cc-by / cc-by-sa licences. Predio dataset there is tabular."
+    "totalFeatures": 118,
+    "numberMatched": 118,
+    "numberReturned": 3,
+    "timeStamp": "2026-09-29T23:11:51.091Z",
+    "crs": {
+        "type": "name",
+        "properties": {
+            "name": "urn:ogc:def:crs:EPSG::4326"
+        }
     }
-  ],
-  "requests": [
-    {
-      "url": "https://datos.cali.gov.co/api/3/action/package_search?q=predios&rows=5",
-      "method": "GET",
-      "httpStatus": 200,
-      "contentType": "application/json",
-      "assessment": "CKAN catalogue search; found IDESC GeoServer WFS links"
-    },
-    {
-      "url": "https://ws-idesc.cali.gov.co/geoserver/ows?service=WFS&request=GetCapabilities",
-      "method": "GET",
-      "httpStatus": 200,
-      "contentType": "xml",
-      "assessment": "capabilities only; not counted as verification"
-    },
-    {
-      "url": "https://ws-idesc.cali.gov.co/geoserver/catastro/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=catastro:cat_bas_terrenos&count=3&outputFormat=application/json&bbox=3.4325,-76.5225,3.4335,-76.5210,urn:ogc:def:crs:EPSG::4326&srsName=EPSG:4326",
-      "method": "GET",
-      "httpStatus": 200,
-      "contentType": "application/json;charset=UTF-8",
-      "parcelRecordCount": 3,
-      "assessment": "verified: 3 closed MultiPolygon terrenos with predial IDs near the UN centre point (numberMatched 118)"
-    }
-  ],
-  "coverageAssessment": {
-    "claimedScope": "Santiago de Cali cadastral base (terrenos, manzanas, construcciones)",
-    "verifiedOpenScope": "three parcels in a ~150 m bounding box in central Cali",
-    "countrywideVerified": false
-  },
-  "remainingUncertainty": "Only one small sample; completeness across the municipality, layer licence and update policy unconfirmed. Records include property address and use attributes (no owner names seen; not stored beyond the 3-feature sample). Neighbouring municipalities (Yumbo, Jamundi) are separate authorities.",
-  "nextStep": "Confirm licence for the catastro workspace, test WFS paging and CORS, and test a second area of Cali."
 }

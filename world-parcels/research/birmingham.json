@@ -1,110 +1,216 @@
 {
-  "schemaVersion": 1,
-  "cityId": "queue:191",
-  "queueRank": 191,
-  "name": "Birmingham",
-  "country": "United Kingdom",
-  "countryCode": "GB",
-  "centerLatLon": [
-    52.5046010416867,
-    -1.96039982513583
-  ],
-  "checkedAt": "2026-09-29",
-  "status": "verified_sample_partial_coverage",
-  "verifiedParcelResponse": {
-    "sourceId": "gb-arcgis-geodom-land-registry-inspire-2021",
-    "requestUrl": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0/query?where=1%3D1&geometry=-1.9795,52.4965,-1.9765,52.4985&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID,INSPIREID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
-    "method": "GET",
-    "httpStatus": 200,
-    "contentType": "application/json;charset=utf-8",
-    "spatialTestAreaLonLat": [
-      -1.9795,
-      52.4965,
-      -1.9765,
-      52.4985
-    ],
-    "parcelRecordCount": 3,
-    "recordListPath": "features",
+    "objectIdFieldName": "OBJECTID",
+    "uniqueIdField": {
+        "name": "OBJECTID",
+        "isSystemMaintained": true
+    },
+    "globalIdFieldName": "",
+    "geometryProperties": {
+        "shapeAreaFieldName": "Shape__Area",
+        "shapeLengthFieldName": "Shape__Length",
+        "units": "esriMeters"
+    },
     "geometryType": "esriGeometryPolygon",
-    "closedRings": true,
-    "idField": "INSPIREID",
-    "responseFile": "birmingham-parcel-response.json",
-    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true; maxRecordCount=2000; returnCountOnly for the test box returned 362"
-  },
-  "source": {
-    "sourceId": "gb-arcgis-geodom-land-registry-inspire-2021",
-    "name": "'Land Registry Inspire Sites 20211022' public ArcGIS Online FeatureServer layer 0 (third-party copy of HM Land Registry INSPIRE index polygons)",
-    "operator": "ArcGIS Online user 'Geodom' (unofficial third party; not HM Land Registry)",
-    "scope": "22,075 polygons in one Midlands extract around Birmingham; not a complete national or city dataset",
-    "endpoint": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0",
-    "method": "GET ArcGIS REST query",
-    "responseFormat": "Esri JSON",
-    "crs": "native EPSG:27700; outSR=4326 returned WGS84",
-    "reuseStatus": "item has no licence text; the original HMLR INSPIRE index polygons are described (per search summaries in the London record, not re-read here) as OGL with Crown copyright and database-right attribution; the copy's own terms are unconfirmed"
-  },
-  "portalsFound": [
-    {
-      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire",
-      "observation": "Official HM Land Registry INSPIRE Index Polygons service: per-local-authority GML downloads, needs a session; see London record. Not a queryable API."
+    "spatialReference": {
+        "wkid": 4326,
+        "latestWkid": 4326
     },
-    {
-      "url": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer",
-      "observation": "Third-party 2021 INSPIRE extract (public, owner Geodom); the extent of x 388269-407892, y 282232-306867 covers Birmingham."
-    },
-    {
-      "url": "https://www.birmingham.gov.uk/",
-      "observation": "Birmingham City Council site reachable (200); no parcel service located. data.birmingham.gov.uk returned a proxy CONNECT 502."
-    }
-  ],
-  "requests": [
-    {
-      "url": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0?f=json",
-      "method": "GET",
-      "httpStatus": 200,
-      "contentType": "application/json;charset=utf-8",
-      "assessment": "layer description: polygon, INSPIREID only, maxRecordCount 2000, EPSG:27700; not counted"
-    },
-    {
-      "url": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0/query (bbox at UN centre -1.9604,52.5046 +-0.001, returnCountOnly)",
-      "method": "GET",
-      "httpStatus": 200,
-      "contentType": "application/json;charset=utf-8",
-      "assessment": "count 0"
-    },
-    {
-      "url": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0/query (bbox -1.9,52.47,-1.88,52.49, returnCountOnly)",
-      "method": "GET",
-      "httpStatus": 200,
-      "contentType": "application/json;charset=utf-8",
-      "assessment": "count 0"
-    },
-    {
-      "url": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0/query (bbox -2.2,52.3,-1.6,52.7, returnCountOnly)",
-      "method": "GET",
-      "httpStatus": 200,
-      "contentType": "application/json;charset=utf-8",
-      "assessment": "count 22075: the layer's whole feature count; coverage is sparse (several 2 km boxes returned 0 or 1)"
-    },
-    {
-      "url": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0/query?where=1%3D1&geometry=-1.9795,52.4965,-1.9765,52.4985&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID,INSPIREID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
-      "method": "GET",
-      "httpStatus": 200,
-      "contentType": "application/json;charset=utf-8",
-      "assessment": "verified: 3 closed polygons with INSPIREID near Handsworth/Hockley, Birmingham; test box has 362"
-    },
-    {
-      "url": "https://data.birmingham.gov.uk/",
-      "method": "GET",
-      "httpStatus": null,
-      "contentType": null,
-      "assessment": "proxy CONNECT tunnel failed, 502"
-    }
-  ],
-  "coverageAssessment": {
-    "claimedScope": "a 2021 extract of HM Land Registry INSPIRE index polygons around Birmingham",
-    "verifiedOpenScope": "three parcel-like index polygons in a ~250 m box about 1.5 km west of the UN centre point",
-    "countrywideVerified": false
-  },
-  "remainingUncertainty": "Unofficial third-party copy, dated Oct 2021, only 22,075 polygons so coverage of Birmingham is patchy; INSPIRE polygons are freehold registered extents, not full cadastral parcels, and are not a legal cadastre. Copy licence unconfirmed. The official HMLR bulk download (Birmingham City Council area GML) needs an account session and was not obtained. Birmingham City Council's own GIS/open data was not reached.",
-  "nextStep": "Obtain the official HMLR INSPIRE GML for Birmingham (and check OGL), or locate a hosted official/queryable service; test Birmingham City Council open data."
+    "fields": [
+        {
+            "name": "OBJECTID",
+            "type": "esriFieldTypeOID",
+            "alias": "OBJECTID",
+            "sqlType": "sqlTypeOther",
+            "domain": null,
+            "defaultValue": null
+        },
+        {
+            "name": "INSPIREID",
+            "type": "esriFieldTypeString",
+            "alias": "INSPIREID",
+            "sqlType": "sqlTypeOther",
+            "length": 30,
+            "domain": null,
+            "defaultValue": null
+        }
+    ],
+    "exceededTransferLimit": true,
+    "features": [
+        {
+            "attributes": {
+                "OBJECTID": 76,
+                "INSPIREID": "43509216"
+            },
+            "geometry": {
+                "rings": [
+                    [
+                        [
+                            -1.97816247069437,
+                            52.4972200042541
+                        ],
+                        [
+                            -1.9782316784135,
+                            52.4972663154215
+                        ],
+                        [
+                            -1.97837230268447,
+                            52.4973611855346
+                        ],
+                        [
+                            -1.9783885727765,
+                            52.4973745026753
+                        ],
+                        [
+                            -1.97834798092171,
+                            52.4973971410762
+                        ],
+                        [
+                            -1.97832883793093,
+                            52.497385001095
+                        ],
+                        [
+                            -1.9782397504878,
+                            52.4973265498545
+                        ],
+                        [
+                            -1.97822134142088,
+                            52.4973198039861
+                        ],
+                        [
+                            -1.97811311314282,
+                            52.4972456166511
+                        ],
+                        [
+                            -1.97816247069437,
+                            52.4972200042541
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "attributes": {
+                "OBJECTID": 77,
+                "INSPIREID": "43509949"
+            },
+            "geometry": {
+                "rings": [
+                    [
+                        [
+                            -1.97758505295708,
+                            52.4972351796862
+                        ],
+                        [
+                            -1.97768002590106,
+                            52.4973044205175
+                        ],
+                        [
+                            -1.97772493497891,
+                            52.4973385909213
+                        ],
+                        [
+                            -1.97780812667132,
+                            52.4974033344424
+                        ],
+                        [
+                            -1.97777865902041,
+                            52.4974190614209
+                        ],
+                        [
+                            -1.97775582160448,
+                            52.4974311936367
+                        ],
+                        [
+                            -1.97762624968452,
+                            52.4973286833813
+                        ],
+                        [
+                            -1.97761078578543,
+                            52.4973237359713
+                        ],
+                        [
+                            -1.97752980197635,
+                            52.4972630382254
+                        ],
+                        [
+                            -1.977510659949,
+                            52.497249549613
+                        ],
+                        [
+                            -1.9775209735664,
+                            52.4972441575694
+                        ],
+                        [
+                            -1.97756619071072,
+                            52.4972218529553
+                        ],
+                        [
+                            -1.97758505295708,
+                            52.4972351796862
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "attributes": {
+                "OBJECTID": 78,
+                "INSPIREID": "43509160"
+            },
+            "geometry": {
+                "rings": [
+                    [
+                        [
+                            -1.97775582160448,
+                            52.4974311936367
+                        ],
+                        [
+                            -1.97773003751856,
+                            52.4974446737946
+                        ],
+                        [
+                            -1.97770793702126,
+                            52.49745590714
+                        ],
+                        [
+                            -1.97762180052248,
+                            52.497388915496
+                        ],
+                        [
+                            -1.97748560127746,
+                            52.4972850553384
+                        ],
+                        [
+                            -1.97746719601968,
+                            52.497271027459
+                        ],
+                        [
+                            -1.977510659949,
+                            52.497249549613
+                        ],
+                        [
+                            -1.9775209735664,
+                            52.4972441575694
+                        ],
+                        [
+                            -1.97754011559456,
+                            52.4972576461803
+                        ],
+                        [
+                            -1.97762183612738,
+                            52.4973178945582
+                        ],
+                        [
+                            -1.97762624968452,
+                            52.4973286833813
+                        ],
+                        [
+                            -1.97775582160448,
+                            52.4974311936367
+                        ]
+                    ]
+                ]
+            }
+        }
+    ]
 }
