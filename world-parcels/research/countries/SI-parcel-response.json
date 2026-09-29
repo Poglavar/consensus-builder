@@ -1,0 +1,472 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "id": "PARCELE.100100000278024754",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       14.51037309,
+       46.05175798
+      ],
+      [
+       14.51023231,
+       46.05174946
+      ],
+      [
+       14.51022134,
+       46.05174788
+      ],
+      [
+       14.51022828,
+       46.05172281
+      ],
+      [
+       14.50986657,
+       46.05167924
+      ],
+      [
+       14.50970228,
+       46.0516555
+      ],
+      [
+       14.50954923,
+       46.05163064
+      ],
+      [
+       14.50929231,
+       46.05158968
+      ],
+      [
+       14.5090121,
+       46.05153602
+      ],
+      [
+       14.50875281,
+       46.05148515
+      ],
+      [
+       14.50740862,
+       46.05119126
+      ],
+      [
+       14.50739637,
+       46.05121811
+      ],
+      [
+       14.5073854,
+       46.05121572
+      ],
+      [
+       14.50738422,
+       46.05121806
+      ],
+      [
+       14.50661565,
+       46.05105054
+      ],
+      [
+       14.50653158,
+       46.05103011
+      ],
+      [
+       14.50652948,
+       46.05103388
+      ],
+      [
+       14.50651955,
+       46.05103141
+      ],
+      [
+       14.50650808,
+       46.05105664
+      ],
+      [
+       14.50646412,
+       46.05104521
+      ],
+      [
+       14.50643742,
+       46.05103951
+      ],
+      [
+       14.50639704,
+       46.05101774
+      ],
+      [
+       14.50640956,
+       46.0510196
+      ],
+      [
+       14.50649942,
+       46.05089771
+      ],
+      [
+       14.50650505,
+       46.05090457
+      ],
+      [
+       14.50650839,
+       46.05090611
+      ],
+      [
+       14.50652165,
+       46.05092606
+      ],
+      [
+       14.50651941,
+       46.05093126
+      ],
+      [
+       14.506524,
+       46.0509383
+      ],
+      [
+       14.50652408,
+       46.05094352
+      ],
+      [
+       14.50654484,
+       46.0509491
+      ],
+      [
+       14.50655158,
+       46.05094607
+      ],
+      [
+       14.50658022,
+       46.05095249
+      ],
+      [
+       14.50658249,
+       46.05095853
+      ],
+      [
+       14.50660222,
+       46.05096329
+      ],
+      [
+       14.50660975,
+       46.05095955
+      ],
+      [
+       14.50675573,
+       46.05099257
+      ],
+      [
+       14.50675685,
+       46.05099779
+      ],
+      [
+       14.50676781,
+       46.05100027
+      ],
+      [
+       14.50677867,
+       46.05099951
+      ]
+     ]
+    ]
+   },
+   "geometry_name": "GEOM",
+   "properties": {
+    "FEATUREID": 100100000278024754,
+    "EID": "100100000278024754",
+    "EID_PARCELA": "100100000278024754",
+    "PARCELA_ID": 27802475,
+    "KO_ID": 1728,
+    "NAZIV": "1728 LJUBLJANA MESTO",
+    "ST_PARCELE": "153/34",
+    "POVRSINA": 4627,
+    "DOLOCITEV_POVRSINE": 0,
+    "METODE_DOLOCITVE_POVRSINE_SIFRA": 0,
+    "METODE_DOLOCITVE_POVRSINE_NAZIV_SL": "ni podatka",
+    "METODE_DOLOCITVE_POVRSINE_OPIS_SL": "Ob migraciji grafi\u010dna povr\u0161ina parcele v zemlji\u0161kokatastrskem na\u010drtu (ZKN) in vpisana (atributna) povr\u0161ina parcele ni bila enaka, na\u010din izra\u010duna povr\u0161ine ni znan. \u0160ifra se uporablja samo ob migraciji iz starega sistema v IS kataster.",
+    "METODE_DOLOCITVE_POVRSINE_NAZIV_EN": null,
+    "METODE_DOLOCITVE_POVRSINE_OPIS_EN": null,
+    "METODE_DOLOCITVE_POVRSINE_NAZIV_IT": null,
+    "METODE_DOLOCITVE_POVRSINE_OPIS_IT": null,
+    "METODE_DOLOCITVE_POVRSINE_NAZIV_HU": null,
+    "METODE_DOLOCITVE_POVRSINE_OPIS_HU": null,
+    "UPRAVNI_STATUS_ID": 1,
+    "UPRAVNI_STATUSI_SIFRA": 1,
+    "UPRAVNI_STATUSI_NAZIV_SL": "ni urejena",
+    "UPRAVNI_STATUSI_OPIS_SL": null,
+    "UPRAVNI_STATUSI_NAZIV_EN": null,
+    "UPRAVNI_STATUSI_OPIS_EN": null,
+    "UPRAVNI_STATUSI_NAZIV_IT": "determinato",
+    "UPRAVNI_STATUSI_OPIS_IT": "determinato",
+    "UPRAVNI_STATUSI_NAZIV_HU": "rendezett",
+    "UPRAVNI_STATUSI_OPIS_HU": "rendezett",
+    "E_CEN": 461985.69,
+    "N_CEN": 101405.81,
+    "DATUM_SYS": "2023-08-29T14:35:02Z",
+    "BONITETA": null,
+    "ZNESEK_KD": null,
+    "SKUPNI_DEL_ETAZNA_LASTNINA": 2,
+    "SKUPNI_DEL_ETAZNA_LASTNINA_SIFRA": 2,
+    "SKUPNI_DEL_ETAZNA_LASTNINA_NAZIV_SL": "Ne",
+    "SKUPNI_DEL_ETAZNA_LASTNINA_OPIS_SL": "Ne",
+    "SKUPNI_DEL_ETAZNA_LASTNINA_NAZIV_EN": null,
+    "SKUPNI_DEL_ETAZNA_LASTNINA_OPIS_EN": null,
+    "SKUPNI_DEL_ETAZNA_LASTNINA_NAZIV_IT": "No",
+    "SKUPNI_DEL_ETAZNA_LASTNINA_OPIS_IT": "No",
+    "SKUPNI_DEL_ETAZNA_LASTNINA_NAZIV_HU": "Nem",
+    "SKUPNI_DEL_ETAZNA_LASTNINA_OPIS_HU": "Nem",
+    "GRAD_PARC": "Ne",
+    "OMEJITEV": "Ne"
+   },
+   "bbox": [
+    14.50639704,
+    46.05089771,
+    14.51046815,
+    46.05175798
+   ]
+  },
+  {
+   "type": "Feature",
+   "id": "PARCELE.100100001355545216",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       14.50655368,
+       46.0517268
+      ],
+      [
+       14.50655446,
+       46.05172563
+      ],
+      [
+       14.50649274,
+       46.0517053
+      ],
+      [
+       14.50642839,
+       46.05173463
+      ],
+      [
+       14.5064337,
+       46.0515735
+      ],
+      [
+       14.50644389,
+       46.05157561
+      ],
+      [
+       14.50644258,
+       46.05157705
+      ],
+      [
+       14.50651322,
+       46.05159769
+      ],
+      [
+       14.50651491,
+       46.05159662
+      ],
+      [
+       14.50692529,
+       46.05171725
+      ],
+      [
+       14.50714363,
+       46.05178126
+      ],
+      [
+       14.50720293,
+       46.05181256
+      ],
+      [
+       14.50726855,
+       46.05184433
+      ],
+      [
+       14.50732191,
+       46.05187497
+      ],
+      [
+       14.50742357,
+       46.05193713
+      ],
+      [
+       14.50753076,
+       46.05198924
+      ],
+      [
+       14.50753294,
+       46.05199015
+      ],
+      [
+       14.50764213,
+       46.0520348
+      ],
+      [
+       14.50778233,
+       46.05207958
+      ],
+      [
+       14.50781431,
+       46.05208728
+      ],
+      [
+       14.50800737,
+       46.05213175
+      ],
+      [
+       14.50815504,
+       46.05218052
+      ],
+      [
+       14.50834746,
+       46.05223866
+      ],
+      [
+       14.5083426,
+       46.05224692
+      ],
+      [
+       14.50843477,
+       46.05227332
+      ],
+      [
+       14.50856109,
+       46.05230949
+      ],
+      [
+       14.50873165,
+       46.05235584
+      ],
+      [
+       14.50876908,
+       46.05236041
+      ],
+      [
+       14.50896102,
+       46.05237123
+      ],
+      [
+       14.50917562,
+       46.05237683
+      ],
+      [
+       14.50935959,
+       46.05238301
+      ],
+      [
+       14.50968513,
+       46.0523962
+      ],
+      [
+       14.51018151,
+       46.0524093
+      ],
+      [
+       14.51017813,
+       46.05251375
+      ],
+      [
+       14.51017758,
+       46.05253156
+      ],
+      [
+       14.51014971,
+       46.05251273
+      ],
+      [
+       14.51009971,
+       46.05251117
+      ],
+      [
+       14.51010021,
+       46.05251243
+      ],
+      [
+       14.50998653,
+       46.05250798
+      ],
+      [
+       14.509985,
+       46.05250635
+      ]
+     ]
+    ]
+   },
+   "geometry_name": "GEOM",
+   "properties": {
+    "FEATUREID": 100100001355545216,
+    "EID": "100100001355545216",
+    "EID_PARCELA": "100100001355545216",
+    "PARCELA_ID": 135554521,
+    "KO_ID": 1737,
+    "NAZIV": "1737 TABOR",
+    "ST_PARCELE": "3778/3",
+    "POVRSINA": 3066,
+    "DOLOCITEV_POVRSINE": 2,
+    "METODE_DOLOCITVE_POVRSINE_SIFRA": 2,
+    "METODE_DOLOCITVE_POVRSINE_NAZIV_SL": "Prevzeta",
+    "METODE_DOLOCITVE_POVRSINE_OPIS_SL": "Povr\u0161ina ni izra\u010dunana iz koordinat to\u010dk parcelne meje.",
+    "METODE_DOLOCITVE_POVRSINE_NAZIV_EN": null,
+    "METODE_DOLOCITVE_POVRSINE_OPIS_EN": null,
+    "METODE_DOLOCITVE_POVRSINE_NAZIV_IT": null,
+    "METODE_DOLOCITVE_POVRSINE_OPIS_IT": null,
+    "METODE_DOLOCITVE_POVRSINE_NAZIV_HU": null,
+    "METODE_DOLOCITVE_POVRSINE_OPIS_HU": null,
+    "UPRAVNI_STATUS_ID": 1,
+    "UPRAVNI_STATUSI_SIFRA": 1,
+    "UPRAVNI_STATUSI_NAZIV_SL": "ni urejena",
+    "UPRAVNI_STATUSI_OPIS_SL": null,
+    "UPRAVNI_STATUSI_NAZIV_EN": null,
+    "UPRAVNI_STATUSI_OPIS_EN": null,
+    "UPRAVNI_STATUSI_NAZIV_IT": "determinato",
+    "UPRAVNI_STATUSI_OPIS_IT": "determinato",
+    "UPRAVNI_STATUSI_NAZIV_HU": "rendezett",
+    "UPRAVNI_STATUSI_OPIS_HU": "rendezett",
+    "E_CEN": 461951.25,
+    "N_CEN": 101501.92,
+    "DATUM_SYS": "2026-03-31T11:35:49Z",
+    "BONITETA": null,
+    "ZNESEK_KD": null,
+    "SKUPNI_DEL_ETAZNA_LASTNINA": 2,
+    "SKUPNI_DEL_ETAZNA_LASTNINA_SIFRA": 2,
+    "SKUPNI_DEL_ETAZNA_LASTNINA_NAZIV_SL": "Ne",
+    "SKUPNI_DEL_ETAZNA_LASTNINA_OPIS_SL": "Ne",
+    "SKUPNI_DEL_ETAZNA_LASTNINA_NAZIV_EN": null,
+    "SKUPNI_DEL_ETAZNA_LASTNINA_OPIS_EN": null,
+    "SKUPNI_DEL_ETAZNA_LASTNINA_NAZIV_IT": "No",
+    "SKUPNI_DEL_ETAZNA_LASTNINA_OPIS_IT": "No",
+    "SKUPNI_DEL_ETAZNA_LASTNINA_NAZIV_HU": "Nem",
+    "SKUPNI_DEL_ETAZNA_LASTNINA_OPIS_HU": "Nem",
+    "GRAD_PARC": "Ne",
+    "OMEJITEV": "Ne"
+   },
+   "bbox": [
+    14.50642839,
+    46.0515735,
+    14.51018151,
+    46.05253156
+   ]
+  }
+ ],
+ "totalFeatures": 149,
+ "numberMatched": 149,
+ "numberReturned": 2,
+ "timeStamp": "2026-09-29T23:22:29.911Z",
+ "crs": {
+  "type": "name",
+  "properties": {
+   "name": "urn:ogc:def:crs:EPSG::4326"
+  }
+ },
+ "bbox": [
+  14.50639704,
+  46.05089771,
+  14.51046815,
+  46.05253156
+ ],
+ "note": "rings truncated to first 40 vertices for size; original reply had 2 features (bbox 14.505,46.050,14.508,46.052)"
+}

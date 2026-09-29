@@ -1,0 +1,101 @@
+{
+ "displayFieldName": "SG21KEY",
+ "fieldAliases": {
+  "OBJECTID": "OBJECTID",
+  "SG21KEY": "SG21KEY",
+  "PROPTYPE": "PROPTYPE"
+ },
+ "geometryType": "esriGeometryPolygon",
+ "spatialReference": {
+  "wkid": 4326,
+  "latestWkid": 4326
+ },
+ "fields": [
+  {
+   "name": "OBJECTID",
+   "type": "esriFieldTypeOID",
+   "alias": "OBJECTID"
+  },
+  {
+   "name": "SG21KEY",
+   "type": "esriFieldTypeString",
+   "alias": "SG21KEY",
+   "length": 21
+  },
+  {
+   "name": "PROPTYPE",
+   "type": "esriFieldTypeString",
+   "alias": "PROPTYPE",
+   "length": 15
+  }
+ ],
+ "features": [
+  {
+   "attributes": {
+    "OBJECTID": 6041603,
+    "SG21KEY": "C01600070000494300000",
+    "PROPTYPE": "E"
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       18.423526584235173,
+       -33.92641290966309
+      ],
+      [
+       18.423946530638602,
+       -33.926017105071985
+      ],
+      [
+       18.424620729549442,
+       -33.926513165260175
+      ],
+      [
+       18.424197409314104,
+       -33.926912184336416
+      ],
+      [
+       18.423526584235173,
+       -33.92641290966309
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "attributes": {
+    "OBJECTID": 6042179,
+    "SG21KEY": "C01600070000491700000",
+    "PROPTYPE": "E"
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       18.423116754180796,
+       -33.92511114563149
+      ],
+      [
+       18.42317576204729,
+       -33.925154143575156
+      ],
+      [
+       18.423090081851154,
+       -33.92523411174959
+      ],
+      [
+       18.423031000224277,
+       -33.925190920390726
+      ],
+      [
+       18.423116754180796,
+       -33.92511114563149
+      ]
+     ]
+    ]
+   }
+  }
+ ],
+ "exceededTransferLimit": true
+}

@@ -1,0 +1,42 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "ZM",
+ "country": "Zambia",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Ministry of Lands and Natural Resources (Surveyor General / Lands and Deeds; ZILMIS land information system)",
+ "portalsFound": [
+  {
+   "url": "https://ministry-of-lands-and-natural-resources-southernafrica.hub.arcgis.com/pages/nsdi",
+   "observation": "MLNR NSDI ArcGIS Hub (from Lusaka probe, HTTP 200); describes national SDI, no open parcel layer found."
+  },
+  {
+   "url": "https://services8.arcgis.com/baO0mx1RSvBYn91a/arcgis/rest/services/Lusaka_parcels_creation/FeatureServer/0",
+   "observation": "Unofficial third-party ArcGIS Online layer, 28 polygons in Mtendere East (Lusaka) only; see research/lusaka.json. Subnational, not national."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.mlnr.gov.zm/, https://zilmis.gov.zm/, https://www.zambia.gov.zm/, https://www.sg.gov.zm",
+   "method": "GET",
+   "httpStatus": null,
+   "assessment": "connection failed via proxy (browser UA also tried); temporarily unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=cadastre%20zambia&f=json&num=8",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "no official national parcel service listed (only unrelated third-party layers)"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "No national open parcel service identified; official ZILMIS is transactional",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Official hosts unreachable from this environment; a national portal may exist.",
+ "nextStep": "Retry MLNR/ZILMIS hosts later; check whether Lusaka layer is an official pilot."
+}

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "SA",
+  "country": "Saudi Arabia",
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "cadastreAuthority": "Real Estate General Authority (REGA) / Ministry of Municipal, Rural Affairs and Housing (Balady) / National Geospatial Platform; Ministry of Justice for title deeds",
+  "portalsFound": [
+    {
+      "url": "https://my.gov.sa/en/content/gis",
+      "observation": "HTTP 403 Cloudflare block page (also with browser UA)"
+    },
+    {
+      "url": "https://nationalgeoplatform.gov.sa/",
+      "observation": "CONNECT tunnel failed 502"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://my.gov.sa/en/content/gis",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "Cloudflare block page"
+    },
+    {
+      "url": "https://nationalgeoplatform.gov.sa/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "CONNECT tunnel failed 502"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "National geospatial platform and REGA parcel services likely exist; not reached (see research/riyadh.json, jeddah.json, both unreachable/negative)",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "unknown",
+  "remainingUncertainty": "Government hosts blocked or unreachable from this network; prior city probes (Riyadh negative on RCRC open data, Jeddah unreachable) do not show absence.",
+  "nextStep": "Retry from Saudi-reachable network; look at National Geospatial Platform and REGA Ejar/Balady GIS services."
+}

@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "RO",
+  "country": "Romania",
+  "checkedAt": "2026-09-29",
+  "status": "national_cadastre_viewer_only",
+  "cadastreAuthority": "ANCPI (Agentia Nationala de Cadastru si Publicitate Imobiliara) - eTerra / geoportal.ancpi.ro; INSPIRE cadastral parcels view/download",
+  "portalsFound": [
+    {
+      "url": "https://eterra.ancpi.ro/",
+      "observation": "HTTP 403 'Acces restrictionat' page from this client (also with browser UA); eTerra viewer requires account for most functions"
+    },
+    {
+      "url": "https://geoportal.ancpi.ro/",
+      "observation": "CONNECT tunnel failed 502"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://eterra.ancpi.ro/",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "ANCPI 'access restricted' page"
+    },
+    {
+      "url": "https://eterra.ancpi.ro/eterra/",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "same restricted page"
+    },
+    {
+      "url": "https://geoportal.ancpi.ro/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "CONNECT tunnel failed 502"
+    },
+    {
+      "url": "https://inspire.ancpi.ro/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "CONNECT tunnel failed 502"
+    },
+    {
+      "url": "https://geoportal.ancpi.ro/geoportal-server/services/ows?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "CONNECT tunnel failed 502"
+    },
+    {
+      "url": "https://data.gov.ro/api/3/action/package_search?q=cadastru&rows=3",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "National cadastre and land book (eTerra); INSPIRE parcel services claimed by ANCPI, not verified",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "viewer-only",
+  "remainingUncertainty": "ANCPI hosts blocked/unreachable from here (possible geo-block); eTerra is account-based, and an INSPIRE WFS/WMS may exist but was not reached. Status reflects unverified viewer-only knowledge.",
+  "nextStep": "Retry from a Romanian-reachable network; check ANCPI INSPIRE WFS GetCapabilities for CP:CadastralParcel."
+}

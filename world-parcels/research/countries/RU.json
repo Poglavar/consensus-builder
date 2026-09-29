@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "RU",
+  "country": "Russian Federation",
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "cadastreAuthority": "Rosreestr (Federal Service for State Registration, Cadastre and Cartography) - NSPD (nspd.gov.ru, successor to the Public Cadastral Map pkk.rosreestr.ru)",
+  "portalsFound": [
+    {
+      "url": "https://nspd.gov.ru/",
+      "observation": "connection reset; see research/saint-petersburg.json and moscow.json (also unreachable)"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://nspd.gov.ru/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset by peer"
+    },
+    {
+      "url": "https://pkk.rosreestr.ru/api/features/1?text=77:01:0001001:1",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset by peer"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Nationwide public cadastral map (NSPD), viewer/API openness not tested",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "unknown",
+  "remainingUncertainty": "Russian hosts unreachable from this network (likely geo-blocking); nothing tested. Reused city evidence only reports the same failure.",
+  "nextStep": "Retry from an unrestricted network; probe NSPD geoportal search/WMS for a small bbox."
+}

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "ST",
+  "country": "Sao Tome and Principe",
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "cadastreAuthority": "Not identified (Direcao de Cadastro / Ministry responsible for land; no known national online cadastre)",
+  "portalsFound": [
+    {
+      "url": "https://www.gov.st/",
+      "observation": "307 redirect to http://www.gov.st:9001, not followed"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.gov.st/",
+      "method": "GET",
+      "httpStatus": 307,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "redirect to non-standard port; no cadastre info"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "None found",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "unknown",
+  "remainingUncertainty": "Very little tested; government host only redirects. Absence not established.",
+  "nextStep": "Search for cadastre projects (World Bank/AfDB) and geoportal for Sao Tome; retry gov.st."
+}
