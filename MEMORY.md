@@ -342,3 +342,4 @@
   `routes/urban-rules.js` returns no variables for the 2025 GUP (NULL `short_name`; join on `title`).
 
 - 2026-09-28: World-parcel expansion starts with a separate city gazetteer and a sequential, evidence-backed parcel-source registry (`world-parcels.md`); a source is verified only by HTTP 200 plus a nonempty parcel list, and Jakarta remains researching until that request is captured.
+- 2026-09-29: World-parcel registry now covers the UN WUP 2025 top 200 cities and a 194-country cadastre probe (`world-parcels/SUMMARY.md`). 52 cities have bounded samples; 48 are `temporarily_unavailable` because the research network could not reach many hosts. `countryCoverage` stays empty until nationwide claims and exclusions are reviewed. Merge with `world-parcels/merge-registry.py`.

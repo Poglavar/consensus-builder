@@ -1,223 +1,114 @@
 {
-    "displayFieldName": "ms_chelka",
-    "fieldAliases": {
-        "oid_chelka": "\u05d6\u05d9\u05d4\u05d5\u05d9 \u05de\u05de\u05d2 \u05d7\u05dc\u05e7\u05d4",
-        "ms_gush": "\u05de\u05e1\u05e4\u05e8 \u05d2\u05d5\u05e9",
-        "ms_chelka": "\u05de\u05e1\u05e4\u05e8 \u05d7\u05dc\u05e7\u05d4",
-        "ms_gush_vechelka": "\u05de\u05e1\u05e4\u05e8 \u05d2\u05d5\u05e9 \u05d5\u05d7\u05dc\u05e7\u05d4",
-        "ms_shetach": "\u05e9\u05d8\u05d7 \u05d2\u05e8\u05e4\u05d9",
-        "ms_shetach_rashum": "\u05e9\u05d8\u05d7 \u05e8\u05e9\u05d5\u05dd",
-        "sw_baalut": "\u05d4\u05d0\u05dd \u05d1\u05e2\u05dc\u05d5\u05ea",
-        "k_input_source": "\u05de\u05e7\u05d5\u05e8",
-        "tr_idkun_acharon": "\u05e2\u05d3\u05db\u05d5\u05df \u05d0\u05d7\u05e8\u05d5\u05df"
-    },
+  "schemaVersion": 1,
+  "cityId": "queue:190",
+  "queueRank": 190,
+  "name": "Tel Aviv",
+  "country": "Israel",
+  "countryCode": "IL",
+  "centerLatLon": [
+    32.0678497892024,
+    34.8222350010982
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_city_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "il-tel-aviv-yafo-iview2-chalkot",
+    "requestUrl": "https://gisn.tel-aviv.gov.il/arcgis/rest/services/IView2/MapServer/524/query?where=1%3D1&geometry=34.7800,32.0840,34.7815,32.0853&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=oid_chelka,ms_gush,ms_chelka,ms_gush_vechelka,ms_shetach,ms_shetach_rashum,sw_baalut,k_input_source,tr_idkun_acharon&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      34.78,
+      32.084,
+      34.7815,
+      32.0853
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
     "geometryType": "esriGeometryPolygon",
-    "spatialReference": {
-        "wkid": 4326,
-        "latestWkid": 4326
+    "closedRings": true,
+    "idField": "oid_chelka (also ms_gush_vechelka, block+parcel number)",
+    "responseFile": "tel-aviv-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true; maxRecordCount=2000; returnCountOnly for the test box returned 54"
+  },
+  "source": {
+    "sourceId": "il-tel-aviv-yafo-iview2-chalkot",
+    "name": "Tel Aviv-Yafo Municipality GIS (IView2 MapServer), layer 524 'Chalkot' (parcels)",
+    "operator": "Tel Aviv-Yafo Municipality",
+    "scope": "Tel Aviv-Yafo municipal area; layer extent about 12 x 14 km in ITM",
+    "endpoint": "https://gisn.tel-aviv.gov.il/arcgis/rest/services/IView2/MapServer/524",
+    "method": "GET ArcGIS REST query",
+    "responseFormat": "Esri JSON",
+    "crs": "native EPSG:2039 (Israeli TM Grid); outSR=4326 returned WGS84",
+    "reuseStatus": "unknown; no licence text or copyright statement in the layer metadata (copyrightText empty); terms of the municipal GIS not read"
+  },
+  "portalsFound": [
+    {
+      "url": "https://gisn.tel-aviv.gov.il/arcgis/rest/services",
+      "observation": "Municipal ArcGIS Server, anonymous. IView2 service exposes layers 524 parcels (chalkot), 525 blocks (gushim), 837 detailed land-use plots and a group 1002 'parcels and land-use'."
     },
-    "fields": [
-        {
-            "name": "oid_chelka",
-            "type": "esriFieldTypeOID",
-            "alias": "\u05d6\u05d9\u05d4\u05d5\u05d9 \u05de\u05de\u05d2 \u05d7\u05dc\u05e7\u05d4"
-        },
-        {
-            "name": "ms_gush",
-            "type": "esriFieldTypeInteger",
-            "alias": "\u05de\u05e1\u05e4\u05e8 \u05d2\u05d5\u05e9"
-        },
-        {
-            "name": "ms_chelka",
-            "type": "esriFieldTypeInteger",
-            "alias": "\u05de\u05e1\u05e4\u05e8 \u05d7\u05dc\u05e7\u05d4"
-        },
-        {
-            "name": "ms_gush_vechelka",
-            "type": "esriFieldTypeInteger",
-            "alias": "\u05de\u05e1\u05e4\u05e8 \u05d2\u05d5\u05e9 \u05d5\u05d7\u05dc\u05e7\u05d4"
-        },
-        {
-            "name": "ms_shetach",
-            "type": "esriFieldTypeDouble",
-            "alias": "\u05e9\u05d8\u05d7 \u05d2\u05e8\u05e4\u05d9"
-        },
-        {
-            "name": "ms_shetach_rashum",
-            "type": "esriFieldTypeDouble",
-            "alias": "\u05e9\u05d8\u05d7 \u05e8\u05e9\u05d5\u05dd"
-        },
-        {
-            "name": "sw_baalut",
-            "type": "esriFieldTypeSmallInteger",
-            "alias": "\u05d4\u05d0\u05dd \u05d1\u05e2\u05dc\u05d5\u05ea"
-        },
-        {
-            "name": "k_input_source",
-            "type": "esriFieldTypeSmallInteger",
-            "alias": "\u05de\u05e7\u05d5\u05e8"
-        },
-        {
-            "name": "tr_idkun_acharon",
-            "type": "esriFieldTypeDate",
-            "alias": "\u05e2\u05d3\u05db\u05d5\u05df \u05d0\u05d7\u05e8\u05d5\u05df",
-            "length": 8
-        }
-    ],
-    "features": [
-        {
-            "attributes": {
-                "oid_chelka": 3143,
-                "ms_gush": 6215,
-                "ms_chelka": 253,
-                "ms_gush_vechelka": 6215253,
-                "ms_shetach": 525.87,
-                "ms_shetach_rashum": 520,
-                "sw_baalut": -1,
-                "k_input_source": 1,
-                "tr_idkun_acharon": null
-            },
-            "geometry": {
-                "rings": [
-                    [
-                        [
-                            34.78092602759671,
-                            32.08474705895189
-                        ],
-                        [
-                            34.78086369171161,
-                            32.08457487897562
-                        ],
-                        [
-                            34.780738180471566,
-                            32.08460366822125
-                        ],
-                        [
-                            34.780599028828284,
-                            32.08463558600571
-                        ],
-                        [
-                            34.78065562870295,
-                            32.084811172811705
-                        ],
-                        [
-                            34.78083759129605,
-                            32.0847680274656
-                        ],
-                        [
-                            34.78092602759671,
-                            32.08474705895189
-                        ]
-                    ]
-                ]
-            }
-        },
-        {
-            "attributes": {
-                "oid_chelka": 3520,
-                "ms_gush": 6215,
-                "ms_chelka": 273,
-                "ms_gush_vechelka": 6215273,
-                "ms_shetach": 584.19,
-                "ms_shetach_rashum": 589,
-                "sw_baalut": -1,
-                "k_input_source": 1,
-                "tr_idkun_acharon": null
-            },
-            "geometry": {
-                "rings": [
-                    [
-                        [
-                            34.780900063722946,
-                            32.085117335024044
-                        ],
-                        [
-                            34.780816468657356,
-                            32.08486942497784
-                        ],
-                        [
-                            34.78069031544099,
-                            32.08489974867065
-                        ],
-                        [
-                            34.780607780883265,
-                            32.08491958788278
-                        ],
-                        [
-                            34.78069456763878,
-                            32.08516435248273
-                        ],
-                        [
-                            34.78083354323486,
-                            32.0851365524707
-                        ],
-                        [
-                            34.78091360712823,
-                            32.085120536546015
-                        ],
-                        [
-                            34.780900063722946,
-                            32.085117335024044
-                        ]
-                    ]
-                ]
-            }
-        },
-        {
-            "attributes": {
-                "oid_chelka": 3577,
-                "ms_gush": 6215,
-                "ms_chelka": 290,
-                "ms_gush_vechelka": 6215290,
-                "ms_shetach": 573.81,
-                "ms_shetach_rashum": 582,
-                "sw_baalut": -1,
-                "k_input_source": 1,
-                "tr_idkun_acharon": null
-            },
-            "geometry": {
-                "rings": [
-                    [
-                        [
-                            34.780285663990604,
-                            32.084897768946455
-                        ],
-                        [
-                            34.78022823698141,
-                            32.08471794081485
-                        ],
-                        [
-                            34.7801392881856,
-                            32.08473907395526
-                        ],
-                        [
-                            34.779944158031576,
-                            32.08478543504559
-                        ],
-                        [
-                            34.77994893012734,
-                            32.08479958473338
-                        ],
-                        [
-                            34.780004867252735,
-                            32.084965454652874
-                        ],
-                        [
-                            34.780043605140094,
-                            32.08495611654718
-                        ],
-                        [
-                            34.78024168348766,
-                            32.08490837011258
-                        ],
-                        [
-                            34.780285663990604,
-                            32.084897768946455
-                        ]
-                    ]
-                ]
-            }
-        }
-    ],
-    "exceededTransferLimit": true
+    {
+      "url": "https://opendata.tel-aviv.gov.il/",
+      "observation": "Municipal open-data portal (React app shell, 200)."
+    },
+    {
+      "url": "https://data.gov.il/api/3/action/package_search?q=parcels&rows=8",
+      "observation": "National open data catalogue searched; one Survey-of-Israel-type 'shape' dataset came up, not inspected in detail."
+    },
+    {
+      "url": "https://www.govmap.gov.il/",
+      "observation": "Official national GovMap viewer (200); parcel search by block/parcel; no open query endpoint tested."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://gisn.tel-aviv.gov.il/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "service list"
+    },
+    {
+      "url": "https://gisn.tel-aviv.gov.il/arcgis/rest/services/IView2/MapServer?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "layer list; not counted"
+    },
+    {
+      "url": "https://gisn.tel-aviv.gov.il/arcgis/rest/services/IView2/MapServer/524?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "layer description: polygon, Query capability, maxRecordCount 2000, EPSG:2039"
+    },
+    {
+      "url": "https://gisn.tel-aviv.gov.il/arcgis/rest/services/IView2/MapServer/524/query (bbox 34.8215,32.0672,34.8230,32.0685 at the UN centre point)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "count 0: the UN centre point lies east of the municipal boundary (Ramat Gan/Bnei Brak side), outside this source"
+    },
+    {
+      "url": "https://gisn.tel-aviv.gov.il/arcgis/rest/services/IView2/MapServer/524/query?where=1%3D1&geometry=34.7800,32.0840,34.7815,32.0853&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=oid_chelka,ms_gush,ms_chelka,ms_gush_vechelka,ms_shetach,ms_shetach_rashum,sw_baalut,k_input_source,tr_idkun_acharon&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "verified: 3 closed polygons with gush/chelka numbers in central Tel Aviv"
+    },
+    {
+      "url": "https://gisn.tel-aviv.gov.il/arcgis/rest/services/IView2/MapServer/524/query (bbox 34.79,32.05,34.85,32.10, returnCountOnly)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "count 9357 within a ~5x5 km box"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Tel Aviv-Yafo municipality parcels; the UN urban agglomeration (Gush Dan) also covers Ramat Gan, Bnei Brak, Givatayim, Holon, Bat Yam etc., which this source does not",
+    "verifiedOpenScope": "three parcels in a ~130 m box in central Tel Aviv",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Municipal source only; the UN centre coordinate falls outside it. Licence and permitted reuse of the municipal layer are unknown, and the layer is possibly a display copy of Survey of Israel data. Israel-wide parcels (Survey of Israel / GovMap) not verified.",
+  "nextStep": "Read municipal GIS terms; find and test a national Survey of Israel / GovMap parcel service for the rest of Gush Dan."
 }

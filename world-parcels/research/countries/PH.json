@@ -1,0 +1,61 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "PH",
+ "country": "Philippines",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "No single national cadastre service found: DENR-LMB (cadastral surveys), LRA (Land Registration Authority, titles), NAMRIA (geoportal/basemaps)",
+ "portalsFound": [
+  {
+   "url": "https://www.geoportal.gov.ph/",
+   "observation": "NAMRIA Philippine Geoportal reachable; mentions a 'Lot Plotter' tool, no open parcel service observed"
+  },
+  {
+   "url": "https://www.namria.gov.ph/",
+   "observation": "NAMRIA site reachable, no cadastre endpoint found"
+  },
+  {
+   "url": "https://www.lra.gov.ph/",
+   "observation": "LRA (from Cebu evidence): title registry, no open parcel API"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.geoportal.gov.ph/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "portal page; no parcel layer service found"
+  },
+  {
+   "url": "https://www.namria.gov.ph/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "institutional site"
+  },
+  {
+   "url": "https://gdis.denr.gov.ph/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "unreachable via proxy (untested)"
+  },
+  {
+   "url": "https://gisserver.namria.gov.ph/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "unreachable via proxy (untested)"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Unknown; cadastral data fragmented across DENR-LMB, LRA and LGUs",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "DENR and NAMRIA GIS hosts unreachable from this environment; earlier Cebu City probe also found no open endpoint (research/cebu-city.json).",
+ "nextStep": "Retry gdis.denr.gov.ph and NAMRIA ArcGIS hosts; check LGU/provincial GIS."
+}

@@ -16,7 +16,9 @@
       "verificationStatus": "verified_nonempty_sample",
       "reuseStatus": "terms_unconfirmed",
       "verifiedCityIds": [
-        "geonames:1185241"
+        "geonames:1185241",
+        "wup2025:7537",
+        "wup2025:6158"
       ],
       "evidenceFile": "research/dhaka.json"
     },
@@ -34,7 +36,8 @@
       "reuseStatus": "underlying_MOJ_data_open_subject_to_terms;_hosted_derivative_terms_unconfirmed",
       "sourceDataDateTokyo": "2023-02-09",
       "verifiedCityIds": [
-        "geonames:1850147"
+        "geonames:1850147",
+        "wup2025:5245"
       ],
       "evidenceFile": "research/tokyo.json"
     },
@@ -156,6 +159,670 @@
         "geonames:3936456"
       ],
       "evidenceFile": "research/lima.json"
+    },
+    {
+      "sourceId": "tr-tkgm-parsel-sorgu-api",
+      "name": "TKGM Parsel Sorgu (MEGSIS) web API",
+      "operator": "Tapu ve Kadastro Genel Mudurlugu (General Directorate of Land Registry and Cadastre)",
+      "countryCode": "TR",
+      "scope": "Turkey-wide viewer backend (only Ankara sampled here)",
+      "endpoint": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/{lat}/{lon}",
+      "method": "GET",
+      "responseFormat": "GeoJSON Feature",
+      "crs": "EPSG:4326 (lon/lat)",
+      "verificationStatus": "verified_sample_city_scope",
+      "reuseStatus": "Public but undocumented backend of the parselsorgu.tkgm.gov.tr viewer; terms of use for programmatic/bulk reuse not read",
+      "verifiedCityIds": [
+        "wup2025:4941"
+      ],
+      "evidenceFile": "research/ankara.json"
+    },
+    {
+      "sourceId": "ml-sprdf-ninacad-parcelle-wfs",
+      "name": "NINACAD parcel layer (sifMali:parcelle) via SPRDF GeoServer",
+      "operator": "Secretariat Permanent de la Reforme Domaniale et Fonciere (SPRDF), Mali",
+      "countryCode": "ML",
+      "scope": "Mali (layer WGS84 extent lon -9.46..-6.05, lat 12.03..13.72: Bamako district and surrounding Koulikoro/Segou areas); coverage of other regions unverified",
+      "endpoint": "https://geodata.sprdf.ml/geoserver/sifMali/ows",
+      "method": "GET (OGC WFS 1.1.0/2.0.0, GeoServer)",
+      "responseFormat": "GeoJSON (also GML, KML, CSV, shapefile-zip)",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "no licence terms found; anonymous read observed, reuse terms not read",
+      "verifiedCityIds": [
+        "wup2025:374"
+      ],
+      "evidenceFile": "research/bamako.json"
+    },
+    {
+      "sourceId": "id-big-satupeta-hak-milik-jawa-barat",
+      "name": "Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) Skala 1:5000, Jawa Barat sublayer (Satu Peta Perizinan dan Pertanahan)",
+      "operator": "Badan Informasi Geospasial (BIG) Satu Peta portal, data from Kementerian ATR/BPN",
+      "countryCode": "ID",
+      "scope": "Land parcels with land-right type (Hak Milik etc.) for Jawa Barat; the same MapServer has sublayers for 15 provinces",
+      "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/21",
+      "method": "GET ArcGIS query",
+      "responseFormat": "Esri JSON",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "Not established; service copyrightText names the Satupeta Perizinan dan Pertanahan policy acceleration team; licence terms not read",
+      "verifiedCityIds": [
+        "wup2025:5991"
+      ],
+      "evidenceFile": "research/bandung.json"
+    },
+    {
+      "sourceId": "gb-arcgis-geodom-land-registry-inspire-2021",
+      "name": "'Land Registry Inspire Sites 20211022' public ArcGIS Online FeatureServer layer 0 (third-party copy of HM Land Registry INSPIRE index polygons)",
+      "operator": "ArcGIS Online user 'Geodom' (unofficial third party; not HM Land Registry)",
+      "countryCode": "GB",
+      "scope": "22,075 polygons in one Midlands extract around Birmingham; not a complete national or city dataset",
+      "endpoint": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0",
+      "method": "GET ArcGIS REST query",
+      "responseFormat": "Esri JSON",
+      "crs": "native EPSG:27700; outSR=4326 returned WGS84",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "item has no licence text; the original HMLR INSPIRE index polygons are described (per search summaries in the London record, not re-read here) as OGL with Crown copyright and database-right attribution; the copy's own terms are unconfirmed",
+      "verifiedCityIds": [
+        "wup2025:3979"
+      ],
+      "evidenceFile": "research/birmingham.json"
+    },
+    {
+      "sourceId": "co-cali-idesc-cat-bas-terrenos",
+      "name": "IDESC Cali GeoServer, layer catastro:cat_bas_terrenos (cadastral land parcels)",
+      "operator": "Alcaldia de Santiago de Cali (IDESC / Infraestructura de Datos Espaciales de Santiago de Cali)",
+      "countryCode": "CO",
+      "scope": "Santiago de Cali municipality",
+      "endpoint": "https://ws-idesc.cali.gov.co/geoserver/catastro/ows",
+      "method": "GET WFS 2.0.0 GetFeature",
+      "responseFormat": "GeoJSON (application/json)",
+      "crs": "EPSG:4326 (srsName requested)",
+      "verificationStatus": "verified_sample_city_scope",
+      "reuseStatus": "WFS capabilities state Fees NONE and AccessConstraints NONE; the datos.cali.gov.co CKAN entries for other IDESC layers list cc-by / cc-by-sa. The licence of this specific layer was not confirmed.",
+      "verifiedCityIds": [
+        "wup2025:899"
+      ],
+      "evidenceFile": "research/cali.json"
+    },
+    {
+      "sourceId": "za-cct-land-parcels",
+      "name": "Land Parcels (City of Cape Town Open Data Portal)",
+      "operator": "City of Cape Town (ODP / GIS)",
+      "countryCode": "ZA",
+      "scope": "City of Cape Town metropolitan municipality",
+      "endpoint": "https://services6.arcgis.com/nyYfO9SxHU2ChQd9/arcgis/rest/services/Property/FeatureServer/0",
+      "method": "GET (ArcGIS REST query)",
+      "responseFormat": "Esri JSON (f=json)",
+      "crs": "EPSG:4326 requested via outSR",
+      "verificationStatus": "verified_sample_city_scope",
+      "reuseStatus": "City open data portal listing; licence terms not read",
+      "verifiedCityIds": [
+        "wup2025:413"
+      ],
+      "evidenceFile": "research/cape-town.json"
+    },
+    {
+      "sourceId": "us-il-cook-county-clerk-parcels-2021",
+      "name": "ccgisdata - Parcel 2021 (Cook County Open Data, dataset 77tz-riq7)",
+      "operator": "Cook County Clerk / Map Department (Cook County GIS)",
+      "countryCode": "US",
+      "scope": "Cook County, Illinois (includes City of Chicago)",
+      "endpoint": "https://datacatalog.cookcountyil.gov/resource/77tz-riq7.json",
+      "method": "GET Socrata SODA SoQL within_box",
+      "responseFormat": "JSON with GeoJSON MultiPolygon the_geom",
+      "crs": "EPSG:4326 (lon/lat)",
+      "verificationStatus": "verified_sample_county_scope",
+      "reuseStatus": "Dataset license shown as 'See Terms of Use'; terms not reviewed. Vintage 2021 (newer years may exist).",
+      "verifiedCityIds": [
+        "wup2025:7747"
+      ],
+      "evidenceFile": "research/chicago.json"
+    },
+    {
+      "sourceId": "bj-andf-efoncier-geoserver",
+      "name": "e-Foncier GeoServer, workspace efb, layer efb_parcel (Cadastre National du Benin)",
+      "operator": "ANDF (Agence Nationale du Domaine et du Foncier), Benin",
+      "countryCode": "BJ",
+      "scope": "digital cadastre parcels; sampled in Cotonou (Littoral) and, with 1 feature, near Seme-Podji (Oueme); extent of national coverage unverified",
+      "endpoint": "https://geoserver.andf.bj/geoserver/efb/wfs",
+      "method": "GET OGC WFS 1.0.0 GetFeature (outputFormat=application/json); endpoint found in the config of the public web app https://cadastre.andf.bj/",
+      "responseFormat": "GeoJSON",
+      "crs": "EPSG:32631 (WGS84 / UTM 31N); bbox accepted in EPSG:4326",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "GeoServer capabilities list Fees NONE / AccessConstraints NONE, which is a default, not a licence; reuse terms unverified",
+      "verifiedCityIds": [
+        "wup2025:1752"
+      ],
+      "evidenceFile": "research/cotonou.json"
+    },
+    {
+      "sourceId": "br-curitiba-ippuc-lote-cadastral",
+      "name": "GeoCuritiba Mapa Cadastral, layer 15 Lote Cadastral",
+      "operator": "IPPUC (Instituto de Pesquisa e Planejamento Urbano de Curitiba) / Prefeitura de Curitiba",
+      "countryCode": "BR",
+      "scope": "Municipality of Curitiba (layer native extent spans the city and part of the metropolitan region); one small area sampled",
+      "endpoint": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15",
+      "method": "GET ArcGIS MapServer query",
+      "responseFormat": "Esri JSON",
+      "crs": "native EPSG:31982 (SIRGAS 2000 UTM 22S); outSR=4326 honoured",
+      "verificationStatus": "verified_sample_city_scope",
+      "reuseStatus": "no licence text or copyright found in the layer metadata (copyrightText empty); reuse terms unverified",
+      "verifiedCityIds": [
+        "wup2025:6446"
+      ],
+      "evidenceFile": "research/curitiba.json"
+    },
+    {
+      "sourceId": "za-giscoe-erven",
+      "name": "South Africa Cadastre (Erven layer), GISCOE",
+      "operator": "Esri South Africa (GISCOE); underlying data is the Chief Surveyor-General national cadastral layer (per its service description; provenance not confirmed)",
+      "countryCode": "ZA",
+      "scope": "South Africa erven (claimed); verified around Johannesburg and now Durban",
+      "endpoint": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1",
+      "method": "GET ArcGIS query",
+      "responseFormat": "Esri JSON",
+      "crs": "EPSG:4326 (outSR)",
+      "verificationStatus": "verified_sample_city_scope",
+      "reuseStatus": "not reviewed; third-party hosted copy, terms and currency unknown",
+      "verifiedCityIds": [
+        "wup2025:5227",
+        "wup2025:3664"
+      ],
+      "evidenceFile": "research/durban.json"
+    },
+    {
+      "sourceId": "de-nrw-geobasis-alkis-vereinfacht-wfs",
+      "name": "WFS NW ALKIS Vereinfacht (Flurstücke, simplified ALKIS)",
+      "operator": "Geobasis NRW (Land Nordrhein-Westfalen surveying authority, Bezirksregierung Köln)",
+      "countryCode": "DE",
+      "scope": "Cadastral parcels (ave:Flurstueck) of North Rhine-Westphalia (feature types also include buildings, land use, cadastral districts); sample is Essen only",
+      "endpoint": "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht",
+      "method": "GET OGC WFS 2.0.0 GetFeature",
+      "responseFormat": "GML 3.2.1 (also GML 3.1, GeoPackage and zipped shapefile advertised; GeoJSON request failed)",
+      "crs": "EPSG:25832 (ETRS89 / UTM 32N) default; EPSG:25831 also offered",
+      "verificationStatus": "verified_sample_city_scope",
+      "reuseStatus": "Capabilities state Datenlizenz Deutschland - Zero 2.0 (dl-de/zero-2-0) with AccessConstraints NONE, and a disclaimer of liability; per-request limits not read",
+      "verifiedCityIds": [
+        "wup2025:675"
+      ],
+      "evidenceFile": "research/essen.json"
+    },
+    {
+      "sourceId": "br-fortaleza-ipplan-zeis-pici-lotes",
+      "name": "PIRF ZEIS Pici - Lotes (Fortaleza open data)",
+      "operator": "IPPLAN Fortaleza (municipal planning institute) via dados.fortaleza.ce.gov.br CKAN",
+      "countryCode": "BR",
+      "scope": "one special-interest social-housing zone (ZEIS Pici); similar per-ZEIS files exist for Lagamar, Pirambu, Serviluz, Bom Jardim, Dionisio Torres",
+      "endpoint": "https://dados.fortaleza.ce.gov.br/api/3/action/package_search?q=lotes",
+      "method": "GET static GeoJSON download",
+      "responseFormat": "GeoJSON (EPSG:4326)",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "CKAN licence field null for this dataset; not reviewed",
+      "verifiedCityIds": [
+        "wup2025:8285"
+      ],
+      "evidenceFile": "research/fortaleza.json"
+    },
+    {
+      "sourceId": "ec-guayaquil-rural-predios-agol-thirdparty",
+      "name": "Catastro rural y nivel de inundacion Guayaquil (ArcGIS Online feature layer)",
+      "operator": "ArcGIS Online user 'ejimenez_gobiernoslocales' (publisher identity and authority unconfirmed; not verified as GAD/Municipio de Guayaquil)",
+      "countryCode": "EC",
+      "scope": "Rural predios of Guayaquil canton only (2097 features; layer id 43); zero features in the urban core bbox",
+      "endpoint": "https://services3.arcgis.com/PYyU96woLS4j2PN8/arcgis/rest/services/Catastro_rural_y_nivel_de_inundacion_Guayaquil/FeatureServer/43",
+      "method": "GET ArcGIS REST query",
+      "responseFormat": "ArcGIS JSON (esriGeometryPolygon)",
+      "crs": "native EPSG:32717; outSR=4326 requested",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "unknown; item is public but no licence/terms found; unofficial. Boundary-neighbour text fields (Linderos) deliberately not saved",
+      "verifiedCityIds": [
+        "wup2025:772"
+      ],
+      "evidenceFile": "research/guayaquil.json"
+    },
+    {
+      "sourceId": "hk-landsd-lot-index-api",
+      "name": "Lot Index API (iC1000 Digital Land Boundary Map)",
+      "operator": "Lands Department, Hong Kong SAR / CSDI",
+      "countryCode": "HK",
+      "scope": "Hong Kong SAR lots (LOT, GLA, STT types)",
+      "endpoint": "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/iC1000/lot?bbox=minX,minY,maxX,maxY,EPSG:2326",
+      "method": "GET",
+      "responseFormat": "GML 3.1.1 (WFS-style FeatureCollection)",
+      "crs": "EPSG:2326 HK1980 Grid",
+      "verificationStatus": "verified_sample_city_scope",
+      "reuseStatus": "Documentation requires Lands Department logo/copyright attribution and forbids large request volumes; full terms not read",
+      "verifiedCityIds": [
+        "wup2025:11566"
+      ],
+      "evidenceFile": "research/hong-kong.json"
+    },
+    {
+      "sourceId": "us-tx-harris-hcad-parcels",
+      "name": "HCAD Parcels (Harris County Appraisal District GIS)",
+      "operator": "Harris County Appraisal District",
+      "countryCode": "US",
+      "scope": "Harris County, Texas (layer copyright HCAD GIS Division)",
+      "endpoint": "https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0",
+      "method": "ArcGIS REST MapServer query",
+      "responseFormat": "JSON, geoJSON",
+      "crs": "native EPSG:2278 (wkid 102740); requested outSR=4326",
+      "verificationStatus": "verified_sample_county_scope",
+      "reuseStatus": "Licence terms not read; layer also exposes owner names and mailing addresses, which were excluded from the saved reply via outFields.",
+      "verifiedCityIds": [
+        "wup2025:6237"
+      ],
+      "evidenceFile": "research/houston.json"
+    },
+    {
+      "sourceId": "tr-tkgm-cbsapi-parsel",
+      "name": "TKGM (Tapu ve Kadastro Genel Mudurlugu) cadastre parcel lookup API used by the Parsel Sorgu viewer",
+      "operator": "Tapu ve Kadastro Genel Mudurlugu (General Directorate of Land Registry and Cadastre)",
+      "countryCode": "TR",
+      "scope": "Turkey nationwide viewer service; only Izmir (Konak) sampled here",
+      "endpoint": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/{lat}/{lon}",
+      "method": "GET",
+      "responseFormat": "GeoJSON Feature",
+      "crs": "WGS84 lon/lat (coordinates inspected as lon,lat)",
+      "verificationStatus": "verified_sample_city_scope",
+      "reuseStatus": "unknown; the endpoint is the viewer's backend and no public API terms or rate limits were read; property attributes only, no owner fields seen",
+      "verifiedCityIds": [
+        "wup2025:1069"
+      ],
+      "evidenceFile": "research/izmir.json"
+    },
+    {
+      "sourceId": "my-selangor-jps-lot-kadaster-petaling",
+      "name": "Lot_Kadaster_MIL1 FeatureServer layer 7 (LOT_DAERAH_PETALING), JPS Selangor GIS",
+      "operator": "Jabatan Pengairan dan Saliran (Drainage and Irrigation Dept) Selangor",
+      "countryCode": "MY",
+      "scope": "Selangor state cadastral lots by district (9 district layers); Petaling district layer has 63,603 features. Covers the Selangor part of the Kuala Lumpur agglomeration, NOT the Kuala Lumpur Federal Territory",
+      "endpoint": "https://jpsselgis.selangor.gov.my/gis/rest/services/Lot_Kadaster_MIL1/FeatureServer/7",
+      "method": "GET ArcGIS query",
+      "responseFormat": "Esri JSON",
+      "crs": "native EPSG:3857 (wkid 102100); EPSG:4326 via outSR",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "Unknown; no licence stated on service; some attributes (applicant/developer names) are personal or commercial data and were excluded from the saved reply",
+      "verifiedCityIds": [
+        "wup2025:1629"
+      ],
+      "evidenceFile": "research/kuala-lumpur.json"
+    },
+    {
+      "sourceId": "zm-lusaka-mtendere-east-agol-unofficial",
+      "name": "Lusaka_parcels_creation FeatureServer, layer 0 'Parcels_Mtendere_East' (ArcGIS Online)",
+      "operator": "Unconfirmed third-party ArcGIS Online account 'eodoi_medeem'; not an official Zambian government service",
+      "countryCode": "ZM",
+      "scope": "One informal settlement (Mtendere East, Lusaka), 28 polygons",
+      "endpoint": "https://services8.arcgis.com/baO0mx1RSvBYn91a/arcgis/rest/services/Lusaka_parcels_creation/FeatureServer/0/query",
+      "method": "GET (ArcGIS REST query)",
+      "responseFormat": "Esri JSON",
+      "crs": "native EPSG:3857; outSR=4326 honoured",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "unknown; publisher and terms unconfirmed",
+      "verifiedCityIds": [
+        "wup2025:1498"
+      ],
+      "evidenceFile": "research/lusaka.json"
+    },
+    {
+      "sourceId": "es-catastro-inspire-cadastral-parcels-atom",
+      "name": "Direccion General del Catastro - INSPIRE Cadastral Parcels download service (ATOM)",
+      "operator": "Direccion General del Catastro, Ministerio de Hacienda, Spain",
+      "countryCode": "ES",
+      "scope": "Spain except Basque Country and Navarre (which run their own cadastres) per Catastro's INSPIRE description; not verified here beyond Madrid",
+      "endpoint": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/ES.SDGC.CP.atom.xml",
+      "method": "GET ATOM feed -> per-province feed -> per-municipality ZIP of GML",
+      "responseFormat": "INSPIRE CadastralParcels GML 3.2 in ZIP",
+      "crs": "EPSG:25830 for Madrid (zone-dependent: 25829/25830/25831, 32628 Canaries)",
+      "verificationStatus": "verified_sample_city_scope",
+      "reuseStatus": "not read; verify Catastro's INSPIRE licence terms before redistribution",
+      "verifiedCityIds": [
+        "wup2025:3440"
+      ],
+      "evidenceFile": "research/madrid.json"
+    },
+    {
+      "sourceId": "co-medellin-catastro-lote",
+      "name": "Medellin Catastro - ConsultaOperadorCatastral MapServer, layer 7 'Lote'",
+      "operator": "Alcaldia de Medellin, Secretaria de Gestion y Control Territorial, Subsecretaria de Catastro",
+      "countryCode": "CO",
+      "scope": "Municipality of Medellin (native extent about the municipal area; layer also covers rural lots per description)",
+      "endpoint": "https://www.medellin.gov.co/servidormapas/rest/services/ServiciosCatastro/ConsultaOperadorCatastral/MapServer/7/query",
+      "method": "GET (ArcGIS REST query)",
+      "responseFormat": "Esri JSON (also geoJSON/PBF per ArcGIS)",
+      "crs": "native EPSG:9377 (MAGNA-SIRGAS Origen Nacional); outSR=4326 honoured",
+      "verificationStatus": "verified_sample_city_scope",
+      "reuseStatus": "not reviewed; layer copyright text credits Subsecretaria de Catastro; the open-data hub (geomedellin-m-medellin.opendata.arcgis.com) lists 'lote del predio' but its licence was not read",
+      "verifiedCityIds": [
+        "wup2025:2525"
+      ],
+      "evidenceFile": "research/medellin.json"
+    },
+    {
+      "sourceId": "au-vic-vicmap-property",
+      "name": "Vicmap Property - Property Map Polygons (PROPERTY_MP), FeatureServer layer 0",
+      "operator": "State of Victoria, Department of Transport and Planning (Vicmap; ArcGIS Online owner Vicmap_Prod)",
+      "countryCode": "AU",
+      "scope": "State of Victoria property polygons (covers Melbourne)",
+      "endpoint": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/arcgis/rest/services/Vicmap_Property/FeatureServer/0",
+      "method": "GET ArcGIS REST query",
+      "responseFormat": "Esri JSON",
+      "crs": "EPSG:4326 requested via outSR",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "Item licenseInfo says Vicmap data is provided under a licence (likely Creative Commons Attribution); exact terms not fully read",
+      "verifiedCityIds": [
+        "wup2025:1634"
+      ],
+      "evidenceFile": "research/melbourne.json"
+    },
+    {
+      "sourceId": "us-fl-miamidade-pa-parcels",
+      "name": "Miami-Dade County GIS MD_PA_PropertySearch, layer 1 (MDC.Parcel_poly)",
+      "operator": "Miami-Dade County (Property Appraiser / GIS)",
+      "countryCode": "US",
+      "scope": "Miami-Dade County",
+      "endpoint": "https://gisfs.miamidade.gov/mdarcgis/rest/services/MD_PA_PropertySearch/MapServer/1",
+      "method": "GET ArcGIS REST query",
+      "responseFormat": "Esri JSON (also f=geojson supported by ArcGIS)",
+      "crs": "EPSG:4326 requested via outSR; native not checked",
+      "verificationStatus": "verified_sample_county_scope",
+      "reuseStatus": "Terms not read; unreviewed",
+      "verifiedCityIds": [
+        "wup2025:7289"
+      ],
+      "evidenceFile": "research/miami.json"
+    },
+    {
+      "sourceId": "it-agenzia-entrate-inspire-cadastral-wfs",
+      "name": "Cartografia Catastale WFS (INSPIRE Cadastral Parcels and Zoning), Agenzia delle Entrate",
+      "operator": "Agenzia delle Entrate (Italian national cadastre)",
+      "countryCode": "IT",
+      "scope": "Italy-wide cadastral map service per operator; only Milan sampled",
+      "endpoint": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php",
+      "method": "GET OGC WFS 2.0.0 GetFeature (typeNames CP:CadastralParcel, CP:CadastralZoning)",
+      "responseFormat": "GML 3.2 (also text/xml subtype gml/3.1.1)",
+      "crs": "EPSG:6706 (RDN2008 geographic, lat/lon axis order) and EPSG:4326 accepted",
+      "verificationStatus": "verified_sample_city_scope",
+      "reuseStatus": "GetCapabilities shows only 'altri vincoli' as AccessConstraints; licence not read here, must be confirmed before redistribution",
+      "verifiedCityIds": [
+        "wup2025:1848"
+      ],
+      "evidenceFile": "research/milan.json"
+    },
+    {
+      "sourceId": "it-agenzia-entrate-cartografia-catastale-wfs",
+      "name": "Cartografia Catastale WFS (INSPIRE cadastral parcels and zoning)",
+      "operator": "Agenzia delle Entrate (Italian revenue agency, Catasto)",
+      "countryCode": "IT",
+      "scope": "Italian cadastral parcels (CP:CadastralParcel) and zoning (CP:CadastralZoning); service title/abstract suggest national cartography, but only Naples was sampled here",
+      "endpoint": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php",
+      "method": "GET OGC WFS 2.0.0 GetFeature",
+      "responseFormat": "GML 3.2 (application/json rejected with InvalidFormat)",
+      "crs": "EPSG:6706 (RDN2008) default; bbox also accepted in EPSG:4326",
+      "verificationStatus": "verified_sample_city_scope",
+      "reuseStatus": "Capabilities list Fees 'CC BY 4.0' and AccessConstraints 'altri vincoli' (other constraints); the full terms and any request-rate or bbox limits were not read",
+      "verifiedCityIds": [
+        "wup2025:4726"
+      ],
+      "evidenceFile": "research/naples.json"
+    },
+    {
+      "sourceId": "fr-ign-apicarto-cadastre-parcelle",
+      "name": "API Carto module Cadastre (IGN Geoplateforme), parcelle endpoint, based on Etalab PCI Vecteur cadastre",
+      "operator": "IGN / DGFiP (Etalab PCI)",
+      "countryCode": "FR",
+      "scope": "France (metropolitan and overseas); Paris arrondissement 5 sampled",
+      "endpoint": "https://apicarto.ign.fr/api/cadastre/parcelle",
+      "method": "GET with GeoJSON geom param",
+      "responseFormat": "GeoJSON FeatureCollection",
+      "crs": "EPSG:4326 (WGS84 lon/lat) as returned",
+      "verificationStatus": "verified_sample_city_scope",
+      "reuseStatus": "Licence not read in this probe; PCI Vecteur cadastre is published by DGFiP as open data via cadastre.data.gouv.fr but terms need confirming",
+      "verifiedCityIds": [
+        "wup2025:2994"
+      ],
+      "evidenceFile": "research/paris.json"
+    },
+    {
+      "sourceId": "br-recife-prefeitura-lotes",
+      "name": "Lotes (Area urbana dataset), Portal de Dados Abertos da Cidade do Recife",
+      "operator": "Prefeitura do Recife (data via EMPREL CKAN)",
+      "countryCode": "BR",
+      "scope": "Municipality of Recife, ~114k lot polygons",
+      "endpoint": "https://dados.recife.pe.gov.br/dataset/1702c764-ec7a-4ef0-9861-8acd0e40c819/resource/c41ee0d0-bb33-4380-8809-2e9082d79ab0/download/lotes.geojson",
+      "method": "GET static GeoJSON download (CKAN)",
+      "responseFormat": "GeoJSON MultiPolygon",
+      "crs": "CRS84 (lon/lat)",
+      "verificationStatus": "verified_sample_city_scope",
+      "reuseStatus": "CKAN package license_id odc-odbl (Open Database License); attribution/share-alike terms not reviewed in detail",
+      "verifiedCityIds": [
+        "wup2025:8535"
+      ],
+      "evidenceFile": "research/recife.json"
+    },
+    {
+      "sourceId": "br-rio-prefeitura-lotes-2013",
+      "name": "Lotes (2013) - Quadras_Lotes_Edificacoes FeatureServer layer 1, Prefeitura do Rio (DATA.RIO)",
+      "operator": "Prefeitura da Cidade do Rio de Janeiro",
+      "countryCode": "BR",
+      "scope": "Municipality of Rio de Janeiro; physical lots restituted from the 2013 aerial survey (updated 2019 in places)",
+      "endpoint": "https://services5.arcgis.com/mgrvZxGU0bSJbVld/arcgis/rest/services/Quadras_Lotes_Edificacoes/FeatureServer/1",
+      "method": "GET ArcGIS query",
+      "responseFormat": "Esri JSON",
+      "crs": "EPSG:4326 requested via outSR (native not checked)",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "ArcGIS item licenseInfo shows Creative Commons Attribution 4.0 (CC BY 4.0); attribution required",
+      "verifiedCityIds": [
+        "wup2025:7935"
+      ],
+      "evidenceFile": "research/rio-de-janeiro.json"
+    },
+    {
+      "sourceId": "us-ca-sf-datasf-active-parcels",
+      "name": "Land Use / Assessor parcels: Parcels - Active and Retired (DataSF dataset acdm-wktn)",
+      "operator": "City and County of San Francisco (DataSF open data portal; parcel basemap maintained by the city)",
+      "countryCode": "US",
+      "scope": "City and County of San Francisco",
+      "endpoint": "https://data.sfgov.org/resource/acdm-wktn.json",
+      "method": "GET (Socrata SODA with SoQL $where within_box)",
+      "responseFormat": "JSON (also .geojson works, tested with HTTP 200)",
+      "crs": "EPSG:4326 (lon/lat)",
+      "verificationStatus": "verified_sample_city_scope",
+      "reuseStatus": "Open data portal; licence text not read in this probe, review before redistribution",
+      "verifiedCityIds": [
+        "wup2025:1233"
+      ],
+      "evidenceFile": "research/san-francisco.json"
+    },
+    {
+      "sourceId": "cl-minvu-predios-santiago-ocuc",
+      "name": "Predios por comuna en Santiago Metropolitana (Predios_Santiago FeatureServer)",
+      "operator": "Data original MINVU; published by Centro de Datos OCUC, Observatorio de Ciudades UC (ArcGIS Online)",
+      "countryCode": "CL",
+      "scope": "Predio polygons for communes of the Santiago metropolitan area (item extent about -70.87,-33.65 to -70.15,-33.29); reference date 2026-04-30",
+      "endpoint": "https://services9.arcgis.com/kKJR3Qt68ohAWuet/arcgis/rest/services/Predios_Santiago/FeatureServer/0",
+      "method": "ArcGIS REST FeatureServer query",
+      "responseFormat": "Esri JSON",
+      "crs": "EPSG:4326 served (item says WKID 102100 native)",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "item is public; licence text says free availability for non-commercial use on the OCUC platform and to verify validity, terms and attribution before reuse; redistribution/commercial reuse not established",
+      "verifiedCityIds": [
+        "wup2025:2380"
+      ],
+      "evidenceFile": "research/santiago.json"
+    },
+    {
+      "sourceId": "do-ri-atlas-geoserver",
+      "name": "Atlas Registro Inmobiliario GeoServer (ParcelasHistoricas, Aprobados)",
+      "operator": "Jurisdiccion Inmobiliaria / Registro Inmobiliario, Dominican Republic",
+      "countryCode": "DO",
+      "scope": "Distrito Nacional and other provinces; extent per layer not fully checked",
+      "endpoint": "https://atlas.ri.gob.do/geoserver/wfs",
+      "method": "GET (OGC WFS 1.0.0)",
+      "responseFormat": "GeoJSON",
+      "crs": "EPSG:32619 (UTM 19N) in output",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "licence not read; no access restriction seen for anonymous GET",
+      "verifiedCityIds": [
+        "wup2025:1455"
+      ],
+      "evidenceFile": "research/santo-domingo.json"
+    },
+    {
+      "sourceId": "id-bigsatupeta-hakmilik-jawa-tengah",
+      "name": "Satu Peta (BIG) PERIZINAN_DAN_PERTANAHAN, layer 25 Jawa Tengah of 'Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000'",
+      "operator": "Badan Informasi Geospasial Satu Peta portal; underlying data presumably Kementerian ATR/BPN (not confirmed)",
+      "countryCode": "ID",
+      "scope": "Central Java province, titled Hak Milik parcels only, patchy",
+      "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/25",
+      "method": "GET ArcGIS REST query",
+      "responseFormat": "Esri JSON",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "unknown; terms not read",
+      "verifiedCityIds": [
+        "wup2025:7063"
+      ],
+      "evidenceFile": "research/semarang.json"
+    },
+    {
+      "sourceId": "sg-sla-cadastral-land-parcel",
+      "name": "SLA Cadastral Land Parcel (data.gov.sg)",
+      "operator": "Singapore Land Authority",
+      "countryCode": "SG",
+      "scope": "Singapore (island-wide surveyed land lots)",
+      "endpoint": "https://api-open.data.gov.sg/v1/public/api/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/poll-download",
+      "method": "GET (poll-download then file download)",
+      "responseFormat": "GeoJSON FeatureCollection",
+      "crs": "EPSG:4326 (WGS84 lon/lat coordinates observed)",
+      "verificationStatus": "verified_sample_city_scope",
+      "reuseStatus": "Published on data.gov.sg as open data; licence text not read; check before redistribution",
+      "verifiedCityIds": [
+        "wup2025:165"
+      ],
+      "evidenceFile": "research/singapore.json"
+    },
+    {
+      "sourceId": "lk-nsdi-planning-cadastre-parcel-fabric",
+      "name": "Sri Lanka NSDI Planning Cadastre - Parcel Fabrics",
+      "operator": "Survey Department of Sri Lanka / NSDI",
+      "countryCode": "LK",
+      "scope": "Partial: districts covered by the parcel fabric",
+      "endpoint": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2",
+      "method": "ArcGIS REST query",
+      "responseFormat": "Esri JSON",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "not reviewed",
+      "verifiedCityIds": [
+        "wup2025:615"
+      ],
+      "evidenceFile": "research/sri-jayawardenepura-kotte-colombo.json"
+    },
+    {
+      "sourceId": "id-big-satupeta-hakmilik-5000-jawa-timur",
+      "name": "Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) Skala 1:5000 - Jawa Timur (BIG Satu Peta PUBLIK/PERIZINAN_DAN_PERTANAHAN layer 12)",
+      "operator": "Badan Informasi Geospasial (Satu Peta); land data of ATR/BPN as displayed on the service",
+      "countryCode": "ID",
+      "scope": "East Java province layer, but sampled coverage is partial (see coverageAssessment)",
+      "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/12",
+      "method": "ArcGIS REST MapServer query",
+      "responseFormat": "Esri JSON",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "unreviewed; the layer carries no copyright text and no licence was read",
+      "verifiedCityIds": [
+        "wup2025:7728"
+      ],
+      "evidenceFile": "research/surabaya.json"
+    },
+    {
+      "sourceId": "au-nsw-six-cadastre-lot",
+      "name": "NSW Cadastre (Lot layer), Spatial Services / SIX Maps",
+      "operator": "NSW Spatial Services (Department of Customer Service)",
+      "countryCode": "AU",
+      "scope": "New South Wales state lots (plan/section/lot extents)",
+      "endpoint": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9",
+      "method": "ArcGIS REST MapServer query",
+      "responseFormat": "ArcGIS JSON (f=json), also geoJSON per server capabilities not tested",
+      "crs": "native EPSG:3857 (102100); outSR=4326 honoured",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "not reviewed; NSW Spatial Services terms not read",
+      "verifiedCityIds": [
+        "wup2025:2139"
+      ],
+      "evidenceFile": "research/sydney.json"
+    },
+    {
+      "sourceId": "il-tel-aviv-yafo-iview2-chalkot",
+      "name": "Tel Aviv-Yafo Municipality GIS (IView2 MapServer), layer 524 'Chalkot' (parcels)",
+      "operator": "Tel Aviv-Yafo Municipality",
+      "countryCode": "IL",
+      "scope": "Tel Aviv-Yafo municipal area; layer extent about 12 x 14 km in ITM",
+      "endpoint": "https://gisn.tel-aviv.gov.il/arcgis/rest/services/IView2/MapServer/524",
+      "method": "GET ArcGIS REST query",
+      "responseFormat": "Esri JSON",
+      "crs": "native EPSG:2039 (Israeli TM Grid); outSR=4326 returned WGS84",
+      "verificationStatus": "verified_sample_city_scope",
+      "reuseStatus": "unknown; no licence text or copyright statement in the layer metadata (copyrightText empty); terms of the municipal GIS not read",
+      "verifiedCityIds": [
+        "wup2025:439"
+      ],
+      "evidenceFile": "research/tel-aviv.json"
+    },
+    {
+      "sourceId": "ca-on-toronto-property-boundary",
+      "name": "City of Toronto Property Boundary (Municipal Parcel Fabric)",
+      "operator": "City of Toronto GIS / Open Data",
+      "countryCode": "CA",
+      "scope": "City of Toronto",
+      "endpoint": "https://gis.toronto.ca/arcgis/rest/services/cot_geospatial27/FeatureServer/36",
+      "method": "ArcGIS REST query",
+      "responseFormat": "Esri JSON (f=json; geojson also available)",
+      "crs": "EPSG:4326 via outSR (native 3857)",
+      "verificationStatus": "verified_sample_city_scope",
+      "reuseStatus": "Open Data catalogue; licence field unspecified in CKAN metadata - review before reuse",
+      "verifiedCityIds": [
+        "wup2025:2925"
+      ],
+      "evidenceFile": "research/toronto.json"
+    },
+    {
+      "sourceId": "us-dc-dcgis-tax-lots",
+      "name": "DC GIS Property and Land, Tax Lots (layer 39)",
+      "operator": "Government of the District of Columbia (DC GIS; Real Property Tax Administration lots)",
+      "countryCode": "US",
+      "scope": "District of Columbia",
+      "endpoint": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Property_and_Land_WebMercator/MapServer/39",
+      "method": "GET ArcGIS query",
+      "responseFormat": "Esri JSON",
+      "crs": "EPSG:4326 (outSR requested)",
+      "verificationStatus": "verified_sample_city_scope",
+      "reuseStatus": "not reviewed; DC Open Data terms not read",
+      "verifiedCityIds": [
+        "wup2025:8123"
+      ],
+      "evidenceFile": "research/washington-dc.json"
+    },
+    {
+      "sourceId": "id-big-satupeta-hak-milik-diy",
+      "name": "Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) Skala 1:5000, Daerah Istimewa Yogyakarta sublayer (Satu Peta Perizinan dan Pertanahan)",
+      "operator": "Badan Informasi Geospasial (BIG) Satu Peta portal; land data attributed to Kementerian ATR/BPN",
+      "countryCode": "ID",
+      "scope": "Land parcels with land-right type for Daerah Istimewa Yogyakarta province; same MapServer has sublayers for 15 provinces",
+      "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/13",
+      "method": "GET ArcGIS REST query",
+      "responseFormat": "Esri JSON",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "Not established; layer has no copyright text and no licence was read",
+      "verifiedCityIds": [
+        "wup2025:7035"
+      ],
+      "evidenceFile": "research/yogyakarta.json"
     }
   ],
   "countryCoverage": [],
@@ -672,6 +1339,4532 @@
       "parcelStatus": "no_verified_sample_candidate_countrywide",
       "sourceIds": [],
       "researchFile": "research/london.json"
+    },
+    {
+      "cityId": "wup2025:11027",
+      "wupCityCode": 11027,
+      "name": "Hajipur",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.981,
+        85.451
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 34,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/hajipur.json"
+    },
+    {
+      "cityId": "wup2025:7935",
+      "wupCityCode": 7935,
+      "name": "Rio de Janeiro",
+      "country": "Brazil",
+      "countryCode": "BR",
+      "centerLatLon": [
+        -22.84585,
+        -43.36665
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 35,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "br-rio-prefeitura-lotes-2013"
+      ],
+      "researchFile": "research/rio-de-janeiro.json"
+    },
+    {
+      "cityId": "wup2025:2994",
+      "wupCityCode": 2994,
+      "name": "Paris",
+      "country": "France",
+      "countryCode": "FR",
+      "centerLatLon": [
+        48.84911,
+        2.35557
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 36,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "fr-ign-apicarto-cadastre-parcelle"
+      ],
+      "researchFile": "research/paris.json"
+    },
+    {
+      "cityId": "wup2025:9913",
+      "wupCityCode": 9913,
+      "name": "Hyderabad",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        17.41389,
+        78.47569
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 37,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/hyderabad.json"
+    },
+    {
+      "cityId": "wup2025:5264",
+      "wupCityCode": 5264,
+      "name": "Tehran",
+      "country": "Iran (Islamic Republic of)",
+      "countryCode": "IR",
+      "centerLatLon": [
+        35.68491,
+        51.34927
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 38,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/tehran.json"
+    },
+    {
+      "cityId": "wup2025:12128",
+      "wupCityCode": 12128,
+      "name": "Taipei",
+      "country": "China, Taiwan Province of China",
+      "countryCode": "TW",
+      "centerLatLon": [
+        25.0275,
+        121.47934
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 39,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/taipei.json"
+    },
+    {
+      "cityId": "wup2025:5991",
+      "wupCityCode": 5991,
+      "name": "Bandung",
+      "country": "Indonesia",
+      "countryCode": "ID",
+      "centerLatLon": [
+        -6.92332,
+        107.62819
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 40,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "id-big-satupeta-hak-milik-jawa-barat"
+      ],
+      "researchFile": "research/bandung.json"
+    },
+    {
+      "cityId": "wup2025:1629",
+      "wupCityCode": 1629,
+      "name": "Kuala Lumpur",
+      "country": "Malaysia",
+      "countryCode": "MY",
+      "centerLatLon": [
+        3.10026,
+        101.63345
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 41,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "my-selangor-jps-lot-kadaster-petaling"
+      ],
+      "researchFile": "research/kuala-lumpur.json"
+    },
+    {
+      "cityId": "wup2025:3566",
+      "wupCityCode": 3566,
+      "name": "Dar es Salaam",
+      "country": "United Republic of Tanzania",
+      "countryCode": "TZ",
+      "centerLatLon": [
+        -6.83353,
+        39.22414
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 42,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/dar-es-salaam.json"
+    },
+    {
+      "cityId": "wup2025:11632",
+      "wupCityCode": 11632,
+      "name": "Suzhou",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        31.38144,
+        120.62354
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 43,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/suzhou.json"
+    },
+    {
+      "cityId": "wup2025:6408",
+      "wupCityCode": 6408,
+      "name": "Ahmedabad",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        23.02084,
+        72.59717
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 44,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/ahmedabad.json"
+    },
+    {
+      "cityId": "wup2025:11700",
+      "wupCityCode": 11700,
+      "name": "Hangzhou",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        30.28128,
+        120.25121
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 45,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/hangzhou.json"
+    },
+    {
+      "cityId": "wup2025:10474",
+      "wupCityCode": 10474,
+      "name": "Wuhan",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        30.56605,
+        114.2968
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 46,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/wuhan.json"
+    },
+    {
+      "cityId": "wup2025:9414",
+      "wupCityCode": 9414,
+      "name": "Tianjin",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        39.13268,
+        117.19419
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 47,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/tianjin.json"
+    },
+    {
+      "cityId": "wup2025:275",
+      "wupCityCode": 275,
+      "name": "Alexandria",
+      "country": "Egypt",
+      "countryCode": "EG",
+      "centerLatLon": [
+        31.19337,
+        29.95177
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 48,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/alexandria.json"
+    },
+    {
+      "cityId": "wup2025:5245",
+      "wupCityCode": 5245,
+      "name": "Nagoya",
+      "country": "Japan",
+      "countryCode": "JP",
+      "centerLatLon": [
+        35.16537,
+        136.92672
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 49,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "jp-moj-esri-touki-2023"
+      ],
+      "researchFile": "research/nagoya.json"
+    },
+    {
+      "cityId": "wup2025:3664",
+      "wupCityCode": 3664,
+      "name": "Johannesburg",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "centerLatLon": [
+        -26.12045,
+        27.86009
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 50,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "za-giscoe-erven"
+      ],
+      "researchFile": "research/johannesburg.json"
+    },
+    {
+      "cityId": "wup2025:8833",
+      "wupCityCode": 8833,
+      "name": "Chongqing",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        29.54541,
+        106.51597
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 51,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/chongqing.json"
+    },
+    {
+      "cityId": "wup2025:2961",
+      "wupCityCode": 2961,
+      "name": "Ar-Riyāḑ (Riyadh)",
+      "country": "Saudi Arabia",
+      "countryCode": "SA",
+      "centerLatLon": [
+        24.68859,
+        46.7206
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 52,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/riyadh.json"
+    },
+    {
+      "cityId": "wup2025:7233",
+      "wupCityCode": 7233,
+      "name": "Surat",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        21.17762,
+        72.77892
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 53,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/surat.json"
+    },
+    {
+      "cityId": "wup2025:7728",
+      "wupCityCode": 7728,
+      "name": "Surabaya",
+      "country": "Indonesia",
+      "countryCode": "ID",
+      "centerLatLon": [
+        -7.38053,
+        112.68747
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 54,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "id-big-satupeta-hakmilik-5000-jawa-timur"
+      ],
+      "researchFile": "research/surabaya.json"
+    },
+    {
+      "cityId": "wup2025:8616",
+      "wupCityCode": 8616,
+      "name": "Pune",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        18.53504,
+        73.86026
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 55,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/pune.json"
+    },
+    {
+      "cityId": "wup2025:4325",
+      "wupCityCode": 4325,
+      "name": "Khartoum",
+      "country": "Sudan",
+      "countryCode": "SD",
+      "centerLatLon": [
+        15.63354,
+        32.49525
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 56,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/khartoum.json"
+    },
+    {
+      "cityId": "wup2025:11254",
+      "wupCityCode": 11254,
+      "name": "Nanjing",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        32.03551,
+        118.77773
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 57,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/nanjing.json"
+    },
+    {
+      "cityId": "wup2025:2380",
+      "wupCityCode": 2380,
+      "name": "Santiago",
+      "country": "Chile",
+      "countryCode": "CL",
+      "centerLatLon": [
+        -33.49154,
+        -70.65339
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 58,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "cl-minvu-predios-santiago-ocuc"
+      ],
+      "researchFile": "research/santiago.json"
+    },
+    {
+      "cityId": "wup2025:6353",
+      "wupCityCode": 6353,
+      "name": "Addis Ababa",
+      "country": "Ethiopia",
+      "countryCode": "ET",
+      "centerLatLon": [
+        9.00714,
+        38.74898
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 59,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/addis-ababa.json"
+    },
+    {
+      "cityId": "wup2025:3439",
+      "wupCityCode": 3439,
+      "name": "Abidjan",
+      "country": "Côte d'Ivoire",
+      "countryCode": "CI",
+      "centerLatLon": [
+        5.35605,
+        -4.01965
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 60,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/abidjan.json"
+    },
+    {
+      "cityId": "wup2025:11800",
+      "wupCityCode": 11800,
+      "name": "Chaozhou",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        23.65299,
+        116.32009
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 61,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "sourceIds": [],
+      "researchFile": "research/chaozhou.json"
+    },
+    {
+      "cityId": "wup2025:850",
+      "wupCityCode": 850,
+      "name": "Amman",
+      "country": "Jordan",
+      "countryCode": "JO",
+      "centerLatLon": [
+        31.98362,
+        35.96021
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 62,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/amman.json"
+    },
+    {
+      "cityId": "wup2025:3303",
+      "wupCityCode": 3303,
+      "name": "Baghdad",
+      "country": "Iraq",
+      "countryCode": "IQ",
+      "centerLatLon": [
+        33.33712,
+        44.38864
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 63,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/baghdad.json"
+    },
+    {
+      "cityId": "wup2025:6602",
+      "wupCityCode": 6602,
+      "name": "Chengdu",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        30.6723,
+        104.04603
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 64,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/chengdu.json"
+    },
+    {
+      "cityId": "wup2025:2033",
+      "wupCityCode": 2033,
+      "name": "Nairobi",
+      "country": "Kenya",
+      "countryCode": "KE",
+      "centerLatLon": [
+        -1.26592,
+        36.84516
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 65,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/nairobi.json"
+    },
+    {
+      "cityId": "wup2025:9587",
+      "wupCityCode": 9587,
+      "name": "Kozhikode",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        11.20591,
+        75.85835
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 66,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/kozhikode.json"
+    },
+    {
+      "cityId": "wup2025:10098",
+      "wupCityCode": 10098,
+      "name": "Shenyang",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        41.79682,
+        123.38899
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 67,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/shenyang.json"
+    },
+    {
+      "cityId": "wup2025:4703",
+      "wupCityCode": 4703,
+      "name": "Kabul",
+      "country": "Afghanistan",
+      "countryCode": "AF",
+      "centerLatLon": [
+        34.52975,
+        69.15522
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 68,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/kabul.json"
+    },
+    {
+      "cityId": "wup2025:7330",
+      "wupCityCode": 7330,
+      "name": "Onitsha",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "centerLatLon": [
+        6.1735,
+        6.82053
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 69,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/onitsha.json"
+    },
+    {
+      "cityId": "wup2025:5433",
+      "wupCityCode": 5433,
+      "name": "Yangon",
+      "country": "Myanmar",
+      "countryCode": "MM",
+      "centerLatLon": [
+        16.86173,
+        96.14539
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 70,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/yangon.json"
+    },
+    {
+      "cityId": "wup2025:3336",
+      "wupCityCode": 3336,
+      "name": "Accra",
+      "country": "Ghana",
+      "countryCode": "GH",
+      "centerLatLon": [
+        5.60366,
+        -0.21058
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 71,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/accra.json"
+    },
+    {
+      "cityId": "wup2025:3440",
+      "wupCityCode": 3440,
+      "name": "Madrid",
+      "country": "Spain",
+      "countryCode": "ES",
+      "centerLatLon": [
+        40.40519,
+        -3.70761
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 72,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "es-catastro-inspire-cadastral-parcels-atom"
+      ],
+      "researchFile": "research/madrid.json"
+    },
+    {
+      "cityId": "wup2025:7724",
+      "wupCityCode": 7724,
+      "name": "Faisalabad",
+      "country": "Pakistan",
+      "countryCode": "PK",
+      "centerLatLon": [
+        31.42333,
+        73.08699
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 73,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/faisalabad.json"
+    },
+    {
+      "cityId": "wup2025:2925",
+      "wupCityCode": 2925,
+      "name": "Toronto",
+      "country": "Canada",
+      "countryCode": "CA",
+      "centerLatLon": [
+        43.71951,
+        -79.47357
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 74,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "ca-on-toronto-property-boundary"
+      ],
+      "researchFile": "research/toronto.json"
+    },
+    {
+      "cityId": "wup2025:7072",
+      "wupCityCode": 7072,
+      "name": "Mashhad",
+      "country": "Iran (Islamic Republic of)",
+      "countryCode": "IR",
+      "centerLatLon": [
+        36.3417,
+        59.48844
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 75,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/mashhad.json"
+    },
+    {
+      "cityId": "wup2025:865",
+      "wupCityCode": 865,
+      "name": "Dubai",
+      "country": "United Arab Emirates",
+      "countryCode": "AE",
+      "centerLatLon": [
+        25.26605,
+        55.34248
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 76,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/dubai.json"
+    },
+    {
+      "cityId": "wup2025:8371",
+      "wupCityCode": 8371,
+      "name": "Xi'an",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        34.25487,
+        108.94684
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 77,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/xian.json"
+    },
+    {
+      "cityId": "wup2025:615",
+      "wupCityCode": 615,
+      "name": "Sri Jayawardenepura Kotte - Colombo",
+      "country": "Sri Lanka",
+      "countryCode": "LK",
+      "centerLatLon": [
+        6.91945,
+        79.92129
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 78,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "lk-nsdi-planning-cadastre-parcel-fabric"
+      ],
+      "researchFile": "research/sri-jayawardenepura-kotte-colombo.json"
+    },
+    {
+      "cityId": "wup2025:2324",
+      "wupCityCode": 2324,
+      "name": "Yaoundé",
+      "country": "Cameroon",
+      "countryCode": "CM",
+      "centerLatLon": [
+        3.84967,
+        11.51771
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 79,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/yaounde.json"
+    },
+    {
+      "cityId": "wup2025:9765",
+      "wupCityCode": 9765,
+      "name": "Kochi",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        10.06128,
+        76.30881
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 80,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/kochi.json"
+    },
+    {
+      "cityId": "wup2025:1975",
+      "wupCityCode": 1975,
+      "name": "Hà Nội (Hanoi)",
+      "country": "Viet Nam",
+      "countryCode": "VN",
+      "centerLatLon": [
+        21.0118,
+        105.83691
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 81,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/hanoi.json"
+    },
+    {
+      "cityId": "wup2025:9717",
+      "wupCityCode": 9717,
+      "name": "Lucknow",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.86152,
+        80.96544
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 82,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/lucknow.json"
+    },
+    {
+      "cityId": "wup2025:7537",
+      "wupCityCode": 7537,
+      "name": "Chattogram",
+      "country": "Bangladesh",
+      "countryCode": "BD",
+      "centerLatLon": [
+        22.37287,
+        91.8104
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 83,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "bd-dlrs-bds-sheets"
+      ],
+      "researchFile": "research/chattogram.json"
+    },
+    {
+      "cityId": "wup2025:165",
+      "wupCityCode": 165,
+      "name": "Singapore",
+      "country": "Singapore",
+      "countryCode": "SG",
+      "centerLatLon": [
+        1.34468,
+        103.84492
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 84,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "sg-sla-cadastral-land-parcel"
+      ],
+      "researchFile": "research/singapore.json"
+    },
+    {
+      "cityId": "wup2025:1866",
+      "wupCityCode": 1866,
+      "name": "Kampala",
+      "country": "Uganda",
+      "countryCode": "UG",
+      "centerLatLon": [
+        0.32122,
+        32.5795
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 85,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/kampala.json"
+    },
+    {
+      "cityId": "wup2025:9574",
+      "wupCityCode": 9574,
+      "name": "Zhengzhou",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        34.76696,
+        113.65311
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 86,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/zhengzhou.json"
+    },
+    {
+      "cityId": "wup2025:10990",
+      "wupCityCode": 10990,
+      "name": "Hefei",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        31.84718,
+        117.26715
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 87,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/hefei.json"
+    },
+    {
+      "cityId": "wup2025:7017",
+      "wupCityCode": 7017,
+      "name": "Islamabad",
+      "country": "Pakistan",
+      "countryCode": "PK",
+      "centerLatLon": [
+        33.60791,
+        73.06213
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 88,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/islamabad.json"
+    },
+    {
+      "cityId": "wup2025:8435",
+      "wupCityCode": 8435,
+      "name": "Kano",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "centerLatLon": [
+        11.98519,
+        8.50932
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 89,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/kano.json"
+    },
+    {
+      "cityId": "wup2025:11566",
+      "wupCityCode": 11566,
+      "name": "Tamar (Hong Kong)",
+      "country": "China, Hong Kong SAR",
+      "countryCode": "HK",
+      "centerLatLon": [
+        22.31636,
+        114.18298
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 90,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "hk-landsd-lot-index-api"
+      ],
+      "researchFile": "research/hong-kong.json"
+    },
+    {
+      "cityId": "wup2025:568",
+      "wupCityCode": 568,
+      "name": "Saint Petersburg",
+      "country": "Russian Federation",
+      "countryCode": "RU",
+      "centerLatLon": [
+        59.93406,
+        30.33777
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 91,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/saint-petersburg.json"
+    },
+    {
+      "cityId": "wup2025:1455",
+      "wupCityCode": 1455,
+      "name": "Santo Domingo",
+      "country": "Dominican Republic",
+      "countryCode": "DO",
+      "centerLatLon": [
+        18.48615,
+        -69.92189
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 92,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "do-ri-atlas-geoserver"
+      ],
+      "researchFile": "research/santo-domingo.json"
+    },
+    {
+      "cityId": "wup2025:413",
+      "wupCityCode": 413,
+      "name": "Cape Town",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "centerLatLon": [
+        -33.98054,
+        18.59996
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 93,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "za-cct-land-parcels"
+      ],
+      "researchFile": "research/cape-town.json"
+    },
+    {
+      "cityId": "wup2025:2076",
+      "wupCityCode": 2076,
+      "name": "Casablanca",
+      "country": "Morocco",
+      "countryCode": "MA",
+      "centerLatLon": [
+        33.58184,
+        -7.54261
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 94,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/casablanca.json"
+    },
+    {
+      "cityId": "wup2025:3197",
+      "wupCityCode": 3197,
+      "name": "Muqdisho (Mogadishu)",
+      "country": "Somalia",
+      "countryCode": "SO",
+      "centerLatLon": [
+        2.05393,
+        45.33137
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 95,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/mogadishu.json"
+    },
+    {
+      "cityId": "wup2025:9738",
+      "wupCityCode": 9738,
+      "name": "Harbin",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        45.7443,
+        126.65899
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 96,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/harbin.json"
+    },
+    {
+      "cityId": "wup2025:9603",
+      "wupCityCode": 9603,
+      "name": "Kanpur",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.46095,
+        80.34062
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 97,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/kanpur.json"
+    },
+    {
+      "cityId": "wup2025:1468",
+      "wupCityCode": 1468,
+      "name": "Kumasi",
+      "country": "Ghana",
+      "countryCode": "GH",
+      "centerLatLon": [
+        6.69546,
+        -1.61389
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 98,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/kumasi.json"
+    },
+    {
+      "cityId": "wup2025:1404",
+      "wupCityCode": 1404,
+      "name": "Dimashq (Damascus)",
+      "country": "Syrian Arab Republic",
+      "countryCode": "SY",
+      "centerLatLon": [
+        33.50347,
+        36.30627
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 99,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/damascus.json"
+    },
+    {
+      "cityId": "wup2025:1086",
+      "wupCityCode": 1086,
+      "name": "Jeddah",
+      "country": "Saudi Arabia",
+      "countryCode": "SA",
+      "centerLatLon": [
+        21.52933,
+        39.209
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 100,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/jeddah.json"
+    },
+    {
+      "cityId": "wup2025:305",
+      "wupCityCode": 305,
+      "name": "Al Kuwayt (Kuwait City)",
+      "country": "Kuwait",
+      "countryCode": "KW",
+      "centerLatLon": [
+        29.28283,
+        47.99948
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 101,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/kuwait-city.json"
+    },
+    {
+      "cityId": "wup2025:1806",
+      "wupCityCode": 1806,
+      "name": "Medan",
+      "country": "Indonesia",
+      "countryCode": "ID",
+      "centerLatLon": [
+        3.5952,
+        98.65929
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 102,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/medan.json"
+    },
+    {
+      "cityId": "wup2025:374",
+      "wupCityCode": 374,
+      "name": "Bamako",
+      "country": "Mali",
+      "countryCode": "ML",
+      "centerLatLon": [
+        12.63105,
+        -7.98841
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 103,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "ml-sprdf-ninacad-parcelle-wfs"
+      ],
+      "researchFile": "research/bamako.json"
+    },
+    {
+      "cityId": "wup2025:7397",
+      "wupCityCode": 7397,
+      "name": "Luxor",
+      "country": "Egypt",
+      "countryCode": "EG",
+      "centerLatLon": [
+        25.6736,
+        32.58581
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 104,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/luxor.json"
+    },
+    {
+      "cityId": "wup2025:7802",
+      "wupCityCode": 7802,
+      "name": "Belo Horizonte",
+      "country": "Brazil",
+      "countryCode": "BR",
+      "centerLatLon": [
+        -19.90062,
+        -43.99167
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 105,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/belo-horizonte.json"
+    },
+    {
+      "cityId": "wup2025:12032",
+      "wupCityCode": 12032,
+      "name": "Wenzhou",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        28.01535,
+        120.63036
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 106,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/wenzhou.json"
+    },
+    {
+      "cityId": "wup2025:2139",
+      "wupCityCode": 2139,
+      "name": "Sydney",
+      "country": "Australia",
+      "countryCode": "AU",
+      "centerLatLon": [
+        -33.85899,
+        151.07897
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 107,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "au-nsw-six-cadastre-lot"
+      ],
+      "researchFile": "research/sydney.json"
+    },
+    {
+      "cityId": "wup2025:3099",
+      "wupCityCode": 3099,
+      "name": "Guadalajara",
+      "country": "Mexico",
+      "countryCode": "MX",
+      "centerLatLon": [
+        20.65679,
+        -103.34743
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 108,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/guadalajara.json"
+    },
+    {
+      "cityId": "wup2025:813",
+      "wupCityCode": 813,
+      "name": "Douala",
+      "country": "Cameroon",
+      "countryCode": "CM",
+      "centerLatLon": [
+        4.05135,
+        9.73966
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 109,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/douala.json"
+    },
+    {
+      "cityId": "wup2025:8064",
+      "wupCityCode": 8064,
+      "name": "Jaipur",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.91287,
+        75.78656
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 110,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/jaipur.json"
+    },
+    {
+      "cityId": "wup2025:4328",
+      "wupCityCode": 4328,
+      "name": "Şan'ā' (Sana'a)",
+      "country": "Yemen",
+      "countryCode": "YE",
+      "centerLatLon": [
+        15.35812,
+        44.20456
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 111,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/sanaa.json"
+    },
+    {
+      "cityId": "wup2025:8609",
+      "wupCityCode": 8609,
+      "name": "Taiyuan",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        37.85311,
+        112.548
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 112,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/taiyuan.json"
+    },
+    {
+      "cityId": "wup2025:11820",
+      "wupCityCode": 11820,
+      "name": "Puning",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        23.26183,
+        116.3952
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 113,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/puning.json"
+    },
+    {
+      "cityId": "wup2025:5068",
+      "wupCityCode": 5068,
+      "name": "Barcelona",
+      "country": "Spain",
+      "countryCode": "ES",
+      "centerLatLon": [
+        41.42516,
+        2.15511
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 114,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/barcelona.json"
+    },
+    {
+      "cityId": "wup2025:6237",
+      "wupCityCode": 6237,
+      "name": "Houston",
+      "country": "United States of America",
+      "countryCode": "US",
+      "centerLatLon": [
+        29.74636,
+        -95.46767
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 115,
+      "parcelStatus": "verified_sample_county_scope",
+      "sourceIds": [
+        "us-tx-harris-hcad-parcels"
+      ],
+      "researchFile": "research/houston.json"
+    },
+    {
+      "cityId": "wup2025:6218",
+      "wupCityCode": 6218,
+      "name": "Monterrey",
+      "country": "Mexico",
+      "countryCode": "MX",
+      "centerLatLon": [
+        25.71411,
+        -100.28803
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 116,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/monterrey.json"
+    },
+    {
+      "cityId": "wup2025:3082",
+      "wupCityCode": 3082,
+      "name": "Toshkent (Tashkent)",
+      "country": "Uzbekistan",
+      "countryCode": "UZ",
+      "centerLatLon": [
+        41.23935,
+        69.25891
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 117,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/toshkent.json"
+    },
+    {
+      "cityId": "wup2025:1961",
+      "wupCityCode": 1961,
+      "name": "Antananarivo",
+      "country": "Madagascar",
+      "countryCode": "MG",
+      "centerLatLon": [
+        -18.86511,
+        47.53777
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 118,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/antananarivo.json"
+    },
+    {
+      "cityId": "wup2025:10447",
+      "wupCityCode": 10447,
+      "name": "Varanasi",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.3131,
+        83.00504
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 119,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/varanasi.json"
+    },
+    {
+      "cityId": "wup2025:33",
+      "wupCityCode": 33,
+      "name": "Dakar",
+      "country": "Senegal",
+      "countryCode": "SN",
+      "centerLatLon": [
+        14.7439,
+        -17.38936
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 120,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/dakar.json"
+    },
+    {
+      "cityId": "wup2025:7369",
+      "wupCityCode": 7369,
+      "name": "Owerri",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "centerLatLon": [
+        5.68743,
+        7.03813
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 121,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/owerri.json"
+    },
+    {
+      "cityId": "wup2025:2715",
+      "wupCityCode": 2715,
+      "name": "Ürümqi",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        43.82864,
+        87.59241
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 122,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/urumqi.json"
+    },
+    {
+      "cityId": "wup2025:2996",
+      "wupCityCode": 2996,
+      "name": "Ibadan",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "centerLatLon": [
+        7.37868,
+        3.92249
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 123,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/ibadan.json"
+    },
+    {
+      "cityId": "wup2025:8535",
+      "wupCityCode": 8535,
+      "name": "Recife",
+      "country": "Brazil",
+      "countryCode": "BR",
+      "centerLatLon": [
+        -8.04622,
+        -34.92078
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 124,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "br-recife-prefeitura-lotes"
+      ],
+      "researchFile": "research/recife.json"
+    },
+    {
+      "cityId": "wup2025:7747",
+      "wupCityCode": 7747,
+      "name": "Chicago",
+      "country": "United States of America",
+      "countryCode": "US",
+      "centerLatLon": [
+        41.87261,
+        -87.70745
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 125,
+      "parcelStatus": "verified_sample_county_scope",
+      "sourceIds": [
+        "us-il-cook-county-clerk-parcels-2021"
+      ],
+      "researchFile": "research/chicago.json"
+    },
+    {
+      "cityId": "wup2025:554",
+      "wupCityCode": 554,
+      "name": "Brazzaville",
+      "country": "Congo",
+      "countryCode": "CG",
+      "centerLatLon": [
+        -4.24419,
+        15.26263
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 126,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/brazzaville.json"
+    },
+    {
+      "cityId": "wup2025:1634",
+      "wupCityCode": 1634,
+      "name": "Melbourne",
+      "country": "Australia",
+      "countryCode": "AU",
+      "centerLatLon": [
+        -37.83093,
+        145.05858
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 127,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "au-vic-vicmap-property"
+      ],
+      "researchFile": "research/melbourne.json"
+    },
+    {
+      "cityId": "wup2025:10816",
+      "wupCityCode": 10816,
+      "name": "Qingdao",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        36.16737,
+        120.39214
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 128,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/qingdao.json"
+    },
+    {
+      "cityId": "wup2025:4941",
+      "wupCityCode": 4941,
+      "name": "Ankara",
+      "country": "Türkiye",
+      "countryCode": "TR",
+      "centerLatLon": [
+        39.95407,
+        32.86789
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 129,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "tr-tkgm-parsel-sorgu-api"
+      ],
+      "researchFile": "research/ankara.json"
+    },
+    {
+      "cityId": "wup2025:5196",
+      "wupCityCode": 5196,
+      "name": "Kasaï-Oriental",
+      "country": "Democratic Republic of the Congo",
+      "countryCode": "CD",
+      "centerLatLon": [
+        -6.1228,
+        23.59847
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 130,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/kasai-oriental.json"
+    },
+    {
+      "cityId": "wup2025:5114",
+      "wupCityCode": 5114,
+      "name": "Karaj",
+      "country": "Iran (Islamic Republic of)",
+      "countryCode": "IR",
+      "centerLatLon": [
+        35.75954,
+        50.97612
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 131,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/karaj.json"
+    },
+    {
+      "cityId": "wup2025:5576",
+      "wupCityCode": 5576,
+      "name": "Berlin",
+      "country": "Germany",
+      "countryCode": "DE",
+      "centerLatLon": [
+        52.50181,
+        13.39995
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 132,
+      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "sourceIds": [],
+      "researchFile": "research/berlin.json",
+      "mergeNote": "Evidence was relayed through a summarising tool, not a raw HTTP reply, and only 2 of 3 features were kept; re-fetch directly before counting it."
+    },
+    {
+      "cityId": "wup2025:6158",
+      "wupCityCode": 6158,
+      "name": "Savar",
+      "country": "Bangladesh",
+      "countryCode": "BD",
+      "centerLatLon": [
+        23.9742,
+        90.21691
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 133,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "bd-dlrs-bds-sheets"
+      ],
+      "researchFile": "research/savar.json"
+    },
+    {
+      "cityId": "wup2025:4408",
+      "wupCityCode": 4408,
+      "name": "Peshawar",
+      "country": "Pakistan",
+      "countryCode": "PK",
+      "centerLatLon": [
+        33.98915,
+        71.51794
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 134,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/peshawar.json"
+    },
+    {
+      "cityId": "wup2025:1498",
+      "wupCityCode": 1498,
+      "name": "Lusaka",
+      "country": "Zambia",
+      "countryCode": "ZM",
+      "centerLatLon": [
+        -15.39711,
+        28.29153
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 135,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "zm-lusaka-mtendere-east-agol-unofficial"
+      ],
+      "researchFile": "research/lusaka.json"
+    },
+    {
+      "cityId": "wup2025:8886",
+      "wupCityCode": 8886,
+      "name": "Indore",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        22.69918,
+        75.85567
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 136,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/indore.json"
+    },
+    {
+      "cityId": "wup2025:9912",
+      "wupCityCode": 9912,
+      "name": "Jinan",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        36.66138,
+        117.01846
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 137,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/jinan.json"
+    },
+    {
+      "cityId": "wup2025:10588",
+      "wupCityCode": 10588,
+      "name": "Changsha",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        28.19235,
+        112.98904
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 138,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/changsha.json"
+    },
+    {
+      "cityId": "wup2025:2525",
+      "wupCityCode": 2525,
+      "name": "Medellín",
+      "country": "Colombia",
+      "countryCode": "CO",
+      "centerLatLon": [
+        6.2485,
+        -75.57935
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 139,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "co-medellin-catastro-lote"
+      ],
+      "researchFile": "research/medellin.json"
+    },
+    {
+      "cityId": "wup2025:9948",
+      "wupCityCode": 9948,
+      "name": "Changchun",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        43.87566,
+        125.30142
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 140,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/changchun.json"
+    },
+    {
+      "cityId": "wup2025:11039",
+      "wupCityCode": 11039,
+      "name": "Patna",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.59702,
+        85.13972
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 141,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/patna.json"
+    },
+    {
+      "cityId": "wup2025:11188",
+      "wupCityCode": 11188,
+      "name": "Nanchang",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        28.67958,
+        115.89641
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 142,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/nanchang.json"
+    },
+    {
+      "cityId": "wup2025:10166",
+      "wupCityCode": 10166,
+      "name": "Nanning",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        22.82542,
+        108.31205
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 143,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/nanning.json"
+    },
+    {
+      "cityId": "wup2025:12024",
+      "wupCityCode": 12024,
+      "name": "Quanzhou",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        24.84913,
+        118.54494
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 144,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/quanzhou.json"
+    },
+    {
+      "cityId": "wup2025:8123",
+      "wupCityCode": 8123,
+      "name": "Washington, D.C.",
+      "country": "United States of America",
+      "countryCode": "US",
+      "centerLatLon": [
+        38.90714,
+        -77.07434
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 145,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "us-dc-dcgis-tax-lots"
+      ],
+      "researchFile": "research/washington-dc.json"
+    },
+    {
+      "cityId": "wup2025:3878",
+      "wupCityCode": 3878,
+      "name": "Busan",
+      "country": "Republic of Korea",
+      "countryCode": "KR",
+      "centerLatLon": [
+        35.15977,
+        129.05896
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 146,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/busan.json"
+    },
+    {
+      "cityId": "wup2025:9793",
+      "wupCityCode": 9793,
+      "name": "Nagpur",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        21.14031,
+        79.07985
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 147,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/nagpur.json"
+    },
+    {
+      "cityId": "wup2025:3444",
+      "wupCityCode": 3444,
+      "name": "El Djazaïr (Algiers)",
+      "country": "Algeria",
+      "countryCode": "DZ",
+      "centerLatLon": [
+        36.7382,
+        3.08705
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 148,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/el-djazair-algiers.json"
+    },
+    {
+      "cityId": "wup2025:8285",
+      "wupCityCode": 8285,
+      "name": "Fortaleza",
+      "country": "Brazil",
+      "countryCode": "BR",
+      "centerLatLon": [
+        -3.77702,
+        -38.55999
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 149,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "br-fortaleza-ipplan-zeis-pici-lotes"
+      ],
+      "researchFile": "research/fortaleza.json"
+    },
+    {
+      "cityId": "wup2025:1712",
+      "wupCityCode": 1712,
+      "name": "Kathmandu",
+      "country": "Nepal",
+      "countryCode": "NP",
+      "centerLatLon": [
+        27.69959,
+        85.33439
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 150,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/kathmandu.json"
+    },
+    {
+      "cityId": "wup2025:8296",
+      "wupCityCode": 8296,
+      "name": "Kunming",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        25.04187,
+        102.7211
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 151,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/kunming.json"
+    },
+    {
+      "cityId": "wup2025:1748",
+      "wupCityCode": 1748,
+      "name": "Ouagadougou",
+      "country": "Burkina Faso",
+      "countryCode": "BF",
+      "centerLatLon": [
+        12.36167,
+        -1.52722
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 152,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/ouagadougou.json"
+    },
+    {
+      "cityId": "wup2025:5227",
+      "wupCityCode": 5227,
+      "name": "Durban",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "centerLatLon": [
+        -29.64517,
+        30.73477
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 153,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "za-giscoe-erven"
+      ],
+      "researchFile": "research/durban.json"
+    },
+    {
+      "cityId": "wup2025:116",
+      "wupCityCode": 116,
+      "name": "Maputo",
+      "country": "Mozambique",
+      "countryCode": "MZ",
+      "centerLatLon": [
+        -25.89051,
+        32.55549
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 154,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/maputo.json"
+    },
+    {
+      "cityId": "wup2025:1233",
+      "wupCityCode": 1233,
+      "name": "San Francisco",
+      "country": "United States of America",
+      "countryCode": "US",
+      "centerLatLon": [
+        37.79081,
+        -122.62524
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 155,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "us-ca-sf-datasf-active-parcels"
+      ],
+      "researchFile": "research/san-francisco.json"
+    },
+    {
+      "cityId": "wup2025:8120",
+      "wupCityCode": 8120,
+      "name": "Kalyan-Dombivli",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        19.20797,
+        73.16996
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 156,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/kalyan-dombivli.json"
+    },
+    {
+      "cityId": "wup2025:772",
+      "wupCityCode": 772,
+      "name": "Guayaquil",
+      "country": "Ecuador",
+      "countryCode": "EC",
+      "centerLatLon": [
+        -2.16603,
+        -79.90993
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 157,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "ec-guayaquil-rural-predios-agol-thirdparty"
+      ],
+      "researchFile": "research/guayaquil.json"
+    },
+    {
+      "cityId": "wup2025:8374",
+      "wupCityCode": 8374,
+      "name": "Salvador",
+      "country": "Brazil",
+      "countryCode": "BR",
+      "centerLatLon": [
+        -12.93669,
+        -38.45137
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 158,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/salvador.json"
+    },
+    {
+      "cityId": "wup2025:8042",
+      "wupCityCode": 8042,
+      "name": "Gujranwala",
+      "country": "Pakistan",
+      "countryCode": "PK",
+      "centerLatLon": [
+        32.15984,
+        74.183
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 159,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/gujranwala.json"
+    },
+    {
+      "cityId": "wup2025:833",
+      "wupCityCode": 833,
+      "name": "Athína (Athens)",
+      "country": "Greece",
+      "countryCode": "GR",
+      "centerLatLon": [
+        37.99008,
+        23.72948
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 160,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/athens.json"
+    },
+    {
+      "cityId": "wup2025:11956",
+      "wupCityCode": 11956,
+      "name": "Ningbo",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        29.91329,
+        121.56263
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 161,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/ningbo.json"
+    },
+    {
+      "cityId": "wup2025:9847",
+      "wupCityCode": 9847,
+      "name": "Kollam",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        9.29818,
+        76.42755
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 162,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/kollam.json"
+    },
+    {
+      "cityId": "wup2025:5062",
+      "wupCityCode": 5062,
+      "name": "Cebu City",
+      "country": "Philippines",
+      "countryCode": "PH",
+      "centerLatLon": [
+        10.30883,
+        123.90284
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 163,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/cebu-city.json"
+    },
+    {
+      "cityId": "wup2025:9058",
+      "wupCityCode": 9058,
+      "name": "Shijiazhuang",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        38.04441,
+        114.48681
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 164,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/shijiazhuang.json"
+    },
+    {
+      "cityId": "wup2025:7167",
+      "wupCityCode": 7167,
+      "name": "Multan",
+      "country": "Pakistan",
+      "countryCode": "PK",
+      "centerLatLon": [
+        30.19047,
+        71.47529
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 165,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/multan.json"
+    },
+    {
+      "cityId": "wup2025:10013",
+      "wupCityCode": 10013,
+      "name": "Thiruvananthapuram",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        8.50983,
+        76.96764
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 166,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/thiruvananthapuram.json"
+    },
+    {
+      "cityId": "wup2025:11531",
+      "wupCityCode": 11531,
+      "name": "Asansol",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        23.69795,
+        86.91141
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 167,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/asansol.json"
+    },
+    {
+      "cityId": "wup2025:1601",
+      "wupCityCode": 1601,
+      "name": "Aleppo",
+      "country": "Syrian Arab Republic",
+      "countryCode": "SY",
+      "centerLatLon": [
+        36.20448,
+        37.14293
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 168,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/aleppo.json"
+    },
+    {
+      "cityId": "wup2025:6721",
+      "wupCityCode": 6721,
+      "name": "Brahmanbaria",
+      "country": "Bangladesh",
+      "countryCode": "BD",
+      "centerLatLon": [
+        24.04659,
+        90.98007
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 169,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/brahmanbaria.json"
+    },
+    {
+      "cityId": "wup2025:7289",
+      "wupCityCode": 7289,
+      "name": "Miami",
+      "country": "United States of America",
+      "countryCode": "US",
+      "centerLatLon": [
+        25.86061,
+        -80.28136
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 170,
+      "parcelStatus": "verified_sample_county_scope",
+      "sourceIds": [
+        "us-fl-miamidade-pa-parcels"
+      ],
+      "researchFile": "research/miami.json"
+    },
+    {
+      "cityId": "wup2025:12022",
+      "wupCityCode": 12022,
+      "name": "Fuzhou",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        26.07371,
+        119.29785
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 171,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/fuzhou.json"
+    },
+    {
+      "cityId": "wup2025:3737",
+      "wupCityCode": 3737,
+      "name": "P'yŏngyang (Pyongyang)",
+      "country": "Dem. People's Republic of Korea",
+      "countryCode": "KP",
+      "centerLatLon": [
+        39.02607,
+        125.74382
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 172,
+      "parcelStatus": "no_verified_sample_candidate_countrywide",
+      "sourceIds": [],
+      "researchFile": "research/pyongyang.json"
+    },
+    {
+      "cityId": "wup2025:11755",
+      "wupCityCode": 11755,
+      "name": "Tamluk",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        22.38579,
+        87.87234
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 173,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/tamluk.json"
+    },
+    {
+      "cityId": "wup2025:5822",
+      "wupCityCode": 5822,
+      "name": "Hyderabad",
+      "country": "Pakistan",
+      "countryCode": "PK",
+      "centerLatLon": [
+        25.37691,
+        68.35441
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 174,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/hyderabad-pakistan.json"
+    },
+    {
+      "cityId": "wup2025:2063",
+      "wupCityCode": 2063,
+      "name": "Ciudad de Guatemala (Guatemala City)",
+      "country": "Guatemala",
+      "countryCode": "GT",
+      "centerLatLon": [
+        14.59835,
+        -90.54461
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 175,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/guatemala-city.json"
+    },
+    {
+      "cityId": "wup2025:6577",
+      "wupCityCode": 6577,
+      "name": "Lubumbashi",
+      "country": "Democratic Republic of the Congo",
+      "countryCode": "CD",
+      "centerLatLon": [
+        -11.6639,
+        27.48135
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 176,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/lubumbashi.json"
+    },
+    {
+      "cityId": "wup2025:6234",
+      "wupCityCode": 6234,
+      "name": "Tasikmalaya",
+      "country": "Indonesia",
+      "countryCode": "ID",
+      "centerLatLon": [
+        -7.29784,
+        108.21469
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 177,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/tasikmalaya.json"
+    },
+    {
+      "cityId": "wup2025:10452",
+      "wupCityCode": 10452,
+      "name": "Dalian",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        38.93791,
+        121.55937
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 178,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/dalian.json"
+    },
+    {
+      "cityId": "wup2025:7035",
+      "wupCityCode": 7035,
+      "name": "Yogyakarta",
+      "country": "Indonesia",
+      "countryCode": "ID",
+      "centerLatLon": [
+        -7.77432,
+        110.43477
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 179,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "id-big-satupeta-hak-milik-diy"
+      ],
+      "researchFile": "research/yogyakarta.json"
+    },
+    {
+      "cityId": "wup2025:8971",
+      "wupCityCode": 8971,
+      "name": "Agra",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        27.18816,
+        78.00132
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 180,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/agra.json"
+    },
+    {
+      "cityId": "wup2025:4726",
+      "wupCityCode": 4726,
+      "name": "Naples",
+      "country": "Italy",
+      "countryCode": "IT",
+      "centerLatLon": [
+        40.86145,
+        14.30921
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 181,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "it-agenzia-entrate-cartografia-catastale-wfs"
+      ],
+      "researchFile": "research/naples.json"
+    },
+    {
+      "cityId": "wup2025:655",
+      "wupCityCode": 655,
+      "name": "Coyah (Conacry)",
+      "country": "Guinea",
+      "countryCode": "GN",
+      "centerLatLon": [
+        9.6483,
+        -13.56498
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 182,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/coyah-conakry.json"
+    },
+    {
+      "cityId": "wup2025:675",
+      "wupCityCode": 675,
+      "name": "Essen",
+      "country": "Germany",
+      "countryCode": "DE",
+      "centerLatLon": [
+        51.48862,
+        6.97217
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 183,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "de-nrw-geobasis-alkis-vereinfacht-wfs"
+      ],
+      "researchFile": "research/essen.json"
+    },
+    {
+      "cityId": "wup2025:899",
+      "wupCityCode": 899,
+      "name": "Cali",
+      "country": "Colombia",
+      "countryCode": "CO",
+      "centerLatLon": [
+        3.43291,
+        -76.5206
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 184,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "co-cali-idesc-cat-bas-terrenos"
+      ],
+      "researchFile": "research/cali.json"
+    },
+    {
+      "cityId": "wup2025:9300",
+      "wupCityCode": 9300,
+      "name": "Guiyang",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        26.58779,
+        106.70212
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 185,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/guiyang.json"
+    },
+    {
+      "cityId": "wup2025:7063",
+      "wupCityCode": 7063,
+      "name": "Semarang",
+      "country": "Indonesia",
+      "countryCode": "ID",
+      "centerLatLon": [
+        -7.03264,
+        110.4327
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 186,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "id-bigsatupeta-hakmilik-jawa-tengah"
+      ],
+      "researchFile": "research/semarang.json"
+    },
+    {
+      "cityId": "wup2025:3645",
+      "wupCityCode": 3645,
+      "name": "Montreal",
+      "country": "Canada",
+      "countryCode": "CA",
+      "centerLatLon": [
+        45.53637,
+        -73.66601
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 187,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/montreal.json"
+    },
+    {
+      "cityId": "wup2025:1069",
+      "wupCityCode": 1069,
+      "name": "Izmir",
+      "country": "Türkiye",
+      "countryCode": "TR",
+      "centerLatLon": [
+        38.4159,
+        27.14284
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 188,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "tr-tkgm-cbsapi-parsel"
+      ],
+      "researchFile": "research/izmir.json"
+    },
+    {
+      "cityId": "wup2025:11514",
+      "wupCityCode": 11514,
+      "name": "Changzhou",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        31.76965,
+        119.96065
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 189,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/changzhou.json"
+    },
+    {
+      "cityId": "wup2025:439",
+      "wupCityCode": 439,
+      "name": "Tel Aviv",
+      "country": "Israel",
+      "countryCode": "IL",
+      "centerLatLon": [
+        32.06785,
+        34.82224
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 190,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "il-tel-aviv-yafo-iview2-chalkot"
+      ],
+      "researchFile": "research/tel-aviv.json"
+    },
+    {
+      "cityId": "wup2025:3979",
+      "wupCityCode": 3979,
+      "name": "Birmingham",
+      "country": "United Kingdom",
+      "countryCode": "GB",
+      "centerLatLon": [
+        52.5046,
+        -1.9604
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 191,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "gb-arcgis-geodom-land-registry-inspire-2021"
+      ],
+      "researchFile": "research/birmingham.json"
+    },
+    {
+      "cityId": "wup2025:2178",
+      "wupCityCode": 2178,
+      "name": "Kyiv (Kiev)",
+      "country": "Ukraine",
+      "countryCode": "UA",
+      "centerLatLon": [
+        50.44919,
+        30.5196
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 192,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/kyiv.json"
+    },
+    {
+      "cityId": "wup2025:11580",
+      "wupCityCode": 11580,
+      "name": "Wuxi",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        31.58173,
+        120.28862
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 193,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/wuxi.json"
+    },
+    {
+      "cityId": "wup2025:1848",
+      "wupCityCode": 1848,
+      "name": "Milan",
+      "country": "Italy",
+      "countryCode": "IT",
+      "centerLatLon": [
+        45.51815,
+        9.1924
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 194,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "it-agenzia-entrate-inspire-cadastral-wfs"
+      ],
+      "researchFile": "research/milan.json"
+    },
+    {
+      "cityId": "wup2025:3791",
+      "wupCityCode": 3791,
+      "name": "Caracas",
+      "country": "Venezuela (Bolivarian Republic of)",
+      "countryCode": "VE",
+      "centerLatLon": [
+        10.47973,
+        -66.88908
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 195,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/caracas.json"
+    },
+    {
+      "cityId": "wup2025:3388",
+      "wupCityCode": 3388,
+      "name": "Manchester",
+      "country": "United Kingdom",
+      "countryCode": "GB",
+      "centerLatLon": [
+        53.49383,
+        -2.25537
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 196,
+      "parcelStatus": "no_verified_sample_candidate_countrywide",
+      "sourceIds": [],
+      "researchFile": "research/manchester.json"
+    },
+    {
+      "cityId": "wup2025:2524",
+      "wupCityCode": 2524,
+      "name": "Quito",
+      "country": "Ecuador",
+      "countryCode": "EC",
+      "centerLatLon": [
+        -0.20343,
+        -78.4989
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 197,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/quito.json"
+    },
+    {
+      "cityId": "wup2025:1752",
+      "wupCityCode": 1752,
+      "name": "Cotonou",
+      "country": "Benin",
+      "countryCode": "BJ",
+      "centerLatLon": [
+        6.38647,
+        2.38952
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 198,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "bj-andf-efoncier-geoserver"
+      ],
+      "researchFile": "research/cotonou.json"
+    },
+    {
+      "cityId": "wup2025:9213",
+      "wupCityCode": 9213,
+      "name": "Bhopal",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        23.23991,
+        77.42391
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 199,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/bhopal.json"
+    },
+    {
+      "cityId": "wup2025:6446",
+      "wupCityCode": 6446,
+      "name": "Curitiba",
+      "country": "Brazil",
+      "countryCode": "BR",
+      "centerLatLon": [
+        -25.45814,
+        -49.25534
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 200,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "br-curitiba-ippuc-lote-cadastral"
+      ],
+      "researchFile": "research/curitiba.json"
+    }
+  ],
+  "countryProbes": [
+    {
+      "countryCode": "AE",
+      "country": "United Arab Emirates",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/AE.json"
+    },
+    {
+      "countryCode": "AF",
+      "country": "Afghanistan",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/AF.json"
+    },
+    {
+      "countryCode": "AL",
+      "country": "Albania",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/AL.json"
+    },
+    {
+      "countryCode": "AM",
+      "country": "Armenia",
+      "reportedStatus": "national_cadastre_credentialed_or_paid",
+      "status": "national_cadastre_credentialed_or_paid",
+      "accessModel": "registration",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/AM.json"
+    },
+    {
+      "countryCode": "AO",
+      "country": "Angola",
+      "reportedStatus": "no_online_cadastre_found",
+      "status": "no_online_cadastre_found",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/AO.json"
+    },
+    {
+      "countryCode": "AR",
+      "country": "Argentina",
+      "reportedStatus": "subnational_only",
+      "status": "subnational_only",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/AR.json"
+    },
+    {
+      "countryCode": "AT",
+      "country": "Austria",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/AT.json"
+    },
+    {
+      "countryCode": "AU",
+      "country": "Australia",
+      "reportedStatus": "subnational_only",
+      "status": "subnational_only",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/AU.json"
+    },
+    {
+      "countryCode": "AZ",
+      "country": "Azerbaijan",
+      "reportedStatus": "no_online_cadastre_found",
+      "status": "no_online_cadastre_found",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/AZ.json"
+    },
+    {
+      "countryCode": "BA",
+      "country": "Bosnia and Herzegovina",
+      "reportedStatus": "subnational_only",
+      "status": "subnational_only",
+      "accessModel": "viewer-only",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/BA.json"
+    },
+    {
+      "countryCode": "BB",
+      "country": "Barbados",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "partial_or_unofficial_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/BB.json",
+      "mergeNote": "Layer holds 23,356 parcels against about 124k claimed for the fabric."
+    },
+    {
+      "countryCode": "BD",
+      "country": "Bangladesh",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/BD.json"
+    },
+    {
+      "countryCode": "BE",
+      "country": "Belgium",
+      "reportedStatus": "subnational_only",
+      "status": "subnational_only",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/BE.json"
+    },
+    {
+      "countryCode": "BF",
+      "country": "Burkina Faso",
+      "reportedStatus": "national_cadastre_credentialed_or_paid",
+      "status": "national_cadastre_credentialed_or_paid",
+      "accessModel": "registration",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/BF.json"
+    },
+    {
+      "countryCode": "BG",
+      "country": "Bulgaria",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/BG.json"
+    },
+    {
+      "countryCode": "BH",
+      "country": "Bahrain",
+      "reportedStatus": "national_cadastre_credentialed_or_paid",
+      "status": "national_cadastre_credentialed_or_paid",
+      "accessModel": "paid",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/BH.json"
+    },
+    {
+      "countryCode": "BI",
+      "country": "Burundi",
+      "reportedStatus": "no_online_cadastre_found",
+      "status": "no_online_cadastre_found",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/BI.json"
+    },
+    {
+      "countryCode": "BJ",
+      "country": "Benin",
+      "reportedStatus": "national_cadastre_viewer_only",
+      "status": "national_cadastre_viewer_only",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/BJ.json"
+    },
+    {
+      "countryCode": "BN",
+      "country": "Brunei Darussalam",
+      "reportedStatus": "national_cadastre_viewer_only",
+      "status": "national_cadastre_viewer_only",
+      "accessModel": "viewer-only",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/BN.json"
+    },
+    {
+      "countryCode": "BO",
+      "country": "Bolivia (Plurinational State of)",
+      "reportedStatus": "national_cadastre_viewer_only",
+      "status": "national_cadastre_viewer_only",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/BO.json"
+    },
+    {
+      "countryCode": "BR",
+      "country": "Brazil",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "partial_or_unofficial_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/BR.json",
+      "mergeNote": "Polygons are SICAR self-declared rural property perimeters, not the legal cadastre."
+    },
+    {
+      "countryCode": "BS",
+      "country": "Bahamas",
+      "reportedStatus": "no_online_cadastre_found",
+      "status": "no_online_cadastre_found",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/BS.json"
+    },
+    {
+      "countryCode": "BT",
+      "country": "Bhutan",
+      "reportedStatus": "national_cadastre_credentialed_or_paid",
+      "status": "national_cadastre_credentialed_or_paid",
+      "accessModel": "registration",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/BT.json"
+    },
+    {
+      "countryCode": "BW",
+      "country": "Botswana",
+      "reportedStatus": "no_online_cadastre_found",
+      "status": "no_online_cadastre_found",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/BW.json"
+    },
+    {
+      "countryCode": "BY",
+      "country": "Belarus",
+      "reportedStatus": "national_cadastre_viewer_only",
+      "status": "national_cadastre_viewer_only",
+      "accessModel": "viewer-only",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/BY.json"
+    },
+    {
+      "countryCode": "BZ",
+      "country": "Belize",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/BZ.json"
+    },
+    {
+      "countryCode": "CA",
+      "country": "Canada",
+      "reportedStatus": "subnational_only",
+      "status": "subnational_only",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/CA.json"
+    },
+    {
+      "countryCode": "CD",
+      "country": "Democratic Republic of the Congo",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/CD.json"
+    },
+    {
+      "countryCode": "CF",
+      "country": "Central African Republic",
+      "reportedStatus": "no_online_cadastre_found",
+      "status": "no_online_cadastre_found",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/CF.json"
+    },
+    {
+      "countryCode": "CG",
+      "country": "Congo",
+      "reportedStatus": "no_online_cadastre_found",
+      "status": "no_online_cadastre_found",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/CG.json"
+    },
+    {
+      "countryCode": "CH",
+      "country": "Switzerland",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "partial_or_unofficial_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/CH.json",
+      "mergeNote": "Coverage is by canton; a Lausanne point returned nothing."
+    },
+    {
+      "countryCode": "CI",
+      "country": "Côte d'Ivoire",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/CI.json"
+    },
+    {
+      "countryCode": "CL",
+      "country": "Chile",
+      "reportedStatus": "national_cadastre_viewer_only",
+      "status": "national_cadastre_viewer_only",
+      "accessModel": "viewer-only",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/CL.json"
+    },
+    {
+      "countryCode": "CM",
+      "country": "Cameroon",
+      "reportedStatus": "no_online_cadastre_found",
+      "status": "no_online_cadastre_found",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/CM.json"
+    },
+    {
+      "countryCode": "CN",
+      "country": "China",
+      "reportedStatus": "national_cadastre_credentialed_or_paid",
+      "status": "national_cadastre_credentialed_or_paid",
+      "accessModel": "registration",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/CN.json"
+    },
+    {
+      "countryCode": "CO",
+      "country": "Colombia",
+      "reportedStatus": "subnational_only",
+      "status": "subnational_only",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/CO.json"
+    },
+    {
+      "countryCode": "CR",
+      "country": "Costa Rica",
+      "reportedStatus": "national_cadastre_viewer_only",
+      "status": "national_cadastre_viewer_only",
+      "accessModel": "viewer-only",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/CR.json"
+    },
+    {
+      "countryCode": "CU",
+      "country": "Cuba",
+      "reportedStatus": "no_online_cadastre_found",
+      "status": "no_online_cadastre_found",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/CU.json"
+    },
+    {
+      "countryCode": "CV",
+      "country": "Cabo Verde",
+      "reportedStatus": "national_cadastre_viewer_only",
+      "status": "national_cadastre_viewer_only",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/CV.json"
+    },
+    {
+      "countryCode": "CW",
+      "country": "Curaçao",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/CW.json"
+    },
+    {
+      "countryCode": "CY",
+      "country": "Cyprus",
+      "reportedStatus": "national_cadastre_viewer_only",
+      "status": "national_cadastre_viewer_only",
+      "accessModel": "viewer-only",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/CY.json"
+    },
+    {
+      "countryCode": "CZ",
+      "country": "Czechia",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/CZ.json"
+    },
+    {
+      "countryCode": "DE",
+      "country": "Germany",
+      "reportedStatus": "subnational_only",
+      "status": "subnational_only",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/DE.json"
+    },
+    {
+      "countryCode": "DJ",
+      "country": "Djibouti",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/DJ.json"
+    },
+    {
+      "countryCode": "DK",
+      "country": "Denmark",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/DK.json"
+    },
+    {
+      "countryCode": "DO",
+      "country": "Dominican Republic",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "partial_or_unofficial_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/DO.json",
+      "mergeNote": "Historical parcels layer; completeness against the current cadastre unverified."
+    },
+    {
+      "countryCode": "DZ",
+      "country": "Algeria",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/DZ.json"
+    },
+    {
+      "countryCode": "EC",
+      "country": "Ecuador",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/EC.json"
+    },
+    {
+      "countryCode": "EE",
+      "country": "Estonia",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/EE.json"
+    },
+    {
+      "countryCode": "EG",
+      "country": "Egypt",
+      "reportedStatus": "no_online_cadastre_found",
+      "status": "no_online_cadastre_found",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/EG.json"
+    },
+    {
+      "countryCode": "EH",
+      "country": "Western Sahara",
+      "reportedStatus": "no_online_cadastre_found",
+      "status": "no_online_cadastre_found",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/EH.json"
+    },
+    {
+      "countryCode": "ER",
+      "country": "Eritrea",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/ER.json"
+    },
+    {
+      "countryCode": "ES",
+      "country": "Spain",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/ES.json"
+    },
+    {
+      "countryCode": "ET",
+      "country": "Ethiopia",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/ET.json"
+    },
+    {
+      "countryCode": "FI",
+      "country": "Finland",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/FI.json"
+    },
+    {
+      "countryCode": "FJ",
+      "country": "Fiji",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/FJ.json"
+    },
+    {
+      "countryCode": "FR",
+      "country": "France",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/FR.json"
+    },
+    {
+      "countryCode": "GA",
+      "country": "Gabon",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/GA.json"
+    },
+    {
+      "countryCode": "GB",
+      "country": "United Kingdom",
+      "reportedStatus": "national_cadastre_credentialed_or_paid",
+      "status": "national_cadastre_credentialed_or_paid",
+      "accessModel": "registration",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/GB.json"
+    },
+    {
+      "countryCode": "GE",
+      "country": "Georgia",
+      "reportedStatus": "national_cadastre_viewer_only",
+      "status": "national_cadastre_viewer_only",
+      "accessModel": "viewer-only",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/GE.json"
+    },
+    {
+      "countryCode": "GF",
+      "country": "French Guiana",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "covered_by_parent_source",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/GF.json",
+      "mergeNote": "French overseas territory served by the IGN API Carto source (see FR)."
+    },
+    {
+      "countryCode": "GH",
+      "country": "Ghana",
+      "reportedStatus": "national_cadastre_credentialed_or_paid",
+      "status": "national_cadastre_credentialed_or_paid",
+      "accessModel": "registration",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/GH.json"
+    },
+    {
+      "countryCode": "GI",
+      "country": "Gibraltar",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/GI.json"
+    },
+    {
+      "countryCode": "GM",
+      "country": "Gambia",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/GM.json"
+    },
+    {
+      "countryCode": "GN",
+      "country": "Guinea",
+      "reportedStatus": "no_online_cadastre_found",
+      "status": "no_online_cadastre_found",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/GN.json"
+    },
+    {
+      "countryCode": "GP",
+      "country": "Guadeloupe",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "covered_by_parent_source",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/GP.json",
+      "mergeNote": "French overseas territory served by the IGN API Carto source (see FR)."
+    },
+    {
+      "countryCode": "GQ",
+      "country": "Equatorial Guinea",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/GQ.json"
+    },
+    {
+      "countryCode": "GR",
+      "country": "Greece",
+      "reportedStatus": "national_cadastre_viewer_only",
+      "status": "national_cadastre_viewer_only",
+      "accessModel": "viewer-only",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/GR.json"
+    },
+    {
+      "countryCode": "GT",
+      "country": "Guatemala",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/GT.json"
+    },
+    {
+      "countryCode": "GW",
+      "country": "Guinea-Bissau",
+      "reportedStatus": "no_online_cadastre_found",
+      "status": "no_online_cadastre_found",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/GW.json"
+    },
+    {
+      "countryCode": "GY",
+      "country": "Guyana",
+      "reportedStatus": "national_cadastre_viewer_only",
+      "status": "national_cadastre_viewer_only",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/GY.json"
+    },
+    {
+      "countryCode": "HK",
+      "country": "China, Hong Kong SAR",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/HK.json"
+    },
+    {
+      "countryCode": "HN",
+      "country": "Honduras",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/HN.json"
+    },
+    {
+      "countryCode": "HR",
+      "country": "Croatia",
+      "reportedStatus": "national_cadastre_credentialed_or_paid",
+      "status": "national_cadastre_credentialed_or_paid",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/HR.json"
+    },
+    {
+      "countryCode": "HT",
+      "country": "Haiti",
+      "reportedStatus": "no_online_cadastre_found",
+      "status": "no_online_cadastre_found",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/HT.json"
+    },
+    {
+      "countryCode": "HU",
+      "country": "Hungary",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "partial_or_unofficial_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/HU.json",
+      "mergeNote": "Layer holds only 1,774 features; Budapest and Debrecen returned nothing."
+    },
+    {
+      "countryCode": "ID",
+      "country": "Indonesia",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "partial_or_unofficial_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/ID.json",
+      "mergeNote": "Patchy provincial land-ownership layers; central Bandung box returned empty."
+    },
+    {
+      "countryCode": "IE",
+      "country": "Ireland",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/IE.json"
+    },
+    {
+      "countryCode": "IL",
+      "country": "Israel",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/IL.json"
+    },
+    {
+      "countryCode": "IN",
+      "country": "India",
+      "reportedStatus": "subnational_only",
+      "status": "subnational_only",
+      "accessModel": "viewer-only",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/IN.json"
+    },
+    {
+      "countryCode": "IQ",
+      "country": "Iraq",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/IQ.json"
+    },
+    {
+      "countryCode": "IR",
+      "country": "Iran (Islamic Republic of)",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/IR.json"
+    },
+    {
+      "countryCode": "IS",
+      "country": "Iceland",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/IS.json"
+    },
+    {
+      "countryCode": "IT",
+      "country": "Italy",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/IT.json"
+    },
+    {
+      "countryCode": "JE",
+      "country": "Jersey",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/JE.json"
+    },
+    {
+      "countryCode": "JM",
+      "country": "Jamaica",
+      "reportedStatus": "national_cadastre_viewer_only",
+      "status": "national_cadastre_viewer_only",
+      "accessModel": "viewer-only",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/JM.json"
+    },
+    {
+      "countryCode": "JO",
+      "country": "Jordan",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/JO.json"
+    },
+    {
+      "countryCode": "JP",
+      "country": "Japan",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "partial_or_unofficial_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/JP.json",
+      "mergeNote": "Unofficial Esri Japan layer covering only Tokyo, Aichi and Fukuoka."
+    },
+    {
+      "countryCode": "KE",
+      "country": "Kenya",
+      "reportedStatus": "national_cadastre_credentialed_or_paid",
+      "status": "national_cadastre_credentialed_or_paid",
+      "accessModel": "registration",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/KE.json"
+    },
+    {
+      "countryCode": "KG",
+      "country": "Kyrgyzstan",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/KG.json"
+    },
+    {
+      "countryCode": "KH",
+      "country": "Cambodia",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/KH.json"
+    },
+    {
+      "countryCode": "KI",
+      "country": "Kiribati",
+      "reportedStatus": "no_online_cadastre_found",
+      "status": "no_online_cadastre_found",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/KI.json"
+    },
+    {
+      "countryCode": "KM",
+      "country": "Comoros",
+      "reportedStatus": "no_online_cadastre_found",
+      "status": "no_online_cadastre_found",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/KM.json"
+    },
+    {
+      "countryCode": "KP",
+      "country": "Dem. People's Republic of Korea",
+      "reportedStatus": "no_online_cadastre_found",
+      "status": "no_online_cadastre_found",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/KP.json"
+    },
+    {
+      "countryCode": "KR",
+      "country": "Republic of Korea",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "registration",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/KR.json"
+    },
+    {
+      "countryCode": "KW",
+      "country": "Kuwait",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/KW.json"
+    },
+    {
+      "countryCode": "KZ",
+      "country": "Kazakhstan",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/KZ.json"
+    },
+    {
+      "countryCode": "LA",
+      "country": "Lao People's Democratic Republic",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/LA.json"
+    },
+    {
+      "countryCode": "LB",
+      "country": "Lebanon",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/LB.json"
+    },
+    {
+      "countryCode": "LK",
+      "country": "Sri Lanka",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "partial_or_unofficial_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/LK.json",
+      "mergeNote": "Parcel fabric extent limited to lon 79.87-81.32, lat 6.7-8.1."
+    },
+    {
+      "countryCode": "LR",
+      "country": "Liberia",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/LR.json"
+    },
+    {
+      "countryCode": "LS",
+      "country": "Lesotho",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/LS.json"
+    },
+    {
+      "countryCode": "LT",
+      "country": "Lithuania",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/LT.json"
+    },
+    {
+      "countryCode": "LU",
+      "country": "Luxembourg",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/LU.json"
+    },
+    {
+      "countryCode": "LV",
+      "country": "Latvia",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "partial_or_unofficial_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/LV.json",
+      "mergeNote": "One municipality shapefile converted by script; not a raw server reply."
+    },
+    {
+      "countryCode": "LY",
+      "country": "Libya",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/LY.json"
+    },
+    {
+      "countryCode": "MA",
+      "country": "Morocco",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/MA.json"
+    },
+    {
+      "countryCode": "MC",
+      "country": "Monaco",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/MC.json"
+    },
+    {
+      "countryCode": "MD",
+      "country": "Republic of Moldova",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/MD.json"
+    },
+    {
+      "countryCode": "ME",
+      "country": "Montenegro",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/ME.json"
+    },
+    {
+      "countryCode": "MG",
+      "country": "Madagascar",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/MG.json"
+    },
+    {
+      "countryCode": "MK",
+      "country": "North Macedonia",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/MK.json"
+    },
+    {
+      "countryCode": "ML",
+      "country": "Mali",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "partial_or_unofficial_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/ML.json",
+      "mergeNote": "Layer extent covers only south-west Mali; nationwide claim overstated."
+    },
+    {
+      "countryCode": "MM",
+      "country": "Myanmar",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/MM.json"
+    },
+    {
+      "countryCode": "MN",
+      "country": "Mongolia",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/MN.json"
+    },
+    {
+      "countryCode": "MO",
+      "country": "China, Macao SAR",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/MO.json"
+    },
+    {
+      "countryCode": "MQ",
+      "country": "Martinique",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "covered_by_parent_source",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/MQ.json",
+      "mergeNote": "French overseas territory served by the IGN API Carto source (see FR)."
+    },
+    {
+      "countryCode": "MR",
+      "country": "Mauritania",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/MR.json"
+    },
+    {
+      "countryCode": "MT",
+      "country": "Malta",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/MT.json"
+    },
+    {
+      "countryCode": "MU",
+      "country": "Mauritius",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/MU.json"
+    },
+    {
+      "countryCode": "MV",
+      "country": "Maldives",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/MV.json"
+    },
+    {
+      "countryCode": "MW",
+      "country": "Malawi",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/MW.json"
+    },
+    {
+      "countryCode": "MX",
+      "country": "Mexico",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/MX.json"
+    },
+    {
+      "countryCode": "MY",
+      "country": "Malaysia",
+      "reportedStatus": "national_cadastre_credentialed_or_paid",
+      "status": "national_cadastre_credentialed_or_paid",
+      "accessModel": "registration",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/MY.json"
+    },
+    {
+      "countryCode": "MZ",
+      "country": "Mozambique",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/MZ.json"
+    },
+    {
+      "countryCode": "NA",
+      "country": "Namibia",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/NA.json"
+    },
+    {
+      "countryCode": "NC",
+      "country": "New Caledonia",
+      "reportedStatus": "national_cadastre_viewer_only",
+      "status": "national_cadastre_viewer_only",
+      "accessModel": "viewer-only",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/NC.json"
+    },
+    {
+      "countryCode": "NE",
+      "country": "Niger",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/NE.json"
+    },
+    {
+      "countryCode": "NG",
+      "country": "Nigeria",
+      "reportedStatus": "subnational_only",
+      "status": "subnational_only",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/NG.json"
+    },
+    {
+      "countryCode": "NI",
+      "country": "Nicaragua",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/NI.json"
+    },
+    {
+      "countryCode": "NL",
+      "country": "Netherlands",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/NL.json"
+    },
+    {
+      "countryCode": "NO",
+      "country": "Norway",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/NO.json"
+    },
+    {
+      "countryCode": "NP",
+      "country": "Nepal",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/NP.json"
+    },
+    {
+      "countryCode": "NZ",
+      "country": "New Zealand",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/NZ.json"
+    },
+    {
+      "countryCode": "OM",
+      "country": "Oman",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/OM.json"
+    },
+    {
+      "countryCode": "PA",
+      "country": "Panama",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/PA.json"
+    },
+    {
+      "countryCode": "PE",
+      "country": "Peru",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/PE.json"
+    },
+    {
+      "countryCode": "PF",
+      "country": "French Polynesia",
+      "reportedStatus": "no_online_cadastre_found",
+      "status": "no_online_cadastre_found",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/PF.json"
+    },
+    {
+      "countryCode": "PG",
+      "country": "Papua New Guinea",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/PG.json"
+    },
+    {
+      "countryCode": "PH",
+      "country": "Philippines",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/PH.json"
+    },
+    {
+      "countryCode": "PK",
+      "country": "Pakistan",
+      "reportedStatus": "subnational_only",
+      "status": "subnational_only",
+      "accessModel": "registration",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/PK.json"
+    },
+    {
+      "countryCode": "PL",
+      "country": "Poland",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/PL.json"
+    },
+    {
+      "countryCode": "PR",
+      "country": "Puerto Rico",
+      "reportedStatus": "subnational_only",
+      "status": "subnational_only",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/PR.json"
+    },
+    {
+      "countryCode": "PS",
+      "country": "State of Palestine",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/PS.json"
+    },
+    {
+      "countryCode": "PT",
+      "country": "Portugal",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "partial_or_unofficial_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/PT.json",
+      "mergeNote": "Mainland only; a Porto bbox returned 0."
+    },
+    {
+      "countryCode": "PY",
+      "country": "Paraguay",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/PY.json"
+    },
+    {
+      "countryCode": "QA",
+      "country": "Qatar",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/QA.json"
+    },
+    {
+      "countryCode": "RE",
+      "country": "Réunion",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "covered_by_parent_source",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/RE.json",
+      "mergeNote": "French overseas territory served by the IGN API Carto source (see FR)."
+    },
+    {
+      "countryCode": "RO",
+      "country": "Romania",
+      "reportedStatus": "national_cadastre_viewer_only",
+      "status": "national_cadastre_viewer_only",
+      "accessModel": "viewer-only",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/RO.json"
+    },
+    {
+      "countryCode": "RS",
+      "country": "Serbia",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/RS.json"
+    },
+    {
+      "countryCode": "RU",
+      "country": "Russian Federation",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/RU.json"
+    },
+    {
+      "countryCode": "RW",
+      "country": "Rwanda",
+      "reportedStatus": "subnational_only",
+      "status": "subnational_only",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/RW.json"
+    },
+    {
+      "countryCode": "SA",
+      "country": "Saudi Arabia",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/SA.json"
+    },
+    {
+      "countryCode": "SB",
+      "country": "Solomon Islands",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/SB.json"
+    },
+    {
+      "countryCode": "SD",
+      "country": "Sudan",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/SD.json"
+    },
+    {
+      "countryCode": "SE",
+      "country": "Sweden",
+      "reportedStatus": "national_cadastre_credentialed_or_paid",
+      "status": "national_cadastre_credentialed_or_paid",
+      "accessModel": "registration",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/SE.json"
+    },
+    {
+      "countryCode": "SG",
+      "country": "Singapore",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "partial_or_unofficial_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/SG.json",
+      "mergeNote": "Bulk file range-read; no spatial query API."
+    },
+    {
+      "countryCode": "SI",
+      "country": "Slovenia",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/SI.json"
+    },
+    {
+      "countryCode": "SK",
+      "country": "Slovakia",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/SK.json"
+    },
+    {
+      "countryCode": "SL",
+      "country": "Sierra Leone",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/SL.json"
+    },
+    {
+      "countryCode": "SN",
+      "country": "Senegal",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/SN.json"
+    },
+    {
+      "countryCode": "SO",
+      "country": "Somalia",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/SO.json"
+    },
+    {
+      "countryCode": "SR",
+      "country": "Suriname",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/SR.json"
+    },
+    {
+      "countryCode": "SS",
+      "country": "South Sudan",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/SS.json"
+    },
+    {
+      "countryCode": "ST",
+      "country": "Sao Tome and Principe",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/ST.json"
+    },
+    {
+      "countryCode": "SV",
+      "country": "El Salvador",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/SV.json"
+    },
+    {
+      "countryCode": "SY",
+      "country": "Syrian Arab Republic",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/SY.json"
+    },
+    {
+      "countryCode": "SZ",
+      "country": "Eswatini",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/SZ.json"
+    },
+    {
+      "countryCode": "TD",
+      "country": "Chad",
+      "reportedStatus": "no_online_cadastre_found",
+      "status": "no_online_cadastre_found",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/TD.json"
+    },
+    {
+      "countryCode": "TG",
+      "country": "Togo",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/TG.json"
+    },
+    {
+      "countryCode": "TH",
+      "country": "Thailand",
+      "reportedStatus": "national_cadastre_credentialed_or_paid",
+      "status": "national_cadastre_credentialed_or_paid",
+      "accessModel": "registration",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/TH.json"
+    },
+    {
+      "countryCode": "TJ",
+      "country": "Tajikistan",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/TJ.json"
+    },
+    {
+      "countryCode": "TL",
+      "country": "Timor-Leste",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/TL.json"
+    },
+    {
+      "countryCode": "TM",
+      "country": "Turkmenistan",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/TM.json"
+    },
+    {
+      "countryCode": "TN",
+      "country": "Tunisia",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/TN.json"
+    },
+    {
+      "countryCode": "TR",
+      "country": "Turkiye",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/TR.json"
+    },
+    {
+      "countryCode": "TT",
+      "country": "Trinidad and Tobago",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/TT.json"
+    },
+    {
+      "countryCode": "TW",
+      "country": "China, Taiwan Province of China",
+      "reportedStatus": "national_cadastre_credentialed_or_paid",
+      "status": "national_cadastre_credentialed_or_paid",
+      "accessModel": "registration",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/TW.json"
+    },
+    {
+      "countryCode": "TZ",
+      "country": "United Republic of Tanzania",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/TZ.json"
+    },
+    {
+      "countryCode": "UA",
+      "country": "Ukraine",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/UA.json"
+    },
+    {
+      "countryCode": "UG",
+      "country": "Uganda",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/UG.json"
+    },
+    {
+      "countryCode": "US",
+      "country": "United States of America",
+      "reportedStatus": "subnational_only",
+      "status": "subnational_only",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/US.json"
+    },
+    {
+      "countryCode": "UY",
+      "country": "Uruguay",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "partial_or_unofficial_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/UY.json",
+      "mergeNote": "Bulk DXF linework range-read, no attributes, CRS unconfirmed; not a query service."
+    },
+    {
+      "countryCode": "UZ",
+      "country": "Uzbekistan",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/UZ.json"
+    },
+    {
+      "countryCode": "VE",
+      "country": "Venezuela (Bolivarian Republic of)",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/VE.json"
+    },
+    {
+      "countryCode": "VN",
+      "country": "Viet Nam",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/VN.json"
+    },
+    {
+      "countryCode": "VU",
+      "country": "Vanuatu",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/VU.json"
+    },
+    {
+      "countryCode": "WS",
+      "country": "Samoa",
+      "reportedStatus": "no_online_cadastre_found",
+      "status": "no_online_cadastre_found",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/WS.json"
+    },
+    {
+      "countryCode": "XK",
+      "country": "Kosovo (under UNSC res. 1244)",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/XK.json"
+    },
+    {
+      "countryCode": "YE",
+      "country": "Yemen",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/YE.json"
+    },
+    {
+      "countryCode": "YT",
+      "country": "Mayotte",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "covered_by_parent_source",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/YT.json",
+      "mergeNote": "French overseas territory served by the IGN API Carto source (see FR)."
+    },
+    {
+      "countryCode": "ZA",
+      "country": "South Africa",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "partial_or_unofficial_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/ZA.json",
+      "mergeNote": "Samples come from a third-party Esri copy of Surveyor-General data; provenance and terms unconfirmed."
+    },
+    {
+      "countryCode": "ZM",
+      "country": "Zambia",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/ZM.json"
+    },
+    {
+      "countryCode": "ZW",
+      "country": "Zimbabwe",
+      "reportedStatus": "temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-29",
+      "evidenceFile": "research/countries/ZW.json"
     }
   ]
 }

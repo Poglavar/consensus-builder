@@ -1,0 +1,651 @@
+{
+ "note": "Raw GeoServer GeoJSON replies from snc:parcelas_activas, 3 features each (properties as returned; no owner-name fields present)",
+ "replies": [
+  {
+   "requestUrl": "https://www.catastro.gov.py/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&count=3&outputFormat=application/json&typeNames=snc:parcelas_activas&srsName=EPSG:4326&bbox=-57.5475,-25.3170,-57.5460,-25.3160,EPSG:4326",
+   "httpStatus": 200,
+   "body": {
+    "type": "FeatureCollection",
+    "features": [
+     {
+      "type": "Feature",
+      "id": "parcelas_activas.4937603",
+      "geometry": {
+       "type": "Polygon",
+       "coordinates": [
+        [
+         [
+          -57.5474,
+          -25.3167
+         ],
+         [
+          -57.5474,
+          -25.3166
+         ],
+         [
+          -57.5474,
+          -25.3166
+         ],
+         [
+          -57.5474,
+          -25.3165
+         ],
+         [
+          -57.5475,
+          -25.3165
+         ],
+         [
+          -57.5475,
+          -25.3166
+         ],
+         [
+          -57.5476,
+          -25.3167
+         ],
+         [
+          -57.5474,
+          -25.3167
+         ]
+        ]
+       ]
+      },
+      "geometry_name": "tmp_shape",
+      "properties": {
+       "id": 4937603,
+       "objectid": 1714048,
+       "id_parcela": null,
+       "dpto": "L",
+       "dist": 3,
+       "padron": null,
+       "zona": 27,
+       "mz": 967,
+       "lote": 17,
+       "finca": 2051,
+       "nro_matricula": null,
+       "ccatastral": null,
+       "obs": null,
+       "mz_agr": null,
+       "lote_agr": null,
+       "tipo_pavim": null,
+       "tipo_cuenta": 1,
+       "hectareas": null,
+       "superficie_tierra": 0,
+       "superficie_edificado": 0,
+       "valor_tierra": 0,
+       "valor_edificado": 0,
+       "shape": {
+        "type": "MultiPolygon",
+        "coordinates": [
+         [
+          [
+           [
+            -57.5474,
+            -25.3167
+           ],
+           [
+            -57.5474,
+            -25.3166
+           ],
+           [
+            -57.5474,
+            -25.3166
+           ],
+           [
+            -57.5474,
+            -25.3165
+           ],
+           [
+            -57.5475,
+            -25.3165
+           ],
+           [
+            -57.5475,
+            -25.3166
+           ],
+           [
+            -57.5476,
+            -25.3167
+           ],
+           [
+            -57.5474,
+            -25.3167
+           ]
+          ]
+         ]
+        ]
+       },
+       "tipo": null,
+       "referencia": 1,
+       "clave_comparacion": null
+      },
+      "bbox": [
+       -57.5476,
+       -25.3167,
+       -57.5474,
+       -25.3165
+      ]
+     },
+     {
+      "type": "Feature",
+      "id": "parcelas_activas.2016080",
+      "geometry": {
+       "type": "Polygon",
+       "coordinates": [
+        [
+         [
+          -57.5469,
+          -25.3165
+         ],
+         [
+          -57.5468,
+          -25.3165
+         ],
+         [
+          -57.5468,
+          -25.3162
+         ],
+         [
+          -57.5469,
+          -25.3162
+         ],
+         [
+          -57.5469,
+          -25.3162
+         ],
+         [
+          -57.5469,
+          -25.3165
+         ]
+        ]
+       ]
+      },
+      "geometry_name": "tmp_shape",
+      "properties": {
+       "id": 2016080,
+       "objectid": 1714476,
+       "id_parcela": null,
+       "dpto": "L",
+       "dist": 3,
+       "padron": null,
+       "zona": 27,
+       "mz": 997,
+       "lote": 5,
+       "finca": 10688,
+       "nro_matricula": null,
+       "ccatastral": null,
+       "obs": null,
+       "mz_agr": "0",
+       "lote_agr": "6",
+       "tipo_pavim": null,
+       "tipo_cuenta": 1,
+       "hectareas": null,
+       "superficie_tierra": 0,
+       "superficie_edificado": 0,
+       "valor_tierra": 0,
+       "valor_edificado": 0,
+       "shape": {
+        "type": "MultiPolygon",
+        "coordinates": [
+         [
+          [
+           [
+            -57.5469,
+            -25.3165
+           ],
+           [
+            -57.5468,
+            -25.3165
+           ],
+           [
+            -57.5468,
+            -25.3162
+           ],
+           [
+            -57.5469,
+            -25.3162
+           ],
+           [
+            -57.5469,
+            -25.3162
+           ],
+           [
+            -57.5469,
+            -25.3165
+           ]
+          ]
+         ]
+        ]
+       },
+       "tipo": null,
+       "referencia": 1,
+       "clave_comparacion": "L|3|#|27|997|5|#|#"
+      },
+      "bbox": [
+       -57.5469,
+       -25.3165,
+       -57.5468,
+       -25.3162
+      ]
+     },
+     {
+      "type": "Feature",
+      "id": "parcelas_activas.1767949",
+      "geometry": {
+       "type": "Polygon",
+       "coordinates": [
+        [
+         [
+          -57.5461,
+          -25.3162
+         ],
+         [
+          -57.546,
+          -25.3162
+         ],
+         [
+          -57.5459,
+          -25.316
+         ],
+         [
+          -57.5459,
+          -25.316
+         ],
+         [
+          -57.5461,
+          -25.3162
+         ]
+        ]
+       ]
+      },
+      "geometry_name": "tmp_shape",
+      "properties": {
+       "id": 1767949,
+       "objectid": 1712938,
+       "id_parcela": null,
+       "dpto": "L",
+       "dist": 3,
+       "padron": null,
+       "zona": 27,
+       "mz": 884,
+       "lote": 4,
+       "finca": 0,
+       "nro_matricula": null,
+       "ccatastral": null,
+       "obs": null,
+       "mz_agr": "IV",
+       "lote_agr": "3",
+       "tipo_pavim": null,
+       "tipo_cuenta": 1,
+       "hectareas": null,
+       "superficie_tierra": 0,
+       "superficie_edificado": 0,
+       "valor_tierra": 0,
+       "valor_edificado": 0,
+       "shape": {
+        "type": "MultiPolygon",
+        "coordinates": [
+         [
+          [
+           [
+            -57.5461,
+            -25.3162
+           ],
+           [
+            -57.546,
+            -25.3162
+           ],
+           [
+            -57.5459,
+            -25.316
+           ],
+           [
+            -57.5459,
+            -25.316
+           ],
+           [
+            -57.5461,
+            -25.3162
+           ]
+          ]
+         ]
+        ]
+       },
+       "tipo": null,
+       "referencia": 1,
+       "clave_comparacion": "L|3|#|27|884|4|#|#"
+      },
+      "bbox": [
+       -57.5461,
+       -25.3162,
+       -57.5459,
+       -25.316
+      ]
+     }
+    ],
+    "totalFeatures": 33,
+    "numberMatched": 33,
+    "numberReturned": 3,
+    "timeStamp": "2026-09-29T23:29:39.726Z",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "urn:ogc:def:crs:EPSG::4326"
+     }
+    },
+    "bbox": [
+     -57.5474,
+     -25.3165,
+     -57.5459,
+     -25.316
+    ]
+   }
+  },
+  {
+   "requestUrl": "https://www.catastro.gov.py/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&count=3&outputFormat=application/json&typeNames=snc:parcelas_activas&srsName=EPSG:4326&bbox=-54.6095,-24.1255,-54.6080,-24.1245,EPSG:4326",
+   "httpStatus": 200,
+   "body": {
+    "type": "FeatureCollection",
+    "features": [
+     {
+      "type": "Feature",
+      "id": "parcelas_activas.1831673",
+      "geometry": {
+       "type": "Polygon",
+       "coordinates": [
+        [
+         [
+          -54.6087,
+          -24.1252
+         ],
+         [
+          -54.6084,
+          -24.1254
+         ],
+         [
+          -54.6083,
+          -24.1253
+         ],
+         [
+          -54.6086,
+          -24.1251
+         ],
+         [
+          -54.6087,
+          -24.1252
+         ]
+        ]
+       ]
+      },
+      "geometry_name": "tmp_shape",
+      "properties": {
+       "id": 1831673,
+       "objectid": 2177030,
+       "id_parcela": null,
+       "dpto": "S",
+       "dist": 9,
+       "padron": null,
+       "zona": 31,
+       "mz": 119,
+       "lote": 8,
+       "finca": 835,
+       "nro_matricula": "S09/1267",
+       "ccatastral": null,
+       "obs": null,
+       "mz_agr": "II",
+       "lote_agr": "8",
+       "tipo_pavim": null,
+       "tipo_cuenta": 1,
+       "hectareas": null,
+       "superficie_tierra": 0,
+       "superficie_edificado": 0,
+       "valor_tierra": 0,
+       "valor_edificado": 0,
+       "shape": {
+        "type": "MultiPolygon",
+        "coordinates": [
+         [
+          [
+           [
+            -54.6087,
+            -24.1252
+           ],
+           [
+            -54.6084,
+            -24.1254
+           ],
+           [
+            -54.6083,
+            -24.1253
+           ],
+           [
+            -54.6086,
+            -24.1251
+           ],
+           [
+            -54.6087,
+            -24.1252
+           ]
+          ]
+         ]
+        ]
+       },
+       "tipo": null,
+       "referencia": 1,
+       "clave_comparacion": "S|9|#|31|119|8|#|#"
+      },
+      "bbox": [
+       -54.6087,
+       -24.1254,
+       -54.6083,
+       -24.1251
+      ]
+     },
+     {
+      "type": "Feature",
+      "id": "parcelas_activas.1850222",
+      "geometry": {
+       "type": "Polygon",
+       "coordinates": [
+        [
+         [
+          -54.6091,
+          -24.1243
+         ],
+         [
+          -54.6088,
+          -24.1245
+         ],
+         [
+          -54.6087,
+          -24.1244
+         ],
+         [
+          -54.609,
+          -24.1242
+         ],
+         [
+          -54.6091,
+          -24.1243
+         ]
+        ]
+       ]
+      },
+      "geometry_name": "tmp_shape",
+      "properties": {
+       "id": 1850222,
+       "objectid": 2176580,
+       "id_parcela": null,
+       "dpto": "S",
+       "dist": 9,
+       "padron": null,
+       "zona": 31,
+       "mz": 117,
+       "lote": 8,
+       "finca": 835,
+       "nro_matricula": null,
+       "ccatastral": null,
+       "obs": null,
+       "mz_agr": "IV",
+       "lote_agr": "8",
+       "tipo_pavim": null,
+       "tipo_cuenta": 1,
+       "hectareas": null,
+       "superficie_tierra": 0,
+       "superficie_edificado": 0,
+       "valor_tierra": 0,
+       "valor_edificado": 0,
+       "shape": {
+        "type": "MultiPolygon",
+        "coordinates": [
+         [
+          [
+           [
+            -54.6091,
+            -24.1243
+           ],
+           [
+            -54.6088,
+            -24.1245
+           ],
+           [
+            -54.6087,
+            -24.1244
+           ],
+           [
+            -54.609,
+            -24.1242
+           ],
+           [
+            -54.6091,
+            -24.1243
+           ]
+          ]
+         ]
+        ]
+       },
+       "tipo": null,
+       "referencia": 1,
+       "clave_comparacion": "S|9|#|31|117|8|#|#"
+      },
+      "bbox": [
+       -54.6091,
+       -24.1245,
+       -54.6087,
+       -24.1242
+      ]
+     },
+     {
+      "type": "Feature",
+      "id": "parcelas_activas.1859612",
+      "geometry": {
+       "type": "Polygon",
+       "coordinates": [
+        [
+         [
+          -54.6078,
+          -24.1253
+         ],
+         [
+          -54.6086,
+          -24.1262
+         ],
+         [
+          -54.6068,
+          -24.1286
+         ],
+         [
+          -54.6059,
+          -24.1278
+         ],
+         [
+          -54.6078,
+          -24.1253
+         ]
+        ]
+       ]
+      },
+      "geometry_name": "tmp_shape",
+      "properties": {
+       "id": 1859612,
+       "objectid": 5801223,
+       "id_parcela": 5801223,
+       "dpto": "S",
+       "dist": 9,
+       "padron": null,
+       "zona": 31,
+       "mz": 348,
+       "lote": 2,
+       "finca": 3476,
+       "nro_matricula": null,
+       "ccatastral": "S09310348002",
+       "obs": " ",
+       "mz_agr": "0",
+       "lote_agr": "11R",
+       "tipo_pavim": null,
+       "tipo_cuenta": 1,
+       "hectareas": null,
+       "superficie_tierra": 0,
+       "superficie_edificado": 0,
+       "valor_tierra": 0,
+       "valor_edificado": 0,
+       "shape": {
+        "type": "MultiPolygon",
+        "coordinates": [
+         [
+          [
+           [
+            -54.6078,
+            -24.1253
+           ],
+           [
+            -54.6086,
+            -24.1262
+           ],
+           [
+            -54.6068,
+            -24.1286
+           ],
+           [
+            -54.6059,
+            -24.1278
+           ],
+           [
+            -54.6078,
+            -24.1253
+           ]
+          ]
+         ]
+        ]
+       },
+       "tipo": 1,
+       "referencia": 0,
+       "clave_comparacion": "S|9|#|31|348|2|S09310348002| "
+      },
+      "bbox": [
+       -54.6086,
+       -24.1286,
+       -54.6059,
+       -24.1253
+      ]
+     }
+    ],
+    "totalFeatures": 31,
+    "numberMatched": 31,
+    "numberReturned": 3,
+    "timeStamp": "2026-09-29T23:30:01.697Z",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "urn:ogc:def:crs:EPSG::4326"
+     }
+    },
+    "bbox": [
+     -54.6096,
+     -24.1257,
+     -54.6081,
+     -24.1243
+    ]
+   }
+  }
+ ]
+}

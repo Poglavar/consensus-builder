@@ -1,0 +1,60 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "QA",
+ "country": "Qatar",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Ministry of Municipality (MoM) - Real Estate/Cadastre; Qatar Geographic portal",
+ "portalsFound": [
+  {
+   "url": "https://www.mme.gov.qa/",
+   "observation": "Ministry site reachable (302 redirect); no cadastre endpoint seen"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.mme.gov.qa/",
+   "method": "GET",
+   "httpStatus": 302,
+   "contentType": "text/html",
+   "assessment": "redirect only"
+  },
+  {
+   "url": "https://www.gsdi.gov.qa/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Host did not answer through the agent proxy (connection failed/CONNECT rejected); treated as temporarily unavailable, not as absence."
+  },
+  {
+   "url": "https://gis.gov.qa/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Host did not answer through the agent proxy (connection failed/CONNECT rejected); treated as temporarily unavailable, not as absence."
+  },
+  {
+   "url": "https://www.moma.gov.qa/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Host did not answer through the agent proxy (connection failed/CONNECT rejected); treated as temporarily unavailable, not as absence."
+  },
+  {
+   "url": "https://www.qatar.gov.qa/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Host did not answer through the agent proxy (connection failed/CONNECT rejected); treated as temporarily unavailable, not as absence."
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Unknown",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Qatari government hosts unreachable from this environment; a parcel viewer (e.g. Ministry of Municipality e-services) probably exists but access model unknown.",
+ "nextStep": "Retry MoM Land Info / Qatar GIS host names."
+}

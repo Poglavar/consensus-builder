@@ -103,7 +103,7 @@
     }
     function hasSample(city, research) {
       const sample = research?.verifiedParcelResponse;
-      return city.sourceIds.length > 0 && sample?.httpStatus === 200 && sample.parcelRecordCount > 0;
+      return city.sourceIds.length > 0 && [200, 206].includes(sample?.httpStatus) && sample.parcelRecordCount > 0;
     }
     const statusText = {
       verified_sample_partial_coverage: 'Parcel sample verified; coverage is partial or unproven',

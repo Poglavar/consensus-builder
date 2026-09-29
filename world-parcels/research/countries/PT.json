@@ -1,0 +1,87 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "PT",
+ "country": "Portugal",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "DGT - Direcao-Geral do Territorio (Cadastro Predial / BUPi, mainland)",
+ "portalsFound": [
+  {
+   "url": "https://ogcapi.dgterritorio.gov.pt/",
+   "observation": "Open OGC API Features; collection 'cadastro' = Cadastro Predial (Continente), 1,820,088 features matched"
+  },
+  {
+   "url": "https://ogcapi.dgterritorio.gov.pt/collections/cadastro",
+   "observation": "INSPIRE-style properties: nationalcadastralreference, areavalue, administrativeunit"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://ogcapi.dgterritorio.gov.pt/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "landing page"
+  },
+  {
+   "url": "https://ogcapi.dgterritorio.gov.pt/collections?f=json&limit=100",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "lists 'cadastro' (Cadastro Predial Continente) among ~100 collections"
+  },
+  {
+   "url": "https://ogcapi.dgterritorio.gov.pt/collections/cadastro/items?f=json&limit=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 MultiPolygon parcels, Mafra area (-9.31,39.17)"
+  },
+  {
+   "url": "https://ogcapi.dgterritorio.gov.pt/collections/cadastro/items?f=json&limit=2&bbox=-8.62,41.14,-8.61,41.15",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 features: Porto has no cadastre coverage in this layer (coverage partial)"
+  },
+  {
+   "url": "https://ogcapi.dgterritorio.gov.pt/collections/cadastro/items?f=json&limit=2&offset=1000000",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "2 MultiPolygon parcels, Leiria-district area (-8.715,39.495), administrativeunit 140209"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "pt-dgt-cadastro-predial",
+  "requestUrl": "https://ogcapi.dgterritorio.gov.pt/collections/cadastro/items?f=json&limit=2&offset=1000000",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   -8.7155,
+   39.495,
+   -8.7155,
+   39.495
+  ],
+  "parcelRecordCount": 2,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "nationalcadastralreference / properties.id",
+  "responseFile": "countries/PT-parcel-response.json",
+  "pagination": "limit/offset; bbox supported",
+  "regionSampled": "Mafra/Lisbon district (administrativeunit 110808) and Leiria/Batalha-Porto de Mos area (140209)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "Cadastro Predial for mainland Portugal (Continente); coverage is partial (municipalities cadastred so far)",
+  "regionsVerified": [
+   "Mafra area",
+   "Leiria area"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Coverage is incomplete (Porto bbox returned 0); Azores/Madeira not in this collection; licence not read. 'nationwideVerified' means two distinct regions same schema, not full-country coverage.",
+ "nextStep": "Map covered municipalities; check Azores/Madeira and BUPi rural data."
+}

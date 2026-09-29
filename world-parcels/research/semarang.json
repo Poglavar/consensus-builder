@@ -1,170 +1,121 @@
 {
-    "displayFieldName": "kecamatan",
-    "fieldAliases": {
-        "objectid": "objectid",
-        "kecamatan": "kecamatan",
-        "kelurahan": "kelurahan",
-        "tipehak": "tipehak",
-        "nib": "nib"
-    },
+  "schemaVersion": 1,
+  "cityId": "queue:186",
+  "queueRank": 186,
+  "name": "Semarang",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "centerLatLon": [
+    -7.03263718095027,
+    110.432698830789
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "id-bigsatupeta-hakmilik-jawa-tengah",
+    "requestUrl": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/25/query?where=1%3D1&geometry=110.559,-6.964,110.562,-6.961&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid,kecamatan,kelurahan,tipehak,nib&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      110.559,
+      -6.964,
+      110.562,
+      -6.961
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
     "geometryType": "esriGeometryPolygon",
-    "spatialReference": {
-        "wkid": 4326,
-        "latestWkid": 4326
+    "closedRings": true,
+    "idField": "objectid (NIB is only a per-kelurahan number, not unique)",
+    "responseFile": "semarang-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit; maxRecordCount=1000"
+  },
+  "source": {
+    "sourceId": "id-bigsatupeta-hakmilik-jawa-tengah",
+    "name": "Satu Peta (BIG) PERIZINAN_DAN_PERTANAHAN, layer 25 Jawa Tengah of 'Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000'",
+    "operator": "Badan Informasi Geospasial Satu Peta portal; underlying data presumably Kementerian ATR/BPN (not confirmed)",
+    "scope": "Central Java province, titled Hak Milik parcels only, patchy",
+    "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/25",
+    "method": "GET ArcGIS REST query",
+    "responseFormat": "Esri JSON",
+    "crs": "EPSG:4326",
+    "reuseStatus": "unknown; terms not read"
+  },
+  "portalsFound": [
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer",
+      "observation": "Public ArcGIS MapServer; layer 10 (Hak Milik 1:5000) has per-province sublayers including 25 Jawa Tengah (also used for the Surabaya record, layer 12 Jawa Timur)."
     },
-    "fields": [
-        {
-            "name": "objectid",
-            "type": "esriFieldTypeOID",
-            "alias": "objectid"
-        },
-        {
-            "name": "kecamatan",
-            "type": "esriFieldTypeString",
-            "alias": "kecamatan",
-            "length": 254
-        },
-        {
-            "name": "kelurahan",
-            "type": "esriFieldTypeString",
-            "alias": "kelurahan",
-            "length": 254
-        },
-        {
-            "name": "tipehak",
-            "type": "esriFieldTypeString",
-            "alias": "tipehak",
-            "length": 254
-        },
-        {
-            "name": "nib",
-            "type": "esriFieldTypeString",
-            "alias": "nib",
-            "length": 254
-        }
-    ],
-    "features": [
-        {
-            "attributes": {
-                "objectid": 30914,
-                "kecamatan": "Guntur",
-                "kelurahan": "Tangkis",
-                "tipehak": "Hak Milik",
-                "nib": "00019"
-            },
-            "geometry": {
-                "rings": [
-                    [
-                        [
-                            110.56057843100007,
-                            -6.962891114999934
-                        ],
-                        [
-                            110.56039693000008,
-                            -6.963360713999975
-                        ],
-                        [
-                            110.56020915500005,
-                            -6.9638458629999604
-                        ],
-                        [
-                            110.55999111300008,
-                            -6.963715254999954
-                        ],
-                        [
-                            110.56034408800008,
-                            -6.962746025999934
-                        ],
-                        [
-                            110.56034507300006,
-                            -6.96274662999997
-                        ],
-                        [
-                            110.56057843100007,
-                            -6.962891114999934
-                        ]
-                    ]
-                ]
-            }
-        },
-        {
-            "attributes": {
-                "objectid": 30922,
-                "kecamatan": "Guntur",
-                "kelurahan": "Tangkis",
-                "tipehak": "Hak Milik",
-                "nib": "00024"
-            },
-            "geometry": {
-                "rings": [
-                    [
-                        [
-                            110.56115991300004,
-                            -6.961877147999928
-                        ],
-                        [
-                            110.56141128700006,
-                            -6.961972910999975
-                        ],
-                        [
-                            110.56166269300007,
-                            -6.962068967999926
-                        ],
-                        [
-                            110.56157386600006,
-                            -6.962319745999935
-                        ],
-                        [
-                            110.56132551100006,
-                            -6.96221411199997
-                        ],
-                        [
-                            110.56107301200007,
-                            -6.962112212999955
-                        ],
-                        [
-                            110.56115991300004,
-                            -6.961877147999928
-                        ]
-                    ]
-                ]
-            }
-        },
-        {
-            "attributes": {
-                "objectid": 32377,
-                "kecamatan": "Guntur",
-                "kelurahan": "Tangkis",
-                "tipehak": "Hak Milik",
-                "nib": "00020"
-            },
-            "geometry": {
-                "rings": [
-                    [
-                        [
-                            110.56194976800003,
-                            -6.963703487999965
-                        ],
-                        [
-                            110.56160552200004,
-                            -6.964616521999972
-                        ],
-                        [
-                            110.56131903300007,
-                            -6.9644659809999325
-                        ],
-                        [
-                            110.56168337100007,
-                            -6.9635718559999304
-                        ],
-                        [
-                            110.56194976800003,
-                            -6.963703487999965
-                        ]
-                    ]
-                ]
-            }
-        }
-    ],
-    "exceededTransferLimit": true
+    {
+      "url": "https://bhumi.atrbpn.go.id/",
+      "observation": "ATR/BPN Bhumi viewer reachable (200 HTML); web map, no open query endpoint tested."
+    },
+    {
+      "url": "https://satudata.jatengprov.go.id/",
+      "observation": "Central Java open-data portal reachable (200 HTML); no parcel dataset checked in detail."
+    },
+    {
+      "url": "https://data.semarangkota.go.id/",
+      "observation": "Semarang city open-data portal returned 403 to curl with a browser User-Agent."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/25?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "service layer list only; layer 25 Jawa Tengah polygon, maxRecordCount 1000, extent lon 108.57-111.62, lat -7.91 to -6.67"
+    },
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/25/query (bbox 110.42,-7.04,110.44,-7.02 around city centre, returnCountOnly)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "count 0"
+    },
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/25/query (bbox 110.35,-7.10,110.50,-6.95 whole city, returnCountOnly)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "count 0 inside Semarang city"
+    },
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/25/query (bbox 110.2,-7.3,110.7,-6.8, returnCountOnly)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "count 31657: parcels exist in the wider region (Temanggung, Demak, Grobogan areas), not in the city box"
+    },
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/25/query (bbox 110.45,-7.1,110.6,-6.95, 2 records)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "nonempty; Guntur (Demak) parcels"
+    },
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/25/query?where=1%3D1&geometry=110.559,-6.964,110.562,-6.961&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid,kecamatan,kelurahan,tipehak,nib&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "verified: 3 closed polygons in Guntur, Demak, about 13 km east of the UN centre point"
+    },
+    {
+      "url": "https://data.semarangkota.go.id/",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html",
+      "assessment": "blocked even with a browser User-Agent"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Central Java province titled parcels, incomplete",
+    "verifiedOpenScope": "three Hak Milik parcels in Guntur (Demak regency), adjacent to but outside Semarang city; zero features inside the Semarang city bounding box",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "No parcel was returned inside Semarang city itself; the sample is outside the city in the wider urban region. Coverage is patchy and limited to Hak Milik parcels; licence, provenance and currency unknown. Semarang city and BPN sources were not resolved.",
+  "nextStep": "Test bhumi.atrbpn.go.id/BPN services and Semarang city GIS for in-city parcels; read Satu Peta terms; treat this source as partial until in-city parcels are found."
 }
