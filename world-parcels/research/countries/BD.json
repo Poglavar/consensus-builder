@@ -1,0 +1,73 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "BD",
+ "country": "Bangladesh",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Department of Land Records and Surveys (DLRS), Ministry of Land",
+ "portalsFound": [
+  {
+   "url": "https://settlement.gov.bd/",
+   "observation": "DLRS digital survey (BDS) sheet GeoJSON service."
+  },
+  {
+   "url": "https://map.settlement.gov.bd/",
+   "observation": "Integrated online mouza map purchase system (payment)."
+  },
+  {
+   "url": "https://map.land.gov.bd/",
+   "observation": "Land ministry mouza map portal."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey (POST rsnum=201901&comcod=4111&unitcod=040107008&sheetno=001)",
+   "method": "POST",
+   "httpStatus": 200,
+   "assessment": "re-verified today: FeatureCollection, 292 Polygon features (Chattogram division, Anwara)",
+   "contentType": "application/json",
+   "parcelRecordCount": 292
+  },
+  {
+   "url": "same, comcod=4105 unitcod=010505005 sheetno=001 (earlier probe, dhaka.json)",
+   "method": "POST",
+   "httpStatus": 200,
+   "assessment": "186 polygons, Gulshan/Dhaka area",
+   "contentType": "application/json",
+   "parcelRecordCount": 186
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "bd-dlrs-bds-sheets",
+  "requestUrl": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+  "method": "POST form",
+  "requestForm": "rsnum=201901&comcod=4111&unitcod=040107008&sheetno=001",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   91.8298,
+   22.2072,
+   91.8342,
+   22.2102
+  ],
+  "parcelRecordCount": 292,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "Dag_No (plot number)",
+  "responseFile": "../chattogram-sheet-001-response.json",
+  "pagination": "none; one mouza sheet per request",
+  "regionSampled": "Chattogram division (Anwara); Dhaka (Gulshan) from earlier probe"
+ },
+ "coverageAssessment": {
+  "claimedScope": "Digital survey sheet GeoJSON where BDS published",
+  "regionsVerified": [
+   "Dhaka (earlier probe)",
+   "Chattogram (re-verified today)"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Coverage is only mouzas/surveys where BDS sheets are published; reuse terms not established; the many mouzas outside published surveys unknown. nationwideVerified reflects two distinct divisions on one schema, not full coverage.",
+ "nextStep": "Enumerate available survey/unit lists to estimate coverage; review terms."
+}

@@ -1,0 +1,58 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "country": "Argentina",
+ "checkedAt": "2026-09-29",
+ "status": "subnational_only",
+ "cadastreAuthority": "No national cadastre: cadastres are provincial (Ley 26.209 national cadastre law; Consejo Federal del Catastro coordinates provincial cadastres + CABA)",
+ "portalsFound": [
+  {
+   "url": "https://cfcatastro.gob.ar/nuestros-catastros/",
+   "observation": "Federal Cadastre Council lists provincial cadastres; no national parcel service."
+  },
+  {
+   "url": "https://sigsa.inmuebles.gov.ar/server/rest/services/IDE/IDE___Catastro_Urbano_y_Rural/FeatureServer/0",
+   "observation": "Salta provincial cadastre ArcGIS FeatureServer, open; parcel polygons verified in earlier city probe (buenos-aires.json, rejected-Salta sample)."
+  },
+  {
+   "url": "https://data.buenosaires.gob.ar/dataset/parcelas",
+   "observation": "CABA open parcel GeoJSON/SHP (CC-BY-2.5-AR); download timed out earlier."
+  },
+  {
+   "url": "https://www.arba.gob.ar/",
+   "observation": "Buenos Aires Province (ARBA) GeoARBA viewer; not tested."
+  },
+  {
+   "url": "https://ide.ign.gob.ar/geoservicios/rest/services",
+   "observation": "National IGN ArcGIS server lists only base map and sociodemographic services, no parcels."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://ide.ign.gob.ar/geoservicios/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "services: servicio_fondos, sociodemog_*; no cadastre",
+   "contentType": "application/json"
+  },
+  {
+   "url": "https://sigsa.inmuebles.gov.ar/server/rest/services/IDE/IDE___Catastro_Urbano_y_Rural/FeatureServer/0/query?objectIds=901121,901122,901123&outFields=OBJECTID,DEPARTA,NRO_PARCELA&returnGeometry=true&outSR=4326&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "3 polygons near Salta (reused from earlier probe); today's fresh attempt reset by peer",
+   "contentType": "application/json",
+   "parcelRecordCount": 3
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Provincial cadastres only; no national service",
+  "regionsVerified": [
+   "Salta (reused from earlier probe, not re-run today)"
+  ],
+  "nationwideVerified": false
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Only Salta verified (reused); each province has its own service and schema. Live re-request today was connection-reset.",
+ "nextStep": "Probe Buenos Aires Province (ARBA), Cordoba (IDECor), Mendoza, Santa Fe, CABA WFS individually."
+}

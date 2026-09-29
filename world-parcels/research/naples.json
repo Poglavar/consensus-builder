@@ -29,13 +29,13 @@
     "closedRings": true,
     "idField": "INSPIREID_LOCALID / NATIONALCADASTRALREFERENCE (e.g. F839_008600.116; F839 = Napoli comune code)",
     "responseFile": "naples-parcel-response.json",
-    "pagination": "WFS 2.0 count + STARTINDEX (reply carries a 'next' link; numberMatched='unknown'); the note in the request that bbox axis order is lat,lon for EPSG:4326"
+    "pagination": "WFS 2.0 count + STARTINDEX (reply carries a 'next' link; numberMatched='unknown'); bbox with EPSG:4326 URN is lat,lon axis order"
   },
   "source": {
     "sourceId": "it-agenzia-entrate-cartografia-catastale-wfs",
     "name": "Cartografia Catastale WFS (INSPIRE cadastral parcels and zoning)",
     "operator": "Agenzia delle Entrate (Italian revenue agency, Catasto)",
-    "scope": "Italian cadastral parcels (CP:CadastralParcel) and zoning (CP:CadastralZoning); capabilities claim national cartography, only Naples sampled here (the service is national, Sardinia/some provinces historically differ)",
+    "scope": "Italian cadastral parcels (CP:CadastralParcel) and zoning (CP:CadastralZoning); service title/abstract suggest national cartography, but only Naples was sampled here",
     "endpoint": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php",
     "method": "GET OGC WFS 2.0.0 GetFeature",
     "responseFormat": "GML 3.2 (application/json rejected with InvalidFormat)",
@@ -76,6 +76,6 @@
     "verifiedOpenScope": "3 parcels in a ~130 m by 110 m box in central Naples (comune F839)",
     "countrywideVerified": false
   },
-  "remainingUncertainty": "Terms beyond the CC BY 4.0 fee field, rate limits and bbox-size limits are unread; the agency notes the data is not the legal cadastral record; response is GML in RDN2008 requiring an adapter; national coverage not confirmed (would need two distinct regions sampled).",
+  "remainingUncertainty": "Terms beyond the CC BY 4.0 fee field, rate limits and bbox-size limits are unread; legal status of the data was not checked; response is GML in RDN2008 requiring an adapter; national coverage not confirmed (would need two distinct regions sampled).",
   "nextStep": "Read the Agenzia delle Entrate terms and rate limits; implement WFS GetFeature paging with GML parsing and reprojection; sample a second Italian region for country-level status."
 }

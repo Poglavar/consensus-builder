@@ -1,0 +1,74 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AT",
+ "country": "Austria",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Bundesamt fuer Eich- und Vermessungswesen (BEV), Kataster / Digitale Katastralmappe (DKM)",
+ "portalsFound": [
+  {
+   "url": "https://data.bev.gv.at/geonetwork/srv/api/records/09e3c4a9-3cc2-40a9-955d-da668b2747f0",
+   "observation": "Open-data record: national GeoPackage of cadastral parcels (KAT_DKM_GST_epsg31287_20240401.gpkg), CC-BY-4.0, ~35 GB, HTTP range supported."
+  },
+  {
+   "url": "https://data.bev.gv.at/geonetwork/srv/api/records/51624c7d-7e32-4844-99fb-9b4a9587a39f",
+   "observation": "INSPIRE WMS view service for cadastral parcels (registration required, free); view-only."
+  },
+  {
+   "url": "https://www.bev.gv.at/Services/Produkte/Kataster-und-Verzeichnisse/Katastralmappe-und-Sachdaten-digital.html",
+   "observation": "BEV product page for DKM and property data."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://data.bev.gv.at/download/Kataster/gpkg/national/KAT_DKM_GST_epsg31287_20240401.gpkg (HEAD)",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "Content-Length 34957406208, Accept-Ranges bytes"
+  },
+  {
+   "url": "same URL, Range: SQLite header + table b-tree pages (leftmost leaf of table GST)",
+   "method": "GET",
+   "httpStatus": 206,
+   "assessment": "3 GST rows with GPKG polygon geometry (envelope x 624654-624824, y 486079-486260 EPSG:31287, eastern Austria); fields KG, GNR, RSTATUS, MST",
+   "contentType": "application/octet-stream",
+   "parcelRecordCount": 3
+  },
+  {
+   "url": "same URL, Range: rightmost leaf of table GST",
+   "method": "GET",
+   "httpStatus": 206,
+   "assessment": "3 GST rows, polygons in western Austria (x~123359 EPSG:31287), KG 92129",
+   "contentType": "application/octet-stream",
+   "parcelRecordCount": 3
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "at-bev-dkm-gpkg",
+  "requestUrl": "https://data.bev.gv.at/download/Kataster/gpkg/national/KAT_DKM_GST_epsg31287_20240401.gpkg",
+  "method": "GET (HTTP Range, SQLite pages)",
+  "httpStatus": 206,
+  "contentType": "application/octet-stream",
+  "spatialTestAreaLonLat": null,
+  "spatialTestAreaNote": "EPSG:31287 bbox [624654,486079,624824,486260] and a second sample near x=123359",
+  "parcelRecordCount": 3,
+  "recordListPath": "GPKG table GST",
+  "geometryType": "POLYGON (GeoPackage binary, WKB Polygon, ring closed)",
+  "closedRings": true,
+  "idField": "KG + GNR (cadastral community + parcel number)",
+  "responseFile": null,
+  "pagination": "whole-country GPKG file; ~10.18M parcel rows (last rowid 10179149)",
+  "regionSampled": "east (x~624k) and west (x~123k) Austria, same file"
+ },
+ "coverageAssessment": {
+  "claimedScope": "National DKM parcels (Austria-wide open GPKG, CC-BY-4.0 per metadata)",
+  "regionsVerified": [
+   "eastern Austria (KG 01002 area, first rows)",
+   "western Austria (KG 92129, last rows)"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Access is a bulk file download (stichtag 2024-04-01), not a bounded query API. Metadata says CC-BY-4.0; not independently reviewed. Live WFS/OGC API not found; WMS requires registration. Sample coordinates are polygons decoded only as envelopes, not fully parsed.",
+ "nextStep": "Use range/GDAL vsicurl for extraction; check BEV for newer stichtag and INSPIRE WFS."
+}
