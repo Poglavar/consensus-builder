@@ -1,0 +1,62 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MZ",
+ "country": "Mozambique",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Direcção Nacional de Terras e Desenvolvimento Territorial (DINAT) / Ministério da Terra e Ambiente; DUAT registry",
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://www.mtnat.gov.mz/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://www.dnt.gov.mz/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://sigt.mta.gov.mz",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://www.mta.gov.mz",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Mozambique%20cadastre&f=json&num=10",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "2 hits, none Mozambican parcels"
+  },
+  {
+   "url": "(earlier, research/maputo.json) www.dinat.gov.mz",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "TLS name mismatch, not retried insecurely"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "National DUAT land-use-right registry (partial, largely non-digital)",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "All Mozambican government hosts unreachable from the proxy; absence of an open service is not established.",
+ "nextStep": "Retry official hosts later; check SIGIT/ land portal (Terra Segura) for downloadable parcels."
+}

@@ -1,0 +1,80 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "NC",
+ "country": "New Caledonia",
+ "checkedAt": "2026-09-29",
+ "status": "national_cadastre_viewer_only",
+ "cadastreAuthority": "Gouvernement de la Nouvelle-Calédonie, Direction des Infrastructures, de la Topographie et des Transports Terrestres (DITTT) - Service topographique / cadastre; carto.gouv.nc",
+ "portalsFound": [
+  {
+   "url": "https://carto.gouv.nc/public/rest/services/plan_parcellaire_informatise/MapServer",
+   "observation": "Open ArcGIS MapServer 'Plan parcellaire informatise', layer 0 Cadastre, native CRS EPSG:3163 (RGNC91-93 Lambert)."
+  },
+  {
+   "url": "https://services1.arcgis.com/TZcrgU6CIbqWt9Qv/arcgis/rest/services/Sections_cadastrales/FeatureServer",
+   "observation": "Cadastral sections feature service listed in AGOL (not probed)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=cadastre Nouvelle-Caledonie parcelle",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "10 hits incl. plan_parcellaire_informatise MapServer"
+  },
+  {
+   "url": "https://carto.gouv.nc/public/rest/services/plan_parcellaire_informatise/MapServer?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "1 layer: Cadastre"
+  },
+  {
+   "url": "https://carto.gouv.nc/.../MapServer/0/query?f=geojson (Noumea bbox, count 3)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "3 features with attributes (nic, lot, commune, surf_cad, typologie) but geometry null"
+  },
+  {
+   "url": "https://carto.gouv.nc/.../MapServer/0/query?f=json&returnGeometry=true (Noumea bbox, 2)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "attributes only, no geometry key"
+  },
+  {
+   "url": "https://carto.gouv.nc/.../MapServer/0/query?f=json&where=nom_commune='KONE'&returnGeometry=true",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "2 Kone records, attributes only, no geometry"
+  },
+  {
+   "url": "https://carto.gouv.nc/.../MapServer/0/query?where=objectid=26900&returnExtentOnly=true&outSR=3163",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "extent returned (445340,214501)-(445701,214618) so geometry exists server-side but polygons are withheld"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Territory-wide cadastre (all communes) via DITTT MapServer",
+  "regionsVerified": [
+   "Noumea and Kone: attribute records only, no polygons returned"
+  ],
+  "nationwideVerified": false
+ },
+ "accessModel": "viewer-only",
+ "remainingUncertainty": "Polygon geometry is not returned by query (attributes and per-feature extent only); an export/WFS or another layer may give geometry. Licence not read.",
+ "nextStep": "Try the Sections_cadastrales FeatureServer, georep.nc / DITTT downloads, or WMS/WFS on carto.gouv.nc.",
+ "subnationalServices": [
+  {
+   "name": "Province Nord GIS",
+   "url": "https://carto.province-nord.nc/ags/rest/services",
+   "observation": "listed in AGOL search; not probed"
+  }
+ ]
+}

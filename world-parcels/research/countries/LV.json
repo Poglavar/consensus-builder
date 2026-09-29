@@ -1,0 +1,89 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "LV",
+ "country": "Latvia",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "State Land Service (Valsts zemes dienests, VZD), Kadastra informacijas sistema; portal geolatvija.lv",
+ "portalsFound": [
+  {
+   "url": "https://data.gov.lv/dati/lv/dataset/kadastra-informacijas-sistemas-atverti-telpiskie-dati",
+   "observation": "Open spatial cadastre data as per-municipality/group shapefile zips (KKParcel, KKBuilding etc.), CC0 dataset listing; national scope by municipality."
+  },
+  {
+   "url": "https://data.gov.lv/dati/lv/dataset/kadastrlie-zemes-gabali-inspire",
+   "observation": "INSPIRE Cadastral Parcels dataset, CC0-1.0, points to https://grafws.kadastrs.lv/atom/cp/atom.xml and geolatvija.lv."
+  },
+  {
+   "url": "https://geolatvija.lv/",
+   "observation": "National geoportal, reachable (200)."
+  },
+  {
+   "url": "https://www.kadastrs.lv/",
+   "observation": "VZD Cadastre site, reachable (200)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://data.gov.lv/dati/api/3/action/package_search?q=kadastr&rows=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "catalogue with 73 cadastre-related datasets"
+  },
+  {
+   "url": "https://grafws.kadastrs.lv/atom/cp/atom.xml",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection reset (temporarily unavailable)"
+  },
+  {
+   "url": "https://ogc.kadastrs.lv/cp?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection rejected/unreachable"
+  },
+  {
+   "url": "https://data.gov.lv/dati/dataset/b28f0eed-73b0-4e44-94e7-b04b11bf0b69/resource/0d6779e2-f4ba-4a89-849c-0c2aee99b43c/download/0004000_kk_shp.zip",
+   "method": "GET",
+   "httpStatus": 206,
+   "contentType": "application/zip",
+   "assessment": "Range bytes 0-4095 of 5169812: PK zip entries, Accept via 206"
+  },
+  {
+   "url": "same URL, full GET (5.2 MB, one municipality file)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/zip",
+   "assessment": "KKParcel.shp holds 138 parcel polygons; first 3 extracted"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "lv-vzd-open-kk-shp",
+  "requestUrl": "https://data.gov.lv/dati/dataset/b28f0eed-73b0-4e44-94e7-b04b11bf0b69/resource/0d6779e2-f4ba-4a89-849c-0c2aee99b43c/download/0004000_kk_shp.zip",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/zip",
+  "spatialTestAreaLonLat": null,
+  "parcelRecordCount": 3,
+  "recordListPath": "ExportCadGroup_1300001/KKParcel.shp (zip entry)",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "CODE",
+  "responseFile": "LV-parcel-response.json",
+  "pagination": "none (one zip per municipality/group); HTTP Range supported",
+  "regionSampled": "municipality file 0004000, cadastral group 1300001; coordinates in LKS-92/TM (EPSG:3059), reply file is a script conversion of the first 3 raw shapefile records (attributes CODE, GEOM_ACT_D, OBJECTCODE, AREA_SCALE, GROUP_CODE, no owner data)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "National open cadastre extract published per municipality; INSPIRE parcel ATOM/WFS also listed",
+  "regionsVerified": [
+   "one municipality zip (0004000)"
+  ],
+  "nationwideVerified": false
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Only one municipality file sampled; INSPIRE WFS/ATOM (grafws.kadastrs.lv, ogc.kadastrs.lv) unreachable here so live query service not checked. Licence shown on data.gov.lv as CC0-1.0 for the INSPIRE dataset only.",
+ "nextStep": "Retry grafws.kadastrs.lv ATOM/WFS bbox query; sample a second municipality."
+}
