@@ -105,6 +105,57 @@
         "geonames:5368361"
       ],
       "evidenceFile": "research/los-angeles.json"
+    },
+    {
+      "sourceId": "ao-arcgis-luanda-agt-property-polygons",
+      "name": "Luanda property polygons (ArcGIS Online, Luanda_AGT_Oficial_2_gdb)",
+      "operator": "ArcGIS Online account ANGOLA_GGPEN; institutional identity not confirmed (attribute names refer to AGT)",
+      "countryCode": "AO",
+      "scope": "Luanda area (Maianga sampled); layer count 2,239,859; publisher, completeness and authority unverified",
+      "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0/query",
+      "method": "GET",
+      "responseFormat": "ArcGIS JSON (esriGeometryPolygon)",
+      "crs": "EPSG:4326 (layer extent published in 3857)",
+      "verificationStatus": "verified_nonempty_sample_partial_coverage",
+      "reuseStatus": "no_terms_visible;_publisher_unconfirmed;_do_not_treat_as_official_cadastre",
+      "verifiedCityIds": [
+        "geonames:2240449"
+      ],
+      "evidenceFile": "research/luanda.json"
+    },
+    {
+      "sourceId": "co-bogota-uaecd-lote",
+      "name": "Bogota D.C. cadastral lots (UAECD catastro/lote MapServer)",
+      "operator": "Unidad Administrativa Especial de Catastro Distrital (UAECD) / IDECA",
+      "countryCode": "CO",
+      "scope": "Distrito Capital de Bogota only; neighbouring municipalities and the rest of Colombia are separate sources",
+      "endpoint": "https://serviciosgis.catastrobogota.gov.co/arcgis/rest/services/catastro/lote/MapServer/0/query",
+      "method": "GET",
+      "responseFormat": "ArcGIS JSON (esriGeometryPolygon)",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_nonempty_sample",
+      "reuseStatus": "CC-BY_per_search_summaries;_licence_page_to_confirm",
+      "verifiedCityIds": [
+        "geonames:3688689"
+      ],
+      "evidenceFile": "research/bogota.json"
+    },
+    {
+      "sourceId": "pe-arcgis-lima-sedapal-lotes",
+      "name": "Lima lots (SEDAPAL-derived, ArcGIS Online 'lotes')",
+      "operator": "ArcGIS Online account dromeroOGIT (institution unconfirmed); data credited to SEDAPAL / Consorcio Servicios Integrales",
+      "countryCode": "PE",
+      "scope": "Parts of Lima (San Juan de Lurigancho sampled; central Lima test box empty); 276,848 lots",
+      "endpoint": "https://services5.arcgis.com/bHvzrGGxW8wP6Utm/arcgis/rest/services/lotes/FeatureServer/0/query",
+      "method": "GET",
+      "responseFormat": "ArcGIS JSON (esriGeometryPolygon)",
+      "crs": "EPSG:4326 via outSR; native 3857",
+      "verificationStatus": "verified_nonempty_sample_partial_coverage",
+      "reuseStatus": "no_terms_visible;_utility_derived_third_party_hosting;_review_before_use",
+      "verifiedCityIds": [
+        "geonames:3936456"
+      ],
+      "evidenceFile": "research/lima.json"
     }
   ],
   "countryCoverage": [],
@@ -525,6 +576,102 @@
         "us-ca-lacounty-assessor-parcels"
       ],
       "researchFile": "research/los-angeles.json"
+    },
+    {
+      "cityId": "geonames:2240449",
+      "name": "Luanda",
+      "country": "Angola",
+      "countryCode": "AO",
+      "centerLatLon": [
+        -8.83682,
+        13.23432
+      ],
+      "citySource": "https://www.geonames.org/2240449/luanda.html",
+      "researchOrder": 28,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "ao-arcgis-luanda-agt-property-polygons"
+      ],
+      "researchFile": "research/luanda.json"
+    },
+    {
+      "cityId": "geonames:1264527",
+      "name": "Chennai",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        13.08784,
+        80.27847
+      ],
+      "citySource": "https://www.geonames.org/1264527/chennai.html",
+      "researchOrder": 29,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/chennai.json"
+    },
+    {
+      "cityId": "geonames:2314302",
+      "name": "Kinshasa",
+      "country": "DR Congo",
+      "countryCode": "CD",
+      "centerLatLon": [
+        -4.32758,
+        15.31357
+      ],
+      "citySource": "https://www.geonames.org/2314302/kinshasa.html",
+      "researchOrder": 30,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/kinshasa.json"
+    },
+    {
+      "cityId": "geonames:3688689",
+      "name": "Bogotá",
+      "country": "Colombia",
+      "countryCode": "CO",
+      "centerLatLon": [
+        4.60971,
+        -74.08175
+      ],
+      "citySource": "https://www.geonames.org/3688689/bogota.html",
+      "researchOrder": 31,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "co-bogota-uaecd-lote"
+      ],
+      "researchFile": "research/bogota.json"
+    },
+    {
+      "cityId": "geonames:3936456",
+      "name": "Lima",
+      "country": "Peru",
+      "countryCode": "PE",
+      "centerLatLon": [
+        -12.04318,
+        -77.02824
+      ],
+      "citySource": "https://www.geonames.org/3936456/lima.html",
+      "researchOrder": 32,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "pe-arcgis-lima-sedapal-lotes"
+      ],
+      "researchFile": "research/lima.json"
+    },
+    {
+      "cityId": "geonames:2643743",
+      "name": "London",
+      "country": "United Kingdom",
+      "countryCode": "GB",
+      "centerLatLon": [
+        51.50853,
+        -0.12574
+      ],
+      "citySource": "https://www.geonames.org/2643743/london.html",
+      "researchOrder": 33,
+      "parcelStatus": "no_verified_sample_candidate_countrywide",
+      "sourceIds": [],
+      "researchFile": "research/london.json"
     }
   ]
 }

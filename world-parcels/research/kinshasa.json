@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:2314302",
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/",
+      "observation": "Ministry of Land Affairs site loaded (HTTP 200 HTML, 105,772 bytes); the only cadastre-related link found points to a pilot cadastre-digitisation document on a localhost URL, with no geodata service."
+    },
+    {
+      "url": "https://cadastre.gouv.cd/",
+      "observation": "Ministry cadastre site listed in search results; the direct request failed with a proxy/connection error, so it is unchecked."
+    },
+    {
+      "url": "https://cio-mag.com/rdc-vers-la-numerisation-du-secteur-cadastral/",
+      "observation": "Trade press describes the e-Foncier cadastre digitisation project (eProseed) starting with the Gombe district of Kinshasa; this is a plan, not an open parcel feed."
+    },
+    {
+      "url": "https://datacatalog.worldbank.org/search/dataset/0039581",
+      "observation": "World Bank catalog lists a Kinshasa communes shapefile (24 municipalities), which is administrative boundaries, not parcels."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "responseBytes": 105772,
+      "parcelRecordCount": null,
+      "assessment": "HTML only; no parcel list"
+    },
+    {
+      "url": "https://cadastre.gouv.cd/",
+      "method": "GET",
+      "httpStatus": null,
+      "error": "connection failed through the agent proxy",
+      "assessment": "unreachable; not a verdict"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search (Kinshasa parcels/cadastre feature services)",
+      "method": "GET",
+      "httpStatus": 200,
+      "parcelRecordCount": null,
+      "assessment": "no Kinshasa parcel layer found (results were unrelated or land cover/buildings)"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "e-Foncier digitisation is planned nationally, starting in Gombe",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "cadastre.gouv.cd could not be reached, so a portal may exist there. Existing records may be paper or access-controlled and not published as open geodata. Building or land-use layers on ArcGIS Online are not parcels.",
+  "nextStep": "Retry cadastre.gouv.cd and check whether the e-Foncier platform exposes a public map service; test a bounded Gombe polygon query if a service appears."
+}
