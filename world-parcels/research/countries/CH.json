@@ -18,7 +18,7 @@
  ],
  "requests": [
   {
-   "url": "https://api3.geo.admin.ch/rest/services/api/MapServer/identify?geometry=2683000,1248000&geometryType=esriGeometryPoint&layers=all:ch.swisstopo-vd.amtliche-vermessung&tolerance=0&mapExtent=2682900,1247900,2683100,1247100&imageDisplay=100,100,96&sr=2056&returnGeometry=true",
+   "url": "https://api3.geo.admin.ch/rest/services/api/MapServer/identify?geometry=2683000,1248000&geometryType=esriGeometryPoint&layers=all:ch.swisstopo-vd.amtliche-vermessung&tolerance=0&mapExtent=2682900,1247900,2683100,1248100&imageDisplay=100,100,96&sr=2056&returnGeometry=true",
    "method": "GET",
    "httpStatus": 200,
    "contentType": "application/json",
