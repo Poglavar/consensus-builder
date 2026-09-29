@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:88",
+  "queueRank": 88,
+  "name": "Islamabad",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "centerLatLon": [
+    33.6079057998337,
+    73.0621288185069
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://gismaps.pulse.gop.pk/arcgis/rest/services/Islamabad/CDA_GIS/MapServer",
+      "observation": "Search result lists a CDA_GIS MapServer (ownership records, cadastral maps, sectors, zones, ICT boundary); host could not be reached from this environment."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services",
+      "observation": "Sibling Punjab ArcGIS server with an Islamabad folder (empty in the anonymous listing) and Lahore, Rawalpindi, etc. folders."
+    },
+    {
+      "url": "https://cda.gov.pk/",
+      "observation": "Capital Development Authority site."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://gismaps.pulse.gop.pk/arcgis/rest/services/Islamabad/CDA_GIS/MapServer?f=json",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT rejected (502, twice); could not test"
+    },
+    {
+      "url": "https://gismaps.pulse.gop.pk/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT rejected (502)"
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "service directory; Islamabad folder listed but empty"
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/Islamabad/CDA_GIS/MapServer?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "JSON body error 499 Token Required"
+    },
+    {
+      "url": "https://lis.pulse.gop.pk/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "",
+      "assessment": "no ArcGIS REST at this path"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "CDA/ICT cadastral layers listed in a public search result",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The candidate host was blocked by the egress proxy, so it is untested (not a negative). The same-named service on the sibling Punjab host requires a token. Punjab sources would not cover ICT/Pakistan-wide.",
+  "nextStep": "Retry gismaps.pulse.gop.pk CDA_GIS from an unrestricted network; test a bounded query on the cadastral layer and check whether it needs a token."
+}

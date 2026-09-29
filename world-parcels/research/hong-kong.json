@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:90",
+  "queueRank": 90,
+  "name": "Tamar (Hong Kong)",
+  "country": "China, Hong Kong SAR",
+  "countryCode": "HK",
+  "centerLatLon": [
+    22.3163570872339,
+    114.182983761781
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_city_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "hk-landsd-lot-index-api",
+    "requestUrl": "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/iC1000/lot?bbox=837000,819400,837240,819600,EPSG:2326",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "text/xml; subtype=gml/3.1.1",
+    "spatialTestAreaLonLat": "bbox 837000,819400,837240,819600 in EPSG:2326 (HK1980 Grid), approx 114.181-114.184 E, 22.315-22.317 N near Tamar/Admiralty",
+    "parcelRecordCount": 2,
+    "recordListPath": "wfs:FeatureCollection/gml:featureMember",
+    "geometryType": "gml:Polygon",
+    "closedRings": true,
+    "idField": "landsd:lotid (cislotdisplayname e.g. KIL 11119 S.C)",
+    "responseFile": "hong-kong-parcel-response.json",
+    "pagination": "none; bbox limited to 750 m x 600 m; the documented example bbox (Kowloon) returned 33 lots"
+  },
+  "source": {
+    "sourceId": "hk-landsd-lot-index-api",
+    "name": "Lot Index API (iC1000 Digital Land Boundary Map)",
+    "operator": "Lands Department, Hong Kong SAR / CSDI",
+    "scope": "Hong Kong SAR lots (LOT, GLA, STT types)",
+    "endpoint": "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/iC1000/lot?bbox=minX,minY,maxX,maxY,EPSG:2326",
+    "method": "GET",
+    "responseFormat": "GML 3.1.1 (WFS-style FeatureCollection)",
+    "crs": "EPSG:2326 HK1980 Grid",
+    "reuseStatus": "Documentation requires Lands Department logo/copyright attribution and forbids large request volumes; full terms not read"
+  },
+  "portalsFound": [
+    {
+      "url": "https://p1hosting.csdi.gov.hk/csdi-webpage/apidoc/LotIndexAPI",
+      "observation": "CSDI API doc for the Lot Index API: bbox in HK1980, max extent 750 m x 600 m, GML output, attribution required."
+    },
+    {
+      "url": "https://data.gov.hk/en-data/dataset/hk-landsd-openmap-development-hkms-digital-c1k",
+      "observation": "iC1000 Digital Land Boundary Map on DATA.GOV.HK; bulk download in FGDB/DWG/GML."
+    },
+    {
+      "url": "https://portal.csdi.gov.hk/csdi-webpage/dataset/landsd_rcd_1637223499176_68379",
+      "observation": "CSDI catalogue entry for iC1000."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/iC1000/lot?bbox=839363,816910,839603,817103,EPSG:2326",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.1.1",
+      "assessment": "documentation example (Kowloon): 33 lot features",
+      "parcelRecordCount": 33
+    },
+    {
+      "url": "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/iC1000/lot?bbox=837000,819400,837240,819600,EPSG:2326",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.1.1",
+      "assessment": "Tamar area sample: 2 lot polygons with closed rings",
+      "parcelRecordCount": 2
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Hong Kong lot boundaries (approximate, per Lands Department; must be verified by field survey)",
+    "verifiedOpenScope": "two Tamar/Admiralty lots plus a 33-lot Kowloon example",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Coverage of the whole territory, update frequency and full terms are unverified. Boundaries are stated as approximate. The API is limited to 750x600 m windows, so viewport loading needs tiling and rate limiting.",
+  "nextStep": "Write a GML/HK1980 to WGS84 adapter (needs an EPSG:2326 transform) with tiled requests and required attribution; read the Lands Department terms."
+}

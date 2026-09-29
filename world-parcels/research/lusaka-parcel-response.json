@@ -1,0 +1,173 @@
+{
+ "objectIdFieldName": "FID",
+ "uniqueIdField": {
+  "name": "FID",
+  "isSystemMaintained": true
+ },
+ "globalIdFieldName": "GlobalID",
+ "geometryProperties": {
+  "shapeAreaFieldName": "Shape__Area",
+  "shapeLengthFieldName": "Shape__Length",
+  "units": "esriMeters"
+ },
+ "serverGens": {
+  "minServerGen": 5185,
+  "serverGen": 5185
+ },
+ "geometryType": "esriGeometryPolygon",
+ "spatialReference": {
+  "wkid": 4326,
+  "latestWkid": 4326
+ },
+ "fields": [
+  {
+   "name": "FID",
+   "type": "esriFieldTypeOID",
+   "alias": "FID",
+   "sqlType": "sqlTypeInteger",
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "Id",
+   "type": "esriFieldTypeInteger",
+   "alias": "Id",
+   "sqlType": "sqlTypeInteger",
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "PCNumber",
+   "type": "esriFieldTypeInteger",
+   "alias": "PCNumber",
+   "sqlType": "sqlTypeInteger",
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "Settlement",
+   "type": "esriFieldTypeString",
+   "alias": "Settlement",
+   "sqlType": "sqlTypeNVarchar",
+   "length": 20,
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "Verified",
+   "type": "esriFieldTypeString",
+   "alias": "Verified",
+   "sqlType": "sqlTypeNVarchar",
+   "length": 3,
+   "domain": null,
+   "defaultValue": null
+  }
+ ],
+ "features": [
+  {
+   "attributes": {
+    "FID": 2,
+    "Id": null,
+    "PCNumber": null,
+    "Settlement": null,
+    "Verified": null
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       28.3227043813756,
+       -15.3657303712448
+      ],
+      [
+       28.3226701832106,
+       -15.3659689601382
+      ],
+      [
+       28.3225052273563,
+       -15.36595990799
+      ],
+      [
+       28.3225716120294,
+       -15.3657316644103
+      ],
+      [
+       28.3227043813756,
+       -15.3657303712448
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "attributes": {
+    "FID": 3,
+    "Id": null,
+    "PCNumber": null,
+    "Settlement": null,
+    "Verified": null
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       28.3272855943727,
+       -15.3636333312384
+      ],
+      [
+       28.3274331158684,
+       -15.3636488493795
+      ],
+      [
+       28.3274170226143,
+       -15.3638247215654
+      ],
+      [
+       28.3272802299546,
+       -15.3638247215654
+      ],
+      [
+       28.3272855943727,
+       -15.3636333312384
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "attributes": {
+    "FID": 4,
+    "Id": null,
+    "PCNumber": null,
+    "Settlement": null,
+    "Verified": null
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       28.3308059937044,
+       -15.3655290680953
+      ],
+      [
+       28.3309615618272,
+       -15.3655678630933
+      ],
+      [
+       28.330924010901,
+       -15.3658264962292
+      ],
+      [
+       28.3307496673151,
+       -15.3657683038016
+      ],
+      [
+       28.3308059937044,
+       -15.3655290680953
+      ]
+     ]
+    ]
+   }
+  }
+ ]
+}
