@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:198",
+  "queueRank": 198,
+  "name": "Cotonou",
+  "country": "Benin",
+  "countryCode": "BJ",
+  "centerLatLon": [
+    6.38646680667236,
+    2.3895186609943
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "bj-andf-efoncier-geoserver",
+    "requestUrl": "https://geoserver.andf.bj/geoserver/efb/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=efb:efb_parcel&maxFeatures=3&outputFormat=application/json&bbox=2.385,6.383,2.393,6.390,EPSG:4326",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      2.385,
+      6.383,
+      2.393,
+      6.39
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "Polygon (GeoJSON)",
+    "closedRings": true,
+    "idField": "nup (numero unique de parcelle); also spatial_unit_oid_local_id, local_parcel_identification",
+    "responseFile": "cotonou-parcel-response.json",
+    "pagination": "WFS maxFeatures=3; totalFeatures=1390 in the test box (server-side count)"
+  },
+  "source": {
+    "sourceId": "bj-andf-efoncier-geoserver",
+    "name": "e-Foncier GeoServer, workspace efb, layer efb_parcel (Cadastre National du Benin)",
+    "operator": "ANDF (Agence Nationale du Domaine et du Foncier), Benin",
+    "scope": "digital cadastre parcels; sampled in Cotonou (Littoral) and, with 1 feature, near Seme-Podji (Oueme); extent of national coverage unverified",
+    "endpoint": "https://geoserver.andf.bj/geoserver/efb/wfs",
+    "method": "GET OGC WFS 1.0.0 GetFeature (outputFormat=application/json); endpoint found in the config of the public web app https://cadastre.andf.bj/",
+    "responseFormat": "GeoJSON",
+    "crs": "EPSG:32631 (WGS84 / UTM 31N); bbox accepted in EPSG:4326",
+    "reuseStatus": "GeoServer capabilities list Fees NONE / AccessConstraints NONE, which is a default, not a licence; reuse terms unverified"
+  },
+  "portalsFound": [
+    {
+      "url": "https://cadastre.andf.bj/",
+      "observation": "Cadastre National du Benin viewer (Angular app); its bundle names GEOSERVER_URL https://geoserver.andf.bj, workspace efb, layers efb:efb_parcel and efb:parcel_zone_declaree."
+    },
+    {
+      "url": "https://andf.bj/",
+      "observation": "ANDF institutional site (HTTP 200)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geoserver.andf.bj/geoserver/efb/ows?service=WFS&version=1.0.0&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/xml",
+      "assessment": "lists efb:efb_parcel_prod, efb:parcel_zone_declaree, efb:efb_parcel; not counted"
+    },
+    {
+      "url": "https://geoserver.andf.bj/geoserver/efb/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=efb:efb_parcel&maxFeatures=3&outputFormat=application/json&bbox=2.385,6.383,2.393,6.390,EPSG:4326",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "parcelRecordCount": 3,
+      "assessment": "3 closed parcel polygons in Cotonou (commune COTONOU, quartier Midedji); attributes contain no owner names (party_exists boolean only)"
+    },
+    {
+      "url": "same layer, bbox 2.60,6.37,2.62,6.39 EPSG:4326, maxFeatures=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "parcelRecordCount": 1,
+      "assessment": "1 parcel in commune SEME-PODJI, totalFeatures=5592; shows coverage beyond Cotonou"
+    },
+    {
+      "url": "https://geoserver.andf.bj/geoserver/efb/wfs?...&version=1.1.0&resultType=hits",
+      "method": "GET",
+      "httpStatus": null,
+      "assessment": "timed out after 40 s (full-layer count not obtained)"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Benin national digital cadastre (per viewer name); not confirmed by an official statement read here",
+    "verifiedOpenScope": "three parcels in Cotonou plus one in Seme-Podji",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Only two small areas sampled; completeness of the Cotonou parcel fabric, update dates and licence are unknown. The layer appears to be the app's own backend, so stability of access for third parties is not assured. Other layers (efb_parcel_prod, view_parcel) not compared.",
+  "nextStep": "Confirm terms with ANDF, sample further Cotonou districts and a second region (e.g. Parakou) before a Benin-wide claim."
+}

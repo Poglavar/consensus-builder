@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "DE",
+  "country": "Germany",
+  "checkedAt": "2026-09-29",
+  "status": "subnational_only",
+  "cadastreAuthority": "No single national service: ALKIS cadastre is run by the 16 Laender surveying agencies (AdV coordinates; BKG federal geodata centre does not publish parcels)",
+  "portalsFound": [
+    {
+      "url": "https://gdi.berlin.de/services/wfs/alkis_flurstuecke",
+      "observation": "Berlin ALKIS Flurstuecke WFS (verified, see research/berlin.json)"
+    },
+    {
+      "url": "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht",
+      "observation": "NRW ALKIS-vereinfacht WFS 2.0; open, verified"
+    },
+    {
+      "url": "https://geodienste.bkg.bund.de/",
+      "observation": "BKG federal services; unreachable (502)"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?service=WFS&request=GetCapabilities",
+      "method": "capabilities",
+      "httpStatus": "GET",
+      "contentType": 200,
+      "assessment": "text/xml"
+    },
+    {
+      "url": "...GetFeature&typeNames=ave:Flurstueck&outputFormat=application/json&bbox=...EPSG:4326",
+      "method": "invalid parameter (JSON/axis order not accepted)",
+      "httpStatus": "GET",
+      "contentType": 400,
+      "assessment": "text/xml"
+    },
+    {
+      "url": "...GetFeature&typeNames=ave:Flurstueck&count=2&srsName=EPSG:25832&bbox=356000,5645000,356150,5645100,EPSG:25832",
+      "method": "numberReturned=2 Flurstueck polygons (Cologne area)",
+      "httpStatus": "GET",
+      "contentType": 200,
+      "assessment": "application/gml+xml; version=3.2.1"
+    }
+  ],
+  "verifiedParcelResponse": {
+    "sourceId": "de-nw-alkis-vereinfacht-wfs",
+    "requestUrl": "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave:Flurstueck&count=2&srsName=EPSG:25832&bbox=356000,5645000,356150,5645100,EPSG:25832",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/gml+xml; version=3.2.1",
+    "spatialTestAreaLonLat": "EPSG:25832 356000,5645000-356150,5645100 (Cologne)",
+    "parcelRecordCount": 2,
+    "recordListPath": "wfs:member",
+    "geometryType": "GML 3.2 surface (Polygon)",
+    "closedRings": null,
+    "idField": "not extracted (saved response truncated to first 4000 chars)",
+    "responseFile": "countries/DE-nrw-parcel-response.gml",
+    "pagination": "WFS 2.0 count/startIndex",
+    "regionSampled": "Nordrhein-Westfalen (Cologne); Berlin via research/berlin.json"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Land-level open WFS (Berlin, NRW verified); other Laender vary (some open, some paid/restricted)",
+    "regionsVerified": [
+      "Berlin",
+      "Nordrhein-Westfalen"
+    ],
+    "nationwideVerified": false
+  },
+  "accessModel": "open",
+  "remainingUncertainty": "Different schemas per Land (Berlin GeoServer vs NRW AAA-vereinfacht); no national parcel service found; other 14 Laender not probed. Licences not read.",
+  "nextStep": "Probe remaining Laender (Hamburg, Brandenburg, Bavaria paid, etc.) individually."
+}

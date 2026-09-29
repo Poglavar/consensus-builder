@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "GE",
+  "country": "Georgia",
+  "checkedAt": "2026-09-29",
+  "status": "national_cadastre_viewer_only",
+  "cadastreAuthority": "National Agency of Public Registry (NAPR, Ministry of Justice)",
+  "portalsFound": [
+    {
+      "url": "https://naprweb.reestri.gov.ge/",
+      "observation": "NAPR web portal (Angular app) for registry/cadastral searches; loads"
+    },
+    {
+      "url": "https://maps.napr.gov.ge/",
+      "observation": "cadastral map host; connection reset / cert name mismatch"
+    },
+    {
+      "url": "https://maps.gov.ge/",
+      "observation": "302; /map returned Access Denied (bot-blocked)"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://naprweb.reestri.gov.ge/",
+      "method": "portal app shell only",
+      "httpStatus": "GET",
+      "contentType": 200,
+      "assessment": "text/html"
+    },
+    {
+      "url": "https://maps.gov.ge/map",
+      "method": "Access Denied page",
+      "httpStatus": "GET",
+      "contentType": 200,
+      "assessment": "text/html"
+    },
+    {
+      "url": "https://maps.napr.gov.ge/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": "000",
+      "contentType": null,
+      "assessment": "TLS hostname mismatch; not bypassed"
+    },
+    {
+      "url": "https://api.napr.gov.ge/",
+      "method": "Access Denied page",
+      "httpStatus": "GET",
+      "contentType": 200,
+      "assessment": "text/html"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "country-wide public cadastral map/registry",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "viewer-only",
+  "remainingUncertainty": "Parcel API or ArcGIS layer behind the public map not reachable/inspected; may exist.",
+  "nextStep": "Inspect the maps.napr.gov.ge network calls from a browser; try alternate hosts."
+}

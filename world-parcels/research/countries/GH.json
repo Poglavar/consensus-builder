@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "GH",
+  "country": "Ghana",
+  "checkedAt": "2026-09-29",
+  "status": "national_cadastre_credentialed_or_paid",
+  "cadastreAuthority": "Lands Commission (Survey and Mapping Division / Land Registration via GELIS)",
+  "portalsFound": [
+    {
+      "url": "https://onlineservices.lc.gov.gh/",
+      "observation": "account-based online services (from research/accra.json)"
+    },
+    {
+      "url": "https://www.lc.gov.gh/",
+      "observation": "Lands Commission site loads; no open parcel service listed"
+    },
+    {
+      "url": "https://data.gov.gh/",
+      "observation": "open data portal; connection reset"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.lc.gov.gh/",
+      "method": "institutional site only",
+      "httpStatus": "GET",
+      "contentType": 200,
+      "assessment": "text/html"
+    },
+    {
+      "url": "https://data.gov.gh/",
+      "method": "GET",
+      "httpStatus": "000",
+      "contentType": null,
+      "assessment": "connection reset"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Lands Commission land records; digital parcel capture partial",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "registration",
+  "remainingUncertainty": "Search/registration portal not tested behind login; open-data host was unreachable.",
+  "nextStep": "Retry data.gov.gh; check if GELIS offers public map search."
+}

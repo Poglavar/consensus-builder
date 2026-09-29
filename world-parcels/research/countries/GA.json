@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "GA",
+  "country": "Gabon",
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "cadastreAuthority": "Direction Generale de la Conservation Fonciere et des Domaines / Cadastre (unconfirmed)",
+  "portalsFound": [
+    {
+      "url": "https://www.gabon.ga/",
+      "observation": "government host unreachable (proxy 502)"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.gabon.ga/",
+      "method": "GET",
+      "httpStatus": "000",
+      "contentType": null,
+      "assessment": "CONNECT tunnel failed 502; unreachable"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "unknown",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "unknown",
+  "remainingUncertainty": "Very little checked.",
+  "nextStep": "Retry; search for Gabon cadastre/fonciere portal and Libreville sources."
+}

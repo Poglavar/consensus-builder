@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "GI",
+  "country": "Gibraltar",
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "cadastreAuthority": "Land and Property Services Limited / Government of Gibraltar (Land Registry, Town Planning GIS)",
+  "portalsFound": [
+    {
+      "url": "https://www.gibraltar.gov.gi/public-services/land-property-services-limited",
+      "observation": "LPS page linked from government site"
+    },
+    {
+      "url": "https://www.gis.gov.gi/",
+      "observation": "GIS host unreachable (502)"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.gibraltar.gov.gi/",
+      "method": "government home page",
+      "httpStatus": "GET",
+      "contentType": 200,
+      "assessment": "text/html"
+    },
+    {
+      "url": "https://www.gis.gov.gi/",
+      "method": "GET",
+      "httpStatus": "000",
+      "contentType": null,
+      "assessment": "tunnel 502"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "unknown",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "unknown",
+  "remainingUncertainty": "Territory is tiny; GIS/Land Registry viewer not inspected.",
+  "nextStep": "Retry GIS host; read LPS page for map/search services."
+}
