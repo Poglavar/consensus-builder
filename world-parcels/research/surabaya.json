@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:54",
+  "queueRank": 54,
+  "name": "Surabaya",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "centerLatLon": [
+    -7.38052698284732,
+    112.687468920357
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "id-big-satupeta-hakmilik-5000-jawa-timur",
+    "requestUrl": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/12/query?where=1%3D1&geometry=112.7290%2C-7.2750%2C112.7310%2C-7.2735&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid%2Ckecamatan%2Ckelurahan%2Ctipehak%2Cnib&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      112.729,
+      -7.275,
+      112.731,
+      -7.2735
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "nib (Nomor Identifikasi Bidang; objectid is the ArcGIS OID)",
+    "responseFile": "surabaya-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true"
+  },
+  "source": {
+    "sourceId": "id-big-satupeta-hakmilik-5000-jawa-timur",
+    "name": "Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) Skala 1:5000 - Jawa Timur (BIG Satu Peta PUBLIK/PERIZINAN_DAN_PERTANAHAN layer 12)",
+    "operator": "Badan Informasi Geospasial (Satu Peta); land data of ATR/BPN as displayed on the service",
+    "scope": "East Java province layer, but sampled coverage is partial (see coverageAssessment)",
+    "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/12",
+    "method": "ArcGIS REST MapServer query",
+    "responseFormat": "Esri JSON",
+    "crs": "EPSG:4326",
+    "reuseStatus": "unreviewed; the layer carries no copyright text and no licence was read"
+  },
+  "portalsFound": [
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer",
+      "observation": "Public MapServer; layer group 10 'Hak Milik Skala 1:5000' has per-province polygon sublayers including Jawa Timur (layer 12); returnCountOnly reports 354,592 features for the layer."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/",
+      "observation": "Official ATR/BPN BHUMI map app loads (HTML shell). Prior Jakarta research found parcel retrieval goes through a token-gated internal API, so it is not treated as open."
+    },
+    {
+      "url": "https://gis.surabaya.go.id/",
+      "observation": "Surabaya city GIS host; no HTTP response through the agent proxy (connection reset or tunnel failure)."
+    },
+    {
+      "url": "https://data.surabaya.go.id/",
+      "observation": "Surabaya open-data host; no HTTP response through the agent proxy (connection reset or tunnel failure)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/12?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain",
+      "assessment": "layer metadata: polygon layer, fields objectid,kecamatan,kelurahan,tipehak,nib; not counted as verification"
+    },
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/12/query (bbox 112.6865,-7.3815,112.6885,-7.3800 around the UN city centre)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "0 features; the UN centre point falls south of the city proper near the Sidoarjo border"
+    },
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/12/query (bbox 112.74,-7.27,112.76,-7.25 and 112.68,-7.39,112.70,-7.37)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "0 features in each"
+    },
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/12/query (bbox 112.6,-7.5,113,-7.0, count 3)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "3 features, all kecamatan TEGALSARI (Surabaya)"
+    },
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/12/query?where=1%3D1&geometry=112.7290%2C-7.2750%2C112.7310%2C-7.2735&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid%2Ckecamatan%2Ckelurahan%2Ctipehak%2Cnib&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "3 closed-ring polygons with nib, tipehak, kelurahan WONOREJO: verified sample",
+      "parcelRecordCount": 3,
+      "responseFile": "surabaya-parcel-response.json"
+    },
+    {
+      "url": "https://gis.surabaya.go.id/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    },
+    {
+      "url": "https://data.surabaya.go.id/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Land-use and ownership (Hak Milik) parcels at 1:5000 for East Java province",
+    "verifiedOpenScope": "three parcels in Tegalsari kecamatan, Surabaya; zero features at the UN city-centre point and two other test boxes; the layer's kecamatan list includes some Surabaya districts (Tegalsari, Rungkut, Sukolilo, Wonokromo, Sawahan, Benowo, Bulak, Tambak) but not verified spatially",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Coverage of Surabaya is patchy and appears limited to titled Hak Milik parcels; the UN centre coordinate returned nothing. Licence, currency and completeness are unknown, and the layer's origin (ATR/BPN) versus BIG publication terms were not read.",
+  "nextStep": "Map the layer's kecamatan extents against Surabaya's 31 districts; read the Satu Peta terms; check whether other Jawa Timur tenure types (HGB etc.) are published elsewhere."
+}

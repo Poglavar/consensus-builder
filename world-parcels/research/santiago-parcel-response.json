@@ -1,0 +1,235 @@
+{
+ "objectIdFieldName": "FID",
+ "uniqueIdField": {
+  "name": "FID",
+  "isSystemMaintained": true
+ },
+ "globalIdFieldName": "",
+ "geometryProperties": {
+  "shapeAreaFieldName": "Shape__Area",
+  "shapeLengthFieldName": "Shape__Length",
+  "units": "esriMeters"
+ },
+ "geometryType": "esriGeometryPolygon",
+ "spatialReference": {
+  "wkid": 4326,
+  "latestWkid": 4326
+ },
+ "fields": [
+  {
+   "name": "FID",
+   "type": "esriFieldTypeOID",
+   "alias": "FID",
+   "sqlType": "sqlTypeInteger",
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "objectid",
+   "type": "esriFieldTypeInteger",
+   "alias": "objectid",
+   "sqlType": "sqlTypeInteger",
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "nom_com",
+   "type": "esriFieldTypeString",
+   "alias": "nom_com",
+   "sqlType": "sqlTypeNVarchar",
+   "length": 254,
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "sup_ha",
+   "type": "esriFieldTypeDouble",
+   "alias": "sup_ha",
+   "sqlType": "sqlTypeFloat",
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "sup_m2",
+   "type": "esriFieldTypeDouble",
+   "alias": "sup_m2",
+   "sqlType": "sqlTypeFloat",
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "Shape__Area",
+   "type": "esriFieldTypeDouble",
+   "alias": "Shape__Area",
+   "sqlType": "sqlTypeFloat",
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "Shape__Length",
+   "type": "esriFieldTypeDouble",
+   "alias": "Shape__Length",
+   "sqlType": "sqlTypeFloat",
+   "domain": null,
+   "defaultValue": null
+  }
+ ],
+ "exceededTransferLimit": true,
+ "features": [
+  {
+   "attributes": {
+    "FID": 570270,
+    "objectid": 571287,
+    "nom_com": "SAN MIGUEL",
+    "sup_ha": 0.052,
+    "sup_m2": 5.1953,
+    "Shape__Area": 749.12109375,
+    "Shape__Length": 126.04420817008905
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       -70.6526938797657,
+       -33.4906902777757
+      ],
+      [
+       -70.6526938912285,
+       -33.4906903145974
+      ],
+      [
+       -70.6526944055665,
+       -33.4906920067624
+      ],
+      [
+       -70.6527977784702,
+       -33.4910318596505
+      ],
+      [
+       -70.6527990166995,
+       -33.4910316014439
+      ],
+      [
+       -70.652935112037,
+       -33.491003252415
+      ],
+      [
+       -70.6528337591511,
+       -33.4906616024294
+      ],
+      [
+       -70.6528332565955,
+       -33.4906599074023
+      ],
+      [
+       -70.6526938797657,
+       -33.4906902777757
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "attributes": {
+    "FID": 570306,
+    "objectid": 571323,
+    "nom_com": "SAN MIGUEL",
+    "sup_ha": 0.051,
+    "sup_m2": 5.113,
+    "Shape__Area": 737.240234375,
+    "Shape__Length": 120.04076798090719
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       -70.6542570549302,
+       -33.4909191736223
+      ],
+      [
+       -70.6542778785456,
+       -33.4909898686719
+      ],
+      [
+       -70.6542783560695,
+       -33.4909914909794
+      ],
+      [
+       -70.6542957919542,
+       -33.4910507790699
+      ],
+      [
+       -70.6542970504862,
+       -33.4910505133627
+      ],
+      [
+       -70.6546686265194,
+       -33.4909721025236
+      ],
+      [
+       -70.6546333173408,
+       -33.4908546586642
+      ],
+      [
+       -70.6546328221315,
+       -33.4908530122452
+      ],
+      [
+       -70.6542583250267,
+       -33.4909189501466
+      ],
+      [
+       -70.6542570549302,
+       -33.4909191736223
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "attributes": {
+    "FID": 570307,
+    "objectid": 571324,
+    "nom_com": "SAN MIGUEL",
+    "sup_ha": 0.044,
+    "sup_m2": 4.4183,
+    "Shape__Area": 637.0859375,
+    "Shape__Length": 111.42837709511957
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       -70.6538961911994,
+       -33.4909326057905
+      ],
+      [
+       -70.6539263542563,
+       -33.4910444244954
+      ],
+      [
+       -70.6542778785456,
+       -33.4909898686719
+      ],
+      [
+       -70.6542570549302,
+       -33.4909191736223
+      ],
+      [
+       -70.6542422360333,
+       -33.4908687361971
+      ],
+      [
+       -70.6542417469617,
+       -33.4908670725598
+      ],
+      [
+       -70.6538961911994,
+       -33.4909326057905
+      ]
+     ]
+    ]
+   }
+  }
+ ]
+}

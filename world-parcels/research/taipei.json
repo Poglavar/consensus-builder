@@ -1,0 +1,76 @@
+{
+  "cityId": "queue:39",
+  "queueRank": 39,
+  "name": "Taipei",
+  "country": "China, Taiwan Province of China",
+  "countryCode": "TW",
+  "centerLatLon": [
+    25.0275,
+    121.4793
+  ],
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://maps.nlsc.gov.tw/S09SOA/pro/Wfs_ajax_list.jsp",
+      "observation": "NLSC (Ministry of the Interior National Land Surveying and Mapping Center) WFS list includes the cadastral layer WFS:CADAS_MERGE (地籍圖) alongside open layers such as WFS:VILLAGE_NLSC."
+    },
+    {
+      "url": "https://maps.nlsc.gov.tw/S09SOA/pro/Wfs_ajax_spec.jsp",
+      "observation": "Spec page states the cadastral, e-map and land-use WFS are for approved government units; point/box/circle/polygon filters, max 1000m x 1000m; only the village boundary layer needs no application."
+    },
+    {
+      "url": "https://www.nlsc.gov.tw/en/cp.aspx?n=2148",
+      "observation": "NLSC Cadastral Maps page; digital cadastral maps (DXF/SHP) are sold/issued via the Taiwan MAP Store with member login (secondary summary via search)."
+    },
+    {
+      "url": "https://data.gov.tw/",
+      "observation": "National open data portal, reachable; no anonymous cadastral parcel service located."
+    },
+    {
+      "url": "https://wms.nlsc.gov.tw/wms",
+      "observation": "NLSC WMS capabilities list LANDSECT (land section outlines) and LandOffice, not parcel polygons."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://wfs.nlsc.gov.tw/WFS?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&TYPENAME=WFS:CADAS_MERGE&SRSNAME=EPSG:4326&FILTER=box 121.5150,25.0400 121.5165,25.0410",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": ";charset=UTF-8",
+      "responseBytes": 17,
+      "assessment": "body was 'Permission Denied'; no parcels"
+    },
+    {
+      "url": "https://wms.nlsc.gov.tw/wms?SERVICE=WMS&REQUEST=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "assessment": "capabilities only; no parcel polygon layer seen among land-related names"
+    },
+    {
+      "url": "https://maps.nlsc.gov.tw/S09SOA/pro/Wfs_ajax_list.jsp",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "documentation; identifies CADAS_MERGE"
+    },
+    {
+      "url": "https://data.taipei/api/v1/dataset?q=...",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html",
+      "assessment": "guessed API path invalid"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Taiwan-wide cadastral map WFS (restricted)",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Cadastral WFS exists but is credentialed for government units; a municipal open-data feed (Taipei/New Taipei GIS) or a permitted application route was not verified. The queue centre point lies in New Taipei rather than Taipei City proper.",
+  "nextStep": "Check Taipei and New Taipei open-data catalogs for a parcel (地籍) layer, and the NLSC application route/terms; recheck if Taiwan MAP Store offers anonymous GeoJSON.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-09-29"
+}

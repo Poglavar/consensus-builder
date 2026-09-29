@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:115",
+  "queueRank": 115,
+  "name": "Houston",
+  "country": "United States of America",
+  "countryCode": "US",
+  "centerLatLon": [
+    29.7463622221773,
+    -95.46766651668
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_county_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "us-tx-harris-hcad-parcels",
+    "requestUrl": "https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0/query?where=1%3D1&geometry=%7B%22xmin%22%3A-95.46867%2C%22ymin%22%3A29.74556%2C%22xmax%22%3A-95.46667%2C%22ymax%22%3A29.74716%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CHCAD_NUM%2CLOWPARCELID%2Cparcel_type%2CAcreage%2Ctax_year&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      -95.46867,
+      29.74556,
+      -95.46667,
+      29.74716
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "HCAD_NUM (also LOWPARCELID)",
+    "responseFile": "houston-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true; maxRecordCount=1000"
+  },
+  "source": {
+    "sourceId": "us-tx-harris-hcad-parcels",
+    "name": "HCAD Parcels (Harris County Appraisal District GIS)",
+    "operator": "Harris County Appraisal District",
+    "scope": "Harris County, Texas (layer copyright HCAD GIS Division)",
+    "endpoint": "https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0",
+    "method": "ArcGIS REST MapServer query",
+    "responseFormat": "JSON, geoJSON",
+    "crs": "native EPSG:2278 (wkid 102740); requested outSR=4326",
+    "reuseStatus": "Licence terms not read; layer also exposes owner names and mailing addresses, which were excluded from the saved reply via outFields."
+  },
+  "portalsFound": [
+    {
+      "url": "https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer",
+      "observation": "Public anonymous MapServer, layer 0 'HCAD Parcels' (Map,Query,Data), polygon delineation of property boundary; copyright HCAD GIS Division."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "layer description only; not counted as verification"
+    },
+    {
+      "url": "https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0/query?where=1%3D1&geometry=%7B%22xmin%22%3A-95.46867%2C%22ymin%22%3A29.74556%2C%22xmax%22%3A-95.46667%2C%22ymax%22%3A29.74716%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CHCAD_NUM%2CLOWPARCELID%2Cparcel_type%2CAcreage%2Ctax_year&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "parcelRecordCount": 3,
+      "assessment": "nonempty closed polygon parcels near the city centre; verified"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Harris County appraisal parcels; the Houston agglomeration also extends into Fort Bend, Montgomery, Brazoria, Galveston and other counties not covered by this source",
+    "verifiedOpenScope": "three parcels near the Houston point in a bounded sample",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Terms of use not reviewed; layer is an appraisal-district parcel map, not necessarily survey-grade. Neighbouring counties need their own sources. A browser-like User-Agent was used for requests.",
+  "nextStep": "Review HCAD data terms; test Fort Bend/Montgomery county parcel services for the rest of the agglomeration."
+}

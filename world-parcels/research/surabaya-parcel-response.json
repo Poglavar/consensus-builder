@@ -1,0 +1,190 @@
+{
+ "displayFieldName": "kecamatan",
+ "fieldAliases": {
+  "objectid": "objectid",
+  "kecamatan": "kecamatan",
+  "kelurahan": "kelurahan",
+  "tipehak": "tipehak",
+  "nib": "nib"
+ },
+ "geometryType": "esriGeometryPolygon",
+ "spatialReference": {
+  "wkid": 4326,
+  "latestWkid": 4326
+ },
+ "fields": [
+  {
+   "name": "objectid",
+   "type": "esriFieldTypeOID",
+   "alias": "objectid"
+  },
+  {
+   "name": "kecamatan",
+   "type": "esriFieldTypeString",
+   "alias": "kecamatan",
+   "length": 254
+  },
+  {
+   "name": "kelurahan",
+   "type": "esriFieldTypeString",
+   "alias": "kelurahan",
+   "length": 254
+  },
+  {
+   "name": "tipehak",
+   "type": "esriFieldTypeString",
+   "alias": "tipehak",
+   "length": 254
+  },
+  {
+   "name": "nib",
+   "type": "esriFieldTypeString",
+   "alias": "nib",
+   "length": 254
+  }
+ ],
+ "features": [
+  {
+   "attributes": {
+    "objectid": 2,
+    "kecamatan": "TEGALSARI",
+    "kelurahan": "WONOREJO",
+    "tipehak": "Hak Milik",
+    "nib": "00196"
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       112.729972567,
+       -7.274447628999951
+      ],
+      [
+       112.72997806500007,
+       -7.274421178999944
+      ],
+      [
+       112.72997944100007,
+       -7.274414559999968
+      ],
+      [
+       112.73005730700004,
+       -7.274429372999975
+      ],
+      [
+       112.730051247,
+       -7.274462507999942
+      ],
+      [
+       112.729972567,
+       -7.274447628999951
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "attributes": {
+    "objectid": 3,
+    "kecamatan": "TEGALSARI",
+    "kelurahan": "WONOREJO",
+    "tipehak": "Hak Milik",
+    "nib": "00194"
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       112.72955437000007,
+       -7.274317589999953
+      ],
+      [
+       112.72949253700006,
+       -7.274540019999961
+      ],
+      [
+       112.72946422300004,
+       -7.274531993999972
+      ],
+      [
+       112.7294531660001,
+       -7.274575303999939
+      ],
+      [
+       112.7293987490001,
+       -7.274560923999957
+      ],
+      [
+       112.72948046400006,
+       -7.274325369999929
+      ],
+      [
+       112.72948791400006,
+       -7.274303890999931
+      ],
+      [
+       112.72955437000007,
+       -7.274317589999953
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "attributes": {
+    "objectid": 4,
+    "kecamatan": "TEGALSARI",
+    "kelurahan": "WONOREJO",
+    "tipehak": "Kosong",
+    "nib": "00188"
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       112.73096864700005,
+       -7.274365658999955
+      ],
+      [
+       112.7309504210001,
+       -7.274458384999946
+      ],
+      [
+       112.73090174300012,
+       -7.274449662999928
+      ],
+      [
+       112.73093003500003,
+       -7.27430699599995
+      ],
+      [
+       112.73093913900004,
+       -7.2742608689999315
+      ],
+      [
+       112.73094091000007,
+       -7.274261256999978
+      ],
+      [
+       112.73098094000011,
+       -7.27427001999996
+      ],
+      [
+       112.73097777400005,
+       -7.274286545999928
+      ],
+      [
+       112.73098396000012,
+       -7.274287755999978
+      ],
+      [
+       112.73096864700005,
+       -7.274365658999955
+      ]
+     ]
+    ]
+   }
+  }
+ ],
+ "exceededTransferLimit": true
+}
