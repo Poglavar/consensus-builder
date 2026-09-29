@@ -1,0 +1,64 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MO",
+ "country": "China, Macao SAR",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Direcção dos Serviços de Solos e Construção Urbana (DSSCU / DSCC)",
+ "portalsFound": [
+  {
+   "url": "https://www.dscc.gov.mo/",
+   "observation": "Redirects to a generic redirect page (site moved; not followed to a working cadastre viewer)."
+  },
+  {
+   "url": "https://data.gov.mo/",
+   "observation": "Open data portal reachable; no cadastre parcel dataset found via search page."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.dscc.gov.mo/",
+   "method": "GET",
+   "httpStatus": 302,
+   "contentType": "",
+   "assessment": "redirect to redirect.html"
+  },
+  {
+   "url": "https://www.dscc.gov.mo/CadastralMap/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "redirect page only"
+  },
+  {
+   "url": "https://open.dscc.gov.mo/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable"
+  },
+  {
+   "url": "https://www.macaugis.gov.mo/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable"
+  },
+  {
+   "url": "https://data.gov.mo/Search?keyword=cadastre",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "JS search page, no data in HTML"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Macao cadastre held by DSSCU; public access unverified",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Authority site redirected/unreachable; not proof of absence.",
+ "nextStep": "Find new DSSCU domain and its cadastral map/WFS; check data.gov.mo API."
+}

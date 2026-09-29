@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "HR",
+  "country": "Croatia",
+  "checkedAt": "2026-09-29",
+  "status": "national_cadastre_credentialed_or_paid",
+  "cadastreAuthority": "State Geodetic Administration (DGU) and Ministry of Justice, via the joint land registry and cadastre information system (ZIS / Uredjena zemlja)",
+  "portalsFound": [
+    {
+      "url": "https://oss.uredjenazemlja.hr/public/",
+      "observation": "Public ZIS application (Angular SPA) loads HTTP 200; viewer."
+    },
+    {
+      "url": "https://oss.uredjenazemlja.hr/OssWebServices/wfs",
+      "observation": "National cadastre WFS 2.0.0 GetCapabilities is public (HTTP 200), listing oss:BZP_CESTICE (parcels), BZP_ZGRADE, BZP_MEDJE_CESTICA, jis:CESTICE and related; GetFeature requires a token."
+    },
+    {
+      "url": "https://oss.uredjenazemlja.hr/OssWebServices/wms",
+      "observation": "WMS 1.3.0 capabilities public with parcel layers (jis_cestice etc.)."
+    },
+    {
+      "url": "https://geoportal.dgu.hr/",
+      "observation": "DGU geoportal reachable (HTTP 200)."
+    },
+    {
+      "url": "https://oss.uredjenazemlja.hr/OssWebServices/inspireService/wfs",
+      "observation": "INSPIRE service endpoint returned HTTP 500 (possibly temporary)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://oss.uredjenazemlja.hr/OssWebServices/wfs?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/xml",
+      "assessment": "capabilities public"
+    },
+    {
+      "url": "https://oss.uredjenazemlja.hr/OssWebServices/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=oss:BZP_CESTICE&count=3&outputFormat=application/json&bbox=45.8130,15.9770,45.8140,15.9785,urn:ogc:def:crs:EPSG::4326",
+      "method": "GET",
+      "httpStatus": 401,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "HTTP 401 'token parameter missing' (Zagreb)"
+    },
+    {
+      "url": "(same, Split bbox 43.5080,16.4390,43.5090,16.4405)",
+      "method": "GET",
+      "httpStatus": 401,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "HTTP 401 token required"
+    },
+    {
+      "url": "https://oss.uredjenazemlja.hr/OssWebServices/inspireService/wfs?request=GetCapabilities&service=WFS",
+      "method": "GET",
+      "httpStatus": 500,
+      "contentType": "text/html",
+      "assessment": "HTTP 500"
+    },
+    {
+      "url": "https://oss.uredjenazemlja.hr/OssWebServices/inspireService/wms?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 500,
+      "contentType": "text/html",
+      "assessment": "HTTP 500"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "All of Croatia (national cadastre, BZP)",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "unknown",
+  "remainingUncertainty": "Token-gated: not known whether tokens are issued freely (e.g. to the public viewer) or only to registered users; token acquisition was not attempted. INSPIRE endpoint 500 may be transient. Licence not read.",
+  "nextStep": "Inspect how the public viewer obtains its token and whether reuse is permitted; retry the INSPIRE cadastral parcels service."
+}
