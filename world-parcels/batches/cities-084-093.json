@@ -1,0 +1,112 @@
+[
+ {
+  "name": "Singapore",
+  "country": "Singapore",
+  "iso2": "SG",
+  "cityCode": 165,
+  "capital": true,
+  "lon": 103.844923485911,
+  "lat": 1.34468387380727,
+  "pop2025k": 4963.998,
+  "rank": 84
+ },
+ {
+  "name": "Kampala",
+  "country": "Uganda",
+  "iso2": "UG",
+  "cityCode": 1866,
+  "capital": true,
+  "lon": 32.5794981900445,
+  "lat": 0.321224889410938,
+  "pop2025k": 4880.943,
+  "rank": 85
+ },
+ {
+  "name": "Zhengzhou",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 9574,
+  "capital": false,
+  "lon": 113.653108262301,
+  "lat": 34.7669580431862,
+  "pop2025k": 4878.035,
+  "rank": 86
+ },
+ {
+  "name": "Hefei",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 10990,
+  "capital": false,
+  "lon": 117.267146275218,
+  "lat": 31.8471765706065,
+  "pop2025k": 4867,
+  "rank": 87
+ },
+ {
+  "name": "Islāmābād",
+  "country": "Pakistan",
+  "iso2": "PK",
+  "cityCode": 7017,
+  "capital": true,
+  "lon": 73.0621288185069,
+  "lat": 33.6079057998337,
+  "pop2025k": 4860.084,
+  "rank": 88
+ },
+ {
+  "name": "Kano",
+  "country": "Nigeria",
+  "iso2": "NG",
+  "cityCode": 8435,
+  "capital": false,
+  "lon": 8.50931812932348,
+  "lat": 11.9851852836313,
+  "pop2025k": 4840.28,
+  "rank": 89
+ },
+ {
+  "name": "Tamar (Hong Kong)",
+  "country": "China, Hong Kong SAR",
+  "iso2": "HK",
+  "cityCode": 11566,
+  "capital": true,
+  "lon": 114.182983761781,
+  "lat": 22.3163570872339,
+  "pop2025k": 4749.543,
+  "rank": 90
+ },
+ {
+  "name": "Saint Petersburg",
+  "country": "Russian Federation",
+  "iso2": "RU",
+  "cityCode": 568,
+  "capital": false,
+  "lon": 30.3377740290309,
+  "lat": 59.9340628982321,
+  "pop2025k": 4736.499,
+  "rank": 91
+ },
+ {
+  "name": "Santo Domingo",
+  "country": "Dominican Republic",
+  "iso2": "DO",
+  "cityCode": 1455,
+  "capital": true,
+  "lon": -69.9218906890503,
+  "lat": 18.4861476703714,
+  "pop2025k": 4600.064,
+  "rank": 92
+ },
+ {
+  "name": "Cape Town",
+  "country": "South Africa",
+  "iso2": "ZA",
+  "cityCode": 413,
+  "capital": true,
+  "lon": 18.5999587421507,
+  "lat": -33.9805360922243,
+  "pop2025k": 4508.921,
+  "rank": 93
+ }
+]

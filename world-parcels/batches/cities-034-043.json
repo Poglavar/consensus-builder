@@ -1,0 +1,112 @@
+[
+ {
+  "name": "Hajipur",
+  "country": "India",
+  "iso2": "IN",
+  "cityCode": 11027,
+  "capital": false,
+  "lon": 85.4509953679278,
+  "lat": 25.9809989936602,
+  "pop2025k": 9941.51,
+  "rank": 34
+ },
+ {
+  "name": "Rio de Janeiro",
+  "country": "Brazil",
+  "iso2": "BR",
+  "cityCode": 7935,
+  "capital": false,
+  "lon": -43.3666524274637,
+  "lat": -22.8458452131082,
+  "pop2025k": 9500.336,
+  "rank": 35
+ },
+ {
+  "name": "Paris",
+  "country": "France",
+  "iso2": "FR",
+  "cityCode": 2994,
+  "capital": true,
+  "lon": 2.35557109932262,
+  "lat": 48.8491114639848,
+  "pop2025k": 9381.921,
+  "rank": 36
+ },
+ {
+  "name": "Hyderabad",
+  "country": "India",
+  "iso2": "IN",
+  "cityCode": 9913,
+  "capital": false,
+  "lon": 78.475689046214,
+  "lat": 17.4138906547212,
+  "pop2025k": 9190.795,
+  "rank": 37
+ },
+ {
+  "name": "Tehrān (Tehran)",
+  "country": "Iran (Islamic Republic of)",
+  "iso2": "IR",
+  "cityCode": 5264,
+  "capital": true,
+  "lon": 51.3492655311391,
+  "lat": 35.6849078671756,
+  "pop2025k": 9174.964,
+  "rank": 38
+ },
+ {
+  "name": "Taipei",
+  "country": "China, Taiwan Province of China",
+  "iso2": "TW",
+  "cityCode": 12128,
+  "capital": true,
+  "lon": 121.479336946596,
+  "lat": 25.0274959507177,
+  "pop2025k": 9136.792,
+  "rank": 39
+ },
+ {
+  "name": "Bandung",
+  "country": "Indonesia",
+  "iso2": "ID",
+  "cityCode": 5991,
+  "capital": false,
+  "lon": 107.628187870505,
+  "lat": -6.92331894949182,
+  "pop2025k": 8909.104,
+  "rank": 40
+ },
+ {
+  "name": "Kuala Lumpur",
+  "country": "Malaysia",
+  "iso2": "MY",
+  "cityCode": 1629,
+  "capital": true,
+  "lon": 101.633454526146,
+  "lat": 3.10025715707001,
+  "pop2025k": 8443.731,
+  "rank": 41
+ },
+ {
+  "name": "Dar es Salaam",
+  "country": "United Republic of Tanzania",
+  "iso2": "TZ",
+  "cityCode": 3566,
+  "capital": true,
+  "lon": 39.2241417477354,
+  "lat": -6.83352843774764,
+  "pop2025k": 7795.114,
+  "rank": 42
+ },
+ {
+  "name": "Suzhou",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 11632,
+  "capital": false,
+  "lon": 120.623540854471,
+  "lat": 31.3814421810495,
+  "pop2025k": 7731.101,
+  "rank": 43
+ }
+]

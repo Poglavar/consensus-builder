@@ -1,0 +1,112 @@
+[
+ {
+  "name": "Shijiazhuang",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 9058,
+  "capital": false,
+  "lon": 114.486805832284,
+  "lat": 38.0444097366153,
+  "pop2025k": 2990.397,
+  "rank": 164
+ },
+ {
+  "name": "Multan",
+  "country": "Pakistan",
+  "iso2": "PK",
+  "cityCode": 7167,
+  "capital": false,
+  "lon": 71.4752917180368,
+  "lat": 30.1904706782392,
+  "pop2025k": 2956.642,
+  "rank": 165
+ },
+ {
+  "name": "Thiruvananthapuram",
+  "country": "India",
+  "iso2": "IN",
+  "cityCode": 10013,
+  "capital": false,
+  "lon": 76.9676364538033,
+  "lat": 8.50983231508796,
+  "pop2025k": 2946.119,
+  "rank": 166
+ },
+ {
+  "name": "Asansol",
+  "country": "India",
+  "iso2": "IN",
+  "cityCode": 11531,
+  "capital": false,
+  "lon": 86.9114092684189,
+  "lat": 23.6979457782642,
+  "pop2025k": 2924.741,
+  "rank": 167
+ },
+ {
+  "name": "Aleppo",
+  "country": "Syrian Arab Republic",
+  "iso2": "SY",
+  "cityCode": 1601,
+  "capital": false,
+  "lon": 37.142929022666,
+  "lat": 36.2044832004488,
+  "pop2025k": 2922.277,
+  "rank": 168
+ },
+ {
+  "name": "Brahmanbaria",
+  "country": "Bangladesh",
+  "iso2": "BD",
+  "cityCode": 6721,
+  "capital": false,
+  "lon": 90.9800651402632,
+  "lat": 24.0465867356083,
+  "pop2025k": 2914.727,
+  "rank": 169
+ },
+ {
+  "name": "Miami",
+  "country": "United States of America",
+  "iso2": "US",
+  "cityCode": 7289,
+  "capital": false,
+  "lon": -80.2813649347787,
+  "lat": 25.8606111445171,
+  "pop2025k": 2912.486,
+  "rank": 170
+ },
+ {
+  "name": "Fuzhou",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 12022,
+  "capital": false,
+  "lon": 119.297849641578,
+  "lat": 26.0737068369161,
+  "pop2025k": 2910.985,
+  "rank": 171
+ },
+ {
+  "name": "P'yŏngyang (Pyongyang)",
+  "country": "Dem. People's Republic of Korea",
+  "iso2": "KP",
+  "cityCode": 3737,
+  "capital": true,
+  "lon": 125.743817349996,
+  "lat": 39.026065627335,
+  "pop2025k": 2901.588,
+  "rank": 172
+ },
+ {
+  "name": "Tamluk",
+  "country": "India",
+  "iso2": "IN",
+  "cityCode": 11755,
+  "capital": false,
+  "lon": 87.872341961915,
+  "lat": 22.3857912198346,
+  "pop2025k": 2894.484,
+  "rank": 173
+ }
+]

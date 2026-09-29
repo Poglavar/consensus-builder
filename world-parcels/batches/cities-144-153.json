@@ -1,0 +1,112 @@
+[
+ {
+  "name": "Quanzhou",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 12024,
+  "capital": false,
+  "lon": 118.544939442673,
+  "lat": 24.8491345315021,
+  "pop2025k": 3286.129,
+  "rank": 144
+ },
+ {
+  "name": "Washington, D.C.",
+  "country": "United States of America",
+  "iso2": "US",
+  "cityCode": 8123,
+  "capital": true,
+  "lon": -77.0743377301391,
+  "lat": 38.9071419499321,
+  "pop2025k": 3270.018,
+  "rank": 145
+ },
+ {
+  "name": "Busan",
+  "country": "Republic of Korea",
+  "iso2": "KR",
+  "cityCode": 3878,
+  "capital": false,
+  "lon": 129.058963034942,
+  "lat": 35.1597692255284,
+  "pop2025k": 3263.221,
+  "rank": 146
+ },
+ {
+  "name": "Nagpur",
+  "country": "India",
+  "iso2": "IN",
+  "cityCode": 9793,
+  "capital": false,
+  "lon": 79.0798475250127,
+  "lat": 21.1403108339582,
+  "pop2025k": 3257.841,
+  "rank": 147
+ },
+ {
+  "name": "El Djazaïr (Algiers)",
+  "country": "Algeria",
+  "iso2": "DZ",
+  "cityCode": 3444,
+  "capital": true,
+  "lon": 3.08705221152983,
+  "lat": 36.7381965172536,
+  "pop2025k": 3246.4,
+  "rank": 148
+ },
+ {
+  "name": "Fortaleza",
+  "country": "Brazil",
+  "iso2": "BR",
+  "cityCode": 8285,
+  "capital": false,
+  "lon": -38.5599910685237,
+  "lat": -3.77702211074443,
+  "pop2025k": 3244.26,
+  "rank": 149
+ },
+ {
+  "name": "Kathmandu",
+  "country": "Nepal",
+  "iso2": "NP",
+  "cityCode": 1712,
+  "capital": true,
+  "lon": 85.334390105517,
+  "lat": 27.6995856600217,
+  "pop2025k": 3231.516,
+  "rank": 150
+ },
+ {
+  "name": "Kunming",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 8296,
+  "capital": false,
+  "lon": 102.72110339014,
+  "lat": 25.0418689141859,
+  "pop2025k": 3228.117,
+  "rank": 151
+ },
+ {
+  "name": "Ouagadougou",
+  "country": "Burkina Faso",
+  "iso2": "BF",
+  "cityCode": 1748,
+  "capital": true,
+  "lon": -1.52722272561358,
+  "lat": 12.3616666818412,
+  "pop2025k": 3206.222,
+  "rank": 152
+ },
+ {
+  "name": "Durban",
+  "country": "South Africa",
+  "iso2": "ZA",
+  "cityCode": 5227,
+  "capital": false,
+  "lon": 30.7347684823797,
+  "lat": -29.6451663770183,
+  "pop2025k": 3177.927,
+  "rank": 153
+ }
+]

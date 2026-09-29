@@ -1,0 +1,112 @@
+[
+ {
+  "name": "Recife",
+  "country": "Brazil",
+  "iso2": "BR",
+  "cityCode": 8535,
+  "capital": false,
+  "lon": -34.9207751899257,
+  "lat": -8.04622135042311,
+  "pop2025k": 3691.196,
+  "rank": 124
+ },
+ {
+  "name": "Chicago",
+  "country": "United States of America",
+  "iso2": "US",
+  "cityCode": 7747,
+  "capital": false,
+  "lon": -87.7074504792355,
+  "lat": 41.8726060313807,
+  "pop2025k": 3683.385,
+  "rank": 125
+ },
+ {
+  "name": "Brazzaville",
+  "country": "Congo",
+  "iso2": "CG",
+  "cityCode": 554,
+  "capital": true,
+  "lon": 15.2626288363336,
+  "lat": -4.24419486632791,
+  "pop2025k": 3656.322,
+  "rank": 126
+ },
+ {
+  "name": "Melbourne",
+  "country": "Australia",
+  "iso2": "AU",
+  "cityCode": 1634,
+  "capital": false,
+  "lon": 145.058580063275,
+  "lat": -37.8309340010454,
+  "pop2025k": 3639.893,
+  "rank": 127
+ },
+ {
+  "name": "Qingdao",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 10816,
+  "capital": false,
+  "lon": 120.392140434954,
+  "lat": 36.1673738784444,
+  "pop2025k": 3616.657,
+  "rank": 128
+ },
+ {
+  "name": "Ankara",
+  "country": "Türkiye",
+  "iso2": "TR",
+  "cityCode": 4941,
+  "capital": true,
+  "lon": 32.8678943256595,
+  "lat": 39.9540727957261,
+  "pop2025k": 3612.251,
+  "rank": 129
+ },
+ {
+  "name": "Kasaï-Oriental",
+  "country": "Democratic Republic of the Congo",
+  "iso2": "CD",
+  "cityCode": 5196,
+  "capital": false,
+  "lon": 23.5984690595655,
+  "lat": -6.12279658565417,
+  "pop2025k": 3605.738,
+  "rank": 130
+ },
+ {
+  "name": "Karaj",
+  "country": "Iran (Islamic Republic of)",
+  "iso2": "IR",
+  "cityCode": 5114,
+  "capital": false,
+  "lon": 50.9761153401972,
+  "lat": 35.759536947844,
+  "pop2025k": 3598.661,
+  "rank": 131
+ },
+ {
+  "name": "Berlin",
+  "country": "Germany",
+  "iso2": "DE",
+  "cityCode": 5576,
+  "capital": true,
+  "lon": 13.3999531382876,
+  "lat": 52.5018146389819,
+  "pop2025k": 3560.908,
+  "rank": 132
+ },
+ {
+  "name": "Savar",
+  "country": "Bangladesh",
+  "iso2": "BD",
+  "cityCode": 6158,
+  "capital": false,
+  "lon": 90.2169056618034,
+  "lat": 23.9741972610535,
+  "pop2025k": 3557.381,
+  "rank": 133
+ }
+]
