@@ -1,0 +1,57 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "ET",
+ "country": "Ethiopia",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Ministry of Urban and Infrastructure / regional land administration bureaus; Ethiopian Geospatial Information Institute; National Rural Land Administration Information System (NRLAIS)",
+ "portalsFound": [
+  {
+   "url": "http://www.ethionsdi.gov.et/",
+   "observation": "NSDI GeoNode returned 503 (from addis-ababa.json); Addis layers were land use, not parcels."
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Ethiopia%20cadastre%20parcels&f=json&num=5",
+   "observation": "Only third-party project layers (e.g. 'Land Ownership'); not official, not tested."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://landadmin.gov.et/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (tunnel failure/connection reset); temporarily unavailable, not proof of absence"
+  },
+  {
+   "url": "https://www.ethiosurvey.gov.et/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (tunnel failure/connection reset); temporarily unavailable, not proof of absence"
+  },
+  {
+   "url": "https://www.mint.gov.et/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (tunnel failure/connection reset); temporarily unavailable, not proof of absence"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Ethiopia%20cadastre%20parcels&f=json&num=5",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "application/json",
+   "assessment": "3 unofficial results"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "regional/city land bureaus; no confirmed national cadastre",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Land administration is regional; a national online parcel service was not reached.",
+ "nextStep": "Retry; check Addis Ababa land bureau and NRLAIS."
+}

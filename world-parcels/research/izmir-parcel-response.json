@@ -1,0 +1,185 @@
+{
+ "type": "FeatureCollection",
+ "note": "Assembled from three separate point-query replies (GET /megsiswebapi.v3/api/parsel/{lat}/{lon}) at 38.4180/27.1450, 38.4150/27.1400 and 38.4120/27.1450; each reply was a single GeoJSON Feature, HTTP 200.",
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       27.14498,
+       38.41809
+      ],
+      [
+       27.14496,
+       38.41809
+      ],
+      [
+       27.14494,
+       38.41802
+      ],
+      [
+       27.14494,
+       38.41798
+      ],
+      [
+       27.14499,
+       38.41797
+      ],
+      [
+       27.14503,
+       38.41802
+      ],
+      [
+       27.14505,
+       38.41803
+      ],
+      [
+       27.14509,
+       38.41805
+      ],
+      [
+       27.14509,
+       38.41806
+      ],
+      [
+       27.14506,
+       38.41807
+      ],
+      [
+       27.14498,
+       38.41809
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "ilceAd": "Konak",
+    "mevkii": "",
+    "ilId": 57,
+    "durum": "1",
+    "ilceId": 554,
+    "zeminKmdurum": "Ana Taşınmaz",
+    "parselNo": "37",
+    "mahalleAd": "Temaşalik",
+    "ozet": "Temaşalik-1568/37",
+    "gittigiParselListe": "",
+    "gittigiParselSebep": "",
+    "alan": "100.00",
+    "adaNo": "1568",
+    "nitelik": "Kargir Ev",
+    "ilAd": "Izmir",
+    "mahalleId": 148606,
+    "pafta": "177"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       27.14008,
+       38.41496
+      ],
+      [
+       27.14003,
+       38.41502
+      ],
+      [
+       27.13998,
+       38.41499
+      ],
+      [
+       27.13998,
+       38.41499
+      ],
+      [
+       27.14001,
+       38.41493
+      ],
+      [
+       27.14008,
+       38.41496
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "ilceAd": "Konak",
+    "mevkii": "",
+    "ilId": 57,
+    "durum": "1",
+    "ilceId": 554,
+    "zeminKmdurum": "Ana Taşınmaz",
+    "parselNo": "6",
+    "mahalleAd": "Suvari",
+    "ozet": "Suvari-438/6",
+    "gittigiParselListe": "",
+    "gittigiParselSebep": "",
+    "alan": "43.50",
+    "adaNo": "438",
+    "nitelik": "Bodrum Kati Havi Iki Katli Kargir Ev",
+    "ilAd": "Izmir",
+    "mahalleId": 152230,
+    "pafta": "70"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       27.14485,
+       38.41171
+      ],
+      [
+       27.145,
+       38.41176
+      ],
+      [
+       27.14505,
+       38.41206
+      ],
+      [
+       27.1449,
+       38.41208
+      ],
+      [
+       27.14488,
+       38.4119
+      ],
+      [
+       27.14485,
+       38.41171
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "ilceAd": "Konak",
+    "mevkii": "",
+    "ilId": 57,
+    "durum": "1",
+    "ilceId": 554,
+    "zeminKmdurum": "Ana Taşınmaz",
+    "parselNo": "18",
+    "mahalleAd": "Imariye",
+    "ozet": "Imariye-1636/18",
+    "gittigiParselListe": "",
+    "gittigiParselSebep": "",
+    "alan": "501.25",
+    "adaNo": "1636",
+    "nitelik": "Kargir Üç Ev Ve Dükkan",
+    "ilAd": "Izmir",
+    "mahalleId": 151033,
+    "pafta": "231"
+   }
+  }
+ ]
+}

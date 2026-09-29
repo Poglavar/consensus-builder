@@ -1,0 +1,77 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "DO",
+ "country": "Dominican Republic",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Jurisdiccion Inmobiliaria / Registro Inmobiliario (statutory land registry); Direccion General de Catastro Nacional runs a separate ArcGIS Hub geoportal",
+ "portalsFound": [
+  {
+   "url": "https://atlas.ri.gob.do/geoserver/wfs",
+   "observation": "Registro Inmobiliario GeoServer WFS; anonymous GeoJSON; layers ParcelasHistoricas, Aprobados (approved surveys)."
+  },
+  {
+   "url": "https://servicios.ri.gob.do/ConsultaParcelario",
+   "observation": "Public parcel-consultation viewer using the WFS/WMS above."
+  },
+  {
+   "url": "https://geoportal-catastronacional.hub.arcgis.com/",
+   "observation": "DGCN national cadastre hub; parcel feature services required a token (from santo-domingo.json)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas:ParcelasHistoricas&outputFormat=application/json&maxFeatures=3&bbox=-70.700,19.450,-70.697,19.453,EPSG:4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=utf-8",
+   "assessment": "3 MultiPolygon parcels, Santiago (PARCELA, PROVINCIA, MUNICIPIO, DC, AREA)"
+  },
+  {
+   "url": "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=Aprobados:Aprobados&outputFormat=application/json&maxFeatures=3&bbox=-70.71,19.44,-70.68,19.47,EPSG:4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=utf-8",
+   "assessment": "3 MultiPolygon approved-survey polygons, Santiago"
+  },
+  {
+   "url": "(reused) santo-domingo.json ParcelasHistoricas bbox -69.9235,18.4850,-69.9205,18.4875",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=utf-8",
+   "assessment": "3 parcels, Distrito Nacional"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "do-ri-atlas-geoserver",
+  "requestUrl": "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas:ParcelasHistoricas&outputFormat=application/json&maxFeatures=3&bbox=-70.700,19.450,-70.697,19.453,EPSG:4326",
+  "method": "GET (WFS 1.0.0)",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=utf-8",
+  "spatialTestAreaLonLat": [
+   -70.7,
+   19.45,
+   -70.697,
+   19.453
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "PARCELA + PROVINCIA/MUNICIPIO/DC",
+  "responseFile": null,
+  "pagination": "WFS maxFeatures; no cursor tested",
+  "regionSampled": "Santiago de los Caballeros (also Santo Domingo, Distrito Nacional)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "national land registry survey parcels (historical and approved layers)",
+  "regionsVerified": [
+   "Distrito Nacional (Santo Domingo)",
+   "Santiago"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "ParcelasHistoricas is a historical layer; completeness and currency vs. the current cadastre unverified. Licence not read. DGCN hub layers are token-gated.",
+ "nextStep": "Assess completeness by province; read licence; test DGCN layers for registration route."
+}
