@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:158",
+  "queueRank": 158,
+  "name": "Salvador",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "centerLatLon": [
+    -12.9366878889254,
+    -38.4513681656682
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://mapeamento.salvador.ba.gov.br/geo/desktop/index.html",
+      "observation": "Prefeitura de Salvador 'Mapeamento Cartografico' GeoMoose viewer backed by MapServer (/app/mapserv). Its mapbook lists topographic/base-map layers (eixos, quadra, hydrography, rail etc.), no lote/parcel layer."
+    },
+    {
+      "url": "https://dados.salvador.ba.gov.br/",
+      "observation": "Salvador Dados open-data site (HTML app); CKAN API path returned 404."
+    },
+    {
+      "url": "https://sedur.salvador.ba.gov.br/",
+      "observation": "Urban development secretariat site; reachable, no parcel service found."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://dados.salvador.ba.gov.br/api/3/action/package_search?q=lote&rows=5",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html",
+      "assessment": "no CKAN API"
+    },
+    {
+      "url": "https://mapeamento.salvador.ba.gov.br/geo/desktop/mapbook.xml",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "assessment": "layer list inspected; no parcel layer"
+    },
+    {
+      "url": "https://mapeamento.salvador.ba.gov.br/app/mapserv?map=/srv/geoapp/data/eixos-wfs.map&SERVICE=WFS&REQUEST=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "MapServer error: mapfile path not accessible; no WFS parcel layer"
+    },
+    {
+      "url": "https://mapeamento.salvador.ba.gov.br/geoserver/ows?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html",
+      "assessment": "no GeoServer"
+    },
+    {
+      "url": "https://geosalvador.salvador.ba.gov.br/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy 502 host unreachable"
+    },
+    {
+      "url": "https://www.sicar.gov.br/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy 502 host unreachable"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Salvador lotes cadastro type:Feature Service",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "0 results"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "municipal base mapping without lots",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Municipal fiscal cadastre (SEFAZ/IPTU) and other Salvador GIS hosts (e.g. geosalvador) were not reachable; an open lot layer may exist elsewhere. Brazil has no single national open lot cadastre (SIGEF covers rural properties only).",
+  "nextStep": "Look for SEFAZ/SEDUR lot layer or Infraestrutura de Dados Espaciais; retry unreachable hosts; try SICAR/SIGEF for rural periphery."
+}

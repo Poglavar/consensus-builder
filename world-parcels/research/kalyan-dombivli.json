@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:156",
+  "queueRank": 156,
+  "name": "Kalyan-Dombivli",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    19.2079660812588,
+    73.1699593951258
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/",
+      "observation": "Official Maharashtra Bhu-Naksha (village cadastral map) viewer of the Maharashtra Land Records Dept; reachable, redirects to /27/index.jsp (HTML shell). It is an interactive viewer; no documented open parcel feature API found."
+    },
+    {
+      "url": "https://kdmc.gov.in/",
+      "observation": "Kalyan-Dombivli Municipal Corporation site; TLS handshake failed (legacy renegotiation), not retried insecurely."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/",
+      "method": "GET",
+      "httpStatus": 302,
+      "contentType": "text/html",
+      "assessment": "redirect chain to viewer shell; HTML only"
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "assessment": "tiny JS redirect page; no parcel data"
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/rest/VillageMapService/ListsAfterLevel",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html",
+      "assessment": "guessed API path not valid"
+    },
+    {
+      "url": "https://kdmc.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "SSL legacy renegotiation error"
+    },
+    {
+      "url": "https://kdmc.maps.arcgis.com/sharing/rest/search?q=parcel&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "unrelated global results (nonexistent org filter); not a KDMC source"
+    },
+    {
+      "url": "https://bhuvan-app1.nrsc.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset"
+    },
+    {
+      "url": "https://www.data.gov.in/search?title=cadastral",
+      "method": "GET",
+      "httpStatus": 503,
+      "contentType": "text/html",
+      "assessment": "service unavailable"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Maharashtra village maps via Bhu-Naksha viewer",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Bhu-Naksha likely has internal map-service calls, but no documented anonymous bounded polygon API was found; the KDMC host and Bhuvan were unreachable so those are not ruled out.",
+  "nextStep": "Inspect Bhu-Naksha's browser network calls for a documented WMS/GeoJSON endpoint and terms; retry KDMC GIS and data.gov.in later; test a bounded Kalyan-area query."
+}

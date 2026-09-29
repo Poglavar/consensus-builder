@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:160",
+  "queueRank": 160,
+  "name": "Athína (Athens)",
+  "country": "Greece",
+  "countryCode": "GR",
+  "centerLatLon": [
+    37.9900827844442,
+    23.7294821422573
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://gis.ktimanet.gr/wms/wmsopen/wmsserver.aspx?SERVICE=WMS&REQUEST=GetCapabilities",
+      "observation": "Hellenic Cadastre (Ktimatologio) open WMS 'BASEMAP': EPSG:4326/2100/900913, GetMap returns raster PNG only; not a vector parcel feed."
+    },
+    {
+      "url": "https://www.ktimatologio.gr/",
+      "observation": "Hellenic Cadastre main site returned 403 Access Denied from this network."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://gis.ktimanet.gr/wms/wmsopen/wmsserver.aspx?SERVICE=WMS&REQUEST=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "assessment": "WMS 1.1.0 capabilities, one queryable BASEMAP layer; service description only"
+    },
+    {
+      "url": "https://gis.ktimanet.gr/wms/wmsopen/wmsserver.aspx?...REQUEST=GetMap&BBOX=23.7270,37.9740,23.7290,37.9755",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "assessment": "raster image (256x200); not a parcel record list"
+    },
+    {
+      "url": "https://gis.ktimanet.gr/wms/wmsopen/wmsserver.aspx?...REQUEST=GetFeatureInfo (gml)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": null,
+      "assessment": "empty body; no feature records"
+    },
+    {
+      "url": "https://gis.ktimanet.gr/wfs/wfsopen/wfsserver.aspx?SERVICE=WFS&REQUEST=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html",
+      "assessment": "no WFS at this path"
+    },
+    {
+      "url": "https://gis.ktimanet.gr/inspire/download/cadastralparcels.aspx?SERVICE=WFS&REQUEST=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html",
+      "assessment": "guessed INSPIRE path invalid"
+    },
+    {
+      "url": "https://geodata.gov.gr/en/api/3/action/package_search?q=cadastre&rows=5",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset"
+    },
+    {
+      "url": "https://inspire.ktimanet.gr/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy 502 host unreachable"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "national raster WMS from Hellenic Cadastre",
+    "verifiedOpenScope": "raster only, no vector parcels",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Ktimatologio's INSPIRE cadastral-parcels download service and geodata.gov.gr were not reachable, so a vector service is not ruled out. Cadastre programme status for Attica not confirmed here.",
+  "nextStep": "Retry the Ktimatologio INSPIRE download/WFS and geodata.gov.gr later and test a bounded CadastralParcel query in Athens."
+}
