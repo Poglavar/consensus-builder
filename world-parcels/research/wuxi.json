@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:193",
+  "queueRank": 193,
+  "name": "Wuxi",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    31.5817276567788,
+    120.288624104434
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://zrzy.wuxi.gov.cn/",
+      "observation": "Wuxi Natural Resources and Planning Bureau homepage reachable (200, HTML); carries news, real-estate registration items and land-transfer (挂牌出让) notices, but no documented open parcel map/feature service link was found on the page."
+    },
+    {
+      "url": "https://www.wuxi.gov.cn/",
+      "observation": "Wuxi government homepage reachable (200); links to a data-opening portal data.wuxi.gov.cn and the municipal data bureau."
+    },
+    {
+      "url": "http://bigdata.wuxi.gov.cn/",
+      "observation": "Municipal data bureau site reachable (200, HTML); no parcel polygon service identified."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://zrzy.wuxi.gov.cn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "HTML homepage only; no parcel list"
+    },
+    {
+      "url": "https://www.wuxi.gov.cn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "HTML homepage; link to data.wuxi.gov.cn"
+    },
+    {
+      "url": "http://bigdata.wuxi.gov.cn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "HTML only"
+    },
+    {
+      "url": "https://data.wuxi.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset by peer"
+    },
+    {
+      "url": "https://zrzy.jiangsu.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset"
+    },
+    {
+      "url": "https://www.jiangsu.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "unreachable"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Wuxi cadastre/real-estate registration, scope unknown",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The Wuxi open-data portal (data.wuxi.gov.cn) and Jiangsu provincial hosts were unreachable, so the data catalogue itself was not inspected; the bureau homepage exposed no parcel service. Not proof that none exists.",
+  "nextStep": "Retry data.wuxi.gov.cn from a network able to reach it and search its catalogue for parcel/cadastral (宗地/地籍) datasets; check Jiangsu Tianditu."
+}

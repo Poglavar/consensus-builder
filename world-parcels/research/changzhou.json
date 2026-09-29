@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:189",
+  "queueRank": 189,
+  "name": "Changzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    31.7696476106068,
+    119.960647832843
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://zrzy.jiangsu.gov.cn/",
+      "observation": "Jiangsu provincial natural resources department; unreachable."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.changzhou.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset"
+    },
+    {
+      "url": "https://zrzyj.changzhou.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT tunnel failed, 502"
+    },
+    {
+      "url": "https://data.changzhou.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT tunnel failed, 502"
+    },
+    {
+      "url": "https://zrzy.jiangsu.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset"
+    },
+    {
+      "url": "https://www.jiangsu.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "unreachable"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Changzhou cadastre/real-estate registration, scope unknown",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "All Changzhou and Jiangsu provincial hosts tried were unreachable, so nothing was learned about a public parcel query. Not proof of absence.",
+  "nextStep": "Retry later; check Changzhou natural resources bureau, Changzhou open-data portal and Jiangsu Tianditu for a bounded polygon service, and land-transfer notice maps."
+}

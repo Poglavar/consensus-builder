@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:185",
+  "queueRank": 185,
+  "name": "Guiyang",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    26.5877905736877,
+    106.702120992921
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "observation": "National Tianditu platform; the proxy received an attack-suspected block page. It serves basemaps, not open parcel polygons."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.guiyang.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset"
+    },
+    {
+      "url": "https://zrzyj.guiyang.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT tunnel failed, 502"
+    },
+    {
+      "url": "https://data.guiyang.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT tunnel failed, 502"
+    },
+    {
+      "url": "https://gz.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT tunnel failed, 502"
+    },
+    {
+      "url": "https://gzdata.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT tunnel failed, 502"
+    },
+    {
+      "url": "https://www.mnr.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT tunnel failed, 502"
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": null,
+      "assessment": "block page (attack-suspected), not parcel data"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Guiyang cadastre/real-estate registration, scope unknown",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Every Guizhou/Guiyang government host was unreachable through the proxy, so nothing was learned about a public parcel query. Comparable Chinese city records suggest cadastral polygons are generally not published as open feature services, but this is unproven for Guiyang.",
+  "nextStep": "Retry later or from a network that can reach .gov.cn; check the Guiyang natural resources bureau, Guizhou public-data portal (gzdata.gov.cn) and land-transfer notice maps for a bounded polygon endpoint."
+}

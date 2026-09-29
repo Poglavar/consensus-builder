@@ -1,0 +1,80 @@
+{
+ "schemaVersion": 1,
+ "cityId": "queue:164",
+ "queueRank": 164,
+ "name": "Shijiazhuang",
+ "country": "China",
+ "countryCode": "CN",
+ "centerLatLon": [
+  38.0444097366153,
+  114.486805832284
+ ],
+ "checkedAt": "2026-09-29",
+ "status": "no_verified_open_endpoint_after_attempts",
+ "verifiedParcelResponse": null,
+ "source": null,
+ "portalsFound": [
+  {
+   "url": "https://hebei.tianditu.gov.cn/home/",
+   "observation": "Provincial map platform; only 'cadastral zone' (地籍区) terminology seen, no queryable parcel layer"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.sjz.gov.cn/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "city government landing page only"
+  },
+  {
+   "url": "https://hebei.tianditu.gov.cn/home/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Hebei provincial geographic-information platform (Tianditu Hebei); landing app, no parcel service exposed"
+  },
+  {
+   "url": "https://zrzy.hebei.gov.cn/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  },
+  {
+   "url": "https://zrzy.sjz.gov.cn/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  },
+  {
+   "url": "https://data.sjz.gov.cn/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  },
+  {
+   "url": "https://data.hebei.gov.cn/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  },
+  {
+   "url": "https://www.mnr.gov.cn/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  }
+ ],
+ "coverageAssessment": {
+  "claimedScope": "Chinese cadastral/real-estate registration data is administered by natural-resources bureaus and is not published as open parcel polygons in anything found",
+  "verifiedOpenScope": "none",
+  "countrywideVerified": false
+ },
+ "remainingUncertainty": "Several Hebei/Shijiazhuang natural-resources and open-data hosts were unreachable from this client. Only landing pages were checked; no polygon query was found or tested. Whether a parcel service exists is unknown.",
+ "nextStep": "Look for a municipal natural-resources / real-estate-registration GIS service and test a bounded query; retry unreachable hosts from another network path."
+}
