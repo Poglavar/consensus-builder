@@ -1,0 +1,195 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "id": "parcelle.94480982",
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        2.35459055,
+        48.84813804
+       ],
+       [
+        2.35448433,
+        48.84820977
+       ],
+       [
+        2.35568881,
+        48.84899394
+       ],
+       [
+        2.35579738,
+        48.84891997
+       ],
+       [
+        2.35459055,
+        48.84813804
+       ]
+      ]
+     ]
+    ]
+   },
+   "geometry_name": "geom",
+   "properties": {
+    "gid": 60899776,
+    "numero": "0045",
+    "feuille": 1,
+    "section": "AD",
+    "code_dep": "75",
+    "nom_com": "Paris",
+    "code_com": "056",
+    "com_abs": "000",
+    "code_arr": "105",
+    "idu": "75105000AD0045",
+    "contenance": 1388,
+    "code_insee": "75056"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "parcelle.94488532",
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        2.35546935,
+        48.84926328
+       ],
+       [
+        2.35551789,
+        48.8492613
+       ],
+       [
+        2.35570235,
+        48.84925402
+       ],
+       [
+        2.35574121,
+        48.84918623
+       ],
+       [
+        2.35557451,
+        48.84907903
+       ],
+       [
+        2.35548299,
+        48.84914113
+       ],
+       [
+        2.35546073,
+        48.84915558
+       ],
+       [
+        2.35546935,
+        48.84926328
+       ]
+      ]
+     ]
+    ]
+   },
+   "geometry_name": "geom",
+   "properties": {
+    "gid": 4372314,
+    "numero": "0011",
+    "feuille": 1,
+    "section": "AD",
+    "code_dep": "75",
+    "nom_com": "Paris",
+    "code_com": "056",
+    "com_abs": "000",
+    "code_arr": "105",
+    "idu": "75105000AD0011",
+    "contenance": 286,
+    "code_insee": "75056"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "parcelle.94491363",
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        2.35530601,
+        48.84926978
+       ],
+       [
+        2.35546935,
+        48.84926328
+       ],
+       [
+        2.35546073,
+        48.84915558
+       ],
+       [
+        2.35548299,
+        48.84914113
+       ],
+       [
+        2.35557451,
+        48.84907903
+       ],
+       [
+        2.35545771,
+        48.84900358
+       ],
+       [
+        2.35527947,
+        48.84912367
+       ],
+       [
+        2.35529466,
+        48.8491412
+       ],
+       [
+        2.35530601,
+        48.84926978
+       ]
+      ]
+     ]
+    ]
+   },
+   "geometry_name": "geom",
+   "properties": {
+    "gid": 7926799,
+    "numero": "0012",
+    "feuille": 1,
+    "section": "AD",
+    "code_dep": "75",
+    "nom_com": "Paris",
+    "code_com": "056",
+    "com_abs": "000",
+    "code_arr": "105",
+    "idu": "75105000AD0012",
+    "contenance": 353,
+    "code_insee": "75056"
+   }
+  }
+ ],
+ "totalFeatures": 11,
+ "numberMatched": 11,
+ "numberReturned": 3,
+ "timeStamp": "2026-09-29T22:56:48.707Z",
+ "links": [
+  {
+   "title": "next page",
+   "type": "application/json",
+   "rel": "next",
+   "href": "http://localhost/api/cadastre/parcelle?geom=%7b%22type%22%3a%22Polygon%22%2c%22coordinates%22%3a%5b%5b%5b2.3550%2c48.8486%5d%2c%5b2.3560%2c48.8486%5d%2c%5b2.3560%2c48.8494%5d%2c%5b2.3550%2c48.8494%5d%2c%5b2.3550%2c48.8486%5d%5d%5d%7d&_limit=3&_start=3"
+  }
+ ],
+ "crs": {
+  "type": "name",
+  "properties": {
+   "name": "urn:ogc:def:crs:EPSG::4326"
+  }
+ }
+}

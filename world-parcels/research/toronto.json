@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:74",
+  "queueRank": 74,
+  "name": "Toronto",
+  "country": "Canada",
+  "countryCode": "CA",
+  "centerLatLon": [
+    43.7195058480876,
+    -79.4735743414679
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_city_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "ca-on-toronto-property-boundary",
+    "requestUrl": "https://gis.toronto.ca/arcgis/rest/services/cot_geospatial27/FeatureServer/36/query?where=1%3D1&geometry=-79.3835%2C43.6525%2C-79.3815%2C43.6540&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      -79.3835,
+      43.6525,
+      -79.3815,
+      43.654
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "PARCELID",
+    "responseFile": "toronto-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true; maxRecordCount=2000"
+  },
+  "source": {
+    "sourceId": "ca-on-toronto-property-boundary",
+    "name": "City of Toronto Property Boundary (Municipal Parcel Fabric)",
+    "operator": "City of Toronto GIS / Open Data",
+    "scope": "City of Toronto",
+    "endpoint": "https://gis.toronto.ca/arcgis/rest/services/cot_geospatial27/FeatureServer/36",
+    "method": "ArcGIS REST query",
+    "responseFormat": "Esri JSON (f=json; geojson also available)",
+    "crs": "EPSG:4326 via outSR (native 3857)",
+    "reuseStatus": "Open Data catalogue; licence field unspecified in CKAN metadata - review before reuse"
+  },
+  "portalsFound": [
+    {
+      "url": "https://ckan0.cf.opendata.inter.prod-toronto.ca/api/3/action/package_show?id=property-boundaries",
+      "observation": "City of Toronto Open Data 'Property Boundaries' (Municipal Parcel Fabric): GeoJSON/SHP/GPKG downloads plus an active datastore; licence field says 'not specified' in CKAN metadata, so terms need review."
+    },
+    {
+      "url": "https://gis.toronto.ca/arcgis/rest/services/cot_geospatial27/FeatureServer",
+      "observation": "City ArcGIS FeatureServer; layer 36 'Property Boundary' is a queryable polygon layer (description: Parcel Mapping - Municipal Parcel Fabric), maxRecordCount 2000, CRS 3857 native."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://ckan0.cf.opendata.inter.prod-toronto.ca/api/3/action/datastore_search?resource_id=4270614e-0b5e-4b54-a2bb-18ef92237646&limit=2",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "datastore returns parcel polygons as GeoJSON text but is not spatially filterable; used only for discovery"
+    },
+    {
+      "url": "https://gis.toronto.ca/arcgis/rest/services/cot_geospatial27/FeatureServer/36/query?where=1%3D1&geometry=-79.3835%2C43.6525%2C-79.3815%2C43.6540&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "3 polygon parcels returned",
+      "parcelRecordCount": 3
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "City of Toronto municipal parcel fabric (former municipalities amalgamated); UN agglomeration also spans Peel, York, Durham regions not covered",
+    "verifiedOpenScope": "three downtown parcels near Trinity Sq",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Sample does not prove completeness; CKAN licence field unspecified; Ontario-wide (Teranet/ParcelMapper) parcels are licensed/paid and were not tested. Suburban municipalities (Mississauga, Markham, Brampton) need their own sources.",
+  "nextStep": "Test Peel/York/Mississauga open parcel sources; review City of Toronto Open Data licence text."
+}
