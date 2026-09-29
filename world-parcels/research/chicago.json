@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:125",
+  "queueRank": 125,
+  "name": "Chicago",
+  "country": "United States of America",
+  "countryCode": "US",
+  "centerLatLon": [
+    41.8726060313807,
+    -87.7074504792355
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_county_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "us-il-cook-county-clerk-parcels-2021",
+    "requestUrl": "https://datacatalog.cookcountyil.gov/resource/77tz-riq7.json?$select=pin10,municipality,the_geom&$where=within_box(the_geom,41.8726,-87.7080,41.8736,-87.7068)&$limit=3",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "spatialTestAreaLonLat": [
+      -87.708,
+      41.8726,
+      -87.7068,
+      41.8736
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "$ (top-level array)",
+    "geometryType": "MultiPolygon (GeoJSON in the_geom)",
+    "closedRings": true,
+    "idField": "pin10",
+    "responseFile": "chicago-parcel-response.json",
+    "pagination": "Socrata SoQL $limit/$offset"
+  },
+  "source": {
+    "sourceId": "us-il-cook-county-clerk-parcels-2021",
+    "name": "ccgisdata - Parcel 2021 (Cook County Open Data, dataset 77tz-riq7)",
+    "operator": "Cook County Clerk / Map Department (Cook County GIS)",
+    "scope": "Cook County, Illinois (includes City of Chicago)",
+    "endpoint": "https://datacatalog.cookcountyil.gov/resource/77tz-riq7.json",
+    "method": "GET Socrata SODA SoQL within_box",
+    "responseFormat": "JSON with GeoJSON MultiPolygon the_geom",
+    "crs": "EPSG:4326 (lon/lat)",
+    "reuseStatus": "Dataset license shown as 'See Terms of Use'; terms not reviewed. Vintage 2021 (newer years may exist)."
+  },
+  "portalsFound": [
+    {
+      "url": "https://datacatalog.cookcountyil.gov/resource/77tz-riq7",
+      "observation": "Cook County open data Socrata dataset with parcel polygons in the_geom; attribution Cook County Clerk / Map Department."
+    },
+    {
+      "url": "https://gis.cookcountyil.gov/traditional/rest/services/Assessor",
+      "observation": "ArcGIS Assessor folder requires a token (499); not usable anonymously."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://gis.cookcountyil.gov/traditional/rest/services/Assessor?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "body is Token Required error (code 499); not verification"
+    },
+    {
+      "url": "https://datacatalog.cookcountyil.gov/resource/77tz-riq7.json?$select=pin10,municipality,the_geom&$where=within_box(the_geom,41.8726,-87.7080,41.8736,-87.7068)&$limit=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "parcelRecordCount": 3,
+      "assessment": "3 Chicago parcels with closed MultiPolygon geometry; verified"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Cook County",
+    "verifiedOpenScope": "three parcels in Chicago (Austin area) in a bounded sample",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "2021 vintage; completeness and current terms not reviewed. Metro area extends beyond Cook County (DuPage, Lake, Will, Kane counties).",
+  "nextStep": "Check for a newer parcel year dataset and review terms; test neighbouring collar counties."
+}

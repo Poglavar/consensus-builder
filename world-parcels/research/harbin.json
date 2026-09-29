@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:96",
+  "queueRank": 96,
+  "name": "Harbin",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    45.7443006606507,
+    126.658985181548
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://heilongjiang.tianditu.gov.cn/haerbin/",
+      "observation": "Tianditu Harbin geographic-information public service platform (basemap/POI services; requires developer key, no parcel layer)."
+    },
+    {
+      "url": "https://www.arcgis.com/apps/mapviewer/index.html?webmap=a302f07e861346dd8809b3b7d8272fdb",
+      "observation": "Third-party Harbin web map, not an official cadastre."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://heilongjiang.tianditu.gov.cn/haerbin/",
+      "method": "GET",
+      "httpStatus": "200",
+      "contentType": "text/html",
+      "assessment": "platform landing page, not parcels"
+    },
+    {
+      "url": "https://heilongjiang.tianditu.gov.cn/haerbin/static/config.js",
+      "method": "GET",
+      "httpStatus": "200",
+      "contentType": "application/javascript",
+      "assessment": "client config referencing SSO and internal endpoints; no public parcel service"
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset by peer"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Harbin municipal geographic-information platform; no parcel polygons exposed",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Chinese land-parcel data is generally not openly published; portal behind key/SSO. Consistent with the Beijing and Guangzhou probes.",
+  "nextStep": "Search Heilongjiang/Harbin open-data catalogue for a licensed parcel layer."
+}

@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:102",
+  "queueRank": 102,
+  "name": "Medan",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "centerLatLon": [
+    3.59519807662413,
+    98.6592873270214
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer",
+      "observation": "BIG Satu Peta MapServer with group 'Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000' (layer 10) with sublayers for 15 provinces (NTB, Jatim, DIY, Kalbar, Sulbar, Kaltara, Aceh, Sultra, Maluku, Kaltim, Jabar, Bali, Banten, Kepri, Jateng); Sumatera Utara (Medan) is not listed."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/peta",
+      "observation": "ATR/BPN Bhumi map viewer; SPA, no open parcel endpoint (same conclusion as Jakarta probe)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer?f=pjson",
+      "method": "GET",
+      "httpStatus": "200",
+      "contentType": "text/plain",
+      "assessment": "service description; no North Sumatra hak-milik sublayer"
+    },
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/12/query?...(East Java layer, Surabaya bbox)",
+      "method": "GET",
+      "httpStatus": "200",
+      "contentType": "application/json",
+      "assessment": "empty features in a 100 m test box; only used to confirm the layer schema (kecamatan,kelurahan,tipehak,nib polygons)"
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/peta",
+      "method": "GET",
+      "httpStatus": "200",
+      "contentType": "text/html",
+      "assessment": "app shell"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "BIG Satu Peta hak-milik layers exist for other provinces, not Sumatera Utara",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Land-ownership polygons may be published for Medan elsewhere in ATR/BPN systems; not found. Province-level BIG layers elsewhere would not imply Medan coverage.",
+  "nextStep": "Check for a Sumatera Utara hak-milik layer being added to BIG Satu Peta, or an ATR/BPN Bhumi service; test sample in Medan. The 15 provincial layers may be worth an Indonesia country probe."
+}

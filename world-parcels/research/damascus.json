@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:99",
+  "queueRank": 99,
+  "name": "Dimashq (Damascus)",
+  "country": "Syrian Arab Republic",
+  "countryCode": "SY",
+  "centerLatLon": [
+    33.5034715476208,
+    36.3062672987401
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://hlp.syria-report.com/hlp/explained-general-directorate-of-cadastral-affairs/",
+      "observation": "General Directorate of Cadastral Affairs holds the register; digitisation ongoing (Damascus among first), no public online parcel map documented."
+    },
+    {
+      "url": "https://sana.sy/en/syria/2280759/",
+      "observation": "News on real-estate record digitisation plan; no public map service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.cadastre.gov.sy/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "CONNECT tunnel failed 502"
+    },
+    {
+      "url": "https://www.moi.gov.sy/",
+      "method": "GET",
+      "httpStatus": "200",
+      "contentType": "text/html",
+      "assessment": "ministry landing page, no parcel data"
+    },
+    {
+      "url": "https://www.sana.sy/en/",
+      "method": "GET",
+      "httpStatus": "200",
+      "contentType": "text/html",
+      "assessment": "news site"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "national cadastre records are not publicly served online",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Official cadastre sites did not resolve/respond from this client; no public geospatial service was found.",
+  "nextStep": "Watch for a launched public real-estate registry map service from the General Directorate of Cadastral Affairs."
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:71",
+  "queueRank": 71,
+  "name": "Accra",
+  "country": "Ghana",
+  "countryCode": "GH",
+  "centerLatLon": [
+    5.60366263373368,
+    -0.210576368296996
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://onlineservices.lc.gov.gh/",
+      "observation": "Ghana Lands Commission online portal (account-based services; no open parcel feed)."
+    },
+    {
+      "url": "https://www.lc.gov.gh/",
+      "observation": "Lands Commission site; Survey and Mapping Division page could not be fetched."
+    },
+    {
+      "url": "https://data.gov.gh/dataset/greater-accra-land-survey-reference-pillars-coordinates-land-surveying-and-mapping",
+      "observation": "Ghana Open Data dataset of survey reference pillars (points, not parcels); connection reset."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.lc.gov.gh/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "site home; no parcel service"
+    },
+    {
+      "url": "https://onlineservices.lc.gov.gh/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "login/welcome page, 27 KB"
+    },
+    {
+      "url": "https://services8.arcgis.com/BuDSiwZVG3gNaQUz/arcgis/rest/services/Accra_Lands/FeatureServer/0?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "point layer of towns (OSM_Accra_towns), not parcels"
+    },
+    {
+      "url": "https://gis.lc.gov.gh/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "curl exit 56: proxy CONNECT tunnel failed (502); host unreachable from the research proxy, not evidence about the service"
+    },
+    {
+      "url": "https://data.gov.gh/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "curl exit 35: connection reset by peer; treated as unreachable, not a permanent negative"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Digital parcel capture reported for parts of Greater Accra (Ayawaso districts) with no public service found",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Some hosts unreachable; parcel data exists partly but no open endpoint verified.",
+  "nextStep": "Retest data.gov.gh and Lands Commission GIS hosts from another network."
+}

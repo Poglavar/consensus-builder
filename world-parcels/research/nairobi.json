@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:65",
+  "queueRank": 65,
+  "name": "Nairobi",
+  "country": "Kenya",
+  "countryCode": "KE",
+  "centerLatLon": [
+    -1.26592113731299,
+    36.845161927435
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://ardhisasa.lands.go.ke/",
+      "observation": "Kenya's national digital land-registry platform (Ministry of Lands); Angular app shell, account-based, no open parcel feed documented."
+    },
+    {
+      "url": "https://nairobimaps.com/",
+      "observation": "Private site offering Nairobi parcel search by LR number; behind a bot-check page, not official or open."
+    },
+    {
+      "url": "https://services6.arcgis.com/HwQk19ysBarANM17/arcgis/rest/services/CBD_Parcel_Data/FeatureServer",
+      "observation": "ArcGIS Online item 'CBD_Parcel_Data' (unofficial, owner unclear, Nairobi CBD): returns 'Token Required'."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://ardhisasa.lands.go.ke/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "SPA shell only"
+    },
+    {
+      "url": "https://www.lands.go.ke/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "ministry site, no parcel service found"
+    },
+    {
+      "url": "https://nairobimaps.com/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "bot-check interstitial only"
+    },
+    {
+      "url": "https://services6.arcgis.com/HwQk19ysBarANM17/arcgis/rest/services/CBD_Parcel_Data/FeatureServer?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "JSON error 499 Token Required; not open"
+    },
+    {
+      "url": "https://geoportal.nairobi.go.ke/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "curl exit 56: proxy CONNECT tunnel failed (502); host unreachable from the research proxy, not evidence about the service"
+    },
+    {
+      "url": "https://opendata.go.ke/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "curl exit 35: connection reset by peer; treated as unreachable, not a permanent negative"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Kenya land registry (Ardhisasa) and Nairobi County; no open parcel layer confirmed",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "County GIS and Survey of Kenya portals were unreachable via the proxy; an open county layer cannot be ruled out.",
+  "nextStep": "Retest Nairobi County GIS/geoportal and Survey of Kenya registry index map services; check Ardhisasa for a public map API."
+}

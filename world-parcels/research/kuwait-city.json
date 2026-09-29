@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:101",
+  "queueRank": 101,
+  "name": "Al Kuwayt (Kuwait City)",
+  "country": "Kuwait",
+  "countryCode": "KW",
+  "centerLatLon": [
+    29.2828343642878,
+    47.9994805163595
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://gis.pai.gov.kw/arcgis/rest/services/Basemap/Public_PAI_Kuwait/MapServer/1",
+      "observation": "Public Authority for Housing Welfare (PAI) ArcGIS MapServer layer 1 'القسائم' (parcels), polygon layer, per search listing; not retrievable from this client."
+    },
+    {
+      "url": "https://kuwaitportal.paci.gov.kw/arcgisportal/rest/services/Hosted/PACIBasemap/MapServer",
+      "observation": "PACI basemap cache service; connection reset."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://gis.pai.gov.kw/arcgis/rest/services/Basemap/Public_PAI_Kuwait/MapServer?f=pjson",
+      "method": "GET",
+      "httpStatus": "403",
+      "contentType": "text/html",
+      "assessment": "Incapsula bot-protection block page"
+    },
+    {
+      "url": "https://gis.pai.gov.kw/arcgis/rest/services/Basemap/Public_PAI_Kuwait/MapServer/1/query?where=1%3D1&geometry=47.9994,29.2828,48.0004,29.2838&geometryType=esriGeometryEnvelope&inSR=4326&outFields=*&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": "403",
+      "contentType": "text/html",
+      "assessment": "Incapsula block; no parcel records returned"
+    },
+    {
+      "url": "https://kuwaitportal.paci.gov.kw/arcgisportal/rest/services/?f=json",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset by peer"
+    },
+    {
+      "url": "http://paci-esridubaioffice.opendata.arcgis.com/",
+      "method": "GET",
+      "httpStatus": "200",
+      "contentType": "text/html",
+      "assessment": "hub shell only"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "PAI Kuwait parcels layer (likely housing-plot scope) - unverified",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "A candidate parcel MapServer exists but the WAF blocked automated access; scope (housing plots vs all Kuwait parcels) and terms unknown.",
+  "nextStep": "Retry the PAI MapServer layer 1 query from an allowed client or find an official downloadable/whitelisted service; verify coverage of Kuwait City."
+}
