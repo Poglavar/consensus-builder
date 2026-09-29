@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:47",
+  "queueRank": 47,
+  "name": "Tianjin",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    39.1326804781437,
+    117.194186505366
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://data.tj.gov.cn/",
+      "observation": "Tianjin municipal open data platform; returned 403 with empty body."
+    },
+    {
+      "url": "https://tianjin.tianditu.gov.cn/",
+      "observation": "Tianditu Tianjin portal (HTTP 200 landing page); no parcel service documented on the landing page."
+    },
+    {
+      "url": "https://ghzrzy.tj.gov.cn/",
+      "observation": "Tianjin planning and natural resources bureau; unreachable."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://data.tj.gov.cn/",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html",
+      "assessment": "Blocked, empty body"
+    },
+    {
+      "url": "https://tianjin.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Portal landing page only"
+    },
+    {
+      "url": "https://ghzrzy.tj.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Connection reset / proxy tunnel failure from this client; not evidence of absence"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Municipal natural-resources / real-estate registration data; access model unknown",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Cadastral (不动产/地籍) polygon data is held by municipal natural-resources bureaus and is generally viewer- or credential-only; no anonymous bounded polygon endpoint was found. Nothing here implies China-wide coverage. Many .gov.cn hosts were unreachable from this client (connection reset / proxy 502), so the result is not proof of absence.",
+  "nextStep": "Retry from a network able to reach .gov.cn portals; inspect the city's open-data catalog for land-parcel layers and the Tianditu city portal for a documented parcel service."
+}

@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:104",
+  "queueRank": 104,
+  "name": "Luxor",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "centerLatLon": [
+    25.6736044952306,
+    32.5858136344761
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.esa.gov.eg/",
+      "observation": "Egyptian Survey Authority site; national survey/cadastral mandate, no public parcel query service found."
+    },
+    {
+      "url": "https://www.esa.gov.eg/benya.aspx",
+      "observation": "ESA page reachable; no documented open parcel feature endpoint."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.esa.gov.eg/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "authority homepage only"
+    },
+    {
+      "url": "https://www.esa.gov.eg/benya.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "information page only; no parcel list"
+    },
+    {
+      "url": "https://opendata.arcgis.com/api/v3/search?q=luxor%20parcels",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "ArcGIS Online search; results are storymaps, village-level poverty layers and images, no cadastral parcels"
+    },
+    {
+      "url": "https://luxor.gov.eg/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection failed via proxy (no response); not a permanent negative"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Egyptian Survey Authority national cadastre, public access unknown",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "ESA may hold a national cadastre but no anonymous bounded polygon endpoint was found; the governorate site did not respond from this client.",
+  "nextStep": "Look for an ESA or Luxor governorate GIS service and retest when luxor.gov.eg is reachable."
+}

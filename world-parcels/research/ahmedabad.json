@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:44",
+  "queueRank": 44,
+  "name": "Ahmedabad",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    23.0208369805955,
+    72.5971679403649
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://gis.ahmedabadcity.gov.in/arcgis/rest/services",
+      "observation": "Ahmedabad Municipal Corporation ArcGIS Server REST directory appears in search results (sign-in gated services seen); TLS certificate was expired when tested."
+    },
+    {
+      "url": "http://projects.datameet.org/Municipal_Spatial_Data/ahmedabad/",
+      "observation": "DataMeet community page for Ahmedabad municipal spatial data (ward maps etc.); not a parcel layer."
+    },
+    {
+      "url": "https://anyror.gujarat.gov.in/",
+      "observation": "Gujarat land-records portal (AnyROR); record lookup, no open polygon API found; unreachable from this client."
+    },
+    {
+      "url": "https://stategisportal.nic.in/stategisportal/Home/State/24",
+      "observation": "NIC State GIS Portal for Gujarat; not reachable (certificate error) so contents unverified."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://gis.ahmedabadcity.gov.in/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS certificate expired; not bypassed. Service unverified (temporary/unreachable)."
+    },
+    {
+      "url": "https://egovamc.com/",
+      "method": "GET",
+      "httpStatus": 525,
+      "contentType": "text/plain",
+      "assessment": "Cloudflare 525 SSL handshake failure"
+    },
+    {
+      "url": "https://ahmedabadcity.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Connection reset / proxy tunnel failure from this client; not evidence of absence"
+    },
+    {
+      "url": "https://anyror.gujarat.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Connection reset / proxy tunnel failure from this client; not evidence of absence"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Ahmedabad%20parcel%20type:%22Feature%20Service%22&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "ArcGIS Online search: 1 unrelated agricultural land-price service; no parcel layer"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Ahmedabad%20cadastral%20type:%22Feature%20Service%22&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "0 results"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Municipal/state land-records systems; parcel geometry not confirmed public",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Ahmedabad Municipal Corporation's GIS server may host town-planning/property layers, but it was unreachable (expired TLS) and no anonymous parcel polygon list was verified. Gujarat AnyROR is a record lookup. Nothing here implies India-wide coverage.",
+  "nextStep": "Retry AMC GIS from a client that can reach it; check Gujarat's Bhu-naksha / SVAMITVA / NAKSHA (DILRMP) outputs for an OGC/ArcGIS endpoint."
+}

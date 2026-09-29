@@ -1,0 +1,78 @@
+{
+  "cityId": "queue:37",
+  "queueRank": 37,
+  "name": "Hyderabad",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    17.4139,
+    78.4757
+  ],
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://dharani.telangana.gov.in/",
+      "observation": "Telangana land records portal (Dharani); connection reset from this environment, so unassessed."
+    },
+    {
+      "url": "https://tgrac.telangana.gov.in/",
+      "observation": "Telangana Remote Sensing Applications Centre portal; reachable HTML, no parcel service found on landing page."
+    },
+    {
+      "url": "https://www.ghmc.gov.in/",
+      "observation": "GHMC site returned 403 'request rejected' to the proxy."
+    },
+    {
+      "url": "https://data.telangana.gov.in/",
+      "observation": "State open data portal; connection reset."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://dharani.telangana.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "curl (35) connection reset; retry needed"
+    },
+    {
+      "url": "https://data.telangana.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset"
+    },
+    {
+      "url": "https://tsgis.telangana.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset"
+    },
+    {
+      "url": "https://www.ghmc.gov.in/",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "WAF rejection"
+    },
+    {
+      "url": "https://tgrac.telangana.gov.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": null,
+      "assessment": "landing page only"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "unknown",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Key Telangana hosts reset or blocked connections, likely geo/WAF filtering, so this is an access failure, not evidence that no source exists. Indian state portals typically expose viewers, not open APIs.",
+  "nextStep": "Retry from another network path; look for Telangana Bhu-Naksha / Dharani cadastral maps and GHMC GIS with a bounded polygon query.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-09-29"
+}

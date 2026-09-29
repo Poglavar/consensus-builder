@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:53",
+  "queueRank": 53,
+  "name": "Surat",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    21.1776194957192,
+    72.7789187685758
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.suratmunicipal.gov.in/",
+      "observation": "Surat Municipal Corporation portal reachable (HTTP 200); Web GIS for town-planning maps advertised in press (Geospatial World), no open parcel API found."
+    },
+    {
+      "url": "https://geospatialworld.net/news/surat-municipal-corporation-makes-its-web-gis-services-public/",
+      "observation": "News item: SMC made Web GIS (town-planning maps, development permissions) public; not a documented parcel feed."
+    },
+    {
+      "url": "https://anyror.gujarat.gov.in/",
+      "observation": "Gujarat land-records portal, see Ahmedabad."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.suratmunicipal.gov.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "Portal home page only"
+    },
+    {
+      "url": "https://smcgis.suratmunicipal.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Proxy tunnel failure (502); unverified"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Surat%20parcel%20type:%22Feature%20Service%22&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "1 unrelated result"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Surat%20cadastral%20type:%22Feature%20Service%22&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "4 unrelated Australian results"
+    },
+    {
+      "url": "https://anyror.gujarat.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Connection reset / proxy tunnel failure from this client; not evidence of absence"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Municipal town-planning web GIS; parcel/plot geometry not confirmed public",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The SMC Web GIS host was not reachable from this client, so whether it exposes plot polygons anonymously is unknown. Same Gujarat state considerations as Ahmedabad.",
+  "nextStep": "Retry SMC Web GIS and look for a documented feature/WFS endpoint."
+}
