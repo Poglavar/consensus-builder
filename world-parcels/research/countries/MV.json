@@ -1,0 +1,41 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MV",
+ "country": "Maldives",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Ministry of Housing, Land and Urban Development (land registry / planning); no national online cadastre identified",
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://planning.gov.mv/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection failed/denied via proxy"
+  },
+  {
+   "url": "https://www.landsurvey.gov.mv/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connect rejected by proxy"
+  },
+  {
+   "url": "https://www.gov.mv/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection failed"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "not established from this client",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "All Maldives hosts tried were unreachable; nothing about cadastre existence learned.",
+ "nextStep": "Retry from another network; search for MHLUD land information system and island-level survey data."
+}

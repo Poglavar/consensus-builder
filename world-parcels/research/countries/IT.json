@@ -1,0 +1,91 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "IT",
+ "country": "Italy",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Agenzia delle Entrate (Catasto) - INSPIRE cadastral parcels; national cadastre except Trentino-Alto Adige/Trieste/Gorizia areas which run a tavolare/libro fondiario system (not tested)",
+ "portalsFound": [
+  {
+   "url": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php",
+   "observation": "Open INSPIRE WFS 2.0.0: CP:CadastralParcel and CP:CadastralZoning; GetFeature works with typeNames + bbox (lat,lon order EPSG:6706)."
+  },
+  {
+   "url": "https://wms.cartografia.agenziaentrate.gov.it/inspire/wms/ows01.php",
+   "observation": "Open WMS 1.3.0 (Cartografia_Catastale, CP.CadastralZoning etc.)."
+  },
+  {
+   "url": "https://www.agenziaentrate.gov.it/portale/web/guest/schede/fabbricatiterreni/consultazione-cartografia-catastale",
+   "observation": "403 Access Denied to curl even with browser UA; licence page not read."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://wms.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php?...GetCapabilities",
+   "method": "GET",
+   "httpStatus": 500,
+   "contentType": "text/xml",
+   "assessment": "wrong host; SOAP fault"
+  },
+  {
+   "url": "https://wms.cartografia.agenziaentrate.gov.it/inspire/wms/ows01.php?service=WMS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "WMS capabilities"
+  },
+  {
+   "url": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php?service=WFS&version=2.0.0&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "WFS capabilities listing CP:CadastralParcel"
+  },
+  {
+   "url": "...request=GetFeature&typeNames=CP:CadastralParcel&count=3&bbox=41.8985,12.4820,41.8995,12.4835,urn:ogc:def:crs:EPSG::6706",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "3 GML polygons, Rome (H501)"
+  },
+  {
+   "url": "...same bbox=38.1150,13.3600,38.1160,13.3615 (Palermo)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "3 GML polygons (raw reply not saved)"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "it-ade-inspire-wfs",
+  "requestUrl": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP:CadastralParcel&count=3&bbox=41.8985,12.4820,41.8995,12.4835,urn:ogc:def:crs:EPSG::6706",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/xml",
+  "spatialTestAreaLonLat": [
+   12.482,
+   41.8985,
+   12.4835,
+   41.8995
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "wfs:member/CP:CadastralParcel",
+  "geometryType": "gml:Polygon (EPSG:6706, lat lon order)",
+  "closedRings": true,
+  "idField": "NATIONALCADASTRALREFERENCE",
+  "responseFile": "IT-parcel-response.xml",
+  "pagination": "WFS 2.0 count/startIndex; response carries a 'next' link",
+  "regionSampled": "Rome (also Palermo)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "INSPIRE cadastral parcels for Italy",
+  "regionsVerified": [
+   "Rome (H501)",
+   "Palermo"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Licence not read (INSPIRE dataset, historically CC BY 4.0 per AdE); WFS enforces small bbox/count limits (not probed); host returned 500 to a GetCapabilities on the wms. host; Trentino-Alto Adige and Friuli tavolare areas not sampled.",
+ "nextStep": "Read AdE licence; sample Bolzano/Trento and Trieste to confirm coverage in tavolare regions."
+}

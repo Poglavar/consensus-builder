@@ -1,0 +1,84 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MN",
+ "country": "Mongolia",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Agency for Land Administration and Management, Geodesy and Cartography (ALAMGAC / Gazar) - eGazar national land information system",
+ "portalsFound": [
+  {
+   "url": "https://www.egazar.gov.mn/",
+   "observation": "eGazar national land portal (HTTP 200)"
+  },
+  {
+   "url": "https://geoserver.egazar.gov.mn/geoserver/ows?service=WFS&request=GetCapabilities",
+   "observation": "Open GeoServer WFS 2.0.0 (289 KB capabilities) listing roughly 100+ cadastre/admin layers incl. geoware:ca_parcel_tbl, ca_046_parcel_tbl, agr_parcels, au_base_level0-2_polygon"
+  },
+  {
+   "url": "https://www.gazar.gov.mn/",
+   "observation": "agency site"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geoserver.egazar.gov.mn/geoserver/ows?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "capabilities; parcel layers listed"
+  },
+  {
+   "url": "https://geoserver.egazar.gov.mn/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=geoware:ca_parcel_tbl&count=3&outputFormat=application/json&srsName=EPSG:4326&bbox=47.918,106.915,47.921,106.919,urn:ogc:def:crs:EPSG::4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "3 Polygon parcels, Ulaanbaatar; verified"
+  },
+  {
+   "url": "https://geoserver.egazar.gov.mn/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=geoware:ca_parcel_tbl&count=3&outputFormat=application/json&srsName=EPSG:4326&bbox=49.47,105.94,49.48,105.96,urn:ogc:def:crs:EPSG::4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "3 Polygon parcels, Darkhan (~200 km from UB); same schema"
+  },
+  {
+   "url": "https://geoserver.egazar.gov.mn/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=geoware:ca_parcel_tbl&count=3&outputFormat=application/json&srsName=EPSG:4326&bbox=47.917,106.912,47.922,106.922,urn:ogc:def:crs:EPSG::4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "3 Polygon parcels, Ulaanbaatar wider box"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "mn-egazar-geoserver-ca-parcel-tbl",
+  "requestUrl": "https://geoserver.egazar.gov.mn/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=geoware:ca_parcel_tbl&count=3&outputFormat=application/json&srsName=EPSG:4326&bbox=47.918,106.915,47.921,106.919,urn:ogc:def:crs:EPSG::4326",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   106.915,
+   47.918,
+   106.919,
+   47.921
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "parcel_id",
+  "responseFile": "MN-parcel-response.json",
+  "pagination": "WFS 2.0 count/startIndex",
+  "regionSampled": "Ulaanbaatar and Darkhan"
+ },
+ "coverageAssessment": {
+  "claimedScope": "National land cadastre (parcel layer ca_parcel_tbl)",
+  "regionsVerified": [
+   "Ulaanbaatar",
+   "Darkhan"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Anonymous read observed; reuse licence not read. Axis order for bbox is lat,lon with the urn EPSG::4326 CRS. Other layers (caddb ca_046_parcel_tbl, agr_parcels) not sampled. Rural aimag completeness unknown. Response attributes contain parcel id, land use, area and street address only.",
+ "nextStep": "Sample a western/eastern aimag; read terms of use; check attribute fields for personal data before ingest."
+}

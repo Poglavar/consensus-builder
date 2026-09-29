@@ -1,0 +1,91 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "IE",
+ "country": "Ireland",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Tailte Éireann (Ordnance Survey Ireland + Property Registration Authority + Valuation Office merged 2023)",
+ "portalsFound": [
+  {
+   "url": "https://data.gov.ie/api/3/action/package_search?q=cadastral+parcels",
+   "observation": "Open-data catalogue lists 'High Value Dataset - Cadastral Parcels Freehold' and 'Leasehold' by Tailte Éireann (GeoJSON/FileGDB downloads + ArcGIS hosted layers)."
+  },
+  {
+   "url": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer",
+   "observation": "Open ArcGIS FeatureServer, layer 12, maxRecordCount 1000, polygons EPSG:4326; attributes minimal (SP_ID, COUNTY_NAM, area/length)."
+  },
+  {
+   "url": "https://www.tailte.ie/",
+   "observation": "301 redirect only; commercial Prime2 cadastre products are paid (not tested)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://data.gov.ie/api/3/action/package_search?q=cadastral&rows=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "catalogue hit"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/content/items/4ed4c7d8775a4c80a3d4d5c73c9a1185?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "item resolves to FeatureServer URL"
+  },
+  {
+   "url": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "single layer id 12"
+  },
+  {
+   "url": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer/12/query (Dublin bbox -6.2620,53.3410,-6.2590,53.3430, resultRecordCount=3)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygon features, county Dublin"
+  },
+  {
+   "url": "same layer, Cork bbox -8.4800,51.8970,-8.4770,51.8990, resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygon features, county Cork (raw reply not saved; attributes only checked)"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "ie-tailte-hvd-freehold",
+  "requestUrl": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer/12/query?where=1=1&geometry=-6.2620,53.3410,-6.2590,53.3430&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": [
+   -6.262,
+   53.341,
+   -6.259,
+   53.343
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "SP_ID",
+  "responseFile": "IE-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount, maxRecordCount 1000",
+  "regionSampled": "Dublin city centre (also Cork, second query)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "Tailte Éireann High Value Dataset: freehold parcels (this layer) and leasehold parcels (separate item 9811f102..., layer 13), national",
+  "regionsVerified": [
+   "Dublin",
+   "Cork"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Layer is an EU High Value Dataset publication; attributes are geometry-only (no folio/parcel number); surveyed-boundary caveat (Irish registry maps are not boundary guarantees). Licence not read (data.gov.ie lists it; verify CC BY 4.0). Leasehold layer not queried.",
+ "nextStep": "Read licence on data.gov.ie item; test leasehold layer 13 and full-download GeoJSON via HTTP range."
+}
