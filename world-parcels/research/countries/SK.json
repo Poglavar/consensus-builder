@@ -1,0 +1,68 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "SK",
+ "checkedAt": "2026-09-29",
+ "country": "Slovakia",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Geodesy, Cartography and Cadastre Authority of the Slovak Republic (UGKK SR) and its cadastre portal",
+ "portalsFound": [
+  {
+   "url": "https://www.skgeodesy.sk/sk/",
+   "observation": "UGKK SR homepage reachable (HTTP 200); links to Kataster nehnutelnosti, katasterportal.skgeodesy.sk, kataster.skgeodesy.sk (ZBGIS map)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://zbgisws.skgeodesy.sk/inspire_cadastralparcels_wfs/service.svc/get?service=WFS&version=2.0.0&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (no HTTP reply)"
+  },
+  {
+   "url": "https://zbgisws.skgeodesy.sk/inspire_cadastralparcels_wfs/service.svc/get?...GetFeature&typeNames=cp:CadastralParcel&count=2&bbox=...",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy"
+  },
+  {
+   "url": "https://kataster.skgeodesy.sk/eskn/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://zbgis.skgeodesy.sk/mapka/sk/kataster",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "tunnel closed mid-exchange"
+  },
+  {
+   "url": "https://www.geoportal.sk/en/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://www.skgeodesy.sk/",
+   "method": "GET",
+   "httpStatus": 302,
+   "contentType": "text/html",
+   "assessment": "redirect to /sk/, then 200"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "subnationalServices": [],
+ "coverageAssessment": {
+  "claimedScope": "National cadastre map (ZBGIS/KN) and INSPIRE cadastral parcels WFS believed to exist; not verified here",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "All ZBGIS/kataster hosts were unreachable from this network (host-specific failures), so this is not evidence of absence. The INSPIRE WFS endpoint name is from memory and untested.",
+ "nextStep": "Retry from another IP; read UGKK open-data page for the current WFS/WMS URLs, then GetFeature count=3 in a small bbox."
+}

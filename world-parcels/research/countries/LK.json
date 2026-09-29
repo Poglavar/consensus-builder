@@ -1,0 +1,77 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "LK",
+ "checkedAt": "2026-09-29",
+ "country": "Sri Lanka",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Survey Department of Sri Lanka / NSDI (gisapps.nsdi.gov.lk)",
+ "portalsFound": [
+  {
+   "url": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2",
+   "observation": "Open ArcGIS REST 'Parcel Fabrics' layer; layer extent lon 79.87-81.32, lat 6.72-8.11 (west and east coast portion, not whole island)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "layer metadata, extent as above"
+  },
+  {
+   "url": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2/query?where=1=1&outFields=objectid,parcel_id&returnGeometry=false&resultRecordCount=3&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "3 records, exceededTransferLimit"
+  },
+  {
+   "url": "...MapServer/2/query?where=objectid=1000&returnGeometry=true&outSR=4326&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "polygon near 79.886E,6.765N (west coast)"
+  },
+  {
+   "url": "...MapServer/2/query?where=1=1&geometry=81.040,7.757,81.043,7.760&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid,parcel_id&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "3 polygons in eastern region (Batticaloa area, ~81.04E,7.76N)"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "lk-nsdi-planning-cadastre-parcel-fabric",
+  "requestUrl": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2/query?where=1=1&geometry=81.040,7.757,81.043,7.760&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid,parcel_id&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   81.04,
+   7.757,
+   81.043,
+   7.76
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "parcel_id (some null in east)",
+  "responseFile": "LK-parcel-response.json",
+  "pagination": "ArcGIS resultRecordCount/resultOffset; maxRecordCount 1000",
+  "regionSampled": "Eastern province (Batticaloa area); Colombo south via ../sri-jayawardenepura-kotte-colombo.json"
+ },
+ "subnationalServices": [],
+ "coverageAssessment": {
+  "claimedScope": "Partial parcel fabric (~122k features), layer extent covers only part of the island",
+  "regionsVerified": [
+   "Colombo southern suburbs",
+   "Batticaloa area (east)"
+  ],
+  "nationwideVerified": false
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Coverage is partial and follows title-registration rollout; northern, central, southern regions untested and the layer extent excludes them. parcel_id null in some eastern records. Licence not read.",
+ "nextStep": "Check other NSDI layers/services for further districts; read terms."
+}

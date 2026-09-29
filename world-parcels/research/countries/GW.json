@@ -1,0 +1,27 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "GW",
+ "country": "Guinea-Bissau",
+ "checkedAt": "2026-09-29",
+ "status": "no_online_cadastre_found",
+ "cadastreAuthority": "Direccao Geral dos Servicos de Geografia e Cadastro (Ministry of Land/Territory); no online service identified",
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://www.gw.undp.org",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "not informative"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "none found",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Very few government web presences located; effectively unresearched beyond host probing. Absence of a found portal is weak evidence only.",
+ "nextStep": "Search for Bissau land registry/SIG projects (World Bank/AfDB-funded cadastre) and any WMS."
+}

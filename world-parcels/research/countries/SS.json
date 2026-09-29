@@ -1,0 +1,28 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "SS",
+ "checkedAt": "2026-09-29",
+ "country": "South Sudan",
+ "status": "no_online_cadastre_found",
+ "cadastreAuthority": "Ministry of Lands, Housing and Urban Development (no functioning national cadastre identified)",
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://mlhud.gov.ss/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "subnationalServices": [],
+ "coverageAssessment": {
+  "claimedScope": "None found",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Ministry host unreachable; only one probe. Absence of evidence, not proof.",
+ "nextStep": "Search for Juba municipal/UN-Habitat land information systems."
+}

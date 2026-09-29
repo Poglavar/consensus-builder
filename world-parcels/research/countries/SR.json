@@ -1,0 +1,47 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "SR",
+ "checkedAt": "2026-09-29",
+ "country": "Suriname",
+ "status": "no_online_cadastre_found",
+ "cadastreAuthority": "Dienst's Lands Beheer / Kadaster en Landmeetkunde (Ministry of Land Policy and Forest Management, GBB)",
+ "portalsFound": [
+  {
+   "url": "https://e-services.gov.sr/grondzaken/",
+   "observation": "Government e-services page for land affairs (transaction/service portal linked from gov.sr); not a parcel map service"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.kadaster.sr/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy"
+  },
+  {
+   "url": "https://www.gov.sr/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "government portal; links to Ministry of Land and Forest Management pages and e-services grondzaken"
+  },
+  {
+   "url": "https://gov.sr/ministeries/ministerie-van-grond-en-bosbeheer/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "ministry page, no map/cadastre viewer seen in link scan"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "subnationalServices": [],
+ "coverageAssessment": {
+  "claimedScope": "No public online parcel service found",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Only link scan of gov.sr and one unreachable kadaster host; the e-services grondzaken page was not opened. Not proof of absence.",
+ "nextStep": "Open e-services.gov.sr/grondzaken and search for a Kadaster GIS/viewer."
+}

@@ -1,0 +1,41 @@
+{
+ "country": "Togo",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Office Togolais des Recettes / Direction de la Conservation Fonciere et de l'Enregistrement (land registry); national land cadastre programme",
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://ogtc.tg/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed (502) / no response; host unreachable from this environment"
+  },
+  {
+   "url": "https://www.republicoftogo.com/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "government news portal, no cadastre service"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Togo+cadastre+parcelle&f=json&num=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "zero results"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "unknown",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "No online cadastre found; authority names are from general knowledge and unverified.",
+ "nextStep": "Identify the land-registry portal (e.g. foncier/cadastre ministry) and probe.",
+ "schemaVersion": 1,
+ "countryCode": "TG",
+ "checkedAt": "2026-09-29"
+}
