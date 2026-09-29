@@ -1,0 +1,50 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "VE",
+ "country": "Venezuela (Bolivarian Republic of)",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Instituto Geografico de Venezuela Simon Bolivar (IGVSB); Servicio Autonomo de Registros y Notarias (SAREN) for property registry",
+ "portalsFound": [
+  {
+   "url": "http://www.igvsb.gob.ve/",
+   "observation": "301 redirect only; https host unreachable (also in caracas.json)."
+  },
+  {
+   "url": "https://ide.igvsb.gob.ve/",
+   "observation": "Unreachable."
+  }
+ ],
+ "requests": [
+  {
+   "url": "http://www.igvsb.gob.ve/",
+   "method": "GET",
+   "httpStatus": 301,
+   "contentType": null,
+   "assessment": "redirect"
+  },
+  {
+   "url": "https://ide.igvsb.gob.ve/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://www.sain.gob.ve/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Unknown; no open cadastral service known",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Official hosts unreachable; absence not established.",
+ "nextStep": "Retry IGVSB/IDE Venezuela and SAREN from another network."
+}

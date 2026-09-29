@@ -1,0 +1,83 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "UY",
+ "country": "Uruguay",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Direccion Nacional de Catastro (DNC), Ministerio de Economia y Finanzas; published on the national open-data catalogue catalogodatos.gub.uy (licence: Licencia de Datos Abiertos - Uruguay; not independently read)",
+ "portalsFound": [
+  {
+   "url": "https://catalogodatos.gub.uy/api/3/action/package_search?q=padrones+catastro",
+   "observation": "National CKAN: 'DXF del parcelario urbano y rural' (Total Pais URBANO and RURAL DXF zips, DNC) and monthly CSV 'Padrones urbanos y rurales' (attribute tables)."
+  },
+  {
+   "url": "https://catalogodatos.gub.uy/dataset/46d904d5-8901-4324-bc74-1ada8e4196b5",
+   "observation": "DXF nationwide parcel linework, updated 2026-09."
+  },
+  {
+   "url": "https://intgis.montevideo.gub.uy/sit/php/common/datos/generar_zip2.php?nom_tab=v_mdg_parcelas_geom&tipo=gis",
+   "observation": "Montevideo municipal parcels SHP download (Intendencia de Montevideo), listed in the catalogue; not tested."
+  },
+  {
+   "url": "https://web.snig.gub.uy/arcgisserver/rest/services",
+   "observation": "SNIG ArcGIS server reachable; services listed are departments/regions/police sections, no parcels."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://catalogodatos.gub.uy/api/3/action/package_search?q=padrones+catastro&rows=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=utf-8",
+   "assessment": "3 datasets incl. national DXF parcelario"
+  },
+  {
+   "url": "https://catalogodatos.gub.uy/dataset/46d904d5-8901-4324-bc74-1ada8e4196b5/resource/426295f1-0761-46ad-9844-8d2c8c8236f7/download/paisurbano_dxf.zip (HEAD)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": null,
+   "assessment": "application/zip, Content-Length 152311015, Accept-Ranges bytes; contains PaisUrbano.DXF (802,682,638 bytes uncompressed)"
+  },
+  {
+   "url": "same URL, Range bytes 0-1999999",
+   "method": "GET",
+   "httpStatus": 206,
+   "contentType": "application/zip",
+   "assessment": "Range honoured; first deflated member PaisUrbano.DXF decompressed partially: 8,229 closed LWPOLYLINE entities (flag 70=1, coordinates ~UTM 21S/22S metres) in ~3 MB"
+  },
+  {
+   "url": "https://web.snig.gub.uy/arcgisserver/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "no parcel services"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "uy-dnc-parcelario-dxf",
+  "requestUrl": "https://catalogodatos.gub.uy/dataset/46d904d5-8901-4324-bc74-1ada8e4196b5/resource/426295f1-0761-46ad-9844-8d2c8c8236f7/download/paisurbano_dxf.zip",
+  "method": "GET (HTTP Range 0-1999999)",
+  "httpStatus": 206,
+  "contentType": "application/zip",
+  "spatialTestAreaLonLat": null,
+  "spatialTestAreaNote": "DXF eastings 602-638 km, northings 6.58 million m (UTM zone 21S, south-west Uruguay); exact CRS not read from metadata",
+  "parcelRecordCount": 8229,
+  "recordListPath": "DXF ENTITIES section, LWPOLYLINE (closed)",
+  "geometryType": "closed LWPOLYLINE (CAD polygons)",
+  "closedRings": true,
+  "idField": null,
+  "responseFile": "UY-dxf-sample.json",
+  "pagination": "whole-country DXF zip (urban ~152 MB; rural separate); HTTP Range supported",
+  "regionSampled": "start of the national urban DXF (single region)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "Nationwide urban and rural parcel linework (DXF) plus monthly padron CSVs, per DNC",
+  "regionsVerified": [
+   "urban DXF file start only"
+  ],
+  "nationwideVerified": false
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "DXF is CAD linework without parcel attributes; padron ids/attributes come from separate CSVs whose link to geometry was not checked. Only the urban file start was sampled; rural file and CRS/metadata not inspected. Licence text not read. A live WFS/ArcGIS query service was not found (IDE hosts unreachable).",
+ "nextStep": "Convert DXF sample to check geometry vs padron ids; sample rural DXF; find DNC/IDEuy WFS."
+}

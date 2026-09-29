@@ -1,0 +1,57 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "UZ",
+ "country": "Uzbekistan",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Cadastre Agency (Agentstvo kadastra) under the Ministry of Economy and Finance; national geoportal for cadastral data",
+ "portalsFound": [
+  {
+   "url": "https://gov.uz/en/kadastr/pages/about",
+   "observation": "Agency page (200) describing state cadastres and a geoportal; no open endpoint stated."
+  },
+  {
+   "url": "https://kadastr.uz/",
+   "observation": "Unreachable."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://kadastr.uz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://geoportal.kadastr.uz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://gov.uz/en/kadastr/pages/about",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=utf-8",
+   "assessment": "HTML about page"
+  },
+  {
+   "url": "https://data.egov.uz/eng/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Nationwide state cadastre (per agency); online parcel access unverified",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Agency hosts unreachable; no conclusion about anonymous parcel service.",
+ "nextStep": "Retry kadastr.uz/geoportal; inspect viewer requests."
+}

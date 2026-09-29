@@ -1,0 +1,583 @@
+{
+ "objectIdFieldName": "objectid",
+ "globalIdFieldName": "",
+ "geometryType": "esriGeometryPolygon",
+ "spatialReference": {
+  "wkid": 102719,
+  "latestWkid": 2264
+ },
+ "fields": [
+  {
+   "name": "objectid",
+   "alias": "OBJECTID",
+   "type": "esriFieldTypeOID"
+  },
+  {
+   "name": "parno",
+   "alias": "Parcel Number",
+   "type": "esriFieldTypeString",
+   "length": 100
+  },
+  {
+   "name": "altparno",
+   "alias": "Alternate Parcel Number",
+   "type": "esriFieldTypeString",
+   "length": 25
+  },
+  {
+   "name": "improvval",
+   "alias": "Improved Value\n",
+   "type": "esriFieldTypeDouble"
+  },
+  {
+   "name": "landval",
+   "alias": "Land Value\n",
+   "type": "esriFieldTypeDouble"
+  },
+  {
+   "name": "parval",
+   "alias": "Parcel Value\n",
+   "type": "esriFieldTypeDouble"
+  },
+  {
+   "name": "siteadd",
+   "alias": "Full Site Address",
+   "type": "esriFieldTypeString",
+   "length": 200
+  },
+  {
+   "name": "sunit",
+   "alias": "Site Address Unit Number",
+   "type": "esriFieldTypeString",
+   "length": 25
+  },
+  {
+   "name": "scity",
+   "alias": "Site Address City",
+   "type": "esriFieldTypeString",
+   "length": 100
+  },
+  {
+   "name": "gisacres",
+   "alias": "GIS Acres",
+   "type": "esriFieldTypeDouble"
+  },
+  {
+   "name": "struct",
+   "alias": "Structure Indicator",
+   "type": "esriFieldTypeString",
+   "length": 1
+  },
+  {
+   "name": "multistruc",
+   "alias": "Multiple Structures",
+   "type": "esriFieldTypeString",
+   "length": 1
+  },
+  {
+   "name": "saledate",
+   "alias": "Last Sale Date\n",
+   "type": "esriFieldTypeDate",
+   "length": 8
+  },
+  {
+   "name": "saledatetx",
+   "alias": "Last Sale Date Text",
+   "type": "esriFieldTypeString",
+   "length": 25
+  },
+  {
+   "name": "legdecfull",
+   "alias": "Full Legal Description",
+   "type": "esriFieldTypeString",
+   "length": 254
+  },
+  {
+   "name": "parusecode",
+   "alias": "Tax Parcel Use Code",
+   "type": "esriFieldTypeString",
+   "length": 50
+  },
+  {
+   "name": "parusedesc",
+   "alias": "Tax Parcel Use Code Description",
+   "type": "esriFieldTypeString",
+   "length": 125
+  },
+  {
+   "name": "parusecd2",
+   "alias": "Second Tax Parcel Use Code",
+   "type": "esriFieldTypeString",
+   "length": 25
+  },
+  {
+   "name": "parusedsc2",
+   "alias": "Second Tax Parcel Use Description",
+   "type": "esriFieldTypeString",
+   "length": 125
+  },
+  {
+   "name": "parvaltype",
+   "alias": "Type of Value Reported",
+   "type": "esriFieldTypeString",
+   "length": 50
+  },
+  {
+   "name": "recareano",
+   "alias": "Record Area Number",
+   "type": "esriFieldTypeDouble"
+  },
+  {
+   "name": "recareatx",
+   "alias": "Record Area Text",
+   "type": "esriFieldTypeString",
+   "length": 25
+  },
+  {
+   "name": "revisedate",
+   "alias": "Revised Date",
+   "type": "esriFieldTypeDate",
+   "length": 8
+  },
+  {
+   "name": "sourceref",
+   "alias": "Source Document Reference",
+   "type": "esriFieldTypeString",
+   "length": 50
+  },
+  {
+   "name": "sourcedate",
+   "alias": "Source Document Date",
+   "type": "esriFieldTypeDate",
+   "length": 8
+  },
+  {
+   "name": "sourcedatx",
+   "alias": "Source Document Date Text",
+   "type": "esriFieldTypeString",
+   "length": 25
+  },
+  {
+   "name": "subdivisio",
+   "alias": "Subdivision Name",
+   "type": "esriFieldTypeString",
+   "length": 50
+  },
+  {
+   "name": "nparno",
+   "alias": "National Parcel Number",
+   "type": "esriFieldTypeString",
+   "length": 100
+  },
+  {
+   "name": "cntyname",
+   "alias": "County Name",
+   "type": "esriFieldTypeString",
+   "length": 50
+  },
+  {
+   "name": "cntyfips",
+   "alias": "County FIPS Code",
+   "type": "esriFieldTypeString",
+   "length": 3
+  },
+  {
+   "name": "stfips",
+   "alias": "State FIPS Code",
+   "type": "esriFieldTypeString",
+   "length": 2
+  },
+  {
+   "name": "stcntyfips",
+   "alias": "State-County FIPS Code",
+   "type": "esriFieldTypeString",
+   "length": 5
+  },
+  {
+   "name": "gnisid",
+   "alias": "GNIS Identifier",
+   "type": "esriFieldTypeInteger"
+  },
+  {
+   "name": "sourceagnt",
+   "alias": "Information Source",
+   "type": "esriFieldTypeString",
+   "length": 100
+  },
+  {
+   "name": "transfdate",
+   "alias": "Transform Date",
+   "type": "esriFieldTypeDate",
+   "length": 8
+  },
+  {
+   "name": "revdatetx",
+   "alias": "Revised Date text",
+   "type": "esriFieldTypeString",
+   "length": 25
+  },
+  {
+   "name": "reviseyear",
+   "alias": "Revised Year",
+   "type": "esriFieldTypeString",
+   "length": 25
+  },
+  {
+   "name": "saddno",
+   "alias": "Site Address Number",
+   "type": "esriFieldTypeString",
+   "length": 10
+  },
+  {
+   "name": "saddpref",
+   "alias": "Site Address Prefix",
+   "type": "esriFieldTypeString",
+   "length": 5
+  },
+  {
+   "name": "saddstname",
+   "alias": "Site Address Street Name",
+   "type": "esriFieldTypeString",
+   "length": 100
+  },
+  {
+   "name": "saddstr",
+   "alias": "Site Address Street Name",
+   "type": "esriFieldTypeString",
+   "length": 50
+  },
+  {
+   "name": "saddstsuf",
+   "alias": "Site Address Street Suffix",
+   "type": "esriFieldTypeString",
+   "length": 10
+  },
+  {
+   "name": "saddsttyp",
+   "alias": "Site Address Street Type",
+   "type": "esriFieldTypeString",
+   "length": 10
+  },
+  {
+   "name": "sstate",
+   "alias": "Site Address State",
+   "type": "esriFieldTypeString",
+   "length": 25
+  },
+  {
+   "name": "stname",
+   "alias": "State Name",
+   "type": "esriFieldTypeString",
+   "length": 2
+  },
+  {
+   "name": "subowntype",
+   "alias": "Subsurface Owner Type",
+   "type": "esriFieldTypeString",
+   "length": 50
+  },
+  {
+   "name": "subsurfown",
+   "alias": "Subsurface Owner",
+   "type": "esriFieldTypeString",
+   "length": 200
+  },
+  {
+   "name": "szip",
+   "alias": "Site Address Zip",
+   "type": "esriFieldTypeString",
+   "length": 25
+  },
+  {
+   "name": "structno",
+   "alias": "Number of Structures",
+   "type": "esriFieldTypeInteger"
+  },
+  {
+   "name": "structyear",
+   "alias": "Structure Year",
+   "type": "esriFieldTypeInteger"
+  },
+  {
+   "name": "presentval",
+   "alias": "Present Use Value",
+   "type": "esriFieldTypeString",
+   "length": 1
+  },
+  {
+   "name": "mapref",
+   "alias": "Map Reference",
+   "type": "esriFieldTypeString",
+   "length": 50
+  },
+  {
+   "name": "Shape__Area",
+   "alias": "st_area(shape)",
+   "type": "esriFieldTypeDouble"
+  },
+  {
+   "name": "Shape__Length",
+   "alias": "st_perimeter(shape)",
+   "type": "esriFieldTypeDouble"
+  }
+ ],
+ "features": [
+  {
+   "attributes": {
+    "objectid": 33437838,
+    "parno": "1703790137",
+    "altparno": "0179249",
+    "improvval": 4994078.0,
+    "landval": 103135770.0,
+    "parval": 108129848.0,
+    "siteadd": "1 E EDENTON ST",
+    "sunit": "",
+    "scity": "RALEIGH",
+    "gisacres": 6.20321031,
+    "struct": "Y",
+    "multistruc": "N",
+    "saledate": 978325200000,
+    "saledatetx": "",
+    "legdecfull": "CAPITOL SQUARE",
+    "parusecode": "XMT",
+    "parusedesc": "E",
+    "parusecd2": "73",
+    "parusedsc2": "MUNC BLD",
+    "parvaltype": "Assessed",
+    "recareano": 6.19000006,
+    "recareatx": "",
+    "revisedate": null,
+    "sourceref": "Deed Book/Page 000000/00000",
+    "sourcedate": 631170000000,
+    "sourcedatx": "",
+    "subdivisio": "",
+    "nparno": "37183_1703790137",
+    "cntyname": "Wake",
+    "cntyfips": "183",
+    "stfips": "37",
+    "stcntyfips": "37183",
+    "gnisid": 1008592,
+    "sourceagnt": "Wake County Assessor",
+    "transfdate": 1778994000000,
+    "revdatetx": "",
+    "reviseyear": "",
+    "saddno": "1",
+    "saddpref": "E",
+    "saddstname": "EDENTON",
+    "saddstr": "EDENTON",
+    "saddstsuf": "",
+    "saddsttyp": "ST",
+    "sstate": "NC",
+    "stname": "NC",
+    "subowntype": "",
+    "subsurfown": "",
+    "szip": "",
+    "structno": 1,
+    "structyear": 1840,
+    "presentval": "",
+    "mapref": "",
+    "Shape__Area": 270211.9057864732,
+    "Shape__Length": 2079.2790207609073
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       2107316.1850613058,
+       739408.0180950612
+      ],
+      [
+       2107296.3196154684,
+       738887.7576526403
+      ],
+      [
+       2106777.6976212263,
+       738907.5607626438
+      ],
+      [
+       2106797.563067049,
+       739427.8212050647
+      ],
+      [
+       2107316.1850613058,
+       739408.0180950612
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "attributes": {
+    "objectid": 33484941,
+    "parno": "1703795310",
+    "altparno": "0102976",
+    "improvval": 10222881.0,
+    "landval": 21826980.0,
+    "parval": 32049861.0,
+    "siteadd": "120 E EDENTON ST",
+    "sunit": "",
+    "scity": "RALEIGH",
+    "gisacres": 1.31230716,
+    "struct": "Y",
+    "multistruc": "N",
+    "saledate": 978325200000,
+    "saledatetx": "",
+    "legdecfull": "LO1 RECTORS & WARDENS & VESTRYMEN CHRIST CHRCH BM2015 -00711",
+    "parusecode": "XMT",
+    "parusedesc": "E",
+    "parusecd2": "66",
+    "parusedsc2": "CHURCH",
+    "parvaltype": "Assessed",
+    "recareano": 1.30999994,
+    "recareatx": "",
+    "revisedate": null,
+    "sourceref": "Deed Book/Page 000527/00242",
+    "sourcedate": -1337713200000,
+    "sourcedatx": "",
+    "subdivisio": "",
+    "nparno": "37183_1703795310",
+    "cntyname": "Wake",
+    "cntyfips": "183",
+    "stfips": "37",
+    "stcntyfips": "37183",
+    "gnisid": 1008592,
+    "sourceagnt": "Wake County Assessor",
+    "transfdate": 1778994000000,
+    "revdatetx": "",
+    "reviseyear": "",
+    "saddno": "120",
+    "saddpref": "E",
+    "saddstname": "EDENTON",
+    "saddstr": "EDENTON",
+    "saddstsuf": "",
+    "saddsttyp": "ST",
+    "sstate": "NC",
+    "stname": "NC",
+    "subowntype": "",
+    "subsurfown": "",
+    "szip": "",
+    "structno": 1,
+    "structyear": 1854,
+    "presentval": "",
+    "mapref": "",
+    "Shape__Area": 57164.1108701947,
+    "Shape__Length": 1048.06548836831
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       2107692.633455381,
+       739331.4211353958
+      ],
+      [
+       2107691.030768305,
+       739288.5012737215
+      ],
+      [
+       2107618.0693000555,
+       739290.8752847314
+      ],
+      [
+       2107607.5748984665,
+       739291.2168194801
+      ],
+      [
+       2107603.6572553813,
+       739186.2898639739
+      ],
+      [
+       2107374.102924466,
+       739195.013599813
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "attributes": {
+    "objectid": 33534591,
+    "parno": "1703786949",
+    "altparno": "0102617",
+    "improvval": 25623351.0,
+    "landval": 33989715.0,
+    "parval": 59613066.0,
+    "siteadd": "101 E MORGAN ST",
+    "sunit": "",
+    "scity": "RALEIGH",
+    "gisacres": 2.03598567,
+    "struct": "Y",
+    "multistruc": "Y",
+    "saledate": 978325200000,
+    "saledatetx": "",
+    "legdecfull": "107 E MORGAN STREET",
+    "parusecode": "XMT",
+    "parusedesc": "E",
+    "parusecd2": "34",
+    "parusedsc2": "OFC GROSS",
+    "parvaltype": "Assessed",
+    "recareano": 2.03999996,
+    "recareatx": "",
+    "revisedate": null,
+    "sourceref": "Deed Book/Page 000711/00043",
+    "sourcedate": -1072292400000,
+    "sourcedatx": "",
+    "subdivisio": "",
+    "nparno": "37183_1703786949",
+    "cntyname": "Wake",
+    "cntyfips": "183",
+    "stfips": "37",
+    "stcntyfips": "37183",
+    "gnisid": 1008592,
+    "sourceagnt": "Wake County Assessor",
+    "transfdate": 1778994000000,
+    "revdatetx": "",
+    "reviseyear": "",
+    "saddno": "101",
+    "saddpref": "E",
+    "saddstname": "MORGAN",
+    "saddstr": "MORGAN",
+    "saddstsuf": "",
+    "saddsttyp": "ST",
+    "sstate": "NC",
+    "stname": "NC",
+    "subowntype": "",
+    "subsurfown": "",
+    "szip": "",
+    "structno": 3,
+    "structyear": 1918,
+    "presentval": "",
+    "mapref": "",
+    "Shape__Area": 88687.60096610748,
+    "Shape__Length": 1262.6406232456943
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       2107790.3412652165,
+       739080.1237377226
+      ],
+      [
+       2107782.2887878865,
+       738869.2777027339
+      ],
+      [
+       2107362.271583304,
+       738885.2392849773
+      ],
+      [
+       2107370.3243887275,
+       739096.0859761387
+      ],
+      [
+       2107790.3412652165,
+       739080.1237377226
+      ]
+     ]
+    ]
+   }
+  }
+ ],
+ "_note": "Raw ArcGIS reply (NC OneMap, Wake County area), owner/mailing fields removed and rings truncated to 6 vertices for storage."
+}
