@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-28",
+  "updatedAt": "2026-09-29",
   "queueSource": "https://population.un.org/wup/",
   "sources": [
     {
@@ -88,6 +88,23 @@
         "geonames:1853909"
       ],
       "evidenceFile": "research/osaka.json"
+    },
+    {
+      "sourceId": "us-ca-lacounty-assessor-parcels",
+      "name": "Los Angeles County Assessor parcels (public MapServer)",
+      "operator": "Los Angeles County Office of the Assessor / County eGIS",
+      "countryCode": "US",
+      "scope": "Los Angeles County only; neighbouring counties in the urban agglomeration are separate sources",
+      "endpoint": "https://public.gis.lacounty.gov/public/rest/services/LACounty_Cache/LACounty_Parcel/MapServer/0/query",
+      "method": "GET",
+      "responseFormat": "ArcGIS JSON (esriGeometryPolygon)",
+      "crs": "native EPSG:3857; EPSG:4326 via outSR",
+      "verificationStatus": "verified_nonempty_sample",
+      "reuseStatus": "county_GIS_terms_grant_copy_and_adapt_license;_conditions_to_review",
+      "verifiedCityIds": [
+        "geonames:5368361"
+      ],
+      "evidenceFile": "research/los-angeles.json"
     }
   ],
   "countryCoverage": [],
@@ -491,6 +508,23 @@
       "parcelStatus": "no_verified_open_endpoint_after_attempts",
       "sourceIds": [],
       "researchFile": "research/lagos.json"
+    },
+    {
+      "cityId": "geonames:5368361",
+      "name": "Los Angeles",
+      "country": "United States",
+      "countryCode": "US",
+      "centerLatLon": [
+        34.05223,
+        -118.24368
+      ],
+      "citySource": "https://www.geonames.org/5368361/los-angeles.html",
+      "researchOrder": 27,
+      "parcelStatus": "verified_sample_county_scope",
+      "sourceIds": [
+        "us-ca-lacounty-assessor-parcels"
+      ],
+      "researchFile": "research/los-angeles.json"
     }
   ]
 }
