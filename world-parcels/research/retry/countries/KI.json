@@ -1,0 +1,66 @@
+{
+ "kind": "country",
+ "key": "KI",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "no_online_cadastre_found",
+ "newStatus": "no_online_cadastre_found",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-KI,en;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.mlgrd.gov.ki/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable (guessed host, wrong ministry)"
+  },
+  {
+   "url": "https://www.melad.gov.ki/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "real Ministry of Environment, Lands & Agricultural Development site"
+  },
+  {
+   "url": "https://lands.melad.gov.ki/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Lands Management Division WordPress site; units: Land Information/Registration/Valuation, GIS Unit, Land Surveying; no map viewer or service link"
+  },
+  {
+   "url": "https://lands.melad.gov.ki/our-work/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "describes GIS Unit; no public service"
+  },
+  {
+   "url": "https://pacificdata.org/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "blocked"
+  },
+  {
+   "url": "https://gsd.spc.int/",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/html",
+   "assessment": "unavailable"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Kiribati parcel OR cadastre&f=json&num=8",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "no parcel/cadastre layers, only unrelated Kiribati items"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "New: authority confirmed as MELAD Lands Management Division (lands.melad.gov.ki), which has a GIS Unit but exposes no public parcel viewer/service. No ArcGIS Online parcel layers. Still no online cadastre found.",
+ "nextStep": "Low priority; check SPC/Pacific Data Hub from another network if desired."
+}

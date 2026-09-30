@@ -1,0 +1,120 @@
+{
+ "kind": "country",
+ "key": "GB",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "national_cadastre_credentialed_or_paid",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: en-GB,en;q=0.9",
+ "changedByHeaders": true,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": {
+  "sourceId": "gb-hmlr-inspire-index-polygons",
+  "requestUrl": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Council_of_the_Isles_of_Scilly.zip",
+  "method": "GET (cookie jar; 302 to a presigned S3 URL, then GET)",
+  "httpStatus": 200,
+  "contentType": "application/force-download (zip containing GML)",
+  "spatialTestAreaLonLat": "Isles of Scilly local authority extent (approx x 94000-95500, y 14000-15000 EPSG:27700)",
+  "parcelRecordCount": 956,
+  "recordListPath": "wfs:FeatureCollection/wfs:member/LR:PREDEFINED",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "INSPIREID / NATIONALCADASTRALREFERENCE",
+  "responseFile": "research/retry/countries/GB-parcel-response.json (first 3 of 956 features, geometry truncated)",
+  "pagination": "none; one zip per local authority (650 KB zip, 2.4 MB GML for the smallest authority)",
+  "regionSampled": "Council of the Isles of Scilly (England)"
+ },
+ "source": {
+  "sourceId": "gb-hmlr-inspire-index-polygons",
+  "name": "HM Land Registry INSPIRE Index Polygons (Use land and property data service)",
+  "operator": "HM Land Registry",
+  "scope": "England and Wales freehold/leasehold title extents (index polygons, not a full cadastre); Scotland (Registers of Scotland) and Northern Ireland (LPS) not covered",
+  "endpoint": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+  "method": "bulk GML download per local authority, no account needed (an anonymous session cookie is set automatically)",
+  "responseFormat": "GML (WFS 2.0 FeatureCollection)",
+  "crs": "EPSG:27700",
+  "reuseStatus": "Download page states 'By downloading these datasets, you are agreeing to the OGL conditions of use' (Open Government Licence v3 link); the zip also contains 'INSPIRE Download Licence.pdf', which I did not read"
+ },
+ "requests": [
+  {
+   "url": "https://inspire.landregistry.gov.uk/inspire/ows?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "ServiceUnavailable: 'Service WFS is disabled' (unchanged)"
+  },
+  {
+   "url": "https://use-land-property-data.service.gov.uk/datasets/inspire",
+   "method": "GET",
+   "httpStatus": 302,
+   "contentType": "text/html",
+   "assessment": "redirect loop without cookies (sets anonymous session cookies; not a login); with a cookie jar returns 200 dataset page, OGL link, Sign in optional"
+  },
+  {
+   "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "list of ~300 per-authority .zip download links, anonymous; 'view all polygons on a map' link also present"
+  },
+  {
+   "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Council_of_the_Isles_of_Scilly.zip",
+   "method": "GET",
+   "httpStatus": 302,
+   "contentType": "text/html",
+   "assessment": "redirect to presigned S3 URL"
+  },
+  {
+   "url": "<presigned S3 URL, expires in 60 s>",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/force-download",
+   "assessment": "649,422-byte zip; GML with 956 closed polygons, INSPIREID/NATIONALCADASTRALREFERENCE"
+  },
+  {
+   "url": "https://api.os.uk/features/ngd/ofa/v1/collections",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "collection list open, no parcel/cadastral collection (Land, Field Boundary etc.)"
+  },
+  {
+   "url": "https://api.os.uk/features/ngd/ofa/v1/collections/bld-fts-buildingpart/items?limit=1",
+   "method": "GET",
+   "httpStatus": 401,
+   "contentType": "application/json",
+   "assessment": "API key required for features"
+  },
+  {
+   "url": "https://data.spatialhub.scot/api/3/action/package_search?q=cadastral&rows=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 datasets"
+  },
+  {
+   "url": "https://www.ros.gov.uk/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare 'Just a moment' challenge; not bypassed"
+  },
+  {
+   "url": "https://www.lps.gov.uk/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Cloudflare challenge/no response; not bypassed"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "UK hosts answer normally; only Cloudflare challenges on RoS/LPS sites",
+ "notes": "Changed by handling cookies: the previous 'Cloudflare challenge' on the INSPIRE download was actually a cookie-dependent redirect; with browser headers plus a cookie jar the OGL-labelled anonymous download works and yields real polygons. Scope caveats: England and Wales only, index polygons (title extents), bulk per-authority files, not a queryable API; WFS still disabled. One authority sampled, so nationwideVerified=false even for England and Wales. Scotland and Northern Ireland not verified. Licence text in the zip not read.",
+ "nextStep": "Sample a second authority (e.g. a London borough); probe RoS and LPS NI services; consider whether bulk-download-only counts as 'online cadastre' in the registry.",
+ "coverageAssessment": {
+  "claimedScope": "England and Wales (HMLR); UK has no single cadastre",
+  "regionsVerified": [
+   "Isles of Scilly (England)"
+  ],
+  "nationwideVerified": false
+ }
+}

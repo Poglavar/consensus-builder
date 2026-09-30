@@ -1,0 +1,102 @@
+{
+ "kind": "country",
+ "key": "GE",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "national_cadastre_viewer_only",
+ "newStatus": "national_cadastre_viewer_only",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: ka-GE,ka;q=0.9,en;q=0.8",
+ "changedByHeaders": true,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://maps.gov.ge/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "now returns the viewer shell at /map/portal/ (previously reported 302 then Access Denied)"
+  },
+  {
+   "url": "https://maps.gov.ge/map/portal/js/main.f0683d617e2f4941ba0a.app.js",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/javascript",
+   "assessment": "inspected: OpenLayers app; styles for layers LR_PARCELS, LR_ZONES, LR_SEQTORS, LR_QUARTERS, LR_LINEOBJECTS with attribute CADCODE; queries go through a same-origin backend not named in the JS; no token, WFS or ArcGIS URL in the bundle"
+  },
+  {
+   "url": "https://maps.gov.ge/map/portal/assets/views/default/index.html",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "UI template, no service URLs"
+  },
+  {
+   "url": "https://maps.gov.ge/geoserver/ows?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "'Access Denied' page (WAF)"
+  },
+  {
+   "url": "https://maps.gov.ge/map/geoserver/ows?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "'Access Denied' page"
+  },
+  {
+   "url": "https://maps.gov.ge/map/api/layers",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "'Access Denied' page"
+  },
+  {
+   "url": "https://maps.gov.ge/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "'Access Denied' page"
+  },
+  {
+   "url": "https://maps.gov.ge/map",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "'Access Denied' page"
+  },
+  {
+   "url": "https://naprweb.reestri.gov.ge/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Angular app shell only"
+  },
+  {
+   "url": "https://api.napr.gov.ge/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "'Access Denied' page"
+  },
+  {
+   "url": "https://maps.napr.gov.ge/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no response (TLS/host issue as before; not bypassed)"
+  },
+  {
+   "url": "https://www.napr.gov.ge/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "agency site"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "portal loads normally; Access Denied only on non-portal paths (WAF for API-like URLs), not clearly geographic",
+ "notes": "New: the maps.gov.ge portal loads and its JS names the parcel layer LR_PARCELS (attribute CADCODE) and is the official NAPR cadastral viewer, but the data endpoint is not exposed in the static JS and API-like paths are WAF-blocked; guessing more was stopped. Still viewer-only from what was verified.",
+ "nextStep": "Capture the viewer's network calls in a real browser to get the identify/bbox endpoint; check its terms."
+}

@@ -1,0 +1,94 @@
+{
+ "kind": "country",
+ "key": "KE",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "national_cadastre_credentialed_or_paid",
+ "newStatus": "national_cadastre_credentialed_or_paid",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-KE,en;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://ardhisasa.lands.go.ke/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Angular shell; main.js inspected: APIs at https://ardhisasa-api.lands.go.ke/<service>/api/v1/... (auth, registration, sale, etc.), parcel lookups by parcel_number only, no spatial/WFS/ArcGIS endpoint"
+  },
+  {
+   "url": "https://ardhisasa-api.lands.go.ke/",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "",
+   "assessment": "API root, no listing"
+  },
+  {
+   "url": "https://ardhisasa-api.lands.go.ke/registration/api/v1/shared/land-use/all",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "",
+   "assessment": "guessed path, not found"
+  },
+  {
+   "url": "https://lands.go.ke/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Ministry site, no parcel viewer link found"
+  },
+  {
+   "url": "https://www.surveyofkenya.go.ke/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT 502"
+  },
+  {
+   "url": "https://geoportal.lands.go.ke/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT 502"
+  },
+  {
+   "url": "https://kenyalis.lands.go.ke/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT 502"
+  },
+  {
+   "url": "https://geoportal.nairobi.go.ke/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT 502"
+  },
+  {
+   "url": "https://kiambu.go.ke/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "county site, no parcel service found"
+  },
+  {
+   "url": "https://services6.arcgis.com/HwQk19ysBarANM17/arcgis/rest/services/CBD_Parcel_Data/FeatureServer/0/query?where=1%3D1&resultRecordCount=3&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "body: error 499 Token Required"
+  },
+  {
+   "url": "https://services2.arcgis.com/vxSS9LwJ1wu0pgAd/arcgis/rest/services/Kenya_Parcels_MAP_DB/FeatureServer/0/query?where=1%3D1&resultRecordCount=3&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "found via ArcGIS Online search (unofficial org); body: error 499 Token Required"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "No change. Viewer JS inspection confirms Ardhisasa is account-based with per-parcel-number APIs, no public spatial endpoint. Two third-party ArcGIS Online parcel layers (Nairobi CBD, Kenya_Parcels_MAP_DB) both require tokens. Several government hosts still refuse the proxy tunnel (not a permanent negative).",
+ "nextStep": "Retry Survey of Kenya/geoportal hosts later; county GIS (Nairobi, Kiambu) may still have an open layer."
+}
