@@ -18,7 +18,7 @@
  },
  "verifiedParcelResponse": {
   "sourceId": "us-md-parcel-boundaries",
-  "requestUrl": "https://mdgeodata.md.gov/imap/rest/services/PlanningCadastre/MD_ParcelBoundaries/MapServer/0/query?where=1%3D1&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-76.6130%2C39.2900%2C-76.6115%2C39.2910&outFields=ACCTID%2CJURSCODE",
+  "requestUrl": "https://mdgeodata.md.gov/imap/rest/services/PlanningCadastre/MD_ParcelBoundaries/MapServer/0/query?where=ACCTID%3C%3E%27ROW%27+AND+ACCTID+IS+NOT+NULL&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-76.6130%2C39.2900%2C-76.6115%2C39.2910&outFields=ACCTID%2CJURSCODE",
   "method": "GET",
   "httpStatus": 200,
   "contentType": "application/json; charset=UTF-8",
@@ -51,14 +51,14 @@
  ],
  "requests": [
   {
-   "url": "https://mdgeodata.md.gov/imap/rest/services/PlanningCadastre/MD_ParcelBoundaries/MapServer/0/query?where=1%3D1&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-76.6130%2C39.2900%2C-76.6115%2C39.2910&outFields=ACCTID%2CJURSCODE",
+   "url": "https://mdgeodata.md.gov/imap/rest/services/PlanningCadastre/MD_ParcelBoundaries/MapServer/0/query?where=ACCTID%3C%3E%27ROW%27+AND+ACCTID+IS+NOT+NULL&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-76.6130%2C39.2900%2C-76.6115%2C39.2910&outFields=ACCTID%2CJURSCODE",
    "method": "GET",
    "httpStatus": 200,
    "contentType": "application/json; charset=UTF-8",
-   "assessment": "3 parcel polygons with ACCTID"
+   "assessment": "3 parcel polygons with ACCTID (Baltimore City); an earlier unfiltered request returned right-of-way polygons with ~31 MB geometry, so ROW records were excluded"
   },
   {
-   "url": "https://mdgeodata.md.gov/imap/rest/services/PlanningCadastre/MD_ParcelBoundaries/MapServer/0/query?where=1%3D1&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-76.4900%2C38.9780%2C-76.4885%2C38.9790&outFields=ACCTID%2CJURSCODE",
+   "url": "https://mdgeodata.md.gov/imap/rest/services/PlanningCadastre/MD_ParcelBoundaries/MapServer/0/query?where=ACCTID%3C%3E%27ROW%27+AND+ACCTID+IS+NOT+NULL&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-76.4900%2C38.9780%2C-76.4885%2C38.9790&outFields=ACCTID%2CJURSCODE",
    "method": "GET",
    "httpStatus": 200,
    "contentType": "application/json; charset=UTF-8",
