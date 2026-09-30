@@ -1,0 +1,49 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "ID",
+ "regionCode": "MU",
+ "regionName": "Maluku Utara",
+ "checkedAt": "2026-09-30",
+ "status": "no_open_service_found",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "No 'Hak Milik' sublayer exists for this province on the BIG Satu Peta MapServer (no sublayer, so no bounded query possible).",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer",
+   "observation": "Listing of the MapServer: group layer 10 has 15 province sublayers (11-25: NTB, Jatim, DIY, Kalbar, Sulbar, Kaltara, Aceh, Sultra, Maluku, Kaltim, Jabar, Bali, Banten, Kepri, Jateng). None for Maluku Utara, Papua Barat, Papua Barat Daya, Papua, Papua Selatan, Papua Tengah, Papua Pegunungan. Layers 28-35 and 51-57 are oil-palm permits in Papua districts, not parcels."
+  },
+  {
+   "url": "https://bhumi.atrbpn.go.id/peta",
+   "observation": "ATR/BPN BHUMI viewer page returns 200 HTML; no open parcel endpoint identified (token-gated); not tested further"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer?f=json and /10?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "sublayer list; headers used: Chrome/125 desktop UA, Accept application/json, Accept-Language id-ID, cookie jar, Referer https://satupeta.big.go.id/"
+  },
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "7 service folders; none is a cadastre layer for this province"
+  },
+  {
+   "url": "https://geoportal.<province>.go.id guesses (Maluku Utara, Papua Barat, Papua)",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "did not resolve/connect (proxy or DNS); guessed hosts, not evidence of absence"
+  }
+ ],
+ "reuseStatus": "n/a",
+ "remainingUncertainty": "Provincial geoportal / Simpul Jaringan URLs were guessed, not looked up; the BHUMI viewer is token-gated and was not queried. Result is 'no sublayer', not 'sublayer but empty'.",
+ "nextStep": "Look up the provincial Simpul Jaringan / geoportal URL and any city (e.g. Ternate, Sorong, Jayapura, Manokwari) services; inspect BHUMI viewer JS."
+}
