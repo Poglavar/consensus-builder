@@ -5,8 +5,8 @@ This is the consolidated record of the world-parcel source research. The machine
 ## Where things stand
 
 - **Cities:** 201 researched (the UN WUP 2025 top 200 plus Zagreb). 61 have a bounded parcel sample (HTTP 200/206 with a nonempty polygon list); 49 are `temporarily_unavailable` because their hosts could not be reached from the research network; 89 had no open endpoint found. No city sample is proven complete for its city.
-- **Countries:** 201 probed. **45** pass the two-region test (polygons returned in two or more distinct regions from one service): AL, AT, BD, BE, BG, BJ, BY, CH, CY, CZ, DK, EE, ES, FI, FO, FR, GG, GR, HK, HR, IE, IL, IM, IS, IT, JM, JO, LI, LT, LU, LV, MN, MT, NC, NL, NO, NZ, PL, PT, PY, SE, SI, SK, TR, XK. 19 more have a partial or unofficial sample (BB, BO, BR, CV, DO, GB, HU, ID, JE, JP, LK, ML, MO, PF, PS, SG, TT, UY, ZA). 75 are unavailable from this network, 21 have nothing found, 11 are gated, 4 are viewer-only, 21 are federations tracked by region.
-- **Federations:** 11 countries tracked region by region, 254 regions, 96 with an open region-wide parcel layer verified by a bounded query.
+- **Countries:** 201 probed. **50** pass the two-region test (polygons returned in two or more distinct regions from one service): AL, AT, BD, BE, BG, BJ, BY, CH, CO, CY, CZ, DK, EE, ES, FI, FO, FR, GG, GR, HK, HR, IE, IL, IM, IS, IT, JM, JO, JP, LI, LT, LU, LV, MN, MT, NC, NL, NO, NZ, PL, PT, PY, RW, SE, SG, SI, SK, TR, UY, XK. 19 more have a partial or unofficial sample (BB, BO, BR, CV, DO, GB, HU, ID, JE, JP, LK, ML, MO, PF, PS, SG, TT, UY, ZA). 75 are unavailable from this network, 21 have nothing found, 11 are gated, 4 are viewer-only, 21 are federations tracked by region.
+- **Federations:** 12 countries tracked region by region, 284 regions, 117 with an open region-wide parcel layer verified by a bounded query.
 
 | Country | Regions | Region-wide open | Partial | Gated | None / unreachable | Rural registry only |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -63,6 +63,15 @@ Saved replies hold parcel IDs and geometry only. Owner names, mailing addresses,
 - **Botswana: low.** Deeds-based title, data supplied on request or for payment, no online service found.
 - **Tunisia: low to medium.** The land-survey office sells maps and its cadastral geoportal is "in progress"; the `.nat.tn` hosts were unreachable, so partly a network verdict.
 - **Also green already:** Benin (national WFS, 578k parcels). **Pilot only:** Cape Verde (572 parcels). **Worth a second look:** Mauritius (open GeoNode without a parcel layer; land-survey host unreachable). **Gated on the evidence:** Kenya, Ghana, Ethiopia, Lesotho. **Never answered from here:** Namibia, Tanzania, Uganda, Senegal, Mozambique, Zambia and most others, which are unknowns, not negatives.
+
+## Developed-country gaps, re-checked (2026-09-30)
+
+Ten countries whose level of development suggested a cadastre we had missed. Four were our miss, four were not, two are still network verdicts.
+
+- **Found (our miss):** **Japan** (MOJ registry maps via the Geospatial Information Center CKAN API, CC BY, per-municipality bulk files, verified Sapporo, Fukuoka, Osaka); **Uruguay** (DNC parcels on the national SNIG ArcGIS server, in a folder the first pass never opened); **Colombia** (IGAC's national cadastre service, 3.6M urban polygons, found through the Colombia en Mapas viewer script; decentralised city cadastres excluded); **Singapore** (the SLA file via the open-data poll-download API; the Singapore Open Data Licence was read and permits commercial use, the first source cleared on licence).
+- **Found but partial by design:** **Chile** (CIREN/MINAGRI rural property cadastre; urban stays viewer-only at SII), **Peru** (MIDAGRI rural layer; urban not reached), **Panama** (ANATI titled parcels for two provinces only).
+- **Not our miss:** **Hungary** sells its cadastral base map per hectare under a 2012 act, with online services contract-only. **South Korea's** national file is free per its catalogue, but every route runs through VWorld, which drops our connections and needs a free key. **Romania's** geoportal is in a phased restart.
+- Lead not yet followed: the Dominican Republic has a separate cadastre hub on ArcGIS (`geoportal-catastronacional.hub.arcgis.com`) that could replace its historical-parcels layer.
 
 ## Open items, in priority order
 

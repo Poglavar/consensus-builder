@@ -84,12 +84,12 @@ Generated from `registry.json` (updated 2026-09-29). A city sample proves only a
 
 Question: does each country have a country-wide online cadastre? Statuses come from `research/countries/<ISO2>.json`; the registry normalises labels the evidence did not support (see each entry's `mergeNote`). `countryCoverage` stays empty until a source has an explicit nationwide claim, two distinct verified regions, one schema, and recorded exclusions.
 
-- **`temporarily_unavailable`** (75): AF, AZ, BN, BT, CD, CI, CU, CW, DJ, DZ, EC, ER, ET, FJ, GA, GI, GM, GQ, GT, GY, HN, IQ, IR, KG, KH, KR, KW, KZ, LA, LB, LY, MA, MD, MK, MM, MR, MU, MV, MW, MX, MZ, NA, NE, NI, NP, OM, PA, PE, QA, RO, RS, RU, SA, SB, SD, SL, SN, SO, SS, ST, SY, SZ, TD, TG, TJ, TL, TM, TZ, UA, UG, UZ, VE, VN, VU, YE
-- **`national_online_cadastre_verified_sample`** (46): AL, AT, BD, BE, BG, BJ, BY, CH, CY, CZ, DK, EE, ES, FI, FO, FR, GG, GR, HK, HR, IE, IL, IM, IS, IT, JM, JO, LI, LT, LU, LV, MN, MT, NC, NL, NO, NZ, PL, PT, PY, RW, SE, SI, SK, TR, XK
+- **`temporarily_unavailable`** (73): AF, AZ, BN, BT, CD, CI, CU, CW, DJ, DZ, EC, ER, ET, FJ, GA, GI, GM, GQ, GT, GY, HN, IQ, IR, KG, KH, KR, KW, KZ, LA, LB, LY, MA, MD, MK, MM, MR, MU, MV, MW, MX, MZ, NA, NE, NI, NP, OM, QA, RO, RS, RU, SA, SB, SD, SL, SN, SO, SS, ST, SY, SZ, TD, TG, TJ, TL, TM, TZ, UA, UG, UZ, VE, VN, VU, YE
+- **`national_online_cadastre_verified_sample`** (50): AL, AT, BD, BE, BG, BJ, BY, CH, CO, CY, CZ, DK, EE, ES, FI, FO, FR, GG, GR, HK, HR, IE, IL, IM, IS, IT, JM, JO, JP, LI, LT, LU, LV, MN, MT, NC, NL, NO, NZ, PL, PT, PY, RW, SE, SG, SI, SK, TR, UY, XK
 - **`no_online_cadastre_found`** (21): AD, AO, BI, BW, CF, CG, CM, EG, EH, GN, GW, HT, KI, KM, KP, LR, PG, SM, SR, VA, WS
-- **`subnational_only`** (20): AE, AR, AU, BA, BS, BZ, CA, CL, CO, DE, IN, MG, NG, PH, PK, PR, SV, US, ZM, ZW
-- **`partial_or_unofficial_sample`** (19): BB, BO, BR, CV, DO, GB, HU, ID, JE, JP, LK, ML, MO, PF, PS, SG, TT, UY, ZA
-- **`national_cadastre_credentialed_or_paid`** (11): BF, BH, CN, GH, KE, LS, ME, MY, TH, TN, TW
+- **`subnational_only`** (18): AE, AR, AU, BA, BS, BZ, CA, DE, IN, MG, NG, PH, PK, PR, SV, US, ZM, ZW
+- **`partial_or_unofficial_sample`** (18): BB, BO, BR, CL, CV, DO, GB, ID, JE, LK, ML, MO, PA, PE, PF, PS, TT, ZA
+- **`national_cadastre_credentialed_or_paid`** (12): BF, BH, CN, GH, HU, KE, LS, ME, MY, TH, TN, TW
 - **`covered_by_parent_source`** (5): GF, GP, MQ, RE, YT
 - **`national_cadastre_viewer_only`** (4): AM, CR, GE, MC
 
@@ -102,8 +102,8 @@ Every non-verified country and every unavailable or candidate city was retried w
 ## Europe focus pass (2026-09-30)
 
 Every European country not yet green was re-probed from the INSPIRE/national catalogues and the official viewer's code, two regions each (`research/europe/`).
-- Now passing the two-region test: AL, BE, CH, FO, GG, GR, IM, IS, LI, LV, MT, PT, SK.
-- Still not: AD (no_online_cadastre_found), AM (national_cadastre_viewer_only), AZ (temporarily_unavailable), BA (subnational_only), DE (subnational_only), GB (partial_or_unofficial_sample), GE (national_cadastre_viewer_only), GI (temporarily_unavailable), HU (partial_or_unofficial_sample), JE (partial_or_unofficial_sample), MC (national_cadastre_viewer_only), MD (temporarily_unavailable), ME (national_cadastre_credentialed_or_paid), MK (temporarily_unavailable), RO (temporarily_unavailable), RS (temporarily_unavailable), RU (temporarily_unavailable), SM (no_online_cadastre_found), UA (temporarily_unavailable), VA (no_online_cadastre_found).
+- Now passing the two-region test: AL, BE, CH, CO, FO, GG, GR, IM, IS, JP, LI, LV, MT, PT, SG, SK, UY.
+- Still not: AD (no_online_cadastre_found), AM (national_cadastre_viewer_only), AZ (temporarily_unavailable), BA (subnational_only), CL (partial_or_unofficial_sample), DE (subnational_only), GB (partial_or_unofficial_sample), GE (national_cadastre_viewer_only), GI (temporarily_unavailable), HU (national_cadastre_credentialed_or_paid), JE (partial_or_unofficial_sample), KR (temporarily_unavailable), MC (national_cadastre_viewer_only), MD (temporarily_unavailable), ME (national_cadastre_credentialed_or_paid), MK (temporarily_unavailable), PA (partial_or_unofficial_sample), PE (partial_or_unofficial_sample), RO (temporarily_unavailable), RS (temporarily_unavailable), RU (temporarily_unavailable), SM (no_online_cadastre_found), UA (temporarily_unavailable), VA (no_online_cadastre_found).
 
 ## Federal countries by region (subnational tier)
 

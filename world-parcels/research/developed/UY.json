@@ -1,0 +1,105 @@
+{
+ "countryCode": "UY",
+ "country": "Uruguay",
+ "previousStatus": "partial_or_unofficial_sample",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Direccion Nacional de Catastro (DNC) data served by SNIG (MGAP) ArcGIS Server; national IDE is IDEuy (AGESIC)",
+ "inspireRecordUrl": null,
+ "portalsFound": [
+  {
+   "url": "https://web.snig.gub.uy/arcgisserver/rest/services/Uruguay",
+   "observation": "Folder 'Uruguay' (missed before because only the root was listed): SNIG_Catastro, SNIG_Catastro_Dos, SNIG_Catastro_Image(_Dos), SNIG_Operadores MapServers."
+  },
+  {
+   "url": "https://web.snig.gub.uy/arcgisserver/rest/services/Uruguay/SNIG_Catastro/MapServer",
+   "observation": "Layers 0 Catastro Rural (scale 1:300000-1:5000) and 1 Catastro Rural y Urbano (scale <=1:5000), polygons, capabilities Query,Map,Data, native EPSG:32721. Fields: Codigo, tipo (U/R), nomDepto, nomLocCat, codDepto, codLocCat, NroPadron, CodDepartamento, area. No owner data."
+  },
+  {
+   "url": "https://visualizador.ide.uy/",
+   "observation": "IDEuy viewer (gvSIG Online / OpenLayers) with GeoNetwork catalogue at /geonetwork; HTML inspected, no parcel URL in the static page."
+  },
+  {
+   "url": "https://catalogodatos.gub.uy/",
+   "observation": "National CKAN with bulk DXF parcelario (previous evidence)."
+  },
+  {
+   "url": "https://geoservicios.ide.uy/ , https://catastro.mef.gub.uy , https://www.ide.gub.uy/",
+   "observation": "proxy CONNECT 502 / connection reset; not bypassed"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://web.snig.gub.uy/arcgisserver/rest/services/Uruguay?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "lists SNIG_Catastro services"
+  },
+  {
+   "url": "https://web.snig.gub.uy/arcgisserver/rest/services/Uruguay/SNIG_Catastro/MapServer/1?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "polygon layer, fields listed"
+  },
+  {
+   "url": "https://web.snig.gub.uy/arcgisserver/rest/services/Uruguay/SNIG_Catastro/MapServer/1/query (Montevideo bbox -56.191,-34.906,-56.189,-34.904; outFields=*; 3)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "3 urban parcels (tipo U, NroPadron 7203 ...), closed polygons"
+  },
+  {
+   "url": "same layer, Salto bbox -57.961,-31.391,-57.959,-31.389",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "3 urban parcels in Salto (Codigo HAA0005666 ...), closed polygons"
+  },
+  {
+   "url": "https://visualizador.ide.uy/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "viewer HTML"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "uy-snig-catastro",
+  "requestUrl": "https://web.snig.gub.uy/arcgisserver/rest/services/Uruguay/SNIG_Catastro/MapServer/1/query?geometry=<bbox>&geometryType=esriGeometryEnvelope&inSR=4326&outFields=*&outSR=4326&f=geojson",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/geo+json",
+  "spatialTestAreaLonLat": "Montevideo ~-56.19,-34.905; Salto ~-57.96,-31.39",
+  "parcelRecordCount": 6,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "Codigo (dept letter + locality + padron) and NroPadron",
+  "responseFile": "research/developed/UY-parcel-response.json",
+  "pagination": "maxRecordCount not read; use small bbox or objectIds",
+  "regionSampled": "Montevideo; Salto"
+ },
+ "coverageAssessment": {
+  "claimedScope": "DNC cadastre, rural and urban parcels, all departments (layer extent covers the country); layer 1 only renders/queries at <=1:5000 scale for display, query not scale limited in test",
+  "regionsVerified": [
+   "Montevideo",
+   "Salto"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Licence not read. Rural layer 0 not sampled. Whether every department is populated was not counted.",
+ "nextStep": "Sample rural layer 0 (e.g. Tacuarembo) and read the SNIG terms; map NroPadron to the DNC padron CSVs.",
+ "foundViaViewerInspection": false,
+ "geoBlockSuspected": false,
+ "changedByHeaders": false,
+ "regionsSampled": [
+  "Montevideo",
+  "Salto"
+ ],
+ "schemaVersion": 1,
+ "checkedAt": "2026-09-30",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: es-UY,es;q=0.9,en;q=0.8; cookie jar used; Referer set to viewer origin where relevant"
+}

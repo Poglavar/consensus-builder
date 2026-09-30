@@ -1036,6 +1036,15 @@
       "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
     },
     {
+      "countryCode": "CO",
+      "country": "Colombia",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/CO.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed. IGAC national service covers IGAC-managed territory; the decentralised cadastres (Bogota, Medellin, Cali, Barranquilla) return nothing there and are covered by the city services."
+    },
+    {
       "countryCode": "CY",
       "country": "Cyprus",
       "status": "verified_countrywide",
@@ -1180,6 +1189,15 @@
       "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
     },
     {
+      "countryCode": "JP",
+      "country": "Japan",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/JP.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed. Per-municipality bulk GeoJSON via the Geospatial Information Center CKAN, CC BY; no bbox service."
+    },
+    {
       "countryCode": "LT",
       "country": "Lithuania",
       "status": "verified_countrywide",
@@ -1306,6 +1324,15 @@
       "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed. Undocumented viewer-internal lookup by designation, not a bbox service; terms unread; may change without notice."
     },
     {
+      "countryCode": "SG",
+      "country": "Singapore",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/SG.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
       "countryCode": "SI",
       "country": "Slovenia",
       "status": "verified_countrywide",
@@ -1330,6 +1357,15 @@
       "basis": "two_region_test",
       "reviewed": false,
       "evidenceFile": "research/countries/TR.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "UY",
+      "country": "Uruguay",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/UY.json",
       "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
     },
     {
@@ -5276,14 +5312,20 @@
       "countryCode": "CL",
       "country": "Chile",
       "reportedStatus": "national_cadastre_viewer_only",
-      "status": "subnational_only",
-      "accessModel": "viewer-only",
+      "status": "partial_or_unofficial_sample",
+      "accessModel": "open",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/CL.json",
-      "previousStatus": "national_cadastre_viewer_only",
+      "previousStatus": "subnational_only",
       "retryFile": "research/retry/countries/CL.json",
       "foundViaViewerInspection": true,
-      "geoBlockSuspected": false
+      "geoBlockSuspected": false,
+      "europeFile": "research/developed/CL.json",
+      "regionsSampled": [
+        "Region Metropolitana",
+        "Biobio"
+      ],
+      "mergeNote": "CIREN/MINAGRI rural property cadastre only (14 regional layers); urban predios remain viewer-only at SII."
     },
     {
       "countryCode": "CM",
@@ -5315,10 +5357,17 @@
       "countryCode": "CO",
       "country": "Colombia",
       "reportedStatus": "subnational_only",
-      "status": "subnational_only",
+      "status": "national_online_cadastre_verified_sample",
       "accessModel": "open",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/CO.json"
+      "evidenceFile": "research/countries/CO.json",
+      "previousStatus": "subnational_only",
+      "europeFile": "research/developed/CO.json",
+      "regionsSampled": [
+        "Caldas (Manizales)",
+        "Narino (Pasto)"
+      ],
+      "mergeNote": "IGAC national service covers IGAC-managed territory; the decentralised cadastres (Bogota, Medellin, Cali, Barranquilla) return nothing there and are covered by the city services."
     },
     {
       "countryCode": "CR",
@@ -5834,17 +5883,17 @@
       "countryCode": "HU",
       "country": "Hungary",
       "reportedStatus": "national_online_cadastre_verified_sample",
-      "status": "partial_or_unofficial_sample",
-      "accessModel": "open (sample); national parcel data not open online from what was reachable",
+      "status": "national_cadastre_credentialed_or_paid",
+      "accessModel": "paid",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/HU.json",
-      "mergeNote": "The Lechner INSPIRE WFS is a Mesterszallas sampling area (about 7x10 km), not a national layer.",
-      "previousStatus": "partial_or_unofficial_sample",
-      "europeFile": "research/europe/HU.json",
+      "mergeNote": "Cadastral base map is sold per hectare under Act XLVI of 2012; online WMS/WFS contract-only; the INSPIRE WFS is a sampling area.",
+      "previousStatus": "national_cadastre_credentialed_or_paid",
+      "europeFile": "research/developed/HU.json",
       "regionsSampled": [
-        "Mesterszallas (only)"
+        "Mesterszallas pilot (only)"
       ],
-      "inspireRecordUrl": "http://inspire.lechnerkozpont.hu/geonetwork/srv/api/records/adc31900-5237-4ee3-ba73-f40b169266fa/formatters/xml (ATOM), also records 2d1c17e0-4e0a-4884-9e1f-f31ee44913f0 (view) and 278bb777-aaac-4678-bd91-d4032c7e8a8c (dataset), all titled 'Mesterszallas sampling area'"
+      "inspireRecordUrl": "http://inspire.lechnerkozpont.hu/geonetwork/srv/api/records/adc31900-5237-4ee3-ba73-f40b169266fa/formatters/xml (ATOM), 2d1c17e0-4e0a-4884-9e1f-f31ee44913f0 (view), 278bb777-aaac-4678-bd91-d4032c7e8a8c (dataset); all describe the 'Mesterszallas sampling area' only"
     },
     {
       "countryCode": "ID",
@@ -5995,11 +6044,18 @@
       "countryCode": "JP",
       "country": "Japan",
       "reportedStatus": "national_online_cadastre_verified_sample",
-      "status": "partial_or_unofficial_sample",
+      "status": "national_online_cadastre_verified_sample",
       "accessModel": "open",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/JP.json",
-      "mergeNote": "Unofficial Esri Japan layer covering only Tokyo, Aichi and Fukuoka."
+      "mergeNote": "Per-municipality bulk GeoJSON via the Geospatial Information Center CKAN, CC BY; no bbox service.",
+      "previousStatus": "partial_or_unofficial_sample",
+      "europeFile": "research/developed/JP.json",
+      "regionsSampled": [
+        "Hokkaido: Sapporo Chuo-ku (01101)",
+        "Fukuoka Prefecture: Fukuoka Higashi-ku (40131)",
+        "Osaka: Chuo-ku (27128, earlier pass)"
+      ]
     },
     {
       "countryCode": "KE",
@@ -6090,7 +6146,9 @@
       "previousStatus": "temporarily_unavailable",
       "retryFile": "research/retry/countries/KR.json",
       "foundViaViewerInspection": false,
-      "geoBlockSuspected": true
+      "geoBlockSuspected": true,
+      "europeFile": "research/developed/KR.json",
+      "regionsSampled": []
     },
     {
       "countryCode": "KW",
@@ -6622,27 +6680,39 @@
       "countryCode": "PA",
       "country": "Panama",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
-      "accessModel": "unknown",
+      "status": "partial_or_unofficial_sample",
+      "accessModel": "open",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/PA.json",
       "previousStatus": "temporarily_unavailable",
       "retryFile": "research/retry/countries/PA.json",
       "foundViaViewerInspection": true,
-      "geoBlockSuspected": false
+      "geoBlockSuspected": false,
+      "europeFile": "research/developed/PA.json",
+      "regionsSampled": [
+        "Panama province",
+        "Colon province"
+      ],
+      "mergeNote": "Europe-pass sample did not establish two regions from one service."
     },
     {
       "countryCode": "PE",
       "country": "Peru",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
-      "accessModel": "unknown",
+      "status": "partial_or_unofficial_sample",
+      "accessModel": "open",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/PE.json",
       "previousStatus": "temporarily_unavailable",
       "retryFile": "research/retry/countries/PE.json",
       "foundViaViewerInspection": true,
-      "geoBlockSuspected": false
+      "geoBlockSuspected": false,
+      "europeFile": "research/developed/PE.json",
+      "regionsSampled": [
+        "Arequipa",
+        "Lima"
+      ],
+      "mergeNote": "MIDAGRI \"Predio Rustico\" rural layer only; urban cadastre (COFOPRI, municipal) not reached."
     },
     {
       "countryCode": "PF",
@@ -6787,9 +6857,9 @@
       "retryFile": "research/retry/countries/RO.json",
       "foundViaViewerInspection": false,
       "geoBlockSuspected": false,
-      "europeFile": "research/europe/RO.json",
+      "europeFile": "research/developed/RO.json",
       "regionsSampled": [],
-      "inspireRecordUrl": "https://data.europa.eu/api/hub/search/datasets/-b4c66413-3e17-4e33-a4dd-10f49950eb88- (download, ATOM) and -cce70e50-f66e-44af-8183-d01b8f1e0556- (view WMS); ids as listed on data.europa.eu, catalogue title 'INSPIRE Download Service - Cadastral Parcels Theme - Annex I'"
+      "inspireRecordUrl": "https://data.europa.eu/api/hub/search/datasets/-b4c66413-3e17-4e33-a4dd-10f49950eb88- (ATOM download) and -cce70e50-f66e-44af-8183-d01b8f1e0556- (WMS view), as recorded in research/europe/RO.json; not re-verified this pass"
     },
     {
       "countryCode": "RS",
@@ -6901,11 +6971,17 @@
       "countryCode": "SG",
       "country": "Singapore",
       "reportedStatus": "national_online_cadastre_verified_sample",
-      "status": "partial_or_unofficial_sample",
+      "status": "national_online_cadastre_verified_sample",
       "accessModel": "open",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/SG.json",
-      "mergeNote": "Bulk file range-read; no spatial query API."
+      "previousStatus": "national_online_cadastre_verified_sample",
+      "europeFile": "research/developed/SG.json",
+      "regionsSampled": [
+        "west (MK06 Bukit Panjang area)",
+        "central (MK24/TS24)",
+        "east (MK23)"
+      ]
     },
     {
       "countryCode": "SI",
@@ -7244,11 +7320,16 @@
       "countryCode": "UY",
       "country": "Uruguay",
       "reportedStatus": "national_online_cadastre_verified_sample",
-      "status": "partial_or_unofficial_sample",
+      "status": "national_online_cadastre_verified_sample",
       "accessModel": "open",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/UY.json",
-      "mergeNote": "Bulk DXF linework range-read, no attributes, CRS unconfirmed; not a query service."
+      "previousStatus": "partial_or_unofficial_sample",
+      "europeFile": "research/developed/UY.json",
+      "regionsSampled": [
+        "Montevideo",
+        "Salto"
+      ]
     },
     {
       "countryCode": "UZ",

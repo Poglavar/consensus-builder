@@ -256,6 +256,12 @@ EUROPE_OVERRIDES = {
     'SK': (None, 'Bulk INSPIRE GML zips read by HTTP Range; the WFS/ATOM endpoints reset from here.'),
     'HU': ('partial_or_unofficial_sample', 'The Lechner INSPIRE WFS is a Mesterszallas sampling area (about 7x10 km), not a national layer.'),
     'AL': (None, 'WAF flaps; Tirana sample comes from the retry pass, Shkoder from the Europe pass.'),
+    # Developed-country pass (2026-09-30)
+    'CL': ('partial_or_unofficial_sample', 'CIREN/MINAGRI rural property cadastre only (14 regional layers); urban predios remain viewer-only at SII.'),
+    'PE': ('partial_or_unofficial_sample', 'MIDAGRI "Predio Rustico" rural layer only; urban cadastre (COFOPRI, municipal) not reached.'),
+    'CO': (None, 'IGAC national service covers IGAC-managed territory; the decentralised cadastres (Bogota, Medellin, Cali, Barranquilla) return nothing there and are covered by the city services.'),
+    'JP': (None, 'Per-municipality bulk GeoJSON via the Geospatial Information Center CKAN, CC BY; no bbox service.'),
+    'HU': ('national_cadastre_credentialed_or_paid', 'Cadastral base map is sold per hectare under Act XLVI of 2012; online WMS/WFS contract-only; the INSPIRE WFS is a sampling area.'),
 }
 NAMES = {'AD': 'Andorra', 'FO': 'Faroe Islands', 'GG': 'Guernsey', 'IM': 'Isle of Man', 'LI': 'Liechtenstein', 'SM': 'San Marino', 'VA': 'Vatican City'}
 for f in sorted(glob.glob('research/europe/*.json')) + sorted(glob.glob('research/developed/*.json')):

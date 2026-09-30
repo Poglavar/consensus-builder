@@ -1,0 +1,200 @@
+{
+ "Colon": {
+  "features": [
+   {
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        -79.65053416737472,
+        9.554188991017623
+       ],
+       [
+        -79.65054468957712,
+        9.55427680667066
+       ],
+       [
+        -79.65057119408615,
+        9.554273536710477
+       ],
+       [
+        -79.65070992318252,
+        9.554261126333378
+       ],
+       [
+        -79.65070242064202,
+        9.554186090302068
+       ],
+       [
+        -79.65070016382249,
+        9.554169280718279
+       ],
+       [
+        -79.65053416737472,
+        9.554188991017623
+       ]
+      ]
+     ],
+     "crs": null
+    },
+    "type": "Feature",
+    "properties": {
+     "numero_finca": null,
+     "gid": "{0000EC7B-13FD-46FC-9F66-8E2D321DA2F9}",
+     "estado_titulo": "SIN_TITULO",
+     "codigo_ubicacion": null,
+     "distrito_nombre": "PORTOBELO",
+     "corregimiento_nombre": "PORTOBELO (CABECERA)",
+     "provincia_nombre": "COLÓN"
+    }
+   },
+   {
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        -79.61589820002185,
+        9.61274717266856
+       ],
+       [
+        -79.61584980020157,
+        9.61278086929865
+       ],
+       [
+        -79.6158612082805,
+        9.612805356240504
+       ],
+       [
+        -79.61591267238066,
+        9.612782160914405
+       ],
+       [
+        -79.61598911092952,
+        9.61274769943972
+       ],
+       [
+        -79.61596716766694,
+        9.612699163086235
+       ],
+       [
+        -79.61589820002185,
+        9.61274717266856
+       ]
+      ]
+     ],
+     "crs": null
+    },
+    "type": "Feature",
+    "properties": {
+     "numero_finca": null,
+     "gid": "{0015A755-F9DD-4156-B22C-6793D30E7E11}",
+     "estado_titulo": "SIN_TITULO",
+     "codigo_ubicacion": null,
+     "distrito_nombre": "PORTOBELO",
+     "corregimiento_nombre": "CACIQUE",
+     "provincia_nombre": "COLÓN"
+    }
+   }
+  ],
+  "type": "FeatureCollection"
+ },
+ "Panama": {
+  "features": [
+   {
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        -79.50210698783937,
+        9.054905942715836
+       ],
+       [
+        -79.50222121128847,
+        9.054987327776242
+       ],
+       [
+        -79.50231911161744,
+        9.054871953091494
+       ],
+       [
+        -79.50220220050632,
+        9.054784996174089
+       ],
+       [
+        -79.50210698783937,
+        9.054905942715836
+       ]
+      ]
+     ],
+     "crs": null
+    },
+    "type": "Feature",
+    "properties": {
+     "numero_finca": null,
+     "gid": "{00009E29-C04A-4893-B816-EBBBA8A5C3A6}",
+     "estado_titulo": "SIN_TITULO",
+     "codigo_ubicacion": null,
+     "distrito_nombre": "SAN MIGUELITO",
+     "corregimiento_nombre": "BELISARIO PORRAS",
+     "provincia_nombre": "PANAMÁ"
+    }
+   },
+   {
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        -79.49445421570935,
+        9.059337713935854
+       ],
+       [
+        -79.49449701743104,
+        9.059419446799446
+       ],
+       [
+        -79.4945489470485,
+        9.059394663599022
+       ],
+       [
+        -79.49468931616701,
+        9.059339813053764
+       ],
+       [
+        -79.49470217665144,
+        9.059313408838383
+       ],
+       [
+        -79.49468654267669,
+        9.059293696107508
+       ],
+       [
+        -79.49447662264382,
+        9.059283207355373
+       ],
+       [
+        -79.49445421570935,
+        9.059337713935854
+       ]
+      ]
+     ],
+     "crs": null
+    },
+    "type": "Feature",
+    "properties": {
+     "numero_finca": null,
+     "gid": "{00024CA0-A281-446F-8DA7-F673B59A12DD}",
+     "estado_titulo": "SIN_TITULO",
+     "codigo_ubicacion": null,
+     "distrito_nombre": "SAN MIGUELITO",
+     "corregimiento_nombre": "BELISARIO PORRAS",
+     "provincia_nombre": "PANAMÁ"
+    }
+   }
+  ],
+  "type": "FeatureCollection"
+ }
+}
