@@ -1,0 +1,58 @@
+[
+ {
+  "kind": "country",
+  "key": "GH",
+  "name": "Ghana",
+  "previousStatus": "national_cadastre_credentialed_or_paid",
+  "evidenceFile": "research/countries/GH.json"
+ },
+ {
+  "kind": "country",
+  "key": "GI",
+  "name": "Gibraltar",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/GI.json"
+ },
+ {
+  "kind": "country",
+  "key": "GM",
+  "name": "Gambia",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/GM.json"
+ },
+ {
+  "kind": "country",
+  "key": "GN",
+  "name": "Guinea",
+  "previousStatus": "no_online_cadastre_found",
+  "evidenceFile": "research/countries/GN.json"
+ },
+ {
+  "kind": "country",
+  "key": "GQ",
+  "name": "Equatorial Guinea",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/GQ.json"
+ },
+ {
+  "kind": "country",
+  "key": "GR",
+  "name": "Greece",
+  "previousStatus": "national_cadastre_viewer_only",
+  "evidenceFile": "research/countries/GR.json"
+ },
+ {
+  "kind": "country",
+  "key": "GT",
+  "name": "Guatemala",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/GT.json"
+ },
+ {
+  "kind": "country",
+  "key": "GW",
+  "name": "Guinea-Bissau",
+  "previousStatus": "no_online_cadastre_found",
+  "evidenceFile": "research/countries/GW.json"
+ }
+]

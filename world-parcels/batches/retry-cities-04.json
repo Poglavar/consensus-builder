@@ -1,0 +1,98 @@
+[
+ {
+  "kind": "city",
+  "key": "belo-horizonte",
+  "rank": 105,
+  "name": "Belo Horizonte",
+  "country": "Brazil",
+  "iso2": "BR",
+  "lat": -19.90062,
+  "lon": -43.99167,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/belo-horizonte.json"
+ },
+ {
+  "kind": "city",
+  "key": "toshkent",
+  "rank": 117,
+  "name": "Toshkent (Tashkent)",
+  "country": "Uzbekistan",
+  "iso2": "UZ",
+  "lat": 41.23935,
+  "lon": 69.25891,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/toshkent.json"
+ },
+ {
+  "kind": "city",
+  "key": "antananarivo",
+  "rank": 118,
+  "name": "Antananarivo",
+  "country": "Madagascar",
+  "iso2": "MG",
+  "lat": -18.86511,
+  "lon": 47.53777,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/antananarivo.json"
+ },
+ {
+  "kind": "city",
+  "key": "dakar",
+  "rank": 120,
+  "name": "Dakar",
+  "country": "Senegal",
+  "iso2": "SN",
+  "lat": 14.7439,
+  "lon": -17.38936,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/dakar.json"
+ },
+ {
+  "kind": "city",
+  "key": "qingdao",
+  "rank": 128,
+  "name": "Qingdao",
+  "country": "China",
+  "iso2": "CN",
+  "lat": 36.16737,
+  "lon": 120.39214,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/qingdao.json"
+ },
+ {
+  "kind": "city",
+  "key": "karaj",
+  "rank": 131,
+  "name": "Karaj",
+  "country": "Iran (Islamic Republic of)",
+  "iso2": "IR",
+  "lat": 35.75954,
+  "lon": 50.97612,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/karaj.json"
+ },
+ {
+  "kind": "city",
+  "key": "berlin",
+  "rank": 132,
+  "name": "Berlin",
+  "country": "Germany",
+  "iso2": "DE",
+  "lat": 52.50181,
+  "lon": 13.39995,
+  "previousStatus": "no_verified_sample_candidate_citywide",
+  "evidenceFile": "research/berlin.json"
+ },
+ {
+  "kind": "city",
+  "key": "indore",
+  "rank": 136,
+  "name": "Indore",
+  "country": "India",
+  "iso2": "IN",
+  "lat": 22.69918,
+  "lon": 75.85567,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/indore.json"
+ }
+]

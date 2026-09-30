@@ -1,0 +1,98 @@
+[
+ {
+  "kind": "city",
+  "key": "london",
+  "rank": 33,
+  "name": "London",
+  "country": "United Kingdom",
+  "iso2": "GB",
+  "lat": 51.50853,
+  "lon": -0.12574,
+  "previousStatus": "no_verified_sample_candidate_countrywide",
+  "evidenceFile": "research/london.json"
+ },
+ {
+  "kind": "city",
+  "key": "hyderabad",
+  "rank": 37,
+  "name": "Hyderabad",
+  "country": "India",
+  "iso2": "IN",
+  "lat": 17.41389,
+  "lon": 78.47569,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/hyderabad.json"
+ },
+ {
+  "kind": "city",
+  "key": "dar-es-salaam",
+  "rank": 42,
+  "name": "Dar es Salaam",
+  "country": "United Republic of Tanzania",
+  "iso2": "TZ",
+  "lat": -6.83353,
+  "lon": 39.22414,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/dar-es-salaam.json"
+ },
+ {
+  "kind": "city",
+  "key": "pune",
+  "rank": 55,
+  "name": "Pune",
+  "country": "India",
+  "iso2": "IN",
+  "lat": 18.53504,
+  "lon": 73.86026,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/pune.json"
+ },
+ {
+  "kind": "city",
+  "key": "nanjing",
+  "rank": 57,
+  "name": "Nanjing",
+  "country": "China",
+  "iso2": "CN",
+  "lat": 32.03551,
+  "lon": 118.77773,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/nanjing.json"
+ },
+ {
+  "kind": "city",
+  "key": "addis-ababa",
+  "rank": 59,
+  "name": "Addis Ababa",
+  "country": "Ethiopia",
+  "iso2": "ET",
+  "lat": 9.00714,
+  "lon": 38.74898,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/addis-ababa.json"
+ },
+ {
+  "kind": "city",
+  "key": "abidjan",
+  "rank": 60,
+  "name": "Abidjan",
+  "country": "Côte d'Ivoire",
+  "iso2": "CI",
+  "lat": 5.35605,
+  "lon": -4.01965,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/abidjan.json"
+ },
+ {
+  "kind": "city",
+  "key": "chaozhou",
+  "rank": 61,
+  "name": "Chaozhou",
+  "country": "China",
+  "iso2": "CN",
+  "lat": 23.65299,
+  "lon": 116.32009,
+  "previousStatus": "no_verified_sample_candidate_citywide",
+  "evidenceFile": "research/chaozhou.json"
+ }
+]

@@ -1,0 +1,58 @@
+[
+ {
+  "kind": "country",
+  "key": "SA",
+  "name": "Saudi Arabia",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/SA.json"
+ },
+ {
+  "kind": "country",
+  "key": "SB",
+  "name": "Solomon Islands",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/SB.json"
+ },
+ {
+  "kind": "country",
+  "key": "SD",
+  "name": "Sudan",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/SD.json"
+ },
+ {
+  "kind": "country",
+  "key": "SE",
+  "name": "Sweden",
+  "previousStatus": "national_cadastre_credentialed_or_paid",
+  "evidenceFile": "research/countries/SE.json"
+ },
+ {
+  "kind": "country",
+  "key": "SK",
+  "name": "Slovakia",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/SK.json"
+ },
+ {
+  "kind": "country",
+  "key": "SL",
+  "name": "Sierra Leone",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/SL.json"
+ },
+ {
+  "kind": "country",
+  "key": "SN",
+  "name": "Senegal",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/SN.json"
+ },
+ {
+  "kind": "country",
+  "key": "SO",
+  "name": "Somalia",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/SO.json"
+ }
+]

@@ -1,0 +1,58 @@
+[
+ {
+  "kind": "country",
+  "key": "AE",
+  "name": "United Arab Emirates",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/AE.json"
+ },
+ {
+  "kind": "country",
+  "key": "AF",
+  "name": "Afghanistan",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/AF.json"
+ },
+ {
+  "kind": "country",
+  "key": "AL",
+  "name": "Albania",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/AL.json"
+ },
+ {
+  "kind": "country",
+  "key": "AM",
+  "name": "Armenia",
+  "previousStatus": "national_cadastre_credentialed_or_paid",
+  "evidenceFile": "research/countries/AM.json"
+ },
+ {
+  "kind": "country",
+  "key": "AO",
+  "name": "Angola",
+  "previousStatus": "no_online_cadastre_found",
+  "evidenceFile": "research/countries/AO.json"
+ },
+ {
+  "kind": "country",
+  "key": "AZ",
+  "name": "Azerbaijan",
+  "previousStatus": "no_online_cadastre_found",
+  "evidenceFile": "research/countries/AZ.json"
+ },
+ {
+  "kind": "country",
+  "key": "BF",
+  "name": "Burkina Faso",
+  "previousStatus": "national_cadastre_credentialed_or_paid",
+  "evidenceFile": "research/countries/BF.json"
+ },
+ {
+  "kind": "country",
+  "key": "BH",
+  "name": "Bahrain",
+  "previousStatus": "national_cadastre_credentialed_or_paid",
+  "evidenceFile": "research/countries/BH.json"
+ }
+]

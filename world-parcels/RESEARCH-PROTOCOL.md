@@ -42,3 +42,19 @@ When verified, also save the small raw reply as `research/<slug>-parcel-response
 ```
 
 `national_online_cadastre_verified_sample` requires an actual nonempty polygon response; note `nationwideVerified: true` only if two geographically distinct regions were sampled from the same source/schema. "State-level" here means the national/central government or a country-wide statutory service (also list any subnational services found, e.g. provinces or cantons).
+
+## Retry pass (2026-09-30)
+
+Second pass over every non-verified country and every unavailable or candidate city, using the rules above. Input: `batches/retry-countries-NN.json` / `batches/retry-cities-NN.json` (each entry names the previous status and its evidence file; read that file first). Output: **do not edit the original evidence file**. Write `research/retry/countries/<ISO2>.json` or `research/retry/cities/<key>.json`:
+
+```
+{ "kind": "country|city", "key": "...", "checkedAt": "2026-09-30", "previousStatus": "...", "newStatus": <vocabulary above>,
+  "headersUsed": "the exact User-Agent/Accept/Accept-Language sent",
+  "changedByHeaders": true|false, "foundViaViewerInspection": true|false,
+  "verifiedParcelResponse": null | {...same fields as above, token/keys redacted...},
+  "source": null | {...}, "requests": [{url, method, httpStatus, contentType, assessment}],
+  "geoBlockSuspected": true|false (say why: region page, 403 only from this network, etc.),
+  "notes": "what is new versus the previous record", "nextStep": "..." }
+```
+
+For each entry: (1) re-request the previously failing URLs with full browser headers; (2) fetch the official viewer/portal page and inspect its HTML/JS (`<script src>`, inline config, `fetch(`/`XMLHttpRequest`/`wfs`/`FeatureServer`/`MapServer`/`token` strings) for the real service URL, layer name and any public token, then test a bounded query; (3) try 2-3 further candidate hosts for that country (national mapping agency, INSPIRE, data.gov portal, ArcGIS Online orgs). Never save a token value; use `<PUBLIC_TOKEN>`. Save small raw replies (JSON, wrap XML in a JSON string) as `research/retry/<countries|cities>/<key>-parcel-response.json`. Do not attempt to bypass logins, CAPTCHAs or TLS errors, and do not guess credentials. If a service is truly behind registration, say so. Reply with one line per entry: key, previous -> new status, source if any.

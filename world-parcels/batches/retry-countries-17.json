@@ -1,0 +1,58 @@
+[
+ {
+  "kind": "country",
+  "key": "UA",
+  "name": "Ukraine",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/UA.json"
+ },
+ {
+  "kind": "country",
+  "key": "UG",
+  "name": "Uganda",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/UG.json"
+ },
+ {
+  "kind": "country",
+  "key": "UZ",
+  "name": "Uzbekistan",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/UZ.json"
+ },
+ {
+  "kind": "country",
+  "key": "VE",
+  "name": "Venezuela (Bolivarian Republic of)",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/VE.json"
+ },
+ {
+  "kind": "country",
+  "key": "VN",
+  "name": "Viet Nam",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/VN.json"
+ },
+ {
+  "kind": "country",
+  "key": "VU",
+  "name": "Vanuatu",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/VU.json"
+ },
+ {
+  "kind": "country",
+  "key": "WS",
+  "name": "Samoa",
+  "previousStatus": "no_online_cadastre_found",
+  "evidenceFile": "research/countries/WS.json"
+ },
+ {
+  "kind": "country",
+  "key": "XK",
+  "name": "Kosovo (under UNSC res. 1244)",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/XK.json"
+ }
+]

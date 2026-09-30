@@ -1,0 +1,98 @@
+[
+ {
+  "kind": "city",
+  "key": "amman",
+  "rank": 62,
+  "name": "Amman",
+  "country": "Jordan",
+  "iso2": "JO",
+  "lat": 31.98362,
+  "lon": 35.96021,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/amman.json"
+ },
+ {
+  "kind": "city",
+  "key": "mashhad",
+  "rank": 75,
+  "name": "Mashhad",
+  "country": "Iran (Islamic Republic of)",
+  "iso2": "IR",
+  "lat": 36.3417,
+  "lon": 59.48844,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/mashhad.json"
+ },
+ {
+  "kind": "city",
+  "key": "kochi",
+  "rank": 80,
+  "name": "Kochi",
+  "country": "India",
+  "iso2": "IN",
+  "lat": 10.06128,
+  "lon": 76.30881,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/kochi.json"
+ },
+ {
+  "kind": "city",
+  "key": "islamabad",
+  "rank": 88,
+  "name": "Islamabad",
+  "country": "Pakistan",
+  "iso2": "PK",
+  "lat": 33.60791,
+  "lon": 73.06213,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/islamabad.json"
+ },
+ {
+  "kind": "city",
+  "key": "saint-petersburg",
+  "rank": 91,
+  "name": "Saint Petersburg",
+  "country": "Russian Federation",
+  "iso2": "RU",
+  "lat": 59.93406,
+  "lon": 30.33777,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/saint-petersburg.json"
+ },
+ {
+  "kind": "city",
+  "key": "casablanca",
+  "rank": 94,
+  "name": "Casablanca",
+  "country": "Morocco",
+  "iso2": "MA",
+  "lat": 33.58184,
+  "lon": -7.54261,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/casablanca.json"
+ },
+ {
+  "kind": "city",
+  "key": "jeddah",
+  "rank": 100,
+  "name": "Jeddah",
+  "country": "Saudi Arabia",
+  "iso2": "SA",
+  "lat": 21.52933,
+  "lon": 39.209,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/jeddah.json"
+ },
+ {
+  "kind": "city",
+  "key": "kuwait-city",
+  "rank": 101,
+  "name": "Al Kuwayt (Kuwait City)",
+  "country": "Kuwait",
+  "iso2": "KW",
+  "lat": 29.28283,
+  "lon": 47.99948,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/kuwait-city.json"
+ }
+]
