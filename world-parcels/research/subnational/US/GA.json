@@ -1,0 +1,75 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "GA",
+ "regionName": "Georgia",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "source": {
+  "sourceId": "us-ga-dekalb-county-tax-parcels-2025",
+  "name": "DeKalb County Tax Parcels 2025",
+  "operator": "DeKalb County GIS (ArcGIS Online owner DeKalbGISAdmin)",
+  "scope": "DeKalb County, GA (Decatur / east Atlanta)",
+  "endpoint": "https://services2.arcgis.com/IxVN2oUE9EYLSnPE/arcgis/rest/services/Tax_Parcels_2025/FeatureServer/0",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "Esri JSON (ArcGIS REST query)",
+  "crs": "EPSG:4326 (outSR requested); native GA East ftUS",
+  "reuseStatus": "no licence text in service metadata"
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-US,en;q=0.9; cookie jar used; no token required",
+ "verifiedParcelResponse": {
+  "sourceId": "us-ga-dekalb-county-tax-parcels-2025",
+  "requestUrl": "https://services2.arcgis.com/IxVN2oUE9EYLSnPE/arcgis/rest/services/Tax_Parcels_2025/FeatureServer/0/query?where=1%3D1&geometry=<bbox lon/lat>&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID,ParcelID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   -84.2971,
+   33.7742,
+   -84.2955,
+   33.7754
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "ParcelID",
+  "responseFile": "GA-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount",
+  "regionSampled": "DeKalb County, GA"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "No statewide open layer found on ArcGIS Online search (only county/city layers: DeKalb, Dougherty, Johns Creek, Sandy Springs, Fulton).",
+ "subregionsVerified": [
+  "DeKalb County, GA"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://gis.fultoncountyga.gov/arcgis/rest/services/MapServices/FultonStreetBaseMap/MapServer/205",
+   "observation": "Fulton County tax parcels listed in search; layer URL returned 404 (not verified)"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Georgia+statewide+parcels",
+   "observation": "No statewide parcel layer returned"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services2.arcgis.com/IxVN2oUE9EYLSnPE/arcgis/rest/services/Tax_Parcels_2025/FeatureServer/0/query?...outFields=OBJECTID,ParcelID&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "3 polygons DeKalb"
+  },
+  {
+   "url": "https://gis.fultoncountyga.gov/.../MapServer/205?f=json",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html",
+   "assessment": "Fulton layer path not valid"
+  }
+ ],
+ "reuseStatus": "DeKalb schema has no owner fields; only ID requested.",
+ "remainingUncertainty": "Statewide absence from catalogue search only; Fulton (Atlanta) and Cobb not verified. Georgia GIO clearinghouse not inspected.",
+ "nextStep": "Find current Fulton parcel service; inspect GA GIO."
+}

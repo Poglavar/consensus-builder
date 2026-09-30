@@ -1,0 +1,76 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "AK",
+ "regionName": "Alaska",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "source": {
+  "sourceId": "us-ak-statewide-parcels",
+  "name": "Alaska Statewide Parcels (AK_Parcels, ArcGIS Online)",
+  "operator": "Owner account \"for_admin\" on ArcGIS Online (publishing agency not stated in service metadata)",
+  "scope": "Alaska, combined from local governments (Anchorage, Fairbanks North Star, ...)",
+  "endpoint": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "Esri JSON (ArcGIS REST query)",
+  "crs": "EPSG:4326 (outSR requested)",
+  "reuseStatus": "no licence text in service metadata"
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-US,en;q=0.9; cookie jar used; no token required",
+ "verifiedParcelResponse": {
+  "sourceId": "us-ak-statewide-parcels",
+  "requestUrl": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0/query?where=1%3D1&geometry=<bbox lon/lat>&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID,parcel_id,local_gov&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   -149.9008,
+   61.2174,
+   -149.8992,
+   61.2186
+  ],
+  "parcelRecordCount": 6,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "parcel_id",
+  "responseFile": "AK-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount",
+  "regionSampled": "Anchorage Municipality, Fairbanks North Star Borough"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Service description: \"Combined land parcel data from various local government bodies in Alaska.\" Extent spans the state. Publisher not identified; coverage of all boroughs not checked.",
+ "subregionsVerified": [
+  "Anchorage Municipality",
+  "Fairbanks North Star Borough"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer",
+   "observation": "Statewide combined parcel layer with owner, values fields (not saved)"
+  },
+  {
+   "url": "https://maps.matsugov.us/map/rest/services/OpenData/Cadastral_Parcels/FeatureServer",
+   "observation": "Mat-Su Borough parcels (not queried)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0/query?...bbox Anchorage...outFields=OBJECTID,parcel_id,local_gov",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "3 polygons, Anchorage Municipality"
+  },
+  {
+   "url": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0/query?...bbox Fairbanks...",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "3 polygons, Fairbanks North Star Borough"
+  }
+ ],
+ "reuseStatus": "Publisher unknown; not verified that every borough is included.",
+ "remainingUncertainty": "Confirm publisher (likely a state/borough aggregator) and completeness; check Mat-Su / Kenai / Juneau presence.",
+ "nextStep": "Identify the owner org of the service item and read terms."
+}

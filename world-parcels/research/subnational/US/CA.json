@@ -1,0 +1,76 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "CA",
+ "regionName": "California",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "source": {
+  "sourceId": "us-ca-calfire-statewide-parcels",
+  "name": "California Statewide Parcels Public View",
+  "operator": "CAL FIRE (ArcGIS Online owner ITS.CALFIRE)",
+  "scope": "California statewide (public view: APN + site address fields only)",
+  "endpoint": "https://bz1uwWPKUInZBK94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "Esri JSON (ArcGIS REST query)",
+  "crs": "EPSG:4326 (outSR requested); native NAD83 California Albers (6414)",
+  "reuseStatus": "no licence text in service metadata"
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-US,en;q=0.9; cookie jar used; no token required",
+ "verifiedParcelResponse": {
+  "sourceId": "us-ca-calfire-statewide-parcels",
+  "requestUrl": "https://bz1uwWPKUInZBK94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0/query?where=1%3D1&geometry=<bbox lon/lat>&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID,PARCEL_APN,COUNTYNAME&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   -118.2443,
+   34.0514,
+   -118.2427,
+   34.0526
+  ],
+  "parcelRecordCount": 6,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PARCEL_APN",
+  "responseFile": "CA-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount",
+  "regionSampled": "Los Angeles County, Sacramento County"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Search title \"California Statewide Parcels Public View\", owner ITS.CALFIRE; extent spans the state. Public view exposes APN and site address only, no owner fields.",
+ "subregionsVerified": [
+  "Los Angeles County",
+  "Sacramento County"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://bz1uwWPKUInZBK94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer",
+   "observation": "Statewide public parcel view"
+  },
+  {
+   "url": "https://services2.arcgis.com/zr3KAIbsRSUyARHG/arcgis/rest/services/CA_State_Parcels/FeatureServer/0",
+   "observation": "Third-party copy CA_Statewide_Parcels (not used)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://bz1uwWPKUInZBK94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0/query?...LA bbox...outFields=OBJECTID,PARCEL_APN,COUNTYNAME",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "3 polygons, Los Angeles"
+  },
+  {
+   "url": "https://bz1uwWPKUInZBK94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0/query?...Sacramento bbox",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "3 polygons, Sacramento"
+  }
+ ],
+ "reuseStatus": "Terms not visible in service metadata; layer looks derived from a commercial-aggregator statewide compilation, so redistribution terms should be read before reuse. Existing LA County evidence (research/los-angeles.json) is county-specific.",
+ "remainingUncertainty": "Not all 58 counties audited; site-address fields present but not requested.",
+ "nextStep": "Read the CAL FIRE item page for licence; audit county coverage."
+}

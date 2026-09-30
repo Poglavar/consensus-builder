@@ -1,0 +1,72 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "DE",
+ "regionName": "Delaware",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "source": {
+  "sourceId": "us-de-firstmap-state-parcels",
+  "name": "DE State Parcels",
+  "operator": "State of Delaware FirstMap (Delaware Geospatial Data Exchange)",
+  "scope": "Delaware statewide (Kent, New Castle, Sussex)",
+  "endpoint": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "Esri JSON (ArcGIS REST query)",
+  "crs": "EPSG:4326 (outSR requested); native Web Mercator",
+  "reuseStatus": "service description: \"State of Delaware Parcels with Ownership Information\"; terms not read"
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-US,en;q=0.9; cookie jar used; no token required",
+ "verifiedParcelResponse": {
+  "sourceId": "us-de-firstmap-state-parcels",
+  "requestUrl": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?where=1%3D1&geometry=<bbox lon/lat>&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID,PIN,COUNTY&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   -75.525,
+   39.1575,
+   -75.5235,
+   39.1585
+  ],
+  "parcelRecordCount": 6,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PIN",
+  "responseFile": "DE-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount",
+  "regionSampled": "Kent County, New Castle County"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Layer named State Parcels; extent covers Delaware; PIN carries county prefix and COUNTY field present.",
+ "subregionsVerified": [
+  "Kent County",
+  "New Castle County"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0",
+   "observation": "Statewide state parcels layer, fields OBJECTID, PIN, ACRES, COUNTY, UPDATED (no owner field exposed in schema)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?...Dover bbox",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "3 polygons Kent"
+  },
+  {
+   "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?...Wilmington bbox",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "3 polygons New Castle"
+  }
+ ],
+ "reuseStatus": "Sussex County not sampled.",
+ "remainingUncertainty": "Terms not read.",
+ "nextStep": "Sample Sussex."
+}
