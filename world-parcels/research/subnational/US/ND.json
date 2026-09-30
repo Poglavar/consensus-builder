@@ -1,0 +1,82 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "ND",
+ "regionName": "North Dakota",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/html,*/*;q=0.8; Accept-Language: en-US,en;q=0.9; cookie jar on (curl -c/-b); via pre-configured proxy, TLS verification on",
+ "source": {
+  "sourceId": "us-nd-gishub-parcels",
+  "name": "NDGISHUB Parcels (State Parcel Program)",
+  "operator": "North Dakota Information Technology / ND GIS Hub (aggregated by AppGeo from county data)",
+  "scope": "statewide",
+  "endpoint": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "json",
+  "crs": "EPSG:4326 via outSR",
+  "reuseStatus": "Public. Item disclaimer: not for navigation, no warranty, not legal boundaries; a fGDB download is offered. No explicit open licence text seen."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-nd-gishub-parcels",
+  "requestUrl": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0/query",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   -100.7845,
+   46.8078,
+   -100.783,
+   46.8088
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "GISID",
+  "responseFile": "ND-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Item description: statewide parcel project (HB 1021) aggregating boundaries from 51 counties plus Adams and Benson built by the project; maintained by the state GIS Hub with county submissions.",
+ "subregionsVerified": [
+  "Burleigh County",
+  "Cass County"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://gishubdata-ndgov.hub.arcgis.com/datasets/NDGOV::parcels/about",
+   "observation": "Hub dataset page; item id ac6da1176038457db16e8debe3f1abaf"
+  },
+  {
+   "url": "https://www.gis.nd.gov/parcel-program",
+   "observation": "State Parcel Program page (from search, not fetched)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0/query?...Burleigh bbox",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons"
+  },
+  {
+   "url": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0/query?...Cass bbox",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons"
+  },
+  {
+   "url": "https://gis.dtsnd.nd.gov/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "proxy CONNECT 502, not reachable from this network"
+  }
+ ],
+ "reuseStatus": "Public service with disclaimer text (see source.reuseStatus).",
+ "remainingUncertainty": "Currency varies by county (monthly to yearly).",
+ "nextStep": "None needed for discovery; read the full item terms before reuse."
+}

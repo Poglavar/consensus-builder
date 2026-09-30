@@ -1,0 +1,75 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "RI",
+ "regionName": "Rhode Island",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/html,*/*;q=0.8; Accept-Language: en-US,en;q=0.9; cookie jar on (curl -c/-b); via pre-configured proxy, TLS verification on",
+ "source": {
+  "sourceId": "us-ri-ridem-tax-parcels",
+  "name": "RIDEM Tax Parcels (Assessors Tax Parcels)",
+  "operator": "Rhode Island Dept of Environmental Management via RIGIS / RI Enterprise GIS (risegis.ri.gov)",
+  "scope": "statewide town assessor parcels (per RIGIS parcel programme; extent -8004108 xmin EPSG:3857 spans the state)",
+  "endpoint": "https://risegis.ri.gov/hosting/rest/services/RIDEM/Tax_Parcels/MapServer/0",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "json",
+  "crs": "EPSG:3857 native",
+  "reuseStatus": "not read; RIGIS distribution"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-ri-ridem-tax-parcels",
+  "requestUrl": "https://risegis.ri.gov/hosting/rest/services/RIDEM/Tax_Parcels/MapServer/0/query",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   -71.413,
+   41.8235,
+   -71.4115,
+   41.8245
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PlatLot",
+  "responseFile": "RI-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Layer 'Tax Parcels' in a state agency service with TownCode across towns; two towns verified. Statewide completeness not confirmed from publisher text.",
+ "subregionsVerified": [
+  "Providence",
+  "Newport"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://risegis.ri.gov/hosting/rest/services/RIDEM/Tax_Parcels/MapServer",
+   "observation": "Assessors Tax Parcels (polygons), minScale 50000-ish 'zoom in to view'"
+  },
+  {
+   "url": "https://www.rigis.org/pages/municipal-gis-resources",
+   "observation": "municipal parcel status"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://risegis.ri.gov/hosting/rest/services/RIDEM/Tax_Parcels/MapServer/0/query Providence",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons"
+  },
+  {
+   "url": "https://risegis.ri.gov/hosting/rest/services/RIDEM/Tax_Parcels/MapServer/0/query Newport",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons"
+  }
+ ],
+ "reuseStatus": "Not read.",
+ "remainingUncertainty": "Publisher wording not read; town coverage completeness unverified.",
+ "nextStep": "Read RIGIS metadata for coverage/currency."
+}

@@ -1,0 +1,81 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "SC",
+ "regionName": "South Carolina",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/html,*/*;q=0.8; Accept-Language: en-US,en;q=0.9; cookie jar on (curl -c/-b); via pre-configured proxy, TLS verification on",
+ "source": {
+  "sourceId": "us-sc-charleston-county-parcels",
+  "name": "Charleston County ProVal/Parcels",
+  "operator": "Charleston County GIS",
+  "scope": "Charleston County only",
+  "endpoint": "https://gisccapps.charlestoncounty.org/arcgis/rest/services/ProVal/Parcels/MapServer/0",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "json",
+  "crs": "4326 via outSR",
+  "reuseStatus": "not read"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-sc-charleston-county-parcels",
+  "requestUrl": "https://gisccapps.charlestoncounty.org/arcgis/rest/services/ProVal/Parcels/MapServer/0/query",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   -79.932,
+   32.776,
+   -79.9305,
+   32.777
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PID",
+  "responseFile": "SC-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "No statewide SC parcel layer found (a search result mentions a defunct SCDOT statewide layer, not tested).",
+ "subregionsVerified": [
+  "Charleston County"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://gisccapps.charlestoncounty.org/arcgis/rest/services/ProVal",
+   "observation": "ProVal/Parcels layer PARCELS with PID"
+  },
+  {
+   "url": "https://www.gcgis.org/arcgis/rest/services",
+   "observation": "Greenville: parcel service path from search not found (only geocoder listed)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gisccapps.charlestoncounty.org/arcgis/rest/services/ProVal/Parcels/MapServer/0/query",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons + 1 polygon; PID only"
+  },
+  {
+   "url": "https://gisccapps.charlestoncounty.org/arcgis/rest/services/GIS_VIEWER/Parcel_Search/MapServer",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "Token Required (499)"
+  },
+  {
+   "url": "https://gis.richlandcountysc.gov/arcgis/rest/services",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "proxy CONNECT 502 (also gis.horrycounty.org)"
+  }
+ ],
+ "reuseStatus": "Not read.",
+ "remainingUncertainty": "Only one county; the older GIS_VIEWER parcel services need tokens.",
+ "nextStep": "Look for SC statewide compile (SC Revenue/Admin) and Greenville/Richland services."
+}

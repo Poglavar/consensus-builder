@@ -1,0 +1,63 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "NC",
+ "regionName": "North Carolina",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/html,*/*;q=0.8; Accept-Language: en-US,en;q=0.9; cookie jar on (curl -c/-b); via pre-configured proxy, TLS verification on",
+ "source": {
+  "sourceId": "us-nc-onemap-parcels",
+  "name": "NC OneMap statewide parcels (NC1Map_Parcels)",
+  "operator": "NC OneMap / NC Center for Geographic Information and Analysis",
+  "scope": "statewide",
+  "endpoint": "https://services.nconemap.gov/secure/rest/services/NC1Map_Parcels/FeatureServer/1",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "geojson/json",
+  "crs": "EPSG:4326 requested via outSR",
+  "reuseStatus": "licence text not read in this pass"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-nc-onemap-parcels",
+  "requestUrl": "https://services.nconemap.gov/secure/rest/services/NC1Map_Parcels/FeatureServer/1/query",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/geo+json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   -78.6389,
+   35.7796,
+   -78.6375,
+   35.7806
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "parno",
+  "responseFile": "NC-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Service is named and published as the NC OneMap statewide parcel layer; re-verified 2026-09-30 for Wake County (earlier verification in research/countries/US.json).",
+ "subregionsVerified": [
+  "Wake County"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://services.nconemap.gov/secure/rest/services/NC1Map_Parcels/FeatureServer/1",
+   "observation": "anonymous query works with browser headers"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services.nconemap.gov/secure/rest/services/NC1Map_Parcels/FeatureServer/1/query?geometry=-78.6389,35.7796,-78.6375,35.7806&outFields=parno,cntyname,objectid&f=geojson&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "3 polygons, Raleigh; only ID/county requested"
+  }
+ ],
+ "reuseStatus": "Not assessed in this pass; see NC OneMap terms.",
+ "remainingUncertainty": "Second county not sampled in this pass (reused earlier evidence).",
+ "nextStep": "Sample a second county (e.g. Mecklenburg) to confirm statewide coverage; read NC OneMap terms."
+}

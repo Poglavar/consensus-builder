@@ -1,0 +1,82 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "TN",
+ "regionName": "Tennessee",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/html,*/*;q=0.8; Accept-Language: en-US,en;q=0.9; cookie jar on (curl -c/-b); via pre-configured proxy, TLS verification on",
+ "source": {
+  "sourceId": "us-tn-tdec-parcels-og",
+  "name": "Parcels_OG (parcel boundary for use with oil and gas wells)",
+  "operator": "Tennessee Dept of Environment & Conservation (TDEC), parcel data from the Comptroller's statewide property boundary programme",
+  "scope": "statewide extent (Davidson and Shelby verified)",
+  "endpoint": "https://tdeconline.tn.gov/arcgis/rest/services/Parcels_OG/MapServer/0",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "json",
+  "crs": "EPSG:2274 native, 4326 via outSR",
+  "reuseStatus": "Comptroller statewide layer (tnmap CADASTRAL/STATEWIDE_PARCELS_OSAP) requires a token; Comptroller states web service is not for commercial use (from search snippet, not read on page)."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-tn-tdec-parcels-og",
+  "requestUrl": "https://tdeconline.tn.gov/arcgis/rest/services/Parcels_OG/MapServer/0/query",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   -86.783,
+   36.162,
+   -86.7815,
+   36.163
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "GISLINK",
+  "responseFile": "TN-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Layer extent spans the state and two distant counties verified; the Comptroller (per search snippet) aggregates 86 of 95 counties, so 9 counties may be absent. Service is labelled for oil/gas well use.",
+ "subregionsVerified": [
+  "Davidson County",
+  "Shelby County"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://geodata.tn.gov/pages/property-data~06d5f39ba142402a8daaeec4cc48ae4b",
+   "observation": "State property boundary data page; 86 of 95 counties (search snippet)"
+  },
+  {
+   "url": "https://tnmap.tn.gov/arcgis/rest/services/CADASTRAL/STATEWIDE_PARCELS_OSAP/MapServer",
+   "observation": "Token Required (499)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://tdeconline.tn.gov/arcgis/rest/services/Parcels_OG/MapServer/0/query Nashville",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons"
+  },
+  {
+   "url": "https://tdeconline.tn.gov/arcgis/rest/services/Parcels_OG/MapServer/0/query Memphis",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons; GISLINK blank in sample"
+  },
+  {
+   "url": "https://tnmap.tn.gov/arcgis/rest/services/CADASTRAL/STATEWIDE_PARCELS_OSAP/MapServer?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "Token Required"
+  }
+ ],
+ "reuseStatus": "Terms not read on page.",
+ "remainingUncertainty": "Coverage of 9 missing counties; Knox bbox returned no features (not used). Layer minScale 50000. Memphis GISLINK blank.",
+ "nextStep": "Read geodata.tn.gov terms; confirm county coverage list."
+}
