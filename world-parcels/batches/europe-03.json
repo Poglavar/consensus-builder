@@ -1,0 +1,60 @@
+[
+ {
+  "iso2": "GR",
+  "name": "Greece",
+  "previousStatus": "national_cadastre_viewer_only",
+  "previousEvidence": [
+   "research/countries/GR.json",
+   "research/retry/countries/GR.json"
+  ],
+  "hints": "Hellenic Cadastre: INSPIRE CP download service (inspire.ktimatologio.gr or via the EU geoportal), geodata.gov.gr; the raster WMS is known. Aim: a vector CP endpoint."
+ },
+ {
+  "iso2": "HU",
+  "name": "Hungary",
+  "previousStatus": "partial_or_unofficial_sample",
+  "previousEvidence": [
+   "research/countries/HU.json"
+  ],
+  "hints": "Lechner INSPIRE WFS returned only 1,774 features: likely a sample/pilot typeName; look for the full CP feature type, stored queries, or the 'e-ingatlan'/foldhivatal viewer backend (map.foldhivatal.hu mapserver)."
+ },
+ {
+  "iso2": "MT",
+  "name": "Malta",
+  "previousStatus": "temporarily_unavailable",
+  "previousEvidence": [
+   "research/countries/MT.json",
+   "research/retry/countries/MT.json"
+  ],
+  "hints": "Cloudflare on pa.org.mt: use the EU INSPIRE geoportal record for Malta CP, geoserver.pa.org.mt, or the Planning Authority MapServer; try with Referer."
+ },
+ {
+  "iso2": "PT",
+  "name": "Portugal",
+  "previousStatus": "partial_or_unofficial_sample",
+  "previousEvidence": [
+   "research/countries/PT.json"
+  ],
+  "hints": "DGT OGC API 'cadastro' is mainland-only and a Porto bbox returned 0: check whether Porto district is simply not yet in the cadastre, sample two mainland regions that are; also Azores (IDEiA) and Madeira (IDE Madeira) services."
+ },
+ {
+  "iso2": "RO",
+  "name": "Romania",
+  "previousStatus": "temporarily_unavailable",
+  "previousEvidence": [
+   "research/countries/RO.json",
+   "research/retry/countries/RO.json"
+  ],
+  "hints": "ANCPI eTerra was in maintenance; use the INSPIRE geoportal record for Romania CP (geoportal.ancpi.ro WMS/WFS, INSPIRE download), retry hosts."
+ },
+ {
+  "iso2": "SK",
+  "name": "Slovakia",
+  "previousStatus": "temporarily_unavailable",
+  "previousEvidence": [
+   "research/countries/SK.json",
+   "research/retry/countries/SK.json"
+  ],
+  "hints": "ÚGKK: ZBGIS/kataster hosts were unreachable; try the INSPIRE CP download at inspire.skgeodesy.sk, zbgis WFS via the EU geoportal record, kataster.skgeodesy.sk map service, with Referer https://zbgis.skgeodesy.sk/."
+ }
+]

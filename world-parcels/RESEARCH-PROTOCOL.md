@@ -58,3 +58,15 @@ Second pass over every non-verified country and every unavailable or candidate c
 ```
 
 For each entry: (1) re-request the previously failing URLs with full browser headers; (2) fetch the official viewer/portal page and inspect its HTML/JS (`<script src>`, inline config, `fetch(`/`XMLHttpRequest`/`wfs`/`FeatureServer`/`MapServer`/`token` strings) for the real service URL, layer name and any public token, then test a bounded query; (3) try 2-3 further candidate hosts for that country (national mapping agency, INSPIRE, data.gov portal, ArcGIS Online orgs). Never save a token value; use `<PUBLIC_TOKEN>`. Save small raw replies (JSON, wrap XML in a JSON string) as `research/retry/<countries|cities>/<key>-parcel-response.json`. Do not attempt to bypass logins, CAPTCHAs or TLS errors, and do not guess credentials. If a service is truly behind registration, say so. Reply with one line per entry: key, previous -> new status, source if any.
+
+## Europe focus pass (2026-09-30)
+
+Every European country not yet in `countryCoverage` gets a deeper pass. EU and EFTA members are obliged by the INSPIRE Directive to publish a Cadastral Parcels (CP) view and download service, so a missing endpoint is usually our search failing, not the data.
+
+Method, in order, for each country:
+1. **INSPIRE geoportal first.** Search https://inspire-geoportal.ec.europa.eu/ (and its API, e.g. `https://inspire-geoportal.ec.europa.eu/srv/api/search/records/_search` with `"Cadastral parcels"` + country) for the country's CP download service, then the national INSPIRE catalogue (CSW/GeoNetwork). Take the real WFS/ATOM/OGC-API URL from the metadata record, never a guessed path. Also check EuroGeographics / the national mapping-and-cadastre agency's own geoportal.
+2. **Read the official viewer's code** (config JSON, main.js, network calls) for the parcel layer, service host, and any public token or required `Referer`.
+3. **Test** a WFS 2.0 `GetFeature` (`typeNames=cp:CadastralParcel` or the national name, `count=3`, `bbox=` in the service's default CRS, `outputFormat` json if offered; try the INSPIRE stored query `GetFeatureById` too), or an ATOM/OGC-API download read by HTTP Range, in **two distinct regions**. Some INSPIRE WFS answer empty for EPSG:4326 boxes but work in the national CRS.
+4. Browser headers, cookie jar, viewer-origin `Referer`, retries on WAF flaps. Never bypass TLS, logins or challenges.
+
+Output: `research/europe/<ISO2>.json` in the country schema plus `newStatus`, `previousStatus`, `regionsSampled`, `inspireRecordUrl` (if found), and the raw reply as `research/europe/<ISO2>-parcel-response.json` (JSON, XML wrapped as a string, tokens as `<PUBLIC_TOKEN>`, no owner data). Do not edit any other file. For a federal country (Germany, Bosnia, Belgium, Switzerland) list each state/canton/entity service found and which were verified; two verified sub-national services from different regions count as passing the two-region test for the *country* only if you say so explicitly and name both.

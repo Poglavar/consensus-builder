@@ -1,0 +1,61 @@
+[
+ {
+  "iso2": "AL",
+  "name": "Albania",
+  "previousStatus": "partial_or_unofficial_sample",
+  "previousEvidence": [
+   "research/countries/AL.json",
+   "research/retry/countries/AL.json"
+  ],
+  "hints": "ASIG WMS GetFeatureInfo verified in Tirana only (WAF flaps): sample a second region (Durrës, Shkodër) with retries."
+ },
+ {
+  "iso2": "BA",
+  "name": "Bosnia and Herzegovina",
+  "previousStatus": "subnational_only",
+  "previousEvidence": [
+   "research/countries/BA.json"
+  ],
+  "hints": "FBiH Geoportal (katastar.ba, geoportal.fgu.ba) and RS RGURS geoportal (katastar.rgurs.org / geoportal.rgurs.org): try WMS GetFeatureInfo / WFS in Sarajevo and Banja Luka."
+ },
+ {
+  "iso2": "ME",
+  "name": "Montenegro",
+  "previousStatus": "national_cadastre_credentialed_or_paid",
+  "previousEvidence": [
+   "research/countries/ME.json",
+   "research/retry/countries/ME.json"
+  ],
+  "hints": "Montenegro: katastar.gov.me / geoportal.co.me (Uprava za katastar), INSPIRE; look for an anonymous viewer behind the login."
+ },
+ {
+  "iso2": "MK",
+  "name": "North Macedonia",
+  "previousStatus": "temporarily_unavailable",
+  "previousEvidence": [
+   "research/countries/MK.json",
+   "research/retry/countries/MK.json"
+  ],
+  "hints": "North Macedonia: katastar.gov.mk OSSP viewer JS, geoportal.katastar.gov.mk WMS; hosts reset before, try Referer."
+ },
+ {
+  "iso2": "RS",
+  "name": "Serbia",
+  "previousStatus": "temporarily_unavailable",
+  "previousEvidence": [
+   "research/countries/RS.json",
+   "research/retry/countries/RS.json"
+  ],
+  "hints": "Serbia: geosrbija.rs A3 viewer (katastarske parcele layer) and katastar.rgz.gov.rs; try with Referer https://a3.geosrbija.rs/."
+ },
+ {
+  "iso2": "MD",
+  "name": "Republic of Moldova",
+  "previousStatus": "temporarily_unavailable",
+  "previousEvidence": [
+   "research/countries/MD.json",
+   "research/retry/countries/MD.json"
+  ],
+  "hints": "Moldova: cadastru.md geo-block page; try geoportal.md INSPIRE, moldova-map; record if region-blocked."
+ }
+]
