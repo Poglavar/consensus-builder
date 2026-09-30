@@ -1,0 +1,88 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "ID",
+ "regionCode": "SG",
+ "regionName": "Sulawesi Tenggara",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "source": {
+  "sourceId": "id-big-satupeta-hak-milik",
+  "name": "BIG Satu Peta - Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000, sublayer 18 Sulawesi Tenggara",
+  "operator": "Badan Informasi Geospasial (BIG) Satu Peta, republishing Kementerian ATR/BPN data",
+  "scope": "Sulawesi Tenggara sublayer of group layer 10; 438 features in total, bounding extent [121.8709, -4.2872, 121.8938, -4.2717] (lon/lat)",
+  "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/18",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "ArcGIS JSON (esriGeometryPolygon)",
+  "crs": "EPSG:4326 (outSR)",
+  "reuseStatus": "licence/terms not read; publicly reachable without token"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "id-big-satupeta-hak-milik",
+  "requestUrl": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/18/query?where=1%3D1&geometry=121.88390000000001,-4.2797,121.8879,-4.2757000000000005&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid,nib&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   121.88390000000001,
+   -4.2797,
+   121.8879,
+   -4.2757000000000005
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "nib (unique only with kelurahan; objectid is the OID)",
+  "responseFile": "SG-parcel-response.json",
+  "pagination": "ArcGIS resultRecordCount / resultOffset"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "Layer name says 1:5000 Hak Milik for Sulawesi Tenggara, but total feature count (438) and extent show only sparse titled-parcel coverage; no statement of full-province coverage.",
+ "subregionsVerified": [
+  "Kolaka-Konawe area, tiny extent (near 121.886E,-4.278N)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer",
+   "observation": "Group layer 10 lists 15 province sublayers; this province has one"
+  },
+  {
+   "url": "https://bhumi.atrbpn.go.id/peta",
+   "observation": "ATR/BPN BHUMI viewer, HTTP 200 HTML; no open bulk endpoint found (token-gated, not probed further)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/10?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "sublayer list, includes Sulawesi Tenggara"
+  },
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/18/query (returnCountOnly, returnExtentOnly)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "count 438, extent [121.8709, -4.2872, 121.8938, -4.2717]"
+  },
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/18/query (boxes +-0.0015/0.01/0.05 deg around Kendari (capital) area)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 features: capital area not covered"
+  },
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/18/query?where=1%3D1&geometry=121.88390000000001,-4.2797,121.8879,-4.2757000000000005&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid,nib&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 closed polygons with nib, ID+geometry only"
+  }
+ ],
+ "headersUsed": "User-Agent Chrome/126 desktop; Accept application/json; Accept-Language id-ID,id;q=0.9,en;q=0.8; cookie jar; Referer https://satupeta.big.go.id/",
+ "reuseStatus": "not read",
+ "remainingUncertainty": "Coverage is sparse and clustered away from the capital (Kendari (capital) area returned empty); licence and currency unread; provincial geoportal not found.",
+ "nextStep": "Read BIG/ATR-BPN terms; look for a provincial Simpul Jaringan parcel layer."
+}

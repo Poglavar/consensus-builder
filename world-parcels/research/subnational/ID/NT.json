@@ -1,0 +1,56 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "ID",
+ "regionCode": "NT",
+ "regionName": "Nusa Tenggara Timur",
+ "checkedAt": "2026-09-30",
+ "status": "no_open_service_found",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "headersUsed": {
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+  "Accept": "application/json,text/plain,*/*",
+  "Accept-Language": "id-ID,id;q=0.9,en;q=0.8",
+  "Referer": "https://satupeta.big.go.id/",
+  "cookieJar": true
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "none",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer",
+   "observation": "Layer 10 has no sublayer for this province (15 sublayers listed; not among them). Other BIG PERIZINAN layer \"PITTI Izin Hak Atas Tanah\" is not a parcel layer."
+  },
+  {
+   "url": "https://bhumi.atrbpn.go.id/peta",
+   "observation": "BHUMI viewer; parcel retrieval via token-gated /expapi/getPersil (see research/jakarta.json); not used"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "no sublayer for this province"
+  },
+  {
+   "url": "https://geoportal.nttprov.go.id",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection reset / proxy 502 from this network; provincial geoportal unverified"
+  },
+  {
+   "url": "https://petasatu.nttprov.go.id",
+   "method": "GET",
+   "httpStatus": 502,
+   "contentType": null,
+   "assessment": "proxy CONNECT failed"
+  }
+ ],
+ "reuseStatus": "n/a",
+ "remainingUncertainty": "Guessed provincial hosts were unreachable, so provincial geoportal remains unchecked; not a permanent negative.",
+ "nextStep": "Revisit if ATR/BPN or the provincial geoportal publishes an open parcel endpoint."
+}

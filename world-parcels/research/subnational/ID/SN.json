@@ -1,0 +1,50 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "ID",
+ "regionCode": "SN",
+ "regionName": "Sulawesi Selatan",
+ "checkedAt": "2026-09-30",
+ "status": "no_open_service_found",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "No BIG Satu Peta Hak Milik sublayer for this province ('no sublayer', not 'empty sublayer').",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer",
+   "observation": "no Hak Milik sublayer for this province"
+  },
+  {
+   "url": "https://bhumi.atrbpn.go.id/peta",
+   "observation": "BHUMI viewer, token-gated data, not queried"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/10?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "15 province sublayers (11-25); none for Sulawesi Selatan"
+  },
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "7 folders; only PERIZINAN_DAN_PERTANAHAN holds land layers, others are forestry, boundaries, etc."
+  },
+  {
+   "url": "https://bhumi.atrbpn.go.id/peta",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "viewer page only; no open parcel endpoint"
+  }
+ ],
+ "headersUsed": "User-Agent Chrome/126 desktop; Accept application/json; Accept-Language id-ID,id;q=0.9,en;q=0.8; cookie jar; Referer https://satupeta.big.go.id/",
+ "reuseStatus": "n/a",
+ "remainingUncertainty": "Provincial/city geoportal hosts were guessed (geoportal.<prov>.go.id) and mostly did not resolve; a real provincial Simpul Jaringan or city (e.g. Makassar) parcel service may exist and was not found. BHUMI is token-gated.",
+ "nextStep": "Find the provincial Satu Peta/Simpul Jaringan catalogue and Makassar city GIS via search; inspect BHUMI JS for the public tile/feature endpoints."
+}
