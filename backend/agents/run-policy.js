@@ -195,3 +195,48 @@ export function createAction({ proposalId, lens } = {}) {
     if (!Array.isArray(lens) || !lens.length) throw new Error('a create action needs the lens it mints with');
     return { type: 'create', ...(proposalId ? { proposalId } : {}), lens: [...lens] };
 }
+
+// ---- society roles (society-run.mjs) -----------------------------------------------------------
+// One invocation of a society persona plays one or more turns; the caps below bound the whole
+// invocation, not each turn, so `--turns 5` cannot multiply the spend.
+
+export const MAX_SOCIETY_TURNS = 10;
+
+export function societyPolicy(env = {}) {
+    return {
+        maxActions: Math.floor(finiteNonNegative(env.AGENT_SOCIETY_ACTION_CAP, 4, 'AGENT_SOCIETY_ACTION_CAP')),
+        maxUsdc: finiteNonNegative(env.AGENT_SOCIETY_USDC_CAP, 0.05, 'AGENT_SOCIETY_USDC_CAP')
+    };
+}
+
+/**
+ * The turns of one invocation. Without `turns` it is the ordinary daily run: run id `<day>-<persona>`
+ * and seed `<day>`. With `--turns N` turn k is its own game day: run id `<day>-<persona>-t<k>` and
+ * seed `<day>:t<k>`, each checkpointed separately so a rerun resumes at the first unfinished turn.
+ */
+export function societyTurns({ day, personaName, turns = null } = {}) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(day || ''))) throw new Error(`day must be YYYY-MM-DD, got ${day}`);
+    if (!personaName) throw new Error('personaName is required');
+    if (turns === null || turns === undefined) return [{ turn: null, runId: `${day}-${personaName}`, seed: day }];
+    if (!Number.isInteger(turns) || turns < 1 || turns > MAX_SOCIETY_TURNS) throw new Error(`--turns must be an integer from 1 to ${MAX_SOCIETY_TURNS}`);
+    return Array.from({ length: turns }, (_, index) => ({
+        turn: index + 1, runId: `${day}-${personaName}-t${index + 1}`, seed: `${day}:t${index + 1}`
+    }));
+}
+
+/** Signed actions and USDC one finished turn spent, read from its checkpoint (summary.society). */
+export function societyTurnSpent(summary = {}) {
+    const society = summary?.society || {};
+    const execution = society.execution || {};
+    const actions = [execution.createSignature, execution.stakeSignature, execution.signature].filter(Boolean).length;
+    const usdc = society.acted ? Number(society.action?.usdc) || 0 : 0;
+    return { actions, usdc };
+}
+
+/** What is left of the invocation caps after the spent turns. */
+export function societyBudget(policy, spent = { actions: 0, usdc: 0 }) {
+    return {
+        actionsLeft: Math.max(0, policy.maxActions - spent.actions),
+        usdcLeft: Math.max(0, Number((policy.maxUsdc - spent.usdc).toFixed(6)))
+    };
+}

@@ -27,7 +27,6 @@ import {
     findTally,
     chainNow,
     schemaPda,
-    settleWithVerdict,
     sha256,
     verdictPayload,
     writeSasAccount,
@@ -58,6 +57,32 @@ describe("proposal_nft", () => {
             createLensMember(provider), createLensMember(provider), createLensMember(provider),
         ]);
     });
+
+    function findVerdictRecord(proposal: PublicKey, verdict: PublicKey): PublicKey {
+        return PublicKey.findProgramAddressSync(
+            [Buffer.from("verdict"), proposal.toBuffer(), verdict.toBuffer()],
+            program.programId
+        )[0];
+    }
+
+    // settle_with_verdict with its full account list, including the VerdictRecord PDA the
+    // submitter pays for.
+    async function settleWithVerdict(
+        proposalProgram: Program,
+        a: { proposal: PublicKey; verdict: PublicKey; credential: PublicKey }
+    ): Promise<string> {
+        return proposalProgram.methods
+            .settleWithVerdict()
+            .accountsStrict({
+                proposal: a.proposal,
+                verdict: a.verdict,
+                verdictCredential: a.credential,
+                verdictRecord: findVerdictRecord(a.proposal, a.verdict),
+                submitter: provider.wallet.publicKey,
+                systemProgram: SystemProgram.programId,
+            })
+            .rpc();
+    }
 
     async function getCounterValue(): Promise<number> {
         const account = await program.account.proposalCounter.fetch(counterPDA);
@@ -441,6 +466,8 @@ describe("proposal_nft", () => {
     // settle_with_verdict
     // ========================
 
+    // Not covered here: that a VerdictRecord stays readable after its SAS attestation is closed
+    // (mock_sas has no close instruction). The record holds the key and hash, not the account.
     describe("settle_with_verdict", () => {
         it("expires an Active proposal (status 3) on a lens member's expired verdict", async () => {
             const { proposalPDA } = await mintProposal(["HR-verdict-exp"], false);
@@ -455,6 +482,16 @@ describe("proposal_nft", () => {
             const parcels = 4 + 4 + "HR-verdict-exp".length;
             const image = 4 + "ipfs://test-image".length;
             expect(raw[8 + 8 + 32 + parcels + 1 + image + 1]).to.equal(3);
+
+            // The settlement leaves a permanent VerdictRecord, not only a log event.
+            const record = await program.account.verdictRecord.fetch(findVerdictRecord(proposalPDA, verdict));
+            expect(record.proposal.toBase58()).to.equal(proposalPDA.toBase58());
+            expect(record.member.toBase58()).to.equal(notary.publicKey.toBase58());
+            expect(record.verdictAttestation.toBase58()).to.equal(verdict.toBase58());
+            const bytes = (await provider.connection.getAccountInfo(verdict))!.data;
+            expect(Buffer.from(record.verdictHash)).to.deep.equal(sha256(Buffer.from(bytes)));
+            expect(record.verdict).to.equal(3);
+            expect(Math.abs((record.settledAt as any).toNumber() - await chainNow(provider.connection))).to.be.below(120);
         });
 
         it("rejects an executed verdict while parcels still lack consent", async () => {
@@ -464,6 +501,8 @@ describe("proposal_nft", () => {
                 () => settleWithVerdict(program, { proposal: proposalPDA, verdict, credential: notary.credential }),
                 "VerdictCannotSkipConsent"
             );
+            // A rejected settlement rolls back the record init with it.
+            expect(await provider.connection.getAccountInfo(findVerdictRecord(proposalPDA, verdict))).to.be.null;
         });
 
         it("executes on an executed verdict when the proposal was minted with verdict_may_execute", async () => {
@@ -472,6 +511,9 @@ describe("proposal_nft", () => {
             const verdict = await attestVerdict(provider, notary, { proposalAccount: proposalPDA, verdict: "executed" });
             await settleWithVerdict(program, { proposal: proposalPDA, verdict, credential: notary.credential });
             expect(await status(proposalPDA)).to.deep.equal({ executed: {} });
+            const record = await program.account.verdictRecord.fetch(findVerdictRecord(proposalPDA, verdict));
+            expect(record.verdict).to.equal(1);
+            expect(record.verdictAttestation.toBase58()).to.equal(verdict.toBase58());
         });
 
         it("rejects a verdict from a member outside the lens", async () => {
@@ -512,7 +554,12 @@ describe("proposal_nft", () => {
             const { proposalPDA } = await mintProposal(["HR-verdict-twice"], false);
             const verdict = await attestVerdict(provider, notary, { proposalAccount: proposalPDA, verdict: "expired" });
             await settleWithVerdict(program, { proposal: proposalPDA, verdict, credential: notary.credential });
-            await expectFailure(() => settleWithVerdict(program, { proposal: proposalPDA, verdict, credential: notary.credential }), "NotActive");
+            // The same attestation cannot settle twice: its VerdictRecord already exists.
+            await expectFailure(() => settleWithVerdict(program, { proposal: proposalPDA, verdict, credential: notary.credential }), /already in use/);
+            // A fresh attestation gets past the record init and fails on the status instead.
+            const second = await attestVerdict(provider, notary, { proposalAccount: proposalPDA, verdict: "expired" });
+            await expectFailure(() => settleWithVerdict(program, { proposal: proposalPDA, verdict: second, credential: notary.credential }), "NotActive");
+            expect(await provider.connection.getAccountInfo(findVerdictRecord(proposalPDA, second))).to.be.null;
             const owner = await fundedKeypair();
             await expectFailure(
                 () => attestAndAccept(program, notary, { proposal: proposalPDA, parcelId: "HR-verdict-twice", owner }),

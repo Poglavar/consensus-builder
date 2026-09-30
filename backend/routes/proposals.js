@@ -324,6 +324,19 @@ function lensArrayValidator(value) {
     return { ok: true, value };
 }
 
+// What the record is, beyond an ordinary proposal. Absent = an ordinary proposal by a proposer.
+// 'owner-offer': an attested owner offering its own parcels; bids arrive as pledges and donations
+// and the owner's own acceptance executes it. A closed enum so a typo is a 400, never a new role.
+export const PROPOSAL_ROLES = Object.freeze(['owner-offer']);
+
+export function proposalRoleValidator(value) {
+    if (value === null || value === undefined) return { ok: true, value: null };
+    if (typeof value !== 'string' || !PROPOSAL_ROLES.includes(value)) {
+        return { ok: false, error: `proposalRole must be one of: ${PROPOSAL_ROLES.join(', ')}.` };
+    }
+    return { ok: true, value };
+}
+
 export const proposalCreateBodyValidator = createJsonBodyValidator({
     allowUnknownFields: true,
     schema: {
@@ -376,7 +389,8 @@ export const proposalCreateBodyValidator = createJsonBodyValidator({
         screenshotUrl: { required: false, validate: validators.optional(validators.string({ maxLength: 2000, label: 'screenshotUrl', disallowControlChars: true })) },
         screenshot_url: { required: false, validate: validators.optional(validators.string({ maxLength: 2000, label: 'screenshot_url', disallowControlChars: true })) },
         // Epoch bucket for the plan timeline (presentation metadata; see proposals-ddl.sql).
-        epochYear: { required: false, validate: validators.optional(validators.finiteNumber({ integer: true, min: 2026, max: 2966, label: 'epochYear' })) }
+        epochYear: { required: false, validate: validators.optional(validators.finiteNumber({ integer: true, min: 2026, max: 2966, label: 'epochYear' })) },
+        proposalRole: { required: false, validate: proposalRoleValidator }
     }
 });
 
@@ -1122,6 +1136,7 @@ export function setupProposalsRoute(app, pool) {
                 -- said: an agent stamp on a row without a payment id is never served.
                 CASE WHEN agent_payment_id IS NOT NULL THEN proposal_data->'agent' END AS agent,
                 epoch_year,
+                proposal_data->>'proposalRole' AS proposal_role,
                 COUNT(*) OVER() AS total_count
             FROM proposal`,
                 includePagination: true
@@ -1162,7 +1177,9 @@ export function setupProposalsRoute(app, pool) {
                     agent: row.agent && typeof row.agent === 'object' && !Array.isArray(row.agent)
                         ? row.agent
                         : null,
-                    epochYear: proposal.epochYear ?? null
+                    epochYear: proposal.epochYear ?? null,
+                    // Only a known role is served; anything else stored before validation is ordinary.
+                    proposalRole: PROPOSAL_ROLES.includes(row.proposal_role) ? row.proposal_role : null
                 };
             }).filter(Boolean);
             if (invalid.length) console.warn(`GET /proposals/summary: skipped ${invalid.length} non-canonical record(s)`, invalid.map(entry => `${entry.id}: ${entry.detail || entry.error}`));

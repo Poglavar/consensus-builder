@@ -1218,6 +1218,58 @@
                 "verdictPlaceholder": "Adresa potvrde presude",
                 "submitVerdict": "Predaj presudu",
                 "verdictSettled": "Presuda \"{{verdict}}\" člana {{member}} je primijenjena; stanje na lancu je sada {{status}}."
+            },
+            "parcelHistory": {
+                "eyebrow": "Trajni zapis po čestici",
+                "title": "Povijest čestice",
+                "hint": "Svaki prijedlog, potvrda vlasništva i suglasnost zabilježeni za pojedinu česticu, od najstarijeg, u vrijeme koje navodi izvor.",
+                "summary": "Povijest: {{parcel}}",
+                "loading": "Učitavanje povijesti…",
+                "unavailable": "Povijest nije dostupna: {{message}}",
+                "empty": "Za ovu česticu još ništa nije zabilježeno.",
+                "untimed": "vrijeme nepoznato",
+                "view": "Prikaži",
+                "proposal": "Prijedlog {{id}}",
+                "member": "Član {{key}}",
+                "owner": "Vlasnik {{key}}",
+                "ownerCount": "Potvrđenih vlasnika: {{count}}",
+                "lens": "Leća: {{keys}}",
+                "noAnchor": "Ova oznaka čestice ne može imati sidro na lancu.",
+                "anchorMinted": "Usidrena na lancu od {{at}}",
+                "anchorExists": "Usidrena na lancu",
+                "anchorMissing": "Još nije usidrena na lancu",
+                "event": {
+                    "created": "Prijedlog izrađen",
+                    "published": "Prijedlog kovan na lancu",
+                    "ownership": "Vlasništvo potvrđeno",
+                    "acceptance": "Vlasnik je rekao da",
+                    "verdict": "Presuda podmirena",
+                    "lifecycle": "Prijedlog je dosegao konačno stanje",
+                    "other": "Događaj"
+                },
+                "outcome": {
+                    "executed": "izvršen",
+                    "cancelled": "otkazan",
+                    "expired": "istekao"
+                }
+            },
+            "ownerOffer": {
+                "badge": "Ponuda vlasnika",
+                "badgeTitle": "Vlasnik nudi ovo zemljište; ponude su obećanja i donacije",
+                "eyebrow": "Ponuda vlasnika",
+                "title": "Ponude",
+                "loading": "Učitavam ponude…",
+                "unavailable": "Ponude nisu dostupne",
+                "explainer": "Vlasnik ovog zemljišta poziva na ponude. Ponude su obećanja i donacije iznad; vlasnik izvršava ponudu tako da kaže da.",
+                "total": "Ukupno ponuđeno {{amount}} · ponuditelja: {{count}}",
+                "empty": "Još nema ponuda. Daj obećanje ili doniraj iznad.",
+                "pledge": "Obećanje",
+                "pledgeFulfilled": "Obećanje · ispunjeno",
+                "donation": "Donacija",
+                "explorer": "Explorer",
+                "unknownTime": "vrijeme nepoznato",
+                "sayYes": "Reci da i izvrši",
+                "ownerHint": "Ovo je tvoja ponuda. Kad kažeš da na svakoj svojoj čestici u kartici leće, ponuda se izvršava, a donacije se isplaćuju tebi."
             }
         },
         "block": {
@@ -2467,7 +2519,20 @@
             },
             "proposal_type_no_longer_available": "Spajanje / Odluči kasnije više nije dostupno. Koristi reparcelaciju.",
             "titleLake": "Kreiraj prijedlog jezera",
-            "typeLake": "Jezero"
+            "typeLake": "Jezero",
+            "ownerOffer": {
+                "label": "Ponudi svoje zemljište",
+                "explain": "Nudiš vlastite čestice i pozivaš na ponude. Ponude stižu kao obećanja i donacije na ovaj prijedlog; nitko ga drugi ne može prihvatiti. Kad ti ponuda odgovara, izvršavaš ga tako da kažeš da na svojim česticama. Iznos ponude je tvoja tražena cijena.",
+                "recheck": "Provjeri ponovno",
+                "checking": "Provjeravam potvrde vlasništva…",
+                "needLens": "Najprije odaberi leću (👓): ponuda treba člana leće koji je potvrdio tvoje vlasništvo.",
+                "needParcels": "Odaberi čestice koje posjeduješ.",
+                "noService": "Nijedan član tvoje leće ne objavljuje adresu servisa, pa se vlasništvo ne može provjeriti.",
+                "unavailable": "Potvrde vlasništva trenutačno se ne mogu provjeriti.",
+                "notAttested": "Nijedan član tvoje leće nije potvrdio ovaj novčanik kao vlasnika odabrane čestice.",
+                "attested": "Tvoj novčanik je potvrđeni vlasnik {{attested}} od {{total}} odabranih čestica.",
+                "deselectOthers": "Ponudi samo svoje čestice: odznači {{parcels}}."
+            }
         },
         "mintedProposals": {
             "acceptancePossible": "Prihvaćanje moguće",
@@ -3285,7 +3350,8 @@
             "failed_to_create_proposal": "Izrada prijedloga nije uspjela.",
             "solana_lens_required": "Prije mintanja na Solani odaberite barem jednog člana leće (gumb 👓).",
             "solana_accept_in_lens_card": "Na Solani vlasnici kažu da u kartici Leća prijedloga: član leće potvrdi vaše vlasništvo, zatim vaš novčanik potpiše.",
-            "solana_acceptance_final": "Prihvaćanja na Solani su konačna: potpisani da ne može se povući."
+            "solana_acceptance_final": "Prihvaćanja na Solani su konačna: potpisani da ne može se povući.",
+            "owner_offer_not_attested": "Ponuda vlasnika smije sadržavati samo čestice za koje je član tvoje leće potvrdio da ih tvoj novčanik posjeduje. {{detail}}"
         }
     },
     "gameDialogs": {
@@ -3589,6 +3655,8 @@
         "title": "Konzola člana leće",
         "intro": "Član leće iznosi činjenice o česticama kao potvrde. Usmjerite ovu konzolu na svoj servis člana da vidite što je izdao i da zabilježite presude.",
         "backToMap": "Natrag na kartu",
+        "runOwn": "Člana leće može pokrenuti bilo tko: registrirajte vjerodajnicu, pokrenite referentni servis i on se sam upisuje u imenik.",
+        "runOwnLink": "Kako pokrenuti vlastitog člana",
         "loading": "Učitavanje…",
         "service": {
             "title": "Servis člana",

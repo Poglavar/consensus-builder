@@ -58,6 +58,126 @@ function updateVoteExpiryFieldVisibility() {
     }
 }
 
+// ---- Owner offer ("Offer my land") ----
+// An attested owner offers its own parcels: proposalRole 'owner-offer'. The mode is offered on the
+// Solana path when a lens member in the picker has attested the connected wallet as owner of at least
+// one selected parcel (GET {serviceUrl}/lens/attestations?parcelUid=&owner=), and it can only be
+// submitted when every selected parcel is the wallet's. The pure gate is OwnerOffer.ownerOfferEligibility.
+let ownerOfferCheckSeq = 0;
+
+function ownerOfferSelectedCadastreIds() {
+    try {
+        if (typeof getCurrentParcelSelectionContext !== 'function' || !window.LiveParcelFabric
+            || typeof window.LiveParcelFabric.cadastreIdsForParcelIds !== 'function') return [];
+        const ids = getCurrentParcelSelectionContext().ids || [];
+        return ids.length ? Array.from(new Set(window.LiveParcelFabric.cadastreIdsForParcelIds(ids).map(String))) : [];
+    } catch (error) {
+        console.warn(`[${new Date().toISOString()}] [OwnerOffer] could not resolve selected parcels`, error);
+        return [];
+    }
+}
+
+// -> { ok: false, reason } | { ok: true, owner, parcelIds, lensKeys, eligibility }
+async function checkOwnerOfferEligibility() {
+    const api = window.OwnerOffer;
+    const picker = window.LensPicker;
+    const client = window.LensServiceClient;
+    if (!api || !picker || !client || !window.LensCore) return { ok: false, reason: 'unavailable' };
+    if (!picker.isActive()) return { ok: false, reason: 'no-solana' };
+    const state = window.solanaWalletManager.getState();
+    const owner = String(state.accounts[0]);
+    const lensKeys = window.LensCore.validateSolanaLens(picker.getEntries()).keys;
+    if (!lensKeys.length) return { ok: false, reason: 'no-lens' };
+    const parcelIds = ownerOfferSelectedCadastreIds();
+    if (!parcelIds.length) return { ok: false, reason: 'no-parcels' };
+    let directory = await picker.loadDirectory();
+    if (directory.status === 'error') directory = await picker.loadDirectory(true);
+    const members = (directory.members || []).filter(member => lensKeys.includes(member.key) && member.serviceUrl);
+    if (!members.length) return { ok: false, reason: 'no-service' };
+    const jobs = [];
+    members.forEach(member => parcelIds.forEach(parcelUid => jobs.push({ member, parcelUid })));
+    const results = new Array(jobs.length);
+    let next = 0;
+    const worker = async () => {
+        while (next < jobs.length) {
+            const index = next++;
+            const { member, parcelUid } = jobs[index];
+            const response = await client.fetchAttestations({ serviceUrl: member.serviceUrl, filter: { parcelUid, owner, kind: 'ownership' } });
+            if (response.outcome.kind !== 'ok') {
+                console.warn(`[${new Date().toISOString()}] [OwnerOffer] ${member.key} attestations for ${parcelUid}: ${response.outcome.message || `HTTP ${response.status}`}`);
+            }
+            results[index] = { memberKey: member.key, parcelUid, attestations: response.attestations };
+        }
+    };
+    await Promise.all(Array.from({ length: Math.min(6, jobs.length) }, worker));
+    const eligibility = api.ownerOfferEligibility({ parcelIds, results, owner, lensKeys });
+    return { ok: true, owner, parcelIds, lensKeys, eligibility };
+}
+
+function ownerOfferStatusText(check) {
+    const t = getProposalI18nHelper();
+    if (!check.ok) {
+        const messages = {
+            'no-lens': ['modal.createProposal.ownerOffer.needLens', 'Choose your lens (👓) first: the offer needs a lens member that attested your ownership.'],
+            'no-parcels': ['modal.createProposal.ownerOffer.needParcels', 'Select the parcels you own.'],
+            'no-service': ['modal.createProposal.ownerOffer.noService', 'None of your lens members publishes a service URL, so your ownership cannot be checked.'],
+            unavailable: ['modal.createProposal.ownerOffer.unavailable', 'Ownership attestations cannot be checked right now.']
+        };
+        const [key, fallback] = messages[check.reason] || messages.unavailable;
+        return t(key, fallback);
+    }
+    const { eligibility, parcelIds } = check;
+    if (!eligibility.eligible) {
+        return t('modal.createProposal.ownerOffer.notAttested', 'No lens member in your lens has attested this wallet as owner of a selected parcel.');
+    }
+    const attested = t('modal.createProposal.ownerOffer.attested', 'Your wallet is the attested owner of {{attested}} of {{total}} selected parcels.',
+        { attested: eligibility.attestedParcelIds.length, total: parcelIds.length });
+    if (eligibility.submittable) return attested;
+    return `${attested} ${t('modal.createProposal.ownerOffer.deselectOthers', 'Offer only your own parcels: deselect {{parcels}}.',
+        { parcels: eligibility.unattestedParcelIds.join(', ') })}`;
+}
+
+// Re-evaluates the gate and renders the "Offer my land" group. Called when the dialog opens and from
+// its Check again button (the lens and the wallet can change while the dialog is open).
+async function refreshOwnerOfferMode() {
+    const group = document.getElementById('proposalOwnerOfferGroup');
+    const checkbox = document.getElementById('proposalOwnerOfferCheckbox');
+    const status = document.getElementById('proposalOwnerOfferStatus');
+    if (!group || !checkbox || !status) return;
+    const seq = ++ownerOfferCheckSeq;
+    if (!(window.LensPicker && window.LensPicker.isActive())) {
+        group.hidden = true;
+        checkbox.checked = false;
+        onProposalOwnerOfferChange();
+        return;
+    }
+    const t = getProposalI18nHelper();
+    group.hidden = false;
+    checkbox.disabled = true;
+    status.textContent = t('modal.createProposal.ownerOffer.checking', 'Checking your ownership attestations…');
+    let check;
+    try {
+        check = await checkOwnerOfferEligibility();
+    } catch (error) {
+        console.error(`[${new Date().toISOString()}] [OwnerOffer] eligibility check failed`, error);
+        check = { ok: false, reason: 'unavailable' };
+    }
+    if (seq !== ownerOfferCheckSeq || !group.isConnected) return;
+    const eligible = !!(check.ok && check.eligibility.eligible);
+    checkbox.disabled = !eligible;
+    if (!eligible) checkbox.checked = false;
+    status.textContent = ownerOfferStatusText(check);
+    onProposalOwnerOfferChange();
+}
+
+function onProposalOwnerOfferChange() {
+    const checkbox = document.getElementById('proposalOwnerOfferCheckbox');
+    const explain = document.getElementById('proposalOwnerOfferExplain');
+    const on = !!(checkbox && checkbox.checked && !checkbox.disabled);
+    window.proposalOwnerOfferMode = on;
+    if (explain) explain.hidden = !on;
+}
+
 function resolveProposalAuthorName() {
     let authorName = '';
     if (typeof getCurrentUsername === 'function') {
@@ -396,6 +516,23 @@ async function createProposal() {
         showProposalAlertMessage('solana_lens_required', 'Choose at least one lens member (the 👓 button) before minting on Solana.');
         if (typeof showLensModal === 'function') showLensModal();
         return;
+    }
+    // "Offer my land": re-check at submit, since the lens, wallet or selection may have changed.
+    const ownerOfferRequested = !!window.proposalOwnerOfferMode;
+    if (ownerOfferRequested) {
+        let ownerOfferCheck;
+        try {
+            ownerOfferCheck = await checkOwnerOfferEligibility();
+        } catch (error) {
+            console.error(`[${new Date().toISOString()}] [OwnerOffer] submit check failed`, error);
+            ownerOfferCheck = { ok: false, reason: 'unavailable' };
+        }
+        if (!ownerOfferCheck.ok || !ownerOfferCheck.eligibility.submittable) {
+            showProposalAlertMessage('owner_offer_not_attested', 'An owner offer can only name parcels your wallet is attested to own by a member of your lens. {{detail}}',
+                { detail: ownerOfferStatusText(ownerOfferCheck) });
+            refreshOwnerOfferMode();
+            return;
+        }
     }
     if (!description) {
         showProposalAlertMessage('please_enter_a_description', 'Please enter a description.');
@@ -762,6 +899,12 @@ async function createProposal() {
                     }
                 }
             }
+        }
+
+        // An attested owner offering its own land; bids arrive as pledges and donations and the
+        // owner's own acceptance executes it. Absent for an ordinary proposal.
+        if (ownerOfferRequested) {
+            proposal.proposalRole = 'owner-offer';
         }
 
         // Auto-tag structure proposals (park/square/lake) created from Purchase flow so they carry geometry and parent ids
@@ -1606,10 +1749,13 @@ async function createProposal() {
                             if (!solanaLens.ok) {
                                 throw new Error(t('alerts.messages.solana_lens_required', 'Choose at least one lens member (the 👓 button) before minting on Solana.'));
                             }
+                            // An owner offer names an asking price; bids arrive as pledges and donations
+                            // from others, so nothing is escrowed from the owner's own wallet at mint.
+                            const escrowAmount = proposal.proposalRole === 'owner-offer' ? 0 : nativeAmount;
                             onchainResult = await window.SolanaProposalChainBridge.mintProposal({
                                 parcelIds: parcelIdsForMinting,
                                 isConditional: isConditional,
-                                solAmount: nativeAmount,
+                                solAmount: escrowAmount,
                                 imageURI: metadataUri,
                                 lens: solanaLens.keys,
                                 // Every goal this dialog creates changes named parcels, so per-parcel

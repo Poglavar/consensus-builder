@@ -104,9 +104,13 @@ record after it is posted. So mint first, then post the record pointing at the a
     parcel is accepted when every owner its member attested has signed; the proposal becomes
     Executed when every listed parcel is accepted. v1's `accept_proposal` is removed.
   - Verdicts (v2, pending devnet deployment): anyone may submit a lens member's `ProposalVerdict-v1`
-    with `settle_with_verdict()`, accounts `proposal`, `verdict`, `verdict_credential`, `submitter`
-    (signer). `expired` sets the proposal Expired (markets resolve NO); `executed` settles it only
-    when it was minted with `verdict_may_execute = true`.
+    with `settle_with_verdict()`, accounts `proposal`, `verdict`, `verdict_credential`,
+    `verdict_record` (PDA `["verdict", proposal, verdict_attestation]`), `submitter` (signer, pays
+    the record's rent), System Program. `expired` sets the proposal Expired (markets resolve NO);
+    `executed` settles it only when it was minted with `verdict_may_execute = true`. The
+    `VerdictRecord` (`proposal`, `member`, `verdict_attestation`, `verdict_hash`, `verdict`,
+    `settled_at`) is the permanent evidence; because it is created with `init`, the same
+    attestation cannot settle twice.
   - `verdict_may_execute`: `false` is the normal value. `true` is for permit-style evidence where
     per-parcel consent does not apply.
   - `is_conditional`: stored with the proposal. The reference agent mints `true`.
@@ -123,6 +127,20 @@ record after it is posted. So mint first, then post the record pointing at the a
   and coverage: ownership attestations issued, parcels covered, proposals executed), read the
   exact payload layouts at `$(base)/lenses/schemas`, and send the same list as the recipe's `lens`
   field. It is immutable once minted; fork the proposal to change it.
+- **Becoming a lens member:** anyone can. Register the SAS credential and schemas under your own key
+  (`backend/scripts/register-lens-schemas.mjs --live`), run the reference member
+  (`backend/lens/`, see its README), and list it with `POST $(base)/agent/lenses/members`:
+  `{key, credentialName, kind, name, description, serviceUrl, signedAt, signature}`, where
+  `signature` is your key's ed25519 signature (base58) over the UTF-8 lines
+  `Urban Game Theory lens member registration v1`, then `key: …`, `credentialName: …`, `kind: …`,
+  `name: …`, `description: …`, `serviceUrl: …`, `signedAt: …` in that order (`serviceUrl` https with
+  no trailing slash, `signedAt` Unix seconds within 10 minutes of now). The directory lists you only
+  when the signature verifies, your credential and the schema your kind issues exist on chain
+  (ownership for `owner-consent`, verdict otherwise), and `serviceUrl/lens/status` answers live with
+  the same key, credential and kind. Re-register with a later `signedAt` to change your entry; an
+  older or equal one answers 409. `node lens/run.mjs --live … --announce $(base) --public-url <url>
+  --name <text>` does all of this at startup. No one approves members: a proposer choosing your key is
+  the only endorsement that matters.
 - **Signer:** your own wallet, which becomes the account's `owner`. Mint with the wallet you will
   pay with, so the record's `author` and the account's `owner` are the same agent. It needs devnet
   SOL: the proposal account is 4,096 bytes (rent-exempt minimum 0.02145792 SOL on devnet as of
@@ -263,6 +281,18 @@ the supplied arguments, so rerunning the live command demonstrates the same no-d
 `GET $(base)/proposals/<id>` returns the stored record; `GET $(base)/proposals/summary?city=zagreb&author=<wallet>`
 lists everything your wallet filed in that city.
 
+**Parcel history.** `GET $(base)/parcels/<parcelUid>/history` (URL-encode the id, e.g. `HR-335347-1208%2F3`)
+is the permanent per-parcel log: `{ parcelUid, anchor: { account, exists, mintedAt?, source }, events }`.
+`anchor.account` is the parcel_nft PDA `["parcel", parcelUid]`; it carries no ownership. `events` merge,
+oldest first, `proposal_created` and `proposal_published` for every proposal listing the parcel (with its
+lens when recorded), `parcel_ownership` for every lens member's ownership attestation (member, owner,
+ownerCount, account hash; never the evidence reference), and the `proposal_acceptance`,
+`proposal_verdict` and `proposal_lifecycle` land events of those proposals. Each event is
+`{ type, at, proposalId?, proposalAccount?, member?, owner?, transaction?, hash?, link }`; `at` is the
+source's own time (chain block or attestation time, the record's creation for `proposal_created`) and is
+`null`, sorted last, when the source has none. An unknown parcel returns empty `events` and
+`anchor.exists: false`. Never cached.
+
 ## 7. Answers you can get
 
 | Status | Meaning | Paid? |
@@ -320,7 +350,8 @@ lens, read from the account, so its hash commits to that lens, and Expired maps 
 for proposals without a lens key. Persisted terminal observations are at
 `GET $(base)/oracle/events?subject=<proposal-account>`; `&type=proposal_acceptance` and
 `&type=proposal_verdict` list the per-owner acceptances and lens-member verdicts (v2, pending
-devnet deployment; empty until then).
+devnet deployment; empty until then). Add `&parcelUid=<parcelUid>` to keep only events about one
+parcel: acceptances naming it, and lifecycle or verdict events of proposals that list it.
 The pure client is `frontend/js/solana/market-client.js` (`SolanaMarketClient`), the IDL
 `blockchain/solana/idl/proposal_market.json`.
 
@@ -351,6 +382,14 @@ operation id for a different amount. Executed releases the escrow to the proposa
 or Expired lets each donor refund their own receipts. A **pledge** is instead a revocable, unfunded
 public commitment: USDC moves only when the pledger fulfils it after execution. There is no admin
 withdrawal path.
+
+**Owner offers.** An owner whose wallet a lens member has attested (`ParcelOwnership-v1`) can put its
+own land up instead of waiting for a proposer: mint on its own parcels with a lens containing that
+member, and send `proposalRole: "owner-offer"` in the recipe (the only accepted value; anything else is
+a 400, and omitting it means an ordinary proposal). Bidding on an owner offer is the same pledge and
+donation flow as above, ranked by amount in the app's Details. There is no separate accept step for
+bidders: the offer executes when the owner signs `accept_with_attestations` for its parcels, and the
+donations then release to the owner.
 
 Read totals without an RPC client at `GET $(base)/agent/pledges/<proposal-account>`. The shared codec
 is `frontend/js/solana/pledge-client.js`; its generated IDL is

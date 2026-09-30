@@ -1,5 +1,6 @@
 // Opt-in PM2 schedules for the autonomous hackathon actors, land-event materializer, the live
-// prospective-market resolver, and the (inactive) notary-01 lens member. Secrets stay in backend/.env
+// prospective-market resolver, the society personas (preservationist-01, speculator-01; opt-in until
+// their keys exist) and the (inactive) notary-01 and lifecycle-01 lens members. Secrets stay in backend/.env
 // or protected key files; deploy-backend.sh deliberately restarts only the API app, so operators
 // activate these jobs separately.
 module.exports = {
@@ -40,6 +41,57 @@ module.exports = {
       NODE_ENV: 'production',
       AGENT_API_BASE: 'https://api.urbangametheory.xyz',
       AGENT_SUPPORT_USDC_CAP: '0.25'
+    },
+    error_file: '/root/code/consensus-builder/backend/logs/agents-error.log',
+    out_file: '/root/code/consensus-builder/backend/logs/agents.log',
+    merge_logs: true,
+    time: true
+  }, {
+    // OPT-IN until keys exist: the contrarian society persona (agents/policies/contrarian.js) bets
+    // NO on the densest active proposal by another actor. Start it with `pm2 start
+    // agents/ecosystem.config.cjs --only consensus-builder-preservationist` only after
+    // ~/.config/solana/ugt-preservationist-01.json exists, its wallet is set in personas.json and
+    // funded with devnet SOL + USDC; until then a live run refuses before reading anything.
+    name: 'consensus-builder-preservationist',
+    script: 'agents/society-run.mjs',
+    args: '--live --persona preservationist-01 --api https://api.urbangametheory.xyz',
+    cwd: '/root/code/consensus-builder/backend',
+    exec_mode: 'fork',
+    instances: 1,
+    autorestart: false,
+    cron_restart: '20 2 * * *',
+    kill_timeout: 900000,
+    env: {
+      NODE_ENV: 'production',
+      AGENT_API_BASE: 'https://api.urbangametheory.xyz',
+      // One NO stake (0.01 USDC) plus a possible market creation per invocation.
+      AGENT_SOCIETY_ACTION_CAP: '2',
+      AGENT_SOCIETY_USDC_CAP: '0.01'
+    },
+    error_file: '/root/code/consensus-builder/backend/logs/agents-error.log',
+    out_file: '/root/code/consensus-builder/backend/logs/agents.log',
+    merge_logs: true,
+    time: true
+  }, {
+    // OPT-IN until keys exist: the speculator society persona (agents/policies/speculator.js)
+    // pledges behind the market favourite and revokes when the market turns or the proposal ages.
+    // Start it with `--only consensus-builder-speculator` only after
+    // ~/.config/solana/ugt-speculator-01.json exists and its wallet is set in personas.json.
+    name: 'consensus-builder-speculator',
+    script: 'agents/society-run.mjs',
+    args: '--live --persona speculator-01 --api https://api.urbangametheory.xyz',
+    cwd: '/root/code/consensus-builder/backend',
+    exec_mode: 'fork',
+    instances: 1,
+    autorestart: false,
+    cron_restart: '25 2 * * *',
+    kill_timeout: 900000,
+    env: {
+      NODE_ENV: 'production',
+      AGENT_API_BASE: 'https://api.urbangametheory.xyz',
+      // One pledge or one revoke per invocation; a pledge is a soft 0.05 USDC commitment.
+      AGENT_SOCIETY_ACTION_CAP: '1',
+      AGENT_SOCIETY_USDC_CAP: '0.05'
     },
     error_file: '/root/code/consensus-builder/backend/logs/agents-error.log',
     out_file: '/root/code/consensus-builder/backend/logs/agents.log',
@@ -93,6 +145,28 @@ module.exports = {
     name: 'consensus-builder-lens-member',
     script: 'agents/lens-member-run.mjs',
     args: '--persona notary-01 --live',
+    cwd: '/root/code/consensus-builder/backend',
+    exec_mode: 'fork',
+    instances: 1,
+    autorestart: false,
+    kill_timeout: 30000,
+    env: {
+      NODE_ENV: 'production'
+    },
+    error_file: '/root/code/consensus-builder/backend/logs/lens-member-error.log',
+    out_file: '/root/code/consensus-builder/backend/logs/lens-member.log',
+    merge_logs: true,
+    time: true
+  }, {
+    // INACTIVE, opt-in: the lifecycle-01 lens member (kind lifecycle) whose expiry verdicts the
+    // proposer's retire phase requests. Not scheduled and never restarted. Start it with `--only
+    // consensus-builder-lifecycle-member` only after the lifecycle-01 key exists, its SAS credential
+    // and the ProposalVerdict-v1 schema are registered (scripts/register-lens-schemas.mjs) and
+    // AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN is set in backend/.env; then set
+    // AGENT_LIFECYCLE_LENS_SERVICE_URL=http://127.0.0.1:3096 for the proposer as well.
+    name: 'consensus-builder-lifecycle-member',
+    script: 'agents/lens-member-run.mjs',
+    args: '--persona lifecycle-01 --live',
     cwd: '/root/code/consensus-builder/backend',
     exec_mode: 'fork',
     instances: 1,

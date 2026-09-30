@@ -1,5 +1,5 @@
 {
-  "_comment": "Server-side agent personas (design §WS3). Keypairs live outside the repo at keypairPath. Proposer and supporter roles share the same controller, checkpoint and activity system. A lens-member persona runs the reference lens member (backend/lens/) via agents/lens-member-run.mjs; wallet null = key not generated yet.",
+  "_comment": "Server-side agent personas (design §WS3). Keypairs live outside the repo at keypairPath. Proposer and supporter roles share the same controller, checkpoint and activity system. A lens-member persona runs the reference lens member (backend/lens/) via agents/lens-member-run.mjs; wallet null = key not generated yet. Society roles (contrarian, speculator) run through agents/society-run.mjs with a pure policy module at agents/policies/<role>.js; their `policy` block holds that module's parameters.",
   "personas": [
     {
       "name": "densifier-01",
@@ -34,6 +34,44 @@
         "priceUsdc": "0.01",
         "credentialName": "LensMember",
         "identity": "devnet-registry"
+      }
+    },
+    {
+      "name": "preservationist-01",
+      "role": "contrarian",
+      "wallet": "GLWL2hfT7T8yZ1juXjH8osioC2mzVHky8mMGvY5gcYUd",
+      "keypairPath": "~/.config/solana/ugt-preservationist-01.json",
+      "policy": {
+        "cities": ["zagreb"],
+        "amountUsdc": "0.01"
+      }
+    },
+    {
+      "name": "speculator-01",
+      "role": "speculator",
+      "wallet": "Fc2trFfYBGvBB315tkojuiqrm5sARjHtspA2tW4iEYqW",
+      "keypairPath": "~/.config/solana/ugt-speculator-01.json",
+      "policy": {
+        "cities": ["zagreb"],
+        "amountUsdc": "0.05",
+        "minPledgeProbability": 0.6,
+        "revokeBelowProbability": 0.5,
+        "pledgeWithinDays": 3,
+        "maxAgeDays": 7
+      }
+    },
+    {
+      "name": "lifecycle-01",
+      "role": "lens-member",
+      "wallet": "m8gLfyPspP6ABSNA4ZMFYCzzRGjNLBmrKKwKrGqbUfR",
+      "keypairPath": "~/.config/solana/ugt-lifecycle-01.json",
+      "service": {
+        "port": 3096,
+        "url": "http://127.0.0.1:3096",
+        "kind": "lifecycle",
+        "credentialName": "LensMember",
+        "identity": "devnet-registry",
+        "operatorTokenEnv": "AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN"
       }
     }
   ]

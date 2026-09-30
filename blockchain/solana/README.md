@@ -24,7 +24,7 @@ see below). Clients built from these IDLs will fail against devnet until then.
 | Program | Change |
 |---|---|
 | `parcel_nft` | `mint_parcel` writes `owner = Pubkey::default()`; the second account is now `payer` (same position as v1's `owner`, so raw-built instructions still work). `set_parcel_metadata_uri` removed. Layout and seeds unchanged. |
-| `proposal_nft` | `accept_proposal`, `withdraw_acceptance` and the certificate-owner check removed. New `accept_with_attestations`, `settle_with_verdict`, `reclaim_expired_funds`; `distribute_funds` pays acceptance records (or the owner when a verdict executed a proposal without any). `mint_and_fund` takes a trailing `verdict_may_execute: bool` (clients must now send it; `false` is the normal value). |
+| `proposal_nft` | `accept_proposal`, `withdraw_acceptance` and the certificate-owner check removed. New `accept_with_attestations`, `settle_with_verdict` (writes a `VerdictRecord` PDA), `reclaim_expired_funds`; `distribute_funds` pays acceptance records (or the owner when a verdict executed a proposal without any). `mint_and_fund` takes a trailing `verdict_may_execute: bool` (clients must now send it; `false` is the normal value). |
 | `proposal_market` | `resolve` maps Expired (3) to NO. `create_external_market` takes an optional proposal as remaining account 0: when passed, `trusted_attester` must be in that proposal's lens. No instruction or account layout changed. |
 
 ### proposal_nft instructions
@@ -49,11 +49,17 @@ Effect: writes the record, `tally.accepted += 1`; when `accepted == required` th
 `accepted_parcels`; when every parcel has, the proposal is Executed.
 
 `settle_with_verdict()` — accounts `proposal` (mut), `verdict` (SAS ProposalVerdict-v1),
-`verdict_credential`, `submitter` (signer). Same attestation checks (schema name
-`ProposalVerdict`), signer in the lens, `proposalAccount == proposal`, `sourceObservedAt <= now`,
-proposal Active. `expired` sets Expired (3); `executed` sets Executed (1) only when the proposal was
-minted with `verdict_may_execute` (a verdict cannot skip per-parcel consent). Emits
+`verdict_credential`, `verdict_record` (init), `submitter` (signer, mut, pays the record's rent),
+`system_program`. Same attestation checks (schema name `ProposalVerdict`), signer in the lens,
+`proposalAccount == proposal`, `sourceObservedAt <= now`, proposal Active. `expired` sets Expired
+(3); `executed` sets Executed (1) only when the proposal was minted with `verdict_may_execute` (a
+verdict cannot skip per-parcel consent). Writes a permanent `VerdictRecord` and emits
 `VerdictSettled { proposal, verdict_attestation, verdict_hash, member, status, settled_at }`.
+Submitting the same attestation twice fails at the `verdict_record` init ("already in use").
+
+Per-parcel history is assembled off-chain from the permanent PDAs: `AcceptanceRecord`s (who
+accepted, under which ownership attestation), `ConsentTally`s and the proposal's `VerdictRecord`s.
+The program has no log account of its own.
 
 `distribute_funds()` — accounts `proposal` (mut). Remaining accounts, per accepted parcel in
 `accepted_parcels` order: its tally, then `tally.accepted` pairs of (acceptance record, recipient).
@@ -74,6 +80,7 @@ Requires status Expired and `sol_balance > 0`; moves the whole balance to the ow
 |---|---|---|
 | `ConsentTally` | `["consent", proposal, parcel_id]` (proposal_nft) | `proposal, parcel_id (≤32), member, required u8, accepted u8, bump` — 111 bytes |
 | `AcceptanceRecord` | `["acceptance", proposal, parcel_id, owner]` (proposal_nft) | `proposal, parcel_id (≤32), owner, member, ownership_attestation, ownership_hash [u8;32] (sha256 of the whole SAS account), payout (default key = none), accepted_at i64, bump` — 245 bytes |
+| `VerdictRecord` | `["verdict", proposal, verdict_attestation]` (proposal_nft) | `proposal, member, verdict_attestation, verdict_hash [u8;32] (sha256 of the whole SAS account), verdict u8 (status set: 1 Executed, 3 Expired), settled_at i64, bump` — 146 bytes |
 | `Parcel` | `["parcel", parcel_id]` (parcel_nft) | unchanged |
 | `Proposal` | `["proposal", counter u64 LE]` (proposal_nft) | unchanged prefix; `verdict_may_execute: bool` appended after `bump` |
 

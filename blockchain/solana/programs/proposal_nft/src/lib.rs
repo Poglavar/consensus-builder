@@ -230,10 +230,20 @@ pub mod proposal_nft {
         proposal.acceptance_possible = false;
         proposal.status = status;
 
+        let verdict_hash = hash(&verdict_data).to_bytes();
+        let record = &mut accounts.verdict_record;
+        record.proposal = proposal_key;
+        record.member = member;
+        record.verdict_attestation = accounts.verdict.key();
+        record.verdict_hash = verdict_hash;
+        record.verdict = status as u8;
+        record.settled_at = now;
+        record.bump = ctx.bumps.verdict_record;
+
         emit!(VerdictSettled {
             proposal: proposal_key,
             verdict_attestation: accounts.verdict.key(),
-            verdict_hash: hash(&verdict_data).to_bytes(),
+            verdict_hash,
             member,
             status: status as u8,
             settled_at: now,
@@ -465,7 +475,22 @@ pub struct SettleWithVerdict<'info> {
     /// CHECK: SAS credential the verdict was issued under; checked in the handler.
     pub verdict_credential: UncheckedAccount<'info>,
 
+    /// Permanent evidence of the settlement. `init`, so replaying the same attestation fails with
+    /// "already in use" before the handler runs.
+    #[account(
+        init,
+        payer = submitter,
+        space = 8 + VerdictRecord::INIT_SPACE,
+        seeds = [b"verdict", proposal.key().as_ref(), verdict.key().as_ref()],
+        bump
+    )]
+    pub verdict_record: Box<Account<'info, VerdictRecord>>,
+
+    /// Pays rent for the verdict record.
+    #[account(mut)]
     pub submitter: Signer<'info>,
+
+    pub system_program: Program<'info, System>,
 }
 
 #[derive(Accounts)]
@@ -568,6 +593,22 @@ pub struct AcceptanceRecord {
     pub ownership_hash: [u8; 32],
     pub payout: Pubkey,
     pub accepted_at: i64,
+    pub bump: u8,
+}
+
+/// One settled verdict: PDA ["verdict", proposal, verdict_attestation]. Keeps the verdict
+/// attestation's key and the sha256 of its whole account bytes, so the evidence outlives the SAS
+/// account (and the transaction logs that carry `VerdictSettled`). `verdict` is the status it set:
+/// 1 Executed, 3 Expired.
+#[account]
+#[derive(InitSpace)]
+pub struct VerdictRecord {
+    pub proposal: Pubkey,
+    pub member: Pubkey,
+    pub verdict_attestation: Pubkey,
+    pub verdict_hash: [u8; 32],
+    pub verdict: u8,
+    pub settled_at: i64,
     pub bump: u8,
 }
 

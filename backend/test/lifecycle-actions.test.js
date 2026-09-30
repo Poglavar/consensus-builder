@@ -8,7 +8,7 @@ import {
     acceptWithAttestations, buildAcceptWithAttestationsIx, buildCancelProposalIx, buildMintParcelIx,
     buildSettleWithVerdictIx, cancelProposal, decodeProposalState, deriveAcceptanceRecordPda, deriveConsentTallyPda,
     deriveMemberCredential, deriveParcelAnchorPda, ensureParcelAnchor, expireWithVerdict, PARCEL_PROGRAM_ID,
-    PROPOSAL_PROGRAM_ID, readAcceptanceRecord, readConsentTally, settleWithVerdict
+    getVerdictRecordPda, PROPOSAL_PROGRAM_ID, readAcceptanceRecord, readConsentTally, readVerdictRecord, settleWithVerdict
 } from '../agents/lifecycle-actions.js';
 import { instructionDiscriminator } from '../agents/minter.js';
 import {
@@ -69,6 +69,14 @@ function recordAccount({ proposal, parcelId, owner, member, attestation, payout 
         Buffer.from([8, 191, 82, 210, 167, 58, 12, 34]), new PublicKey(proposal).toBuffer(), string(parcelId),
         new PublicKey(owner).toBuffer(), new PublicKey(member).toBuffer(), new PublicKey(attestation).toBuffer(),
         Buffer.alloc(32, 7), new PublicKey(payout).toBuffer(), time, Buffer.from([252])
+    ]);
+}
+
+function verdictRecordAccount({ proposal, member, attestation, verdictCode = 3, settledAt = 1790000000 }) {
+    const time = Buffer.alloc(8); time.writeBigInt64LE(BigInt(settledAt));
+    return Buffer.concat([
+        Buffer.from([5, 210, 137, 12, 43, 13, 62, 182]), new PublicKey(proposal).toBuffer(), new PublicKey(member).toBuffer(),
+        new PublicKey(attestation).toBuffer(), Buffer.alloc(32, 9), Buffer.from([verdictCode]), time, Buffer.from([251])
     ]);
 }
 
@@ -284,7 +292,13 @@ describe('settle_with_verdict', () => {
     it('builds the IDL account order and matches the browser codec', () => {
         const [proposal, verdict, credential, submitter] = Array.from({ length: 4 }, () => Keypair.generate().publicKey);
         const ix = buildSettleWithVerdictIx({ proposalAccount: proposal, verdictAttestation: verdict, verdictCredential: credential, submitter });
-        expect(flags(ix)).toEqual([[proposal.toBase58(), false, true], [verdict.toBase58(), false, false], [credential.toBase58(), false, false], [submitter.toBase58(), true, false]]);
+        const [record] = PublicKey.findProgramAddressSync([Buffer.from('verdict'), proposal.toBuffer(), verdict.toBuffer()], new PublicKey(PROPOSAL_PROGRAM_ID));
+        expect(getVerdictRecordPda({ proposalAccount: proposal, verdictAttestation: verdict }).toBase58()).toBe(record.toBase58());
+        expect(browser.getVerdictRecordPda(proposal, verdict)[0].toBase58()).toBe(record.toBase58());
+        expect(flags(ix)).toEqual([
+            [proposal.toBase58(), false, true], [verdict.toBase58(), false, false], [credential.toBase58(), false, false],
+            [record.toBase58(), false, true], [submitter.toBase58(), true, true], [web3.SystemProgram.programId.toBase58(), false, false]
+        ]);
         const theirs = browser.buildSettleWithVerdictIx({ proposal, verdict, verdictCredential: credential, submitter });
         expect([...ix.data]).toEqual([...theirs.data]);
         expect(flags(ix)).toEqual(flags(theirs));
@@ -298,11 +312,27 @@ describe('settle_with_verdict', () => {
             return 'settle-tx';
         });
         expect(await settleWithVerdict({ connection: chain.connection, submitterKeypair: submitter, proposalAccount: proposal, verdictAttestation: attestation, sendAndConfirm }))
-            .toMatchObject({ replayed: false, signature: 'settle-tx', status: 'expired', member });
+            .toMatchObject({ replayed: false, signature: 'settle-tx', status: 'expired', member, record: getVerdictRecordPda({ proposalAccount: proposal, verdictAttestation: attestation }).toBase58() });
         chain.put(proposal, proposalAccount(3, { parcelIds: ['HR-1'], lens: [member] }));
         expect(await settleWithVerdict({ connection: chain.connection, submitterKeypair: submitter, proposalAccount: proposal, verdictAttestation: attestation, member, sendAndConfirm }))
             .toMatchObject({ replayed: true, signature: null, status: 'expired' });
         expect(sendAndConfirm).toHaveBeenCalledOnce();
+    });
+
+    it('replays without sending when the VerdictRecord for that attestation already exists', async () => {
+        const { chain, member, proposal, attestation } = verdictChain();
+        const record = getVerdictRecordPda({ proposalAccount: proposal, verdictAttestation: attestation });
+        // The proposal still reads Active: the record alone must stop a second send.
+        chain.put(record, verdictRecordAccount({ proposal, member, attestation, verdictCode: 3 }));
+        const read = await readVerdictRecord({ connection: chain.connection, proposalAccount: proposal, verdictAttestation: attestation });
+        expect(read).toMatchObject({ address: record.toBase58(), proposal: proposal.toBase58(), member, verdictAttestation: attestation.toBase58(), verdict: 'expired', settledAt: 1790000000, bump: 251 });
+        expect(browser.readVerdictRecord(verdictRecordAccount({ proposal, member, attestation }), record.toBase58()))
+            .toMatchObject({ verdictAttestation: read.verdictAttestation, verdictHash: read.verdictHash, settledAt: read.settledAt });
+        const sendAndConfirm = vi.fn();
+        expect(await settleWithVerdict({ connection: chain.connection, submitterKeypair: Keypair.generate(), proposalAccount: proposal, verdictAttestation: attestation, sendAndConfirm }))
+            .toMatchObject({ replayed: true, signature: null, status: 'expired', member, record: record.toBase58() });
+        expect(sendAndConfirm).not.toHaveBeenCalled();
+        expect(await readVerdictRecord({ connection: chain.connection, proposalAccount: proposal, verdictAttestation: Keypair.generate().publicKey })).toBeNull();
     });
 
     it('refuses an executed verdict without verdict_may_execute, a member outside the lens and a cancelled proposal', async () => {

@@ -69,19 +69,60 @@ function publicResolver(status, now) {
     };
 }
 
+// Society roles (agents/society-run.mjs) are optional: a deployment may not run them at all. They
+// live in `optionalJobs`, never in `jobs`, so the proof audit's "every job completed and fresh" check
+// is unchanged. No row = not configured; a newest row older than its window = inactive (stopped, not
+// broken); only a recent run counts toward the overall status, where a failure is real attention.
+export const OPTIONAL_SOCIETY_ROLES = [
+    { role: 'contrarian', schedule: 'daily at 02:20 UTC', maxAgeHours: 36 },
+    { role: 'speculator', schedule: 'daily at 02:25 UTC', maxAgeHours: 36 }
+];
+const SOCIETY_OK_OUTCOMES = ['completed', 'no-action', 'replayed', 'cap-reached'];
+
+function publicSocietyRun(row, { role, schedule, maxAgeHours, now }) {
+    if (!row) return { role, schedule, optional: true, configured: false, status: 'not-configured', freshness: freshness(null, maxAgeHours, now), lastRun: null };
+    const summary = row.summary && typeof row.summary === 'object' ? row.summary : {};
+    const endedAt = row.finished_at || row.updated_at || null;
+    const execution = summary.society?.execution || {};
+    const fresh = freshness(endedAt, maxAgeHours, now);
+    const successful = row.status === 'done' && SOCIETY_OK_OUTCOMES.includes(summary.outcome);
+    const configured = fresh.state === 'fresh';
+    return {
+        role,
+        schedule,
+        optional: true,
+        configured,
+        status: !configured ? 'inactive' : successful ? 'completed' : row.status || 'unknown',
+        freshness: fresh,
+        lastRun: {
+            id: row.run_id,
+            persona: row.persona,
+            stage: row.stage,
+            outcome: summary.outcome || null,
+            turn: summary.turn ?? null,
+            endedAt,
+            transaction: execution.signature || execution.stakeSignature || null
+        }
+    };
+}
+
 export function buildPublicOperationsStatus({ runs = [], landOracle = null, prospective = null, now = Date.now() } = {}) {
     const latest = role => runs.find(row => {
         const summaryRole = row?.summary?.role || 'proposer';
         return summaryRole === role;
     }) || null;
+    // Multi-turn society invocations write several rows a day; the newest finished one is the outcome.
+    const latestFinished = role => runs.find(row => row?.summary?.role === role && row.status !== 'running') || null;
+    const optionalJobs = OPTIONAL_SOCIETY_ROLES.map(spec => publicSocietyRun(latestFinished(spec.role), { ...spec, now }));
     const jobs = [
         publicAgentRun(latest('proposer'), { role: 'proposer', schedule: 'daily at 02:00 UTC', maxAgeHours: 36, now }),
         publicAgentRun(latest('supporter'), { role: 'supporter', schedule: 'daily at 02:15 UTC', maxAgeHours: 36, now }),
         publicLandOracle(landOracle, now),
         publicResolver(prospective, now)
     ];
-    const healthy = jobs.every(job => job.status === 'completed' && job.freshness.state === 'fresh');
-    return { version: 1, generatedAt: new Date(Number(now)).toISOString(), status: healthy ? 'healthy' : 'attention', jobs };
+    const healthy = jobs.every(job => job.status === 'completed' && job.freshness.state === 'fresh')
+        && optionalJobs.every(job => !job.configured || job.status === 'completed');
+    return { version: 1, generatedAt: new Date(Number(now)).toISOString(), status: healthy ? 'healthy' : 'attention', jobs, optionalJobs };
 }
 
 export async function readPublicOperationsStatus({ pool, env = process.env, prospectiveStatus, now = Date.now(), statsReader = readRunStats } = {}) {

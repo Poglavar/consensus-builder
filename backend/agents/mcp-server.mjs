@@ -182,7 +182,7 @@ export function createUrbanGameTheoryMcpServer({ env = process.env, fetchImpl, t
 
     server.registerTool('ugt_submit_verdict', {
         title: 'Submit a lens member verdict',
-        description: 'Permissionlessly submit a lens member\'s ProposalVerdict-v1 attestation with settle_with_verdict: "expired" sets the proposal Expired (its market resolves NO); "executed" only for proposals minted with verdict_may_execute. member must be in the proposal\'s lens. Replays when the proposal already has that status.',
+        description: 'Permissionlessly submit a lens member\'s ProposalVerdict-v1 attestation with settle_with_verdict: "expired" sets the proposal Expired (its market resolves NO); "executed" only for proposals minted with verdict_may_execute. member must be in the proposal\'s lens. Returns record, the VerdictRecord PDA ["verdict", proposal, verdictAttestation] the settlement creates. Replays (no send) when that record already exists or the proposal already has that status.',
         inputSchema: z.object({
             proposalAccount,
             verdictAttestation: pubkey.describe('SAS ProposalVerdict-v1 attestation address'),

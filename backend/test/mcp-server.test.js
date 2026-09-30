@@ -36,7 +36,7 @@ function stubTools() {
         donate: vi.fn(async () => ({ signature: 'donate-tx' })),
         forecast: vi.fn(async () => ({ stakeSignature: 'stake-tx' })),
         acceptParcel: vi.fn(async () => ({ signature: 'accept-tx' })),
-        submitVerdict: vi.fn(async () => ({ signature: 'settle-tx' })),
+        submitVerdict: vi.fn(async () => ({ signature: 'settle-tx', record: 'verdict-record-pda' })),
         cancel: vi.fn(async () => ({ signature: 'cancel-tx' })),
         refundDonation: vi.fn(async () => ({ signature: 'refund-tx' })),
         voidPledge: vi.fn(async () => ({ signature: 'void-tx' })),
@@ -151,6 +151,6 @@ describe('Urban Game Theory MCP server', () => {
         expect(ok.isError).not.toBe(true);
         expect(tools.acceptParcel).toHaveBeenCalledWith({ proposalAccount: key, parcelId: 'HR-1', member: key, confirm: true });
         const settled = await client.callTool({ name: 'ugt_submit_verdict', arguments: { proposalAccount: key, verdictAttestation: key, member: key, confirm: true } });
-        expect(settled.structuredContent).toMatchObject({ signature: 'settle-tx' });
+        expect(settled.structuredContent).toMatchObject({ signature: 'settle-tx', record: 'verdict-record-pda' });
     });
 });

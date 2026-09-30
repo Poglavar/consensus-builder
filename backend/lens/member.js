@@ -73,6 +73,9 @@ function schemaAddresses(credential) {
     return { ownership: derive('ownership'), verdict: derive('verdict') };
 }
 
+// What a member attests about, reported as `kind` by /lens/status (lens-model.md member kinds).
+export const LENS_MEMBER_KINDS = Object.freeze(['owner-consent', 'court', 'permit', 'imagery', 'osm', 'lifecycle']);
+
 export function createLensMember({
     keypair = null,
     authority: authorityOverride = null,
@@ -88,6 +91,7 @@ export function createLensMember({
     if (!issuer || typeof issuer.createAttestation !== 'function') throw new Error('createLensMember: issuer.createAttestation is required');
     if (!store) throw new Error('createLensMember: store is required');
     if (!identity) throw new Error('createLensMember: identity adapter is required');
+    if (!LENS_MEMBER_KINDS.includes(kind)) throw new Error(`createLensMember: unknown kind "${kind}" (one of ${LENS_MEMBER_KINDS.join(', ')})`);
     // No key file (dry run): the authority is an ephemeral or borrowed public key that signs nothing,
     // reported as such by status().
     const ephemeral = !keypair;

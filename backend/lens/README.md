@@ -85,6 +85,26 @@ approve you, and being listed costs you nothing: an attestation you never issue 
 Your key is the credential authority, so keep the keypair off shared hosts and out of git; the
 schema PDAs are derived from it (`GET /lens/status` prints them).
 
+No database is needed: `--owners` holds your owner set in a JSON file and `--store` keeps issued
+attestations in another, rewritten atomically on every issue.
+
+```bash
+git clone <this repo> && cd <repo>/backend && npm ci
+solana-keygen new -o ~/lens-member.json          # fund it with devnet SOL for rent
+node scripts/register-lens-schemas.mjs --keypair ~/lens-member.json --credential-name MyNotary --live
+X402_NETWORK=solana-devnet X402_FACILITATOR_URL=<facilitator> X402_PAY_TO=<your wallet> \
+node lens/run.mjs --live --keypair ~/lens-member.json --credential-name MyNotary \
+  --owners ~/owners.json --store ~/attestations.json --host 0.0.0.0 --port 3095 \
+  --announce https://api.urbangametheory.xyz --public-url https://lens.example.org --name "My notary office"
+```
+
+`--announce` signs a registration with the member key once the server listens and posts it to the
+directory's `/agent/lenses/members`. The directory checks the signature, that the credential and the
+schema your `--kind` issues exist on chain, and that `--public-url/lens/status` answers live with the
+same key, credential and kind; then the proposal picker lists you. The public URL must be https (put
+the process behind any TLS proxy). A refusal is printed with its reason and the member keeps serving,
+so proposers can still paste your key by hand. Re-announcing with new text replaces your entry.
+
 ## Privacy
 
 - No person on chain. Attestations carry wallets, hashes and opaque references only.

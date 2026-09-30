@@ -115,7 +115,9 @@ describe('shared Urban Game Theory agent tools', () => {
         });
 
         await tools.acceptParcel({ proposalAccount: 'proposal', parcelId: 'HR-1', member: 'member', confirm: true });
-        await tools.submitVerdict({ proposalAccount: 'proposal', verdictAttestation: 'verdict', member: 'member', confirm: true });
+        dependencies.settleWithVerdict.mockResolvedValueOnce({ signature: 'settle-tx', record: 'verdict-record-pda' });
+        expect(await tools.submitVerdict({ proposalAccount: 'proposal', verdictAttestation: 'verdict', member: 'member', confirm: true }))
+            .toMatchObject({ signature: 'settle-tx', record: 'verdict-record-pda', verdictAttestation: 'verdict' });
         await tools.revokePledge({ proposalAccount: 'proposal', confirm: true });
         await tools.releaseDonations({ proposalAccount: 'proposal', confirm: true });
         await tools.fulfillPledge({ proposalAccount: 'proposal', confirm: true });

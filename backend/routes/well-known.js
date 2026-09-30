@@ -90,7 +90,8 @@ export function buildLlmsTxt(base, env) {
         `- [agents.json](${base}/agents.json): the proposal recipe as JSON Schema with live payment terms and endpoints.`,
         `- [OpenAPI](${base}/openapi.json): agent-facing endpoints as OpenAPI 3.1.`,
         `- [x402 manifest](${base}/.well-known/x402): paid resources for x402 indexers.`,
-        `- [Lens members](${base}/agent/lenses/members): the attester directory to pick a proposal's lens from; schemas at ${base}/lenses/schemas.`,
+        `- [Lens members](${base}/agent/lenses/members): the attester directory to pick a proposal's lens from; schemas at ${base}/lenses/schemas. Anyone can become a member: POST a signed registration to the same path.`,
+        `- [Parcel history](${base}/parcels/{parcelUid}/history): the permanent per-parcel log of proposals, lens ownership attestations and land events.`,
         '',
         '## Paid endpoints (x402)',
         ...paidLines,
@@ -111,6 +112,21 @@ function readRecipeSchema() {
 }
 
 // Frozen by lens-model.md: the directory response shape.
+const LENS_REGISTRATION_BODY = {
+    type: 'object',
+    required: ['key', 'credentialName', 'kind', 'name', 'serviceUrl', 'signedAt', 'signature'],
+    properties: {
+        key: { type: 'string', description: 'The member\'s base58 SAS credential authority.' },
+        credentialName: { type: 'string', maxLength: 32 },
+        kind: { type: 'string', enum: ['owner-consent', 'court', 'permit', 'imagery', 'osm', 'lifecycle'] },
+        name: { type: 'string', maxLength: 64 },
+        description: { type: 'string', maxLength: 280 },
+        serviceUrl: { type: 'string', description: 'https; the directory probes serviceUrl/lens/status.' },
+        signedAt: { type: 'integer', description: 'Unix seconds, within 10 minutes of the server clock.' },
+        signature: { type: 'string', description: 'Base58 ed25519 signature by key over the registration message (docs: Becoming a lens member).' }
+    }
+};
+
 const LENS_MEMBERS_SCHEMA = {
     type: 'object',
     required: ['members'],
@@ -126,6 +142,7 @@ const LENS_MEMBERS_SCHEMA = {
                     name: { type: ['string', 'null'] },
                     description: { type: ['string', 'null'] },
                     serviceUrl: { type: ['string', 'null'], description: 'Where the member takes attestation requests; null when it has none.' },
+                    registeredAt: { type: ['string', 'null'], format: 'date-time', description: 'The member\'s own signed registration time; null when it was only seen on chain.' },
                     coverage: {
                         type: 'object',
                         properties: {
@@ -215,6 +232,19 @@ export function buildOpenApi(base, env) {
                     summary: 'Attester directory (agent alias of /lenses/members)',
                     operationId: 'getAgentLensMembers',
                     responses: { 200: { description: 'Same body as /lenses/members.', content: { 'application/json': { schema: LENS_MEMBERS_SCHEMA } } } }
+                },
+                post: {
+                    summary: 'List yourself as a lens member: a registration signed by the member key, checked against its SAS credential and schemas on chain and its live /lens/status',
+                    operationId: 'registerLensMember',
+                    requestBody: { required: true, content: { 'application/json': { schema: LENS_REGISTRATION_BODY } } },
+                    responses: {
+                        201: { description: '{ member } in the directory shape.' },
+                        400: { description: 'Malformed field or signedAt outside 10 minutes.' },
+                        401: { description: 'Signature does not verify.' },
+                        409: { description: 'A registration signed at the same time or later is already stored.' },
+                        422: { description: 'credential_missing, schema_missing, service_unreachable or service_mismatch.' },
+                        429: { description: 'Too many attempts from this client.' }
+                    }
                 }
             },
             '/lenses/schemas': {
@@ -222,6 +252,30 @@ export function buildOpenApi(base, env) {
                     summary: 'The lens SAS schemas (ParcelOwnership-v1, ProposalVerdict-v1): layout strings and field lists. An owner\'s yes is not an attestation: the owner signs accept_with_attestations with an optional payout key',
                     operationId: 'getLensSchemas',
                     responses: { 200: { description: '{ sasProgram, schemas: [{ kind, id, name, version, layout, fields, sasLayout }] }' } }
+                }
+            },
+            '/parcels/{parcelUid}/history': {
+                get: {
+                    summary: 'Permanent per-parcel log: proposals listing the parcel, lens ownership attestations and land events, oldest first by each source\'s own time',
+                    operationId: 'getParcelHistory',
+                    parameters: [{ name: 'parcelUid', in: 'path', required: true, schema: { type: 'string', maxLength: 128 }, description: 'Cadastral parcel id, URL-encoded (e.g. HR-335347-1208%2F3).' }],
+                    responses: {
+                        200: { description: '{ parcelUid, anchor: { account, exists, mintedAt?, source }, events: [{ type (proposal_created | proposal_published | parcel_ownership | proposal_acceptance | proposal_verdict | proposal_lifecycle), at (source time or null), proposalId?, proposalAccount?, member?, owner?, transaction?, hash?, link }] }. Unknown parcel: empty events, anchor.exists false.' },
+                        400: { description: 'Invalid parcelUid.' }
+                    }
+                }
+            },
+            '/oracle/events': {
+                get: {
+                    summary: 'Persisted land events (proposal lifecycle, acceptances, verdicts)',
+                    operationId: 'getOracleEvents',
+                    parameters: [
+                        { name: 'type', in: 'query', required: false, schema: { type: 'string', enum: ['proposal_lifecycle', 'proposal_acceptance', 'proposal_verdict'] } },
+                        { name: 'subject', in: 'query', required: false, schema: { type: 'string' }, description: 'Proposal account.' },
+                        { name: 'parcelUid', in: 'query', required: false, schema: { type: 'string' }, description: 'Only events about this parcel: acceptances naming it, lifecycle and verdict events of proposals listing it.' },
+                        { name: 'limit', in: 'query', required: false, schema: { type: 'integer', minimum: 1, maximum: 100 } }
+                    ],
+                    responses: { 200: { description: '{ events, count, eventType, parcelUid? }' }, 400: { description: 'Invalid filter.' } }
                 }
             },
             '/proposals/{id}': {

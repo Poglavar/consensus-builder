@@ -19,6 +19,9 @@ CREATE TABLE IF NOT EXISTS consensus.lens_member (
 
 -- Added after the table first shipped; the DDL runs on every deploy, so it must be idempotent.
 ALTER TABLE consensus.lens_member ADD COLUMN IF NOT EXISTS service_url text;
+-- Self-registration (POST /lenses/members): the member's SAS credential name and its own signed time.
+ALTER TABLE consensus.lens_member ADD COLUMN IF NOT EXISTS credential_name text;
+ALTER TABLE consensus.lens_member ADD COLUMN IF NOT EXISTS registered_at timestamptz;
 
 DO $$
 BEGIN

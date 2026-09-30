@@ -597,7 +597,10 @@ function buildSummary(primary, ctx) {
         }
         if (action === 'settle_with_verdict') {
             const verdict = accountAddress(primary, 'verdict');
-            return `${label(actorAddress(primary, 'submitter'))} settled${onProposal} with verdict attestation ${verdict ? label(verdict) : '?'}`;
+            // v2 writes a VerdictRecord PDA ["verdict", proposal, verdict]; v1-era calls have none.
+            const record = accountAddress(primary, 'verdict_record');
+            const recorded = record ? `, recorded at ${label(record)}` : '';
+            return `${label(actorAddress(primary, 'submitter'))} settled${onProposal} with verdict attestation ${verdict ? label(verdict) : '?'}${recorded}`;
         }
         if (action === 'accept_proposal') {
             return `${label(actorAddress(primary, 'accepter'))} accepted parcel ${args.parcel_id ?? '?'}${onProposal}`;

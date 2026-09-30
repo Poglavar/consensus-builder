@@ -42,6 +42,41 @@ daily `$0` choice, executes one pledge/donation/market action through the existi
 and writes the same `consensus.agent_run` and activity envelope. The initial `supporter-01` policy
 uses a soft pledge, so it produces real signed evidence without requiring a funded USDC transfer.
 
+## A society of agents that disagree
+
+`society-run.mjs` runs any persona whose role has a pure policy module at `policies/<role>.js`
+(`decide(input)` → one action or none, plus `NEEDS` saying what to gather). Each turn it reads the
+active minted proposals, every proposal's market, and the persona's own history (its checkpointed
+turns, its on-chain positions/pledges, and in a dry run the earlier simulated turns), asks the policy,
+and executes the one action through `AgentActionEngine` with the same `consensus.agent_run` rows,
+activity envelope and Telegram summary as the supporter. `$0` by default; `--controller llm` lets a
+model (Batches, via `llm-picker.js` and `society-llm.js`) pick one of the policy's options that fit the
+caps, or none — never anything the policy did not offer. `support-run.mjs` is unchanged.
+
+| persona | role | rule |
+|---|---|---|
+| `preservationist-01` | `contrarian` (`policies/contrarian.js`) | Among active minted proposals by other actors it has not already bet against (on-chain NO position or checkpointed stake) and whose market is unresolved, score density: proposed gross floor area = Σ footprint m² × floors from the record's `geometry.buildings` (floors from the feature, else `buildingProposal.parameters.floors`, else height / 3); without a massing, a text heuristic (floors mentioned × 100 + 50 per density word) ranked after every measured one. Score 0 (parks, squares) is never a target. Stake NO `policy.amountUsdc` (0.01) on the highest; ties by a `seed`-stable hash. A missing market costs a second signature. |
+| `speculator-01` | `speculator` (`policies/speculator.js`) | Implied YES = yesPool / (yesPool + noPool); no/empty/resolved market = no signal. First, revoke (`revoke_pledge`) an active own pledge on a still-Active proposal whose probability < `revokeBelowProbability` (0.5) or whose age (from its `createdAt`) > `maxAgeDays` (7), lowest probability first. Otherwise pledge `amountUsdc` (0.05) to the proposal with the highest probability ≥ `minPledgeProbability` (0.6) that is ≤ `pledgeWithinDays` (3) old and was never pledged to before (a revoked pledge is not re-made, so it cannot flap). |
+| `lifecycle-01` | `lens-member`, kind `lifecycle` | Runs the reference lens member through `lens-member-run.mjs` (port 3096). Its `service.operatorTokenEnv` maps `AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN` to the member's `LENS_OPERATOR_TOKEN`, so the proposer's retire phase and the member share one token; set `AGENT_LIFECYCLE_LENS_SERVICE_URL=http://127.0.0.1:3096` for the proposer to expire stale proposals by verdict. |
+
+All three have `wallet: null` until the operator generates `~/.config/solana/ugt-<name>.json`; a
+`--live` society run refuses before reading anything until the key exists and `wallet` matches it.
+
+Caps bound one invocation: `AGENT_SOCIETY_ACTION_CAP` signed actions (default 4) and
+`AGENT_SOCIETY_USDC_CAP` (default 0.05; stakes and pledge commitments count, revokes are free). The
+policy sees the remaining budget, so a revoke can still happen after the USDC is spent; when options
+exist but none fits, the turn ends `cap-reached` and the invocation stops.
+
+Game days: `--turns N` (1–10) plays N turns in one invocation. Turn k is checkpointed as
+`<day>-<persona>-t<k>` with seed `<day>:t<k>` and re-reads the chain, so turn k sees what turn k−1
+signed; a rerun resumes at the first unfinished turn and counts the finished ones against the caps.
+Without `--turns` the run id is `<day>-<persona>` and the seed `<day>`. Proposal ages always use the
+real clock. Outcomes: `completed`, `no-action`, `replayed` (already on-chain), `cap-reached`, `failed`.
+
+`/hackathon/operations.json` lists these roles under `optionalJobs` (not `jobs`, so the proof audit's
+four-job check is unchanged): no row = `not-configured`; the newest finished row older than 36 h =
+`inactive`; only a recent failure turns the overall status to `attention`.
+
 `canonical-case-run.mjs` is a manual, resumable demonstration over those same modules. It uses the
 configured proposer and supporter to mint one small real parcel set, pay the x402 endpoint, donate,
 pledge, and forecast both YES and NO. Each action is checkpointed in `consensus.agent_run` and
@@ -74,7 +109,7 @@ closed Details disclosure preserves controller and source provenance for audits.
 | field | meaning |
 |---|---|
 | `name` | the persona's id; appears in `candidateId`, `custom_id`, the record's `agent.persona` and the building's `author` |
-| `role` | `proposer`, `supporter` or `lens-member`; proposer and supporter share the controller, checkpoint and activity system |
+| `role` | `proposer`, `supporter`, `lens-member`, or a society role with a `policies/<role>.js` module (`contrarian`, `speculator`); all but lens members share the controller, checkpoint and activity system |
 | `wallet` | public key, for labels; the record's `author` is bound by the paid route from the settlement, never from here |
 | `keypairPath` | where the signing key lives — **outside the repo** |
 | `weights` | `{ density, openSpace, valueUplift, heritage }`; drives the planner's score and is put into the prompt in words |
@@ -82,7 +117,8 @@ closed Details disclosure preserves controller and source provenance for audits.
 | `dailyProposals` | how many picks a controller may make for this persona in one run (the hackathon persona is capped at one) |
 | `stakeUsdc` | the bettor's stake size |
 | `support` | supporter cities, allowed action types and per-action USDC amount |
-| `service` | lens members only: `port`, `url`, `kind` (`owner-consent`), `priceUsdc` per ownership attestation, `credentialName`, `identity` adapter |
+| `service` | lens members only: `port`, `url`, `kind` (`owner-consent` or `lifecycle`), `priceUsdc` per ownership attestation, `credentialName`, `identity` adapter, optional `operatorTokenEnv` (the env var passed on as `LENS_OPERATOR_TOKEN`) |
+| `policy` | society roles only: `cities` plus the policy module's parameters (see the table above) |
 
 `heritage` is declared and weighted but contributes **0**: there is no heritage dataset wired in
 yet, and a term faked from something else would look like a judgement nobody made.
@@ -143,15 +179,16 @@ allowed, it always runs the terminal path and checkpoints each step under `summa
 | function | instruction | accounts, in order |
 |---|---|---|
 | `acceptWithAttestations` / `buildAcceptWithAttestationsIx` | `accept_with_attestations(parcel_id, payout: Option<Pubkey>)` | proposal (w), parcel anchor `["parcel", id]` (parcel_nft), ownership attestation, ownership credential, tally `["consent", proposal, id]` (w), record `["acceptance", proposal, id, owner]` (w), owner (signer), payer (signer, w), system program |
-| `settleWithVerdict` / `buildSettleWithVerdictIx` | `settle_with_verdict()` | proposal (w), verdict attestation, verdict credential, submitter (signer) |
+| `settleWithVerdict` / `buildSettleWithVerdictIx` | `settle_with_verdict()` | proposal (w), verdict attestation, verdict credential, verdict record `["verdict", proposal, verdict_attestation]` (w, `init`), submitter (signer, w: pays the record's rent), system program |
 | `ensureParcelAnchor` / `buildMintParcelIx` | `mint_parcel(id, metadata_uri)` | parcel anchor (w), payer (signer, w), system program |
 
 The credential is `PDA(["credential", member, credentialName])` under SAS (`deriveCredentialPda`,
-default name `LensMember`). Both write paths read first: an existing acceptance record, or a proposal
-already in the verdict's status, is replayed without sending. Before signing they check what the
+default name `LensMember`). Both write paths read first: an existing acceptance record, an existing
+verdict record for that attestation, or a proposal already in the verdict's status, is replayed
+without sending. Before signing they check what the
 program will check (member in the lens, attestation signer/credential/payload, an existing tally's
 member and `ownerCount`, the anchor) so a mismatch fails with a message, not a program error.
-`readConsentTally`, `readAcceptanceRecord` and `decodeProposalState` (now with `lens`, `bump`,
+`readConsentTally`, `readAcceptanceRecord`, `readVerdictRecord` (`getVerdictRecordPda`) and `decodeProposalState` (now with `lens`, `bump`,
 `verdictMayExecute`; status 3 = Expired) are the read side. `mint_and_fund` sends the trailing
 `verdict_may_execute` (default false) from `minter.js`.
 
@@ -211,6 +248,7 @@ A batch that has not finished inside `awaitMs` is not an error — `runPickBatch
 | `AGENT_DAILY_USDC_CAP` | `run-policy.js` | maximum x402 plus stake spend; safe default 0.35 USDC |
 | `AGENT_PROPOSAL_FEE_USDC` | `run-policy.js` | conservative x402 fee used in the pre-signing plan; default 0.05 USDC |
 | `AGENT_SUPPORT_USDC_CAP` | `support-run.mjs` | maximum amount of its one daily support action; safe default 0.25 USDC |
+| `AGENT_SOCIETY_ACTION_CAP` / `AGENT_SOCIETY_USDC_CAP` | `society-run.mjs` | signed actions / USDC per invocation across all turns; defaults 4 / 0.05 |
 | `PGHOST` / `PGPORT` / `PGUSER` / `PGPASSWORD` / `PGDATABASE` | `parcel-source.js` (via the pool the caller passes) | the shared `geodata` database |
 | `X402_*`, `CDP_API_KEY_ID`, `CDP_API_KEY_SECRET` | `routes/agent-proposals.js`, `routes/agent-oracle-facts.js` | hosted-CDP pay-to-propose and paid verified-fact gates; see the agent quickstart |
 
@@ -235,6 +273,9 @@ PGHOST=localhost node agents/run.mjs --live --until posted          # stop befor
 node agents/support-run.mjs --dry-run --api https://api.urbangametheory.xyz
 PGHOST=localhost node agents/support-run.mjs --live --persona supporter-01 --api https://api.urbangametheory.xyz
 PGHOST=localhost npm run sync:land-events -- --dry-run
+node agents/society-run.mjs --persona preservationist-01 --turns 3 --api https://api.urbangametheory.xyz   # dry run (default)
+node agents/society-run.mjs --persona speculator-01 --api https://api.urbangametheory.xyz
+node agents/lens-member-run.mjs --persona lifecycle-01 --print
 ```
 
 ## MCP: one surface for any controller
@@ -254,7 +295,8 @@ the agent's own key is refused). `ugt_submit_proposal` accepts the minted `lens`
 `payout`, `confirm`) signs `accept_with_attestations` as the attested owner; without an attestation it
 looks one up on the member's service (`serviceUrl` from the directory, `GET /lens/attestations`).
 `ugt_submit_verdict` (`proposalAccount`, `verdictAttestation`, `member`, `confirm`) submits a lens
-member's verdict with `settle_with_verdict`. The v1 `ugt_accept_proposal` is gone with the instruction.
+member's verdict with `settle_with_verdict` and returns `record`, the VerdictRecord PDA it created
+(null when the proposal was already in that status through another settlement). The v1 `ugt_accept_proposal` is gone with the instruction.
 
 The server is read-only by default. Signed or paid tools require all three controls:
 
@@ -287,8 +329,11 @@ summary per run). Anthropic variables are optional and read only in explicit LLM
 ## Daily schedule (opt-in)
 
 `agents/ecosystem.config.cjs` defines `consensus-builder-agents` at 02:00 UTC, the shared-runtime
-`consensus-builder-supporter` persona at 02:15 UTC, and the deterministic
-`consensus-builder-land-oracle` materializer at 02:30 UTC. All three are one-shot,
+`consensus-builder-supporter` persona at 02:15 UTC, the society personas
+`consensus-builder-preservationist` (02:20) and `consensus-builder-speculator` (02:25) — opt-in until
+their keys exist, one action per invocation each — and the deterministic
+`consensus-builder-land-oracle` materializer at 02:30 UTC. `consensus-builder-lifecycle-member` is
+inactive and unscheduled like the notary member. All three are one-shot,
 non-restarting scheduled processes; the proposer has the limits above and four candidates offered
 to the algorithmic controller.
 
@@ -332,6 +377,9 @@ cd /root/code/consensus-builder/backend
 pm2 start agents/ecosystem.config.cjs --only consensus-builder-agents
 pm2 start agents/ecosystem.config.cjs --only consensus-builder-supporter
 pm2 start agents/ecosystem.config.cjs --only consensus-builder-land-oracle
+# only after ugt-preservationist-01.json / ugt-speculator-01.json exist and their wallets are set:
+pm2 start agents/ecosystem.config.cjs --only consensus-builder-preservationist
+pm2 start agents/ecosystem.config.cjs --only consensus-builder-speculator
 pm2 save
 ```
 

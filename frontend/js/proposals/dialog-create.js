@@ -598,6 +598,11 @@ function showProposalDialog(overrides = null) {
     const similarUnknownTitle = t('modal.createProposal.similar.unknownTitle', 'Untitled proposal');
     const similarUnknownAuthor = t('modal.createProposal.similar.unknownAuthor', 'Unknown');
     const lensTooltip = t('modal.createProposal.lensTooltip', 'Open lens modal');
+    const ownerOfferLabels = {
+        label: t('modal.createProposal.ownerOffer.label', 'Offer my land'),
+        explain: t('modal.createProposal.ownerOffer.explain', 'You offer your own parcels and invite bids. Bids arrive as pledges and donations on this proposal; nobody else can accept it. When a bid suits you, you execute the offer by saying yes on your parcels. The offer amount is your asking price.'),
+        recheck: t('modal.createProposal.ownerOffer.recheck', 'Check again')
+    };
     const submitLabel = isEditingExisting
         ? t('proposalDrafts.actions.createReplacement', 'Create replacement proposal')
         : t('modal.createProposal.submit', 'Create Proposal');
@@ -753,6 +758,14 @@ function showProposalDialog(overrides = null) {
                             <input type="text" id="proposalRecipientAddress" class="proposal-recipient-input" placeholder="${recipientPlaceholder}" oninput="onProposalOwnershipChange()">
                         </div>
                     </div>
+                </div>
+                <div class="form-group proposal-owner-offer" id="proposalOwnerOfferGroup" hidden>
+                    <div class="proposal-owner-offer-row">
+                        <label class="proposal-owner-offer-toggle"><input type="checkbox" id="proposalOwnerOfferCheckbox" disabled onchange="onProposalOwnerOfferChange()"><span>${ownerOfferLabels.label}</span></label>
+                        <button type="button" class="btn btn-secondary proposal-owner-offer-recheck" onclick="refreshOwnerOfferMode()">${ownerOfferLabels.recheck}</button>
+                    </div>
+                    <p class="proposal-owner-offer-status" id="proposalOwnerOfferStatus" aria-live="polite"></p>
+                    <p class="proposal-owner-offer-explain" id="proposalOwnerOfferExplain" hidden>${ownerOfferLabels.explain}</p>
                 </div>
                 <div class="form-group" id="proposalOwnershipTransferGroup" style="display:none;">
                     <label>${t('modal.createProposal.ownershipTransfer.label', 'Transfer direction:')}</label>
@@ -1139,6 +1152,9 @@ function showProposalDialog(overrides = null) {
     // As is / As is / No change unless a goal was preset (e.g. from a road drawing).
     // This drives the legacy goal-key machinery via syncProposalFacets().
     initProposalFacets(overrideGoal);
+    // "Offer my land" starts off on every open; the gate is re-read from the lens members' services.
+    window.proposalOwnerOfferMode = false;
+    if (typeof refreshOwnerOfferMode === 'function') refreshOwnerOfferMode();
     setProposalAcquisitionMode(overrideAcquisition || 'full', { force: true });
     setProposalBoundaryMode(ownershipMode || 'multiple', { lock: true });
 

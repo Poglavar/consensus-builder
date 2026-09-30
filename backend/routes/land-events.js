@@ -13,6 +13,7 @@ import {
     RECIPE_V2_ID
 } from '../oracle/proposal-lifecycle.js';
 import { ACCEPTANCE_EVENT_TYPE, VERDICT_EVENT_TYPE } from '../oracle/proposal-consent.js';
+import { landEventParcelCondition, validParcelUid } from '../oracle/parcel-history.js';
 import {
     buildCourtParcelOperationRecipe,
     buildCourtParcelOperationRecipeV2,
@@ -138,6 +139,10 @@ export function setupLandEventsRoute(app, pool, { readProposalAccount = defaultP
             const params = [eventType];
             let where = 'event_type = $1';
             if (subject) { params.push(subject); where += ` AND subject_id = $${params.length}`; }
+            // ?parcelUid=: acceptances naming the parcel, and lifecycle/verdict events of proposals listing it.
+            const parcelUid = req.query.parcelUid !== undefined ? validParcelUid(String(req.query.parcelUid)) : null;
+            if (req.query.parcelUid !== undefined && !parcelUid) return res.status(400).json({ error: 'parcelUid must be 1-128 printable characters' });
+            if (parcelUid) { params.push(parcelUid); where += ` AND ${landEventParcelCondition(params.length)}`; }
             params.push(limit);
             const { rows } = await pool.query(`
                 SELECT event_id, event_type, subject_type, subject_id, outcome, source_url,
@@ -149,7 +154,7 @@ export function setupLandEventsRoute(app, pool, { readProposalAccount = defaultP
                 LIMIT $${params.length}
             `, params);
             const events = rows.map(eventFromRow);
-            return res.json({ events, count: events.length, eventType });
+            return res.json({ events, count: events.length, eventType, ...(parcelUid ? { parcelUid } : {}) });
         } catch (error) {
             console.error('GET /oracle/events failed', error);
             return res.status(500).json({ error: 'Failed to read land events' });

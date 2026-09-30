@@ -240,6 +240,7 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     read: `${base}/proposals/{id}`,
                     listByAuthor: `${base}/proposals/summary?city={city}&author={wallet}`,
                     listByParcel: `${base}/proposals?parcel_id={cadastreParcelId}`,
+                    parcelHistory: `${base}/parcels/{parcelUid}/history`,
                     parcelsUnder: `${base}/parcels/under`,
                     urbanRules: `${base}/urban-rules?coordinates={lng},{lat}`,
                     buildingFootprints: `${base}/buildings/footprints`,
@@ -296,6 +297,17 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                         proposal_verdict: 'one per VerdictSettled: verdict attestation, its sha256, member, executed or expired (v2, pending devnet deployment)'
                     },
                     eventsByType: `${base}/oracle/events?type={eventType}&subject={proposalAccount}`,
+                    eventsByParcel: `${base}/oracle/events?type={eventType}&parcelUid={parcelUid}`,
+                    // Permanent per-parcel log: proposals, lens ownership attestations and land events,
+                    // oldest first by each source's own time (null and last when the source has none).
+                    parcelHistory: {
+                        url: `${base}/parcels/{parcelUid}/history`,
+                        response: '{ parcelUid, anchor: { account, exists, mintedAt?, source }, events: [{ type, at, proposalId?, proposalAccount?, member?, owner?, transaction?, hash?, link }] }',
+                        eventTypes: ['proposal_created', 'proposal_published', 'parcel_ownership', 'proposal_acceptance', 'proposal_verdict', 'proposal_lifecycle'],
+                        anchor: 'parcel_nft PDA ["parcel", parcelUid]; an identity only, it carries no ownership',
+                        privacy: 'ownership attestations expose member, owner wallet, ownerCount and the account hash; never the evidence reference',
+                        caching: 'no-store'
+                    },
                     recipeId: LAND_RECIPE_ID,
                     recipe: `${base}/oracle/recipes/${LAND_RECIPE_ID}?proposal={proposalAccount}&market={marketAccount}`,
                     // Precommitted recipes never change under their id: v1 stays byte-identical, v2 adds the lens.
@@ -428,8 +440,9 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     settle: {
                         instruction: 'settle_with_verdict',
                         args: [],
-                        accounts: ['proposal', 'verdict', 'verdict_credential', 'submitter'],
-                        signer: 'submitter: anyone; the verdict (ProposalVerdict-v1) must be signed by a lens member',
+                        accounts: ['proposal', 'verdict', 'verdict_credential', 'verdict_record', 'submitter', 'system_program'],
+                        signer: 'submitter: anyone (signer, writable: pays the verdict record\'s rent); the verdict (ProposalVerdict-v1) must be signed by a lens member',
+                        verdictRecordPda: 'seeds ["verdict", proposal, verdict_attestation] (VerdictRecord { proposal, member, verdict_attestation, verdict_hash, verdict, settled_at, bump }); init, so one attestation settles at most once',
                         effect: 'expired sets Expired (3); executed sets Executed (1) only when minted with verdict_may_execute',
                         event: 'VerdictSettled { proposal, verdict_attestation, verdict_hash, member, status, settled_at }',
                         status: 'v2, pending devnet deployment'

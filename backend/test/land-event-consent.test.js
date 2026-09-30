@@ -90,6 +90,13 @@ function acceptTx(signature, owner, attestation, record) {
     };
 }
 
+// settle_with_verdict v2 carries six accounts: the permanent VerdictRecord PDA and the system program
+// joined the original four when verdicts became on-chain records.
+const SYSTEM_PROGRAM = '11111111111111111111111111111111';
+const VERDICT_RECORD = PublicKey.findProgramAddressSync(
+    [Buffer.from('verdict'), new PublicKey(PROPOSAL).toBuffer(), new PublicKey(VERDICT).toBuffer()], new PublicKey(PROPOSAL_PROGRAM_ID)
+)[0].toBase58();
+
 function settleTx(signature, { err = null, emitter = PROPOSAL_PROGRAM_ID, status = STATUS_EXPIRED } = {}) {
     const logs = emitter === PROPOSAL_PROGRAM_ID
         ? [`Program ${PROPOSAL_PROGRAM_ID} invoke [1]`, `Program data: ${verdictPayload(status).toString('base64')}`, `Program ${PROPOSAL_PROGRAM_ID} success`]
@@ -104,7 +111,7 @@ function settleTx(signature, { err = null, emitter = PROPOSAL_PROGRAM_ID, status
                 signatures: [signature],
                 message: {
                     accountKeys: [{ pubkey: MEMBER, signer: true, writable: true }, { pubkey: PROPOSAL, signer: false, writable: true }, { pubkey: PROPOSAL_PROGRAM_ID, signer: false, writable: false }],
-                    instructions: [{ programId: PROPOSAL_PROGRAM_ID, accounts: [PROPOSAL, VERDICT, CREDENTIAL, MEMBER], data: ixData('settle_with_verdict', {}) }]
+                    instructions: [{ programId: PROPOSAL_PROGRAM_ID, accounts: [PROPOSAL, VERDICT, CREDENTIAL, VERDICT_RECORD, MEMBER, SYSTEM_PROGRAM], data: ixData('settle_with_verdict', {}) }]
                 }
             }
         }

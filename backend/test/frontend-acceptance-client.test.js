@@ -10,6 +10,7 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as web3 from '@solana/web3.js';
+import { encodeBase58 } from '../solana/tx-decoder.js';
 import { buildSasAttestationAccount, encodeLensPayload, deriveCredentialPda as backendCredentialPda } from '../oracle/lens-schemas.js';
 
 const require = createRequire(import.meta.url);
@@ -192,11 +193,20 @@ describe('instruction accounts', () => {
         expect(() => client.getConsentTallyPda(PROPOSAL, 'x'.repeat(33))).toThrow(/PDA seed/);
     });
 
-    it('settle_with_verdict follows the IDL account order and flags', () => {
+    it('settle_with_verdict follows the IDL account order, flags and verdict record seeds', () => {
         const ix = client.buildSettleWithVerdictIx({ proposal: PROPOSAL, verdict: ATTESTATION, verdictCredential: CREDENTIAL, submitter: PAYER });
         const flags = idlFlags(PROPOSAL_IDL, 'settle_with_verdict');
-        expect(flags.map(f => f.name)).toEqual(['proposal', 'verdict', 'verdict_credential', 'submitter']);
-        expect(metasOf(ix)).toEqual([PROPOSAL, ATTESTATION, CREDENTIAL, PAYER].map((pubkey, i) => ({ pubkey, isSigner: flags[i].isSigner, isWritable: flags[i].isWritable })));
+        expect(flags.map(f => f.name)).toEqual(['proposal', 'verdict', 'verdict_credential', 'verdict_record', 'submitter', 'system_program']);
+        const record = pda([Buffer.from('verdict'), new PublicKey(PROPOSAL).toBuffer(), new PublicKey(ATTESTATION).toBuffer()], proposalProgram);
+        expect(metasOf(ix)).toEqual([PROPOSAL, ATTESTATION, CREDENTIAL, record, PAYER, web3.SystemProgram.programId.toBase58()]
+            .map((pubkey, i) => ({ pubkey, isSigner: flags[i].isSigner, isWritable: flags[i].isWritable })));
+        expect(metasOf(ix)[4]).toEqual({ pubkey: PAYER, isSigner: true, isWritable: true });
+        expect(client.getVerdictRecordPda(PROPOSAL, ATTESTATION)[0].toBase58()).toBe(record);
+        // the IDL's own seeds are ["verdict", proposal, verdict] in that order
+        const seeds = ixOf(PROPOSAL_IDL, 'settle_with_verdict').accounts.find(a => a.name === 'verdict_record').pda.seeds;
+        expect(Buffer.from(seeds[0].value).toString()).toBe('verdict');
+        expect(seeds.slice(1).map(seed => seed.path)).toEqual(['proposal', 'verdict']);
+        expect([...ix.data]).toEqual(ixOf(PROPOSAL_IDL, 'settle_with_verdict').discriminator);
     });
 
     it('mint_parcel v2 is ownerless: parcel, payer, system_program', () => {
@@ -269,6 +279,43 @@ describe('account decoders', () => {
         const paid = client.readAcceptanceRecord(encodeAccount(PROPOSAL_IDL, 'AcceptanceRecord', { ...values, payout: PAYOUT }));
         expect(paid.payout).toBe(PAYOUT);
     });
+
+    it('readVerdictRecord decodes every field; a truncated record throws, another kind is null', () => {
+        const values = {
+            proposal: PROPOSAL, member: MEMBER, verdict_attestation: ATTESTATION,
+            verdict_hash: Array.from({ length: 32 }, (_, i) => 255 - i), verdict: 3, settled_at: 1759400000, bump: 249
+        };
+        const bytes = encodeAccount(PROPOSAL_IDL, 'VerdictRecord', values);
+        expect(bytes.length).toBe(8 + 32 * 4 + 1 + 8 + 1);
+        expect(client.readVerdictRecord(bytes, 'V')).toEqual({
+            address: 'V', proposal: PROPOSAL, member: MEMBER, verdictAttestation: ATTESTATION,
+            verdictHash: Buffer.from(values.verdict_hash).toString('hex'), verdictCode: 3, verdict: 'Expired', settledAt: 1759400000, bump: 249
+        });
+        expect(client.readVerdictRecord(encodeAccount(PROPOSAL_IDL, 'VerdictRecord', { ...values, verdict: 1 })).verdict).toBe('Executed');
+        expect(() => client.readVerdictRecord(bytes.subarray(0, bytes.length - 1))).toThrow(/bump/);
+        const tally = encodeAccount(PROPOSAL_IDL, 'ConsentTally', { proposal: PROPOSAL, parcel_id: PARCEL_ID, member: MEMBER, required: 2, accepted: 1, bump: 250 });
+        expect(client.readVerdictRecord(tally)).toBeNull();
+    });
+
+    it('fetchVerdictRecords filters program accounts by the VerdictRecord discriminator and proposal', async () => {
+        const bytes = encodeAccount(PROPOSAL_IDL, 'VerdictRecord', {
+            proposal: PROPOSAL, member: MEMBER, verdict_attestation: ATTESTATION, verdict_hash: Array(32).fill(1), verdict: 3, settled_at: 1759400000, bump: 249
+        });
+        const calls = [];
+        const connection = {
+            async getProgramAccounts(programId, config) {
+                calls.push({ programId: programId.toBase58(), config });
+                return [{ pubkey: new PublicKey(keyOf(21)), account: { data: bytes } }];
+            }
+        };
+        const records = await client.fetchVerdictRecords(connection, { proposal: PROPOSAL });
+        expect(records.map(r => [r.address, r.verdictAttestation])).toEqual([[keyOf(21), ATTESTATION]]);
+        expect(calls[0].programId).toBe(PROPOSAL_IDL.address);
+        expect(calls[0].config.filters).toEqual([
+            { memcmp: { offset: 0, bytes: encodeBase58(Buffer.from(PROPOSAL_IDL.accounts.find(a => a.name === 'VerdictRecord').discriminator)) } },
+            { memcmp: { offset: 8, bytes: PROPOSAL } }
+        ]);
+    });
 });
 
 // ---- SAS attestations -----------------------------------------------------------------------------
@@ -316,6 +363,16 @@ describe('SAS lens attestations', () => {
         expect(run({ ...proposal(), verdictMayExecute: true }, verdict)).toBeNull();
         expect(run(proposal(), { ...verdict, verdict: 'expired' })).toBeNull();
         expect(run(proposal(), { ...verdict, proposalAccount: keyOf(5) })).toBe('wrong_proposal');
+    });
+
+    it('checkVerdictForSettle refuses an attestation that already has a verdict record', () => {
+        const fields = { proposalAccount: PROPOSAL, verdict: 'expired', evidenceRef: '', sourceObservedAt: 1759200000 };
+        const run = verdictRecords => client.checkVerdictForSettle({
+            attestation: { address: ATTESTATION, authority: MEMBER, expiry: 1790000000 }, fields, proposal: proposal(), proposalAddress: PROPOSAL, verdictRecords, nowSeconds: now
+        });
+        expect(run([])).toBeNull();
+        expect(run([{ verdictAttestation: keyOf(17) }])).toBeNull();
+        expect(run([{ verdictAttestation: keyOf(17) }, { verdictAttestation: ATTESTATION }])).toBe('verdict_already_settled');
     });
 });
 

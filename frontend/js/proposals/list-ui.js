@@ -836,6 +836,7 @@ function buildProposalListItemsHtml(dataset, options = {}) {
                     <span class="proposal-mint-state proposal-mint-state--compact" style="color:${mintStyles.color};background:${mintStyles.background};border:1px solid ${mintStyles.border};">${escapeHtml(mintLabel)}</span>
                     ${isLocal ? `<span class="proposal-mint-state proposal-mint-state--compact proposal-local-state" style="color:#334155;background:#f1f5f9;border:1px solid #cbd5e1;">${escapeHtml(mintLabels.local)}</span>` : ''}
                     ${agentProvenance ? `<span class="proposal-agent-badge" title="${escapeHtml(agentBadgeTitle)}"><span aria-hidden="true">✦</span> ${escapeHtml(agentBadgeLabel)}</span>` : ''}
+                    ${proposal && proposal.proposalRole === 'owner-offer' ? `<span class="proposal-owner-offer-badge" title="${escapeHtml(t('panel.proposal.ownerOffer.badgeTitle', 'The owner offers this land; bids are pledges and donations'))}">${escapeHtml(t('panel.proposal.ownerOffer.badge', 'Owner offer'))}</span>` : ''}
                     ${buyButtonHtml}
                 </div>
             </div>

@@ -1,6 +1,9 @@
 // Attestation stores for the reference lens member: Postgres (consensus.lens_attestation, DDL in
-// routes/lens-member-ddl.sql) for a live member, and an in-memory one for dry runs and tests.
-// Both hold the same record shape the member produces; issued_at is chain time, never insert time.
+// routes/lens-member-ddl.sql) for a live member, a JSON file for a member run without Postgres, and
+// an in-memory one for dry runs and tests. All hold the same record shape the member produces;
+// issued_at is chain time, never insert time.
+
+import fs from 'node:fs';
 
 function emptyCounts() {
     return { ownership: 0, verdict: 0, parcels: 0, proposals: 0 };
@@ -13,8 +16,8 @@ function matches(record, { parcelUid, proposalAccount, owner, kind }) {
         && (!kind || record.kind === kind);
 }
 
-export function createMemoryStore() {
-    const records = new Map();
+export function createMemoryStore({ initial = [], onRecord = null } = {}) {
+    const records = new Map(initial.map(record => [record.address, { ...record }]));
     return {
         kind: 'memory',
         async get(address) {
@@ -23,6 +26,7 @@ export function createMemoryStore() {
         async record(record) {
             if (records.has(record.address)) throw new Error(`attestation ${record.address} is already recorded`);
             records.set(record.address, { ...record });
+            if (onRecord) await onRecord([...records.values()]);
         },
         async list(filter = {}) {
             return [...records.values()].filter(record => matches(record, filter)).slice(0, filter.limit ?? 200);
@@ -39,6 +43,25 @@ export function createMemoryStore() {
             return { ...counts, parcels: parcels.size, proposals: proposals.size };
         }
     };
+}
+
+// Every issued attestation in one JSON array, rewritten through a temp file and a rename on each
+// record, so a kill never leaves a half-written file. For a single member process only.
+export function createFileStore(file) {
+    let initial = [];
+    if (fs.existsSync(file)) {
+        initial = JSON.parse(fs.readFileSync(file, 'utf8'));
+        if (!Array.isArray(initial)) throw new Error(`${file} must hold a JSON array of attestation records`);
+    }
+    const store = createMemoryStore({
+        initial,
+        onRecord: async records => {
+            const temp = `${file}.${process.pid}.tmp`;
+            await fs.promises.writeFile(temp, `${JSON.stringify(records, null, 2)}\n`);
+            await fs.promises.rename(temp, file);
+        }
+    });
+    return { ...store, kind: 'file' };
 }
 
 function recordOf(row) {

@@ -1,7 +1,7 @@
 // Pure client codec for the lens-model v2 instructions of proposal_nft and parcel_nft
 // (blockchain/solana/idl/*.json): PDA derivation, byte-exact Anchor/borsh instruction encoding for
 // mint_and_fund, mint_parcel, accept_with_attestations, settle_with_verdict and distribute_funds,
-// and decoders for Proposal (v2, incl. verdict_may_execute), ConsentTally, AcceptanceRecord and SAS
+// and decoders for Proposal (v2, incl. verdict_may_execute), ConsentTally, AcceptanceRecord, VerdictRecord and SAS
 // lens attestations. No DOM and no wallet; the fetch* helpers take a connection and only read.
 (function attachSolanaAcceptanceClient(root, factory) {
     const core = (root && root.LensCore) || (typeof require === 'function' ? require('../lens-core.js') : null);
@@ -25,7 +25,8 @@
         Proposal: Object.freeze([26, 94, 189, 187, 116, 136, 53, 33]),
         ProposalCounter: Object.freeze([110, 92, 147, 182, 142, 28, 182, 5]),
         ConsentTally: Object.freeze([200, 21, 66, 56, 62, 148, 43, 226]),
-        AcceptanceRecord: Object.freeze([8, 191, 82, 210, 167, 58, 12, 34])
+        AcceptanceRecord: Object.freeze([8, 191, 82, 210, 167, 58, 12, 34]),
+        VerdictRecord: Object.freeze([5, 210, 137, 12, 43, 13, 62, 182])
     });
 
     const constants = Object.freeze({
@@ -200,6 +201,12 @@
         return pda([utf8('acceptance'), toKey(proposal, 'proposal').toBytes(), seedBytes(parcelId, 'parcelId'), toKey(owner, 'owner').toBytes()], programId);
     }
 
+    // One per settled verdict: ["verdict", proposal, verdict_attestation]. `init` on-chain, so a
+    // replayed attestation fails before the handler runs.
+    function getVerdictRecordPda(proposal, verdictAttestation, programId = constants.PROPOSAL_NFT_PROGRAM_ID) {
+        return pda([utf8('verdict'), toKey(proposal, 'proposal').toBytes(), toKey(verdictAttestation, 'verdictAttestation').toBytes()], programId);
+    }
+
     // sas-lib 1.0.10 / backend/oracle/lens-schemas.js: PDA(["credential", authority, name]) under SAS.
     function deriveCredentialPda(authority, name) {
         return pda([utf8('credential'), toKey(authority, 'authority').toBytes(), seedBytes(name, 'credential name')], constants.SAS_PROGRAM_ID)[0];
@@ -278,13 +285,20 @@
         };
     }
 
-    // Accounts: proposal (mut), verdict, verdict_credential, submitter (signer). Permissionless.
+    // Accounts, in IDL order: proposal (mut), verdict, verdict_credential, verdict_record (mut, PDA),
+    // submitter (signer, mut: pays the record's rent), system_program. Permissionless. Returns the
+    // instruction; the record address is getVerdictRecordPda(proposal, verdict).
     function buildSettleWithVerdictIx({ proposal, verdict, verdictCredential, submitter, programId = constants.PROPOSAL_NFT_PROGRAM_ID } = {}) {
+        const proposalKey = toKey(proposal, 'proposal');
+        const verdictKey = toKey(verdict, 'verdict');
+        const [verdictRecord] = getVerdictRecordPda(proposalKey, verdictKey, programId);
         return instruction(programId, [
-            meta(toKey(proposal, 'proposal'), false, true),
-            meta(toKey(verdict, 'verdict'), false, false),
+            meta(proposalKey, false, true),
+            meta(verdictKey, false, false),
             meta(toKey(verdictCredential, 'verdictCredential'), false, false),
-            meta(toKey(submitter, 'submitter'), true, false)
+            meta(verdictRecord, false, true),
+            meta(toKey(submitter, 'submitter'), true, true),
+            meta(toKey(constants.SYSTEM_PROGRAM_ID, 'system'), false, false)
         ], encodeSettleWithVerdictData());
     }
 
@@ -442,6 +456,25 @@
         return record;
     }
 
+    // verdict is the status the settlement set: 1 Executed, 3 Expired.
+    function readVerdictRecord(data, address = null) {
+        const bytes = data instanceof Uint8Array ? data : Uint8Array.from(data || []);
+        if (!hasDiscriminator(bytes, ACCOUNT_DISCRIMINATORS.VerdictRecord)) return null;
+        const r = reader(bytes, 8);
+        const record = {
+            address,
+            proposal: r.pubkey('proposal'),
+            member: r.pubkey('member'),
+            verdictAttestation: r.pubkey('verdict_attestation'),
+            verdictHash: Array.from(r.bytes(32, 'verdict_hash'), byte => byte.toString(16).padStart(2, '0')).join(''),
+            verdictCode: r.u8('verdict'),
+            settledAt: safeNumber(r.i64('settled_at'), 'settled_at'),
+            bump: r.u8('bump')
+        };
+        record.verdict = STATUS_NAMES[record.verdictCode] || `Unknown(${record.verdictCode})`;
+        return record;
+    }
+
     // SAS attestation: 2 | nonce 32 | credential 32 | schema 32 | data (u32 + bytes) | signer 32 |
     // expiry i64 | token_account 32. Throws when the bytes are not an attestation.
     function parseSasAttestation(data) {
@@ -493,9 +526,12 @@
         return null;
     }
 
-    function checkVerdictForSettle({ attestation, fields, proposal, proposalAddress, nowSeconds }) {
+    // `verdictRecords` are the proposal's existing VerdictRecords (fetchVerdictRecords); a record for
+    // this attestation means it was already settled and the record's `init` would fail.
+    function checkVerdictForSettle({ attestation, fields, proposal, proposalAddress, verdictRecords = [], nowSeconds }) {
         const now = Number.isFinite(nowSeconds) ? nowSeconds : Math.floor(Date.now() / 1000);
         if (!proposal) return 'proposal_missing';
+        if ((verdictRecords || []).some(record => record && record.verdictAttestation === attestation.address)) return 'verdict_already_settled';
         if (proposal.statusCode !== constants.STATUS_ACTIVE) return 'proposal_not_active';
         if (!proposal.lens.includes(attestation.authority)) return 'member_not_in_lens';
         if (!(attestation.expiry > now)) return 'attestation_expired';
@@ -530,6 +566,12 @@
         return data ? readAcceptanceRecord(data, address.toBase58()) : null;
     }
 
+    async function fetchVerdictRecord(connection, { proposal, verdictAttestation, programId } = {}) {
+        const [address] = getVerdictRecordPda(proposal, verdictAttestation, programId);
+        const data = await fetchAccountData(connection, address);
+        return data ? readVerdictRecord(data, address.toBase58()) : null;
+    }
+
     // Every account of one kind that names this proposal right after the discriminator.
     async function fetchByProposal(connection, kind, proposal, programId, read) {
         const accounts = await connection.getProgramAccounts(toKey(programId || constants.PROPOSAL_NFT_PROGRAM_ID, 'programId'), {
@@ -548,6 +590,10 @@
 
     function fetchAcceptanceRecords(connection, { proposal, programId } = {}) {
         return fetchByProposal(connection, 'AcceptanceRecord', proposal, programId, readAcceptanceRecord);
+    }
+
+    function fetchVerdictRecords(connection, { proposal, programId } = {}) {
+        return fetchByProposal(connection, 'VerdictRecord', proposal, programId, readVerdictRecord);
     }
 
     async function fetchLensAttestation(connection, kind, address) {
@@ -575,6 +621,7 @@
         getParcelPda,
         getConsentTallyPda,
         getAcceptanceRecordPda,
+        getVerdictRecordPda,
         deriveCredentialPda,
         deriveSchemaPda,
         buildMintAndFundIx,
@@ -586,6 +633,7 @@
         readProposalV2,
         readConsentTally,
         readAcceptanceRecord,
+        readVerdictRecord,
         parseSasAttestation,
         decodeLensPayload,
         checkOwnershipForAccept,
@@ -595,6 +643,8 @@
         fetchAcceptanceRecord,
         fetchConsentTallies,
         fetchAcceptanceRecords,
+        fetchVerdictRecord,
+        fetchVerdictRecords,
         fetchLensAttestation
     };
 

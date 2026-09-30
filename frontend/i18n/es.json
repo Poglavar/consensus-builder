@@ -1235,6 +1235,58 @@
                 "verdictPlaceholder": "Dirección de la atestación de veredicto",
                 "submitVerdict": "Presentar veredicto",
                 "verdictSettled": "Veredicto \"{{verdict}}\" de {{member}} aplicado; el estado en la cadena ahora es {{status}}."
+            },
+            "parcelHistory": {
+                "eyebrow": "Registro permanente por parcela",
+                "title": "Historial de la parcela",
+                "hint": "Cada propuesta, atestación de propiedad y consentimiento registrados para cada parcela, del más antiguo al más reciente, en el momento que indica su fuente.",
+                "summary": "Historial: {{parcel}}",
+                "loading": "Cargando historial…",
+                "unavailable": "Historial no disponible: {{message}}",
+                "empty": "Aún no hay nada registrado para esta parcela.",
+                "untimed": "hora desconocida",
+                "view": "Ver",
+                "proposal": "Propuesta {{id}}",
+                "member": "Miembro {{key}}",
+                "owner": "Propietario {{key}}",
+                "ownerCount": "Propietarios atestados: {{count}}",
+                "lens": "Lente: {{keys}}",
+                "noAnchor": "Este identificador de parcela no puede tener un ancla en cadena.",
+                "anchorMinted": "Anclada en cadena desde {{at}}",
+                "anchorExists": "Anclada en cadena",
+                "anchorMissing": "Aún no anclada en cadena",
+                "event": {
+                    "created": "Propuesta creada",
+                    "published": "Propuesta acuñada en cadena",
+                    "ownership": "Propiedad atestada",
+                    "acceptance": "El propietario dijo sí",
+                    "verdict": "Veredicto liquidado",
+                    "lifecycle": "La propuesta llegó a un estado final",
+                    "other": "Evento"
+                },
+                "outcome": {
+                    "executed": "ejecutada",
+                    "cancelled": "cancelada",
+                    "expired": "expirada"
+                }
+            },
+            "ownerOffer": {
+                "badge": "Oferta del propietario",
+                "badgeTitle": "El propietario ofrece este terreno; las pujas son compromisos y donaciones",
+                "eyebrow": "Oferta del propietario",
+                "title": "Pujas",
+                "loading": "Cargando pujas…",
+                "unavailable": "Pujas no disponibles",
+                "explainer": "El propietario de este terreno invita a pujar. Las pujas son los compromisos y donaciones de arriba; el propietario ejecuta la oferta diciendo sí.",
+                "total": "Puja total {{amount}} · {{count}} postor(es)",
+                "empty": "Aún no hay pujas. Comprométete o dona arriba para pujar.",
+                "pledge": "Compromiso",
+                "pledgeFulfilled": "Compromiso · cumplido",
+                "donation": "Donación",
+                "explorer": "Explorador",
+                "unknownTime": "hora desconocida",
+                "sayYes": "Decir sí y ejecutar",
+                "ownerHint": "Esta oferta es tuya. Decir sí en cada una de tus parcelas en la tarjeta de la lente la ejecuta y te libera las donaciones."
             }
         },
         "block": {
@@ -2510,7 +2562,20 @@
             },
             "proposal_type_no_longer_available": "Fusionar / Decidir después ya no está disponible. Usa la reparcelación.",
             "titleLake": "Crear propuesta de lago",
-            "typeLake": "Lago"
+            "typeLake": "Lago",
+            "ownerOffer": {
+                "label": "Ofrecer mi terreno",
+                "explain": "Ofreces tus propias parcelas e invitas a pujar. Las pujas llegan como compromisos y donaciones en esta propuesta; nadie más puede aceptarla. Cuando una puja te convenga, ejecutas la oferta diciendo sí en tus parcelas. El importe de la oferta es tu precio de venta.",
+                "recheck": "Comprobar de nuevo",
+                "checking": "Comprobando tus atestaciones de propiedad…",
+                "needLens": "Elige primero tu lente (👓): la oferta necesita un miembro de la lente que haya atestado tu propiedad.",
+                "needParcels": "Selecciona las parcelas que posees.",
+                "noService": "Ningún miembro de tu lente publica una URL de servicio, así que no se puede comprobar tu propiedad.",
+                "unavailable": "Ahora mismo no se pueden comprobar las atestaciones de propiedad.",
+                "notAttested": "Ningún miembro de tu lente ha atestado esta cartera como propietaria de una parcela seleccionada.",
+                "attested": "Tu cartera es la propietaria atestada de {{attested}} de {{total}} parcelas seleccionadas.",
+                "deselectOthers": "Ofrece solo tus parcelas: deselecciona {{parcels}}."
+            }
         },
         "unapplyTour": {
             "titleUnapply": "Desaplicar «{{title}}»",
@@ -3300,7 +3365,8 @@
             "failed_to_create_proposal": "No se pudo crear la propuesta.",
             "solana_lens_required": "Elige al menos un miembro de la lente (el botón 👓) antes de acuñar en Solana.",
             "solana_accept_in_lens_card": "En Solana, los propietarios dicen sí en la tarjeta Lente de la propuesta: un miembro de la lente atestigua tu propiedad y luego tu billetera firma.",
-            "solana_acceptance_final": "Las aceptaciones en Solana son definitivas: un sí firmado no se puede retirar."
+            "solana_acceptance_final": "Las aceptaciones en Solana son definitivas: un sí firmado no se puede retirar.",
+            "owner_offer_not_attested": "Una oferta del propietario solo puede incluir parcelas que un miembro de tu lente haya atestado como propiedad de tu cartera. {{detail}}"
         }
     },
     "gameDialogs": {
@@ -3604,6 +3670,8 @@
         "title": "Consola del miembro de la lente",
         "intro": "Un miembro de la lente declara hechos sobre parcelas como atestaciones. Apunta esta consola a tu servicio de miembro para ver lo que ha emitido y registrar veredictos.",
         "backToMap": "Volver al mapa",
+        "runOwn": "Cualquiera puede operar un miembro de la lente: registra una credencial, inicia el servicio de referencia y se inscribe solo en el directorio.",
+        "runOwnLink": "Cómo operar tu propio miembro",
         "loading": "Cargando…",
         "service": {
             "title": "Servicio del miembro",

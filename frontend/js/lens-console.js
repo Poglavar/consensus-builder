@@ -237,6 +237,8 @@
         }
         root.addEventListener('i18n:translationsLoaded', () => { renderStatus(); renderWallet(); renderDirectory(); });
 
+        doc.getElementById('lc-run-own').href = `${String(root.getBackendBase()).replace(/\/+$/, '')}/docs/agents`;
+
         const input = doc.getElementById('lc-service-url');
         const fromQuery = new URLSearchParams(root.location.search).get('service');
         input.value = fromQuery || readStoredServiceUrl() || '';

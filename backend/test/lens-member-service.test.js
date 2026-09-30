@@ -61,6 +61,15 @@ async function challengeAndSign(app, who, parcelUid) {
 }
 
 describe('reference lens member', () => {
+    it('reports the kind it was created with and refuses an unknown one', async () => {
+        const issuer = createFakeIssuer({ authority: AUTHORITY, clock });
+        const identity = createDevnetRegistryIdentity({ rows: registryRows(), clock, authority: AUTHORITY });
+        const member = createLensMember({ authority: AUTHORITY, kind: 'lifecycle', issuer, store: createMemoryStore(), identity, clock, dryRun: true });
+        expect((await member.status()).kind).toBe('lifecycle');
+        expect(() => createLensMember({ authority: AUTHORITY, kind: 'oracle', issuer, store: createMemoryStore(), identity, clock }))
+            .toThrow(/unknown kind "oracle"/);
+    });
+
     it('reports key, kind, credential, schemas, counts and that dry-run pricing is off', async () => {
         const { app, member } = setup();
         const res = await request(app).get('/lens/status');

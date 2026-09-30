@@ -325,7 +325,9 @@ export function createUrbanGameTheoryTools({
             return { ...result, owner, member, ownershipAttestation: attestation, attestationSource: lookedUp ? `${serviceUrl}/lens/attestations` : 'argument' };
         },
 
-        // Permissionless: submit a lens member's ProposalVerdict-v1 (settle_with_verdict).
+        // Permissionless: submit a lens member's ProposalVerdict-v1 (settle_with_verdict). `record` is the
+        // VerdictRecord PDA ["verdict", proposal, attestation]; null only when the proposal was already
+        // in the verdict's status through another settlement (no record exists for this attestation).
         async submitVerdict({ proposalAccount, verdictAttestation, member, confirm } = {}) {
             requireLive(confirm);
             const { keypair, connection } = signer();
@@ -333,10 +335,11 @@ export function createUrbanGameTheoryTools({
             const members = await impl.fetchLensMembers({ apiBase, fetchImpl }).catch(() => []);
             const serviceUrl = members.find(item => item.key === member)?.serviceUrl || null;
             if (serviceUrl) credentialName = (await impl.fetchLensStatus({ serviceUrl, fetchImpl })).credentialName || credentialName;
-            return impl.settleWithVerdict({
+            const result = await impl.settleWithVerdict({
                 connection, submitterKeypair: keypair, proposalAccount, verdictAttestation, member, credentialName,
                 sendAndConfirm: impl.sendAndConfirmPolling
             });
+            return { ...result, record: result.record ?? null, verdictAttestation };
         },
 
         async refundDonation({ proposalAccount, operationId, confirm } = {}) {

@@ -228,13 +228,19 @@ export async function settleWithVerdict(
     a: { proposal: PublicKey; verdict: PublicKey; credential: PublicKey }
 ): Promise<string> {
     const provider = proposalProgram.provider as anchor.AnchorProvider;
+    const verdictRecord = PublicKey.findProgramAddressSync(
+        [Buffer.from("verdict"), a.proposal.toBuffer(), a.verdict.toBuffer()],
+        proposalProgram.programId
+    )[0];
     return proposalProgram.methods
         .settleWithVerdict()
         .accountsStrict({
             proposal: a.proposal,
             verdict: a.verdict,
             verdictCredential: a.credential,
+            verdictRecord,
             submitter: provider.wallet.publicKey,
+            systemProgram: anchor.web3.SystemProgram.programId,
         })
         .rpc();
 }

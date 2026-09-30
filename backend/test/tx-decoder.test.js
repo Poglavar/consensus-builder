@@ -429,6 +429,30 @@ describe('decodeParsedTransaction: proposal_nft v2 instructions (synthetic)', ()
         expect(decoded.instructions[0].args.verdict_may_execute).toBe(true);
         expect(decoded.instructions[0].args.lens).toEqual([TREASURY]);
     });
+
+    it('decodes a v2 settle_with_verdict with its verdict record and names the record in the summary', () => {
+        const VERDICT_RECORD = PublicKey.findProgramAddressSync(
+            [Buffer.from('verdict'), new PublicKey(PROPOSAL).toBuffer(), new PublicKey(ATTESTATION).toBuffer()], new PublicKey(PROPOSAL_PROGRAM)
+        )[0].toBase58();
+        const decoded = decode(buildTx({
+            accountKeys: [
+                key(OWNER, { signer: true, writable: true }), key(PROPOSAL, { writable: true }), key(VERDICT_RECORD, { writable: true }),
+                key(ATTESTATION), key(CREDENTIAL), key(SYSTEM_PROGRAM), key(PROPOSAL_PROGRAM)
+            ],
+            instructions: [{
+                accounts: [PROPOSAL, ATTESTATION, CREDENTIAL, VERDICT_RECORD, OWNER, SYSTEM_PROGRAM],
+                data: anchorData('proposal_nft', 'settle_with_verdict', {}), programId: PROPOSAL_PROGRAM, stackHeight: 1
+            }]
+        }));
+        const anchor = decoded.instructions[0];
+        expect(anchor.action).toBe('settle_with_verdict');
+        expect(anchor.idlVersion).toBe('v2');
+        expect(anchor.accountsWarning).toBeUndefined();
+        expect(anchor.accounts.map((account) => account.role)).toEqual(['proposal', 'verdict', 'verdict_credential', 'verdict_record', 'submitter', 'system_program']);
+        expect(anchor.accounts[3].address).toBe(VERDICT_RECORD);
+        const short = (address) => `${address.slice(0, 4)}…${address.slice(-4)}`;
+        expect(decoded.summary).toBe(`agent densifier-01 settled on proposal ${short(PROPOSAL)} with verdict attestation ${short(ATTESTATION)}, recorded at ${short(VERDICT_RECORD)}`);
+    });
 });
 
 describe('loadIdls: legacy interfaces', () => {

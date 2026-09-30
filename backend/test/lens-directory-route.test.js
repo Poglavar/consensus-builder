@@ -31,8 +31,8 @@ describe('GET /lenses/members', () => {
         expect(res.headers['cache-control']).toBe('no-store');
         expect(res.body).toEqual({
             members: [
-                { key: KEY, kind: 'owner-consent', name: 'notary-01', description: 'Devnet reference member', serviceUrl: 'https://attester.example.test/requests', coverage: { ownership: 3, parcels: 2, executed: 1 } },
-                { key: 'G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg', kind: null, name: null, description: null, serviceUrl: null, coverage: { ownership: 0, parcels: 0, executed: 0 } }
+                { key: KEY, kind: 'owner-consent', name: 'notary-01', description: 'Devnet reference member', serviceUrl: 'https://attester.example.test/requests', registeredAt: null, coverage: { ownership: 3, parcels: 2, executed: 1 } },
+                { key: 'G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg', kind: null, name: null, description: null, serviceUrl: null, registeredAt: null, coverage: { ownership: 0, parcels: 0, executed: 0 } }
             ]
         });
         expect(pool.query.mock.calls.at(-1)[0]).toContain('FROM consensus.lens_member');
@@ -73,7 +73,7 @@ describe('upsertLensMember', () => {
         expect(sql).toContain('ON CONFLICT (key) DO UPDATE');
         expect(sql).toContain('service_url = COALESCE(EXCLUDED.service_url, lens_member.service_url)');
         expect(params).toEqual([KEY, 'owner-consent', null, null, null, url, '{"ownership":1,"parcels":1,"executed":0}', '2026-09-21T14:13:20.000Z']);
-        expect(member).toEqual({ key: KEY, kind: 'owner-consent', name: null, description: null, serviceUrl: url, coverage: { ownership: 1, parcels: 1, executed: 0 } });
+        expect(member).toEqual({ key: KEY, kind: 'owner-consent', name: null, description: null, serviceUrl: url, registeredAt: null, coverage: { ownership: 1, parcels: 1, executed: 0 } });
     });
 
     it('never invents a seen time and refuses a bad key', async () => {

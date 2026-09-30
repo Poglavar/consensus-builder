@@ -1307,6 +1307,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             });
     }
 
+    if (isSolanaPledgeProposal && window.OwnerOffer?.mount) window.OwnerOffer.mount(document.querySelector(`.proposal-pledge-summary[data-proposal-account="${nftInfo.tokenId}"]`), { proposal: fullProposal, proposalAccount: nftInfo.tokenId });
+
     // Lens card: decoded chain lens + directory names + per-parcel ownership attestation, consent
     // tally and Say yes, plus the permissionless verdict settlement. Hydrated
     // after render like the pledge card so a slow directory or RPC never delays Details.
@@ -1320,6 +1322,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             }
         );
     }
+    if (isSolanaPledgeProposal) window.ProposalParcelHistoryCard?.mountAfter(document.querySelector(`.proposal-lens-card[data-proposal-lens-card="${nftInfo.tokenId}"]`), { parcelIds: Array.isArray(fullProposal?.cadastreParcelIds) ? fullProposal.cadastreParcelIds : [] });
 
     if (isSolanaPledgeProposal && window.ProposalPossibilityTimeline?.build) {
         hydrateProposalPossibilityTimeline(

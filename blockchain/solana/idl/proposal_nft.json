@@ -469,8 +469,48 @@
           "name": "verdict_credential"
         },
         {
+          "name": "verdict_record",
+          "docs": [
+            "Permanent evidence of the settlement. `init`, so replaying the same attestation fails with",
+            "\"already in use\" before the handler runs."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  101,
+                  114,
+                  100,
+                  105,
+                  99,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "proposal"
+              },
+              {
+                "kind": "account",
+                "path": "verdict"
+              }
+            ]
+          }
+        },
+        {
           "name": "submitter",
+          "docs": [
+            "Pays rent for the verdict record."
+          ],
+          "writable": true,
           "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": []
@@ -527,6 +567,19 @@
         28,
         182,
         5
+      ]
+    },
+    {
+      "name": "VerdictRecord",
+      "discriminator": [
+        5,
+        210,
+        137,
+        12,
+        43,
+        13,
+        62,
+        182
       ]
     }
   ],
@@ -905,6 +958,53 @@
           },
           {
             "name": "Expired"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VerdictRecord",
+      "docs": [
+        "One settled verdict: PDA [\"verdict\", proposal, verdict_attestation]. Keeps the verdict",
+        "attestation's key and the sha256 of its whole account bytes, so the evidence outlives the SAS",
+        "account (and the transaction logs that carry `VerdictSettled`). `verdict` is the status it set:",
+        "1 Executed, 3 Expired."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal",
+            "type": "pubkey"
+          },
+          {
+            "name": "member",
+            "type": "pubkey"
+          },
+          {
+            "name": "verdict_attestation",
+            "type": "pubkey"
+          },
+          {
+            "name": "verdict_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "verdict",
+            "type": "u8"
+          },
+          {
+            "name": "settled_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }

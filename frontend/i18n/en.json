@@ -1188,6 +1188,58 @@
                 "verdictPlaceholder": "Verdict attestation address",
                 "submitVerdict": "Submit verdict",
                 "verdictSettled": "Verdict \"{{verdict}}\" from {{member}} settled; on-chain status is now {{status}}."
+            },
+            "parcelHistory": {
+                "eyebrow": "Permanent per-parcel log",
+                "title": "Parcel history",
+                "hint": "Every proposal, ownership attestation and consent recorded for each parcel, oldest first, at the time its source states.",
+                "summary": "History: {{parcel}}",
+                "loading": "Loading history…",
+                "unavailable": "History unavailable: {{message}}",
+                "empty": "Nothing recorded for this parcel yet.",
+                "untimed": "time unknown",
+                "view": "View",
+                "proposal": "Proposal {{id}}",
+                "member": "Member {{key}}",
+                "owner": "Owner {{key}}",
+                "ownerCount": "{{count}} attested owner(s)",
+                "lens": "Lens: {{keys}}",
+                "noAnchor": "This parcel id cannot have an on-chain anchor.",
+                "anchorMinted": "Anchored on chain since {{at}}",
+                "anchorExists": "Anchored on chain",
+                "anchorMissing": "Not anchored on chain yet",
+                "event": {
+                    "created": "Proposal created",
+                    "published": "Proposal minted on chain",
+                    "ownership": "Ownership attested",
+                    "acceptance": "Owner said yes",
+                    "verdict": "Verdict settled",
+                    "lifecycle": "Proposal reached a final state",
+                    "other": "Event"
+                },
+                "outcome": {
+                    "executed": "executed",
+                    "cancelled": "cancelled",
+                    "expired": "expired"
+                }
+            },
+            "ownerOffer": {
+                "badge": "Owner offer",
+                "badgeTitle": "The owner offers this land; bids are pledges and donations",
+                "eyebrow": "Owner offer",
+                "title": "Bids",
+                "loading": "Loading bids…",
+                "unavailable": "Bids unavailable",
+                "explainer": "The owner of this land invites bids. Bids are the pledges and donations above; the owner executes the offer by saying yes.",
+                "total": "Total bid {{amount}} · {{count}} bidder(s)",
+                "empty": "No bids yet. Pledge or donate above to bid.",
+                "pledge": "Pledge",
+                "pledgeFulfilled": "Pledge · fulfilled",
+                "donation": "Donation",
+                "explorer": "Explorer",
+                "unknownTime": "time unknown",
+                "sayYes": "Say yes to execute",
+                "ownerHint": "You own this offer. Saying yes on each of your parcels in the lens card executes it and releases the donations to you."
             }
         },
         "block": {
@@ -2459,7 +2511,20 @@
             },
             "proposal_type_no_longer_available": "Merge / Decide Later is no longer available. Use Land readjustment.",
             "titleLake": "Create Lake Proposal",
-            "typeLake": "Lake"
+            "typeLake": "Lake",
+            "ownerOffer": {
+                "label": "Offer my land",
+                "explain": "You offer your own parcels and invite bids. Bids arrive as pledges and donations on this proposal; nobody else can accept it. When a bid suits you, you execute the offer by saying yes on your parcels. The offer amount is your asking price.",
+                "recheck": "Check again",
+                "checking": "Checking your ownership attestations…",
+                "needLens": "Choose your lens (👓) first: the offer needs a lens member that attested your ownership.",
+                "needParcels": "Select the parcels you own.",
+                "noService": "None of your lens members publishes a service URL, so your ownership cannot be checked.",
+                "unavailable": "Ownership attestations cannot be checked right now.",
+                "notAttested": "No lens member in your lens has attested this wallet as owner of a selected parcel.",
+                "attested": "Your wallet is the attested owner of {{attested}} of {{total}} selected parcels.",
+                "deselectOthers": "Offer only your own parcels: deselect {{parcels}}."
+            }
         },
         "unapplyTour": {
             "titleUnapply": "Un-apply “{{title}}”",
@@ -3249,7 +3314,8 @@
             "failed_to_create_proposal": "Failed to create proposal.",
             "solana_lens_required": "Choose at least one lens member (the 👓 button) before minting on Solana.",
             "solana_accept_in_lens_card": "On Solana, owners say yes in the proposal's Lens card: a lens member attests your ownership, then your wallet signs.",
-            "solana_acceptance_final": "Acceptances on Solana are final: a signed yes cannot be withdrawn."
+            "solana_acceptance_final": "Acceptances on Solana are final: a signed yes cannot be withdrawn.",
+            "owner_offer_not_attested": "An owner offer can only name parcels your wallet is attested to own by a member of your lens. {{detail}}"
         }
     },
     "gameDialogs": {
@@ -3553,6 +3619,8 @@
         "title": "Lens member console",
         "intro": "A lens member states facts about parcels as attestations. Point this console at your member service to see what it has issued and to record verdicts.",
         "backToMap": "Back to the map",
+        "runOwn": "Anyone can run a lens member: register a credential, start the reference service and it lists itself in the directory.",
+        "runOwnLink": "How to run your own member",
         "loading": "Loading…",
         "service": {
             "title": "Member service",

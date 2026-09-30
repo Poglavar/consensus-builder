@@ -208,17 +208,25 @@
         const parsed = await readProposal(client, connection, proposal);
         const onChain = await client.fetchLensAttestation(connection, 'verdict', verdictAttestation.trim());
         if (!onChain) throw codedError(`Attestation ${verdictAttestation} is not on chain`, 'ATTESTATION_NOT_ON_CHAIN');
-        const problem = client.checkVerdictForSettle({ attestation: onChain, fields: onChain.fields, proposal: parsed, proposalAddress: parsed.address });
+        const verdictRecords = await client.fetchVerdictRecords(connection, { proposal, programId: proposalProgram });
+        const problem = client.checkVerdictForSettle({ attestation: onChain, fields: onChain.fields, proposal: parsed, proposalAddress: parsed.address, verdictRecords });
         if (problem) throw codedError(`Settlement would be rejected: ${problem}`, 'PRECHECK_FAILED', { reason: problem });
         // The program checks the credential's authority against the attestation signer, so the
         // credential the attestation itself names is the one to pass.
+        // The submitter signs and is writable: it pays rent for the VerdictRecord PDA.
         const instruction = client.buildSettleWithVerdictIx({
             proposal, verdict: onChain.address, verdictCredential: onChain.credential, submitter: wallet, programId: proposalProgram
         });
+        const verdictRecord = client.getVerdictRecordPda(proposal, onChain.address, proposalProgram)[0].toBase58();
         const sent = await send(connection, provider, wallet, cluster, [instruction], options);
-        const after = await client.fetchProposalV2(connection, proposal);
-        log(`settled ${proposal} with verdict ${onChain.fields.verdict}`, { signature: sent.transactionHash, status: after && after.status });
-        return { ...sent, verdict: onChain.fields.verdict, member: onChain.authority, proposal: after };
+        const [after, record] = await Promise.all([
+            client.fetchProposalV2(connection, proposal),
+            client.fetchVerdictRecord(connection, { proposal, verdictAttestation: onChain.address, programId: proposalProgram })
+        ]);
+        log(`settled ${proposal} with verdict ${onChain.fields.verdict}; verdict record ${verdictRecord}`, {
+            signature: sent.transactionHash, status: after && after.status, recordOnChain: !!record
+        });
+        return { ...sent, verdict: onChain.fields.verdict, member: onChain.authority, proposal: after, verdictRecord, record };
     }
 
     // distribute_funds v2: remaining accounts are built from the tallies and acceptance records.

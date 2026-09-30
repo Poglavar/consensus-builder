@@ -169,6 +169,20 @@ export async function listRuns(pool, { day = null } = {}) {
     return rows;
 }
 
+/** One persona's runs, newest first (bounded): the history a society policy reads back. */
+export async function listPersonaRuns(pool, persona, { limit = 200 } = {}) {
+    requirePool(pool);
+    requireText(persona, 'persona');
+    const { rows } = await pool.query(
+        `SELECT ${RUN_COLUMNS} FROM consensus.agent_run
+          WHERE persona = $1
+          ORDER BY started_at DESC
+          LIMIT $2`,
+        [persona, limit]
+    );
+    return rows;
+}
+
 /** Throws when this run would push the day over the cap. Exactly at the cap is allowed. */
 export function assertUnderCap({ spentUsd, estimateUsd, capUsd } = {}) {
     for (const [label, value] of [['spentUsd', spentUsd], ['estimateUsd', estimateUsd], ['capUsd', capUsd]]) {

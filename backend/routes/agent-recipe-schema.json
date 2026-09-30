@@ -30,6 +30,11 @@
       "items": { "type": "string", "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$", "description": "Base58 Solana public key of a lens member (an attester)." },
       "description": "The lens: public keys of the attesters whose SAS attestations (ParcelOwnership-v1, ProposalVerdict-v1) this proposal accepts. Pass the same list as the lens argument of mint_and_fund; it is immutable once minted (fork the proposal to change it). Pick members from GET /lenses/members; schemas at GET /lenses/schemas."
     },
+    "proposalRole": {
+      "type": "string",
+      "enum": ["owner-offer"],
+      "description": "Omit for an ordinary proposal. owner-offer: the author is a lens-attested owner of the declared parcels offering its own land. Bids arrive as proposal_pledge pledges and donations (GET /agent/pledges/<proposal-account>), and the owner executes by signing accept_with_attestations for its parcels. Any other value is refused with 400."
+    },
     "offer": { "type": "number", "description": "Amount offered to the parcel owners." },
     "offerCurrency": { "type": "string", "maxLength": 10 },
     "buildingProposal": { "type": "object", "description": "A building massing in the app's stored shape; copy from GET /proposals?city=…&limit=5." },

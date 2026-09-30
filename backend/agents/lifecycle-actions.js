@@ -116,7 +116,8 @@ export const STATUS_ACTIVE = 0;
 export const STATUS_EXPIRED = 3;
 const ACCOUNT_DISCRIMINATORS = {
     ConsentTally: [200, 21, 66, 56, 62, 148, 43, 226],
-    AcceptanceRecord: [8, 191, 82, 210, 167, 58, 12, 34]
+    AcceptanceRecord: [8, 191, 82, 210, 167, 58, 12, 34],
+    VerdictRecord: [5, 210, 137, 12, 43, 13, 62, 182]
 };
 
 function key(value, label) {
@@ -144,6 +145,14 @@ export function deriveConsentTallyPda({ proposalAccount, parcelId, programId = P
 export function deriveAcceptanceRecordPda({ proposalAccount, parcelId, owner, programId = PROPOSAL_PROGRAM_ID }) {
     return web3.PublicKey.findProgramAddressSync(
         [Buffer.from('acceptance'), key(proposalAccount, 'proposalAccount').toBuffer(), Buffer.from(String(parcelId)), key(owner, 'owner').toBuffer()],
+        new web3.PublicKey(programId)
+    )[0];
+}
+
+// One per settled verdict: ["verdict", proposal, verdict_attestation] under proposal_nft (`init`).
+export function getVerdictRecordPda({ proposalAccount, verdictAttestation, programId = PROPOSAL_PROGRAM_ID }) {
+    return web3.PublicKey.findProgramAddressSync(
+        [Buffer.from('verdict'), key(proposalAccount, 'proposalAccount').toBuffer(), key(verdictAttestation, 'verdictAttestation').toBuffer()],
         new web3.PublicKey(programId)
     )[0];
 }
@@ -194,6 +203,25 @@ export function decodeAcceptanceRecord(data) {
     return { proposal, parcelId, owner, member, ownershipAttestation, ownershipHash, payout, acceptedAt, bump };
 }
 
+const VERDICT_CODE_NAMES = { 1: 'executed', 3: 'expired' };
+
+// VerdictRecord: proposal, member, verdict_attestation, verdict_hash [32], verdict u8 (1 Executed,
+// 3 Expired), settled_at i64, bump.
+export function decodeVerdictRecord(data) {
+    const bytes = Buffer.from(data || []);
+    checkDiscriminator(bytes, 'VerdictRecord');
+    const state = { offset: 8 };
+    const proposal = readKey(bytes, state);
+    const member = readKey(bytes, state);
+    const verdictAttestation = readKey(bytes, state);
+    if (state.offset + 32 + 1 + 8 + 1 > bytes.length) throw new Error('verdict record ended before its hash, verdict, settled_at and bump');
+    const verdictHash = bytes.subarray(state.offset, state.offset + 32).toString('hex'); state.offset += 32;
+    const verdictCode = bytes[state.offset++];
+    const settledAt = Number(bytes.readBigInt64LE(state.offset)); state.offset += 8;
+    const bump = bytes[state.offset];
+    return { proposal, member, verdictAttestation, verdictHash, verdictCode, verdict: VERDICT_CODE_NAMES[verdictCode] || `unknown(${verdictCode})`, settledAt, bump };
+}
+
 async function readProposal(connection, proposalAccount) {
     const info = await connection.getAccountInfo(key(proposalAccount, 'proposalAccount'), 'confirmed');
     if (!info?.data) throw new Error('proposal account does not exist');
@@ -212,6 +240,13 @@ export async function readAcceptanceRecord({ connection, proposalAccount, parcel
     const address = deriveAcceptanceRecordPda({ proposalAccount, parcelId, owner, programId });
     const info = await connection.getAccountInfo(address, 'confirmed');
     return info?.data ? { address: address.toBase58(), ...decodeAcceptanceRecord(info.data) } : null;
+}
+
+/** The settlement record for one verdict attestation, or null when it has not been settled. */
+export async function readVerdictRecord({ connection, proposalAccount, verdictAttestation, programId = PROPOSAL_PROGRAM_ID } = {}) {
+    const address = getVerdictRecordPda({ proposalAccount, verdictAttestation, programId });
+    const info = await connection.getAccountInfo(address, 'confirmed');
+    return info?.data ? { address: address.toBase58(), ...decodeVerdictRecord(info.data) } : null;
 }
 
 // Borsh Option<Pubkey>: 0, or 1 followed by the 32 key bytes.
@@ -253,16 +288,21 @@ export function buildAcceptWithAttestationsIx({
 
 /**
  * settle_with_verdict(). Account order (IDL): proposal (w), verdict attestation, verdict credential,
- * submitter (signer). Permissionless: anyone may submit a lens member's verdict.
+ * verdict record (w, PDA ["verdict", proposal, verdict_attestation]), submitter (signer, w: pays the
+ * record's rent), system program. Permissionless: anyone may submit a lens member's verdict.
  */
 export function buildSettleWithVerdictIx({ proposalAccount, verdictAttestation, verdictCredential, submitter, programId = PROPOSAL_PROGRAM_ID } = {}) {
+    const proposal = key(proposalAccount, 'proposalAccount');
+    const verdict = key(verdictAttestation, 'verdictAttestation');
     return new web3.TransactionInstruction({
         programId: new web3.PublicKey(programId),
         keys: [
-            { pubkey: key(proposalAccount, 'proposalAccount'), isSigner: false, isWritable: true },
-            { pubkey: key(verdictAttestation, 'verdictAttestation'), isSigner: false, isWritable: false },
+            { pubkey: proposal, isSigner: false, isWritable: true },
+            { pubkey: verdict, isSigner: false, isWritable: false },
             { pubkey: key(verdictCredential, 'verdictCredential'), isSigner: false, isWritable: false },
-            { pubkey: key(submitter, 'submitter'), isSigner: true, isWritable: false }
+            { pubkey: getVerdictRecordPda({ proposalAccount: proposal, verdictAttestation: verdict, programId }), isSigner: false, isWritable: true },
+            { pubkey: key(submitter, 'submitter'), isSigner: true, isWritable: true },
+            { pubkey: web3.SystemProgram.programId, isSigner: false, isWritable: false }
         ],
         data: Buffer.from(instructionDiscriminator('settle_with_verdict'))
     });
@@ -344,8 +384,9 @@ export async function acceptWithAttestations({
 const VERDICT_STATUS = { executed: STATUS_EXECUTED, expired: STATUS_EXPIRED };
 
 /**
- * Submit a lens member's ProposalVerdict-v1 attestation (permissionless). Replays when the proposal
- * already has the status the verdict names; refuses a verdict on any other terminal state, an
+ * Submit a lens member's ProposalVerdict-v1 attestation (permissionless). Replays (no send) when the
+ * VerdictRecord for this attestation already exists, or when the proposal already has the status the
+ * verdict names; refuses a verdict on any other terminal state, an
  * `executed` verdict on a proposal minted without verdict_may_execute, and a member outside the lens.
  * `member` defaults to the attestation's signer, which must still be in the lens.
  */
@@ -357,6 +398,14 @@ export async function settleWithVerdict({
     if (!connection?.getAccountInfo) throw new Error('a solana connection is required');
     if (!submitterKeypair?.publicKey) throw new Error('submitterKeypair is required');
     const proposalKey = key(proposalAccount, 'proposalAccount');
+    const recordAddress = getVerdictRecordPda({ proposalAccount: proposalKey, verdictAttestation, programId }).toBase58();
+    const existing = await readVerdictRecord({ connection, proposalAccount: proposalKey, verdictAttestation, programId });
+    if (existing) {
+        return {
+            replayed: true, signature: null, status: existing.verdict, verdict: existing.verdict, member: existing.member,
+            record: recordAddress, verdictHash: existing.verdictHash, verdictRecord: existing
+        };
+    }
     const info = await connection.getAccountInfo(key(verdictAttestation, 'verdictAttestation'), 'confirmed');
     if (!info?.data) throw new Error(`verdict attestation ${verdictAttestation} does not exist`);
     const signerOf = decodeLensAttestation('verdict', info.data).authority;
@@ -367,7 +416,7 @@ export async function settleWithVerdict({
     if (named !== proposalKey.toBase58()) throw new Error(`verdict attestation is about proposal ${named}, not ${proposalKey.toBase58()}`);
     const wanted = VERDICT_STATUS[verdict];
     const proposal = await readProposal(connection, proposalKey);
-    if (proposal.status === wanted) return { replayed: true, signature: null, status: verdict, verdict, member: memberKey.toBase58() };
+    if (proposal.status === wanted) return { replayed: true, signature: null, status: verdict, verdict, member: memberKey.toBase58(), record: null };
     if (proposal.status !== STATUS_ACTIVE) throw new Error(`proposal is not active (status ${proposal.status}); a ${verdict} verdict cannot settle it`);
     if (!proposal.lens.includes(memberKey.toBase58())) throw new Error(`lens member ${memberKey.toBase58()} is not in this proposal's lens [${proposal.lens.join(', ')}]`);
     if (verdict === 'executed' && !proposal.verdictMayExecute) {
@@ -376,7 +425,7 @@ export async function settleWithVerdict({
     const signature = await sendInstruction(connection, buildSettleWithVerdictIx({
         proposalAccount: proposalKey, verdictAttestation, verdictCredential: credential, submitter: submitterKeypair.publicKey, programId
     }), submitterKeypair, sendAndConfirm);
-    return { replayed: false, signature, status: verdict, verdict, member: memberKey.toBase58(), verdictHash: attestation.accountHash };
+    return { replayed: false, signature, status: verdict, verdict, member: memberKey.toBase58(), record: recordAddress, verdictHash: attestation.accountHash };
 }
 
 export async function cancelProposal({
