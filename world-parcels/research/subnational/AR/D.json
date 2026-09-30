@@ -1,0 +1,42 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "regionCode": "D",
+ "regionName": "San Luis",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR,es;q=0.9; cookie jar; viewer-origin Referer",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "n/a",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://catastro.sanluis.gov.ar/",
+   "observation": "Dirección Provincial de Catastro y Tierras Fiscales; public 'Visualizador Catastral' advertised; every page returned HTTP 403 (Apache) from this network"
+  },
+  {
+   "url": "https://mapas.sanluis.gov.ar/",
+   "observation": "200; ULP ArcGIS Online story-maps, not a parcel service"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://catastro.sanluis.gov.ar/",
+   "method": "GET",
+   "httpStatus": 403,
+   "assessment": "403 with browser headers, cookie jar and Referer; not bypassed"
+  },
+  {
+   "url": "https://ide.sanluis.gov.ar/",
+   "method": "GET",
+   "httpStatus": null,
+   "assessment": "connection failed"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "reuseStatus": "unknown",
+ "remainingUncertainty": "Viewer's backing service never seen; 403 on all catastro.sanluis.gov.ar paths suggests geo/WAF block of this network.",
+ "nextStep": "Retry from an Argentine network or read viewer JS when reachable."
+}

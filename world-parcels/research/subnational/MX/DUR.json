@@ -1,0 +1,67 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "DUR",
+ "regionName": "Durango",
+ "checkedAt": "2026-09-30",
+ "status": "credentialed_or_paid",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-MX,es;q=0.9 (cookie jar on; viewer-origin Referer where the viewer was fetched)",
+ "source": {
+  "sourceId": "mx-dur-municipio-sigeom",
+  "name": "SIGEOM Municipio de Durango mapa",
+  "operator": "Municipio de Durango",
+  "scope": "municipal (Durango capital)",
+  "endpoint": "http://sigeomweb.municipiodurango.gob.mx/mapa",
+  "method": "GET",
+  "responseFormat": "Angular/OpenLayers app with WMS/WFS GeoServer layers",
+  "crs": "unknown",
+  "reuseStatus": "login required"
+ },
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "http://sigeomweb.municipiodurango.gob.mx/mapa",
+   "observation": "200 Angular app; API /api/sigemun/... redirects to Keycloak login 'Componente Descentralizado de Seguridad del Municipio de Durango'; layer tree endpoint requires login"
+  },
+  {
+   "url": "https://www.durango.gob.mx/tramites-y-servicios/...predios_catastrales_registrados",
+   "observation": "state tramite page (search by request), no map"
+  }
+ ],
+ "requests": [
+  {
+   "url": "http://sigeomweb.municipiodurango.gob.mx/mapa",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "app shell"
+  },
+  {
+   "url": "http://sigeomweb.municipiodurango.gob.mx/api/sigemun/configuracion/api/adm-capas/getArbol",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Keycloak login page; not bypassed"
+  },
+  {
+   "url": "https://catastro.durango.gob.mx/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT 502"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=predios Durango / catastro Durango",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "no Mexican parcel layer"
+  }
+ ],
+ "reuseStatus": "not assessed",
+ "remainingUncertainty": "Only municipal viewer found and it is behind login; no state viewer found. Reused from research/countries/MX.json and research/retry/countries/MX.json: RAN (phina/sig.ran.gob.mx) Akamai 403, INEGI has no parcel service; no national layer.",
+ "nextStep": "Look for state Direccion de Catastro Durango viewer; check whether SIGEOM has a public/guest map."
+}

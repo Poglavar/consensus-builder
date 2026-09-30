@@ -1,0 +1,50 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "regionCode": "U",
+ "regionName": "Chubut",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR,es;q=0.9; cookie jar; viewer-origin Referer",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "none",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://catastro.chubut.gov.ar/",
+   "observation": "Dirección General de Catastro e Información Territorial site (WordPress); links the SIT viewer http://sit.chubut.gov.ar/cbtweb/forms/Main.aspx (Autodesk MapGuide per third-party description)"
+  },
+  {
+   "url": "http://catastro.chubut.gov.ar/geoserver/Chubut/ows",
+   "observation": "Spatineo directory lists this WMS/WFS GeoServer path; today it now returns the WordPress 404 page, so it appears retired"
+  }
+ ],
+ "requests": [
+  {
+   "url": "http://catastro.chubut.gov.ar/geoserver/Chubut/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html",
+   "assessment": "WordPress 404; also /geoserver/ows and /geoserver/Chubut/wfs"
+  },
+  {
+   "url": "http://sit.chubut.gov.ar/cbtweb/forms/Main.aspx",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/plain",
+   "assessment": "upstream connect error; viewer down or unreachable from here"
+  },
+  {
+   "url": "https://ide.chubut.gov.ar/ and other guessed hosts",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy 502"
+  }
+ ],
+ "reuseStatus": "n/a",
+ "remainingUncertainty": "SIT MapGuide viewer returned 503 so its parcel endpoint was not inspected; a previously listed GeoServer appears gone.",
+ "nextStep": "Retry the SIT viewer later and inspect it for a MapGuide/WMS parcel layer."
+}

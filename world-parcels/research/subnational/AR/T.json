@@ -1,0 +1,63 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "regionCode": "T",
+ "regionName": "Tucumán",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR,es;q=0.9; cookie jar; viewer-origin Referer",
+ "source": {
+  "sourceId": "ar-tucuman-dgct-geoserver",
+  "name": "dgct workspace (parcelas, manzanas, departamentos, ...)",
+  "operator": "Direccion General de Catastro de Tucuman",
+  "scope": "province (unverified)",
+  "endpoint": "http://200.49.89.203/geoserver/dgct/wfs (also http://190.221.181.227/geoserver/dgct/ows used by IDET viewer)",
+  "method": "WMS/WFS",
+  "responseFormat": "unknown",
+  "crs": "unknown",
+  "reuseStatus": "unknown"
+ },
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "DGC page says WMS/WFS in implementation phase",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://catastrotucuman.gov.ar/gestiones/servicio-wms-wfs/",
+   "observation": "publishes WMS/WFS URLs for geoserver dgct"
+  },
+  {
+   "url": "http://residual.tucuman.gob.ar/geotuc/visor_idet",
+   "observation": "IDET viewer config lists dgct layer 'parcelas' on 190.221.181.227"
+  },
+  {
+   "url": "http://geosplan.tucuman.gob.ar/geoserver/WFS_GEOSPLAN/wfs",
+   "observation": "WFS 200 but 22 layers, no parcels"
+  }
+ ],
+ "requests": [
+  {
+   "url": "http://200.49.89.203/geoserver/dgct/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 503,
+   "assessment": "upstream connect timeout (twice)"
+  },
+  {
+   "url": "https://200.49.89.203/geoserver/dgct/wfs?...",
+   "method": "GET",
+   "httpStatus": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "http://190.221.181.227/geoserver/dgct/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 503,
+   "assessment": "upstream connect timeout"
+  }
+ ],
+ "foundViaViewerInspection": true,
+ "geoBlockSuspected": true,
+ "reuseStatus": "unknown",
+ "remainingUncertainty": "Parcel layer 'parcelas' exists per viewer but both hosts unreachable from this network (IP-literal hosts, possible geo/network block).",
+ "nextStep": "Retry later / from AR network: GetFeature dgct:parcelas count=3."
+}

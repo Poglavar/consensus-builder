@@ -1,0 +1,50 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "COL",
+ "regionName": "Colima",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-MX,es;q=0.9 (cookie jar on; viewer-origin Referer where the viewer was fetched)",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "http://rppccolima.col.gob.mx:8000/geoportal/vc",
+   "observation": "IRTEC geoportal (cadastral viewer, reported to need a username) found by search; connection timed out"
+  },
+  {
+   "url": "http://www.catastroestado.col.gob.mx/",
+   "observation": "200 state Direccion de Catastro page, static; no viewer link found"
+  }
+ ],
+ "requests": [
+  {
+   "url": "http://rppccolima.col.gob.mx:8000/geoportal/vc",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "timeout after 40 s"
+  },
+  {
+   "url": "http://www.catastroestado.col.gob.mx/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "static page"
+  },
+  {
+   "url": "https://catastro.col.gob.mx/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT 502"
+  }
+ ],
+ "reuseStatus": "not assessed",
+ "remainingUncertainty": "Geoportal timed out; may also require login. Reused from research/countries/MX.json and research/retry/countries/MX.json: RAN (phina/sig.ran.gob.mx) Akamai 403, INEGI has no parcel service; no national layer.",
+ "nextStep": "Retry geoportal/vc later and inspect for anonymous layers."
+}

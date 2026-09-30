@@ -1,0 +1,89 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "regionCode": "B",
+ "regionName": "Buenos Aires",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR,es;q=0.9; cookie jar; viewer-origin Referer",
+ "source": {
+  "sourceId": null,
+  "name": "idera:Parcela",
+  "operator": "ARBA (Agencia de Recaudación de la Provincia de Buenos Aires), Carto ARBA",
+  "scope": "Province of Buenos Aires parcel layer (idera:Parcela, also idera:Subparcela)",
+  "endpoint": "https://geo.arba.gov.ar/geoserver/wms",
+  "method": "WMS 1.1.1 GetFeatureInfo with info_format=application/json (returns polygon geometry, one to few features per point query). WFS on the same GeoServer answers 'Service WFS is disabled'.",
+  "responseFormat": "GeoJSON",
+  "crs": "EPSG:4326"
+ },
+ "verifiedParcelResponse": {
+  "requestUrl": "https://geo.arba.gov.ar/geoserver/wms?service=WMS&version=1.1.1&request=GetFeatureInfo&layers=idera:Parcela&query_layers=idera:Parcela&bbox=-57.5490,-38.0010,-57.5480,-38.0000&width=101&height=101&srs=EPSG:4326&x=50&y=50&buffer=40&info_format=application/json&feature_count=3&propertyName=geom",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "feature id (Parcela.<nomenclatura>); properties empty",
+  "responseFile": "research/subnational/AR/B-parcel-response.json",
+  "pagination": "none; point/click queries only (no bulk export via this service)",
+  "regionSampled": "La Plata (1 parcel) and Mar del Plata (3 parcels), about 350 km apart"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Single provincial layer idera:Parcela on ARBA's GeoServer published under the IDERA workspace; sampled in two distant cities. ARBA's own coverage statement not read.",
+ "subregionsVerified": [
+  "La Plata",
+  "Mar del Plata"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://carto.arba.gov.ar/cartoArba",
+   "observation": "Carto ARBA viewer; /cartoArba/client/loadLayer (public JSON) lists 'Base Catastral' layers (carto:Parcelas, Macizos, Parcelas Rurales...) served through its own /cartoArba/ProxyMap"
+  },
+  {
+   "url": "https://carto.arba.gov.ar/cartoArba/ProxyMap",
+   "observation": "Bare WFS/WMS requests to this proxy return HTTP 200 with an empty body (session or header dependent); not usable"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://carto.arba.gov.ar/cartoArba/client/loadLayer",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "public layer list, no token"
+  },
+  {
+   "url": "https://geo.arba.gov.ar/geoserver/wfs?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "ExceptionReport: Service WFS is disabled"
+  },
+  {
+   "url": "https://geo.arba.gov.ar/geoserver/wms?...GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "lists idera:Parcela and idera:Subparcela"
+  },
+  {
+   "url": "(GetFeatureInfo x2)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "polygon geometry with IDs in feature id; properties empty"
+  },
+  {
+   "url": "https://imageo.arba.gov.ar/geoserver/...",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "TLS chain error (unable to get local issuer certificate); not bypassed"
+  }
+ ],
+ "reuseStatus": "Not read.",
+ "remainingUncertainty": "Only point-style GetFeatureInfo works; not a bulk feed. Whole-province completeness not measured. Whether ARBA intends anonymous programmatic use is unknown.",
+ "nextStep": "Look for an ARBA/IDE PBA open-data download or an enabled WFS; municipal open data (e.g. La Plata) as alternative."
+}

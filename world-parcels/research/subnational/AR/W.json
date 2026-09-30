@@ -1,0 +1,43 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "regionCode": "W",
+ "regionName": "Corrientes",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR,es;q=0.9; cookie jar; viewer-origin Referer",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "none",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://ide.corrientes.gob.ar/",
+   "observation": "IDECorr portal, IDERA member since 2016; viewer at /visor/; uses GeoServer per search summary"
+  },
+  {
+   "url": "https://ciudaddecorrientes.gov.ar/tramites/catastro",
+   "observation": "City of Corrientes cadastre page; virtual map has a cadastral property layer (not reached)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://ide.corrientes.gob.ar/, https://catastro.corrientes.gov.ar/, https://www.corrientes.gob.ar/catastro",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "TLS: unable to get local issuer certificate (server chain incomplete); not bypassed"
+  },
+  {
+   "url": "https://mapa.ciudaddecorrientes.gov.ar/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy 502"
+  }
+ ],
+ "reuseStatus": "n/a",
+ "remainingUncertainty": "Provincial services could not be tested because of the TLS chain error; parcel availability unknown.",
+ "nextStep": "Retry when the certificate chain is fixed or from a client that has the intermediate CA; test IDECorr GeoServer WFS."
+}

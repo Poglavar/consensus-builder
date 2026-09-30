@@ -1,0 +1,75 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "regionCode": "E",
+ "regionName": "Entre Ríos",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR,es;q=0.9; cookie jar; viewer-origin Referer",
+ "source": {
+  "sourceId": null,
+  "name": "Parcelario Base (sit_catastro:vwm_parcelario_base)",
+  "operator": "ATER (Administradora Tributaria de Entre Ríos), Visor Catastro",
+  "scope": "Province of Entre Ríos parcel base (public 'Parcelario Base' layer of the open viewer profile 098)",
+  "endpoint": "https://geoserver.ater.gob.ar/geoserver/wfs",
+  "method": "WFS 2.0.0 GetFeature, no key on this path (the /geoserver/ows path answers 401)",
+  "responseFormat": "GeoJSON",
+  "crs": "EPSG:4326 via srsName"
+ },
+ "verifiedParcelResponse": {
+  "requestUrl": "https://geoserver.ater.gob.ar/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=sit_catastro:vwm_parcelario_base&count=3&outputFormat=application/json&srsName=EPSG:4326&propertyName=departamento,partida,geom&bbox=-60.5345,-31.7335,-60.5330,-31.7320,EPSG:4326",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "departamento + partida (tax account number) / feature id",
+  "responseFile": "research/subnational/AR/E-parcel-response.json",
+  "pagination": "WFS 2.0 count/startIndex",
+  "regionSampled": "Paraná and Concordia (about 250 km apart)"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "ATER's open viewer announcement says the open version offers WMS/WFS geoservices and parcel information throughout the province (via search summary; page not fully read).",
+ "subregionsVerified": [
+  "Paraná",
+  "Concordia"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://visor.ater.gob.ar/",
+   "observation": "Open viewer; JS reads layer list from /php/getCapasPorRol.php?codigo=098 (public profile) giving layer sit_catastro:vwm_parcelario_base on geoserver.ater.gob.ar"
+  },
+  {
+   "url": "https://www.ater.gob.ar/ater2/Catastro/visorabierto.asp",
+   "observation": "ATER page 'Visor Gráfico Catastral y datos abiertos'"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://visor.ater.gob.ar/php/getCapasPorRol.php?codigo=098",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "public layer list (no token)"
+  },
+  {
+   "url": "https://geoserver.ater.gob.ar/geoserver/ows?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 401,
+   "contentType": "text/html",
+   "assessment": "HTTP auth required on that path; not bypassed. Path /geoserver/wfs answers without auth"
+  },
+  {
+   "url": "(2 bounded GetFeature queries)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 parcels each; numberMatched 74 and 72"
+  }
+ ],
+ "reuseStatus": "Terms not read. Layer attributes are departamento, partida, plano, estado (no owner fields seen); only departamento, partida, geom requested.",
+ "remainingUncertainty": "The 401 on /ows suggests WFS is not formally advertised on the anonymous path; access may be revoked or restricted without notice.",
+ "nextStep": "Read ATER open-data terms; confirm WFS is intended for public use."
+}
