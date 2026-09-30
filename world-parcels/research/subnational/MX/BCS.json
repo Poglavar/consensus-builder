@@ -1,0 +1,53 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "BCS",
+ "regionName": "Baja California Sur",
+ "checkedAt": "2026-09-30",
+ "status": "credentialed_or_paid",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept-Language: es-MX,es;q=0.9; cookie jar on",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "none; Mexican cadastre is state/municipal and no state-wide open layer was found",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://catastro.lapaz.gob.mx/catastro/",
+   "observation": "La Paz municipal catastro: HTTP 401 (authentication required); an auth wall, not bypassed"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://catastro.lapaz.gob.mx/",
+   "method": "GET",
+   "httpStatus": 301,
+   "contentType": "",
+   "assessment": "redirect to /catastro/"
+  },
+  {
+   "url": "https://catastro.lapaz.gob.mx/catastro/",
+   "method": "GET",
+   "httpStatus": 401,
+   "contentType": "",
+   "assessment": "401 auth wall"
+  },
+  {
+   "url": "catastro.bcs.gob.mx, implanlapaz.gob.mx, catastro.loscabos.gob.mx",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection reset / no connection"
+  },
+  {
+   "url": "https://www.bcs.gob.mx/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "state portal, no parcel service seen"
+  }
+ ],
+ "reuseStatus": "not read",
+ "remainingUncertainty": "Only the La Paz catastro host answered and it demands credentials. State cadastre and Los Cabos hosts unreachable. ArcGIS Online searches found no BCS parcel layers.",
+ "nextStep": "Retry Los Cabos and La Paz IMPLAN; look for a public La Paz viewer."
+}

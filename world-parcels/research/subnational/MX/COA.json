@@ -1,0 +1,85 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "COA",
+ "regionName": "Coahuila",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept-Language: es-MX,es;q=0.9; cookie jar on",
+ "source": {
+  "sourceId": "mx-coa-torreon-agol-predios",
+  "name": "PREDIOS_2019 (feature service PREDIOS_TORREON)",
+  "operator": "ArcGIS Online user 'solucionessig' (third-party GIS firm; not clearly the municipality or state)",
+  "scope": "281,456 polygons, extent around Torreon (lon -103.49..-103.21, lat 25.20..25.68), 2019 vintage",
+  "endpoint": "https://services9.arcgis.com/fp5f46XvVGKIUi0R/arcgis/rest/services/PREDIOS_TORREON/FeatureServer/0",
+  "method": "GET /query",
+  "responseFormat": "GeoJSON/JSON",
+  "crs": "EPSG:4326",
+  "reuseStatus": "no licence text (itemInfo licenseInfo empty)"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "mx-coa-torreon-agol-predios",
+  "requestUrl": "https://services9.arcgis.com/fp5f46XvVGKIUi0R/arcgis/rest/services/PREDIOS_TORREON/FeatureServer/0/query?geometry=-103.45,25.53,-103.448,25.532&geometryType=esriGeometryEnvelope&inSR=4326&outFields=OBJECTID,CATASTRO&returnGeometry=true&outSR=4326&resultRecordCount=3&f=geojson",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": [
+   -103.45,
+   25.53,
+   -103.448,
+   25.532
+  ],
+  "parcelRecordCount": 2,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "OBJECTID (CATASTRO key present but blank in sampled rows)",
+  "responseFile": "COA-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount",
+  "regionSampled": "Torreon"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "none; Mexican cadastre is state/municipal and no state-wide open layer was found",
+ "subregionsVerified": [
+  "Torreon municipality (third-party-published)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=predios Torreon",
+   "observation": "located PREDIOS_TORREON; other Coahuila hits were unrelated"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services9.arcgis.com/fp5f46XvVGKIUi0R/arcgis/rest/services/PREDIOS_TORREON/FeatureServer/0?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "fields include CATASTRO, NO_OFICIAL (street number; not requested), SIMAS, TENENCIA"
+  },
+  {
+   "url": "https://services9.arcgis.com/fp5f46XvVGKIUi0R/arcgis/rest/services/PREDIOS_TORREON/FeatureServer/0/query?...returnCountOnly=true",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "count 281456"
+  },
+  {
+   "url": "https://services9.arcgis.com/fp5f46XvVGKIUi0R/arcgis/rest/services/PREDIOS_TORREON/FeatureServer/0/query?bbox...resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "polygons returned"
+  },
+  {
+   "url": "www.coahuila.gob.mx, catastro.saltillo.gob.mx, catastro.torreon.gob.mx, geoportal.coahuila.gob.mx",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection reset / no connection"
+  }
+ ],
+ "reuseStatus": "unknown; publisher is not the government cadastre, so treat as unofficial",
+ "remainingUncertainty": "Publisher provenance unclear (private firm, apparently working with Torreon water utility SIMAS); 2019 data; CATASTRO key blank on sampled rows. No state-wide Coahuila source found; state and Saltillo hosts unreachable.",
+ "nextStep": "Confirm official Torreon/Coahuila catastro viewer; test Saltillo and Monclova."
+}

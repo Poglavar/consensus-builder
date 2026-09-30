@@ -1,0 +1,61 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "BCN",
+ "regionName": "Baja California",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept-Language: es-MX,es;q=0.9; cookie jar on",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "none; Mexican cadastre is state/municipal and no state-wide open layer was found",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://www.bajacalifornia.gob.mx/",
+   "observation": "HTTP 200 state portal; no parcel service found"
+  },
+  {
+   "url": "https://www.tijuana.gob.mx/",
+   "observation": "HTTP 200; no parcel service found"
+  },
+  {
+   "url": "https://www.mexicali.gob.mx/",
+   "observation": "HTTP 200; not inspected further"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services1.arcgis.com/ukPxft9M8QvcWGJu/arcgis/rest/services/tijuanap/FeatureServer/0?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "body error 499 Token Required (parcel-named Tijuana layer, credentialed; not attempted further)"
+  },
+  {
+   "url": "https://services3.arcgis.com/0clPiMU0zPLoWhbK/arcgis/rest/services/Tijuana_Predio3/FeatureServer/0?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "body error 499 Token Required"
+  },
+  {
+   "url": "catastro.bajacalifornia.gob.mx, catastro.tijuana.gob.mx, sig.tijuana.gob.mx, implantijuana.org, catastro.mexicali.gob.mx, ensenada.gob.mx",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection reset / no connection"
+  },
+  {
+   "url": "Ensenada 'predio' web map item 86411e94...",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "application/json",
+   "assessment": "Subscription is disabled, item not accessible"
+  }
+ ],
+ "reuseStatus": "not read",
+ "remainingUncertainty": "State and Tijuana catastro hosts unreachable from this network. Only Tijuana parcel-named AGOL layers found are token-protected third-party layers; not an open service.",
+ "nextStep": "Retry catastro/IMPLAN hosts (Tijuana, Mexicali, Ensenada) from another network; inspect the Tijuana municipal viewer JS."
+}

@@ -1,0 +1,53 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "CMX",
+ "regionName": "Ciudad de México",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept-Language: es-MX,es;q=0.9; cookie jar on",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "SIG-CDMX says every predio polygon downloadable per alcaldia (16), so region-wide is plausible but unverified",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://sig.cdmx.gob.mx/datos/descarga",
+   "observation": "per earlier indexed text (research/mexico-city.json) the SIG-CDMX offers per-alcaldia predio Shapefiles; not reachable from here"
+  }
+ ],
+ "requests": [
+  {
+   "url": "sig.cdmx.gob.mx/datos/descarga",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection reset / no connection"
+  },
+  {
+   "url": "datos.cdmx.gob.mx dataset informacion-catastral-de-la-ciudad-de-mexico",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection reset / no connection"
+  },
+  {
+   "url": "catastro.cdmx.gob.mx, www.cdmx.gob.mx, mapa.cdmx.gob.mx, sedema.cdmx.gob.mx (every *.cdmx.gob.mx host reset the connection)",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection reset / no connection"
+  },
+  {
+   "url": "https://services1.arcgis.com/kwYBN5ZQWMtXqpy0/arcgis/rest/services/BenitoJuarezPredios/FeatureServer",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "body error 499 Token Required (third-party AGOL layer)"
+  }
+ ],
+ "reuseStatus": "not read",
+ "remainingUncertainty": "Whole cdmx.gob.mx domain unreachable via this proxy (connection reset even with browser headers), so the strong candidate source stays unverified.",
+ "nextStep": "Fetch one alcaldia Shapefile/GeoJSON from sig.cdmx.gob.mx from a network that reaches it; check ZIP size before download."
+}
