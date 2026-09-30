@@ -1,0 +1,87 @@
+{
+ "country": "Republic of Korea",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "cadastreAuthority": "Ministry of Land, Infrastructure and Transport (MOLIT) / National Spatial Data Center; continuous cadastral map (연속지적도) served by VWorld (api.vworld.kr, layer LP_PA_CBND_BUBUN) and offered as province SHP downloads",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8; cookie jar on; Referer = viewer/portal origin",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "geoBlockSuspected": true,
+ "inspireRecordUrl": null,
+ "portalsFound": [
+  {
+   "url": "https://www.data.go.kr/data/15045882/fileData.do",
+   "observation": "HTTP 200 after retries. Catalogue record 국토교통부_일별연속지적도형정보 (daily continuous cadastral map): SHP by province (시도), EPSG:5186, 38,352,207 rows, whole country, updated automatically; cost 무료 (free); 이용허락범위 제한 없음 (no restriction on use). Download link points to https://www.vworld.kr/dtmk/dtmk_ntads_s002.do?svcCde=NA&dsId=23"
+  },
+  {
+   "url": "https://www.vworld.kr/",
+   "observation": "Every vworld.kr host (www, map, api, xdworld) drops the connection from this network; data.go.kr and eum.go.kr answer, so the block is host/region specific"
+  },
+  {
+   "url": "https://www.eum.go.kr/web/js/ac/common.js",
+   "observation": "Official 토지이음 land-use viewer script (HTTP 200) itself calls http://api.vworld.kr/ned/data/... for land attributes, confirming VWorld is the backend; parcel map layer not shown in reachable JS"
+  },
+  {
+   "url": "https://openapi.nsdi.go.kr/",
+   "observation": "unreachable (connection reset / CONNECT 502)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.data.go.kr/data/15045882/fileData.do",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html;charset=UTF-8",
+   "assessment": "catalogue metadata read (needed several retries after connection resets)"
+  },
+  {
+   "url": "https://www.data.go.kr/data/15038253/openapi.do",
+   "method": "GET",
+   "httpStatus": 500,
+   "contentType": "text/html",
+   "assessment": "error page"
+  },
+  {
+   "url": "https://map.vworld.kr/ , https://www.vworld.kr/ , https://api.vworld.kr/req/wfs?SERVICE=WFS&REQUEST=GetCapabilities , https://xdworld.vworld.kr/ , https://www.vworld.kr/dtmk/dtmk_ntads_s002.do?svcCde=NA&dsId=23",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection dropped on all, Referer https://map.vworld.kr/ and Korean headers tried"
+  },
+  {
+   "url": "https://api.vworld.kr/req/data?service=data&request=GetFeature&data=LP_PA_CBND_BUBUN&size=3&format=json",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection dropped (no key; key would be required)"
+  },
+  {
+   "url": "https://openapi.nsdi.go.kr/ , https://www.nsdi.go.kr/ , https://data.nsdi.go.kr/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://www.eum.go.kr/web/am/amMain.jsp",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=euc-kr",
+   "assessment": "viewer home reachable; used to inspect JS"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "regionsSampled": [],
+ "coverageAssessment": {
+  "claimedScope": "Nationwide continuous cadastral map, 38.35M parcel rows, province-level SHP and VWorld API (per data.go.kr catalogue, not verified with a polygon)",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "registration",
+ "remainingUncertainty": "No polygon obtained: all VWorld hosts unreachable here. VWorld API needs a free API key (a registration on vworld.kr, typically requiring a Korean-language sign-up; not registered, requirement not read). The licence on the file dataset is stated as unrestricted, 무료, on data.go.kr.",
+ "nextStep": "From a Korea-reachable network, request the VWorld file download (dsId=23) for one province by HTTP Range, or query LP_PA_CBND_BUBUN with a VWorld key and geomFilter box in Seoul and Busan.",
+ "schemaVersion": 1,
+ "countryCode": "KR",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable"
+}

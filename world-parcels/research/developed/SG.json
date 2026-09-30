@@ -1,0 +1,129 @@
+{
+ "country": "Singapore",
+ "previousStatus": "partial_or_unofficial_sample",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Singapore Land Authority (SLA), published on data.gov.sg",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-SG,en;q=0.9; cookie jar on; Referer = viewer/portal origin",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "geoBlockSuspected": false,
+ "inspireRecordUrl": null,
+ "portalsFound": [
+  {
+   "url": "https://api-production.data.gov.sg/v2/public/api/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/metadata",
+   "observation": "HTTP 200, no key. SLA Cadastral Land Parcel, GEOJSON, 144,795,983 bytes, last updated 2026-09-28, 'depicts the entire cadastral map of Singapore', fields OBJECTID_1, LOT_KEY, INC_CRC, FMEL_UPD_D, SHAPE_1.AREA/LEN"
+  },
+  {
+   "url": "https://api-open.data.gov.sg/v1/public/api/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/poll-download",
+   "observation": "HTTP 201, returns a short-lived presigned download URL (not stored)"
+  },
+  {
+   "url": "https://data.gov.sg/open-data-licence",
+   "observation": "Singapore Open Data Licence read: worldwide, perpetual, royalty-free licence to use, copy, distribute, modify and adapt, commercially or non-commercially; sublicensing allowed as needed for apps; attribution/other conditions on that page"
+  },
+  {
+   "url": "https://www.onemap.gov.sg/api/common/elastic/search",
+   "observation": "OneMap answers address search (HTTP 200) but says 'Authentication token missing'; themes API returned 401. OneMap needs a free API token from an email registration form; no parcel-polygon endpoint identified. Not registered."
+  },
+  {
+   "url": "https://sla.gov.sg/",
+   "observation": "SLA site (200); no keyless query service found"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://api-production.data.gov.sg/v2/public/api/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/metadata",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "dataset metadata"
+  },
+  {
+   "url": "https://api-open.data.gov.sg/v1/public/api/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/poll-download",
+   "method": "GET",
+   "httpStatus": 201,
+   "contentType": "application/json",
+   "assessment": "presigned URL <PRESIGNED_URL>"
+  },
+  {
+   "url": "<PRESIGNED_URL> Range: bytes=0-9000",
+   "method": "GET",
+   "httpStatus": 206,
+   "contentType": "binary/octet-stream",
+   "assessment": "10 complete Polygon features, west Singapore (103.719E,1.352N)"
+  },
+  {
+   "url": "<PRESIGNED_URL> Range: bytes=72000000-72009000",
+   "method": "GET",
+   "httpStatus": 206,
+   "contentType": "binary/octet-stream",
+   "assessment": "7 features, central (103.83-103.87E)"
+  },
+  {
+   "url": "<PRESIGNED_URL> Range: bytes=144700000-144709000",
+   "method": "GET",
+   "httpStatus": 206,
+   "contentType": "binary/octet-stream",
+   "assessment": "9 features, east (103.80-103.90E)"
+  },
+  {
+   "url": "https://data.gov.sg/open-data-licence",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "licence read"
+  },
+  {
+   "url": "https://www.onemap.gov.sg/api/common/elastic/search?searchVal=200640&returnGeom=Y&getAddrDetails=Y",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "token-missing warning; address result only"
+  },
+  {
+   "url": "https://www.onemap.gov.sg/api/public/themesvc/getAllThemesInfo?moreInfo=Y",
+   "method": "GET",
+   "httpStatus": 401,
+   "contentType": "application/json",
+   "assessment": "Unauthorized"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "sg-sla-cadastral-land-parcel",
+  "requestUrl": "presigned URL from https://api-open.data.gov.sg/v1/public/api/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/poll-download, GET with Range: bytes=<offset>-<offset+9000> at offsets 0, 72000000, 144700000",
+  "method": "GET",
+  "httpStatus": 206,
+  "contentType": "binary/octet-stream (GeoJSON text)",
+  "spatialTestAreaLonLat": "lon 103.72-103.90, lat 1.24-1.35 (three offsets of the same file)",
+  "parcelRecordCount": 6,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "LOT_KEY (e.g. MK06-02166V)",
+  "responseFile": "SG-parcel-response.json",
+  "pagination": "none: single 145 MB GeoJSON file; range reads only",
+  "regionSampled": "three file offsets: Bukit Panjang/Choa Chu Kang area, central/Tanglin-Rochor, east/Tampines-Pasir Ris (lot keys MK06, MK24, MK23 etc. = different survey mukims)"
+ },
+ "regionsSampled": [
+  "west (MK06 Bukit Panjang area)",
+  "central (MK24/TS24)",
+  "east (MK23)"
+ ],
+ "coverageAssessment": {
+  "claimedScope": "Entire cadastral map of Singapore (all surveyed land lots), one file",
+  "regionsVerified": [
+   "west",
+   "central",
+   "east Singapore (three offsets of one file, different mukims)"
+  ],
+  "nationwideVerified": true,
+  "nationwideBasis": "the source is a single island-wide file; features from three separate offsets fall in different mukims"
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Bulk file only; no bbox query service found (OneMap needs a token and no parcel layer found). Strata and airspace lots are separate datasets. Full-file coordinates read only at samples.",
+ "nextStep": "Download once server-side (145 MB), index by bbox. Consider OneMap token (free email registration) only if a cadastral theme layer is required.",
+ "schemaVersion": 1,
+ "countryCode": "SG",
+ "checkedAt": "2026-09-30",
+ "status": "national_online_cadastre_verified_sample"
+}

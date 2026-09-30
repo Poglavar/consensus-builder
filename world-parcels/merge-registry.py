@@ -100,7 +100,7 @@ OVERRIDES = {
     'HU': ('partial_or_unofficial_sample', 'Layer holds only 1,774 features; Budapest and Debrecen returned nothing.'),
     'ID': ('partial_or_unofficial_sample', 'Patchy provincial land-ownership layers; central Bandung box returned empty.'),
     'JP': ('partial_or_unofficial_sample', 'Unofficial Esri Japan layer covering only Tokyo, Aichi and Fukuoka.'),
-    'SG': ('partial_or_unofficial_sample', 'Bulk file range-read; no spatial query API.'),
+    # SG: bulk file, but the whole national cadastre with a read licence; bulk-vs-service is an adapter question (cf. AT, ES, GR, SK).
     'LK': ('partial_or_unofficial_sample', 'Parcel fabric extent limited to lon 79.87-81.32, lat 6.7-8.1.'),
     'PT': ('partial_or_unofficial_sample', 'Mainland only; a Porto bbox returned 0.'),
     'DO': ('partial_or_unofficial_sample', 'Historical parcels layer; completeness against the current cadastre unverified.'),
