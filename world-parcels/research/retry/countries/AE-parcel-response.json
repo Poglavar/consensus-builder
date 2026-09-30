@@ -1,0 +1,168 @@
+{
+ "displayFieldName": "MAPNAME",
+ "fieldAliases": {
+  "plot_num": "plot_num",
+  "district_n": "district_n",
+  "community_": "community_",
+  "PLOT_AREA": "PLOT_AREA",
+  "LANDUSE_CL": "LANDUSE_CL",
+  "STATUS": "STATUS",
+  "FID": "FID"
+ },
+ "geometryType": "esriGeometryPolygon",
+ "spatialReference": {
+  "wkid": 4326,
+  "latestWkid": 4326
+ },
+ "fields": [
+  {
+   "name": "plot_num",
+   "type": "esriFieldTypeDouble",
+   "alias": "plot_num"
+  },
+  {
+   "name": "district_n",
+   "type": "esriFieldTypeDouble",
+   "alias": "district_n"
+  },
+  {
+   "name": "community_",
+   "type": "esriFieldTypeDouble",
+   "alias": "community_"
+  },
+  {
+   "name": "PLOT_AREA",
+   "type": "esriFieldTypeString",
+   "alias": "PLOT_AREA",
+   "length": 50
+  },
+  {
+   "name": "LANDUSE_CL",
+   "type": "esriFieldTypeDouble",
+   "alias": "LANDUSE_CL"
+  },
+  {
+   "name": "STATUS",
+   "type": "esriFieldTypeInteger",
+   "alias": "STATUS"
+  },
+  {
+   "name": "FID",
+   "type": "esriFieldTypeOID",
+   "alias": "FID"
+  }
+ ],
+ "features": [
+  {
+   "attributes": {
+    "plot_num": 5,
+    "district_n": 3,
+    "community_": 3,
+    "PLOT_AREA": "318144",
+    "LANDUSE_CL": 12,
+    "STATUS": 0,
+    "FID": 2996
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       55.70962689639038,
+       24.117489841918527
+      ],
+      [
+       55.70963410073208,
+       24.117381697968284
+      ],
+      [
+       55.709516285372814,
+       24.117375094650605
+      ],
+      [
+       55.70950909077122,
+       24.117483238674314
+      ],
+      [
+       55.70962689639038,
+       24.117489841918527
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "attributes": {
+    "plot_num": 5,
+    "district_n": 3,
+    "community_": 3,
+    "PLOT_AREA": "107144",
+    "LANDUSE_CL": 12,
+    "STATUS": 0,
+    "FID": 2997
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       55.70963592655818,
+       24.117354658959766
+      ],
+      [
+       55.70964312269952,
+       24.11724649766166
+      ],
+      [
+       55.70952527881762,
+       24.11723989275051
+      ],
+      [
+       55.70951808257815,
+       24.117348054038974
+      ],
+      [
+       55.70963592655818,
+       24.117354658959766
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "attributes": {
+    "plot_num": 5,
+    "district_n": 3,
+    "community_": 3,
+    "PLOT_AREA": "127143.95",
+    "LANDUSE_CL": 12,
+    "STATUS": 0,
+    "FID": 2998
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       55.70964489940935,
+       24.117219472786303
+      ],
+      [
+       55.70965208403302,
+       24.11711132866399
+      ],
+      [
+       55.70953425908084,
+       24.117104725287284
+      ],
+      [
+       55.70952707435906,
+       24.11721286939997
+      ],
+      [
+       55.70964489940935,
+       24.117219472786303
+      ]
+     ]
+    ]
+   }
+  }
+ ]
+}
