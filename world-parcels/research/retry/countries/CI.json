@@ -1,0 +1,46 @@
+{
+ "kind": "country",
+ "key": "CI",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: fr-CI,fr;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://cadastrenational.dgi.gouv.ci/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "SSL certificate has expired (curl 60); not bypassed"
+  },
+  {
+   "url": "https://geoportail.anstat.ci/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "still blocked (challenge page) with full browser headers; not bypassed"
+  },
+  {
+   "url": "https://www.gouv.ci ; https://www.cndj.ci",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "reachable, not parcel services"
+  },
+  {
+   "url": "https://geoportail.gouv.ci ; https://foncier.gouv.ci ; https://www.mcu.gouv.ci",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "CONNECT tunnel failed, response 502 from agent proxy (no HTTP response from origin)"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "expired certificate is a server-side fault, not a geo-block; ANSTAT 403 is a bot challenge, cause unproven",
+ "notes": "Unchanged: e-cadastre certificate still expired, so no viewer HTML could be inspected.",
+ "nextStep": "Retry after DGI renews the certificate; inspect its backend API then."
+}

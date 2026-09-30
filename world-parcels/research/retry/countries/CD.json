@@ -1,0 +1,46 @@
+{
+ "kind": "country",
+ "key": "CD",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: fr-CD,fr;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.affairesfoncieres.gouv.cd/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=utf-8",
+   "assessment": "reachable Next.js site with a WordPress content backend; news and documents on the cadastre digitisation pilot; no map or parcel API in HTML"
+  },
+  {
+   "url": "https://www.cadastre.gouv.cd/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "CONNECT tunnel failed, response 502 from agent proxy (no HTTP response from origin)"
+  },
+  {
+   "url": "https://cadastreminier.cd/ ; https://drcmining.cadastre.gouv.cd ; https://portals.flexicadastre.com/drc/ ; https://www.mines-rdc.cd",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "CONNECT tunnel failed, response 502 from agent proxy (no HTTP response from origin) or TLS failure (mines-rdc.cd, not bypassed)"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=parcelles%20Kinshasa (and Lubumbashi)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "zero results"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "several DRC hosts give proxy 502 while ministry site loads; cause unknown",
+ "notes": "Ministry site re-inspected: only a digitisation pilot is described, no geodata endpoint. Mining cadastre hosts (different dataset) unreachable.",
+ "nextStep": "Retry mining cadastre and cadastre.gouv.cd from another network."
+}

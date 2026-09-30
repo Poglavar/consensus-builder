@@ -1,0 +1,46 @@
+{
+ "kind": "country",
+ "key": "CM",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "no_online_cadastre_found",
+ "newStatus": "no_online_cadastre_found",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: fr-CM,fr;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.mindcaf.gov.cm/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=utf-8",
+   "assessment": "ministry site: land-reform roadmap PDFs only; no parcel or map links in HTML"
+  },
+  {
+   "url": "https://geocameroun.cm/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "CONNECT tunnel failed, response 502 from agent proxy (no HTTP response from origin)"
+  },
+  {
+   "url": "https://www.minfof.gov.cm/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "forestry ministry, not cadastre"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=cadastre%20Cameroun%20parcelles",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "zero results"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "geocameroun.cm gives proxy 502 while other .cm hosts load; cause unknown",
+ "notes": "Re-inspected MINDCAF HTML; nothing new. GeoCameroun still unreachable.",
+ "nextStep": "Retry geocameroun.cm from another network; PAMOCCA outputs."
+}
