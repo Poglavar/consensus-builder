@@ -1,0 +1,73 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "BR",
+ "regionCode": "SP",
+ "regionName": "São Paulo",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/plain,*/*; Accept-Language: pt-BR,pt;q=0.9,en;q=0.8; Referer: https://consultapublica.car.gov.br/publico/imoveis/index; cookie jar used",
+ "source": {
+  "sourceId": "br-sicar-car-imoveis-sp",
+  "name": "SICAR / CAR rural property perimeters, layer sicar_imoveis_sp",
+  "operator": "Servico Florestal Brasileiro (SICAR)",
+  "scope": "State of São Paulo, rural properties (CAR, self-declared); not urban lots and not the legal cadastre",
+  "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+  "method": "GET WFS 2.0.0 GetFeature",
+  "responseFormat": "GeoJSON",
+  "crs": "EPSG:4326",
+  "reuseStatus": "Licence/terms not read"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "br-sicar-car-imoveis-sp",
+  "requestUrl": "https://geoserver.car.gov.br/geoserver/sicar/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_sp&count=3&outputFormat=application/json&bbox=-46.79,-21.91,-46.69,-21.81,EPSG:4326",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=utf-8",
+  "spatialTestAreaLonLat": [
+   -46.79,
+   -21.91,
+   -46.69,
+   -21.81
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "cod_imovel",
+  "responseFile": "SP-parcel-response.json",
+  "pagination": "WFS startIndex/count",
+  "sampledMunicipality": "Águas da Prata"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "SICAR publishes one WFS layer per UF covering the whole state (rural CAR perimeters); one bbox sampled. Urban lots are municipal.",
+ "layerType": "rural (SICAR/CAR self-declared); plus municipal urban lots for Sao Paulo city",
+ "subregionsVerified": [
+  "Sao Paulo (municipality, lotes fiscais, from earlier evidence, not re-requested)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://consultapublica.car.gov.br/publico/imoveis/index",
+   "observation": "CAR public consultation viewer, used as Referer"
+  },
+  {
+   "url": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+   "observation": "SICAR GeoServer, open WFS, no token needed"
+  },
+  {
+   "url": "https://dadosabertos.urbis.prefeitura.sp.gov.br/dataset/lotes-fiscais",
+   "observation": "Capital urban fiscal lots, file holds 50k of 1.69M records; see research/sao-paulo.json"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geoserver.car.gov.br/geoserver/sicar/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_sp&count=3&outputFormat=application/json&bbox=-46.79,-21.91,-46.69,-21.81,EPSG:4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=utf-8",
+   "assessment": "3 MultiPolygon rural CAR properties (Águas da Prata); server ignored propertyName filter, only cod_imovel/municipio and geometry saved (no owner fields exist in the layer)"
+  }
+ ],
+ "reuseStatus": "Licence/terms not read",
+ "remainingUncertainty": "Rural, self-declared CAR polygons only, not the legal cadastre; no state urban-lot layer found in this pass. Licence not read.",
+ "nextStep": "Look for state IDE / capital urban lot layers and INCRA SIGEF certified parcels."
+}

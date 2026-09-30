@@ -36,18 +36,18 @@
   "idField": "cod_imovel",
   "responseFile": "RJ-parcel-response.json",
   "pagination": "WFS startIndex/count",
-  "sampledMunicipality": "Barra do Piraí"
+  "sampledMunicipality": "Teresópolis"
  },
  "regionWideClaimed": true,
  "regionWideBasis": "SICAR publishes one WFS layer per UF covering the whole state (rural CAR perimeters); one bbox sampled. Urban lots are municipal.",
- "layerType": "rural (SICAR/CAR self-declared); plus municipal urban lots for the capital/city noted in subregionsVerified",
+ "layerType": "rural (SICAR/CAR self-declared); plus municipal urban lots for Rio city",
  "subregionsVerified": [
   "Rio de Janeiro (municipality, urban lots, 2013 survey)"
  ],
  "portalsFound": [
   {
    "url": "https://consultapublica.car.gov.br/publico/imoveis/index",
-   "observation": "Viewer origin used as Referer; CAR public consultation"
+   "observation": "CAR public consultation viewer, used as Referer"
   },
   {
    "url": "https://geoserver.car.gov.br/geoserver/sicar/ows",
@@ -55,26 +55,33 @@
   },
   {
    "url": "https://services5.arcgis.com/mgrvZxGU0bSJbVld/arcgis/rest/services/Quadras_Lotes_Edificacoes/FeatureServer/1",
-   "observation": "Prefeitura do Rio lots (urban), see research/rio-de-janeiro.json"
+   "observation": "Prefeitura do Rio urban lots, see research/rio-de-janeiro.json"
   }
  ],
  "requests": [
+  {
+   "url": "https://geoserver.car.gov.br/geoserver/sicar/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_rj&count=3&outputFormat=application/json&bbox=-43.3,-22.95,-43.1,-22.85,EPSG:4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=utf-8",
+   "assessment": "0 records around Rio city (urban, no CAR rural); rural sample taken at Teresopolis instead"
+  },
   {
    "url": "https://geoserver.car.gov.br/geoserver/sicar/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_rj&count=3&outputFormat=application/json&bbox=-43.0,-22.4,-42.8,-22.2,EPSG:4326",
    "method": "GET",
    "httpStatus": 200,
    "contentType": "application/json;charset=utf-8",
-   "assessment": "3 MultiPolygon rural CAR properties (Barra do Piraí); propertyName filter ignored by server, only cod_imovel/municipio/tipo_imovel and geometry saved"
+   "assessment": "3 MultiPolygon rural CAR properties (Teresópolis); server ignored propertyName filter, only cod_imovel/municipio and geometry saved (no owner fields exist in the layer)"
   },
   {
    "url": "https://services5.arcgis.com/mgrvZxGU0bSJbVld/arcgis/rest/services/Quadras_Lotes_Edificacoes/FeatureServer/1/query?geometry=-43.3680,-22.8465,-43.3660,-22.8450&geometryType=esriGeometryEnvelope&inSR=4326&outFields=cod_lote&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
    "method": "GET",
    "httpStatus": 200,
    "contentType": "application/json; charset=utf-8",
-   "assessment": "3 lot polygons, cod_lote (re-verified 2026-09-30); Rio municipality only, CC BY 4.0 per earlier record"
+   "assessment": "3 lot polygons, cod_lote (re-verified 2026-09-30); Rio municipality only; CC BY 4.0 per earlier record"
   }
  ],
  "reuseStatus": "Licence/terms not read",
- "remainingUncertainty": "Rural, self-declared CAR polygons only; no state urban-lot layer searched in depth beyond reuse of existing city evidence. Licence not read.",
- "nextStep": "Statewide urban layer not found; Rio city lots are municipal-only."
+ "remainingUncertainty": "Rural, self-declared CAR polygons only, not the legal cadastre; no state urban-lot layer found in this pass. Licence not read.",
+ "nextStep": "No statewide urban layer found; Rio city lots are municipal-only."
 }
