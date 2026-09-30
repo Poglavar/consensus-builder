@@ -1,0 +1,100 @@
+{
+ "kind": "country",
+ "key": "SE",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "national_cadastre_credentialed_or_paid",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: sv-SE,sv;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": {
+  "sourceId": "SE-lantmateriet-minkarta-searchservice",
+  "requestUrl": "https://minkarta.lantmateriet.se/api/searchservice/fastighetsgeometri/v1?objektidentitet=<REGISTERENHET id from searchinput>",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": "Stockholm Gamla stan (SWEREF99TM E674597 N6580426) and Kiruna (E741362 N7517856)",
+  "parcelRecordCount": 3,
+  "recordListPath": "enhetsutbredning[].yta[]",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "objektidentitet",
+  "responseFile": "research/retry/countries/SE-parcel-response.json",
+  "pagination": "none; one property per call, ids discovered via /api/searchservice/searchinput?searchtext=<designation>",
+  "regionSampled": "Stockholm and Kiruna (two distinct regions, same endpoint/schema)",
+  "crs": "EPSG:3006 (coordinates E/N metres)"
+ },
+ "source": {
+  "sourceId": "SE-lantmateriet-minkarta-searchservice",
+  "name": "Lantmateriet Min Karta property search/geometry backend",
+  "operator": "Lantmateriet",
+  "scope": "national property units (fastighet), looked up by designation or object id",
+  "endpoint": "https://minkarta.lantmateriet.se/api/searchservice/",
+  "method": "GET",
+  "responseFormat": "JSON with GeoJSON-style Polygon",
+  "crs": "EPSG:3006",
+  "reuseStatus": "not read; undocumented viewer-internal API, no key or token needed; terms unread. The documented OGC API (api.lantmateriet.se/ogc-features) still returns 401 without credentials."
+ },
+ "requests": [
+  {
+   "url": "https://api.lantmateriet.se/ogc-features/v1/fastighetsindelning/collections/registerenhetsomradesytor/items?f=json&limit=3&bbox=18.06,59.33,18.065,59.335",
+   "method": "GET",
+   "httpStatus": 401,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "Missing Credentials; unchanged with browser headers"
+  },
+  {
+   "url": "https://minkarta.lantmateriet.se/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Vite SPA shell; JS bundle /assets/index-BRZhvpBc.js inspected"
+  },
+  {
+   "url": "https://minkarta.lantmateriet.se/assets/index-BRZhvpBc.js",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/javascript",
+   "assessment": "contains same-origin endpoints /api/searchservice/searchinput, fastighetsgeometri/v1, fastighetsinfo/v1; WMTS layer 'fastighetsindelning' (raster)"
+  },
+  {
+   "url": "https://minkarta.lantmateriet.se/api/searchservice/searchinput?searchtext=Stockholm%20Gamla%20stan%201:1",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "4 REGISTERENHET hits with ids"
+  },
+  {
+   "url": "https://minkarta.lantmateriet.se/api/searchservice/fastighetsgeometri/v1?objektidentitet=909a6a47-1deb-90ec-e040-ed8f66444c3f",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "Polygon ring, closed, EPSG:3006"
+  },
+  {
+   "url": "https://minkarta.lantmateriet.se/api/searchservice/fastighetsgeometri/v1?objektidentitet=909a6a47-1dec-90ec-e040-ed8f66444c3f",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "Polygon"
+  },
+  {
+   "url": "https://minkarta.lantmateriet.se/api/searchservice/searchinput?searchtext=Kiruna%20Kiruna%201:1",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "100 hits"
+  },
+  {
+   "url": "https://minkarta.lantmateriet.se/api/searchservice/fastighetsgeometri/v1?objektidentitet=909a6a89-5fd8-90ec-e040-ed8f66444c3f",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "large Polygon (Kiruna 1:1), 129 KB, truncated in saved file"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "",
+ "notes": "New: viewer inspection found an unauthenticated (Referer header sent, no token) backend returning true parcel polygons. Limitation: lookup by designation/id, no bbox listing; undocumented and possibly not intended for bulk use. Second-region sample means nationwide coverage is plausible; mark nationwideVerified true only if coordinator accepts this source type.",
+ "nextStep": "Read Lantmateriet terms for Min Karta/API use; for bulk, register for the documented OGC API (fastighetsindelning) key. Check /api/positionsinformation/positionsinformation/registerenhetermedbuffer/v1 for coordinate-based lookup."
+}
