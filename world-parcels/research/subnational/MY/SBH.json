@@ -1,0 +1,95 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MY",
+ "regionCode": "SBH",
+ "regionName": "Sabah",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: ms-MY,ms;q=0.9,en;q=0.8; cookie jar on; Referer = viewer origin",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://jtu.sabah.gov.my/",
+   "observation": "JTU (Jabatan Tanah dan Ukur) site loads (200); links to eservice.hq.jtu.my (info portal) and quitrent.jtu.sabah.gov.my (Vue app for quit-rent lookup/payment; JS shows /v3/api/check, /query, payment endpoints; no parcel geometry service, no ArcGIS/WFS strings)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://jtu.sabah.gov.my/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "portal page"
+  },
+  {
+   "url": "http://www.quitrent.jtu.sabah.gov.my/ and js/app.js",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "quit-rent app; API only for payments/lookups, not tested (would return personal data)"
+  },
+  {
+   "url": "https://eservice.hq.jtu.my/SLP/index.cfm",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "e-services page, no map service"
+  },
+  {
+   "url": "sabahgeoportal.sabah.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "geoportal.sabah.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "gis.sabah.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "ptg.sabah.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "ssdi.sabah.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "sabah.geoportal.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "landsurvey.sabah.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  }
+ ],
+ "reuseStatus": "unknown; no licence text read",
+ "remainingUncertainty": "No Sabah GIS/geoportal host reachable from this network, so any public parcel viewer is unassessed.",
+ "nextStep": "Retry from another network; look for Sabah Geoportal / JTU e-Kadaster viewer JS."
+}

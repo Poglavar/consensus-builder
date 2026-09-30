@@ -1,0 +1,97 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MY",
+ "regionCode": "SWK",
+ "regionName": "Sarawak",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: ms-MY,ms;q=0.9,en;q=0.8; cookie jar on; Referer = viewer origin",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "",
+ "subregionsVerified": [],
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://www.sarawak.gov.my/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "state portal loads, no parcel link found"
+  },
+  {
+   "url": "lasis.sarawak.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "geoportal.sarawak.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "tanahdanukur.sarawak.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "landsurvey.sarawak.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "lass.sarawak.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "gis.sarawak.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "geo.sarawak.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "sarawakgeoportal.sarawak.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "ssdi.sarawak.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "mapserver.sarawak.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  }
+ ],
+ "reuseStatus": "unknown; no licence text read",
+ "remainingUncertainty": "Sarawak Land and Survey (LASIS/geoportal) hosts unreachable from this network (proxy 502 or connection reset); Sarawak's land system is separate from Peninsular JUPEM and may be login-gated.",
+ "nextStep": "Retry from another network; inspect LASIS viewer JS."
+}
