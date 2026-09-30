@@ -258,7 +258,7 @@ EUROPE_OVERRIDES = {
     'AL': (None, 'WAF flaps; Tirana sample comes from the retry pass, Shkoder from the Europe pass.'),
 }
 NAMES = {'AD': 'Andorra', 'FO': 'Faroe Islands', 'GG': 'Guernsey', 'IM': 'Isle of Man', 'LI': 'Liechtenstein', 'SM': 'San Marino', 'VA': 'Vatican City'}
-for f in sorted(glob.glob('research/europe/*.json')):
+for f in sorted(glob.glob('research/europe/*.json')) + sorted(glob.glob('research/developed/*.json')):
     if any(x in f for x in SKIP):
         continue
     d = load(f)
