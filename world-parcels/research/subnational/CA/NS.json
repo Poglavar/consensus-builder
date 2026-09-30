@@ -1,0 +1,83 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CA",
+ "regionCode": "NS",
+ "regionName": "Nova Scotia",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-CA,en;q=0.9,fr-CA;q=0.8; cookie jar on",
+ "source": {
+  "sourceId": "ca-ns-nsprd-property",
+  "name": "NSPRD.Property (Nova Scotia Property Records Database parcels)",
+  "operator": "Service Nova Scotia / Nova Scotia Geospatial Infrastructure (NSGI)",
+  "scope": "Nova Scotia (extent spans the province)",
+  "endpoint": "https://nsgiwa2.novascotia.ca/arcgis/rest/services/PLAN/PLAN_NSPRD_WM84/MapServer/0",
+  "method": "ArcGIS REST query",
+  "responseFormat": "Esri JSON",
+  "crs": "EPSG:4326 via outSR (native 3857)",
+  "reuseStatus": "Anonymous public service; licence not read (GeoNOVA terms)."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "ca-ns-nsprd-property",
+  "requestUrl": "https://nsgiwa2.novascotia.ca/arcgis/rest/services/PLAN/PLAN_NSPRD_WM84/MapServer/0/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json&geometry=-63.5780,44.6470,-63.5760,44.6485",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   -63.578,
+   44.647,
+   -63.576,
+   44.6485
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PID",
+  "responseFile": "NS-parcel-response.json",
+  "pagination": "ArcGIS resultRecordCount; maxRecordCount 2000",
+  "regionSampled": "Halifax and Sydney/CBRM (two areas)"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "An Esri-hosted item description (Wolfville-owned item copy) states 'authoritative parcel geometry for the Province of Nova Scotia derived from NSPRD, maintained by Service Nova Scotia'; layer extent covers the province. Halifax and Cape Breton both returned parcels.",
+ "subregionsVerified": [
+  "Halifax",
+  "Sydney (CBRM)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://geonova.novascotia.ca/home/",
+   "observation": "GeoNOVA portal; nsgi.novascotia.ca root points here."
+  },
+  {
+   "url": "https://nsgi.novascotia.ca/arcgis/rest/services",
+   "observation": "404; the working host is nsgiwa2.novascotia.ca (found via ArcGIS Online item)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://nsgiwa2.novascotia.ca/arcgis/rest/services/PLAN/PLAN_NSPRD_WM84/MapServer/0/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json&geometry=-63.5780,44.6470,-63.5760,44.6485",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "3 polygon parcels, PID only"
+  },
+  {
+   "url": "same layer, geometry=-60.1850,46.1380,-60.1830,46.1395",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "3 polygon parcels, Sydney"
+  },
+  {
+   "url": "https://nsgi.novascotia.ca/arcgis/rest/services/PLAN/PLAN_NSPRD_WM84/MapServer?f=json",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "empty reply (old host)"
+  }
+ ],
+ "reuseStatus": "Not verified.",
+ "remainingUncertainty": "Layer carries ROADWAT/THEME_NO so non-property polygons exist; layer is a display view with limited attributes.",
+ "nextStep": "Read GeoNOVA terms."
+}

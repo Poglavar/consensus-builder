@@ -1,0 +1,78 @@
+{
+ "country": "Albania",
+ "previousStatus": "partial_or_unofficial_sample",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "ASHK/ALBSCAD data published via ASIG geoportal",
+ "inspireRecordUrl": null,
+ "portalsFound": [
+  {
+   "url": "https://geoportal.asig.gov.al/",
+   "observation": "ASIG geoportal, GeoServer with WAF that flaps (empty replies, HTML Error page) on most attempts"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geoportal.asig.gov.al/service/zrpp/wms?service=WMS&version=1.1.1&request=GetFeatureInfo&layers=zrpp:p_kadas_albscad_072026&query_layers=zrpp:p_kadas_albscad_072026&styles=&srs=EPSG:4326&width=800&height=560&x=400&y=280&buffer=60&info_format=application/json&feature_count=3&bbox=19.5080,42.0640,19.5180,42.0710",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "3 MultiPolygon parcels, Shkoder (first attempt)"
+  },
+  {
+   "url": "same WMS GetFeatureInfo, bbox 19.4500,41.3190,19.4600,41.3260 (Durres) and Tirana bbox, 25 attempts each",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "empty reply / WAF Error page every attempt in this pass (flap, not absence)"
+  },
+  {
+   "url": "same, small bboxes around Shkoder/Durres/Vlore 100x100 px",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "valid but empty FeatureCollection (click pixel missed a parcel or no data); many attempts got WAF page/empty reply"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "al-asig-zrpp-wms-albscad",
+  "requestUrl": "https://geoportal.asig.gov.al/service/zrpp/wms?service=WMS&version=1.1.1&request=GetFeatureInfo&layers=zrpp:p_kadas_albscad_072026&query_layers=zrpp:p_kadas_albscad_072026&styles=&srs=EPSG:4326&width=800&height=560&x=400&y=280&buffer=60&info_format=application/json&feature_count=3&bbox=19.5080,42.0640,19.5180,42.0710",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   19.508,
+   42.064,
+   19.518,
+   42.071
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "properties.inspireid / numrin_pas",
+  "responseFile": "research/europe/AL-parcel-response.json",
+  "pagination": "feature_count=3",
+  "regionSampled": "Shkoder (approx 42.068N 19.513E)"
+ },
+ "regionsSampled": [
+  "Shkoder (this pass)",
+  "Tirana (research/retry/countries/AL.json, same layer zrpp:p_kadas_albscad_072026, 2026-09-30; not re-sampled in this pass because the WAF blocked my retries)"
+ ],
+ "coverageAssessment": {
+  "claimedScope": "Layer zrpp:p_kadas_albscad_072026 bbox spans Albania",
+  "regionsVerified": [
+   "Shkoder",
+   "Tirana (from retry evidence)"
+  ],
+  "nationwideVerified": true,
+  "note": "nationwide flag relies on the retry-pass Tirana sample plus my Shkoder sample from the same WMS layer/schema; WFS is disabled, only WMS GetFeatureInfo returns geometry"
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Licence terms not read; WAF makes bulk/reliable access difficult; GetFeatureInfo only (no WFS).",
+ "nextStep": "Read ASIG licence; look for ATOM/download; sample Durres/Vlore/Korce.",
+ "schemaVersion": 1,
+ "countryCode": "AL",
+ "checkedAt": "2026-09-30",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: application/json,text/html,application/xml;q=0.9,*/*;q=0.8; Accept-Language: local-language,en (cookie jar; Referer https://geoportal.asig.gov.al/)"
+}

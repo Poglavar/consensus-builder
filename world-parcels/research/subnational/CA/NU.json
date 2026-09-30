@@ -1,0 +1,71 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CA",
+ "regionCode": "NU",
+ "regionName": "Nunavut",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-CA,en;q=0.9,fr-CA;q=0.8; cookie jar on",
+ "source": {
+  "sourceId": "ca-clss-canada-lands-parcels",
+  "name": "Canada Lands Parcel Mapping (Canada Lands Digital Cadastral Data, aggregated nightly)",
+  "operator": "Natural Resources Canada (Canada Lands Survey System), hosted in ArcGIS Online org 'admin_canadacadastral'",
+  "scope": "Yukon, Northwest Territories, Nunavut, Indian reserves, national/historic parks",
+  "endpoint": "https://services7.arcgis.com/hFo7GO2CrHDM1QVm/arcgis/rest/services/ParcelTime/FeatureServer/0",
+  "method": "ArcGIS REST query",
+  "responseFormat": "Esri JSON",
+  "crs": "EPSG:4326 via outSR (native 3857)",
+  "reuseStatus": "Licence text not read."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "ca-clss-canada-lands-parcels",
+  "requestUrl": "https://services7.arcgis.com/hFo7GO2CrHDM1QVm/arcgis/rest/services/ParcelTime/FeatureServer/0/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PIN&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json&geometry=-68.53,63.74,-68.51,63.76",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": [
+   -68.53,
+   63.74,
+   -68.51,
+   63.76
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PIN",
+  "responseFile": "NU-parcel-response.json",
+  "pagination": "ArcGIS resultRecordCount; maxRecordCount 2000",
+  "regionSampled": "Iqaluit"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Same NRCan item lists Nunavut as covered. Only Iqaluit sampled. The City of Iqaluit's own Iqaluit_Parcels_2024 layer returns 'Token Required' (not open).",
+ "subregionsVerified": [
+  "Iqaluit"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://services6.arcgis.com/RVeD29fOF1K9aQpE/arcgis/rest/services/Iqaluit_Parcels_2024/FeatureServer",
+   "observation": "Token Required (499)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services7.arcgis.com/hFo7GO2CrHDM1QVm/arcgis/rest/services/ParcelTime/FeatureServer/0/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PIN&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json&geometry=-68.53,63.74,-68.51,63.76",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "3 polygon parcels, PIN only"
+  },
+  {
+   "url": "https://services6.arcgis.com/RVeD29fOF1K9aQpE/arcgis/rest/services/Iqaluit_Parcels_2024/FeatureServer/0?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "error 499 Token Required"
+  }
+ ],
+ "reuseStatus": "Not verified.",
+ "remainingUncertainty": "Territory-wide density (other hamlets) untested.",
+ "nextStep": "Sample Rankin Inlet or Cambridge Bay."
+}

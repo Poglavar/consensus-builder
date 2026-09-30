@@ -1,0 +1,72 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CA",
+ "regionCode": "NB",
+ "regionName": "New Brunswick",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-CA,en;q=0.9,fr-CA;q=0.8; cookie jar on",
+ "source": {
+  "sourceId": "ca-nb-geonb-parcels",
+  "name": "GeoNB SNB Parcels (Land Registry parcels)",
+  "operator": "Service New Brunswick / Government of New Brunswick (GeoNB)",
+  "scope": "New Brunswick (layer extent covers the province)",
+  "endpoint": "https://geonb.snb.ca/arcgis/rest/services/GeoNB_SNB_Parcels/MapServer/0",
+  "method": "ArcGIS REST query",
+  "responseFormat": "Esri JSON",
+  "crs": "EPSG:4326 via outSR (native NB Double Stereographic 2953)",
+  "reuseStatus": "Public anonymous service; licence text not read (GeoNB terms)."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "ca-nb-geonb-parcels",
+  "requestUrl": "https://geonb.snb.ca/arcgis/rest/services/GeoNB_SNB_Parcels/MapServer/0/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json&geometry=-66.6465,45.9625,-66.6445,45.9640",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   -66.6465,
+   45.9625,
+   -66.6445,
+   45.964
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PID",
+  "responseFile": "NB-parcel-response.json",
+  "pagination": "ArcGIS resultRecordCount; maxRecordCount 2000; layer minScale 1:40000",
+  "regionSampled": "Fredericton and Moncton (two areas, same layer)"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Layer description 'New Brunswick parcel boundaries and PID number'; extent spans the province; samples returned in Fredericton and Moncton. Layer is only drawn at scale <= 1:40000 but queries work.",
+ "subregionsVerified": [
+  "Fredericton",
+  "Moncton"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://geonb.snb.ca/arcgis/rest/services",
+   "observation": "GeoNB ArcGIS Server, anonymous; lists GeoNB_SNB_Parcels."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geonb.snb.ca/arcgis/rest/services/GeoNB_SNB_Parcels/MapServer/0/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json&geometry=-66.6465,45.9625,-66.6445,45.9640",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "3 polygon parcels (PID only)"
+  },
+  {
+   "url": "same, geometry=-64.7830,46.0900,-64.7810,46.0915",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "3 polygon parcels, Moncton"
+  }
+ ],
+ "reuseStatus": "GeoNB open data; terms not read.",
+ "remainingUncertainty": "A polygon with PID 00000003 appears in every box (large, likely a non-parcel placeholder/road/water class); filter it. Layer has Titles_Status/Gazette_Status fields not requested.",
+ "nextStep": "Read GeoNB licence; characterise PID 00000003."
+}
