@@ -1,0 +1,84 @@
+{
+ "previousStatus": "national_cadastre_viewer_only",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: el-CY,el;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": {
+  "sourceId": "cy-dls-cadastralmap-en",
+  "requestUrl": "https://eservices.dls.moi.gov.cy/arcgis/rest/services/National/CadastralMap_EN/MapServer/0/query?geometry=33.3600,35.1700,33.3630,35.1730&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&resultRecordCount=3&outSR=4326&f=geojson",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/geo+json;charset=UTF-8",
+  "spatialTestAreaLonLat": "Nicosia 33.3600,35.1700,33.3630,35.1730; Paphos 32.4200,34.7700,32.4230,34.7730",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "SBPI_ID_NO",
+  "responseFile": "research/retry/countries/CY-parcel-response.json",
+  "pagination": "resultRecordCount honoured; maxRecordCount 1000",
+  "regionSampled": "Nicosia and Paphos (3 features each)"
+ },
+ "source": {
+  "sourceId": "cy-dls-cadastralmap-en",
+  "name": "CadastralMap_EN MapServer, layer 0 Parcels",
+  "operator": "Department of Lands and Surveys (DLS), Ministry of Interior",
+  "scope": "national service; fields SBPI_ID_NO, DIST_CODE, VIL_CODE, QRTR_CODE, BLCK_CODE, PARCEL_NBR, SHEET, PLAN_NBR (no owner data); only two areas sampled",
+  "endpoint": "https://eservices.dls.moi.gov.cy/arcgis/rest/services/National/CadastralMap_EN/MapServer/0",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "geojson/json",
+  "crs": "Web Mercator 3857 native; outSR=4326 works",
+  "reuseStatus": "licence not read; anonymous, no token"
+ },
+ "requests": [
+  {
+   "url": "https://eservices.dls.moi.gov.cy/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "now lists folders BASEMAPS, DTPH, GP, National, Utilities (earlier 'Could not access any server machines' is gone)"
+  },
+  {
+   "url": "https://eservices.dls.moi.gov.cy/Services/Rest/Info/GetConfiguration",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "viewer config: ARCGIS_SERVER_ADDRESS, MAPVIEWER_URL, NATIONAL_MAPVIEWER_URL, Sales_EN FeatureServer path; no token present"
+  },
+  {
+   "url": "https://eservices.dls.moi.gov.cy/arcgis/rest/services/National/CadastralMap_EN/MapServer?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "layer 0 Parcels polygon, capabilities Data,Map,Query"
+  },
+  {
+   "url": "https://eservices.dls.moi.gov.cy/arcgis/rest/services/National/CadastralMap_GR/MapServer?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "error 500 'Could not find service' (some listed services stopped/flaky)"
+  },
+  {
+   "url": "https://eservices.dls.moi.gov.cy/arcgis/rest/services/National/Sales_EN/FeatureServer/0?f=json",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection failed at the agent proxy (no HTTP status): connection failure (intermittent)"
+  },
+  {
+   "url": "https://eservices.dls.moi.gov.cy/arcgis/rest/services/National/CadastralMap_EN/MapServer/0/query (Paphos bbox)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "3 features"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "NEW: ArcGIS backend is now up and publicly answers parcel polygon queries without a token; found by reading the eservices viewer config (GetConfiguration) and listing the National folder. Two distinct regions (Nicosia, Paphos) from the same layer -> nationwide sample. Some sibling services (GR variant, Sales, export) return 500 or connection failures intermittently.",
+ "nextStep": "Read DLS licence/terms; confirm coverage of other districts (Limassol, Larnaca, Famagusta) and that the Cassini/LTM sheet layers are consistent.",
+ "kind": "country",
+ "key": "CY",
+ "checkedAt": "2026-09-30"
+}

@@ -1,0 +1,66 @@
+{
+ "kind": "country",
+ "key": "KW",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: ar-KW,ar;q=0.9,en-US;q=0.8,en;q=0.7",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://gis.pai.gov.kw/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": "403",
+   "contentType": "text/html",
+   "assessment": "Incapsula bot-challenge page with full browser headers"
+  },
+  {
+   "url": "https://gis.pai.gov.kw/arcgis/rest/services/Basemap/Public_PAI_Kuwait/MapServer/1/query?where=1=1&geometry=47.9994,29.2828,48.0004,29.2838&geometryType=esriGeometryEnvelope&inSR=4326&outFields=*&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+   "method": "GET",
+   "httpStatus": "403",
+   "contentType": "text/html",
+   "assessment": "Incapsula challenge (script /_Incapsula_Resource); not bypassed"
+  },
+  {
+   "url": "https://gis.pai.gov.kw/",
+   "method": "GET",
+   "httpStatus": "403",
+   "contentType": "text/html",
+   "assessment": "Incapsula challenge"
+  },
+  {
+   "url": "https://www.pai.gov.kw/",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "text/html",
+   "assessment": "Public Authority for Industry Liferay portal reachable; no GIS/viewer link found in HTML; /ar/web/guest/gis is 404"
+  },
+  {
+   "url": "https://www.paci.gov.kw/",
+   "method": "GET",
+   "httpStatus": "0",
+   "contentType": "",
+   "assessment": "connection reset by peer via proxy"
+  },
+  {
+   "url": "https://kuwaitportal.paci.gov.kw/arcgisportal/rest/services/?f=json",
+   "method": "GET",
+   "httpStatus": "0",
+   "contentType": "",
+   "assessment": "connection failed via proxy"
+  },
+  {
+   "url": "https://www.kuwaitfinder.com/, https://www.data.gov.kw/, https://opendata.gov.kw/, https://www.kmun.gov.kw/",
+   "method": "GET",
+   "httpStatus": "0",
+   "contentType": "",
+   "assessment": "connection failed via proxy"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "Headers did not change the result. Note PAI in the gis.pai.gov.kw layer is the Public Authority for Industry (earlier record said Housing Welfare), so that layer is probably industrial plots, not a national cadastre. No viewer JS reachable to inspect because the GIS host is behind an Incapsula challenge and PACI hosts are unreachable.",
+ "nextStep": "Test from a Kuwait/regional network or a real browser session that passes Incapsula; look for the PACI/Kuwait Finder parcel service."
+}

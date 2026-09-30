@@ -1,0 +1,45 @@
+{
+ "kind": "country",
+ "key": "LA",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: lo-LA,lo;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.dolm.gov.la/",
+   "method": "GET",
+   "httpStatus": "0",
+   "contentType": "",
+   "assessment": "proxy CONNECT 502 (policy denial or upstream failure)"
+  },
+  {
+   "url": "https://lmd.gov.la/, https://www.nlma.gov.la/, https://www.lris.gov.la, https://www.mone.gov.la/",
+   "method": "GET",
+   "httpStatus": "0",
+   "contentType": "",
+   "assessment": "connection failed / CONNECT rejected via proxy"
+  },
+  {
+   "url": "https://www.monre.gov.la/",
+   "method": "GET",
+   "httpStatus": "403",
+   "contentType": "application/json",
+   "assessment": "Imunify360 bot-protection block; not bypassed"
+  },
+  {
+   "url": "https://laolandinfo.org/",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "text/html",
+   "assessment": "LIWG civil-society land site; legislation only, no parcel service"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "Government hosts unreachable from this network (proxy 502 on CONNECT) or bot-blocked; nothing new found.",
+ "nextStep": "Test from another network; identify the Lao land information system portal."
+}

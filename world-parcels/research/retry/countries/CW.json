@@ -1,0 +1,53 @@
+{
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: nl-CW,nl;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://kadaster.cw/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare 'Just a moment...' managed challenge"
+  },
+  {
+   "url": "https://www.kadaster.cw/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare challenge"
+  },
+  {
+   "url": "https://www.kadaster.cw/en",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare challenge"
+  },
+  {
+   "url": "https://geoportal.cw/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection failed at the agent proxy (no HTTP status): unreachable"
+  },
+  {
+   "url": "https://www.gobiernu.cw/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "government portal reachable; not inspected for cadastre link beyond reachability"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "Cloudflare bot challenge (not a region block); not bypassed per protocol.",
+ "notes": "Nothing new; full browser headers still get the Cloudflare challenge. Not attempting to solve it.",
+ "nextStep": "Needs an interactive browser session to pass the challenge, or contact Kadaster Curacao for a public map service.",
+ "kind": "country",
+ "key": "CW",
+ "checkedAt": "2026-09-30"
+}
