@@ -18,6 +18,8 @@ export function buildHackathonProofManifest({ apiBase, env = process.env } = {})
     const canonicalCaseId = env.HACKATHON_CASE_ID || 'hackathon-golden-borovje-2026';
     // The executed case is the YES counterpart of the cancelled golden case; the public audit requires it.
     const executedCaseId = env.HACKATHON_EXECUTED_CASE_ID || 'hackathon-executed-borovje-2026';
+    // Canonical case v3: executed through lens-member attestations and owner signatures (lens model v2).
+    const attestedCaseId = env.HACKATHON_ATTESTED_CASE_ID || 'hackathon-attested-borovje-2026';
     return {
         version: 1,
         title: 'Hyperstition: Markets for Possible Cities',
@@ -119,6 +121,8 @@ export function buildHackathonProofManifest({ apiBase, env = process.env } = {})
             prospectiveMarket: `${base}/oracle/markets/prospective/status`,
             canonicalCase: `${base}/hackathon/cases/${encodeURIComponent(canonicalCaseId)}`,
             executedCase: `${base}/hackathon/cases/${encodeURIComponent(executedCaseId)}`,
+            attestedCase: `${base}/hackathon/cases/${encodeURIComponent(attestedCaseId)}`,
+            lensMembers: `${base}/lenses/members`,
             operations: `${base}/hackathon/operations.json`,
             activity: `${base}/agent/activity?limit=200`,
             runs: `${base}/agent/runs?limit=50`

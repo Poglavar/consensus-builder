@@ -1020,7 +1020,8 @@
                 "undo": "Deshacer",
                 "accepted": "Aceptada",
                 "pending": "Pendiente",
-                "recipient": "destinatario"
+                "recipient": "destinatario",
+                "solanaLensHint": "Di sí en la tarjeta Lente"
             },
             "voting": {
                 "voteYes": "Votar sí",
@@ -1175,6 +1176,65 @@
                 "fulfill": "Cumplir mi compromiso",
                 "refund": "Reembolsar mis donaciones",
                 "void": "Anular mi compromiso"
+            },
+            "lens": {
+                "eyebrow": "Atestadores de confianza",
+                "title": "Lente",
+                "loading": "Cargando lente…",
+                "empty": "Esta propuesta no nombra ninguna lente.",
+                "directoryUnavailable": "Directorio de miembros no disponible; solo se muestran las claves.",
+                "unknownMember": "no está en el directorio",
+                "ownershipTitle": "Atestación de propiedad",
+                "ownershipHint": "Si eres propietario de una de estas parcelas, pide a un miembro de la lente que lo atestigüe: tu billetera firma un desafío de un solo uso, el miembro consulta su registro y emite la atestación.",
+                "memberSelect": "Miembro de la lente",
+                "requestAttestation": "Atestiguar mi propiedad",
+                "noServiceUrl": "Sin URL de servicio: ningún miembro de esta lente publica dónde pedir una atestación.",
+                "noServiceUrlShort": "sin URL de servicio",
+                "working": "Esperando a la billetera y al miembro de la lente…",
+                "attested": "Atestiguado.",
+                "attestedExisting": "Ya atestiguado.",
+                "attestationAddress": "Atestación",
+                "accountHash": "Hash de la cuenta",
+                "noWallet": "No se encontró ninguna billetera de Solana en este navegador.",
+                "noSignMessage": "Esta billetera no puede firmar mensajes.",
+                "paymentRequired": "Este miembro de la lente cobra {{price}} por atestación de propiedad, pagado vía x402. El pago desde el navegador aún no está disponible; puede pagarlo un agente o un cliente x402 de línea de comandos.",
+                "paymentRequiredNoPrice": "Este miembro de la lente exige un pago x402 por las atestaciones de propiedad. El pago desde el navegador aún no está disponible.",
+                "badChallenge": "El servicio devolvió un desafío que no corresponde a esta billetera y parcela ({{reason}}); no se firmó nada.",
+                "notConfigured": "Este miembro de la lente no está configurado para emitir atestaciones: {{message}}",
+                "refused": "El miembro de la lente se negó: {{message}}",
+                "noSignTransaction": "Esta billetera no puede firmar transacciones.",
+                "findingAttestation": "Buscando la atestación de tu propiedad…",
+                "preparing": "Preparando la transacción…",
+                "awaitingSignature": "Esperando la firma de tu billetera…",
+                "submitted": "Enviada; esperando confirmación…",
+                "viewTransaction": "Ver transacción",
+                "noAttestation": "Ningún miembro de la lente ha atestiguado esta billetera como propietaria de esta parcela. Usa primero \"Atestiguar mi propiedad\".",
+                "noAttestationMember": "No hay atestación de propiedad para esta billetera de {{member}}, el miembro de la lente que abrió el recuento de esta parcela. Pídesela primero con \"Atestiguar mi propiedad\".",
+                "alreadyAccepted": "Esta billetera ya dijo sí para esta parcela.",
+                "badPayout": "La dirección de pago debe ser una dirección de Solana, o quedar vacía.",
+                "badVerdictAddress": "Pega la dirección de una atestación de veredicto.",
+                "precheckFailed": "El programa rechazaría esto ({{reason}}); no se firmó nada.",
+                "consentLoading": "Leyendo el consentimiento de la cadena…",
+                "consentComplete": "Consentimiento completo: {{accepted}} de {{required}} propietarios atestiguados dijeron sí.",
+                "consentCompleteLegacy": "Aceptada en la cadena.",
+                "consentProgress": "{{accepted}} de {{required}} propietarios atestiguados dijeron sí (propietarios atestiguados por {{member}}).",
+                "consentNone": "Ningún propietario atestiguado ha dicho sí todavía.",
+                "consentYours": "Tu billetera dijo sí.",
+                "consentUnavailable": "Estado del consentimiento no disponible: {{message}}",
+                "proposalStatus": "Estado en la cadena: {{status}}.",
+                "payoutPlaceholder": "Dirección de pago (opcional)",
+                "payoutLabel": "Dirección de pago para tu parte de los fondos de la propuesta (opcional)",
+                "sayYes": "Decir sí",
+                "sayYesHint": "Una vez atestiguado, \"Decir sí\" firma tu consentimiento en la cadena. Todos los propietarios que el miembro atestiguó deben decir sí para que la parcela cuente; un sí no se puede retirar.",
+                "saidYes": "Dijiste sí.",
+                "tallyAfter": "Han firmado {{accepted}} de {{required}} propietarios atestiguados.",
+                "parcelComplete": "El consentimiento de esta parcela está completo.",
+                "proposalExecuted": "Todas las parcelas han consentido: la propuesta está ejecutada.",
+                "verdictTitle": "Resolver con un veredicto",
+                "verdictHint": "Cualquiera puede presentar la atestación de veredicto de un miembro de la lente. \"expired\" termina la propuesta; \"executed\" solo se aplica a propuestas acuñadas para aceptarlo.",
+                "verdictPlaceholder": "Dirección de la atestación de veredicto",
+                "submitVerdict": "Presentar veredicto",
+                "verdictSettled": "Veredicto \"{{verdict}}\" de {{member}} aplicado; el estado en la cadena ahora es {{status}}."
             }
         },
         "block": {
@@ -1489,7 +1549,36 @@
             "readOnlyTitle": "Lente de la propuesta",
             "readOnlySubtitle": "Guardada con esta propuesta; no se puede editar.",
             "readOnlyNote": "Esta lente viene incluida en la propuesta y no se puede editar.",
-            "proposalTriggerTitle": "Ver la lente de la propuesta (solo lectura)"
+            "proposalTriggerTitle": "Ver la lente de la propuesta (solo lectura)",
+            "picker": {
+                "title": "Lente de esta propuesta",
+                "subtitle": "Elige los miembros de la lente cuyas atestaciones de propiedad aceptará esta propuesta. La lente queda fijada al acuñar.",
+                "loading": "Cargando miembros de la lente…",
+                "loadFailed": "No se pudo cargar el directorio de miembros de la lente: {{error}}",
+                "emptyDirectory": "Aún no se conoce ningún miembro de la lente. Pega abajo la clave de un miembro.",
+                "coverageCounts": "{{ownership}} atestaciones de propiedad · {{parcels}} parcelas · {{executed}} ejecutadas",
+                "noServiceUrl": "Sin URL de servicio: se desconoce la cobertura de las parcelas seleccionadas",
+                "coverageLoading": "Comprobando las parcelas seleccionadas…",
+                "coverageUnavailable": "El servicio no respondió; cobertura desconocida",
+                "coverageSelected": "Atestigua {{covered}} de {{total}} parcelas seleccionadas",
+                "parcelsTitle": "Parcelas seleccionadas",
+                "parcelUnknown": "cobertura desconocida",
+                "parcelCoveredBy": "atestiguada por {{members}}",
+                "parcelNotCovered": "sin atestación de propiedad de tu lente",
+                "onlyCovered": "Solo parcelas cubiertas por mi lente",
+                "noParcelCoverage": "Ningún miembro de la lente publica una URL de servicio, así que no se puede mostrar la cobertura por parcela; las cifras de arriba son totales del directorio.",
+                "noCoveredParcels": "Tu lente no cubre ninguna de las parcelas seleccionadas.",
+                "pasteLabel": "Pega una clave",
+                "pastePlaceholder": "Clave pública base58",
+                "pasteAdd": "Añadir",
+                "pasteInvalid": "No es una clave pública de Solana: {{value}}",
+                "chosenCount": {
+                    "one": "{{count}} miembro de la lente elegido",
+                    "other": "{{count}} miembros de la lente elegidos"
+                },
+                "required": "Elige al menos un miembro de la lente; una propuesta de Solana no se puede acuñar sin él.",
+                "done": "Listo"
+            }
         },
         "dataSource": {
             "changeWarning": "Cambiar la fuente de datos BORRARÁ todos los datos guardados localmente (parcelas, carreteras, propuestas, planes, configuraciones de usuario, etc.).\n\n¿Quieres continuar?"
@@ -2399,7 +2488,13 @@
                 "createInMemory": "Crear en memoria",
                 "mintPrerequisites": "Acuñar los requisitos previos",
                 "cancel": "Cancelar",
-                "confirm": "Crear"
+                "confirm": "Crear",
+                "anchorMessageSingle": "La siguiente parcela todavía no tiene un ancla de parcela en <strong>{{chain}}</strong>, así que una propuesta para ella no se puede acuñar en la cadena:",
+                "anchorMessagePlural": "Las siguientes parcelas todavía no tienen un ancla de parcela en <strong>{{chain}}</strong>, así que una propuesta para ellas no se puede acuñar en la cadena:",
+                "anchorExplainer": "Un ancla de parcela es la identidad de la parcela en la cadena. Nadie la posee y crearla no otorga propiedad; solo pagas su renta. La propiedad llega a la cadena por separado, como la atestación de un miembro de la lente. También puedes crear anclas desde la pestaña Herramientas del panel Información de la parcela.",
+                "createAnchor": "Crear el ancla de la parcela",
+                "createAnchors": "Crear las anclas de las parcelas",
+                "anchorThenCreate": "Crea las anclas de las parcelas y luego vuelve a pulsar Crear."
             },
             "onchainMintFailed": {
                 "message": "La acuñación en cadena falló por la siguiente razón:",
@@ -3202,7 +3297,10 @@
             "block_multiselect_off": "No se pudo activar la selección múltiple, y una manzana se entrega como una selección de varias parcelas.",
             "activity_no_parcel_set": "Esta propuesta no tiene cargado un conjunto canónico de parcelas.",
             "blockchain_mint_wallet_prompt": "La acuñación en blockchain está disponible, pero no hay ninguna billetera conectada. ¿Quieres conectar una billetera para acuñar esta propuesta en la cadena?",
-            "failed_to_create_proposal": "No se pudo crear la propuesta."
+            "failed_to_create_proposal": "No se pudo crear la propuesta.",
+            "solana_lens_required": "Elige al menos un miembro de la lente (el botón 👓) antes de acuñar en Solana.",
+            "solana_accept_in_lens_card": "En Solana, los propietarios dicen sí en la tarjeta Lente de la propuesta: un miembro de la lente atestigua tu propiedad y luego tu billetera firma.",
+            "solana_acceptance_final": "Las aceptaciones en Solana son definitivas: un sí firmado no se puede retirar."
         }
     },
     "gameDialogs": {
@@ -3501,5 +3599,79 @@
     "claims": {
         "onParcels": "En las parcelas:",
         "cadastreViewToggle": "Vista catastral: solo parcelas originales"
+    },
+    "lensConsole": {
+        "title": "Consola del miembro de la lente",
+        "intro": "Un miembro de la lente declara hechos sobre parcelas como atestaciones. Apunta esta consola a tu servicio de miembro para ver lo que ha emitido y registrar veredictos.",
+        "backToMap": "Volver al mapa",
+        "loading": "Cargando…",
+        "service": {
+            "title": "Servicio del miembro",
+            "directoryLabel": "Miembros conocidos con URL de servicio",
+            "directoryPick": "Elige un miembro…",
+            "directoryNone": "Ningún miembro del directorio publica una URL de servicio",
+            "urlLabel": "URL del servicio",
+            "load": "Cargar"
+        },
+        "status": {
+            "key": "Clave del miembro",
+            "kind": "Tipo",
+            "identity": "Verificación de identidad",
+            "credential": "Credencial",
+            "counts": "Emitidas",
+            "price": "Precio de la atestación de propiedad",
+            "free": "sin precio (gratis o sin configurar)",
+            "dryRun": "Modo de prueba: las atestaciones se construyen en memoria y nunca llegan a la cadena.",
+            "ephemeral": "Clave efímera: este miembro no tiene identidad persistente; reinícialo con un par de claves para poder figurar en una lente."
+        },
+        "wallet": {
+            "title": "Billetera del miembro",
+            "connect": "Conectar billetera",
+            "disconnected": "Ninguna billetera conectada.",
+            "none": "No se encontró ninguna billetera de Solana en este navegador.",
+            "address": "Billetera",
+            "matches": "Esta billetera es la clave del miembro del servicio cargado.",
+            "differs": "Esta billetera no es la clave del miembro del servicio cargado ({{key}})."
+        },
+        "attestations": {
+            "title": "Atestaciones emitidas",
+            "kind": "Tipo",
+            "kindAll": "Todas",
+            "kindOwnership": "Propiedad",
+            "kindVerdict": "Veredicto",
+            "parcel": "Parcela",
+            "owner": "Propietario",
+            "hash": "Hash de la cuenta",
+            "issuedAt": "Emitida (hora de la cadena)",
+            "unknownTime": "desconocida",
+            "load": "Actualizar",
+            "empty": "Ninguna atestación coincide."
+        },
+        "verdict": {
+            "title": "Veredicto del operador",
+            "hint": "Un veredicto declara que una propuesta se ejecutó (para tipos de evidencia sin consentimiento por parcela, como un registro de permisos) o expiró. Solo el operador del miembro puede publicarlo.",
+            "proposal": "Cuenta de la propuesta",
+            "verdict": "Veredicto",
+            "executed": "ejecutada",
+            "expired": "expirada",
+            "evidence": "Referencia de evidencia (opcional)",
+            "observed": "Cuándo lo registró la fuente",
+            "token": "Token del operador (no se guarda)",
+            "submit": "Publicar veredicto",
+            "done": "Veredicto atestiguado.",
+            "reused": "Ya atestiguado; se devolvió el veredicto guardado.",
+            "errors": {
+                "proposal": "La cuenta de la propuesta debe ser una clave pública de Solana.",
+                "verdict": "Elige ejecutada o expirada.",
+                "time": "Indica cuándo registró la fuente el resultado.",
+                "token": "Introduce el token del operador."
+            }
+        },
+        "errors": {
+            "network": "No se pudo contactar con el servicio ({{message}}). ¿Está en marcha y permite este origen (CORS)?",
+            "http": "El servicio respondió {{status}}: {{message}}",
+            "noService": "Primero carga una URL de servicio.",
+            "badUrl": "Introduce una URL http(s) de un servicio de miembro de la lente."
+        }
     }
 }

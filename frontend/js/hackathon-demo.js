@@ -24,9 +24,68 @@
         return then ? Math.max(0, (current - then) / 3_600_000) : Infinity;
     }
 
+    // Money- and consent-moving actions a judge verifies on Explorer, in lifecycle order. Only activity
+    // entries that carry a transaction signature count; anything missing simply is not listed.
+    const CASE_ACTIONS = [
+        { type: 'certifyParcel', label: 'Ownership certificate' },
+        { type: 'accept', label: 'Acceptance' },
+        { type: 'resolve', label: 'Market resolution' },
+        { type: 'releaseDonations', label: 'Donation release' },
+        { type: 'fulfillPledge', label: 'Pledge fulfilment' },
+        { type: 'claim', side: 'yes', label: 'YES claim' }
+    ];
+
+    function explorerTx(signature) {
+        return `https://explorer.solana.com/tx/${encodeURIComponent(signature)}?cluster=devnet`;
+    }
+
+    function caseTransactions(caseRecord) {
+        const activity = Array.isArray(caseRecord?.activity) ? caseRecord.activity : [];
+        return CASE_ACTIONS.flatMap(spec => activity
+            .filter(event => event?.ok !== false && event?.transaction && event.action?.type === spec.type
+                && (!spec.side || event.action?.side === spec.side))
+            .map(event => ({
+                type: spec.type,
+                label: event.action?.parcelId ? `${spec.label} ${event.action.parcelId}` : spec.label,
+                signature: event.transaction,
+                url: explorerTx(event.transaction)
+            })));
+    }
+
+    // One card model for any aggregate case (cancelled golden case, executed YES counterpart). Success is
+    // earned only by the server's own `state: complete`; a missing record stays pending/unavailable.
+    function caseCardModel(caseRecord, { error = null, name = 'Case', missing = 'No aggregate case record was returned.' } = {}) {
+        if (!caseRecord) return {
+            tone: error ? 'error' : 'waiting',
+            state: error ? 'unavailable' : 'pending',
+            label: error ? `${name} unavailable` : `${name} pending`,
+            detail: error || missing,
+            lifecycle: null, marketOutcome: null, transactions: [], ownerCaveat: false,
+            case: null
+        };
+        const forecast = caseRecord.branches?.forecast;
+        const transactions = caseTransactions(caseRecord);
+        const actorOf = type => new Set((caseRecord.activity || [])
+            .filter(event => event?.action?.type === type && event.transaction).map(event => event.actor?.id).filter(Boolean));
+        const certifiers = actorOf('certifyParcel');
+        const acceptors = actorOf('accept');
+        return {
+            tone: caseRecord.state === 'complete' ? 'success' : 'waiting',
+            state: caseRecord.state || 'unknown',
+            label: caseRecord.proposal?.name || caseRecord.id || name,
+            detail: `${caseRecord.parcelSet?.parcelCount || 0} real cadastral parcel${caseRecord.parcelSet?.parcelCount === 1 ? '' : 's'} · ${caseRecord.progress?.complete || 0}/${caseRecord.progress?.total || 0} independently verified stages`,
+            lifecycle: caseRecord.proposal?.lifecycleStatus || null,
+            marketOutcome: forecast?.resolved ? (forecast.outcome || 'Resolved') : (forecast?.exists ? 'Unresolved' : null),
+            transactions,
+            // The ownership certificates were minted to the same agent that accepted: mechanics, not owner consent.
+            ownerCaveat: acceptors.size > 0 && [...acceptors].every(id => certifiers.has(id)),
+            case: caseRecord
+        };
+    }
+
     function buildDemoModel({
         runs = [], events = [], docs = {}, discovery = null, oracleDiscovery = null,
-        oracleEvents = [], publicRecords = null, prospectiveMarket = null, proofManifest = null, canonicalCase = null, errors = {},
+        oracleEvents = [], publicRecords = null, prospectiveMarket = null, proofManifest = null, canonicalCase = null, executedCase = null, errors = {},
         now = new Date().toISOString()
     } = {}) {
         const latestAlgorithm = newest(runs, run => run.controller === 'algorithm' && (run.role || 'proposer') === 'proposer');
@@ -260,19 +319,14 @@
             },
             errors,
             proofManifest,
-            canonicalCase: canonicalCase ? {
-                tone: canonicalCase.state === 'complete' ? 'success' : 'waiting',
-                state: canonicalCase.state || 'unknown',
-                label: canonicalCase.proposal?.name || canonicalCase.id || 'Canonical case',
-                detail: `${canonicalCase.parcelSet?.parcelCount || 0} real cadastral parcel${canonicalCase.parcelSet?.parcelCount === 1 ? '' : 's'} · ${canonicalCase.progress?.complete || 0}/${canonicalCase.progress?.total || 0} independently verified stages`,
-                case: canonicalCase
-            } : {
-                tone: errors.canonicalCase ? 'error' : 'waiting',
-                state: errors.canonicalCase ? 'unavailable' : 'pending',
-                label: errors.canonicalCase ? 'Canonical case unavailable' : 'Canonical case pending',
-                detail: errors.canonicalCase || 'No aggregate case record was returned.',
-                case: null
-            },
+            canonicalCase: caseCardModel(canonicalCase, { error: errors.canonicalCase, name: 'Canonical case' }),
+            executedCase: caseCardModel(executedCase, {
+                error: errors.executedCase,
+                name: 'Executed case',
+                missing: proofManifest?.publicProof?.executedCase
+                    ? 'No aggregate case record was returned.'
+                    : 'The proof manifest does not declare an executed case yet.'
+            }),
             latestLlm
         };
     }
@@ -314,6 +368,53 @@
         container.append(section);
     }
 
+    function caseSection(doc, card, eyebrow) {
+        const section = node(doc, 'section', null, `hd-case is-${card.tone}`);
+        const head = node(doc, 'div', null, 'hd-case__head');
+        const copy = node(doc, 'div');
+        copy.append(
+            node(doc, 'span', eyebrow, 'hd-eyebrow'),
+            node(doc, 'h2', card.label),
+            node(doc, 'p', card.detail, 'hd-muted')
+        );
+        if (card.case) {
+            const facts = node(doc, 'dl', null, 'hd-case__facts');
+            [['Lifecycle', card.lifecycle || 'Not recorded'], ['Market outcome', card.marketOutcome || 'No market']].forEach(([label, value]) => {
+                const row = node(doc, 'div'); row.append(node(doc, 'dt', label), node(doc, 'dd', value)); facts.append(row);
+            });
+            copy.append(facts);
+        }
+        const links = node(doc, 'div', null, 'hd-links');
+        if (card.case?.links?.map) links.append(link(doc, 'Open parcel set + read-only Details', card.case.links.map));
+        // Same `?activity=proposal:<id>` deep link the map explorer parses (AgentActionEngine.parseActivityLink).
+        if (card.case?.id) links.append(link(doc, 'Every actor and action in the explorer', `/?activity=${encodeURIComponent(`proposal:${card.case.id}`)}`));
+        if (card.case?.links?.self) links.append(link(doc, 'Inspect aggregate JSON ↗', card.case.links.self));
+        copy.append(links);
+        head.append(copy, node(doc, 'span', String(card.state || 'unknown').replaceAll('_', ' ').toUpperCase(), 'hd-pill'));
+        section.append(head);
+        if (card.case?.stages?.length) {
+            const graph = node(doc, 'ol', null, 'hd-case__graph');
+            card.case.stages.forEach(item => {
+                const entry = node(doc, 'li', null, `is-${item.state}`);
+                entry.append(
+                    node(doc, 'span', String(item.state || 'pending').toUpperCase()),
+                    node(doc, 'strong', item.label),
+                    node(doc, 'small', item.detail)
+                );
+                graph.append(entry);
+            });
+            section.append(graph);
+        }
+        if (card.transactions?.length) {
+            const txs = node(doc, 'div', null, 'hd-links hd-case__txs');
+            card.transactions.forEach(tx => txs.append(link(doc, `${tx.label} ↗`, tx.url)));
+            section.append(txs);
+        }
+        if (card.case?.stages?.length) section.append(node(doc, 'p', 'Support, forecasting and owner action can begin in parallel. Evidence authorizes resolution; resolution unlocks payout or refund.', 'hd-proof-reason'));
+        if (card.ownerCaveat) section.append(node(doc, 'p', 'Honest boundary: the agent that accepted also holds the devnet ownership certificates for these parcels, so this proves the mechanics and payout, not real-owner consent.', 'hd-proof-reason'));
+        return section;
+    }
+
     function render(element, model, { apiBase = backendBase() } = {}) {
         const doc = element.ownerDocument;
         element.replaceChildren();
@@ -351,38 +452,13 @@
         });
         liveMarket.append(liveCopy, liveFacts);
 
-        const canonical = model.canonicalCase;
-        const canonicalSection = node(doc, 'section', null, `hd-case is-${canonical.tone}`);
-        const canonicalHead = node(doc, 'div', null, 'hd-case__head');
-        const canonicalCopy = node(doc, 'div');
-        canonicalCopy.append(
-            node(doc, 'span', 'CANONICAL CASE · ONE INSPECTABLE GRAPH', 'hd-eyebrow'),
-            node(doc, 'h2', canonical.label),
-            node(doc, 'p', canonical.detail, 'hd-muted')
+        // The canonical (cancelled) case leads, its executed YES counterpart follows: one proposal per
+        // branch a judge can follow end to end before any detail.
+        element.append(
+            caseSection(doc, model.canonicalCase, 'CANONICAL CASE · ONE INSPECTABLE GRAPH'),
+            caseSection(doc, model.executedCase, 'EXECUTED CASE · THE YES COUNTERPART'),
+            liveMarket
         );
-        const canonicalLinks = node(doc, 'div', null, 'hd-links');
-        if (canonical.case?.links?.map) canonicalLinks.append(link(doc, 'Open parcel set + read-only Details', canonical.case.links.map));
-        // Same `?activity=proposal:<id>` deep link the map explorer parses (AgentActionEngine.parseActivityLink).
-        if (canonical.case?.id) canonicalLinks.append(link(doc, 'Every actor and action in the explorer', `/?activity=${encodeURIComponent(`proposal:${canonical.case.id}`)}`));
-        if (canonical.case?.links?.self) canonicalLinks.append(link(doc, 'Inspect aggregate JSON ↗', canonical.case.links.self));
-        canonicalCopy.append(canonicalLinks);
-        canonicalHead.append(canonicalCopy, node(doc, 'span', String(canonical.state || 'unknown').replaceAll('_', ' ').toUpperCase(), 'hd-pill'));
-        canonicalSection.append(canonicalHead);
-        if (canonical.case?.stages?.length) {
-            const caseGraph = node(doc, 'ol', null, 'hd-case__graph');
-            canonical.case.stages.forEach(item => {
-                const entry = node(doc, 'li', null, `is-${item.state}`);
-                entry.append(
-                    node(doc, 'span', String(item.state || 'pending').toUpperCase()),
-                    node(doc, 'strong', item.label),
-                    node(doc, 'small', item.detail)
-                );
-                caseGraph.append(entry);
-            });
-            canonicalSection.append(caseGraph, node(doc, 'p', 'Support, forecasting and owner action can begin in parallel. Evidence authorizes resolution; resolution unlocks payout or refund.', 'hd-proof-reason'));
-        }
-        // The canonical case leads: one proposal a judge can follow end to end before any detail.
-        element.append(canonicalSection, liveMarket);
 
         const story = node(doc, 'section', null, 'hd-story');
         const storyCopy = node(doc, 'div', null, 'hd-story-copy');
@@ -621,13 +697,19 @@
             if (result.status === 'fulfilled') values[key] = result.value;
             else errors[key] = result.reason?.message || String(result.reason);
         });
-        const caseUrl = values.proofManifest?.publicProof?.canonicalCase
-            || `${base}/hackathon/cases/hackathon-golden-borovje-2026`;
-        try {
-            values.canonicalCase = await fetchJson(caseUrl);
-        } catch (error) {
-            errors.canonicalCase = error?.message || String(error);
-        }
+        // The executed case exists only when the manifest declares it; there is no hardcoded fallback id.
+        const caseUrls = {
+            canonicalCase: values.proofManifest?.publicProof?.canonicalCase
+                || `${base}/hackathon/cases/hackathon-golden-borovje-2026`,
+            executedCase: values.proofManifest?.publicProof?.executedCase || null
+        };
+        await Promise.all(Object.entries(caseUrls).filter(([, url]) => url).map(async ([key, url]) => {
+            try {
+                values[key] = await fetchJson(url);
+            } catch (error) {
+                errors[key] = error?.message || String(error);
+            }
+        }));
         return { values, errors };
     }
 
@@ -648,6 +730,7 @@
             prospectiveMarket: values.prospective || null,
             proofManifest: values.proofManifest || null,
             canonicalCase: values.canonicalCase || null,
+            executedCase: values.executedCase || null,
             errors
         }), { apiBase: base });
     }
@@ -661,5 +744,5 @@
         else start();
     }
 
-    return { ageHours, backendBase, buildDemoModel, fetchEvidence, newest, render };
+    return { ageHours, backendBase, buildDemoModel, caseCardModel, caseTransactions, fetchEvidence, newest, render };
 });

@@ -229,6 +229,75 @@ describe('hackathon demo evidence model', () => {
     });
 });
 
+describe('hackathon demo executed case card', () => {
+    const actor = id => ({ id });
+    const executed = {
+        id: 'executed-case', state: 'complete',
+        proposal: { name: 'Two-parcel infill', lifecycleStatus: 'Executed' },
+        parcelSet: { parcelCount: 2 }, progress: { complete: 7, total: 7 },
+        branches: { forecast: { exists: true, resolved: true, outcome: 'YES' } },
+        stages: [{ id: 'resolution', label: 'Permissionless resolution', state: 'complete', detail: 'Market resolved YES.' }],
+        activity: [
+            { actor: actor('densifier'), action: { type: 'create' }, transaction: 'tx-create' },
+            { actor: actor('densifier'), action: { type: 'claim', side: 'yes' }, transaction: 'tx-claim' },
+            { actor: actor('supporter'), action: { type: 'claim', side: 'no' }, transaction: 'tx-no-claim' },
+            { actor: actor('supporter'), action: { type: 'certifyParcel', parcelId: 'P/1' }, transaction: 'tx-cert-1' },
+            { actor: actor('supporter'), action: { type: 'accept', parcelId: 'P/1' }, transaction: 'tx-accept-1' },
+            { actor: actor('supporter'), action: { type: 'accept', parcelId: 'P/2' } },
+            { actor: actor('supporter'), action: { type: 'resolve' }, transaction: 'tx-resolve' },
+            { actor: actor('supporter'), action: { type: 'releaseDonations' }, transaction: 'tx-release' },
+            { actor: actor('supporter'), action: { type: 'fulfillPledge' }, transaction: 'tx-fulfil' }
+        ]
+    };
+
+    it('lists only signed consent and settlement actions, in lifecycle order, as devnet Explorer links', () => {
+        const txs = demo.caseTransactions(executed);
+        expect(txs.map(tx => tx.signature)).toEqual(['tx-cert-1', 'tx-accept-1', 'tx-resolve', 'tx-release', 'tx-fulfil', 'tx-claim']);
+        expect(txs[0]).toMatchObject({ label: 'Ownership certificate P/1', url: 'https://explorer.solana.com/tx/tx-cert-1?cluster=devnet' });
+        expect(txs.at(-1).label).toBe('YES claim');
+    });
+
+    it('marks a complete executed case live with lifecycle, outcome and the self-certified owner caveat', () => {
+        const model = demo.buildDemoModel({ docs: {}, executedCase: executed, proofManifest: { publicProof: { executedCase: 'https://api/x' } } });
+        expect(model.executedCase).toMatchObject({
+            tone: 'success', state: 'complete', label: 'Two-parcel infill', lifecycle: 'Executed', marketOutcome: 'YES',
+            ownerCaveat: true, detail: '2 real cadastral parcels · 7/7 independently verified stages'
+        });
+    });
+
+    it('keeps an incomplete executed case pending rather than successful', () => {
+        const partial = { ...executed, state: 'in_progress', branches: { forecast: { exists: true, resolved: false } } };
+        const model = demo.buildDemoModel({ docs: {}, executedCase: partial });
+        expect(model.executedCase).toMatchObject({ tone: 'waiting', state: 'in_progress', marketOutcome: 'Unresolved' });
+    });
+
+    it('stays pending when the manifest declares no executed case, and errors when the fetch failed', () => {
+        expect(demo.buildDemoModel({ docs: {}, proofManifest: { publicProof: {} } }).executedCase).toMatchObject({
+            tone: 'waiting', state: 'pending', label: 'Executed case pending',
+            detail: 'The proof manifest does not declare an executed case yet.', transactions: []
+        });
+        expect(demo.buildDemoModel({ docs: {}, errors: { executedCase: 'returned 500' } }).executedCase).toMatchObject({
+            tone: 'error', state: 'unavailable', label: 'Executed case unavailable', detail: 'returned 500'
+        });
+    });
+
+    it('does not fetch an executed case the manifest does not declare', async () => {
+        const previous = globalThis.fetch;
+        const requested = [];
+        globalThis.fetch = async url => {
+            requested.push(url);
+            const body = url.endsWith('/hackathon/proof.json') ? { publicProof: { canonicalCase: 'https://api/cases/golden' } } : {};
+            return { ok: true, json: async () => body };
+        };
+        try {
+            const { values } = await demo.fetchEvidence('https://api');
+            expect(requested).toContain('https://api/cases/golden');
+            expect(requested.some(url => url.includes('executed'))).toBe(false);
+            expect(values.executedCase).toBeUndefined();
+        } finally { globalThis.fetch = previous; }
+    });
+});
+
 describe('hackathon demo API base', () => {
     const withLocation = (location, fn) => {
         const previous = globalThis.location;

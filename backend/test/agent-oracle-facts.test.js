@@ -19,7 +19,9 @@ import {
     setTransactionMessageLifetimeUsingBlockhash
 } from '@solana/kit';
 import { decodePaymentRequiredHeader, encodePaymentSignatureHeader } from '@x402/core/http';
+import { createHash } from 'node:crypto';
 import { PROPOSAL_PROGRAM_ID, STATUS_CANCELLED } from '../oracle/proposal-lifecycle.js';
+import { proposalAccountBytes } from './fixtures/proposal-account.js';
 import { AGENT_ORACLE_FACTS_PATH, setupAgentOracleFactsRoute } from '../routes/agent-oracle-facts.js';
 
 const NETWORK = 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1';
@@ -27,6 +29,8 @@ const USDC_DEVNET = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 const TOKEN_PROGRAM = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';
 const PROPOSAL = 'Gsvt6nMhsvfrEDgvcqZDzPKZhhqACFEi3mueMxQNQ6UT';
 const TX = '5igNaTuReOfTheSettledOracleFact';
+// The verified bundle derives the recipe's trusted attesters from the lens in these hashed bytes.
+const ACCOUNT = proposalAccountBytes({ status: STATUS_CANCELLED, lens: ['AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ'] });
 
 let payer;
 let feePayer;
@@ -55,11 +59,11 @@ function eventRow() {
         subject_id: PROPOSAL,
         outcome: 'cancelled',
         source_url: `https://explorer.solana.com/address/${PROPOSAL}?cluster=devnet`,
-        source_hash: `sha256:${'a'.repeat(64)}`,
+        source_hash: `sha256:${createHash('sha256').update(ACCOUNT).digest('hex')}`,
         source_observed_at: '2026-09-21T16:24:07.000Z',
         attester: PROPOSAL_PROGRAM_ID,
         transaction_signature: 'tx-cancel',
-        evidence: { proposalStatusByte: STATUS_CANCELLED },
+        evidence: { proposalStatusByte: STATUS_CANCELLED, accountDataBase64: ACCOUNT.toString('base64') },
         created_at: '2026-09-21T16:27:35.059Z'
     };
 }
@@ -191,8 +195,9 @@ describe(`GET ${AGENT_ORACLE_FACTS_PATH}`, () => {
         expect(fakeFacilitator.settle).toHaveBeenCalledOnce();
         expect(paid.body).toMatchObject({
             fact: { outcome: 'cancelled', subject: { id: PROPOSAL } },
-            recipe: { id: 'proposal-lifecycle-v1', subject: { proposalAccount: PROPOSAL } },
-            verification: { status: 'verified', checks: { subjectMatches: true } }
+            // The stored event carries proposal account bytes with a lens key, so the bundle uses v2.
+            recipe: { id: 'proposal-lifecycle-v2', subject: { proposalAccount: PROPOSAL } },
+            verification: { status: 'verified', recipeId: 'proposal-lifecycle-v2', checks: { subjectMatches: true } }
         });
     });
 

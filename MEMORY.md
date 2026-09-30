@@ -382,3 +382,12 @@
   resolver publishes only its commitment, aggregate stakes and run health at
   `/oracle/markets/prospective/status`; parcel recipes, wallets and operator configuration remain
   private. `npm run demo:judge` audits and narrates those same public endpoints without mutations.
+- 2026-10-01: **Parcels are ownerless anchors; the lens is a passive attester list.** A parcel PDA
+  only gives proposals and attestations a stable subject; real ownership reaches the chain only as a
+  lens member's `ParcelOwnership-v1` attestation. Lens members attest, owners sign, and a parcel is
+  accepted only when every attested owner (the member's `ownerCount`) has signed: one acceptance per
+  attested owner, no majority shortcut (`lens-model.md`).
+- 2026-10-01: **Acceptance is the owner's own signature, not an attestation.** SAS schemas live under
+  a credential, so an acceptance attestation would force every owner to register a credential first;
+  the owner signing `accept_with_attestations` against a member's ownership attestation proves the
+  same consent without that.

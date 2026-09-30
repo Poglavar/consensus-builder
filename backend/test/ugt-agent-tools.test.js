@@ -57,7 +57,8 @@ describe('shared Urban Game Theory agent tools', () => {
         await expect(tools.donate({ proposalAccount: 'abc', amountUsdc: '0.01', operationId: 'once', confirm: true })).rejects.toThrow('live actions are disabled');
         await expect(tools.forecast({ proposalAccount: 'abc', side: 'yes', amountUsdc: '0.01', confirm: true })).rejects.toThrow('live actions are disabled');
         await expect(tools.cancel({ proposalAccount: 'abc', confirm: true })).rejects.toThrow('live actions are disabled');
-        await expect(tools.accept({ proposalAccount: 'abc', parcelId: 'HR-1', confirm: true })).rejects.toThrow('live actions are disabled');
+        await expect(tools.acceptParcel({ proposalAccount: 'abc', parcelId: 'HR-1', member: 'm', confirm: true })).rejects.toThrow('live actions are disabled');
+        await expect(tools.submitVerdict({ proposalAccount: 'abc', verdictAttestation: 'v', member: 'm', confirm: true })).rejects.toThrow('live actions are disabled');
         await expect(tools.refundDonation({ proposalAccount: 'abc', operationId: 'once', confirm: true })).rejects.toThrow('live actions are disabled');
         await expect(tools.voidPledge({ proposalAccount: 'abc', confirm: true })).rejects.toThrow('live actions are disabled');
         await expect(tools.revokePledge({ proposalAccount: 'abc', confirm: true })).rejects.toThrow('live actions are disabled');
@@ -99,23 +100,34 @@ describe('shared Urban Game Theory agent tools', () => {
 
     it('routes both terminal branches and external markets through shared signer adapters', async () => {
         const dependencies = Object.fromEntries([
-            'acceptProposal', 'revokePledge', 'releaseDonations', 'fulfillPledge',
+            'acceptWithAttestations', 'settleWithVerdict', 'revokePledge', 'releaseDonations', 'fulfillPledge',
             'resolveExternalMarket', 'claimExternalMarket'
         ].map(name => [name, vi.fn(async () => ({ signature: `${name}-tx` }))]));
         const tools = createUrbanGameTheoryTools({
             env: { UGT_MCP_LIVE: '1', UGT_AGENT_KEYPAIR: keypairFile() },
             fetchImpl: vi.fn(), createConnection: () => ({ getAccountInfo: vi.fn() }),
-            dependencies: { ...dependencies, sendAndConfirmPolling: vi.fn() }
+            dependencies: {
+                ...dependencies, sendAndConfirmPolling: vi.fn(),
+                fetchLensMembers: vi.fn(async () => [{ key: 'member', serviceUrl: 'http://lens.test' }]),
+                fetchLensStatus: vi.fn(async () => ({ key: 'member', credentialName: 'NotaryCred' })),
+                findOwnershipAttestation: vi.fn(async () => ({ address: 'found-attestation' }))
+            }
         });
 
-        await tools.accept({ proposalAccount: 'proposal', parcelId: 'HR-1', confirm: true });
+        await tools.acceptParcel({ proposalAccount: 'proposal', parcelId: 'HR-1', member: 'member', confirm: true });
+        await tools.submitVerdict({ proposalAccount: 'proposal', verdictAttestation: 'verdict', member: 'member', confirm: true });
         await tools.revokePledge({ proposalAccount: 'proposal', confirm: true });
         await tools.releaseDonations({ proposalAccount: 'proposal', confirm: true });
         await tools.fulfillPledge({ proposalAccount: 'proposal', confirm: true });
         await tools.resolveExternal({ recipeHash: 'a'.repeat(64), attestation: 'attestation', confirm: true });
         await tools.claimExternal({ recipeHash: 'a'.repeat(64), side: 'yes', confirm: true });
 
-        expect(dependencies.acceptProposal).toHaveBeenCalledWith(expect.objectContaining({ proposalAccount: 'proposal', parcelId: 'HR-1' }));
+        expect(dependencies.acceptWithAttestations).toHaveBeenCalledWith(expect.objectContaining({
+            proposalAccount: 'proposal', parcelId: 'HR-1', member: 'member', ownershipAttestation: 'found-attestation', credentialName: 'NotaryCred', payout: null
+        }));
+        expect(dependencies.settleWithVerdict).toHaveBeenCalledWith(expect.objectContaining({
+            proposalAccount: 'proposal', verdictAttestation: 'verdict', member: 'member', credentialName: 'NotaryCred'
+        }));
         expect(dependencies.revokePledge).toHaveBeenCalledWith(expect.objectContaining({ proposalAccount: 'proposal' }));
         expect(dependencies.releaseDonations).toHaveBeenCalledWith(expect.objectContaining({ proposalAccount: 'proposal' }));
         expect(dependencies.fulfillPledge).toHaveBeenCalledWith(expect.objectContaining({ proposalAccount: 'proposal' }));
@@ -160,5 +172,42 @@ describe('shared Urban Game Theory agent tools', () => {
             proposal: { proposalId: 'too-expensive', cadastreParcelIds: ['HR-1'] }, confirm: true
         })).rejects.toThrow('proposal x402 price exceeds');
         expect(createPaidClient).not.toHaveBeenCalled();
+    });
+
+    it('looks the ownership attestation up on the member service from the directory, and refuses a member without one', async () => {
+        const keyFile = keypairFile();
+        const owner = Keypair.fromSecretKey(Uint8Array.from(JSON.parse(fs.readFileSync(keyFile, 'utf8')))).publicKey.toBase58();
+        const seen = [];
+        const fetchImpl = vi.fn(async (url) => {
+            seen.push(String(url));
+            if (String(url).endsWith('/agent/lenses/members')) {
+                return jsonResponse({ members: [{ key: 'member', kind: 'owner-consent', serviceUrl: 'http://lens.test' }, { key: 'silent', kind: 'court' }] });
+            }
+            if (String(url).startsWith('http://lens.test/lens/attestations')) {
+                return jsonResponse({ attestations: [
+                    { address: 'old', parcelUid: 'HR-1', owner, authority: 'member', issuedAt: '2026-09-01T00:00:00.000Z' },
+                    { address: 'new', parcelUid: 'HR-1', owner, authority: 'member', issuedAt: '2026-09-20T00:00:00.000Z' },
+                    { address: 'foreign', parcelUid: 'HR-1', owner, authority: 'someone-else', issuedAt: '2026-09-30T00:00:00.000Z' }
+                ] });
+            }
+            if (String(url) === 'http://lens.test/lens/status') return jsonResponse({ key: 'member', credentialName: 'LensMember' });
+            return jsonResponse({ error: 'unexpected' }, 404);
+        });
+        const acceptWithAttestations = vi.fn(async () => ({ signature: 'accept-tx' }));
+        const tools = createUrbanGameTheoryTools({
+            env: { UGT_MCP_LIVE: '1', UGT_AGENT_KEYPAIR: keyFile, UGT_API_BASE: 'https://api.example.test' },
+            fetchImpl, createConnection: () => ({}), dependencies: { acceptWithAttestations, sendAndConfirmPolling: vi.fn() }
+        });
+
+        const result = await tools.acceptParcel({ proposalAccount: 'proposal', parcelId: 'HR-1', member: 'member', confirm: true });
+        expect(seen).toContain(`http://lens.test/lens/attestations?parcelUid=HR-1&owner=${owner}&kind=ownership`);
+        expect(acceptWithAttestations).toHaveBeenCalledWith(expect.objectContaining({ ownershipAttestation: 'new', member: 'member' }));
+        expect(result).toMatchObject({ owner, ownershipAttestation: 'new', attestationSource: 'http://lens.test/lens/attestations' });
+
+        await expect(tools.acceptParcel({ proposalAccount: 'proposal', parcelId: 'HR-1', member: 'silent', confirm: true }))
+            .rejects.toThrow(/publishes no serviceUrl/);
+        await expect(tools.acceptParcel({ proposalAccount: 'proposal', parcelId: 'HR-2', member: 'member', confirm: true }))
+            .rejects.toThrow(/request one first/);
+        expect(acceptWithAttestations).toHaveBeenCalledTimes(1);
     });
 });

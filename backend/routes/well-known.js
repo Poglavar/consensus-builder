@@ -90,6 +90,7 @@ export function buildLlmsTxt(base, env) {
         `- [agents.json](${base}/agents.json): the proposal recipe as JSON Schema with live payment terms and endpoints.`,
         `- [OpenAPI](${base}/openapi.json): agent-facing endpoints as OpenAPI 3.1.`,
         `- [x402 manifest](${base}/.well-known/x402): paid resources for x402 indexers.`,
+        `- [Lens members](${base}/agent/lenses/members): the attester directory to pick a proposal's lens from; schemas at ${base}/lenses/schemas.`,
         '',
         '## Paid endpoints (x402)',
         ...paidLines,
@@ -108,6 +109,36 @@ function readRecipeSchema() {
     delete schema.$id;
     return schema;
 }
+
+// Frozen by lens-model.md: the directory response shape.
+const LENS_MEMBERS_SCHEMA = {
+    type: 'object',
+    required: ['members'],
+    properties: {
+        members: {
+            type: 'array',
+            items: {
+                type: 'object',
+                required: ['key', 'kind', 'name', 'description', 'serviceUrl', 'coverage'],
+                properties: {
+                    key: { type: 'string', description: 'Base58 SAS authority public key; put it in a proposal\'s lens.' },
+                    kind: { type: ['string', 'null'], enum: ['owner-consent', 'court', 'permit', 'imagery', 'osm', 'lifecycle', null], description: 'What the member attests, not who it is.' },
+                    name: { type: ['string', 'null'] },
+                    description: { type: ['string', 'null'] },
+                    serviceUrl: { type: ['string', 'null'], description: 'Where the member takes attestation requests; null when it has none.' },
+                    coverage: {
+                        type: 'object',
+                        properties: {
+                            ownership: { type: 'integer', description: 'Ownership attestations issued.' },
+                            parcels: { type: 'integer', description: 'Distinct parcels covered.' },
+                            executed: { type: 'integer', description: 'Proposals executed on its attestations.' }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
 
 export function buildOpenApi(base, env) {
     const paid = Object.fromEntries(paidResources(base, env).map(r => [r.url, r]));
@@ -170,6 +201,27 @@ export function buildOpenApi(base, env) {
                     summary: 'Proposal recipe, live payment terms and endpoint map',
                     operationId: 'getAgentsManifest',
                     responses: { 200: { description: 'Agent manifest.' } }
+                }
+            },
+            '/lenses/members': {
+                get: {
+                    summary: 'Attester directory: known lens members and their coverage',
+                    operationId: 'getLensMembers',
+                    responses: { 200: { description: '{ members: [{ key, kind (owner-consent | court | permit | imagery | osm | lifecycle), name, description, serviceUrl, coverage: { ownership, parcels, executed } }] }', content: { 'application/json': { schema: LENS_MEMBERS_SCHEMA } } } }
+                }
+            },
+            '/agent/lenses/members': {
+                get: {
+                    summary: 'Attester directory (agent alias of /lenses/members)',
+                    operationId: 'getAgentLensMembers',
+                    responses: { 200: { description: 'Same body as /lenses/members.', content: { 'application/json': { schema: LENS_MEMBERS_SCHEMA } } } }
+                }
+            },
+            '/lenses/schemas': {
+                get: {
+                    summary: 'The lens SAS schemas (ParcelOwnership-v1, ProposalVerdict-v1): layout strings and field lists. An owner\'s yes is not an attestation: the owner signs accept_with_attestations with an optional payout key',
+                    operationId: 'getLensSchemas',
+                    responses: { 200: { description: '{ sasProgram, schemas: [{ kind, id, name, version, layout, fields, sasLayout }] }' } }
                 }
             },
             '/proposals/{id}': {

@@ -224,7 +224,9 @@ function runEvents(row) {
         const post = summary.posts?.[pick.candidateId];
         const stake = summary.stakes?.[pick.candidateId];
         if (mint) events.push({
-            ...base, id: `mint:${row.run_id}:${pick.proposalId}`, action: { type: 'create', proposalId: pick.proposalId },
+            ...base, id: `mint:${row.run_id}:${pick.proposalId}`,
+            // The lens chosen at mint travels with the create event so the public audit can see it.
+            action: { type: 'create', proposalId: pick.proposalId, ...(summary.lensChoice?.lens?.length ? { lens: summary.lensChoice.lens } : {}) },
             entity: { type: 'proposal', id: String(pick.proposalId) }, transaction: mint.signature || mint.transactionHash || null,
             message: `${row.persona} created proposal ${pick.name || pick.proposalId}.`
         });
@@ -323,6 +325,7 @@ function runDetail(row, costs = []) {
         modelCostUsd: recordedCost || (Number.isFinite(summaryCost) ? summaryCost : 0),
         batchId: summary.decisionResult?.batchId || summary.batchId || costs[0]?.batch_id || null,
         outcome: summary.outcome || null,
+        lensChoice: summary.lensChoice || null,
         support: summary.support || null,
         picks: Array.isArray(summary.picks) ? summary.picks.map(pick => ({
             candidateId: pick.candidateId || null,

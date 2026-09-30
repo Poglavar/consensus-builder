@@ -1,5 +1,6 @@
 // Localnet suite for the proposal_market program: opens a parimutuel market on a proposal_nft
-// Proposal and drives it through staking, resolution (Executed → YES, Cancelled → NO) and payout.
+// Proposal and drives it through staking, resolution (Executed → YES, Cancelled or Expired → NO)
+// and payout, plus the proposal-lens binding of external markets.
 
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
@@ -15,13 +16,24 @@ import {
     mintTo,
 } from "@solana/spl-token";
 import { expect } from "chai";
+import { createHash } from "crypto";
 import {
     findProposalCounterPDA,
     findProposalPDA,
-    findParcelPDA,
     airdrop,
     initializeProposalCounter,
 } from "./helpers.ts";
+import {
+    LensMember,
+    attestAndAccept,
+    attestVerdict,
+    createLensMember,
+    credentialBytes,
+    ensureParcelAnchor,
+    schemaBytes,
+    settleWithVerdict,
+    writeSasAccount,
+} from "./sas-mock.ts";
 
 const SIDE_NO = 0;
 const SIDE_YES = 1;
@@ -46,6 +58,8 @@ describe("proposal_market", () => {
     let walletA: Staker; // the provider wallet
     let walletB: Staker;
     let walletC: Staker;
+    // The lens member every proposal below lists; the provider wallet is the attested owner.
+    let notary: LensMember;
 
     // The executed-proposal market, shared by the create_market / stake / resolve blocks.
     let executedProposal: PublicKey;
@@ -63,6 +77,7 @@ describe("proposal_market", () => {
         walletA = await fundStaker(payer);
         walletB = await fundStaker(Keypair.generate());
         walletC = await fundStaker(Keypair.generate());
+        notary = await createLensMember(provider);
 
         ({ proposalPDA: executedProposal } = await mintProposal(["HR-mkt-exec"], false));
     });
@@ -90,36 +105,13 @@ describe("proposal_market", () => {
         return (account.count as any).toNumber();
     }
 
-    async function mintParcelForOwner(
-        parcelId: string,
-        owner: PublicKey = provider.wallet.publicKey,
-        signer?: Keypair
-    ): Promise<PublicKey> {
-        const [parcelPDA] = findParcelPDA(parcelProgram.programId, parcelId);
-        const builder = parcelProgram.methods
-            .mintParcel(parcelId, `ipfs://${parcelId}`)
-            .accounts({
-                parcel: parcelPDA,
-                owner,
-                systemProgram: SystemProgram.programId,
-            } as any);
-
-        if (signer) {
-            await builder.signers([signer]).rpc();
-        } else {
-            await builder.rpc();
-        }
-
-        return parcelPDA;
-    }
-
     async function mintProposal(
         parcelIds: string[],
         isConditional: boolean,
         solAmount: number = 0
     ): Promise<{ proposalId: number; proposalPDA: PublicKey }> {
         for (const parcelId of parcelIds) {
-            await mintParcelForOwner(parcelId);
+            await ensureParcelAnchor(parcelProgram, parcelId);
         }
 
         const count = await getCounterValue();
@@ -131,7 +123,8 @@ describe("proposal_market", () => {
                 isConditional,
                 "ipfs://test-image",
                 new anchor.BN(solAmount),
-                [provider.wallet.publicKey] // lens
+                [notary.publicKey], // lens
+                false // verdict_may_execute
             )
             .accounts({
                 proposal: proposalPDA,
@@ -144,30 +137,22 @@ describe("proposal_market", () => {
         return { proposalId: count, proposalPDA };
     }
 
-    function actionAccounts(
-        proposalPDA: PublicKey,
-        parcelId: string,
-        signerName: "accepter" | "withdrawer",
-        signer: PublicKey = provider.wallet.publicKey
-    ): any {
-        const [parcelPDA] = findParcelPDA(parcelProgram.programId, parcelId);
-        return {
-            proposal: proposalPDA,
-            parcel: parcelPDA,
-            parcelProgram: parcelProgram.programId,
-            [signerName]: signer,
-        };
-    }
-
-    /** Accept the only parcel of a single-parcel proposal, which flips it to Executed. */
+    /** The notary attests the provider wallet as sole owner of the only parcel, and it accepts:
+     * the proposal flips to Executed. */
     async function executeProposal(proposalPDA: PublicKey, parcelId: string) {
-        await proposalProgram.methods
-            .acceptProposal(parcelId)
-            .accounts(actionAccounts(proposalPDA, parcelId, "accepter"))
-            .rpc();
+        await attestAndAccept(proposalProgram, notary, { proposal: proposalPDA, parcelId, owner: payer });
 
         const account = await proposalProgram.account.proposal.fetch(proposalPDA);
         expect(account.status).to.deep.equal({ executed: {} });
+    }
+
+    /** A lens member's expired verdict flips an Active proposal to Expired. */
+    async function expireProposal(proposalPDA: PublicKey) {
+        const verdict = await attestVerdict(provider, notary, { proposalAccount: proposalPDA, verdict: "expired" });
+        await settleWithVerdict(proposalProgram, { proposal: proposalPDA, verdict, credential: notary.credential });
+
+        const account = await proposalProgram.account.proposal.fetch(proposalPDA);
+        expect(account.status).to.deep.equal({ expired: {} });
     }
 
     /** Cancel an Active proposal as its owner, which flips it to Cancelled. */
@@ -551,6 +536,111 @@ describe("proposal_market", () => {
             expect(after - before).to.equal(250_000n);
             expect((await program.account.position.fetch(position)).claimed).to.be.true;
             expect(await tokenBalance(cancelledVault)).to.equal(0n);
+        });
+    });
+
+    // ========================
+    // Resolve and claim (Expired by a lens verdict → NO)
+    // ========================
+
+    describe("resolve and claim after the proposal expires by verdict", () => {
+        let expiredProposal: PublicKey;
+        let expiredMarket: PublicKey;
+
+        before(async () => {
+            ({ proposalPDA: expiredProposal } = await mintProposal(["HR-mkt-expire"], false));
+            ({ market: expiredMarket } = await createMarket(expiredProposal));
+            await stake(expiredMarket, expiredProposal, walletA, SIDE_YES, 100_000);
+            await stake(expiredMarket, expiredProposal, walletB, SIDE_NO, 300_000);
+        });
+
+        it("refuses to resolve while the proposal is Active", async () => {
+            await expectFailure(() => resolve(expiredMarket, expiredProposal), "NotTerminal");
+        });
+
+        it("resolves to NO once a lens member's verdict expires the proposal (status 3)", async () => {
+            await expireProposal(expiredProposal);
+            await resolve(expiredMarket, expiredProposal);
+
+            const market = await program.account.market.fetch(expiredMarket);
+            expect(market.resolved).to.be.true;
+            expect(market.outcome).to.equal(SIDE_NO);
+        });
+
+        it("pays the NO side the whole pot", async () => {
+            const before = await tokenBalance(walletB.tokenAccount);
+            await claim(expiredMarket, walletB, SIDE_NO);
+            expect((await tokenBalance(walletB.tokenAccount)) - before).to.equal(400_000n);
+            await expectFailure(() => claim(expiredMarket, walletA, SIDE_YES), "NothingToClaim");
+        });
+    });
+
+    // ========================
+    // External markets bound to a proposal's lens
+    // ========================
+
+    describe("create_external_market with a proposal", () => {
+        let credential: PublicKey;
+        let schema: PublicKey;
+        let lensProposal: PublicKey;
+
+        before(async () => {
+            credential = await writeSasAccount(provider, credentialBytes(notary.publicKey, "court"));
+            schema = await writeSasAccount(provider, schemaBytes(credential, "CourtParcelOperation"));
+            ({ proposalPDA: lensProposal } = await mintProposal(["HR-mkt-ext-lens"], false));
+        });
+
+        async function createExternal(label: string, trustedAttester: PublicKey, proposal?: PublicKey) {
+            const recipeHash = createHash("sha256").update(`ext-${label}-${Date.now()}`).digest();
+            const market = PublicKey.findProgramAddressSync([Buffer.from("external_market"), recipeHash], program.programId)[0];
+            const builder = program.methods
+                .createExternalMarket(
+                    Array.from(recipeHash),
+                    Array.from(createHash("sha256").update("HR-mkt-ext-lens").digest()),
+                    Array.from(createHash("sha256").update("transfer").digest()),
+                    Array.from(createHash("sha256").update("dismissed").digest()),
+                    trustedAttester,
+                    new anchor.BN(Math.floor(Date.now() / 1000) + 3600)
+                )
+                .accountsStrict({
+                    market,
+                    stakeMint,
+                    vault: getAssociatedTokenAddressSync(stakeMint, market, true),
+                    credential,
+                    schema,
+                    creator: provider.wallet.publicKey,
+                    tokenProgram: TOKEN_PROGRAM_ID,
+                    associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+                    systemProgram: SystemProgram.programId,
+                })
+                .remainingAccounts(proposal ? [{ pubkey: proposal, isSigner: false, isWritable: false }] : []);
+            await builder.rpc();
+            return program.account.externalMarket.fetch(market);
+        }
+
+        it("rejects a trusted attester outside the proposal's lens", async () => {
+            await expectFailure(
+                () => createExternal("outside", Keypair.generate().publicKey, lensProposal),
+                "AttesterNotInProposalLens"
+            );
+        });
+
+        it("opens the market when the trusted attester is a lens member", async () => {
+            const market = await createExternal("inside", notary.publicKey, lensProposal);
+            expect(market.trustedAttester.toBase58()).to.equal(notary.publicKey.toBase58());
+        });
+
+        it("rejects a bound account that is not a proposal_nft Proposal", async () => {
+            await expectFailure(
+                () => createExternal("not-proposal", notary.publicKey, counterPDA),
+                "InvalidProposalAccount"
+            );
+        });
+
+        it("still opens an unbound market without the proposal account", async () => {
+            const attester = Keypair.generate().publicKey;
+            const market = await createExternal("unbound", attester);
+            expect(market.trustedAttester.toBase58()).to.equal(attester.toBase58());
         });
     });
 

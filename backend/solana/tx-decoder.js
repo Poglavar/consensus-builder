@@ -71,9 +71,42 @@ export function encodeBase58(buf) {
 // reversed (little-endian u64), as seen on every `anchor deploy` follow-up transaction.
 const ANCHOR_IDL_IX_DISCRIMINATOR = '40f4bc78a7e9690a';
 
+function indexInstructions(raw) {
+    const instructions = new Map();
+    for (const ix of raw.instructions || []) {
+        if (!Array.isArray(ix.discriminator)) continue;
+        instructions.set(Buffer.from(ix.discriminator).toString('hex'), {
+            name: ix.name,
+            accounts: (ix.accounts || []).map((account) => account.name),
+            args: (ix.args || []).map((arg) => ({ name: arg.name, type: arg.type }))
+        });
+    }
+    return instructions;
+}
+
+// `legacy/<program>.v<N>.json` beside the current IDL: earlier interfaces of the SAME deployed
+// program. This is not a legacy fallback of the kind the repo rules forbid: a transaction on chain
+// is immutable and was executed by whatever program build was live at its slot, so decoding devnet
+// history needs the interface that build had. Newest first; the current IDL is one above the newest.
+function loadLegacyIdls(dir, baseName) {
+    const legacyDir = path.join(dir, 'legacy');
+    if (!fs.existsSync(legacyDir)) return [];
+    const re = new RegExp(`^${baseName}\\.v(\\d+)\\.json$`);
+    return fs.readdirSync(legacyDir)
+        .map((file) => ({ file, match: re.exec(file) }))
+        .filter(({ match }) => match)
+        .map(({ file, match }) => ({
+            version: Number(match[1]),
+            instructions: indexInstructions(JSON.parse(fs.readFileSync(path.join(legacyDir, file), 'utf8')))
+        }))
+        .sort((a, b) => b.version - a.version);
+}
+
 /**
  * Read the app program IDLs from `dir`. Returns lookups by program address and by program name;
- * each instruction is indexed by the hex of its 8-byte Anchor discriminator.
+ * each instruction is indexed by the hex of its 8-byte Anchor discriminator. `versions` lists the
+ * current interface first and then every legacy one from `dir/legacy/`, each tagged `v<N>`; the
+ * decoder tries them in that order (see decodeProgramInstruction).
  */
 export function loadIdls(dir) {
     const byAddress = new Map();
@@ -84,16 +117,14 @@ export function loadIdls(dir) {
         const raw = JSON.parse(fs.readFileSync(path.join(dir, file), 'utf8'));
         const name = raw.metadata?.name || raw.name || path.basename(file, '.json');
         const address = raw.address || raw.metadata?.address || null;
-        const instructions = new Map();
-        for (const ix of raw.instructions || []) {
-            if (!Array.isArray(ix.discriminator)) continue;
-            instructions.set(Buffer.from(ix.discriminator).toString('hex'), {
-                name: ix.name,
-                accounts: (ix.accounts || []).map((account) => account.name),
-                args: (ix.args || []).map((arg) => ({ name: arg.name, type: arg.type }))
-            });
-        }
-        const entry = { name, address, instructions };
+        const instructions = indexInstructions(raw);
+        const legacy = loadLegacyIdls(dir, path.basename(file, '.json'));
+        const currentVersion = legacy.length ? legacy[0].version + 1 : 1;
+        const versions = [
+            { idlVersion: `v${currentVersion}`, instructions },
+            ...legacy.map((entry) => ({ idlVersion: `v${entry.version}`, instructions: entry.instructions }))
+        ];
+        const entry = { name, address, instructions, versions };
         list.push(entry);
         byName.set(name, entry);
         if (address) byAddress.set(address, entry);
@@ -144,22 +175,55 @@ class BorshReader {
             for (let i = 0; i < len; i++) out.push(this.readType(type.vec));
             return out;
         }
+        if (type && typeof type === 'object' && type.option !== undefined) {
+            const tag = this.take(1).readUInt8(0);
+            if (tag === 0) return null;
+            if (tag !== 1) throw new Error(`invalid option tag ${tag}`);
+            return this.readType(type.option);
+        }
+        if (type && typeof type === 'object' && Array.isArray(type.array) && type.array[0] === 'u8') {
+            return this.take(type.array[1]).toString('hex');
+        }
         throw new Error(`unsupported IDL arg type "${JSON.stringify(type)}"`);
     }
 }
 
+// `exact` says whether the args consumed the payload to the last byte. Anchor rejects trailing
+// bytes too, so only an exact read proves the instruction was built for this interface; the
+// version picker relies on it (a v1 mint_and_fund lacks v2's trailing bool, a v2 one would leave
+// that bool unread under v1).
 function decodeArgs(idlInstruction, payload) {
-    if (!idlInstruction.args.length) return { args: {}, argsError: null };
+    if (!idlInstruction.args.length) return { args: {}, argsError: null, exact: payload.length === 0 };
     const reader = new BorshReader(payload);
     const args = {};
     try {
         for (const arg of idlInstruction.args) args[arg.name] = reader.readType(arg.type);
-        return { args, argsError: null };
+        return { args, argsError: null, exact: reader.offset === payload.length };
     } catch (error) {
         // A type we cannot read desyncs everything after it, so the whole arg set is reported as
         // undecodable rather than half-truthfully.
-        return { args: null, argsError: error.message };
+        return { args: null, argsError: error.message, exact: false };
     }
+}
+
+// Pick the interface an instruction was built for: the newest version whose discriminator
+// matches, whose args read exactly and whose account list is long enough; else the newest one
+// whose args read exactly; else the newest one knowing the discriminator (its argsError and
+// accountsWarning then explain the mismatch). Versions sharing a discriminator and arg layout
+// (cancel_and_refund, contribute_funds...) resolve to the current one: their bytes cannot tell the
+// builds apart, and the accounts the program received are listed either way.
+function decodeProgramInstruction(idl, discriminator, payload, accountCount) {
+    const versions = idl.versions || [{ idlVersion: null, instructions: idl.instructions }];
+    const candidates = [];
+    for (const version of versions) {
+        const idlInstruction = version.instructions.get(discriminator);
+        if (!idlInstruction) continue;
+        candidates.push({ idlVersion: version.idlVersion, idlInstruction, ...decodeArgs(idlInstruction, payload) });
+    }
+    return candidates.find((c) => c.exact && accountCount >= c.idlInstruction.accounts.length)
+        ?? candidates.find((c) => c.exact)
+        ?? candidates[0]
+        ?? null;
 }
 
 // --- helpers -----------------------------------------------------------------------------------
@@ -337,7 +401,8 @@ function decodeInstruction(ix, { index, inner, parentIndex, book, idlsByAddress,
         const data = decodeBase58(ix.data);
         if (data && data.length >= 8) {
             const discriminator = data.subarray(0, 8).toString('hex');
-            const idlInstruction = idl.instructions.get(discriminator);
+            const match = decodeProgramInstruction(idl, discriminator, data.subarray(8), addresses.length);
+            const idlInstruction = match?.idlInstruction ?? null;
             decoded.discriminator = discriminator;
             if (!idlInstruction && discriminator === ANCHOR_IDL_IX_DISCRIMINATOR) {
                 // `anchor deploy` / `anchor idl` write the program's IDL into an on-chain account
@@ -350,9 +415,9 @@ function decodeInstruction(ix, { index, inner, parentIndex, book, idlsByAddress,
             }
             if (idlInstruction) {
                 decoded.action = idlInstruction.name;
-                const { args, argsError } = decodeArgs(idlInstruction, data.subarray(8));
-                decoded.args = args;
-                if (argsError) decoded.argsError = argsError;
+                decoded.idlVersion = match.idlVersion;
+                decoded.args = match.args;
+                if (match.argsError) decoded.argsError = match.argsError;
                 // Anchor appends `remaining_accounts` after the declared ones, so a longer list
                 // still maps positionally. A SHORTER list means the deployed program is not the
                 // build this IDL describes — positional names would then be fiction, so the roles
@@ -524,6 +589,15 @@ function buildSummary(primary, ctx) {
             const parcels = Array.isArray(args.parcel_ids) && args.parcel_ids.length ? args.parcel_ids.join(',') : 'no parcels';
             const sol = args.sol_amount != null ? formatAtomicAmount(String(args.sol_amount), LAMPORTS_DECIMALS) : '?';
             return `${label(actorAddress(primary, 'owner'))} minted proposal for parcels ${parcels} funded with ${sol} SOL`;
+        }
+        if (action === 'accept_with_attestations') {
+            const member = accountAddress(primary, 'ownership');
+            const attested = member ? ` (ownership attestation ${label(member)})` : '';
+            return `${label(actorAddress(primary, 'owner'))} accepted parcel ${args.parcel_id ?? '?'}${onProposal}${attested}`;
+        }
+        if (action === 'settle_with_verdict') {
+            const verdict = accountAddress(primary, 'verdict');
+            return `${label(actorAddress(primary, 'submitter'))} settled${onProposal} with verdict attestation ${verdict ? label(verdict) : '?'}`;
         }
         if (action === 'accept_proposal') {
             return `${label(actorAddress(primary, 'accepter'))} accepted parcel ${args.parcel_id ?? '?'}${onProposal}`;

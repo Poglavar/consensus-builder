@@ -17,7 +17,9 @@ default = []
 idl-build = ["anchor-lang/idl-build"]
 
 [dependencies]
-anchor-lang = "0.30.1"
+anchor-lang = { version = "0.30.1", features = ["init-if-needed"] }
+# SAS account parsers shared with proposal_market.
+sas_attestation = { path = "../../crates/sas_attestation" }
 
 # Anchor's #[program] expands cfgs that belong to the SBF toolchain and anchor-lang, not this crate;
 # declare them so rustc's check-cfg stops flagging every expansion (Anchor's recommended config).

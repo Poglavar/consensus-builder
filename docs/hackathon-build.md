@@ -120,7 +120,7 @@ cd backend
 npm run mcp
 ```
 
-That default is read-only and exposes twenty-two tools. Paid proposal/fact tools and every signed
+That default is read-only and exposes twenty-five tools. Paid proposal/fact tools and every signed
 proposal, support, forecast and settlement tool remain disabled unless the MCP process has
 `UGT_MCP_LIVE=1`, an external `UGT_AGENT_KEYPAIR`, and the individual call supplies `confirm: true`. The per-action cap
 defaults to `0.25` devnet USDC and can be lowered with `UGT_MCP_MAX_USDC_PER_ACTION`.
@@ -150,7 +150,10 @@ start from the warning and instructions in [`blockchain/solana/README.md`](../bl
 
 The safest judge path is the deployed [Demo Center](https://urbangametheory.xyz/hackathon-demo.html).
 
-The Demo Center's canonical-case card reads `/hackathon/cases/:proposalId`. To preview the
+The Demo Center's canonical-case card reads `/hackathon/cases/:proposalId`; the same card code renders
+the completed executed YES counterpart ([proposal](https://urbangametheory.xyz/proposals/hackathon-executed-borovje-2026),
+[aggregate JSON](https://api.urbangametheory.xyz/hackathon/cases/hackathon-executed-borovje-2026)) from the
+manifest's `publicProof.executedCase`. To preview the
 deterministic multi-parcel live-case plan without signing or writing anything:
 
 ```bash

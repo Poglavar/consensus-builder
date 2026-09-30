@@ -1,10 +1,11 @@
 // Unit tests for agents/minter.js — the node port of the browser's mint_and_fund.
-// The parity check is not a copy of the browser encoding: frontend/js/solana/proposal-bridge.js is
-// loaded in THIS realm with its internal borsh helpers exposed, the browser's own instruction data
-// is composed from them exactly as its mintProposal() does, and the bytes are compared. So a change
-// to either side that moves a single byte fails here. The discriminator is additionally pinned to
-// the generated IDL, and the PDAs to blockchain/solana/tests/helpers.ts's seeds.
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+// The parity check is not a copy of the browser encoding: the browser's own v2 codec
+// (frontend/js/solana/acceptance-client.js, which proposal-bridge.js's mintProposal() calls) is
+// required in THIS realm and its instruction data is compared byte for byte, after the browser's own
+// de-duplication of parcel ids. So a change to either side that moves a single byte fails here. The
+// discriminator is additionally pinned to the generated IDL, and the PDAs to
+// blockchain/solana/tests/helpers.ts's seeds.
+import { describe, it, expect, beforeAll } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -37,45 +38,20 @@ const FIXTURE = {
     lens: [LENS_A, LENS_B]
 };
 
-let bridge; // the browser module's own internals
+let browserCodec; // frontend/js/solana/acceptance-client.js
 
 beforeAll(() => {
-    // proposal-bridge.js is a classic-script IIFE that keeps its borsh helpers private. Load it in
-    // this realm (never a vm realm — see MEMORY.md) with the helpers published on the way out.
-    const file = path.join(REPO, 'frontend/js/solana/proposal-bridge.js');
-    const source = readFileSync(file, 'utf8');
-    const exposeLine = '    globalScope.__bridgeInternals = { encodeBorshString, encodeBorshVecString, encodeBorshVecPubkey, concatBuffers, sha256Discriminator };\n})();';
-    const patched = source.replace(/\}\)\(\);\s*$/, exposeLine);
-    if (patched === source) throw new Error('could not patch proposal-bridge.js: its IIFE tail changed');
-    globalThis.window = globalThis;
-    globalThis.solanaWeb3 = web3;
-    (0, eval)(patched);
-    bridge = globalThis.__bridgeInternals;
-    if (!bridge || typeof bridge.encodeBorshVecString !== 'function') throw new Error('proposal-bridge.js exposed no internals');
+    browserCodec = require('../../frontend/js/solana/acceptance-client.js');
+    browserCodec.configure({ web3 });
 });
 
-afterAll(() => {
-    delete globalThis.__bridgeInternals;
-    delete globalThis.SolanaProposalChainBridge;
-    delete globalThis.solanaWeb3;
-    delete globalThis.window;
-});
-
-// Byte-for-byte what frontend/js/solana/proposal-bridge.js's mintProposal() puts in the instruction.
-async function browserMintAndFundData({ parcelIds, isConditional, imageUri, lamports, lens }) {
+// Byte-for-byte what proposal-bridge.js's mintProposal() puts in the instruction: it de-duplicates
+// the parcel ids, then hands them to the shared codec.
+function browserMintAndFundData({ parcelIds, isConditional, imageUri, lamports, lens, verdictMayExecute = false }) {
     const uniqueParcelIds = [...new Set(parcelIds.map(String).filter(Boolean))];
-    const discriminator = await bridge.sha256Discriminator('mint_and_fund');
-    const solAmountBuf = new Uint8Array(8);
-    new DataView(solAmountBuf.buffer).setBigUint64(0, lamports, true);
-    const lensAddresses = lens.map(l => (typeof l === 'string' ? l : (l?.address || l?.toString?.())));
-    const args = bridge.concatBuffers([
-        bridge.encodeBorshVecString(uniqueParcelIds),
-        new Uint8Array([isConditional ? 1 : 0]),
-        bridge.encodeBorshString(imageUri || ''),
-        solAmountBuf,
-        bridge.encodeBorshVecPubkey(lensAddresses.filter(Boolean))
-    ]);
-    return bridge.concatBuffers([discriminator, args]);
+    return browserCodec.encodeMintAndFundData({
+        parcelIds: uniqueParcelIds, isConditional, imageUri, solLamports: lamports, lens, verdictMayExecute
+    });
 }
 
 function counterAccount(count) {
@@ -91,8 +67,8 @@ describe('encodeMintAndFundData', () => {
         expect(Array.from(actual)).toEqual(Array.from(expected));
     });
 
-    it('matches the browser on the edges too: no lens, empty image, zero lamports, one parcel', async () => {
-        const edge = { parcelIds: ['HR-1'], isConditional: false, imageUri: '', lamports: 0n, lens: [] };
+    it('matches the browser on the edges too: one lens key, empty image, zero lamports, one parcel', async () => {
+        const edge = { parcelIds: ['HR-1'], isConditional: false, imageUri: '', lamports: 0n, lens: [LENS_A] };
         expect(Array.from(encodeMintAndFundData(edge))).toEqual(Array.from(await browserMintAndFundData(edge)));
     });
 
@@ -123,7 +99,23 @@ describe('encodeMintAndFundData', () => {
         expect(view.getUint32(offset, true)).toBe(2); // vec<pubkey> length
         expect(new PublicKey(bytes.slice(offset + 4, offset + 36)).toBase58()).toBe(LENS_A);
         expect(new PublicKey(bytes.slice(offset + 36, offset + 68)).toBase58()).toBe(LENS_B);
-        expect(bytes.length).toBe(offset + 68);
+        expect(bytes[offset + 68]).toBe(0); // verdict_may_execute, default false
+        expect(bytes.length).toBe(offset + 69);
+    });
+
+    it('encodes verdict_may_execute as the trailing bool the v2 IDL declares', async () => {
+        const idl = IDL.instructions.find(ix => ix.name === 'mint_and_fund');
+        expect(idl.args.map(arg => [arg.name, arg.type])).toEqual([
+            ['parcel_ids', { vec: 'string' }], ['is_conditional', 'bool'], ['image_uri', 'string'],
+            ['sol_amount', 'u64'], ['lens', { vec: 'pubkey' }], ['verdict_may_execute', 'bool']
+        ]);
+        const off = encodeMintAndFundData(FIXTURE);
+        const on = encodeMintAndFundData({ ...FIXTURE, verdictMayExecute: true });
+        expect(on.length).toBe(off.length);
+        expect(Array.from(on.slice(0, -1))).toEqual(Array.from(off.slice(0, -1)));
+        expect([off.at(-1), on.at(-1)]).toEqual([0, 1]);
+        expect(Array.from(on)).toEqual(Array.from(await browserMintAndFundData({ ...FIXTURE, verdictMayExecute: true })));
+        expect(() => encodeMintAndFundData({ ...FIXTURE, verdictMayExecute: 'yes' })).toThrow(/boolean/);
     });
 
     it('refuses a proposal with no parcels and a fractional lamport amount', () => {
@@ -248,12 +240,14 @@ describe('mintProposal', () => {
         });
     });
 
-    it('defaults lens to the owner when none is given', async () => {
+    it('refuses to mint without a lens instead of defaulting to the owner', async () => {
         const ownerKeypair = Keypair.generate();
-        const { connection, sendAndConfirm, sends } = stubbedRun({ counts: [0n], sendResults: ['SIG'] });
-        await mintProposal({ connection, programId: PROGRAM_ID, ownerKeypair, parcelIds: ['HR-1'], sendAndConfirm });
-        const expected = encodeMintAndFundData({ parcelIds: ['HR-1'], isConditional: true, imageUri: '', lamports: 0n, lens: [ownerKeypair.publicKey] });
-        expect(Array.from(sends[0].transaction.instructions[0].data)).toEqual(Array.from(expected));
+        for (const lens of [undefined, null, [], ['']]) {
+            const { connection, sendAndConfirm, sends } = stubbedRun({ counts: [0n], sendResults: ['SIG'] });
+            await expect(mintProposal({ connection, programId: PROGRAM_ID, ownerKeypair, parcelIds: ['HR-1'], lens, sendAndConfirm }))
+                .rejects.toThrow(/lens is required/);
+            expect(sends).toHaveLength(0);
+        }
     });
 
     it('re-reads the counter and retries ONCE when another mint took the index', async () => {
@@ -262,7 +256,7 @@ describe('mintProposal', () => {
         race.logs = ['Allocate: account Address { .. } already in use'];
         const { connection, sendAndConfirm, sends } = stubbedRun({ counts: [5n, 6n], sendResults: [race, 'SIGNATURE-2'] });
 
-        const result = await mintProposal({ connection, programId: PROGRAM_ID, ownerKeypair, parcelIds: ['HR-1'], sendAndConfirm });
+        const result = await mintProposal({ connection, programId: PROGRAM_ID, ownerKeypair, parcelIds: ['HR-1'], lens: [LENS_A], sendAndConfirm });
 
         expect(sends).toHaveLength(2);
         expect(result.count).toBe(6n);
@@ -277,12 +271,12 @@ describe('mintProposal', () => {
         const race = new Error('already in use');
         const second = new Error('still already in use');
         const raced = stubbedRun({ counts: [5n, 6n], sendResults: [race, second] });
-        await expect(mintProposal({ connection: raced.connection, programId: PROGRAM_ID, ownerKeypair, parcelIds: ['HR-1'], sendAndConfirm: raced.sendAndConfirm }))
+        await expect(mintProposal({ connection: raced.connection, programId: PROGRAM_ID, ownerKeypair, parcelIds: ['HR-1'], lens: [LENS_A], sendAndConfirm: raced.sendAndConfirm }))
             .rejects.toThrow(/still already in use/);
         expect(raced.sends).toHaveLength(2);
 
         const other = stubbedRun({ counts: [5n], sendResults: [new Error('insufficient funds for rent')] });
-        await expect(mintProposal({ connection: other.connection, programId: PROGRAM_ID, ownerKeypair, parcelIds: ['HR-1'], sendAndConfirm: other.sendAndConfirm }))
+        await expect(mintProposal({ connection: other.connection, programId: PROGRAM_ID, ownerKeypair, parcelIds: ['HR-1'], lens: [LENS_A], sendAndConfirm: other.sendAndConfirm }))
             .rejects.toThrow(/insufficient funds/);
         expect(other.sends).toHaveLength(1);
     });

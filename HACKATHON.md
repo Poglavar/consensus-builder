@@ -81,8 +81,11 @@ git diff 3ee1855...colosseum-worlds-fair
     The public Activity explorer shows all three actions from the same structured event stream.
 11. **Bounded daily autonomy and wallet-grade support UX** — the opt-in PM2 persona schedule uses
     an auditable `$0` deterministic controller and stores its complete decision policy, rationale,
-    x402 payment id and every transaction; it refuses more than one proposal, four possible signed
-    actions or `0.35 USDC` per day by default. The one-off LLM proof remains available as a separate,
+    x402 payment id and every transaction; it refuses more than one proposal or `0.35 USDC` per day
+    by default, and caps signed actions at thirteen: four for the proposal and up to three retirements
+    (cancel, resolve, reclaim) of its own proposals that gathered no acceptance within seven days, so
+    the daily loop reaches a terminal state instead of leaving markets locked open. The one-off LLM
+    proof remains available as a separate,
     explicit controller mode. Human donation and pledge flows show wallet balances, distinguish escrowed
     funds from soft commitments, prevent duplicate submission, expose submitted/confirmed states,
     preserve explorer links on uncertain confirmation and batch large refunds safely.
@@ -192,6 +195,40 @@ git diff 3ee1855...colosseum-worlds-fair
     each mutable devnet program is identified by ProgramData address, last deployment slot and the
     SHA-256 of the binary read back from Solana. This avoids presenting one branch SHA as if it
     described three independently deployed artifacts.
+34. **Executed YES case** — [`hackathon-executed-borovje-2026`](https://urbangametheory.xyz/proposals/hackathon-executed-borovje-2026)
+    ([aggregate JSON](https://api.urbangametheory.xyz/hackathon/cases/hackathon-executed-borovje-2026))
+    is the YES counterpart of the cancelled canonical case on a second two-parcel Borovje set,
+    anchored by proposal account [`2Jcy…EAZB`](https://explorer.solana.com/address/2JcywzEzFg1n8eJh5cBHBPy4XaRig2jD3VbcZco9EAZB?cluster=devnet).
+    Ownership certificates [`3wBS…Ybvd`](https://explorer.solana.com/tx/3wBSmzUNkoV19nJhEgZMcMhf921vgJ2S4obd8pDMVL4P8btg4mJuXSmghcs4h6wt2uymHTjedFUjo6Ygm4FYbvd?cluster=devnet)
+    and [`Hoqu…yVWa`](https://explorer.solana.com/tx/Hoquuys8vtZfFxjWiGkSnQVyAEe7Ystio2wqFCTv8AYYefFTUvBdiMN52vWQfChQGhm7ooFQT4z1UCZBdbPyVWa?cluster=devnet),
+    acceptances [`vGKC…1YKa`](https://explorer.solana.com/tx/vGKCNhwVsFBNMhBULK8DRXRESxVqSCiBFP7WgT2s2VBQ7s986tbHWqBCwZKhbK57m2qDsrCsWFGbCLStH7c1YKa?cluster=devnet)
+    and [`5Us4…sE4p`](https://explorer.solana.com/tx/5Us4w5dnNWEsn8dZwjE27iEdKQvGpT8BXhyY4vf2iyJnhdvoDu3Vs5kXGbEdboqmMVCtMDDTnayV9UiNM4fqsE4p?cluster=devnet)
+    (the second makes the proposal `Executed`), YES resolution [`5TGY…BWjQ`](https://explorer.solana.com/tx/5TGYK3gWc8p83CcMivMiBD3dPVosVXdUWyh8yo3GLqa2D2Frgp2Y7udThVoSNxesPgHFttVGJjDqWtUkFvCCBWjQ?cluster=devnet),
+    donation release [`4yrJ…Z6BW`](https://explorer.solana.com/tx/4yrJioA47DGAiouEm3qyFrZ1RENNeX2YnFvJTztG1sD8RQhnaGDiagXr7PgQUNhjYCH1HAe3f2nfaYfm1jDGZ6BW?cluster=devnet),
+    pledge fulfilment [`5MYa…WBUc`](https://explorer.solana.com/tx/5MYaie9TLWbcVevxQPPVJXWurBqoM2ACWYohGvkheCbLzpjh6kGqi3XnBsi1KE8B6drfGbksaQMvAA5L2SaQWBUc?cluster=devnet)
+    and YES claim [`WZwf…m4WW`](https://explorer.solana.com/tx/WZwfmV9uzKRvqKzsctCuG4HzYuhoZAJNobonyc5mi5hj89jgmNnwDHffVhmNW2RAiCCr2pcSNG64Zaak3Z2m4WW?cluster=devnet)
+    complete all seven stages; the Demo Center renders it with the same card as the cancelled case.
+    The supporter persona holds the devnet ownership certificates of both parcels, so this proves the
+    executed mechanics and YES payout, not real-owner consent.
+    Item 35 replaces that certificate caveat with an attested consent chain.
+35. **Lens model: attested execution** — *built, not yet deployed.* Design of record
+    [`lens-model.md`](lens-model.md); trust boundary in [`docs/protocol.md`](docs/protocol.md#lens-model-and-the-trust-boundary).
+    Parcels become ownerless anchors, the lens becomes a passive list of trusted attesters stored on
+    each proposal, a lens member attests each owner (`ParcelOwnership-v1`, SAS), and every attested
+    owner signs its own acceptance; the last signature makes the proposal `Executed`. Built pieces:
+    v2 of `parcel_nft` (ownerless mint), `proposal_nft` (`accept_with_attestations`,
+    `settle_with_verdict`, per-parcel consent tallies and acceptance records that keep the attestation
+    hash, v1 certificate-holder acceptance removed) and `proposal_market` (Expired → NO, lens-bound
+    external markets), with 136 localnet tests against a byte-exact SAS mock, including
+    member-not-in-lens, signer-not-attested-owner, expired-attestation, double-acceptance and
+    self-lens cases; the `ParcelOwnership-v1` and `ProposalVerdict-v1` schemas and parsers; the
+    attester directory (`GET /lenses/members`); a reference lens member service (`backend/lens/`,
+    x402-priced ownership attestations behind a wallet challenge); the lens picker in the create
+    dialog; the member console ([`lens.html`](frontend/lens.html)); and MCP tools
+    (`ugt_list_attesters`, `ugt_mint_proposal` with a lens, `ugt_request_ownership`). Program ids are
+    unchanged: v2 is an in-place upgrade still to be deployed, one program at a time. Until then
+    devnet runs v1, and the public audit reports `attested_execution`, `no_self_lens` and
+    `attester_diversity` as advisory.
 
 ### Live external-market integration proof
 
@@ -223,7 +260,7 @@ numbered feature list.
 | Contract tests | Anchor suites for the two existing programs | Market and pledge suites, including wrong-owner, wrong-mint, account-substitution and pre-created-vault cases (110 local-validator tests) |
 | Paying to act | None | x402 pay-to-propose and paid verified facts, both listed on the hosted Bazaar |
 | Agents | None | Deterministic and LLM-controlled personas, a supporter, an MCP tool surface over the same executors, and cost-ledgered runs (`backend/agents`, +4,768 lines) |
-| Evidence and resolution | Lens trust concept and EVM (EAS) ownership-attestation scripts; nothing resolved a market | Proposal-lifecycle oracle, court attestations (SAS), recipe-bound resolution, and a genuinely prospective court market |
+| Evidence and resolution | Lens trust concept and EVM (EAS) ownership-attestation scripts; nothing resolved a market | **Lens model** (built, not yet deployed): the proposal's lens is the list of attesters it trusts, lens members attest ownership over SAS, owners sign acceptance, parcels carry no ownership (item 35). Live on devnet: proposal-lifecycle oracle, court attestations (SAS), recipe-bound resolution, and a genuinely prospective court market |
 | Activity and proof | Local game log for the simulation | One activity format and explorer for humans, algorithms and LLMs; public proof manifest, operations endpoint, canonical case page, and public audit command |
 | Tests overall | Existing backend suite | +10,438 lines of backend tests across 80 files |
 
@@ -263,8 +300,11 @@ stages from public data rather than presenting a scripted success state.
 two-parcel set: the wallet holding the devnet ownership certificate of every listed parcel accepts,
 the proposal reaches `Executed` on-chain, the market resolves YES, the donation escrow is released,
 the pledge is fulfilled and the YES position is claimed. The public audit's `executed_case_yes`
-check requires all of that to be complete, so the page states the truth until the run has happened
-rather than presenting a scripted YES.
+check requires all of that to be complete. The run has happened: all seven stages are complete and
+the Demo Center shows the case beside the cancelled one, reading it from the manifest's
+`publicProof.executedCase` and falling back to an explicit pending state if that record is absent.
+Because the accepting wallet is the supporter persona holding the devnet certificates, the case
+proves the executed mechanics and payout, not real-owner consent.
 
 1. Discover the paid proposal capability through the x402/Bazaar metadata.
 2. Run an agent proposal through payment, persistence, and its on-chain transaction link.

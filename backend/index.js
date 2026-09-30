@@ -42,6 +42,7 @@ import { setupAgentDiscoveryRoute } from './routes/agent-discovery.js';
 import { setupWellKnownRoutes } from './routes/well-known.js';
 import { setupAgentOracleFactsRoute } from './routes/agent-oracle-facts.js';
 import { setupLandEventsRoute } from './routes/land-events.js';
+import { setupLensesRoute } from './routes/lenses.js';
 import { setupHackathonProofRoute } from './routes/hackathon-proof.js';
 import { setupHackathonCasesRoute } from './routes/hackathon-cases.js';
 import { setupHackathonOperationsRoute } from './routes/hackathon-operations.js';
@@ -443,6 +444,7 @@ export function createApp({
     setupAgentDiscoveryRoute(app, { env }); // hosted Bazaar listing proof; credentials remain server-side
     setupAgentOracleFactsRoute(app, activePool, { env }); // paid, discoverable recipe-bound oracle facts
     setupLandEventsRoute(app, activePool); // deterministic proposal lifecycle events + recipe declarations
+    setupLensesRoute(app, activePool); // lens attester directory + SAS schema definitions (lens-model.md)
     setupHackathonProofRoute(app, { env }); // public hackathon scope plus redacted prospective resolver status
     setupHackathonCasesRoute(app, activePool, { env }); // one data-derived proposal → support/forecast/evidence graph
     setupHackathonOperationsRoute(app, activePool, { env }); // redacted scheduled-job outcomes and freshness

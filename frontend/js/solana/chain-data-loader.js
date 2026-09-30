@@ -168,6 +168,20 @@
             const acceptanceCount = offset + 8 <= body.length ? new DataView(body.buffer, body.byteOffset + offset, 8).getBigUint64(0, true) : 0n;
             offset += 8;
             const acceptedParcels = readVecString();
+            // lens: Vec<Pubkey>, bump: u8, then v2's verdict_may_execute: bool; the fixed-size
+            // account's zero padding follows and is ignored (v1-era accounts read false there).
+            // A malformed lens vector is reported, not replaced.
+            let lens = [];
+            let lensError = null;
+            let verdictMayExecute = false;
+            try {
+                const tail = globalScope.LensCore.decodeProposalLensTail(body, offset);
+                lens = tail.lens;
+                verdictMayExecute = tail.bump !== null && tail.offset < body.length && body[tail.offset] === 1;
+            } catch (error) {
+                lensError = error && error.message ? error.message : String(error);
+                console.warn(`[${new Date().toISOString()}] [SolanaChainDataLoader] proposal ${address}: lens not decodable: ${lensError}`);
+            }
 
             return {
                 proposalId: address,
@@ -185,7 +199,10 @@
                 expiryTimestamp: '0',
                 expiringPercentage: '0',
                 owner,
-                acceptedParcels: acceptedParcels || []
+                acceptedParcels: acceptedParcels || [],
+                lens,
+                lensError,
+                verdictMayExecute
             };
         } catch (_) {
             return null;
@@ -282,7 +299,7 @@
             if (account.data.length < 20) continue;
             const parsed = parseProposalAccount(account.data, pubkey.toString());
             if (parsed && parsed.owner === walletAddress) {
-                proposals.push({ ...parsed, lens: [] });
+                proposals.push(parsed);
             }
         }
         return proposals;

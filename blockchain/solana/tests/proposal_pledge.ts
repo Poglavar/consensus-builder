@@ -24,6 +24,7 @@ import {
     findParcelPDA,
     initializeProposalCounter,
 } from "./helpers.ts";
+import { LensMember, attestAndAccept, createLensMember, ensureParcelAnchor } from "./sas-mock.ts";
 
 const COMMITMENT_ACTIVE = 0;
 const COMMITMENT_FULFILLED = 1;
@@ -59,6 +60,7 @@ describe("proposal_pledge", () => {
     let counterPDA: PublicKey;
     let fakeMint: PublicKey;
     const creator = Keypair.generate(); // owns every proposal below, so it is the captured beneficiary
+    let creatorLens: LensMember; // creator is also the (self-)lens of every proposal below
     let beneficiaryUsdc: PublicKey;
     let donorA: Party, donorB: Party, pledgerA: Party, pledgerB: Party, pledgerC: Party, attacker: Party;
 
@@ -93,6 +95,7 @@ describe("proposal_pledge", () => {
         [donorA, donorB, pledgerA, pledgerB, attacker] = await Promise.all(keypairs.slice(0, 5).map(kp => party(kp)));
         pledgerC = await party(keypairs[5], false); // pledges but never holds USDC
         beneficiaryUsdc = getAssociatedTokenAddressSync(USDC, creator.publicKey);
+        creatorLens = await createLensMember(provider, creator);
     });
 
     // ========================
@@ -111,31 +114,21 @@ describe("proposal_pledge", () => {
 
     async function newProposal(tag: string): Promise<Prop> {
         const parcelId = `HR-plg-${tag}`;
-        await parcelProgram.methods
-            .mintParcel(parcelId, `ipfs://${parcelId}`)
-            .accounts({ parcel: findParcelPDA(parcelProgram.programId, parcelId)[0], owner: provider.wallet.publicKey, systemProgram: SystemProgram.programId } as any)
-            .rpc();
+        await ensureParcelAnchor(parcelProgram, parcelId);
         const count = (await proposalProgram.account.proposalCounter.fetch(counterPDA)).count as any;
         const [proposal] = findProposalPDA(proposalProgram.programId, count.toNumber());
         await proposalProgram.methods
-            .mintAndFund([parcelId], false, "ipfs://pledge-test", new anchor.BN(0), [creator.publicKey])
+            .mintAndFund([parcelId], false, "ipfs://pledge-test", new anchor.BN(0), [creator.publicKey], false)
             .accounts({ proposal, proposalCounter: counterPDA, owner: creator.publicKey, systemProgram: SystemProgram.programId } as any)
             .signers([creator])
             .rpc();
         return { proposal, parcelId };
     }
 
-    /** The provider wallet owns the single parcel, so its acceptance executes the proposal. */
+    /** The creator (the proposal's lens) attests the provider wallet as sole owner of the single
+     * parcel, and that wallet's acceptance executes the proposal. */
     async function execute(p: Prop) {
-        await proposalProgram.methods
-            .acceptProposal(p.parcelId)
-            .accounts({
-                proposal: p.proposal,
-                parcel: findParcelPDA(parcelProgram.programId, p.parcelId)[0],
-                parcelProgram: parcelProgram.programId,
-                accepter: provider.wallet.publicKey,
-            } as any)
-            .rpc();
+        await attestAndAccept(proposalProgram, creatorLens, { proposal: p.proposal, parcelId: p.parcelId, owner: payer });
         expect((await proposalProgram.account.proposal.fetch(p.proposal)).status).to.deep.equal({ executed: {} });
     }
 

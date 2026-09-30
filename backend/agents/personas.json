@@ -1,5 +1,5 @@
 {
-  "_comment": "Server-side agent personas (design §WS3). Keypairs live outside the repo at keypairPath. Proposer and supporter roles share the same controller, checkpoint and activity system.",
+  "_comment": "Server-side agent personas (design §WS3). Keypairs live outside the repo at keypairPath. Proposer and supporter roles share the same controller, checkpoint and activity system. A lens-member persona runs the reference lens member (backend/lens/) via agents/lens-member-run.mjs; wallet null = key not generated yet.",
   "personas": [
     {
       "name": "densifier-01",
@@ -20,6 +20,20 @@
         "cities": ["zagreb"],
         "actions": ["pledge"],
         "amountUsdc": "0.10"
+      }
+    },
+    {
+      "name": "notary-01",
+      "role": "lens-member",
+      "wallet": "5x8hiYo9V6kWpG8eVoyXZf4BHXnKSoCP3r7r3PyMBg4z",
+      "keypairPath": "~/.config/solana/ugt-notary-01.json",
+      "service": {
+        "port": 3095,
+        "url": "http://127.0.0.1:3095",
+        "kind": "owner-consent",
+        "priceUsdc": "0.01",
+        "credentialName": "LensMember",
+        "identity": "devnet-registry"
       }
     }
   ]

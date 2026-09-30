@@ -11,15 +11,19 @@ import { buyOracleFact, createOracleFactClient, fetchOracleFactChallenge } from 
 import { ensurePledgeBookAndSet } from './pledger.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import { createPaidClient, fetchChallenge, paymentIdForProposal, postAgentProposal } from './x402-client.js';
+import { mintProposal } from './minter.js';
+import { fetchLensMembers, parseLensList } from './lens-directory-client.js';
+import { fetchLensStatus, findOwnershipAttestation, requestOwnershipAttestation } from './lens-ownership-client.js';
 import {
-    acceptProposal, cancelProposal, claimExternalMarket, claimProposalMarket, fulfillPledge,
-    refundDonation, releaseDonations, resolveExternalMarket, resolveProposalMarket, revokePledge,
-    voidPledge
+    acceptWithAttestations, cancelProposal, claimExternalMarket, claimProposalMarket, DEFAULT_CREDENTIAL_NAME,
+    fulfillPledge, refundDonation, releaseDonations, resolveExternalMarket, resolveProposalMarket, revokePledge,
+    settleWithVerdict, voidPledge
 } from './lifecycle-actions.js';
 
 const DEFAULT_API_BASE = 'https://api.urbangametheory.xyz';
 const DEFAULT_RPC_URL = 'https://api.devnet.solana.com';
 const USDC_DEVNET = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
+const PROPOSAL_NFT_PROGRAM = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
 const SIDE = Object.freeze({ no: 0, yes: 1 });
 
 function enabled(value) {
@@ -108,7 +112,8 @@ export function createUrbanGameTheoryTools({
         ensurePledgeBookAndSet,
         ensureDonationEscrowAndDonate,
         ensureMarketAndStake,
-        acceptProposal,
+        acceptWithAttestations,
+        settleWithVerdict,
         cancelProposal,
         refundDonation,
         revokePledge,
@@ -120,6 +125,11 @@ export function createUrbanGameTheoryTools({
         resolveExternalMarket,
         claimExternalMarket,
         sendAndConfirmPolling,
+        fetchLensMembers,
+        requestOwnershipAttestation,
+        findOwnershipAttestation,
+        fetchLensStatus,
+        mintProposal,
         ...dependencies
     };
     let signing = null;
@@ -173,6 +183,43 @@ export function createUrbanGameTheoryTools({
             fetchImpl,
             withQuery(apiBase, '/oracle/events', { subject: proposalAccount, limit })
         ),
+
+        async listAttesters({ kind } = {}) {
+            const members = await impl.fetchLensMembers({ apiBase, fetchImpl });
+            return { members: kind ? members.filter(member => member.kind === kind) : members };
+        },
+
+        // Challenge → sign with UGT_AGENT_KEYPAIR → POST /lens/ownership on the member's own service.
+        // Signing a challenge moves nothing; only the x402 payment of a priced member needs the live gate.
+        async requestOwnership({ serviceUrl, parcelUid, confirm } = {}) {
+            const { secretKey } = signer();
+            return impl.requestOwnershipAttestation({
+                serviceUrl, parcelUid, secretKey, fetchImpl,
+                pay: async ({ challenge, paymentId, url, init }) => {
+                    requireLive(confirm);
+                    assertChallengeUnderCap(challenge, maxUsdcPerAction, 'ownership attestation');
+                    const { paidFetch } = await impl.createPaidClient({ secretKey, paymentId, rpcUrl, fetchImpl });
+                    return paidFetch(url, init);
+                }
+            });
+        },
+
+        async mintProposal({ parcelIds, lens, imageUri = '', isConditional = true, confirm } = {}) {
+            requireLive(confirm);
+            if (!Array.isArray(parcelIds) || !parcelIds.length) throw new Error('parcelIds must contain at least one parcel id');
+            const lensKeys = parseLensList(lens || []);
+            if (!lensKeys.length) throw new Error('lens must name at least one lens member key (see ugt_list_attesters)');
+            const { keypair, connection } = signer();
+            const self = keypair.publicKey.toBase58();
+            if (lensKeys.length === 1 && lensKeys[0] === self) {
+                throw new Error(`lens names only this agent's own key ${self}; a self-lens lets the proposer decide its own proposal`);
+            }
+            return impl.mintProposal({
+                connection, programId: PROPOSAL_NFT_PROGRAM, ownerKeypair: keypair, parcelIds,
+                isConditional, imageUri, lamports: 0n, lens: lensKeys,
+                sendAndConfirm: impl.sendAndConfirmPolling
+            });
+        },
 
         inspectVerifiedFact: ({ proposalAccount, marketAccount } = {}) => impl.fetchOracleFactChallenge({
             baseUrl: apiBase, proposalAccount, marketAccount, fetchImpl
@@ -250,11 +297,44 @@ export function createUrbanGameTheoryTools({
             });
         },
 
-        async accept({ proposalAccount, parcelId, confirm } = {}) {
+        // The agent key says yes to one parcel as an attested owner (accept_with_attestations). Without
+        // an explicit attestation it is looked up on the member's own service (serviceUrl from the
+        // attester directory, GET /lens/attestations), and the credential name from its GET /lens/status.
+        async acceptParcel({ proposalAccount, parcelId, member, ownershipAttestation, payout, confirm } = {}) {
             requireLive(confirm);
             const { keypair, connection } = signer();
-            return impl.acceptProposal({
-                connection, accepterKeypair: keypair, proposalAccount, parcelId,
+            const owner = keypair.publicKey.toBase58();
+            let attestation = ownershipAttestation || null;
+            let credentialName = DEFAULT_CREDENTIAL_NAME;
+            let lookedUp = null;
+            const members = await impl.fetchLensMembers({ apiBase, fetchImpl }).catch(error => {
+                if (attestation) return [];
+                throw error;
+            });
+            const serviceUrl = members.find(item => item.key === member)?.serviceUrl || null;
+            if (!attestation) {
+                if (!serviceUrl) throw new Error(`lens member ${member} publishes no serviceUrl in the attester directory; pass ownershipAttestation explicitly`);
+                lookedUp = await impl.findOwnershipAttestation({ serviceUrl, parcelUid: parcelId, owner, member, fetchImpl });
+                attestation = lookedUp.address;
+            }
+            if (serviceUrl) credentialName = (await impl.fetchLensStatus({ serviceUrl, fetchImpl })).credentialName || credentialName;
+            const result = await impl.acceptWithAttestations({
+                connection, ownerKeypair: keypair, proposalAccount, parcelId, ownershipAttestation: attestation,
+                member, credentialName, payout: payout || null, sendAndConfirm: impl.sendAndConfirmPolling
+            });
+            return { ...result, owner, member, ownershipAttestation: attestation, attestationSource: lookedUp ? `${serviceUrl}/lens/attestations` : 'argument' };
+        },
+
+        // Permissionless: submit a lens member's ProposalVerdict-v1 (settle_with_verdict).
+        async submitVerdict({ proposalAccount, verdictAttestation, member, confirm } = {}) {
+            requireLive(confirm);
+            const { keypair, connection } = signer();
+            let credentialName = DEFAULT_CREDENTIAL_NAME;
+            const members = await impl.fetchLensMembers({ apiBase, fetchImpl }).catch(() => []);
+            const serviceUrl = members.find(item => item.key === member)?.serviceUrl || null;
+            if (serviceUrl) credentialName = (await impl.fetchLensStatus({ serviceUrl, fetchImpl })).credentialName || credentialName;
+            return impl.settleWithVerdict({
+                connection, submitterKeypair: keypair, proposalAccount, verdictAttestation, member, credentialName,
                 sendAndConfirm: impl.sendAndConfirmPolling
             });
         },

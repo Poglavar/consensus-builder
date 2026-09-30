@@ -154,6 +154,16 @@
         return lensEntries.slice();
     }
 
+    // On the Solana path the lens is the picker's member keys (lens-picker.js); the EVM list with
+    // its 0x defaults stays untouched for the EVM path.
+    function isSolanaLensPath() {
+        return !!(window.LensPicker && window.LensPicker.isActive());
+    }
+
+    function getLensEntriesForActivePath() {
+        return isSolanaLensPath() ? window.LensPicker.getEntries() : getActiveLensEntries();
+    }
+
     function normalizeChainId(chainId) {
         if (chainId === undefined || chainId === null) return null;
         try {
@@ -242,7 +252,7 @@
     }
 
     function refreshLensPatternPreviews() {
-        const patternUrl = getLensPatternDataUrl();
+        const patternUrl = getLensPatternDataUrl(getLensEntriesForActivePath());
         document.querySelectorAll('[data-lens-pattern]').forEach(el => {
             if (el.tagName === 'IMG') {
                 el.src = patternUrl;
@@ -424,6 +434,10 @@
 
         const opts = options && typeof options === 'object' && !Array.isArray(options) ? options : {};
         const readOnly = opts.readOnly === true;
+        if (!readOnly && isSolanaLensPath()) {
+            window.LensPicker.show();
+            return;
+        }
         const sourceEntries = Array.isArray(opts.entries) ? sanitizeEntries(opts.entries) : getActiveLensEntries();
 
         const title = (typeof opts.title === 'string' && opts.title.trim())
@@ -571,7 +585,8 @@
 
     window.showLensModal = showLensModal;
     window.closeLensModal = closeLensModal;
-    window.getLensEntries = getActiveLensEntries;
+    window.getLensEntries = getLensEntriesForActivePath;
+    window.isSolanaLensPath = isSolanaLensPath;
     window.getLensPatternDataUrl = getLensPatternDataUrl;
     window.refreshLensPatternPreviews = refreshLensPatternPreviews;
 })();

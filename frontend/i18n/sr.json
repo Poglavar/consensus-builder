@@ -1003,7 +1003,8 @@
                 "undo": "Poništi",
                 "accepted": "Prihvaćeno",
                 "pending": "Na čekanju",
-                "recipient": "primalac"
+                "recipient": "primalac",
+                "solanaLensHint": "Recite da u kartici Sočivo"
             },
             "voting": {
                 "voteYes": "Glasaj za",
@@ -1158,6 +1159,65 @@
                 "fulfill": "Ispuni moje obećanje",
                 "refund": "Vrati moje donacije",
                 "void": "Poništi moje obećanje"
+            },
+            "lens": {
+                "eyebrow": "Pouzdani potvrđivači",
+                "title": "Sočivo",
+                "loading": "Učitavanje sočiva…",
+                "empty": "Ovaj predlog ne navodi sočivo.",
+                "directoryUnavailable": "Imenik članova nije dostupan; prikazuju se samo ključevi.",
+                "unknownMember": "nije u imeniku",
+                "ownershipTitle": "Potvrda vlasništva",
+                "ownershipHint": "Ako ste vlasnik neke od ovih parcela, zatražite od člana sočiva potvrdu: vaš novčanik potpisuje jednokratni izazov, član proverava svoj registar i izdaje potvrdu.",
+                "memberSelect": "Član sočiva",
+                "requestAttestation": "Potvrdi moje vlasništvo",
+                "noServiceUrl": "Nema URL-a servisa: nijedan član ovog sočiva ne objavljuje gde da se zatraži potvrda.",
+                "noServiceUrlShort": "nema URL-a servisa",
+                "working": "Čeka se novčanik i član sočiva…",
+                "attested": "Potvrđeno.",
+                "attestedExisting": "Već potvrđeno.",
+                "attestationAddress": "Potvrda",
+                "accountHash": "Heš naloga",
+                "noWallet": "U ovom pregledaču nije pronađen Solana novčanik.",
+                "noSignMessage": "Ovaj novčanik ne može da potpisuje poruke.",
+                "paymentRequired": "Ovaj član sočiva naplaćuje {{price}} po potvrdi vlasništva, plaćeno preko x402. Plaćanje iz pregledača još nije podržano; može ga platiti agent ili x402 klijent iz komandne linije.",
+                "paymentRequiredNoPrice": "Ovaj član sočiva traži x402 plaćanje za potvrde vlasništva. Plaćanje iz pregledača još nije podržano.",
+                "badChallenge": "Servis je vratio izazov koji ne odgovara ovom novčaniku i parceli ({{reason}}); ništa nije potpisano.",
+                "notConfigured": "Ovaj član sočiva nije podešen za izdavanje potvrda: {{message}}",
+                "refused": "Član sočiva je odbio: {{message}}",
+                "noSignTransaction": "Ovaj novčanik ne može da potpisuje transakcije.",
+                "findingAttestation": "Tražim potvrdu vašeg vlasništva…",
+                "preparing": "Pripremam transakciju…",
+                "awaitingSignature": "Čekam potpis vašeg novčanika…",
+                "submitted": "Poslato; čekam potvrdu…",
+                "viewTransaction": "Prikaži transakciju",
+                "noAttestation": "Nijedan član sočiva nije potvrdio ovaj novčanik kao vlasnika ove parcele. Prvo upotrebite \"Potvrdi moje vlasništvo\".",
+                "noAttestationMember": "Nema potvrde vlasništva za ovaj novčanik od člana {{member}}, koji je otvorio zbir za ovu parcelu. Prvo ga zatražite preko \"Potvrdi moje vlasništvo\".",
+                "alreadyAccepted": "Ovaj novčanik je već rekao da za ovu parcelu.",
+                "badPayout": "Adresa za isplatu mora biti Solana adresa ili prazna.",
+                "badVerdictAddress": "Nalepite adresu potvrde presude.",
+                "precheckFailed": "Program bi ovo odbio ({{reason}}); ništa nije potpisano.",
+                "consentLoading": "Čitam saglasnosti sa lanca…",
+                "consentComplete": "Saglasnost potpuna: {{accepted}} od {{required}} potvrđenih vlasnika reklo je da.",
+                "consentCompleteLegacy": "Prihvaćeno na lancu.",
+                "consentProgress": "{{accepted}} od {{required}} potvrđenih vlasnika reklo je da (vlasnike je potvrdio {{member}}).",
+                "consentNone": "Nijedan potvrđeni vlasnik još nije rekao da.",
+                "consentYours": "Vaš novčanik je rekao da.",
+                "consentUnavailable": "Stanje saglasnosti nije dostupno: {{message}}",
+                "proposalStatus": "Stanje na lancu: {{status}}.",
+                "payoutPlaceholder": "Adresa za isplatu (neobavezno)",
+                "payoutLabel": "Adresa za isplatu vašeg udela u sredstvima predloga (neobavezno)",
+                "sayYes": "Reci da",
+                "sayYesHint": "Posle potvrde, \"Reci da\" potpisuje vašu saglasnost na lancu. Svaki vlasnik kog je član potvrdio mora da kaže da pre nego što se parcela računa; da se ne može povući.",
+                "saidYes": "Rekli ste da.",
+                "tallyAfter": "Potpisalo je {{accepted}} od {{required}} potvrđenih vlasnika.",
+                "parcelComplete": "Saglasnost za ovu parcelu je potpuna.",
+                "proposalExecuted": "Sve parcele su saglasne: predlog je izvršen.",
+                "verdictTitle": "Reši presudom",
+                "verdictHint": "Bilo ko može da preda potvrdu presude člana sočiva. \"expired\" završava predlog; \"executed\" važi samo za predloge iskovane tako da je prihvataju.",
+                "verdictPlaceholder": "Adresa potvrde presude",
+                "submitVerdict": "Predaj presudu",
+                "verdictSettled": "Presuda \"{{verdict}}\" člana {{member}} je primenjena; stanje na lancu je sada {{status}}."
             }
         },
         "block": {
@@ -1445,7 +1505,37 @@
             "readOnlyTitle": "Sočivo predloga",
             "readOnlySubtitle": "Sačuvano u ovom predlogu; izmena je onemogućena.",
             "readOnlyNote": "Ovo sočivo je ugrađeno u predlog i ne može se uređivati.",
-            "proposalTriggerTitle": "Pregled sočiva predloga (samo čitanje)"
+            "proposalTriggerTitle": "Pregled sočiva predloga (samo čitanje)",
+            "picker": {
+                "title": "Sočivo ovog predloga",
+                "subtitle": "Izaberite članove sočiva čije će potvrde vlasništva ovaj predlog prihvatati. Sočivo se fiksira pri mintovanju.",
+                "loading": "Učitavanje članova sočiva…",
+                "loadFailed": "Imenik članova sočiva nije mogao da se učita: {{error}}",
+                "emptyDirectory": "Još nema poznatih članova sočiva. Nalepite ključ člana ispod.",
+                "coverageCounts": "{{ownership}} potvrda vlasništva · {{parcels}} parcela · {{executed}} izvršeno",
+                "noServiceUrl": "Nema URL-a servisa: pokrivenost izabranih parcela nije poznata",
+                "coverageLoading": "Provera izabranih parcela…",
+                "coverageUnavailable": "Servis nije odgovorio; pokrivenost nepoznata",
+                "coverageSelected": "Potvrđuje {{covered}} od {{total}} izabranih parcela",
+                "parcelsTitle": "Izabrane parcele",
+                "parcelUnknown": "pokrivenost nepoznata",
+                "parcelCoveredBy": "potvrdio: {{members}}",
+                "parcelNotCovered": "nema potvrde vlasništva iz vašeg sočiva",
+                "onlyCovered": "Samo parcele koje pokriva moje sočivo",
+                "noParcelCoverage": "Nijedan član sočiva ne objavljuje URL servisa pa se pokrivenost po parceli ne može prikazati; brojevi iznad su ukupni podaci iz imenika.",
+                "noCoveredParcels": "Vaše sočivo ne pokriva nijednu izabranu parcelu.",
+                "pasteLabel": "Nalepite ključ",
+                "pastePlaceholder": "Javni ključ (base58)",
+                "pasteAdd": "Dodaj",
+                "pasteInvalid": "Nije Solana javni ključ: {{value}}",
+                "chosenCount": {
+                    "one": "Izabran {{count}} član sočiva",
+                    "few": "Izabrana {{count}} člana sočiva",
+                    "other": "Izabrano {{count}} članova sočiva"
+                },
+                "required": "Izaberite bar jednog člana sočiva; Solana predlog se bez njega ne može mintovati.",
+                "done": "Gotovo"
+            }
         },
         "dataSource": {
             "changeWarning": "Promena izvora podataka OBRISAĆE sve lokalno sačuvane podatke (parcele, putevi, predlozi, planovi, korisnička podešavanja itd.).\n\nDa li želite da nastavite?"
@@ -2355,7 +2445,13 @@
                 "cancel": "Otkaži",
                 "confirm": "Kreiraj",
                 "createInMemory": "Napravi u memoriji",
-                "mintPrerequisites": "Iskuj preduslove"
+                "mintPrerequisites": "Iskuj preduslove",
+                "anchorMessageSingle": "Sledeća parcela još nema sidro parcele na <strong>{{chain}}</strong>, pa predlog za nju ne može da se iskuje na lancu:",
+                "anchorMessagePlural": "Sledeće parcele još nemaju sidro parcele na <strong>{{chain}}</strong>, pa predlog za njih ne može da se iskuje na lancu:",
+                "anchorExplainer": "Sidro parcele je identitet parcele na lancu. Niko ga ne poseduje i njegovo stvaranje ne daje vlasništvo; plaćate samo njegovu zakupninu. Vlasništvo dolazi na lanac zasebno, kao potvrda člana sočiva. Sidra možete da stvorite i u kartici Alati na panelu Informacije o parceli.",
+                "createAnchor": "Stvori sidro parcele",
+                "createAnchors": "Stvori sidra parcela",
+                "anchorThenCreate": "Stvorite sidra parcela, zatim ponovo kliknite Stvori."
             },
             "onchainMintFailed": {
                 "cancel": "Otkaži",
@@ -3186,7 +3282,10 @@
             "block_multiselect_off": "Višestruki izbor nije mogao da se uključi, a blok se isporučuje kao izbor više parcela.",
             "activity_no_parcel_set": "Ovaj predlog nema učitan kanonski skup parcela.",
             "blockchain_mint_wallet_prompt": "Kovanje na blockchainu je dostupno, ali nijedan novčanik nije povezan. Želiš li da povežeš novčanik i iskuješ ovaj predlog na blockchainu?",
-            "failed_to_create_proposal": "Izrada predloga nije uspela."
+            "failed_to_create_proposal": "Izrada predloga nije uspela.",
+            "solana_lens_required": "Pre mintovanja na Solani izaberite bar jednog člana sočiva (dugme 👓).",
+            "solana_accept_in_lens_card": "Na Solani vlasnici kažu da u kartici Sočivo predloga: član sočiva potvrdi vaše vlasništvo, zatim vaš novčanik potpiše.",
+            "solana_acceptance_final": "Prihvatanja na Solani su konačna: potpisano da ne može da se povuče."
         }
     },
     "gameDialogs": {
@@ -3485,5 +3584,79 @@
     "claims": {
         "onParcels": "Na parcelama:",
         "cadastreViewToggle": "Katastarski prikaz: samo izvorne parcele"
+    },
+    "lensConsole": {
+        "title": "Konzola člana sočiva",
+        "intro": "Član sočiva iznosi činjenice o parcelama kao potvrde. Usmerite ovu konzolu na svoj servis člana da vidite šta je izdao i da zabeležite presude.",
+        "backToMap": "Nazad na mapu",
+        "loading": "Učitavanje…",
+        "service": {
+            "title": "Servis člana",
+            "directoryLabel": "Poznati članovi sa URL-om servisa",
+            "directoryPick": "Izaberite člana…",
+            "directoryNone": "Nijedan član u imeniku ne objavljuje URL servisa",
+            "urlLabel": "URL servisa",
+            "load": "Učitaj"
+        },
+        "status": {
+            "key": "Ključ člana",
+            "kind": "Vrsta",
+            "identity": "Provera identiteta",
+            "credential": "Akreditiv",
+            "counts": "Izdato",
+            "price": "Cena potvrde vlasništva",
+            "free": "bez cene (besplatno ili nije podešeno)",
+            "dryRun": "Probni rad: potvrde se grade u memoriji i nikad ne stižu na lanac.",
+            "ephemeral": "Privremeni ključ: ovaj član nema trajni identitet; pokrenite ga sa parom ključeva da bi mogao da bude u sočivu."
+        },
+        "wallet": {
+            "title": "Novčanik člana",
+            "connect": "Poveži novčanik",
+            "disconnected": "Novčanik nije povezan.",
+            "none": "U ovom pregledaču nije pronađen Solana novčanik.",
+            "address": "Novčanik",
+            "matches": "Ovaj novčanik je ključ člana učitanog servisa.",
+            "differs": "Ovaj novčanik nije ključ člana učitanog servisa ({{key}})."
+        },
+        "attestations": {
+            "title": "Izdate potvrde",
+            "kind": "Vrsta",
+            "kindAll": "Sve",
+            "kindOwnership": "Vlasništvo",
+            "kindVerdict": "Presuda",
+            "parcel": "Parcela",
+            "owner": "Vlasnik",
+            "hash": "Heš naloga",
+            "issuedAt": "Izdato (vreme lanca)",
+            "unknownTime": "nepoznato",
+            "load": "Osveži",
+            "empty": "Nijedna potvrda ne odgovara."
+        },
+        "verdict": {
+            "title": "Presuda operatera",
+            "hint": "Presuda utvrđuje da je predlog izvršen (za vrste dokaza bez pristanka po parceli, npr. registar dozvola) ili da je istekao. Može je objaviti samo operater člana.",
+            "proposal": "Nalog predloga",
+            "verdict": "Presuda",
+            "executed": "izvršen",
+            "expired": "istekao",
+            "evidence": "Referenca dokaza (opciono)",
+            "observed": "Kada ga je izvor zabeležio",
+            "token": "Token operatera (ne čuva se)",
+            "submit": "Objavi presudu",
+            "done": "Presuda potvrđena.",
+            "reused": "Već potvrđeno; vraćena je sačuvana presuda.",
+            "errors": {
+                "proposal": "Nalog predloga mora biti Solana javni ključ.",
+                "verdict": "Izaberite izvršen ili istekao.",
+                "time": "Unesite kada je izvor zabeležio ishod.",
+                "token": "Unesite token operatera."
+            }
+        },
+        "errors": {
+            "network": "Servis nije dostupan ({{message}}). Da li radi i da li dozvoljava ovo poreklo (CORS)?",
+            "http": "Servis je odgovorio {{status}}: {{message}}",
+            "noService": "Prvo učitajte URL servisa.",
+            "badUrl": "Unesite http(s) URL servisa člana sočiva."
+        }
     }
 }

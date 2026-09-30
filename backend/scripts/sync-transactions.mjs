@@ -19,16 +19,11 @@
 
 import pkg from 'pg';
 import 'dotenv/config';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
 import { Connection } from '@solana/web3.js';
-import { buildAddressBook, watchedAddresses } from '../solana/address-book.js';
-import { syncTransactions, countTransactions, DEFAULT_SIGNATURE_SCAN_LIMIT, FETCH_CHUNK_SPACING_MS } from '../solana/tx-store.js';
+import { DEFAULT_SIGNATURE_SCAN_LIMIT, FETCH_CHUNK_SPACING_MS } from '../solana/tx-store.js';
+import { runTransactionSync, readPersonasFile, timestampedLog as log } from '../solana/transaction-sync-job.js';
 
 const { Pool } = pkg;
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const CLUSTER = 'devnet';
 
 function usage() {
     console.log([
@@ -46,8 +41,6 @@ function usage() {
         '  PGHOST=localhost node scripts/sync-transactions.mjs --run --limit 25'
     ].join('\n'));
 }
-
-const log = (message) => console.log(`[${new Date().toISOString()}] ${message}`);
 
 function parseArgs(argv) {
     const args = { run: false, dryRun: false, limit: DEFAULT_SIGNATURE_SCAN_LIMIT, spacing: FETCH_CHUNK_SPACING_MS, help: false };
@@ -86,9 +79,7 @@ async function main() {
         return;
     }
 
-    const personas = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'agents', 'personas.json'), 'utf8'));
-    const book = buildAddressBook({ env: process.env, personas });
-    const watched = watchedAddresses(book);
+    const personas = readPersonasFile();
 
     const pool = new Pool({
         host: process.env.PGHOST,
@@ -100,33 +91,16 @@ async function main() {
     const connection = new Connection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
 
     try {
-        const before = await countTransactions(pool, CLUSTER);
-        log(`store holds ${before} ${CLUSTER} transactions; scanning ${watched.length} watched addresses (limit ${args.limit}, chunk spacing ${args.spacing}ms)${args.dryRun ? ' — DRY RUN, nothing will be fetched or written' : ''}`);
-
-        const started = Date.now();
-        const result = await syncTransactions({
+        const result = await runTransactionSync({
             pool,
             connection,
-            watched,
+            env: process.env,
+            personas,
             limit: args.limit,
-            cluster: CLUSTER,
-            chunkSpacingMs: args.spacing,
+            spacing: args.spacing,
             dryRun: args.dryRun,
-            onProgress: ({ phase, done, total, address, signatures, stored }) => {
-                if (phase === 'scan') {
-                    log(`  scan ${done}/${total} · ${book.labelFor(address).label || address} · ${signatures} signatures seen`);
-                } else if (total > 0) {
-                    const elapsed = (Date.now() - started) / 1000;
-                    const rate = done > 0 ? elapsed / done : 0;
-                    const eta = rate > 0 ? `· ETA ${Math.round(rate * (total - done))}s` : '';
-                    log(`  fetch ${done}/${total} · stored ${stored ?? 0} ${eta}`);
-                }
-            }
+            log
         });
-
-        const after = await countTransactions(pool, CLUSTER);
-        log(`scanned ${result.scanned} signatures · ${result.newSignatures} not in the store · fetched ${result.fetched} · failed ${result.failed}`);
-        log(`store now holds ${after} transactions (+${after - before}) in ${((Date.now() - started) / 1000).toFixed(1)}s`);
 
         if (result.error) {
             log(`INCOMPLETE — ${result.error}`);

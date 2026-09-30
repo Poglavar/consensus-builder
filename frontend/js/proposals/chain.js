@@ -136,11 +136,18 @@ async function fetchLensFromChain(proposal) {
     try {
         if (!proposal || !proposal.onchain || !proposal.onchain.proposalId) return [];
         const chainId = proposal.onchain.chainId || (typeof normalizeChainId === 'function' ? normalizeChainId(window?.DEFAULT_CHAIN_ID) : null);
-        // Lens is an EVM ProposalNFT field; the Solana program stores none (SolanaChainDataLoader
-        // parses proposals with lens: []), so never hand a Solana cluster id to the EVM provider.
+        // Solana proposals carry `lens: Vec<Pubkey>` in the proposal account itself; read it there and
+        // never hand a Solana cluster id to the EVM provider.
         const chainKey = String(chainId || '').toLowerCase();
         if (proposal.chainType === 'solana' || proposal.onchain.chainType === 'solana' || chainKey === 'solana' || chainKey.startsWith('solana-')) {
-            return [];
+            const loader = window.SolanaChainDataLoader;
+            if (typeof window.ensureWalletVendors === 'function') await window.ensureWalletVendors();
+            if (!loader || !window.solanaWeb3) return [];
+            const cluster = chainKey.replace(/^solana-?/, '') || 'devnet';
+            const account = String(proposal.onchain.proposalId);
+            const info = await loader.getConnection(cluster).getAccountInfo(new window.solanaWeb3.PublicKey(account));
+            const parsed = info && info.data ? loader.parseProposalAccount(info.data, account) : null;
+            return normalizeLensEntries(parsed && Array.isArray(parsed.lens) ? parsed.lens : []);
         }
         let contractAddress = proposal.onchain.contractAddress || null;
         if (!contractAddress && typeof window !== 'undefined' && window.ChainDataLoader && typeof window.ChainDataLoader.resolveContractAddress === 'function') {

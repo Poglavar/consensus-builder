@@ -72,6 +72,7 @@ describe('GET /llms.txt', () => {
         expect(res.text.startsWith('# Urban Game Theory API\n')).toBe(true);
         expect(res.text).toContain('(https://api.example.test/docs/agents)');
         expect(res.text).toContain('POST https://api.example.test/agent/proposals');
+        expect(res.text).toContain('https://api.example.test/agent/lenses/members');
     });
 });
 
@@ -87,6 +88,22 @@ describe('GET /openapi.json', () => {
         expect(schema.$schema).toBeUndefined();
         expect(post['x-x402']).toEqual({ price: '$0.05', network: 'solana:devnet', payTo: env.X402_PAY_TO });
         expect(post.responses[402]).toBeDefined();
+    });
+
+    it('lists the lens directory and schema endpoints and the recipe lens field', async () => {
+        const res = await request(appFor()).get('/openapi.json');
+        for (const path of ['/lenses/members', '/agent/lenses/members', '/lenses/schemas']) {
+            expect(res.body.paths[path]?.get, path).toBeDefined();
+        }
+        const members = res.body.paths['/lenses/members'].get.responses[200].content['application/json'].schema;
+        const item = members.properties.members.items;
+        expect(Object.keys(item.properties.coverage.properties)).toEqual(['ownership', 'parcels', 'executed']);
+        expect(item.required).toContain('serviceUrl');
+        expect(item.properties.serviceUrl.type).toEqual(['string', 'null']);
+        expect(item.properties.kind.enum).toEqual(['owner-consent', 'court', 'permit', 'imagery', 'osm', 'lifecycle', null]);
+        const lens = res.body.paths['/agent/proposals'].post.requestBody.content['application/json'].schema.properties.lens;
+        expect(lens).toMatchObject({ type: 'array', minItems: 1 });
+        expect(lens.description).toMatch(/immutable/);
     });
 });
 

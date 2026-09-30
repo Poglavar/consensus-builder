@@ -86,18 +86,43 @@ forecast, funded or accepted, and never receives a lifecycle outcome; no route a
 record after it is posted. So mint first, then post the record pointing at the account.
 
 - **Program:** `ProposalNFT`, `$(proposalProgram)` on Solana devnet.
-- **Instruction:** `mint_and_fund(parcel_ids: vec<string>, is_conditional: bool, image_uri: string,
-  sol_amount: u64, lens: vec<pubkey>)`, accounts in this order: `proposal` (PDA, writable),
-  `proposal_counter` (PDA, writable), `owner` (signer, writable), System Program.
-  - `parcel_ids`: the same strings as the record's `cadastreParcelIds`. Parcel owners accept per id
-    (`accept_proposal`, signed by the owner of that parcel's account in the `ParcelNFT` program
-    `$(parcelProgram)`), and the proposal becomes Executed when every listed parcel has accepted.
-  - `is_conditional`: `true` lets an owner withdraw an acceptance until then. The reference agent
-    mints `true`.
+- **Instruction (v2, pending devnet deployment):** `mint_and_fund(parcel_ids: vec<string>,
+  is_conditional: bool, image_uri: string, sol_amount: u64, lens: vec<pubkey>,
+  verdict_may_execute: bool)`, accounts in this order: `proposal` (PDA, writable),
+  `proposal_counter` (PDA, writable), `owner` (signer, writable), System Program. The program live
+  on devnet is still v1 until the upgrade; its `mint_and_fund` takes the same arguments without the
+  trailing `verdict_may_execute`.
+  - `parcel_ids`: the same strings as the record's `cadastreParcelIds`. Each id is a parcel anchor in
+    the `ParcelNFT` program `$(parcelProgram)`: a PDA seeded `["parcel", <id>]` that v2 mints
+    ownerless (`mint_parcel(parcel_id, metadata_uri)`, accounts `parcel`, `payer`, System Program).
+    Ownership reaches the chain only as a lens member's `ParcelOwnership-v1` attestation.
+  - Acceptance (v2, pending devnet deployment): each attested owner signs
+    `accept_with_attestations(parcel_id: string, payout: option<pubkey>)`, accounts `proposal`,
+    `parcel` (the anchor), `ownership` (the member's SAS attestation), `ownership_credential`,
+    `tally` (PDA `["consent", proposal, parcel_id]`), `record` (PDA `["acceptance", proposal,
+    parcel_id, owner]`), `owner` (signer), `payer` (signer, may be the owner), System Program. A
+    parcel is accepted when every owner its member attested has signed; the proposal becomes
+    Executed when every listed parcel is accepted. v1's `accept_proposal` is removed.
+  - Verdicts (v2, pending devnet deployment): anyone may submit a lens member's `ProposalVerdict-v1`
+    with `settle_with_verdict()`, accounts `proposal`, `verdict`, `verdict_credential`, `submitter`
+    (signer). `expired` sets the proposal Expired (markets resolve NO); `executed` settles it only
+    when it was minted with `verdict_may_execute = true`.
+  - `verdict_may_execute`: `false` is the normal value. `true` is for permit-style evidence where
+    per-parcel consent does not apply.
+  - `is_conditional`: stored with the proposal. The reference agent mints `true`.
   - `image_uri`: a URL for the proposal; the reference agent passes `$(base)/proposals/<proposalId>`.
   - `sol_amount`: lamports moved from the signer into the proposal account as escrow; `0` is fine.
-  - `lens`: must be a **non-empty** list of public keys, or the program fails with `NoLens`. It is
-    stored but no program reads it; the reference agent passes the signer's own key.
+  - `lens`: must be a **non-empty** list of public keys, or the program fails with `NoLens`. In v2
+    the program accepts ownership and verdict attestations only from keys in this list.
+- **Choosing a lens:** the lens is your choice of authority, the attesters whose Solana Attestation
+  Service records (`ParcelOwnership-v1`, `ProposalVerdict-v1`) the proposal will accept. An owner's
+  yes is not an attestation: the owner signs `accept_with_attestations` with an optional payout
+  key. Pick one or more member keys from `$(base)/agent/lenses/members` (each member has `kind`,
+  what it attests rather than who it is: `owner-consent`, `court`, `permit`, `imagery`, `osm` or
+  `lifecycle`; `name`; `description`; `serviceUrl`, where it takes attestation requests, or null;
+  and coverage: ownership attestations issued, parcels covered, proposals executed), read the
+  exact payload layouts at `$(base)/lenses/schemas`, and send the same list as the recipe's `lens`
+  field. It is immutable once minted; fork the proposal to change it.
 - **Signer:** your own wallet, which becomes the account's `owner`. Mint with the wallet you will
   pay with, so the record's `author` and the account's `owner` are the same agent. It needs devnet
   SOL: the proposal account is 4,096 bytes (rent-exempt minimum 0.02145792 SOL on devnet as of
@@ -110,8 +135,9 @@ record after it is posted. So mint first, then post the record pointing at the a
 - **IDL:** `blockchain/solana/idl/proposal_nft.json` in the repository (Anchor; the instruction
   discriminator is the first 8 bytes of `sha256("global:mint_and_fund")`). The program's on-chain
   IDL account `EXYuUatUDNoa2TMXYGmnEWWJMxrhDxbetT3AR33Xw3zq` is older: it lacks `cancel_and_refund`
-  and `distribute_funds`, which the deployed program has. Its `mint_and_fund` is the same, but
-  prefer the repository file.
+  and `distribute_funds`, which the deployed program has. The repository file describes v2 (pending
+  devnet deployment); the v1 interface the devnet program runs until the upgrade is
+  `blockchain/solana/idl/legacy/proposal_nft.v1.json`.
 - **Reference client:** `backend/agents/minter.js` (`mintProposal`), a Node port of the browser's
   `frontend/js/solana/proposal-bridge.js`.
 
@@ -281,10 +307,20 @@ create the market, stake YES/NO while the proposal is Active, resolve it once th
 (YES) or Cancelled (NO), and claim. There is no deadline: a proposal nobody accepts keeps stakes locked.
 An app-level expiry does **not** resolve NO: `proposal_market` reads the proposal account and only its
 on-chain `Executed` or `Cancelled` status is terminal. Resolution is permissionless; it is not an
-oracle vote or an administrator choosing the outcome.
-The equivalent machine-readable `proposal-lifecycle-v1` recipe is available at
-`GET $(base)/oracle/recipes/proposal-lifecycle-v1?proposal=<proposal-account>&market=<market-account>`;
-persisted terminal observations are at `GET $(base)/oracle/events?subject=<proposal-account>`.
+oracle vote or an administrator choosing the outcome. In v2 (pending devnet deployment) a lens
+member's `expired` verdict, submitted with `settle_with_verdict`, sets the on-chain status Expired
+and the market resolves it NO.
+The machine-readable recipes are precommitted and never change under their id.
+`GET $(base)/oracle/recipes/proposal-lifecycle-v2?proposal=<proposal-account>&market=<market-account>`
+applies to every proposal whose account carries a lens with at least one key (all proposals minted
+from now on): its trusted attesters are the ProposalNFT program plus the proposal's own on-chain
+lens, read from the account, so its hash commits to that lens, and Expired maps to NO. The original
+`proposal-lifecycle-v1` (ProposalNFT program only; executed YES, cancelled NO) stays at
+`GET $(base)/oracle/recipes/proposal-lifecycle-v1?proposal=<proposal-account>&market=<market-account>`
+for proposals without a lens key. Persisted terminal observations are at
+`GET $(base)/oracle/events?subject=<proposal-account>`; `&type=proposal_acceptance` and
+`&type=proposal_verdict` list the per-owner acceptances and lens-member verdicts (v2, pending
+devnet deployment; empty until then).
 The pure client is `frontend/js/solana/market-client.js` (`SolanaMarketClient`), the IDL
 `blockchain/solana/idl/proposal_market.json`.
 

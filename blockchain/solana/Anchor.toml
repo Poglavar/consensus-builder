@@ -27,8 +27,8 @@ wallet = "~/.config/solana/id.json"
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
 
 # Genesis accounts for tests/proposal_pledge.ts: proposal_pledge only accepts the devnet USDC mint
-# address, and no proposal_nft instruction reaches Expired, so both are loaded as local fixtures.
-# Regenerate with: node tests/fixtures/generate-pledge-fixtures.mjs
+# address, and its Expired-proposal cases predate settle_with_verdict, so both are loaded as local
+# fixtures. Regenerate with: node tests/fixtures/generate-pledge-fixtures.mjs
 # Declaring [test.validator] makes Anchor pass --bind-address (default 0.0.0.0), which the
 # agave 3.x test validator rejects at startup, so pin it to loopback.
 [test.validator]
@@ -61,3 +61,9 @@ filename = "tests/fixtures/expired-book.json"
 [[test.validator.account]]
 address = "DcQ5uCvjijqCX1juMJy8XBWHhQakjGLQv3GSiU6r3oL2"
 filename = "tests/fixtures/expired-commitment.json"
+
+# Localnet-only mock of the Solana Attestation Service at its real program id (source in
+# tests/mock_sas): the lens-model suites write SAS credential/schema/attestation bytes through it.
+[[test.genesis]]
+address = "22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG"
+program = "tests/fixtures/mock_sas.so"

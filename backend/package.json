@@ -14,13 +14,14 @@
         "demo:oracle-fact": "node scripts/oracle-fact-demo.mjs",
         "mcp": "node agents/mcp-server.mjs",
         "audit:hackathon": "node scripts/hackathon-proof-audit.mjs",
-    "demo:judge": "node scripts/judge-demo.mjs",
+        "demo:judge": "node scripts/judge-demo.mjs",
         "demo:case": "node agents/canonical-case-run.mjs --dry-run",
         "demo:case:live": "node agents/canonical-case-run.mjs --live",
         "demo:case:executed": "node agents/canonical-case-run.mjs --dry-run --outcome executed --terminal",
         "demo:case:executed:live": "node agents/canonical-case-run.mjs --live --outcome executed --terminal",
         "demo:cold-start": "node examples/independent-x402-client.mjs",
         "sync:land-events": "node scripts/sync-land-events.mjs",
+        "lens:member": "node lens/run.mjs",
         "smoke:prod:parcels": "node scripts/smoke-production-bbox.mjs",
         "plan-yield": "PGHOST=${PGHOST:-localhost} node scripts/plan-yield.js"
     },
@@ -46,6 +47,7 @@
         "helmet": "^8.3.0",
         "marked": "^16.4.2",
         "pg": "^8.23.0",
+        "sas-lib": "^1.0.10",
         "zod": "^4.6.5"
     },
     "devDependencies": {

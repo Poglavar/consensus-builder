@@ -20,7 +20,7 @@ describe('daily algorithmic agent schedule', () => {
         expect(app.args).toContain('--candidates 4');
         expect(app.args).toContain('--controller algorithm');
         expect(app.env).toMatchObject({
-            AGENT_DAILY_ACTION_CAP: '4',
+            AGENT_DAILY_ACTION_CAP: '13',
             AGENT_DAILY_USDC_CAP: '0.35'
         });
         expect(app.env).not.toHaveProperty('AGENT_LLM_MODEL');
@@ -93,5 +93,24 @@ describe('daily algorithmic agent schedule', () => {
         expect(source).toContain("runStatus: 'completed'");
         expect(source).toContain("runStatus: 'failed'");
         expect(source).toContain('fs.renameSync(tempFile, RUN_STATS_FILE)');
+    });
+
+    it('declares the notary-01 lens member as an inactive, unscheduled opt-in process', () => {
+        const lensMember = apps.find(item => item.name === 'consensus-builder-lens-member');
+        expect(lensMember).toMatchObject({
+            script: 'agents/lens-member-run.mjs',
+            instances: 1,
+            autorestart: false
+        });
+        expect(lensMember.args).toContain('--persona notary-01');
+        expect(lensMember).not.toHaveProperty('cron_restart');
+        const config = fs.readFileSync(new URL('../agents/ecosystem.config.cjs', import.meta.url), 'utf8');
+        expect(config).toMatch(/INACTIVE, opt-in[\s\S]*schemas are registered/);
+        const personas = JSON.parse(fs.readFileSync(new URL('../agents/personas.json', import.meta.url), 'utf8')).personas;
+        expect(personas.find(persona => persona.name === 'notary-01')).toMatchObject({
+            role: 'lens-member',
+            keypairPath: '~/.config/solana/ugt-notary-01.json',
+            service: { port: 3095, kind: 'owner-consent', priceUsdc: '0.01' }
+        });
     });
 });

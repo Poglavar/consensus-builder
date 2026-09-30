@@ -76,6 +76,93 @@ function validateProspectiveSettlement(status) {
     return { valid, pending: false, settlement };
 }
 
+// Lens entries arrive as base58 strings or `{ address, name }` objects (the frontend's stored shape).
+function lensAddresses(lens) {
+    if (!Array.isArray(lens)) return null;
+    const addresses = lens.map(entry => typeof entry === 'string' ? entry : entry?.address || entry?.key || null)
+        .filter(Boolean).map(String);
+    return addresses.length ? addresses : null;
+}
+
+// The lens a create event carries, if the activity/run payload exposes it at all.
+function eventLens(event) {
+    return lensAddresses(event?.action?.lens) || lensAddresses(event?.lens) || null;
+}
+
+// The lens a public proposal record carries: the stored lens column first, then the on-chain copy.
+function recordLens(record) {
+    return lensAddresses(record?.lens) || lensAddresses(record?.onchain?.lens)
+        || lensAddresses(record?.onchainData?.lens) || null;
+}
+
+const eventParcel = event => event?.action?.parcelId || event?.action?.parcelUid || event?.parcelId || null;
+const eventOwner = event => event?.action?.owner || event?.action?.signer || event?.actor?.wallet || null;
+
+/**
+ * Attested execution (lens model v3 case): every parcel carries a lens member's ownership attestation,
+ * every attested owner signed its acceptance, the proposal is Executed, and the YES side was resolved
+ * and claimed. The v1 certificate-holder `accept` path must not appear at all.
+ */
+function evaluateAttestedCase(attested) {
+    if (!attested) return { ok: false, evidence: null };
+    const activity = attested.activity || [];
+    const withTx = type => activity.filter(event => event.action?.type === type && Boolean(event.transaction));
+    const parcelCount = Number(attested.parcelSet?.parcelCount || 0);
+    const attestations = withTx('attestOwnership');
+    const acceptances = withTx('acceptance');
+    const attestedParcels = new Set(attestations.map(eventParcel).filter(Boolean));
+    // Parcels with attestations are proven per parcel when events name them, else by count.
+    const parcelsAttested = attestedParcels.size > 0 ? attestedParcels.size : attestations.length;
+    // Required signatures: sum of each parcel's ownerCount when exposed, else one per parcel.
+    const ownerCounts = new Map();
+    for (const event of attestations) {
+        const count = Number(event.action?.ownerCount);
+        const parcel = eventParcel(event);
+        if (parcel && Number.isInteger(count) && count >= 1) ownerCounts.set(parcel, Math.max(ownerCounts.get(parcel) || 0, count));
+    }
+    const declared = attested.parcelSet?.ownerCounts;
+    if (ownerCounts.size === 0 && declared && typeof declared === 'object') {
+        Object.entries(declared).forEach(([parcel, count]) => {
+            if (Number.isInteger(Number(count)) && Number(count) >= 1) ownerCounts.set(parcel, Number(count));
+        });
+    }
+    const exposedCounts = ownerCounts.size > 0 && ownerCounts.size >= parcelCount;
+    const requiredAcceptances = exposedCounts ? [...ownerCounts.values()].reduce((sum, count) => sum + count, 0) : parcelCount;
+    // One acceptance per attested owner: distinct (parcel, owner) pairs when events name them.
+    const pairs = new Set(acceptances.map(event => {
+        const parcel = eventParcel(event);
+        const owner = eventOwner(event);
+        return parcel && owner ? `${parcel}\u0000${owner}` : null;
+    }).filter(Boolean));
+    const acceptanceCount = pairs.size > 0 ? pairs.size : acceptances.length;
+    const legacyAccepts = withTx('accept').length;
+    const has = (type, side = null) => activity.some(event => event.action?.type === type
+        && (side === null || String(event.action?.side || '').toLowerCase() === side) && Boolean(event.transaction));
+    const stagesComplete = ['decision', 'evidence', 'resolution', 'settlement']
+        .every(id => attested.stages?.find(item => item.id === id)?.state === 'complete');
+    const ok = Boolean(
+        parcelCount >= 1
+        && String(attested.proposal?.lifecycleStatus || '').toLowerCase() === 'executed'
+        && parcelsAttested >= parcelCount
+        && acceptanceCount >= requiredAcceptances
+        && legacyAccepts === 0
+        && attested.branches?.forecast?.resolved === true
+        && String(attested.branches?.forecast?.outcome || '').toUpperCase() === 'YES'
+        && has('resolve') && has('claim', 'yes')
+        && stagesComplete
+    );
+    return {
+        ok,
+        evidence: {
+            id: attested.id || null, lifecycleStatus: attested.proposal?.lifecycleStatus || null,
+            parcelCount, parcelsAttested, attestations: attestations.length,
+            acceptances: acceptanceCount, requiredAcceptances,
+            requiredFrom: exposedCounts ? 'ownerCount' : 'parcelCount',
+            legacyAccepts, outcome: attested.branches?.forecast?.outcome || null
+        }
+    };
+}
+
 async function readJson(fetchImpl, url) {
     const response = await fetchImpl(url, { headers: { accept: 'application/json' } });
     const body = await response.text();
@@ -91,7 +178,9 @@ export async function auditHackathonProof({
     baseUrl = 'https://api.urbangametheory.xyz',
     fetchImpl = globalThis.fetch,
     now = Date.now(),
-    maxRunAgeHours = 48
+    maxRunAgeHours = 48,
+    lensWindowDays = 30,
+    maxLensLookups = 50
 } = {}) {
     if (typeof fetchImpl !== 'function') throw new Error('no fetch implementation available');
     const base = cleanBase(baseUrl);
@@ -105,7 +194,8 @@ export async function auditHackathonProof({
         publicRecords: '/oracle/public-records/summary',
         proofManifest: '/hackathon/proof.json',
         prospectiveStatus: '/oracle/markets/prospective/status',
-        operations: '/hackathon/operations.json'
+        operations: '/hackathon/operations.json',
+        lensMembers: '/lenses/members'
     };
     const entries = Object.entries(paths);
     const settled = await Promise.allSettled(entries.map(([, path]) => readJson(fetchImpl, `${base}${path}`)));
@@ -135,6 +225,17 @@ export async function auditHackathonProof({
         }
     } else {
         errors.executedCase = 'proof manifest does not declare publicProof.executedCase';
+    }
+
+    const attestedCaseUrl = values.proofManifest?.publicProof?.attestedCase;
+    if (attestedCaseUrl) {
+        try {
+            values.attestedCase = await readJson(fetchImpl, attestedCaseUrl);
+        } catch (error) {
+            errors.attestedCase = error instanceof Error ? error.message : String(error);
+        }
+    } else {
+        errors.attestedCase = 'proof manifest does not declare publicProof.attestedCase';
     }
 
     const expectedProposal = `${base}/agent/proposals`;
@@ -210,6 +311,57 @@ export async function auditHackathonProof({
         && ['decision', 'evidence', 'resolution', 'settlement']
             .every(id => executed.stages?.find(item => item.id === id)?.state === 'complete')
     );
+
+    const attestedExecution = evaluateAttestedCase(values.attestedCase);
+
+    // No self-lens: an agent proposal whose lens is only its creator's wallet is creator-decidable.
+    // The lens comes from the create event when the feed exposes it, else from the public record.
+    const lensWindowStart = Number(now) - lensWindowDays * 86_400_000;
+    const creates = events.filter(event => event.action?.type === 'create'
+        && time(event.recordedAt || event.occurredAt) >= lensWindowStart
+        && Boolean(event.action?.proposalId || event.entity?.id));
+    const createProposalId = event => String(event.action?.proposalId || event.entity?.id);
+    const lookupIds = [...new Set(creates.filter(event => !eventLens(event)).map(createProposalId))].slice(0, maxLensLookups);
+    const proposalRecords = new Map();
+    await Promise.all(lookupIds.map(async id => {
+        try {
+            proposalRecords.set(id, await readJson(fetchImpl, `${base}/proposals/${encodeURIComponent(id)}`));
+        } catch (error) {
+            proposalRecords.set(id, { error: error instanceof Error ? error.message : String(error) });
+        }
+    }));
+    const lensReport = creates.map(event => {
+        const proposalId = createProposalId(event);
+        const record = proposalRecords.get(proposalId);
+        const lens = eventLens(event) || recordLens(record);
+        const creator = event.actor?.wallet || null;
+        return {
+            proposalId, creator, lens,
+            lensFrom: eventLens(event) ? 'activity' : lens ? 'proposal_record' : null,
+            self: Boolean(lens && creator && lens.every(address => address === creator))
+        };
+    });
+    const selfLens = lensReport.filter(item => item.self);
+    const undecided = lensReport.filter(item => !item.lens || !item.creator);
+    const lensInsufficient = creates.length === 0 || undecided.length > 0;
+    const noSelfLens = selfLens.length === 0 && !lensInsufficient;
+    const noSelfLensEvidence = errors.activity || {
+        windowDays: lensWindowDays, creates: creates.length,
+        decided: lensReport.length - undecided.length,
+        selfLens: selfLens.map(({ proposalId, creator }) => ({ proposalId, creator })),
+        ...(lensInsufficient ? {
+            insufficientData: creates.length === 0
+                ? `no create events in the last ${lensWindowDays} days`
+                : `${undecided.length} create event(s) expose neither a lens nor a creator wallet`,
+            undecided: undecided.slice(0, 10).map(({ proposalId, creator, lens }) => ({
+                proposalId, missing: [!lens && 'lens', !creator && 'creator'].filter(Boolean)
+            }))
+        } : {})
+    };
+
+    // Attester diversity: ownership attestations from at least two distinct lens members.
+    const lensMembers = Array.isArray(values.lensMembers?.members) ? values.lensMembers.members : [];
+    const attesters = lensMembers.filter(member => member?.key && Number(member.coverage?.ownership) > 0);
 
     const checks = [
         check('proposal_bazaar', exactResource(values.proposalDiscovery, expectedProposal),
@@ -312,7 +464,21 @@ export async function auditHackathonProof({
             } : prospectiveSettlement.settlement),
         check('chronology_label', Boolean(chronology?.classification),
             'The external-market proof publishes its evidence chronology classification',
-            chronology?.classification || errors.docs || null, 'advisory')
+            chronology?.classification || errors.docs || null, 'advisory'),
+        // Lens-model checks: advisory until the v2 programs are deployed and the attested case has
+        // run. Flipping one to required is deleting its trailing 'advisory'.
+        check('attested_execution', attestedExecution.ok,
+            'A case executed only through lens-member ownership attestations and owner signatures, and paid YES',
+            attestedExecution.evidence || errors.attestedCase || null, 'advisory'),
+        check('no_self_lens', noSelfLens,
+            `No agent proposal created in the last ${lensWindowDays} days lists only its creator in its lens`,
+            noSelfLensEvidence, 'advisory'),
+        check('attester_diversity', attesters.length >= 2,
+            'At least two distinct lens members have issued ownership attestations',
+            values.lensMembers ? {
+                members: lensMembers.length,
+                attesters: attesters.map(member => ({ key: member.key, name: member.name || null, ownership: Number(member.coverage.ownership) }))
+            } : errors.lensMembers || null, 'advisory')
     ];
     const summary = checks.reduce((counts, item) => {
         counts[item.status] += 1;
@@ -329,4 +495,4 @@ export async function auditHackathonProof({
     };
 }
 
-export { cleanBase, exactResource, validateProspectiveSettlement };
+export { cleanBase, evaluateAttestedCase, exactResource, lensAddresses, validateProspectiveSettlement };

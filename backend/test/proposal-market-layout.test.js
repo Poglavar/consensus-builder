@@ -78,6 +78,26 @@ describe('proposal_market reads proposal_nft::Proposal by a mirrored prefix', ()
     });
 });
 
+describe('proposal_market reads the proposal lens by a mirrored ProposalLensView', () => {
+    it('mirrors proposal_nft::Proposal field by field through lens, which follows accepted_parcels', () => {
+        const proposal = structFields(proposalNftRs, 'pub struct Proposal {');
+        const view = structFields(marketRs, 'struct ProposalLensView {');
+
+        expect(view.map(f => f.name).slice(-2)).toEqual(['accepted_parcels', 'lens']);
+        const normalised = proposal.slice(0, view.length).map(f => (f.name === 'status' ? { ...f, type: 'u8' } : f));
+        expect(view).toEqual(normalised);
+        expect(view.at(-1)).toEqual({ name: 'lens', type: 'Vec<Pubkey>' });
+    });
+
+    it('matches the IDL order the backend lens reader (readProposalLens) walks', () => {
+        const idlFields = proposalNftIdl.types.find(t => t.name === 'Proposal').type.fields.map(f => f.name);
+        const view = structFields(marketRs, 'struct ProposalLensView {').map(f => f.name);
+        expect(idlFields.slice(0, view.length)).toEqual(view);
+        // Everything after the lens is outside every mirror and may grow; nothing before it may move.
+        expect(idlFields.slice(view.length)).toEqual(['bump', 'verdict_may_execute']);
+    });
+});
+
 describe('the checked-in proposal_market IDL matches the program source', () => {
     it('declares the same program id as lib.rs, Anchor.toml and the frontend address book', () => {
         const declared = marketRs.match(/declare_id!\("([1-9A-HJ-NP-Za-km-z]+)"\)/)[1];

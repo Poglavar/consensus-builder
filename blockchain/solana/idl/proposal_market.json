@@ -150,7 +150,11 @@
         "Open a market whose resolution rule is committed before trading. The recipe document lives",
         "off-chain, but its sha256 digest and every security-sensitive input are stored on-chain.",
         "`subject_hash` is sha256(parcelUid); the outcome hashes are sha256(operation) values from the",
-        "court oracle's SAS schema."
+        "court oracle's SAS schema.",
+        "",
+        "Optional remaining account 0: a proposal_nft Proposal. When passed, the market is bound to",
+        "that proposal's authority choice: `trusted_attester` must be one of its lens members. The",
+        "binding is checked at creation only; the ExternalMarket layout is unchanged."
       ],
       "discriminator": [
         62,
@@ -518,8 +522,9 @@
     {
       "name": "resolve",
       "docs": [
-        "Permissionless. Reads the proposal's on-chain status: Executed → YES, Cancelled → NO,",
-        "anything else → NotTerminal. There is no clock: an Active proposal keeps the market open."
+        "Permissionless. Reads the proposal's on-chain status: Executed → YES, Cancelled or Expired",
+        "→ NO, anything else → NotTerminal. There is no clock: an Active proposal keeps the market",
+        "open."
       ],
       "discriminator": [
         246,
@@ -862,7 +867,7 @@
     {
       "code": 6002,
       "name": "NotTerminal",
-      "msg": "The proposal has not reached a terminal state (Executed or Cancelled)"
+      "msg": "The proposal has not reached a terminal state (Executed, Cancelled or Expired)"
     },
     {
       "code": 6003,
@@ -983,6 +988,11 @@
       "code": 6026,
       "name": "EvidenceFromFuture",
       "msg": "The source-observation timestamp is in the future"
+    },
+    {
+      "code": 6027,
+      "name": "AttesterNotInProposalLens",
+      "msg": "The trusted attester is not a member of the bound proposal's lens"
     }
   ],
   "types": [

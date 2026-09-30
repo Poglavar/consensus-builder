@@ -1003,7 +1003,8 @@
                 "undo": "Poništi",
                 "accepted": "Prihvaćeno",
                 "pending": "Na čekanju",
-                "recipient": "primatelj"
+                "recipient": "primatelj",
+                "solanaLensHint": "Recite da u kartici Leća"
             },
             "voting": {
                 "voteYes": "Glasaj za",
@@ -1158,6 +1159,65 @@
                 "fulfill": "Ispuni moje obećanje",
                 "refund": "Vrati moje donacije",
                 "void": "Poništi moje obećanje"
+            },
+            "lens": {
+                "eyebrow": "Pouzdani potvrđivači",
+                "title": "Leća",
+                "loading": "Učitavanje leće…",
+                "empty": "Ovaj prijedlog ne navodi leću.",
+                "directoryUnavailable": "Imenik članova nije dostupan; prikazuju se samo ključevi.",
+                "unknownMember": "nije u imeniku",
+                "ownershipTitle": "Potvrda vlasništva",
+                "ownershipHint": "Ako ste vlasnik neke od ovih čestica, zatražite od člana leće potvrdu: vaš novčanik potpisuje jednokratni izazov, član provjerava svoj registar i izdaje potvrdu.",
+                "memberSelect": "Član leće",
+                "requestAttestation": "Potvrdi moje vlasništvo",
+                "noServiceUrl": "Nema URL-a servisa: nijedan član ove leće ne objavljuje gdje zatražiti potvrdu.",
+                "noServiceUrlShort": "nema URL-a servisa",
+                "working": "Čeka se novčanik i član leće…",
+                "attested": "Potvrđeno.",
+                "attestedExisting": "Već potvrđeno.",
+                "attestationAddress": "Potvrda",
+                "accountHash": "Hash računa",
+                "noWallet": "U ovom pregledniku nije pronađen Solana novčanik.",
+                "noSignMessage": "Ovaj novčanik ne može potpisivati poruke.",
+                "paymentRequired": "Ovaj član leće naplaćuje {{price}} po potvrdi vlasništva, plaćeno preko x402. Plaćanje iz preglednika još nije podržano; može ga platiti agent ili x402 klijent iz naredbenog retka.",
+                "paymentRequiredNoPrice": "Ovaj član leće traži x402 plaćanje za potvrde vlasništva. Plaćanje iz preglednika još nije podržano.",
+                "badChallenge": "Servis je vratio izazov koji ne odgovara ovom novčaniku i čestici ({{reason}}); ništa nije potpisano.",
+                "notConfigured": "Ovaj član leće nije podešen za izdavanje potvrda: {{message}}",
+                "refused": "Član leće je odbio: {{message}}",
+                "noSignTransaction": "Ovaj novčanik ne može potpisivati transakcije.",
+                "findingAttestation": "Tražim potvrdu vašeg vlasništva…",
+                "preparing": "Pripremam transakciju…",
+                "awaitingSignature": "Čekam potpis vašeg novčanika…",
+                "submitted": "Poslano; čekam potvrdu…",
+                "viewTransaction": "Prikaži transakciju",
+                "noAttestation": "Nijedan član leće nije potvrdio ovaj novčanik kao vlasnika ove čestice. Najprije upotrijebite \"Potvrdi moje vlasništvo\".",
+                "noAttestationMember": "Nema potvrde vlasništva za ovaj novčanik od člana {{member}}, koji je otvorio zbroj za ovu česticu. Najprije ga zatražite putem \"Potvrdi moje vlasništvo\".",
+                "alreadyAccepted": "Ovaj novčanik je već rekao da za ovu česticu.",
+                "badPayout": "Adresa za isplatu mora biti Solana adresa ili prazna.",
+                "badVerdictAddress": "Zalijepite adresu potvrde presude.",
+                "precheckFailed": "Program bi ovo odbio ({{reason}}); ništa nije potpisano.",
+                "consentLoading": "Čitam suglasnosti s lanca…",
+                "consentComplete": "Suglasnost potpuna: {{accepted}} od {{required}} potvrđenih vlasnika reklo je da.",
+                "consentCompleteLegacy": "Prihvaćeno na lancu.",
+                "consentProgress": "{{accepted}} od {{required}} potvrđenih vlasnika reklo je da (vlasnike je potvrdio {{member}}).",
+                "consentNone": "Nijedan potvrđeni vlasnik još nije rekao da.",
+                "consentYours": "Vaš novčanik je rekao da.",
+                "consentUnavailable": "Stanje suglasnosti nije dostupno: {{message}}",
+                "proposalStatus": "Stanje na lancu: {{status}}.",
+                "payoutPlaceholder": "Adresa za isplatu (neobavezno)",
+                "payoutLabel": "Adresa za isplatu vašeg udjela u sredstvima prijedloga (neobavezno)",
+                "sayYes": "Reci da",
+                "sayYesHint": "Nakon potvrde, \"Reci da\" potpisuje vašu suglasnost na lancu. Svaki vlasnik kojeg je član potvrdio mora reći da prije nego što se čestica računa; da se ne može povući.",
+                "saidYes": "Rekli ste da.",
+                "tallyAfter": "Potpisalo je {{accepted}} od {{required}} potvrđenih vlasnika.",
+                "parcelComplete": "Suglasnost za ovu česticu je potpuna.",
+                "proposalExecuted": "Sve čestice su suglasne: prijedlog je izvršen.",
+                "verdictTitle": "Riješi presudom",
+                "verdictHint": "Bilo tko može predati potvrdu presude člana leće. \"expired\" završava prijedlog; \"executed\" vrijedi samo za prijedloge iskovane tako da je prihvaćaju.",
+                "verdictPlaceholder": "Adresa potvrde presude",
+                "submitVerdict": "Predaj presudu",
+                "verdictSettled": "Presuda \"{{verdict}}\" člana {{member}} je primijenjena; stanje na lancu je sada {{status}}."
             }
         },
         "block": {
@@ -1445,7 +1505,37 @@
             "readOnlyTitle": "Leća prijedloga",
             "readOnlySubtitle": "Spremljeno u ovom prijedlogu; uređivanje je onemogućeno.",
             "readOnlyNote": "Ova leća je ugrađena u prijedlog i ne može se uređivati.",
-            "proposalTriggerTitle": "Pregled leće prijedloga (samo čitanje)"
+            "proposalTriggerTitle": "Pregled leće prijedloga (samo čitanje)",
+            "picker": {
+                "title": "Leća ovog prijedloga",
+                "subtitle": "Odaberite članove leće čije će potvrde vlasništva ovaj prijedlog prihvaćati. Leća se fiksira pri mintanju.",
+                "loading": "Učitavanje članova leće…",
+                "loadFailed": "Imenik članova leće nije se mogao učitati: {{error}}",
+                "emptyDirectory": "Još nema poznatih članova leće. Zalijepite ključ člana ispod.",
+                "coverageCounts": "{{ownership}} potvrda vlasništva · {{parcels}} čestica · {{executed}} izvršeno",
+                "noServiceUrl": "Nema URL-a servisa: pokrivenost odabranih čestica nije poznata",
+                "coverageLoading": "Provjera odabranih čestica…",
+                "coverageUnavailable": "Servis nije odgovorio; pokrivenost nepoznata",
+                "coverageSelected": "Potvrđuje {{covered}} od {{total}} odabranih čestica",
+                "parcelsTitle": "Odabrane čestice",
+                "parcelUnknown": "pokrivenost nepoznata",
+                "parcelCoveredBy": "potvrdio: {{members}}",
+                "parcelNotCovered": "nema potvrde vlasništva iz vaše leće",
+                "onlyCovered": "Samo čestice koje pokriva moja leća",
+                "noParcelCoverage": "Nijedan član leće ne objavljuje URL servisa pa se pokrivenost po čestici ne može prikazati; brojevi iznad su ukupni podaci iz imenika.",
+                "noCoveredParcels": "Vaša leća ne pokriva nijednu odabranu česticu.",
+                "pasteLabel": "Zalijepite ključ",
+                "pastePlaceholder": "Javni ključ (base58)",
+                "pasteAdd": "Dodaj",
+                "pasteInvalid": "Nije Solana javni ključ: {{value}}",
+                "chosenCount": {
+                    "one": "Odabran {{count}} član leće",
+                    "few": "Odabrana {{count}} člana leće",
+                    "other": "Odabrano {{count}} članova leće"
+                },
+                "required": "Odaberite barem jednog člana leće; Solana prijedlog se bez njega ne može mintati.",
+                "done": "Gotovo"
+            }
         },
         "dataSource": {
             "changeWarning": "Promjena izvora podataka OBRISAT ĆE sve lokalno spremljene podatke (parcele, ceste, prijedlozi, planovi, korisničke postavke, itd.).\n\nŽelite li nastaviti?"
@@ -2355,7 +2445,13 @@
                 "cancel": "Odustani",
                 "confirm": "Kreiraj",
                 "createInMemory": "Stvori u memoriji",
-                "mintPrerequisites": "Iskuj preduvjete"
+                "mintPrerequisites": "Iskuj preduvjete",
+                "anchorMessageSingle": "Sljedeća čestica još nema sidro čestice na <strong>{{chain}}</strong>, pa se prijedlog za nju ne može iskovati na lancu:",
+                "anchorMessagePlural": "Sljedeće čestice još nemaju sidro čestice na <strong>{{chain}}</strong>, pa se prijedlog za njih ne može iskovati na lancu:",
+                "anchorExplainer": "Sidro čestice je identitet čestice na lancu. Nitko ga ne posjeduje i njegovo stvaranje ne daje vlasništvo; plaćate samo njegov najam. Vlasništvo dolazi na lanac zasebno, kao potvrda člana leće. Sidra možete stvoriti i u kartici Alati na ploči Informacije o čestici.",
+                "createAnchor": "Stvori sidro čestice",
+                "createAnchors": "Stvori sidra čestica",
+                "anchorThenCreate": "Stvorite sidra čestica, zatim ponovno kliknite Stvori."
             },
             "onchainMintFailed": {
                 "cancel": "Odustani",
@@ -3186,7 +3282,10 @@
             "block_multiselect_off": "Višestruki odabir nije se mogao uključiti, a blok se isporučuje kao odabir više čestica.",
             "activity_no_parcel_set": "Ovaj prijedlog nema učitan kanonski skup čestica.",
             "blockchain_mint_wallet_prompt": "Kovanje na blockchainu je dostupno, ali nijedan novčanik nije povezan. Želiš li povezati novčanik i iskovati ovaj prijedlog na blockchainu?",
-            "failed_to_create_proposal": "Izrada prijedloga nije uspjela."
+            "failed_to_create_proposal": "Izrada prijedloga nije uspjela.",
+            "solana_lens_required": "Prije mintanja na Solani odaberite barem jednog člana leće (gumb 👓).",
+            "solana_accept_in_lens_card": "Na Solani vlasnici kažu da u kartici Leća prijedloga: član leće potvrdi vaše vlasništvo, zatim vaš novčanik potpiše.",
+            "solana_acceptance_final": "Prihvaćanja na Solani su konačna: potpisani da ne može se povući."
         }
     },
     "gameDialogs": {
@@ -3485,5 +3584,79 @@
     "claims": {
         "onParcels": "Na česticama:",
         "cadastreViewToggle": "Katastarski prikaz: samo izvorne čestice"
+    },
+    "lensConsole": {
+        "title": "Konzola člana leće",
+        "intro": "Član leće iznosi činjenice o česticama kao potvrde. Usmjerite ovu konzolu na svoj servis člana da vidite što je izdao i da zabilježite presude.",
+        "backToMap": "Natrag na kartu",
+        "loading": "Učitavanje…",
+        "service": {
+            "title": "Servis člana",
+            "directoryLabel": "Poznati članovi s URL-om servisa",
+            "directoryPick": "Odaberite člana…",
+            "directoryNone": "Nijedan član u imeniku ne objavljuje URL servisa",
+            "urlLabel": "URL servisa",
+            "load": "Učitaj"
+        },
+        "status": {
+            "key": "Ključ člana",
+            "kind": "Vrsta",
+            "identity": "Provjera identiteta",
+            "credential": "Vjerodajnica",
+            "counts": "Izdano",
+            "price": "Cijena potvrde vlasništva",
+            "free": "bez cijene (besplatno ili nije podešeno)",
+            "dryRun": "Probni rad: potvrde se grade u memoriji i nikad ne dolaze na lanac.",
+            "ephemeral": "Privremeni ključ: ovaj član nema trajni identitet; pokrenite ga s parom ključeva da bi mogao biti u leći."
+        },
+        "wallet": {
+            "title": "Novčanik člana",
+            "connect": "Poveži novčanik",
+            "disconnected": "Novčanik nije povezan.",
+            "none": "U ovom pregledniku nije pronađen Solana novčanik.",
+            "address": "Novčanik",
+            "matches": "Ovaj novčanik je ključ člana učitanog servisa.",
+            "differs": "Ovaj novčanik nije ključ člana učitanog servisa ({{key}})."
+        },
+        "attestations": {
+            "title": "Izdane potvrde",
+            "kind": "Vrsta",
+            "kindAll": "Sve",
+            "kindOwnership": "Vlasništvo",
+            "kindVerdict": "Presuda",
+            "parcel": "Čestica",
+            "owner": "Vlasnik",
+            "hash": "Hash računa",
+            "issuedAt": "Izdano (vrijeme lanca)",
+            "unknownTime": "nepoznato",
+            "load": "Osvježi",
+            "empty": "Nijedna potvrda ne odgovara."
+        },
+        "verdict": {
+            "title": "Presuda operatera",
+            "hint": "Presuda utvrđuje da je prijedlog izvršen (za vrste dokaza bez pristanka po čestici, npr. registar dozvola) ili da je istekao. Može je objaviti samo operater člana.",
+            "proposal": "Račun prijedloga",
+            "verdict": "Presuda",
+            "executed": "izvršen",
+            "expired": "istekao",
+            "evidence": "Referenca dokaza (neobavezno)",
+            "observed": "Kada ga je izvor zabilježio",
+            "token": "Token operatera (ne sprema se)",
+            "submit": "Objavi presudu",
+            "done": "Presuda potvrđena.",
+            "reused": "Već potvrđeno; vraćena je spremljena presuda.",
+            "errors": {
+                "proposal": "Račun prijedloga mora biti Solana javni ključ.",
+                "verdict": "Odaberite izvršen ili istekao.",
+                "time": "Unesite kada je izvor zabilježio ishod.",
+                "token": "Unesite token operatera."
+            }
+        },
+        "errors": {
+            "network": "Servis nije dostupan ({{message}}). Radi li i dopušta li ovo porijeklo (CORS)?",
+            "http": "Servis je odgovorio {{status}}: {{message}}",
+            "noService": "Najprije učitajte URL servisa.",
+            "badUrl": "Unesite http(s) URL servisa člana leće."
+        }
     }
 }

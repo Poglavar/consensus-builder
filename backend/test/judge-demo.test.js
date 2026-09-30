@@ -18,6 +18,20 @@ describe('judge demo model', () => {
         expect(demo.steps).toContainEqual({ label: 'Prospective market · awaiting_evidence', url: 'https://explorer/market' });
     });
 
+    it('narrates the attested case and the lens member directory', () => {
+        const demo = buildJudgeDemo({
+            manifest: { publicProof: { manifest: 'https://api.example/hackathon/proof.json', attestedCase: 'https://api.example/hackathon/cases/attested' } }
+        });
+        const labels = demo.steps.map(step => step.label);
+        expect(labels.indexOf('Attested case (lens member attested ownership, owners signed)'))
+            .toBe(labels.indexOf('Executed case (market paid YES)') + 1);
+        expect(demo.steps).toContainEqual({ label: 'Attested case (lens member attested ownership, owners signed)', url: 'https://api.example/hackathon/cases/attested' });
+        expect(demo.steps).toContainEqual({ label: 'Lens member directory (who may attest)', url: 'https://api.example/lenses/members' });
+        const named = buildJudgeDemo({ manifest: { publicProof: { manifest: 'https://api.example/p', lensMembers: 'https://x/lenses' } } });
+        expect(named.steps.find(step => step.label.startsWith('Lens member directory')).url).toBe('https://x/lenses');
+        expect(buildJudgeDemo({}).steps.find(step => step.label.startsWith('Lens member directory')).url).toBeNull();
+    });
+
     it('fails closed when proof is incomplete', () => {
         expect(buildJudgeDemo({ audit: { status: 'incomplete' } }).status).toBe('incomplete');
     });

@@ -18,6 +18,8 @@ commits, and features built during the hackathon.
 
 - [Live pitch deck](https://urbangametheory.xyz/deck.html)
 - [Five-minute demo center](https://urbangametheory.xyz/hackathon-demo.html)
+- [Executed YES case](https://urbangametheory.xyz/proposals/hackathon-executed-borovje-2026) — the counterpart of the cancelled canonical case, shown beside it in the demo center with every devnet transaction linked.
+- [Lens model](lens-model.md) — soulbound parcels, a list of trusted attesters per proposal, attested execution; built and tested on localnet, not yet deployed to devnet.
 - [Agent/x402 quickstart](https://api.urbangametheory.xyz/docs/agents)
 - [Unified human and agent activity](https://urbangametheory.xyz/actor-explorer.html)
 - [Follow @UrbanGameTheory on X](https://x.com/UrbanGameTheory)

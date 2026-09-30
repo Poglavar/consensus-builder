@@ -1,11 +1,30 @@
 //! Urban Game Theory Proposal NFT - Solana Program
 //! Equivalent to EVM ProposalNFT.sol - proposals for parcel development
+//!
+//! v2, the lens model (lens-model.md): a proposal executes only through attestations. Its `lens`
+//! lists the SAS issuers it trusts; a lens member's ParcelOwnership-v1 attestation names a parcel's
+//! owner wallet, that wallet signs `accept_with_attestations`, and one acceptance record per
+//! attested owner completes the parcel. A lens member's ProposalVerdict-v1 attestation can expire
+//! the proposal (or execute it, only when minted with `verdict_may_execute`). Parcel anchors carry
+//! no ownership and nothing here reads their `owner`.
 
 use anchor_lang::prelude::*;
+use anchor_lang::solana_program::hash::hash;
+use sas_attestation::{PayloadReader, SasError, SAS_PROGRAM_ID};
 
 declare_id!("3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg");
 
 const PARCEL_NFT_PROGRAM_ID: Pubkey = pubkey!("4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1");
+
+/// SAS schema names and version the lens attestations are issued under. Each lens member issues
+/// under its own credential, so the schema address is PDA(["schema", credential, name, [1]]) and
+/// the program recomputes it instead of trusting the attestation's schema field.
+pub const OWNERSHIP_SCHEMA_NAME: &[u8] = b"ParcelOwnership";
+pub const VERDICT_SCHEMA_NAME: &[u8] = b"ProposalVerdict";
+pub const LENS_SCHEMA_VERSION: u8 = 1;
+
+/// Longest parcel id a tally or record can hold (also the PDA seed limit).
+pub const MAX_PARCEL_ID_LEN: usize = 32;
 
 #[program]
 pub mod proposal_nft {
@@ -25,6 +44,7 @@ pub mod proposal_nft {
         image_uri: String,
         sol_amount: u64,
         lens: Vec<Pubkey>,
+        verdict_may_execute: bool,
     ) -> Result<()> {
         require!(!parcel_ids.is_empty(), ProposalError::NoParcels);
         require!(!lens.is_empty(), ProposalError::NoLens);
@@ -62,6 +82,7 @@ pub mod proposal_nft {
         proposal.lens = lens;
         proposal.owner = ctx.accounts.owner.key();
         proposal.bump = ctx.bumps.proposal;
+        proposal.verdict_may_execute = verdict_may_execute;
 
         Ok(())
     }
@@ -93,140 +114,234 @@ pub mod proposal_nft {
         Ok(())
     }
 
-    /// Accept a proposal (parcel owner)
-    pub fn accept_proposal(ctx: Context<AcceptProposal>, parcel_id: String) -> Result<()> {
-        require_keys_eq!(
-            ctx.accounts.parcel_program.key(),
-            PARCEL_NFT_PROGRAM_ID,
-            ProposalError::InvalidParcelProgram
-        );
-        validate_parcel_owner(
-            &ctx.accounts.parcel,
-            &ctx.accounts.parcel_program,
-            &parcel_id,
-            &ctx.accounts.accepter.key(),
+    /// Record one attested owner's yes for one parcel. `ownership` is a lens member's
+    /// ParcelOwnership-v1 SAS attestation naming `owner`; `owner` signs this transaction. A parcel
+    /// completes when every owner the member recognises (`ownerCount`) has a record; the proposal
+    /// executes when every parcel is complete. A second acceptance by the same owner fails at the
+    /// `record` init (account already in use).
+    pub fn accept_with_attestations(
+        ctx: Context<AcceptWithAttestations>,
+        parcel_id: String,
+        payout: Option<Pubkey>,
+    ) -> Result<()> {
+        let now = Clock::get()?.unix_timestamp;
+        let proposal_key = ctx.accounts.proposal.key();
+        let accounts = &mut *ctx.accounts;
+        let proposal = &mut accounts.proposal;
+
+        require!(proposal.status == ProposalStatus::Active, ProposalError::NotActive);
+        require!(proposal.acceptance_possible, ProposalError::AcceptanceClosed);
+        require!(proposal.parcel_ids.contains(&parcel_id), ProposalError::ParcelNotInProposal);
+        require!(!proposal.accepted_parcels.contains(&parcel_id), ProposalError::AlreadyAccepted);
+        require_parcel_anchor(&accounts.parcel, &parcel_id)?;
+
+        let ownership_data = accounts.ownership.try_borrow_data()?;
+        let attestation = verify_attestation(
+            &accounts.ownership,
+            &ownership_data,
+            &accounts.ownership_credential,
+            OWNERSHIP_SCHEMA_NAME,
+            now,
         )?;
+        let member = attestation.authority;
+        require!(proposal.lens.contains(&member), ProposalError::MemberNotInLens);
 
-        let proposal = &mut ctx.accounts.proposal;
-        require!(
-            proposal.acceptance_possible,
-            ProposalError::AcceptanceClosed
-        );
-        require!(
-            proposal.parcel_ids.contains(&parcel_id),
-            ProposalError::ParcelNotInProposal
-        );
-        require!(
-            !proposal.accepted_parcels.contains(&parcel_id),
-            ProposalError::AlreadyAccepted
-        );
+        let ownership = parse_ownership(attestation.payload)?;
+        require!(ownership.parcel_uid == parcel_id.as_bytes(), ProposalError::WrongParcel);
+        require!(ownership.owner_count >= 1, ProposalError::InvalidOwnerCount);
+        require_keys_eq!(accounts.owner.key(), ownership.owner, ProposalError::OwnerMismatch);
+        require!(ownership.source_observed_at <= now, ProposalError::AttestationFromFuture);
 
-        proposal.accepted_parcels.push(parcel_id.clone());
-        proposal.acceptance_count += 1;
+        let tally = &mut accounts.tally;
+        if tally.required == 0 {
+            // Fresh from init_if_needed: this member's owner count defines the parcel's owner set.
+            tally.proposal = proposal_key;
+            tally.parcel_id = parcel_id.clone();
+            tally.member = member;
+            tally.required = ownership.owner_count;
+            tally.accepted = 0;
+            tally.bump = ctx.bumps.tally;
+        } else {
+            require!(tally.required == ownership.owner_count, ProposalError::OwnerCountMismatch);
+            require_keys_eq!(tally.member, member, ProposalError::TallyMemberMismatch);
+        }
+        tally.accepted = tally.accepted.checked_add(1).ok_or(ProposalError::ArithmeticOverflow)?;
 
-        if proposal.acceptance_count == proposal.parcel_ids.len() as u64 {
-            proposal.acceptance_possible = false;
-            proposal.status = ProposalStatus::Executed;
+        let record = &mut accounts.record;
+        record.proposal = proposal_key;
+        record.parcel_id = parcel_id.clone();
+        record.owner = accounts.owner.key();
+        record.member = member;
+        record.ownership_attestation = accounts.ownership.key();
+        record.ownership_hash = hash(&ownership_data).to_bytes();
+        record.payout = payout.unwrap_or_default();
+        record.accepted_at = now;
+        record.bump = ctx.bumps.record;
+
+        if tally.accepted == tally.required {
+            proposal.accepted_parcels.push(parcel_id);
+            proposal.acceptance_count += 1;
+            if proposal.acceptance_count == proposal.parcel_ids.len() as u64 {
+                proposal.acceptance_possible = false;
+                proposal.status = ProposalStatus::Executed;
+            }
         }
 
         Ok(())
     }
 
-    /// Withdraw acceptance (conditional proposals only)
-    pub fn withdraw_acceptance(ctx: Context<WithdrawAcceptance>, parcel_id: String) -> Result<()> {
-        require_keys_eq!(
-            ctx.accounts.parcel_program.key(),
-            PARCEL_NFT_PROGRAM_ID,
-            ProposalError::InvalidParcelProgram
-        );
-        validate_parcel_owner(
-            &ctx.accounts.parcel,
-            &ctx.accounts.parcel_program,
-            &parcel_id,
-            &ctx.accounts.withdrawer.key(),
+    /// Settle an Active proposal from a lens member's ProposalVerdict-v1 attestation: `expired`
+    /// sets Expired; `executed` sets Executed only for proposals minted with
+    /// `verdict_may_execute` (a verdict cannot skip per-parcel consent otherwise).
+    pub fn settle_with_verdict(ctx: Context<SettleWithVerdict>) -> Result<()> {
+        let now = Clock::get()?.unix_timestamp;
+        let proposal_key = ctx.accounts.proposal.key();
+        let accounts = &mut *ctx.accounts;
+        let proposal = &mut accounts.proposal;
+        require!(proposal.status == ProposalStatus::Active, ProposalError::NotActive);
+
+        let verdict_data = accounts.verdict.try_borrow_data()?;
+        let attestation = verify_attestation(
+            &accounts.verdict,
+            &verdict_data,
+            &accounts.verdict_credential,
+            VERDICT_SCHEMA_NAME,
+            now,
         )?;
+        let member = attestation.authority;
+        require!(proposal.lens.contains(&member), ProposalError::MemberNotInLens);
 
-        let proposal = &mut ctx.accounts.proposal;
-        require!(proposal.is_conditional, ProposalError::NotConditional);
-        require!(
-            proposal.status == ProposalStatus::Active,
-            ProposalError::NotActive
-        );
+        let verdict = parse_verdict(attestation.payload)?;
+        require_keys_eq!(verdict.proposal_account, proposal_key, ProposalError::WrongProposal);
+        require!(verdict.source_observed_at <= now, ProposalError::AttestationFromFuture);
 
-        let pos = proposal
-            .accepted_parcels
-            .iter()
-            .position(|p| p == &parcel_id)
-            .ok_or(ProposalError::AcceptanceNotFound)?;
+        let status = if verdict.verdict == b"expired" {
+            ProposalStatus::Expired
+        } else if verdict.verdict == b"executed" {
+            require!(
+                proposal.verdict_may_execute
+                    || proposal.acceptance_count == proposal.parcel_ids.len() as u64,
+                ProposalError::VerdictCannotSkipConsent
+            );
+            ProposalStatus::Executed
+        } else {
+            return err!(ProposalError::InvalidVerdict);
+        };
+        proposal.acceptance_possible = false;
+        proposal.status = status;
 
-        proposal.accepted_parcels.remove(pos);
-        proposal.acceptance_count -= 1;
-        proposal.acceptance_possible = true;
-
+        emit!(VerdictSettled {
+            proposal: proposal_key,
+            verdict_attestation: accounts.verdict.key(),
+            verdict_hash: hash(&verdict_data).to_bytes(),
+            member,
+            status: status as u8,
+            settled_at: now,
+        });
         Ok(())
     }
 
-    /// Distribute locked SOL equally to owners of accepted parcel certificates.
+    /// Distribute the locked SOL of an Executed proposal over its acceptance records: each
+    /// accepted parcel gets an equal share, split equally between that parcel's records. A
+    /// record's share goes to its `payout`; a record without one pays the proposal owner.
+    /// Remaining accounts, per accepted parcel in `accepted_parcels` order: the parcel's tally,
+    /// then `tally.accepted` pairs of (acceptance record, recipient). Rounding dust goes to the
+    /// first recipient of the first parcel. A proposal Executed by verdict with no accepted parcel
+    /// has no records: the whole balance returns to the proposal owner, passed as the only
+    /// remaining account.
     pub fn distribute_funds(ctx: Context<DistributeFunds>) -> Result<()> {
-        require_keys_eq!(
-            ctx.accounts.parcel_program.key(),
-            PARCEL_NFT_PROGRAM_ID,
-            ProposalError::InvalidParcelProgram
-        );
-
-        let (accepted_parcels, amount) = {
+        let proposal_key = ctx.accounts.proposal.key();
+        let (accepted_parcels, amount, proposal_owner) = {
             let proposal = &mut ctx.accounts.proposal;
             require!(
                 proposal.status == ProposalStatus::Executed,
                 ProposalError::NotExecuted
             );
             require!(proposal.sol_balance > 0, ProposalError::ZeroAmount);
-            require!(
-                !proposal.accepted_parcels.is_empty(),
-                ProposalError::AcceptanceNotFound
-            );
 
             let accepted_parcels = proposal.accepted_parcels.clone();
             let amount = proposal.sol_balance;
             proposal.sol_balance = 0;
-            (accepted_parcels, amount)
+            (accepted_parcels, amount, proposal.owner)
         };
 
-        let expected_remaining = accepted_parcels.len() * 2;
-        require!(
-            ctx.remaining_accounts.len() == expected_remaining,
-            ProposalError::InvalidDistributionAccounts
-        );
+        let remaining = ctx.remaining_accounts;
+        if accepted_parcels.is_empty() {
+            require!(remaining.len() == 1, ProposalError::InvalidDistributionAccounts);
+            let owner = &remaining[0];
+            require_keys_eq!(owner.key(), proposal_owner, ProposalError::InvalidDistributionAccounts);
+            require!(owner.is_writable, ProposalError::InvalidDistributionAccounts);
+            return transfer_program_lamports(&ctx.accounts.proposal.to_account_info(), owner, amount);
+        }
+        let parcel_count = accepted_parcels.len() as u64;
+        let parcel_base = amount / parcel_count;
+        let parcel_remainder = amount % parcel_count;
+        let mut cursor = 0usize;
 
-        let accepted_count = accepted_parcels.len() as u64;
-        let base_share = amount
-            .checked_div(accepted_count)
-            .ok_or(ProposalError::ArithmeticOverflow)?;
-        let remainder = amount
-            .checked_rem(accepted_count)
-            .ok_or(ProposalError::ArithmeticOverflow)?;
-
-        for (index, parcel_id) in accepted_parcels.iter().enumerate() {
-            let parcel_account = &ctx.remaining_accounts[index * 2];
-            let recipient = &ctx.remaining_accounts[index * 2 + 1];
+        for (parcel_index, parcel_id) in accepted_parcels.iter().enumerate() {
+            let tally_info = remaining.get(cursor).ok_or(ProposalError::InvalidDistributionAccounts)?;
+            cursor += 1;
+            let tally: ConsentTally = read_program_account(tally_info)?;
             require!(
-                recipient.is_writable,
+                tally.proposal == proposal_key
+                    && tally.parcel_id == *parcel_id
+                    && tally.accepted > 0
+                    && tally.accepted == tally.required,
                 ProposalError::InvalidDistributionAccounts
             );
-            validate_parcel_owner(
-                parcel_account,
-                &ctx.accounts.parcel_program,
-                parcel_id,
-                recipient.key,
-            )?;
 
-            let payout = base_share
-                .checked_add(if index == 0 { remainder } else { 0 })
-                .ok_or(ProposalError::ArithmeticOverflow)?;
-            transfer_program_lamports(&ctx.accounts.proposal.to_account_info(), recipient, payout)?;
+            let parcel_share = parcel_base + if parcel_index == 0 { parcel_remainder } else { 0 };
+            let owners = tally.accepted as u64;
+            let record_base = parcel_share / owners;
+            let record_remainder = parcel_share % owners;
+            let mut seen_owners: Vec<Pubkey> = Vec::with_capacity(tally.accepted as usize);
+
+            for record_index in 0..tally.accepted as usize {
+                let record_info = remaining.get(cursor).ok_or(ProposalError::InvalidDistributionAccounts)?;
+                let recipient = remaining.get(cursor + 1).ok_or(ProposalError::InvalidDistributionAccounts)?;
+                cursor += 2;
+
+                let record: AcceptanceRecord = read_program_account(record_info)?;
+                require!(
+                    record.proposal == proposal_key && record.parcel_id == *parcel_id,
+                    ProposalError::InvalidDistributionAccounts
+                );
+                require!(!seen_owners.contains(&record.owner), ProposalError::InvalidDistributionAccounts);
+                seen_owners.push(record.owner);
+
+                let expected_recipient = if record.payout == Pubkey::default() {
+                    proposal_owner
+                } else {
+                    record.payout
+                };
+                require_keys_eq!(recipient.key(), expected_recipient, ProposalError::InvalidDistributionAccounts);
+                require!(recipient.is_writable, ProposalError::InvalidDistributionAccounts);
+
+                let share = record_base + if record_index == 0 { record_remainder } else { 0 };
+                transfer_program_lamports(&ctx.accounts.proposal.to_account_info(), recipient, share)?;
+            }
         }
+        require!(cursor == remaining.len(), ProposalError::InvalidDistributionAccounts);
 
         Ok(())
+    }
+
+    /// Return the locked SOL of an Expired proposal to its creator (cancel_and_refund stays
+    /// Active-only, so this is the only exit for funds on an expired proposal).
+    pub fn reclaim_expired_funds(ctx: Context<ReclaimExpiredFunds>) -> Result<()> {
+        let amount = {
+            let proposal = &mut ctx.accounts.proposal;
+            require!(proposal.status == ProposalStatus::Expired, ProposalError::NotExpired);
+            require!(proposal.sol_balance > 0, ProposalError::ZeroAmount);
+            let amount = proposal.sol_balance;
+            proposal.sol_balance = 0;
+            amount
+        };
+        transfer_program_lamports(
+            &ctx.accounts.proposal.to_account_info(),
+            &ctx.accounts.owner.to_account_info(),
+            amount,
+        )
     }
 
     /// Cancel an active proposal and return locked SOL to its creator.
@@ -296,41 +411,80 @@ pub struct ContributeFunds<'info> {
 
 #[derive(Accounts)]
 #[instruction(parcel_id: String)]
-pub struct AcceptProposal<'info> {
+pub struct AcceptWithAttestations<'info> {
     #[account(mut)]
-    pub proposal: Account<'info, Proposal>,
+    pub proposal: Box<Account<'info, Proposal>>,
 
-    /// CHECK: Validated as the PDA account for the accepted parcel id.
+    /// CHECK: the parcel_nft anchor PDA for `parcel_id`; owner and address checked in the handler.
     pub parcel: UncheckedAccount<'info>,
 
-    /// CHECK: Must be the trusted ParcelNFT program.
-    pub parcel_program: UncheckedAccount<'info>,
+    /// CHECK: SAS ParcelOwnership-v1 attestation; owner, layout, credential, schema, expiry, lens
+    /// membership and payload are checked in the handler.
+    pub ownership: UncheckedAccount<'info>,
 
-    pub accepter: Signer<'info>,
+    /// CHECK: SAS credential the ownership attestation was issued under; owner, layout and
+    /// authority are checked in the handler.
+    pub ownership_credential: UncheckedAccount<'info>,
+
+    #[account(
+        init_if_needed,
+        payer = payer,
+        space = 8 + ConsentTally::INIT_SPACE,
+        seeds = [b"consent", proposal.key().as_ref(), parcel_id.as_bytes()],
+        bump
+    )]
+    pub tally: Box<Account<'info, ConsentTally>>,
+
+    #[account(
+        init,
+        payer = payer,
+        space = 8 + AcceptanceRecord::INIT_SPACE,
+        seeds = [b"acceptance", proposal.key().as_ref(), parcel_id.as_bytes(), owner.key().as_ref()],
+        bump
+    )]
+    pub record: Box<Account<'info, AcceptanceRecord>>,
+
+    /// The attested owner saying yes; must equal the ownership payload's `owner`.
+    pub owner: Signer<'info>,
+
+    /// Pays rent for the tally and the record; may be the owner.
+    #[account(mut)]
+    pub payer: Signer<'info>,
+
+    pub system_program: Program<'info, System>,
 }
 
 #[derive(Accounts)]
-#[instruction(parcel_id: String)]
-pub struct WithdrawAcceptance<'info> {
+pub struct SettleWithVerdict<'info> {
     #[account(mut)]
-    pub proposal: Account<'info, Proposal>,
+    pub proposal: Box<Account<'info, Proposal>>,
 
-    /// CHECK: Validated as the PDA account for the withdrawn parcel id.
-    pub parcel: UncheckedAccount<'info>,
+    /// CHECK: SAS ProposalVerdict-v1 attestation; checked in the handler.
+    pub verdict: UncheckedAccount<'info>,
 
-    /// CHECK: Must be the trusted ParcelNFT program.
-    pub parcel_program: UncheckedAccount<'info>,
+    /// CHECK: SAS credential the verdict was issued under; checked in the handler.
+    pub verdict_credential: UncheckedAccount<'info>,
 
-    pub withdrawer: Signer<'info>,
+    pub submitter: Signer<'info>,
 }
 
 #[derive(Accounts)]
 pub struct DistributeFunds<'info> {
+    /// Remaining accounts carry, per accepted parcel, its tally and (record, recipient) pairs.
     #[account(mut)]
     pub proposal: Account<'info, Proposal>,
+}
 
-    /// CHECK: Must be the trusted ParcelNFT program. Remaining accounts carry parcel/recipient pairs.
-    pub parcel_program: UncheckedAccount<'info>,
+#[derive(Accounts)]
+pub struct ReclaimExpiredFunds<'info> {
+    #[account(
+        mut,
+        has_one = owner
+    )]
+    pub proposal: Account<'info, Proposal>,
+
+    #[account(mut)]
+    pub owner: Signer<'info>,
 }
 
 #[derive(Accounts)]
@@ -382,14 +536,49 @@ pub struct Proposal {
     pub accepted_parcels: Vec<String>,
     pub lens: Vec<Pubkey>,
     pub bump: u8,
+    pub verdict_may_execute: bool,
 }
 
+/// One lens member's view of one parcel's owner set within one proposal:
+/// PDA ["consent", proposal, parcel_id].
 #[account]
-pub struct Parcel {
+#[derive(InitSpace)]
+pub struct ConsentTally {
+    pub proposal: Pubkey,
+    #[max_len(32)]
     pub parcel_id: String,
-    pub metadata_uri: String,
-    pub owner: Pubkey,
+    pub member: Pubkey,
+    pub required: u8,
+    pub accepted: u8,
     pub bump: u8,
+}
+
+/// One attested owner's yes: PDA ["acceptance", proposal, parcel_id, owner]. Keeps the ownership
+/// attestation's key and the sha256 of its whole account bytes, so the evidence outlives the SAS
+/// account.
+#[account]
+#[derive(InitSpace)]
+pub struct AcceptanceRecord {
+    pub proposal: Pubkey,
+    #[max_len(32)]
+    pub parcel_id: String,
+    pub owner: Pubkey,
+    pub member: Pubkey,
+    pub ownership_attestation: Pubkey,
+    pub ownership_hash: [u8; 32],
+    pub payout: Pubkey,
+    pub accepted_at: i64,
+    pub bump: u8,
+}
+
+#[event]
+pub struct VerdictSettled {
+    pub proposal: Pubkey,
+    pub verdict_attestation: Pubkey,
+    pub verdict_hash: [u8; 32],
+    pub member: Pubkey,
+    pub status: u8,
+    pub settled_at: i64,
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq)]
@@ -434,53 +623,132 @@ pub enum ProposalError {
     ArithmeticOverflow,
     #[msg("Insufficient escrow balance")]
     InsufficientEscrowBalance,
+    #[msg("The attestation issuer is not in this proposal's lens")]
+    MemberNotInLens,
+    #[msg("The account is not a valid SAS attestation or credential")]
+    InvalidAttestation,
+    #[msg("The attestation has expired")]
+    AttestationExpired,
+    #[msg("The attestation was issued under a different credential")]
+    WrongCredential,
+    #[msg("The credential's authority did not sign the attestation")]
+    CredentialAuthorityMismatch,
+    #[msg("The attestation is not under the expected lens schema")]
+    WrongSchema,
+    #[msg("The attestation payload does not match its schema")]
+    InvalidAttestationPayload,
+    #[msg("The ownership attestation is about a different parcel")]
+    WrongParcel,
+    #[msg("The ownership attestation's ownerCount must be at least 1")]
+    InvalidOwnerCount,
+    #[msg("The signer is not the attested owner")]
+    OwnerMismatch,
+    #[msg("The attestation's source time is in the future")]
+    AttestationFromFuture,
+    #[msg("The attestation's ownerCount differs from the parcel's tally")]
+    OwnerCountMismatch,
+    #[msg("Another lens member already opened this parcel's tally")]
+    TallyMemberMismatch,
+    #[msg("The verdict is about a different proposal")]
+    WrongProposal,
+    #[msg("The verdict must be executed or expired")]
+    InvalidVerdict,
+    #[msg("An executed verdict cannot skip per-parcel consent")]
+    VerdictCannotSkipConsent,
+    #[msg("Proposal is not expired")]
+    NotExpired,
 }
 
-fn validate_parcel_owner<'parcel, 'program>(
-    parcel_account: &AccountInfo<'parcel>,
-    parcel_program: &AccountInfo<'program>,
-    parcel_id: &str,
-    expected_owner: &Pubkey,
-) -> Result<Parcel> {
-    require!(
-        parcel_program.executable,
-        ProposalError::InvalidParcelProgram
-    );
-    require_keys_eq!(
-        parcel_program.key(),
-        PARCEL_NFT_PROGRAM_ID,
-        ProposalError::InvalidParcelProgram
-    );
-    require_keys_eq!(
-        *parcel_account.owner,
-        parcel_program.key(),
-        ProposalError::InvalidParcelProgram
-    );
+/// The parcel anchor must exist: owned by parcel_nft at PDA ["parcel", parcel_id].
+fn require_parcel_anchor(parcel: &AccountInfo, parcel_id: &str) -> Result<()> {
+    require_keys_eq!(*parcel.owner, PARCEL_NFT_PROGRAM_ID, ProposalError::InvalidParcelAccount);
+    let (expected, _) =
+        Pubkey::find_program_address(&[b"parcel", parcel_id.as_bytes()], &PARCEL_NFT_PROGRAM_ID);
+    require_keys_eq!(parcel.key(), expected, ProposalError::InvalidParcelAccount);
+    Ok(())
+}
 
-    let (expected_parcel_pda, _) =
-        Pubkey::find_program_address(&[b"parcel", parcel_id.as_bytes()], &parcel_program.key());
+fn sas_error(error: SasError) -> Error {
+    match error {
+        SasError::InvalidPayload => error!(ProposalError::InvalidAttestationPayload),
+        SasError::WrongCredential => error!(ProposalError::WrongCredential),
+        SasError::InvalidAccount | SasError::SchemaPaused => error!(ProposalError::InvalidAttestation),
+    }
+}
+
+/// The attestation checks shared by acceptance and verdict: SAS-owned, discriminator 2, not
+/// expired (expiry strictly after now), issued under `credential`, whose authority is the
+/// attestation's signer, under this credential's `schema_name` v1 schema PDA.
+fn verify_attestation<'a>(
+    attestation_account: &AccountInfo,
+    data: &'a [u8],
+    credential: &AccountInfo,
+    schema_name: &[u8],
+    now: i64,
+) -> Result<sas_attestation::Attestation<'a>> {
+    require_keys_eq!(*attestation_account.owner, SAS_PROGRAM_ID, ProposalError::InvalidAttestation);
+    let attestation = sas_attestation::parse_attestation(data).map_err(sas_error)?;
+    require!(attestation.expiry > now, ProposalError::AttestationExpired);
+    require_keys_eq!(attestation.credential, credential.key(), ProposalError::WrongCredential);
+    require_keys_eq!(*credential.owner, SAS_PROGRAM_ID, ProposalError::InvalidAttestation);
+    let credential_authority = {
+        let credential_data = credential.try_borrow_data()?;
+        sas_attestation::parse_credential_authority(&credential_data).map_err(sas_error)?
+    };
+    require_keys_eq!(credential_authority, attestation.authority, ProposalError::CredentialAuthorityMismatch);
     require_keys_eq!(
-        parcel_account.key(),
-        expected_parcel_pda,
-        ProposalError::InvalidParcelAccount
+        attestation.schema,
+        sas_attestation::schema_address(&credential.key(), schema_name, LENS_SCHEMA_VERSION),
+        ProposalError::WrongSchema
     );
+    Ok(attestation)
+}
 
-    let account_data = parcel_account.try_borrow_data()?;
-    let mut data_slice: &[u8] = &account_data;
-    let parcel = Parcel::try_deserialize(&mut data_slice)
-        .map_err(|_| ProposalError::InvalidParcelAccount)?;
+/// ParcelOwnership-v1: string parcelUid, string owner, uint8 ownerCount, string evidenceRef,
+/// int64 sourceObservedAt.
+struct OwnershipPayload<'a> {
+    parcel_uid: &'a [u8],
+    owner: Pubkey,
+    owner_count: u8,
+    source_observed_at: i64,
+}
 
-    require!(
-        parcel.parcel_id == parcel_id,
-        ProposalError::InvalidParcelAccount
-    );
-    require_keys_eq!(
-        parcel.owner,
-        *expected_owner,
-        ProposalError::UnauthorizedParcelOwner
-    );
+fn parse_ownership(payload: &[u8]) -> Result<OwnershipPayload<'_>> {
+    let mut reader = PayloadReader::new(payload);
+    let parcel_uid = reader.string().map_err(sas_error)?;
+    let owner = sas_attestation::parse_pubkey_string(reader.string().map_err(sas_error)?).map_err(sas_error)?;
+    let owner_count = reader.u8().map_err(sas_error)?;
+    let _evidence_ref = reader.string().map_err(sas_error)?;
+    let source_observed_at = reader.i64().map_err(sas_error)?;
+    reader.finish().map_err(sas_error)?;
+    Ok(OwnershipPayload { parcel_uid, owner, owner_count, source_observed_at })
+}
 
-    Ok(parcel)
+/// ProposalVerdict-v1: string proposalAccount, string verdict, string evidenceRef,
+/// int64 sourceObservedAt.
+struct VerdictPayload<'a> {
+    proposal_account: Pubkey,
+    verdict: &'a [u8],
+    source_observed_at: i64,
+}
+
+fn parse_verdict(payload: &[u8]) -> Result<VerdictPayload<'_>> {
+    let mut reader = PayloadReader::new(payload);
+    let proposal_account =
+        sas_attestation::parse_pubkey_string(reader.string().map_err(sas_error)?).map_err(sas_error)?;
+    let verdict = reader.string().map_err(sas_error)?;
+    let _evidence_ref = reader.string().map_err(sas_error)?;
+    let source_observed_at = reader.i64().map_err(sas_error)?;
+    reader.finish().map_err(sas_error)?;
+    Ok(VerdictPayload { proposal_account, verdict, source_observed_at })
+}
+
+/// Deserialize an account this program owns (owner and Anchor discriminator checked).
+fn read_program_account<T: AccountDeserialize>(info: &AccountInfo) -> Result<T> {
+    require_keys_eq!(*info.owner, crate::ID, ProposalError::InvalidDistributionAccounts);
+    let data = info.try_borrow_data()?;
+    let mut slice: &[u8] = &data;
+    T::try_deserialize(&mut slice).map_err(|_| error!(ProposalError::InvalidDistributionAccounts))
 }
 
 fn transfer_program_lamports<'from, 'to>(

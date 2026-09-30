@@ -47,6 +47,8 @@ describe('hackathon public proof routes', () => {
                 operations: 'https://api.example.test/hackathon/operations.json',
                 canonicalCase: 'https://api.example.test/hackathon/cases/hackathon-golden-borovje-2026',
                 executedCase: 'https://api.example.test/hackathon/cases/hackathon-executed-borovje-2026',
+                attestedCase: 'https://api.example.test/hackathon/cases/hackathon-attested-borovje-2026',
+                lensMembers: 'https://api.example.test/lenses/members',
                 independentX402: {
                     kind: 'clean_room_verified_fact_purchase', amountAtomic: '10000',
                     transaction: '3T7mg2f5FRk6uFND6eyRKrS5VyHviizk4vmPqB1zxVJbmnz4f1nxaMjXxGi4XEh8JMMesPXNbaaCNzgFQxRxTGPn'
@@ -65,9 +67,12 @@ describe('hackathon public proof routes', () => {
             statusReader: () => buildProspectiveMarketStatus({ now: Date.parse('2026-09-22T20:00:00Z') })
         });
         const { body } = await request(app).get('/hackathon/proof.json');
+        // The manifest pins what is DEPLOYED on devnet. The working IDLs are lens-model v2 (built, not
+        // deployed), so the pins are compared against the deployed snapshots under idl/legacy until the
+        // v2 programs ship; then the pins move to the working files and the snapshots stay as history.
         const files = {
-            ProposalPledge: 'proposal_pledge.json', ProposalMarket: 'proposal_market.json',
-            ProposalNFT: 'proposal_nft.json', ParcelNFT: 'parcel_nft.json'
+            ProposalPledge: 'proposal_pledge.json', ProposalMarket: 'legacy/proposal_market.v1.json',
+            ProposalNFT: 'legacy/proposal_nft.v1.json', ParcelNFT: 'legacy/parcel_nft.v1.json'
         };
         expect(body.releaseArtifacts.programs.map(program => program.name)).toEqual(Object.keys(files));
         for (const program of body.releaseArtifacts.programs) {

@@ -54,6 +54,10 @@
         const parcel = action.parcelId ? ` parcel ${action.parcelId}` : '';
         const side = action.side ? ` ${String(action.side).toUpperCase()}` : '';
         if (action.type === 'certifyParcel') return `${actor.name} holds the ownership certificate for${parcel}.`;
+        if (action.type === 'anchorParcel') return `${actor.name} created the parcel anchor for${parcel}.`;
+        if (action.type === 'attestOwnership') return `${actor.name} attested the owner of${parcel}.`;
+        if (action.type === 'acceptance') return `${actor.name} said yes to${proposal} for${parcel}.`;
+        if (action.type === 'verdict') return `${actor.name} submitted a verdict on${proposal}.`;
         if (action.type === 'accept') return `${actor.name} accepted${proposal} for${parcel}.`;
         if (action.type === 'cancel') return `${actor.name} cancelled${proposal}.`;
         if (action.type === 'resolve') return `${actor.name} resolved the market of${proposal}.`;

@@ -1,7 +1,7 @@
 /**
  * Solana Proposal Chain Bridge
- * Mint, contribute, accept, withdraw proposals on Solana
- * Mirrors ProposalChainBridge API for EVM
+ * Mint, contribute, distribute and cancel proposals on Solana (proposal_nft v2).
+ * Owner consent is not here: see acceptance-bridge.js (accept_with_attestations).
  */
 (function () {
     const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
@@ -43,34 +43,6 @@
             offset += b.length;
         }
         return out;
-    }
-
-    function encodeBorshString(s) {
-        const utf8 = new TextEncoder().encode(s);
-        const len = new Uint8Array(4);
-        new DataView(len.buffer).setUint32(0, utf8.length, true);
-        return concatBuffers([len, utf8]);
-    }
-
-    function encodeBorshVecString(arr) {
-        const len = new Uint8Array(4);
-        new DataView(len.buffer).setUint32(0, arr.length, true);
-        const parts = [len];
-        for (const s of arr) {
-            parts.push(encodeBorshString(s));
-        }
-        return concatBuffers(parts);
-    }
-
-    function encodeBorshVecPubkey(pubkeys) {
-        const len = new Uint8Array(4);
-        new DataView(len.buffer).setUint32(0, pubkeys.length, true);
-        const parts = [len];
-        for (const pk of pubkeys) {
-            const key = new globalScope.solanaWeb3.PublicKey(pk);
-            parts.push(new Uint8Array(key.toBytes()));
-        }
-        return concatBuffers(parts);
     }
 
     function parseIntegerBigInt(value, label) {
@@ -144,27 +116,6 @@
         return signature;
     }
 
-    function getParcelPda(programId, parcelId) {
-        if (globalScope.SolanaChainDataLoader && typeof globalScope.SolanaChainDataLoader.getParcelPda === 'function') {
-            return globalScope.SolanaChainDataLoader.getParcelPda(programId, parcelId);
-        }
-        const enc = new TextEncoder();
-        const [pda] = globalScope.solanaWeb3.PublicKey.findProgramAddressSync(
-            [enc.encode('parcel'), enc.encode(parcelId)],
-            new globalScope.solanaWeb3.PublicKey(programId)
-        );
-        return pda;
-    }
-
-    function readRecipientFromOptions(options, parcelId) {
-        const recipients = options.recipients || options.recipientAccounts || {};
-        if (Array.isArray(recipients)) {
-            const match = recipients.find(entry => entry && String(entry.parcelId) === String(parcelId));
-            return match && (match.recipient || match.owner || match.address || match.publicKey);
-        }
-        return recipients[parcelId] || recipients[String(parcelId)];
-    }
-
     async function resolveProposalProgramId() {
         const loader = globalScope.SolanaChainDataLoader;
         if (loader && loader.resolveProgramAddress) {
@@ -205,27 +156,13 @@
 
         const cluster = getCluster();
         const connection = globalScope.SolanaChainDataLoader.getConnection(cluster);
-        const programKey = new globalScope.solanaWeb3.PublicKey(programId);
-
-        const [proposalCounterPda] = globalScope.solanaWeb3.PublicKey.findProgramAddressSync(
-            [new TextEncoder().encode('proposal_counter')],
-            programKey
-        );
-
+        const [proposalCounterPda] = globalScope.SolanaAcceptanceClient.getProposalCounterPda(programId);
         const counterAccount = await connection.getAccountInfo(proposalCounterPda);
         if (!counterAccount || !counterAccount.data) {
             throw new Error('Proposal counter not initialized. Deploy and initialize the program first.');
         }
         const count = new DataView(counterAccount.data.buffer, counterAccount.data.byteOffset + 8, 8).getBigUint64(0, true);
 
-        const countBuf = new Uint8Array(8);
-        new DataView(countBuf.buffer).setBigUint64(0, count, true);
-        const [proposalPda] = globalScope.solanaWeb3.PublicKey.findProgramAddressSync(
-            [new TextEncoder().encode('proposal'), countBuf],
-            programKey
-        );
-
-        const discriminator = await sha256Discriminator('mint_and_fund');
         const solAmount = options.solLamports !== undefined
             ? parseIntegerBigInt(options.solLamports, 'SOL lamports')
             : (options.solAmount !== undefined
@@ -233,37 +170,28 @@
                 : (options.ethAmount !== undefined
                     ? parseSolToLamports(options.ethAmount, 'SOL amount')
                     : parseIntegerBigInt(options.ethAmountWei || 0, 'SOL lamports')));
-        const solAmountBuf = new Uint8Array(8);
-        new DataView(solAmountBuf.buffer).setBigUint64(0, solAmount, true);
 
-        const lensAddresses = (options.lens || []).map(l => typeof l === 'string' ? l : (l?.address || l?.toString?.()));
-        const args = concatBuffers([
-            encodeBorshVecString(uniqueParcelIds),
-            new Uint8Array([options.isConditional ? 1 : 0]),
-            encodeBorshString(options.imageURI || ''),
-            solAmountBuf,
-            encodeBorshVecPubkey(lensAddresses.filter(Boolean))
-        ]);
-
-        const ixData = concatBuffers([discriminator, args]);
+        const lensAddresses = (options.lens || []).map(l => typeof l === 'string' ? l : (l?.address || l?.toString?.())).filter(Boolean);
+        // v2 mint_and_fund ends with `verdict_may_execute: bool`. Only an explicit `true` sets it:
+        // a lens member's `executed` verdict may then execute without per-parcel consent.
+        const { proposal: proposalPda, instruction } = globalScope.SolanaAcceptanceClient.buildMintAndFundIx({
+            owner: wallet,
+            proposalCount: count,
+            programId,
+            parcelIds: uniqueParcelIds,
+            isConditional: Boolean(options.isConditional),
+            imageUri: options.imageURI || '',
+            solLamports: solAmount,
+            lens: lensAddresses,
+            verdictMayExecute: options.verdictMayExecute === true
+        });
 
         const provider = globalScope.solanaWalletManager.getProvider();
         const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
         const tx = new globalScope.solanaWeb3.Transaction();
         tx.recentBlockhash = blockhash;
         tx.feePayer = wallet;
-        tx.add(
-            new globalScope.solanaWeb3.TransactionInstruction({
-                programId: programKey,
-                keys: [
-                    { pubkey: proposalPda, isSigner: false, isWritable: true },
-                    { pubkey: proposalCounterPda, isSigner: false, isWritable: true },
-                    { pubkey: wallet, isSigner: true, isWritable: true },
-                    { pubkey: globalScope.solanaWeb3.SystemProgram.programId, isSigner: false, isWritable: false }
-                ],
-                data: ixData
-            })
-        );
+        tx.add(instruction);
 
         const signature = await signSendAndConfirm(provider, connection, tx, blockhash, lastValidBlockHeight);
 
@@ -329,186 +257,14 @@
         };
     }
 
-    async function acceptProposal(options = {}) {
-        if (!haveSolanaWeb3()) throw new Error('Solana web3.js not available');
-        const wallet = getWallet();
-        if (!wallet) throw new Error('Connect a Solana wallet to accept proposals');
-
-        const programId = options.programId || options.contractAddress || await resolveProposalProgramId();
-        if (!programId) throw new Error('ProposalNFT program not configured');
-        const parcelProgramId = options.parcelProgramId || await resolveParcelProgramId();
-        if (!parcelProgramId) throw new Error('ParcelNFT program not configured');
-        if (!options.proposalId) throw new Error('Proposal id required');
-        if (!options.parcelId) throw new Error('Parcel id required');
-
-        const discriminator = await sha256Discriminator('accept_proposal');
-        const args = encodeBorshString(options.parcelId);
-        const ixData = concatBuffers([discriminator, args]);
-
-        const proposalKey = new globalScope.solanaWeb3.PublicKey(options.proposalId);
-        const programKey = new globalScope.solanaWeb3.PublicKey(programId);
-        const parcelProgramKey = new globalScope.solanaWeb3.PublicKey(parcelProgramId);
-        const parcelKey = getParcelPda(parcelProgramId, options.parcelId);
-        const cluster = getCluster();
-        const connection = globalScope.SolanaChainDataLoader.getConnection(cluster);
-        const provider = globalScope.solanaWalletManager.getProvider();
-
-        const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
-        const tx = new globalScope.solanaWeb3.Transaction();
-        tx.recentBlockhash = blockhash;
-        tx.feePayer = wallet;
-        tx.add(
-            new globalScope.solanaWeb3.TransactionInstruction({
-                programId: programKey,
-                keys: [
-                    { pubkey: proposalKey, isSigner: false, isWritable: true },
-                    { pubkey: parcelKey, isSigner: false, isWritable: false },
-                    { pubkey: parcelProgramKey, isSigner: false, isWritable: false },
-                    { pubkey: wallet, isSigner: true, isWritable: false }
-                ],
-                data: ixData
-            })
-        );
-
-        const signature = await signSendAndConfirm(provider, connection, tx, blockhash, lastValidBlockHeight);
-
-        const clusterSuffix = cluster !== 'mainnet-beta' ? `?cluster=${cluster}` : '';
-        return {
-            transactionHash: signature,
-            chainId: `solana-${cluster}`,
-            cluster,
-            contractAddress: programId,
-            explorerUrl: `https://explorer.solana.com/tx/${signature}${clusterSuffix}`
-        };
-    }
-
-    async function withdrawAcceptance(options = {}) {
-        if (!haveSolanaWeb3()) throw new Error('Solana web3.js not available');
-        const wallet = getWallet();
-        if (!wallet) throw new Error('Connect a Solana wallet to withdraw acceptance');
-
-        const programId = options.programId || options.contractAddress || await resolveProposalProgramId();
-        if (!programId) throw new Error('ProposalNFT program not configured');
-        const parcelProgramId = options.parcelProgramId || await resolveParcelProgramId();
-        if (!parcelProgramId) throw new Error('ParcelNFT program not configured');
-        if (!options.proposalId) throw new Error('Proposal id required');
-        if (!options.parcelId) throw new Error('Parcel id required');
-
-        const discriminator = await sha256Discriminator('withdraw_acceptance');
-        const args = encodeBorshString(options.parcelId);
-        const ixData = concatBuffers([discriminator, args]);
-
-        const proposalKey = new globalScope.solanaWeb3.PublicKey(options.proposalId);
-        const programKey = new globalScope.solanaWeb3.PublicKey(programId);
-        const parcelProgramKey = new globalScope.solanaWeb3.PublicKey(parcelProgramId);
-        const parcelKey = getParcelPda(parcelProgramId, options.parcelId);
-        const cluster = getCluster();
-        const connection = globalScope.SolanaChainDataLoader.getConnection(cluster);
-        const provider = globalScope.solanaWalletManager.getProvider();
-
-        const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
-        const tx = new globalScope.solanaWeb3.Transaction();
-        tx.recentBlockhash = blockhash;
-        tx.feePayer = wallet;
-        tx.add(
-            new globalScope.solanaWeb3.TransactionInstruction({
-                programId: programKey,
-                keys: [
-                    { pubkey: proposalKey, isSigner: false, isWritable: true },
-                    { pubkey: parcelKey, isSigner: false, isWritable: false },
-                    { pubkey: parcelProgramKey, isSigner: false, isWritable: false },
-                    { pubkey: wallet, isSigner: true, isWritable: false }
-                ],
-                data: ixData
-            })
-        );
-
-        const signature = await signSendAndConfirm(provider, connection, tx, blockhash, lastValidBlockHeight);
-
-        const clusterSuffix = cluster !== 'mainnet-beta' ? `?cluster=${cluster}` : '';
-        return {
-            transactionHash: signature,
-            chainId: `solana-${cluster}`,
-            cluster,
-            contractAddress: programId,
-            explorerUrl: `https://explorer.solana.com/tx/${signature}${clusterSuffix}`
-        };
-    }
-
+    // v1 accept_proposal / withdraw_acceptance no longer exist in proposal_nft v2: an attested
+    // owner says yes through SolanaAcceptanceBridge.sayYes (accept_with_attestations), and an
+    // acceptance cannot be withdrawn. distribute_funds v2 pays acceptance records.
     async function distributeFunds(options = {}) {
         if (!haveSolanaWeb3()) throw new Error('Solana web3.js not available');
-        const wallet = getWallet();
-        if (!wallet) throw new Error('Connect a Solana wallet to distribute proposal funds');
-
-        const programId = options.programId || options.contractAddress || await resolveProposalProgramId();
-        if (!programId) throw new Error('ProposalNFT program not configured');
-        const parcelProgramId = options.parcelProgramId || await resolveParcelProgramId();
-        if (!parcelProgramId) throw new Error('ParcelNFT program not configured');
+        if (!globalScope.SolanaAcceptanceBridge) throw new Error('Acceptance bridge is unavailable');
         if (!options.proposalId) throw new Error('Proposal id required');
-
-        const proposalKey = new globalScope.solanaWeb3.PublicKey(options.proposalId);
-        const programKey = new globalScope.solanaWeb3.PublicKey(programId);
-        const parcelProgramKey = new globalScope.solanaWeb3.PublicKey(parcelProgramId);
-        const cluster = getCluster();
-        const connection = globalScope.SolanaChainDataLoader.getConnection(cluster);
-        const provider = globalScope.solanaWalletManager.getProvider();
-
-        let acceptedParcels = Array.isArray(options.acceptedParcels) ? options.acceptedParcels.map(String).filter(Boolean) : [];
-        if (acceptedParcels.length === 0) {
-            const proposalInfo = await connection.getAccountInfo(proposalKey);
-            const parsedProposal = proposalInfo && proposalInfo.data && globalScope.SolanaChainDataLoader.parseProposalAccount
-                ? globalScope.SolanaChainDataLoader.parseProposalAccount(proposalInfo.data, proposalKey.toString())
-                : null;
-            acceptedParcels = Array.isArray(parsedProposal && parsedProposal.acceptedParcels)
-                ? parsedProposal.acceptedParcels.map(String).filter(Boolean)
-                : [];
-        }
-        if (acceptedParcels.length === 0) throw new Error('No accepted parcels to distribute funds to');
-
-        const remainingAccounts = [];
-        for (const parcelId of acceptedParcels) {
-            const parcelKey = getParcelPda(parcelProgramId, parcelId);
-            let recipient = readRecipientFromOptions(options, parcelId);
-            if (!recipient) {
-                const parcelInfo = await connection.getAccountInfo(parcelKey);
-                const parsedParcel = parcelInfo && parcelInfo.data && globalScope.SolanaChainDataLoader.parseParcelAccount
-                    ? globalScope.SolanaChainDataLoader.parseParcelAccount(parcelInfo.data)
-                    : null;
-                recipient = parsedParcel && parsedParcel.owner;
-            }
-            if (!recipient) throw new Error(`Recipient owner not found for parcel ${parcelId}`);
-            remainingAccounts.push(
-                { pubkey: parcelKey, isSigner: false, isWritable: false },
-                { pubkey: new globalScope.solanaWeb3.PublicKey(recipient), isSigner: false, isWritable: true }
-            );
-        }
-
-        const discriminator = await sha256Discriminator('distribute_funds');
-        const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
-        const tx = new globalScope.solanaWeb3.Transaction();
-        tx.recentBlockhash = blockhash;
-        tx.feePayer = wallet;
-        tx.add(
-            new globalScope.solanaWeb3.TransactionInstruction({
-                programId: programKey,
-                keys: [
-                    { pubkey: proposalKey, isSigner: false, isWritable: true },
-                    { pubkey: parcelProgramKey, isSigner: false, isWritable: false },
-                    ...remainingAccounts
-                ],
-                data: discriminator
-            })
-        );
-
-        const signature = await signSendAndConfirm(provider, connection, tx, blockhash, lastValidBlockHeight);
-        const clusterSuffix = cluster !== 'mainnet-beta' ? `?cluster=${cluster}` : '';
-        return {
-            transactionHash: signature,
-            chainId: `solana-${cluster}`,
-            cluster,
-            contractAddress: programId,
-            explorerUrl: `https://explorer.solana.com/tx/${signature}${clusterSuffix}`
-        };
+        return globalScope.SolanaAcceptanceBridge.distributeFunds({ ...options, proposal: options.proposalId });
     }
 
     async function cancelAndRefund(options = {}) {
@@ -557,8 +313,6 @@
         isSupported: () => haveSolanaWeb3(),
         mintProposal,
         contributeToProposal,
-        acceptProposal,
-        withdrawAcceptance,
         distributeFunds,
         cancelAndRefund,
         resolveProposalProgramId,

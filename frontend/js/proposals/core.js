@@ -1323,6 +1323,13 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
     const bridgeMethod = isVote ? 'castVote' : 'acceptProposal';
     const isOnChain = nftInfo && bridge && typeof bridge[bridgeMethod] === 'function';
 
+    // Solana proposals (proposal_nft v2) take no owner-accept call: an attested owner's wallet
+    // says yes in the Lens card of Details (accept_with_attestations), never from here.
+    if (nftInfo && !isVote && String(nftInfo.chain || '').startsWith('solana')) {
+        showProposalAlertMessage('solana_accept_in_lens_card', 'On Solana, owners say yes in the proposal\'s Lens card: a lens member attests your ownership, then your wallet signs.');
+        return;
+    }
+
     if (isOnChain) {
         try {
             if (typeof updateStatus === 'function') {

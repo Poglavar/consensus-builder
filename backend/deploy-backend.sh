@@ -78,6 +78,8 @@ npm ci
 DDL_FILES=(
     routes/area-monitor-ddl.sql
     routes/land-events-ddl.sql
+    routes/lenses-ddl.sql
+    routes/lens-member-ddl.sql
     routes/parcels-ddl.sql
     routes/transactions-ddl.sql
     db/agents-ddl.sql

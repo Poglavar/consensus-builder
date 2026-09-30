@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "crates/sas_attestation",
     "programs/parcel_nft",
     "programs/proposal_nft",
     "programs/proposal_market",

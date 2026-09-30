@@ -1,0 +1,20 @@
+# Localnet-only stand-in for the Solana Attestation Service program (see src/lib.rs). Its own
+# workspace so the Anchor workspace never builds or deploys it; the built .so is checked in at
+# tests/fixtures/mock_sas.so. Rebuild: cargo build-sbf --manifest-path tests/mock_sas/Cargo.toml
+# && cp tests/mock_sas/target/deploy/mock_sas.so tests/fixtures/
+[package]
+name = "mock_sas"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+solana-program = "=1.18.26"
+
+[workspace]
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_os, values("solana"))', 'cfg(feature, values("custom-heap", "custom-panic"))'] }

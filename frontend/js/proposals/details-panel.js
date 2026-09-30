@@ -781,6 +781,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             </div>
             ${parcelSetRelationsHtml}
             ${agentProvenanceHtml}
+            ${isSolanaPledgeProposal ? `<section class="proposal-funding-card proposal-lens-card" data-proposal-lens-card="${nftInfo.tokenId}" aria-live="polite"></section>` : ''}
             ${isSolanaPledgeProposal ? `<section class="proposal-possibility-card" data-proposal-timeline="${nftInfo.tokenId}" aria-label="Proposal timeline">
                 <div class="proposal-funding-head">
                     <div>
@@ -1304,6 +1305,20 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                     node.textContent = tProposal('panel.proposal.pledge.unavailable', 'Unavailable');
                 });
             });
+    }
+
+    // Lens card: decoded chain lens + directory names + per-parcel ownership attestation, consent
+    // tally and Say yes, plus the permissionless verdict settlement. Hydrated
+    // after render like the pledge card so a slow directory or RPC never delays Details.
+    if (isSolanaPledgeProposal && window.ProposalLensCard?.mount) {
+        window.ProposalLensCard.mount(
+            document.querySelector(`.proposal-lens-card[data-proposal-lens-card="${nftInfo.tokenId}"]`),
+            {
+                resolveLens: () => (proposalLensEntries.length ? proposalLensEntries : fetchLensFromChain(fullProposal)),
+                parcelIds: Array.isArray(fullProposal?.cadastreParcelIds) ? fullProposal.cadastreParcelIds : [],
+                proposalAccount: nftInfo.tokenId
+            }
+        );
     }
 
     if (isSolanaPledgeProposal && window.ProposalPossibilityTimeline?.build) {

@@ -42,6 +42,7 @@ function decode(rpcTx) {
     return decodeParsedTransaction(rpcTx, { book, idls });
 }
 
+// `name` is a current IDL (`proposal_nft`) or a legacy one under idl/legacy (`legacy/proposal_nft.v1`).
 function rawIdl(name) {
     return JSON.parse(fs.readFileSync(path.join(IDL_DIR, `${name}.json`), 'utf8'));
 }
@@ -68,6 +69,7 @@ function borsh(type, value) {
         return Buffer.concat([len, bytes]);
     }
     if (type === 'pubkey') return new PublicKey(value).toBuffer();
+    if (type && type.option) return value == null ? Buffer.from([0]) : Buffer.concat([Buffer.from([1]), borsh(type.option, value)]);
     if (type && type.vec) {
         const len = Buffer.alloc(4);
         len.writeUInt32LE(value.length);
@@ -329,6 +331,10 @@ describe('decodeParsedTransaction: proposal_nft mint_and_fund (recorded devnet t
         expect(anchor.action).toBe('mint_and_fund');
     });
 
+    it('decodes it with the v1 interface: the v2 mint_and_fund shares the discriminator but reads a trailing bool v1 never sent', () => {
+        expect(anchor.idlVersion).toBe('v1');
+    });
+
     it('decodes every arg type the instruction uses', () => {
         expect(anchor.args).toEqual({
             parcel_ids: ['HR-335649-507'],
@@ -362,8 +368,9 @@ describe('decodeParsedTransaction: proposal_nft accept_proposal (recorded devnet
     const anchor = decoded.instructions.find((instruction) => instruction.program.name === 'proposal_nft');
 
     it('maps the instruction data to the IDL discriminator and decodes the arg', () => {
-        expect(anchor.discriminator).toBe(idlDiscriminatorHex('proposal_nft', 'accept_proposal'));
+        expect(anchor.discriminator).toBe(idlDiscriminatorHex('legacy/proposal_nft.v1', 'accept_proposal'));
         expect(anchor.action).toBe('accept_proposal');
+        expect(anchor.idlVersion).toBe('v1');
         expect(anchor.args).toEqual({ parcel_id: 'HR-335649-507' });
     });
 
@@ -374,6 +381,61 @@ describe('decodeParsedTransaction: proposal_nft accept_proposal (recorded devnet
 
     it('falls back to the instruction signer for the actor in the summary', () => {
         expect(decoded.summary).toBe('8ErK…UPyw accepted parcel HR-335649-507');
+    });
+});
+
+describe('decodeParsedTransaction: proposal_nft v2 instructions (synthetic)', () => {
+    const OWNER = PERSONA_WALLET;
+    const PAYOUT = TREASURY;
+    const PARCEL = 'DDi6wgNuAR3GYu2Zirmys4HnB6Ee3DiHpY84bqauqQHH';
+    const ATTESTATION = 'EVFpL5JVXmsWpJieChQRhXxAHSNCVh8v3KwWdsoniiwB';
+    const CREDENTIAL = 'LU6ENfBJU9BJSgsFJMoBNcafSaMkoZHrjY4bZ61Aim9';
+    const TALLY = '6NPKGcQQ6yDzFLyPejeegsjrArHDQcAkHGvX8runxkjB';
+    const RECORD = '2kVqTDdSZG9sTzuvDRUmNgtzJyUmKFF4gytJiv2LmBog';
+    const accounts = [PROPOSAL, PARCEL, ATTESTATION, CREDENTIAL, TALLY, RECORD, OWNER, OWNER, SYSTEM_PROGRAM];
+    const tx = (values) => buildTx({
+        accountKeys: [
+            key(OWNER, { signer: true, writable: true }),
+            key(PROPOSAL, { writable: true }), key(PARCEL), key(ATTESTATION), key(CREDENTIAL),
+            key(TALLY, { writable: true }), key(RECORD, { writable: true }), key(SYSTEM_PROGRAM), key(PROPOSAL_PROGRAM)
+        ],
+        instructions: [{ accounts, data: anchorData('proposal_nft', 'accept_with_attestations', values), programId: PROPOSAL_PROGRAM, stackHeight: 1 }]
+    });
+
+    it('decodes accept_with_attestations with the v2 interface, the payout option and the account roles', () => {
+        const decoded = decode(tx({ parcel_id: 'HR-335649-507', payout: PAYOUT }));
+        const anchor = decoded.instructions[0];
+        expect(anchor.action).toBe('accept_with_attestations');
+        expect(anchor.idlVersion).toBe('v2');
+        expect(anchor.args).toEqual({ parcel_id: 'HR-335649-507', payout: PAYOUT });
+        expect(anchor.argsError).toBeUndefined();
+        expect(anchor.accounts.map((account) => account.role)).toEqual(['proposal', 'parcel', 'ownership', 'ownership_credential', 'tally', 'record', 'owner', 'payer', 'system_program']);
+        expect(decoded.summary).toBe(`agent densifier-01 accepted parcel HR-335649-507 on proposal ${PROPOSAL.slice(0, 4)}…${PROPOSAL.slice(-4)} (ownership attestation ${ATTESTATION.slice(0, 4)}…${ATTESTATION.slice(-4)})`);
+    });
+
+    it('reads an absent payout as null', () => {
+        expect(decode(tx({ parcel_id: 'HR-1', payout: null })).instructions[0].args).toEqual({ parcel_id: 'HR-1', payout: null });
+    });
+
+    it('decodes a v2 mint_and_fund (trailing verdict_may_execute) with the v2 interface', () => {
+        const data = anchorData('proposal_nft', 'mint_and_fund', {
+            parcel_ids: ['HR-1'], is_conditional: false, image_uri: 'ipfs://x', sol_amount: '0', lens: [TREASURY], verdict_may_execute: true
+        });
+        const decoded = decode(buildTx({
+            accountKeys: [key(OWNER, { signer: true, writable: true }), key(PROPOSAL, { writable: true }), key(TALLY, { writable: true }), key(SYSTEM_PROGRAM), key(PROPOSAL_PROGRAM)],
+            instructions: [{ accounts: [PROPOSAL, TALLY, OWNER, SYSTEM_PROGRAM], data, programId: PROPOSAL_PROGRAM, stackHeight: 1 }]
+        }));
+        expect(decoded.instructions[0].idlVersion).toBe('v2');
+        expect(decoded.instructions[0].args.verdict_may_execute).toBe(true);
+        expect(decoded.instructions[0].args.lens).toEqual([TREASURY]);
+    });
+});
+
+describe('loadIdls: legacy interfaces', () => {
+    it('lists the current proposal_nft IDL first and the v1 history interface after it', () => {
+        const versions = idls.byName.get('proposal_nft').versions.map((version) => version.idlVersion);
+        expect(versions).toEqual(['v2', 'v1']);
+        expect(idls.byName.get('proposal_pledge').versions.map((version) => version.idlVersion)).toEqual(['v1']);
     });
 });
 

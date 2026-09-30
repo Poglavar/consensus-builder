@@ -1100,6 +1100,12 @@
         return contributeToProposal(options);
     }
 
+    // A Solana proposal (chainId solana-*), or no chain given while a Solana wallet is connected.
+    function isSolanaAcceptanceTarget(options) {
+        const chainId = options && options.chainId !== undefined && options.chainId !== null ? String(options.chainId) : '';
+        return chainId ? chainId.startsWith('solana') : isSolanaWalletConnected();
+    }
+
     async function acceptProposalWithRouting(options = {}) {
         if (isCantonActive()) {
             // Canton acceptance is done by the OWNER from the parcel panel's "Canton
@@ -1107,8 +1113,12 @@
             // path can't, so guide the user instead of failing cryptically.
             throw new Error('To accept on Canton: switch your Canton identity to the owner, then use the "Canton proposals" section in the parcel panel.');
         }
-        if (isSolanaWalletConnected() && globalScope.SolanaProposalChainBridge && globalScope.SolanaProposalChainBridge.isSupported()) {
-            return globalScope.SolanaProposalChainBridge.acceptProposal(options);
+        if (isSolanaAcceptanceTarget(options)) {
+            // proposal_nft v2 has no owner-accept instruction: an attested owner says yes in the
+            // proposal's Lens card (accept_with_attestations via SolanaAcceptanceBridge).
+            const error = new Error('On Solana, owners say yes from the proposal\'s Lens card with a lens member\'s ownership attestation.');
+            error.code = 'SOLANA_ACCEPT_IN_LENS_CARD';
+            throw error;
         }
         return acceptProposalOnChain(options);
     }
@@ -1117,8 +1127,10 @@
         if (isCantonActive()) {
             throw new Error('Withdrawing acceptance is not wired on Canton.');
         }
-        if (isSolanaWalletConnected() && globalScope.SolanaProposalChainBridge && globalScope.SolanaProposalChainBridge.isSupported()) {
-            return globalScope.SolanaProposalChainBridge.withdrawAcceptance(options);
+        if (isSolanaAcceptanceTarget(options)) {
+            const error = new Error('Acceptances on Solana are final: proposal_nft v2 has no withdrawal.');
+            error.code = 'SOLANA_ACCEPTANCE_FINAL';
+            throw error;
         }
         return withdrawAcceptanceOnChain(options);
     }

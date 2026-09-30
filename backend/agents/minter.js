@@ -1,5 +1,5 @@
-// Node port of the browser's `mint_and_fund` (frontend/js/solana/proposal-bridge.js): the same
-// Anchor discriminator, the same borsh argument encoding and the same PDAs, signed with a persona
+// Node port of the browser's `mint_and_fund` (frontend/js/solana/proposal-bridge.js via its v2 codec
+// acceptance-client.js): the same Anchor discriminator, the same borsh argument encoding and the same PDAs, signed with a persona
 // keypair instead of a wallet extension. Encoding and PDA derivation are pure and byte-compared
 // against the browser code in test/agents-minter.test.js; only mintProposal() touches the network.
 
@@ -82,15 +82,18 @@ function toLamports(value, label = 'lamports') {
 }
 
 /**
- * The instruction data for `mint_and_fund`, byte-identical to the browser's:
- * discriminator ‖ vec<string> parcel_ids ‖ u8 is_conditional ‖ string image_uri ‖ u64 sol_lamports ‖ vec<pubkey> lens.
+ * The instruction data for `mint_and_fund` (proposal_nft v2 IDL):
+ * discriminator ‖ vec<string> parcel_ids ‖ u8 is_conditional ‖ string image_uri ‖ u64 sol_lamports ‖ vec<pubkey> lens
+ * ‖ u8 verdict_may_execute. The trailing bool is new in v2 and defaults to false: only permit-style
+ * evidence may let a lens member's `executed` verdict skip per-parcel consent.
  * Parcel ids are de-duplicated and stringified exactly as the browser does, so the same logical
  * input produces the same bytes on both sides.
  *
- * @param {{ parcelIds: string[], isConditional?: boolean, imageUri?: string, lamports?: bigint|number|string, lens?: Array }} args
+ * @param {{ parcelIds: string[], isConditional?: boolean, imageUri?: string, lamports?: bigint|number|string, lens?: Array, verdictMayExecute?: boolean }} args
  * @returns {Uint8Array}
  */
-export function encodeMintAndFundData({ parcelIds, isConditional = true, imageUri = '', lamports = 0n, lens = [] } = {}) {
+export function encodeMintAndFundData({ parcelIds, isConditional = true, imageUri = '', lamports = 0n, lens = [], verdictMayExecute = false } = {}) {
+    if (typeof verdictMayExecute !== 'boolean') throw new Error('verdictMayExecute must be a boolean');
     const ids = [...new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean))];
     if (ids.length === 0) throw new Error('No parcel identifiers provided');
     const lensAddresses = (Array.isArray(lens) ? lens : [])
@@ -102,7 +105,8 @@ export function encodeMintAndFundData({ parcelIds, isConditional = true, imageUr
         Uint8Array.from([isConditional ? 1 : 0]),
         encodeBorshString(imageUri || ''),
         encodeU64(toLamports(lamports, 'SOL lamports')),
-        encodeBorshVecPubkey(lensAddresses)
+        encodeBorshVecPubkey(lensAddresses),
+        Uint8Array.from([verdictMayExecute ? 1 : 0])
     ]);
 }
 
@@ -175,8 +179,9 @@ function isCounterRace(error) {
  * Mint one proposal NFT with the persona keypair.
  *
  * @param {{ connection: object, programId: string|PublicKey, ownerKeypair: object, parcelIds: string[],
- *           isConditional?: boolean, imageUri?: string, lamports?: bigint, lens?: Array,
- *           sendAndConfirm?: Function }} options sendAndConfirm is the injection seam for tests.
+ *           isConditional?: boolean, imageUri?: string, lamports?: bigint, lens: Array,
+ *           verdictMayExecute?: boolean, sendAndConfirm?: Function }} options lens is required (non-empty); sendAndConfirm is the
+ *           injection seam for tests.
  * @returns {Promise<{ signature: string, proposalPda: string, count: bigint, chainId: string,
  *                     contractAddress: string, transactionHash: string }>}
  */
@@ -189,14 +194,20 @@ export async function mintProposal({
     imageUri = '',
     lamports = 0n,
     lens,
+    verdictMayExecute = false,
     sendAndConfirm = sendAndConfirmTransaction
 } = {}) {
     if (!connection) throw new Error('a solana connection is required');
     if (!ownerKeypair || !ownerKeypair.publicKey) throw new Error('ownerKeypair (a web3 Keypair) is required');
     const program = toPublicKey(programId, 'programId');
     const owner = ownerKeypair.publicKey;
-    const lensAddresses = lens === undefined || lens === null ? [owner] : lens;
-    const data = encodeMintAndFundData({ parcelIds, isConditional, imageUri, lamports, lens: lensAddresses });
+    // No default: a lens defaulting to the proposer made every agent proposal self-decidable
+    // (lens-model.md §Why). The caller names the authorities explicitly.
+    if (!Array.isArray(lens) || lens.filter(Boolean).length === 0) {
+        throw new Error('lens is required: pass at least one lens member key (see agents/lens-directory-client.js)');
+    }
+    const lensAddresses = lens;
+    const data = encodeMintAndFundData({ parcelIds, isConditional, imageUri, lamports, lens: lensAddresses, verdictMayExecute });
 
     const attempt = async (count) => {
         const { proposalPda } = deriveProposalPdas(program, count);

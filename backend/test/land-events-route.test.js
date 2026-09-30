@@ -6,13 +6,17 @@ import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
 import { setupLandEventsRoute } from '../routes/land-events.js';
 import { COURT_SCHEMA_V2 } from '../oracle/court-parcel-operation.js';
+import { PROPOSAL_PROGRAM_ID } from '../oracle/proposal-lifecycle.js';
+import { proposalAccountBytes } from './fixtures/proposal-account.js';
 
 const PROPOSAL = 'Gsvt6nMhsvfrEDgvcqZDzPKZhhqACFEi3mueMxQNQ6UT';
 const MARKET = 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB';
+const NOTARY = 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ';
 
-function appFor(pool) {
+// No test reaches devnet: the proposal account comes from this reader.
+function appFor(pool, readProposalAccount = async () => proposalAccountBytes({ lens: [NOTARY] })) {
     const app = express();
-    setupLandEventsRoute(app, pool);
+    setupLandEventsRoute(app, pool, { readProposalAccount });
     return app;
 }
 
@@ -38,19 +42,56 @@ describe('land-event routes', () => {
         expect(ddl).toMatch(/source_observed_at\s+timestamptz NOT NULL/i);
         expect(ddl).toMatch(/source_hash\s+text NOT NULL/i);
         expect(ddl).toMatch(/ALTER TABLE consensus\.land_event OWNER TO geo_user/);
-        expect(ddl).toMatch(/UNIQUE \(event_type, subject_id, outcome\)/);
+        // One lifecycle outcome per proposal; acceptances are many per proposal, keyed by event_id.
+        expect(ddl).toMatch(/CREATE UNIQUE INDEX IF NOT EXISTS land_event_lifecycle_outcome_uidx[\s\S]*WHERE event_type = 'proposal_lifecycle'/);
+        expect(ddl).toMatch(/DROP CONSTRAINT IF EXISTS land_event_event_type_subject_id_outcome_key/);
+        expect(ddl).toMatch(/event_id\s+text PRIMARY KEY/);
     });
 
-    it('returns a subject-specific immutable recipe', async () => {
-        const res = await request(appFor({ query: vi.fn() }))
+    it('returns the precommitted v1 recipe unchanged, without reading Solana', async () => {
+        const reader = vi.fn();
+        const res = await request(appFor({ query: vi.fn() }, reader))
             .get(`/oracle/recipes/proposal-lifecycle-v1?proposal=${PROPOSAL}&market=${MARKET}`);
         expect(res.status).toBe(200);
         expect(res.body.recipe).toMatchObject({
             id: 'proposal-lifecycle-v1', eventType: 'proposal_lifecycle',
             subject: { proposalAccount: PROPOSAL, marketAccount: MARKET },
+            trustedAttesters: [{ kind: 'solana_program', address: PROPOSAL_PROGRAM_ID }],
             outcomes: { executed: 'YES', cancelled: 'NO' }
         });
-        expect(res.body.recipe.hash).toMatch(/^sha256:/);
+        expect(res.body.recipe.hash).toBe('sha256:4ee703c741d7d49844bf830dd550610be0b2aa0155ba9c694059b7914538e48d');
+        expect(reader).not.toHaveBeenCalled();
+    });
+
+    it('returns the v2 recipe with the proposal lens as trusted attesters', async () => {
+        const res = await request(appFor({ query: vi.fn() }))
+            .get(`/oracle/recipes/proposal-lifecycle-v2?proposal=${PROPOSAL}&market=${MARKET}`);
+        expect(res.status).toBe(200);
+        expect(res.body.recipe).toMatchObject({
+            id: 'proposal-lifecycle-v2', version: 2, eventType: 'proposal_lifecycle',
+            subject: { proposalAccount: PROPOSAL, marketAccount: MARKET },
+            outcomes: { executed: 'YES', cancelled: 'NO', expired: 'NO' }
+        });
+        expect(res.body.recipe.trustedAttesters).toEqual([
+            { kind: 'solana_program', address: PROPOSAL_PROGRAM_ID, role: 'enforces the proposal lens on chain' },
+            { kind: 'solana_sas_issuer', address: NOTARY, role: 'lens member' }
+        ]);
+        expect(res.body.recipe.hash).toMatch(/^sha256:[a-f0-9]{64}$/);
+    });
+
+    it('commits the v2 recipe hash to the proposal lens', async () => {
+        const url = `/oracle/recipes/proposal-lifecycle-v2?proposal=${PROPOSAL}`;
+        const notary = await request(appFor({ query: vi.fn() })).get(url);
+        const self = await request(appFor({ query: vi.fn() }, async () => proposalAccountBytes({ lens: [PROPOSAL_PROGRAM_ID] }))).get(url);
+        expect(notary.body.recipe.hash).not.toBe(self.body.recipe.hash);
+    });
+
+    it('answers 404 / 502 / 422 for a v2 recipe whose proposal account is missing, unreadable or lensless', async () => {
+        const url = `/oracle/recipes/proposal-lifecycle-v2?proposal=${PROPOSAL}`;
+        expect((await request(appFor({ query: vi.fn() }, async () => null)).get(url)).status).toBe(404);
+        expect((await request(appFor({ query: vi.fn() }, async () => { throw new Error('429'); })).get(url)).status).toBe(502);
+        expect((await request(appFor({ query: vi.fn() }, async () => Buffer.alloc(60))).get(url)).status).toBe(422);
+        expect((await request(appFor({ query: vi.fn() }, async () => proposalAccountBytes({ lens: [] }))).get(url)).status).toBe(422);
     });
 
     it('returns a court recipe and deterministic external-market address', async () => {
@@ -128,6 +169,16 @@ describe('land-event routes', () => {
             source: { hash: 'sha256:abc', transaction: 'tx-1', transactionUrl: 'https://explorer/tx' }
         });
         expect(pool.query.mock.calls[0][1]).toEqual(['proposal_lifecycle', PROPOSAL, 100]);
+    });
+
+    it('filters by the lens-model event types and rejects unknown ones', async () => {
+        const pool = { query: vi.fn().mockResolvedValue({ rows: [] }) };
+        const res = await request(appFor(pool)).get(`/oracle/events?type=proposal_acceptance&subject=${PROPOSAL}`);
+        expect(res.status).toBe(200);
+        expect(res.body.eventType).toBe('proposal_acceptance');
+        expect(pool.query.mock.calls[0][1]).toEqual(['proposal_acceptance', PROPOSAL, 25]);
+        const bad = await request(appFor(pool)).get('/oracle/events?type=anything');
+        expect(bad.status).toBe(400);
     });
 
     it('rejects malformed public keys before querying', async () => {

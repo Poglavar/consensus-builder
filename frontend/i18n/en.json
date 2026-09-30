@@ -973,7 +973,8 @@
                 "undo": "Undo",
                 "accepted": "Accepted",
                 "pending": "Pending",
-                "recipient": "recipient"
+                "recipient": "recipient",
+                "solanaLensHint": "Say yes in the Lens card"
             },
             "voting": {
                 "voteYes": "Vote yes",
@@ -1128,6 +1129,65 @@
                 "ownershipMixed": "Ownership Mixed:",
                 "totalMarketPrice": "Total Market Price:",
                 "totalAcquiringDifficulty": "Total Acquiring Difficulty:"
+            },
+            "lens": {
+                "eyebrow": "Trusted attesters",
+                "title": "Lens",
+                "loading": "Loading lens…",
+                "empty": "This proposal names no lens.",
+                "directoryUnavailable": "Member directory unavailable; showing keys only.",
+                "unknownMember": "not in the directory",
+                "ownershipTitle": "Ownership attestation",
+                "ownershipHint": "If you own one of these parcels, ask a lens member to attest it: your wallet signs a one-time challenge, the member checks its registry and issues the attestation.",
+                "memberSelect": "Lens member",
+                "requestAttestation": "Attest my ownership",
+                "noServiceUrl": "No service URL: none of this lens publishes where to ask for an attestation.",
+                "noServiceUrlShort": "no service URL",
+                "working": "Waiting for the wallet and the lens member…",
+                "attested": "Attested.",
+                "attestedExisting": "Already attested.",
+                "attestationAddress": "Attestation",
+                "accountHash": "Account hash",
+                "noWallet": "No Solana wallet found in this browser.",
+                "noSignMessage": "This wallet cannot sign messages.",
+                "paymentRequired": "This lens member charges {{price}} per ownership attestation, paid over x402. Paying from the browser is not supported yet; an agent or CLI x402 client can pay it.",
+                "paymentRequiredNoPrice": "This lens member requires an x402 payment for ownership attestations. Paying from the browser is not supported yet.",
+                "badChallenge": "The service returned a challenge that does not match this wallet and parcel ({{reason}}); nothing was signed.",
+                "notConfigured": "This lens member is not configured to issue attestations: {{message}}",
+                "refused": "The lens member refused: {{message}}",
+                "noSignTransaction": "This wallet cannot sign transactions.",
+                "findingAttestation": "Looking for your ownership attestation…",
+                "preparing": "Preparing the transaction…",
+                "awaitingSignature": "Waiting for your wallet signature…",
+                "submitted": "Submitted; waiting for confirmation…",
+                "viewTransaction": "View transaction",
+                "noAttestation": "No lens member has attested this wallet as an owner of this parcel. Use \"Attest my ownership\" first.",
+                "noAttestationMember": "No ownership attestation for this wallet from {{member}}, the lens member that opened this parcel's tally. Ask it with \"Attest my ownership\" first.",
+                "alreadyAccepted": "This wallet has already said yes for this parcel.",
+                "badPayout": "The payout must be a Solana address, or empty.",
+                "badVerdictAddress": "Paste the address of a verdict attestation.",
+                "precheckFailed": "The program would reject this ({{reason}}); nothing was signed.",
+                "consentLoading": "Reading consent from chain…",
+                "consentComplete": "Consent complete: {{accepted}} of {{required}} attested owners said yes.",
+                "consentCompleteLegacy": "Accepted on chain.",
+                "consentProgress": "{{accepted}} of {{required}} attested owners said yes (owners attested by {{member}}).",
+                "consentNone": "No attested owner has said yes yet.",
+                "consentYours": "Your wallet said yes.",
+                "consentUnavailable": "Consent state unavailable: {{message}}",
+                "proposalStatus": "On-chain status: {{status}}.",
+                "payoutPlaceholder": "Payout address (optional)",
+                "payoutLabel": "Payout address for your share of the proposal funds (optional)",
+                "sayYes": "Say yes",
+                "sayYesHint": "Once attested, \"Say yes\" signs your consent on chain. Every owner the member attested must say yes before the parcel counts; a yes cannot be withdrawn.",
+                "saidYes": "You said yes.",
+                "tallyAfter": "{{accepted}} of {{required}} attested owners have signed.",
+                "parcelComplete": "This parcel's consent is complete.",
+                "proposalExecuted": "Every parcel has consented: the proposal is executed.",
+                "verdictTitle": "Settle with a verdict",
+                "verdictHint": "Anyone may submit a lens member's verdict attestation. \"expired\" ends the proposal; \"executed\" only applies to proposals minted to accept it.",
+                "verdictPlaceholder": "Verdict attestation address",
+                "submitVerdict": "Submit verdict",
+                "verdictSettled": "Verdict \"{{verdict}}\" from {{member}} settled; on-chain status is now {{status}}."
             }
         },
         "block": {
@@ -1438,7 +1498,36 @@
             "readOnlyTitle": "Proposal lens",
             "readOnlySubtitle": "Saved with this proposal; editing is disabled.",
             "readOnlyNote": "This lens is baked into the proposal and cannot be edited.",
-            "proposalTriggerTitle": "View proposal lens (read-only)"
+            "proposalTriggerTitle": "View proposal lens (read-only)",
+            "picker": {
+                "title": "Lens for this proposal",
+                "subtitle": "Pick the lens members whose ownership attestations this proposal will accept. The lens is fixed at mint.",
+                "loading": "Loading lens members…",
+                "loadFailed": "Could not load the lens member directory: {{error}}",
+                "emptyDirectory": "No lens members are known yet. Paste a member key below.",
+                "coverageCounts": "{{ownership}} ownership attestations · {{parcels}} parcels · {{executed}} executed",
+                "noServiceUrl": "No service URL: coverage of the selected parcels is unknown",
+                "coverageLoading": "Checking the selected parcels…",
+                "coverageUnavailable": "Service did not answer; coverage unknown",
+                "coverageSelected": "Attests {{covered}} of {{total}} selected parcels",
+                "parcelsTitle": "Selected parcels",
+                "parcelUnknown": "coverage unknown",
+                "parcelCoveredBy": "attested by {{members}}",
+                "parcelNotCovered": "no ownership attestation from your lens",
+                "onlyCovered": "Only parcels covered by my lens",
+                "noParcelCoverage": "No lens member publishes a service URL, so per-parcel coverage cannot be shown; the counts above are directory totals.",
+                "noCoveredParcels": "None of the selected parcels is covered by your lens.",
+                "pasteLabel": "Paste a key",
+                "pastePlaceholder": "Base58 public key",
+                "pasteAdd": "Add",
+                "pasteInvalid": "Not a Solana public key: {{value}}",
+                "chosenCount": {
+                    "one": "{{count}} lens member chosen",
+                    "other": "{{count}} lens members chosen"
+                },
+                "required": "Choose at least one lens member; a Solana proposal cannot be minted without one.",
+                "done": "Done"
+            }
         },
         "dataSource": {
             "changeWarning": "Changing the data source will CLEAR all locally saved data (parcels, roads, proposals, plans, user settings, etc.).\n\nDo you want to proceed?"
@@ -2348,7 +2437,13 @@
                 "createInMemory": "Create in memory",
                 "mintPrerequisites": "Mint the prerequisites",
                 "cancel": "Cancel",
-                "confirm": "Create"
+                "confirm": "Create",
+                "anchorMessageSingle": "The following parcel has no parcel anchor on <strong>{{chain}}</strong> yet, so a proposal for it cannot be minted on-chain:",
+                "anchorMessagePlural": "The following parcels have no parcel anchor on <strong>{{chain}}</strong> yet, so a proposal for them cannot be minted on-chain:",
+                "anchorExplainer": "A parcel anchor is the parcel's on-chain identity. Nobody owns it and creating it confers no ownership; you only pay its rent. Ownership reaches the chain separately, as a lens member's attestation. You can also create anchors from the Parcel Info panel's Tools tab.",
+                "createAnchor": "Create the parcel anchor",
+                "createAnchors": "Create the parcel anchors",
+                "anchorThenCreate": "Create the parcel anchors, then click Create again."
             },
             "onchainMintFailed": {
                 "message": "On-chain mint failed for reason:",
@@ -3151,7 +3246,10 @@
             "block_multiselect_off": "Multi-select could not be turned on, and a block is delivered as a multi-parcel selection.",
             "activity_no_parcel_set": "This proposal has no canonical parcel set loaded.",
             "blockchain_mint_wallet_prompt": "Blockchain minting is available but no wallet is connected. Would you like to connect a wallet to mint this proposal on-chain?",
-            "failed_to_create_proposal": "Failed to create proposal."
+            "failed_to_create_proposal": "Failed to create proposal.",
+            "solana_lens_required": "Choose at least one lens member (the 👓 button) before minting on Solana.",
+            "solana_accept_in_lens_card": "On Solana, owners say yes in the proposal's Lens card: a lens member attests your ownership, then your wallet signs.",
+            "solana_acceptance_final": "Acceptances on Solana are final: a signed yes cannot be withdrawn."
         }
     },
     "gameDialogs": {
@@ -3450,5 +3548,79 @@
     "claims": {
         "onParcels": "On parcels:",
         "cadastreViewToggle": "Cadastre view: original parcels only"
+    },
+    "lensConsole": {
+        "title": "Lens member console",
+        "intro": "A lens member states facts about parcels as attestations. Point this console at your member service to see what it has issued and to record verdicts.",
+        "backToMap": "Back to the map",
+        "loading": "Loading…",
+        "service": {
+            "title": "Member service",
+            "directoryLabel": "Known members with a service URL",
+            "directoryPick": "Pick a member…",
+            "directoryNone": "No member in the directory publishes a service URL",
+            "urlLabel": "Service URL",
+            "load": "Load"
+        },
+        "status": {
+            "key": "Member key",
+            "kind": "Kind",
+            "identity": "Identity check",
+            "credential": "Credential",
+            "counts": "Issued",
+            "price": "Ownership price",
+            "free": "not priced (free or not configured)",
+            "dryRun": "Dry run: attestations are built in memory and never reach the chain.",
+            "ephemeral": "Ephemeral key: this member has no persistent identity; restart it with a keypair to be listed in a lens."
+        },
+        "wallet": {
+            "title": "Member wallet",
+            "connect": "Connect wallet",
+            "disconnected": "No wallet connected.",
+            "none": "No Solana wallet found in this browser.",
+            "address": "Wallet",
+            "matches": "This wallet is the member key of the loaded service.",
+            "differs": "This wallet is not the member key of the loaded service ({{key}})."
+        },
+        "attestations": {
+            "title": "Issued attestations",
+            "kind": "Kind",
+            "kindAll": "All",
+            "kindOwnership": "Ownership",
+            "kindVerdict": "Verdict",
+            "parcel": "Parcel",
+            "owner": "Owner",
+            "hash": "Account hash",
+            "issuedAt": "Issued (chain time)",
+            "unknownTime": "unknown",
+            "load": "Refresh",
+            "empty": "No attestations match."
+        },
+        "verdict": {
+            "title": "Operator verdict",
+            "hint": "A verdict states that a proposal executed (for evidence kinds without per-parcel consent, such as a permit register) or expired. Only the member operator can post one.",
+            "proposal": "Proposal account",
+            "verdict": "Verdict",
+            "executed": "executed",
+            "expired": "expired",
+            "evidence": "Evidence reference (optional)",
+            "observed": "When the source recorded it",
+            "token": "Operator token (not stored)",
+            "submit": "Post verdict",
+            "done": "Verdict attested.",
+            "reused": "Already attested; the stored verdict was returned.",
+            "errors": {
+                "proposal": "The proposal account must be a Solana public key.",
+                "verdict": "Choose executed or expired.",
+                "time": "Enter when the source recorded the outcome.",
+                "token": "Enter the operator token."
+            }
+        },
+        "errors": {
+            "network": "Could not reach the service ({{message}}). Is it running, and does it allow this origin (CORS)?",
+            "http": "The service answered {{status}}: {{message}}",
+            "noService": "Load a service URL first.",
+            "badUrl": "Enter an http(s) URL of a lens member service."
+        }
     }
 }

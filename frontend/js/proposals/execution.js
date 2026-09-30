@@ -80,6 +80,11 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
     // detect the vote proposal and route to castVote / rescindVote on-chain).
     const isVote = typeof isVoteProposal === 'function' && isVoteProposal(proposal);
 
+    // Minted Solana proposals (proposal_nft v2) have no owner Accept/Undo: an attested owner's
+    // wallet says yes in the Details Lens card, and a signed yes is final.
+    const solanaNft = !isVote && typeof getProposalNftInfo === 'function' ? getProposalNftInfo(proposal) : null;
+    const isSolanaConsent = !!(solanaNft && String(solanaNft.chain || '').startsWith('solana'));
+
     // Compute parcel and owner payout shares
     const offerAmount = Number.isFinite(Number(proposal.offer)) ? Number(proposal.offer) : 0;
     const offerCurrency = proposal.offerCurrency || proposal.currency || '';
@@ -110,7 +115,12 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
 
         let buttonsHtml = '';
         const tProposalUI = getProposalI18nHelper();
-        if (proposalExpired) {
+        if (isSolanaConsent) {
+            const hint = tProposalUI('panel.proposal.acceptance.solanaLensHint', 'Say yes in the Lens card');
+            buttonsHtml = entry.accepted
+                ? ''
+                : `<span class="owner-acceptance-lens-hint">${hint}</span>`;
+        } else if (proposalExpired) {
             // Show disabled buttons for expired proposals
             const expiredTitle = isVote
                 ? tProposalUI('panel.proposal.voting.concluded', 'Vote concluded')
@@ -1373,6 +1383,11 @@ async function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
     const rejectMethod = isVote ? 'rescindVote' : 'withdrawAcceptance';
     const isOnChain = rejectNftInfo && rejectBridge && typeof rejectBridge[rejectMethod] === 'function';
     const normalizedParcelIdForChain = normalizeParcelId(parcelId);
+
+    if (isOnChain && !isVote && String(rejectNftInfo.chain || '').startsWith('solana')) {
+        showProposalAlertMessage('solana_acceptance_final', 'Acceptances on Solana are final: a signed yes cannot be withdrawn.');
+        return;
+    }
 
     if (isOnChain) {
         if (!isVote) {

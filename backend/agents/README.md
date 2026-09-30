@@ -58,6 +58,10 @@ puts the proposal in `Executed` on-chain, the market resolves YES, the donation 
 pledge is fulfilled from the supporter's wallet and the proposer claims the winning YES position. The
 land-event materializer (daily 02:30 UTC) publishes the `executed` event that completes the public case
 page and the `executed_case_yes` audit check.
+That case was recorded on the v1 programs (2026-09). Lens model v2 removes `accept_proposal`, so the
+runner replays it only from its checkpoint: the anchor step reads each parcel anchor (minting it
+ownerless via `ensureParcelAnchor` if missing), and a new executed case with no recorded acceptances
+stops with a message pointing at `--outcome attested`.
 
 Both this runner and the browser simulation use `frontend/js/agent-action-engine.js`. A controller
 (`human`, `algorithm`, or `llm`) chooses an action, the registered deterministic handler executes
@@ -70,7 +74,7 @@ closed Details disclosure preserves controller and source provenance for audits.
 | field | meaning |
 |---|---|
 | `name` | the persona's id; appears in `candidateId`, `custom_id`, the record's `agent.persona` and the building's `author` |
-| `role` | `proposer` or `supporter`; both share the controller, checkpoint and activity system |
+| `role` | `proposer`, `supporter` or `lens-member`; proposer and supporter share the controller, checkpoint and activity system |
 | `wallet` | public key, for labels; the record's `author` is bound by the paid route from the settlement, never from here |
 | `keypairPath` | where the signing key lives — **outside the repo** |
 | `weights` | `{ density, openSpace, valueUplift, heritage }`; drives the planner's score and is put into the prompt in words |
@@ -78,9 +82,78 @@ closed Details disclosure preserves controller and source provenance for audits.
 | `dailyProposals` | how many picks a controller may make for this persona in one run (the hackathon persona is capped at one) |
 | `stakeUsdc` | the bettor's stake size |
 | `support` | supporter cities, allowed action types and per-action USDC amount |
+| `service` | lens members only: `port`, `url`, `kind` (`owner-consent`), `priceUsdc` per ownership attestation, `credentialName`, `identity` adapter |
 
 `heritage` is declared and weighted but contributes **0**: there is no heritage dataset wired in
 yet, and a term faked from something else would look like a judgement nobody made.
+
+## Lens: who decides an agent proposal
+
+A proposal's lens is the list of lens member keys whose attestations its contract accepts
+(`../../lens-model.md`). Proposers never name themselves: `run.mjs` and `canonical-case-run.mjs`
+take `--lens KEY,KEY`, or, without it, choose from the attester directory
+(`GET /agent/lenses/members`) with `lens-directory-client.js`:
+
+- `chooseLens(members, { kinds: ['owner-consent'], min: 1, exclude: [proposerWallet] })` keeps
+  members of those kinds that are not excluded, ranks them by `coverage.ownership` descending then
+  `key` ascending, and returns the first `min` (or `max`). Fewer than `min` throws.
+- An empty or unreachable directory, or a `--lens` naming only the proposer, refuses the mint with a
+  message; nothing falls back to a self-lens. `minter.js` itself throws when `lens` is empty.
+- The daily run checkpoints the choice in `summary.lensChoice` (the canonical case in
+  `canonicalCase.lensChoice` and `summary.lensChoice`), so a resumed run mints with the same
+  authorities. `--dry-run` prints the chosen lens and why, or the refusal.
+- The mint's `create` action carries the lens (`run-policy.js createAction`), so every create event in
+  the activity feed has `action.lens` for the proof audit's `no_self_lens` check.
+
+### `notary-01`, the lens-member persona
+
+`notary-01` (role `lens-member`) runs the reference lens member in `../lens/` for its key
+(`~/.config/solana/ugt-notary-01.json`; `wallet` stays `null` until that key is generated):
+
+```bash
+node agents/lens-member-run.mjs --persona notary-01 --owners /tmp/owners.json   # dry run (default)
+node agents/lens-member-run.mjs --persona notary-01 --print                     # show the command only
+node agents/lens-member-run.mjs --persona notary-01 --live                      # after schemas are registered
+```
+
+The runner registers nothing on chain. Before `--live`: generate the key, register its credential
+and the two schemas (`scripts/register-lens-schemas.mjs`), install `sas-lib` and set `X402_*`. Its
+PM2 entry `consensus-builder-lens-member` is inactive and unscheduled until then.
+
+### Canonical case v3 (`--outcome attested`)
+
+`node agents/canonical-case-run.mjs --dry-run --outcome attested [--owners rows.json]` prints every
+step (`attestedCaseSteps` in `canonical-case.js`): mint with lens `[notary-01]`, publish, donate,
+pledge, YES and NO stakes, one ownerless parcel anchor per parcel (existing anchors replay), one
+`ParcelOwnership-v1` attestation per recorded owner wallet, requested from the notary service
+(`--lens-service`, default the persona's `service.url`) with that owner's own challenge signature and
+x402 payment, one `accept_with_attestations` signature per owner (the last one executes), a check that
+the proposal is `Executed`, market YES, release, fulfil, claim. Owners come from `--owners` (every
+wallet must be a persona wallet, since its keypair signs; each parcel must list exactly `ownerCount`
+wallets) or default to the supporter wallet holding both parcels with `ownerCount` 1.
+
+`--live` is refused before anything is read or signed until `LENS_V2_DEPLOYED=1` is set: the v2
+programs are built and tested on localnet but not deployed (`blockchain/solana/README.md`). Once
+allowed, it always runs the terminal path and checkpoints each step under `summary.canonicalCase`
+(`anchors`, `attestations` and `ownerAcceptances` keyed `parcel|owner`, then `executed`,
+`resolution`, `release`, `fulfilment`, `claim`); a rerun resumes at the first step not done.
+
+### Lens v2 signing adapters (`lifecycle-actions.js`)
+
+| function | instruction | accounts, in order |
+|---|---|---|
+| `acceptWithAttestations` / `buildAcceptWithAttestationsIx` | `accept_with_attestations(parcel_id, payout: Option<Pubkey>)` | proposal (w), parcel anchor `["parcel", id]` (parcel_nft), ownership attestation, ownership credential, tally `["consent", proposal, id]` (w), record `["acceptance", proposal, id, owner]` (w), owner (signer), payer (signer, w), system program |
+| `settleWithVerdict` / `buildSettleWithVerdictIx` | `settle_with_verdict()` | proposal (w), verdict attestation, verdict credential, submitter (signer) |
+| `ensureParcelAnchor` / `buildMintParcelIx` | `mint_parcel(id, metadata_uri)` | parcel anchor (w), payer (signer, w), system program |
+
+The credential is `PDA(["credential", member, credentialName])` under SAS (`deriveCredentialPda`,
+default name `LensMember`). Both write paths read first: an existing acceptance record, or a proposal
+already in the verdict's status, is replayed without sending. Before signing they check what the
+program will check (member in the lens, attestation signer/credential/payload, an existing tally's
+member and `ownerCount`, the anchor) so a mismatch fails with a message, not a program error.
+`readConsentTally`, `readAcceptanceRecord` and `decodeProposalState` (now with `lens`, `bump`,
+`verdictMayExecute`; status 3 = Expired) are the read side. `mint_and_fund` sends the trailing
+`verdict_may_execute` (default false) from `minter.js`.
 
 ## Candidate and record shapes
 
@@ -166,10 +239,22 @@ PGHOST=localhost npm run sync:land-events -- --dry-run
 
 ## MCP: one surface for any controller
 
-`npm run mcp` starts `agents/mcp-server.mjs` over stdio. Its twenty-two tools expose the same proposal,
+`npm run mcp` starts `agents/mcp-server.mjs` over stdio. Its twenty-six tools expose the same proposal,
 activity, x402, pledge, donation, and market adapters used elsewhere in this directory. This lets an
 MCP-capable LLM host choose actions while the deterministic runners keep their existing algorithmic
 choice policy; both execute through the same modules and appear in the same product views.
+
+Lens tools: `ugt_list_attesters` (read the directory, optional `kind`), `ugt_request_ownership`
+(`serviceUrl`, `parcelUid`, optional `confirm`: challenge → ed25519 signature with the agent key →
+`POST /lens/ownership`; returns the attestation address and account hash; free members answer
+without the live gate, a priced member is paid only under the controls below) and
+`ugt_mint_proposal` (`parcelIds`, `lens`, `imageUri`, `isConditional`, `confirm`; a lens naming only
+the agent's own key is refused). `ugt_submit_proposal` accepts the minted `lens` in its body.
+`ugt_accept_parcel` (`proposalAccount`, `parcelId`, `member`, optional `ownershipAttestation` and
+`payout`, `confirm`) signs `accept_with_attestations` as the attested owner; without an attestation it
+looks one up on the member's service (`serviceUrl` from the directory, `GET /lens/attestations`).
+`ugt_submit_verdict` (`proposalAccount`, `verdictAttestation`, `member`, `confirm`) submits a lens
+member's verdict with `settle_with_verdict`. The v1 `ugt_accept_proposal` is gone with the instruction.
 
 The server is read-only by default. Signed or paid tools require all three controls:
 
@@ -206,7 +291,36 @@ summary per run). Anthropic variables are optional and read only in explicit LLM
 `consensus-builder-land-oracle` materializer at 02:30 UTC. All three are one-shot,
 non-restarting scheduled processes; the proposer has the limits above and four candidates offered
 to the algorithmic controller.
-They are deliberately separate from the API
+
+Each proposer run starts with a retire phase, before it mints anything new. Nobody accepts the
+persona's real-parcel proposals, so without it every day would leave another open market with a
+locked stake. The phase lists the persona's own minted proposals from its `consensus.agent_run`
+rows (age = the row's UTC run `day`), reads each proposal, market and YES position from the chain,
+and retires those still Active, without acceptances and at least `AGENT_RETIRE_AFTER_DAYS` old
+(default 7): owner `cancel_and_refund` → permissionless `resolve` (NO) → `claim`, which refunds the
+YES stake in full because the NO pool is empty (with NO stakers present the stake is lost and no
+claim is sent). A proposal already cancelled with steps outstanding is finished regardless of age.
+Each step goes through the action engine (`cancel`, `resolve`, `claim` in the activity feed) and is
+checkpointed under `summary.retirements[proposalPda]`; a rerun re-reads the chain and skips what is
+done. At most `AGENT_RETIRE_MAX_PER_RUN` (default 3) retire per day, and their signatures share
+`AGENT_DAILY_ACTION_CAP` with the day's proposal: retirements get only what the proposal plan leaves
+over, so with the scheduled cap of 4 and one proposal (4 worst-case actions) they retire only on
+no-pick days unless the cap is raised (4 + 3 × 3 = 13 drains three a day). `--dry-run` lists what
+would be retired, and why the rest was skipped, without signing.
+
+Expiry by verdict. With `AGENT_LIFECYCLE_LENS_SERVICE_URL` (a lens member service, typically kind
+`lifecycle`) and `AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN` (its `LENS_OPERATOR_TOKEN`) set, the member's
+key (read from its `GET /lens/status`) is appended to every new mint's lens, and a stale proposal
+whose lens includes that key is retired with `expire` instead of `cancel`: the member attests
+`ProposalVerdict-v1` "expired" (`POST /lens/verdict`), the persona submits it with
+`settle_with_verdict`, the proposal becomes Expired (status 3) and the market resolves NO as after a
+cancel. The verdict's `sourceObservedAt` is the run day's UTC midnight plus `AGENT_RETIRE_AFTER_DAYS`
+(the instant the policy made it stale), so a retry maps to the same attestation. The activity type is
+`verdict`; the checkpoint key is `summary.retirements[pda].expiry`. Proposals minted before (whose
+lens lacks the member) keep the cancel path. A URL without the token, or an unreachable member,
+fails the retire phase for that run instead of silently cancelling. Without the URL nothing changes.
+
+The scheduled processes are deliberately separate from the API
 ecosystem file, so an ordinary backend deploy cannot silently acquire a signing key or start an
 autonomous spender.
 

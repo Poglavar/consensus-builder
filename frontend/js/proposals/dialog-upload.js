@@ -262,7 +262,9 @@ function buildProposalScreenshotContext(parcelLayers = [], options = {}) {
     return { polygon, parcelPolygons, neighbours, bounds, fitToPolygonOnly, polygonOrder, parcelPolygonOrder };
 }
 
-async function showMissingParcelsModal(missingParcels, chainName) {
+// options.anchors: Solana v2, where a missing parcel means a missing ownerless parcel anchor, not
+// a certificate someone owns; the wording and the action button say so.
+async function showMissingParcelsModal(missingParcels, chainName, options = {}) {
     return new Promise((resolve) => {
         const t = getProposalI18nHelper();
         setProposalModalDimmed(true);
@@ -306,22 +308,36 @@ async function showMissingParcelsModal(missingParcels, chainName) {
         const parcelList = missingParcels.length > 10
             ? `${missingParcels.slice(0, 10).join(', ')}${overflowLabel}`
             : missingParcels.join(', ');
-        const messageKey = missingParcels.length === 1 ? 'messageSingle' : 'messagePlural';
-        const introMessage = t(
-            `modal.createProposal.missingParcels.${messageKey}`,
-            missingParcels.length === 1
-                ? 'The following parcel is not represented as an NFT on <strong>{{chain}}</strong>, so a proposal for it cannot be minted on-chain:'
-                : 'The following parcels are not represented as NFTs on <strong>{{chain}}</strong>, so a proposal for them cannot be minted on-chain:',
-            { chain: chainDisplay }
-        );
+        const anchors = options && options.anchors === true;
+        const single = missingParcels.length === 1;
+        const introMessage = anchors
+            ? t(
+                `modal.createProposal.missingParcels.${single ? 'anchorMessageSingle' : 'anchorMessagePlural'}`,
+                single
+                    ? 'The following parcel has no parcel anchor on <strong>{{chain}}</strong> yet, so a proposal for it cannot be minted on-chain:'
+                    : 'The following parcels have no parcel anchor on <strong>{{chain}}</strong> yet, so a proposal for them cannot be minted on-chain:',
+                { chain: chainDisplay }
+            )
+            : t(
+                `modal.createProposal.missingParcels.${single ? 'messageSingle' : 'messagePlural'}`,
+                single
+                    ? 'The following parcel is not represented as an NFT on <strong>{{chain}}</strong>, so a proposal for it cannot be minted on-chain:'
+                    : 'The following parcels are not represented as NFTs on <strong>{{chain}}</strong>, so a proposal for them cannot be minted on-chain:',
+                { chain: chainDisplay }
+            );
         const proceedPrompt = t(
             'modal.createProposal.missingParcels.proceedQuestion',
             'Proceed to create an in-memory proposal?'
         );
-        const explainerText = t(
-            'modal.createProposal.missingParcels.explainer',
-            "You can create an in-memory proposal or proceed to mint the prerequisite parcels. Minting does not confer ownership, it only creates an on-chain representation. Anyone can mint any parcel to onboard it onto the platform. You can also mint them from the Parcel Info panel's Tools tab."
-        );
+        const explainerText = anchors
+            ? t(
+                'modal.createProposal.missingParcels.anchorExplainer',
+                "A parcel anchor is the parcel's on-chain identity. Nobody owns it and creating it confers no ownership; you only pay its rent. Ownership reaches the chain separately, as a lens member's attestation. You can also create anchors from the Parcel Info panel's Tools tab."
+            )
+            : t(
+                'modal.createProposal.missingParcels.explainer',
+                "You can create an in-memory proposal or proceed to mint the prerequisite parcels. Minting does not confer ownership, it only creates an on-chain representation. Anyone can mint any parcel to onboard it onto the platform. You can also mint them from the Parcel Info panel's Tools tab."
+            );
 
         message.innerHTML = `
             <p style="margin-bottom: 12px;">${introMessage}</p>
@@ -348,7 +364,11 @@ async function showMissingParcelsModal(missingParcels, chainName) {
         const mintPrereqBtn = document.createElement('button');
         mintPrereqBtn.type = 'button';
         mintPrereqBtn.className = 'btn btn-action';
-        mintPrereqBtn.textContent = t('modal.createProposal.missingParcels.mintPrerequisites', 'Mint the prerequisites');
+        mintPrereqBtn.textContent = anchors
+            ? (single
+                ? t('modal.createProposal.missingParcels.createAnchor', 'Create the parcel anchor')
+                : t('modal.createProposal.missingParcels.createAnchors', 'Create the parcel anchors'))
+            : t('modal.createProposal.missingParcels.mintPrerequisites', 'Mint the prerequisites');
 
         function cleanup(result) {
             if (overlay && overlay.parentNode) {

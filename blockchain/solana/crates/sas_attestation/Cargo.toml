@@ -1,0 +1,12 @@
+[package]
+name = "sas_attestation"
+version = "0.1.0"
+description = "Byte-level parsers for Solana Attestation Service accounts, shared by proposal_market and proposal_nft"
+edition = "2021"
+
+[lib]
+name = "sas_attestation"
+
+[dependencies]
+# Same anchor-lang line as the programs so the workspace resolves ONE solana-program version.
+anchor-lang = "0.30.1"

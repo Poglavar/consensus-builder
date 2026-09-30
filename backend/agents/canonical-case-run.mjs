@@ -2,6 +2,9 @@
 // Manual, resumable golden-case runner. This is one use of the shared actor/action runtime, not a
 // second agent system: two configured deterministic personas mint, pay, support and forecast one
 // real parcel set, and checkpoint the same consensus.agent_run activity envelope used elsewhere.
+// Outcome "attested" (canonical case v3, lens-model.md) mints with the notary-01 lens member, asks
+// that member to attest each recorded owner, and has every owner sign accept_with_attestations; it
+// refuses --live until LENS_V2_DEPLOYED=1 says the v2 programs are on devnet.
 import 'dotenv/config';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -11,20 +14,24 @@ import { fileURLToPath } from 'node:url';
 import pg from 'pg';
 import { Connection, Keypair, PublicKey } from '@solana/web3.js';
 import {
-    canonicalCaseConfig, canonicalProposalBody, canonicalTerminalActions,
-    DEFAULT_CASE_ID, DEFAULT_EXECUTED_CASE_ID, DEFAULT_EXECUTED_PARCELS, DEFAULT_PARCELS
+    assertAttestedLiveAllowed, attestedCasePlan, attestedCaseSteps, canonicalCaseConfig, canonicalProposalBody,
+    canonicalTerminalActions, ownerKey,
+    DEFAULT_ATTESTED_CASE_ID, DEFAULT_CASE_ID, DEFAULT_EXECUTED_CASE_ID, DEFAULT_EXECUTED_PARCELS, DEFAULT_PARCELS
 } from './canonical-case.js';
 import { mintProposal } from './minter.js';
+import { resolveLens, describeLensChoice } from './lens-directory-client.js';
 import { createPaidClient, paymentIdForProposal, postAgentProposal } from './x402-client.js';
 import { ensureDonationEscrowAndDonate } from './donor.js';
 import { ensurePledgeBookAndSet } from './pledger.js';
 import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
 import { getRun, startRun, updateRun } from './ledger.js';
 import { sendAndConfirmPolling } from './solana-send.js';
+import { createAction } from './run-policy.js';
 import {
-    acceptProposal, cancelProposal, claimProposalMarket, decodeProposalState, ensureParcelCertificate,
+    acceptWithAttestations, cancelProposal, claimProposalMarket, decodeProposalState, ensureParcelAnchor,
     fulfillPledge, refundDonation, releaseDonations, resolveProposalMarket, voidPledge
 } from './lifecycle-actions.js';
+import { paymentIdForOwnership, requestOwnershipAttestation } from './lens-ownership-client.js';
 import { STATUS_EXECUTED } from '../oracle/proposal-lifecycle.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -41,12 +48,20 @@ function usage(code) {
         'then one of two terminal paths: cancelled (refund, void, claim NO) or executed (accept, release, fulfil, claim YES).', '',
         '  --dry-run                 Print the deterministic plan; write and sign nothing',
         '  --live                    Execute/resume the case on Solana devnet',
-        '  --outcome NAME            cancelled (default) or executed; selects the default case id and parcels',
-        `  --proposal-id ID          Stable public id (default ${DEFAULT_CASE_ID}; executed: ${DEFAULT_EXECUTED_CASE_ID})`,
+        '  --outcome NAME            cancelled (default), executed, or attested (v3 lens model; --live needs',
+        '                            LENS_V2_DEPLOYED=1 and always runs the terminal path)',
+        `  --proposal-id ID          Stable public id (default ${DEFAULT_CASE_ID}; executed: ${DEFAULT_EXECUTED_CASE_ID};`,
+        `                            attested: ${DEFAULT_ATTESTED_CASE_ID})`,
         `  --parcels ID,ID           2–8 cadastral parcel ids (default ${DEFAULT_PARCELS.join(',')};`,
         `                            executed: ${DEFAULT_EXECUTED_PARCELS.join(',')})`,
         '  --name TEXT               Proposal title for a custom case',
         '  --api URL                 Public backend base URL',
+        '  --lens KEY,KEY            Lens member keys for the mint (default: chosen from GET /agent/lenses/members;',
+        '                            attested: the notary-01 persona key). Never the proposer alone.',
+        '  --owners FILE             attested: recorded owner rows [{parcelUid, owner, ownerCount}] (the lens member',
+        '                            --owners format); every owner must be a persona wallet (its keypair signs);',
+        '                            default: the supporter wallet owns each parcel with ownerCount 1',
+        '  --lens-service URL        attested: the notary lens member service (default: notary-01 service.url)',
         '  --terminal                Run the terminal path for --outcome after setup (with --dry-run: show it in the plan)',
         '  --help                    This text'
     ].join('\n'));
@@ -77,8 +92,41 @@ function loadPersonas() {
     const config = JSON.parse(fs.readFileSync(path.join(__dirname, 'personas.json'), 'utf8'));
     const proposer = config.personas.find(item => (item.role || 'proposer') === 'proposer');
     const supporter = config.personas.find(item => item.role === 'supporter');
+    const notary = config.personas.find(item => item.name === 'notary-01') || null;
     if (!proposer || !supporter) throw new Error('personas.json needs both proposer and supporter roles');
-    return { proposer, supporter };
+    return { proposer, supporter, notary, all: config.personas };
+}
+
+// The persona whose wallet an owner row names: only a persona's keypair can sign an owner's yes.
+function ownerPersona(personas, wallet) {
+    const persona = personas.find(item => item.wallet === wallet && item.keypairPath);
+    if (!persona) throw new Error(`owner wallet ${wallet} is not a persona wallet with a keypair in personas.json; the case cannot sign its acceptance`);
+    return persona;
+}
+
+// The notary's public key: the configured wallet, else read from its keypair file; null when neither exists.
+function notaryKeyOf(notary) {
+    if (!notary) return null;
+    if (notary.wallet) return notary.wallet;
+    const file = expandHome(notary.keypairPath || '');
+    if (!file || !fs.existsSync(file)) return null;
+    return Keypair.fromSecretKey(Uint8Array.from(JSON.parse(fs.readFileSync(file, 'utf8')))).publicKey.toBase58();
+}
+
+// Recorded owners per parcel for the attested plan: an owner-rows file, or the supporter persona
+// (lens-model.md: the supporter holds the devnet-recorded owner wallets).
+function recordedOwners(parcelIds, ownersFile, supporter) {
+    if (!ownersFile) {
+        return Object.fromEntries(parcelIds.map(id => [id, {
+            wallets: [supporter.wallet], ownerCount: 1,
+            source: `assumed: ${supporter.name} (live reads consensus.lens_devnet_owner)`
+        }]));
+    }
+    const rows = JSON.parse(fs.readFileSync(ownersFile, 'utf8'));
+    return Object.fromEntries(parcelIds.map(id => {
+        const own = rows.filter(row => row.parcelUid === id);
+        return [id, { wallets: own.map(row => row.owner), ownerCount: own[0]?.ownerCount ?? 0, source: ownersFile }];
+    }));
 }
 
 function loadKeypair(persona) {
@@ -102,17 +150,52 @@ async function main() {
         proposalId: args['proposal-id'], parcels: args.parcels, outcome: args.outcome, name: args.name
     });
     const apiBase = (args.api || process.env.AGENT_API_BASE || 'https://api.urbangametheory.xyz').replace(/\/$/, '');
-    const { proposer, supporter } = loadPersonas();
+    const { proposer, supporter, notary, all: allPersonas } = loadPersonas();
     const runId = `hackathon-case:${config.proposalId}`;
     const plan = {
         runId, proposalId: config.proposalId, parcels: config.parcelIds, outcome: config.outcome,
         name: config.name, actors: [actor(proposer), actor(supporter)], amounts: config.amounts,
         actions: [
             'mint', 'x402_publish', 'donate', 'pledge', 'forecast_yes', 'forecast_no',
-            ...(args.terminal ? canonicalTerminalActions(config.outcome) : [])
+            ...(args.terminal || config.outcome === 'attested' ? canonicalTerminalActions(config.outcome) : [])
         ]
     };
+
+    let attested = null;
+    if (config.outcome === 'attested') {
+        // The gate comes first: nothing is read, written or signed on a refused live run.
+        if (args.live) assertAttestedLiveAllowed(process.env);
+        const notaryKey = args.lens ? null : notaryKeyOf(notary);
+        const lensChoice = args.lens
+            ? await resolveLens({ explicit: args.lens, proposer: proposer.wallet })
+            : notaryKey
+                ? { lens: [notaryKey], source: 'persona', reason: 'notary-01 persona key (lens-model.md canonical case v3)', members: [{ key: notaryKey }] }
+                : null;
+        const owners = recordedOwners(config.parcelIds, args.owners, supporter);
+        const member = lensChoice?.lens?.[0] ?? null;
+        const serviceUrl = args['lens-service'] || notary?.service?.url || null;
+        plan.actors.push(notary ? { ...actor(notary), wallet: notaryKey ?? member, role: 'lens-member', serviceUrl } : { id: 'notary-01', missing: true });
+        plan.lens = lensChoice
+            ? { keys: lensChoice.lens, source: lensChoice.source, why: lensChoice.reason }
+            : { keys: [], refused: `notary-01 key not configured: generate ${notary?.keypairPath ?? '~/.config/solana/ugt-notary-01.json'} and set its wallet in personas.json` };
+        plan.steps = attestedCasePlan({ config, notaryKey: member, owners }).steps;
+        plan.live = { gate: 'LENS_V2_DEPLOYED=1', allowed: process.env.LENS_V2_DEPLOYED === '1', memberService: serviceUrl, credentialName: notary?.service?.credentialName ?? 'LensMember' };
+        if (args.dryRun) {
+            console.log(JSON.stringify(plan, null, 2));
+            return;
+        }
+        if (!lensChoice) throw new Error(plan.lens.refused);
+        if (!serviceUrl) throw new Error('no lens member service URL: pass --lens-service or set notary-01 service.url in personas.json');
+        attested = { lensChoice, owners, member, serviceUrl, credentialName: plan.live.credentialName };
+    }
+
     if (args.dryRun) {
+        try {
+            const choice = await resolveLens({ explicit: args.lens, proposer: proposer.wallet, apiBase });
+            plan.lens = { keys: choice.lens, source: choice.source, why: choice.reason };
+        } catch (error) {
+            plan.lens = { keys: [], refused: `would refuse to mint: ${error.message}` };
+        }
         console.log(JSON.stringify(plan, null, 2));
         return;
     }
@@ -139,7 +222,8 @@ async function main() {
             Object.assign(caseState, safeResult(patch));
             run = await updateRun(pool, runId, { stage, status, summaryPatch: {
                 role: 'proposer', controller: 'algorithm', wallet: proposer.wallet,
-                canonicalCase: caseState, activities, outcome: status === 'done' ? 'completed' : 'partial'
+                canonicalCase: caseState, lensChoice: caseState.lensChoice ?? null, activities,
+                outcome: status === 'done' ? 'completed' : 'partial'
             } });
         };
         const perform = async (persona, action, execute) => (await runtime.run(actor(persona), {
@@ -147,11 +231,17 @@ async function main() {
         })).outcome;
 
         if (!caseState.mint?.proposalPda) {
-            const mint = await perform(proposer, { type: 'create' }, () => mintProposal({
+            // Chosen once and checkpointed; a directory without a qualifying member refuses the mint.
+            if (!caseState.lensChoice) {
+                const lensChoice = attested ? attested.lensChoice : await resolveLens({ explicit: args.lens, proposer: proposer.wallet, apiBase });
+                console.log(`[${new Date().toISOString()}] ${describeLensChoice(lensChoice)}`);
+                await checkpoint('lens', { lensChoice });
+            }
+            const mint = await perform(proposer, createAction({ lens: caseState.lensChoice.lens }), () => mintProposal({
                 connection, programId: PROPOSAL_NFT_PROGRAM, ownerKeypair: proposerSigner.keypair,
                 parcelIds: config.parcelIds, isConditional: true,
                 imageUri: `${apiBase}/proposals/${config.proposalId}`, lamports: 0n,
-                lens: [proposer.wallet], sendAndConfirm: sendAndConfirmPolling
+                lens: caseState.lensChoice.lens, sendAndConfirm: sendAndConfirmPolling
             }));
             await checkpoint('minted', { mint });
         }
@@ -203,33 +293,84 @@ async function main() {
             }));
             await checkpoint('forecasting', { no });
         }
-        if (!args.terminal) {
+        if (!args.terminal && !attested) {
             await checkpoint('funded_and_forecast', { completedAt: new Date().toISOString() }, 'done');
             console.log(JSON.stringify({ status: 'completed', case: `${apiBase}/hackathon/cases/${config.proposalId}`, ...caseState }, null, 2));
             return;
         }
 
-        if (config.outcome === 'executed') {
-            // Executed path. The supporter persona holds the devnet ownership certificate of every listed
-            // parcel and accepts each one; the last acceptance flips the proposal to Executed on-chain, which
-            // is the only state the market program accepts as YES.
+        const metadataUri = parcelId => `${apiBase}/parcels/parcelIds?ids=${encodeURIComponent(parcelId)}`;
+        if (config.outcome === 'attested') {
+            // Canonical case v3. Each step below is one entry of attestedCaseSteps(); a resumed run skips
+            // whatever the checkpoint already holds.
+            const pending = attestedCaseSteps({ config, notaryKey: attested.member, owners: attested.owners, caseState }).filter(step => !step.done);
+            console.log(`[${new Date().toISOString()}] attested case: ${pending.length} step(s) left: ${pending.map(step => step.action).join(', ') || 'none'}`);
+            const signers = new Map();
+            const signerOf = wallet => {
+                if (!signers.has(wallet)) signers.set(wallet, { persona: ownerPersona(allPersonas, wallet), ...loadKeypair(ownerPersona(allPersonas, wallet)) });
+                return signers.get(wallet);
+            };
+            const rpcUrl = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
+            for (const step of pending.filter(item => item.action === 'anchor_parcel')) {
+                const anchor = await perform(supporter, { type: 'anchorParcel', parcelId: step.parcelUid }, () => ensureParcelAnchor({
+                    connection, payerKeypair: supporterSigner.keypair, parcelId: step.parcelUid,
+                    metadataUri: metadataUri(step.parcelUid), sendAndConfirm: sendAndConfirmPolling
+                }));
+                await checkpoint('anchoring', { anchors: { ...(caseState.anchors || {}), [step.parcelUid]: anchor } });
+            }
+            for (const step of pending.filter(item => item.action === 'attest_ownership')) {
+                const owner = signerOf(step.owner);
+                const attestation = await perform(owner.persona, { type: 'attestOwnership', parcelId: step.parcelUid, member: attested.member }, async () => {
+                    const result = await requestOwnershipAttestation({
+                        serviceUrl: attested.serviceUrl, parcelUid: step.parcelUid, secretKey: owner.secret,
+                        pay: async ({ paymentId, url, init }) => {
+                            const { paidFetch } = await createPaidClient({ secretKey: owner.secret, paymentId, rpcUrl });
+                            return paidFetch(url, init);
+                        }
+                    });
+                    if (result.record?.authority && result.record.authority !== attested.member) {
+                        throw new Error(`lens service ${attested.serviceUrl} attested as ${result.record.authority}, not the lens member ${attested.member}`);
+                    }
+                    return {
+                        address: result.address, accountHash: result.accountHash, reused: result.reused, paid: result.paid,
+                        ownerCount: result.payload?.ownerCount ?? null, transaction: result.record?.transactionSignature ?? null,
+                        paymentId: paymentIdForOwnership({ serviceUrl: attested.serviceUrl, parcelUid: step.parcelUid, owner: step.owner })
+                    };
+                });
+                if (attestation.ownerCount !== null && attestation.ownerCount !== step.ownerCount) {
+                    throw new Error(`notary attested ownerCount ${attestation.ownerCount} for ${step.parcelUid}, the plan recorded ${step.ownerCount}`);
+                }
+                await checkpoint('attesting', { attestations: { ...(caseState.attestations || {}), [ownerKey(step.parcelUid, step.owner)]: attestation } });
+            }
+            for (const step of pending.filter(item => item.action === 'accept_with_attestations')) {
+                const owner = signerOf(step.owner);
+                const id = ownerKey(step.parcelUid, step.owner);
+                const acceptance = await perform(owner.persona, { type: 'acceptance', parcelId: step.parcelUid, member: attested.member }, () => acceptWithAttestations({
+                    connection, ownerKeypair: owner.keypair, proposalAccount: proposalPda, parcelId: step.parcelUid,
+                    ownershipAttestation: caseState.attestations[id].address, member: attested.member,
+                    credentialName: attested.credentialName, sendAndConfirm: sendAndConfirmPolling
+                }));
+                await checkpoint('accepting', { ownerAcceptances: { ...(caseState.ownerAcceptances || {}), [id]: acceptance } });
+            }
+        } else if (config.outcome === 'executed') {
+            // Executed path (v1, recorded 2026-09): the certificate holder accepted each parcel with the
+            // since-removed accept_proposal. The recorded run replays from its checkpoint; the anchor
+            // step reads the anchor (and mints it ownerless if missing), and a NEW executed case cannot
+            // accept any more — use --outcome attested.
             for (const parcelId of config.parcelIds) {
                 if (caseState.certificates?.[parcelId]) continue;
-                const certificate = await perform(supporter, { type: 'certifyParcel', parcelId }, () => ensureParcelCertificate({
-                    connection, ownerKeypair: supporterSigner.keypair, parcelId,
-                    metadataUri: `${apiBase}/parcels/parcelIds?ids=${encodeURIComponent(parcelId)}`,
+                const certificate = await perform(supporter, { type: 'anchorParcel', parcelId }, () => ensureParcelAnchor({
+                    connection, payerKeypair: supporterSigner.keypair, parcelId, metadataUri: metadataUri(parcelId),
                     sendAndConfirm: sendAndConfirmPolling
                 }));
                 await checkpoint('certifying', { certificates: { ...(caseState.certificates || {}), [parcelId]: certificate } });
             }
-            for (const parcelId of config.parcelIds) {
-                if (caseState.acceptances?.[parcelId]) continue;
-                const acceptance = await perform(supporter, { type: 'accept', parcelId }, () => acceptProposal({
-                    connection, accepterKeypair: supporterSigner.keypair, proposalAccount: proposalPda, parcelId,
-                    sendAndConfirm: sendAndConfirmPolling
-                }));
-                await checkpoint('accepting', { acceptances: { ...(caseState.acceptances || {}), [parcelId]: acceptance } });
+            const missing = config.parcelIds.filter(parcelId => !caseState.acceptances?.[parcelId]);
+            if (missing.length) {
+                throw new Error(`executed case has no recorded acceptance for ${missing.join(', ')}: v1 accept_proposal was removed by lens model v2; run --outcome attested instead`);
             }
+        }
+        if (config.outcome === 'executed' || config.outcome === 'attested') {
             if (!caseState.executed) {
                 const info = await connection.getAccountInfo(new PublicKey(proposalPda), 'confirmed');
                 const state = decodeProposalState(info?.data);

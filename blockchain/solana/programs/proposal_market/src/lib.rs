@@ -1,6 +1,6 @@
 // proposal_market: a parimutuel prediction market per proposal_nft Proposal, staked in one SPL
 // token (devnet USDC for the hackathon), with NO deadline. A market resolves only when its proposal
-// reaches a terminal on-chain state: Executed → YES, Cancelled → NO. Anyone may create the market,
+// reaches a terminal on-chain state: Executed → YES, Cancelled or Expired → NO. Anyone may create the market,
 // stake, resolve and claim. The proposal is read directly from its account (owner, discriminator
 // and layout checked) rather than through declare_program!, the same way proposal_nft reads
 // parcel_nft accounts, so this crate stays on the workspace's single anchor-lang version.
@@ -9,6 +9,7 @@ use anchor_lang::prelude::*;
 use anchor_lang::solana_program::hash::hash;
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
+use sas_attestation::SasError;
 
 declare_id!("GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB");
 
@@ -19,7 +20,7 @@ pub const PROPOSAL_NFT_PROGRAM_ID: Pubkey = pubkey!("3WsVS6LkLo4ySLaLvxKdwuD37fc
 /// Solana Attestation Service program used by the court oracle on devnet. External markets do not
 /// trust an API response: they parse an account owned by this program and pin its credential,
 /// schema, issuer, parcel and outcome value against commitments made before staking starts.
-pub const SAS_PROGRAM_ID: Pubkey = pubkey!("22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG");
+pub const SAS_PROGRAM_ID: Pubkey = sas_attestation::SAS_PROGRAM_ID;
 
 /// Account discriminator of proposal_nft::Proposal (sha256("account:Proposal")[..8], as in the IDL).
 pub const PROPOSAL_DISCRIMINATOR: [u8; 8] = [26, 94, 189, 187, 116, 136, 53, 33];
@@ -28,6 +29,8 @@ pub const PROPOSAL_DISCRIMINATOR: [u8; 8] = [26, 94, 189, 187, 116, 136, 53, 33]
 pub const STATUS_ACTIVE: u8 = 0;
 pub const STATUS_EXECUTED: u8 = 1;
 pub const STATUS_CANCELLED: u8 = 2;
+/// Set by a lens member's ProposalVerdict-v1 `expired` attestation (proposal_nft settle_with_verdict).
+pub const STATUS_EXPIRED: u8 = 3;
 
 pub const SIDE_NO: u8 = 0;
 pub const SIDE_YES: u8 = 1;
@@ -36,9 +39,9 @@ pub const MARKET_SEED: &[u8] = b"market";
 pub const EXTERNAL_MARKET_SEED: &[u8] = b"external_market";
 pub const POSITION_SEED: &[u8] = b"position";
 
-pub const SAS_CREDENTIAL_DISCRIMINATOR: u8 = 0;
-pub const SAS_SCHEMA_DISCRIMINATOR: u8 = 1;
-pub const SAS_ATTESTATION_DISCRIMINATOR: u8 = 2;
+pub const SAS_CREDENTIAL_DISCRIMINATOR: u8 = sas_attestation::CREDENTIAL_DISCRIMINATOR;
+pub const SAS_SCHEMA_DISCRIMINATOR: u8 = sas_attestation::SCHEMA_DISCRIMINATOR;
+pub const SAS_ATTESTATION_DISCRIMINATOR: u8 = sas_attestation::ATTESTATION_DISCRIMINATOR;
 
 #[program]
 pub mod proposal_market {
@@ -107,14 +110,15 @@ pub mod proposal_market {
         Ok(())
     }
 
-    /// Permissionless. Reads the proposal's on-chain status: Executed → YES, Cancelled → NO,
-    /// anything else → NotTerminal. There is no clock: an Active proposal keeps the market open.
+    /// Permissionless. Reads the proposal's on-chain status: Executed → YES, Cancelled or Expired
+    /// → NO, anything else → NotTerminal. There is no clock: an Active proposal keeps the market
+    /// open.
     pub fn resolve(ctx: Context<Resolve>) -> Result<()> {
         require!(!ctx.accounts.market.resolved, MarketError::MarketResolved);
         let status = read_proposal_status(&ctx.accounts.proposal, Some(&ctx.accounts.market.proposal))?;
         let outcome = match status {
             STATUS_EXECUTED => SIDE_YES,
-            STATUS_CANCELLED => SIDE_NO,
+            STATUS_CANCELLED | STATUS_EXPIRED => SIDE_NO,
             _ => return err!(MarketError::NotTerminal),
         };
         let market = &mut ctx.accounts.market;
@@ -157,6 +161,10 @@ pub mod proposal_market {
     /// off-chain, but its sha256 digest and every security-sensitive input are stored on-chain.
     /// `subject_hash` is sha256(parcelUid); the outcome hashes are sha256(operation) values from the
     /// court oracle's SAS schema.
+    ///
+    /// Optional remaining account 0: a proposal_nft Proposal. When passed, the market is bound to
+    /// that proposal's authority choice: `trusted_attester` must be one of its lens members. The
+    /// binding is checked at creation only; the ExternalMarket layout is unchanged.
     pub fn create_external_market(
         ctx: Context<CreateExternalMarket>,
         recipe_hash: [u8; 32],
@@ -171,6 +179,10 @@ pub mod proposal_market {
         require!(yes_value_hash != no_value_hash, MarketError::AmbiguousOutcomes);
         require!(closes_at > Clock::get()?.unix_timestamp, MarketError::InvalidCloseTime);
         validate_sas_schema(&ctx.accounts.credential, &ctx.accounts.schema)?;
+        if let Some(proposal) = ctx.remaining_accounts.first() {
+            let lens = read_proposal_lens(proposal)?;
+            require!(lens.contains(&trusted_attester), MarketError::AttesterNotInProposalLens);
+        }
 
         let market = &mut ctx.accounts.market;
         market.stake_mint = ctx.accounts.stake_mint.key();
@@ -354,6 +366,45 @@ fn read_proposal_status(proposal: &AccountInfo, expected: Option<&Pubkey>) -> Re
     Ok(head.status)
 }
 
+/// proposal_nft::Proposal up to and including `lens`, for proposal-bound external markets. Field
+/// order MUST match programs/proposal_nft/src/lib.rs; fields after `lens` are not mirrored.
+#[allow(dead_code)]
+#[derive(AnchorDeserialize)]
+struct ProposalLensView {
+    pub proposal_id: u64,
+    pub owner: Pubkey,
+    pub parcel_ids: Vec<String>,
+    pub is_conditional: bool,
+    pub image_uri: String,
+    pub acceptance_possible: bool,
+    pub status: u8,
+    pub sol_balance: u64,
+    pub token_balance: u64,
+    pub acceptance_count: u64,
+    pub accepted_parcels: Vec<String>,
+    pub lens: Vec<Pubkey>,
+}
+
+/// Verify that `proposal` is a proposal_nft Proposal and return its lens.
+fn read_proposal_lens(proposal: &AccountInfo) -> Result<Vec<Pubkey>> {
+    require_keys_eq!(*proposal.owner, PROPOSAL_NFT_PROGRAM_ID, MarketError::InvalidProposalAccount);
+    let data = proposal.try_borrow_data()?;
+    require!(data.len() > 8 && data[..8] == PROPOSAL_DISCRIMINATOR, MarketError::InvalidProposalAccount);
+    let mut body: &[u8] = &data[8..];
+    let view = ProposalLensView::deserialize(&mut body).map_err(|_| error!(MarketError::InvalidProposalAccount))?;
+    Ok(view.lens)
+}
+
+/// Map a shared SAS parser error onto this program's error codes.
+fn sas_error(error: SasError) -> Error {
+    match error {
+        SasError::InvalidAccount => error!(MarketError::InvalidSasAccount),
+        SasError::InvalidPayload => error!(MarketError::InvalidEvidencePayload),
+        SasError::WrongCredential => error!(MarketError::WrongEvidenceCredential),
+        SasError::SchemaPaused => error!(MarketError::SchemaPaused),
+    }
+}
+
 fn validate_sas_schema(credential: &AccountInfo, schema: &AccountInfo) -> Result<()> {
     require_keys_eq!(*credential.owner, SAS_PROGRAM_ID, MarketError::InvalidSasAccount);
     let credential_data = credential.try_borrow_data()?;
@@ -368,19 +419,7 @@ fn validate_sas_schema_data(schema: &AccountInfo, expected_credential: &Pubkey) 
 }
 
 fn validate_sas_schema_bytes(schema_data: &[u8], expected_credential: &Pubkey) -> Result<()> {
-    require!(schema_data.len() >= 33 && schema_data[0] == SAS_SCHEMA_DISCRIMINATOR, MarketError::InvalidSasAccount);
-    let embedded_credential = Pubkey::new_from_array(
-        schema_data[1..33].try_into().map_err(|_| error!(MarketError::InvalidSasAccount))?
-    );
-    require_keys_eq!(embedded_credential, *expected_credential, MarketError::WrongEvidenceCredential);
-    // Schema layout: discriminator, credential, then four u32-sized byte vectors, isPaused, version.
-    let mut offset = 33usize;
-    for _ in 0..4 {
-        read_borsh_string(&schema_data, &mut offset).map_err(|_| error!(MarketError::InvalidSasAccount))?;
-    }
-    require!(offset + 2 <= schema_data.len(), MarketError::InvalidSasAccount);
-    require!(schema_data[offset] == 0, MarketError::SchemaPaused);
-    Ok(())
+    sas_attestation::validate_schema_bytes(schema_data, expected_credential).map_err(sas_error)
 }
 
 struct SasCourtEvidence {
@@ -401,53 +440,36 @@ fn read_sas_court_evidence(attestation: &AccountInfo) -> Result<SasCourtEvidence
 }
 
 fn parse_sas_court_evidence(data: &[u8]) -> Result<SasCourtEvidence> {
-    // discriminator + nonce + credential + schema + data length + authority + expiry
-    require!(data.len() >= 141 && data[0] == SAS_ATTESTATION_DISCRIMINATOR, MarketError::InvalidSasAccount);
-    let credential = Pubkey::new_from_array(data[33..65].try_into().map_err(|_| error!(MarketError::InvalidSasAccount))?);
-    let schema = Pubkey::new_from_array(data[65..97].try_into().map_err(|_| error!(MarketError::InvalidSasAccount))?);
-    let payload_len = u32::from_le_bytes(data[97..101].try_into().map_err(|_| error!(MarketError::InvalidSasAccount))?) as usize;
-    let payload_end = 101usize.checked_add(payload_len).ok_or(MarketError::InvalidSasAccount)?;
-    let record_end = payload_end.checked_add(40).ok_or(MarketError::InvalidSasAccount)?;
-    require!(record_end <= data.len(), MarketError::InvalidSasAccount);
-    let authority = Pubkey::new_from_array(
-        data[payload_end..payload_end + 32].try_into().map_err(|_| error!(MarketError::InvalidSasAccount))?
-    );
-    let expiry = i64::from_le_bytes(
-        data[payload_end + 32..record_end].try_into().map_err(|_| error!(MarketError::InvalidSasAccount))?
-    );
+    let attestation = sas_attestation::parse_attestation(data).map_err(sas_error)?;
 
     // CourtParcelOperationV1: string parcelUid, string decisionUuid, string operation,
     // string decisionLink.
     // CourtParcelOperationV2 appends int64 sourceObservedAt. The schema account bound into the
     // market determines which payload SAS can issue; accepting both shapes keeps already-created
     // V1 markets resolvable while V2 markets gain an on-chain temporal-integrity check.
-    let payload = &data[101..payload_end];
-    let mut offset = 0usize;
-    let parcel_uid = read_borsh_string(payload, &mut offset)?;
-    let _decision_uuid = read_borsh_string(payload, &mut offset)?;
-    let operation = read_borsh_string(payload, &mut offset)?;
-    let _decision_link = read_borsh_string(payload, &mut offset)?;
-    let source_observed_at = if offset == payload.len() {
+    let mut payload = sas_attestation::PayloadReader::new(attestation.payload);
+    let parcel_uid = payload.string().map_err(sas_error)?;
+    let _decision_uuid = payload.string().map_err(sas_error)?;
+    let operation = payload.string().map_err(sas_error)?;
+    let _decision_link = payload.string().map_err(sas_error)?;
+    let source_observed_at = if payload.is_at_end() {
         None
     } else {
-        let timestamp_end = offset.checked_add(8).ok_or(MarketError::InvalidEvidencePayload)?;
-        require!(timestamp_end == payload.len(), MarketError::InvalidEvidencePayload);
-        let timestamp = i64::from_le_bytes(
-            payload[offset..timestamp_end].try_into().map_err(|_| error!(MarketError::InvalidEvidencePayload))?
-        );
+        let timestamp = payload.i64().map_err(sas_error)?;
+        payload.finish().map_err(sas_error)?;
         require!(timestamp > 0, MarketError::InvalidEvidencePayload);
         Some(timestamp)
     };
 
     Ok(SasCourtEvidence {
-        credential,
-        schema,
-        authority,
-        expiry,
+        credential: attestation.credential,
+        schema: attestation.schema,
+        authority: attestation.authority,
+        expiry: attestation.expiry,
         subject_hash: hash(parcel_uid).to_bytes(),
         value_hash: hash(operation).to_bytes(),
         source_observed_at,
-        account_hash: hash(&data).to_bytes(),
+        account_hash: hash(data).to_bytes(),
     })
 }
 
@@ -457,18 +479,6 @@ fn validate_source_chronology(source_observed_at: Option<i64>, closes_at: i64, n
         require!(observed_at <= now, MarketError::EvidenceFromFuture);
     }
     Ok(())
-}
-
-fn read_borsh_string<'a>(bytes: &'a [u8], offset: &mut usize) -> Result<&'a [u8]> {
-    let length_end = offset.checked_add(4).ok_or(MarketError::InvalidEvidencePayload)?;
-    require!(length_end <= bytes.len(), MarketError::InvalidEvidencePayload);
-    let length = u32::from_le_bytes(
-        bytes[*offset..length_end].try_into().map_err(|_| error!(MarketError::InvalidEvidencePayload))?
-    ) as usize;
-    let value_end = length_end.checked_add(length).ok_or(MarketError::InvalidEvidencePayload)?;
-    require!(value_end <= bytes.len(), MarketError::InvalidEvidencePayload);
-    *offset = value_end;
-    Ok(&bytes[length_end..value_end])
 }
 
 #[account]
@@ -701,7 +711,7 @@ pub enum MarketError {
     InvalidProposalAccount,
     #[msg("The proposal is not Active")]
     ProposalNotActive,
-    #[msg("The proposal has not reached a terminal state (Executed or Cancelled)")]
+    #[msg("The proposal has not reached a terminal state (Executed, Cancelled or Expired)")]
     NotTerminal,
     #[msg("Side must be 0 (NO) or 1 (YES)")]
     InvalidSide,
@@ -751,6 +761,8 @@ pub enum MarketError {
     EvidencePredatesMarketClose,
     #[msg("The source-observation timestamp is in the future")]
     EvidenceFromFuture,
+    #[msg("The trusted attester is not a member of the bound proposal's lens")]
+    AttesterNotInProposalLens,
 }
 
 #[cfg(test)]

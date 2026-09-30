@@ -390,6 +390,13 @@ async function createProposal() {
         showProposalAlertMessage('please_enter_an_author_name', 'Please enter an author name.');
         return;
     }
+    // A Solana mint needs a lens the proposer chose; nothing substitutes one.
+    if (typeof window.isSolanaLensPath === 'function' && window.isSolanaLensPath()
+        && !window.LensCore.validateSolanaLens(getLensEntries()).ok) {
+        showProposalAlertMessage('solana_lens_required', 'Choose at least one lens member (the 👓 button) before minting on Solana.');
+        if (typeof showLensModal === 'function') showLensModal();
+        return;
+    }
     if (!description) {
         showProposalAlertMessage('please_enter_a_description', 'Please enter a description.');
         return;
@@ -515,7 +522,11 @@ async function createProposal() {
             if (!parcelCheckResult.allHaveNFTs && parcelCheckResult.missingParcels.length > 0) {
                 // Some parcels don't have NFTs - show modal
                 const chainDisplay = parcelCheckResult.chainName || parcelCheckResult.chainId || 'the blockchain';
-                const action = await showMissingParcelsModal(parcelCheckResult.missingParcels, chainDisplay);
+                const action = await showMissingParcelsModal(parcelCheckResult.missingParcels, chainDisplay, { anchors: isSolanaChain });
+                const tAnchor = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
+                const afterPrerequisitesText = isSolanaChain
+                    ? (tAnchor ? tAnchor('modal.createProposal.missingParcels.anchorThenCreate', 'Create the parcel anchors, then click Create again.') : 'Create the parcel anchors, then click Create again.')
+                    : 'Mint the prerequisite parcel NFTs, then click Create again.';
 
                 if (action === 'mint') {
                     const mintableParcels = parcelCheckResult.missingParcels.map((parcelId) => {
@@ -530,10 +541,10 @@ async function createProposal() {
                         await openParcelMintModal({
                             parcels: mintableParcels,
                             onExit: () => {
-                                updateStatus('Mint the prerequisite parcel NFTs, then click Create again.');
+                                updateStatus(afterPrerequisitesText);
                             }
                         });
-                        updateStatus('Mint the prerequisite parcel NFTs, then click Create again.');
+                        updateStatus(afterPrerequisitesText);
                     } catch (mintModalError) {
                         console.error('Unable to open mint modal for missing parcels', mintModalError);
                         updateStatus('Unable to open mint modal. Please mint parcels before creating the proposal.');
@@ -1498,7 +1509,7 @@ async function createProposal() {
                         const lensAddressesForMint = lensEntriesForMint
                             .filter(entry => entry && entry.address && entry.address.trim())
                             .map(entry => entry.address.trim());
-                        // Skip lens requirement for ownership-transfer-from-me proposals and Solana (wallet used as fallback lens)
+                        // Skip lens requirement for ownership-transfer-from-me proposals; Solana validates its own lens below
                         const isFromMeProposal = selectedTool === 'ownership-transfer-from-me';
                         if (!lensAddressesForMint.length && !isFromMeProposal && !isSolanaWalletConnected && !cantonActive) {
                             throw new Error('Cannot mint proposal: lens list is empty. Set your lens before minting.');
@@ -1590,18 +1601,21 @@ async function createProposal() {
                                 imageURI: metadataUri
                             });
                         } else if (isSolanaWalletConnected && window.SolanaProposalChainBridge) {
-                            // For Solana, use the connected wallet as the lens if no valid Solana pubkeys are available
-                            const solanaWalletAddress = solWm.getState().accounts[0];
-                            const solanaLens = lensAddressesForMint.filter(a => !a.startsWith('0x'));
-                            if (solanaLens.length === 0 && solanaWalletAddress) {
-                                solanaLens.push(solanaWalletAddress);
+                            // The lens is exactly the members the proposer picked; an empty one is an error.
+                            const solanaLens = window.LensCore.validateSolanaLens(lensEntriesForMint);
+                            if (!solanaLens.ok) {
+                                throw new Error(t('alerts.messages.solana_lens_required', 'Choose at least one lens member (the 👓 button) before minting on Solana.'));
                             }
                             onchainResult = await window.SolanaProposalChainBridge.mintProposal({
                                 parcelIds: parcelIdsForMinting,
                                 isConditional: isConditional,
                                 solAmount: nativeAmount,
                                 imageURI: metadataUri,
-                                lens: solanaLens
+                                lens: solanaLens.keys,
+                                // Every goal this dialog creates changes named parcels, so per-parcel
+                                // owner consent always applies and no lens verdict may execute it.
+                                // `true` is reserved for permit-style evidence with no parcel consent.
+                                verdictMayExecute: false
                             });
                         } else {
                             onchainResult = await window.ProposalChainBridge.mintProposal({

@@ -7,12 +7,17 @@ import { fileURLToPath } from 'node:url';
 import { PublicKey } from '@solana/web3.js';
 import { describe, expect, it } from 'vitest';
 import { encodeBase58, loadIdls } from '../solana/tx-decoder.js';
+import { proposalAccountBytes } from './fixtures/proposal-account.js';
 import {
     buildProposalLifecycleEvent,
     buildProposalLifecycleRecipe,
+    buildProposalLifecycleRecipeV2,
+    readProposalLens,
+    recipeForProposalAccount,
     readProposalStatus,
     STATUS_CANCELLED,
     STATUS_EXECUTED,
+    STATUS_EXPIRED,
     sourceForProposal,
     syncProposalLifecycleEvents
 } from '../oracle/proposal-lifecycle.js';
@@ -59,17 +64,66 @@ describe('proposal lifecycle oracle', () => {
         expect(() => readProposalStatus(Buffer.alloc(12))).toThrow(/length|ended|status/);
     });
 
-    it('hashes the full subject-specific recipe deterministically', () => {
-        const first = buildProposalLifecycleRecipe({ proposalAccount: 'proposal-1', marketAccount: 'market-1' });
-        const replay = buildProposalLifecycleRecipe({ proposalAccount: 'proposal-1', marketAccount: 'market-1' });
-        const other = buildProposalLifecycleRecipe({ proposalAccount: 'proposal-2', marketAccount: 'market-1' });
+    it('reads the lens after accepted_parcels and refuses a truncated one', () => {
+        const data = proposalAccountBytes({ status: STATUS_EXECUTED, acceptedParcels: ['HR-1', 'HR-22'], lens: [OWNER, PROGRAM] });
+        expect(readProposalStatus(data)).toBe(STATUS_EXECUTED);
+        expect(readProposalLens(data)).toEqual([OWNER, PROGRAM]);
+        expect(readProposalLens(proposalAccountBytes({ lens: [] }))).toEqual([]);
+        expect(() => readProposalLens(data.subarray(0, data.length - 20))).toThrow(/lens/);
+        // v1 accounts end at status in the old fixture below: no lens, never an invented one.
+        expect(() => readProposalLens(proposalAccount(STATUS_EXECUTED))).toThrow();
+    });
+
+    it('treats Expired (3) as a terminal outcome anchored to settle_with_verdict', () => {
+        const event = buildProposalLifecycleEvent({
+            proposalAccount: 'proposal-1', status: STATUS_EXPIRED, accountData: proposalAccountBytes({ status: STATUS_EXPIRED }),
+            transaction: 'tx-verdict', blockTime: 1_789_895_600
+        });
+        expect(event).toMatchObject({ outcome: 'expired', id: 'solana:devnet:proposal_lifecycle:proposal-1:expired' });
+    });
+
+    it('keeps proposal-lifecycle-v1 byte-identical: its hash is pinned and must never drift', () => {
+        const recipe = buildProposalLifecycleRecipe({ proposalAccount: PROPOSAL, marketAccount: 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB' });
+        expect(recipe.hash).toBe('sha256:4ee703c741d7d49844bf830dd550610be0b2aa0155ba9c694059b7914538e48d');
+        expect(buildProposalLifecycleRecipe({ proposalAccount: PROPOSAL }).hash)
+            .toBe('sha256:7e52c7ae09e4d299011701104a2ed59d6ba846229f63652cfbc5a2d104e5bc2d');
+        expect(recipe).toMatchObject({
+            id: 'proposal-lifecycle-v1', version: 1,
+            trustedAttesters: [{ kind: 'solana_program', address: PROGRAM }],
+            outcomes: { executed: 'YES', cancelled: 'NO' }
+        });
+    });
+
+    it('hashes the full subject-specific v2 recipe deterministically and commits it to the lens', () => {
+        const lens = [OWNER];
+        const first = buildProposalLifecycleRecipeV2({ proposalAccount: 'proposal-1', marketAccount: 'market-1', lens });
+        const replay = buildProposalLifecycleRecipeV2({ proposalAccount: 'proposal-1', marketAccount: 'market-1', lens });
+        const other = buildProposalLifecycleRecipeV2({ proposalAccount: 'proposal-2', marketAccount: 'market-1', lens });
+        const otherLens = buildProposalLifecycleRecipeV2({ proposalAccount: 'proposal-1', marketAccount: 'market-1', lens: [PROGRAM] });
         expect(first).toEqual(replay);
         expect(first.hash).toMatch(/^sha256:[a-f0-9]{64}$/);
         expect(other.hash).not.toBe(first.hash);
+        expect(otherLens.hash).not.toBe(first.hash);
         expect(first).toMatchObject({
-            eventType: 'proposal_lifecycle', outcomes: { executed: 'YES', cancelled: 'NO' },
-            verification: { permissionless: true }
+            id: 'proposal-lifecycle-v2', version: 2,
+            eventType: 'proposal_lifecycle', outcomes: { executed: 'YES', cancelled: 'NO', expired: 'NO' },
+            verification: { permissionless: true, statusBytes: { executed: 1, cancelled: 2, expired: 3 } }
         });
+        expect(first.trustedAttesters.map(attester => [attester.kind, attester.address]))
+            .toEqual([['solana_program', PROGRAM], ['solana_sas_issuer', OWNER]]);
+        expect(() => buildProposalLifecycleRecipeV2({ proposalAccount: 'proposal-1' })).toThrow(/lens is required/);
+        expect(() => buildProposalLifecycleRecipeV2({ proposalAccount: 'proposal-1', lens: [] })).toThrow(/lens is required/);
+    });
+
+    it('picks v2 for an account with a lens key and v1 otherwise', () => {
+        const withLens = proposalAccountBytes({ status: STATUS_EXECUTED, lens: [OWNER] });
+        expect(recipeForProposalAccount({ proposalAccount: PROPOSAL, accountData: withLens }).id).toBe('proposal-lifecycle-v2');
+        expect(recipeForProposalAccount({ proposalAccount: PROPOSAL, accountData: proposalAccountBytes({ lens: [] }) }).id).toBe('proposal-lifecycle-v1');
+        expect(recipeForProposalAccount({ proposalAccount: PROPOSAL, accountData: proposalAccount(STATUS_EXECUTED) }).id).toBe('proposal-lifecycle-v1');
+        const event = buildProposalLifecycleEvent({
+            proposalAccount: PROPOSAL, status: STATUS_EXECUTED, accountData: withLens, transaction: 'tx-1', blockTime: 1_789_895_600
+        });
+        expect(event.evidence.recipeId).toBe('proposal-lifecycle-v2');
     });
 
     it('uses the chain block time and account bytes as event evidence', () => {

@@ -1,0 +1,99 @@
+<!doctype html>
+<!-- Lens member console: a lens member (notary, cadastre office) connects its wallet, reads its
+     member service's status and issued attestations, and posts operator verdicts with a token that is
+     entered here and never stored. Standalone page; logic lives in js/lens-core.js. -->
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Consensus Builder — Lens member console</title>
+    <meta name="description" content="Console for Urban Game Theory lens members: status, issued ownership attestations and operator verdicts." />
+    <link rel="icon" href="favicon.ico" />
+    <link rel="stylesheet" href="css/lens-console.css?v=1" />
+</head>
+<body class="lc-body">
+    <main class="lc-wrap">
+        <header class="lc-header">
+            <div class="lc-header-row">
+                <h1 data-i18n-key="lensConsole.title">Lens member console</h1>
+                <select id="lc-language" class="lc-input lc-language" aria-label="Language" data-i18n-key="language.switcher.aria" data-i18n-attr="aria-label">
+                    <option value="en">EN</option>
+                    <option value="hr">HR</option>
+                    <option value="es">ES</option>
+                    <option value="sr">SR</option>
+                </select>
+            </div>
+            <p data-i18n-key="lensConsole.intro">A lens member states facts about parcels as attestations. Point this console at your member service to see what it has issued and to record verdicts.</p>
+            <p><a href="/" data-i18n-key="lensConsole.backToMap">Back to the map</a></p>
+        </header>
+
+        <section class="lc-card" aria-labelledby="lc-service-title">
+            <h2 id="lc-service-title" data-i18n-key="lensConsole.service.title">Member service</h2>
+            <label class="lc-label" for="lc-directory" data-i18n-key="lensConsole.service.directoryLabel">Known members with a service URL</label>
+            <select id="lc-directory" class="lc-input"></select>
+            <label class="lc-label" for="lc-service-url" data-i18n-key="lensConsole.service.urlLabel">Service URL</label>
+            <div class="lc-row">
+                <input id="lc-service-url" class="lc-input" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="http://localhost:3095" />
+                <button id="lc-service-load" class="lc-button" type="button" data-i18n-key="lensConsole.service.load">Load</button>
+            </div>
+            <div id="lc-status" class="lc-output" aria-live="polite"></div>
+        </section>
+
+        <section class="lc-card" aria-labelledby="lc-wallet-title">
+            <h2 id="lc-wallet-title" data-i18n-key="lensConsole.wallet.title">Member wallet</h2>
+            <div class="lc-row">
+                <button id="lc-wallet-connect" class="lc-button" type="button" data-i18n-key="lensConsole.wallet.connect">Connect wallet</button>
+            </div>
+            <div id="lc-wallet" class="lc-output" aria-live="polite"></div>
+        </section>
+
+        <section class="lc-card" aria-labelledby="lc-attestations-title">
+            <h2 id="lc-attestations-title" data-i18n-key="lensConsole.attestations.title">Issued attestations</h2>
+            <div class="lc-grid">
+                <label class="lc-label" for="lc-filter-kind" data-i18n-key="lensConsole.attestations.kind">Kind</label>
+                <select id="lc-filter-kind" class="lc-input">
+                    <option value="" data-i18n-key="lensConsole.attestations.kindAll">All</option>
+                    <option value="ownership" data-i18n-key="lensConsole.attestations.kindOwnership">Ownership</option>
+                    <option value="verdict" data-i18n-key="lensConsole.attestations.kindVerdict">Verdict</option>
+                </select>
+                <label class="lc-label" for="lc-filter-parcel" data-i18n-key="lensConsole.attestations.parcel">Parcel</label>
+                <input id="lc-filter-parcel" class="lc-input" type="text" autocomplete="off" spellcheck="false" />
+            </div>
+            <div class="lc-row">
+                <button id="lc-attestations-load" class="lc-button" type="button" data-i18n-key="lensConsole.attestations.load">Refresh</button>
+            </div>
+            <div id="lc-attestations" class="lc-output" aria-live="polite"></div>
+        </section>
+
+        <section class="lc-card" aria-labelledby="lc-verdict-title">
+            <h2 id="lc-verdict-title" data-i18n-key="lensConsole.verdict.title">Operator verdict</h2>
+            <p class="lc-muted" data-i18n-key="lensConsole.verdict.hint">A verdict states that a proposal executed (for evidence kinds without per-parcel consent, such as a permit register) or expired. Only the member operator can post one.</p>
+            <form id="lc-verdict-form" class="lc-grid" autocomplete="off">
+                <label class="lc-label" for="lc-verdict-proposal" data-i18n-key="lensConsole.verdict.proposal">Proposal account</label>
+                <input id="lc-verdict-proposal" class="lc-input" type="text" spellcheck="false" required />
+                <label class="lc-label" for="lc-verdict-kind" data-i18n-key="lensConsole.verdict.verdict">Verdict</label>
+                <select id="lc-verdict-kind" class="lc-input">
+                    <option value="executed" data-i18n-key="lensConsole.verdict.executed">executed</option>
+                    <option value="expired" data-i18n-key="lensConsole.verdict.expired">expired</option>
+                </select>
+                <label class="lc-label" for="lc-verdict-evidence" data-i18n-key="lensConsole.verdict.evidence">Evidence reference (optional)</label>
+                <input id="lc-verdict-evidence" class="lc-input" type="text" spellcheck="false" />
+                <label class="lc-label" for="lc-verdict-observed" data-i18n-key="lensConsole.verdict.observed">When the source recorded it</label>
+                <input id="lc-verdict-observed" class="lc-input" type="datetime-local" step="1" required />
+                <label class="lc-label" for="lc-verdict-token" data-i18n-key="lensConsole.verdict.token">Operator token (not stored)</label>
+                <input id="lc-verdict-token" class="lc-input" type="password" autocomplete="off" required />
+                <button id="lc-verdict-submit" class="lc-button lc-button-primary" type="submit" data-i18n-key="lensConsole.verdict.submit">Post verdict</button>
+            </form>
+            <div id="lc-verdict-result" class="lc-output" aria-live="polite"></div>
+        </section>
+    </main>
+    <script src="js/persistent-storage.js?v=1"></script>
+    <script src="js/i18n.js?v=1"></script>
+    <script src="js/i18n-loader.js?v=1"></script>
+    <script src="js/data-source.js?v=1"></script>
+    <script src="js/solana/wallet-adapter.js?v=1"></script>
+    <script src="js/lens-core.js?v=1"></script>
+    <script src="js/lens-service-client.js?v=1"></script>
+    <script src="js/lens-console.js?v=1"></script>
+</body>
+</html>

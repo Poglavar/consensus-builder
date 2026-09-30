@@ -3,7 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { marked } from 'marked';
 import { readX402Config, readX402OracleConfig } from '../utils/x402-payment.js';
-import { EVENT_TYPE as LAND_EVENT_TYPE, RECIPE_ID as LAND_RECIPE_ID } from '../oracle/proposal-lifecycle.js';
+import { EVENT_TYPE as LAND_EVENT_TYPE, RECIPE_ID as LAND_RECIPE_ID, RECIPE_V2_ID as LAND_RECIPE_V2_ID } from '../oracle/proposal-lifecycle.js';
 import { COURT_RECIPE_ID, COURT_RECIPE_V2_ID, COURT_SCHEMA_V2 } from '../oracle/court-parcel-operation.js';
 import { classifyExternalMarketChronology } from '../oracle/external-market-chronology.js';
 import { PROSPECTIVE_MARKET } from '../oracle/prospective-market-public.js';
@@ -244,7 +244,23 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     urbanRules: `${base}/urban-rules?coordinates={lng},{lat}`,
                     buildingFootprints: `${base}/buildings/footprints`,
                     hackathonProof: `${base}/hackathon/proof.json`,
-                    prospectiveMarketStatus: `${base}/oracle/markets/prospective/status`
+                    prospectiveMarketStatus: `${base}/oracle/markets/prospective/status`,
+                    lensMembers: `${base}/lenses/members`,
+                    agentLensMembers: `${base}/agent/lenses/members`,
+                    lensSchemas: `${base}/lenses/schemas`
+                },
+                // Lens model (lens-model.md): the proposer's chosen list of attesters.
+                lens: {
+                    recipeField: 'lens',
+                    mintArgument: 'lens: vec<pubkey>',
+                    rule: 'at least one base58 public key; immutable once minted (fork the proposal to change it)',
+                    members: `${base}/agent/lenses/members`,
+                    memberFields: ['key', 'kind', 'name', 'description', 'serviceUrl', 'coverage'],
+                    memberKinds: ['owner-consent', 'court', 'permit', 'imagery', 'osm', 'lifecycle'],
+                    kindMeaning: 'what the member attests, not who it is',
+                    schemas: `${base}/lenses/schemas`,
+                    attestations: ['ParcelOwnership-v1', 'ProposalVerdict-v1'],
+                    ownerAcceptance: 'the parcel owner signs accept_with_attestations with an optional payout key; a signature, not an attestation'
                 },
                 mcp: {
                     transport: 'stdio',
@@ -254,9 +270,10 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     liveGuard: 'UGT_MCP_LIVE=1 plus confirm=true; all writes use Solana devnet',
                     tools: [
                         'ugt_capabilities', 'ugt_list_proposals', 'ugt_activity', 'ugt_support_status',
-                        'ugt_oracle_events', 'ugt_inspect_verified_fact', 'ugt_buy_verified_fact',
+                        'ugt_oracle_events', 'ugt_list_attesters', 'ugt_request_ownership',
+                        'ugt_mint_proposal', 'ugt_inspect_verified_fact', 'ugt_buy_verified_fact',
                         'ugt_submit_proposal', 'ugt_pledge', 'ugt_donate', 'ugt_forecast',
-                        'ugt_cancel_proposal', 'ugt_accept_proposal', 'ugt_refund_donation',
+                        'ugt_cancel_proposal', 'ugt_accept_parcel', 'ugt_submit_verdict', 'ugt_refund_donation',
                         'ugt_void_pledge', 'ugt_revoke_pledge', 'ugt_release_donations',
                         'ugt_fulfill_pledge',
                         'ugt_resolve_market', 'ugt_claim_market',
@@ -271,8 +288,33 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     eventType: LAND_EVENT_TYPE,
                     schema: `${base}/oracle/recipe.schema.json`,
                     events: `${base}/oracle/events?subject={proposalAccount}`,
+                    // Lens model v2 evidence log, pending devnet deployment: empty until the v2
+                    // proposal_nft program is live. Event times are the on-chain accepted_at / settled_at.
+                    eventTypes: {
+                        proposal_lifecycle: 'terminal proposal state: executed, cancelled or expired (default of ?type=)',
+                        proposal_acceptance: 'one per AcceptanceRecord: parcelUid, owner, member, ownership attestation and its sha256 (v2, pending devnet deployment)',
+                        proposal_verdict: 'one per VerdictSettled: verdict attestation, its sha256, member, executed or expired (v2, pending devnet deployment)'
+                    },
+                    eventsByType: `${base}/oracle/events?type={eventType}&subject={proposalAccount}`,
                     recipeId: LAND_RECIPE_ID,
                     recipe: `${base}/oracle/recipes/${LAND_RECIPE_ID}?proposal={proposalAccount}&market={marketAccount}`,
+                    // Precommitted recipes never change under their id: v1 stays byte-identical, v2 adds the lens.
+                    recipes: [
+                        {
+                            id: LAND_RECIPE_ID,
+                            url: `${base}/oracle/recipes/${LAND_RECIPE_ID}?proposal={proposalAccount}&market={marketAccount}`,
+                            trustedAttesters: 'the ProposalNFT program only',
+                            outcomes: { executed: 'YES', cancelled: 'NO' },
+                            use: 'proposals whose account carries no lens key'
+                        },
+                        {
+                            id: LAND_RECIPE_V2_ID,
+                            url: `${base}/oracle/recipes/${LAND_RECIPE_V2_ID}?proposal={proposalAccount}&market={marketAccount}`,
+                            trustedAttesters: 'the ProposalNFT program plus every key in the proposal\'s on-chain lens (read from the account)',
+                            outcomes: { executed: 'YES', cancelled: 'NO', expired: 'NO' },
+                            use: 'every proposal whose account carries a lens with at least one key (all proposals minted from now on)'
+                        }
+                    ],
                     source: 'Solana proposal account plus its terminal transaction',
                     attester: solanaProgramId('ProposalNFT'),
                     publicRecords: {
@@ -341,7 +383,7 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                         no: 'proposal account status is Cancelled',
                         permissionless: true,
                         deadline: null,
-                        expired: 'not terminal in the market program; the proposal must be cancelled or executed on-chain',
+                        expired: 'not terminal in the deployed (v1) market program; the proposal must be cancelled or executed on-chain. v2, pending devnet deployment: resolve maps Expired (status 3, set by settle_with_verdict) to NO',
                         oracleRecipe: LAND_RECIPE_ID
                     },
                     idl: 'blockchain/solana/idl/proposal_market.json',
@@ -358,15 +400,39 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                 proposalAccount: {
                     programId: proposalProgramId(),
                     cluster: 'devnet',
+                    // v2 interface (blockchain/solana/README.md "Lens model v2"), pending devnet
+                    // deployment. The devnet program is still v1 until the upgrade.
+                    interfaceVersion: 'v2, pending devnet deployment',
                     mint: {
                         instruction: 'mint_and_fund',
-                        args: ['parcel_ids: vec<string>', 'is_conditional: bool', 'image_uri: string', 'sol_amount: u64', 'lens: vec<pubkey>'],
+                        args: ['parcel_ids: vec<string>', 'is_conditional: bool', 'image_uri: string', 'sol_amount: u64', 'lens: vec<pubkey>', 'verdict_may_execute: bool'],
                         accounts: ['proposal', 'proposal_counter', 'owner', 'system_program'],
                         signer: 'owner: your own wallet; it pays rent for the 4096-byte proposal account',
                         parcelIds: 'the same strings as the record\'s cadastreParcelIds',
-                        lens: 'must be non-empty; stored, not read by any program',
+                        lens: 'must be non-empty; the attesters whose ownership and verdict attestations this proposal accepts',
+                        verdictMayExecute: 'false is the normal value; true lets a lens member\'s executed verdict settle the proposal without per-parcel consent (permit-style evidence)',
+                        v1: 'the devnet program until the v2 upgrade takes the same args without the trailing verdict_may_execute',
                         counterPda: 'seeds ["proposal_counter"]',
                         proposalPda: 'seeds ["proposal", count as 8-byte little-endian u64], count read at byte offset 8 of the counter account'
+                    },
+                    accept: {
+                        instruction: 'accept_with_attestations',
+                        args: ['parcel_id: string', 'payout: option<pubkey>'],
+                        accounts: ['proposal', 'parcel', 'ownership', 'ownership_credential', 'tally', 'record', 'owner', 'payer', 'system_program'],
+                        signer: 'owner: the wallet a lens member attested as the parcel owner (ParcelOwnership-v1); payer may be the owner',
+                        tallyPda: 'seeds ["consent", proposal, parcel_id] (ConsentTally)',
+                        recordPda: 'seeds ["acceptance", proposal, parcel_id, owner] (AcceptanceRecord)',
+                        effect: 'a parcel is accepted when every owner its member attested has signed; the proposal is Executed when every parcel is',
+                        status: 'v2, pending devnet deployment; replaces accept_proposal'
+                    },
+                    settle: {
+                        instruction: 'settle_with_verdict',
+                        args: [],
+                        accounts: ['proposal', 'verdict', 'verdict_credential', 'submitter'],
+                        signer: 'submitter: anyone; the verdict (ProposalVerdict-v1) must be signed by a lens member',
+                        effect: 'expired sets Expired (3); executed sets Executed (1) only when minted with verdict_may_execute',
+                        event: 'VerdictSettled { proposal, verdict_attestation, verdict_hash, member, status, settled_at }',
+                        status: 'v2, pending devnet deployment'
                     },
                     recordLink: {
                         field: 'onchain',
@@ -381,7 +447,8 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                 parcelAccount: {
                     programId: parcelProgramId(),
                     cluster: 'devnet',
-                    role: 'parcel ownership: accept_proposal is signed by the owner of the parcel account',
+                    role: 'parcel anchor: the on-chain identity of a cadastral parcel; v2 (pending devnet deployment) mints it ownerless (owner = default key, the second account is the payer) and ownership reaches the chain only as a lens member\'s ParcelOwnership-v1 attestation',
+                    mint: { instruction: 'mint_parcel', args: ['parcel_id: string', 'metadata_uri: string'], accounts: ['parcel', 'payer', 'system_program'] },
                     pda: 'seeds ["parcel", parcel id as UTF-8 bytes]',
                     idl: 'blockchain/solana/idl/parcel_nft.json'
                 },

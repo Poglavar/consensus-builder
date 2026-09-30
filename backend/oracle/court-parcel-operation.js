@@ -14,7 +14,24 @@ export const COURT_CREDENTIAL = '6fibS3XSgE7c4XDSFUuArBcmnD8bN26XNpjZTC8bBbcY';
 export const COURT_SCHEMA_V1 = '2SdzCg62opMYbEfE4wcwUWYghA7n8GdAmkCC192FbUy9';
 export const COURT_SCHEMA_V2 = 'G747jAqNr6ZwBiNAdeW1Bc4PWQH7arfvq5cjDXDcSoMG';
 export const COURT_SCHEMA = COURT_SCHEMA_V1;
-export const COURT_ATTESTER = 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ';
+// The court oracle is one lens member among others; its signing key is configuration, not code.
+// COURT_ATTESTER (env) overrides the documented default: the key that has issued every devnet
+// court attestation so far (credential COURT_CREDENTIAL's authority).
+export const DEFAULT_COURT_ATTESTER = 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ';
+
+export function courtAttesterFromEnv(env = process.env) {
+    const configured = typeof env.COURT_ATTESTER === 'string' ? env.COURT_ATTESTER.trim() : '';
+    if (!configured) return DEFAULT_COURT_ATTESTER;
+    try {
+        const key = new PublicKey(configured).toBase58();
+        if (key !== configured) throw new Error('not canonical');
+        return key;
+    } catch {
+        throw new Error('COURT_ATTESTER must be a base58 Solana public key');
+    }
+}
+
+export const COURT_ATTESTER = courtAttesterFromEnv();
 export const MARKET_PROGRAM_ID = 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB';
 
 function hashText(value) {

@@ -7,6 +7,7 @@ import { createUrbanGameTheoryTools } from './ugt-agent-tools.js';
 const proposalAccount = z.string().min(32).describe('Solana ProposalNFT account address');
 const amountUsdc = z.string().regex(/^\d+(\.\d{1,6})?$/).describe('Exact devnet USDC decimal string, for example "0.05"');
 const confirmation = z.literal(true).describe('Explicitly authorize this paid or signed devnet action');
+const pubkey = z.string().regex(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/).describe('base58 Solana public key');
 const recipeHash = z.string().regex(/^(sha256:)?[0-9a-fA-F]{64}$/).describe('Committed 32-byte external-market recipe hash');
 
 function jsonSafe(value) {
@@ -80,6 +81,37 @@ export function createUrbanGameTheoryMcpServer({ env = process.env, fetchImpl, t
         inputSchema: z.object({ proposalAccount, limit: z.number().int().min(1).max(100).default(20) }), annotations: READ_ONLY
     }, handler(args => actions.getOracleEvents(args)));
 
+    server.registerTool('ugt_list_attesters', {
+        title: 'List lens members (attesters)',
+        description: 'Read the attester directory: lens members with kind and coverage. Pick a proposal lens from it; the contract trusts only keys in a proposal\'s lens.',
+        inputSchema: z.object({ kind: z.string().optional().describe('Only members of this kind, for example owner-consent') }),
+        annotations: READ_ONLY
+    }, handler(args => actions.listAttesters(args)));
+
+    server.registerTool('ugt_request_ownership', {
+        title: 'Request a parcel-ownership attestation',
+        description: 'Ask a lens member service to attest this agent\'s key as an owner of a parcel: challenge, ed25519 signature with UGT_AGENT_KEYPAIR, POST /lens/ownership. Free when the member is in dry run or the fact is already attested; a priced member is paid over x402 only with UGT_MCP_LIVE=1 and confirm=true. Returns the attestation address and account hash.',
+        inputSchema: z.object({
+            serviceUrl: z.string().url().describe('Base URL of the lens member service, for example http://127.0.0.1:3095'),
+            parcelUid: z.string().min(1).describe('Cadastral parcel id, for example HR-335550-1813/6'),
+            confirm: z.boolean().optional().describe('Required (true) only when the member charges for the attestation')
+        }),
+        annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.requestOwnership(args)));
+
+    server.registerTool('ugt_mint_proposal', {
+        title: 'Mint a proposal with a chosen lens',
+        description: 'Sign mint_and_fund on devnet with UGT_AGENT_KEYPAIR: the parcels, the lens (lens member keys whose attestations decide this proposal; not only your own key), the image URI and the conditional flag.',
+        inputSchema: z.object({
+            parcelIds: z.array(z.string().min(1)).min(1),
+            lens: z.array(pubkey).min(1).describe('Lens member keys, for example from ugt_list_attesters'),
+            imageUri: z.string().default(''),
+            isConditional: z.boolean().default(true),
+            confirm: confirmation
+        }),
+        annotations: PAID_NON_IDEMPOTENT
+    }, handler(args => actions.mintProposal(args)));
+
     server.registerTool('ugt_inspect_verified_fact', {
         title: 'Inspect a verified-fact payment',
         description: 'Fetch and decode the x402 challenge for a recipe-bound fact without paying.',
@@ -102,6 +134,7 @@ export function createUrbanGameTheoryMcpServer({ env = process.env, fetchImpl, t
                 cadastreParcelIds: z.array(z.string().min(1)).min(1),
                 city: z.string().optional(), type: z.string().optional(), name: z.string().optional(),
                 description: z.string().optional(), offer: z.number().optional(), offerCurrency: z.string().optional(),
+                lens: z.array(pubkey).optional().describe('The lens the proposal was minted with (ugt_mint_proposal)'),
                 agent: z.object({ persona: z.string().optional(), rationale: z.string().optional(), run_id: z.string().optional() }).optional()
             }).passthrough(),
             confirm: confirmation
@@ -133,12 +166,31 @@ export function createUrbanGameTheoryMcpServer({ env = process.env, fetchImpl, t
         inputSchema: z.object({ proposalAccount, confirm: confirmation }), annotations: PAID_IDEMPOTENT
     }, handler(args => actions.cancel(args)));
 
-    server.registerTool('ugt_accept_proposal', {
-        title: 'Accept a proposal for one parcel',
-        description: 'Accept an active proposal as the on-chain owner of one included cadastral parcel.',
-        inputSchema: z.object({ proposalAccount, parcelId: z.string().min(1), confirm: confirmation }),
+    server.registerTool('ugt_accept_parcel', {
+        title: 'Accept one parcel as its attested owner',
+        description: 'Sign accept_with_attestations with UGT_AGENT_KEYPAIR as an owner a lens member has attested (ParcelOwnership-v1). member must be in the proposal\'s lens. Without ownershipAttestation the attestation is looked up on the member\'s service (serviceUrl from ugt_list_attesters, GET /lens/attestations); request one first with ugt_request_ownership. A repeat returns the existing acceptance record. The last owner of the last parcel executes the proposal.',
+        inputSchema: z.object({
+            proposalAccount,
+            parcelId: z.string().min(1).describe('Cadastral parcel id in the proposal, for example HR-335550-1813/6'),
+            member: pubkey.describe('Lens member key that attested the ownership'),
+            ownershipAttestation: pubkey.optional().describe('SAS ParcelOwnership-v1 attestation address; looked up on the member service when absent'),
+            payout: pubkey.optional().describe('Where this owner\'s share of escrowed SOL goes on distribution; absent = none'),
+            confirm: confirmation
+        }),
         annotations: PAID_IDEMPOTENT
-    }, handler(args => actions.accept(args)));
+    }, handler(args => actions.acceptParcel(args)));
+
+    server.registerTool('ugt_submit_verdict', {
+        title: 'Submit a lens member verdict',
+        description: 'Permissionlessly submit a lens member\'s ProposalVerdict-v1 attestation with settle_with_verdict: "expired" sets the proposal Expired (its market resolves NO); "executed" only for proposals minted with verdict_may_execute. member must be in the proposal\'s lens. Replays when the proposal already has that status.',
+        inputSchema: z.object({
+            proposalAccount,
+            verdictAttestation: pubkey.describe('SAS ProposalVerdict-v1 attestation address'),
+            member: pubkey.describe('Lens member key that signed the verdict'),
+            confirm: confirmation
+        }),
+        annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.submitVerdict(args)));
 
     server.registerTool('ugt_refund_donation', {
         title: 'Refund a donation',

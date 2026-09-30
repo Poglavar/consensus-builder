@@ -4,12 +4,21 @@
 // pick on Solana devnet with the persona keypair, post it through the paid x402 route (mint first:
 // the record has no on-chain write path after creation), then stake on its market. Every stage is
 // checkpointed in consensus.agent_run so a rerun never redoes a mint, payment or stake.
+// Before minting anything new, the retire phase closes the persona's own stale proposals (Active,
+// no acceptances, older than AGENT_RETIRE_AFTER_DAYS): cancel → resolve NO → claim the YES refund.
+// With a lifecycle lens member configured (AGENT_LIFECYCLE_LENS_SERVICE_URL + _OPERATOR_TOKEN) the
+// member's key joins every new mint's lens, and proposals whose lens includes it are expired by the
+// member's "expired" verdict (settle_with_verdict) instead of cancelled by their author.
 //
 // Usage:
 //   node agents/run.mjs --dry-run [--controller algorithm|llm] [--persona NAME] [--day YYYY-MM-DD]
-//   node agents/run.mjs --live    [--controller algorithm|llm] [--persona NAME] [--until STAGE]
+//   node agents/run.mjs --live    [--controller algorithm|llm] [--persona NAME] [--until STAGE] [--lens KEY,KEY]
+//   The lens (whose attestations decide the proposal) is --lens or, when absent, chosen from the attester
+//   directory (GET /agent/lenses/members, agents/lens-directory-client.js); never the persona's own key.
 //   STAGE: planned | chosen | minted | posted | staked (default staked)
 // Env: PG* (run with PGHOST=localhost on the host), AGENT_DAILY_ACTION_CAP (4),
+//      AGENT_RETIRE_AFTER_DAYS (7), AGENT_RETIRE_MAX_PER_RUN (3),
+//      AGENT_LIFECYCLE_LENS_SERVICE_URL + AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN (optional expiry verdicts),
 //      AGENT_DAILY_USDC_CAP (0.35), AGENT_API_BASE (default http://localhost:$API_PORT),
 //      SOLANA_RPC_URL, TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID (optional, one summary per run).
 //      ANTHROPIC_API_KEY/AGENT_LLM_* are read only with explicit --controller llm.
@@ -30,11 +39,17 @@ import { selectAlgorithmicPicks } from './algorithmic-picker.js';
 import { buildPickRequests, parsePicks, estimateBatchCostUsd, runPickBatch, pickCustomId, DEFAULT_MODEL } from './llm-picker.js';
 import { createPaidClient, paymentIdForProposal, postAgentProposal } from './x402-client.js';
 import { mintProposal } from './minter.js';
+import { resolveLens, describeLensChoice } from './lens-directory-client.js';
 import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
-import { getRun, startRun, updateRun, recordCosts, dailySpendUsd, assertUnderCap, dailyCapUsd } from './ledger.js';
+import { getRun, startRun, updateRun, recordCosts, dailySpendUsd, assertUnderCap, dailyCapUsd, listRuns } from './ledger.js';
 import { sendTelegram } from './telegram.js';
 import { sendAndConfirmPolling } from './solana-send.js';
-import { assertExecutionPlan, decisionCompletion, executionPolicy, summarizeExecutionPlan } from './run-policy.js';
+import {
+    assertExecutionPlan, decisionCompletion, executionPolicy, summarizeExecutionPlan,
+    retirePolicy, ownedProposalsFromRuns, retirementsSpent, planRetirements, ageInDays, lifecycleLensConfig, createAction
+} from './run-policy.js';
+import { fetchLensStatus } from './lens-ownership-client.js';
+import { inspectRetirement, executeRetirement } from './lifecycle-actions.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -58,6 +73,8 @@ function usage(exitCode) {
         '  --candidates N       Candidates per persona offered to the controller (default 8)',
         '  --until STAGE        Stop after STAGE: planned | chosen | minted | posted | staked',
         '  --api URL            Backend base for POST /agent/proposals (default AGENT_API_BASE or http://localhost:$API_PORT)',
+        '  --lens KEY,KEY       Lens member keys for every mint (default: chosen from GET /agent/lenses/members;',
+        '                       an empty directory refuses to mint; the persona\'s own key alone is refused)',
         '  --help               This text'
     ].join('\n'));
     process.exit(exitCode);
@@ -116,6 +133,144 @@ function stageIndex(stage) {
 // a retry of a completed post returns the original 201 without another settlement.
 function proposalIdFor(persona, day, index) {
     return `agent-${persona.name}-${day}-${index + 1}`;
+}
+
+// Dry-run view of the lens each persona with picks would mint with, and why; a refusal is printed,
+// not thrown, so the rest of the plan stays visible.
+async function logLensPlan({ entries, picksFor, args, apiBase }) {
+    for (const entry of entries) {
+        if (!picksFor(entry)) continue;
+        try {
+            const choice = withLifecycleMember(
+                await resolveLens({ explicit: args.lens, proposer: entry.persona.wallet, apiBase }),
+                await lifecycleMember()
+            );
+            log(`${entry.persona.name} ${describeLensChoice(choice)}`);
+        } catch (err) {
+            log(`${entry.persona.name} would REFUSE to mint: ${err.message}`);
+        }
+    }
+}
+
+// The configured lifecycle lens member ({ serviceUrl, operatorToken, key, credentialName }) or null.
+// Its key and credential come from the member's own GET /lens/status, never from local config.
+async function lifecycleMember() {
+    const config = lifecycleLensConfig(process.env);
+    if (!config) return null;
+    const status = await fetchLensStatus({ serviceUrl: config.serviceUrl });
+    return { ...config, key: status.key, credentialName: status.credentialName || undefined, kind: status.kind ?? null };
+}
+
+// A mint's lens plus the lifecycle member, so the member's expiry verdict can later settle it.
+function withLifecycleMember(choice, member) {
+    if (!member || choice.lens.includes(member.key)) return choice;
+    return {
+        ...choice,
+        lens: [...choice.lens, member.key],
+        reason: `${choice.reason}; + lifecycle member ${member.key} (AGENT_LIFECYCLE_LENS_SERVICE_URL) for expiry verdicts`
+    };
+}
+
+// Retire phase. Proposals come from this persona's own agent_run rows (age = the row's run `day`);
+// their state comes from the chain, so a rerun skips whatever is already cancelled/resolved/claimed.
+// Retirement signatures share AGENT_DAILY_ACTION_CAP with the day's proposal: they get only what the
+// proposal plan (and any retirement already signed today) leaves over, and the run says what waits.
+async function retireStage({ pool, connection, entries, day, dryRun, controller, plannedActions, failures, report }) {
+    const policy = executionPolicy(process.env);
+    const retire = retirePolicy(process.env);
+    const runs = await listRuns(pool);
+    let budget = Math.max(0, policy.maxActions - plannedActions);
+    log(`retire: after ${retire.afterDays} day(s) · ≤ ${retire.maxPerRun} per run · ${budget}/${policy.maxActions} signed actions left after ${plannedActions} planned for proposing`);
+    // Configured but unreachable is a failure, not a silent switch back to cancelling.
+    let lifecycle = null;
+    try {
+        lifecycle = await lifecycleMember();
+    } catch (err) {
+        log(`retire: lifecycle lens member unavailable, nothing retired this run: ${err.message}`);
+        failures.push(`retire lifecycle member: ${err.message}`);
+        return;
+    }
+    log(lifecycle
+        ? `retire: proposals whose lens includes lifecycle member ${lifecycle.key} (${lifecycle.serviceUrl}) are EXPIRED by its verdict; the rest are cancelled`
+        : 'retire: no lifecycle lens member configured (AGENT_LIFECYCLE_LENS_SERVICE_URL); stale proposals are cancelled by their author');
+    for (const e of entries) {
+        const persona = e.persona;
+        const owned = ownedProposalsFromRuns(runs, persona.name, day);
+        const signer = dryRun ? null : loadKeypair(persona.keypairPath).keypair;
+        const owner = signer ? signer.publicKey.toBase58() : persona.wallet;
+        const summary = e.run?.summary ?? {};
+        const retirements = { ...(summary.retirements ?? {}) };
+        const spent = retirementsSpent(retirements);
+        const inspections = [];
+        let young = 0;
+        for (const proposal of owned) {
+            // Too young to retire and not already cancelled by hand: no chain read needed.
+            const ageDays = ageInDays(proposal.sourceDay, day);
+            if (ageDays !== null && ageDays < retire.afterDays && !retirements[proposal.proposalPda]) { young += 1; continue; }
+            try {
+                inspections.push(await inspectRetirement({ connection, owner, proposal, lifecycleMember: lifecycle }));
+            } catch (err) {
+                log(`${persona.name} retire: could not read ${proposal.proposalId} ${proposal.proposalPda}: ${err.message}`);
+                failures.push(`${persona.name} retire inspect ${proposal.proposalId}: ${err.message}`);
+            }
+        }
+        const plan = planRetirements(inspections, { policy: retire, runDay: day, actionBudget: budget, spent });
+        budget = Math.max(0, budget - plan.actions);
+        const counts = plan.skipped.reduce((acc, item) => ({ ...acc, [item.reason]: (acc[item.reason] ?? 0) + 1 }), {});
+        log(`${persona.name} retire: ${owned.length} own proposal(s) · ${young} younger than ${retire.afterDays}d · ${plan.selected.length} to retire (${plan.actions} signed action(s)) · skipped ${JSON.stringify(counts)}`);
+        for (const item of plan.selected) {
+            log(`   ${dryRun ? 'would retire' : 'retire'} ${item.proposalId} ${item.proposalPda} · ${item.ageDays}d old · ${item.steps.join(' → ')}${item.note ? ` · ${item.note}` : ''}`);
+        }
+        if (plan.limited) {
+            log(`   ${plan.limited} eligible proposal(s) deferred: per-run cap ${retire.maxPerRun} or action cap (${plan.budget} left) reached; they retire on a later run`);
+        }
+        if (dryRun || !plan.selected.length) {
+            if (plan.selected.length || plan.limited) report.push(`${persona.name}: ${dryRun ? 'would retire' : 'retired'} ${plan.selected.length}${plan.limited ? ` (${plan.limited} deferred)` : ''}`);
+            continue;
+        }
+
+        const activities = Array.isArray(summary.activities) ? [...summary.activities] : [];
+        const runtime = actionEngineApi.createEngine({
+            decisionProviders: {
+                algorithm: (_actor, context) => context.action,
+                llm: (_actor, context) => context.action
+            },
+            actionHandlers: { '*': (_actor, _action, context) => context.execute() },
+            onActivity: activity => activities.push(activity)
+        });
+        const actor = {
+            id: persona.name, name: persona.name,
+            controller: summary.controller || (summary.model ? 'llm' : controller), wallet: owner
+        };
+        const retirePlan = {
+            policy: retire, day, budget: plan.budget,
+            selected: plan.selected.map(item => ({ proposalId: item.proposalId, proposalPda: item.proposalPda, ageDays: item.ageDays, steps: item.steps })),
+            skipped: plan.skipped
+        };
+        let retired = 0;
+        for (const item of plan.selected) {
+            try {
+                await executeRetirement({
+                    connection, ownerKeypair: signer, item, record: retirements[item.proposalPda] ?? {},
+                    lifecycle: lifecycle ? { ...lifecycle, afterDays: retire.afterDays, evidenceRef: `agent-retire:no-acceptances:${retire.afterDays}d` } : null,
+                    sendAndConfirm: sendAndConfirmPolling,
+                    perform: async (action, execute) => (await runtime.run(actor, { action, execute, source: 'live' })).outcome,
+                    checkpoint: async (record) => {
+                        retirements[item.proposalPda] = record;
+                        e.run = await updateRun(pool, e.runId, { summaryPatch: { retirements, retirePlan, activities } });
+                    }
+                });
+                retirements[item.proposalPda] = { ...retirements[item.proposalPda], completedAt: new Date().toISOString() };
+                e.run = await updateRun(pool, e.runId, { summaryPatch: { retirements, retirePlan, activities } });
+                retired += 1;
+                const done = retirements[item.proposalPda];
+                log(`${persona.name} retired ${item.proposalId}: ${done.expiry ? `expire ${done.expiry.signature ?? 'replayed'} (verdict ${done.expiry.verdictAttestation})` : `cancel ${done.cancel?.signature ?? '-'}`} · resolve ${done.resolution?.signature ?? '-'} (${done.resolution?.outcome ?? 'not needed'}) · claim ${done.claim?.signature ?? done.claim?.reason ?? '-'}`);
+            } catch (err) {
+                failures.push(`${persona.name} retire ${item.proposalId}: ${err.message}`);
+            }
+        }
+        report.push(`${persona.name}: retired ${retired}/${plan.selected.length}${plan.limited ? ` (${plan.limited} deferred)` : ''}`);
+    }
 }
 
 async function main() {
@@ -186,6 +341,14 @@ async function main() {
                 for (const pick of decision.picks) log(`   ${pick.candidateId}: ${pick.name}`);
             }
             if (args.dryRun) {
+                await logLensPlan({ entries, args, apiBase, picksFor: entry => decisions.get(entry.persona.name)?.picks?.length });
+                await retireStage({
+                    pool, connection: new Connection(rpcUrl, 'confirmed'), entries, day, dryRun: true, controller,
+                    plannedActions: summarizeExecutionPlan(entries.map(entry => ({
+                        persona: entry.persona, run: { summary: { picks: decisions.get(entry.persona.name)?.picks ?? [] } }
+                    }))).actionCount,
+                    failures, report
+                });
                 log('dry run: nothing written, no model called, nothing signed');
                 return;
             }
@@ -222,6 +385,16 @@ async function main() {
             const cap = dailyCapUsd(process.env);
             log(`batch: ${requests.length} request(s) · estimated ≤ $${estimate.toFixed(4)} · spent today $${spent.toFixed(4)} · cap $${cap}`);
             if (args.dryRun) {
+                // The model is not called in a dry run, so assume each persona uses its full daily quota.
+                await logLensPlan({ entries, args, apiBase, picksFor: entry => entry.candidates.length });
+                await retireStage({
+                    pool, connection: new Connection(rpcUrl, 'confirmed'), entries, day, dryRun: true, controller,
+                    plannedActions: summarizeExecutionPlan(entries.map(entry => ({
+                        persona: entry.persona,
+                        run: { summary: { picks: Array.from({ length: entry.persona.dailyProposals ?? 1 }, (_, index) => ({ proposalId: `planned-${index + 1}` })) } }
+                    }))).actionCount,
+                    failures, report
+                });
                 log('dry run: nothing written, no model called, nothing signed');
                 return;
             }
@@ -292,6 +465,13 @@ async function main() {
         const policy = executionPolicy(process.env);
         const executionPlan = assertExecutionPlan(summarizeExecutionPlan(entries, policy), policy);
         log(`execution policy: ${executionPlan.actionCount}/${policy.maxActions} signed actions · ≤ ${executionPlan.maxUsdc.toFixed(2)}/${policy.maxUsdc.toFixed(2)} USDC`);
+        const connection = new Connection(rpcUrl, 'confirmed');
+
+        // ---- retire phase: close stale own proposals before minting anything new -------------
+        await retireStage({
+            pool, connection, entries, day, dryRun: false, controller,
+            plannedActions: executionPlan.actionCount, failures, report
+        });
         for (const e of entries.filter(entry => entry.run?.summary?.picks?.length)) {
             e.run = await updateRun(pool, e.runId, { status: 'running', summaryPatch: {
                 executionPolicy: policy,
@@ -302,7 +482,6 @@ async function main() {
                 }
             } });
         }
-        const connection = new Connection(rpcUrl, 'confirmed');
         for (const e of entries) {
             const persona = e.persona;
             const summary = e.run?.summary ?? {};
@@ -332,7 +511,24 @@ async function main() {
                 return result.outcome;
             };
 
-            for (const [k, pick] of picks.entries()) {
+            // The lens is chosen once per persona-day and checkpointed, so a resumed run mints with the
+            // same authorities. No lens → no mint (never a silent self-lens).
+            let lensChoice = summary.lensChoice ?? null;
+            if (!lensChoice && picks.some(pick => !mints[pick.candidateId])) {
+                try {
+                    lensChoice = withLifecycleMember(
+                        await resolveLens({ explicit: args.lens, proposer: keypair.publicKey.toBase58(), apiBase }),
+                        await lifecycleMember()
+                    );
+                    await updateRun(pool, e.runId, { status: 'running', summaryPatch: { lensChoice } });
+                    log(`${persona.name} ${describeLensChoice(lensChoice)}`);
+                } catch (err) {
+                    failures.push(`${persona.name} lens: ${err.message}`);
+                    personaFailed = true;
+                }
+            }
+
+            for (const [k, pick] of (personaFailed ? [] : picks.entries())) {
                 const candidate = e.candidates.find((c) => c.candidateId === pick.candidateId);
                 if (!candidate) { failures.push(`${persona.name}: pick ${pick.candidateId} has no candidate`); continue; }
                 const tag = `${persona.name} ${k + 1}/${picks.length} ${pick.proposalId}`;
@@ -340,10 +536,10 @@ async function main() {
                 // mint
                 if (!mints[pick.candidateId]) {
                     try {
-                        const minted = await runAction({ type: 'create', proposalId: pick.proposalId }, () => mintProposal({
+                        const minted = await runAction(createAction({ proposalId: pick.proposalId, lens: lensChoice.lens }), () => mintProposal({
                             connection, programId: PROPOSAL_NFT_PROGRAM, ownerKeypair: keypair,
                             parcelIds: [candidate.parcelId], isConditional: true,
-                            imageUri: `${apiBase}/proposals/${pick.proposalId}`, lamports: 0n, lens: [keypair.publicKey.toBase58()],
+                            imageUri: `${apiBase}/proposals/${pick.proposalId}`, lamports: 0n, lens: lensChoice.lens,
                             sendAndConfirm: sendAndConfirmPolling
                         }));
                         mints[pick.candidateId] = { ...minted, count: minted.count === undefined ? undefined : String(minted.count) };

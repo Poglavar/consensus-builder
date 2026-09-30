@@ -6,14 +6,18 @@ import {
     buildProposalLifecycleRecipe,
     EVENT_TYPE,
     PROPOSAL_PROGRAM_ID,
+    recipeForProposalAccount,
+    sha256,
     STATUS_CANCELLED,
-    STATUS_EXECUTED
+    STATUS_EXECUTED,
+    STATUS_EXPIRED
 } from './proposal-lifecycle.js';
 import { evaluateResolutionRecipe } from './recipe-evaluator.js';
 
 const OUTCOME_STATUS = Object.freeze({
     executed: STATUS_EXECUTED,
-    cancelled: STATUS_CANCELLED
+    cancelled: STATUS_CANCELLED,
+    expired: STATUS_EXPIRED
 });
 
 function validIsoDate(value) {
@@ -42,7 +46,22 @@ export function buildVerifiedProposalFact({ event, proposalAccount, marketAccoun
         throw new Error('event has no source transaction or source timestamp');
     }
 
-    const recipe = buildProposalLifecycleRecipe({ proposalAccount, marketAccount });
+    // proposal-lifecycle-v2 when the event carries the proposal account bytes and they hold a lens:
+    // the lens is read from the very bytes the event hashed, so it cannot be swapped without
+    // breaking the source hash. Events without the bytes keep the precommitted v1 recipe.
+    const encoded = event.evidence?.accountDataBase64;
+    let recipe;
+    let lensFromHashedAccount = false;
+    if (encoded) {
+        const accountData = Buffer.from(String(encoded), 'base64');
+        if (`sha256:${sha256(accountData)}` !== event.source.hash) {
+            throw new Error('event proposal account bytes do not match its source hash');
+        }
+        recipe = recipeForProposalAccount({ proposalAccount, marketAccount, accountData });
+        lensFromHashedAccount = recipe.version === 2;
+    } else {
+        recipe = buildProposalLifecycleRecipe({ proposalAccount, marketAccount });
+    }
     const lens = evaluateResolutionRecipe({
         recipe,
         evidence: [event],
@@ -60,6 +79,7 @@ export function buildVerifiedProposalFact({ event, proposalAccount, marketAccoun
             status: 'verified',
             method: 'source-hashed Solana program account plus terminal transaction',
             eventId: event.id,
+            recipeId: recipe.id,
             recipeHash: recipe.hash,
             lens,
             checks: {
@@ -67,6 +87,7 @@ export function buildVerifiedProposalFact({ event, proposalAccount, marketAccoun
                 terminalStatusMatches: true,
                 trustedAttesterMatches: true,
                 sourceHashPresent: true,
+                lensFromHashedAccount,
                 sourceTransactionPresent: true,
                 sourceTimestampPresent: true
             }
