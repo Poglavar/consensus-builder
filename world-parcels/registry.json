@@ -4879,7 +4879,17 @@
       "status": "subnational_only",
       "accessModel": "open",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/AR.json"
+      "evidenceFile": "research/countries/AR.json",
+      "regionSummary": {
+        "regionsTotal": 24,
+        "regionWide": 10,
+        "partial": 2,
+        "credentialed": 0,
+        "viewerOnly": 3,
+        "unavailable": 7,
+        "none": 2,
+        "ruralRegistryOnly": 0
+      }
     },
     {
       "countryCode": "AT",
@@ -4905,7 +4915,8 @@
         "credentialed": 0,
         "viewerOnly": 0,
         "unavailable": 0,
-        "none": 1
+        "none": 1,
+        "ruralRegistryOnly": 0
       }
     },
     {
@@ -4976,7 +4987,8 @@
         "credentialed": 0,
         "viewerOnly": 0,
         "unavailable": 0,
-        "none": 0
+        "none": 0,
+        "ruralRegistryOnly": 0
       }
     },
     {
@@ -5075,7 +5087,17 @@
       "accessModel": "open",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/BR.json",
-      "mergeNote": "Polygons are SICAR self-declared rural property perimeters, not the legal cadastre."
+      "mergeNote": "Polygons are SICAR self-declared rural property perimeters, not the legal cadastre.",
+      "regionSummary": {
+        "regionsTotal": 27,
+        "regionWide": 1,
+        "partial": 4,
+        "credentialed": 0,
+        "viewerOnly": 0,
+        "unavailable": 0,
+        "none": 0,
+        "ruralRegistryOnly": 22
+      }
     },
     {
       "countryCode": "BS",
@@ -5157,7 +5179,8 @@
         "credentialed": 0,
         "viewerOnly": 0,
         "unavailable": 0,
-        "none": 1
+        "none": 1,
+        "ruralRegistryOnly": 0
       }
     },
     {
@@ -5218,12 +5241,13 @@
       ],
       "regionSummary": {
         "regionsTotal": 26,
-        "regionWide": 5,
-        "partial": 15,
+        "regionWide": 18,
+        "partial": 2,
         "credentialed": 6,
         "viewerOnly": 0,
         "unavailable": 0,
-        "none": 0
+        "none": 0,
+        "ruralRegistryOnly": 0
       }
     },
     {
@@ -5395,7 +5419,8 @@
         "credentialed": 1,
         "viewerOnly": 0,
         "unavailable": 1,
-        "none": 0
+        "none": 0,
+        "ruralRegistryOnly": 0
       }
     },
     {
@@ -6412,7 +6437,17 @@
       "previousStatus": "temporarily_unavailable",
       "retryFile": "research/retry/countries/MX.json",
       "foundViaViewerInspection": false,
-      "geoBlockSuspected": true
+      "geoBlockSuspected": true,
+      "regionSummary": {
+        "regionsTotal": 32,
+        "regionWide": 0,
+        "partial": 7,
+        "credentialed": 3,
+        "viewerOnly": 2,
+        "unavailable": 19,
+        "none": 1,
+        "ruralRegistryOnly": 0
+      }
     },
     {
       "countryCode": "MY",
@@ -7158,7 +7193,8 @@
         "credentialed": 0,
         "viewerOnly": 0,
         "unavailable": 0,
-        "none": 0
+        "none": 0,
+        "ruralRegistryOnly": 0
       }
     },
     {
@@ -7417,6 +7453,7 @@
       "viewerOnly": 0,
       "unavailable": 0,
       "none": 0,
+      "ruralRegistryOnly": 0,
       "regions": [
         {
           "code": "AK",
@@ -8180,6 +8217,7 @@
       "viewerOnly": 0,
       "unavailable": 0,
       "none": 1,
+      "ruralRegistryOnly": 0,
       "regions": [
         {
           "code": "AB",
@@ -8377,6 +8415,7 @@
       "viewerOnly": 0,
       "unavailable": 0,
       "none": 1,
+      "ruralRegistryOnly": 0,
       "regions": [
         {
           "code": "ACT",
@@ -8498,6 +8537,1132 @@
       ]
     },
     {
+      "countryCode": "BR",
+      "country": "Brazil",
+      "regionsTotal": 27,
+      "regionWide": 1,
+      "partial": 4,
+      "credentialed": 0,
+      "viewerOnly": 0,
+      "unavailable": 0,
+      "none": 0,
+      "ruralRegistryOnly": 22,
+      "regions": [
+        {
+          "code": "AC",
+          "name": "Acre",
+          "status": "verified_region_wide",
+          "bucket": "ruralRegistryOnly",
+          "mergeNote": "SICAR self-declared rural property perimeters only; not the legal cadastre, no urban lots.",
+          "sourceName": "SICAR/CAR rural properties, layer sicar:sicar_imoveis_ac",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [],
+          "reuseStatus": "licence/terms not read",
+          "evidenceFile": "research/subnational/BR/AC.json"
+        },
+        {
+          "code": "AL",
+          "name": "Alagoas",
+          "status": "verified_region_wide",
+          "bucket": "ruralRegistryOnly",
+          "mergeNote": "SICAR self-declared rural property perimeters only; not the legal cadastre, no urban lots.",
+          "sourceName": "SICAR/CAR rural properties, layer sicar:sicar_imoveis_al",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [],
+          "reuseStatus": "licence/terms not read",
+          "evidenceFile": "research/subnational/BR/AL.json"
+        },
+        {
+          "code": "AM",
+          "name": "Amazonas",
+          "status": "verified_region_wide",
+          "bucket": "ruralRegistryOnly",
+          "mergeNote": "SICAR self-declared rural property perimeters only; not the legal cadastre, no urban lots.",
+          "sourceName": "SICAR/CAR rural properties, layer sicar:sicar_imoveis_am",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [],
+          "reuseStatus": "licence/terms not read",
+          "evidenceFile": "research/subnational/BR/AM.json"
+        },
+        {
+          "code": "AP",
+          "name": "Amapá",
+          "status": "verified_region_wide",
+          "bucket": "ruralRegistryOnly",
+          "mergeNote": "SICAR self-declared rural property perimeters only; not the legal cadastre, no urban lots.",
+          "sourceName": "SICAR/CAR rural properties, layer sicar:sicar_imoveis_ap",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [],
+          "reuseStatus": "licence/terms not read",
+          "evidenceFile": "research/subnational/BR/AP.json"
+        },
+        {
+          "code": "BA",
+          "name": "Bahia",
+          "status": "verified_region_wide",
+          "bucket": "ruralRegistryOnly",
+          "mergeNote": "SICAR self-declared rural property perimeters only; not the legal cadastre, no urban lots.",
+          "sourceName": "SICAR/CAR rural properties, layer sicar:sicar_imoveis_ba",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [],
+          "reuseStatus": "licence/terms not read",
+          "evidenceFile": "research/subnational/BR/BA.json"
+        },
+        {
+          "code": "CE",
+          "name": "Ceará",
+          "status": "verified_region_wide",
+          "bucket": "ruralRegistryOnly",
+          "mergeNote": "SICAR self-declared rural property perimeters only; not the legal cadastre, no urban lots.",
+          "sourceName": "SICAR/CAR rural properties, layer sicar:sicar_imoveis_ce",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [],
+          "reuseStatus": "licence/terms not read",
+          "evidenceFile": "research/subnational/BR/CE.json"
+        },
+        {
+          "code": "DF",
+          "name": "Distrito Federal",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "CADASTRO_TERRITORIAL MapServer layer 10 'Lotes Registrados' (IDE-DF / GeoPortal SEDUH)",
+          "endpoint": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/MapServer/10",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Brasilia (Plano Piloto)",
+            "Ceilandia"
+          ],
+          "reuseStatus": "licence/terms not read",
+          "evidenceFile": "research/subnational/BR/DF.json"
+        },
+        {
+          "code": "ES",
+          "name": "Espírito Santo",
+          "status": "verified_region_wide",
+          "bucket": "ruralRegistryOnly",
+          "mergeNote": "SICAR self-declared rural property perimeters only; not the legal cadastre, no urban lots.",
+          "sourceName": "SICAR/CAR rural properties, layer sicar:sicar_imoveis_es",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [],
+          "reuseStatus": "licence/terms not read",
+          "evidenceFile": "research/subnational/BR/ES.json"
+        },
+        {
+          "code": "GO",
+          "name": "Goiás",
+          "status": "verified_region_wide",
+          "bucket": "ruralRegistryOnly",
+          "mergeNote": "SICAR self-declared rural property perimeters only; not the legal cadastre, no urban lots.",
+          "sourceName": "SICAR/CAR rural properties, layer sicar:sicar_imoveis_go",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [],
+          "reuseStatus": "licence/terms not read",
+          "evidenceFile": "research/subnational/BR/GO.json"
+        },
+        {
+          "code": "MA",
+          "name": "Maranhão",
+          "status": "verified_region_wide",
+          "bucket": "ruralRegistryOnly",
+          "mergeNote": "SICAR self-declared rural property perimeters only; not the legal cadastre, no urban lots.",
+          "sourceName": "SICAR/CAR rural property perimeters, layer sicar:sicar_imoveis_ma",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [],
+          "reuseStatus": "licence not read",
+          "evidenceFile": "research/subnational/BR/MA.json"
+        },
+        {
+          "code": "MG",
+          "name": "Minas Gerais",
+          "status": "verified_region_wide",
+          "bucket": "ruralRegistryOnly",
+          "mergeNote": "SICAR self-declared rural property perimeters only; not the legal cadastre, no urban lots.",
+          "sourceName": "SICAR/CAR rural property perimeters, layer sicar:sicar_imoveis_mg",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [],
+          "reuseStatus": "licence not read",
+          "evidenceFile": "research/subnational/BR/MG.json"
+        },
+        {
+          "code": "MS",
+          "name": "Mato Grosso do Sul",
+          "status": "verified_region_wide",
+          "bucket": "ruralRegistryOnly",
+          "mergeNote": "SICAR self-declared rural property perimeters only; not the legal cadastre, no urban lots.",
+          "sourceName": "SICAR/CAR rural property perimeters, layer sicar:sicar_imoveis_ms",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [],
+          "reuseStatus": "licence not read",
+          "evidenceFile": "research/subnational/BR/MS.json"
+        },
+        {
+          "code": "MT",
+          "name": "Mato Grosso",
+          "status": "verified_region_wide",
+          "bucket": "ruralRegistryOnly",
+          "mergeNote": "SICAR self-declared rural property perimeters only; not the legal cadastre, no urban lots.",
+          "sourceName": "SICAR/CAR rural property perimeters, layer sicar:sicar_imoveis_mt",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [],
+          "reuseStatus": "licence not read",
+          "evidenceFile": "research/subnational/BR/MT.json"
+        },
+        {
+          "code": "PA",
+          "name": "Pará",
+          "status": "verified_region_wide",
+          "bucket": "ruralRegistryOnly",
+          "mergeNote": "SICAR self-declared rural property perimeters only; not the legal cadastre, no urban lots.",
+          "sourceName": "SICAR/CAR rural property perimeters, layer sicar:sicar_imoveis_pa",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [],
+          "reuseStatus": "licence not read",
+          "evidenceFile": "research/subnational/BR/PA.json"
+        },
+        {
+          "code": "PB",
+          "name": "Paraíba",
+          "status": "verified_region_wide",
+          "bucket": "ruralRegistryOnly",
+          "mergeNote": "SICAR self-declared rural property perimeters only; not the legal cadastre, no urban lots.",
+          "sourceName": "SICAR/CAR rural property perimeters, layer sicar:sicar_imoveis_pb",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [],
+          "reuseStatus": "licence not read",
+          "evidenceFile": "research/subnational/BR/PB.json"
+        },
+        {
+          "code": "PE",
+          "name": "Pernambuco",
+          "status": "verified_region_wide",
+          "bucket": "partial",
+          "mergeNote": "Urban lots verified for Recife lotes only; statewide layer is SICAR rural registry.",
+          "sourceName": "SICAR/CAR rural property perimeters, layer sicar:sicar_imoveis_pe",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Recife (urban lots, CKAN static GeoJSON)"
+          ],
+          "reuseStatus": "licence not read",
+          "evidenceFile": "research/subnational/BR/PE.json"
+        },
+        {
+          "code": "PI",
+          "name": "Piauí",
+          "status": "verified_region_wide",
+          "bucket": "ruralRegistryOnly",
+          "mergeNote": "SICAR self-declared rural property perimeters only; not the legal cadastre, no urban lots.",
+          "sourceName": "SICAR/CAR rural property perimeters, layer sicar:sicar_imoveis_pi",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [],
+          "reuseStatus": "licence not read",
+          "evidenceFile": "research/subnational/BR/PI.json"
+        },
+        {
+          "code": "PR",
+          "name": "Paraná",
+          "status": "verified_region_wide",
+          "bucket": "partial",
+          "mergeNote": "Urban lots verified for Curitiba lote cadastral only; statewide layer is SICAR rural registry.",
+          "sourceName": "SICAR/CAR rural property perimeters, layer sicar:sicar_imoveis_pr",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Curitiba (urban lots, IPPUC)"
+          ],
+          "reuseStatus": "licence not read",
+          "evidenceFile": "research/subnational/BR/PR.json"
+        },
+        {
+          "code": "RJ",
+          "name": "Rio de Janeiro",
+          "status": "verified_region_wide",
+          "bucket": "partial",
+          "mergeNote": "Urban lots verified for Rio de Janeiro city lots only; statewide layer is SICAR rural registry.",
+          "sourceName": "SICAR / CAR rural property perimeters, layer sicar_imoveis_rj",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Rio de Janeiro (municipality, urban lots, 2013 survey)"
+          ],
+          "reuseStatus": "Licence/terms not read",
+          "evidenceFile": "research/subnational/BR/RJ.json"
+        },
+        {
+          "code": "RN",
+          "name": "Rio Grande do Norte",
+          "status": "verified_region_wide",
+          "bucket": "ruralRegistryOnly",
+          "mergeNote": "SICAR self-declared rural property perimeters only; not the legal cadastre, no urban lots.",
+          "sourceName": "SICAR / CAR rural property perimeters, layer sicar_imoveis_rn",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [],
+          "reuseStatus": "Licence/terms not read",
+          "evidenceFile": "research/subnational/BR/RN.json"
+        },
+        {
+          "code": "RO",
+          "name": "Rondônia",
+          "status": "verified_region_wide",
+          "bucket": "ruralRegistryOnly",
+          "mergeNote": "SICAR self-declared rural property perimeters only; not the legal cadastre, no urban lots.",
+          "sourceName": "SICAR / CAR rural property perimeters, layer sicar_imoveis_ro",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [],
+          "reuseStatus": "Licence/terms not read",
+          "evidenceFile": "research/subnational/BR/RO.json"
+        },
+        {
+          "code": "RR",
+          "name": "Roraima",
+          "status": "verified_region_wide",
+          "bucket": "ruralRegistryOnly",
+          "mergeNote": "SICAR self-declared rural property perimeters only; not the legal cadastre, no urban lots.",
+          "sourceName": "SICAR / CAR rural property perimeters, layer sicar_imoveis_rr",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [],
+          "reuseStatus": "Licence/terms not read",
+          "evidenceFile": "research/subnational/BR/RR.json"
+        },
+        {
+          "code": "RS",
+          "name": "Rio Grande do Sul",
+          "status": "verified_region_wide",
+          "bucket": "ruralRegistryOnly",
+          "mergeNote": "SICAR self-declared rural property perimeters only; not the legal cadastre, no urban lots.",
+          "sourceName": "SICAR / CAR rural property perimeters, layer sicar_imoveis_rs",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [],
+          "reuseStatus": "Licence/terms not read",
+          "evidenceFile": "research/subnational/BR/RS.json"
+        },
+        {
+          "code": "SC",
+          "name": "Santa Catarina",
+          "status": "verified_region_wide",
+          "bucket": "ruralRegistryOnly",
+          "mergeNote": "SICAR self-declared rural property perimeters only; not the legal cadastre, no urban lots.",
+          "sourceName": "SICAR / CAR rural property perimeters, layer sicar_imoveis_sc",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [],
+          "reuseStatus": "Licence/terms not read",
+          "evidenceFile": "research/subnational/BR/SC.json"
+        },
+        {
+          "code": "SE",
+          "name": "Sergipe",
+          "status": "verified_region_wide",
+          "bucket": "ruralRegistryOnly",
+          "mergeNote": "SICAR self-declared rural property perimeters only; not the legal cadastre, no urban lots.",
+          "sourceName": "SICAR / CAR rural property perimeters, layer sicar_imoveis_se",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [],
+          "reuseStatus": "Licence/terms not read",
+          "evidenceFile": "research/subnational/BR/SE.json"
+        },
+        {
+          "code": "SP",
+          "name": "São Paulo",
+          "status": "verified_region_wide",
+          "bucket": "partial",
+          "mergeNote": "Urban lots verified for Sao Paulo lotes fiscais only; statewide layer is SICAR rural registry.",
+          "sourceName": "SICAR / CAR rural property perimeters, layer sicar_imoveis_sp",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Sao Paulo (municipality, lotes fiscais, from earlier evidence, not re-requested)"
+          ],
+          "reuseStatus": "Licence/terms not read",
+          "evidenceFile": "research/subnational/BR/SP.json"
+        },
+        {
+          "code": "TO",
+          "name": "Tocantins",
+          "status": "verified_region_wide",
+          "bucket": "ruralRegistryOnly",
+          "mergeNote": "SICAR self-declared rural property perimeters only; not the legal cadastre, no urban lots.",
+          "sourceName": "SICAR / CAR rural property perimeters, layer sicar_imoveis_to",
+          "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [],
+          "reuseStatus": "Licence/terms not read",
+          "evidenceFile": "research/subnational/BR/TO.json"
+        }
+      ],
+      "note": "No state publishes urban lots except the Federal District; SICAR is the self-declared rural environmental registry, not the legal cadastre, and is counted separately. Municipal urban layers exist for four capitals."
+    },
+    {
+      "countryCode": "AR",
+      "country": "Argentina",
+      "regionsTotal": 24,
+      "regionWide": 10,
+      "partial": 2,
+      "credentialed": 0,
+      "viewerOnly": 3,
+      "unavailable": 7,
+      "none": 2,
+      "ruralRegistryOnly": 0,
+      "regions": [
+        {
+          "code": "A",
+          "name": "Salta",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "IDE - Catastro Urbano y Rural (FeatureServer/0)",
+          "endpoint": "https://sigsa.inmuebles.gov.ar/server/rest/services/IDE/IDE___Catastro_Urbano_y_Rural/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Salta capital (Departamento 01)"
+          ],
+          "reuseStatus": "Not read; open ArcGIS service, no token",
+          "evidenceFile": "research/subnational/AR/A.json"
+        },
+        {
+          "code": "B",
+          "name": "Buenos Aires",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "idera:Parcela",
+          "endpoint": "https://geo.arba.gov.ar/geoserver/wms",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "La Plata",
+            "Mar del Plata"
+          ],
+          "reuseStatus": "Not read.",
+          "evidenceFile": "research/subnational/AR/B.json"
+        },
+        {
+          "code": "C",
+          "name": "Ciudad Autónoma de Buenos Aires",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Parcelas catastrales (catalogo_og_130:parcelas)",
+          "endpoint": "https://geoserver.buenosaires.gob.ar/geoserver/catalogo_og_130/wfs",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Ciudad Autónoma de Buenos Aires"
+          ],
+          "reuseStatus": "Catalog page stated CC-BY-2.5-AR earlier; WFS terms not read.",
+          "evidenceFile": "research/subnational/AR/C.json"
+        },
+        {
+          "code": "D",
+          "name": "San Luis",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "unknown",
+          "evidenceFile": "research/subnational/AR/D.json"
+        },
+        {
+          "code": "E",
+          "name": "Entre Ríos",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Parcelario Base (sit_catastro:vwm_parcelario_base)",
+          "endpoint": "https://geoserver.ater.gob.ar/geoserver/wfs",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Paraná",
+            "Concordia"
+          ],
+          "reuseStatus": "Terms not read. Layer attributes are departamento, partida, plano, estado (no owner fields seen); only departamento, partida, geom requested.",
+          "evidenceFile": "research/subnational/AR/E.json"
+        },
+        {
+          "code": "F",
+          "name": "La Rioja",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/AR/F.json"
+        },
+        {
+          "code": "G",
+          "name": "Santiago del Estero",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/AR/G.json"
+        },
+        {
+          "code": "H",
+          "name": "Chaco",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "parcelario_urbano_2021 and parcelario_rural_2021 (BASE_DES_TERR)",
+          "endpoint": "https://sit.chaco.gob.ar/geoserver/wfs",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Resistencia",
+            "Presidencia Roque Sáenz Peña",
+            "rural sample"
+          ],
+          "reuseStatus": "Licence not read.",
+          "evidenceFile": "research/subnational/AR/H.json"
+        },
+        {
+          "code": "J",
+          "name": "San Juan",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "unide_catastro:Parcelas_Catastro_Geoportal",
+          "endpoint": "https://unide.sanjuan.gob.ar/geoserver/unide_catastro/wms",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "San Juan capital",
+            "Caucete",
+            "Jachal"
+          ],
+          "reuseStatus": "Terms not read",
+          "evidenceFile": "research/subnational/AR/J.json"
+        },
+        {
+          "code": "K",
+          "name": "Catamarca",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/AR/K.json"
+        },
+        {
+          "code": "L",
+          "name": "La Pampa",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/AR/L.json"
+        },
+        {
+          "code": "M",
+          "name": "Mendoza",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Catastro_publico / Parcelario catastral (layer 1)",
+          "endpoint": "https://webgis.ciudaddemendoza.gob.ar/server/rest/services/Catastro_p%C3%BAblico/FeatureServer/1",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Ciudad de Mendoza"
+          ],
+          "reuseStatus": "CC-BY-4.0 per search snippet for the city dataset; unverified",
+          "evidenceFile": "research/subnational/AR/M.json"
+        },
+        {
+          "code": "N",
+          "name": "Misiones",
+          "status": "viewer_only",
+          "bucket": "viewerOnly",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "Unknown",
+          "evidenceFile": "research/subnational/AR/N.json"
+        },
+        {
+          "code": "P",
+          "name": "Formosa",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Formosa/WFS_Produccion MapServer layer 0 PARCELAS_GEORREFERENCIADAS",
+          "endpoint": "https://sit.formosa.gob.ar/sit.public/proxy.ashx?https://10.10.0.36/arcgis/rest/services/Formosa/WFS_Produccion/MapServer/0",
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "Unknown",
+          "evidenceFile": "research/subnational/AR/P.json"
+        },
+        {
+          "code": "Q",
+          "name": "Neuquén",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "IDE/Catastro MapServer layer 4 Parcelas",
+          "endpoint": "https://catastro.neuquen.gov.ar/server/rest/services/IDE/Catastro/MapServer/4",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Neuquén capital",
+            "San Martín de los Andes"
+          ],
+          "reuseStatus": "Not stated in the service metadata (copyrightText empty)",
+          "evidenceFile": "research/subnational/AR/Q.json"
+        },
+        {
+          "code": "R",
+          "name": "Río Negro",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Hosted/PARCELARIO MapServer layer 0",
+          "endpoint": "https://mapasagencia.rionegro.gov.ar/server/rest/services/Hosted/PARCELARIO/MapServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Viedma",
+            "San Carlos de Bariloche"
+          ],
+          "reuseStatus": "Unread; publisher describes data as free/open for GIS use",
+          "evidenceFile": "research/subnational/AR/R.json"
+        },
+        {
+          "code": "S",
+          "name": "Santa Fe",
+          "status": "viewer_only",
+          "bucket": "viewerOnly",
+          "sourceName": "scit_parcelas (Parcelas - WMS SCIT)",
+          "endpoint": "https://aswe.santafe.gov.ar/idesf/wms",
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/AR/S.json"
+        },
+        {
+          "code": "T",
+          "name": "Tucumán",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": "dgct workspace (parcelas, manzanas, departamentos, ...)",
+          "endpoint": "http://200.49.89.203/geoserver/dgct/wfs (also http://190.221.181.227/geoserver/dgct/ows used by IDET viewer)",
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "unknown",
+          "evidenceFile": "research/subnational/AR/T.json"
+        },
+        {
+          "code": "U",
+          "name": "Chubut",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/AR/U.json"
+        },
+        {
+          "code": "V",
+          "name": "Tierra del Fuego",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "DGC-Parcelario_URBANO / DGC-Parcelario_RURAL",
+          "endpoint": "http://catastro.aref.gob.ar/arcgis/services/publica/TDF_DGC_wfs/MapServer/WFSServer",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Ushuaia",
+            "Rio Grande"
+          ],
+          "reuseStatus": "Terms not read",
+          "evidenceFile": "research/subnational/AR/V.json"
+        },
+        {
+          "code": "W",
+          "name": "Corrientes",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/AR/W.json"
+        },
+        {
+          "code": "X",
+          "name": "Córdoba",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Parcelas (idecor:parcelas)",
+          "endpoint": "https://idecor-ws.mapascordoba.gob.ar/geoserver/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Córdoba city",
+            "Río Cuarto"
+          ],
+          "reuseStatus": "Not read. The layer also carries valuation and cuenta fields (not requested or saved); only Nomenclatura and geom were requested.",
+          "evidenceFile": "research/subnational/AR/X.json"
+        },
+        {
+          "code": "Y",
+          "name": "Jujuy",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/AR/Y.json"
+        },
+        {
+          "code": "Z",
+          "name": "Santa Cruz",
+          "status": "viewer_only",
+          "bucket": "viewerOnly",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "unknown",
+          "evidenceFile": "research/subnational/AR/Z.json"
+        }
+      ],
+      "note": "Cadastre is provincial (Ley 26.209); several provinces publish only point-query or raster viewers."
+    },
+    {
+      "countryCode": "MX",
+      "country": "Mexico",
+      "regionsTotal": 32,
+      "regionWide": 0,
+      "partial": 7,
+      "credentialed": 3,
+      "viewerOnly": 2,
+      "unavailable": 19,
+      "none": 1,
+      "ruralRegistryOnly": 0,
+      "regions": [
+        {
+          "code": "AGU",
+          "name": "Aguascalientes",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "AGS_PREDIOS (feature service PREDIO_WFL1)",
+          "endpoint": "https://services7.arcgis.com/DRM2ftezSpbrLDLB/arcgis/rest/services/PREDIO_WFL1/FeatureServer/0",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Aguascalientes municipality (layer 0, only 48 polygons)"
+          ],
+          "reuseStatus": "unknown; no licence text visible on the service or item",
+          "evidenceFile": "research/subnational/MX/AGU.json"
+        },
+        {
+          "code": "BCN",
+          "name": "Baja California",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/MX/BCN.json"
+        },
+        {
+          "code": "BCS",
+          "name": "Baja California Sur",
+          "status": "credentialed_or_paid",
+          "bucket": "credentialed",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/MX/BCS.json"
+        },
+        {
+          "code": "CAM",
+          "name": "Campeche",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/MX/CAM.json"
+        },
+        {
+          "code": "CHH",
+          "name": "Chihuahua",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/MX/CHH.json"
+        },
+        {
+          "code": "CHP",
+          "name": "Chiapas",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/MX/CHP.json"
+        },
+        {
+          "code": "CMX",
+          "name": "Ciudad de México",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/MX/CMX.json"
+        },
+        {
+          "code": "COA",
+          "name": "Coahuila",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "PREDIOS_2019 (feature service PREDIOS_TORREON)",
+          "endpoint": "https://services9.arcgis.com/fp5f46XvVGKIUi0R/arcgis/rest/services/PREDIOS_TORREON/FeatureServer/0",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Torreon municipality (third-party-published)"
+          ],
+          "reuseStatus": "unknown; publisher is not the government cadastre, so treat as unofficial",
+          "evidenceFile": "research/subnational/MX/COA.json"
+        },
+        {
+          "code": "COL",
+          "name": "Colima",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not assessed",
+          "evidenceFile": "research/subnational/MX/COL.json"
+        },
+        {
+          "code": "DUR",
+          "name": "Durango",
+          "status": "credentialed_or_paid",
+          "bucket": "credentialed",
+          "sourceName": "SIGEOM Municipio de Durango mapa",
+          "endpoint": "http://sigeomweb.municipiodurango.gob.mx/mapa",
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not assessed",
+          "evidenceFile": "research/subnational/MX/DUR.json"
+        },
+        {
+          "code": "GRO",
+          "name": "Guerrero",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not assessed",
+          "evidenceFile": "research/subnational/MX/GRO.json"
+        },
+        {
+          "code": "GUA",
+          "name": "Guanajuato",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "CARTOGRAFIA_SMA_2023 (predio-level cartography, San Miguel de Allende)",
+          "endpoint": "https://www.arcgis.com/sharing/rest/content/items/c9df54c373734fe1868579543a1528e8/data?f=json",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "San Miguel de Allende"
+          ],
+          "reuseStatus": "No licence text visible on the item; treat as unknown",
+          "evidenceFile": "research/subnational/MX/GUA.json"
+        },
+        {
+          "code": "HID",
+          "name": "Hidalgo",
+          "status": "credentialed_or_paid",
+          "bucket": "credentialed",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not assessed",
+          "evidenceFile": "research/subnational/MX/HID.json"
+        },
+        {
+          "code": "JAL",
+          "name": "Jalisco",
+          "status": "viewer_only",
+          "bucket": "viewerOnly",
+          "sourceName": "eCarto 'WEB CARTOGRAFIA' public map 808 (Cartografia Estatal predio layer)",
+          "endpoint": "https://catastro.jalisco.gob.mx/ecarto/catastro/map/808",
+          "regionWideClaimed": true,
+          "subregionsVerified": [],
+          "reuseStatus": "not assessed",
+          "evidenceFile": "research/subnational/MX/JAL.json"
+        },
+        {
+          "code": "MEX",
+          "name": "Estado de México",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not assessed",
+          "evidenceFile": "research/subnational/MX/MEX.json"
+        },
+        {
+          "code": "MIC",
+          "name": "Michoacán",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not assessed",
+          "evidenceFile": "research/subnational/MX/MIC.json"
+        },
+        {
+          "code": "MOR",
+          "name": "Morelos",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "CUERNA_PMDUS layer 13 'USO SUELO CATASTRO 2022' (Cuernavaca urban development plan)",
+          "endpoint": "https://services9.arcgis.com/fp5f46XvVGKIUi0R/arcgis/rest/services/CUERNA_PMDUS/FeatureServer/13",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Cuernavaca"
+          ],
+          "reuseStatus": "not established (no licence text read)",
+          "evidenceFile": "research/subnational/MX/MOR.json"
+        },
+        {
+          "code": "NAY",
+          "name": "Nayarit",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not established (no licence text read)",
+          "evidenceFile": "research/subnational/MX/NAY.json"
+        },
+        {
+          "code": "NLE",
+          "name": "Nuevo León",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "PDU_JUAREZ_Predios (ArcGIS Online feature service, 237,359 polygons)",
+          "endpoint": "https://services3.arcgis.com/BfOao3Z3i3oD6m74/arcgis/rest/services/PDU_JUAREZ_Predios/FeatureServer/0",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Juarez (Nuevo Leon)"
+          ],
+          "reuseStatus": "not established",
+          "evidenceFile": "research/subnational/MX/NLE.json"
+        },
+        {
+          "code": "OAX",
+          "name": "Oaxaca",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not established (no licence text read)",
+          "evidenceFile": "research/subnational/MX/OAX.json"
+        },
+        {
+          "code": "PUE",
+          "name": "Puebla",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not established (no licence text read)",
+          "evidenceFile": "research/subnational/MX/PUE.json"
+        },
+        {
+          "code": "QUE",
+          "name": "Querétaro",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "CATASTRO_QRO layer 4 'M06_RAN' (agrarian/ejido parcels, RAN-derived)",
+          "endpoint": "https://services9.arcgis.com/fp5f46XvVGKIUi0R/arcgis/rest/services/CATASTRO_QRO/FeatureServer/4",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Querétaro municipality (agrarian parcels)",
+            "Corregidora",
+            "Huimilpan"
+          ],
+          "reuseStatus": "not established (no licence text read)",
+          "evidenceFile": "research/subnational/MX/QUE.json"
+        },
+        {
+          "code": "ROO",
+          "name": "Quintana Roo",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not established (no licence text read)",
+          "evidenceFile": "research/subnational/MX/ROO.json"
+        },
+        {
+          "code": "SIN",
+          "name": "Sinaloa",
+          "status": "viewer_only",
+          "bucket": "viewerOnly",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/MX/SIN.json"
+        },
+        {
+          "code": "SLP",
+          "name": "San Luis Potosí",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not established (no licence text read)",
+          "evidenceFile": "research/subnational/MX/SLP.json"
+        },
+        {
+          "code": "SON",
+          "name": "Sonora",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/MX/SON.json"
+        },
+        {
+          "code": "TAB",
+          "name": "Tabasco",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Visor Cartografico de Tabasco (per-municipality qgis2web Leaflet maps)",
+          "endpoint": "https://catastro.sf.tabasco.gob.mx/wp-content/uploads/mapas/centro1/data/ZONA1_2.js",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Centro (Villahermosa) zonas 1-7 (partial)"
+          ],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/MX/TAB.json"
+        },
+        {
+          "code": "TAM",
+          "name": "Tamaulipas",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/MX/TAM.json"
+        },
+        {
+          "code": "TLA",
+          "name": "Tlaxcala",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/MX/TLA.json"
+        },
+        {
+          "code": "VER",
+          "name": "Veracruz",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/MX/VER.json"
+        },
+        {
+          "code": "YUC",
+          "name": "Yucatán",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/MX/YUC.json"
+        },
+        {
+          "code": "ZAC",
+          "name": "Zacatecas",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/MX/ZAC.json"
+        }
+      ],
+      "note": "Cadastre is state and municipal; no state-wide open service was reached from this network, most state hosts reset or block, and the partial samples are municipal or third-party layers."
+    },
+    {
       "countryCode": "DE",
       "country": "Germany",
       "regionsTotal": 16,
@@ -8507,6 +9672,7 @@
       "viewerOnly": 0,
       "unavailable": 1,
       "none": 0,
+      "ruralRegistryOnly": 0,
       "regions": [
         {
           "code": "BB",
@@ -8732,45 +9898,52 @@
       "countryCode": "CH",
       "country": "Switzerland",
       "regionsTotal": 26,
-      "regionWide": 5,
-      "partial": 15,
+      "regionWide": 18,
+      "partial": 2,
       "credentialed": 6,
       "viewerOnly": 0,
       "unavailable": 0,
       "none": 0,
+      "ruralRegistryOnly": 0,
       "regions": [
         {
           "code": "AG",
-          "name": "AG",
-          "status": "open_per_service_list_not_sampled",
-          "bucket": "partial",
-          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "name": "Aargau",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Amtliche Vermessung (open AV) via geodienste.ch WFS",
           "endpoint": "https://geodienste.ch/db/av_0/deu",
-          "subregionsVerified": [],
-          "reuseStatus": "open per geodienste.ch services.json",
-          "evidenceFile": "research/europe/CH.json"
+          "subregionsVerified": [
+            "Aarau"
+          ],
+          "reuseStatus": "see source.reuseStatus",
+          "evidenceFile": "research/subnational/CH/AG.json"
         },
         {
           "code": "AI",
-          "name": "AI",
-          "status": "open_per_service_list_not_sampled",
-          "bucket": "partial",
-          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "name": "Appenzell Innerrhoden",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Amtliche Vermessung (open AV) via geodienste.ch WFS",
           "endpoint": "https://geodienste.ch/db/av_0/deu",
-          "subregionsVerified": [],
-          "reuseStatus": "open per geodienste.ch services.json",
-          "evidenceFile": "research/europe/CH.json"
+          "subregionsVerified": [
+            "Appenzell"
+          ],
+          "reuseStatus": "see source.reuseStatus",
+          "evidenceFile": "research/subnational/CH/AI.json"
         },
         {
           "code": "AR",
-          "name": "AR",
-          "status": "open_per_service_list_not_sampled",
-          "bucket": "partial",
-          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "name": "Appenzell Ausserrhoden",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Amtliche Vermessung (open AV) via geodienste.ch WFS",
           "endpoint": "https://geodienste.ch/db/av_0/deu",
-          "subregionsVerified": [],
-          "reuseStatus": "open per geodienste.ch services.json",
-          "evidenceFile": "research/europe/CH.json"
+          "subregionsVerified": [
+            "Herisau"
+          ],
+          "reuseStatus": "see source.reuseStatus",
+          "evidenceFile": "research/subnational/CH/AR.json"
         },
         {
           "code": "BE",
@@ -8787,36 +9960,42 @@
         },
         {
           "code": "BL",
-          "name": "BL",
-          "status": "open_per_service_list_not_sampled",
-          "bucket": "partial",
-          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "name": "Basel-Landschaft",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Amtliche Vermessung (open AV) via geodienste.ch WFS",
           "endpoint": "https://geodienste.ch/db/av_0/deu",
-          "subregionsVerified": [],
-          "reuseStatus": "open per geodienste.ch services.json",
-          "evidenceFile": "research/europe/CH.json"
+          "subregionsVerified": [
+            "Liestal"
+          ],
+          "reuseStatus": "see source.reuseStatus",
+          "evidenceFile": "research/subnational/CH/BL.json"
         },
         {
           "code": "BS",
-          "name": "BS",
-          "status": "open_per_service_list_not_sampled",
-          "bucket": "partial",
-          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "name": "Basel-Stadt",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Amtliche Vermessung (open AV) via geodienste.ch WFS",
           "endpoint": "https://geodienste.ch/db/av_0/deu",
-          "subregionsVerified": [],
-          "reuseStatus": "open per geodienste.ch services.json",
-          "evidenceFile": "research/europe/CH.json"
+          "subregionsVerified": [
+            "Basel"
+          ],
+          "reuseStatus": "see source.reuseStatus",
+          "evidenceFile": "research/subnational/CH/BS.json"
         },
         {
           "code": "FR",
-          "name": "FR",
-          "status": "open_per_service_list_not_sampled",
-          "bucket": "partial",
-          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "name": "Fribourg",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Amtliche Vermessung (open AV) via geodienste.ch WFS",
           "endpoint": "https://geodienste.ch/db/av_0/deu",
-          "subregionsVerified": [],
-          "reuseStatus": "open per geodienste.ch services.json",
-          "evidenceFile": "research/europe/CH.json"
+          "subregionsVerified": [
+            "Fribourg"
+          ],
+          "reuseStatus": "see source.reuseStatus",
+          "evidenceFile": "research/subnational/CH/FR.json"
         },
         {
           "code": "GE",
@@ -8833,80 +10012,84 @@
         },
         {
           "code": "GL",
-          "name": "GL",
-          "status": "open_per_service_list_not_sampled",
-          "bucket": "partial",
-          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "name": "Glarus",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Amtliche Vermessung (open AV) via geodienste.ch WFS",
           "endpoint": "https://geodienste.ch/db/av_0/deu",
-          "subregionsVerified": [],
-          "reuseStatus": "open per geodienste.ch services.json",
-          "evidenceFile": "research/europe/CH.json"
+          "subregionsVerified": [
+            "Glarus"
+          ],
+          "reuseStatus": "see source.reuseStatus",
+          "evidenceFile": "research/subnational/CH/GL.json"
         },
         {
           "code": "GR",
-          "name": "GR",
-          "status": "open_per_service_list_not_sampled",
-          "bucket": "partial",
-          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "name": "Graubuenden",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Amtliche Vermessung (open AV) via geodienste.ch WFS",
           "endpoint": "https://geodienste.ch/db/av_0/deu",
-          "subregionsVerified": [],
-          "reuseStatus": "open per geodienste.ch services.json",
-          "evidenceFile": "research/europe/CH.json"
+          "subregionsVerified": [
+            "Chur"
+          ],
+          "reuseStatus": "see source.reuseStatus",
+          "evidenceFile": "research/subnational/CH/GR.json"
         },
         {
           "code": "JU",
           "name": "JU",
-          "status": "credentialed: free up to 10 ha, contract and fee above",
+          "status": "credentialed_or_paid",
           "bucket": "credentialed",
-          "sourceName": "geodienste.ch av_0 WFS",
+          "sourceName": "geodienste.ch Amtliche Vermessung (av_0) WFS 2.0, feature type ms:RESF",
           "endpoint": "https://geodienste.ch/db/av_0/deu",
           "subregionsVerified": [],
-          "reuseStatus": "free up to 10 ha, contract and fee above",
-          "evidenceFile": "research/europe/CH.json"
+          "reuseStatus": "Free and contract-free below 10 ha; from 10 ha a contract and fee are required (geodienste.ch notes). AV vector data publication_data = \"Freigabe erforderlich\"; WMS free.",
+          "evidenceFile": "research/subnational/CH/JU.json"
         },
         {
           "code": "LU",
           "name": "LU",
-          "status": "credentialed: area-based fees, contract",
+          "status": "credentialed_or_paid",
           "bucket": "credentialed",
-          "sourceName": "geodienste.ch av_0 WFS",
+          "sourceName": "geodienste.ch Amtliche Vermessung (av_0) WFS 2.0, feature type ms:RESF",
           "endpoint": "https://geodienste.ch/db/av_0/deu",
           "subregionsVerified": [],
-          "reuseStatus": "area-based fees, contract",
-          "evidenceFile": "research/europe/CH.json"
+          "reuseStatus": "Area-based fees (100 CHF/ha building zone, 4 CHF/ha other; one-off purchase or annual subscription), contract required; publication_data = \"Freigabe erforderlich\".",
+          "evidenceFile": "research/subnational/CH/LU.json"
         },
         {
           "code": "NE",
           "name": "NE",
-          "status": "credentialed: contract; cantonal coverage flag false",
+          "status": "credentialed_or_paid",
           "bucket": "credentialed",
-          "sourceName": "geodienste.ch av_0 WFS",
+          "sourceName": "geodienste.ch Amtliche Vermessung (av_0) WFS 2.0, feature type ms:RESF",
           "endpoint": "https://geodienste.ch/db/av_0/deu",
           "subregionsVerified": [],
-          "reuseStatus": "contract; cantonal coverage flag false",
-          "evidenceFile": "research/europe/CH.json"
+          "reuseStatus": "Vector AV requires an existing paid usage contract (SITN contract, cantonal tariff); WMS open with registration; cantonal_coverage false (partial coverage).",
+          "evidenceFile": "research/subnational/CH/NE.json"
         },
         {
           "code": "NW",
           "name": "NW",
-          "status": "credentialed: contract",
+          "status": "credentialed_or_paid",
           "bucket": "credentialed",
-          "sourceName": "geodienste.ch av_0 WFS",
+          "sourceName": "geodienste.ch Amtliche Vermessung (av_0) WFS 2.0, feature type ms:RESF",
           "endpoint": "https://geodienste.ch/db/av_0/deu",
           "subregionsVerified": [],
-          "reuseStatus": "contract",
-          "evidenceFile": "research/europe/CH.json"
+          "reuseStatus": "Contract required (contract_required_data true), release required; data issued via GIS Daten AG Stans per Produkteinformation NW/OW.",
+          "evidenceFile": "research/subnational/CH/NW.json"
         },
         {
           "code": "OW",
           "name": "OW",
-          "status": "credentialed: release required",
+          "status": "credentialed_or_paid",
           "bucket": "credentialed",
-          "sourceName": "geodienste.ch av_0 WFS",
+          "sourceName": "geodienste.ch Amtliche Vermessung (av_0) WFS 2.0, feature type ms:RESF",
           "endpoint": "https://geodienste.ch/db/av_0/deu",
           "subregionsVerified": [],
-          "reuseStatus": "release required",
-          "evidenceFile": "research/europe/CH.json"
+          "reuseStatus": "Release required (publication_data \"Freigabe erforderlich\"); free only if the client is a municipality, canton or Confederation; via GIS Daten AG Sarnen.",
+          "evidenceFile": "research/subnational/CH/OW.json"
         },
         {
           "code": "SG",
@@ -8923,36 +10106,42 @@
         },
         {
           "code": "SH",
-          "name": "SH",
-          "status": "open_per_service_list_not_sampled",
-          "bucket": "partial",
-          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "name": "Schaffhausen",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Amtliche Vermessung (open AV) via geodienste.ch WFS",
           "endpoint": "https://geodienste.ch/db/av_0/deu",
-          "subregionsVerified": [],
-          "reuseStatus": "open per geodienste.ch services.json",
-          "evidenceFile": "research/europe/CH.json"
+          "subregionsVerified": [
+            "Schaffhausen"
+          ],
+          "reuseStatus": "see source.reuseStatus",
+          "evidenceFile": "research/subnational/CH/SH.json"
         },
         {
           "code": "SO",
-          "name": "SO",
-          "status": "open_per_service_list_not_sampled",
-          "bucket": "partial",
-          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "name": "Solothurn",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Amtliche Vermessung (open AV) via geodienste.ch WFS",
           "endpoint": "https://geodienste.ch/db/av_0/deu",
-          "subregionsVerified": [],
-          "reuseStatus": "open per geodienste.ch services.json",
-          "evidenceFile": "research/europe/CH.json"
+          "subregionsVerified": [
+            "Solothurn"
+          ],
+          "reuseStatus": "see source.reuseStatus",
+          "evidenceFile": "research/subnational/CH/SO.json"
         },
         {
           "code": "SZ",
-          "name": "SZ",
-          "status": "open_per_service_list_not_sampled",
-          "bucket": "partial",
-          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "name": "Schwyz",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Amtliche Vermessung (open AV) via geodienste.ch WFS",
           "endpoint": "https://geodienste.ch/db/av_0/deu",
-          "subregionsVerified": [],
-          "reuseStatus": "open per geodienste.ch services.json",
-          "evidenceFile": "research/europe/CH.json"
+          "subregionsVerified": [
+            "Schwyz"
+          ],
+          "reuseStatus": "see source.reuseStatus",
+          "evidenceFile": "research/subnational/CH/SZ.json"
         },
         {
           "code": "TG",
@@ -8970,57 +10159,65 @@
         {
           "code": "TI",
           "name": "TI",
-          "status": "open_per_service_list_not_sampled",
+          "status": "verified_partial_region",
           "bucket": "partial",
-          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "sourceName": "geodienste.ch Amtliche Vermessung (av_0) WFS 2.0, feature type ms:RESF",
           "endpoint": "https://geodienste.ch/db/av_0/deu",
-          "subregionsVerified": [],
-          "reuseStatus": "open per geodienste.ch services.json",
-          "evidenceFile": "research/europe/CH.json"
+          "subregionsVerified": [
+            "Bellinzona"
+          ],
+          "reuseStatus": "Freie Nutzung. Quellenangabe ist Pflicht. Licence text taken from services.json, canton terms page not independently read.",
+          "evidenceFile": "research/subnational/CH/TI.json"
         },
         {
           "code": "UR",
           "name": "UR",
-          "status": "open_per_service_list_not_sampled",
-          "bucket": "partial",
-          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "geodienste.ch Amtliche Vermessung (av_0) WFS 2.0, feature type ms:RESF",
           "endpoint": "https://geodienste.ch/db/av_0/deu",
-          "subregionsVerified": [],
-          "reuseStatus": "open per geodienste.ch services.json",
-          "evidenceFile": "research/europe/CH.json"
+          "subregionsVerified": [
+            "Altdorf"
+          ],
+          "reuseStatus": "Freie Nutzung. Quellenangabe ist Pflicht. Licence text taken from services.json, canton terms page not independently read.",
+          "evidenceFile": "research/subnational/CH/UR.json"
         },
         {
           "code": "VD",
           "name": "VD",
-          "status": "credentialed: release required",
+          "status": "credentialed_or_paid",
           "bucket": "credentialed",
-          "sourceName": "geodienste.ch av_0 WFS",
+          "sourceName": "geodienste.ch Amtliche Vermessung (av_0) WFS 2.0, feature type ms:RESF",
           "endpoint": "https://geodienste.ch/db/av_0/deu",
           "subregionsVerified": [],
-          "reuseStatus": "release required",
-          "evidenceFile": "research/europe/CH.json"
+          "reuseStatus": "Release required; for one-off use or areas smaller than the canton order via viageo.ch; cantonal terms on vd.ch.",
+          "evidenceFile": "research/subnational/CH/VD.json"
         },
         {
           "code": "VS",
           "name": "VS",
-          "status": "open_per_service_list_not_sampled",
+          "status": "verified_partial_region",
           "bucket": "partial",
-          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "sourceName": "geodienste.ch Amtliche Vermessung (av_0) WFS 2.0, feature type ms:RESF",
           "endpoint": "https://geodienste.ch/db/av_0/deu",
-          "subregionsVerified": [],
-          "reuseStatus": "open per geodienste.ch services.json",
-          "evidenceFile": "research/europe/CH.json"
+          "subregionsVerified": [
+            "Martigny area (Sion test bbox returned 0)"
+          ],
+          "reuseStatus": "Freie Nutzung. Quellenangabe ist Pflicht. Licence text taken from services.json, canton terms page not independently read.",
+          "evidenceFile": "research/subnational/CH/VS.json"
         },
         {
           "code": "ZG",
           "name": "ZG",
-          "status": "open_per_service_list_not_sampled",
-          "bucket": "partial",
-          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "geodienste.ch Amtliche Vermessung (av_0) WFS 2.0, feature type ms:RESF",
           "endpoint": "https://geodienste.ch/db/av_0/deu",
-          "subregionsVerified": [],
-          "reuseStatus": "open per geodienste.ch services.json",
-          "evidenceFile": "research/europe/CH.json"
+          "subregionsVerified": [
+            "Zug"
+          ],
+          "reuseStatus": "Freie Nutzung. Quellenangabe ist Pflicht. Licence text taken from services.json, canton terms page not independently read.",
+          "evidenceFile": "research/subnational/CH/ZG.json"
         },
         {
           "code": "ZH",
@@ -9036,7 +10233,7 @@
           "evidenceFile": "research/europe/CH.json"
         }
       ],
-      "note": "One national WFS (geodienste.ch) aggregates cantonal surveys; 20 cantons open, 6 gated. Unsampled open cantons are listed as partial until queried."
+      "note": "One national WFS (geodienste.ch) aggregates cantonal surveys. Conditions for gated cantons come from the service metadata, not the cantonal terms pages."
     },
     {
       "countryCode": "BE",
@@ -9048,6 +10245,7 @@
       "viewerOnly": 0,
       "unavailable": 0,
       "none": 0,
+      "ruralRegistryOnly": 0,
       "regions": [
         {
           "code": "BRU",

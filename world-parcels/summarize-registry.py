@@ -38,10 +38,10 @@ out += ['## Europe focus pass (2026-09-30)', '',
         f"- Now passing the two-region test: {', '.join(eu)}.",
         f"- Still not: {', '.join(eu_no)}.", '']
 out += ['## Federal countries by region (subnational tier)', '',
-        'For federations the unit of coverage is the state, province, canton or Land. `regionWide` = an open layer for the whole region verified by a bounded query; `partial` = only a county/city layer found (or, for Switzerland, an open canton not yet sampled); `gated` = credentialed or viewer-only.', '',
-        '| Country | Regions | Region-wide open | Partial | Gated | None / unavailable |', '| --- | ---: | ---: | ---: | ---: | ---: |']
+        'For federations the unit of coverage is the state, province, canton or Land. `regionWide` = an open layer for the whole region verified by a bounded query; `partial` = only a county/city or unofficial layer found; `gated` = credentialed or viewer-only; `rural registry only` = Brazil\'s SICAR self-declared rural perimeters, which are not the legal cadastre.', '',
+        '| Country | Regions | Region-wide open | Partial | Gated | None / unavailable | Rural registry only |', '| --- | ---: | ---: | ---: | ---: | ---: | ---: |']
 for e in r.get('subnationalCoverage', []):
-    out.append(f"| {e['country']} | {e['regionsTotal']} | {e['regionWide']} | {e['partial']} | {e['credentialed'] + e['viewerOnly']} | {e['none'] + e['unavailable']} |")
+    out.append(f"| {e['country']} | {e['regionsTotal']} | {e['regionWide']} | {e['partial']} | {e['credentialed'] + e['viewerOnly']} | {e['none'] + e['unavailable']} | {e.get('ruralRegistryOnly', 0)} |")
 out += ['']
 for e in r.get('subnationalCoverage', []):
     rw = [x['code'] for x in e['regions'] if x['bucket'] == 'regionWide']

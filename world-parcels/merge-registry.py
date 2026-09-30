@@ -311,16 +311,24 @@ def add_country(code, name, regions, note=None):
     entry = {'countryCode': code, 'country': name, 'regionsTotal': len(regions),
              'regionWide': counts['regionWide'], 'partial': counts['partial'], 'credentialed': counts['credentialed'],
              'viewerOnly': counts['viewerOnly'], 'unavailable': counts['unavailable'], 'none': counts['none'],
+             'ruralRegistryOnly': counts['ruralRegistryOnly'],
              'regions': sorted(regions, key=lambda r: r['code'])}
     if note:
         entry['note'] = note
     subnational.append(entry)
     p = by_code.get(code)
     if p:
-        p['regionSummary'] = {k: entry[k] for k in ('regionsTotal', 'regionWide', 'partial', 'credentialed', 'viewerOnly', 'unavailable', 'none')}
+        p['regionSummary'] = {k: entry[k] for k in ('regionsTotal', 'regionWide', 'partial', 'credentialed', 'viewerOnly', 'unavailable', 'none', 'ruralRegistryOnly')}
 
 import collections
-for code, name in (('US', 'United States'), ('CA', 'Canada'), ('AU', 'Australia')):
+# Brazilian states whose only urban parcels come from a verified municipal layer (see the city entries).
+BR_MUNICIPAL_URBAN = {'RJ': 'Rio de Janeiro city lots', 'SP': 'Sao Paulo lotes fiscais', 'PR': 'Curitiba lote cadastral', 'PE': 'Recife lotes'}
+SUBNATIONAL_NOTES = {
+    'BR': 'No state publishes urban lots except the Federal District; SICAR is the self-declared rural environmental registry, not the legal cadastre, and is counted separately. Municipal urban layers exist for four capitals.',
+    'AR': 'Cadastre is provincial (Ley 26.209); several provinces publish only point-query or raster viewers.',
+    'MX': 'Cadastre is state and municipal; no state-wide open service was reached from this network, most state hosts reset or block, and the partial samples are municipal or third-party layers.',
+}
+for code, name in (('US', 'United States'), ('CA', 'Canada'), ('AU', 'Australia'), ('BR', 'Brazil'), ('AR', 'Argentina'), ('MX', 'Mexico')):
     regions = []
     for f in sorted(glob.glob(f'research/subnational/{code}/*.json')):
         if 'response' in f:
@@ -329,10 +337,17 @@ for code, name in (('US', 'United States'), ('CA', 'Canada'), ('AU', 'Australia'
         if not isinstance(d, dict) or 'regionCode' not in d:
             continue
         src = d.get('source') or {}
-        regions.append({'code': d['regionCode'], 'name': d['regionName'], 'status': d['status'], 'bucket': region_bucket(d['status']),
+        bucket = region_bucket(d['status'])
+        rnote = None
+        if code == 'BR' and 'sicar' in ((src.get('endpoint') or '') + (src.get('name') or '')).lower():
+            if d['regionCode'] in BR_MUNICIPAL_URBAN:
+                bucket, rnote = 'partial', f"Urban lots verified for {BR_MUNICIPAL_URBAN[d['regionCode']]} only; statewide layer is SICAR rural registry."
+            else:
+                bucket, rnote = 'ruralRegistryOnly', 'SICAR self-declared rural property perimeters only; not the legal cadastre, no urban lots.'
+        regions.append({'code': d['regionCode'], 'name': d['regionName'], 'status': d['status'], 'bucket': bucket, **({'mergeNote': rnote} if rnote else {}),
                         'sourceName': src.get('name'), 'endpoint': src.get('endpoint'), 'regionWideClaimed': d.get('regionWideClaimed'),
                         'subregionsVerified': d.get('subregionsVerified') or [], 'reuseStatus': d.get('reuseStatus'), 'evidenceFile': f})
-    add_country(code, name, regions)
+    add_country(code, name, regions, SUBNATIONAL_NOTES.get(code))
 
 de = load('research/europe/DE.json')
 if de and de.get('laender'):
@@ -346,8 +361,23 @@ if de and de.get('laender'):
                         'endpoint': l.get('endpoint'), 'subregionsVerified': l.get('regionsSampled') or [], 'reuseStatus': l.get('licenceNote'), 'evidenceFile': 'research/europe/DE.json'})
     add_country('DE', 'Germany', regions, 'No national service; ALKIS is run by each Land. Berlin needs a fetch from a network that trusts its certificate chain.')
 
+ch_files = [f for f in glob.glob('research/subnational/CH/*.json') if 'response' not in f]
 ch = load('research/europe/CH.json')
-if ch and ch.get('cantonStatus'):
+if ch_files:
+    regions = []
+    for f in sorted(ch_files):
+        d = load(f)
+        if not isinstance(d, dict) or 'regionCode' not in d:
+            continue
+        src = d.get('source') or {}
+        regions.append({'code': d['regionCode'], 'name': d['regionName'].split(' (')[0], 'status': d['status'], 'bucket': region_bucket(d['status']),
+                        'sourceName': src.get('name') or 'geodienste.ch av_0 WFS (ms:RESF)', 'endpoint': src.get('endpoint') or 'https://geodienste.ch/db/av_0/deu',
+                        'subregionsVerified': d.get('subregionsVerified') or [], 'reuseStatus': d.get('reuseStatus'), 'evidenceFile': f})
+    for c in ('ZH', 'BE', 'GE', 'SG', 'TG'):
+        if not any(r['code'] == c for r in regions):
+            regions.append({'code': c, 'name': c, 'status': 'verified_region_wide', 'bucket': 'regionWide', 'sourceName': 'geodienste.ch av_0 WFS (ms:RESF)', 'endpoint': 'https://geodienste.ch/db/av_0/deu', 'subregionsVerified': [c], 'reuseStatus': 'open per geodienste.ch services.json', 'evidenceFile': 'research/europe/CH.json'})
+    add_country('CH', 'Switzerland', regions, 'One national WFS (geodienste.ch) aggregates cantonal surveys. Conditions for gated cantons come from the service metadata, not the cantonal terms pages.')
+elif ch and ch.get('cantonStatus'):
     cs = ch['cantonStatus']
     opened = [c.split(' ')[0] for c in cs.get('open_free_data_per_services.json', []) if not c.startswith('FL')]
     sampled = set(cs.get('verified_open_by_wfs_sample', []))

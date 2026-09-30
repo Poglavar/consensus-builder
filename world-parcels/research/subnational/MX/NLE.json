@@ -1,61 +1,90 @@
 {
- "schemaVersion": 1,
- "countryCode": "MX",
- "regionCode": "NLE",
- "regionName": "Nuevo León",
- "checkedAt": "2026-09-30",
- "status": "temporarily_unavailable",
- "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-MX,es;q=0.9; Referer: viewer/service origin; cookie jar on",
- "source": null,
- "verifiedParcelResponse": null,
- "regionWideClaimed": false,
- "regionWideBasis": "none",
- "subregionsVerified": [],
- "portalsFound": [
-  {
-   "url": "https://sig.nl.gob.mx/",
-   "observation": "200, 1.1 MB page; no ArcGIS/WMS/catastro link in HTML (CC BY-NC-SA licence footer for site content only)"
+  "schemaVersion": 1,
+  "countryCode": "MX",
+  "regionCode": "NLE",
+  "regionName": "Nuevo León",
+  "checkedAt": "2026-09-30",
+  "status": "verified_partial_region",
+  "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-MX,es;q=0.9; Referer: viewer/service origin; cookie jar on",
+  "source": {
+    "sourceId": "mx-nl-juarez-pdu-predios",
+    "name": "PDU_JUAREZ_Predios (ArcGIS Online feature service, 237,359 polygons)",
+    "operator": "Unconfirmed: ArcGIS Online org BfOao3Z3i3oD6m74; layer name suggests the Juarez municipal urban development plan (PDU)",
+    "scope": "Juarez municipality (Monterrey metro) only",
+    "endpoint": "https://services3.arcgis.com/BfOao3Z3i3oD6m74/arcgis/rest/services/PDU_JUAREZ_Predios/FeatureServer/0",
+    "method": "GET",
+    "responseFormat": "ArcGIS JSON (esriGeometryPolygon)",
+    "crs": "EPSG:3857 native; EPSG:4326 via outSR",
+    "reuseStatus": "no licence text visible; publisher unconfirmed"
   },
-  {
-   "url": "https://www.monterrey.gob.mx/",
-   "observation": "200; only predial payment app asp.monterrey.gob.mx/predial"
+  "verifiedParcelResponse": {
+    "sourceId": "mx-nl-juarez-pdu-predios",
+    "requestUrl": "https://services3.arcgis.com/BfOao3Z3i3oD6m74/arcgis/rest/services/PDU_JUAREZ_Predios/FeatureServer/0/query?where=1%3D1&geometry=%7B%22xmin%22%3A-100.10%2C%22ymin%22%3A25.64%2C%22xmax%22%3A-100.09%2C%22ymax%22%3A25.65%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&outFields=FID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "FID (fields: FID, expediente, iscondo)",
+    "responseFile": "NLE-parcel-response.json",
+    "regionsSampled": [
+      "Juarez NL box 1",
+      "Juarez NL box 2"
+    ]
   },
-  {
-   "url": "https://www.sanpedro.gob.mx/",
-   "observation": "200; no catastro map link"
-  }
- ],
- "requests": [
-  {
-   "url": "research/countries/MX.json, research/retry/countries/MX.json",
-   "method": "GET",
-   "httpStatus": "-",
-   "contentType": "",
-   "assessment": "Previous MX passes: RAN Akamai 403, INEGI no parcel service, most state catastro hosts unreachable; no state parcel service found."
-  },
-  {
-   "url": "catastro.nl.gob.mx, www.irycnl.gob.mx, geoportal.nl.gob.mx, mapas.monterrey.gob.mx, sig.sanpedro.gob.mx",
-   "method": "GET",
-   "httpStatus": 0,
-   "contentType": "",
-   "assessment": "CONNECT tunnel failed / 502 from proxy (host unreachable from this network)"
-  },
-  {
-   "url": "https://www.nl.gob.mx/catastro",
-   "method": "GET",
-   "httpStatus": "404",
-   "contentType": "no page",
-   "assessment": "text/html"
-  },
-  {
-   "url": "https://www.arcgis.com/sharing/rest/search?q=<state catastro/predios queries>&f=json",
-   "method": "GET",
-   "httpStatus": "200",
-   "contentType": "ArcGIS Online searches for catastro/predios/lotes by state name; no state or municipal parcel layer found for this state",
-   "assessment": "application/json"
-  }
- ],
- "reuseStatus": "not established",
- "remainingUncertainty": "Instituto Registral y Catastral hosts unreachable; no viewer JS could be inspected. Monterrey/San Pedro municipal viewers not found.",
- "nextStep": "Retry irycnl.gob.mx and municipal viewers from a browser-capable network."
+  "regionWideClaimed": false,
+  "regionWideBasis": "none",
+  "subregionsVerified": [
+    "Juarez (Nuevo Leon)"
+  ],
+  "portalsFound": [
+    {
+      "url": "https://sig.nl.gob.mx/",
+      "observation": "200, 1.1 MB page; no ArcGIS/WMS/catastro link in HTML (CC BY-NC-SA licence footer for site content only)"
+    },
+    {
+      "url": "https://www.monterrey.gob.mx/",
+      "observation": "200; only predial payment app asp.monterrey.gob.mx/predial"
+    },
+    {
+      "url": "https://www.sanpedro.gob.mx/",
+      "observation": "200; no catastro map link"
+    }
+  ],
+  "requests": [
+    {
+      "url": "research/countries/MX.json, research/retry/countries/MX.json",
+      "method": "GET",
+      "httpStatus": "-",
+      "contentType": "",
+      "assessment": "Previous MX passes: RAN Akamai 403, INEGI no parcel service, most state catastro hosts unreachable; no state parcel service found."
+    },
+    {
+      "url": "catastro.nl.gob.mx, www.irycnl.gob.mx, geoportal.nl.gob.mx, mapas.monterrey.gob.mx, sig.sanpedro.gob.mx",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "CONNECT tunnel failed / 502 from proxy (host unreachable from this network)"
+    },
+    {
+      "url": "https://www.nl.gob.mx/catastro",
+      "method": "GET",
+      "httpStatus": "404",
+      "contentType": "no page",
+      "assessment": "text/html"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=<state catastro/predios queries>&f=json",
+      "method": "GET",
+      "httpStatus": "200",
+      "contentType": "ArcGIS Online searches for catastro/predios/lotes by state name; no state or municipal parcel layer found for this state",
+      "assessment": "application/json"
+    }
+  ],
+  "reuseStatus": "not established",
+  "remainingUncertainty": "Flagged by the MX-01 agent and verified by the coordinator with two bounded queries. Publisher is inferred from the layer name, not confirmed; the state cadastre hosts remain unreachable. Instituto Registral y Catastral hosts unreachable; no viewer JS could be inspected. Monterrey/San Pedro municipal viewers not found.",
+  "nextStep": "Retry irycnl.gob.mx and municipal viewers from a browser-capable network.",
+  "previousStatus": "temporarily_unavailable"
 }

@@ -135,7 +135,7 @@
         const cls = nationwide.has(code) ? ' nationwide' : (sub && (sub.regionWide + sub.partial) > 0 ? ' regional' : '');
         const path = el('path', {d: geometryPath(feature.geometry), class: `country${cls}`});
         path.append(el('title'));
-        path.lastChild.textContent = (feature.properties.NAME || 'Country') + (sub ? `: ${sub.regionWide} of ${sub.regionsTotal} regions have an open region-wide parcel layer, ${sub.partial} partial (county/city or unsampled), ${sub.credentialed + sub.viewerOnly} gated, ${sub.unavailable + sub.none} none found` : (nationwide.has(code) ? ': parcels returned in two or more regions (nationwide claim unreviewed)' : ''));
+        path.lastChild.textContent = (feature.properties.NAME || 'Country') + (sub ? `: ${sub.regionWide} of ${sub.regionsTotal} regions have an open region-wide parcel layer, ${sub.partial} partial (county/city or unofficial), ${sub.credentialed + sub.viewerOnly} gated or viewer-only, ${sub.unavailable + sub.none} none found or unreachable${sub.ruralRegistryOnly ? `, ${sub.ruralRegistryOnly} rural registry only` : ''}` : (nationwide.has(code) ? ': parcels returned in two or more regions (nationwide claim unreviewed)' : ''));
         borders.append(path);
       }
       svg.append(borders);

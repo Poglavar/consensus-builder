@@ -107,20 +107,26 @@ Every European country not yet green was re-probed from the INSPIRE/national cat
 
 ## Federal countries by region (subnational tier)
 
-For federations the unit of coverage is the state, province, canton or Land. `regionWide` = an open layer for the whole region verified by a bounded query; `partial` = only a county/city layer found (or, for Switzerland, an open canton not yet sampled); `gated` = credentialed or viewer-only.
+For federations the unit of coverage is the state, province, canton or Land. `regionWide` = an open layer for the whole region verified by a bounded query; `partial` = only a county/city or unofficial layer found; `gated` = credentialed or viewer-only; `rural registry only` = Brazil's SICAR self-declared rural perimeters, which are not the legal cadastre.
 
-| Country | Regions | Region-wide open | Partial | Gated | None / unavailable |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| United States | 51 | 32 | 19 | 0 | 0 |
-| Canada | 13 | 7 | 5 | 0 | 1 |
-| Australia | 8 | 7 | 0 | 0 | 1 |
-| Germany | 16 | 14 | 0 | 1 | 1 |
-| Switzerland | 26 | 5 | 15 | 6 | 0 |
-| Belgium | 3 | 3 | 0 | 0 | 0 |
+| Country | Regions | Region-wide open | Partial | Gated | None / unavailable | Rural registry only |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| United States | 51 | 32 | 19 | 0 | 0 | 0 |
+| Canada | 13 | 7 | 5 | 0 | 1 | 0 |
+| Australia | 8 | 7 | 0 | 0 | 1 | 0 |
+| Brazil | 27 | 1 | 4 | 0 | 0 | 22 |
+| Argentina | 24 | 10 | 2 | 3 | 9 | 0 |
+| Mexico | 32 | 0 | 7 | 5 | 20 | 0 |
+| Germany | 16 | 14 | 0 | 1 | 1 | 0 |
+| Switzerland | 26 | 18 | 2 | 6 | 0 | 0 |
+| Belgium | 3 | 3 | 0 | 0 | 0 | 0 |
 
 - **United States**: region-wide AK, AR, CA, CO, CT, DC, DE, FL, HI, IA, IN, MA, MD, MN, MT, NC, ND, NE, NH, NJ, NM, NV, OH, RI, TN, TX, UT, VA, VT, WA, WI, WV; partial AL, AZ, GA, ID, IL, KS, KY, LA, ME, MI, MO, MS, NY, OK, OR, PA, SC, SD, WY.
 - **Canada**: region-wide BC, NB, NS, NT, NU, QC, YT; partial AB, MB, ON, PE, SK; other NL (none).
 - **Australia**: region-wide ACT, NSW, QLD, SA, TAS, VIC, WA; partial none; other NT (none).
+- **Brazil**: region-wide DF; partial PE, PR, RJ, SP; other AC (ruralRegistryOnly), AL (ruralRegistryOnly), AM (ruralRegistryOnly), AP (ruralRegistryOnly), BA (ruralRegistryOnly), CE (ruralRegistryOnly), ES (ruralRegistryOnly), GO (ruralRegistryOnly), MA (ruralRegistryOnly), MG (ruralRegistryOnly), MS (ruralRegistryOnly), MT (ruralRegistryOnly), PA (ruralRegistryOnly), PB (ruralRegistryOnly), PI (ruralRegistryOnly), RN (ruralRegistryOnly), RO (ruralRegistryOnly), RR (ruralRegistryOnly), RS (ruralRegistryOnly), SC (ruralRegistryOnly), SE (ruralRegistryOnly), TO (ruralRegistryOnly).
+- **Argentina**: region-wide A, B, C, E, H, J, Q, R, V, X; partial M, P; other D (unavailable), F (unavailable), G (none), K (unavailable), L (unavailable), N (viewerOnly), S (viewerOnly), T (unavailable), U (unavailable), W (unavailable), Y (none), Z (viewerOnly).
+- **Mexico**: region-wide none; partial AGU, COA, GUA, MOR, NLE, QUE, TAB; other BCN (unavailable), BCS (credentialed), CAM (unavailable), CHH (unavailable), CHP (unavailable), CMX (unavailable), COL (unavailable), DUR (credentialed), GRO (none), HID (credentialed), JAL (viewerOnly), MEX (unavailable), MIC (unavailable), NAY (unavailable), OAX (unavailable), PUE (unavailable), ROO (unavailable), SIN (viewerOnly), SLP (unavailable), SON (unavailable), TAM (unavailable), TLA (unavailable), VER (unavailable), YUC (unavailable), ZAC (unavailable).
 - **Germany**: region-wide BB, BW, HB, HE, HH, MV, NI, NW, RP, SH, SL, SN, ST, TH; partial none; other BE (unavailable), BY (credentialed).
-- **Switzerland**: region-wide BE, GE, SG, TG, ZH; partial AG, AI, AR, BL, BS, FR, GL, GR, SH, SO, SZ, TI, UR, VS, ZG; other JU (credentialed), LU (credentialed), NE (credentialed), NW (credentialed), OW (credentialed), VD (credentialed).
+- **Switzerland**: region-wide AG, AI, AR, BE, BL, BS, FR, GE, GL, GR, SG, SH, SO, SZ, TG, UR, ZG, ZH; partial TI, VS; other JU (credentialed), LU (credentialed), NE (credentialed), NW (credentialed), OW (credentialed), VD (credentialed).
 - **Belgium**: region-wide BRU, VLG, WAL; partial none.
