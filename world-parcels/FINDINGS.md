@@ -56,6 +56,14 @@ This is the consolidated record of the world-parcel source research. The machine
 
 Saved replies hold parcel IDs and geometry only. Owner names, mailing addresses, applicant/developer names, tax IDs and API keys were deliberately excluded or redacted (US county layers, Guernsey, Luanda, Trinidad, Cuiabá, Puebla, Selangor and others carry them). The Croatian public token is referenced as a placeholder; the value lives only in the app's frontend where it already was.
 
+## Africa, checked against the evidence (2026-09-30)
+
+- **Rwanda: open, and now verified nationally.** The question was whether the public viewer issues an anonymous token. It does not need one: the National Land Authority publishes its LAIS register as one anonymous ArcGIS layer per district, on the Rwanda Spatial Data Infrastructure (`geodata.rw`, ArcGIS Enterprise) and mirrored on its ArcGIS Online account. Kigali (555,857 parcels, three districts) verified on the official server in two boxes; 18 further districts verified on ArcGIS Online with counts of 206k to 591k each, 21 of 30 districts in all; the other 9 are catalogued but their RSDI services were stopped at test time. Layers carry UPI, administrative names, size and dates, no owner data. The route was catalogue and REST inspection, not a browser: the NLA site links `geodata.rw`, whose portal search lists the services. A headed-browser attempt failed on the proxy's certificate chain and was not forced.
+- **South Africa: high odds, partly done.** Samples in Johannesburg, Cape Town and Durban, but two come from Esri South Africa's hosted copy; the Chief Surveyor-General's own service should be retested to make it official.
+- **Botswana: low.** Deeds-based title, data supplied on request or for payment, no online service found.
+- **Tunisia: low to medium.** The land-survey office sells maps and its cadastral geoportal is "in progress"; the `.nat.tn` hosts were unreachable, so partly a network verdict.
+- **Also green already:** Benin (national WFS, 578k parcels). **Pilot only:** Cape Verde (572 parcels). **Worth a second look:** Mauritius (open GeoNode without a parcel layer; land-survey host unreachable). **Gated on the evidence:** Kenya, Ghana, Ethiopia, Lesotho. **Never answered from here:** Namibia, Tanzania, Uganda, Senegal, Mozambique, Zambia and most others, which are unknowns, not negatives.
+
 ## Open items, in priority order
 
 1. **Read licences** for the sources the app would actually use; nothing has been reviewed.

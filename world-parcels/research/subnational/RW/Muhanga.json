@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "RW",
+  "checkedAt": "2026-09-30",
+  "headersUsed": "desktop Chrome UA, cookie jar, Referer https://geodata.rw/portal/home/ for geodata.rw",
+  "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+  "regionCode": "Muhanga",
+  "regionName": "Muhanga",
+  "status": "temporarily_unavailable",
+  "source": null,
+  "verifiedParcelResponse": null,
+  "regionWideClaimed": false,
+  "portalsFound": [
+    {
+      "url": "https://geodata.rw/server/rest/services/LAISData/Muhanga_Parcels/MapServer",
+      "observation": "Listed as a public map service in the RSDI portal catalogue (geodata.rw), but the server reported the service \"not started\" on 2026-09-30; no ArcGIS Online copy under the NLA account."
+    }
+  ],
+  "remainingUncertainty": "Service exists in the catalogue but was stopped at test time.",
+  "nextStep": "Retry the RSDI service later."
+}

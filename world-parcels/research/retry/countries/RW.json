@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "kind": "country",
+  "key": "RW",
+  "countryCode": "RW",
+  "country": "Rwanda",
+  "checkedAt": "2026-09-30",
+  "previousStatus": "subnational_only",
+  "newStatus": "national_online_cadastre_verified_sample",
+  "headersUsed": "desktop Chrome UA, cookie jar, Referer https://geodata.rw/portal/home/ for geodata.rw",
+  "changedByHeaders": false,
+  "foundViaViewerInspection": true,
+  "cadastreAuthority": "National Land Authority (NLA); Land Administration Information System (LAIS) published through the Rwanda Spatial Data Infrastructure (geodata.rw, ArcGIS Enterprise) and the NLA ArcGIS Online organisation",
+  "accessModel": "open (anonymous ArcGIS REST, no token)",
+  "source": {
+    "sourceId": "rw-nla-lais-district-parcels",
+    "name": "LAIS district parcel layers (NLA)",
+    "operator": "National Land Authority, Rwanda",
+    "scope": "All 30 districts as one layer each (Kigali as one layer for its three districts); 21 districts verified with samples, 9 listed in the RSDI catalogue but stopped at test time",
+    "endpoint": "https://geodata.rw/server/rest/services/LAISData/<District>_Parcels/FeatureServer and https://services7.arcgis.com/htgaiKX6RV2DDGgK/arcgis/rest/services/<District>_Parcels/FeatureServer/0",
+    "method": "GET",
+    "responseFormat": "ArcGIS JSON (esriGeometryPolygon)",
+    "crs": "ITRF_2005 TM30 native on RSDI; EPSG:4326 via outSR",
+    "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read."
+  },
+  "verifiedParcelResponse": {
+    "sourceId": "rw-nla-lais-district-parcels",
+    "requestUrl": "https://geodata.rw/server/rest/services/LAISData/Kigali_Parcels/FeatureServer/11/query?...&outFields=upi&resultRecordCount=3&f=json (see RW-parcel-response.json)",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json",
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "upi",
+    "responseFile": "RW-parcel-response.json",
+    "regionsSampled": [
+      "Bugesera",
+      "Burera",
+      "Gakenke",
+      "Gasabo",
+      "Gatsibo",
+      "Huye",
+      "Karongi",
+      "Kayonza",
+      "Kicukiro",
+      "Kirehe",
+      "Ngoma",
+      "Ngororero",
+      "Nyabihu",
+      "Nyagatare",
+      "Nyamagabe",
+      "Nyamasheke",
+      "Nyanza",
+      "Nyarugenge",
+      "Nyaruguru",
+      "Rubavu",
+      "Rwamagana"
+    ]
+  },
+  "regionsSampled": [
+    "Bugesera",
+    "Burera",
+    "Gakenke",
+    "Gasabo",
+    "Gatsibo",
+    "Huye",
+    "Karongi",
+    "Kayonza",
+    "Kicukiro",
+    "Kirehe",
+    "Ngoma",
+    "Ngororero",
+    "Nyabihu",
+    "Nyagatare",
+    "Nyamagabe",
+    "Nyamasheke",
+    "Nyanza",
+    "Nyarugenge",
+    "Nyaruguru",
+    "Rubavu",
+    "Rwamagana"
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Rwanda LAIS (national land register) published per district",
+    "regionsVerified": [
+      "Bugesera",
+      "Burera",
+      "Gakenke",
+      "Gasabo",
+      "Gatsibo",
+      "Huye",
+      "Karongi",
+      "Kayonza",
+      "Kicukiro",
+      "Kirehe",
+      "Ngoma",
+      "Ngororero",
+      "Nyabihu",
+      "Nyagatare",
+      "Nyamagabe",
+      "Nyamasheke",
+      "Nyanza",
+      "Nyarugenge",
+      "Nyaruguru",
+      "Rubavu",
+      "Rwamagana"
+    ],
+    "nationwideVerified": true,
+    "basis": "19 district layers on one ArcGIS Online host (18 districts) plus Kigali (3 districts) on the RSDI server, one publisher and schema (upi)"
+  },
+  "portalsFound": [
+    {
+      "url": "https://www.lands.rw/land-use-and-mapping",
+      "observation": "NLA site links the RSDI portal geodata.rw and the Rwanda Land Dashboard."
+    },
+    {
+      "url": "https://geodata.rw/portal/sharing/rest/portals/self",
+      "observation": "\"Rwanda Spatial Data Infrastructure\" ArcGIS Enterprise; its catalogue lists 29 public district parcel services under LAISData plus \"Parcels of first registration\" (hosted service returned \"not found\" at test time)."
+    },
+    {
+      "url": "https://geodata.rw/server/rest/services?f=json",
+      "observation": "Folders basemap, CORS, FilePub, Forest, Hosted, LAIS, LAISData, masterplan, Overlays, ParTes, Settlement, SPR, Test, Utilities; LAISData currently exposes only Bugesera_Parcels and Kigali_Parcels as running services."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=owner:n.ueberschaer@nla",
+      "observation": "NLA ArcGIS Online account publishes 19 district *_Parcels feature services publicly (plus DLUP land-use plans and dashboards)."
+    },
+    {
+      "url": "https://rwandalanddashboard.lands.rw/",
+      "observation": "Shiny dashboard; data delivered over a websocket, no reusable service URL."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geodata.rw/server/rest/services/LAISData/Kigali_Parcels/FeatureServer/11/query (two Kigali boxes)",
+      "method": "GET",
+      "httpStatus": 200,
+      "assessment": "3 closed polygons each; layer count 555,857"
+    },
+    {
+      "url": "services7.arcgis.com/htgaiKX6RV2DDGgK .../<District>_Parcels/FeatureServer/0/query (19 districts)",
+      "method": "GET",
+      "httpStatus": 200,
+      "assessment": "3 closed polygons each; district counts 206k-591k"
+    },
+    {
+      "url": "https://geodata.rw/server/rest/services/LAISData/Musanze_Parcels/FeatureServer/0/query",
+      "method": "GET",
+      "httpStatus": 200,
+      "assessment": "\"Service not started\" (same for Nyagatare, Rubavu on the RSDI host)"
+    }
+  ],
+  "geoBlockSuspected": false,
+  "notes": "Earlier probes never reached the viewer: lands.rw only redirected and nla.gov.rw/landportal.rw are unreachable. The NLA site links geodata.rw, whose portal catalogue exposed the district services. No token is issued or needed. Headless-browser attempt failed on the proxy certificate chain (not bypassed); the catalogue and REST inspection made it unnecessary.",
+  "remainingUncertainty": "Nine districts (Gicumbi, Gisagara, Kamonyi, Muhanga, Musanze, Ruhango, Rulindo, Rusizi, Rutsiro) exist only as stopped RSDI services; licence unread; per-district completeness unmeasured; layers differ slightly in schema (FID vs OBJECTID).",
+  "nextStep": "Read RSDI/NLA terms; retry the stopped RSDI services; build one ArcGIS adapter with a district router."
+}

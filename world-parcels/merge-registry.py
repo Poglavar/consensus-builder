@@ -329,8 +329,9 @@ SUBNATIONAL_NOTES = {
     'MX': 'Cadastre is state and municipal; no state-wide open service was reached from this network, most state hosts reset or block, and the partial samples are municipal or third-party layers.',
     'MY': 'Land is a state matter and the national eKadaster is login-gated. Four states publish a state-wide lot layer (Selangor, Terengganu, Penang, Perak); several state GIS hosts were unreachable from this network.',
     'ID': 'The national BIG Satu Peta land-ownership service has sublayers for 15 of 38 provinces, each a set of small survey packages: every sampled province returned parcels only in patches and capital-city boxes were empty. Provincial geoportal hostnames were mostly guessed, so "none" is not conclusive.',
+    'RW': 'The NLA publishes its LAIS register as one open layer per district (Kigali as one layer for three districts) on the RSDI server and its ArcGIS Online account, no token. 21 districts verified; the other 9 are catalogued but their RSDI services were stopped at test time.',
 }
-for code, name in (('US', 'United States'), ('CA', 'Canada'), ('AU', 'Australia'), ('BR', 'Brazil'), ('AR', 'Argentina'), ('MX', 'Mexico'), ('MY', 'Malaysia'), ('ID', 'Indonesia')):
+for code, name in (('US', 'United States'), ('CA', 'Canada'), ('AU', 'Australia'), ('BR', 'Brazil'), ('AR', 'Argentina'), ('MX', 'Mexico'), ('MY', 'Malaysia'), ('ID', 'Indonesia'), ('RW', 'Rwanda')):
     regions = []
     for f in sorted(glob.glob(f'research/subnational/{code}/*.json')):
         if 'response' in f:

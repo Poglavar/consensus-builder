@@ -1288,6 +1288,15 @@
       "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
     },
     {
+      "countryCode": "RW",
+      "country": "Rwanda",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/retry/countries/RW.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
       "countryCode": "SE",
       "country": "Sweden",
       "status": "verified_countrywide",
@@ -6816,10 +6825,24 @@
       "countryCode": "RW",
       "country": "Rwanda",
       "reportedStatus": "subnational_only",
-      "status": "subnational_only",
-      "accessModel": "open",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open (anonymous ArcGIS REST, no token)",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/RW.json"
+      "evidenceFile": "research/countries/RW.json",
+      "previousStatus": "subnational_only",
+      "retryFile": "research/retry/countries/RW.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false,
+      "regionSummary": {
+        "regionsTotal": 30,
+        "regionWide": 21,
+        "partial": 0,
+        "credentialed": 0,
+        "viewerOnly": 0,
+        "unavailable": 9,
+        "none": 0,
+        "ruralRegistryOnly": 0
+      }
     },
     {
       "countryCode": "SA",
@@ -10404,6 +10427,426 @@
         }
       ],
       "note": "The national BIG Satu Peta land-ownership service has sublayers for 15 of 38 provinces, each a set of small survey packages: every sampled province returned parcels only in patches and capital-city boxes were empty. Provincial geoportal hostnames were mostly guessed, so \"none\" is not conclusive."
+    },
+    {
+      "countryCode": "RW",
+      "country": "Rwanda",
+      "regionsTotal": 30,
+      "regionWide": 21,
+      "partial": 0,
+      "credentialed": 0,
+      "viewerOnly": 0,
+      "unavailable": 9,
+      "none": 0,
+      "ruralRegistryOnly": 0,
+      "regions": [
+        {
+          "code": "Bugesera",
+          "name": "Bugesera",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Bugesera_Parcels (LAIS), NLA ArcGIS Online",
+          "endpoint": "https://services7.arcgis.com/htgaiKX6RV2DDGgK/arcgis/rest/services/Bugesera_Parcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Bugesera"
+          ],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Bugesera.json"
+        },
+        {
+          "code": "Burera",
+          "name": "Burera",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Burera_Parcels (LAIS), NLA ArcGIS Online",
+          "endpoint": "https://services7.arcgis.com/htgaiKX6RV2DDGgK/arcgis/rest/services/Burera_Parcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Burera"
+          ],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Burera.json"
+        },
+        {
+          "code": "Gakenke",
+          "name": "Gakenke",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Gakenke_Parcels (LAIS), NLA ArcGIS Online",
+          "endpoint": "https://services7.arcgis.com/htgaiKX6RV2DDGgK/arcgis/rest/services/Gakenke_Parcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Gakenke"
+          ],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Gakenke.json"
+        },
+        {
+          "code": "Gasabo",
+          "name": "Gasabo (City of Kigali)",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Kigali Parcels (LAIS), Rwanda Spatial Data Infrastructure",
+          "endpoint": "https://geodata.rw/server/rest/services/LAISData/Kigali_Parcels/FeatureServer/11",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Nyarugenge",
+            "Kicukiro"
+          ],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Gasabo.json"
+        },
+        {
+          "code": "Gatsibo",
+          "name": "Gatsibo",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Gatsibo_Parcels (LAIS), NLA ArcGIS Online",
+          "endpoint": "https://services7.arcgis.com/htgaiKX6RV2DDGgK/arcgis/rest/services/Gatsibo_Parcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Gatsibo"
+          ],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Gatsibo.json"
+        },
+        {
+          "code": "Gicumbi",
+          "name": "Gicumbi",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Gicumbi.json"
+        },
+        {
+          "code": "Gisagara",
+          "name": "Gisagara",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Gisagara.json"
+        },
+        {
+          "code": "Huye",
+          "name": "Huye",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Huye_Parcels (LAIS), NLA ArcGIS Online",
+          "endpoint": "https://services7.arcgis.com/htgaiKX6RV2DDGgK/arcgis/rest/services/Huye_Parcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Huye"
+          ],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Huye.json"
+        },
+        {
+          "code": "Kamonyi",
+          "name": "Kamonyi",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Kamonyi.json"
+        },
+        {
+          "code": "Karongi",
+          "name": "Karongi",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Karongi_Parcels (LAIS), NLA ArcGIS Online",
+          "endpoint": "https://services7.arcgis.com/htgaiKX6RV2DDGgK/arcgis/rest/services/Karongi_Parcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Karongi"
+          ],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Karongi.json"
+        },
+        {
+          "code": "Kayonza",
+          "name": "Kayonza",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Kayonza_Parcels (LAIS), NLA ArcGIS Online",
+          "endpoint": "https://services7.arcgis.com/htgaiKX6RV2DDGgK/arcgis/rest/services/Kayonza_Parcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Kayonza"
+          ],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Kayonza.json"
+        },
+        {
+          "code": "Kicukiro",
+          "name": "Kicukiro (City of Kigali)",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Kigali Parcels (LAIS), Rwanda Spatial Data Infrastructure",
+          "endpoint": "https://geodata.rw/server/rest/services/LAISData/Kigali_Parcels/FeatureServer/11",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Nyarugenge",
+            "Kicukiro"
+          ],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Kicukiro.json"
+        },
+        {
+          "code": "Kirehe",
+          "name": "Kirehe",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Kirehe_Parcels (LAIS), NLA ArcGIS Online",
+          "endpoint": "https://services7.arcgis.com/htgaiKX6RV2DDGgK/arcgis/rest/services/Kirehe_Parcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Kirehe"
+          ],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Kirehe.json"
+        },
+        {
+          "code": "Muhanga",
+          "name": "Muhanga",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Muhanga.json"
+        },
+        {
+          "code": "Musanze",
+          "name": "Musanze",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Musanze.json"
+        },
+        {
+          "code": "Ngoma",
+          "name": "Ngoma",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Ngoma_Parcels (LAIS), NLA ArcGIS Online",
+          "endpoint": "https://services7.arcgis.com/htgaiKX6RV2DDGgK/arcgis/rest/services/Ngoma_Parcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Ngoma"
+          ],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Ngoma.json"
+        },
+        {
+          "code": "Ngororero",
+          "name": "Ngororero",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Ngororero_Parcels (LAIS), NLA ArcGIS Online",
+          "endpoint": "https://services7.arcgis.com/htgaiKX6RV2DDGgK/arcgis/rest/services/Ngororero_Parcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Ngororero"
+          ],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Ngororero.json"
+        },
+        {
+          "code": "Nyabihu",
+          "name": "Nyabihu",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Nyabihu_Parcels (LAIS), NLA ArcGIS Online",
+          "endpoint": "https://services7.arcgis.com/htgaiKX6RV2DDGgK/arcgis/rest/services/Nyabihu_Parcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Nyabihu"
+          ],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Nyabihu.json"
+        },
+        {
+          "code": "Nyagatare",
+          "name": "Nyagatare",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Nyagatare_Parcels (LAIS), NLA ArcGIS Online",
+          "endpoint": "https://services7.arcgis.com/htgaiKX6RV2DDGgK/arcgis/rest/services/Nyagatare_Parcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Nyagatare"
+          ],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Nyagatare.json"
+        },
+        {
+          "code": "Nyamagabe",
+          "name": "Nyamagabe",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Nyamagabe_Parcels (LAIS), NLA ArcGIS Online",
+          "endpoint": "https://services7.arcgis.com/htgaiKX6RV2DDGgK/arcgis/rest/services/Nyamagabe_Parcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Nyamagabe"
+          ],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Nyamagabe.json"
+        },
+        {
+          "code": "Nyamasheke",
+          "name": "Nyamasheke",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Nyamasheke_Parcels (LAIS), NLA ArcGIS Online",
+          "endpoint": "https://services7.arcgis.com/htgaiKX6RV2DDGgK/arcgis/rest/services/Nyamasheke_Parcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Nyamasheke"
+          ],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Nyamasheke.json"
+        },
+        {
+          "code": "Nyanza",
+          "name": "Nyanza",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Nyanza_Parcels (LAIS), NLA ArcGIS Online",
+          "endpoint": "https://services7.arcgis.com/htgaiKX6RV2DDGgK/arcgis/rest/services/Nyanza_Parcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Nyanza"
+          ],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Nyanza.json"
+        },
+        {
+          "code": "Nyarugenge",
+          "name": "Nyarugenge (City of Kigali)",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Kigali Parcels (LAIS), Rwanda Spatial Data Infrastructure",
+          "endpoint": "https://geodata.rw/server/rest/services/LAISData/Kigali_Parcels/FeatureServer/11",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Nyarugenge",
+            "Kicukiro"
+          ],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Nyarugenge.json"
+        },
+        {
+          "code": "Nyaruguru",
+          "name": "Nyaruguru",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Nyaruguru_Parcels (LAIS), NLA ArcGIS Online",
+          "endpoint": "https://services7.arcgis.com/htgaiKX6RV2DDGgK/arcgis/rest/services/Nyaruguru_Parcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Nyaruguru"
+          ],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Nyaruguru.json"
+        },
+        {
+          "code": "Rubavu",
+          "name": "Rubavu",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Rubavu_Parcels (LAIS), NLA ArcGIS Online",
+          "endpoint": "https://services7.arcgis.com/htgaiKX6RV2DDGgK/arcgis/rest/services/Rubavu_Parcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Rubavu"
+          ],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Rubavu.json"
+        },
+        {
+          "code": "Ruhango",
+          "name": "Ruhango",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Ruhango.json"
+        },
+        {
+          "code": "Rulindo",
+          "name": "Rulindo",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Rulindo.json"
+        },
+        {
+          "code": "Rusizi",
+          "name": "Rusizi",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Rusizi.json"
+        },
+        {
+          "code": "Rutsiro",
+          "name": "Rutsiro",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Rutsiro.json"
+        },
+        {
+          "code": "Rwamagana",
+          "name": "Rwamagana",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Rwamagana_Parcels (LAIS), NLA ArcGIS Online",
+          "endpoint": "https://services7.arcgis.com/htgaiKX6RV2DDGgK/arcgis/rest/services/Rwamagana_Parcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Rwamagana"
+          ],
+          "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+          "evidenceFile": "research/subnational/RW/Rwamagana.json"
+        }
+      ],
+      "note": "The NLA publishes its LAIS register as one open layer per district (Kigali as one layer for three districts) on the RSDI server and its ArcGIS Online account, no token. 21 districts verified; the other 9 are catalogued but their RSDI services were stopped at test time."
     },
     {
       "countryCode": "DE",

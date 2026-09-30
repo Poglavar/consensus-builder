@@ -85,9 +85,9 @@ Generated from `registry.json` (updated 2026-09-29). A city sample proves only a
 Question: does each country have a country-wide online cadastre? Statuses come from `research/countries/<ISO2>.json`; the registry normalises labels the evidence did not support (see each entry's `mergeNote`). `countryCoverage` stays empty until a source has an explicit nationwide claim, two distinct verified regions, one schema, and recorded exclusions.
 
 - **`temporarily_unavailable`** (75): AF, AZ, BN, BT, CD, CI, CU, CW, DJ, DZ, EC, ER, ET, FJ, GA, GI, GM, GQ, GT, GY, HN, IQ, IR, KG, KH, KR, KW, KZ, LA, LB, LY, MA, MD, MK, MM, MR, MU, MV, MW, MX, MZ, NA, NE, NI, NP, OM, PA, PE, QA, RO, RS, RU, SA, SB, SD, SL, SN, SO, SS, ST, SY, SZ, TD, TG, TJ, TL, TM, TZ, UA, UG, UZ, VE, VN, VU, YE
-- **`national_online_cadastre_verified_sample`** (45): AL, AT, BD, BE, BG, BJ, BY, CH, CY, CZ, DK, EE, ES, FI, FO, FR, GG, GR, HK, HR, IE, IL, IM, IS, IT, JM, JO, LI, LT, LU, LV, MN, MT, NC, NL, NO, NZ, PL, PT, PY, SE, SI, SK, TR, XK
-- **`subnational_only`** (21): AE, AR, AU, BA, BS, BZ, CA, CL, CO, DE, IN, MG, NG, PH, PK, PR, RW, SV, US, ZM, ZW
+- **`national_online_cadastre_verified_sample`** (46): AL, AT, BD, BE, BG, BJ, BY, CH, CY, CZ, DK, EE, ES, FI, FO, FR, GG, GR, HK, HR, IE, IL, IM, IS, IT, JM, JO, LI, LT, LU, LV, MN, MT, NC, NL, NO, NZ, PL, PT, PY, RW, SE, SI, SK, TR, XK
 - **`no_online_cadastre_found`** (21): AD, AO, BI, BW, CF, CG, CM, EG, EH, GN, GW, HT, KI, KM, KP, LR, PG, SM, SR, VA, WS
+- **`subnational_only`** (20): AE, AR, AU, BA, BS, BZ, CA, CL, CO, DE, IN, MG, NG, PH, PK, PR, SV, US, ZM, ZW
 - **`partial_or_unofficial_sample`** (19): BB, BO, BR, CV, DO, GB, HU, ID, JE, JP, LK, ML, MO, PF, PS, SG, TT, UY, ZA
 - **`national_cadastre_credentialed_or_paid`** (11): BF, BH, CN, GH, KE, LS, ME, MY, TH, TN, TW
 - **`covered_by_parent_source`** (5): GF, GP, MQ, RE, YT
@@ -96,7 +96,7 @@ Question: does each country have a country-wide online cadastre? Statuses come f
 ## Retry pass (2026-09-30)
 
 Every non-verified country and every unavailable or candidate city was retried with browser-like headers, a cookie jar and inspection of the official viewer's JavaScript (`research/retry/`).
-- Countries where the official viewer's scripts or config were inspected (some yielded a source, most did not): AE, AL, AM, BJ, BN, BO, BS, BY, CD, CL, CM, CN, CR, CV, CY, EG, EH, ET, GE, GI, GN, GR, HN, HT, JM, JO, KE, KG, KH, LR, LS, LT, MC, ME, MG, MO, MU, NP, PA, PE, PF, PH, PS, SE, SV, TT, UA, UG, UZ, VE, VN, VU, WS, XK, ZW.
+- Countries where the official viewer's scripts or config were inspected (some yielded a source, most did not): AE, AL, AM, BJ, BN, BO, BS, BY, CD, CL, CM, CN, CR, CV, CY, EG, EH, ET, GE, GI, GN, GR, HN, HT, JM, JO, KE, KG, KH, LR, LS, LT, MC, ME, MG, MO, MU, NP, PA, PE, PF, PH, PS, RW, SE, SV, TT, UA, UG, UZ, VE, VN, VU, WS, XK, ZW.
 - Still unavailable with a suspected geo-block or bot challenge (unconfirmed): AF, AZ, BT, CD, CU, DJ, DZ, EC, ER, ET, FJ, GA, GI, GQ, GT, HN, IQ, IR, KG, KH, KR, KW, LA, LB, LY, MA, MD, MK, MR, MU, MV, MW, MX, MZ, NA, NI, OM, QA, RS, RU, SA, SN, SS, SY, TD, TG, TJ, TL, TM, TZ, UA, UZ, VE, VN, YE. Retry these from an in-country network.
 
 ## Europe focus pass (2026-09-30)
@@ -119,6 +119,7 @@ For federations the unit of coverage is the state, province, canton or Land. `re
 | Mexico | 32 | 0 | 7 | 5 | 20 | 0 |
 | Malaysia | 16 | 4 | 0 | 1 | 11 | 0 |
 | Indonesia | 38 | 0 | 15 | 0 | 23 | 0 |
+| Rwanda | 30 | 21 | 0 | 0 | 9 | 0 |
 | Germany | 16 | 14 | 0 | 1 | 1 | 0 |
 | Switzerland | 26 | 18 | 2 | 6 | 0 | 0 |
 | Belgium | 3 | 3 | 0 | 0 | 0 | 0 |
@@ -131,6 +132,7 @@ For federations the unit of coverage is the state, province, canton or Land. `re
 - **Mexico**: region-wide none; partial AGU, COA, GUA, MOR, NLE, QUE, TAB; other BCN (unavailable), BCS (credentialed), CAM (unavailable), CHH (unavailable), CHP (unavailable), CMX (unavailable), COL (unavailable), DUR (credentialed), GRO (none), HID (credentialed), JAL (viewerOnly), MEX (unavailable), MIC (unavailable), NAY (unavailable), OAX (unavailable), PUE (unavailable), ROO (unavailable), SIN (viewerOnly), SLP (unavailable), SON (unavailable), TAM (unavailable), TLA (unavailable), VER (unavailable), YUC (unavailable), ZAC (unavailable).
 - **Malaysia**: region-wide PNG, PRK, SGR, TRG; partial none; other JHR (none), KDH (none), KTN (none), KUL (none), LBN (unavailable), MLK (unavailable), NSN (none), PHG (credentialed), PJY (unavailable), PLS (unavailable), SBH (unavailable), SWK (unavailable).
 - **Indonesia**: region-wide none; partial AC, BA, BT, JB, JI, JT, KB, KI, KR, KU, MA, NB, SG, SR, YO; other BB (none), BE (unavailable), GO (none), JA (unavailable), JK (none), KS (none), KT (none), LA (none), MU (none), NT (none), PA (none), PB (none), PD (none), PP (none), PS (none), PT (none), RI (none), SA (none), SB (none), SN (none), SS (none), ST (none), SU (unavailable).
+- **Rwanda**: region-wide Bugesera, Burera, Gakenke, Gasabo, Gatsibo, Huye, Karongi, Kayonza, Kicukiro, Kirehe, Ngoma, Ngororero, Nyabihu, Nyagatare, Nyamagabe, Nyamasheke, Nyanza, Nyarugenge, Nyaruguru, Rubavu, Rwamagana; partial none; other Gicumbi (unavailable), Gisagara (unavailable), Kamonyi (unavailable), Muhanga (unavailable), Musanze (unavailable), Ruhango (unavailable), Rulindo (unavailable), Rusizi (unavailable), Rutsiro (unavailable).
 - **Germany**: region-wide BB, BW, HB, HE, HH, MV, NI, NW, RP, SH, SL, SN, ST, TH; partial none; other BE (unavailable), BY (credentialed).
 - **Switzerland**: region-wide AG, AI, AR, BE, BL, BS, FR, GE, GL, GR, SG, SH, SO, SZ, TG, UR, ZG, ZH; partial TI, VS; other JU (credentialed), LU (credentialed), NE (credentialed), NW (credentialed), OW (credentialed), VD (credentialed).
 - **Belgium**: region-wide BRU, VLG, WAL; partial none.
