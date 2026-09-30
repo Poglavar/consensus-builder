@@ -150,6 +150,12 @@
       "method": "GET",
       "httpStatus": 200,
       "assessment": "\"Service not started\" (same for Nyagatare, Rubavu on the RSDI host)"
+    },
+    {
+      "url": "https://geodata.rw/server/rest/services/LAISData/Bugesera_Parcels/FeatureServer/0/query",
+      "method": "GET",
+      "httpStatus": "200 (count) / timeout (bbox)",
+      "assessment": "Layer count 366,118 answered; two bounded queries timed out at 40 s. The RSDI host is slow or flaky; the ArcGIS Online copy of the same layer answered immediately."
     }
   ],
   "geoBlockSuspected": false,
