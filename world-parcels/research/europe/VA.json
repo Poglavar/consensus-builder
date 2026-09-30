@@ -1,0 +1,55 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "VA",
+ "country": "Vatican City",
+ "checkedAt": "2026-09-30",
+ "status": "no_online_cadastre_found",
+ "previousStatus": "not_probed",
+ "newStatus": "no_online_cadastre_found",
+ "cadastreAuthority": "Governorate of Vatican City State (technical services); no public cadastre authority found",
+ "inspireRecordUrl": null,
+ "portalsFound": [
+  {
+   "url": "https://www.vaticanstate.va/",
+   "observation": "Official site loads (200); no cadastral or geodata section found"
+  },
+  {
+   "url": "https://www.vatican.va/",
+   "observation": "Holy See site loads; no cadastre"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.vaticanstate.va/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "no cadastral publication seen"
+  },
+  {
+   "url": "https://www.vatican.va/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "no cadastral publication seen"
+  },
+  {
+   "url": "web search 'Vatican City State cadastre parcel map open data geoportal'",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "n/a",
+   "assessment": "no official cadastre or geoportal found; only OSM extracts"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "no cadastral publication found",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "regionsSampled": [],
+ "accessModel": "unknown",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: application/json,text/xml,application/xml,text/html;q=0.9,*/*;q=0.8; cookie jar used; Accept-Language it-VA",
+ "remainingUncertainty": "Site navigation was not crawled deeply; property in the state is state-owned, so a public parcel service is unlikely.",
+ "nextStep": "None; keep as no online cadastre unless an official source appears."
+}

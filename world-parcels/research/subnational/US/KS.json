@@ -1,0 +1,67 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "KS",
+ "regionName": "Kansas",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "source": {
+  "sourceId": "us-ks-douglas-tax-parcel",
+  "name": "Tax Parcel (Douglas County, KS)",
+  "operator": "Douglas County, Kansas GIS",
+  "scope": "Douglas County only",
+  "endpoint": "https://gis.dgcoks.gov/server/rest/services/Tax_Parcel/MapServer/0",
+  "method": "GET ArcGIS REST /query",
+  "responseFormat": "Esri JSON polygons (rings)",
+  "crs": "requested outSR=4326",
+  "reuseStatus": "Terms/licence text not read on the service."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-ks-douglas-tax-parcel",
+  "requestUrl": "https://gis.dgcoks.gov/server/rest/services/Tax_Parcel/MapServer/0/query?where=1%3D1&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-95.2360%2C38.9712%2C-95.2345%2C38.9722&outFields=PID%2CJOINPIN",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   -95.236,
+   38.9712,
+   -95.2345,
+   38.9722
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "$.features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PID",
+  "responseFile": "KS-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount (ArcGIS)"
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-US,en;q=0.9; cookie jar kept; no headers-dependent change observed",
+ "regionWideClaimed": false,
+ "regionWideBasis": "No open statewide layer found: KansasGIS/DASC ORKA portal handles parcel data requests county by county (county approval, 2-3 weeks, some fees); DASC publishes only single-county services (e.g. Comanche, Elk). Douglas chosen because it answered anonymously; larger Johnson/Sedgwick services not located.",
+ "subregionsVerified": [
+  "Douglas County (Lawrence)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://hub.kansasgis.org/",
+   "observation": "Kansas Geoportal; parcels by request via ORKA/PORKA"
+  },
+  {
+   "url": "https://services.kansasgis.org/arcgis3/rest/services/forka",
+   "observation": "single-county parcel MapServers (CM_Parcels Comanche, EK_Parcels Elk)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gis.dgcoks.gov/server/rest/services/Tax_Parcel/MapServer/0/query?where=1%3D1&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-95.2360%2C38.9712%2C-95.2345%2C38.9722&outFields=PID%2CJOINPIN",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "3 parcel polygons with PID"
+  }
+ ],
+ "reuseStatus": "Terms/licence text not read on the service.",
+ "remainingUncertainty": "Not the largest county; layer includes owner and address fields (not requested).",
+ "nextStep": "Locate Johnson and Sedgwick County parcel services."
+}

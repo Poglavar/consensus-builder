@@ -1,0 +1,55 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "SM",
+ "country": "San Marino",
+ "checkedAt": "2026-09-30",
+ "status": "no_online_cadastre_found",
+ "previousStatus": "not_probed",
+ "newStatus": "no_online_cadastre_found",
+ "cadastreAuthority": "Ufficio Tecnico del Catasto e Cartografia, Dipartimento Territorio e Ambiente, Repubblica di San Marino",
+ "inspireRecordUrl": null,
+ "portalsFound": [
+  {
+   "url": "https://gov.sm/pub2/GovSM/Territorio/Catasto/Visure-Catastali.html",
+   "observation": "Cadastral 'visure' (map extracts and parcel data) are obtained at the counter or, for accredited professionals, via Catasto Web in the PA portal; access on payment of cadastral fees. No public WMS/WFS mentioned."
+  },
+  {
+   "url": "https://geodati.gov.it / agenziaentrate.gov.it cartografia catastale WFS",
+   "observation": "Italian national cadastre WFS; does not cover San Marino"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gov.sm/pub2/GovSM/Territorio/Catasto/Visure-Catastali.html",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "service description read"
+  },
+  {
+   "url": "https://www.gov.sm/pub2/GovSM/Dipartimenti/Dipartimento-Territorio-e-Ambiente/Ufficio-Tecnico-del-Catasto-e-Cartografia.html",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection reset by peer on scripted request; content known from web search snippet only"
+  },
+  {
+   "url": "https://www.cadastre.sm/, https://catasto.sm/, https://geoportale.gov.sm/, https://sit.gov.sm/, https://webgis.gov.sm/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "proxy CONNECT 502, guessed hosts"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "no public online cadastral parcel service found",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "regionsSampled": [],
+ "accessModel": "paid",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: application/json,text/xml,application/xml,text/html;q=0.9,*/*;q=0.8; cookie jar used; Accept-Language it-SM",
+ "remainingUncertainty": "Not an EU/INSPIRE member. A geoportal on an unreached host cannot be excluded; several gov.sm pages reset the connection.",
+ "nextStep": "Retry gov.sm office page; search for a San Marino geoportal/SIT viewer."
+}

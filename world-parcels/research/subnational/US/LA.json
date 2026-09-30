@@ -1,0 +1,63 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "LA",
+ "regionName": "Louisiana",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "source": {
+  "sourceId": "us-la-ebr-tax-parcel",
+  "name": "Tax Parcel (East Baton Rouge Parish)",
+  "operator": "City of Baton Rouge / Parish of East Baton Rouge (EBRGIS, EBR Assessor, Dept of Information Services)",
+  "scope": "East Baton Rouge Parish only",
+  "endpoint": "https://maps.brla.gov/gis/rest/services/Cadastral/Tax_Parcel/MapServer/0",
+  "method": "GET ArcGIS REST /query",
+  "responseFormat": "Esri JSON polygons (rings)",
+  "crs": "requested outSR=4326",
+  "reuseStatus": "Terms/licence text not read on the service."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-la-ebr-tax-parcel",
+  "requestUrl": "https://maps.brla.gov/gis/rest/services/Cadastral/Tax_Parcel/MapServer/0/query?where=1%3D1&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-91.1880%2C30.4510%2C-91.1865%2C30.4520&outFields=ID%2CASSESSMENT_NUM",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   -91.188,
+   30.451,
+   -91.1865,
+   30.452
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "$.features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "ID",
+  "responseFile": "LA-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount (ArcGIS)"
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-US,en;q=0.9; cookie jar kept; no headers-dependent change observed",
+ "regionWideClaimed": false,
+ "regionWideBasis": "No statewide open layer found; LAGIC/LSU Atlas and DOA GIS pages list none; parcels are per-parish assessor data.",
+ "subregionsVerified": [
+  "East Baton Rouge Parish"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://atlas.ga.lsu.edu/",
+   "observation": "LSU Atlas; no statewide parcel layer surfaced"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://maps.brla.gov/gis/rest/services/Cadastral/Tax_Parcel/MapServer/0/query?where=1%3D1&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-91.1880%2C30.4510%2C-91.1865%2C30.4520&outFields=ID%2CASSESSMENT_NUM",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "3 parcel polygons with ID"
+  }
+ ],
+ "reuseStatus": "Terms/licence text not read on the service.",
+ "remainingUncertainty": "Orleans and Jefferson Parish services not tested; layer carries owner/address fields (not requested).",
+ "nextStep": "Test Orleans (maps.nola.gov) and Jefferson parcel services."
+}
