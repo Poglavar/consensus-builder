@@ -1,0 +1,74 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "MI",
+ "regionName": "Michigan",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/plain,*/*; Accept-Language: en-US,en;q=0.9; cookie jar on; via pre-configured proxy",
+ "source": {
+  "sourceId": "us-mi-detroit-parcels-current",
+  "name": "Parcels (Current), City of Detroit",
+  "operator": "City of Detroit Office of the Assessor / Detroit Open Data",
+  "scope": "city only (Detroit, Wayne County)",
+  "endpoint": "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/parcel_file_current/FeatureServer/0",
+  "method": "GET",
+  "responseFormat": "ArcGIS REST JSON",
+  "crs": "native SR; requested outSR=4326",
+  "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-mi-detroit-parcels-current",
+  "requestUrl": "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/parcel_file_current/FeatureServer/0/query?geometry=<bbox ~150m>&outFields=parcel_id&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   "[-83.0466,42.3306,-83.0450,42.3322]"
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "parcel_id",
+  "responseFile": "research/subnational/US/MI-parcel-response.json",
+  "pagination": "resultRecordCount / resultOffset",
+  "regionSampled": [
+   "City of Detroit"
+  ]
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "Publisher (Detroit open data): all properties in the City of Detroit, 2026 tax year. Michigan has no public statewide parcel REST layer per web search summaries (Michigan Geographic Framework covers roads/boundaries; the PA 116 statewide parcel submission is a bulk delivery, not an open service). Not verified on a state page.",
+ "subregionsVerified": [
+  "City of Detroit (Wayne County)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://data.detroitmi.gov/maps/detroitmi::parcels-current-1/about",
+   "observation": "Detroit open data item"
+  },
+  {
+   "url": "https://gis-michigan.opendata.arcgis.com/",
+   "observation": "state open data hub; no parcels layer found via search"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/parcel_file_current/FeatureServer/0?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "layer fields read"
+  },
+  {
+   "url": "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/parcel_file_current/FeatureServer/0/query?geometry=<bbox near Detroit>&outFields=parcel_id...",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons, ID and geometry only"
+  }
+ ],
+ "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution.",
+ "remainingUncertainty": "No statewide layer found; county services (Kent, Oakland, Wayne county-level) not tested. Layer carries taxpayer and address fields; not requested.",
+ "nextStep": "Test Kent/Oakland/Washtenaw county REST layers; ask Michigan DTMB whether PA 116 parcels are published."
+}
