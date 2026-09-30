@@ -1,0 +1,79 @@
+[
+ {
+  "iso2": "US",
+  "country": "United States",
+  "regionCode": "AL",
+  "regionName": "Alabama",
+  "hints": "Start at the state GIS office / geoportal / ArcGIS Hub ('<state> statewide parcels'); the NSGIC/NGDA 'parcels' inventory lists which states have a statewide layer. Known: NC statewide (verified), NYC tax lots, LA County, Harris County, Cook County, Miami-Dade, San Francisco, DC (verified). Colorado has a statewide parcel compilation (Colorado OIT/ 'Colorado Parcels'). Texas has no statewide open layer (county appraisal districts). Request only parcel ID/APN and geometry fields."
+ },
+ {
+  "iso2": "US",
+  "country": "United States",
+  "regionCode": "AK",
+  "regionName": "Alaska",
+  "hints": "Start at the state GIS office / geoportal / ArcGIS Hub ('<state> statewide parcels'); the NSGIC/NGDA 'parcels' inventory lists which states have a statewide layer. Known: NC statewide (verified), NYC tax lots, LA County, Harris County, Cook County, Miami-Dade, San Francisco, DC (verified). Colorado has a statewide parcel compilation (Colorado OIT/ 'Colorado Parcels'). Texas has no statewide open layer (county appraisal districts). Request only parcel ID/APN and geometry fields."
+ },
+ {
+  "iso2": "US",
+  "country": "United States",
+  "regionCode": "AZ",
+  "regionName": "Arizona",
+  "hints": "Start at the state GIS office / geoportal / ArcGIS Hub ('<state> statewide parcels'); the NSGIC/NGDA 'parcels' inventory lists which states have a statewide layer. Known: NC statewide (verified), NYC tax lots, LA County, Harris County, Cook County, Miami-Dade, San Francisco, DC (verified). Colorado has a statewide parcel compilation (Colorado OIT/ 'Colorado Parcels'). Texas has no statewide open layer (county appraisal districts). Request only parcel ID/APN and geometry fields."
+ },
+ {
+  "iso2": "US",
+  "country": "United States",
+  "regionCode": "AR",
+  "regionName": "Arkansas",
+  "hints": "Start at the state GIS office / geoportal / ArcGIS Hub ('<state> statewide parcels'); the NSGIC/NGDA 'parcels' inventory lists which states have a statewide layer. Known: NC statewide (verified), NYC tax lots, LA County, Harris County, Cook County, Miami-Dade, San Francisco, DC (verified). Colorado has a statewide parcel compilation (Colorado OIT/ 'Colorado Parcels'). Texas has no statewide open layer (county appraisal districts). Request only parcel ID/APN and geometry fields."
+ },
+ {
+  "iso2": "US",
+  "country": "United States",
+  "regionCode": "CA",
+  "regionName": "California",
+  "hints": "Start at the state GIS office / geoportal / ArcGIS Hub ('<state> statewide parcels'); the NSGIC/NGDA 'parcels' inventory lists which states have a statewide layer. Known: NC statewide (verified), NYC tax lots, LA County, Harris County, Cook County, Miami-Dade, San Francisco, DC (verified). Colorado has a statewide parcel compilation (Colorado OIT/ 'Colorado Parcels'). Texas has no statewide open layer (county appraisal districts). Request only parcel ID/APN and geometry fields."
+ },
+ {
+  "iso2": "US",
+  "country": "United States",
+  "regionCode": "CO",
+  "regionName": "Colorado",
+  "hints": "Start at the state GIS office / geoportal / ArcGIS Hub ('<state> statewide parcels'); the NSGIC/NGDA 'parcels' inventory lists which states have a statewide layer. Known: NC statewide (verified), NYC tax lots, LA County, Harris County, Cook County, Miami-Dade, San Francisco, DC (verified). Colorado has a statewide parcel compilation (Colorado OIT/ 'Colorado Parcels'). Texas has no statewide open layer (county appraisal districts). Request only parcel ID/APN and geometry fields."
+ },
+ {
+  "iso2": "US",
+  "country": "United States",
+  "regionCode": "CT",
+  "regionName": "Connecticut",
+  "hints": "Start at the state GIS office / geoportal / ArcGIS Hub ('<state> statewide parcels'); the NSGIC/NGDA 'parcels' inventory lists which states have a statewide layer. Known: NC statewide (verified), NYC tax lots, LA County, Harris County, Cook County, Miami-Dade, San Francisco, DC (verified). Colorado has a statewide parcel compilation (Colorado OIT/ 'Colorado Parcels'). Texas has no statewide open layer (county appraisal districts). Request only parcel ID/APN and geometry fields."
+ },
+ {
+  "iso2": "US",
+  "country": "United States",
+  "regionCode": "DE",
+  "regionName": "Delaware",
+  "hints": "Start at the state GIS office / geoportal / ArcGIS Hub ('<state> statewide parcels'); the NSGIC/NGDA 'parcels' inventory lists which states have a statewide layer. Known: NC statewide (verified), NYC tax lots, LA County, Harris County, Cook County, Miami-Dade, San Francisco, DC (verified). Colorado has a statewide parcel compilation (Colorado OIT/ 'Colorado Parcels'). Texas has no statewide open layer (county appraisal districts). Request only parcel ID/APN and geometry fields."
+ },
+ {
+  "iso2": "US",
+  "country": "United States",
+  "regionCode": "DC",
+  "regionName": "District of Columbia",
+  "hints": "Start at the state GIS office / geoportal / ArcGIS Hub ('<state> statewide parcels'); the NSGIC/NGDA 'parcels' inventory lists which states have a statewide layer. Known: NC statewide (verified), NYC tax lots, LA County, Harris County, Cook County, Miami-Dade, San Francisco, DC (verified). Colorado has a statewide parcel compilation (Colorado OIT/ 'Colorado Parcels'). Texas has no statewide open layer (county appraisal districts). Request only parcel ID/APN and geometry fields."
+ },
+ {
+  "iso2": "US",
+  "country": "United States",
+  "regionCode": "FL",
+  "regionName": "Florida",
+  "hints": "Start at the state GIS office / geoportal / ArcGIS Hub ('<state> statewide parcels'); the NSGIC/NGDA 'parcels' inventory lists which states have a statewide layer. Known: NC statewide (verified), NYC tax lots, LA County, Harris County, Cook County, Miami-Dade, San Francisco, DC (verified). Colorado has a statewide parcel compilation (Colorado OIT/ 'Colorado Parcels'). Texas has no statewide open layer (county appraisal districts). Request only parcel ID/APN and geometry fields."
+ },
+ {
+  "iso2": "US",
+  "country": "United States",
+  "regionCode": "GA",
+  "regionName": "Georgia",
+  "hints": "Start at the state GIS office / geoportal / ArcGIS Hub ('<state> statewide parcels'); the NSGIC/NGDA 'parcels' inventory lists which states have a statewide layer. Known: NC statewide (verified), NYC tax lots, LA County, Harris County, Cook County, Miami-Dade, San Francisco, DC (verified). Colorado has a statewide parcel compilation (Colorado OIT/ 'Colorado Parcels'). Texas has no statewide open layer (county appraisal districts). Request only parcel ID/APN and geometry fields."
+ }
+]

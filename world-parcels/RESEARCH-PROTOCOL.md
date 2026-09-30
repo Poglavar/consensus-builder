@@ -70,3 +70,18 @@ Method, in order, for each country:
 4. Browser headers, cookie jar, viewer-origin `Referer`, retries on WAF flaps. Never bypass TLS, logins or challenges.
 
 Output: `research/europe/<ISO2>.json` in the country schema plus `newStatus`, `previousStatus`, `regionsSampled`, `inspireRecordUrl` (if found), and the raw reply as `research/europe/<ISO2>-parcel-response.json` (JSON, XML wrapped as a string, tokens as `<PUBLIC_TOKEN>`, no owner data). Do not edit any other file. For a federal country (Germany, Bosnia, Belgium, Switzerland) list each state/canton/entity service found and which were verified; two verified sub-national services from different regions count as passing the two-region test for the *country* only if you say so explicitly and name both.
+
+## Subnational pass for federal countries (2026-09-30)
+
+In federations the cadastre is usually a state, province or canton function, so a country-level "no national service" answer hides real coverage (Colorado and New York City both publish parcels; the United States has no national layer). For these countries the unit of coverage is the **region**.
+
+Input: `batches/subnational-<ISO2>-NN.json`, one entry per region (`iso2`, `regionCode`, `regionName`, `hints`). For each region, in order: (1) look for the **statewide/provincial parcel layer** on the region's GIS office, open-data portal or ArcGIS Hub (many US states publish one; some, like Texas, only have county layers); (2) if none, take the largest county/municipality's parcel service as a *partial* result and say so; (3) test one small bounded query (`resultRecordCount=3` / `count=3`), browser headers, cookie jar, no token values, **request only ID and geometry fields** (parcel layers in the US often carry owner names and mailing addresses; never save those). Record licence/terms text when visible.
+
+Output: `research/subnational/<ISO2>/<regionCode>.json`:
+```
+{ "schemaVersion": 1, "countryCode": "US", "regionCode": "CO", "regionName": "Colorado", "checkedAt": "2026-09-30",
+  "status": "verified_region_wide" | "verified_partial_region" (county/municipal only) | "credentialed_or_paid" | "viewer_only" | "no_open_service_found" | "temporarily_unavailable",
+  "source": {...as country schema...}, "verifiedParcelResponse": null | {...}, "regionWideClaimed": true|false, "regionWideBasis": "what the publisher says",
+  "subregionsVerified": ["Denver County"], "portalsFound": [...], "requests": [...], "reuseStatus": "...", "remainingUncertainty": "...", "nextStep": "..." }
+```
+Raw replies as `research/subnational/<ISO2>/<regionCode>-parcel-response.json` (ID + geometry only). Do not edit any other file.
