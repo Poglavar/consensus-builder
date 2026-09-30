@@ -1,0 +1,73 @@
+{
+ "kind": "country",
+ "key": "AO",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "no_online_cadastre_found",
+ "newStatus": "no_online_cadastre_found",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8 (application/json,*/*;q=0.8 for JSON/API calls); Accept-Language: pt-AO,pt;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.igca.gov.ao/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "homepage, no geoportal link"
+  },
+  {
+   "url": "https://www.igca.gov.ao/produtos-e-servicos",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "products: 'Venda de Mapas' (map sales); no online parcel service"
+  },
+  {
+   "url": "https://www.igca.gov.ao/detalhes-servicos/81",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "service detail page; no map endpoint"
+  },
+  {
+   "url": "https://www.minopuh.gov.ao/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "ministry site; no geoportal"
+  },
+  {
+   "url": "https://geoportal.igca.gov.ao/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "unreachable (host may not exist)"
+  },
+  {
+   "url": "https://sigt.igca.gov.ao/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "unreachable"
+  },
+  {
+   "url": "https://geoportal.gov.ao/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "unreachable"
+  },
+  {
+   "url": "https://sig.gov.ao/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "unreachable"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "IGCA site loads fine with browser headers (as before); no public map/viewer found; guessed hosts do not resolve/connect, which is inconclusive. No change.",
+ "nextStep": "Search for SIGT/Esri deployment portal or ArcGIS Online org for IGCA; low expectation."
+}

@@ -1,0 +1,107 @@
+{
+ "note": "3 plots from Maharashtra Bhu-Naksha rest/MapInfo/getPlotInfo (state=27, village Bhamburda, CTSO 1 Pune, Pune urban). WKT geometry truncated to 5 vertices; CRS appears to be UTM 43N metres (xmin~375880, ymin~2049700) although srs=EPSG:4326 was requested. Owner info fields dropped (info was empty).",
+ "features": [
+  {
+   "properties": {
+    "plotno": "1",
+    "plotid": "_dV3wx4fQ9ax1zhKmKzQKg",
+    "giscode": "UCM2515000000000000000005",
+    "area_m2": 21135000.0,
+    "gisinfo": "Category : U Urban, District : 25 Pune, Taluka : 15 CTSO 1 Pune, Village : 000000000000000005 Bhamburda, "
+   },
+   "geometryType": "MULTIPOLYGON",
+   "closedRing": true,
+   "vertexCount": 16,
+   "wktFirst5": [
+    [
+     "375916.533095369",
+     "2049710.523214671"
+    ],
+    [
+     "375905.1365003264",
+     "2049707.392066642"
+    ],
+    [
+     "375895.7209659712",
+     "2049704.867912698"
+    ],
+    [
+     "375888.1976686371",
+     "2049702.893756832"
+    ],
+    [
+     "375881.4958253483",
+     "2049701.156131469"
+    ]
+   ]
+  },
+  {
+   "properties": {
+    "plotno": "10",
+    "plotid": "kPDuFmcuQU6SZeYyYGqLew",
+    "giscode": "UCM2515000000000000000005",
+    "area_m2": 5755000.0,
+    "gisinfo": "Category : U Urban, District : 25 Pune, Taluka : 15 CTSO 1 Pune, Village : 000000000000000005 Bhamburda, "
+   },
+   "geometryType": "MULTIPOLYGON",
+   "closedRing": true,
+   "vertexCount": 6,
+   "wktFirst5": [
+    [
+     "378478.5976841312",
+     "2049323.412642494"
+    ],
+    [
+     "378475.0654811862",
+     "2049324.476232261"
+    ],
+    [
+     "378476.6786347844",
+     "2049330.5115789562"
+    ],
+    [
+     "378480.22101077443",
+     "2049329.285099916"
+    ],
+    [
+     "378479.4299160991",
+     "2049326.295649446"
+    ]
+   ]
+  },
+  {
+   "properties": {
+    "plotno": "11",
+    "plotid": "-5CSEUolRO2_8S8kKDSIGQ",
+    "giscode": "UCM2515000000000000000005",
+    "area_m2": 44180000.0,
+    "gisinfo": "Category : U Urban, District : 25 Pune, Taluka : 15 CTSO 1 Pune, Village : 000000000000000005 Bhamburda, "
+   },
+   "geometryType": "MULTIPOLYGON",
+   "closedRing": true,
+   "vertexCount": 15,
+   "wktFirst5": [
+    [
+     "376066.5943163537",
+     "2048769.030954693"
+    ],
+    [
+     "376077.6829863829",
+     "2048769.725338249"
+    ],
+    [
+     "376081.2395156415",
+     "2048770.009955168"
+    ],
+    [
+     "376082.6010021186",
+     "2048769.627281853"
+    ],
+    [
+     "376083.9311821141",
+     "2048768.579372865"
+    ]
+   ]
+  }
+ ]
+}
