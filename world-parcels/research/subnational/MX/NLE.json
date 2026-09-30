@@ -1,0 +1,61 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "NLE",
+ "regionName": "Nuevo León",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-MX,es;q=0.9; Referer: viewer/service origin; cookie jar on",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "none",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://sig.nl.gob.mx/",
+   "observation": "200, 1.1 MB page; no ArcGIS/WMS/catastro link in HTML (CC BY-NC-SA licence footer for site content only)"
+  },
+  {
+   "url": "https://www.monterrey.gob.mx/",
+   "observation": "200; only predial payment app asp.monterrey.gob.mx/predial"
+  },
+  {
+   "url": "https://www.sanpedro.gob.mx/",
+   "observation": "200; no catastro map link"
+  }
+ ],
+ "requests": [
+  {
+   "url": "research/countries/MX.json, research/retry/countries/MX.json",
+   "method": "GET",
+   "httpStatus": "-",
+   "contentType": "",
+   "assessment": "Previous MX passes: RAN Akamai 403, INEGI no parcel service, most state catastro hosts unreachable; no state parcel service found."
+  },
+  {
+   "url": "catastro.nl.gob.mx, www.irycnl.gob.mx, geoportal.nl.gob.mx, mapas.monterrey.gob.mx, sig.sanpedro.gob.mx",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed / 502 from proxy (host unreachable from this network)"
+  },
+  {
+   "url": "https://www.nl.gob.mx/catastro",
+   "method": "GET",
+   "httpStatus": "404",
+   "contentType": "no page",
+   "assessment": "text/html"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=<state catastro/predios queries>&f=json",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "ArcGIS Online searches for catastro/predios/lotes by state name; no state or municipal parcel layer found for this state",
+   "assessment": "application/json"
+  }
+ ],
+ "reuseStatus": "not established",
+ "remainingUncertainty": "Instituto Registral y Catastral hosts unreachable; no viewer JS could be inspected. Monterrey/San Pedro municipal viewers not found.",
+ "nextStep": "Retry irycnl.gob.mx and municipal viewers from a browser-capable network."
+}

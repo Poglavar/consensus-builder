@@ -1,0 +1,53 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "NAY",
+ "regionName": "Nayarit",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-MX,es;q=0.9; Referer: viewer/service origin; cookie jar on",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "none",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://www.tepic.gob.mx/",
+   "observation": "Tepic municipal site 200; only predial payment link, no catastro map"
+  }
+ ],
+ "requests": [
+  {
+   "url": "research/countries/MX.json, research/retry/countries/MX.json",
+   "method": "GET",
+   "httpStatus": "-",
+   "contentType": "",
+   "assessment": "Previous MX passes: RAN Akamai 403, INEGI no parcel service, most state catastro hosts unreachable; no state parcel service found."
+  },
+  {
+   "url": "catastro.nayarit.gob.mx, www.nayarit.gob.mx, catastro.tepic.gob.mx, tepic.gob.mx",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed / 502 from proxy (host unreachable from this network)"
+  },
+  {
+   "url": "https://nayarit.gob.mx/",
+   "method": "GET",
+   "httpStatus": "403",
+   "contentType": "access denied even with browser headers",
+   "assessment": "text/html"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=<state catastro/predios queries>&f=json",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "ArcGIS Online searches for catastro/predios/lotes by state name; no state or municipal parcel layer found for this state",
+   "assessment": "application/json"
+  }
+ ],
+ "reuseStatus": "not established (no licence text read)",
+ "remainingUncertainty": "State and Tepic catastro hosts unreachable; negative is weak.",
+ "nextStep": "Retry from browser-capable network; find Registro Público/Catastro Nayarit viewer."
+}

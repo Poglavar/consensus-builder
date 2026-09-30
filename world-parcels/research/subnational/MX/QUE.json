@@ -1,0 +1,104 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "QUE",
+ "regionName": "Querétaro",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-MX,es;q=0.9; Referer: viewer/service origin; cookie jar on",
+ "source": {
+  "sourceId": "MX-QUE-catastro-qro-ran-parcels",
+  "name": "CATASTRO_QRO layer 4 'M06_RAN' (agrarian/ejido parcels, RAN-derived)",
+  "operator": "third-party GIS consultancy (ArcGIS Online owner 'solucionessig'); underlying data attributed to Registro Agrario Nacional",
+  "scope": "Querétaro, Corregidora and Huimilpan municipalities; agrarian (ejidal/dominio pleno) parcels, not urban cadastral lots",
+  "endpoint": "https://services9.arcgis.com/fp5f46XvVGKIUi0R/arcgis/rest/services/CATASTRO_QRO/FeatureServer/4",
+  "method": "GET query",
+  "responseFormat": "ArcGIS FeatureServer, f=geojson",
+  "crs": "EPSG:4326 requested (native ITRF2008 UTM 14N)",
+  "reuseStatus": "item public; no licence text visible"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "MX-QUE-catastro-qro-ran-parcels",
+  "requestUrl": "https://services9.arcgis.com/fp5f46XvVGKIUi0R/arcgis/rest/services/CATASTRO_QRO/FeatureServer/4/query?where=1%3D1&outFields=OBJECTID,cve_parc,cve_ejid,tipoparc,num_mun,nom_mun&resultRecordCount=3&outSR=4326&f=geojson",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": [
+   -100.49,
+   20.55,
+   -100.43,
+   20.59
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "cve_parc",
+  "responseFile": "QUE-parcel-response.json",
+  "pagination": "resultOffset; 6385 features total"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "Three municipalities only (distinct nom_mun: QUERETARO, CORREGIDORA, HUIMILPAN); ejido parcels only.",
+ "subregionsVerified": [
+  "Querétaro municipality (agrarian parcels)",
+  "Corregidora",
+  "Huimilpan"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://irc.gob.mx/portal/",
+   "observation": "catastro.queretaro.gob.mx redirects to Instituto Registral y Catastral portal (HTTP 200); no map viewer/service found in HTML"
+  },
+  {
+   "url": "https://www.municipiodequeretaro.gob.mx/",
+   "observation": "200; no catastro viewer link"
+  }
+ ],
+ "requests": [
+  {
+   "url": "research/countries/MX.json, research/retry/countries/MX.json",
+   "method": "GET",
+   "httpStatus": "-",
+   "contentType": "",
+   "assessment": "Previous MX passes: RAN Akamai 403, INEGI no parcel service, most state catastro hosts unreachable; no state parcel service found."
+  },
+  {
+   "url": "https://catastro.queretaro.gob.mx/ -> https://irc.gob.mx/portal/",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "portal page only",
+   "assessment": "text/html"
+  },
+  {
+   "url": "https://gis.municipiodequeretaro.gob.mx/",
+   "method": "GET",
+   "httpStatus": "0",
+   "contentType": "unreachable",
+   "assessment": ""
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=catastro Querétaro",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "found CATASTRO_QRO (12 layers: schools, RAN, settlements, limits...)",
+   "assessment": "application/json"
+  },
+  {
+   "url": "https://services9.arcgis.com/fp5f46XvVGKIUi0R/arcgis/rest/services/CATASTRO_QRO/FeatureServer/4/query (count)",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "count 6385",
+   "assessment": "application/json"
+  },
+  {
+   "url": "https://services9.arcgis.com/fp5f46XvVGKIUi0R/arcgis/rest/services/CATASTRO_QRO/FeatureServer/4/query?...f=geojson",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "3 closed polygons",
+   "assessment": "application/json"
+  }
+ ],
+ "reuseStatus": "not established (no licence text read)",
+ "remainingUncertainty": "This is agrarian-land parcels (RAN-derived, third-party copy), not the state urban cadastre. Instituto Registral y Catastral viewer not located.",
+ "nextStep": "Inspect irc.gob.mx portal's catastro map link from a browser; check municipal Querétaro SIG."
+}
