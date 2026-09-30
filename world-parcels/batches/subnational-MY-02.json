@@ -1,0 +1,58 @@
+[
+ {
+  "iso2": "MY",
+  "country": "Malaysia",
+  "regionCode": "PLS",
+  "regionName": "Perlis",
+  "hints": "Land is a state matter. National JUPEM eKadaster is login-gated. Verified so far: Selangor JPS 'Lot_Kadaster_MIL1' ArcGIS layer 7 (Petaling only), see research/retry/countries/MY-selangor-petaling-parcel-response.json and research/kuala-lumpur.json. Look for each state's land office / PTG / state GIS (e.g. Penang PGIS/PLANMalaysia, Johor JPNJ / Iskandar, Sabah Jabatan Tanah dan Ukur (JTU) / Sabah Geoportal, Sarawak LASIS / Sarawak Geoportal, Perak, Kedah, Melaka, N. Sembilan, Pahang, Kelantan, Terengganu, Perlis), plus DBKL for Kuala Lumpur, Perbadanan Labuan, Putrajaya Corporation. Inspect viewer JS for ArcGIS/GeoServer endpoints; many state portals are behind MyGovUC-style logins: record honestly."
+ },
+ {
+  "iso2": "MY",
+  "country": "Malaysia",
+  "regionCode": "SBH",
+  "regionName": "Sabah",
+  "hints": "Land is a state matter. National JUPEM eKadaster is login-gated. Verified so far: Selangor JPS 'Lot_Kadaster_MIL1' ArcGIS layer 7 (Petaling only), see research/retry/countries/MY-selangor-petaling-parcel-response.json and research/kuala-lumpur.json. Look for each state's land office / PTG / state GIS (e.g. Penang PGIS/PLANMalaysia, Johor JPNJ / Iskandar, Sabah Jabatan Tanah dan Ukur (JTU) / Sabah Geoportal, Sarawak LASIS / Sarawak Geoportal, Perak, Kedah, Melaka, N. Sembilan, Pahang, Kelantan, Terengganu, Perlis), plus DBKL for Kuala Lumpur, Perbadanan Labuan, Putrajaya Corporation. Inspect viewer JS for ArcGIS/GeoServer endpoints; many state portals are behind MyGovUC-style logins: record honestly."
+ },
+ {
+  "iso2": "MY",
+  "country": "Malaysia",
+  "regionCode": "SWK",
+  "regionName": "Sarawak",
+  "hints": "Land is a state matter. National JUPEM eKadaster is login-gated. Verified so far: Selangor JPS 'Lot_Kadaster_MIL1' ArcGIS layer 7 (Petaling only), see research/retry/countries/MY-selangor-petaling-parcel-response.json and research/kuala-lumpur.json. Look for each state's land office / PTG / state GIS (e.g. Penang PGIS/PLANMalaysia, Johor JPNJ / Iskandar, Sabah Jabatan Tanah dan Ukur (JTU) / Sabah Geoportal, Sarawak LASIS / Sarawak Geoportal, Perak, Kedah, Melaka, N. Sembilan, Pahang, Kelantan, Terengganu, Perlis), plus DBKL for Kuala Lumpur, Perbadanan Labuan, Putrajaya Corporation. Inspect viewer JS for ArcGIS/GeoServer endpoints; many state portals are behind MyGovUC-style logins: record honestly."
+ },
+ {
+  "iso2": "MY",
+  "country": "Malaysia",
+  "regionCode": "SGR",
+  "regionName": "Selangor",
+  "hints": "Land is a state matter. National JUPEM eKadaster is login-gated. Verified so far: Selangor JPS 'Lot_Kadaster_MIL1' ArcGIS layer 7 (Petaling only), see research/retry/countries/MY-selangor-petaling-parcel-response.json and research/kuala-lumpur.json. Look for each state's land office / PTG / state GIS (e.g. Penang PGIS/PLANMalaysia, Johor JPNJ / Iskandar, Sabah Jabatan Tanah dan Ukur (JTU) / Sabah Geoportal, Sarawak LASIS / Sarawak Geoportal, Perak, Kedah, Melaka, N. Sembilan, Pahang, Kelantan, Terengganu, Perlis), plus DBKL for Kuala Lumpur, Perbadanan Labuan, Putrajaya Corporation. Inspect viewer JS for ArcGIS/GeoServer endpoints; many state portals are behind MyGovUC-style logins: record honestly."
+ },
+ {
+  "iso2": "MY",
+  "country": "Malaysia",
+  "regionCode": "TRG",
+  "regionName": "Terengganu",
+  "hints": "Land is a state matter. National JUPEM eKadaster is login-gated. Verified so far: Selangor JPS 'Lot_Kadaster_MIL1' ArcGIS layer 7 (Petaling only), see research/retry/countries/MY-selangor-petaling-parcel-response.json and research/kuala-lumpur.json. Look for each state's land office / PTG / state GIS (e.g. Penang PGIS/PLANMalaysia, Johor JPNJ / Iskandar, Sabah Jabatan Tanah dan Ukur (JTU) / Sabah Geoportal, Sarawak LASIS / Sarawak Geoportal, Perak, Kedah, Melaka, N. Sembilan, Pahang, Kelantan, Terengganu, Perlis), plus DBKL for Kuala Lumpur, Perbadanan Labuan, Putrajaya Corporation. Inspect viewer JS for ArcGIS/GeoServer endpoints; many state portals are behind MyGovUC-style logins: record honestly."
+ },
+ {
+  "iso2": "MY",
+  "country": "Malaysia",
+  "regionCode": "KUL",
+  "regionName": "Kuala Lumpur",
+  "hints": "Land is a state matter. National JUPEM eKadaster is login-gated. Verified so far: Selangor JPS 'Lot_Kadaster_MIL1' ArcGIS layer 7 (Petaling only), see research/retry/countries/MY-selangor-petaling-parcel-response.json and research/kuala-lumpur.json. Look for each state's land office / PTG / state GIS (e.g. Penang PGIS/PLANMalaysia, Johor JPNJ / Iskandar, Sabah Jabatan Tanah dan Ukur (JTU) / Sabah Geoportal, Sarawak LASIS / Sarawak Geoportal, Perak, Kedah, Melaka, N. Sembilan, Pahang, Kelantan, Terengganu, Perlis), plus DBKL for Kuala Lumpur, Perbadanan Labuan, Putrajaya Corporation. Inspect viewer JS for ArcGIS/GeoServer endpoints; many state portals are behind MyGovUC-style logins: record honestly."
+ },
+ {
+  "iso2": "MY",
+  "country": "Malaysia",
+  "regionCode": "LBN",
+  "regionName": "Labuan",
+  "hints": "Land is a state matter. National JUPEM eKadaster is login-gated. Verified so far: Selangor JPS 'Lot_Kadaster_MIL1' ArcGIS layer 7 (Petaling only), see research/retry/countries/MY-selangor-petaling-parcel-response.json and research/kuala-lumpur.json. Look for each state's land office / PTG / state GIS (e.g. Penang PGIS/PLANMalaysia, Johor JPNJ / Iskandar, Sabah Jabatan Tanah dan Ukur (JTU) / Sabah Geoportal, Sarawak LASIS / Sarawak Geoportal, Perak, Kedah, Melaka, N. Sembilan, Pahang, Kelantan, Terengganu, Perlis), plus DBKL for Kuala Lumpur, Perbadanan Labuan, Putrajaya Corporation. Inspect viewer JS for ArcGIS/GeoServer endpoints; many state portals are behind MyGovUC-style logins: record honestly."
+ },
+ {
+  "iso2": "MY",
+  "country": "Malaysia",
+  "regionCode": "PJY",
+  "regionName": "Putrajaya",
+  "hints": "Land is a state matter. National JUPEM eKadaster is login-gated. Verified so far: Selangor JPS 'Lot_Kadaster_MIL1' ArcGIS layer 7 (Petaling only), see research/retry/countries/MY-selangor-petaling-parcel-response.json and research/kuala-lumpur.json. Look for each state's land office / PTG / state GIS (e.g. Penang PGIS/PLANMalaysia, Johor JPNJ / Iskandar, Sabah Jabatan Tanah dan Ukur (JTU) / Sabah Geoportal, Sarawak LASIS / Sarawak Geoportal, Perak, Kedah, Melaka, N. Sembilan, Pahang, Kelantan, Terengganu, Perlis), plus DBKL for Kuala Lumpur, Perbadanan Labuan, Putrajaya Corporation. Inspect viewer JS for ArcGIS/GeoServer endpoints; many state portals are behind MyGovUC-style logins: record honestly."
+ }
+]
