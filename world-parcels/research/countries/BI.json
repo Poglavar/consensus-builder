@@ -1,0 +1,50 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "BI",
+ "country": "Burundi",
+ "checkedAt": "2026-09-29",
+ "status": "no_online_cadastre_found",
+ "cadastreAuthority": "Cadastre National (Ministry in charge of land/urban planning); Land Title services",
+ "portalsFound": [
+  {
+   "url": "https://pms.gov.bi/",
+   "observation": "Property Management System (PMS) site reachable; SPA that auto-reloads, no public parcel API observed."
+  },
+  {
+   "url": "http://isoko.gov.bi/?procedures=titre-foncier",
+   "observation": "Government procedures portal describing land title process only."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://pms.gov.bi/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "SPA shell, no data"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=cadastre%20Burundi&f=json&num=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "one unrelated hosted item (generic land ownership); not Burundi parcels"
+  },
+  {
+   "url": "https://www.minagri.gov.bi/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "none found",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Only web searches and a JS shell were seen; PMS may contain restricted registry data. Most land is unregistered per press.",
+ "nextStep": "Inspect PMS network calls and Ministry of Environment/Agriculture/Land pages."
+}

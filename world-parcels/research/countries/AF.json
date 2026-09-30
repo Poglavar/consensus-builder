@@ -1,0 +1,37 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AF",
+ "country": "Afghanistan",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Afghanistan Land Authority (ARAZI); Afghan Geodesy and Cartography Head Office (AGCHO)",
+ "portalsFound": [
+  {
+   "url": "https://www.arazi.gov.af/english/index",
+   "observation": "ARAZI site; unreachable from proxy (CONNECT 502). Public descriptions mention state-land surveying and a State Land Bank, not an open parcel service."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.arazi.gov.af",
+   "method": "GET",
+   "httpStatus": null,
+   "assessment": "CONNECT tunnel failed 502; host unreachable"
+  },
+  {
+   "url": "https://arazi.gov.af/",
+   "method": "GET",
+   "httpStatus": null,
+   "assessment": "unreachable"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "No public national cadastre service identified",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Official hosts unreachable; web search found no online parcel geoportal, but absence is not established. See also kabul.json.",
+ "nextStep": "Retry from another network; look for ALASP/ARAZI GIS portals."
+}

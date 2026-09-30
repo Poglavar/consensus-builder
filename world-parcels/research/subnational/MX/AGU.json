@@ -1,0 +1,85 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "AGU",
+ "regionName": "Aguascalientes",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept-Language: es-MX,es;q=0.9; cookie jar on",
+ "source": {
+  "sourceId": "mx-agu-seplade-agol-predios",
+  "name": "AGS_PREDIOS (feature service PREDIO_WFL1)",
+  "operator": "ArcGIS Online org of SEPLADE (Aguascalientes state planning/development agency), inferred from item owner names *_seplade",
+  "scope": "48 polygons in layer 0 (Aguascalientes city area); sibling layers PREDIOS_COS, PREDIOS_RR, PAB_PREDIOS, SFR_PREDIOS (Cosio, Rincon de Romos, Pabellon de Arteaga, San Francisco de los Romo)",
+  "endpoint": "https://services7.arcgis.com/DRM2ftezSpbrLDLB/arcgis/rest/services/PREDIO_WFL1/FeatureServer/0",
+  "method": "GET /query",
+  "responseFormat": "GeoJSON/JSON",
+  "crs": "EPSG:3857 native, outSR=4326 accepted",
+  "reuseStatus": "no licence text seen (item licenseInfo empty)"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "mx-agu-seplade-agol-predios",
+  "requestUrl": "https://services7.arcgis.com/DRM2ftezSpbrLDLB/arcgis/rest/services/PREDIO_WFL1/FeatureServer/0/query?where=1=1&outFields=id,SUP&returnGeometry=true&outSR=4326&resultRecordCount=3&f=geojson",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": [
+   -102.29,
+   21.79,
+   -102.28,
+   21.8
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "id",
+  "responseFile": "AGU-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount; layer 0 count=48",
+  "regionSampled": "Aguascalientes municipality"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "none; Mexican cadastre is state/municipal and no state-wide open layer was found",
+ "subregionsVerified": [
+  "Aguascalientes municipality (layer 0, only 48 polygons)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://geoportal.aguascalientes.gob.mx/",
+   "observation": "HTTP 200 but page body is only the host name; no viewer content"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=predios Aguascalientes",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "application/json",
+   "assessment": "found SEPLADE feature service PREDIO_WFL1"
+  },
+  {
+   "url": "https://services7.arcgis.com/DRM2ftezSpbrLDLB/arcgis/rest/services/PREDIO_WFL1/FeatureServer/0?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "layer metadata: fields FID,id,SUP,METROS; no owner fields"
+  },
+  {
+   "url": "https://services7.arcgis.com/DRM2ftezSpbrLDLB/arcgis/rest/services/PREDIO_WFL1/FeatureServer/0/query?...resultRecordCount=3&f=geojson",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 closed polygons"
+  },
+  {
+   "url": "catastro.aguascalientes.gob.mx / sig.aguascalientes.gob.mx / seplade.aguascalientes.gob.mx",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection reset / no connection"
+  }
+ ],
+ "reuseStatus": "unknown; no licence text visible on the service or item",
+ "remainingUncertainty": "Layer 0 holds only 48 polygons, so this is a tiny sample of urban parcels or lots, not the state cadastre (Instituto Catastral de Aguascalientes not reached). Layer names suggest municipal urban-viewer datasets. Completeness and official status unverified.",
+ "nextStep": "Find the Instituto Catastral del Estado de Aguascalientes viewer; check the other municipal layers' counts."
+}

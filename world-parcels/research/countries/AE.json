@@ -1,0 +1,61 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AE",
+ "country": "United Arab Emirates",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "No federal cadastre; land registries are emirate-level (Dubai Land Department / Dubai Municipality, Abu Dhabi DMT/ADM, etc.)",
+ "portalsFound": [
+  {
+   "url": "https://www.dm.gov.ae/",
+   "observation": "Dubai Municipality site reachable; GIS data provided to entities on request, no public parcel endpoint documented (see dubai.json)."
+  },
+  {
+   "url": "https://dubailand.gov.ae/",
+   "observation": "Dubai Land Department site reachable; open-data page lists transactions, not polygons."
+  },
+  {
+   "url": "https://opendata.dubaipulse.gov.ae/",
+   "observation": "Dubai Pulse unreachable via proxy (502)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gis.dm.gov.ae/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://www.abudhabi.ae/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://opendata.dubaipulse.gov.ae/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "proxy CONNECT 502"
+  },
+  {
+   "url": "https://www.dm.gov.ae/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "HTML only"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Emirate-level only; no UAE-wide cadastre found",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Emirate GIS hosts unreachable; open parcel services may exist behind them. No federal cadastre identified.",
+ "nextStep": "Retry Dubai Pulse/GeoDubai and Abu Dhabi (ADM/DMT) GIS; test bounded queries."
+}

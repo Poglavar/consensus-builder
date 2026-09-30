@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "GM",
+  "country": "Gambia",
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "cadastreAuthority": "Department of Lands and Surveys (unconfirmed)",
+  "portalsFound": [
+    {
+      "url": "https://data.gov.gm/",
+      "observation": "open data host has self-signed certificate; not fetched (TLS verification not disabled)"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://data.gov.gm/",
+      "method": "GET",
+      "httpStatus": "000",
+      "contentType": null,
+      "assessment": "TLS verify failed: self-signed cert; not bypassed"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "unknown",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "unknown",
+  "remainingUncertainty": "No cadastre service inspected.",
+  "nextStep": "Retry; look for Lands and Surveys / KMC GIS."
+}

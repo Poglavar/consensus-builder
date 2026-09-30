@@ -1,0 +1,36 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "BH",
+ "country": "Bahrain",
+ "checkedAt": "2026-09-29",
+ "status": "national_cadastre_credentialed_or_paid",
+ "cadastreAuthority": "Survey and Land Registration Bureau (SLRB)",
+ "portalsFound": [
+  {
+   "url": "https://www.slrb.gov.bh/en/request-for-cadastral-property-maps",
+   "observation": "Cadastral property maps (1:1000) sold via e-service with fees."
+  },
+  {
+   "url": "https://www.slrb.gov.bh/en/property-location-identification-service-on-google-maps",
+   "observation": "Only a per-deed location link, no parcel layer."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.slrb.gov.bh/en/request-for-cadastral-property-maps",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "purchase service; no open parcel query",
+   "contentType": "text/html"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "National cadastral maps by paid request",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "paid",
+ "remainingUncertainty": "Open geoportal not excluded (Bahrain national GIS hosts unreachable in probe).",
+ "nextStep": "Check Bahrain NSPP/Geoportal for public parcel layers."
+}

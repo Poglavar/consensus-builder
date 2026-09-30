@@ -1,0 +1,94 @@
+{
+ "kind": "country",
+ "key": "MZ",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: pt-MZ,pt;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.mtnat.gov.mz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "proxy CONNECT 502 / connect failure"
+  },
+  {
+   "url": "https://www.dnt.gov.mz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "proxy CONNECT 502 / connect failure"
+  },
+  {
+   "url": "https://sigt.mta.gov.mz",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "proxy CONNECT 502 / connect failure"
+  },
+  {
+   "url": "https://www.mta.gov.mz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "proxy CONNECT 502 / connect failure"
+  },
+  {
+   "url": "https://www.dinat.gov.mz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "proxy CONNECT 502 / connect failure"
+  },
+  {
+   "url": "https://terrasegura.gov.mz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "proxy CONNECT 502 / connect failure"
+  },
+  {
+   "url": "https://sigit.gov.mz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "proxy CONNECT 502 / connect failure"
+  },
+  {
+   "url": "https://www.mitader.gov.mz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "proxy CONNECT 502 / connect failure"
+  },
+  {
+   "url": "https://portaldogoverno.gov.mz/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "government portal; no cadastre link"
+  },
+  {
+   "url": "https://www.masa.gov.mz/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "agriculture ministry; not relevant"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=mocambique parcelas OR DUAT",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "only population, protected areas, irrigation; no parcels"
+  }
+ ],
+ "geoBlockSuspected": "true (all land-ministry .gov.mz hosts refuse via proxy while portaldogoverno.gov.mz and masa.gov.mz load)",
+ "notes": "No change. Land/cadastre ministry hosts remain unreachable through this proxy.",
+ "nextStep": "Retry official hosts from another network; check Terra Segura / SIGIT / DINAT portals."
+}

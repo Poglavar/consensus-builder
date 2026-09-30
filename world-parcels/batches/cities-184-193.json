@@ -1,0 +1,112 @@
+[
+ {
+  "name": "Cali",
+  "country": "Colombia",
+  "iso2": "CO",
+  "cityCode": 899,
+  "capital": false,
+  "lon": -76.5206016723112,
+  "lat": 3.43291280476524,
+  "pop2025k": 2700.232,
+  "rank": 184
+ },
+ {
+  "name": "Guiyang",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 9300,
+  "capital": false,
+  "lon": 106.702120992921,
+  "lat": 26.5877905736877,
+  "pop2025k": 2686.949,
+  "rank": 185
+ },
+ {
+  "name": "Semarang",
+  "country": "Indonesia",
+  "iso2": "ID",
+  "cityCode": 7063,
+  "capital": false,
+  "lon": 110.432698830789,
+  "lat": -7.03263718095027,
+  "pop2025k": 2679.349,
+  "rank": 186
+ },
+ {
+  "name": "Montreal",
+  "country": "Canada",
+  "iso2": "CA",
+  "cityCode": 3645,
+  "capital": false,
+  "lon": -73.6660077343496,
+  "lat": 45.5363747662468,
+  "pop2025k": 2668.723,
+  "rank": 187
+ },
+ {
+  "name": "Izmir",
+  "country": "Türkiye",
+  "iso2": "TR",
+  "cityCode": 1069,
+  "capital": false,
+  "lon": 27.1428417001797,
+  "lat": 38.4159048253719,
+  "pop2025k": 2650.237,
+  "rank": 188
+ },
+ {
+  "name": "Changzhou",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 11514,
+  "capital": false,
+  "lon": 119.960647832843,
+  "lat": 31.7696476106068,
+  "pop2025k": 2649.836,
+  "rank": 189
+ },
+ {
+  "name": "Tel Aviv",
+  "country": "Israel",
+  "iso2": "IL",
+  "cityCode": 439,
+  "capital": false,
+  "lon": 34.8222350010982,
+  "lat": 32.0678497892024,
+  "pop2025k": 2642.872,
+  "rank": 190
+ },
+ {
+  "name": "Birmingham",
+  "country": "United Kingdom",
+  "iso2": "GB",
+  "cityCode": 3979,
+  "capital": false,
+  "lon": -1.96039982513583,
+  "lat": 52.5046010416867,
+  "pop2025k": 2631.757,
+  "rank": 191
+ },
+ {
+  "name": "Kyiv (Kiev)",
+  "country": "Ukraine",
+  "iso2": "UA",
+  "cityCode": 2178,
+  "capital": true,
+  "lon": 30.519603206343,
+  "lat": 50.4491934982354,
+  "pop2025k": 2614.581,
+  "rank": 192
+ },
+ {
+  "name": "Wuxi",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 11580,
+  "capital": false,
+  "lon": 120.288624104434,
+  "lat": 31.5817276567788,
+  "pop2025k": 2613.1,
+  "rank": 193
+ }
+]

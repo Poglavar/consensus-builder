@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:95",
+  "queueRank": 95,
+  "name": "Muqdisho (Mogadishu)",
+  "country": "Somalia",
+  "countryCode": "SO",
+  "centerLatLon": [
+    2.05393262544166,
+    45.3313716202418
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Banaadir",
+      "observation": "Banadir Regional Administration covers Mogadishu; no public cadastre or parcel GIS portal was found in searches."
+    },
+    {
+      "url": "https://riftvalley.net/wp-content/uploads/2018/06/Land-Matters-in-Mogadishu-RVI-Rift-Valley-Forum-and-HIPS-2017.pdf",
+      "observation": "Research report describing land administration in Mogadishu as fragmented; no national digital cadastre."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://data.humdata.org/api/3/action/package_search?q=cadastre%20OR%20parcels%20Somalia&rows=3",
+      "method": "GET",
+      "httpStatus": "200",
+      "contentType": "application/json",
+      "assessment": "0 datasets"
+    },
+    {
+      "url": "https://banadir.gov.so/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "CONNECT tunnel failed 502; host unreachable"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "none found",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "No official online cadastre located; absence of evidence, and official sites were unreachable from this client.",
+  "nextStep": "Check Banadir Regional Administration and Somali land-registry projects (e.g. donor-funded) for a published parcel layer."
+}

@@ -1,0 +1,53 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "CHP",
+ "regionName": "Chiapas",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept-Language: es-MX,es;q=0.9; cookie jar on",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "none; Mexican cadastre is state/municipal and no state-wide open layer was found",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://catastro.tuxtla.gob.mx/",
+   "observation": "Tuxtla Gutierrez municipal catastro portal (HTTP 200, AngularJS payment/consulta app); no map or parcel service referenced in HTML"
+  }
+ ],
+ "requests": [
+  {
+   "url": "http://geoserver.aserca.gob.mx/ArcGIS/rest/services/Predios/MapServer?f=json",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/plain",
+   "assessment": "upstream connection timeout; found via web map 'Chiapas predios' (federal ASERCA farm-parcel service, not a cadastre)"
+  },
+  {
+   "url": "https://geoserver.aserca.gob.mx/ArcGIS/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection reset"
+  },
+  {
+   "url": "catastro.chiapas.gob.mx",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection reset / no connection"
+  },
+  {
+   "url": "https://www.chiapas.gob.mx/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "state portal only"
+  }
+ ],
+ "reuseStatus": "not read",
+ "remainingUncertainty": "State catastro host unreachable; ASERCA Predios MapServer (agricultural producer parcels, would need owner-field care) timed out. Tuxtla portal has no visible parcel service.",
+ "nextStep": "Retry ASERCA Predios MapServer later; inspect Tuxtla portal JS API calls."
+}

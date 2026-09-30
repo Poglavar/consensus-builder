@@ -1,0 +1,60 @@
+{
+ "kind": "country",
+ "key": "SY",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8; Accept-Language: ar-SY,ar;q=0.9,en;q=0.8 (cookie jar kept via curl -b/-c)",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.syrianrealestate.gov.sy/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (HTTP status 0 / CONNECT 502)"
+  },
+  {
+   "url": "https://www.cadastre.gov.sy/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (HTTP status 0 / CONNECT 502)"
+  },
+  {
+   "url": "https://moloa.gov.sy/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (HTTP status 0 / CONNECT 502)"
+  },
+  {
+   "url": "https://www.egov.sy/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (HTTP status 0 / CONNECT 502)"
+  },
+  {
+   "url": "https://www.moe.gov.sy/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (HTTP status 0 / CONNECT 502)"
+  },
+  {
+   "url": "https://www.moc.gov.sy/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "redirects to /ar; communications ministry homepage, unrelated to cadastre"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "Every .gov.sy host except moc.gov.sy fails at CONNECT; likely policy/sanctions block or dead hosts.",
+ "notes": "No change: cadastre hosts unreachable even with Arabic browser headers; no viewer found to inspect.",
+ "nextStep": "Retry from another network; find the General Directorate of Cadastral Affairs portal via the Ministry of Local Administration."
+}

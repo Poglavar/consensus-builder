@@ -1,0 +1,53 @@
+{
+ "kind": "city",
+ "key": "abidjan",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: fr-CI,fr;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://cadastrenational.dgi.gouv.ci/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl failure (previously certificate expired); not bypassed; still no response"
+  },
+  {
+   "url": "https://geoportail.anstat.ci/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "bot-challenge page with full browser headers; not bypassed"
+  },
+  {
+   "url": "https://ecadastre.dgi.gouv.ci/ ; https://cadastre.gouv.ci/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response (curl 000: connection reset/tunnel failure through the agent proxy)"
+  },
+  {
+   "url": "https://www.dgi.gouv.ci/ ; https://data.gouv.ci/ ; https://cotedivoire.africageoportal.com/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "reachable, portals/hub landing pages, no parcel service"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Abidjan parcelles cadastre type:Feature Service",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 results"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "expired certificate is a server-side fault; ANSTAT 403 is a bot challenge, cause unproven",
+ "notes": "Unchanged: e-cadastre still unreachable (expired certificate previously), ANSTAT still challenged.",
+ "nextStep": "Retry after DGI certificate renewal and inspect the e-cadastre viewer."
+}

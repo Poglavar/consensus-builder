@@ -1,0 +1,48 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CH",
+ "regionCode": "JU",
+ "regionName": "JU",
+ "checkedAt": "2026-09-30",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: application/json,text/xml,application/xml,text/html;q=0.9,*/*;q=0.8; Accept-Language: de-CH,de;q=0.9; Referer https://geodienste.ch/; cookie jar used",
+ "status": "credentialed_or_paid",
+ "source": {
+  "sourceId": "ch-geodienste-av0",
+  "name": "geodienste.ch Amtliche Vermessung (av_0) WFS 2.0, feature type ms:RESF",
+  "operator": "Cantons and Confederation via geodienste.ch",
+  "scope": "canton JU as one filter of a multi-canton national aggregate",
+  "endpoint": "https://geodienste.ch/db/av_0/deu",
+  "method": "GET",
+  "responseFormat": "WFS 2.0 GML 3.2 (text/xml)",
+  "crs": "EPSG:2056",
+  "reuseStatus": "keine Angabe (per services.json); canton terms https://www.jura.ch/DEN/SDT/Cadastre-et-geoinformation/Mensuration-officielle-MO.html"
+ },
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "Not open. Free and contract-free below 10 ha; from 10 ha a contract and fee are required (geodienste.ch notes). AV vector data publication_data = \"Freigabe erforderlich\"; WMS free.",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://geodienste.ch/info/services.json",
+   "observation": "JU av entry: publication_data=Freigabe erforderlich, cantonal_coverage=True, contract_required_data=True, opendata_terms_data=keine Angabe, terms_of_use_data=https://www.jura.ch/DEN/SDT/Cadastre-et-geoinformation/Mensuration-officielle-MO.html"
+  },
+  {
+   "url": "https://geodienste.ch/services/av",
+   "observation": "geodienste.ch AV topic page (terms https://geodienste.ch/terms-of-use)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geodienste.ch/db/av_0/deu?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:RESF&COUNT=3&SRSNAME=urn:ogc:def:crs:EPSG::2056&BBOX=2593000,1244900,2593150,1245050,urn:ogc:def:crs:EPSG::2056",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "0 RESF features"
+  }
+ ],
+ "gatedCondition": "Free and contract-free below 10 ha; from 10 ha a contract and fee are required (geodienste.ch notes). AV vector data publication_data = \"Freigabe erforderlich\"; WMS free.",
+ "gatedBehaviour": "Bounded GetFeature at Delemont returned HTTP 200 with numberReturned=0 (release filter FILTER_ALLOWED_CANTONS excludes JU); not bypassed.",
+ "reuseStatus": "Free and contract-free below 10 ha; from 10 ha a contract and fee are required (geodienste.ch notes). AV vector data publication_data = \"Freigabe erforderlich\"; WMS free.",
+ "remainingUncertainty": "A 0-feature result is the documented release gate; not retried with credentials. No login attempted. Cantonal WMS is free but is not a parcel record list.",
+ "nextStep": "Obtain contract/release from canton (Service du développement territorial) if parcel data for JU is needed."
+}

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:3530597",
+  "checkedAt": "2026-09-28",
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {"url": "https://sig.cdmx.gob.mx/datos/descarga", "observation": "Official SIGCDMX says every predio polygon can be downloaded as a Shapefile separately for each of the 16 alcaldías. This is municipal/federal-district coverage, not Mexican national coverage. Individual download URLs and feature contents could not be accessed in this pass."},
+    {"url": "https://datos.cdmx.gob.mx/dataset/informacion-catastral-de-la-ciudad-de-mexico", "observation": "The CKAN cadastral dataset has borough CSV files with attributes; CSV alone is not proof of polygons."},
+    {"url": "https://www.jefaturadegobierno.cdmx.gob.mx/comunicacion/nota/presenta-gobierno-capitalino-sistema-abierto-de-informacion-geografica-de-la-ciudad-de-mexico", "observation": "City government describes public access to cadastral geography, limited to Mexico City."}
+  ],
+  "requests": [
+    {"url": "https://sig.cdmx.gob.mx/datos/descarga", "method": "GET", "httpStatus": null, "error": "Sandboxed request could not resolve the host; unrestricted direct request timed out after 25 seconds, and browser navigation also timed out. Indexed official page text was inspected.", "parcelRecordCount": null}
+  ],
+  "coverageAssessment": {"claimedScope": "All 16 Mexico City alcaldías via separate Shapefile downloads", "verifiedOpenScope": "none; no 200 polygon-list response", "countrywideVerified": false},
+  "remainingUncertainty": "Strong citywide source candidate, but download URLs, response status, actual geometry, completeness, CRS, and license need direct verification. The metropolitan area extends beyond the federal district.",
+  "nextStep": "Retrieve one borough Shapefile, confirm HTTP 200 and nonempty closed polygon features, then sample the other boroughs."
+}

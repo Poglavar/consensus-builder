@@ -1,0 +1,66 @@
+{
+ "kind": "city",
+ "key": "toshkent",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: uz-UZ,uz;q=0.9,ru;q=0.8 (cookie jar used)",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://kadastr.uz/ ; https://kadastr.uz/en",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset by peer"
+  },
+  {
+   "url": "https://geoportal.kadastr.uz/ ; https://cadastre.uz/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "CONNECT tunnel 502"
+  },
+  {
+   "url": "https://e-kadastr.uz/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "TLS handshake error (unrecognized name); not bypassed"
+  },
+  {
+   "url": "https://geoportal.uz/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "TLS name mismatch; not bypassed"
+  },
+  {
+   "url": "https://data.egov.uz/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://gov.uz/en/kadastr",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "agency page on gov.uz; only social links and kadastr.uz/uz/etirof-etish-reja-jadvali, no geoportal endpoint"
+  },
+  {
+   "url": "https://my.gov.uz/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "e-government portal shell (login-based services)"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "Agency host resets connections from this network (possibly geo/IP filtering) but cause unproven.",
+ "nextStep": "Retry kadastr.uz from an Uzbek network; inspect geoportal for parcel WFS/ArcGIS layer."
+}

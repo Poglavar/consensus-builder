@@ -1,0 +1,91 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "BR",
+ "regionCode": "DF",
+ "regionName": "Distrito Federal",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "source": {
+  "sourceId": "br-df-ide-lotes-registrados",
+  "name": "CADASTRO_TERRITORIAL MapServer layer 10 'Lotes Registrados' (IDE-DF / GeoPortal SEDUH)",
+  "operator": "SEDUH-DF / IDE-DF",
+  "scope": "Distrito Federal registered urban lots (layer extent covers the DF, EPSG:31983)",
+  "endpoint": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/MapServer/10",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "GeoJSON (f=geojson) Polygon",
+  "crs": "EPSG:31983 native, outSR=4326 accepted",
+  "layerKind": "urban_lots_registered",
+  "maxRecordCount": 100000,
+  "reuseStatus": "copyrightText 'SEDUH'; no licence text read"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "br-df-ide-lotes-registrados",
+  "requestUrl": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/MapServer/10/query?f=geojson&where=1=1&geometry=-47.93,-15.80,-47.929,-15.799&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid,pu_cipu,qd_lote&outSR=4326&resultRecordCount=3&returnGeometry=true",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/geo+json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   -47.93,
+   -15.8,
+   -47.929,
+   -15.799
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "pu_cipu",
+  "responseFile": "research/subnational/BR/DF-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount",
+  "headersUsed": "Chrome/129 desktop UA 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36'; Accept: application/json,*/*;q=0.8; Accept-Language: pt-BR,pt;q=0.9; cookie jar; Referer = viewer origin"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Layer extent spans the whole DF (EPSG:31983 x 153146..218058, y 8223165..8274064); DF is one federative unit; features returned in Brasilia Plano Piloto and Ceilandia (bbox -48.11,-15.82). Publisher makes no completeness claim; irregular occupations are in separate layer 11.",
+ "subregionsVerified": [
+  "Brasilia (Plano Piloto)",
+  "Ceilandia"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services",
+   "observation": "open ArcGIS Server 10.71, folder Publico incl. CADASTRO_TERRITORIAL, CONTROLE_URBANO, LIMITES"
+  },
+  {
+   "url": "https://www.geoportal.seduh.df.gov.br/",
+   "observation": "GeoPortal viewer, used as Referer"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "service list"
+  },
+  {
+   "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/MapServer/10?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "layer metadata; fields include address/CEP (pu_end_*, pu_cep) which were NOT requested"
+  },
+  {
+   "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/MapServer/10/query?f=geojson&where=1=1&geometry=-47.93,-15.80,-47.929,-15.799&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid,pu_cipu,qd_lote&outSR=4326&resultRecordCount=3&returnGeometry=true",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "3 lot polygons, ID+geometry only"
+  },
+  {
+   "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/MapServer/10/query with geometry=-48.11,-15.82,-48.109,-15.819 (Ceilandia), outFields=objectid,pu_cipu, count 3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "features returned; not saved"
+  }
+ ],
+ "reuseStatus": "licence/terms not read",
+ "remainingUncertainty": "Completeness of Lotes Registrados across all RAs not measured. Rural DF also covered by SICAR (research/countries/BR.json).",
+ "nextStep": "Count features per RA; read SEDUH data terms."
+}

@@ -1,0 +1,65 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "GB",
+ "country": "United Kingdom",
+ "checkedAt": "2026-09-29",
+ "status": "national_cadastre_credentialed_or_paid",
+ "cadastreAuthority": "England and Wales: HM Land Registry (INSPIRE Index Polygons free download; National Polygon Service paid). Scotland: Registers of Scotland (Land Register cadastral map). Northern Ireland: Land & Property Services (LPS). No single UK-wide cadastre.",
+ "portalsFound": [
+  {
+   "url": "https://use-land-property-data.service.gov.uk/datasets/inspire",
+   "observation": "HMLR INSPIRE Index Polygons, per-local-authority downloads for England and Wales (freehold title extents, not full cadastre); behind a Cloudflare challenge/account step for curl."
+  },
+  {
+   "url": "https://inspire.landregistry.gov.uk/inspire/ows",
+   "observation": "HMLR OGC endpoint; WFS explicitly disabled, WMS images only."
+  },
+  {
+   "url": "https://api.os.uk/features/ngd/ofa/v1/collections",
+   "observation": "Ordnance Survey NGD features API requires an API key (401)."
+  },
+  {
+   "url": "https://data.spatialhub.scot/",
+   "observation": "Spatial Hub Scotland CKAN reachable; search for 'cadastral' returned 0 datasets."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://inspire.landregistry.gov.uk/inspire/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CadastralParcels&count=3&bbox=51.5,-0.13,51.501,-0.129",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "OWS ServiceUnavailable: 'Service WFS is disabled'"
+  },
+  {
+   "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+   "method": "GET",
+   "httpStatus": 302,
+   "contentType": null,
+   "assessment": "redirect to Cloudflare challenge; no file obtained"
+  },
+  {
+   "url": "https://api.os.uk/features/ngd/ofa/v1/collections?key=x",
+   "method": "GET",
+   "httpStatus": 401,
+   "contentType": "application/json",
+   "assessment": "API key required"
+  },
+  {
+   "url": "https://data.spatialhub.scot/api/3/action/package_search?q=cadastral&rows=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "count 0"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "England and Wales freehold index polygons only (per authority); Scotland and Northern Ireland separate",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "registration",
+ "remainingUncertainty": "No bounded polygon reply obtained. HMLR INSPIRE polygons are downloadable per authority (account/session step) and are index polygons, not a queryable API. Licence terms not read. Scotland/NI not probed beyond one catalogue search.",
+ "nextStep": "Complete an INSPIRE download in a browser session and extract a small bbox; probe Registers of Scotland and LPS NI services; OS Data Hub with key."
+}

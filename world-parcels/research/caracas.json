@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:195",
+  "queueRank": 195,
+  "name": "Caracas",
+  "country": "Venezuela (Bolivarian Republic of)",
+  "countryCode": "VE",
+  "centerLatLon": [
+    10.4797277282105,
+    -66.889076497662
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "http://www.igvsb.gob.ve/",
+      "observation": "Instituto Geografico de Venezuela Simon Bolivar, the national mapping/cadastre body; the host answered only with a 301 redirect, and the redirected https host reset the connection."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=catastro Caracas parcelas",
+      "observation": "ArcGIS Online search for Caracas cadastral feature services returned no results."
+    }
+  ],
+  "requests": [
+    {
+      "url": "http://www.igvsb.gob.ve/",
+      "method": "GET",
+      "httpStatus": 301,
+      "contentType": "text/html",
+      "parcelRecordCount": null,
+      "assessment": "redirect only"
+    },
+    {
+      "url": "https://www.igvsb.gob.ve/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "parcelRecordCount": null,
+      "assessment": "connection reset by peer"
+    },
+    {
+      "url": "https://geoportal.igvsb.gob.ve/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "parcelRecordCount": null,
+      "assessment": "proxy CONNECT failed / unreachable"
+    },
+    {
+      "url": "http://ide.igvsb.gob.ve/geoserver/ows?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "parcelRecordCount": null,
+      "assessment": "unreachable"
+    },
+    {
+      "url": "https://www.alcaldiadecaracas.gob.ve/, https://datos.gob.ve/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "parcelRecordCount": null,
+      "assessment": "unreachable"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search (catastro Caracas parcelas)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "parcelRecordCount": 0,
+      "assessment": "0 results"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "unknown",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Every official Venezuelan host was unreachable or reset from this environment, so absence of an open service is not shown. No cadastral open-data service is known to me; this was not established by requests.",
+  "nextStep": "Retry IGVSB / IDE Venezuela (ide.igvsb.gob.ve) and Alcaldia Metropolitana / Chacao / Baruta municipal GIS from another network."
+}

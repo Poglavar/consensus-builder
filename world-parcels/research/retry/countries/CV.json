@@ -1,0 +1,98 @@
+{
+ "previousStatus": "national_cadastre_viewer_only",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: pt-CV,pt;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": {
+  "sourceId": "cv-ingt-prime-ver-predio",
+  "requestUrl": "https://ingtgeo.gov.cv/arcgisingt/rest/services/PRIME/VER_PREDIO_NO_MAPA_PRIME/FeatureServer/0/query?where=1%3D1&outFields=*&resultRecordCount=3&outSR=4326&f=geojson",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/geo+json;charset=UTF-8",
+  "spatialTestAreaLonLat": "first 3 features (Sal island ~-22.94,16.77); second query bbox -25.1,14.85,-23.0,15.6 (Santiago, Praia ~-23.51,14.92) returned 93 in bbox, 2 fetched",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "NIP",
+  "responseFile": "research/retry/countries/CV-parcel-response.json",
+  "pagination": "resultRecordCount works on FeatureServer; MapServer layers reject pagination ('Pagination is not supported'); maxRecordCount 1000",
+  "regionSampled": "Sal and Santiago islands"
+ },
+ "source": {
+  "sourceId": "cv-ingt-prime-ver-predio",
+  "name": "VER_PREDIO_NO_MAPA_PRIME (PRIME folder)",
+  "operator": "INGT - Instituto Nacional de Gestao do Territorio (ingtgeo.gov.cv ArcGIS Server 10.71)",
+  "scope": "national server, but layer holds only 572 parcels (returnCountOnly) spanning extent x -25.08..-22.75, y 14.90..16.92; fields NIP, POLIGON_ID, OBJECTID only",
+  "endpoint": "https://ingtgeo.gov.cv/arcgisingt/rest/services/PRIME/VER_PREDIO_NO_MAPA_PRIME/FeatureServer/0",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "geojson/json",
+  "crs": "native Cabo Verde ITRF96 Lambert; outSR=4326 works",
+  "reuseStatus": "licence not read; anonymous access, no token"
+ },
+ "requests": [
+  {
+   "url": "https://ingt.gov.cv/ingt/Servi%C3%A7os/cadastro-predial/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "page links portaldocadastro.ingt.gov.cv (WordPress, online process portal) and IDE-CV page"
+  },
+  {
+   "url": "https://ingt.gov.cv/ingt/Servi%C3%A7os/idecv/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "links http://idecv-ingt.opendata.arcgis.com"
+  },
+  {
+   "url": "https://idecv-ingt.opendata.arcgis.com/api/feed/dcat-us/1.1.json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "92 datasets: land-use plans, toponymy; hosted on services5.arcgis.com and ingtgeo.gov.cv"
+  },
+  {
+   "url": "https://ingtgeo.gov.cv/arcgisingt/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "root lists PLANTA_CADASTRAL_CIP, PLANTA_PRE_CADASTRO, folders PRIME, SDI, SERVICO_WFS, Limits"
+  },
+  {
+   "url": "https://ingtgeo.gov.cv/arcgisingt/rest/services/PLANTA_PRE_CADASTRO/MapServer/0/query?...resultRecordCount=3&f=geojson",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "error 400 'Pagination is not supported' (MapServer); layer not sampled further (SDE.CM_BDADOS_SAL, polygon)"
+  },
+  {
+   "url": "https://ingtgeo.gov.cv/arcgisingt/rest/services/PRIME/VER_PREDIO_NO_MAPA_PRIME/FeatureServer/0/query?returnCountOnly=true&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "count 572"
+  },
+  {
+   "url": "https://ide.cv/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection failed at the agent proxy (no HTTP status): unreachable"
+  },
+  {
+   "url": "https://sniig.cv/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection failed at the agent proxy (no HTTP status): unreachable"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "NEW: open anonymous ArcGIS FeatureServer returns real parcel polygons (NIP = national property id) on two islands (Sal, Santiago). Bare curl without browser headers also returned 200, so headers did not matter. Found via IDE-CV page -> ingtgeo.gov.cv root listing. Coverage is a small pilot layer (572 parcels), not the full national cadastre; PLANTA_CADASTRAL_CIP (extent tiny, ~100x340 m) and PLANTA_PRE_CADASTRO (Sal) MapServers also exist and SERVICO_WFS/PRECADASTRO_MINDELO_CV (Sao Vicente) was not sampled.",
+ "nextStep": "Sample PLANTA_PRE_CADASTRO and SERVICO_WFS/PRECADASTRO_MINDELO_CV via MapServer query without pagination params; establish real coverage; read licence.",
+ "kind": "country",
+ "key": "CV",
+ "checkedAt": "2026-09-30"
+}

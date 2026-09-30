@@ -1,0 +1,45 @@
+{
+ "kind": "country",
+ "key": "LB",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: ar-LB,ar;q=0.9,fr;q=0.8,en;q=0.7",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.cadastre.gov.lb/ (and /en, http://)",
+   "method": "GET",
+   "httpStatus": "0",
+   "contentType": "",
+   "assessment": "proxy CONNECT 502"
+  },
+  {
+   "url": "https://data.gov.lb/, https://www.finance.gov.lb/, https://www.mem.gov.lb/",
+   "method": "GET",
+   "httpStatus": "0",
+   "contentType": "",
+   "assessment": "connection failed via proxy"
+  },
+  {
+   "url": "https://www.cdr.gov.lb/",
+   "method": "GET",
+   "httpStatus": "403",
+   "contentType": "text/html",
+   "assessment": "blocked"
+  },
+  {
+   "url": "https://www.presidency.gov.lb/",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "text/html",
+   "assessment": "reachable but irrelevant"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "Cadastre host unreachable; nothing new.",
+ "nextStep": "Test cadastre.gov.lb from another network; look for ArcGIS service."
+}

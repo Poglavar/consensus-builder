@@ -1,0 +1,78 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "HI",
+ "regionName": "Hawaii",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "source": {
+  "sourceId": "us-hi-statewide-tmks",
+  "name": "Statewide TMKs (ParcelsZoning layer 25)",
+  "operator": "State of Hawaii Office of Planning and Sustainable Development, Statewide GIS Program",
+  "scope": "Statewide TMK parcels (all counties)",
+  "endpoint": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25",
+  "method": "GET ArcGIS REST /query",
+  "responseFormat": "Esri JSON polygons (rings)",
+  "crs": "requested outSR=4326",
+  "reuseStatus": "Terms/licence text not read on the service; see publisher page."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-hi-statewide-tmks",
+  "requestUrl": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25/query?where=1%3D1&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-157.8590%2C21.3060%2C-157.8575%2C21.3070&outFields=tmk%2Ctmk_txt",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   -157.859,
+   21.306,
+   -157.8575,
+   21.307
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "$.features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "tmk",
+  "responseFile": "HI-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount (ArcGIS)"
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-US,en;q=0.9; cookie jar kept; no headers-dependent change observed",
+ "regionWideClaimed": true,
+ "regionWideBasis": "Layer is named \"Statewide TMKs\"; county-specific parcel layers (Oahu, Maui, Hawaii, Kauai) sit alongside it in the same service.",
+ "subregionsVerified": [
+  "City and County of Honolulu (Oahu)",
+  "Hawaii County (Hilo area)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://geodata.hawaii.gov/arcgis/rest/services",
+   "observation": "State GIS ArcGIS Server directory, anonymous"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25/query?where=1%3D1&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-157.8590%2C21.3060%2C-157.8575%2C21.3070&outFields=tmk%2Ctmk_txt",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "3 parcel polygons with tmk"
+  },
+  {
+   "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "layer metadata: polygon, TMK fields"
+  },
+  {
+   "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25/query?where=1%3D1&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-155.0900%2C19.7200%2C-155.0885%2C19.7210&outFields=tmk%2Ctmk_txt",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "Hilo, Hawaii County: 3 polygons"
+  }
+ ],
+ "reuseStatus": "Terms/licence text not read on the service; see publisher page.",
+ "remainingUncertainty": "Coverage completeness (all four counties, Kauai not sampled) not measured; only Oahu and Hawaii Island tested.",
+ "nextStep": "Sample Kauai/Maui; read the Statewide GIS Program data terms."
+}

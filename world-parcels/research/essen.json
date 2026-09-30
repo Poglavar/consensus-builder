@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:183",
+  "queueRank": 183,
+  "name": "Essen",
+  "country": "Germany",
+  "countryCode": "DE",
+  "centerLatLon": [
+    51.4886212700177,
+    6.97216877251344
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_city_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "de-nrw-geobasis-alkis-vereinfacht-wfs",
+    "requestUrl": "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?service=WFS&version=2.0.0&request=GetFeature&typenames=ave:Flurstueck&bbox=359150,5706060,359250,5706160,urn:ogc:def:crs:EPSG::25832&count=3",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+    "spatialTestAreaLonLat": [
+      6.9713,
+      51.4881,
+      6.9727,
+      51.489
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "wfs:FeatureCollection/wfs:member (ave:Flurstueck)",
+    "geometryType": "GML 3.2.1 MultiSurface/Polygon (gml:posList, EPSG:25832 x y)",
+    "closedRings": true,
+    "idField": "flstkennz (Flurst\u00fcckskennzeichen) / idflurst / gml:id",
+    "responseFile": "essen-parcel-response.json",
+    "pagination": "WFS 2.0 count + STARTINDEX; numberMatched='unknown'. The test box is given in EPSG:25832 metres (359150,5706060 to 359250,5706160), approx. 100 m square; lon/lat bounds listed are approximate."
+  },
+  "source": {
+    "sourceId": "de-nrw-geobasis-alkis-vereinfacht-wfs",
+    "name": "WFS NW ALKIS Vereinfacht (Flurst\u00fccke, simplified ALKIS)",
+    "operator": "Geobasis NRW (Land Nordrhein-Westfalen surveying authority, Bezirksregierung K\u00f6ln)",
+    "scope": "Cadastral parcels (ave:Flurstueck) of North Rhine-Westphalia (feature types also include buildings, land use, cadastral districts); sample is Essen only",
+    "endpoint": "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht",
+    "method": "GET OGC WFS 2.0.0 GetFeature",
+    "responseFormat": "GML 3.2.1 (also GML 3.1, GeoPackage and zipped shapefile advertised; GeoJSON request failed)",
+    "crs": "EPSG:25832 (ETRS89 / UTM 32N) default; EPSG:25831 also offered",
+    "reuseStatus": "Capabilities state Datenlizenz Deutschland - Zero 2.0 (dl-de/zero-2-0) with AccessConstraints NONE, and a disclaimer of liability; per-request limits not read"
+  },
+  "portalsFound": [
+    {
+      "url": "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?service=WFS&request=GetCapabilities",
+      "observation": "Official Geobasis NRW WFS capabilities (HTTP 200): feature types ave:Flurstueck, FlurstueckPunkt, GebaeudeBauwerk, KatasterBezirk, Nutzung, NutzungFlurstueck, VerwaltungsEinheit; licence dl-de/zero-2-0."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "assessment": "service description only; not counted as verification"
+    },
+    {
+      "url": "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?service=WFS&version=2.0.0&request=GetFeature&typenames=adv:AX_Flurstueck&bbox=51.4880,6.9710,51.4890,6.9730,urn:ogc:def:crs:EPSG::4326&count=3",
+      "method": "GET",
+      "httpStatus": 400,
+      "contentType": "text/xml",
+      "assessment": "wrong type name (adv:AX_Flurstueck); InvalidParameterValue"
+    },
+    {
+      "url": "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?service=WFS&version=2.0.0&request=GetFeature&typenames=ave:Flurstueck&count=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "assessment": "unfiltered 1-record probe; not a spatial test"
+    },
+    {
+      "url": "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?service=WFS&version=2.0.0&request=GetFeature&typenames=ave:Flurstueck&bbox=51.4884,6.9718,51.4890,6.9728,urn:ogc:def:crs:EPSG::4326&count=3&outputFormat=application/geo%2Bjson",
+      "method": "GET",
+      "httpStatus": 400,
+      "contentType": "text/xml",
+      "assessment": "OGC Proxy InvalidParameterValue; GeoJSON output format not accepted (cause not separated from the 4326 bbox); GML with an EPSG:25832 bbox works"
+    },
+    {
+      "url": "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?service=WFS&version=2.0.0&request=GetFeature&typenames=ave:Flurstueck&bbox=359150,5706060,359250,5706160,urn:ogc:def:crs:EPSG::25832&count=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "assessment": "3 Flurstueck polygons in Essen (Gemarkung Vogelheim, gemeinde Essen 05113000) with closed rings"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "North Rhine-Westphalia parcels (state-level open data)",
+    "verifiedOpenScope": "3 parcels in a ~100 m square in Essen; single state sampled",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Only NRW (state) is covered by this source; Germany has 16 state cadastres, so no country-level claim. Server limits on bbox size and request rate were not read; the simplified product may omit some ALKIS attributes; data vintage was 2024-10-21 for the sampled records.",
+  "nextStep": "Implement WFS GetFeature paging with GML parsing and UTM32 reprojection; read Geobasis NRW terms and limits; note the full-ALKIS NRW WFS is a separate service. Other German states need their own sources."
+}

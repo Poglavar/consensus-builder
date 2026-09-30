@@ -1,0 +1,46 @@
+{
+ "kind": "country",
+ "key": "GQ",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: es-GQ,es;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.gq.gob.gq/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no response"
+  },
+  {
+   "url": "https://www.guineaecuatorialpress.com/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "press site, no cadastre"
+  },
+  {
+   "url": "https://www.guineaecuatorial.org/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "3 KB landing page, no cadastre"
+  },
+  {
+   "url": "https://minhap.gob.gq/, gobierno.gq, guineaecuatorial.gob.gq, dgcg.gq, mopvu.gq",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no response"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "gq.gob.gq and other .gq government hosts give no response through the proxy while press/other-hosted sites load; possible network filtering, unconfirmed",
+ "notes": "No government host reachable; nothing about a cadastre found.",
+ "nextStep": "Retry later or from another network; find the ministry responsible for land (Obras Publicas / Urbanismo)."
+}

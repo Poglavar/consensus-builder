@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:155",
+  "queueRank": 155,
+  "name": "San Francisco",
+  "country": "United States of America",
+  "countryCode": "US",
+  "centerLatLon": [
+    37.7908132131578,
+    -122.625238949058
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_city_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "us-ca-sf-datasf-active-parcels",
+    "requestUrl": "https://data.sfgov.org/resource/acdm-wktn.json?%24limit=3&%24where=within_box%28shape%2C37.7905%2C-122.4075%2C37.7920%2C-122.4055%29",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "spatialTestAreaLonLat": [
+      -122.4075,
+      37.7905,
+      -122.4055,
+      37.792
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "$ (top-level array; geometry in 'shape')",
+    "geometryType": "MultiPolygon",
+    "closedRings": true,
+    "idField": "blklot (mapblklot = map block/lot)",
+    "responseFile": "san-francisco-parcel-response.json",
+    "pagination": "Socrata SODA $limit/$offset; the request redirected from data.sfgov.org to data.sf.gov (followed)"
+  },
+  "source": {
+    "sourceId": "us-ca-sf-datasf-active-parcels",
+    "name": "Land Use / Assessor parcels: Parcels - Active and Retired (DataSF dataset acdm-wktn)",
+    "operator": "City and County of San Francisco (DataSF open data portal; parcel basemap maintained by the city)",
+    "scope": "City and County of San Francisco",
+    "endpoint": "https://data.sfgov.org/resource/acdm-wktn.json",
+    "method": "GET (Socrata SODA with SoQL $where within_box)",
+    "responseFormat": "JSON (also .geojson works, tested with HTTP 200)",
+    "crs": "EPSG:4326 (lon/lat)",
+    "reuseStatus": "Open data portal; licence text not read in this probe, review before redistribution"
+  },
+  "portalsFound": [
+    {
+      "url": "https://data.sfgov.org/",
+      "observation": "DataSF open-data portal (redirects to data.sf.gov); parcel dataset acdm-wktn queryable anonymously via Socrata SODA."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://data.sfgov.org/resource/acdm-wktn.json?%24limit=3&%24where=within_box%28shape%2C37.7905%2C-122.4075%2C37.7920%2C-122.4055%29",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "3 nonempty MultiPolygon parcel records with closed rings; VERIFIED"
+    },
+    {
+      "url": "https://data.sfgov.org/resource/acdm-wktn.geojson?%24limit=3&%24where=within_box(shape,...)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/vnd.geo+json; charset=UTF-8",
+      "assessment": "3 GeoJSON features; confirms format alternative"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "City and County of San Francisco",
+    "verifiedOpenScope": "three parcels in a downtown SF bbox; UN queue centroid (-122.625, 37.791) lies offshore west of the city so the test area is at the city centre instead",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Sample does not prove completeness. The UN San Francisco agglomeration extends over other Bay Area counties (e.g. Alameda, San Mateo, Marin) that need their own sources. Licence and rate limits (app-token recommended) not reviewed.",
+  "nextStep": "Implement bounded SoQL within_box requests; find county sources for Oakland and the peninsula for rest of the agglomeration."
+}

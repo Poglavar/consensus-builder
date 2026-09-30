@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:152",
+  "queueRank": 152,
+  "name": "Ouagadougou",
+  "country": "Burkina Faso",
+  "countryCode": "BF",
+  "centerLatLon": [
+    12.3616666818412,
+    -1.52722272561358
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://dgi.bf/informatisation-du-cadastre-national-les-plans-cadastraux-de-07-arrondissements-de-ouagadougou-en-cours-de-numerisation/",
+      "observation": "Tax directorate (DGI) reports cadastral plans of 7 Ouagadougou arrondissements being digitised; SYC@D cadastral system launched Dec 2021; no public parcel service documented."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://dgi.bf/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "site reachable; no geoportal link identified"
+    },
+    {
+      "url": "https://dgi.bf/informatisation-du-cadastre-national-les-plans-cadastraux-de-07-arrondissements-de-ouagadougou-en-cours-de-numerisation/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "news article on digitisation"
+    },
+    {
+      "url": "https://hub.arcgis.com/api/v3/search?q=ouagadougou%20parcelles",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "only candidate 'Parcelles_2021_04' FeatureServer (services6.arcgis.com/zvfkYEZu1gFkquqP) was returned as polygons with French Lambert-93 extent (EPSG:2154, x~665000,y~6862000 = France), so REJECTED as not Ouagadougou"
+    },
+    {
+      "url": "https://www.dgi.bf/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "host unreachable (connection failed/timeout via proxy); not evidence of absence"
+    },
+    {
+      "url": "https://data.gov.bf/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "host unreachable (connection failed/timeout via proxy); not evidence of absence"
+    },
+    {
+      "url": "https://www.mefp.gov.bf/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "host unreachable (connection failed/timeout via proxy); not evidence of absence"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "national cadastre in digitisation; not open",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Several government hosts were unreachable; no open geoportal was found, but its absence is unconfirmed.",
+  "nextStep": "Look for a SYC@D public viewer or municipal (Commune de Ouagadougou) GIS; retry unreachable hosts."
+}

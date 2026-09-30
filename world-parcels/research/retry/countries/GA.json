@@ -1,0 +1,95 @@
+{
+ "kind": "country",
+ "key": "GA",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: fr-GA,fr;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.gabon.ga/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no response (proxy 502 earlier; still fails with browser headers)"
+  },
+  {
+   "url": "https://gabon.ga/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no response"
+  },
+  {
+   "url": "https://cadastre.ga/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no response"
+  },
+  {
+   "url": "https://www.dgdi.ga/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no response"
+  },
+  {
+   "url": "https://www.anuttc.ga/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no response"
+  },
+  {
+   "url": "https://www.sigagabon.org/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no response"
+  },
+  {
+   "url": "https://ancfcc.ga/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no response (guess)"
+  },
+  {
+   "url": "https://www.gouvernement.ga/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "reachable; government news site, no cadastre service found"
+  },
+  {
+   "url": "https://www.presidence.ga/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "reachable; presidency site, not a cadastre"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Gabon%20cadastre%20parcelles&f=json&num=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 results"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Libreville%20parcelles&f=json&num=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "1 personal-account item; not official, not tested"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "several .ga hosts fail at CONNECT while others answer; likely site down or network-specific",
+ "notes": "Slightly more probed; still no cadastre authority portal found or reachable.",
+ "nextStep": "Identify the cadastre/land-registry portal (Conservation Fonciere) by web search; retry."
+}

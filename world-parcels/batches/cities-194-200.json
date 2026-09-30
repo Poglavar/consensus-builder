@@ -1,0 +1,79 @@
+[
+ {
+  "name": "Milan",
+  "country": "Italy",
+  "iso2": "IT",
+  "cityCode": 1848,
+  "capital": false,
+  "lon": 9.19240351352659,
+  "lat": 45.5181467423715,
+  "pop2025k": 2599.022,
+  "rank": 194
+ },
+ {
+  "name": "Caracas",
+  "country": "Venezuela (Bolivarian Republic of)",
+  "iso2": "VE",
+  "cityCode": 3791,
+  "capital": true,
+  "lon": -66.889076497662,
+  "lat": 10.4797277282105,
+  "pop2025k": 2576.666,
+  "rank": 195
+ },
+ {
+  "name": "Manchester",
+  "country": "United Kingdom",
+  "iso2": "GB",
+  "cityCode": 3388,
+  "capital": false,
+  "lon": -2.25536904358391,
+  "lat": 53.4938305721117,
+  "pop2025k": 2535.427,
+  "rank": 196
+ },
+ {
+  "name": "Quito",
+  "country": "Ecuador",
+  "iso2": "EC",
+  "cityCode": 2524,
+  "capital": true,
+  "lon": -78.4989048157792,
+  "lat": -0.203432542228661,
+  "pop2025k": 2534.914,
+  "rank": 197
+ },
+ {
+  "name": "Cotonou",
+  "country": "Benin",
+  "iso2": "BJ",
+  "cityCode": 1752,
+  "capital": true,
+  "lon": 2.3895186609943,
+  "lat": 6.38646680667236,
+  "pop2025k": 2506.489,
+  "rank": 198
+ },
+ {
+  "name": "Bhopal",
+  "country": "India",
+  "iso2": "IN",
+  "cityCode": 9213,
+  "capital": false,
+  "lon": 77.4239121630525,
+  "lat": 23.2399095144358,
+  "pop2025k": 2487.205,
+  "rank": 199
+ },
+ {
+  "name": "Curitiba",
+  "country": "Brazil",
+  "iso2": "BR",
+  "cityCode": 6446,
+  "capital": false,
+  "lon": -49.2553428080241,
+  "lat": -25.4581368087922,
+  "pop2025k": 2475.352,
+  "rank": 200
+ }
+]

@@ -1,0 +1,79 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "FL",
+ "regionName": "Florida",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "source": {
+  "sourceId": "us-fl-dor-statewide-cadastral",
+  "name": "Florida Statewide Cadastral (CADASTRAL_DOR)",
+  "operator": "Florida Department of Revenue Property Tax Oversight (hosted via Florida GIO / FDEP ArcGIS Online)",
+  "scope": "Florida statewide, all 67 counties",
+  "endpoint": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "Esri JSON (ArcGIS REST query)",
+  "crs": "EPSG:4326 (outSR requested); native NAD83 HARN Florida GDL Albers (6439)",
+  "reuseStatus": "copyright text: Florida county property appraisers / FL DOR PTO; terms not read"
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-US,en;q=0.9; cookie jar used; no token required",
+ "verifiedParcelResponse": {
+  "sourceId": "us-fl-dor-statewide-cadastral",
+  "requestUrl": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query (see requests)",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   -82.9404,
+   29.5795,
+   -82.94,
+   29.5843
+  ],
+  "parcelRecordCount": 6,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PARCEL_ID",
+  "responseFile": "FL-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount",
+  "regionSampled": "County code 48 (Levy area, lon -82.94 lat 29.58), County code 13 (Bay area, lon -85.48 lat 30.57)"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Service description: parcel polygons collected every April from all 67 county property appraisers by the Department of Revenue, exported August 2025. Sampled via CO_NO attribute filters because bbox spatial queries timed out.",
+ "subregionsVerified": [
+  "County code 48 (Levy area, lon -82.94 lat 29.58)",
+  "County code 13 (Bay area, lon -85.48 lat 30.57)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer",
+   "observation": "Layer joins parcels with the NAL roll, so owner and address fields exist (not requested/saved)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=CO_NO%3D48&outFields=OBJECTID,PARCEL_ID,CO_NO&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "3 polygons"
+  },
+  {
+   "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=CO_NO%3D13...",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "3 polygons"
+  },
+  {
+   "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?geometry=<bbox Orlando/Miami>...",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "spatial-envelope queries timed out at 40 s (x4, incl. CO_NO=60 and 23); temporarily slow, not a negative"
+  }
+ ],
+ "reuseStatus": "Layer is a huge table; envelope queries were too slow from this network. Miami-Dade/Orlando not sampled. Existing Miami-Dade city evidence: research/miami.json.",
+ "remainingUncertainty": "Spatial bbox query not demonstrated on this endpoint; attribute-filtered sample only.",
+ "nextStep": "Retry bbox with returnGeometry and a smaller envelope off-peak, or use the statewide centroid layer for ID lookup."
+}

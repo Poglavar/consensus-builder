@@ -1,0 +1,48 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CH",
+ "regionCode": "NW",
+ "regionName": "NW",
+ "checkedAt": "2026-09-30",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: application/json,text/xml,application/xml,text/html;q=0.9,*/*;q=0.8; Accept-Language: de-CH,de;q=0.9; Referer https://geodienste.ch/; cookie jar used",
+ "status": "credentialed_or_paid",
+ "source": {
+  "sourceId": "ch-geodienste-av0",
+  "name": "geodienste.ch Amtliche Vermessung (av_0) WFS 2.0, feature type ms:RESF",
+  "operator": "Cantons and Confederation via geodienste.ch",
+  "scope": "canton NW as one filter of a multi-canton national aggregate",
+  "endpoint": "https://geodienste.ch/db/av_0/deu",
+  "method": "GET",
+  "responseFormat": "WFS 2.0 GML 3.2 (text/xml)",
+  "crs": "EPSG:2056",
+  "reuseStatus": "keine Angabe (per services.json); canton terms https://geodienste.ch/pdfs/NW/av/data/Produkteinformation_fuer_Datenausgabe_NW_OW.pdf"
+ },
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "Not open. Contract required (contract_required_data true), release required; data issued via GIS Daten AG Stans per Produkteinformation NW/OW.",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://geodienste.ch/info/services.json",
+   "observation": "NW av entry: publication_data=Freigabe erforderlich, cantonal_coverage=True, contract_required_data=True, opendata_terms_data=keine Angabe, terms_of_use_data=https://geodienste.ch/pdfs/NW/av/data/Produkteinformation_fuer_Datenausgabe_NW_OW.pdf"
+  },
+  {
+   "url": "https://geodienste.ch/services/av",
+   "observation": "geodienste.ch AV topic page (terms https://geodienste.ch/terms-of-use)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geodienste.ch/db/av_0/deu?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:RESF&COUNT=3&SRSNAME=urn:ogc:def:crs:EPSG::2056&BBOX=2670500,1201000,2670650,1201150,urn:ogc:def:crs:EPSG::2056",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "0 RESF features"
+  }
+ ],
+ "gatedCondition": "Contract required (contract_required_data true), release required; data issued via GIS Daten AG Stans per Produkteinformation NW/OW.",
+ "gatedBehaviour": "Bounded GetFeature at Stans returned HTTP 200 with numberReturned=0 (release filter FILTER_ALLOWED_CANTONS excludes NW); not bypassed.",
+ "reuseStatus": "Contract required (contract_required_data true), release required; data issued via GIS Daten AG Stans per Produkteinformation NW/OW.",
+ "remainingUncertainty": "A 0-feature result is the documented release gate; not retried with credentials. No login attempted. Cantonal WMS is free but is not a parcel record list.",
+ "nextStep": "Obtain contract/release from canton (GIS Daten AG) if parcel data for NW is needed."
+}

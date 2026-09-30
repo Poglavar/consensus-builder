@@ -1,0 +1,46 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CD",
+ "country": "Democratic Republic of the Congo",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Ministry of Land Affairs (Affaires Foncieres); e-Foncier digitisation pilot in Kinshasa reported",
+ "portalsFound": [
+  {
+   "url": "https://www.affairesfoncieres.gouv.cd/",
+   "observation": "Ministry site reachable in earlier city probe (kasai-oriental.json); no geodata service, only digitisation pilot references."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.cadastre.gouv.cd/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (tunnel failure/connection reset); temporarily unavailable, not proof of absence"
+  },
+  {
+   "url": "https://www.rdc-cadastre.cd/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (tunnel failure/connection reset); temporarily unavailable, not proof of absence"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=DRC%20cadastre%20parcelles&f=json",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "application/json",
+   "assessment": "zero results"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "national land ministry; digitisation pilot in Kinshasa only",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Reachable pages show no public parcel service; several candidate hosts unreachable. Mining cadastre (CAMI) is a different dataset and was not tested.",
+ "nextStep": "Retry later; check Kinshasa e-Foncier and the mining cadastre portal separately."
+}

@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:162",
+  "queueRank": 162,
+  "name": "Kollam",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    9.29818038422683,
+    76.4275496736682
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://kerala.gov.in/",
+      "observation": "Kerala state portal reachable (HTTP 200); no parcel service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://erekha.kerala.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS self-signed certificate chain; not retried insecurely"
+    },
+    {
+      "url": "https://webgis.kerala.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy 502 host unreachable"
+    },
+    {
+      "url": "https://bhunaksha.kerala.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy 502 host unreachable"
+    },
+    {
+      "url": "https://ilrms.kerala.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy 502 host unreachable"
+    },
+    {
+      "url": "https://kollam.nic.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset"
+    },
+    {
+      "url": "https://kerala.gov.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "state portal home page only"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Kerala Revenue/ReSurvey (ILRMS, eReKha) portals",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Kerala's land-record and web-GIS hosts were unreachable or failed TLS, so absence of a public parcel API is not established. Kerala resurvey portals are likely record/viewer oriented.",
+  "nextStep": "Retry ILRMS/eReKha/Bhunaksha Kerala from another network; inspect for a documented map service and test a bounded Kollam query."
+}

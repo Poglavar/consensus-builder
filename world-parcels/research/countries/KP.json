@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "KP",
+  "country": "Dem. People's Republic of Korea",
+  "checkedAt": "2026-09-29",
+  "status": "no_online_cadastre_found",
+  "cadastreAuthority": "Unknown (state land administration; no public cadastre)",
+  "portalsFound": [],
+  "requests": [],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "none found",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "unknown",
+  "remainingUncertainty": "No hosts probed successfully; extremely restricted internet, no public geoportal known.",
+  "nextStep": "None likely; low priority."
+}

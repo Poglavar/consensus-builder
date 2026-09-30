@@ -1,0 +1,123 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "IS",
+ "country": "Iceland",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "HMS (Housing and Construction Authority) Landeignaskra (Land Registry) and Fasteignaskra; viewer https://landeignaskra.hms.is/",
+ "inspireRecordUrl": null,
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: is-IS,is;q=0.9,en;q=0.5; Referer: https://landeignaskra.hms.is/; cookie jar",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "portalsFound": [
+  {
+   "url": "https://landeignaskra.hms.is/",
+   "observation": "Next.js land registry viewer, HTTP 200 (unlike hms.is and www.hms.is which return a 429 Vercel challenge). Page config names GEO_BASE_URL=https://geo.fasteignaskra.is, workspace fasteignaskra, layer MV_LANDEIGNASKRA (land units), EPSG:3057, and JS chunks call same-origin /api/geo/wfs/landeign?bbox=<extent>."
+  },
+  {
+   "url": "https://geo.fasteignaskra.is/",
+   "observation": "backend GeoServer host; direct /geoserver/* calls return HTTP 500 app page and other paths 404 (nginx); use the viewer's same-origin proxy instead"
+  },
+  {
+   "url": "https://gis.lmi.is/geoserver/ows",
+   "observation": "LMI WFS capabilities re-read (425 KB): no land-unit/cadastral parcel layer (only an unrelated Grunnkerfi:gcp_net_public control-point layer)"
+  },
+  {
+   "url": "https://map.is/",
+   "observation": "viewer landing (k4.map.is app), not inspected further"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gis.lmi.is/geoserver/ows?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "no parcel layer"
+  },
+  {
+   "url": "https://hms.is/kort",
+   "method": "GET",
+   "httpStatus": 429,
+   "contentType": "text/html",
+   "assessment": "Vercel challenge, not bypassed"
+  },
+  {
+   "url": "https://kort.hms.is/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT 502"
+  },
+  {
+   "url": "https://landeignaskra.hms.is/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "viewer HTML with public config; no token needed"
+  },
+  {
+   "url": "https://landeignaskra.hms.is/api/geo/wfs/landeign?bbox=357000,406400,357300,406700",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "GeoJSON FeatureCollection, 4 Polygon land units (Reykjavik)"
+  },
+  {
+   "url": "https://landeignaskra.hms.is/api/geo/wfs/landeign?bbox=541800,576400,542000,576600",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "20 Polygon land units (Akureyri)"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "is-hms-landeignaskra-wfs-proxy",
+  "requestUrl": "https://landeignaskra.hms.is/api/geo/wfs/landeign?bbox=357000,406400,357300,406700",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": "bbox in EPSG:3057 (ISN93): 357000,406400,357300,406700",
+  "parcelRecordCount": 4,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "LANDEIGN_NR",
+  "responseFile": "IS-parcel-response.json",
+  "pagination": "none seen (bbox strategy)",
+  "regionSampled": "Reykjavik area"
+ },
+ "additionalVerifiedRegion": {
+  "sourceId": "is-hms-landeignaskra-wfs-proxy",
+  "requestUrl": "https://landeignaskra.hms.is/api/geo/wfs/landeign?bbox=541800,576400,542000,576600",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": "bbox in EPSG:3057 (ISN93): 541800,576400,542000,576600",
+  "parcelRecordCount": 20,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "LANDEIGN_NR",
+  "responseFile": "IS-parcel-response.json",
+  "pagination": "none seen (bbox strategy)",
+  "regionSampled": "Akureyri area"
+ },
+ "regionsSampled": [
+  "Reykjavik",
+  "Akureyri"
+ ],
+ "coverageAssessment": {
+  "claimedScope": "National land-unit (landeign) registry viewer",
+  "regionsVerified": [
+   "Reykjavik area (SW)",
+   "Akureyri area (N)"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Service is the viewer's own same-origin API proxy, not a documented INSPIRE download service; the bbox is in ISN93 (EPSG:3057) and each reply is capped/unpaged. Features carry only LANDEIGN_NR and SKIKI_AUDK (no owner data seen). Licence and terms of use not read. INSPIRE CP record for Iceland not located.",
+ "nextStep": "Read HMS terms for the landeign API; look for an official INSPIRE CP download service at HMS/LMI."
+}

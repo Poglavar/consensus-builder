@@ -1,0 +1,31 @@
+{
+ "kind": "country",
+ "key": "KP",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "no_online_cadastre_found",
+ "newStatus": "no_online_cadastre_found",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: ko-KP,ko;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.ournetwork.kp",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable"
+  },
+  {
+   "url": "http://www.kcna.kp/",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/plain",
+   "assessment": "proxy upstream error"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "No public DPRK cadastre or geoportal is known; DPRK sites are not reachable from outside. Effectively negative.",
+ "nextStep": "None."
+}

@@ -1,0 +1,45 @@
+{
+  "kind": "country",
+  "key": "RU",
+  "checkedAt": "2026-09-30",
+  "previousStatus": "temporarily_unavailable",
+  "newStatus": "temporarily_unavailable",
+  "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: ru-RU,ru;q=0.9",
+  "changedByHeaders": false,
+  "foundViaViewerInspection": false,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "requests": [
+    {
+      "url": "https://nspd.gov.ru/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "",
+      "assessment": "connection reset by peer"
+    },
+    {
+      "url": "https://rosreestr.gov.ru/, lk.rosreestr.ru, pkk.rosreestr.ru",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "",
+      "assessment": "connection reset / failed"
+    },
+    {
+      "url": "https://data.gov.ru/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "tiny page (671 bytes), no cadastre content"
+    },
+    {
+      "url": "https://nspd.gov.ru/api/geoportal/v2/search/geoportal?query=77:01:0001001:1",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "",
+      "assessment": "not reached (host resets)"
+    }
+  ],
+  "geoBlockSuspected": true,
+  "notes": "geoBlockSuspected: all Rosreestr/NSPD hosts reset connections with full browser headers (same as before); Russian government sites commonly filter foreign IPs. Nothing tested at service level.",
+  "nextStep": "Retry from a Russian-reachable network; probe NSPD geoportal search and WMS for a small bbox."
+}

@@ -1,0 +1,417 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "DE",
+ "country": "Germany",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "subnational_only",
+ "newStatus": "subnational_only",
+ "status": "subnational_only",
+ "cadastreAuthority": "16 Laender surveying/cadastre agencies (AdV coordinates, GDI-DE catalogue at gdk.gdi-de.org); no national parcel service",
+ "inspireRecordUrl": "https://gdk.gdi-de.org/gdi-de/srv/eng/csw (GDI-DE national catalogue; per-Land records, e.g. \"INSPIRE-WFS MV Flurstuecke/Grundstuecke ALKIS\", \"INSPIRE-WFS BY Flurstuecke/Grundstuecke ALKIS\")",
+ "portalsFound": [
+  {
+   "url": "https://gdk.gdi-de.org/gdi-de/srv/eng/csw",
+   "observation": "GDI-DE CSW; works with browser headers; source of real service URLs"
+  },
+  {
+   "url": "https://inspire-geoportal.ec.europa.eu/",
+   "observation": "search API path redirects to data.europa.eu"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://inspire-geoportal.ec.europa.eu/srv/api/search/records/_search",
+   "method": "POST",
+   "httpStatus": 301,
+   "contentType": "",
+   "assessment": "redirects to https://data.europa.eu; the geoportal search API is not available at this path"
+  },
+  {
+   "url": "https://gdk.gdi-de.org/gdi-de/srv/eng/csw (GetRecords, CQL AnyText like)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "national GDI-DE catalogue works; gave the real service URLs for SH, MV, SN, BB, HB, SL, RP, BY, BW (10,924+ matches for \"Flurst\")"
+  },
+  {
+   "url": "https://inspire.brandenburg.de/services/cp_alkis_wfs (GetFeature/items, count 3, bbox ~150x100 m; bbox in EPSG:25833)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/gml+xml; version=3.2(.1)",
+   "assessment": "Brandenburg: parcel polygons returned in Potsdam and Cottbus"
+  },
+  {
+   "url": "https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/vereinf/wfs (GetFeature/items, count 3, bbox ~150x100 m; bbox in EPSG:25832)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/gml+xml; version=3.2(.1)",
+   "assessment": "Hessen: parcel polygons returned in Frankfurt and Kassel"
+  },
+  {
+   "url": "https://opendata.lgln.niedersachsen.de/doorman/noauth/alkis_wfs_einfach (GetFeature/items, count 3, bbox ~150x100 m; bbox in EPSG:25832)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/gml+xml; version=3.2(.1)",
+   "assessment": "Niedersachsen: parcel polygons returned in Hannover and Oldenburg"
+  },
+  {
+   "url": "https://www.geoproxy.geoportal-th.de/geoproxy/services/adv_alkis_wfs (GetFeature/items, count 3, bbox ~150x100 m; bbox in EPSG:25832)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/gml+xml; version=3.2(.1)",
+   "assessment": "Thueringen: parcel polygons returned in Erfurt and Jena"
+  },
+  {
+   "url": "https://www.geodatenportal.sachsen-anhalt.de/wss/service/ST_LVermGeo_ALKIS_WFS_OpenData/guest (GetFeature/items, count 3, bbox ~150x100 m; bbox in EPSG:25832)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/gml+xml; version=3.2(.1)",
+   "assessment": "Sachsen-Anhalt: parcel polygons returned in Magdeburg and Halle"
+  },
+  {
+   "url": "https://www.geodaten-mv.de/dienste/alkis_wfs_einfach (GetFeature/items, count 3, bbox ~150x100 m; bbox in EPSG:25833)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/gml+xml; version=3.2(.1)",
+   "assessment": "Mecklenburg-Vorpommern: parcel polygons returned in Rostock and Schwerin"
+  },
+  {
+   "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs (GetFeature/items, count 3, bbox ~150x100 m; bbox in EPSG:25833)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/gml+xml; version=3.2(.1)",
+   "assessment": "Sachsen: parcel polygons returned in Dresden and Leipzig"
+  },
+  {
+   "url": "https://geodienste.bremen.de/wfs_hduk2958loah3976niun (GetFeature/items, count 3, bbox ~150x100 m; bbox in EPSG:25832)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/gml+xml; version=3.2(.1)",
+   "assessment": "Bremen: parcel polygons returned in Bremen and Bremerhaven"
+  },
+  {
+   "url": "https://geodienste.hamburg.de/HH_WFS_INSPIRE_Flurstuecke (GetFeature/items, count 3, bbox ~150x100 m; bbox in EPSG:25832)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/gml+xml; version=3.2(.1)",
+   "assessment": "Hamburg: parcel polygons returned in Hamburg-Mitte and Hamburg-Harburg"
+  },
+  {
+   "url": "https://service.gdi-sh.de/SH_INSPIREDOWNLOAD_AI_CP_ALKIS (GetFeature/items, count 3, bbox ~150x100 m; bbox in EPSG:25832)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/gml+xml; version=3.2(.1)",
+   "assessment": "Schleswig-Holstein: parcel polygons returned in Kiel and Luebeck"
+  },
+  {
+   "url": "https://owsproxy.lgl-bw.de/owsproxy/wfs/WFS_LGL-BW_ALKIS (GetFeature/items, count 3, bbox ~150x100 m; bbox in EPSG:25832)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/gml+xml; version=3.2(.1)",
+   "assessment": "Baden-Wuerttemberg: parcel polygons returned in Stuttgart and Freiburg"
+  },
+  {
+   "url": "https://www.geoportal.rlp.de/spatial-objects/519/collections/ave:Flurstueck/items (GetFeature/items, count 3, bbox ~150x100 m; bbox in EPSG:4326 bbox)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "Rheinland-Pfalz: parcel polygons returned in Mainz and Trier"
+  },
+  {
+   "url": "https://geoportal.saarland.de/spatial-objects/414/collections/ALKIS_ALKIS_WFS_ohne_Eig:Flurstueck/items (GetFeature/items, count 3, bbox ~150x100 m; bbox in EPSG:4326 bbox)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "Saarland: parcel polygons returned in Saarbruecken and Merzig"
+  },
+  {
+   "url": "https://geoservices.bayern.de/inspire-ows/v1/alkis/cp/dls/wfs?...GetCapabilities",
+   "method": "GET",
+   "httpStatus": 401,
+   "contentType": "text/html",
+   "assessment": "credentialed"
+  },
+  {
+   "url": "https://gdi.berlin.de/services/wfs/alkis_flurstuecke?...GetCapabilities",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "TLS/connection failure, unchanged from previous pass"
+  },
+  {
+   "url": "https://dienste.gdi-sh.de/WFS_SH_ALKIS_vereinf_OpenGBD ... typeNames=ave:Flurstueck",
+   "method": "GET",
+   "httpStatus": 400,
+   "contentType": "text/xml",
+   "assessment": "type advertised but rejected for query; SH INSPIRE CP service used instead"
+  },
+  {
+   "url": "https://geodienste.sachsen.de/wfs_geosn_alkis-adv/guest",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "guessed path; real open path is /aaa/public_alkis/vereinf/wfs"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "de-laender-open-wfs",
+  "requestUrl": "https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave:Flurstueck&count=3&srsName=urn:ogc:def:crs:EPSG::25832&bbox=477118,5550910,477268,5551010,urn:ogc:def:crs:EPSG::25832",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/gml+xml; version=3.2.1",
+  "spatialTestAreaLonLat": "Frankfurt am Main (Hessen) 477118,5550910 EPSG:25832; also Kassel",
+  "parcelRecordCount": 3,
+  "recordListPath": "wfs:member",
+  "geometryType": "GML Polygon/Surface",
+  "closedRings": null,
+  "idField": "gml:id / flstkennz (per schema)",
+  "responseFile": "europe/DE-parcel-response.json",
+  "pagination": "WFS 2.0 count/startIndex",
+  "regionSampled": "13 Laender, see laender[]"
+ },
+ "regionsSampled": [
+  "Brandenburg",
+  "Hessen",
+  "Niedersachsen",
+  "Thueringen",
+  "Sachsen-Anhalt",
+  "Mecklenburg-Vorpommern",
+  "Sachsen",
+  "Bremen",
+  "Hamburg",
+  "Schleswig-Holstein",
+  "Baden-Wuerttemberg",
+  "Rheinland-Pfalz",
+  "Saarland"
+ ],
+ "laender": [
+  {
+   "code": "BB",
+   "land": "Brandenburg",
+   "status": "verified",
+   "endpoint": "https://inspire.brandenburg.de/services/cp_alkis_wfs",
+   "featureType": "cp:CadastralParcel",
+   "crs": "EPSG:25833",
+   "licenceNote": "dl-de/by-2.0 (read in capabilities)",
+   "regionsSampled": [
+    "Potsdam",
+    "Cottbus"
+   ],
+   "recordsPerRegion": 3
+  },
+  {
+   "code": "HE",
+   "land": "Hessen",
+   "status": "verified",
+   "endpoint": "https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/vereinf/wfs",
+   "featureType": "ave:Flurstueck",
+   "crs": "EPSG:25832",
+   "licenceNote": "free of charge, unrestricted use incl. commercial (capabilities text, HVGG s.24)",
+   "regionsSampled": [
+    "Frankfurt",
+    "Kassel"
+   ],
+   "recordsPerRegion": 3
+  },
+  {
+   "code": "NI",
+   "land": "Niedersachsen",
+   "status": "verified",
+   "endpoint": "https://opendata.lgln.niedersachsen.de/doorman/noauth/alkis_wfs_einfach",
+   "featureType": "ave:Flurstueck",
+   "crs": "EPSG:25832",
+   "licenceNote": "CC BY 4.0 (capabilities)",
+   "regionsSampled": [
+    "Hannover",
+    "Oldenburg"
+   ],
+   "recordsPerRegion": 3
+  },
+  {
+   "code": "TH",
+   "land": "Thueringen",
+   "status": "verified",
+   "endpoint": "https://www.geoproxy.geoportal-th.de/geoproxy/services/adv_alkis_wfs",
+   "featureType": "ave:Flurstueck",
+   "crs": "EPSG:25832",
+   "licenceNote": "CC BY 4.0, (c) GDI-Th (capabilities)",
+   "regionsSampled": [
+    "Erfurt",
+    "Jena"
+   ],
+   "recordsPerRegion": 3
+  },
+  {
+   "code": "ST",
+   "land": "Sachsen-Anhalt",
+   "status": "verified",
+   "endpoint": "https://www.geodatenportal.sachsen-anhalt.de/wss/service/ST_LVermGeo_ALKIS_WFS_OpenData/guest",
+   "featureType": "ave:Flurstueck",
+   "crs": "EPSG:25832",
+   "licenceNote": "not determined (capabilities cite Kostenverordnung; OpenData guest endpoint answered without credentials)",
+   "regionsSampled": [
+    "Magdeburg",
+    "Halle"
+   ],
+   "recordsPerRegion": 3
+  },
+  {
+   "code": "MV",
+   "land": "Mecklenburg-Vorpommern",
+   "status": "verified",
+   "endpoint": "https://www.geodaten-mv.de/dienste/alkis_wfs_einfach",
+   "featureType": "ave:Flurstueck",
+   "crs": "EPSG:25833",
+   "licenceNote": "no conditions in Fees; attribution required (capabilities, full text not read)",
+   "regionsSampled": [
+    "Rostock",
+    "Schwerin"
+   ],
+   "recordsPerRegion": 3
+  },
+  {
+   "code": "SN",
+   "land": "Sachsen",
+   "status": "verified",
+   "endpoint": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs",
+   "featureType": "ave:Flurstueck",
+   "crs": "EPSG:25833",
+   "licenceNote": "free of charge with source GeoSN (capabilities)",
+   "regionsSampled": [
+    "Dresden",
+    "Leipzig"
+   ],
+   "recordsPerRegion": 3
+  },
+  {
+   "code": "HB",
+   "land": "Bremen",
+   "status": "verified",
+   "endpoint": "https://geodienste.bremen.de/wfs_hduk2958loah3976niun",
+   "featureType": "app:flurstuecke",
+   "crs": "EPSG:25832",
+   "licenceNote": "CC BY 4.0 (capabilities)",
+   "regionsSampled": [
+    "Bremen",
+    "Bremerhaven"
+   ],
+   "recordsPerRegion": 3
+  },
+  {
+   "code": "HH",
+   "land": "Hamburg",
+   "status": "verified",
+   "endpoint": "https://geodienste.hamburg.de/HH_WFS_INSPIRE_Flurstuecke",
+   "featureType": "cp:CadastralParcel",
+   "crs": "EPSG:25832",
+   "licenceNote": "dl-de/by-2.0 (capabilities)",
+   "regionsSampled": [
+    "Hamburg-Mitte",
+    "Hamburg-Harburg"
+   ],
+   "recordsPerRegion": 3
+  },
+  {
+   "code": "SH",
+   "land": "Schleswig-Holstein",
+   "status": "verified",
+   "endpoint": "https://service.gdi-sh.de/SH_INSPIREDOWNLOAD_AI_CP_ALKIS",
+   "featureType": "cp:CadastralParcel",
+   "crs": "EPSG:25832",
+   "licenceNote": "INSPIRE download service; sibling OpenGBD ALKIS-vereinfacht service declares CC BY 4.0 (capabilities of that sibling)",
+   "regionsSampled": [
+    "Kiel",
+    "Luebeck"
+   ],
+   "recordsPerRegion": 3
+  },
+  {
+   "code": "BW",
+   "land": "Baden-Wuerttemberg",
+   "status": "verified",
+   "endpoint": "https://owsproxy.lgl-bw.de/owsproxy/wfs/WFS_LGL-BW_ALKIS",
+   "featureType": "nora:v_al_flurstueck",
+   "crs": "EPSG:25832",
+   "licenceNote": "free under Open Data licence dl-de/by-2.0 (capabilities)",
+   "regionsSampled": [
+    "Stuttgart",
+    "Freiburg"
+   ],
+   "recordsPerRegion": 3
+  },
+  {
+   "code": "RP",
+   "land": "Rheinland-Pfalz",
+   "status": "verified",
+   "endpoint": "https://www.geoportal.rlp.de/spatial-objects/519/collections/ave:Flurstueck/items",
+   "featureType": "ave:Flurstueck (OGC API Features, f=json)",
+   "crs": "EPSG:4326 bbox",
+   "licenceNote": "dl-de/by-2.0 (collection metadata)",
+   "regionsSampled": [
+    "Mainz",
+    "Trier"
+   ],
+   "recordsPerRegion": "1-5"
+  },
+  {
+   "code": "SL",
+   "land": "Saarland",
+   "status": "verified",
+   "endpoint": "https://geoportal.saarland.de/spatial-objects/414/collections/ALKIS_ALKIS_WFS_ohne_Eig:Flurstueck/items",
+   "featureType": "ALKIS_ALKIS_WFS_ohne_Eig:Flurstueck (OGC API Features, f=json)",
+   "crs": "EPSG:4326 bbox",
+   "licenceNote": "not read",
+   "regionsSampled": [
+    "Saarbruecken",
+    "Merzig"
+   ],
+   "recordsPerRegion": "1-5"
+  },
+  {
+   "code": "NW",
+   "land": "Nordrhein-Westfalen",
+   "status": "verified (previous pass, not re-tested)",
+   "endpoint": "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht",
+   "regionsSampled": [
+    "Cologne"
+   ]
+  },
+  {
+   "code": "BE",
+   "land": "Berlin",
+   "status": "verified per research/berlin.json (previous pass); not re-tested: TLS handshake failed from this network (HTTP 000) on https://gdi.berlin.de/services/wfs/alkis_flurstuecke, not bypassed",
+   "endpoint": "https://gdi.berlin.de/services/wfs/alkis_flurstuecke"
+  },
+  {
+   "code": "BY",
+   "land": "Bayern",
+   "status": "credentialed",
+   "endpoint": "https://geoservices.bayern.de/inspire-ows/v1/alkis/cp/dls/wfs and https://geoservices.bayern.de/wfs/v1/ogc_alkis_ave.cgi",
+   "note": "Both listed in the GDI-DE catalogue; GetCapabilities returns HTTP 401 (Basic auth) with and without Referer. Only Parzellarkarte WMS is open. Not bypassed."
+  }
+ ],
+ "coverageAssessment": {
+  "claimedScope": "Per-Land open ALKIS WFS/OGC API; no single national service",
+  "regionsVerified": [
+   "Brandenburg",
+   "Hessen",
+   "Niedersachsen",
+   "Thueringen",
+   "Sachsen-Anhalt",
+   "Mecklenburg-Vorpommern",
+   "Sachsen",
+   "Bremen",
+   "Hamburg",
+   "Schleswig-Holstein",
+   "Baden-Wuerttemberg",
+   "Rheinland-Pfalz",
+   "Saarland",
+   "Nordrhein-Westfalen (previous pass)"
+  ],
+  "nationwideVerified": false,
+  "twoRegionTestNote": "Explicitly: Hessen (Frankfurt, Kassel) and Niedersachsen (Hannover, Oldenburg) are two verified sub-national services from different regions sharing the AdV ALKIS-vereinfacht \"ave:Flurstueck\" schema; so are Sachsen-Anhalt, Thueringen, MV, Sachsen. Every listed Land was itself sampled in two places. This does not make it a single national source: Bayern is credentialed (401) and Berlin was not reachable this pass."
+ },
+ "accessModel": "open (13 Laender, mostly dl-de/by-2.0 or CC BY 4.0); Bayern credentialed",
+ "remainingUncertainty": "Licences only partly read (from capabilities text). Sachsen-Anhalt OpenData licence not determined. Berlin TLS chain failing from this network. Bayern ALKIS WFS needs credentials (LDBV). Schemas vary (ave 1.0/2.0, INSPIRE cp, BW nora, Bremen deegree app).",
+ "nextStep": "Coordinator may register the Land services individually; consider a Bavaria licence check (LDBV Geodaten online) and retry Berlin from another network."
+}

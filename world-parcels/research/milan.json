@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:194",
+  "queueRank": 194,
+  "name": "Milan",
+  "country": "Italy",
+  "countryCode": "IT",
+  "centerLatLon": [
+    45.5181467423715,
+    9.19240351352659
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_city_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "it-agenzia-entrate-inspire-cadastral-wfs",
+    "requestUrl": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=CP:CadastralParcel&COUNT=3&SRSNAME=urn:ogc:def:crs:EPSG::6706&BBOX=45.4640,9.1915,45.4646,9.1925,urn:ogc:def:crs:EPSG::6706",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/xml",
+    "spatialTestAreaLonLat": [
+      9.1915,
+      45.464,
+      9.1925,
+      45.4646
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "wfs:FeatureCollection/wfs:member/CP:CadastralParcel",
+    "geometryType": "gml:Polygon (exterior LinearRing, srsDimension 2, lat lon order)",
+    "closedRings": true,
+    "idField": "CP:NATIONALCADASTRALREFERENCE / CP:INSPIREID_LOCALID (e.g. F205_039000.280; F205 = Milano)",
+    "responseFile": "milan-parcel-response.json",
+    "pagination": "WFS 2.0 COUNT + next link in FeatureCollection; numberMatched=unknown"
+  },
+  "source": {
+    "sourceId": "it-agenzia-entrate-inspire-cadastral-wfs",
+    "name": "Cartografia Catastale WFS (INSPIRE Cadastral Parcels and Zoning), Agenzia delle Entrate",
+    "operator": "Agenzia delle Entrate (Italian national cadastre)",
+    "scope": "Italy-wide cadastral map service per operator; only Milan sampled",
+    "endpoint": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php",
+    "method": "GET OGC WFS 2.0.0 GetFeature (typeNames CP:CadastralParcel, CP:CadastralZoning)",
+    "responseFormat": "GML 3.2 (also text/xml subtype gml/3.1.1)",
+    "crs": "EPSG:6706 (RDN2008 geographic, lat/lon axis order) and EPSG:4326 accepted",
+    "reuseStatus": "GetCapabilities shows only 'altri vincoli' as AccessConstraints; licence not read here, must be confirmed before redistribution"
+  },
+  "portalsFound": [
+    {
+      "url": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php?service=WFS&request=GetCapabilities",
+      "observation": "WFS 2.0.0 capabilities (HTTP 200) list CP:CadastralParcel and CP:CadastralZoning; no auth key needed."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/xml",
+      "assessment": "service description only; not counted as verification"
+    },
+    {
+      "url": "same host, GetFeature CP:CadastralParcel count=3 bbox 45.4640,9.1915,45.4646,9.1925 EPSG:4326, default curl User-Agent, outputFormat=application/json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "assessment": "ServiceException InvalidFormat: JSON output not offered (first attempt also drew a 403 Akamai block for the non-browser UA)"
+    },
+    {
+      "url": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=CP:CadastralParcel&COUNT=3&SRSNAME=urn:ogc:def:crs:EPSG::6706&BBOX=45.4640,9.1915,45.4646,9.1925,urn:ogc:def:crs:EPSG::6706",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/xml",
+      "parcelRecordCount": 3,
+      "assessment": "3 closed polygons near Piazza del Duomo/Milan; verified with browser-style User-Agent"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "national Italian cadastral map (INSPIRE view/download)",
+    "verifiedOpenScope": "three parcels in central Milan (municipality code F205)",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Only one small Milan bbox tested. Licence/terms, rate limits, completeness of the Milan cadastral map and exclusions (e.g. autonomous provinces with their own cadastre) were not verified. Output is GML only; numberMatched is unknown.",
+  "nextStep": "Read the Agenzia delle Entrate licence, add a GML adapter (or ogr2ogr), test a second Italian region before any countrywide claim."
+}

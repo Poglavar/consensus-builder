@@ -1,0 +1,61 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "PK",
+ "country": "Pakistan",
+ "checkedAt": "2026-09-29",
+ "status": "subnational_only",
+ "cadastreAuthority": "No national cadastre; land records are provincial (Punjab Land Records Authority/PULSE, Sindh, KP, Balochistan Boards of Revenue); ICT by CDA/Islamabad",
+ "portalsFound": [
+  {
+   "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services",
+   "observation": "Punjab ArcGIS Server directory: 20 folders (Lahore, Faisalabad, Multan, Islamabad, Stateland, DC_Valuation...) but only ArcGIS_Shell and SampleWorldCities visible anonymously; token security"
+  },
+  {
+   "url": "https://lis.pulse.gop.pk/",
+   "observation": "PULSE Punjab Urban Land Systems Enhancement portal (web app, login-based)"
+  },
+  {
+   "url": "https://gismaps.pulse.gop.pk/arcgis/rest/services",
+   "observation": "proxy CONNECT failed; untested"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "folder list; no parcel services anonymously"
+  },
+  {
+   "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/info?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "isTokenBasedSecurity true (token required)"
+  },
+  {
+   "url": "https://gismaps.pulse.gop.pk/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "unreachable via proxy"
+  },
+  {
+   "url": "https://lis.pulse.gop.pk/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "portal shell, no open parcel API observed"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Provincial (Punjab) only; no country-wide cadastre",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "registration",
+ "remainingUncertainty": "Punjab parcel services are token-protected; Sindh, KP, Balochistan portals not reached (city evidence: Faisalabad, Multan, Peshawar, Islamabad files). No open parcel response.",
+ "nextStep": "Retry Islamabad/CDA host; look for Sindh and KP services."
+}

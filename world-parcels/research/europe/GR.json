@@ -1,0 +1,116 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "GR",
+ "country": "Greece",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "national_cadastre_viewer_only",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Hellenic Cadastre (Ktimatologio S.A.), published on data.gov.gr",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: <per country, e.g. el-GR,el;q=0.9,en;q=0.8>; cookie jar on; Referer = viewer/portal origin",
+ "inspireRecordUrl": "https://data.europa.eu/api/hub/search/datasets/17226281-9e0f-431f-b1a3-c9e807cdd3cd (data.europa.eu; the old inspire-geoportal.ec.europa.eu/srv API now 301-redirects to data.europa.eu). No INSPIRE CP WFS/ATOM record for Greece was found; the bulk vector open dataset is on data.gov.gr.",
+ "portalsFound": [
+  {
+   "url": "https://data.gov.gr/dataset/geotemachia-oria-kai-kaek-ton-periochon-toy-leitoyrgoyntos-ktimatologioy-auto",
+   "observation": "CKAN dataset 'Land parcels (boundaries and KAEK) of the Operating Cadastre areas' (High Value Dataset, EU reg 2023/138), 13 regional shapefile ZIPs, updated 2026-09-29"
+  },
+  {
+   "url": "https://data.gov.gr/dataset/geotemachia-oria-kai-kaek-ton-periochon-toy-leitoyrgoyntos-ktimatologioy",
+   "observation": "companion dataset (boundaries and IDs), shapefile, licence CC BY 4.0 stated on data.europa.eu"
+  },
+  {
+   "url": "https://data.gov.gr/api/3/action/package_show?id=geotemachia-oria-kai-kaek-ton-periochon-toy-leitoyrgoyntos-ktimatologioy",
+   "observation": "CKAN API answers 200 JSON with per-region resource URLs"
+  },
+  {
+   "url": "https://inspire.ktimatologio.gr/",
+   "observation": "CONNECT 502 (unreachable) again"
+  },
+  {
+   "url": "https://www.ktimatologio.gr/",
+   "observation": "403 in earlier passes"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://data.gov.gr/api/3/action/package_show?id=geotemachia-oria-kai-kaek-ton-periochon-toy-leitoyrgoyntos-ktimatologioy",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "lists 13 regional SHP zip resources"
+  },
+  {
+   "url": "https://data.gov.gr/dataset/17226281-9e0f-431f-b1a3-c9e807cdd3cd/resource/d56f6aa3-1aa7-42fc-ad0b-df47decf973e/download/periferia_ionion_nison.zip",
+   "method": "GET",
+   "httpStatus": 302,
+   "contentType": "->200/206 application/octet-stream",
+   "assessment": "302 to time-limited signed Azure blob URL (signature not saved); Range read of zip directory and first .shp/.dbf bytes ok; Ionian Islands zip 29.3 MB, 3 polygons parsed, closed rings"
+  },
+  {
+   "url": "https://data.gov.gr/dataset/17226281-9e0f-431f-b1a3-c9e807cdd3cd/resource/5c42296d-0413-4c6b-9f6a-0924837f35e9/download/periferia_attikis.zip",
+   "method": "GET",
+   "httpStatus": 302,
+   "contentType": "->200/206 application/octet-stream",
+   "assessment": "Attica zip 152.9 MB, 3 polygons parsed, closed rings"
+  },
+  {
+   "url": "https://inspire.ktimatologio.gr/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "CONNECT tunnel 502"
+  },
+  {
+   "url": "https://geodata.gov.gr/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "not retried; data.gov.gr is the working portal"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "gr-datagovgr-ktimatologio-geotemachia",
+  "requestUrl": "https://data.gov.gr/dataset/17226281-9e0f-431f-b1a3-c9e807cdd3cd/resource/d56f6aa3-1aa7-42fc-ad0b-df47decf973e/download/periferia_ionion_nison.zip (HTTP Range) and .../5c42296d-0413-4c6b-9f6a-0924837f35e9/download/periferia_attikis.zip",
+  "method": "GET (Range)",
+  "httpStatus": 206,
+  "contentType": "application/octet-stream (ZIP of ESRI shapefile)",
+  "spatialTestAreaLonLat": "Zakynthos ~[20.914,37.758]-[20.924,37.759]; west Attica ~[23.529,38.061]-[23.546,38.062]",
+  "parcelRecordCount": 6,
+  "recordListPath": "regions.*.features",
+  "geometryType": "Polygon (shapefile type 5)",
+  "closedRings": true,
+  "idField": "KAEK",
+  "responseFile": "europe/GR-parcel-response.json",
+  "pagination": "none: bulk regional file download only (no query API)",
+  "regionSampled": "Ionian Islands; Attica"
+ },
+ "source": {
+  "sourceId": "gr-datagovgr-ktimatologio-geotemachia",
+  "name": "Land Parcels (boundaries and KAEK) of the Operating Cadastre areas",
+  "operator": "Hellenic Cadastre via data.gov.gr",
+  "scope": "13 regions, areas already in the Operating Cadastre only",
+  "endpoint": "https://data.gov.gr/api/3/action/package_show?id=geotemachia-oria-kai-kaek-ton-periochon-toy-leitoyrgoyntos-ktimatologioy",
+  "method": "CKAN + regional ZIP download",
+  "responseFormat": "ESRI Shapefile in ZIP",
+  "crs": "EPSG:2100",
+  "reuseStatus": "open access; CC BY 4.0 shown on the companion dataset record (licence field empty in this dataset's CKAN record, confirm before reuse)"
+ },
+ "regionsSampled": [
+  "Ionian Islands",
+  "Attica"
+ ],
+ "coverageAssessment": {
+  "claimedScope": "national parcels of areas in the Operating Cadastre (survey of remaining areas ongoing)",
+  "regionsVerified": [
+   "Ionian Islands (Zakynthos)",
+   "Attica (west)"
+  ],
+  "nationwideVerified": true,
+  "note": "same source and schema in two distinct regions; 13 region zips published; areas still in the cadastral survey are excluded"
+ },
+ "accessModel": "open (bulk file download, no query endpoint)",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "remainingUncertainty": "No live per-bbox query service (WFS/OGC API) found; access is regional bulk ZIPs (25-265 MB). Licence text not read on this exact dataset. maps.ktimatologio.gr viewer not inspected further.",
+ "nextStep": "Register as bulk-download source; optionally find INSPIRE CP WFS behind the unreachable inspire.ktimatologio.gr."
+}

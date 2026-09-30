@@ -1,0 +1,43 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "IQ",
+ "country": "Iraq",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "General Directorate of Real Estate Registration (Ministry of Justice) and Survey Directorate (Ministry of Water Resources) - not confirmed",
+ "portalsFound": [
+  {
+   "url": "https://www.dgcs.gov.iq/",
+   "observation": "No response through proxy (connection failure), here and in earlier research/baghdad.json."
+  },
+  {
+   "url": "https://www.baghdad.gov.iq/",
+   "observation": "Earlier: JS challenge shell only."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.dgcs.gov.iq/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection failure"
+  },
+  {
+   "url": "(earlier) research/baghdad.json requests",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "no GIS/parcel service found"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "none found",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Official hosts unreachable; no online cadastre evidence either way; Kurdistan Region not examined.",
+ "nextStep": "Retry from another network; search Ministry of Justice real-estate registration e-services and KRG cadastre."
+}

@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:3688689",
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_city_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "co-bogota-uaecd-lote",
+    "requestUrl": "https://serviciosgis.catastrobogota.gov.co/arcgis/rest/services/catastro/lote/MapServer/0/query?geometry=%7B%22xmin%22%3A-74.0825%2C%22ymin%22%3A4.6090%2C%22xmax%22%3A-74.0810%2C%22ymax%22%3A4.6105%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outSR=4326&outFields=*&returnGeometry=true&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      -74.0825,
+      4.609,
+      -74.081,
+      4.6105
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "LOTCODIGO",
+    "responseFile": "bogota-lote-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true; maxRecordCount=2000; returnCountOnly for the test box returned 4"
+  },
+  "portalsFound": [
+    {
+      "url": "https://serviciosgis.catastrobogota.gov.co/arcgis/rest/services/catastro/lote/MapServer",
+      "observation": "Official Unidad Administrativa Especial de Catastro Distrital (UAECD) ArcGIS Server; catastro/lote MapServer with one queryable Lote polygon layer (native EPSG:4326, JSON/geoJSON/PBF query formats), described as 'minimum geographic unit where one or more properties are located', updated to the last Sunday of each month; layer extent about lon -74.45 to -73.99, lat 3.73 to 4.84."
+    },
+    {
+      "url": "https://datosabiertos.bogota.gov.co/dataset/lote",
+      "observation": "Bogota open-data catalog entry for Lote (from search results; not fetched directly)."
+    },
+    {
+      "url": "https://www.ideca.gov.co/recursos/mapas/base-de-datos-catastral-para-bogota-dc",
+      "observation": "IDECA page for the cadastral database, offered as GDB/GeoPackage/PostgreSQL downloads per search summary; not fetched."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://serviciosgis.catastrobogota.gov.co/arcgis/rest/services/catastro/lote/MapServer?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "geometryType": "esriGeometryPolygon",
+      "maxRecordCount": 2000,
+      "assessment": "service description only; not counted as verification"
+    },
+    {
+      "url": "https://serviciosgis.catastrobogota.gov.co/arcgis/rest/services/catastro/lote/MapServer/0/query?geometry=%7B%22xmin%22%3A-74.0825%2C%22ymin%22%3A4.6090%2C%22xmax%22%3A-74.0810%2C%22ymax%22%3A4.6105%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outSR=4326&outFields=*&returnGeometry=true&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "parcelRecordCount": 3,
+      "geometryType": "esriGeometryPolygon",
+      "assessment": "verified nonempty lot polygons near central Bogota"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Distrito Capital (Bogota D.C.), including rural lots per layer description",
+    "verifiedOpenScope": "three lots in a bounded central Bogota sample",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Licence: search summaries say UAECD cadastral data and the IDECA reference map use Creative Commons attribution (CC-BY) terms, but the dataset licence page was not read here (the datosabiertos URL guessed first returned 404), so it needs confirming. Lot polygons carry lot/block codes, not legal-cadastre ownership. The layer has minScale 10000, so wide queries may be restricted in map rendering but not in query. The urban agglomeration extends beyond Bogota D.C.; municipalities such as Soacha are not covered. Colombia's IGAC cadastre is a separate source not tested here.",
+  "nextStep": "Confirm the licence text on the datosabiertos or IDECA dataset page, test paging, and identify sources for neighbouring municipalities."
+}

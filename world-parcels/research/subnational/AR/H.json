@@ -1,0 +1,69 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "regionCode": "H",
+ "regionName": "Chaco",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR,es;q=0.9; cookie jar; viewer-origin Referer",
+ "source": {
+  "sourceId": null,
+  "name": "parcelario_urbano_2021 and parcelario_rural_2021 (BASE_DES_TERR)",
+  "operator": "SIT Chaco (Sistema de Información Territorial), Gobierno del Chaco",
+  "scope": "Province of Chaco: separate urban and rural parcel layers, vintage 2021",
+  "endpoint": "https://sit.chaco.gob.ar/geoserver/wfs",
+  "method": "WFS 2.0.0 GetFeature, no key",
+  "responseFormat": "GeoJSON",
+  "crs": "EPSG:4326 via srsName"
+ },
+ "verifiedParcelResponse": {
+  "requestUrl": "https://sit.chaco.gob.ar/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=BASE_DES_TERR:parcelario_urbano_2021&count=3&outputFormat=application/json&srsName=EPSG:4326&propertyName=ID_NOMENCL,geom&bbox=-58.9840,-27.4500,-58.9825,-27.4485,EPSG:4326",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "ID_NOMENCL",
+  "responseFile": "research/subnational/AR/H-parcel-response.json",
+  "pagination": "WFS 2.0 count/startIndex",
+  "regionSampled": "Resistencia, Presidencia Roque Sáenz Peña (urban); rural layer near 26.9S 60.2W"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Two layers (urban + rural, 2021 vintage) published by the provincial SIT; layers carry DPTO/CIRC/SECC/MZ/PARC nomenclature fields. Publisher coverage statement not read.",
+ "subregionsVerified": [
+  "Resistencia",
+  "Presidencia Roque Sáenz Peña",
+  "rural sample"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://sit.chaco.gob.ar/geoservicios",
+   "observation": "SIT Chaco geoservices page pointing to /geoserver/wfs and /geoserver/wms"
+  },
+  {
+   "url": "http://mapa.catastrochaco.gov.ar/",
+   "observation": "Registro Parcelario viewer of the cadastre directorate (not inspected further)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://sit.chaco.gob.ar/geoserver/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "lists BASE_DES_TERR:parcelario_urbano_2021 / parcelario_rural_2021"
+  },
+  {
+   "url": "(3 bounded GetFeature queries, count=3)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 parcels each; numberMatched 46, 50, 88"
+  }
+ ],
+ "reuseStatus": "Licence not read.",
+ "remainingUncertainty": "2021 vintage; coverage of rural layer beyond the tested cell and completeness across all departments not measured.",
+ "nextStep": "Read SIT terms; check for newer layers."
+}

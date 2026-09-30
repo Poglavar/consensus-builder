@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:75",
+  "queueRank": 75,
+  "name": "Mashhad",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "centerLatLon": [
+    36.3417045946513,
+    59.4884414222244
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.ncc.gov.ir/",
+      "observation": "National Cartographic Center of Iran; not reachable from the research proxy."
+    },
+    {
+      "url": "https://www.nlso.ir/",
+      "observation": "Iran Deeds and Properties Registration / cadastre bodies; not reachable from the research proxy."
+    },
+    {
+      "url": "https://gis.mashhad.ir/",
+      "observation": "Mashhad Municipality GIS host guessed from municipality naming; not reachable."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.ncc.gov.ir/",
+      "method": "GET",
+      "httpStatus": 502,
+      "contentType": "",
+      "assessment": "connection failed / 502 from proxy; no content, not a verdict"
+    },
+    {
+      "url": "https://gis.mashhad.ir/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed / 502 from proxy; no content, not a verdict"
+    },
+    {
+      "url": "https://www.mashhad.ir/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed / 502 from proxy; no content, not a verdict"
+    },
+    {
+      "url": "https://map.mashhad.ir/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed / 502 from proxy; no content, not a verdict"
+    },
+    {
+      "url": "https://data.mashhad.ir/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed / 502 from proxy; no content, not a verdict"
+    },
+    {
+      "url": "https://www.nlso.ir/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed / 502 from proxy; no content, not a verdict"
+    },
+    {
+      "url": "https://sabteahval.ir/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed / 502 from proxy; no content, not a verdict"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "unknown",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "All Iranian government hosts tried failed to connect through the proxy (likely geo-restriction or sanctions filtering), so no portal content was read. Real availability of a municipal/national parcel service is unknown; web search found nothing indexed.",
+  "nextStep": "Retry from a network that can reach .ir hosts; look for Mashhad Municipality GIS and Iran cadastre (Deeds and Properties Registration Organization) open services."
+}

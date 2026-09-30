@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:84",
+  "queueRank": 84,
+  "name": "Singapore",
+  "country": "Singapore",
+  "countryCode": "SG",
+  "centerLatLon": [
+    1.34468387380727,
+    103.844923485911
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_city_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "sg-sla-cadastral-land-parcel",
+    "requestUrl": "https://api-open.data.gov.sg/v1/public/api/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/poll-download (returns a short-lived presigned S3 URL; then GET with Range: bytes=0-14000)",
+    "method": "GET",
+    "httpStatus": 206,
+    "contentType": "binary/octet-stream (GeoJSON text)",
+    "spatialTestAreaLonLat": null,
+    "parcelRecordCount": 16,
+    "recordListPath": "features",
+    "geometryType": "Polygon",
+    "closedRings": true,
+    "idField": "LOT_KEY",
+    "responseFile": "singapore-parcel-response.json",
+    "pagination": "none; a single ~145 MB GeoJSON file. Verification used an HTTP Range request for the first 14 KB (16 complete features, spread across the island, not a spatial query). Runtime use needs a one-time server-side ingest and spatial index."
+  },
+  "source": {
+    "sourceId": "sg-sla-cadastral-land-parcel",
+    "name": "SLA Cadastral Land Parcel (data.gov.sg)",
+    "operator": "Singapore Land Authority",
+    "scope": "Singapore (island-wide surveyed land lots)",
+    "endpoint": "https://api-open.data.gov.sg/v1/public/api/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/poll-download",
+    "method": "GET (poll-download then file download)",
+    "responseFormat": "GeoJSON FeatureCollection",
+    "crs": "EPSG:4326 (WGS84 lon/lat coordinates observed)",
+    "reuseStatus": "Published on data.gov.sg as open data; licence text not read; check before redistribution"
+  },
+  "portalsFound": [
+    {
+      "url": "https://data.gov.sg/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/view",
+      "observation": "data.gov.sg dataset page: SLA Cadastral Land Parcel, polygons of each surveyed land lot, updated periodically, GeoJSON download."
+    },
+    {
+      "url": "https://www.sla.gov.sg/geospatial/digitised-land-information/",
+      "observation": "SLA page on digitised cadastral information."
+    },
+    {
+      "url": "https://data.gov.sg/datasets/d_4522da5e03b0051cd3f5b0f1ab9557e3/view",
+      "observation": "Companion SLA Cadastral Airspace Parcel dataset (not tested)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://api-open.data.gov.sg/v1/public/api/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/poll-download",
+      "method": "GET",
+      "httpStatus": 201,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "poll-download API returned code 0 and a presigned download URL; not counted as verification"
+    },
+    {
+      "url": "(presigned S3 URL from the poll-download reply) Range: bytes=0-14000",
+      "method": "GET",
+      "httpStatus": 206,
+      "contentType": "binary/octet-stream",
+      "assessment": "Content-Range 0-14000/144795983; 16 complete GeoJSON Polygon features with closed rings and LOT_KEY ids",
+      "parcelRecordCount": 16
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "all surveyed land lots in Singapore",
+    "verifiedOpenScope": "16 lots from the head of the file (not spatially bounded)",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "No spatial query API was found; the sample is the head of a bulk file, so lot-in-bbox behaviour, completeness and the exact licence terms are unverified. Airspace parcels and strata are separate datasets. Country is a city-state but a single source and region were sampled, so country-level green is not claimed.",
+  "nextStep": "Ingest the file server-side into a spatial index (or find an SLA/OneMap query service) and serve bbox chunks; read the Singapore Open Data Licence."
+}

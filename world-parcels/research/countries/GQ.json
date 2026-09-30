@@ -1,0 +1,27 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "GQ",
+ "country": "Equatorial Guinea",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "unknown",
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://www.gq.gob.gq/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (tunnel failure/connection reset); temporarily unavailable, not proof of absence"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "unknown",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Only one government host tried (unreachable); no evidence either way.",
+ "nextStep": "Retry; search for land/cadastre ministry site."
+}

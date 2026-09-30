@@ -1,0 +1,32 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CF",
+ "country": "Central African Republic",
+ "checkedAt": "2026-09-29",
+ "status": "no_online_cadastre_found",
+ "cadastreAuthority": "Ministry of Land Affairs / Cadastre (title procedure documented by KTK)",
+ "portalsFound": [
+  {
+   "url": "http://kodetiakotara.net/index.php/procedure-de-delivrance-dun-titre-foncier-en-rca/",
+   "observation": "Civil-society description of the land title procedure; no online parcel service."
+  }
+ ],
+ "requests": [
+  {
+   "url": "WebSearch: Centrafrique cadastre plateforme numérique",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "only DRC/Burkina digitisation results; nothing for CAR"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "none found",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Very few government sites reachable; search-only evidence.",
+ "nextStep": "Check ministry site and any donor (World Bank/UN-Habitat) land projects."
+}

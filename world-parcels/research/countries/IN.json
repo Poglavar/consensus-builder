@@ -1,0 +1,79 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "IN",
+ "country": "India",
+ "checkedAt": "2026-09-29",
+ "status": "subnational_only",
+ "cadastreAuthority": "No single national online cadastre; land records are a state subject. Central DoLR runs DILRMP; NIC provides state-run Bhu-Naksha (cadastral map) viewers and Bhulekh record portals per state",
+ "portalsFound": [
+  {
+   "url": "https://bhunakshaodisha.nic.in/",
+   "observation": "Odisha BhuNaksha portal loads (200)"
+  },
+  {
+   "url": "https://bhunaksha.rajasthan.gov.in/",
+   "observation": "Rajasthan BhuNaksha loads (200)"
+  },
+  {
+   "url": "https://mahabhunakasha.mahabhumi.gov.in/",
+   "observation": "Maharashtra MahaBhunakasha redirects (302)"
+  },
+  {
+   "url": "https://bhuvan.nrsc.gov.in/",
+   "observation": "ISRO Bhuvan loads (200); not a cadastre"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://bhunakshaodisha.nic.in/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "viewer landing only"
+  },
+  {
+   "url": "https://bhunaksha.rajasthan.gov.in/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "viewer landing only"
+  },
+  {
+   "url": "https://mahabhunakasha.mahabhumi.gov.in/",
+   "method": "GET",
+   "httpStatus": 302,
+   "contentType": "text/html",
+   "assessment": "redirect"
+  },
+  {
+   "url": "https://bhunakshaodisha.nic.in/bhunaksha/ROOT/WMS?service=WMS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html",
+   "assessment": "guessed WMS path does not exist"
+  },
+  {
+   "url": "https://dilrmp.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": "text/html",
+   "assessment": "unreachable"
+  },
+  {
+   "url": "https://bhunaksha.maharashtra.gov.in/, uk, hp, karnataka, tn, mp, odisha dharitri portals",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": "text/html",
+   "assessment": "unreachable from this environment"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "State-level Bhu-Naksha/Bhulekh portals (viewer style, plot lookup by village/survey number); city evidence: 21 Indian cities probed, none verified (see research/*.json)",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "viewer-only",
+ "remainingUncertainty": "No open bulk/polygon endpoint found; many state hosts unreachable so this is not proof of absence. Some state Bhu-Naksha instances expose undocumented plot-geometry JSON endpoints (not tested; terms unknown). Delhi/Kerala/Telangana/Karnataka parcels not verified.",
+ "nextStep": "Probe state-specific Bhu-Naksha rest endpoints (village level codes) and Kerala ReLIS / Karnataka Bhoomi with a working browser session; check Maharashtra mahabhunakasha."
+}

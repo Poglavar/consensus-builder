@@ -1,0 +1,119 @@
+{
+ "country": "Japan",
+ "previousStatus": "partial_or_unofficial_sample",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Ministry of Justice (法務省) registry-office maps (登記所備付地図), published as open data via the G-space Information Center (G空間情報センター, geospatial.jp CKAN); converted per municipality to GeoJSON/SHP by AIGID (社会基盤情報流通推進協議会)",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: ja-JP,ja;q=0.9,en;q=0.8; cookie jar on; Referer = viewer/portal origin",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "geoBlockSuspected": false,
+ "inspireRecordUrl": null,
+ "portalsFound": [
+  {
+   "url": "https://www.geospatial.jp/ckan/api/3/action/package_search",
+   "observation": "Public CKAN 2.11 API, no key. ~10,800 packages matching 'aigid-moj'; MOJ originals are 'houmusyouchizu-*' (licence 独自利用規約 / ol, XML zip per municipality, MOJ terms at https://www.moj.go.jp/MINJI/minji05_00494.html)"
+  },
+  {
+   "url": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-01101",
+   "observation": "Sapporo Chuo-ku, GeoJSON+SHP per year 2023-2026, licence cc-by (Creative Commons Attribution) read from the CKAN license_id field; 56 MB GeoJSON"
+  },
+  {
+   "url": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-40131",
+   "observation": "Fukuoka Higashi-ku, GeoJSON+SHP per year, licence cc-by; GeoJSON 10-27 MB; also mirrored on https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/..."
+  },
+  {
+   "url": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-27128",
+   "observation": "Osaka Chuo-ku (previously sampled), licence cc-by"
+  },
+  {
+   "url": "https://front.geospatial.jp/moj-chizu-xml-download/",
+   "observation": "HTTP 200 page but content is a 'page not found' template: the old URL moved; CKAN is the working route"
+  },
+  {
+   "url": "https://services.arcgis.com/wlVTGRSYTzAbjjiC/ArcGIS/rest/services/touki/FeatureServer",
+   "observation": "Earlier Esri Japan queryable derivative (Tokyo/Aichi/Fukuoka), not re-tested"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-01101",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "package metadata, resources and cc-by licence"
+  },
+  {
+   "url": "https://www.geospatial.jp/ckan/dataset/d3d3d515-.../resource/c595c169-.../download/01101__12_r_2025.geojson (Range: bytes=0-2500)",
+   "method": "GET",
+   "httpStatus": 206,
+   "contentType": "application/json",
+   "assessment": "Sapporo: FeatureCollection, Polygon lots with 地番, CRS84, prefecture 01 (Hokkaido)"
+  },
+  {
+   "url": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/40/aigid-moj-40131/40131_<name>_筆R_2026.geojson (Range: bytes=0-2500)",
+   "method": "GET",
+   "httpStatus": 206,
+   "contentType": "binary/octet-stream",
+   "assessment": "Fukuoka Higashi: Polygon lots, prefecture 40 (Kyushu)"
+  },
+  {
+   "url": "https://www.geospatial.jp/ckan/dataset/0340e2dc-.../download/40131__2_r_2025.geojson (Range)",
+   "method": "GET",
+   "httpStatus": 500,
+   "contentType": "text/html",
+   "assessment": "CKAN download proxy returned 500 once for this file; the S3 mirror worked"
+  },
+  {
+   "url": "https://front.geospatial.jp/moj-chizu-xml-download/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "not-found template"
+  },
+  {
+   "url": "https://api.gsi.go.jp/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT 502"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "jp-moj-aigid-geospatial-ckan",
+  "requestUrl": "https://www.geospatial.jp/ckan/dataset/d3d3d515-82ef-4f9a-9c4c-37e36adfb0ef/resource/c595c169-a9f6-4a38-a56e-a429f5b4f25a/download/01101__12_r_2025.geojson with Range: bytes=0-2500; and S3 mirror of aigid-moj-40131 with Range: bytes=0-2500",
+  "method": "GET",
+  "httpStatus": 206,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": "Sapporo Chuo-ku ~141.34E 43.02N; Fukuoka Higashi-ku ~130.486E 33.627N",
+  "parcelRecordCount": 5,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "ID / 地番 (lot number, with 市区町村C)",
+  "responseFile": "JP-parcel-response.json",
+  "pagination": "none: per-municipality static file; discover via CKAN package_search (rows/start)",
+  "regionSampled": "Hokkaido (Sapporo Chuo-ku) and Fukuoka (Fukuoka Higashi-ku); Osaka Chuo-ku previously"
+ },
+ "regionsSampled": [
+  "Hokkaido: Sapporo Chuo-ku (01101)",
+  "Fukuoka Prefecture: Fukuoka Higashi-ku (40131)",
+  "Osaka: Chuo-ku (27128, earlier pass)"
+ ],
+ "coverageAssessment": {
+  "claimedScope": "MOJ registry maps nationwide, one package per municipality/ward; registry maps do not cover every parcel (unsurveyed/mountain areas, some urban areas without a 14-article map)",
+  "regionsVerified": [
+   "Hokkaido (Sapporo Chuo-ku)",
+   "Fukuoka (Fukuoka Higashi-ku)",
+   "Osaka (Chuo-ku)"
+  ],
+  "nationwideVerified": true,
+  "nationwideBasis": "three distant prefectures from the same publisher/schema; per-municipality files, no single spatial query endpoint"
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Bulk per-municipality files only (no bbox query API); server-side ingest needed. AIGID conversions are cc-by; MOJ originals under MOJ terms (独自利用規約), read only as a CKAN licence label, full text not read. Coverage of all ~1,900 municipalities not enumerated. Published maps are registry maps (not always survey-accurate).",
+ "nextStep": "Enumerate aigid-moj packages via CKAN, ingest per municipality on demand, credit AIGID/MOJ. Consider Esri Japan FeatureServer for live queries in Tokyo/Aichi/Fukuoka.",
+ "schemaVersion": 1,
+ "countryCode": "JP",
+ "checkedAt": "2026-09-30",
+ "status": "national_online_cadastre_verified_sample"
+}

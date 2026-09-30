@@ -1,0 +1,94 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "NE",
+ "regionName": "Nebraska",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/plain,*/*; Accept-Language: en-US,en;q=0.9; cookie jar on; via pre-configured proxy",
+ "source": {
+  "sourceId": "us-ne-ocio-statewide-parcels",
+  "name": "Statewide Parcels (external)",
+  "operator": "Nebraska OCIO GIS Team (NebraskaMap)",
+  "scope": "statewide parcel dataset, 2025 parcels, ~1.15M records",
+  "endpoint": "https://gis.ne.gov/Enterprise/rest/services/StatewideParcelsExternal/FeatureServer/0",
+  "method": "GET",
+  "responseFormat": "ArcGIS REST JSON",
+  "crs": "EPSG:3857 native (Shape__Area field); requested outSR=4326",
+  "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-ne-ocio-statewide-parcels",
+  "requestUrl": "https://gis.ne.gov/Enterprise/rest/services/StatewideParcelsExternal/FeatureServer/0/query?geometry=<bbox ~150m>&outFields=State_PID,Parcel_ID,County_ID&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   "[-96.7034,40.8128,-96.7018,40.8144]",
+   "[-95.9353,41.2557,-95.9337,41.2573]",
+   "[-101.7008,41.1292,-101.6992,41.1308]"
+  ],
+  "parcelRecordCount": 8,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "State_PID (with Parcel_ID, County_ID)",
+  "responseFile": "research/subnational/US/NE-parcel-response.json",
+  "pagination": "resultRecordCount / resultOffset (per-sample 3 records)",
+  "regionSampled": [
+   "Lincoln (Lancaster)",
+   "Omaha (Douglas)",
+   "Keith County"
+  ]
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "NebraskaMap item: \"Statewide Parcel dataset for 2025 parcels. Information provided from counties\" (maintained by county assessors, merged yearly by the OCIO GIS Team for the Dept of Revenue); ~1,154,898 records, updated 2026-06-23 per catalog page.",
+ "subregionsVerified": [
+  "Lancaster County (109)",
+  "Douglas County (055)",
+  "Keith County (101)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://www.nebraskamap.gov/datasets/statewide-parcels/about",
+   "observation": "catalog page naming service"
+  },
+  {
+   "url": "https://giscat.ne.gov/agency/rest/services/TaxParcelsDED/MapServer/0",
+   "observation": "older DED tax parcel layer, not used"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gis.ne.gov/Enterprise/rest/services/StatewideParcelsExternal/FeatureServer/0?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "service/layer description read"
+  },
+  {
+   "url": "https://gis.ne.gov/Enterprise/rest/services/StatewideParcelsExternal/FeatureServer/0/query?geometry=<bbox ~150m near Lincoln (Lancaster)>&outFields=State_PID,Parcel_ID,County_ID...",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons returned with ID and geometry only"
+  },
+  {
+   "url": "https://gis.ne.gov/Enterprise/rest/services/StatewideParcelsExternal/FeatureServer/0/query?geometry=<bbox ~150m near Omaha (Douglas)>&outFields=State_PID,Parcel_ID,County_ID...",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons returned with ID and geometry only"
+  },
+  {
+   "url": "https://gis.ne.gov/Enterprise/rest/services/StatewideParcelsExternal/FeatureServer/0/query?geometry=<bbox ~150m near Keith County>&outFields=State_PID,Parcel_ID,County_ID...",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons returned with ID and geometry only"
+  }
+ ],
+ "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution. Layer has owner-adjacent and sales fields; not requested.",
+ "remainingUncertainty": "One sample polygon returned an empty Parcel_ID (likely unparcelled/ROW shape). County completeness not checked.",
+ "nextStep": "Read NebraskaMap terms; note the layer is FeatureServer so pagination is supported."
+}

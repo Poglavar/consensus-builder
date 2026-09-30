@@ -1,0 +1,233 @@
+{
+ "note": "WFS 2.0 GetFeature outputFormat application/geo+json, count=2, bbox lat/lon urn:ogc:def:crs:EPSG::4326",
+ "valletta_area_malta": {
+  "type": "FeatureCollection",
+  "features": [
+   {
+    "type": "Feature",
+    "id": "CP_10140_8044",
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        14.51524012987702,
+        35.899123403801596
+       ],
+       [
+        14.51531775330072,
+        35.89904176524546
+       ],
+       [
+        14.515114653198134,
+        35.89891255799586
+       ],
+       [
+        14.514983148823694,
+        35.899052760513605
+       ],
+       [
+        14.515114940659023,
+        35.899136691252714
+       ],
+       [
+        14.515169288733716,
+        35.89907416162347
+       ],
+       [
+        14.51524012987702,
+        35.899123403801596
+       ],
+       [
+        14.51524012987702,
+        35.899123403801596
+       ]
+      ]
+     ]
+    },
+    "properties": {
+     "identifier": {
+      "value": "https://msdi.data.gov.mt/so/cp/CadastralParcel/RegisteredLandParcels/CP_10140_8044",
+      "codeSpace": "http://inspire.ec.europa.eu/ids"
+     },
+     "beginLifespanVersion": "2016-04-20T00:00:00+02:00",
+     "inspireId": {
+      "Identifier": {
+       "namespace": "RegisteredLandParcels",
+       "localId": "CP_10140_8044"
+      }
+     },
+     "label": "ParceNo_10140",
+     "nationalCadastralReference": "10140",
+     "validFrom": "1999-01-01T01:01:00+01:00"
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "CP_10144_8046",
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        14.51492828870929,
+        35.89988885485836
+       ],
+       [
+        14.515064392457989,
+        35.89974037287852
+       ],
+       [
+        14.515015604954906,
+        35.899708799046465
+       ],
+       [
+        14.51488127088732,
+        35.89985873643371
+       ],
+       [
+        14.51492828870929,
+        35.89988885485836
+       ],
+       [
+        14.51492828870929,
+        35.89988885485836
+       ]
+      ]
+     ]
+    },
+    "properties": {
+     "identifier": {
+      "value": "https://msdi.data.gov.mt/so/cp/CadastralParcel/RegisteredLandParcels/CP_10144_8046",
+      "codeSpace": "http://inspire.ec.europa.eu/ids"
+     },
+     "beginLifespanVersion": "2016-04-20T00:00:00+02:00",
+     "inspireId": {
+      "Identifier": {
+       "namespace": "RegisteredLandParcels",
+       "localId": "CP_10144_8046"
+      }
+     },
+     "label": "ParceNo_10144",
+     "nationalCadastralReference": "10144",
+     "validFrom": "1999-01-01T01:01:00+01:00"
+    }
+   }
+  ]
+ },
+ "gozo_victoria_area": {
+  "type": "FeatureCollection",
+  "features": [
+   {
+    "type": "Feature",
+    "id": "CP_29002_24580",
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        14.236463782816374,
+        36.04563035961765
+       ],
+       [
+        14.236584013334001,
+        36.04613536182476
+       ],
+       [
+        14.2366464552294,
+        36.04613016858705
+       ],
+       [
+        14.23653221647472,
+        36.0456249339205
+       ],
+       [
+        14.236463782816374,
+        36.04563035961765
+       ],
+       [
+        14.236463782816374,
+        36.04563035961765
+       ]
+      ]
+     ]
+    },
+    "properties": {
+     "identifier": {
+      "value": "https://msdi.data.gov.mt/so/cp/CadastralParcel/RegisteredLandParcels/CP_29002_24580",
+      "codeSpace": "http://inspire.ec.europa.eu/ids"
+     },
+     "beginLifespanVersion": "2016-04-20T00:00:00+02:00",
+     "inspireId": {
+      "Identifier": {
+       "namespace": "RegisteredLandParcels",
+       "localId": "CP_29002_24580"
+      }
+     },
+     "label": "ParceNo_29002",
+     "nationalCadastralReference": "29002",
+     "validFrom": "1999-01-01T01:01:00+01:00"
+    }
+   },
+   {
+    "type": "Feature",
+    "id": "CP_29003_24581",
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        14.237008072047024,
+        36.04599921898741
+       ],
+       [
+        14.237007928316578,
+        36.046014370191905
+       ],
+       [
+        14.237199458118305,
+        36.04602297717877
+       ],
+       [
+        14.237201173900496,
+        36.04598278217886
+       ],
+       [
+        14.237032398424917,
+        36.045974850673026
+       ],
+       [
+        14.237032164862942,
+        36.04599937151633
+       ],
+       [
+        14.237008072047024,
+        36.04599921898741
+       ],
+       [
+        14.237008072047024,
+        36.04599921898741
+       ]
+      ]
+     ]
+    },
+    "properties": {
+     "identifier": {
+      "value": "https://msdi.data.gov.mt/so/cp/CadastralParcel/RegisteredLandParcels/CP_29003_24581",
+      "codeSpace": "http://inspire.ec.europa.eu/ids"
+     },
+     "beginLifespanVersion": "2016-04-20T00:00:00+02:00",
+     "inspireId": {
+      "Identifier": {
+       "namespace": "RegisteredLandParcels",
+       "localId": "CP_29003_24581"
+      }
+     },
+     "label": "ParceNo_29003",
+     "nationalCadastralReference": "29003",
+     "validFrom": "1999-01-01T01:01:00+01:00"
+    }
+   }
+  ]
+ }
+}

@@ -1,0 +1,102 @@
+{
+ "kind": "city",
+ "key": "maputo",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: pt-MZ,pt;q=0.9; cookie jar (curl -c/-b)",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.mta.gov.mz/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+  },
+  {
+   "url": "https://www.dinat.gov.mz/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+  },
+  {
+   "url": "https://geoportal.gov.mz/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+  },
+  {
+   "url": "https://sigt.mta.gov.mz",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+  },
+  {
+   "url": "https://www.dnt.gov.mz/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+  },
+  {
+   "url": "https://www.maputo.gov.mz/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+  },
+  {
+   "url": "https://www.cmmaputo.gov.mz/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "Maputo municipality site reachable; only menu item is 'Actualizacao de Cadastro' (owner registration-update form page), no map/feature service in HTML"
+  },
+  {
+   "url": "https://cmmaputo.gov.mz/actualizacao-de-cadastros/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "page describes cadastre update by brigades/online; no service URL"
+  },
+  {
+   "url": "https://portaldogoverno.gov.mz/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "government portal; no cadastre link"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Maputo cadastro OR parcelas&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "only land-use/population/Bairros; no parcels"
+  },
+  {
+   "url": "https://services.arcgis.com/Y1Ir4pYHqx2LNdtU/arcgis/rest/services/Bairros_Maputo/FeatureServer/0?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "neighbourhood (bairro) layer, not parcels"
+  },
+  {
+   "url": "https://services1.arcgis.com/cc7nIINtrZ67dyVJ/arcgis/rest/services/Land_Ownership/FeatureServer/0?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "Africa world-cities layer; unrelated"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "official hosts fail at proxy CONNECT/reset while other sites of the same country load; unproven",
+ "notes": "New: cmmaputo.gov.mz municipal site is reachable but exposes no parcel service. Land ministry hosts (MTA/DINAT/DNT) remain unreachable, consistent with MZ.json.",
+ "nextStep": "Retry MTA/DINAT/Terra Segura from another network."
+}

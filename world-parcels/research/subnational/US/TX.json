@@ -1,0 +1,85 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "TX",
+ "regionName": "Texas",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/html,*/*;q=0.8; Accept-Language: en-US,en;q=0.9; cookie jar on (curl -c/-b); via pre-configured proxy, TLS verification on",
+ "source": {
+  "sourceId": "us-tx-stratmap-land-parcels",
+  "name": "StratMap Land Parcels 48 Most Recent",
+  "operator": "Texas Geographic Information Office (TxGIO / TNRIS), data from county appraisal districts",
+  "scope": "multi-county statewide compilation ('various counties')",
+  "endpoint": "https://feature.geographic.texas.gov/arcgis/rest/services/Parcels/stratmap_land_parcels_48_most_recent/MapServer/0",
+  "method": "GET MapServer identify (query capability 'Query' is listed but query returns 'capability not supported')",
+  "responseFormat": "json",
+  "crs": "EPSG:4326 via sr",
+  "reuseStatus": "not read on page; open TxGIO product"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-tx-stratmap-land-parcels",
+  "requestUrl": "https://feature.geographic.texas.gov/arcgis/rest/services/Parcels/stratmap_land_parcels_48_most_recent/MapServer/identify",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   -97.7436,
+   30.2666,
+   -97.7416,
+   30.2686
+  ],
+  "parcelRecordCount": 1,
+  "recordListPath": "results",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PROP_ID",
+  "responseFile": "TX-parcel-response.json",
+  "pagination": "none (identify returns hits at a point)"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Service description: parcels contributed by county appraisal districts, compiled statewide by TxGIO; not every county present (Harris/Houston point returned nothing).",
+ "subregionsVerified": [
+  "Travis County",
+  "Dallas County"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://feature.geographic.texas.gov/arcgis/rest/services/Parcels/stratmap_land_parcels_48_most_recent/MapServer",
+   "observation": "MapServer; /query refused, /identify works; layer carries owner and address fields (not saved)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://feature.geographic.texas.gov/arcgis/rest/services/Parcels/stratmap_land_parcels_48_most_recent/MapServer/0/query",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "error 400 capability not supported for every query"
+  },
+  {
+   "url": "https://feature.geographic.texas.gov/arcgis/rest/services/Parcels/stratmap_land_parcels_48_most_recent/MapServer/identify (Austin)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "1 parcel polygon; only ID/county/FIPS/year saved"
+  },
+  {
+   "url": "https://feature.geographic.texas.gov/arcgis/rest/services/Parcels/stratmap_land_parcels_48_most_recent/MapServer/identify (Dallas)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "1 parcel polygon"
+  },
+  {
+   "url": "https://feature.geographic.texas.gov/arcgis/rest/services/Parcels/stratmap_land_parcels_48_most_recent/MapServer/identify (Houston point)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 results"
+  }
+ ],
+ "reuseStatus": "Not read.",
+ "remainingUncertainty": "Only point-identify works, no bbox/count query; identify response includes owner/address attributes which were dropped before saving. Coverage gaps (Harris test point empty).",
+ "nextStep": "Test an export/WMS path and list which counties are covered."
+}

@@ -1,0 +1,74 @@
+{
+ "kind": "country",
+ "key": "GR",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "national_cadastre_viewer_only",
+ "newStatus": "national_cadastre_viewer_only",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: el-GR,el;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.ktimatologio.gr/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Access Denied even with full headers"
+  },
+  {
+   "url": "https://inspire.ktimatologio.gr/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no response"
+  },
+  {
+   "url": "https://geodata.gov.gr/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no response"
+  },
+  {
+   "url": "https://gis.ktimanet.gr/wms/wmsopen/wmsserver.aspx?SERVICE=WMS&REQUEST=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "WMS 1.1.0 single BASEMAP layer, raster only; GetMap returns image/png"
+  },
+  {
+   "url": "https://gis.ktimanet.gr/wms/ktbasemap/default.aspx",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "basemap viewer; JS API (public key redacted, <PUBLIC_TOKEN>) covers roads, places, OTA; no parcel query"
+  },
+  {
+   "url": "https://maps.ktimatologio.gr/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "'Digital Map of the Cadastre' ArcGIS Experience Builder shell; config/service URLs not exposed at guessed paths (404/403)"
+  },
+  {
+   "url": "https://maps.gsis.gr/gspp/maps/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "ArcGIS Server with empty Ktimatologio folder; APAA_PUBLIC holds property zone values, not parcels"
+  },
+  {
+   "url": "https://gis.ktimanet.gr/inspire/",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html",
+   "assessment": "no INSPIRE path"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "www.ktimatologio.gr returns a 403 Access Denied page (375 B) with full browser headers; inspire/geodata/cadastre.gov.gr hosts do not connect. Could be WAF/geo filtering, unconfirmed",
+ "notes": "New: found maps.ktimatologio.gr (official Digital Cadastre Map, Experience Builder) and maps.gsis.gr ArcGIS Server; neither exposed a vector parcel query. Still viewer/raster only.",
+ "nextStep": "Load maps.ktimatologio.gr in a real browser to read its network calls for the parcel layer; retry INSPIRE hosts."
+}

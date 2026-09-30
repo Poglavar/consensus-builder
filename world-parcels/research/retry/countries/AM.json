@@ -1,0 +1,104 @@
+{
+ "kind": "country",
+ "key": "AM",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "national_cadastre_credentialed_or_paid",
+ "newStatus": "national_cadastre_viewer_only",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8 (application/json,*/*;q=0.8 for JSON/API calls); Accept-Language: hy-AM,hy;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": {
+  "sourceId": "am-geoportal-wms-arpis",
+  "name": "National Geoportal (geoportal.am) GeoServer WMS: arpis:V_VALID_MAP_PARCELS (render only), Real_estate (blocks, buildings queryable)",
+  "operator": "Cadastre Committee of Armenia (via geoportal.am / e-cadastre)",
+  "scope": "Yerevan sampled only",
+  "endpoint": "https://geoportal.am/gs/wms",
+  "method": "WMS GetMap (anonymous); GetFeatureInfo works for blocks/buildings only",
+  "responseFormat": "PNG; GeoJSON for blocks/buildings",
+  "crs": "EPSG:4326",
+  "reuseStatus": "not read"
+ },
+ "requests": [
+  {
+   "url": "https://www.e-cadastre.am/en/map",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "redirects to customer login (reCAPTCHA / EKENG auth); not attempted further"
+  },
+  {
+   "url": "https://maparmenia.am/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://dram.am/en/cadastre",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare 'Just a moment' challenge; not bypassed"
+  },
+  {
+   "url": "https://geoportal.am/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "National Geoportal home; links to map_geoportal?layer=realestate"
+  },
+  {
+   "url": "https://geoportal.am/openlayers/js/main_free_mix.js?ver=1.1629",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/javascript",
+   "assessment": "viewer JS: WMS urls geoportal.am/gs/... and map.cadastre.am:8443/geoserver/..., layer Real_estate; no token"
+  },
+  {
+   "url": "https://map.cadastre.am:8443/geoserver/wms?service=WMS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "unreachable"
+  },
+  {
+   "url": "https://geoportal.am/gs/ows?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "Service WFS is disabled"
+  },
+  {
+   "url": "https://geoportal.am/gs/wms?...GetMap layers=Real_estate bbox=44.505,40.175,44.520,40.185 (WMS 1.1.1)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "image/png",
+   "assessment": "non-blank render (411 KB)"
+  },
+  {
+   "url": "https://geoportal.am/gs/wms?...GetFeatureInfo layers=Real_estate bbox 44.513,40.1795,44.5145,40.1805",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "V_VALID_MAP_BLOCKS polygons (cadastral blocks, area, code) and V_VALID_MAP_BUILDINGS polygons with PARCEL_ID; no parcel polygons"
+  },
+  {
+   "url": "https://geoportal.am/gs/wms?...GetMap layers=arpis:V_VALID_MAP_PARCELS",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "image/png",
+   "assessment": "30 KB PNG showing parcel outlines (checked visually)"
+  },
+  {
+   "url": "https://geoportal.am/gs/wms?...GetFeatureInfo query_layers=arpis:V_VALID_MAP_PARCELS",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/vnd.ogc.se_xml",
+   "assessment": "OperationNotSupported: layer not queryable"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "New: the e-cadastre login is not the only access; the public National Geoportal serves parcel outlines as an anonymous WMS image layer (arpis:V_VALID_MAP_PARCELS), but no vector parcel records: WFS disabled, parcel layer not queryable. Blocks and buildings ARE queryable (blocks are not parcels, so not counted). Real_estate WMS with 1.3.0 and lon/lat bbox returns blank images because of axis order. Not verified sample per protocol.",
+ "nextStep": "Look for a queryable parcel layer (other arpis layers, map.cadastre.am:8443 from another network); check terms of the raster tiles; do not treat blocks as parcels."
+}

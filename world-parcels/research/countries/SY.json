@@ -1,0 +1,46 @@
+{
+ "country": "Syrian Arab Republic",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "General Directorate of Cadastral Affairs (Ministry of Local Administration / Real Estate Registry)",
+ "portalsFound": [
+  {
+   "url": "https://hlp.syria-report.com/hlp/explained-general-directorate-of-cadastral-affairs/",
+   "observation": "From Damascus/Aleppo city records: register digitisation ongoing, no public online parcel map documented."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.syrianrealestate.gov.sy/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed (502) / no response; host unreachable from this environment"
+  },
+  {
+   "url": "https://www.moc.gov.sy/",
+   "method": "GET",
+   "httpStatus": 307,
+   "contentType": "text/html; charset=utf-8",
+   "assessment": "ministry site redirects; no cadastre content"
+  },
+  {
+   "url": "https://www.cadastre.gov.sy/ (from damascus.json/aleppo.json)",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed (502) / no response; host unreachable from this environment"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "none found",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Cadastre hosts unreachable from this proxy; no public geospatial service found. Not proof of absence.",
+ "nextStep": "Retry from another network; look for any official real-estate registry portal.",
+ "schemaVersion": 1,
+ "countryCode": "SY",
+ "checkedAt": "2026-09-29"
+}

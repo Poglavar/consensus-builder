@@ -1,0 +1,81 @@
+{
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: es-EC,es;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://sni.gob.ec/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Apache 403 Forbidden even with full browser headers"
+  },
+  {
+   "url": "https://www.sni.gob.ec/inicio",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "403"
+  },
+  {
+   "url": "https://ide.sni.gob.ec/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "403"
+  },
+  {
+   "url": "https://geoportal.quito.gob.ec/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "403 with transaction id (WAF)"
+  },
+  {
+   "url": "https://www.geoportaligm.gob.ec/portal/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "IGM portal reachable; no cadastre/parcel service links found in HTML"
+  },
+  {
+   "url": "https://www.agricultura.gob.ec/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "MAG site reachable; only generic sni.gob.ec links"
+  },
+  {
+   "url": "https://sigtierras.gob.ec/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection failed at the agent proxy (no HTTP status): unreachable"
+  },
+  {
+   "url": "https://geoportal.igm.gob.ec/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection failed at the agent proxy (no HTTP status): unreachable"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=predios%20catastro%20Ecuador...",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "only third-party/consultancy layers (e.g. a GADM Riobamba 'PREDIOS' WFL1 by user jamiliz); not official, not sampled"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "SNI and Quito geoportal return 403 to browser-header requests from this network while other Ecuador hosts (IGM, MAG) answer 200; typical of geo/IP filtering.",
+ "notes": "Headers did not change the 403. Nothing new; still no verifiable parcel service.",
+ "nextStep": "Retry from an Ecuadorian network; look for municipal ArcGIS servers (Quito, Cuenca, Guayaquil) and SIGTIERRAS WFS.",
+ "kind": "country",
+ "key": "EC",
+ "checkedAt": "2026-09-30"
+}

@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:197",
+  "queueRank": 197,
+  "name": "Quito",
+  "country": "Ecuador",
+  "countryCode": "EC",
+  "centerLatLon": [
+    -0.203432542228661,
+    -78.4989048157792
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://geoportal.quito.gob.ec/",
+      "observation": "Quito municipal geoportal returned 403 Forbidden to curl, also for /arcgis/rest/services, even with a browser User-Agent."
+    },
+    {
+      "url": "https://services8.arcgis.com/A7poLg9W2f35Clfc/arcgis/rest/services/CATASTROS/FeatureServer/0",
+      "observation": "ArcGIS Online item 'Catastro_DMQ' (owner aarrieta_amc_quito, tags Demo/Piloto/AMC, snippet 'predial information layer of the Distrito Metropolitano de Quito', 2022) is listed, but the service now answers 'Invalid URL' (400) and the org lists no services; not a working source."
+    },
+    {
+      "url": "https://servicios.quito.gob.ec/",
+      "observation": "Municipal services portal (Angular shell, HTTP 200); /arcgis/rest/services path returned the app shell, not an ArcGIS directory."
+    },
+    {
+      "url": "https://sigtierras.gob.ec/",
+      "observation": "National land programme (SIGTIERRAS) site and its IDE GeoServer were unreachable (proxy 502 / connection reset), so national predial WFS status is unknown."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geoportal.quito.gob.ec/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html",
+      "parcelRecordCount": null,
+      "assessment": "Forbidden"
+    },
+    {
+      "url": "https://services8.arcgis.com/A7poLg9W2f35Clfc/arcgis/rest/services/CATASTROS/FeatureServer/0/query (bbox -78.4990,-0.2040,-78.4975,-0.2028, count 3)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "parcelRecordCount": 0,
+      "assessment": "error 400 Invalid URL; service gone"
+    },
+    {
+      "url": "https://servicios.quito.gob.ec/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "parcelRecordCount": null,
+      "assessment": "SPA shell"
+    },
+    {
+      "url": "https://ide.sigtierras.gob.ec/geoserver/ows?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "parcelRecordCount": null,
+      "assessment": "connection reset"
+    },
+    {
+      "url": "https://sitios.quito.gob.ec/, https://ide.quito.gob.ec/, https://datosabiertos.quito.gob.ec/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "parcelRecordCount": null,
+      "assessment": "proxy CONNECT 502 / unreachable"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Distrito Metropolitano de Quito predial cadastre (municipal), unverified",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Official Quito GIS hosts were blocked (403) or unreachable, so absence of an open endpoint is not shown. The only parcel-like public item found was a dead pilot service.",
+  "nextStep": "Retry from another network: Quito IDE/ geoportal ArcGIS REST, the SIGTIERRAS IDE WFS, and Ecuador's national IDE (ide.geoportaligm.gob.ec / MAG)."
+}

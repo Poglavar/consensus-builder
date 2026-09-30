@@ -1,0 +1,58 @@
+[
+ {
+  "kind": "country",
+  "key": "MA",
+  "name": "Morocco",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/MA.json"
+ },
+ {
+  "kind": "country",
+  "key": "MC",
+  "name": "Monaco",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/MC.json"
+ },
+ {
+  "kind": "country",
+  "key": "MD",
+  "name": "Republic of Moldova",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/MD.json"
+ },
+ {
+  "kind": "country",
+  "key": "ME",
+  "name": "Montenegro",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/ME.json"
+ },
+ {
+  "kind": "country",
+  "key": "MG",
+  "name": "Madagascar",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/MG.json"
+ },
+ {
+  "kind": "country",
+  "key": "MK",
+  "name": "North Macedonia",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/MK.json"
+ },
+ {
+  "kind": "country",
+  "key": "MM",
+  "name": "Myanmar",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/MM.json"
+ },
+ {
+  "kind": "country",
+  "key": "MO",
+  "name": "China, Macao SAR",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/MO.json"
+ }
+]

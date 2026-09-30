@@ -1,0 +1,73 @@
+{
+ "kind": "country",
+ "key": "BF",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "national_cadastre_credentialed_or_paid",
+ "newStatus": "national_cadastre_credentialed_or_paid",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8 (application/json,*/*;q=0.8 for JSON/API calls); Accept-Language: fr-BF,fr;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://dgi.bf/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "DGI homepage; SYC@D/eCADASTRE mentions in news, no public map link"
+  },
+  {
+   "url": "https://dgi.bf/documents_fonciers/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "land documents information page; no viewer"
+  },
+  {
+   "url": "https://sycad.dgi.bf/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "unreachable"
+  },
+  {
+   "url": "https://ecadastre.dgi.bf/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "unreachable"
+  },
+  {
+   "url": "https://ecadastre.bf/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "unreachable"
+  },
+  {
+   "url": "https://www.igb.bf/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Institut Geographique du Burkina; map products only, no geoportal"
+  },
+  {
+   "url": "https://geoportail.bf/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "unreachable"
+  },
+  {
+   "url": "https://www.sig.gov.bf/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "redirects to gouvernement.gov.bf; not GIS"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "No public parcel viewer/service located; SYC@D and eCADASTRE hosts unreachable so their access model is not directly confirmed (previous 'credentialed' status rests on the DGI descriptions). Not upgraded.",
+ "nextStep": "Find the eCADASTRE service URL from dgi.bf menus and inspect it from another network."
+}

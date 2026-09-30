@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:5128581",
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_city_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "us-nyc-dof-digital-tax-map",
+    "requestUrl": "https://services6.arcgis.com/yG5s3afENB5iO9fj/ArcGIS/rest/services/DTM_ETL_DAILY_view/FeatureServer/0/query?where=1%3D1&geometry=%7B%22xmin%22%3A-74.011%2C%22ymin%22%3A40.705%2C%22xmax%22%3A-74.009%2C%22ymax%22%3A40.707%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CBORO%2CBLOCK%2CLOT%2CBBL&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "spatialTestAreaLonLat": [-74.011, 40.705, -74.009, 40.707],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "responseFile": "new-york-city-tax-lot-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true; maxRecordCount=1000"
+  },
+  "portalsFound": [
+    {"url": "https://catalog.data.gov/dataset/tax_lot_polygon", "observation": "Official catalog identifies NYC Department of Finance Digital Tax Map tax-lot polygons and links the downloadable ArcGIS FeatureServer. It describes monthly extraction and updates."},
+    {"url": "https://data.cityofnewyork.us/City-Government/Primary-Land-Use-Tax-Lot-Output-Map-MapPLUTO-/f888-ni5f/about_data", "observation": "NYC MapPLUTO is a separate city tax-lot release; its Socrata API is a non-tabular asset and cannot return rows through /resource/f888-ni5f.json."},
+    {"url": "https://gisservices.its.ny.gov/arcgis/rest/services/NYS_Tax_Parcels_Public/MapServer", "observation": "New York State publishes selected consenting counties, including NYC's five boroughs; it explicitly is not statewide complete, and does not imply United States coverage."}
+  ],
+  "requests": [
+    {"url": "https://services6.arcgis.com/yG5s3afENB5iO9fj/ArcGIS/rest/services/DTM_ETL_DAILY_view/FeatureServer/0?f=json", "method": "GET", "httpStatus": 200, "geometryType": "esriGeometryPolygon", "maxRecordCount": 1000},
+    {"url": "https://data.cityofnewyork.us/resource/f888-ni5f.json?%24limit=2", "method": "GET", "httpStatus": 403, "rawReply": {"error": true, "message": "no row or column access to non-tabular tables"}, "parcelRecordCount": null}
+  ],
+  "coverageAssessment": {"claimedScope": "New York City's five boroughs in the NYC Digital Tax Map; wider metro area excluded", "verifiedOpenScope": "three Manhattan tax lots in a bounded sample", "countrywideVerified": false},
+  "remainingUncertainty": "The bounded sample does not prove every city lot is present. The official city scope and monthly refresh are catalog claims; API terms, stable update/version keys, and cross-borough completeness need review before runtime use.",
+  "nextStep": "Implement spatially bounded and paginated ArcGIS requests; cross-check all five boroughs and source terms."
+}

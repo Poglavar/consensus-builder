@@ -1,0 +1,80 @@
+{
+ "country": "Switzerland",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "swisstopo / Federal Directorate for Cadastral Surveying (Amtliche Vermessung, AV); data held by the cantons and served via geo.admin.ch",
+ "portalsFound": [
+  {
+   "url": "https://api3.geo.admin.ch/rest/services/api/MapServer/ch.swisstopo-vd.amtliche-vermessung",
+   "observation": "Federal geo.admin.ch layer 'OpenData-AV' aggregating cantonal official survey data incl. parcels (attributes: bfsnr, ak canton, number, egris_egrid)."
+  },
+  {
+   "url": "https://maps.zh.ch",
+   "observation": "Canton Zurich geoportal (subnational, linked from geoportal_url attribute)."
+  },
+  {
+   "url": "https://map.geo.admin.ch",
+   "observation": "Federal map viewer."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://api3.geo.admin.ch/rest/services/api/MapServer/identify?geometry=2683000,1248000&geometryType=esriGeometryPoint&layers=all:ch.swisstopo-vd.amtliche-vermessung&tolerance=0&mapExtent=2682900,1247900,2683100,1248100&imageDisplay=100,100,96&sr=2056&returnGeometry=true",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "ZH parcel polygon returned (29-vertex closed ring), ak=ZH"
+  },
+  {
+   "url": "https://api3.geo.admin.ch/rest/services/api/MapServer/identify?geometry=2600500,1199500&...&tolerance=5&returnGeometry=true",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "BE parcel polygon returned (closed ring)"
+  },
+  {
+   "url": "https://api3.geo.admin.ch/rest/services/api/MapServer/identify?geometry=2500500,1117500&...&tolerance=5&returnGeometry=true",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 GE parcel polygons returned"
+  },
+  {
+   "url": "https://api3.geo.admin.ch/rest/services/api/MapServer/identify?geometry=2538500,1152500&...&tolerance=20&returnGeometry=false",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "Lausanne (VD) area: empty result; VD apparently not in the open AV layer at that point"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "ch-geoadmin-openav",
+  "requestUrl": "https://api3.geo.admin.ch/rest/services/api/MapServer/identify?geometry=2500500,1117500&geometryType=esriGeometryPoint&layers=all:ch.swisstopo-vd.amtliche-vermessung&tolerance=5&mapExtent=2500400,1117400,2500600,1117600&imageDisplay=100,100,96&sr=2056&returnGeometry=true",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": "LV95 (EPSG:2056) ~200 m box around E2500500 N1117500 (Geneva)",
+  "parcelRecordCount": 3,
+  "recordListPath": "results",
+  "geometryType": "esriGeometryPolygon (rings)",
+  "closedRings": true,
+  "idField": "attributes.number / egris_egrid",
+  "responseFile": "countries/CH-parcel-response.json",
+  "pagination": "none (identify, point/tolerance); MapServer find and WFS/download of AV per canton exist but not tested",
+  "regionSampled": "Cantons GE, BE, ZH"
+ },
+ "coverageAssessment": {
+  "claimedScope": "Federal open-data AV layer aggregating cantonal official survey data",
+  "regionsVerified": [
+   "ZH",
+   "BE",
+   "GE"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Coverage is by canton and release status: sampled VD point returned nothing, so not every canton/area is present. Licence of OpenData-AV (opendata.swiss terms) not read here. Identify is point-based; bulk export is via cantonal/swisstopo downloads.",
+ "nextStep": "Check which cantons are in the layer (e.g. VD, TI), read the OpenData-AV terms of use, and test bbox queries.",
+ "schemaVersion": 1,
+ "countryCode": "CH",
+ "checkedAt": "2026-09-29"
+}

@@ -1,0 +1,73 @@
+{
+ "kind": "country",
+ "key": "KH",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: km-KH,km;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://cadastral.mlmupc.gov.kh/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "nginx 403 even with full browser headers"
+  },
+  {
+   "url": "https://cadastral.mlmupc.gov.kh/service",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "nginx 403"
+  },
+  {
+   "url": "https://cadastral.mlmupc.gov.kh/geoserver/wfs?request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "nginx 403 (guessed path)"
+  },
+  {
+   "url": "https://gdcg.mlmupc.gov.kh/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "nginx 403"
+  },
+  {
+   "url": "https://eregistration.mlmupc.gov.kh/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT 502"
+  },
+  {
+   "url": "https://www.lmap.gov.kh/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT 502"
+  },
+  {
+   "url": "https://mlmupc.gov.kh/electronic-cadastral-services/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "ministry page loads; only links to cadastral.mlmupc.gov.kh/service, /mortgage and gdcg.mlmupc.gov.kh/search"
+  },
+  {
+   "url": "https://data.opendevelopmentmekong.net/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "no cadastre layer evidence"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "Ministry site now loads and its e-cadastral-services page names cadastral.mlmupc.gov.kh/service and gdcg.mlmupc.gov.kh as the services, but both return a blanket nginx 403 to this network with full headers (headers did not change the result). Region-based IP block suspected because the main mlmupc.gov.kh host serves us.",
+ "nextStep": "Retry from a Cambodian/Asia egress; inspect viewer JS from a browser."
+}

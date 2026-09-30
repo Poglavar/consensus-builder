@@ -1,0 +1,71 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "HN",
+ "country": "Honduras",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Instituto de la Propiedad (IP) - Catastro/Registro (SURE/ Registro Catastral); SINIT (Sistema Nacional de Informacion Territorial) hosts geoportal",
+ "portalsFound": [
+  {
+   "url": "https://www.sinit.hn",
+   "observation": "SINIT home loads (200): national territorial information system; parcel layer not identified"
+  },
+  {
+   "url": "https://www.ip.gob.hn/",
+   "observation": "IP returns 403 to scripted requests"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.sinit.hn",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "home only"
+  },
+  {
+   "url": "https://sinit.hn/",
+   "method": "GET",
+   "httpStatus": 406,
+   "contentType": "text/html",
+   "assessment": "blocked by WAF for scripted UA"
+  },
+  {
+   "url": "https://sinit.hn/geoserver/wms?request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html",
+   "assessment": "guessed path absent"
+  },
+  {
+   "url": "https://www.ip.gob.hn/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "blocked"
+  },
+  {
+   "url": "https://ip.gob.hn/sistema-de-catastro",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/timeout from this environment (proxy returned no response)"
+  },
+  {
+   "url": "https://catastro.gob.hn",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/timeout from this environment (proxy returned no response)"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "IP national cadastre (partial nationally)",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "IP host blocked (403/406) and SINIT service endpoints not enumerated; no parcel test performed.",
+ "nextStep": "Find SINIT ArcGIS/WMS service directory and IP consulta catastral; retry with different network."
+}

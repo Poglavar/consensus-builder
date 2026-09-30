@@ -1,0 +1,64 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "KH",
+ "country": "Cambodia",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Ministry of Land Management, Urban Planning and Construction (MLMUPC), General Department of Cadastre and Geography",
+ "portalsFound": [
+  {
+   "url": "https://cadastral.mlmupc.gov.kh/",
+   "observation": "Cadastral map host returns HTTP 403 (nginx) even with browser User-Agent."
+  },
+  {
+   "url": "https://www.lmap.gov.kh/",
+   "observation": "Cloudflare challenge; not passed."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://mlmupc.gov.kh/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "ministry site with JS fingerprint challenge"
+  },
+  {
+   "url": "https://cadastral.mlmupc.gov.kh/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "",
+   "assessment": "forbidden"
+  },
+  {
+   "url": "https://eregistration.mlmupc.gov.kh/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "",
+   "assessment": "forbidden"
+  },
+  {
+   "url": "https://www.lmap.gov.kh/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "",
+   "assessment": "Cloudflare challenge"
+  },
+  {
+   "url": "https://data.opendevelopmentmekong.net/api/3/action/package_search?q=cadastral",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "no relevant datasets returned"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "MLMUPC cadastral index map / systematic land registration; national scope claimed but unverified",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Blocks by host were not proof of absence; a public cadastral viewer likely exists but is unverified.",
+ "nextStep": "Retry from a different egress; look for MLMUPC cadastral map viewer and any WMS/WFS."
+}

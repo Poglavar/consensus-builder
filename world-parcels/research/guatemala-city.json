@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:175",
+  "queueRank": 175,
+  "name": "Ciudad de Guatemala (Guatemala City)",
+  "country": "Guatemala",
+  "countryCode": "GT",
+  "centerLatLon": [
+    14.5983508835391,
+    -90.5446061703246
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://ric.gob.gt/",
+      "observation": "Registro de Informaci\u00f3n Catastral (RIC), the national cadastre authority; the TLS connection failed from this environment, so its content is unassessed."
+    },
+    {
+      "url": "https://www.muniguate.com/",
+      "observation": "Municipalidad de Guatemala site (catastro/SIG hosts catastro., sig.) returned a bare HTTP 403 page even with a browser User-Agent; likely geo/WAF block, unassessed."
+    },
+    {
+      "url": "https://services7.arcgis.com/BBr2ruK5unTgrH8y/arcgis/rest/services/Ciudad_de_guatemala/FeatureServer",
+      "observation": "Third-party ArcGIS Online layer; it is a seismic-hazard (IFA Geoaptitud) polygon layer for the municipality, not parcels."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://ric.gob.gt/ and https://www.ric.gob.gt/ and https://www.registrocatastral.gob.gt/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "SSL_ERROR_SYSCALL (repeated); unreachable, not a verdict"
+    },
+    {
+      "url": "https://www.muniguate.com/ , https://catastro.muniguate.com/ , https://sig.muniguate.com/",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html",
+      "assessment": "3 KB generic 403 page with browser UA; blocked"
+    },
+    {
+      "url": "https://geoportal.muniguate.com/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT 502; unreachable"
+    },
+    {
+      "url": "https://ide.segeplan.gob.gt/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "SSL_ERROR_SYSCALL; unreachable"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search (Guatemala predios/catastro/lotes/fincas)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "only boundary, hazard and thematic layers; no parcel layer"
+    },
+    {
+      "url": "https://services7.arcgis.com/BBr2ruK5unTgrH8y/arcgis/rest/services/Ciudad_de_guatemala/FeatureServer/0?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "polygon layer with fields Id/Descrip only (seismic hazard class); not parcels"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "National cadastre (RIC) and municipal cadastre exist but were not reachable",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Both authoritative hosts (RIC and Muniguate) were unreachable or blocked from this environment, so no request could test a parcel query. Nothing here proves that no open source exists. Guatemala's cadastre is known to be partial nationally.",
+  "nextStep": "Retry ric.gob.gt and the Muniguate SIG/catastro hosts from another network; look for an RIC WMS/WFS or ArcGIS service and test a bounded query near the city centre."
+}

@@ -1,0 +1,67 @@
+{
+ "country": "Trinidad and Tobago",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Land Surveys Division / Land and Surveys, Ministry of Housing and Urban Development (Trinidad and Tobago); Registrar General's Department for title",
+ "portalsFound": [
+  {
+   "url": "https://services6.arcgis.com/AHlNpA8CDt3bXVVp/arcgis/rest/services/CMIS_Surveyor_Parcels/FeatureServer",
+   "observation": "Public ArcGIS Online feature service (owner 'surmaptt', extent covering Trinidad and Tobago) holding surveyor-submitted parcel polygons with workflow status 'Submitted'. Looks like a staging layer for a cadastral management information system, not a confirmed official national cadastre; publisher affiliation not confirmed."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.gisportal.gov.tt/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed (502) / no response; host unreachable from this environment"
+  },
+  {
+   "url": "https://www.lands.gov.tt/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed (502) / no response; host unreachable from this environment"
+  },
+  {
+   "url": "https://landsandsurvey.gov.tt/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed (502) / no response; host unreachable from this environment"
+  },
+  {
+   "url": "https://www.gov.tt/",
+   "method": "GET",
+   "httpStatus": 302,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "redirect only"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Trinidad+parcel+cadastre&f=json&num=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "found CMIS_Surveyor_Parcels item"
+  },
+  {
+   "url": "https://services6.arcgis.com/AHlNpA8CDt3bXVVp/arcgis/rest/services/CMIS_Surveyor_Parcels/FeatureServer/0/query?where=1%3D1&outFields=*&resultRecordCount=3&outSR=4326&f=geojson",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 closed-ring polygons in Trinidad (Port of Spain area, e.g. Woodbrook, St. James) with lot/plan fields mostly empty and surveyor names; partial submission data, not verified as a national parcel fabric. Response not saved because attributes include surveyor names (personal data)."
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "unknown; candidate service holds surveyor-submitted parcels only",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Government hosts unreachable from proxy. The CMIS layer is open and returns polygons but its official status, completeness and licence are unconfirmed, so it is not counted as a verified national cadastre.",
+ "nextStep": "Confirm who publishes CMIS (Land Surveyors Board / Land and Surveys Division) and whether a public parcel viewer/API exists; check licence.",
+ "schemaVersion": 1,
+ "countryCode": "TT",
+ "checkedAt": "2026-09-29"
+}

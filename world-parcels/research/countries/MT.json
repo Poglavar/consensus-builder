@@ -1,0 +1,60 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MT",
+ "country": "Malta",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Planning Authority (PA) mapping; Land Registry; Malta Mapping Authority",
+ "portalsFound": [
+  {
+   "url": "https://www.pa.org.mt/",
+   "observation": "Cloudflare 'Just a moment' challenge"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.pa.org.mt/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare challenge"
+  },
+  {
+   "url": "https://msdi.data.gov.mt/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare block"
+  },
+  {
+   "url": "https://msdi.data.gov.mt/geoserver/ows?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare block"
+  },
+  {
+   "url": "https://pamapserver.pa.org.mt/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare challenge"
+  },
+  {
+   "url": "https://portal.data.gov.mt/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare block"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "not established from this client",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Every Maltese host returned a Cloudflare challenge to non-browser HTTP; nothing about the data services was observed.",
+ "nextStep": "Needs a browser-capable client; PA mapping/Malta MSDI geoserver are the candidates."
+}

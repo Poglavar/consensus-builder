@@ -1,0 +1,50 @@
+[
+ {
+  "iso2": "BF",
+  "name": "Burkina Faso"
+ },
+ {
+  "iso2": "BI",
+  "name": "Burundi"
+ },
+ {
+  "iso2": "CV",
+  "name": "Cabo Verde"
+ },
+ {
+  "iso2": "KH",
+  "name": "Cambodia"
+ },
+ {
+  "iso2": "CM",
+  "name": "Cameroon"
+ },
+ {
+  "iso2": "CA",
+  "name": "Canada"
+ },
+ {
+  "iso2": "CF",
+  "name": "Central African Republic"
+ },
+ {
+  "iso2": "TD",
+  "name": "Chad"
+ },
+ {
+  "iso2": "CL",
+  "name": "Chile"
+ },
+ {
+  "iso2": "CN",
+  "name": "China"
+ },
+ {
+  "iso2": "HK",
+  "name": "China, Hong Kong SAR"
+ },
+ {
+  "iso2": "MO",
+  "name": "China, Macao SAR"
+ }
+]

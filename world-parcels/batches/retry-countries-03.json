@@ -1,0 +1,58 @@
+[
+ {
+  "kind": "country",
+  "key": "BZ",
+  "name": "Belize",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/BZ.json"
+ },
+ {
+  "kind": "country",
+  "key": "CD",
+  "name": "Democratic Republic of the Congo",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/CD.json"
+ },
+ {
+  "kind": "country",
+  "key": "CF",
+  "name": "Central African Republic",
+  "previousStatus": "no_online_cadastre_found",
+  "evidenceFile": "research/countries/CF.json"
+ },
+ {
+  "kind": "country",
+  "key": "CG",
+  "name": "Congo",
+  "previousStatus": "no_online_cadastre_found",
+  "evidenceFile": "research/countries/CG.json"
+ },
+ {
+  "kind": "country",
+  "key": "CI",
+  "name": "Côte d'Ivoire",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/CI.json"
+ },
+ {
+  "kind": "country",
+  "key": "CL",
+  "name": "Chile",
+  "previousStatus": "national_cadastre_viewer_only",
+  "evidenceFile": "research/countries/CL.json"
+ },
+ {
+  "kind": "country",
+  "key": "CM",
+  "name": "Cameroon",
+  "previousStatus": "no_online_cadastre_found",
+  "evidenceFile": "research/countries/CM.json"
+ },
+ {
+  "kind": "country",
+  "key": "CN",
+  "name": "China",
+  "previousStatus": "national_cadastre_credentialed_or_paid",
+  "evidenceFile": "research/countries/CN.json"
+ }
+]

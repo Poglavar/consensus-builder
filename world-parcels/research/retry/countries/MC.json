@@ -1,0 +1,90 @@
+{
+ "kind": "country",
+ "key": "MC",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "national_cadastre_viewer_only",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: fr-MC,fr;q=0.9,en;q=0.5",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": {
+  "sourceId": "mc-urbamonaco-parcellaire",
+  "name": "URBA_Parcellaire_Public FeatureServer layer 5 (plan parcellaire)",
+  "operator": "Direction de la Prospective, de l'Urbanisme et de la Mobilite (UrbaMonaco), Government of Monaco",
+  "scope": "Principality of Monaco",
+  "endpoint": "https://montecarto-srv2.gouv.mc/arcgis/rest/services/URBA/URBA_Parcellaire_Public/FeatureServer/5",
+  "method": "GET (ArcGIS REST)",
+  "responseFormat": "ESRI JSON",
+  "crs": "unknown",
+  "reuseStatus": "gated: token required; viewer obtains access through server proxy https://carto.gouv.mc/proxy.php which refuses external use"
+ },
+ "requests": [
+  {
+   "url": "https://urbamonaco.gouv.mc/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "portal HTML 253 KB"
+  },
+  {
+   "url": "https://urbamonaco.gouv.mc/plan-parcellaire",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Plan parcellaire page embeds WidgetArcgis config listing montecarto-srv2.gouv.mc layer URLs, parcellaire layer, layer_api_key null, proxy_url carto.gouv.mc/proxy.php"
+  },
+  {
+   "url": "https://montecarto-srv2.gouv.mc/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "folders CSPM, DAU, RECETTE, URBA, Utilities listed anonymously"
+  },
+  {
+   "url": "https://montecarto-srv2.gouv.mc/arcgis/rest/services/URBA?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "only anonymous service is Urba_impression GPServer"
+  },
+  {
+   "url": "https://montecarto-srv2.gouv.mc/arcgis/rest/services/URBA/URBA_Parcellaire_Public/FeatureServer/5?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "body: error 499 Token Required"
+  },
+  {
+   "url": "https://montecarto-srv2.gouv.mc/arcgis/rest/services/URBA/URBA_Parcellaire_Public/FeatureServer/5/query?where=1=1&resultRecordCount=3&f=geojson",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "body: error 499 Token Required"
+  },
+  {
+   "url": "https://carto.gouv.mc/proxy.php?<layer query>",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "application/json",
+   "assessment": "Application access is restricted; not bypassed"
+  },
+  {
+   "url": "https://geoportail.gouv.mc/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "403 from this network after redirect to urbamonaco"
+  },
+  {
+   "url": "https://www.cadastre.gouv.mc/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "New: viewer inspection located the real ArcGIS Server and parcel layer. No public token was embedded (layer_api_key null); access is via a referrer/app-restricted proxy, which was not bypassed. Parcel polygons are viewable in the official viewer but not retrievable via an open endpoint.",
+ "nextStep": "Ask UrbaMonaco whether the parcel layer is offered as open data; check data.gouv.mc / data.gouvernement.mc for a parcel dataset."
+}

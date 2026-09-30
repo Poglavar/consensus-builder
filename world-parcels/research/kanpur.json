@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:97",
+  "queueRank": 97,
+  "name": "Kanpur",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    26.460949782044,
+    80.3406195423691
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "observation": "Uttar Pradesh Bhu-Naksha cadastral map portal (Angular app); covers UP districts including Kanpur Nagar per official descriptions."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/",
+      "observation": "UP Bhulekh land-record portal; GeoDashboard reports plot counts."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "method": "GET",
+      "httpStatus": "200",
+      "contentType": "text/html",
+      "assessment": "Angular app shell"
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/main-76RVRF3Z.js",
+      "method": "GET",
+      "httpStatus": "200",
+      "contentType": "application/javascript",
+      "assessment": "bundle shows village maps served as WMS raster tiles (/WMS/tile, LAYERS=VILLAGE_MAP, requires per-village gis_code); no vector API"
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/WMS/tile?SERVICE=WMS&REQUEST=GetCapabilities",
+      "method": "GET",
+      "httpStatus": "200",
+      "contentType": "text/html",
+      "assessment": "SPA fallback HTML, not capabilities"
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/v1/khasramap/plot",
+      "method": "GET",
+      "httpStatus": "401",
+      "contentType": "application/json",
+      "assessment": "Missing or invalid Authorization header"
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/api/plots?gisCode=1,2,3&plotNo=1",
+      "method": "GET",
+      "httpStatus": "404",
+      "contentType": "",
+      "assessment": "not found"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "UP Bhu-Naksha (state-level, raster tiles/authenticated API)",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Viewer is public but tiles are raster; vector plot API requires authorization. State scope does not imply India-wide coverage.",
+  "nextStep": "Look for a documented public UP plot-geometry API or downloadable village GeoJSON; test a Kanpur Nagar village."
+}

@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:129",
+  "queueRank": 129,
+  "name": "Ankara",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "centerLatLon": [
+    39.9540727957261,
+    32.8678943256595
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_city_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "tr-tkgm-parsel-sorgu-api",
+    "requestUrl": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/39.9540/32.8678",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "spatialTestAreaLonLat": [
+      32.865,
+      39.952,
+      32.8705,
+      39.956
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "$ (one GeoJSON Feature per point request; saved file merges 3 point requests at lat/lon 39.9540/32.8678, 39.9560/32.8700, 39.9520/32.8650)",
+    "geometryType": "Polygon (GeoJSON Feature)",
+    "closedRings": true,
+    "idField": "properties.ozet (mahalle-ada/parsel); adaNo, parselNo, mahalleId",
+    "responseFile": "ankara-parcel-response.json",
+    "pagination": "none; point-in-parcel lookup /parsel/{lat}/{lon} returns one parcel; also /parsel/{mahalleId}/{ada}/{parsel}"
+  },
+  "source": {
+    "sourceId": "tr-tkgm-parsel-sorgu-api",
+    "name": "TKGM Parsel Sorgu (MEGSIS) web API",
+    "operator": "Tapu ve Kadastro Genel Mudurlugu (General Directorate of Land Registry and Cadastre)",
+    "scope": "Turkey-wide viewer backend (only Ankara sampled here)",
+    "endpoint": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/{lat}/{lon}",
+    "method": "GET",
+    "responseFormat": "GeoJSON Feature",
+    "crs": "EPSG:4326 (lon/lat)",
+    "reuseStatus": "Public but undocumented backend of the parselsorgu.tkgm.gov.tr viewer; terms of use for programmatic/bulk reuse not read"
+  },
+  "portalsFound": [
+    {
+      "url": "https://parselsorgu.tkgm.gov.tr/",
+      "observation": "Official TKGM parcel query viewer."
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/idariYapi/ilListe",
+      "observation": "Anonymous JSON/GeoJSON list of provinces; ilceListe/{il}, mahalleListe/{ilce} give the admin hierarchy (Ankara il id 28)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/1/1/1",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "application/json",
+      "assessment": "parcel not found JSON; API alive"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/idariYapi/ilceListe/28",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Ankara districts list"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/39.9540/32.8678",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "parcelRecordCount": 1,
+      "assessment": "one Altindag parcel polygon (closed ring, 49 points); two more point requests gave two more parcels"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Turkey (viewer covers the country)",
+    "verifiedOpenScope": "three parcels in central Ankara (Altindag/Cankaya area) via point lookups",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Point lookup only, no bbox/list query; single-parcel responses. Undocumented API and terms/rate limits unknown; parcel attributes include nitelik (usage text) and area but no owner data seen. Only Ankara sampled.",
+  "nextStep": "Read TKGM terms; check whether an official documented WFS/API exists; sample a second province to test nationwide."
+}

@@ -1,0 +1,72 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "AR",
+ "regionName": "Arkansas",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "source": {
+  "sourceId": "us-ar-gis-office-parcel-polygon",
+  "name": "Arkansas Planning_Cadastre PARCEL_POLYGON_CAMP",
+  "operator": "Arkansas GIS Office (state)",
+  "scope": "Arkansas, county-contributed statewide polygons",
+  "endpoint": "https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Planning_Cadastre/FeatureServer/6",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "Esri JSON (ArcGIS REST query)",
+  "crs": "EPSG:4326 (outSR requested); native NAD83 UTM 15N",
+  "reuseStatus": "no licence text in service metadata"
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-US,en;q=0.9; cookie jar used; no token required",
+ "verifiedParcelResponse": {
+  "sourceId": "us-ar-gis-office-parcel-polygon",
+  "requestUrl": "https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Planning_Cadastre/FeatureServer/6/query?where=1%3D1&geometry=<bbox lon/lat>&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid,parcelid,county&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   -92.289,
+   34.746,
+   -92.2875,
+   34.747
+  ],
+  "parcelRecordCount": 6,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "parcelid",
+  "responseFile": "AR-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount",
+  "regionSampled": "Pulaski County, Benton County"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "State GIS Office FeatureServer \"Planning_Cadastre\" layer 6; layer extent spans the state (UTM15N x 355k-803k, y 3.65M-4.04M m). Full coverage of all 75 counties not checked.",
+ "subregionsVerified": [
+  "Pulaski County",
+  "Benton County"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Planning_Cadastre/FeatureServer",
+   "observation": "Layers include PARCEL_POLYGON_CAMP (6), PARCEL_CENTROID_CAMP (0), PLSS layers; polygon layer carries owner and address fields (not saved)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Planning_Cadastre/FeatureServer/6/query?...Little Rock bbox...outFields=objectid,parcelid,county",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "3 polygons, Pulaski"
+  },
+  {
+   "url": "https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Planning_Cadastre/FeatureServer/6/query?...Bentonville bbox",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "3 polygons, Benton"
+  }
+ ],
+ "reuseStatus": "Owner name and address fields present; only objectid, parcelid, county requested.",
+ "remainingUncertainty": "Some counties may be missing or older; completeness not audited.",
+ "nextStep": "Count distinct county values to audit coverage."
+}

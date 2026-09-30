@@ -1,0 +1,37 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "DZ",
+ "country": "Algeria",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Direction Generale du Domaine National et du Cadastre (DGDNC), Ministry of Finance (successor of the dissolved Agence Nationale du Cadastre)",
+ "portalsFound": [
+  {
+   "url": "https://fadaeldjazair.mf.gov.dz/fr/geo_services/",
+   "observation": "'Fadaeldjazair' Finance-ministry geoportal reported to offer cadastral and land information; host reset connection."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://fadaeldjazair.mf.gov.dz/fr/geo_services/",
+   "method": "GET",
+   "httpStatus": null,
+   "assessment": "Connection reset by peer"
+  },
+  {
+   "url": "https://www.anc.dz/",
+   "method": "GET",
+   "httpStatus": null,
+   "assessment": "unreachable"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Claimed national cadastral geoportal (Fadaeldjazair); scope unverified",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Unreachable; may be search/viewer only, possibly requiring registration.",
+ "nextStep": "Retry; inspect network calls of the geoportal for WMS/WFS/ArcGIS endpoints. See el-djazair-algiers.json."
+}

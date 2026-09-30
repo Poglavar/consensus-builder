@@ -1,0 +1,72 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "CO",
+ "regionName": "Colorado",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "source": {
+  "sourceId": "us-co-oit-public-parcels",
+  "name": "Colorado Public Parcels (Colorado_Public_Parcel_Composite)",
+  "operator": "Colorado Governor's Office of Information Technology (OIT) GIS Team",
+  "scope": "Colorado statewide compilation",
+  "endpoint": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "Esri JSON (ArcGIS REST query)",
+  "crs": "EPSG:4326 native",
+  "reuseStatus": "Copyright text: State makes no warranty as to completeness/accuracy; full terms not read"
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-US,en;q=0.9; cookie jar used; no token required",
+ "verifiedParcelResponse": {
+  "sourceId": "us-co-oit-public-parcels",
+  "requestUrl": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=1%3D1&geometry=<bbox lon/lat>&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID,parcel_id,countyName&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   -104.9908,
+   39.7394,
+   -104.9892,
+   39.7406
+  ],
+  "parcelRecordCount": 6,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "parcel_id",
+  "responseFile": "CO-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount",
+  "regionSampled": "Denver County, Mesa County"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Service description: aggregated by the OIT GIS Team from counties and municipalities into a unified statewide layer, updated annually. Extent covers the whole state.",
+ "subregionsVerified": [
+  "Denver County",
+  "Mesa County"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0",
+   "observation": "Layer carries owner, mailing address, sale price fields (not saved)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?...Denver bbox...outFields=OBJECTID,parcel_id,countyName",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "3 polygons Denver"
+  },
+  {
+   "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?...Grand Junction bbox",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "3 polygons Mesa"
+  }
+ ],
+ "reuseStatus": "Owner and mailing fields exist; only ID/county requested. Some counties may be withheld (a \"sharing\" field exists).",
+ "remainingUncertainty": "Per-county completeness not audited.",
+ "nextStep": "Check distinct countyName count and the sharing field."
+}

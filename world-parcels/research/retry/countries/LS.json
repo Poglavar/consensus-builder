@@ -1,0 +1,38 @@
+{
+ "kind": "country",
+ "key": "LS",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "national_cadastre_credentialed_or_paid",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-LS,en;q=0.9",
+ "changedByHeaders": true,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.laa.org.ls/ -> https://laa.org.ls/",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "text/html",
+   "assessment": "LAA site loads after redirect"
+  },
+  {
+   "url": "https://laa.org.ls/cadastral-survey/",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "text/html",
+   "assessment": "Cadastral survey page: survey examination fee & map sales, online portal link"
+  },
+  {
+   "url": "https://portal.laa.landfolio.com/Portal/",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "text/html",
+   "assessment": "Landfolio portal with Login.aspx, SelfRegistration.aspx, CatalogueList.aspx, ProductAccess.aspx pages; no anonymous parcel query found"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "Now reachable. Parcel data/maps appear to be sold or registration-gated through the LAA Landfolio portal. Terms not read in detail; no parcel query attempted (needs account).",
+ "nextStep": "Register on the portal (if permitted) to see the catalogue and licence terms."
+}

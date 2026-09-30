@@ -1,0 +1,80 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "NY",
+ "regionName": "New York",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/plain,*/*; Accept-Language: en-US,en;q=0.9; cookie jar on; via pre-configured proxy",
+ "source": {
+  "sourceId": "us-ny-its-tax-parcels",
+  "name": "NYS Tax Parcels Public",
+  "operator": "NYS ITS Geospatial Services with NYS Dept of Taxation and Finance ORPTS",
+  "scope": "statewide service, but only counties that granted sharing permission (38 counties per service description)",
+  "endpoint": "https://gisservices.its.ny.gov/arcgis/rest/services/NYS_Tax_Parcels_Public/MapServer/1",
+  "method": "GET",
+  "responseFormat": "ArcGIS REST JSON",
+  "crs": "EPSG:3857 native; requested outSR=4326",
+  "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-ny-its-tax-parcels",
+  "requestUrl": "https://gisservices.its.ny.gov/arcgis/rest/services/NYS_Tax_Parcels_Public/MapServer/1/query?geometry=<bbox ~150m>&outFields=PRINT_KEY,SWIS&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   "[-73.7570,42.6518,-73.7554,42.6534]",
+   "[-78.8792,42.8856,-78.8776,42.8872]"
+  ],
+  "parcelRecordCount": 6,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PRINT_KEY (with SWIS)",
+  "responseFile": "research/subnational/US/NY-parcel-response.json",
+  "pagination": "resultRecordCount / resultOffset (per-sample 3 records)",
+  "regionSampled": [
+   "Albany County",
+   "Erie County"
+  ]
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "Service description (Publication Date May 2026): \"contains 2025 parcel data only for NY State counties which gave NYS ITS Geospatial Services permission to share this data with the public... To date, 38 counties have provided\" permission. A footprint layer (layer 0) shows which counties are included.",
+ "subregionsVerified": [
+  "Albany County (SWIS 010100)",
+  "Erie County (SWIS 140200)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://gisservices.its.ny.gov/arcgis/rest/services/NYS_Tax_Parcels_Public/MapServer",
+   "observation": "public, no token"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gisservices.its.ny.gov/arcgis/rest/services/NYS_Tax_Parcels_Public/MapServer/1?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "service/layer description read"
+  },
+  {
+   "url": "https://gisservices.its.ny.gov/arcgis/rest/services/NYS_Tax_Parcels_Public/MapServer/1/query?geometry=<bbox ~150m near Albany County>&outFields=PRINT_KEY,SWIS...",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons returned with ID and geometry only"
+  },
+  {
+   "url": "https://gisservices.its.ny.gov/arcgis/rest/services/NYS_Tax_Parcels_Public/MapServer/1/query?geometry=<bbox ~150m near Erie County>&outFields=PRINT_KEY,SWIS...",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons returned with ID and geometry only"
+  }
+ ],
+ "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution.",
+ "remainingUncertainty": "Not all 62 counties; NYC (5 boroughs) has its own tax-lot layer already in research/new-york-city.json. The full attribute table carries owner-adjacent/address fields, deliberately not requested. Number of included counties not independently counted (used publisher statement).",
+ "nextStep": "Query layer 0 footprint to list included counties; combine with NYC tax lots for downstate coverage."
+}

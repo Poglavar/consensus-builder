@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:114",
+  "queueRank": 114,
+  "name": "Barcelona",
+  "country": "Spain",
+  "countryCode": "ES",
+  "centerLatLon": [
+    41.4251649163782,
+    2.15510955627463
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.catastro.hacienda.gob.es/webinspire/index.html",
+      "observation": "Spanish Direccion General del Catastro INSPIRE page lists WFS endpoints http://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx (cadastral parcels), wfsBU, wfsAD, plus a WMS. National service (Basque Country and Navarra publish their own cadastres separately)."
+    },
+    {
+      "url": "https://opendata-ajuntament.barcelona.cat/data/api/3/action/package_search?q=parcel",
+      "observation": "Barcelona open data CKAN: dataset 'mapa-parcelari' (Land plots in the city of Barcelona), licence CC-BY-4.0; resources are a WMS reference and 20-34 MB SHP/DGN bulk downloads, not a bounded query, so not fetched."
+    },
+    {
+      "url": "https://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?SERVICE=WMS&REQUEST=GetCapabilities",
+      "observation": "Catastro WMS capabilities (raster maps only); abstract says free use, no mass download of cartography permitted."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=wfs&version=2&request=getfeature&STOREDQUERIE_ID=GetParcel&srsname=EPSG::4326&bbox=41.4249,2.1549,41.4253,2.1553",
+      "method": "GET",
+      "httpStatus": 400,
+      "contentType": "text/html",
+      "assessment": "generic Sede Electronica error page, no features"
+    },
+    {
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=wfs&version=2&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 400,
+      "contentType": "text/html",
+      "assessment": "400 even for GetCapabilities (also tried uppercase params, http/https, browser User-Agent)"
+    },
+    {
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=wfs&version=2&request=getfeature&STOREDQUERIE_ID=GetParcel&refcat=9872023VH5797S&srsname=EPSG::25830",
+      "method": "GET",
+      "httpStatus": 400,
+      "contentType": "text/html",
+      "assessment": "documented refcat form also 400 from this client"
+    },
+    {
+      "url": "https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCoordenadas.asmx/Consulta_RCCOOR?SRS=EPSG:4326&Coordenada_X=2.1551&Coordenada_Y=41.4251",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "assessment": "valid XML but 'no reference for these coordinates'; not a polygon list"
+    },
+    {
+      "url": "https://opendata-ajuntament.barcelona.cat/data/api/3/action/package_search?q=parcel&rows=8",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "catalog metadata only"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Spain national cadastre (INSPIRE WFS) claimed; Barcelona municipal parcel dataset",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The Catastro WFS is documented and probably works from other clients; every request from this environment returned a generic 400, so this is a weak negative and the exact query syntax (bbox stored query) was not confirmed. Licence of Catastro data not read; Barcelona dataset is CC-BY-4.0 but bulk-only.",
+  "nextStep": "Retest Catastro WFS from another client with the documented stored query/bbox; alternatively add an adapter over the Barcelona SHP with a bounded local extract."
+}

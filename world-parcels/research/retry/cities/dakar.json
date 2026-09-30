@@ -1,0 +1,66 @@
+{
+ "kind": "city",
+ "key": "dakar",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: fr-SN,fr;q=0.9 (cookie jar used)",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "http://www.georepertoire.gouv.sn/",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/plain",
+   "assessment": "DNS resolution failed (transient) at proxy"
+  },
+  {
+   "url": "https://www.georepertoire.gouv.sn/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://www.geosenegal.gouv.sn/georepertoire.html",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "application/json",
+   "assessment": "Imunify360 bot-protection JSON denial even with browser headers; not bypassed"
+  },
+  {
+   "url": "https://senegal.africageoportal.com/api/v3/datasets?q=cadastre",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "Hub search returns unrelated (non-Senegal) datasets"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Dakar cadastre OR parcelles",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "only communes, households, utilities, 1944 town plan; no cadastral parcels"
+  },
+  {
+   "url": "https://www.dgid.sn/service/cadastre/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "DGID cadastre service page (paid per-parcel plan extracts); no open service link found"
+  },
+  {
+   "url": "https://www.sigsenegal.gouv.sn/ ; https://cadastre.gouv.sn/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "CONNECT tunnel 502"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "Catalogue host down/DNS failure and geosenegal host bot-blocks automation; not clearly geographic.",
+ "nextStep": "Retry georepertoire.gouv.sn; read record access links for the Dakar cadastral plan vector data; test any WFS."
+}

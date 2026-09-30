@@ -1,0 +1,71 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CA",
+ "regionCode": "SK",
+ "regionName": "Saskatchewan",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-CA,en;q=0.9,fr-CA;q=0.8; cookie jar on",
+ "source": {
+  "sourceId": "ca-sk-saskatoon-parcel",
+  "name": "City of Saskatoon Parcel (Open Data)",
+  "operator": "City of Saskatoon",
+  "scope": "City of Saskatoon",
+  "endpoint": "https://gisext.saskatoon.ca/arcgisod/rest/services/OD/LandSurface/MapServer/1",
+  "method": "ArcGIS REST query",
+  "responseFormat": "Esri JSON",
+  "crs": "EPSG:4326 via outSR (native 2151)",
+  "reuseStatus": "Open data service; licence not read. Layer has address fields, not requested."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "ca-sk-saskatoon-parcel",
+  "requestUrl": "https://gisext.saskatoon.ca/arcgisod/rest/services/OD/LandSurface/MapServer/1/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=SiteId&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json&geometry=-106.6720,52.1300,-106.6700,52.1315",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   -106.672,
+   52.13,
+   -106.67,
+   52.1315
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "SiteId",
+  "responseFile": "SK-parcel-response.json",
+  "pagination": "ArcGIS resultRecordCount; maxRecordCount 1000",
+  "regionSampled": "Saskatoon"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "Provincial cadastre (ISC) is on gis.saskatchewan.ca 'Cadastre' MapServer, which answers 'Token Required' (499); ISC land-titles parcel data is commercial.",
+ "subregionsVerified": [
+  "Saskatoon"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://gis.saskatchewan.ca/arcgis/rest/services/Cadastre/MapServer",
+   "observation": "Token Required (499); server info shows token-based security."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gisext.saskatoon.ca/arcgisod/rest/services/OD/LandSurface/MapServer/1/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=SiteId&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json&geometry=-106.6720,52.1300,-106.6700,52.1315",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "3 polygon parcels, SiteId only"
+  },
+  {
+   "url": "https://gis.saskatchewan.ca/arcgis/rest/services/Cadastre/MapServer/6/query?where=1=1&resultRecordCount=1&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "error 499 Token Required (credentialed; not bypassed)"
+  }
+ ],
+ "reuseStatus": "Not verified.",
+ "remainingUncertainty": "Provincial layer is credentialed for the SK Cadastre service; Regina open parcels untested.",
+ "nextStep": "Test Regina open data; ISC terms (credentialed_or_paid for province)."
+}

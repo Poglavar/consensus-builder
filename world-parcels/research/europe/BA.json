@@ -1,0 +1,79 @@
+{
+ "country": "Bosnia and Herzegovina",
+ "previousStatus": "subnational_only",
+ "newStatus": "subnational_only",
+ "status": "subnational_only",
+ "cadastreAuthority": "FGU (FBiH) and RGURS (Republika Srpska); no state cadastre; Brcko separate",
+ "inspireRecordUrl": null,
+ "portalsFound": [
+  {
+   "url": "https://geoportal.rgurs.org/",
+   "observation": "RS Terria geoportal (public, HTTP 200). Config init/geoportal.json lists cadastre layers katastar:MVIEW_KAT_PARCELE_N, katastar:GRADBL_PARCELE_20KO (Banja Luka), DKP_postgres:Doboj_Foca on /geoserver/katastar/ows; the Katastar group is flagged keycloakToken:true (login token required)."
+  },
+  {
+   "url": "https://www.katastar.ba/servisi",
+   "observation": "FBiH page says Katastarski podaci (WMS, WFS: cadastral municipalities, parcels, land use, buildings) exist, but the service URL list is not shown; geoportal/preglednik answers 'login required' (registration with reCAPTCHA)."
+  },
+  {
+   "url": "https://geoportal.fgu.ba/ , https://katastar.rgurs.org/ , https://www.rgurs.org/",
+   "observation": "proxy CONNECT 502 / TLS chain error; not bypassed"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geoportal.rgurs.org/geoserver/katastar/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=katastar:MVIEW_KAT_PARCELE_N&count=2&outputFormat=application/json",
+   "method": "GET",
+   "httpStatus": 400,
+   "contentType": "application/xml",
+   "assessment": "Feature type unknown (anonymous WFS caps list no types)"
+  },
+  {
+   "url": "https://geoportal.rgurs.org/geoserver/katastar/wms?...GetFeatureInfo layers=GRADBL_PARCELE_20KO (Banja Luka bbox) and MVIEW_KAT_PARCELE_N",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/vnd.ogc.se_xml",
+   "assessment": "LayerNotDefined for anonymous client; layers hidden behind Keycloak security"
+  },
+  {
+   "url": "https://geoportal.rgurs.org/geoserver/DKP_postgres/ows WFS Doboj_Foca",
+   "method": "GET",
+   "httpStatus": 400,
+   "contentType": "application/xml",
+   "assessment": "unknown feature type (restricted)"
+  },
+  {
+   "url": "https://www.katastar.ba/geoportal/preglednik/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "'Onemoguceno' notice: login required; not bypassed"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "entity-level services",
+  "regionsVerified": [],
+  "nationwideVerified": false,
+  "subnationalServices": [
+   {
+    "entity": "Republika Srpska",
+    "service": "geoportal.rgurs.org GeoServer",
+    "verified": false,
+    "access": "Keycloak login"
+   },
+   {
+    "entity": "FBiH",
+    "service": "katastar.ba geoportal WMS/WFS",
+    "verified": false,
+    "access": "registration/login"
+   }
+  ]
+ },
+ "accessModel": "registration",
+ "remainingUncertainty": "No anonymous polygon reply from either entity; a registered account could get access (terms not read).",
+ "nextStep": "Would need free registration (user decision); do not bypass.",
+ "schemaVersion": 1,
+ "countryCode": "BA",
+ "checkedAt": "2026-09-30",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: application/json,text/html,application/xml;q=0.9,*/*;q=0.8; Accept-Language: local-language,en (cookie jar; Referer https://geoportal.asig.gov.al/)"
+}

@@ -1,0 +1,82 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "regionCode": "R",
+ "regionName": "Río Negro",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR,es;q=0.9; cookie jar used; Referer = viewer origin where noted",
+ "source": {
+  "sourceId": "ar-rn-art-parcelario",
+  "name": "Hosted/PARCELARIO MapServer layer 0",
+  "operator": "Agencia de Recaudación Tributaria de Río Negro (Catastro)",
+  "scope": "Provincial parcelario (layer extent starts at lon -8002281 x in EPSG:3857; parcels returned in Viedma on the Atlantic coast and Bariloche in the Andes)",
+  "endpoint": "https://mapasagencia.rionegro.gov.ar/server/rest/services/Hosted/PARCELARIO/MapServer/0",
+  "method": "ArcGIS MapServer query, f=json, no key",
+  "responseFormat": "Esri JSON",
+  "crs": "EPSG:4326 (outSR requested)",
+  "reuseStatus": "Catastro press text describes the provincial parcel registry as free and open for use in GIS; licence text not read"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "ar-rn-art-parcelario",
+  "requestUrl": "https://mapasagencia.rionegro.gov.ar/server/rest/services/Hosted/PARCELARIO/MapServer/0/query?where=1%3D1&geometry=-63.0180,-40.8150,-63.0160,-40.8135&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid,cca&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   -63.018,
+   -40.815,
+   -63.016,
+   -40.8135
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "cca (catastral nomenclature) / objectid",
+  "responseFile": "research/subnational/AR/R-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount (exceededTransferLimit true)"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Provincial catastro states its IDE service covers the entire provincial parcel registry; two cities ~800 km apart returned parcels from the same layer. Completeness not measured.",
+ "subregionsVerified": [
+  "Viedma",
+  "San Carlos de Bariloche"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://catastro.rionegro.gov.ar/",
+   "observation": "Catastro portal (SIREC); references IDE services and WMS mapasagencia.../Municipios/GC_201904_WMS_V7"
+  },
+  {
+   "url": "https://mapasagencia.rionegro.gov.ar/server/rest/services",
+   "observation": "Provincial ArcGIS Enterprise; Hosted/PARCELARIO found via search"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://mapasagencia.rionegro.gov.ar/server/rest/services/Hosted/PARCELARIO/MapServer?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "one layer PARCELARIO"
+  },
+  {
+   "url": "query Viedma (see verifiedParcelResponse)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons"
+  },
+  {
+   "url": "same query bbox -71.3120,-41.1360,-71.3100,-41.1345",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons, Bariloche"
+  }
+ ],
+ "reuseStatus": "Unread; publisher describes data as free/open for GIS use",
+ "remainingUncertainty": "Layer is a hosted snapshot (name suggests periodic upload); update date unknown. Only ID and geometry fields requested; no owner names, addresses or tokens saved.",
+ "nextStep": "Read catastro.rionegro.gov.ar 'Capas' page for licence; check FeatureServer sibling for updates."
+}

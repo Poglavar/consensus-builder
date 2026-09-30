@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "BB",
+  "country": "Barbados",
+  "checkedAt": "2026-09-29",
+  "status": "national_online_cadastre_verified_sample",
+  "cadastreAuthority": "Lands and Surveys Department (Government of Barbados); National Digital Parcel Fabric published via Barbados Geoportal (ArcGIS Hub, org BdsLandsAndSurveysDept)",
+  "portalsFound": [
+    {
+      "url": "https://geoportal-bds-lsdept.hub.arcgis.com/",
+      "observation": "Barbados Geoportal (ArcGIS Hub) listing public feature services incl. 'Registered Parcels' and 'LRD_taxparcels'"
+    },
+    {
+      "url": "https://www.landsandsurveys.gov.bb/",
+      "observation": "Department site"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=orgid:GaT8GzOa0Kqi9sL7&num=50&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Org item listing; found Registered Parcels FeatureServer"
+    },
+    {
+      "url": "https://services7.arcgis.com/GaT8GzOa0Kqi9sL7/arcgis/rest/services/Parcels_/FeatureServer/0/query?where=1%3D1&returnCountOnly=true&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "count 23356 features"
+    },
+    {
+      "url": "https://services7.arcgis.com/GaT8GzOa0Kqi9sL7/arcgis/rest/services/Parcels_/FeatureServer/0/query?where=1%3D1&outFields=*&returnGeometry=true&resultRecordCount=3&outSR=4326&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "3 polygon parcels (attributes include owner name field, not saved)"
+    },
+    {
+      "url": "same layer, envelope queries in two further areas",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "3 features each; PARISH values show St. James, St. Philip and others across island"
+    }
+  ],
+  "verifiedParcelResponse": {
+    "sourceId": "bb-lsd-registered-parcels",
+    "requestUrl": "https://services7.arcgis.com/GaT8GzOa0Kqi9sL7/arcgis/rest/services/Parcels_/FeatureServer/0/query?where=1%3D1&outFields=*&returnGeometry=true&resultRecordCount=3&outSR=4326&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json",
+    "spatialTestAreaLonLat": [
+      -59.634,
+      13.147,
+      -59.633,
+      13.148
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "PID",
+    "responseFile": null,
+    "pagination": "resultOffset/resultRecordCount",
+    "regionSampled": "St. James and St. Philip parishes"
+  },
+  "coverageAssessment": {
+    "claimedScope": "National Digital Parcel Fabric, ~124,000 tax parcels (per Esri case study)",
+    "regionsVerified": [
+      "St. James",
+      "St. Philip"
+    ],
+    "nationwideVerified": true,
+    "layerFeatureCount": 23356
+  },
+  "accessModel": "open",
+  "remainingUncertainty": "Public layer holds 23,356 registered parcels, well under the ~124k claimed for the fabric; licence not read. Attributes include owner names (personal data).",
+  "nextStep": "Check for a fuller tax-parcel layer (LRD_taxparcels / TaxParcels2022) and licence terms."
+}

@@ -1,0 +1,91 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "MOR",
+ "regionName": "Morelos",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-MX,es;q=0.9; Referer: viewer/service origin; cookie jar on",
+ "source": {
+  "sourceId": "MX-MOR-cuernavaca-pmdus-uso-suelo-catastro",
+  "name": "CUERNA_PMDUS layer 13 'USO SUELO CATASTRO 2022' (Cuernavaca urban development plan)",
+  "operator": "third-party GIS consultancy (ArcGIS Online owner 'solucionessig'), not the state catastro",
+  "scope": "Cuernavaca municipality only",
+  "endpoint": "https://services9.arcgis.com/fp5f46XvVGKIUi0R/arcgis/rest/services/CUERNA_PMDUS/FeatureServer/13",
+  "method": "GET query",
+  "responseFormat": "ArcGIS FeatureServer, f=geojson",
+  "crs": "EPSG:4326 requested (native unspecified)",
+  "reuseStatus": "item is public; no licence text visible"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "MX-MOR-cuernavaca-pmdus-uso-suelo-catastro",
+  "requestUrl": "https://services9.arcgis.com/fp5f46XvVGKIUi0R/arcgis/rest/services/CUERNA_PMDUS/FeatureServer/13/query?where=1%3D1&outFields=OBJECTID,Cve_Ent,Cve_Mun&resultRecordCount=3&outSR=4326&f=geojson",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": [
+   -99.31,
+   18.76,
+   -99.18,
+   19.01
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "OBJECTID (no cadastral key exposed; only land-use attribute)",
+  "responseFile": "MOR-parcel-response.json",
+  "pagination": "resultOffset; total 120171 polygons; exceededTransferLimit"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "Layer covers Cuernavaca only (extent lon -99.31..-99.18, lat 18.76..19.01); a planning-study product, no statement of statewide coverage.",
+ "subregionsVerified": [
+  "Cuernavaca"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://cuernavaca.gob.mx/",
+   "observation": "municipal site links only predial payment pages, no catastro viewer"
+  }
+ ],
+ "requests": [
+  {
+   "url": "research/countries/MX.json, research/retry/countries/MX.json",
+   "method": "GET",
+   "httpStatus": "-",
+   "contentType": "",
+   "assessment": "Previous MX passes: RAN Akamai 403, INEGI no parcel service, most state catastro hosts unreachable; no state parcel service found."
+  },
+  {
+   "url": "catastro.morelos.gob.mx, sig.morelos.gob.mx, isrycm.morelos.gob.mx, catastro.cuernavaca.gob.mx",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed / 502 from proxy (host unreachable from this network)"
+  },
+  {
+   "url": "https://www.morelos.gob.mx/catastro",
+   "method": "GET",
+   "httpStatus": "404",
+   "contentType": "no such page",
+   "assessment": "text/html"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=predios Morelos",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "found CUERNA_PMDUS and 'ServicioRegion01' (owner Predial2018) which returns 'Token Required' 499",
+   "assessment": "application/json"
+  },
+  {
+   "url": "https://services9.arcgis.com/fp5f46XvVGKIUi0R/arcgis/rest/services/CUERNA_PMDUS/FeatureServer/13/query?...&f=geojson",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "3 polygons at lot scale; 120,171 features counted",
+   "assessment": "application/json"
+  }
+ ],
+ "reuseStatus": "not established (no licence text read)",
+ "remainingUncertainty": "120k small polygons look like cadastral lots but carry no parcel key or owner field, only land use; provenance is a consultant's plan dataset, not the Instituto de Servicios Registrales y Catastrales. State catastro hosts unreachable, so state-wide status unknown.",
+ "nextStep": "Reach the ISRyCM Morelos catastro geoportal from a browser-capable network; ask whether the Cuernavaca layer is redistributable."
+}

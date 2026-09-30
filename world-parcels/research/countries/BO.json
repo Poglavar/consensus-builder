@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "BO",
+  "country": "Bolivia (Plurinational State of)",
+  "checkedAt": "2026-09-29",
+  "status": "national_cadastre_viewer_only",
+  "cadastreAuthority": "Instituto Nacional de Reforma Agraria (INRA) - rural cadastre (SINACAR); urban cadastre is municipal",
+  "portalsFound": [
+    {
+      "url": "https://sinacar.inra.gob.bo/",
+      "observation": "SINACAR Angular app; references https://geoserver.inra.gob.bo/geoserver"
+    },
+    {
+      "url": "https://geoserver.inra.gob.bo/geoserver/ows",
+      "observation": "GeoServer answers; WMS lists externo:titulado2022, sinacar:coberturaTit, satellite image layers, but WFS lists no feature types"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geoserver.inra.gob.bo/geoserver/ows?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "assessment": "no FeatureTypes listed"
+    },
+    {
+      "url": "https://geoserver.inra.gob.bo/geoserver/ows?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "assessment": "lists externo:titulado2022 among layers"
+    },
+    {
+      "url": "https://geoserver.inra.gob.bo/geoserver/externo/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=externo:titulado2022&count=3&outputFormat=application/json",
+      "method": "GET",
+      "httpStatus": 400,
+      "contentType": "application/xml",
+      "assessment": "Feature type unknown"
+    },
+    {
+      "url": "https://geoserver.inra.gob.bo/geoserver/externo/wms?...GetFeatureInfo&layers=externo:titulado2022",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/vnd.ogc.se_xml",
+      "assessment": "LayerNotDefined"
+    },
+    {
+      "url": "https://geo.inra.gob.bo/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT 502"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Titled rural properties nationwide (INRA), urban lots not covered",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "unknown",
+  "remainingUncertainty": "Advertised titled-property layer is not queryable via public WFS/GetFeatureInfo; may need a different workspace/auth. (Geoportal Catastro Nacional hub found in search is Dominican Republic, not Bolivia.)",
+  "nextStep": "Inspect SINACAR main.js/api calls in a browser; try WMS GetMap with correct workspace."
+}

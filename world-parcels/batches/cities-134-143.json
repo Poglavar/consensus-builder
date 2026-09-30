@@ -1,0 +1,112 @@
+[
+ {
+  "name": "Peshawar",
+  "country": "Pakistan",
+  "iso2": "PK",
+  "cityCode": 4408,
+  "capital": false,
+  "lon": 71.5179392692637,
+  "lat": 33.9891478051398,
+  "pop2025k": 3554.423,
+  "rank": 134
+ },
+ {
+  "name": "Lusaka",
+  "country": "Zambia",
+  "iso2": "ZM",
+  "cityCode": 1498,
+  "capital": true,
+  "lon": 28.2915266777252,
+  "lat": -15.3971082156756,
+  "pop2025k": 3510.723,
+  "rank": 135
+ },
+ {
+  "name": "Indore",
+  "country": "India",
+  "iso2": "IN",
+  "cityCode": 8886,
+  "capital": false,
+  "lon": 75.8556700061169,
+  "lat": 22.6991756014844,
+  "pop2025k": 3476.423,
+  "rank": 136
+ },
+ {
+  "name": "Jinan",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 9912,
+  "capital": false,
+  "lon": 117.018457710091,
+  "lat": 36.661377871139,
+  "pop2025k": 3472.98,
+  "rank": 137
+ },
+ {
+  "name": "Changsha",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 10588,
+  "capital": false,
+  "lon": 112.989044800597,
+  "lat": 28.1923490591892,
+  "pop2025k": 3457.508,
+  "rank": 138
+ },
+ {
+  "name": "Medellín",
+  "country": "Colombia",
+  "iso2": "CO",
+  "cityCode": 2525,
+  "capital": false,
+  "lon": -75.5793509793547,
+  "lat": 6.24850335443391,
+  "pop2025k": 3350.384,
+  "rank": 139
+ },
+ {
+  "name": "Changchun",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 9948,
+  "capital": false,
+  "lon": 125.30142385642,
+  "lat": 43.8756613705717,
+  "pop2025k": 3349.934,
+  "rank": 140
+ },
+ {
+  "name": "Patna",
+  "country": "India",
+  "iso2": "IN",
+  "cityCode": 11039,
+  "capital": false,
+  "lon": 85.1397184130161,
+  "lat": 25.5970203089431,
+  "pop2025k": 3309.383,
+  "rank": 141
+ },
+ {
+  "name": "Nanchang",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 11188,
+  "capital": false,
+  "lon": 115.896408932399,
+  "lat": 28.6795808438221,
+  "pop2025k": 3299.773,
+  "rank": 142
+ },
+ {
+  "name": "Nanning",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 10166,
+  "capital": false,
+  "lon": 108.312052358985,
+  "lat": 22.8254179691826,
+  "pop2025k": 3288.636,
+  "rank": 143
+ }
+]

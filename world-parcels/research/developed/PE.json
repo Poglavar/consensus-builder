@@ -1,0 +1,102 @@
+{
+ "countryCode": "PE",
+ "country": "Peru",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "MIDAGRI (rural predio cadastre, COPREDRUST / PTRT); urban cadastre is municipal; SBN publishes state-property points",
+ "inspireRecordUrl": null,
+ "portalsFound": [
+  {
+   "url": "https://visor.geoperu.gob.pe/api/pro/layer-nacional/",
+   "observation": "GeoPeru layer catalogue (2,267 layers) now returned HTTP 200 JSON with viewer Referer (earlier Cloudflare 403 did not recur). Parcel-like entries: 42301 'MIDAGRI - Predio rustico' (url_fuente WMS), 41395 'Predios estatales' SBN (points), 8218 SEDAPAL 'Lotes' (Lima water utility WMS), 1091 Catastro Municipal INEI."
+  },
+  {
+   "url": "https://winlmprap09.midagri.gob.pe/winlmprap13/rest/services/ogc/COPREDRUST/MapServer/0",
+   "observation": "ArcGIS Server 10.81 'Predio Rustico' polygon layer, Map/Query/Data, maxRecordCount 1000, e.g. 141,731 features in Arequipa. Fields include UNICAT, DEPAR, PROVI, DISTR, UBIDIS, TITULO, AREA, plus NOMPRE (property name; not requested) ."
+  },
+  {
+   "url": "https://espacialg.geoperu.gob.pe/geoserver/ows?service=WFS&request=GetCapabilities",
+   "observation": "HTTP 200 ows exception: 'Service WFS is disabled' (no challenge now); WMS only."
+  },
+  {
+   "url": "https://geo.midagri.gob.pe/ and other sunarp/cofopri hosts",
+   "observation": "still connection reset via proxy; the working MIDAGRI host is winlmprap09.midagri.gob.pe taken from the GeoPeru catalogue."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://visor.geoperu.gob.pe/js/configuracion.js",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/javascript",
+   "assessment": "config: API paths, espacialg host"
+  },
+  {
+   "url": "https://visor.geoperu.gob.pe/api/pro/layer-nacional/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "2267 layers JSON (Referer visor.geoperu.gob.pe)"
+  },
+  {
+   "url": "https://winlmprap09.midagri.gob.pe/winlmprap13/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "folders ogc, public, Consulta, VisorPublico..."
+  },
+  {
+   "url": "https://winlmprap09.midagri.gob.pe/winlmprap13/rest/services/ogc/COPREDRUST/MapServer/0/query (where DEPAR='AREQUIPA', outFields ids only, 3)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "3 polygons Condesuyos/Chichas (first bbox attempts timed out at 40 s, then worked with where filter)"
+  },
+  {
+   "url": "same layer, where DEPAR='LIMA'",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "3 polygons, Canete/Mala (two records identical OBJECTID, kept as returned)"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "pe-midagri-predio-rustico",
+  "requestUrl": "https://winlmprap09.midagri.gob.pe/winlmprap13/rest/services/ogc/COPREDRUST/MapServer/0/query?where=DEPAR='<DEPT>'&outFields=OBJECTID,UNICAT,DEPAR,PROVI,DISTR,UBIDIS,AREA&resultRecordCount=3&outSR=4326&f=geojson",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/geo+json",
+  "spatialTestAreaLonLat": "Arequipa Condesuyos ~-72.93,-15.55; Lima Canete/Mala ~-76.65,-12.67",
+  "parcelRecordCount": 6,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "UNICAT (+UBIDIS ubigeo)",
+  "responseFile": "research/developed/PE-parcel-response.json",
+  "pagination": "resultRecordCount/resultOffset (max 1000)",
+  "regionSampled": "Arequipa; Lima (department)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "Rural predios (titled/surveyed rural properties) nationwide per MIDAGRI; layer fullExtent covers the country; urban parcels not covered",
+  "regionsVerified": [
+   "Arequipa",
+   "Lima (Canete/Mala; department, not metropolitan Lima)"
+  ],
+  "nationwideVerified": true,
+  "scopeNote": "rural only; no urban cadastre found (municipal SAT/ICL not located)"
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Licence not read. Bbox queries were slow (timeouts) though where filters worked. Urban Lima parcels only as SEDAPAL WMS (not sampled). Peru rural layer content is survey coverage, not full territory.",
+ "nextStep": "Read MIDAGRI terms; probe municipal Lima cadastre and SEDAPAL WMS; GeoPeru info-layer endpoint returns 404 for ids used.",
+ "foundViaViewerInspection": true,
+ "geoBlockSuspected": false,
+ "changedByHeaders": false,
+ "regionsSampled": [
+  "Arequipa",
+  "Lima"
+ ],
+ "schemaVersion": 1,
+ "checkedAt": "2026-09-30",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: es-PE,es;q=0.9,en;q=0.8; cookie jar used; Referer set to viewer origin where relevant"
+}

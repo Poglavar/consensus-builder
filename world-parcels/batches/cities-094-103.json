@@ -1,0 +1,112 @@
+[
+ {
+  "name": "Casablanca",
+  "country": "Morocco",
+  "iso2": "MA",
+  "cityCode": 2076,
+  "capital": false,
+  "lon": -7.54260580529481,
+  "lat": 33.5818411354042,
+  "pop2025k": 4457.471,
+  "rank": 94
+ },
+ {
+  "name": "Muqdisho (Mogadishu)",
+  "country": "Somalia",
+  "iso2": "SO",
+  "cityCode": 3197,
+  "capital": true,
+  "lon": 45.3313716202418,
+  "lat": 2.05393262544166,
+  "pop2025k": 4399.43,
+  "rank": 95
+ },
+ {
+  "name": "Harbin",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 9738,
+  "capital": false,
+  "lon": 126.658985181548,
+  "lat": 45.7443006606507,
+  "pop2025k": 4376.259,
+  "rank": 96
+ },
+ {
+  "name": "Kanpur",
+  "country": "India",
+  "iso2": "IN",
+  "cityCode": 9603,
+  "capital": false,
+  "lon": 80.3406195423691,
+  "lat": 26.460949782044,
+  "pop2025k": 4329.973,
+  "rank": 97
+ },
+ {
+  "name": "Kumasi",
+  "country": "Ghana",
+  "iso2": "GH",
+  "cityCode": 1468,
+  "capital": false,
+  "lon": -1.61389130350228,
+  "lat": 6.69546322877124,
+  "pop2025k": 4297.984,
+  "rank": 98
+ },
+ {
+  "name": "Dimashq (Damascus)",
+  "country": "Syrian Arab Republic",
+  "iso2": "SY",
+  "cityCode": 1404,
+  "capital": true,
+  "lon": 36.3062672987401,
+  "lat": 33.5034715476208,
+  "pop2025k": 4287.746,
+  "rank": 99
+ },
+ {
+  "name": "Jeddah",
+  "country": "Saudi Arabia",
+  "iso2": "SA",
+  "cityCode": 1086,
+  "capital": false,
+  "lon": 39.2089998542255,
+  "lat": 21.5293312912755,
+  "pop2025k": 4284.08,
+  "rank": 100
+ },
+ {
+  "name": "Al Kuwayt (Kuwait City)",
+  "country": "Kuwait",
+  "iso2": "KW",
+  "cityCode": 305,
+  "capital": true,
+  "lon": 47.9994805163595,
+  "lat": 29.2828343642878,
+  "pop2025k": 4265.132,
+  "rank": 101
+ },
+ {
+  "name": "Medan",
+  "country": "Indonesia",
+  "iso2": "ID",
+  "cityCode": 1806,
+  "capital": false,
+  "lon": 98.6592873270214,
+  "lat": 3.59519807662413,
+  "pop2025k": 4245.895,
+  "rank": 102
+ },
+ {
+  "name": "Bamako",
+  "country": "Mali",
+  "iso2": "ML",
+  "cityCode": 374,
+  "capital": true,
+  "lon": -7.98841144489398,
+  "lat": 12.6310497786104,
+  "pop2025k": 4244.881,
+  "rank": 103
+ }
+]

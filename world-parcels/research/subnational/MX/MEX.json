@@ -1,0 +1,53 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "MEX",
+ "regionName": "Estado de México",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-MX,es;q=0.9 (cookie jar on; viewer-origin Referer where the viewer was fetched)",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://igecem.edomex.gob.mx/visores-geograficos",
+   "observation": "IGECEM (state cadastre institute) viewers page indexed by search; not reachable from here"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://igecem.edomex.gob.mx/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection reset by peer (twice)"
+  },
+  {
+   "url": "http://igecem.edomex.gob.mx/visores-geograficos",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/plain",
+   "assessment": "upstream connect timeout"
+  },
+  {
+   "url": "http://igecem.edomex.gob.mx/centro_geoespacial",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/plain",
+   "assessment": "upstream connect timeout"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=predios Estado de Mexico / catastro Toluca / catastro Edomex IGECEM",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "no results"
+  }
+ ],
+ "reuseStatus": "not assessed",
+ "remainingUncertainty": "Host refuses connections from this network (possible geo-block); viewer JS not inspected. Reused from research/countries/MX.json and research/retry/countries/MX.json: RAN (phina/sig.ran.gob.mx) Akamai 403, INEGI has no parcel service; no national layer.",
+ "nextStep": "Retry from a Mexican-egress client; inspect IGECEM visores-geograficos JS for ArcGIS/GeoServer layer."
+}

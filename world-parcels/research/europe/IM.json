@@ -1,0 +1,112 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "IM",
+ "country": "Isle of Man",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "not_probed",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Isle of Man Land Registry (Isle of Man Government, MannGIS ArcGIS Online org)",
+ "inspireRecordUrl": null,
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-GB,en;q=0.9; Referer: https://manngis.maps.arcgis.com/; cookie jar",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "portalsFound": [
+  {
+   "url": "https://manngis.maps.arcgis.com/apps/webappviewer/index.html?id=2774436daaac4f82ad5bfc40742da71b",
+   "observation": "'Isle of Man Land Registry Title Locator' web app (public, found via ArcGIS Online search). Its app config (sharing/rest/content/items/<id>/data) lists the LandRegistryPublic MapServer layers"
+  },
+  {
+   "url": "https://utility.arcgis.com/usrsvcs/servers/<SERVER_ID>/rest/services/BusinessDynamicServices/LandRegistryPublic/MapServer",
+   "observation": "ArcGIS Online gateway to Government's server; layers 0 Application, 1 Caution Against First Registration, 2 Land Parcels (polygon), 3 Priority, 4 LRV_TitleParcels (point); service description says a subset of the Public Kiosk View; native wkid 27700; anonymous, no token"
+  },
+  {
+   "url": "https://www.gov.im/ , https://maps.gov.im/ , https://data.gov.im/",
+   "observation": "F5 WAF 403 'request rejected' for browser-header requests from this network (the app's basemaps are on maps.gov.im); not bypassed"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Isle%20of%20Man%20land%20registry&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "finds MannGIS Title Locator"
+  },
+  {
+   "url": "https://www.gov.im/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "F5 block page, unchanged with headers"
+  },
+  {
+   "url": "MapServer/2?f=json and MapServer?f=json (utility.arcgis.com gateway)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "Land Parcels polygon layer, extent EPSG:27700 217654,465543-249768,504990"
+  },
+  {
+   "url": "https://utility.arcgis.com/usrsvcs/servers/<SERVER_ID>/rest/services/BusinessDynamicServices/LandRegistryPublic/MapServer/2/query?f=json&where=1%3D1&geometry=-4.4830,54.1495,-4.4815,54.1505&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygon parcels, Douglas"
+  },
+  {
+   "url": "https://utility.arcgis.com/usrsvcs/servers/<SERVER_ID>/rest/services/BusinessDynamicServices/LandRegistryPublic/MapServer/2/query?f=json&where=1%3D1&geometry=-4.3860,54.3185,-4.3845,54.3195&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygon parcels, Ramsey"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "im-landregistry-public-mapserver",
+  "requestUrl": "https://utility.arcgis.com/usrsvcs/servers/<SERVER_ID>/rest/services/BusinessDynamicServices/LandRegistryPublic/MapServer/2/query?f=json&where=1%3D1&geometry=-4.4830,54.1495,-4.4815,54.1505&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&resultRecordCount=3",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=utf-8",
+  "spatialTestAreaLonLat": "-4.4830,54.1495,-4.4815,54.1505",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "OBJECTID / UTRN_Edition",
+  "responseFile": "IM-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount",
+  "regionSampled": "Douglas"
+ },
+ "additionalVerifiedRegion": {
+  "sourceId": "im-landregistry-public-mapserver",
+  "requestUrl": "https://utility.arcgis.com/usrsvcs/servers/<SERVER_ID>/rest/services/BusinessDynamicServices/LandRegistryPublic/MapServer/2/query?f=json&where=1%3D1&geometry=-4.3860,54.3185,-4.3845,54.3195&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&resultRecordCount=3",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=utf-8",
+  "spatialTestAreaLonLat": "-4.3860,54.3185,-4.3845,54.3195",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "OBJECTID / UTRN_Edition",
+  "responseFile": "IM-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount",
+  "regionSampled": "Ramsey"
+ },
+ "regionsSampled": [
+  "Douglas",
+  "Ramsey"
+ ],
+ "coverageAssessment": {
+  "claimedScope": "Registered land parcels in the Isle of Man Land Registry (Public Kiosk View subset; unregistered land is not included)",
+  "regionsVerified": [
+   "Douglas (east)",
+   "Ramsey (north)"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open (anonymous ArcGIS service via the public Title Locator app)",
+ "remainingUncertainty": "Service description says it is an interim subset built for search during COVID and 'will eventually be replaced'; may move. Parcel_Description text (contains property addresses) was not saved. Licence/terms not read. Gateway server id redacted as <SERVER_ID>. Not an INSPIRE service (not EU).",
+ "nextStep": "Read the Land Registry terms at gov.im/landregistry (blocked here); check coverage percentage vs registered titles."
+}

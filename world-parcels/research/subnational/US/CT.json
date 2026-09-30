@@ -1,0 +1,83 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "CT",
+ "regionName": "Connecticut",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "source": {
+  "sourceId": "us-ct-cama-parcel-layer-2025",
+  "name": "Connecticut CAMA and Parcel Layer 2025",
+  "operator": "Connecticut GIS Office (ArcGIS Online owner ctgisoffice family; this 2025 item is owned by a staff account)",
+  "scope": "Connecticut statewide (169 towns)",
+  "endpoint": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "Esri JSON (ArcGIS REST query)",
+  "crs": "EPSG:4326 (outSR requested); native Web Mercator",
+  "reuseStatus": "no licence text in service metadata"
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-US,en;q=0.9; cookie jar used; no token required",
+ "verifiedParcelResponse": {
+  "sourceId": "us-ct-cama-parcel-layer-2025",
+  "requestUrl": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0/query?where=1%3D1&geometry=<bbox lon/lat>&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID,Town_Name,Parcel_ID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   -72.6748,
+   41.7624,
+   -72.6732,
+   41.7636
+  ],
+  "parcelRecordCount": 6,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "Parcel_ID",
+  "responseFile": "CT-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount",
+  "regionSampled": "Hartford, New Haven"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Item is the annual statewide CT parcel + CAMA layer; extent covers Connecticut. The 2023 sibling layer timed out from this network twice; the 2025 layer answered.",
+ "subregionsVerified": [
+  "Hartford",
+  "New Haven"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_State_Parcel_Layer_2023/FeatureServer/0",
+   "observation": "2023 layer: metadata OK, two spatial queries timed out (40 s)"
+  },
+  {
+   "url": "https://cteco.uconn.edu/ctmaps/rest/services/Parcels/Parcels/FeatureServer",
+   "observation": "CT ECO 2020 parcels (not queried)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0/query?...Hartford bbox...outFields=OBJECTID,Town_Name,Parcel_ID",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "3 polygons Hartford"
+  },
+  {
+   "url": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0/query?...New Haven bbox",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "3 polygons New Haven"
+  },
+  {
+   "url": ".../Connecticut_State_Parcel_Layer_2023/FeatureServer/0/query?...",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "timeout after 40 s (x2); temporarily unavailable, not a negative"
+  }
+ ],
+ "reuseStatus": "Layer carries owner, mailing address and sale fields; not requested.",
+ "remainingUncertainty": "Publisher note on completeness of all 169 towns not read.",
+ "nextStep": "Audit distinct Town_Name count."
+}

@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:131",
+  "queueRank": 131,
+  "name": "Karaj",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "centerLatLon": [
+    35.759536947844,
+    50.9761153401972
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Open_data_in_Iran",
+      "observation": "Secondary source (via Tehran probe): the Deeds and Properties Registration Organization holds digital urban parcel data but no open parcel service is documented."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://karaj.ir",
+      "method": "GET",
+      "httpStatus": null,
+      "assessment": "connection failure via proxy"
+    },
+    {
+      "url": "https://map.karaj.ir",
+      "method": "GET",
+      "httpStatus": null,
+      "assessment": "connection failure"
+    },
+    {
+      "url": "https://gis.karaj.ir",
+      "method": "GET",
+      "httpStatus": null,
+      "assessment": "connection failure"
+    },
+    {
+      "url": "https://data.karaj.ir",
+      "method": "GET",
+      "httpStatus": null,
+      "assessment": "connection failure"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Unknown; Iranian .ir hosts (guessed municipality GIS/data subdomains) unreachable from this network",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "All .ir hosts tried failed to connect; this is not evidence of absence. Hostnames were guesses, no portal was actually confirmed.",
+  "nextStep": "Retry from a network that can reach .ir hosts; check Karaj Municipality GIS and the Deeds and Properties Registration Organization for public parcel layers."
+}

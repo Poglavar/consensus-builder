@@ -1,0 +1,84 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "TAB",
+ "regionName": "Tabasco",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "source": {
+  "sourceId": "mx-tab-catastro-visor-centro",
+  "name": "Visor Cartografico de Tabasco (per-municipality qgis2web Leaflet maps)",
+  "operator": "Direccion de Catastro, Secretaria de Finanzas de Tabasco",
+  "scope": "municipality-by-municipality (17 municipalities listed; only Centro zonas 1-7 fetched)",
+  "endpoint": "https://catastro.sf.tabasco.gob.mx/wp-content/uploads/mapas/centro1/data/ZONA1_2.js",
+  "method": "GET (static JS-wrapped GeoJSON, Range 0-2500)",
+  "responseFormat": "var json_ZONA1_2 = GeoJSON FeatureCollection",
+  "crs": "CRS84 (WGS84)",
+  "reuseStatus": "not read; public static files of an official viewer"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "mx-tab-catastro-visor-centro",
+  "requestUrl": "https://catastro.sf.tabasco.gob.mx/wp-content/uploads/mapas/centro1/data/ZONA1_2.js",
+  "method": "GET Range 0-2500",
+  "httpStatus": 206,
+  "contentType": "application/javascript",
+  "spatialTestAreaLonLat": [
+   -92.937,
+   17.989,
+   -92.915,
+   17.997
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": null,
+  "responseFile": "research/subnational/MX/TAB-parcel-response.json",
+  "pagination": "none (whole-file download)"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "Publisher lists all 17 municipalities; not verified",
+ "subregionsVerified": [
+  "Centro (Villahermosa) zonas 1-7 (partial)"
+ ],
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept-Language: es-MX,es;q=0.9; cookie jar; viewer-origin Referer where applicable",
+ "portalsFound": [
+  {
+   "url": "https://catastro.sf.tabasco.gob.mx/cartografia/visor-cartografico-de-tabasco/",
+   "observation": "State catastro viewer index, Balancan..Paraiso, Centro (Villahermosa) zones 1-7"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://catastro.sf.tabasco.gob.mx/cartografia/visor-cartografico-de-tabasco/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "lists 17 municipal viewers"
+  },
+  {
+   "url": "https://catastro.sf.tabasco.gob.mx/cartografia/visor-cartografico-de-tabasco/centro-zonas-1-7/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "iframes /wp-content/uploads/mapas/centro1/index.html"
+  },
+  {
+   "url": "https://catastro.sf.tabasco.gob.mx/wp-content/uploads/mapas/centro1/index.html",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "qgis2web viewer; data/ZONA1_2..ZONA7_8.js"
+  },
+  {
+   "url": "https://catastro.sf.tabasco.gob.mx/wp-content/uploads/mapas/centro1/data/ZONA1_2.js",
+   "method": "GET",
+   "httpStatus": 206,
+   "contentType": "",
+   "assessment": "MultiPolygon lot-sized (few-metre) features, empty properties; 7 features in the first 2.5 KB"
+  }
+ ],
+ "reuseStatus": "not read",
+ "remainingUncertainty": "Polygons are parcel-sized but carry NO parcel ID or attributes (properties empty), so ID-bearing parcels not verified; zones may be selective (not all lots) and files are static exports (Oct 2025), not a live service. Other 16 municipalities not fetched.",
+ "nextStep": "Fetch each municipality's data/*.js to gauge coverage; ask Catastro for attributed data."
+}

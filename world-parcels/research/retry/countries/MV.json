@@ -1,0 +1,73 @@
+{
+ "kind": "country",
+ "key": "MV",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: en-MV,en;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://planning.gov.mv/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connect failure / reset"
+  },
+  {
+   "url": "https://www.landsurvey.gov.mv/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connect failure / reset"
+  },
+  {
+   "url": "https://www.gov.mv/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connect failure / reset"
+  },
+  {
+   "url": "https://www.housing.gov.mv/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connect failure / reset"
+  },
+  {
+   "url": "https://gis.gov.mv/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connect failure / reset"
+  },
+  {
+   "url": "https://atlas.gov.mv/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connect failure / reset"
+  },
+  {
+   "url": "https://presidencymaldives.gov.mv/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "403 (likely Cloudflare) not relevant"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=maldives parcel OR cadastre",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "only boundaries, docks, land use; no parcels"
+  }
+ ],
+ "geoBlockSuspected": "true (nearly all .gov.mv hosts reset/refused via this proxy while statisticsmaldives.gov.mv loads)",
+ "notes": "No change. Nothing about a Maldives cadastre learned; almost every .gov.mv host fails to connect.",
+ "nextStep": "Retry from another network; look for MHLUD land information system and island-level survey data."
+}

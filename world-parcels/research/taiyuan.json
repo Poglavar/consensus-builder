@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:112",
+  "queueRank": 112,
+  "name": "Taiyuan",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    37.853105714027,
+    112.547997757151
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://data.taiyuan.gov.cn/",
+      "observation": "Taiyuan open-data platform; did not respond from this client."
+    },
+    {
+      "url": "https://zrzyj.taiyuan.gov.cn/",
+      "observation": "Taiyuan Natural Resources bureau; did not respond."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://data.taiyuan.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no response"
+    },
+    {
+      "url": "https://zrzyj.taiyuan.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no response"
+    },
+    {
+      "url": "https://map.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 418,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "CloudWAF block page"
+    },
+    {
+      "url": "https://opendata.arcgis.com/api/v3/search?q=taiyuan%20cadastral",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "no cadastral parcel layers"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Taiyuan municipality (unverified)",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Municipal hosts unreachable, so this negative is weak; national picture (see Beijing/Shanghai) is closed or credentialed cadastre.",
+  "nextStep": "Retest municipal open-data portal from another network; check Shanxi provincial platform."
+}

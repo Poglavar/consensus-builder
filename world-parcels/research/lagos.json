@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:2332459",
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {"url": "https://landonline.lagosstate.gov.ng/", "observation": "Official Lagos State land-administration portal describes property search by address, property number, or parcel ID with GIS maps, but the visible service is account-oriented and no open parcel feature list is documented."},
+    {"url": "https://lagossurveyor.ebs-rcm.com/", "observation": "Lagos State Surveyor General portal advertises land-information transactions, without a verified downloadable parcel layer."},
+    {"url": "https://osgof.gov.ng/cadastral-legal-surveys/", "observation": "Federal Surveyor General describes cadastral and legal surveys for government properties nationwide, not a national open parcel polygon database."}
+  ],
+  "requests": [
+    {"url": "https://landonline.lagosstate.gov.ng/", "method": "GET", "httpStatus": 200, "contentType": "text/html;charset=utf-8", "responseBytes": 4021, "parcelRecordCount": null, "assessment": "HTML app shell only; no parcel list"}
+  ],
+  "coverageAssessment": {"claimedScope": "Lagos State land-administration transactions, geographic parcel completeness unknown", "verifiedOpenScope": "none", "countrywideVerified": false},
+  "remainingUncertainty": "A state GIS may hold parcels internally, but the public portal did not expose an anonymous bounded polygon endpoint. State scope would not establish Nigeria-wide coverage.",
+  "nextStep": "Look for an official downloadable GIS layer or documented public feature service and test a bounded Lagos-area polygon response."
+}

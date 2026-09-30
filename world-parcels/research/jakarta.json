@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:1642911",
+  "checkedAt": "2026-09-28",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {
+      "url": "https://dki-siap.atrbpn.go.id/kakap-net/",
+      "observation": "Public page exposes a parcel search interface; a machine-readable parcel-list request has not been identified or verified."
+    },
+    {
+      "url": "https://jakartasatu.jakarta.go.id/geoportal/layanan/berbagi-pakai",
+      "observation": "Portal describes spatial-data sharing; parcel-list endpoint, access conditions, and scope remain unverified."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/peta",
+      "observation": "Official map displays a Bidang Tanah layer. Its public JavaScript names layer umum:Persil but routes parcel retrieval through /expapi/getPersil with a token from /expapi/loginApi; this is not a verified open parcel feed."
+    },
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer",
+      "observation": "Public map-service metadata has land-ownership polygon layers for 15 provinces, but no DKI Jakarta layer."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://bhumi.atrbpn.go.id/geoserver/ows?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/plain;charset=UTF-8",
+      "responseText": "Metadata WMS Layer tidak ditemukan",
+      "parcelRecordCount": null
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/ows?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html; charset=utf-8",
+      "parcelRecordCount": null
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html; charset=utf-8",
+      "parcelRecordCount": null
+    },
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain;charset=UTF-8",
+      "responseFile": "jakarta-big-mapservice-response.json",
+      "parcelRecordCount": null,
+      "observation": "Metadata response only; the public land-ownership group omits DKI Jakarta."
+    }
+  ],
+  "remainingUncertainty": "BHUMI visibly serves parcel map data, but a reusable, openly licensed parcel-list endpoint for Jakarta has not been found. The portal's authenticated internal API was not used as an open-data source.",
+  "nextStep": "Revisit if ATR/BPN or Jakarta Satu publishes an open parcel-list endpoint or clear reuse terms."
+}

@@ -1,0 +1,88 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "MS",
+ "regionName": "Mississippi",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/plain,*/*; Accept-Language: en-US,en;q=0.9; cookie jar on; via pre-configured proxy",
+ "source": {
+  "sourceId": "us-ms-deq-hinds-parcels",
+  "name": "HINDS_PARCELS",
+  "operator": "Mississippi DEQ (Office of Pollution Control GIS)",
+  "scope": "Hinds County only (Jackson)",
+  "endpoint": "https://opcgis.deq.state.ms.us/opcgis/rest/services/Government/HINDS_PARCELS/MapServer/0",
+  "method": "GET",
+  "responseFormat": "ArcGIS REST JSON",
+  "crs": "EPSG:6510 native (wkid 103089); no outSR requested",
+  "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-ms-deq-hinds-parcels",
+  "requestUrl": "https://opcgis.deq.state.ms.us/opcgis/rest/services/Government/HINDS_PARCELS/MapServer/0/query?geometry=<bbox ~150m>&outFields=PARNO&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   "[-90.1856,32.2980,-90.1840,32.2996]"
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PARNO",
+  "responseFile": "research/subnational/US/MS-parcel-response.json",
+  "pagination": "resultRecordCount / resultOffset",
+  "regionSampled": [
+   "Hinds County"
+  ]
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "Service description: contains the Hinds County, MS parcel polygons. The statewide MS_Parcels_2023 service (gis.mississippi.edu, MARIS/MDEQ) answered error 499 Token Required, so the statewide layer is credentialed. This server rejects resultRecordCount (400), so the sample used a 150 m bbox; the first 3 of 18 returned features were kept.",
+ "subregionsVerified": [
+  "Hinds County (Jackson)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://gis.mississippi.edu/server/rest/services/Cadastral/MS_Parcels_2023/MapServer",
+   "observation": "statewide 2023 county parcels; Token Required"
+  },
+  {
+   "url": "https://maris.mississippi.edu/HTML/Maps/MARISMapServices.html",
+   "observation": "MARIS map services page (found via search)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gis.mississippi.edu/server/rest/services/Cadastral/MS_Parcels_2023/MapServer?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "body is error 499 Token Required; not bypassed"
+  },
+  {
+   "url": "https://opcgis.deq.state.ms.us/opcgis/rest/services/Government/HINDS_PARCELS/MapServer/0?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/plain",
+   "assessment": "layer fields read"
+  },
+  {
+   "url": "https://opcgis.deq.state.ms.us/opcgis/rest/services/Government/HINDS_PARCELS/MapServer/0/query?...resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/plain",
+   "assessment": "body error 400; count parameter unsupported"
+  },
+  {
+   "url": "https://opcgis.deq.state.ms.us/opcgis/rest/services/Government/HINDS_PARCELS/MapServer/0/query?geometry=<bbox near Jackson>&outFields=PARNO&returnGeometry=true",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/plain",
+   "assessment": "18 polygons; 3 saved, ID and geometry only"
+  }
+ ],
+ "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution.",
+ "remainingUncertainty": "Statewide 2023 layer needs a token; whether MARIS issues one free was not investigated. Layer carries owner/mail fields; not requested.",
+ "nextStep": "Investigate whether MARIS issues a free token for MS_Parcels_2023."
+}

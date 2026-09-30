@@ -1,0 +1,58 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "regionCode": "Y",
+ "regionName": "Jujuy",
+ "checkedAt": "2026-09-30",
+ "status": "no_open_service_found",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR,es;q=0.9; cookie jar used; Referer = viewer origin where noted",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "none",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://geo.idejuy.jujuy.gob.ar/geoserver/wfs",
+   "observation": "IDEJuy GeoServer WFS capabilities read (200): 32 layers (health, education, roads, census) and no parcel or cadastre layer"
+  },
+  {
+   "url": "https://geo.idejuy.jujuy.gob.ar/api/v2/datasets?search=parcel",
+   "observation": "GeoNode search returned no parcel dataset in the first page"
+  },
+  {
+   "url": "https://inmuebles.jujuy.gob.ar/",
+   "observation": "Dirección Provincial de Inmuebles site (200); registro gráfico page, no map service link"
+  },
+  {
+   "url": "https://catastro.jujuy.gob.ar",
+   "observation": "connection reset"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geo.idejuy.jujuy.gob.ar/geoserver/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "no cadastral layer"
+  },
+  {
+   "url": "http://idej.jujuy.gob.ar/geoservicios/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset (https variant loads)"
+  },
+  {
+   "url": "https://geo.idejuy.jujuy.gob.ar/geoserver/wms?service=WMS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset"
+  }
+ ],
+ "reuseStatus": "n/a",
+ "remainingUncertainty": "A parcel visor is advertised in a social post (geo.idejuy.../visor, consult-only) but no service URL was found; the WMS capabilities request was reset.",
+ "nextStep": "Inspect geo.idejuy.jujuy.gob.ar/visor JS config; retry WMS capabilities."
+}

@@ -1,0 +1,67 @@
+{
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: es-PA,es;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.anati.gob.pa/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "ANATI site; HTML inspected: no viewer/geoportal/ArcGIS/WFS link; only links to certificate services and rpn.anati.gob.pa"
+  },
+  {
+   "url": "https://consultatramites.anati.gob.pa/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "procedure-status lookup guarded by Cloudflare Turnstile CAPTCHA; not attempted further"
+  },
+  {
+   "url": "https://rpn.anati.gob.pa/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "notification system, no parcels"
+  },
+  {
+   "url": "https://etax2.mef.gob.pa/etax2web/Inm/CertificadoCatastral/LoginCertificacionCatastral.aspx",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "MEF cadastral-certificate login page (credentialed e-service, no map)"
+  },
+  {
+   "url": "https://www.anati.gob.pa/catastro, /geoportal, /servicios-en-linea",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html",
+   "assessment": "guessed paths do not exist"
+  },
+  {
+   "url": "https://geoportal.anati.gob.pa/ (also mapas., visor., sig., gis., catastro., mapa., tramites.anati.gob.pa, ide.gob.pa, www.ign.gob.pa)",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=ANATI catastro",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 hits"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "guessed anati subdomains reset while www.anati.gob.pa answers; likely non-existent hosts rather than a geo-block",
+ "notes": "New: ANATI HTML inspected; its only cadastre-related services are login/CAPTCHA e-services (MEF certificate, consultatramites). No open map viewer or service URL is advertised, and all guessed geoportal hosts reset. Still no evidence either way for an open parcel service.",
+ "nextStep": "Find the ANATI cadastre/Tommy Guardia geoportal URL from a non-ANATI source; do not bypass Turnstile/login.",
+ "kind": "country",
+ "key": "PA",
+ "checkedAt": "2026-09-30"
+}

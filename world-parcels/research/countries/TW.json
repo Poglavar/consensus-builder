@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "TW",
+  "country": "China, Taiwan Province of China",
+  "checkedAt": "2026-09-29",
+  "status": "national_cadastre_credentialed_or_paid",
+  "cadastreAuthority": "National Land Surveying and Mapping Center (NLSC), Ministry of the Interior",
+  "portalsFound": [
+    {
+      "url": "https://maps.nlsc.gov.tw/S09SOA/pro/Wfs_ajax_list.jsp",
+      "observation": "NLSC WFS list is reachable (HTTP 200) and includes cadastral layer CADAS_MERGE; per city evidence (taipei.json) the spec page restricts cadastral/e-map/land-use WFS to approved government units, max 1000m x 1000m query."
+    },
+    {
+      "url": "https://wms.nlsc.gov.tw/wms",
+      "observation": "WMS capabilities list land-section outlines and land offices, not parcel polygons (from taipei.json)."
+    },
+    {
+      "url": "https://data.gov.tw/",
+      "observation": "National open-data portal reachable; no anonymous parcel service found."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://maps.nlsc.gov.tw/S09SOA/pro/Wfs_ajax_list.jsp",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "assessment": "page reachable, confirming WFS catalogue; no parcel query attempted because access requires application"
+    },
+    {
+      "url": "https://data.gov.tw/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "reachable; no parcel dataset verified"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "National cadastral map (all of Taiwan) held by NLSC",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "registration",
+  "remainingUncertainty": "Cadastral WFS approval terms are from the NLSC spec page as recorded in city evidence, not re-read here; digital cadastral maps reportedly sold via Taiwan MAP Store with member login. Licence not read.",
+  "nextStep": "Check NLSC application route for WFS access by non-government users; look for municipal open-data parcel layers."
+}

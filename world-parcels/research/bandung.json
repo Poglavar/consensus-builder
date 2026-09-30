@@ -1,0 +1,99 @@
+{
+  "cityId": "queue:40",
+  "queueRank": 40,
+  "name": "Bandung",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "centerLatLon": [
+    -6.9233,
+    107.6282
+  ],
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "id-big-satupeta-hak-milik-jawa-barat",
+    "requestUrl": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/21/query?where=1%3D1&geometry=107.6145%2C-6.9160%2C107.6170%2C-6.9135&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid%2Ckecamatan%2Ckelurahan%2Ctipehak%2Cnib&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      107.6145,
+      -6.916,
+      107.617,
+      -6.9135
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "nib (Nomor Identifikasi Bidang; uniqueness across the layer not checked, pair with kelurahan)",
+    "responseFile": "bandung-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true; maxRecordCount=1000"
+  },
+  "source": {
+    "sourceId": "id-big-satupeta-hak-milik-jawa-barat",
+    "name": "Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) Skala 1:5000, Jawa Barat sublayer (Satu Peta Perizinan dan Pertanahan)",
+    "operator": "Badan Informasi Geospasial (BIG) Satu Peta portal, data from Kementerian ATR/BPN",
+    "scope": "Land parcels with land-right type (Hak Milik etc.) for Jawa Barat; the same MapServer has sublayers for 15 provinces",
+    "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/21",
+    "method": "GET ArcGIS query",
+    "responseFormat": "Esri JSON",
+    "crs": "EPSG:4326",
+    "reuseStatus": "Not established; service copyrightText names the Satupeta Perizinan dan Pertanahan policy acceleration team; licence terms not read"
+  },
+  "portalsFound": [
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer",
+      "observation": "Public ArcGIS MapServer; group layer 10 'Hak Milik 1:5000' has provincial sublayers including Jawa Barat (21); attributes objectid, kecamatan, kelurahan, tipehak, nib."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/peta",
+      "observation": "ATR/BPN BHUMI viewer; no open list endpoint verified (see Jakarta record)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/21?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "layer metadata: polygon, maxRecordCount 1000, extent covers West Java"
+    },
+    {
+      "url": "https://.../MapServer/21/query?where=1=1&returnCountOnly=true",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "174067 features layer-wide"
+    },
+    {
+      "url": "https://.../MapServer/21/query bbox 107.6270,-6.9240,107.6300,-6.9220",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "empty features: coverage is patchy"
+    },
+    {
+      "url": "https://.../MapServer/21/query bbox 107.55,-6.98,107.70,-6.85 count",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "762 features in the ~15 km box (sparse)"
+    },
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/21/query?where=1%3D1&geometry=107.6145%2C-6.9160%2C107.6170%2C-6.9135&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid%2Ckecamatan%2Ckelurahan%2Ctipehak%2Cnib&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "3 polygons in Sumur Bandung/Merdeka, verified"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Hak Milik parcels 1:5000 for Jawa Barat (174,067 features layer-wide)",
+    "verifiedOpenScope": "three parcels in Sumur Bandung, Bandung; also polygons seen in neighbouring Cimahi",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Coverage is clearly incomplete: ~745 features in a 5x5 km central Bandung box and an empty query at the queue centre point, so it is a sparse subset (probably only some registered rights). Vintage, reuse terms and relation to legal cadastre unclear. Same MapServer may serve other provinces, worth testing for Jakarta (Jakarta not among its sublayers per existing record).",
+  "nextStep": "Find why coverage is sparse, check for a fuller BHUMI/ATR-BPN source, read licence, test another Indonesian province from same schema.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-09-29"
+}

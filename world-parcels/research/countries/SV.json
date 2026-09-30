@@ -1,0 +1,60 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "SV",
+ "country": "El Salvador",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Centro Nacional de Registros (CNR) - Instituto Geografico y del Catastro Nacional",
+ "portalsFound": [
+  {
+   "url": "https://www.cnr.gob.sv/",
+   "observation": "CNR site returned 403 to plain and browser UA."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.cnr.gob.sv/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "403"
+  },
+  {
+   "url": "https://www.cnr.gob.sv/catastro/",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html",
+   "assessment": "404"
+  },
+  {
+   "url": "https://sigcnr.cnr.gob.sv/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (tunnel failure/connection reset); temporarily unavailable, not proof of absence"
+  },
+  {
+   "url": "https://geoportal.cnr.gob.sv/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (tunnel failure/connection reset); temporarily unavailable, not proof of absence"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=CNR%20El%20Salvador%20catastro%20parcelas&f=json&num=5",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "application/json",
+   "assessment": "one unrelated base-map service"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "national cadastre (CNR)",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "CNR runs a national cadastre and online map viewer per public knowledge, but nothing was reachable to confirm access or endpoints.",
+ "nextStep": "Retry via other routes; locate the CNR cadastral map viewer/ArcGIS server URL."
+}

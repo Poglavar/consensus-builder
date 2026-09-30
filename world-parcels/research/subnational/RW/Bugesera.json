@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "RW",
+  "checkedAt": "2026-09-30",
+  "headersUsed": "desktop Chrome UA, cookie jar, Referer https://geodata.rw/portal/home/ for geodata.rw",
+  "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+  "regionCode": "Bugesera",
+  "regionName": "Bugesera",
+  "status": "verified_region_wide",
+  "source": {
+    "sourceId": "rw-nla-agol-bugesera-parcels",
+    "name": "Bugesera_Parcels (LAIS), NLA ArcGIS Online",
+    "operator": "National Land Authority (NLA), Rwanda (ArcGIS Online account n.ueberschaer@nla)",
+    "scope": "Bugesera district, 368990 parcels",
+    "endpoint": "https://services7.arcgis.com/htgaiKX6RV2DDGgK/arcgis/rest/services/Bugesera_Parcels/FeatureServer/0",
+    "method": "GET",
+    "responseFormat": "ArcGIS JSON (esriGeometryPolygon)",
+    "crs": "EPSG:4326 via outSR"
+  },
+  "verifiedParcelResponse": {
+    "sourceId": "rw-nla-agol-bugesera-parcels",
+    "requestUrl": "https://services7.arcgis.com/htgaiKX6RV2DDGgK/arcgis/rest/services/Bugesera_Parcels/FeatureServer/0/query?where=1%3D1&outFields=upi&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json",
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "upi",
+    "totalFeatures": 368990,
+    "responseFile": "../../retry/countries/RW-parcel-response.json",
+    "sampling": "bbox at layer extent centre"
+  },
+  "regionWideClaimed": true,
+  "regionWideBasis": "One layer per district named for the district; record counts in the hundreds of thousands",
+  "subregionsVerified": [
+    "Bugesera"
+  ],
+  "alsoListedOn": "https://geodata.rw/server/rest/services/LAISData/Bugesera_Parcels/MapServer (RSDI catalogue; service reported \"not started\" on 2026-09-30)",
+  "remainingUncertainty": "Completeness within the district not measured; licence unread.",
+  "nextStep": "Read NLA/RSDI terms."
+}

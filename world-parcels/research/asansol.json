@@ -1,0 +1,80 @@
+{
+ "schemaVersion": 1,
+ "cityId": "queue:167",
+ "queueRank": 167,
+ "name": "Asansol",
+ "country": "India",
+ "countryCode": "IN",
+ "centerLatLon": [
+  23.6979457782642,
+  86.9114092684189
+ ],
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "verifiedParcelResponse": null,
+ "source": null,
+ "portalsFound": [
+  {
+   "url": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action",
+   "observation": "West Bengal land and land-reforms portal (Banglarbhumi) with plot map lookup; connection reset from this client (see kolkata.json)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=West Bengal cadastral OR mouza (Feature Service)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "only web maps/admin boundaries in first results; no parcel feature service"
+  },
+  {
+   "url": "https://banglarbhumi.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  },
+  {
+   "url": "https://bhunaksha.wb.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  },
+  {
+   "url": "https://bhunaksha.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  },
+  {
+   "url": "https://bhulekh.wb.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  },
+  {
+   "url": "https://webgis.wb.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  },
+  {
+   "url": "https://dilrmp.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  }
+ ],
+ "coverageAssessment": {
+  "claimedScope": "West Bengal Banglarbhumi plot maps (unverified)",
+  "verifiedOpenScope": "none",
+  "countrywideVerified": false
+ },
+ "remainingUncertainty": "West Bengal land-record and Bhunaksha hosts were unreachable from this client, which does not prove absence. State scope would not imply India-wide coverage.",
+ "nextStep": "Retry from another network path; test Banglarbhumi/Bhunaksha WB plot-map request for the district."
+}

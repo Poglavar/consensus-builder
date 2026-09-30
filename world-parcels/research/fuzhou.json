@@ -1,0 +1,73 @@
+{
+ "schemaVersion": 1,
+ "cityId": "queue:171",
+ "queueRank": 171,
+ "name": "Fuzhou",
+ "country": "China",
+ "countryCode": "CN",
+ "centerLatLon": [
+  26.0737068369161,
+  119.297849641578
+ ],
+ "checkedAt": "2026-09-29",
+ "status": "no_verified_open_endpoint_after_attempts",
+ "verifiedParcelResponse": null,
+ "source": null,
+ "portalsFound": [
+  {
+   "url": "https://zrzyt.fujian.gov.cn/",
+   "observation": "Provincial natural-resources department portal; no parcel query service seen"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.fuzhou.gov.cn/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "city government landing page only"
+  },
+  {
+   "url": "https://zrzyt.fujian.gov.cn/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Fujian Department of Natural Resources landing page only"
+  },
+  {
+   "url": "https://zrzy.fuzhou.gov.cn/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  },
+  {
+   "url": "https://data.fuzhou.gov.cn/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  },
+  {
+   "url": "https://fj.tianditu.gov.cn/home/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  },
+  {
+   "url": "https://fujian.tianditu.gov.cn/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  }
+ ],
+ "coverageAssessment": {
+  "claimedScope": "Chinese cadastral/real-estate registration data is administered by natural-resources bureaus and is not published as open parcel polygons in anything found",
+  "verifiedOpenScope": "none",
+  "countrywideVerified": false
+ },
+ "remainingUncertainty": "Fuzhou municipal open-data and Fujian Tianditu hosts were unreachable from this client. Only landing pages were checked; no polygon query was found or tested.",
+ "nextStep": "Look for a municipal natural-resources / real-estate-registration GIS service and test a bounded query; retry unreachable hosts from another network path."
+}

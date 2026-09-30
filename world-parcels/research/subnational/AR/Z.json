@@ -1,0 +1,37 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "regionCode": "Z",
+ "regionName": "Santa Cruz",
+ "checkedAt": "2026-09-30",
+ "status": "viewer_only",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR,es;q=0.9; cookie jar; viewer-origin Referer",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "n/a",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://situ.santacruz.gob.ar/ide/visor",
+   "observation": "SITU Leaflet viewer with municipal cadastre layers (catastro_las_heras, catastro_perito_moreno, catastro_puerto_san_julian, catastro_gobernador_gregores, catastro_julia_dufour, las estancias); backed by GeoServer at localhost behind /proxy.php; layer downloads via /ide/visor/descargar/<base64>, login page present"
+  },
+  {
+   "url": "https://www.asip.gob.ar/catastro/",
+   "observation": "ASIP provincial cadastre page: forms and taxes, no map service"
+  }
+ ],
+ "requests": [
+  {
+   "url": "http://situ.santacruz.gob.ar/proxy.php?<localhost geoserver ows WFS GetCapabilities / GetFeature catastro_las_heras>",
+   "method": "GET",
+   "httpStatus": 500,
+   "assessment": "Viewer proxy returns 500 for WFS; no direct public GeoServer host found; not pursued further"
+  }
+ ],
+ "foundViaViewerInspection": true,
+ "geoBlockSuspected": false,
+ "reuseStatus": "unknown",
+ "remainingUncertainty": "Municipal parcel layers exist in the viewer (Las Heras, Perito Moreno, Puerto San Julian, Gregores, Julia Dufour) but no bounded parcel reply obtained; Rio Gallegos not seen.",
+ "nextStep": "Test viewer WMS GetFeatureInfo through proxy.php with correct layer names; check whether /descargar needs login."
+}

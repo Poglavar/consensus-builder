@@ -1,0 +1,72 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CA",
+ "regionCode": "PE",
+ "regionName": "Prince Edward Island",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-CA,en;q=0.9,fr-CA;q=0.8; cookie jar on",
+ "source": {
+  "sourceId": "ca-pe-summerside-property-data",
+  "name": "Summerside Property Data (Simple)",
+  "operator": "City of Summerside (ArcGIS Online org 'Cityofsside'); attribution 'Province of PEI'",
+  "scope": "City of Summerside (layer extent is a small area of western PEI)",
+  "endpoint": "https://services.arcgis.com/saEl5YeiAcYEyKvA/arcgis/rest/services/Property_Data_Simple/FeatureServer/0",
+  "method": "ArcGIS REST query",
+  "responseFormat": "Esri JSON",
+  "crs": "EPSG:4326 via outSR (native PEI Stereographic 2954)",
+  "reuseStatus": "Licence not read; layer also carries address fields, not requested."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "ca-pe-summerside-property-data",
+  "requestUrl": "https://services.arcgis.com/saEl5YeiAcYEyKvA/arcgis/rest/services/Property_Data_Simple/FeatureServer/0/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json&geometry=-63.80,46.39,-63.77,46.41",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": [
+   -63.8,
+   46.39,
+   -63.77,
+   46.41
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PID",
+  "responseFile": "PE-parcel-response.json",
+  "pagination": "ArcGIS resultRecordCount; maxRecordCount 2000",
+  "regionSampled": "Summerside"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "Municipal layer; the provincial PID parcel fabric (Province of PEI GIS / PEI Property Online) was not reachable: gov.pe.ca and princeedwardisland.ca returned 404/403 or proxy 502 from here.",
+ "subregionsVerified": [
+  "Summerside"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://www.princeedwardisland.ca/en/information/environment-water-and-climate-change/pei-open-data",
+   "observation": "403 Forbidden to our request (WAF), not verified."
+  },
+  {
+   "url": "https://www.gov.pe.ca/gis/rest/services",
+   "observation": "404."
+  },
+  {
+   "url": "https://gis.gov.pe.ca/arcgis/rest/services",
+   "observation": "proxy CONNECT 502."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services.arcgis.com/saEl5YeiAcYEyKvA/arcgis/rest/services/Property_Data_Simple/FeatureServer/0/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json&geometry=-63.80,46.39,-63.77,46.41",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "3 polygon parcels, PID only"
+  }
+ ],
+ "reuseStatus": "Not verified.",
+ "remainingUncertainty": "PEI provincial layer status unknown: 403/502 may be network/WAF, not a permanent negative.",
+ "nextStep": "Retry PEI open data portal; inspect Property Online viewer JS."
+}

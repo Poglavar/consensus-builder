@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:1174872",
+  "checkedAt": "2026-09-28",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {"url": "https://www.sindhzameen.gos.pk/", "observation": "Sindh Board of Revenue offers public cadastral survey maps and records, but its notice expressly prohibits unauthorized reproduction; no openly reusable parcel geometry feed is advertised."},
+    {"url": "https://bor.sindh.gov.pk/land-administration-revenue-management-information-system-larmis", "observation": "The provincial GIS program reports survey-number maps for 4,000 of 5,979 dehs, so even internal polygon coverage is not complete across Sindh."},
+    {"url": "https://bor.sindh.gov.pk/geodatabase", "observation": "Karachi state-land geodatabase project describes 72 of 93 dehs mapped in two districts, not a citywide public parcel service."}
+  ],
+  "requests": [
+    {"url": "https://www.sindhzameen.gos.pk/", "method": "GET", "httpStatus": null, "error": "Connection timed out after 20 seconds", "parcelRecordCount": null}
+  ],
+  "coverageAssessment": {"claimedScope": "Sindh provincial system with partial survey-number digitization", "verifiedOpenScope": "none", "countrywideVerified": false},
+  "remainingUncertainty": "The public portal may display individual map sheets, but neither Karachi-wide polygon coverage nor reuse rights are established.",
+  "nextStep": "Seek an expressly open, bounded parcel API or data release from Sindh BOR; test geometry and geographic coverage."
+}

@@ -1,0 +1,71 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "MD",
+ "regionName": "Maryland",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "source": {
+  "sourceId": "us-md-parcel-boundaries",
+  "name": "MD Parcel Boundaries (MD iMAP)",
+  "operator": "Maryland Department of Planning (MDP) / SDAT via MD iMAP",
+  "scope": "Statewide parcel boundaries",
+  "endpoint": "https://mdgeodata.md.gov/imap/rest/services/PlanningCadastre/MD_ParcelBoundaries/MapServer/0",
+  "method": "GET ArcGIS REST /query",
+  "responseFormat": "Esri JSON polygons (rings)",
+  "crs": "requested outSR=4326",
+  "reuseStatus": "Terms/licence text not read on the service; see publisher page."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-md-parcel-boundaries",
+  "requestUrl": "https://mdgeodata.md.gov/imap/rest/services/PlanningCadastre/MD_ParcelBoundaries/MapServer/0/query?where=ACCTID%3C%3E%27ROW%27+AND+ACCTID+IS+NOT+NULL&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-76.6130%2C39.2900%2C-76.6115%2C39.2910&outFields=ACCTID%2CJURSCODE",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   -76.613,
+   39.29,
+   -76.6115,
+   39.291
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "$.features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "ACCTID",
+  "responseFile": "MD-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount (ArcGIS)"
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-US,en;q=0.9; cookie jar kept; no headers-dependent change observed",
+ "regionWideClaimed": true,
+ "regionWideBasis": "Layer \"Parcel Boundaries\" in MD iMAP PlanningCadastre; copyright text \"MD iMAP, MDP, SDAT\".",
+ "subregionsVerified": [
+  "Baltimore City",
+  "Anne Arundel County (Annapolis)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://mdgeodata.md.gov/imap/rest/services/PlanningCadastre",
+   "observation": "MD iMAP directory lists MD_ParcelBoundaries and MD_PropertyData"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://mdgeodata.md.gov/imap/rest/services/PlanningCadastre/MD_ParcelBoundaries/MapServer/0/query?where=ACCTID%3C%3E%27ROW%27+AND+ACCTID+IS+NOT+NULL&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-76.6130%2C39.2900%2C-76.6115%2C39.2910&outFields=ACCTID%2CJURSCODE",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "3 parcel polygons with ACCTID (Baltimore City); an earlier unfiltered request returned right-of-way polygons with ~31 MB geometry, so ROW records were excluded"
+  },
+  {
+   "url": "https://mdgeodata.md.gov/imap/rest/services/PlanningCadastre/MD_ParcelBoundaries/MapServer/0/query?where=ACCTID%3C%3E%27ROW%27+AND+ACCTID+IS+NOT+NULL&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-76.4900%2C38.9780%2C-76.4885%2C38.9790&outFields=ACCTID%2CJURSCODE",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "Annapolis, Anne Arundel: 3 polygons"
+  }
+ ],
+ "reuseStatus": "Terms/licence text not read on the service; see publisher page.",
+ "remainingUncertainty": "Per-jurisdiction completeness not measured; layer has owner/address fields that were not requested. MD_PropertyData layer 0 is parcel points, not polygons.",
+ "nextStep": "Read MDP MDProperty View terms."
+}

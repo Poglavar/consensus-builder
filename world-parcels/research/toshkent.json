@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:117",
+  "queueRank": 117,
+  "name": "Toshkent (Tashkent)",
+  "country": "Uzbekistan",
+  "countryCode": "UZ",
+  "centerLatLon": [
+    41.2393518231547,
+    69.2589127379298
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://gov.uz/en/kadastr/pages/about",
+      "observation": "Cadastre Agency under the Ministry of Economy and Finance (HTTP 200); describes state cadastres and a geoportal to visualize cadastral data, no open endpoint stated."
+    },
+    {
+      "url": "https://kadastr.uz/en",
+      "observation": "Official agency site named in search results; unreachable from this client."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://kadastr.uz/en",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed"
+    },
+    {
+      "url": "https://geoportal.kadastr.uz",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed"
+    },
+    {
+      "url": "https://cadastre.uz/en",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed"
+    },
+    {
+      "url": "https://gov.uz/en/kadastr/pages/about",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "agency description only"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Uzbekistan state cadastre (Cadastre Agency), online scope unverified",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Agency hosts were unreachable, so no conclusion about an anonymous parcel service is possible.",
+  "nextStep": "Retry kadastr.uz and its geoportal later or from another network; inspect viewer requests for a parcel WFS/ArcGIS layer."
+}

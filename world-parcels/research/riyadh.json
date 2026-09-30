@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:52",
+  "queueRank": 52,
+  "name": "Ar-Riyāḑ (Riyadh)",
+  "country": "Saudi Arabia",
+  "countryCode": "SA",
+  "centerLatLon": [
+    24.6885868840551,
+    46.7206037028758
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://opendata.rcrc.gov.sa/explore/",
+      "observation": "Royal Commission for Riyadh City open data portal (Opendatasoft). Catalog API returned 35 datasets: census tables, metro, bus, services, none is a parcel layer."
+    },
+    {
+      "url": "https://my.gov.sa/en/content/gis",
+      "observation": "Saudi national portal page on GIS; returned 403 to this client."
+    },
+    {
+      "url": "https://data.gov.sa/",
+      "observation": "National open data portal; Ministry of Municipal, Rural Affairs and Housing (MOMRAH) datasets not reachable from this client."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://opendata.rcrc.gov.sa/api/explore/v2.1/catalog/datasets?limit=100",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "35 datasets, no parcel/plot/cadastre dataset; assessment: negative for this portal"
+    },
+    {
+      "url": "https://opendata.rcrc.gov.sa/explore/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "Catalog page"
+    },
+    {
+      "url": "https://my.gov.sa/en/content/gis",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html",
+      "assessment": "Blocked"
+    },
+    {
+      "url": "https://geoportal.rcrc.gov.sa/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Proxy tunnel failure (502); unverified"
+    },
+    {
+      "url": "https://data.gov.sa/Data/en/organization/momrah",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Connection reset / proxy tunnel failure from this client; not evidence of absence"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Riyadh%20parcels&f=json&num=5",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "ArcGIS Online search returned generic 'Parcel' web maps by individuals; none verified as official Riyadh cadastre"
+    },
+    {
+      "url": "https://gis.rega.gov.sa/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Proxy tunnel failure (502); guessed host, unverified"
+    },
+    {
+      "url": "https://mapservices.ecra.gov.sa/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Proxy tunnel failure (502); guessed host, unverified"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Saudi land registry / Real Estate General Authority / MOMRAH; no anonymous parcel service found",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Official Saudi parcel data likely sits behind MOMRAH/REGA/Balady services requiring accounts or not reachable here; no bounded polygon response obtained.",
+  "nextStep": "Look for a REGA/MOMRAH open dataset or documented feature service; retry unreachable hosts from another network."
+}

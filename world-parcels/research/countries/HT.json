@@ -1,0 +1,57 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "HT",
+ "country": "Haiti",
+ "checkedAt": "2026-09-29",
+ "status": "no_online_cadastre_found",
+ "cadastreAuthority": "No functioning national cadastre; land records fragmented (ONACA/ Direction Generale des Impots, notaries). CNIGS is the national geospatial centre",
+ "portalsFound": [
+  {
+   "url": "https://cnigs.ht/",
+   "observation": "CNIGS (Centre National de l'Information Geo-Spatiale) loads; sections projets/produits/haitidata; no parcel data"
+  },
+  {
+   "url": "https://cnigs.ht/site/haitidata",
+   "observation": "HaitiData catalogue page; no cadastre/parcel entry found in page text"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://cnigs.ht/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "portal"
+  },
+  {
+   "url": "https://cnigs.ht/site/haitidata",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "no parcel dataset matches"
+  },
+  {
+   "url": "https://onacah.gouv.ht",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/timeout from this environment (proxy returned no response)"
+  },
+  {
+   "url": "https://www.mtptc.gouv.ht/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "ministry site, nothing relevant"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "none",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Only page-text checks; HaitiData catalogue may list parcel layers in dynamic content (Port-au-Prince cadastre projects existed).",
+ "nextStep": "Query HaitiData GeoNode/CKAN API for cadastre/parcelle layers."
+}

@@ -1,0 +1,68 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "KZ",
+ "country": "Kazakhstan",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Committee for Land Management / AIS GZK (State Land Cadastre) and Public Cadastral Map (map.gov4c.kz, Unified State Real Estate Cadastre)",
+ "portalsFound": [
+  {
+   "url": "https://aisgzk.kz/arcgis/rest/services",
+   "observation": "Open ArcGIS 10.2 REST directory listing ~40 MapServer services (aisgzkSyti01_174 etc., layers G_/M_/Ned_ per region code; SR 32642)."
+  },
+  {
+   "url": "https://map.gov4c.kz/egkn/",
+   "observation": "Public cadastral map; connection failed via proxy."
+  },
+  {
+   "url": "https://aisgzk.kz/aisgzk/en/",
+   "observation": "AISGZK portal loads (200)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://aisgzk.kz/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "directory HTML (f=json returns HTML on this 10.2 server)"
+  },
+  {
+   "url": "https://aisgzk.kz/arcgis/rest/services/aisgzkSyti01_174/MapServer",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "layer 0 G_01_174 listed"
+  },
+  {
+   "url": "https://aisgzk.kz/arcgis/rest/services/aisgzkAgsData1/MapServer",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html",
+   "assessment": "listed service not found"
+  },
+  {
+   "url": "https://aisgzk.kz/arcgis/rest/services/aisgzkSyti01_174/MapServer/0/query (bbox 510000,5905000,510300,5905300 EPSG:32642, resultRecordCount=3)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "error page in Russian: cannot connect to remote server (backend down)"
+  },
+  {
+   "url": "https://map.gov4c.kz/egkn/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection failure"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "National land cadastre (per-region MapServers); public map for whole country",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Open-looking ArcGIS directory but query backend failed; unclear whether layers are parcels, and the mixed 404/error responses suggest partial outage. Not proof of absence.",
+ "nextStep": "Retry query later (try other regions, f=json variants, /export); test map.gov4c.kz."
+}

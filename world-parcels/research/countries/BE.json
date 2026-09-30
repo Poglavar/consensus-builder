@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "BE",
+  "country": "Belgium",
+  "checkedAt": "2026-09-29",
+  "status": "subnational_only",
+  "cadastreAuthority": "Federal: FPS Finance / General Administration of Patrimonial Documentation (cadastre); regional: Digital Flanders (GRB), SPW Wallonie, Paradigm Brussels (UrbIS)",
+  "portalsFound": [
+    {
+      "url": "https://geo.api.vlaanderen.be/GRB/wfs",
+      "observation": "Flanders GRB WFS, open, layer GRB:ADP (cadastral-parcel-based, CAPAKEY)"
+    },
+    {
+      "url": "https://geoservices.wallonie.be/arcgis/rest/services",
+      "observation": "Wallonia ArcGIS server, reachable; cadastral parcel layer not located in 3 folders checked (DONNEES_BASE has FDC only)"
+    },
+    {
+      "url": "https://geoservices-urbis.irisnet.be/geoserver/ows",
+      "observation": "Brussels UrbIS geoserver; GetCapabilities returned an exception report"
+    },
+    {
+      "url": "https://eservices.minfin.fgov.be/mymap/",
+      "observation": "Federal MyMap viewer (login/ForgeRock)"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geo.api.vlaanderen.be/GRB/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=GRB:ADP&count=3&outputFormat=application/json&bbox=4.35,51.21,4.352,51.212,EPSG:4326",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "3 Polygon features with CAPAKEY, NISCODE (Antwerp)"
+    },
+    {
+      "url": "https://geoservices.wallonie.be/arcgis/rest/services/DONNEES_BASE?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "no cadastral parcel service listed"
+    },
+    {
+      "url": "https://geoservices.wallonie.be/geoserver/wfs?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "assessment": "no cadastre feature type found"
+    },
+    {
+      "url": "https://eservices.minfin.fgov.be/ecad-web/api/",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html",
+      "assessment": "not found"
+    },
+    {
+      "url": "https://opendata.fin.belgium.be/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "default web server page"
+    }
+  ],
+  "verifiedParcelResponse": {
+    "sourceId": "be-vl-grb-adp",
+    "requestUrl": "https://geo.api.vlaanderen.be/GRB/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=GRB:ADP&count=3&outputFormat=application/json&bbox=4.35,51.21,4.352,51.212,EPSG:4326",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      4.35,
+      51.21,
+      4.352,
+      51.212
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "Polygon",
+    "closedRings": true,
+    "idField": "CAPAKEY",
+    "responseFile": null,
+    "pagination": "WFS startIndex/count",
+    "regionSampled": "Flanders (Antwerp) - regional scope only"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Flanders region only verified; federal cadastre not open API",
+    "regionsVerified": [
+      "Flanders"
+    ],
+    "nationwideVerified": false
+  },
+  "accessModel": "open",
+  "remainingUncertainty": "Wallonia (CADMAP) and Brussels parcel endpoints not located; federal FPS Finance cadastral plan (CadGIS/MyMap) likely login-gated or licensed, not confirmed.",
+  "nextStep": "Locate Wallonia CADMAP/Brussels parcel endpoints; check federal INSPIRE Cadastral Parcels download service."
+}

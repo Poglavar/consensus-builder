@@ -1,0 +1,90 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "ID",
+ "regionCode": "JI",
+ "regionName": "Jawa Timur",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "source": {
+  "sourceId": "id-big-satupeta-hak-milik",
+  "name": "Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000 - Jawa Timur",
+  "operator": "Kementerian ATR/BPN data republished by Badan Informasi Geospasial (BIG) Satu Peta",
+  "scope": "partial: sparse Hak Milik land-right polygons, patchy coverage",
+  "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/12",
+  "method": "GET /query",
+  "responseFormat": "ArcGIS JSON (f=json)",
+  "crs": "EPSG:4326",
+  "reuseStatus": "licence/terms not read; layer copyrightText empty"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "id-big-satupeta-hak-milik",
+  "requestUrl": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/12/query?where=1%3D1&outFields=objectid,kecamatan,kelurahan,tipehak,nib&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   112.72868,
+   -7.27458,
+   112.73006,
+   -7.27017
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "nib (unique only with kelurahan; can be blank); objectid is the OID",
+  "responseFile": "JI-parcel-response.json",
+  "pagination": "ArcGIS resultRecordCount / resultOffset (maxRecordCount 1000)"
+ },
+ "headersUsed": {
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+  "Accept": "application/json,text/plain,*/*",
+  "Accept-Language": "id-ID,id;q=0.9,en;q=0.8",
+  "Referer": "https://satupeta.big.go.id/",
+  "cookieJar": true
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "Publisher names the sublayer after the province but states no coverage claim; observed coverage is patchy. layer extent covers most of the province but sampled only Surabaya",
+ "subregionsVerified": [
+  "Kota Surabaya (Tegalsari/Wonorejo)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer",
+   "observation": "ArcGIS 10.81 MapServer; group layer 10 with 15 province sublayers (NTB 11, Jatim 12, DIY 13, Kalbar 14, Sulbar 15, Kaltara 16, Aceh 17, Sultra 18, Maluku 19, Kaltim 20, Jabar 21, Bali 22, Banten 23, Kepri 24, Jateng 25)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "sublayer list: layer 10 group has sublayer 12 = Jawa Timur"
+  },
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/12?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "fields objectid,kecamatan,kelurahan,tipehak,nib; copyrightText empty; maxRecordCount 1000"
+  },
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/12/query?where=1%3D1&outFields=objectid,kecamatan,kelurahan,tipehak,nib&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "3 polygon features, no spatial filter (count 3)"
+  },
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/12/query (envelope [112.729, -7.275, 112.731, -7.2735], inSR 4326, count 3)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygon features"
+  }
+ ],
+ "reuseStatus": "not read",
+ "remainingUncertainty": "Coverage extent and currency unknown; only titled Hak Milik/HGB/HP parcels; layer fields kecamatan/kelurahan are administrative names only. BHUMI full cadastre is token-gated.",
+ "nextStep": "Read BIG/ATR-BPN reuse terms; sample more boxes to map coverage."
+}

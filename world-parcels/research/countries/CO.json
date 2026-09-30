@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "CO",
+  "country": "Colombia",
+  "checkedAt": "2026-09-29",
+  "status": "subnational_only",
+  "cadastreAuthority": "Instituto Geografico Agustin Codazzi (IGAC) is the national cadastral authority; Bogota (UAECD), Medellin and Cali run their own decentralised cadastres",
+  "portalsFound": [
+    {
+      "url": "https://serviciosgis.catastrobogota.gov.co/arcgis/rest/services/catastro/lote/MapServer",
+      "observation": "Bogota UAECD ArcGIS lot layer, open, verified in city evidence (bogota.json)."
+    },
+    {
+      "url": "https://www.medellin.gov.co/servidormapas/rest/services/ServiciosCatastro/ConsultaOperadorCatastral/MapServer",
+      "observation": "Medellin ArcGIS cadastral service, verified in city evidence (medellin.json); needs browser-style User-Agent."
+    },
+    {
+      "url": "https://ws-idesc.cali.gov.co/geoserver/catastro/ows",
+      "observation": "Cali IDESC GeoServer WFS cat_bas_terrenos, verified in city evidence (cali.json); carries 30-digit national predial number (npn)."
+    },
+    {
+      "url": "https://geoportal.igac.gov.co/",
+      "observation": "IGAC geoportal returned HTTP 500 / connection reset on all attempts this run."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geoportal.igac.gov.co/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset by peer"
+    },
+    {
+      "url": "https://srvags.igac.gov.co/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy tunnel 502"
+    },
+    {
+      "url": "https://geoportal.igac.gov.co/",
+      "method": "GET",
+      "httpStatus": 500,
+      "contentType": "text/html",
+      "assessment": "HTTP 500 error page (Oracle-style)"
+    },
+    {
+      "url": "https://www.igac.gov.co/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "HTTP 200 wrapper but body was a 500 error page"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "IGAC covers the country except decentralised cadastres (Bogota, Medellin, Cali, Antioquia dept.)",
+    "regionsVerified": [
+      "Bogota (city evidence)",
+      "Medellin (city evidence)",
+      "Cali (city evidence)"
+    ],
+    "nationwideVerified": false
+  },
+  "accessModel": "open",
+  "remainingUncertainty": "No national IGAC endpoint verified because IGAC hosts were unreachable (temporary, not proof of absence). Municipal services verified separately in city files; they are different schemas/operators. Licence not read.",
+  "nextStep": "Retry IGAC geoportal/ArcGIS (Consulta catastral / geoservicios) later; check datos.gov.co and Antioquia departmental cadastre."
+}

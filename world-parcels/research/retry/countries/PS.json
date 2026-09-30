@@ -1,0 +1,120 @@
+{
+  "kind": "country",
+  "key": "PS",
+  "checkedAt": "2026-09-30",
+  "previousStatus": "temporarily_unavailable",
+  "newStatus": "national_online_cadastre_verified_sample",
+  "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: ar-PS,ar;q=0.9,en;q=0.8",
+  "changedByHeaders": true,
+  "foundViaViewerInspection": true,
+  "verifiedParcelResponse": {
+    "sourceId": "geomolg-parcels-all-pla",
+    "requestUrl": "https://orthophotos.geomolg.ps/adaptor/rest/services/Parcels_All_PLA/MapServer/0/query?f=json&where=1%3D1&outFields=OBJECTID,GOV_E,VILLAGE_E,BLOCK_NO,Plot_NO,Shape_Area&returnGeometry=true&resultRecordCount=3&outSR=4326&token=<PUBLIC_TOKEN>",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json",
+    "spatialTestAreaLonLat": "Jenin governorate (Al Jalama, ~35.32E 32.51N) and Hebron governorate (Dura, ~35.0E 31.52N)",
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon (rings)",
+    "closedRings": true,
+    "idField": "OBJECTID; Plot_NO/BLOCK_NO/VILLAGE_E",
+    "responseFile": "research/retry/countries/PS-parcel-response.json",
+    "pagination": "resultRecordCount (maxRecordCount 2000)",
+    "regionSampled": "Jenin and Hebron governorates (West Bank)"
+  },
+  "source": {
+    "sourceId": "geomolg-parcels-all-pla",
+    "name": "Parcels_All_PLA MapServer layer 0 'Parcels - Registered - Source: PLA'",
+    "operator": "GeoMolg (Palestinian Ministry of Local Government geospatial portal), data source Palestinian Land Authority (PLA)",
+    "scope": "registered parcels in 11 West Bank governorates (Bethlehem, Jerusalem, Jericho, Tulkarm, Ramallah, Qalqilya, Salfit, Tubas, Jenin, Nablus, Hebron); no Gaza governorates in distinct list",
+    "endpoint": "https://orthophotos.geomolg.ps/adaptor/rest/services/Parcels_All_PLA/MapServer/0",
+    "method": "GET ArcGIS REST query with <PUBLIC_TOKEN>",
+    "responseFormat": "Esri JSON",
+    "crs": "native EPSG:28191 (Palestine 1923 Grid); outSR=4326 accepted",
+    "reuseStatus": "not read. Token is embedded in the public GeoMolg 'ParcelSearch' Geocortex site config; issued by GeoMolg; terms unknown, do not assume it is meant for third-party use"
+  },
+  "requests": [
+    {
+      "url": "https://www.pla.pna.ps/",
+      "method": "GET",
+      "httpStatus": 301,
+      "contentType": "text/html",
+      "assessment": "with browser headers now redirects to /ar (before: anti-bot loader); /en returns 403 JSON"
+    },
+    {
+      "url": "https://geomolg.ps/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "meta refresh to /L5/index.html?viewer=A3.V1 (Geocortex Essentials HTML5 viewer)"
+    },
+    {
+      "url": "https://geomolg.ps/Geocortex/Essentials/REST/sites?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "lists 21 sites incl. A3, Gaza, ParcelSearch"
+    },
+    {
+      "url": "https://geomolg.ps/Geocortex/Essentials/REST/sites/A3?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "body is 403 'current user cannot access' (login needed for main viewer site); same for Gaza"
+    },
+    {
+      "url": "https://geomolg.ps/Geocortex/Essentials/REST/sites/ParcelSearch/map?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "anonymous; map services Parcels_All_PLA and CommunitiesLandBoundary_04 with connection string carrying a token (redacted)"
+    },
+    {
+      "url": "https://orthophotos.geomolg.ps/adaptor/rest/services/Parcels_All_PLA/MapServer?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "without token: error 499 Token Required; with <PUBLIC_TOKEN>: service info, layer 0 polygon"
+    },
+    {
+      "url": "https://orthophotos.geomolg.ps/adaptor/rest/services/Parcels_All_PLA/MapServer/0/query?f=json&where=1%3D1&outFields=OBJECTID,GOV_E,VILLAGE_E,BLOCK_NO,Plot_NO,Shape_Area&returnGeometry=true&resultRecordCount=3&outSR=4326&token=<PUBLIC_TOKEN>",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "3 polygon parcels, Al Jalama (Jenin)"
+    },
+    {
+      "url": "same with where=GOV_E='Hebron Governorate'",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "3 polygon parcels, Dura (Hebron)"
+    },
+    {
+      "url": "same returnDistinctValues GOV_E",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "11 governorates, all West Bank"
+    },
+    {
+      "url": "geomolg.ps/arcgis/rest/services, gis.geomolg.ps, www.gis.gov.ps, opendata.ps, pna.ps",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "",
+      "assessment": "404 or connection failed"
+    }
+  ],
+  "geoBlockSuspected": false,
+  "notes": "New: guessed REST paths earlier were wrong. The GeoMolg viewer's ParcelSearch site returns a public config with a tokenised ArcGIS service; token-based query returns parcel polygons. Only West Bank, Gaza not covered by this layer (Gaza site itself requires login). Schema has governorate/village/block/plot fields, no owner fields queried. changedByHeaders true only in that pla.pna.ps returned a redirect page instead of the bot loader; the parcel service itself is unrelated to headers (bare curl also worked).",
+  "nextStep": "Read GeoMolg/PLA terms of use; sample remaining governorates; check whether token is long-lived or rotated; find Gaza parcel source.",
+  "coverageAssessment": {
+    "claimedScope": "West Bank registered parcels (PLA)",
+    "regionsVerified": [
+      "Jenin Governorate",
+      "Hebron Governorate"
+    ],
+    "nationwideVerified": false
+  }
+}

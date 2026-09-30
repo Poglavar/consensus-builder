@@ -1,0 +1,62 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "NI",
+ "country": "Nicaragua",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Instituto Nicaragüense de Estudios Territoriales (INETER) - Dirección General de Catastro Fiscal; Intendencia de la Propiedad",
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://www.ineter.gob.ni/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://www.dgcatastro.gob.ni/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://catastro.ineter.gob.ni",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://sig.ineter.gob.ni",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://www.dgi.gob.ni",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "tax authority home only, no parcel service"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Nicaragua%20catastro",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 hits"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Fiscal cadastre (INETER); coverage partial",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "INETER hosts unreachable from proxy; nothing established either way.",
+ "nextStep": "Retry INETER SIG/IDE hosts later."
+}

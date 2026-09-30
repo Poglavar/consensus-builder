@@ -1,0 +1,92 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "id": "denr_parcel_data.25010",
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        121.01581604,
+        14.55681734
+       ],
+       [
+        121.01585788,
+        14.5566043
+       ],
+       [
+        121.01555258,
+        14.55654738
+       ],
+       [
+        121.01551074,
+        14.55676042
+       ],
+       [
+        121.01581604,
+        14.55681734
+       ]
+      ]
+     ]
+    ]
+   },
+   "geometry_name": "wkb_geometry",
+   "properties": {
+    "lotnumber": "11660",
+    "shape_length": 119.101902489116,
+    "shape_area": 863.198046814009
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "denr_parcel_data.25011",
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        121.01585788,
+        14.5566043
+       ],
+       [
+        121.01589971,
+        14.55639127
+       ],
+       [
+        121.01559441,
+        14.55633434
+       ],
+       [
+        121.01555258,
+        14.55654738
+       ],
+       [
+        121.01585788,
+        14.5566043
+       ]
+      ]
+     ]
+    ]
+   },
+   "geometry_name": "wkb_geometry",
+   "properties": {
+    "lotnumber": "11661",
+    "shape_length": 119.10170599917,
+    "shape_area": 863.194648083316
+   }
+  }
+ ],
+ "totalFeatures": "unknown",
+ "numberReturned": 2,
+ "timeStamp": "2026-09-30T09:31:34.811Z",
+ "crs": {
+  "type": "name",
+  "properties": {
+   "name": "urn:ogc:def:crs:EPSG::4326"
+  }
+ }
+}

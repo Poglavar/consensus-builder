@@ -1,0 +1,76 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "NL",
+ "country": "Netherlands",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Kadaster (Het Kadaster), statutory national cadastre; open data via PDOK (BRK Kadastrale Kaart)",
+ "portalsFound": [
+  {
+   "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1_0",
+   "observation": "OGC API Features, collections incl. perceel; anonymous access, no key."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v5_0/collections/perceel/items",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html",
+   "assessment": "wrong version path (guess)"
+  },
+  {
+   "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1_0?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "landing page, links to /ogc/v1"
+  },
+  {
+   "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1_0/collections/perceel/items?f=json&limit=3&bbox=4.8990,52.3720,4.9010,52.3735",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "3 perceel MultiPolygons, Amsterdam"
+  },
+  {
+   "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1_0/collections/perceel/items?f=json&limit=3&bbox=6.5650,53.2180,6.5680,53.2200",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "3 perceel MultiPolygons, Groningen"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "nl-pdok-brk-kadastrale-kaart",
+  "requestUrl": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1_0/collections/perceel/items?f=json&limit=3&bbox=4.8990,52.3720,4.9010,52.3735",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/geo+json",
+  "spatialTestAreaLonLat": [
+   4.899,
+   52.372,
+   4.901,
+   52.3735
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "identificatie_lokaal_id",
+  "responseFile": "research/countries/NL-parcel-response.json",
+  "pagination": "OGC API limit/next links; CRS via bbox-crs/crs params",
+  "regionSampled": "Amsterdam (also Groningen)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "All cadastral parcels in the Netherlands (BRK kadastrale kaart)",
+  "regionsVerified": [
+   "Amsterdam (bbox 4.899,52.372)",
+   "Groningen (bbox 6.565,53.218)"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Licence not read (PDOK publishes BRK Kadastrale Kaart as open data; confirm terms before reuse). Attributes are parcel identifiers/area, no owner data.",
+ "nextStep": "Promote to registry; record collection list and CRS options."
+}

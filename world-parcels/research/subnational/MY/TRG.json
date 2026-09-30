@@ -1,0 +1,102 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MY",
+ "regionCode": "TRG",
+ "regionName": "Terengganu",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: ms-MY,ms;q=0.9,en;q=0.8; cookie jar on; Referer = viewer origin",
+ "source": {
+  "sourceId": "my-terengganu-ugist-lot",
+  "name": "DC0040_Land_Parcel_or_Lot_2023 (dataset, REGION type), SuperMap iServer data service data-UGIST",
+  "operator": "Terengganu state GIS portal (SuperMap iPortal/iServer at gis.terengganu.gov.my); operating unit not stated in responses",
+  "scope": "Terengganu state, 628,017 lot polygons (dataset recordCount)",
+  "endpoint": "https://gis.terengganu.gov.my/iserver/services/data-UGIST/rest/data",
+  "method": "POST featureResults.json getFeatureMode=SQL (SuperMap REST)",
+  "responseFormat": "SuperMap JSON (geometry.points/parts)",
+  "crs": "EPSG:3857 (mercator)",
+  "reuseStatus": "unknown; no licence text read; dataset isReadOnly true"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "my-terengganu-ugist-lot",
+  "requestUrl": "https://gis.terengganu.gov.my/iserver/services/data-UGIST/rest/data/featureResults.json?returnContent=true&fromIndex=0&toIndex=2",
+  "method": "POST",
+  "httpStatus": 201,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": "attribute-filtered first 3 records per district: Kemaman (SMID>0) and Besut (DAERAH='BESUT')",
+  "parcelRecordCount": 6,
+  "recordListPath": "features",
+  "geometryType": "REGION (polygon)",
+  "closedRings": true,
+  "idField": "UPI (also SMID, LOT)",
+  "responseFile": "research/subnational/MY/TRG-parcel-response.json",
+  "pagination": "fromIndex/toIndex, maxFeatures",
+  "regionSampled": "Kemaman and Besut districts (southern and northern ends of the state)"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Dataset recordCount 628,017 with bounds spanning the state (x 11398170-11542805, y 432375-664997 EPSG:3857); Besut alone 88,902. Publisher gives no explicit completeness statement.",
+ "subregionsVerified": [
+  "Kemaman",
+  "Besut"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://gis.terengganu.gov.my/",
+   "observation": "SuperMap iPortal web UI; anonymous /iportal/web/maps.json and services.json answered 200; /iserver/services.json lists data-UGIST and data-BuiltEnvironment (found by inspecting the portal, not guessed)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gis.terengganu.gov.my/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "iPortal shell"
+  },
+  {
+   "url": "https://gis.terengganu.gov.my/iserver/services.json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "11 services"
+  },
+  {
+   "url": "https://gis.terengganu.gov.my/iserver/services/data-UGIST/rest/data/datasources/192_168_3_72_5432_mercator_3857/../datasources.json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "2 datasources"
+  },
+  {
+   "url": "https://gis.terengganu.gov.my/iserver/services/data-UGIST/rest/data/datasources/192_168_3_72_5432_mercator_3857/datasets/DC0040_Land_Parcel_or_Lot_2023_3857.json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "recordCount 628017, type REGION"
+  },
+  {
+   "url": "https://gis.terengganu.gov.my/iserver/services/data-UGIST/rest/data/datasources/192_168_3_72_5432_mercator_3857/datasets/DC0040_Land_Parcel_or_Lot_2023_3857/fields.json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "fields smid, lot, pa, upi, daerah, status, id; only SMID, LOT, UPI, DAERAH requested"
+  },
+  {
+   "url": "https://gis.terengganu.gov.my/iserver/services/data-UGIST/rest/data/featureResults.json",
+   "method": "POST",
+   "httpStatus": 201,
+   "contentType": "application/json",
+   "assessment": "3 closed polygons Kemaman; totalCount 628017"
+  },
+  {
+   "url": "same, DAERAH='BESUT'",
+   "method": "POST",
+   "httpStatus": 201,
+   "contentType": "application/json",
+   "assessment": "3 closed polygons Besut; totalCount 88902"
+  }
+ ],
+ "reuseStatus": "unknown; no licence text read",
+ "remainingUncertainty": "Licence and update cadence unknown; 2023 vintage by dataset name. Portal is anonymous but run for state agencies; terms not read.",
+ "nextStep": "Read portal terms; test remaining districts if needed."
+}

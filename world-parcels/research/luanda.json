@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:2240449",
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "ao-arcgis-luanda-agt-property-polygons",
+    "requestUrl": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0/query?geometry=%7B%22xmin%22%3A13.2330%2C%22ymin%22%3A-8.8375%2C%22xmax%22%3A13.2350%2C%22ymax%22%3A-8.8360%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outSR=4326&outFields=OBJECTID,PredioT,Municipio,Comuna&returnGeometry=true&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "spatialTestAreaLonLat": [
+      13.233,
+      -8.8375,
+      13.235,
+      -8.836
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "OBJECTID (also ID_AGT, ID_GGPEN present but not sampled)",
+    "responseFile": "luanda-parcels-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true; maxRecordCount=2000; layer count 2,239,859",
+    "note": "Only non-personal fields were requested; the layer also exposes tax-ID type and owner-quality style fields that were deliberately not saved."
+  },
+  "portalsFound": [
+    {
+      "url": "https://www.igca.gov.ao/",
+      "observation": "Official Instituto Geografico e Cadastral de Angola site (HTTP 200). Homepage lists surveys, map sales and a land-rights concession window, with no geoportal, service endpoint or open data link and no licence text."
+    },
+    {
+      "url": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer",
+      "observation": "Anonymous ArcGIS Online FeatureServer, owner account ANGOLA_GGPEN, found via ArcGIS Online search. Polygon layer named for AGT (likely the tax authority), fields ID_AGT, Municipio, Comuna, Bairro, PredioT; 2,239,859 features. The publisher's identity, authority and reuse terms are NOT confirmed: item description and copyright fields are empty."
+    },
+    {
+      "url": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_Nova_gdb/FeatureServer",
+      "observation": "Sibling polygon layer with the same schema and a much larger extent; only its metadata was read, not queried."
+    },
+    {
+      "url": "https://services3.arcgis.com/FFbsDavSuoAXfNla/arcgis/rest/services/Lotes_KK5800/FeatureServer",
+      "observation": "Small housing-estate lot layer (Lotes_KK5800, Quadra/N_Lote fields, extent about 2 x 4 km near Luanda); metadata only, not a citywide source."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "geometryType": "esriGeometryPolygon",
+      "maxRecordCount": 2000,
+      "assessment": "layer description only; not counted as verification"
+    },
+    {
+      "url": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0/query?geometry=%7B%22xmin%22%3A13.2330%2C%22ymin%22%3A-8.8375%2C%22xmax%22%3A13.2350%2C%22ymax%22%3A-8.8360%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outSR=4326&outFields=OBJECTID,PredioT,Municipio,Comuna&returnGeometry=true&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "parcelRecordCount": 3,
+      "geometryType": "esriGeometryPolygon",
+      "assessment": "verified nonempty parcel-like polygons in the Maianga municipality test area"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "unstated; layer extent covers roughly Luanda province east to about 19 degrees E, and attributes name Provincia/Municipio/Comuna",
+    "verifiedOpenScope": "three polygons near central Luanda (Maianga) in a bounded sample",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The publisher is not shown to be an Angolan government body, and no licence or terms were visible. Polygons look like property records but may be tax-registry capture rather than surveyed cadastre; the layer advertises edit capabilities (not tested) and exposes potentially personal attributes. Completeness, currency and stability of the URL are unknown. An anonymous third-party hosted layer must not be treated as an official open cadastre.",
+  "nextStep": "Identify the layer's publisher (AGT or another agency) and its terms, look for an official IGCA or AGT service, and only then decide whether the endpoint may be registered for runtime use."
+}

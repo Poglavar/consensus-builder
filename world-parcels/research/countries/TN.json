@@ -1,0 +1,48 @@
+{
+ "country": "Tunisia",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Office de la Topographie et du Cadastre (OTC) and Conservation de la Propriete Fonciere (Agence Fonciere)",
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://www.cnct.nat.tn/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed (502) / no response; host unreachable from this environment"
+  },
+  {
+   "url": "https://www.opf.nat.tn/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed (502) / no response; host unreachable from this environment"
+  },
+  {
+   "url": "https://www.ocld.nat.tn/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed (502) / no response; host unreachable from this environment"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Tunisia+cadastre+parcelle&f=json&num=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "zero results"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "unknown",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "All probed .nat.tn hosts unreachable; authority names from general knowledge; no open service located.",
+ "nextStep": "Retry from another network; check OTC (otc.nat.tn) online cadastre viewer and any WMS.",
+ "schemaVersion": 1,
+ "countryCode": "TN",
+ "checkedAt": "2026-09-29"
+}

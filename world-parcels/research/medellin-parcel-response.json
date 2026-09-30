@@ -1,0 +1,215 @@
+{
+ "displayFieldName": "cbml",
+ "fieldAliases": {
+  "objectid": "OBJECTID",
+  "cbml": "cbml",
+  "tipo_lote": "tipo_lote",
+  "anotaciones": "anotaciones",
+  "numero_edificacion": "numero_edificacion",
+  "area_lote": "area_lote",
+  "relacion_superficie": "relacion_superficie",
+  "longitud": "longitud",
+  "latitud": "latitud",
+  "mz_igac": "mz_igac",
+  "subtipo_lote": "subtipo_lote",
+  "st_area(shape)": "st_area(shape)",
+  "st_perimeter(shape)": "st_perimeter(shape)",
+  "x_origen_nacional": "x_origen_nacional",
+  "y_origen_nacional": "y_origen_nacional",
+  "juridica_predio": "juridica_predio",
+  "numero_predial_nacional": "numero_predial_nacional",
+  "condicion_predio": "condicion_predio",
+  "streetview": "streetview"
+ },
+ "geometryType": "esriGeometryPolygon",
+ "spatialReference": {
+  "wkid": 4326,
+  "latestWkid": 4326
+ },
+ "features": [
+  {
+   "attributes": {
+    "objectid": 43891,
+    "cbml": "10190160010",
+    "tipo_lote": "N",
+    "anotaciones": null,
+    "numero_edificacion": 0,
+    "area_lote": 109.0,
+    "relacion_superficie": "0",
+    "longitud": -75.57078152,
+    "latitud": 6.24807366,
+    "mz_igac": "050010100101900160010",
+    "subtipo_lote": 1,
+    "st_area(shape)": 108.75178747433893,
+    "st_perimeter(shape)": 40.937737606837416,
+    "x_origen_nacional": 4715644.32814571,
+    "y_origen_nacional": 2249095.10015,
+    "juridica_predio": null,
+    "numero_predial_nacional": null,
+    "condicion_predio": 9,
+    "streetview": "https://www.google.com/maps?cbll=6.24807366,-75.57078152&cbp=12,90,0,0,5&layer=c"
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       -75.57071991349403,
+       6.24810041435449
+      ],
+      [
+       -75.57075074503845,
+       6.248014095612438
+      ],
+      [
+       -75.5708433434736,
+       6.24804689708166
+      ],
+      [
+       -75.5708176139939,
+       6.248117328603974
+      ],
+      [
+       -75.57079463085861,
+       6.248128140903641
+      ],
+      [
+       -75.57071991349403,
+       6.24810041435449
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "attributes": {
+    "objectid": 43984,
+    "cbml": "10190160004",
+    "tipo_lote": "N",
+    "anotaciones": null,
+    "numero_edificacion": 0,
+    "area_lote": 100.0,
+    "relacion_superficie": "0",
+    "longitud": -75.57079232,
+    "latitud": 6.24783044,
+    "mz_igac": "050010100101900160004",
+    "subtipo_lote": 1,
+    "st_area(shape)": 99.5806570905655,
+    "st_perimeter(shape)": 51.6719107473205,
+    "x_origen_nacional": 4715643.00141139,
+    "y_origen_nacional": 2249068.20465,
+    "juridica_predio": null,
+    "numero_predial_nacional": null,
+    "condicion_predio": 0,
+    "streetview": "https://www.google.com/maps?cbll=6.24783044,-75.57079232&cbp=12,90,0,0,5&layer=c"
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       -75.57074869698135,
+       6.247882385033934
+      ],
+      [
+       -75.57077066631896,
+       6.247821597754962
+      ],
+      [
+       -75.57080212080672,
+       6.247734632260645
+      ],
+      [
+       -75.57084594513273,
+       6.2477507982876475
+      ],
+      [
+       -75.5708139740887,
+       6.247839289700634
+      ],
+      [
+       -75.57079730624115,
+       6.247885437334787
+      ],
+      [
+       -75.57078454117111,
+       6.24788065563479
+      ],
+      [
+       -75.57076960740817,
+       6.247921687581929
+      ],
+      [
+       -75.57076574087581,
+       6.247920278024911
+      ],
+      [
+       -75.57073857650094,
+       6.24791037634755
+      ],
+      [
+       -75.57074377711936,
+       6.247895987628931
+      ],
+      [
+       -75.57074869698135,
+       6.247882385033934
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "attributes": {
+    "objectid": 44293,
+    "cbml": "10070130014",
+    "tipo_lote": "L",
+    "anotaciones": null,
+    "numero_edificacion": 0,
+    "area_lote": 25.0,
+    "relacion_superficie": "0",
+    "longitud": -75.56949573,
+    "latitud": 6.24707137,
+    "mz_igac": "050010100100700130014",
+    "subtipo_lote": 1,
+    "st_area(shape)": 24.620870608033144,
+    "st_perimeter(shape)": 21.97176959271204,
+    "x_origen_nacional": 4715786.10276342,
+    "y_origen_nacional": 2248983.5439,
+    "juridica_predio": null,
+    "numero_predial_nacional": null,
+    "condicion_predio": 0,
+    "streetview": "https://www.google.com/maps?cbll=6.24707137,-75.56949573&cbp=12,90,0,0,5&layer=c"
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       -75.56945952582988,
+       6.247077111135392
+      ],
+      [
+       -75.5694644024786,
+       6.247062421130687
+      ],
+      [
+       -75.56953486001876,
+       6.247053907457563
+      ],
+      [
+       -75.569531618652,
+       6.247065633091446
+      ],
+      [
+       -75.56952272755977,
+       6.247097848639016
+      ],
+      [
+       -75.56945952582988,
+       6.247077111135392
+      ]
+     ]
+    ]
+   }
+  }
+ ],
+ "exceededTransferLimit": true
+}

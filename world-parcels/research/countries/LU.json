@@ -1,0 +1,81 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "LU",
+ "country": "Luxembourg",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Administration du cadastre et de la topographie (ACT), via Geoportail.lu INSPIRE services",
+ "portalsFound": [
+  {
+   "url": "https://wms.inspire.geoportail.lu/geoserver/cp/ows",
+   "observation": "INSPIRE Cadastral Parcels WFS (GeoServer), layer cp:CP.CadastralParcel, open, no credentials; totalFeatures 717208 in reply."
+  },
+  {
+   "url": "https://geoportail.lu/",
+   "observation": "National geoportal (302 redirect)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://wms.inspire.geoportail.lu/geoserver/cp/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection failed (flaky tunnel)"
+  },
+  {
+   "url": "https://data.public.lu/api/1/datasets/?q=cadastre&page_size=3",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable"
+  },
+  {
+   "url": "https://wms.inspire.geoportail.lu/geoserver/cp/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp:CP.CadastralParcel&count=3&outputFormat=application/json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "3 polygon parcels, closed rings, EPSG:3035, three communes ~25 km apart"
+  },
+  {
+   "url": "https://wms.inspire.geoportail.lu/geoserver/cp/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp:CP.CadastralParcel&count=3&outputFormat=application/json&srsName=EPSG:4326&bbox=6.1290,49.6110,6.1310,49.6125,EPSG:4326",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection failed on 4 retries (bbox-filtered variant not verified)"
+  },
+  {
+   "url": "https://wms.inspire.geoportail.lu/geoserver/cp/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp:CP.CadastralParcel&count=3&outputFormat=application/json&startIndex=60000",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection failed"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "lu-act-inspire-cp-wfs",
+  "requestUrl": "https://wms.inspire.geoportail.lu/geoserver/cp/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp:CP.CadastralParcel&count=3&outputFormat=application/json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": null,
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "inspireid_identifier_localid",
+  "responseFile": "LU-parcel-response.json",
+  "pagination": "WFS count/startIndex",
+  "regionSampled": "first 3 features unfiltered; parcels in three distinct cadastral sections (sections 036B, 119A, 124A), x/y in EPSG:3035 spanning ~28 km x ~26 km; no bbox test area (bbox variant failed)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "National INSPIRE cadastral parcel dataset (717208 features reported)",
+  "regionsVerified": [
+   "three distinct communes/sections across Luxembourg, same layer/schema"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Bbox-filtered query not confirmed (connection failures); licence terms not read; nationwide flag rests on totalFeatures plus spread of 3 samples.",
+ "nextStep": "Retry bbox query with srsName EPSG:3035/4326; read data.public.lu licence."
+}

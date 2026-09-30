@@ -1,0 +1,45 @@
+{
+ "kind": "city",
+ "key": "shenzhen",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "no_verified_sample_candidate_citywide",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: zh-CN (cookie jar used)",
+ "changedByHeaders": "Inspect viewer from a permitted China-region browser session.",
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://pnr.sz.gov.cn/d-djtcx/djtcx/index.html",
+   "method": "GET",
+   "httpStatus": 412,
+   "contentType": "text/html",
+   "assessment": "Same anti-bot 412 challenge with full headers and cookie jar; not bypassed"
+  },
+  {
+   "url": "https://pnr.sz.gov.cn/",
+   "method": "GET",
+   "httpStatus": 412,
+   "contentType": "text/html",
+   "assessment": "Same 412 challenge"
+  },
+  {
+   "url": "https://opendata.sz.gov.cn/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Municipal open-data portal loads; no cadastral parcel dataset located"
+  },
+  {
+   "url": "https://opendata.sz.gov.cn/api/29200_00403601/1/service.xhtml",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xhtml+xml",
+   "assessment": "JSON error 'appKey cannot be empty': portal APIs need a registered key (dataset id was a probe, not a parcel dataset)"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "412 challenge only from this network on pnr.sz.gov.cn; consistent with CN.json.",
+ "nextStep": "No change; open-data API needs a key and the viewer is behind an anti-bot challenge."
+}

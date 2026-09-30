@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:50",
+  "queueRank": 50,
+  "name": "Johannesburg",
+  "country": "South Africa",
+  "countryCode": "ZA",
+  "centerLatLon": [
+    -26.1204492874788,
+    27.8600917239307
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_city_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "za-giscoe-erven",
+    "requestUrl": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1/query?where=1%3D1&geometry=%7B%22xmin%22%3A27.859%2C%22ymin%22%3A-26.1215%2C%22xmax%22%3A27.861%2C%22ymax%22%3A-26.12%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CSG21KEY%2CPROPTYPE%2CMaj_Rgn_Nme&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      27.859,
+      -26.1215,
+      27.861,
+      -26.12
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "SG21KEY (21-character Surveyor-General code)",
+    "responseFile": "johannesburg-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true; maxRecordCount=1000"
+  },
+  "source": {
+    "sourceId": "za-giscoe-erven",
+    "name": "South Africa Cadastre (Erven layer), GISCOE",
+    "operator": "Esri South Africa (GISCOE); underlying data is the Chief Surveyor-General national cadastral layer (per its service description; provenance not confirmed)",
+    "scope": "South Africa erven, holdings and farm portions (claimed); verified only around Johannesburg (two sites)",
+    "endpoint": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1",
+    "method": "GET ArcGIS query",
+    "responseFormat": "Esri JSON",
+    "crs": "EPSG:4326 (outSR)",
+    "reuseStatus": "not reviewed; third-party hosted copy, terms and currency unknown"
+  },
+  "portalsFound": [
+    {
+      "url": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer",
+      "observation": "Esri South Africa public MapServer: 'Cadastral Parcels of South Africa including erven, holdings and farm portions'; layer 1 Erven, minScale 18055."
+    },
+    {
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer",
+      "observation": "Another host: 'National Cadastral Layer, Custodian Chief Surveyor General' (service description reachable, not queried)."
+    },
+    {
+      "url": "https://eservices.joburg.org.za/onlinemaps",
+      "observation": "City of Johannesburg online maps page (HTTP 200); no open parcel API identified."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "service description; not counted"
+    },
+    {
+      "url": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1/query?geometry=28.0450,-26.2060,28.0470,-26.2045 (central Johannesburg envelope)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "parcelRecordCount": 3,
+      "assessment": "second nonempty polygon sample near the CBD"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "national (South Africa) per service description",
+    "verifiedOpenScope": "three erven at the UN city point plus three in the CBD",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Third-party hosted copy of national cadastre; currency, reuse terms and completeness unverified. Only Johannesburg sampled; no other region tested here. The official CSG/City sources should be compared before runtime use.",
+  "nextStep": "Review terms; test the CSG-hosted service and another province before claiming national coverage."
+}

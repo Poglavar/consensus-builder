@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "CR",
+  "country": "Costa Rica",
+  "checkedAt": "2026-09-29",
+  "status": "national_cadastre_viewer_only",
+  "cadastreAuthority": "Registro Nacional (Catastro Nacional) for cadastral plans; SNIT (IGN) for reference geodata",
+  "portalsFound": [
+    {
+      "url": "https://geos.snitcr.go.cr/be/IGN_5/wfs",
+      "observation": "SNIT GeoServer WFS reachable; layers are 1:5000 topographic themes (forestal, cultivos, edificaciones, vias, urbano, etc.); no cadastral parcel layer listed."
+    },
+    {
+      "url": "https://www.snitcr.go.cr/",
+      "observation": "SNIT portal reachable (HTTP 200)."
+    },
+    {
+      "url": "https://www.rnpdigital.com/",
+      "observation": "Registro Nacional site returned 'Request Rejected' (WAF) to non-browser client; cadastral map viewer not reachable programmatically."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geos.snitcr.go.cr/be/IGN_5/wfs?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/xml",
+      "assessment": "capabilities OK; no cadastre layer"
+    },
+    {
+      "url": "https://geos.snitcr.go.cr/be/IGN_5/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp:CadastralParcel&count=3",
+      "method": "GET",
+      "httpStatus": 400,
+      "contentType": "application/xml",
+      "assessment": "layer unknown (400 InvalidParameterValue)"
+    },
+    {
+      "url": "https://www.rnpdigital.com/shopping/consultaRegistral/mapas.jspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "WAF rejected"
+    },
+    {
+      "url": "https://mapas.registronacional.go.cr/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection failure"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Registro Nacional cadastre viewer (not verified)",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "viewer-only",
+  "remainingUncertainty": "Viewer-only status is inferred: the Registro Nacional cadastral map could not be reached by script and no parcel service was found on SNIT. Licence not read.",
+  "nextStep": "Retry Registro Nacional cadastre map with browser-like access; inspect its network calls for an ArcGIS/WMS backend."
+}

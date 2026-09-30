@@ -1,0 +1,52 @@
+{
+ "kind": "city",
+ "key": "mexico-city",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "no_verified_sample_candidate_citywide",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-MX (cookie jar used)",
+ "changedByHeaders": "Retry from a Mexico-reachable network; fetch one alcaldia shapefile from sig.cdmx.gob.mx/datos/descarga.",
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://sig.cdmx.gob.mx/datos/descarga (also / and /arcgis/rest/services)",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://datos.cdmx.gob.mx/dataset/informacion-catastral-de-la-ciudad-de-mexico and CKAN package_show",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://sigcdmx.cdmx.gob.mx/ ; https://mapas.cdmx.gob.mx/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "CONNECT 502"
+  },
+  {
+   "url": "https://semovi.cdmx.gob.mx/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=predios CDMX&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "2 hits, both unofficial user items; 'Predios' FeatureServer returns 'Token Required' (HTTP 200 body error 499) and its item says subscription canceled; not usable"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "Every cdmx.gob.mx host reset or 502'd from this network while other Mexican hosts (see MX.json) answer; likely host-level block, unproven.",
+ "nextStep": "No change from previous record and country-level MX retry."
+}

@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "GF",
+  "country": "French Guiana",
+  "checkedAt": "2026-09-29",
+  "status": "national_online_cadastre_verified_sample",
+  "cadastreAuthority": "DGFiP cadastre (PCI) served by IGN Geoplateforme API Carto (French national service)",
+  "portalsFound": [
+    {
+      "url": "https://apicarto.ign.fr/api/doc/cadastre",
+      "observation": "API Carto cadastre module covers overseas departments"
+    },
+    {
+      "url": "https://cadastre.data.gouv.fr/",
+      "observation": "Etalab open PCI downloads"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://apicarto.ign.fr/api/cadastre/parcelle?geom=Point(-52.3269,4.9372)&_limit=2",
+      "method": "FeatureCollection with MultiPolygon parcel features (Cayenne, French Guiana)",
+      "httpStatus": "GET",
+      "contentType": 200,
+      "assessment": "application/json; charset=utf-8"
+    }
+  ],
+  "verifiedParcelResponse": {
+    "sourceId": "fr-ign-apicarto-cadastre-parcelle",
+    "requestUrl": "https://apicarto.ign.fr/api/cadastre/parcelle?geom=%7B%22type%22%3A%22Point%22%2C%22coordinates%22%3A%5B-52.3269%2C4.9372%5D%7D&_limit=2",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "spatialTestAreaLonLat": [
+      -52.3269,
+      4.9372,
+      -52.3269,
+      4.9372
+    ],
+    "parcelRecordCount": 2,
+    "recordListPath": "features",
+    "geometryType": "MultiPolygon",
+    "closedRings": true,
+    "idField": "idu",
+    "responseFile": null,
+    "pagination": "_limit/_start",
+    "regionSampled": "Cayenne, French Guiana"
+  },
+  "coverageAssessment": {
+    "claimedScope": "French national cadastre (French Guiana is a French department)",
+    "regionsVerified": [
+      "Cayenne"
+    ],
+    "nationwideVerified": false
+  },
+  "accessModel": "open",
+  "remainingUncertainty": "Only one commune sampled; interior communes may lack PCI vector coverage. Licence not read.",
+  "nextStep": "Sample Saint-Laurent-du-Maroni to confirm territory coverage."
+}

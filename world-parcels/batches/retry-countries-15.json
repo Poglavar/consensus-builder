@@ -1,0 +1,58 @@
+[
+ {
+  "kind": "country",
+  "key": "SR",
+  "name": "Suriname",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/SR.json"
+ },
+ {
+  "kind": "country",
+  "key": "SS",
+  "name": "South Sudan",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/SS.json"
+ },
+ {
+  "kind": "country",
+  "key": "ST",
+  "name": "Sao Tome and Principe",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/ST.json"
+ },
+ {
+  "kind": "country",
+  "key": "SV",
+  "name": "El Salvador",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/SV.json"
+ },
+ {
+  "kind": "country",
+  "key": "SY",
+  "name": "Syrian Arab Republic",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/SY.json"
+ },
+ {
+  "kind": "country",
+  "key": "SZ",
+  "name": "Eswatini",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/SZ.json"
+ },
+ {
+  "kind": "country",
+  "key": "TD",
+  "name": "Chad",
+  "previousStatus": "no_online_cadastre_found",
+  "evidenceFile": "research/countries/TD.json"
+ },
+ {
+  "kind": "country",
+  "key": "TG",
+  "name": "Togo",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/TG.json"
+ }
+]

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:89",
+  "queueRank": 89,
+  "name": "Kano",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "centerLatLon": [
+    11.9851852836313,
+    8.50931812932348
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://kangis.gov.ng/",
+      "observation": "KANGIS (Kano Geographic Information Service) site; holds Kano cadastral/land-title records but resets connections from this client."
+    },
+    {
+      "url": "https://www.kangis.gov.ng/",
+      "observation": "KANGIS www host: 200 HTML site with no data service linked."
+    },
+    {
+      "url": "https://kanostate.gov.ng/",
+      "observation": "Kano State government site; KANGIS bill PDF describes data custody, not an open API."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://kangis.gov.ng/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset by peer (twice)"
+    },
+    {
+      "url": "https://www.kangis.gov.ng/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "static site (19 KB), no parcel service or data links"
+    },
+    {
+      "url": "https://kanostate.gov.ng/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "state government home page; no parcel service"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Kano State land records and cadastre (KANGIS custody)",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "KANGIS may run a viewer or service internally; none was discoverable. Lagos research also found no open Nigerian parcel endpoint. A state source would not imply national coverage.",
+  "nextStep": "Find a KANGIS web map/API (network calls of any public viewer) or a downloadable layer, and test a bounded query."
+}

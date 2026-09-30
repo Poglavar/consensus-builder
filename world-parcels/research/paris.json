@@ -1,0 +1,89 @@
+{
+  "cityId": "queue:36",
+  "queueRank": 36,
+  "name": "Paris",
+  "country": "France",
+  "countryCode": "FR",
+  "centerLatLon": [
+    48.8491,
+    2.3556
+  ],
+  "status": "verified_sample_city_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "fr-ign-apicarto-cadastre-parcelle",
+    "requestUrl": "https://apicarto.ign.fr/api/cadastre/parcelle?geom=%7B%22type%22%3A%22Polygon%22%2C%22coordinates%22%3A%5B%5B%5B2.3550%2C48.8486%5D%2C%5B2.3560%2C48.8486%5D%2C%5B2.3560%2C48.8494%5D%2C%5B2.3550%2C48.8494%5D%2C%5B2.3550%2C48.8486%5D%5D%5D%7D&_limit=3",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "spatialTestAreaLonLat": [
+      2.355,
+      48.8486,
+      2.356,
+      48.8494
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "MultiPolygon",
+    "closedRings": true,
+    "idField": "idu (e.g. 75105000AD0011)",
+    "responseFile": "paris-parcel-response.json",
+    "pagination": "_limit / _start query params; numberMatched=11 for test polygon"
+  },
+  "source": {
+    "sourceId": "fr-ign-apicarto-cadastre-parcelle",
+    "name": "API Carto module Cadastre (IGN Geoplateforme), parcelle endpoint, based on Etalab PCI Vecteur cadastre",
+    "operator": "IGN / DGFiP (Etalab PCI)",
+    "scope": "France (metropolitan and overseas); Paris arrondissement 5 sampled",
+    "endpoint": "https://apicarto.ign.fr/api/cadastre/parcelle",
+    "method": "GET with GeoJSON geom param",
+    "responseFormat": "GeoJSON FeatureCollection",
+    "crs": "EPSG:4326 (WGS84 lon/lat) as returned",
+    "reuseStatus": "Licence not read in this probe; PCI Vecteur cadastre is published by DGFiP as open data via cadastre.data.gouv.fr but terms need confirming"
+  },
+  "portalsFound": [
+    {
+      "url": "https://apicarto.ign.fr/api/doc/cadastre",
+      "observation": "IGN API Carto documentation for cadastre module; parcelle endpoint takes a GeoJSON geom."
+    },
+    {
+      "url": "https://cadastre.data.gouv.fr/",
+      "observation": "Official Etalab/DGFiP portal for the PCI Vecteur open cadastre, downloadable by commune/department."
+    },
+    {
+      "url": "https://data.geopf.fr/wfs/ows",
+      "observation": "Geoplateforme WFS lists CADASTRALPARCELS.PARCELLAIRE_EXPRESS:parcelle among layers; a bbox query with lat/lon axis order returned zero features (untested with correct axis)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://apicarto.ign.fr/api/cadastre/parcelle?geom=<Point 2.3556,48.8491>&_limit=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "1 parcel, MultiPolygon, point query"
+    },
+    {
+      "url": "https://apicarto.ign.fr/api/cadastre/parcelle?geom=%7B%22type%22%3A%22Polygon%22%2C%22coordinates%22%3A%5B%5B%5B2.3550%2C48.8486%5D%2C%5B2.3560%2C48.8486%5D%2C%5B2.3560%2C48.8494%5D%2C%5B2.3550%2C48.8494%5D%2C%5B2.3550%2C48.8486%5D%5D%5D%7D&_limit=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "3 parcels returned, verified"
+    },
+    {
+      "url": "https://data.geopf.fr/wfs/ows?...PARCELLAIRE_EXPRESS:parcelle&BBOX=48.848,2.354,48.850,2.357,EPSG:4326",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "empty features; not used"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "France-wide cadastre parcels (API Carto)",
+    "verifiedOpenScope": "three parcels in Paris 5e",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Only Paris sampled; France-wide claim not verified in a second region here. Rate limits, licence and completeness of the greater Ile-de-France agglomeration not checked.",
+  "nextStep": "Test a second French region for country evidence; implement bounded polygon queries with _start paging.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-09-29"
+}

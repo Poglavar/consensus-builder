@@ -1,0 +1,85 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "PR",
+ "country": "Puerto Rico",
+ "checkedAt": "2026-09-29",
+ "status": "subnational_only",
+ "cadastreAuthority": "CRIM (Centro de Recaudacion de Ingresos Municipales) holds the island-wide property/cadastre map; no open island-wide parcel service found",
+ "portalsFound": [
+  {
+   "url": "https://sige.pr.gov/server/rest/services",
+   "observation": "Government of PR ArcGIS Server (SIGE): folders incl. Crim_collaboration, municipios, Planes_Territoriales; only zoning/classification polygons (Junta de Planificacion) found, no parcels"
+  },
+  {
+   "url": "https://services7.arcgis.com/QzuqnWYL9YGM618L/arcgis/rest/services/PARCELAS/FeatureServer",
+   "observation": "Ponce municipality (Poncegis) open parcel FeatureServer: municipal scope only"
+  },
+  {
+   "url": "https://www.crimpr.net/",
+   "observation": "CRIM site reachable (301); no open GIS endpoint found; gis.crimpr.net rejected by proxy"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://sige.pr.gov/server/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "folder list"
+  },
+  {
+   "url": "https://sige.pr.gov/server/rest/services/Crim_collaboration/cali_jp_colaboracion/MapServer?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "single polygon layer Calificacion_Clasificacion_jp (zoning/classification), not cadastre"
+  },
+  {
+   "url": "https://gis.crimpr.net/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT 502; untested"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=parcelas%20CRIM%20Puerto%20Rico%20type:%22Feature%20Service%22&num=8&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "only Ponce municipal parcel services found"
+  },
+  {
+   "url": "https://services7.arcgis.com/QzuqnWYL9YGM618L/arcgis/rest/services/PARCELAS/FeatureServer/0/query?where=1%3D1&outFields=*&resultRecordCount=2&f=geojson",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "2 Polygon parcels (Ponce) with catastro number fields; municipal only"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "pr-ponce-parcelas",
+  "requestUrl": "https://services7.arcgis.com/QzuqnWYL9YGM618L/arcgis/rest/services/PARCELAS/FeatureServer/0/query?where=1%3D1&outFields=*&resultRecordCount=2&f=geojson",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": null,
+  "parcelRecordCount": 2,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "NUM_CATAST / FID",
+  "responseFile": "countries/PR-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount",
+  "regionSampled": "Ponce municipality only (municipal, not island-wide)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "Island-wide CRIM cadastre (viewer/paid) not verified; Ponce municipal parcels open",
+  "regionsVerified": [
+   "Ponce (municipal)"
+  ],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "CRIM's online map/data access terms and any island-wide open service were not reached (gis.crimpr.net blocked). Ponce sample has no bbox test (unfiltered first 2 rows). Ponce layer is a municipal service, not island-wide.",
+ "nextStep": "Retry CRIM hosts; check CRIM parcel viewer and data-request terms."
+}

@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:177",
+  "queueRank": 177,
+  "name": "Tasikmalaya",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "centerLatLon": [
+    -7.29783520822771,
+    108.214688775464
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer",
+      "observation": "BIG Satu Peta public MapServer; Jawa Barat sublayer 21 is queryable but has no polygons near Tasikmalaya (see requests)."
+    },
+    {
+      "url": "https://tasikmalayakota.go.id/",
+      "observation": "City government site reachable (HTTP 200 HTML); no parcel service found on landing page."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/peta",
+      "observation": "ATR/BPN BHUMI map (HTTP 200 HTML); parcel retrieval token-gated per Jakarta research, not open."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search",
+      "observation": "ArcGIS Online search for Tasikmalaya parcels returned only landslide-hazard maps, no parcel layers."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/21/query?where=1%3D1&geometry=108.2132%2C-7.2993%2C108.2162%2C-7.2963&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "parcelRecordCount": 0,
+      "assessment": "empty features at queue centre"
+    },
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/21 (returnCountOnly, envelopes 0.06 to 0.6 deg wide centred -7.33,108.22 and shifted variants)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "0 polygons within about 33 km of Tasikmalaya; polygons exist further away (e.g. 4,300-5,900 in 0.4-0.8 deg boxes to the east, north and west), so this layer does not cover the city"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Jawa Barat province land-rights layer (sparse subset)",
+    "verifiedOpenScope": "none for Tasikmalaya",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Layer is a sparse subset of Jawa Barat; the city may be added later or held only in ATR/BPN's token-gated system. Absence here is not proof no open source exists.",
+  "nextStep": "Re-test the Satu Peta layer periodically; look for a Tasikmalaya/Jabar geoportal (Jabar Satu Peta) with a public parcel layer."
+}

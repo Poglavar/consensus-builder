@@ -1,0 +1,87 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "BR",
+ "regionCode": "RJ",
+ "regionName": "Rio de Janeiro",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/plain,*/*; Accept-Language: pt-BR,pt;q=0.9,en;q=0.8; Referer: https://consultapublica.car.gov.br/publico/imoveis/index; cookie jar used",
+ "source": {
+  "sourceId": "br-sicar-car-imoveis-rj",
+  "name": "SICAR / CAR rural property perimeters, layer sicar_imoveis_rj",
+  "operator": "Servico Florestal Brasileiro (SICAR)",
+  "scope": "State of Rio de Janeiro, rural properties (CAR, self-declared); not urban lots and not the legal cadastre",
+  "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+  "method": "GET WFS 2.0.0 GetFeature",
+  "responseFormat": "GeoJSON",
+  "crs": "EPSG:4326",
+  "reuseStatus": "Licence/terms not read"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "br-sicar-car-imoveis-rj",
+  "requestUrl": "https://geoserver.car.gov.br/geoserver/sicar/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_rj&count=3&outputFormat=application/json&bbox=-43.0,-22.4,-42.8,-22.2,EPSG:4326",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=utf-8",
+  "spatialTestAreaLonLat": [
+   -43.0,
+   -22.4,
+   -42.8,
+   -22.2
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "cod_imovel",
+  "responseFile": "RJ-parcel-response.json",
+  "pagination": "WFS startIndex/count",
+  "sampledMunicipality": "Teresópolis"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "SICAR publishes one WFS layer per UF covering the whole state (rural CAR perimeters); one bbox sampled. Urban lots are municipal.",
+ "layerType": "rural (SICAR/CAR self-declared); plus municipal urban lots for Rio city",
+ "subregionsVerified": [
+  "Rio de Janeiro (municipality, urban lots, 2013 survey)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://consultapublica.car.gov.br/publico/imoveis/index",
+   "observation": "CAR public consultation viewer, used as Referer"
+  },
+  {
+   "url": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+   "observation": "SICAR GeoServer, open WFS, no token needed"
+  },
+  {
+   "url": "https://services5.arcgis.com/mgrvZxGU0bSJbVld/arcgis/rest/services/Quadras_Lotes_Edificacoes/FeatureServer/1",
+   "observation": "Prefeitura do Rio urban lots, see research/rio-de-janeiro.json"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geoserver.car.gov.br/geoserver/sicar/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_rj&count=3&outputFormat=application/json&bbox=-43.3,-22.95,-43.1,-22.85,EPSG:4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=utf-8",
+   "assessment": "0 records around Rio city (urban, no CAR rural); rural sample taken at Teresopolis instead"
+  },
+  {
+   "url": "https://geoserver.car.gov.br/geoserver/sicar/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_rj&count=3&outputFormat=application/json&bbox=-43.0,-22.4,-42.8,-22.2,EPSG:4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=utf-8",
+   "assessment": "3 MultiPolygon rural CAR properties (Teresópolis); server ignored propertyName filter, only cod_imovel/municipio and geometry saved (no owner fields exist in the layer)"
+  },
+  {
+   "url": "https://services5.arcgis.com/mgrvZxGU0bSJbVld/arcgis/rest/services/Quadras_Lotes_Edificacoes/FeatureServer/1/query?geometry=-43.3680,-22.8465,-43.3660,-22.8450&geometryType=esriGeometryEnvelope&inSR=4326&outFields=cod_lote&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "3 lot polygons, cod_lote (re-verified 2026-09-30); Rio municipality only; CC BY 4.0 per earlier record"
+  }
+ ],
+ "reuseStatus": "Licence/terms not read",
+ "remainingUncertainty": "Rural, self-declared CAR polygons only, not the legal cadastre; no state urban-lot layer found in this pass. Licence not read.",
+ "nextStep": "No statewide urban layer found; Rio city lots are municipal-only."
+}

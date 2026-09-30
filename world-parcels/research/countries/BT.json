@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "BT",
+  "country": "Bhutan",
+  "checkedAt": "2026-09-29",
+  "status": "national_cadastre_credentialed_or_paid",
+  "cadastreAuthority": "National Land Commission Secretariat (NLCS); e-Sakor / NLCS digital portal",
+  "portalsFound": [
+    {
+      "url": "https://web.nlcs.gov.bt/",
+      "observation": "NLCS site; portal for landowner services"
+    },
+    {
+      "url": "https://www.nlcs.gov.bt/?page_id=203",
+      "observation": "Maps page"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://web.nlcs.gov.bt/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "site reachable, no parcel service"
+    },
+    {
+      "url": "https://nlcs.gov.bt/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset"
+    },
+    {
+      "url": "https://www.dlgi.gov.bt/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT 502"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "National cadastral resurvey completed 2010 in all 20 dzongkhags; per NLCS/BhutanWiki, Land Act 2007 limits thram/map viewing to owners and authorised persons",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "registration",
+  "remainingUncertainty": "Access restriction taken from secondary search results, not a legal text read here.",
+  "nextStep": "None likely unless government data-sharing agreement."
+}

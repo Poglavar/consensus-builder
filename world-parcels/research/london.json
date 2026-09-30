@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:2643743",
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_sample_candidate_countrywide",
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire",
+      "observation": "HM Land Registry INSPIRE Index Polygons (freehold registered property in England and Wales) are distributed as per-local-authority GML downloads. Search summaries say they are available under the Open Government Licence with a Crown copyright and database rights attribution. The download page redirects to itself in a loop for anonymous curl (HTTP 302), so no download was obtained. Not a queryable API."
+    },
+    {
+      "url": "https://inspire.landregistry.gov.uk/inspire/ows",
+      "observation": "Land Registry INSPIRE OGC endpoint. WFS GetCapabilities returned HTTP 200 with an OWS ServiceUnavailable exception: 'Service WFS is disabled'. WMS GetCapabilities returned HTTP 200 capabilities XML; WMS renders images and is not a parcel-record list."
+    },
+    {
+      "url": "https://environment.data.gov.uk/spatialdata/inspire-cadastral-parcels/wfs",
+      "observation": "Guessed Defra WFS path returned only HTML (a 200 'Defra Data Services Platform' app shell on one request, HTTP 404 on another), so no working WFS was found there."
+    },
+    {
+      "url": "https://api.os.uk/features/ngd/ofa/v1/collections",
+      "observation": "Ordnance Survey Data Hub OGC API Features returned HTTP 401 without an API key; OS products carry their own licences and were not tested with a key."
+    },
+    {
+      "url": "https://services2.arcgis.com/LrUbY6lLLgV3tEa5/arcgis/rest/services/Land_Registry_INSPIRE/FeatureServer",
+      "observation": "Third-party ArcGIS Online copy of INSPIRE polygons (owner KCC_GIS); its layer extent is British National Grid x 355231-434876, y 539890-657601, i.e. northern England, and a Trafalgar Square query returned 0 features."
+    },
+    {
+      "url": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer",
+      "observation": "Third-party 2021 INSPIRE extract with extent x 388269-407892, y 282232-306867 (Midlands); central London query returned 0 features."
+    },
+    {
+      "url": "https://services3.arcgis.com/mZLeUnrj76OCQON5/arcgis/rest/services/Land_Registry_Freehold_Polygons/FeatureServer",
+      "observation": "Third-party freehold-polygon copy with extent x 419440-505731, y 157700-257630, which stops west of central London (x about 530000); a bounded query timed out."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://inspire.landregistry.gov.uk/inspire/ows?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/xml",
+      "parcelRecordCount": null,
+      "assessment": "OWS exception 'Service WFS is disabled'"
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "method": "GET",
+      "httpStatus": 302,
+      "parcelRecordCount": null,
+      "assessment": "redirect loop without a session; no data obtained"
+    },
+    {
+      "url": "https://api.os.uk/features/ngd/ofa/v1/collections",
+      "method": "GET",
+      "httpStatus": 401,
+      "parcelRecordCount": null,
+      "assessment": "API key required"
+    },
+    {
+      "url": "https://services2.arcgis.com/LrUbY6lLLgV3tEa5/arcgis/rest/services/Land_Registry_INSPIRE/FeatureServer/0/query (Trafalgar Square box -0.129,51.5065,-0.127,51.508)",
+      "method": "GET",
+      "httpStatus": 200,
+      "parcelRecordCount": 0,
+      "assessment": "empty result"
+    },
+    {
+      "url": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0/query (same box)",
+      "method": "GET",
+      "httpStatus": 200,
+      "parcelRecordCount": 0,
+      "assessment": "empty result"
+    },
+    {
+      "url": "https://services3.arcgis.com/mZLeUnrj76OCQON5/arcgis/rest/services/Land_Registry_Freehold_Polygons/FeatureServer/0/query (same box)",
+      "method": "GET",
+      "httpStatus": null,
+      "error": "timed out after 40 s",
+      "assessment": "no response; extent excludes central London anyway"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "INSPIRE Index Polygons cover freehold registered land in England and Wales (not Scotland or Northern Ireland; they are indicative extents, not surveyed boundaries)",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "No polygon record was retrieved for London. The official Land Registry download needs an account or an interactive session that curl did not complete; licence and attribution terms come from search summaries and must be confirmed on the GOV.UK pages before any redistribution. Ordnance Survey and HM Land Registry commercial parcel products (for example National Polygon Service) are licensed separately and were not tested. Any third-party ArcGIS copies are unofficial and their licence was not verified.",
+  "nextStep": "Sign in to the Use land and property data service (or fetch through a browser session), download one London borough's INSPIRE GML, record its licence file, and test whether a bounded extract can be served; separately check whether London boroughs or the GLA publish a queryable parcel service."
+}

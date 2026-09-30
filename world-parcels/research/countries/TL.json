@@ -1,0 +1,53 @@
+{
+ "country": "Timor-Leste",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Ministry of Justice, Land, Property and Cadastral Services (Direcao Nacional de Terras, Propriedades e Servicos Cadastrais)",
+ "portalsFound": [
+  {
+   "url": "https://www.mj.gov.tl/",
+   "observation": "Ministry of Justice site reachable (200 HTML); no cadastre map service located in the page."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.gov.tl/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed (502) / no response; host unreachable from this environment"
+  },
+  {
+   "url": "https://geoportal.gov.tl/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed (502) / no response; host unreachable from this environment"
+  },
+  {
+   "url": "https://www.mj.gov.tl/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=utf-8",
+   "assessment": "landing page only"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Timor-Leste+cadastre+parcel&f=json&num=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "zero results"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "unknown",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "No open service found; several hosts unreachable. Not proof of absence.",
+ "nextStep": "Look for the national cadastre/Ita Nia Rai portal and any geoportal.",
+ "schemaVersion": 1,
+ "countryCode": "TL",
+ "checkedAt": "2026-09-29"
+}

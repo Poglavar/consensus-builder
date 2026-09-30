@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:86",
+  "queueRank": 86,
+  "name": "Zhengzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    34.7669580431862,
+    113.653108262301
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://public.zhengzhou.gov.cn/",
+      "observation": "Zhengzhou government public-information portal; data-market and open-data policy documents, no parcel service."
+    },
+    {
+      "url": "https://zrzyhghj.zhengzhou.gov.cn/",
+      "observation": "Zhengzhou Natural Resources and Planning Bureau site; HTML pages only."
+    },
+    {
+      "url": "https://www.gscloud.cn/",
+      "observation": "Geospatial Data Cloud (raster/DEM/imagery), not cadastral parcels."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://public.zhengzhou.gov.cn/D0104X/8096881.jhtml",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "assessment": "policy document on data-element market reform; not a parcel data source"
+    },
+    {
+      "url": "https://zrzyhghj.zhengzhou.gov.cn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "assessment": "bureau home page, no open parcel service"
+    },
+    {
+      "url": "https://data.zzdata.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT rejected (502)"
+    },
+    {
+      "url": "https://zrzyj.zhengzhou.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT rejected (502)"
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 418,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "blocked (HTTP 418) by the site for this client"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "municipal natural-resources/cadastre portals; no open parcel service found",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "China does not publish an open national parcel polygon service in anything found; municipal portals may hold cadastral or land-use viewers behind logins, WeChat/app flows or geo-restricted hosts. Several .gov.cn hosts were rejected/reset by the proxy, so an open endpoint cannot be ruled out. Web searches (Chinese) for open parcel/cadastral interfaces (宗地/地籍) returned only policy pages.",
+  "nextStep": "Look for the municipal natural-resources bureau's Tianditu-based or ArcGIS service (e.g. a 'time-space big data platform') with a documented anonymous feature query; test from a mainland-reachable network."
+}

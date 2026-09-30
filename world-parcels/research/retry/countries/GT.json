@@ -1,0 +1,67 @@
+{
+ "kind": "country",
+ "key": "GT",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: es-GT,es;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.ric.gob.gt/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "TLS connection failed"
+  },
+  {
+   "url": "https://geoportal.ric.gob.gt/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no response"
+  },
+  {
+   "url": "https://www.muniguate.com/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "generic 403 block page; sig./mapas.muniguate.com same"
+  },
+  {
+   "url": "https://www.sit.gob.gt/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "403"
+  },
+  {
+   "url": "https://www.igm.gob.gt/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "IGN site; no parcel service link found"
+  },
+  {
+   "url": "https://www.segeplan.gob.gt/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "88-byte stub"
+  },
+  {
+   "url": "https://services7.arcgis.com/BBr2ruK5unTgrH8y/arcgis/rest/services/Fincas/FeatureServer/0?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "'Fincas Global Bank' private org layer, no fields listed; not an official cadastre, not queried further"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "ric.gob.gt hosts fail at TLS connect (SSL_ERROR_SYSCALL) and muniguate.com returns a generic 403 page to all paths, suggesting network/geo filtering, unconfirmed",
+ "notes": "No new usable source. Muniguate blocked (403), RIC unreachable.",
+ "nextStep": "Retry RIC hosts from another network; look for RIC geoportal and Muniguate ArcGIS."
+}

@@ -1,0 +1,46 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MW",
+ "country": "Malawi",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Ministry of Lands (Department of Lands/Surveys); Malawi Land Registry",
+ "portalsFound": [
+  {
+   "url": "https://www.lands.gov.mw/",
+   "observation": "Ministry homepage reachable; no parcel viewer link seen in first-page hrefs."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.lands.gov.mw/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Ministry homepage, no cadastre map link found"
+  },
+  {
+   "url": "https://www.malawi.gov.mw/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable from this environment (connection failed/reset via proxy)"
+  },
+  {
+   "url": "https://www.mw-lands.gov.mw/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable from this environment (connection failed/reset via proxy)"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Unknown",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Only the ministry homepage was reachable; land information system (e.g. MLIS/ Malawi Customary Land) not tested.",
+ "nextStep": "Search for the Malawi Land Information System / GIS portal and test."
+}

@@ -1,0 +1,67 @@
+{
+ "kind": "country",
+ "key": "TW",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "national_cadastre_credentialed_or_paid",
+ "newStatus": "national_cadastre_credentialed_or_paid",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8; Accept-Language: zh-TW,zh;q=0.9,en;q=0.8; cookie jar (curl -c/-b) kept per country",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://maps.nlsc.gov.tw/S09SOA/pro/Wfs_ajax_list.jsp",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html;charset=UTF-8",
+   "assessment": "NLSC WFS catalogue of 19 layers; page legend says items marked with the 'may_apply' icon require an application; all 19 rows (incl. CADAS_MERGE cadastre, EMAP_BUILD, LANDSECT) carry that icon"
+  },
+  {
+   "url": "https://wms.nlsc.gov.tw/wms?service=WMS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "open WMS: EMAP, PHOTO2, LANDSECT (section outlines), LUIMAP, etc.; no parcel/cadastre polygon layer (raster or vector)"
+  },
+  {
+   "url": "https://maps.nlsc.gov.tw/ and /homePage.action",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html;charset=UTF-8",
+   "assessment": "portal home is a frameset to homePage.action; static JS only, no cadastre endpoint exposed"
+  },
+  {
+   "url": "https://wfs.nlsc.gov.tw/..., https://maps.nlsc.gov.tw/S09SOA/wfs?...typeName=CADAS_MERGE (guessed endpoints)",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": null,
+   "assessment": "guessed WFS endpoint not found; no parcel query attempted since access requires application"
+  },
+  {
+   "url": "https://api.nlsc.gov.tw/other/TownVillagePointQuery/121.5654/25.0330",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "open point query returns land-section name/code only (no polygon)"
+  },
+  {
+   "url": "https://data.gov.tw/api/front/dataset/list?q=...",
+   "method": "GET",
+   "httpStatus": 405,
+   "contentType": "text/html",
+   "assessment": "API method not allowed; no dataset confirmed"
+  },
+  {
+   "url": "https://data.gov.tw/, https://landmaps.nlsc.gov.tw/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "reachable; landmaps root just a status message"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "all NLSC hosts respond normally with 200",
+ "notes": "Confirms the previous status more precisely: all 19 NLSC WFS layers including the cadastre (WFS:CADAS_MERGE) are flagged as needing an application; the open WMS/API offer only land-section outlines and section lookups. Headers did not change anything.",
+ "nextStep": "Check the NLSC application procedure for non-government WFS access; look for municipal open-data parcel layers."
+}

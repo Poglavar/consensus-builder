@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "CU",
+  "country": "Cuba",
+  "checkedAt": "2026-09-29",
+  "status": "no_online_cadastre_found",
+  "cadastreAuthority": "Unknown (Instituto de Planificacion Fisica / Direccion de Catastro; not confirmed)",
+  "portalsFound": [],
+  "requests": [
+    {
+      "url": "https://www.onec.gob.cu/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy tunnel 502 (statistics office, not a cadastre)"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "none found",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "unknown",
+  "remainingUncertainty": "Very limited reachability and discovery; no cadastre portal identified.",
+  "nextStep": "Search for Cuban cadastre/IPF geoportal."
+}

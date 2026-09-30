@@ -1,0 +1,74 @@
+{
+  "cityId": "queue:38",
+  "queueRank": 38,
+  "name": "Tehran",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "centerLatLon": [
+    35.6849,
+    51.3493
+  ],
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.sabteahval.ir/",
+      "observation": "Civil registry site; unreachable. Not a cadastre."
+    },
+    {
+      "url": "https://map.tehran.ir/",
+      "observation": "Tehran Municipality map portal; connection reset from this environment."
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Open_data_in_Iran",
+      "observation": "Secondary source: Iran's Deeds and Properties Registration Organization is said to hold digital urban parcel data, but no open parcel service is documented."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://map.tehran.ir/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset by peer"
+    },
+    {
+      "url": "https://gis.tehran.ir/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection failure"
+    },
+    {
+      "url": "https://data.tehran.ir/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection failure"
+    },
+    {
+      "url": "https://www.ncc.gov.ir/",
+      "method": "GET",
+      "httpStatus": 502,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "National Cartographic Center bad gateway"
+    },
+    {
+      "url": "https://tehran.ir/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection failure"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "unknown",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Iranian .ir hosts were unreachable from this environment (likely network filtering), so this is an access failure and not proof no source exists. A public parcel API appears unlikely; national cadastre is run by the Deeds and Properties Registration Organization and reuse terms are unknown.",
+  "nextStep": "Retry from a network able to reach .ir hosts; check Tehran Municipality ICT open data and NCC geoportal for parcel layers.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-09-29"
+}

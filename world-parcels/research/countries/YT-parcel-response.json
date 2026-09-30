@@ -1,0 +1,79 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "id": "parcelle.19344139",
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        45.22800095,
+        -12.78021
+       ],
+       [
+        45.22804917,
+        -12.78024007
+       ],
+       [
+        45.2279257,
+        -12.78043921
+       ],
+       [
+        45.22785136,
+        -12.78055927
+       ],
+       [
+        45.22780021,
+        -12.78064188
+       ],
+       [
+        45.22775006,
+        -12.78060919
+       ],
+       [
+        45.22779855,
+        -12.78053572
+       ],
+       [
+        45.22784557,
+        -12.78046442
+       ],
+       [
+        45.22800095,
+        -12.78021
+       ]
+      ]
+     ]
+    ]
+   },
+   "geometry_name": "geom",
+   "properties": {
+    "gid": 16886864,
+    "numero": "0015",
+    "feuille": 1,
+    "section": "AY",
+    "code_dep": "97",
+    "nom_com": "Mamoudzou",
+    "code_com": "611",
+    "com_abs": "000",
+    "code_arr": "000",
+    "idu": "97611000AY0015",
+    "contenance": 314,
+    "code_insee": "97611"
+   }
+  }
+ ],
+ "totalFeatures": 1,
+ "numberMatched": 1,
+ "numberReturned": 1,
+ "timeStamp": "2026-09-29T23:18:38.220Z",
+ "crs": {
+  "type": "name",
+  "properties": {
+   "name": "urn:ogc:def:crs:EPSG::4326"
+  }
+ }
+}

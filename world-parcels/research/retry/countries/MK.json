@@ -1,0 +1,101 @@
+{
+ "kind": "country",
+ "key": "MK",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: mk-MK,mk;q=0.9,sq;q=0.6,en;q=0.5",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.katastar.gov.mk/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset/failed via proxy with full browser headers (curl exit 35/000, no HTTP reply); unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://katastar.gov.mk/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset/failed via proxy with full browser headers (curl exit 35/000, no HTTP reply); unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://e-uslugi.katastar.gov.mk/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset/failed via proxy with full browser headers (curl exit 35/000, no HTTP reply); unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://geoportal.katastar.gov.mk/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset/failed via proxy with full browser headers (curl exit 35/000, no HTTP reply); unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://ns.katastar.gov.mk/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset/failed via proxy with full browser headers (curl exit 35/000, no HTTP reply); unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://ossp.katastar.gov.mk/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset/failed via proxy with full browser headers (curl exit 35/000, no HTTP reply); unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://arec.gov.mk/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset/failed via proxy with full browser headers (curl exit 35/000, no HTTP reply); unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://www.mioa.gov.mk/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset/failed via proxy with full browser headers (curl exit 35/000, no HTTP reply); unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://nsdi.mk/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset/failed via proxy with full browser headers (curl exit 35/000, no HTTP reply); unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://geoportal.mk/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset/failed via proxy with full browser headers (curl exit 35/000, no HTTP reply); unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://data.gov.mk/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "open-data portal loads"
+  },
+  {
+   "url": "https://data.gov.mk/api/3/action/package_search?q=katastar&rows=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "datasets are lists (cadastral municipalities, plan-sheet nomenclature, municipalities migrated to eKat), no parcel geometry"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "Every AREC/gov.mk host reset the TLS connection immediately (curl 35) while data.gov.mk answered, which suggests network-level filtering of these hosts from this network. No viewer HTML could be inspected.",
+ "nextStep": "Retry from a North Macedonia network; inspect the AREC e-cadastre viewer JS."
+}

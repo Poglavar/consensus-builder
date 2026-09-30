@@ -1,0 +1,212 @@
+{
+ "note": "First 3 cadastral parcels of the Madrid municipality INSPIRE GML (A.ES.SDGC.CP.28900.cadastralparcel.gml), read by HTTP Range request bytes 0-400000 of the 40,435,873-byte ZIP and stream-decompressing the first deflate entry. Coordinates are EPSG:25830 (ETRS89 / UTM 30N) easting,northing; rings are closed (first point equals last). File header reports numberMatched=numberReturned=141430 for the municipality. No personal data (cadastral reference and area only).",
+ "sourceZip": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/28/28900-MADRID/A.ES.SDGC.CP.28900.zip",
+ "range": "bytes=0-400000",
+ "crs": "EPSG:25830",
+ "features": [
+  {
+   "gmlId": "ES.SDGC.CP.000200500VK56E",
+   "nationalCadastralReference": "000200500VK56E",
+   "areaValueM2": "1268",
+   "geometryType": "gml:MultiSurface/Surface/PolygonPatch (exterior ring)",
+   "exteriorRing": [
+    [
+     451599.36,
+     4467174.94
+    ],
+    [
+     451584.92,
+     4467181.41
+    ],
+    [
+     451586.25,
+     4467184.21
+    ],
+    [
+     451591.74,
+     4467195.85
+    ],
+    [
+     451592.03,
+     4467196.45
+    ],
+    [
+     451592.24,
+     4467196.89
+    ],
+    [
+     451599.65,
+     4467212.61
+    ],
+    [
+     451599.85,
+     4467213.03
+    ],
+    [
+     451600.14,
+     4467213.63
+    ],
+    [
+     451600.34,
+     4467214.07
+    ],
+    [
+     451609.34,
+     4467233.7
+    ],
+    [
+     451609.54,
+     4467234.14
+    ],
+    [
+     451611.0,
+     4467231.99
+    ],
+    [
+     451618.47,
+     4467224.9
+    ],
+    [
+     451618.65,
+     4467224.74
+    ],
+    [
+     451623.61,
+     4467220.18
+    ],
+    [
+     451623.81,
+     4467220.0
+    ],
+    [
+     451624.31,
+     4467219.55
+    ],
+    [
+     451628.76,
+     4467216.83
+    ],
+    [
+     451605.68,
+     4467172.11
+    ],
+    [
+     451602.62,
+     4467173.48
+    ],
+    [
+     451600.85,
+     4467174.28
+    ],
+    [
+     451600.18,
+     4467174.58
+    ],
+    [
+     451599.36,
+     4467174.94
+    ]
+   ]
+  },
+  {
+   "gmlId": "ES.SDGC.CP.000205600VK56E",
+   "nationalCadastralReference": "000205600VK56E",
+   "areaValueM2": "297",
+   "geometryType": "gml:MultiSurface/Surface/PolygonPatch (exterior ring)",
+   "exteriorRing": [
+    [
+     451593.0,
+     4467163.25
+    ],
+    [
+     451579.4,
+     4467169.61
+    ],
+    [
+     451582.37,
+     4467175.95
+    ],
+    [
+     451583.42,
+     4467178.21
+    ],
+    [
+     451583.7,
+     4467178.81
+    ],
+    [
+     451584.92,
+     4467181.41
+    ],
+    [
+     451599.36,
+     4467174.94
+    ],
+    [
+     451600.18,
+     4467174.58
+    ],
+    [
+     451600.85,
+     4467174.28
+    ],
+    [
+     451602.62,
+     4467173.48
+    ],
+    [
+     451605.68,
+     4467172.11
+    ],
+    [
+     451599.53,
+     4467160.19
+    ],
+    [
+     451593.0,
+     4467163.25
+    ]
+   ]
+  },
+  {
+   "gmlId": "ES.SDGC.CP.000205700VK56E",
+   "nationalCadastralReference": "000205700VK56E",
+   "areaValueM2": "155",
+   "geometryType": "gml:MultiSurface/Surface/PolygonPatch (exterior ring)",
+   "exteriorRing": [
+    [
+     451590.04,
+     4467156.91
+    ],
+    [
+     451576.44,
+     4467163.26
+    ],
+    [
+     451576.93,
+     4467164.31
+    ],
+    [
+     451579.4,
+     4467169.61
+    ],
+    [
+     451593.0,
+     4467163.25
+    ],
+    [
+     451599.53,
+     4467160.19
+    ],
+    [
+     451596.32,
+     4467153.97
+    ],
+    [
+     451590.04,
+     4467156.91
+    ]
+   ]
+  }
+ ]
+}

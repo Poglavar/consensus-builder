@@ -1,0 +1,23 @@
+[
+ {
+  "kind": "country",
+  "key": "YE",
+  "name": "Yemen",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/YE.json"
+ },
+ {
+  "kind": "country",
+  "key": "ZM",
+  "name": "Zambia",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/ZM.json"
+ },
+ {
+  "kind": "country",
+  "key": "ZW",
+  "name": "Zimbabwe",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/ZW.json"
+ }
+]

@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:58",
+  "queueRank": 58,
+  "name": "Santiago",
+  "country": "Chile",
+  "countryCode": "CL",
+  "centerLatLon": [
+    -33.491535748246,
+    -70.6533926759612
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "cl-minvu-predios-santiago-ocuc",
+    "requestUrl": "https://services9.arcgis.com/kKJR3Qt68ohAWuet/arcgis/rest/services/Predios_Santiago/FeatureServer/0/query?where=1%3D1&geometry=%7B%22xmin%22%3A-70.6545%2C%22ymin%22%3A-33.4925%2C%22xmax%22%3A-70.6525%2C%22ymax%22%3A-33.4910%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "spatialTestAreaLonLat": [
+      -70.6545,
+      -33.4925,
+      -70.6525,
+      -33.491
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "FID (ArcGIS OID); no cadastral rol/ID field in the layer",
+    "responseFile": "santiago-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true"
+  },
+  "source": {
+    "sourceId": "cl-minvu-predios-santiago-ocuc",
+    "name": "Predios por comuna en Santiago Metropolitana (Predios_Santiago FeatureServer)",
+    "operator": "Data original MINVU; published by Centro de Datos OCUC, Observatorio de Ciudades UC (ArcGIS Online)",
+    "scope": "Predio polygons for communes of the Santiago metropolitan area (item extent about -70.87,-33.65 to -70.15,-33.29); reference date 2026-04-30",
+    "endpoint": "https://services9.arcgis.com/kKJR3Qt68ohAWuet/arcgis/rest/services/Predios_Santiago/FeatureServer/0",
+    "method": "ArcGIS REST FeatureServer query",
+    "responseFormat": "Esri JSON",
+    "crs": "EPSG:4326 served (item says WKID 102100 native)",
+    "reuseStatus": "item is public; licence text says free availability for non-commercial use on the OCUC platform and to verify validity, terms and attribution before reuse; redistribution/commercial reuse not established"
+  },
+  "portalsFound": [
+    {
+      "url": "https://www.arcgis.com/home/item.html?id=2f5e2e44cc80410c9e48817d797c4e4f",
+      "observation": "Public ArcGIS Online item 'Predios por comuna en Santiago Metropolitana' from OCUC with MINVU as original source."
+    },
+    {
+      "url": "https://geoide.minvu.cl/server/rest/services",
+      "observation": "MINVU ArcGIS Server lists Catastros and other folders; no predios layer verified there."
+    },
+    {
+      "url": "https://www4.sii.cl/mapasui/internet/",
+      "observation": "SII fiscal cadastre viewer (Mapas SII); no HTTP response through the agent proxy (connection reset or tunnel failure). Search results say SII polygons are served as WMS images only, with no vector download."
+    },
+    {
+      "url": "https://www.geoportal.cl/",
+      "observation": "IDE Chile geoportal loads (HTML); no parcel WFS verified."
+    },
+    {
+      "url": "https://catastral.cl/",
+      "observation": "Third-party redistribution of SII data; not an official source and not used."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/content/items/2f5e2e44cc80410c9e48817d797c4e4f?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "item metadata (service URL, extent, licence text); not verification"
+    },
+    {
+      "url": "https://services9.arcgis.com/kKJR3Qt68ohAWuet/arcgis/rest/services/Predios_Santiago/FeatureServer/0?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "layer metadata: polygon, fields FID, objectid, nom_com, sup_ha, sup_m2; not verification"
+    },
+    {
+      "url": "https://services9.arcgis.com/kKJR3Qt68ohAWuet/arcgis/rest/services/Predios_Santiago/FeatureServer/0/query?where=1%3D1&geometry=%7B%22xmin%22%3A-70.6545%2C%22ymin%22%3A-33.4925%2C%22xmax%22%3A-70.6525%2C%22ymax%22%3A-33.4910%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "3 closed-ring polygons, nom_com SAN MIGUEL: verified sample",
+      "parcelRecordCount": 3,
+      "responseFile": "santiago-parcel-response.json"
+    },
+    {
+      "url": "https://www4.sii.cl/mapasui/internet/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Predios in the Santiago Metropolitan Area, grouped by commune",
+    "verifiedOpenScope": "three predios in San Miguel commune near the UN city centre point",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Attribute quality is doubtful (sup_m2 values disagree with Shape__Area), no official parcel ID/rol field, geometry may be a MINVU derivative rather than the SII cadastre, and the licence is non-commercial/unclear. Completeness across communes was not tested.",
+  "nextStep": "Confirm MINVU's original terms and whether the polygons match SII roles; test one predio in a second commune; look for an official rol-bearing layer."
+}

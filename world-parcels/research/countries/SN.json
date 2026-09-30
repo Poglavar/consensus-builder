@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "SN",
+  "country": "Senegal",
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "cadastreAuthority": "Direction des Impots et Domaines / Direction du Cadastre; national geo-repertory georepertoire.gouv.sn lists cadastral datasets",
+  "portalsFound": [
+    {
+      "url": "https://www.georepertoire.gouv.sn/",
+      "observation": "connection reset (Dakar probe: 503 / down)"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.georepertoire.gouv.sn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset by peer"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Geo-repertory catalogue lists cadastral vector data (per Dakar probe); download-on-request possible; nothing verified",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "unknown",
+  "remainingUncertainty": "Catalogue host repeatedly down; openness unknown.",
+  "nextStep": "Retry georepertoire.gouv.sn later; check whether the Dakar cadastre dataset is downloadable."
+}

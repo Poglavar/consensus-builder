@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "FI",
+  "country": "Finland",
+  "checkedAt": "2026-09-29",
+  "status": "national_online_cadastre_verified_sample",
+  "cadastreAuthority": "National Land Survey of Finland (Maanmittauslaitos, MML)",
+  "portalsFound": [
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/ows",
+      "observation": "INSPIRE Cadastral Parcels download WFS 2.0; feature types cp:CadastralParcel, cp:BasicPropertyUnit, cp:CadastralBoundary; open, no key needed"
+    },
+    {
+      "url": "https://avoin-paikkatieto.maanmittauslaitos.fi/kiinteisto-avoin/simple-features/v3/collections",
+      "observation": "MML open-data OGC API Features (property register); 401 without API key (registration)"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/ows?service=WFS&request=GetCapabilities",
+      "method": "WFS 2.0 capabilities, National Land Survey of Finland",
+      "httpStatus": "GET",
+      "contentType": 200,
+      "assessment": "application/xml"
+    },
+    {
+      "url": "...GetFeature&typeNames=cp:CadastralParcel&count=2&bbox=60.1699,24.9384,60.1705,24.9394,EPSG:4258",
+      "method": "valid but empty (numberMatched=0); tiny bbox missed parcels",
+      "httpStatus": "GET",
+      "contentType": 200,
+      "assessment": "text/xml; subtype=gml/3.2"
+    },
+    {
+      "url": "...GetFeature&typeNames=cp:CadastralParcel&count=2&bbox=385000,6672000,385400,6672300,EPSG:3067 (Helsinki)",
+      "method": "numberMatched=29 numberReturned=2 gml:Polygon parcels",
+      "httpStatus": "GET",
+      "contentType": 200,
+      "assessment": "text/xml; subtype=gml/3.2"
+    },
+    {
+      "url": "...same, bbox=440000,7375000,440400,7375300,EPSG:3067 (Rovaniemi, Lapland)",
+      "method": "numberMatched=13 numberReturned=2",
+      "httpStatus": "GET",
+      "contentType": 200,
+      "assessment": "text/xml; subtype=gml/3.2"
+    },
+    {
+      "url": "https://avoin-paikkatieto.maanmittauslaitos.fi/kiinteisto-avoin/simple-features/v3/collections",
+      "method": "API key required for the OGC API endpoint",
+      "httpStatus": "GET",
+      "contentType": 401,
+      "assessment": null
+    }
+  ],
+  "verifiedParcelResponse": {
+    "sourceId": "fi-mml-inspire-cp-wfs",
+    "requestUrl": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp:CadastralParcel&count=2&bbox=385000,6672000,385400,6672300,urn:ogc:def:crs:EPSG::3067",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "text/xml; subtype=gml/3.2",
+    "spatialTestAreaLonLat": "EPSG:3067 385000,6672000-385400,6672300 (Helsinki)",
+    "parcelRecordCount": 2,
+    "recordListPath": "wfs:member/cp:CadastralParcel",
+    "geometryType": "Polygon (GML 3.2)",
+    "closedRings": true,
+    "idField": "gml:id FI_CP_CADASTRALPARCEL_*",
+    "responseFile": "countries/FI-parcel-response.gml",
+    "pagination": "WFS 2.0 count/startIndex",
+    "regionSampled": "Helsinki and Rovaniemi"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Finland-wide INSPIRE Cadastral Parcels",
+    "regionsVerified": [
+      "Helsinki (uusimaa)",
+      "Rovaniemi (Lapland)"
+    ],
+    "nationwideVerified": true
+  },
+  "accessModel": "open",
+  "remainingUncertainty": "Licence not read (MML open data is generally CC BY 4.0, unverified here). Axis order for EPSG:4258 bbox tricky; use EPSG:3067.",
+  "nextStep": "Read MML licence; use paging for bulk; consider avoin-paikkatieto API key for OGC API Features."
+}

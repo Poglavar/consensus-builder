@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:5368361",
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_county_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "us-ca-lacounty-assessor-parcels",
+    "requestUrl": "https://public.gis.lacounty.gov/public/rest/services/LACounty_Cache/LACounty_Parcel/MapServer/0/query?where=1%3D1&geometry=%7B%22xmin%22%3A-118.2445%2C%22ymin%22%3A34.0515%2C%22xmax%22%3A-118.2425%2C%22ymax%22%3A34.0530%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CAIN%2CAPN&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=UTF-8",
+    "spatialTestAreaLonLat": [-118.2445, 34.0515, -118.2425, 34.053],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "AIN (APN is the formatted form)",
+    "responseFile": "los-angeles-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true; maxRecordCount=1000"
+  },
+  "portalsFound": [
+    {"url": "https://egis-lacounty.hub.arcgis.com/documents/4d67b154ae614d219c58535659128e71/about", "observation": "County eGIS describes current Assessor parcel boundaries for about 2.4 million parcels, updated monthly, downloadable as file geodatabase or shapefile."},
+    {"url": "https://egis-lacounty.hub.arcgis.com/pages/terms-of-use", "observation": "County GIS terms grant a license to copy, publish, distribute, adapt and exploit the data commercially, subject to the terms; the full conditions still need review before redistribution."},
+    {"url": "https://public.gis.lacounty.gov/public/rest/services/LACounty_Cache/LACounty_Parcel/MapServer", "observation": "Public MapServer with a queryable Parcels polygon layer (Map,Query,Data), native CRS EPSG:3857, JSON/geoJSON/PBF query formats, copyright Los Angeles County Office of the Assessor."}
+  ],
+  "requests": [
+    {"url": "https://public.gis.lacounty.gov/public/rest/services/LACounty_Cache/LACounty_Parcel/MapServer?f=json", "method": "GET", "httpStatus": 200, "contentType": "application/json;charset=UTF-8", "geometryType": "esriGeometryPolygon", "maxRecordCount": 1000, "assessment": "service description only; not counted as verification"}
+  ],
+  "coverageAssessment": {"claimedScope": "Los Angeles County; the UN urban agglomeration also extends into Orange, Riverside, San Bernardino and Ventura counties, which this source does not cover", "verifiedOpenScope": "three downtown Los Angeles parcels in a bounded sample", "countrywideVerified": false},
+  "remainingUncertainty": "Neighbouring counties need their own sources. The bounded sample does not prove completeness across the county; the cached map service's stability for runtime use and the terms' attribution conditions need review.",
+  "nextStep": "Find and test Orange County's parcel source for the rest of the agglomeration; implement bounded, paginated ArcGIS requests."
+}

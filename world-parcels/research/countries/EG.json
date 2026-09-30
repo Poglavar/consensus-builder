@@ -1,0 +1,57 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "EG",
+ "country": "Egypt",
+ "checkedAt": "2026-09-29",
+ "status": "no_online_cadastre_found",
+ "cadastreAuthority": "Egyptian Survey Authority (ESA) - national property database / cadastral mandate",
+ "portalsFound": [
+  {
+   "url": "https://www.esa.gov.eg/benya.aspx",
+   "observation": "ESA describes a national property database; no parcel query endpoint (reachable, HTTP 200)."
+  },
+  {
+   "url": "https://geoportal.mwri.gov.eg/portal",
+   "observation": "Water-resources geoportal; no parcel layers (from alexandria.json)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.esa.gov.eg/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=utf-8",
+   "assessment": "official site reachable; no public parcel service linked"
+  },
+  {
+   "url": "https://www.esa.gov.eg/benya.aspx",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=utf-8",
+   "assessment": "description only"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Egypt%20cadastral%20parcels&f=json&num=5",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "application/json",
+   "assessment": "zero results"
+  },
+  {
+   "url": "https://geoportal.egypt.gov.eg/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (tunnel failure/connection reset); temporarily unavailable, not proof of absence"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "national database described",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "A restricted or in-person ESA database may exist; absence of a public endpoint only reflects what was reachable.",
+ "nextStep": "Look for ESA e-services or licensed data channels; retry the geoportal host."
+}

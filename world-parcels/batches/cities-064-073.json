@@ -1,0 +1,112 @@
+[
+ {
+  "name": "Chengdu",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 6602,
+  "capital": false,
+  "lon": 104.046029731707,
+  "lat": 30.6722990667209,
+  "pop2025k": 6139.874,
+  "rank": 64
+ },
+ {
+  "name": "Nairobi",
+  "country": "Kenya",
+  "iso2": "KE",
+  "cityCode": 2033,
+  "capital": true,
+  "lon": 36.845161927435,
+  "lat": -1.26592113731299,
+  "pop2025k": 6134.334,
+  "rank": 65
+ },
+ {
+  "name": "Kozhikode",
+  "country": "India",
+  "iso2": "IN",
+  "cityCode": 9587,
+  "capital": false,
+  "lon": 75.8583486485998,
+  "lat": 11.2059147426276,
+  "pop2025k": 6123.872,
+  "rank": 66
+ },
+ {
+  "name": "Shenyang",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 10098,
+  "capital": false,
+  "lon": 123.388989217199,
+  "lat": 41.796815705277,
+  "pop2025k": 5702.638,
+  "rank": 67
+ },
+ {
+  "name": "Kābul (Kabul)",
+  "country": "Afghanistan",
+  "iso2": "AF",
+  "cityCode": 4703,
+  "capital": true,
+  "lon": 69.1552204695761,
+  "lat": 34.5297462873789,
+  "pop2025k": 5635.737,
+  "rank": 68
+ },
+ {
+  "name": "Onitsha",
+  "country": "Nigeria",
+  "iso2": "NG",
+  "cityCode": 7330,
+  "capital": false,
+  "lon": 6.82053185724296,
+  "lat": 6.17349813029485,
+  "pop2025k": 5627.706,
+  "rank": 69
+ },
+ {
+  "name": "Yangon",
+  "country": "Myanmar",
+  "iso2": "MM",
+  "cityCode": 5433,
+  "capital": false,
+  "lon": 96.145394871956,
+  "lat": 16.8617300599396,
+  "pop2025k": 5618.303,
+  "rank": 70
+ },
+ {
+  "name": "Accra",
+  "country": "Ghana",
+  "iso2": "GH",
+  "cityCode": 3336,
+  "capital": true,
+  "lon": -0.210576368296996,
+  "lat": 5.60366263373368,
+  "pop2025k": 5592.78,
+  "rank": 71
+ },
+ {
+  "name": "Madrid",
+  "country": "Spain",
+  "iso2": "ES",
+  "cityCode": 3440,
+  "capital": true,
+  "lon": -3.70761468237855,
+  "lat": 40.4051902313398,
+  "pop2025k": 5583.601,
+  "rank": 72
+ },
+ {
+  "name": "Faisalabad",
+  "country": "Pakistan",
+  "iso2": "PK",
+  "cityCode": 7724,
+  "capital": false,
+  "lon": 73.0869945908686,
+  "lat": 31.4233255346028,
+  "pop2025k": 5566.382,
+  "rank": 73
+ }
+]

@@ -1,0 +1,63 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "IL",
+ "regionName": "Illinois",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "source": {
+  "sourceId": "us-il-cook-county-clerk-parcels-2021",
+  "name": "ccgisdata - Parcel 2021 (Cook County Open Data, dataset 77tz-riq7)",
+  "operator": "Cook County Clerk / Cook County GIS",
+  "scope": "Cook County only (includes Chicago)",
+  "endpoint": "https://datacatalog.cookcountyil.gov/resource/77tz-riq7.json",
+  "method": "GET Socrata SoQL within_box",
+  "responseFormat": "JSON with GeoJSON MultiPolygon the_geom",
+  "crs": "EPSG:4326",
+  "reuseStatus": "Dataset license shown as \"See Terms of Use\"; terms not read. Vintage 2021 per dataset title."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-il-cook-county-clerk-parcels-2021",
+  "requestUrl": "https://datacatalog.cookcountyil.gov/resource/77tz-riq7.json?$select=pin10,the_geom&$where=within_box(the_geom,41.8726,-87.7080,41.8736,-87.7068)&$limit=3",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=utf-8",
+  "spatialTestAreaLonLat": [
+   -87.708,
+   41.8726,
+   -87.7068,
+   41.8736
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "$ (top-level array)",
+  "geometryType": "MultiPolygon (GeoJSON in the_geom)",
+  "closedRings": true,
+  "idField": "pin10",
+  "responseFile": "IL-parcel-response.json",
+  "pagination": "Socrata $limit/$offset"
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-US,en;q=0.9; cookie jar kept; no headers-dependent change observed",
+ "regionWideClaimed": false,
+ "regionWideBasis": "No statewide Illinois parcel layer found or claimed; assessment is county based. Cook County evidence reused from research/chicago.json and re-requested today.",
+ "subregionsVerified": [
+  "Cook County (Chicago)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://datacatalog.cookcountyil.gov/resource/77tz-riq7",
+   "observation": "Cook County Socrata parcels"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://datacatalog.cookcountyil.gov/resource/77tz-riq7.json?$select=pin10,the_geom&$where=within_box(the_geom,41.8726,-87.7080,41.8736,-87.7068)&$limit=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=utf-8",
+   "assessment": "3 parcel polygons with pin10 (first attempt in this session returned an empty body, retry succeeded)"
+  }
+ ],
+ "reuseStatus": "Terms not read.",
+ "remainingUncertainty": "Other Illinois counties and any statewide clearinghouse layer not probed; Cook vintage may be older than current.",
+ "nextStep": "Probe DuPage/Lake/Will county services and the Illinois Geospatial Data Clearinghouse."
+}

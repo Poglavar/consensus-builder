@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:109",
+  "queueRank": 109,
+  "name": "Douala",
+  "country": "Cameroon",
+  "countryCode": "CM",
+  "centerLatLon": [
+    4.05134876751942,
+    9.73966468522168
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.mindcaf.gov.cm/",
+      "observation": "Ministry of State Property, Surveys and Land Tenure (MINDCAF); land-titling authority, homepage only."
+    },
+    {
+      "url": "https://www.minhdu.gov.cm/",
+      "observation": "Ministry of Housing and Urban Development homepage."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.mindcaf.gov.cm/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "ministry homepage; no open parcel service found"
+    },
+    {
+      "url": "https://www.minhdu.gov.cm/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "ministry homepage only"
+    },
+    {
+      "url": "https://opendata.arcgis.com/api/v3/search?q=douala%20parcelles",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "only story maps and embassy layers; 'Parcelles' hit is from an unrelated French service"
+    },
+    {
+      "url": "https://mnpc.gov.cm/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no response"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Cameroon land tenure records (no online parcel layer found)",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "No public GIS or open-data portal for Cameroonian cadastre was found; a private or paper-based system is likely but not confirmed.",
+  "nextStep": "Check for a MINDCAF land information system or Douala city council GIS project (e.g. donor-funded)."
+}

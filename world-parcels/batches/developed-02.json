@@ -1,0 +1,50 @@
+[
+ {
+  "iso2": "CL",
+  "name": "Chile",
+  "previousStatus": "subnational_only",
+  "previousEvidence": [
+   "research/countries/CL.json",
+   "research/retry/countries/CL.json"
+  ],
+  "hints": "SII (Servicio de Impuestos Internos) 'Mapas' viewer and its backing services; IDE Chile (ide.cl / geoportal.cl CSW) catalogue for 'predios' / 'roles'; MINVU geoide.minvu.cl server folders (Valparaíso PREDIOS verified, list other regions' PREDIOS_* services); INE. Aim: a national or multi-region official predio layer. Two regions: Santiago and Concepción or Antofagasta."
+ },
+ {
+  "iso2": "UY",
+  "name": "Uruguay",
+  "previousStatus": "partial_or_unofficial_sample",
+  "previousEvidence": [
+   "research/countries/UY.json"
+  ],
+  "hints": "Dirección Nacional de Catastro (catastro.gub.uy) and the national IDE (ide.uy / geoservicios.ide.uy or visualizador.ide.uy): look for 'parcelario' WFS/WMS on the IDEuy GeoServer and the Catastro 'Sistema de Información Territorial'. We only found a bulk DXF. Two regions: Montevideo and Salto."
+ },
+ {
+  "iso2": "CO",
+  "name": "Colombia",
+  "previousStatus": "subnational_only",
+  "previousEvidence": [
+   "research/countries/CO.json"
+  ],
+  "hints": "IGAC (igac.gov.co) 'Datos Abiertos Catastro' / 'Colombia en Mapas' (colombiaenmapas.gov.co) and the ArcGIS services behind it (geoportal.igac.gov.co / catastro ArcGIS REST); also ANT and SNC. IGAC hosts returned 500 before; retry with browser headers and inspect the Colombia en Mapas viewer JS for the FeatureServer. Bogotá, Medellín and Cali are verified municipal services. Two regions from a national service: e.g. Manizales and Barranquilla."
+ },
+ {
+  "iso2": "PE",
+  "name": "Peru",
+  "previousStatus": "temporarily_unavailable",
+  "previousEvidence": [
+   "research/countries/PE.json",
+   "research/retry/countries/PE.json"
+  ],
+  "hints": "GeoPerú / GeoIDEP (geoidep.gob.pe, geoperu.gob.pe) sat behind a Cloudflare challenge; SBN (Superintendencia Nacional de Bienes Estatales), COFOPRI 'Catastro' and municipal SAT/ICL Lima. Inspect GeoPerú's layer catalogue API for a 'predios'/'catastro' layer; also MINAGRI SICAR rural. Two regions: Lima and Arequipa."
+ },
+ {
+  "iso2": "PA",
+  "name": "Panama",
+  "previousStatus": "temporarily_unavailable",
+  "previousEvidence": [
+   "research/countries/PA.json",
+   "research/retry/countries/PA.json"
+  ],
+  "hints": "ANATI (anati.gob.pa) and the national IDE (IGN Tommy Guardia / IDE Panamá, ide.gob.pa?) plus Panama City's municipal geoportal (mupa.gob.pa). Look for a catastro WFS/ArcGIS endpoint. Two regions: Panama City and David."
+ }
+]

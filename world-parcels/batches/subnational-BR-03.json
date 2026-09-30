@@ -1,0 +1,65 @@
+[
+ {
+  "iso2": "BR",
+  "country": "Brazil",
+  "regionCode": "RJ",
+  "regionName": "Rio de Janeiro",
+  "hints": "Brazil has no national urban cadastre; SICAR (rural, self-declared) is national but not the legal cadastre. Look for the STATE geoportal / IDE (e.g. IDE-SP, IEDE-RS, GeoSC, IDE-MG, IDE-PE, GeoPortal ES) and, if no state urban-lot layer exists, the capital city's 'lotes' layer (many prefeituras publish GeoServer WFS or ArcGIS: São Paulo lotes fiscais verified; Rio 'Lotes' verified; Recife verified; Curitiba verified; Fortaleza partial; Belo Horizonte blocked by WAF; Salvador negative). Many .gov.br hosts return 403 to bare requests: use browser headers and Referer. Record whether the layer is urban lots (IPTU) or rural (SICAR/INCRA SIGEF)."
+ },
+ {
+  "iso2": "BR",
+  "country": "Brazil",
+  "regionCode": "RN",
+  "regionName": "Rio Grande do Norte",
+  "hints": "Brazil has no national urban cadastre; SICAR (rural, self-declared) is national but not the legal cadastre. Look for the STATE geoportal / IDE (e.g. IDE-SP, IEDE-RS, GeoSC, IDE-MG, IDE-PE, GeoPortal ES) and, if no state urban-lot layer exists, the capital city's 'lotes' layer (many prefeituras publish GeoServer WFS or ArcGIS: São Paulo lotes fiscais verified; Rio 'Lotes' verified; Recife verified; Curitiba verified; Fortaleza partial; Belo Horizonte blocked by WAF; Salvador negative). Many .gov.br hosts return 403 to bare requests: use browser headers and Referer. Record whether the layer is urban lots (IPTU) or rural (SICAR/INCRA SIGEF)."
+ },
+ {
+  "iso2": "BR",
+  "country": "Brazil",
+  "regionCode": "RS",
+  "regionName": "Rio Grande do Sul",
+  "hints": "Brazil has no national urban cadastre; SICAR (rural, self-declared) is national but not the legal cadastre. Look for the STATE geoportal / IDE (e.g. IDE-SP, IEDE-RS, GeoSC, IDE-MG, IDE-PE, GeoPortal ES) and, if no state urban-lot layer exists, the capital city's 'lotes' layer (many prefeituras publish GeoServer WFS or ArcGIS: São Paulo lotes fiscais verified; Rio 'Lotes' verified; Recife verified; Curitiba verified; Fortaleza partial; Belo Horizonte blocked by WAF; Salvador negative). Many .gov.br hosts return 403 to bare requests: use browser headers and Referer. Record whether the layer is urban lots (IPTU) or rural (SICAR/INCRA SIGEF)."
+ },
+ {
+  "iso2": "BR",
+  "country": "Brazil",
+  "regionCode": "RO",
+  "regionName": "Rondônia",
+  "hints": "Brazil has no national urban cadastre; SICAR (rural, self-declared) is national but not the legal cadastre. Look for the STATE geoportal / IDE (e.g. IDE-SP, IEDE-RS, GeoSC, IDE-MG, IDE-PE, GeoPortal ES) and, if no state urban-lot layer exists, the capital city's 'lotes' layer (many prefeituras publish GeoServer WFS or ArcGIS: São Paulo lotes fiscais verified; Rio 'Lotes' verified; Recife verified; Curitiba verified; Fortaleza partial; Belo Horizonte blocked by WAF; Salvador negative). Many .gov.br hosts return 403 to bare requests: use browser headers and Referer. Record whether the layer is urban lots (IPTU) or rural (SICAR/INCRA SIGEF)."
+ },
+ {
+  "iso2": "BR",
+  "country": "Brazil",
+  "regionCode": "RR",
+  "regionName": "Roraima",
+  "hints": "Brazil has no national urban cadastre; SICAR (rural, self-declared) is national but not the legal cadastre. Look for the STATE geoportal / IDE (e.g. IDE-SP, IEDE-RS, GeoSC, IDE-MG, IDE-PE, GeoPortal ES) and, if no state urban-lot layer exists, the capital city's 'lotes' layer (many prefeituras publish GeoServer WFS or ArcGIS: São Paulo lotes fiscais verified; Rio 'Lotes' verified; Recife verified; Curitiba verified; Fortaleza partial; Belo Horizonte blocked by WAF; Salvador negative). Many .gov.br hosts return 403 to bare requests: use browser headers and Referer. Record whether the layer is urban lots (IPTU) or rural (SICAR/INCRA SIGEF)."
+ },
+ {
+  "iso2": "BR",
+  "country": "Brazil",
+  "regionCode": "SC",
+  "regionName": "Santa Catarina",
+  "hints": "Brazil has no national urban cadastre; SICAR (rural, self-declared) is national but not the legal cadastre. Look for the STATE geoportal / IDE (e.g. IDE-SP, IEDE-RS, GeoSC, IDE-MG, IDE-PE, GeoPortal ES) and, if no state urban-lot layer exists, the capital city's 'lotes' layer (many prefeituras publish GeoServer WFS or ArcGIS: São Paulo lotes fiscais verified; Rio 'Lotes' verified; Recife verified; Curitiba verified; Fortaleza partial; Belo Horizonte blocked by WAF; Salvador negative). Many .gov.br hosts return 403 to bare requests: use browser headers and Referer. Record whether the layer is urban lots (IPTU) or rural (SICAR/INCRA SIGEF)."
+ },
+ {
+  "iso2": "BR",
+  "country": "Brazil",
+  "regionCode": "SP",
+  "regionName": "São Paulo",
+  "hints": "Brazil has no national urban cadastre; SICAR (rural, self-declared) is national but not the legal cadastre. Look for the STATE geoportal / IDE (e.g. IDE-SP, IEDE-RS, GeoSC, IDE-MG, IDE-PE, GeoPortal ES) and, if no state urban-lot layer exists, the capital city's 'lotes' layer (many prefeituras publish GeoServer WFS or ArcGIS: São Paulo lotes fiscais verified; Rio 'Lotes' verified; Recife verified; Curitiba verified; Fortaleza partial; Belo Horizonte blocked by WAF; Salvador negative). Many .gov.br hosts return 403 to bare requests: use browser headers and Referer. Record whether the layer is urban lots (IPTU) or rural (SICAR/INCRA SIGEF)."
+ },
+ {
+  "iso2": "BR",
+  "country": "Brazil",
+  "regionCode": "SE",
+  "regionName": "Sergipe",
+  "hints": "Brazil has no national urban cadastre; SICAR (rural, self-declared) is national but not the legal cadastre. Look for the STATE geoportal / IDE (e.g. IDE-SP, IEDE-RS, GeoSC, IDE-MG, IDE-PE, GeoPortal ES) and, if no state urban-lot layer exists, the capital city's 'lotes' layer (many prefeituras publish GeoServer WFS or ArcGIS: São Paulo lotes fiscais verified; Rio 'Lotes' verified; Recife verified; Curitiba verified; Fortaleza partial; Belo Horizonte blocked by WAF; Salvador negative). Many .gov.br hosts return 403 to bare requests: use browser headers and Referer. Record whether the layer is urban lots (IPTU) or rural (SICAR/INCRA SIGEF)."
+ },
+ {
+  "iso2": "BR",
+  "country": "Brazil",
+  "regionCode": "TO",
+  "regionName": "Tocantins",
+  "hints": "Brazil has no national urban cadastre; SICAR (rural, self-declared) is national but not the legal cadastre. Look for the STATE geoportal / IDE (e.g. IDE-SP, IEDE-RS, GeoSC, IDE-MG, IDE-PE, GeoPortal ES) and, if no state urban-lot layer exists, the capital city's 'lotes' layer (many prefeituras publish GeoServer WFS or ArcGIS: São Paulo lotes fiscais verified; Rio 'Lotes' verified; Recife verified; Curitiba verified; Fortaleza partial; Belo Horizonte blocked by WAF; Salvador negative). Many .gov.br hosts return 403 to bare requests: use browser headers and Referer. Record whether the layer is urban lots (IPTU) or rural (SICAR/INCRA SIGEF)."
+ }
+]

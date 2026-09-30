@@ -1,0 +1,112 @@
+[
+ {
+  "name": "Toronto",
+  "country": "Canada",
+  "iso2": "CA",
+  "cityCode": 2925,
+  "capital": false,
+  "lon": -79.4735743414679,
+  "lat": 43.7195058480876,
+  "pop2025k": 5494.431,
+  "rank": 74
+ },
+ {
+  "name": "Mashhad",
+  "country": "Iran (Islamic Republic of)",
+  "iso2": "IR",
+  "cityCode": 7072,
+  "capital": false,
+  "lon": 59.4884414222244,
+  "lat": 36.3417045946513,
+  "pop2025k": 5398.248,
+  "rank": 75
+ },
+ {
+  "name": "Dubai",
+  "country": "United Arab Emirates",
+  "iso2": "AE",
+  "cityCode": 865,
+  "capital": false,
+  "lon": 55.3424842471265,
+  "lat": 25.2660457368685,
+  "pop2025k": 5283.789,
+  "rank": 76
+ },
+ {
+  "name": "Xi'an",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 8371,
+  "capital": false,
+  "lon": 108.94684185227,
+  "lat": 34.2548749159638,
+  "pop2025k": 5231.053,
+  "rank": 77
+ },
+ {
+  "name": "Sri Jayawardenepura Kotte - Colombo",
+  "country": "Sri Lanka",
+  "iso2": "LK",
+  "cityCode": 615,
+  "capital": true,
+  "lon": 79.9212854446979,
+  "lat": 6.91944652502954,
+  "pop2025k": 5223.838,
+  "rank": 78
+ },
+ {
+  "name": "Yaoundé",
+  "country": "Cameroon",
+  "iso2": "CM",
+  "cityCode": 2324,
+  "capital": true,
+  "lon": 11.5177122171369,
+  "lat": 3.84966629078637,
+  "pop2025k": 5106.087,
+  "rank": 79
+ },
+ {
+  "name": "Kochi",
+  "country": "India",
+  "iso2": "IN",
+  "cityCode": 9765,
+  "capital": false,
+  "lon": 76.3088105504372,
+  "lat": 10.0612792171801,
+  "pop2025k": 5077.67,
+  "rank": 80
+ },
+ {
+  "name": "Hà Nội (Hanoi)",
+  "country": "Viet Nam",
+  "iso2": "VN",
+  "cityCode": 1975,
+  "capital": true,
+  "lon": 105.836912720905,
+  "lat": 21.0118048844826,
+  "pop2025k": 5068.414,
+  "rank": 81
+ },
+ {
+  "name": "Lucknow",
+  "country": "India",
+  "iso2": "IN",
+  "cityCode": 9717,
+  "capital": false,
+  "lon": 80.9654352206033,
+  "lat": 26.8615244724503,
+  "pop2025k": 5052.444,
+  "rank": 82
+ },
+ {
+  "name": "Chattogram",
+  "country": "Bangladesh",
+  "iso2": "BD",
+  "cityCode": 7537,
+  "capital": false,
+  "lon": 91.8103998549196,
+  "lat": 22.3728677361523,
+  "pop2025k": 4983.553,
+  "rank": 83
+ }
+]

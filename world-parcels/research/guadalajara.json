@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:108",
+  "queueRank": 108,
+  "name": "Guadalajara",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "centerLatLon": [
+    20.6567869138028,
+    -103.347430134243
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://catastro.jalisco.gob.mx/",
+      "observation": "Dirección de Catastro del Estado de Jalisco page offers 'Consultar cartografía', valores catastrales, 3D model and LiDAR pages; no documented open parcel service seen."
+    },
+    {
+      "url": "https://www.inegi.org.mx/app/mapa/espacioydatos/",
+      "observation": "INEGI Espacio y Datos viewer; national geostatistical framework has blocks (manzanas), not cadastral parcels."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://catastro.jalisco.gob.mx/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "state cadastre landing page only"
+    },
+    {
+      "url": "https://opendata.arcgis.com/api/v3/search?q=catastro%20jalisco%20predios",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "no Guadalajara predios layer among results"
+    },
+    {
+      "url": "https://opendata.arcgis.com/api/v3/search?q=predios%20guadalajara",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "top hit 'Catastro Guadalajara' feature service is from an unrelated Guadalajara (Spain, with 'POM' planning layers); not used"
+    },
+    {
+      "url": "https://www.inegi.org.mx/app/mapa/espacioydatos/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "viewer page only"
+    },
+    {
+      "url": "https://datos.guadalajara.gob.mx/api/3/action/package_search?q=predio&rows=5",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "no such CKAN API at guess URL"
+    },
+    {
+      "url": "https://sigmapas.guadalajara.gob.mx/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no response"
+    },
+    {
+      "url": "https://datos.jalisco.gob.mx/api/3/action/package_search?q=predios&rows=5",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no response"
+    },
+    {
+      "url": "https://iit.jalisco.gob.mx/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no response"
+    },
+    {
+      "url": "https://sitios.zapopan.gob.mx/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no response"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Jalisco state / Guadalajara municipality cadastre (unverified)",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Several municipal/state GIS hosts did not respond from this client, so the negative is weak. The metropolitan area spans Guadalajara, Zapopan, Tlaquepaque, Tonalá and others, each with its own catastro.",
+  "nextStep": "Retry IDEJalisco and municipal GIS hosts; look for a documented ArcGIS/WFS predios layer and test a small bbox."
+}

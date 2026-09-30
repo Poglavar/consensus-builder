@@ -1,0 +1,46 @@
+{
+ "kind": "country",
+ "key": "SD",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: ar-SD,ar;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.ssa.gov.sd/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed at proxy CONNECT/TLS (curl exit, no HTTP reply); same on retry with browser headers"
+  },
+  {
+   "url": "https://ssa.gov.sd/ | https://www.moj.gov.sd/ | https://www.gov.sd/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed at proxy CONNECT/TLS (curl exit, no HTTP reply); same on retry with browser headers"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Sudan%20cadastre%20parcels&f=json&num=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 results"
+  },
+  {
+   "url": "https://data.humdata.org/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "HDX homepage only; no parcel dataset queried"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "",
+ "notes": "All Sudanese government hosts fail at connection level; no ArcGIS Online parcel content. Conflict-related outages plausible; not proof of absence.",
+ "nextStep": "Retry later; search HDX/Khartoum State land registry datasets."
+}

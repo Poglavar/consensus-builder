@@ -1,0 +1,32 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AZ",
+ "country": "Azerbaijan",
+ "checkedAt": "2026-09-29",
+ "status": "no_online_cadastre_found",
+ "cadastreAuthority": "State Service on Property Issues (emlak.gov.az) and its State Cadastre and Registry of Real Estate PLE",
+ "portalsFound": [
+  {
+   "url": "https://emlak.gov.az/en",
+   "observation": "Agency site reachable; no public parcel map link found. FIG paper describes a national digital land cadastre information system (internal)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://emlak.gov.az/en",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "homepage; only sitemap link, no map endpoint",
+   "contentType": "text/html"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Digital land cadastre covering national territory (per FIG paper); no public service found",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Only homepage and web search checked; a public map (e.g. under e-gov or Cadastre map subdomain) could exist.",
+ "nextStep": "Search Azerbaijani-language terms (kadastr xerite) and ARXKOM urban cadastre."
+}

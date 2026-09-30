@@ -1,0 +1,74 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "BR",
+ "regionCode": "MT",
+ "regionName": "Mato Grosso",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "layerKind": "rural_car_self_declared_not_urban_lots",
+ "source": {
+  "sourceId": "br-sicar-car-imoveis",
+  "name": "SICAR/CAR rural property perimeters, layer sicar:sicar_imoveis_mt",
+  "operator": "Serviço Florestal Brasileiro (SICAR / Cadastro Ambiental Rural)",
+  "scope": "Mato Grosso, rural properties self-declared in the CAR (not the legal cadastre, not urban lots)",
+  "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+  "method": "GET WFS 2.0.0 GetFeature",
+  "responseFormat": "GeoJSON",
+  "crs": "EPSG:4326",
+  "reuseStatus": "licence text not read"
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: application/json,text/html,application/xhtml+xml,*/*;q=0.8; Accept-Language: pt-BR,pt;q=0.9; Referer: https://consultapublica.car.gov.br/; cookie jar used; no token required",
+ "verifiedParcelResponse": {
+  "sourceId": "br-sicar-car-imoveis",
+  "requestUrl": "https://geoserver.car.gov.br/geoserver/sicar/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_mt&count=3&outputFormat=application/json&propertyName=cod_imovel,geo_area_imovel&bbox=-56.00,-15.90,-55.98,-15.88,EPSG:4326",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=utf-8",
+  "spatialTestAreaLonLat": [
+   -56.0,
+   -15.9,
+   -55.98,
+   -15.88
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "cod_imovel",
+  "responseFile": "MT-parcel-response.json",
+  "pagination": "WFS startIndex/count"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "SICAR publishes one WFS layer per UF (sicar_imoveis_mt); CAR is mandatory nationwide for rural properties, but polygons are owner-declared. Statewide completeness not measured.",
+ "subregionsVerified": [],
+ "additionalSources": [],
+ "portalsFound": [
+  {
+   "url": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+   "observation": "SICAR GeoServer, per-state layers; WFS attribute 'geom' is not valid, geometry property is geo_area_imovel"
+  },
+  {
+   "url": "https://app.smartgis.net.br/cuiaba/publico/",
+   "observation": "Cuiabá municipal lot viewer (SmartGIS); API mixes tax data; not sampled"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geoserver.car.gov.br/geoserver/sicar/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_mt&count=3&outputFormat=application/json&propertyName=cod_imovel,geo_area_imovel&bbox=-56.00,-15.90,-55.98,-15.88,EPSG:4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=utf-8",
+   "assessment": "3 MultiPolygon rural properties, closed rings; only cod_imovel + geometry requested"
+  },
+  {
+   "url": "https://api.smartgis.net.br/cuiaba/prefeitura/api/PublicLote/Get/1",
+   "method": "GET",
+   "httpStatus": 400,
+   "contentType": "application/json",
+   "assessment": "Cuiabá SIGCuiabá public viewer (app.smartgis.net.br/cuiaba/publico) found via its JS; PublicLote endpoints return lot/tax (IPTU) records whose fields cannot be limited to ID+geometry, so no lot data was requested or saved"
+  }
+ ],
+ "reuseStatus": "licence not read",
+ "remainingUncertainty": "Rural CAR polygons are self-declared environmental registrations and can overlap; no state urban-lot layer was found. Capital/municipal urban cadastre not verified.",
+ "nextStep": "Check whether SIGCuiabá exposes an ID+geometry-only lot layer."
+}

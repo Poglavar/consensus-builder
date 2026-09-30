@@ -1,0 +1,87 @@
+{
+ "kind": "country",
+ "key": "MA",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: ar-MA,fr-MA;q=0.9,fr;q=0.8",
+ "changedByHeaders": true,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.ancfcc.gov.ma/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "200 with browser headers (previously 403); site nav lists e-services (chikaya, espacenotaire, espaceadoul, espaceigt, contentieux, facture) and cartography pages; no map viewer or service link"
+  },
+  {
+   "url": "https://www.ancfcc.gov.ma/nos-métiers/cartographie/produits/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "product pages, no data endpoint"
+  },
+  {
+   "url": "https://cadastre.ancfcc.gov.ma/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://carto.ancfcc.gov.ma/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://services.ancfcc.gov.ma/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://espaceigt.ancfcc.gov.ma",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "403 challenge page (surveyor e-space, professional login area)"
+  },
+  {
+   "url": "https://www.geoportail.ma/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://www.cadastre.ma/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://data.gov.ma/data/api/3/action/package_search?q=cadastre",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 datasets"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=ANCFCC%20cadastre&f=json&num=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 hits"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "Main ANCFCC site now loads with full headers (earlier 403), but no public parcel viewer or service was found; dedicated cadastre/carto hosts reset connections, possibly a Morocco-only restriction or nonexistent hosts.",
+ "nextStep": "Retry from a Morocco-reachable network; look for ANCFCC 'consultation en ligne' / Cadastre viewer; check INSPIRE-like Moroccan geoportal."
+}

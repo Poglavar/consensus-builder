@@ -1,0 +1,28 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "SO",
+ "checkedAt": "2026-09-29",
+ "country": "Somalia",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "None identified (no functioning national cadastre; municipal records e.g. Banadir Regional Administration)",
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://mopic.gov.so/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "subnationalServices": [],
+ "coverageAssessment": {
+  "claimedScope": "None found",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Government hosts unreachable; city-level pass for Mogadishu also found nothing. Absence of evidence only.",
+ "nextStep": "Look for Somaliland/Puntland land registry or donor-funded municipal GIS."
+}

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:1172451",
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {"url": "https://lis.pulse.gop.pk/", "observation": "Punjab PULSE public land-information map shows indicative Khasra boundaries, but no reusable bounded polygon endpoint was verified."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/Lahore", "observation": "Official Punjab Land Records Authority ArcGIS Lahore folder has no public services."},
+    {"url": "https://www.punjab-zameen.gov.pk/", "observation": "Provincial land-record authority provides record services; this is not evidence of a countrywide open parcel dataset."}
+  ],
+  "requests": [
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/Lahore?f=pjson", "method": "GET", "httpStatus": 200, "contentType": "text/plain;charset=UTF-8", "parcelRecordCount": 0, "response": {"currentVersion": 11.3, "folders": [], "services": []}}
+  ],
+  "coverageAssessment": {"claimedScope": "Punjab province PULSE map; Lahore folder empty", "verifiedOpenScope": "none", "countrywideVerified": false},
+  "remainingUncertainty": "The PULSE viewer may retrieve parcels through a protected service; open API access, Lahore extent, and reuse rights need verification.",
+  "nextStep": "Inspect documented PULSE API access and test a small Lahore khasra polygon query if permitted."
+}

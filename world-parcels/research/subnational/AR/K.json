@@ -1,0 +1,46 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "regionCode": "K",
+ "regionName": "Catamarca",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR,es;q=0.9; cookie jar; viewer-origin Referer",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "none",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://cfcatastro.gob.ar/nuestros-catastros/",
+   "observation": "CFC list of provincial cadastres; no service URL found"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://catastro.catamarca.gov.ar/, https://ide.catamarca.gov.ar/, https://mapas.catamarca.gob.ar/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT 502 / DNS failure"
+  },
+  {
+   "url": "https://www.catamarca.gob.ar/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "JS challenge page; not bypassed"
+  },
+  {
+   "url": "https://www.portal.catamarca.gob.ar/organismo/administracion-general-de-catastro-82/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "TLS handshake failure"
+  }
+ ],
+ "reuseStatus": "n/a",
+ "remainingUncertainty": "The real Catamarca cadastre geoportal was not located; candidate hosts were unreachable from this network (not a permanent negative).",
+ "nextStep": "Retry later from another network; find the Administración General de Catastro viewer domain via IDERA."
+}

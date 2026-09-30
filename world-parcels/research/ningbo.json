@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:161",
+  "queueRank": 161,
+  "name": "Ningbo",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    29.9132916963759,
+    121.56263122907
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "observation": "National Tianditu platform returned an 418 WAF block page from this network."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://zrzyghj.ningbo.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy 502 host unreachable"
+    },
+    {
+      "url": "https://www.ningbo.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS SYSCALL error"
+    },
+    {
+      "url": "https://data.ningbo.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset"
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 418,
+      "contentType": "text/html",
+      "assessment": "WAF block page"
+    },
+    {
+      "url": "https://ningbo.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy 502 host unreachable"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Ningbo parcel",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "0 results"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "unknown",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "All Ningbo/Chinese government hosts tested were unreachable or blocked; nothing is established either way. Chinese cadastral polygon data is generally not openly published.",
+  "nextStep": "Retry from a network able to reach .gov.cn portals; inspect Ningbo public data catalog and Ningbo Natural Resources & Planning Bureau map services."
+}

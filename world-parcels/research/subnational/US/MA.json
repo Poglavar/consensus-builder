@@ -1,0 +1,71 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "MA",
+ "regionName": "Massachusetts",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "source": {
+  "sourceId": "us-ma-level3-parcels",
+  "name": "Massachusetts Property Tax Parcels (MassGIS Level 3)",
+  "operator": "MassGIS (Bureau of Geographic Information)",
+  "scope": "Statewide Level 3 assessors parcels",
+  "endpoint": "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0",
+  "method": "GET ArcGIS REST /query",
+  "responseFormat": "Esri JSON polygons (rings)",
+  "crs": "requested outSR=4326",
+  "reuseStatus": "Terms/licence text not read on the service; see publisher page."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-ma-level3-parcels",
+  "requestUrl": "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0/query?where=1%3D1&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-71.0600%2C42.3580%2C-71.0585%2C42.3590&outFields=MAP_PAR_ID%2CLOC_ID",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": [
+   -71.06,
+   42.358,
+   -71.0585,
+   42.359
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "$.features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "MAP_PAR_ID",
+  "responseFile": "MA-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount (ArcGIS)"
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-US,en;q=0.9; cookie jar kept; no headers-dependent change observed",
+ "regionWideClaimed": true,
+ "regionWideBasis": "Layer description: \"MassGIS' Level 3 Assessors' Parcel Mapping data set ... Each community in the Commonwealth was bid on\"; copyright MassGIS.",
+ "subregionsVerified": [
+  "Suffolk County (Boston)",
+  "Hampden County (Springfield)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0?f=json",
+   "observation": "layer metadata, anonymous"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0/query?where=1%3D1&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-71.0600%2C42.3580%2C-71.0585%2C42.3590&outFields=MAP_PAR_ID%2CLOC_ID",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "3 parcel polygons with MAP_PAR_ID"
+  },
+  {
+   "url": "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0/query?where=1%3D1&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-72.5900%2C42.1010%2C-72.5885%2C42.1020&outFields=MAP_PAR_ID%2CLOC_ID",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "Springfield, Hampden: 3 polygons"
+  }
+ ],
+ "reuseStatus": "Terms/licence text not read on the service; see publisher page.",
+ "remainingUncertainty": "Per-town vintage varies (fiscal year field); owner/address fields exist but were not requested. Hosted on an ArcGIS Online org that is assumed, not confirmed, to be MassGIS-run.",
+ "nextStep": "Read MassGIS data-use terms; confirm official org."
+}

@@ -1,0 +1,88 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "ID",
+ "regionCode": "KU",
+ "regionName": "Kalimantan Utara",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "source": {
+  "sourceId": "id-big-satupeta-hak-milik",
+  "name": "BIG Satu Peta - Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000, sublayer 16 Kalimantan Utara",
+  "operator": "Badan Informasi Geospasial (BIG) Satu Peta, republishing Kementerian ATR/BPN data",
+  "scope": "Kalimantan Utara sublayer of group layer 10; 13733 features in total, bounding extent [116.5525, 2.9941, 117.9212, 4.1566] (lon/lat)",
+  "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/16",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "ArcGIS JSON (esriGeometryPolygon)",
+  "crs": "EPSG:4326 (outSR)",
+  "reuseStatus": "licence/terms not read; publicly reachable without token"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "id-big-satupeta-hak-milik",
+  "requestUrl": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/16/query?where=1%3D1&geometry=116.61070000000001,3.5349000000000004,116.6147,3.5389&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid,nib&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   116.61070000000001,
+   3.5349000000000004,
+   116.6147,
+   3.5389
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "nib (unique only with kelurahan; objectid is the OID)",
+  "responseFile": "KU-parcel-response.json",
+  "pagination": "ArcGIS resultRecordCount / resultOffset"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "Layer name says 1:5000 Hak Milik for Kalimantan Utara, but total feature count (13733) and extent show only sparse titled-parcel coverage; no statement of full-province coverage.",
+ "subregionsVerified": [
+  "Malinau/Bulungan-region interior (Kalimantan Utara, near 116.61E,3.54N)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer",
+   "observation": "Group layer 10 lists 15 province sublayers; this province has one"
+  },
+  {
+   "url": "https://bhumi.atrbpn.go.id/peta",
+   "observation": "ATR/BPN BHUMI viewer, HTTP 200 HTML; no open bulk endpoint found (token-gated, not probed further)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/10?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "sublayer list, includes Kalimantan Utara"
+  },
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/16/query (returnCountOnly, returnExtentOnly)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "count 13733, extent [116.5525, 2.9941, 117.9212, 4.1566]"
+  },
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/16/query (boxes +-0.0015/0.01/0.05 deg around Tanjung Selor (capital) area)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 features: capital area not covered"
+  },
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/16/query?where=1%3D1&geometry=116.61070000000001,3.5349000000000004,116.6147,3.5389&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid,nib&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 closed polygons with nib, ID+geometry only"
+  }
+ ],
+ "headersUsed": "User-Agent Chrome/126 desktop; Accept application/json; Accept-Language id-ID,id;q=0.9,en;q=0.8; cookie jar; Referer https://satupeta.big.go.id/",
+ "reuseStatus": "not read",
+ "remainingUncertainty": "Coverage is sparse and clustered away from the capital (Tanjung Selor (capital) area returned empty); licence and currency unread; provincial geoportal not found.",
+ "nextStep": "Read BIG/ATR-BPN terms; look for a provincial Simpul Jaringan parcel layer."
+}

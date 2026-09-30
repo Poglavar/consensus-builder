@@ -1,0 +1,124 @@
+{
+ "kind": "country",
+ "key": "JO",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: ar-JO,ar;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": {
+  "sourceId": "jo-dls-cassini-mapserver",
+  "requestUrl": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3/query?f=json&where=1%3D1&geometry=35.9100,31.9500,35.9130,31.9530&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&outSR=4326&returnGeometry=true&resultRecordCount=3",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   35.91,
+   31.95,
+   35.913,
+   31.953
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PARCEL_ID (with DLS_KEY, VILL_CODE, HOD_CODE)",
+  "responseFile": "research/retry/countries/JO-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount",
+  "regionSampled": "Amman (35.911E,31.951N); also Irbid bbox 35.8500,32.5500,35.8530,32.5530 returned 3 parcels; Aqaba 0"
+ },
+ "source": {
+  "sourceId": "jo-dls-cassini-mapserver",
+  "name": "DLS_Cassini MapServer layer 3 (Parcels / قطع الاراضي)",
+  "operator": "Department of Lands and Survey (DLS), Jordan",
+  "scope": "Public DLS web-map service used by the official viewer; parcels verified in Amman and Irbid; Aqaba bbox returned 0 features",
+  "endpoint": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "ArcGIS JSON (esriGeometryPolygon)",
+  "crs": "native Palestine_1923_Palestine_Grid (Cassini); outSR=4326 accepted",
+  "reuseStatus": "terms not read"
+ },
+ "requests": [
+  {
+   "url": "https://www.dls.gov.jo/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "previously 302; now loads; page links to https://maps.dls.gov.jo/dlsweb"
+  },
+  {
+   "url": "https://opendata.gov.jo/api/3/action/package_search?q=parcel&rows=3",
+   "method": "GET",
+   "httpStatus": 400,
+   "contentType": "application/json",
+   "assessment": "GET rejected ('use POST'); POST returned 200 with unrelated datasets"
+  },
+  {
+   "url": "https://landsurvey.gov.jo/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel 502"
+  },
+  {
+   "url": "https://eservices.dls.gov.jo/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "TLS verification failed (not bypassed)"
+  },
+  {
+   "url": "http://www.ammancitygis.gov.jo/ArcGIS/rest/services",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/plain",
+   "assessment": "upstream timeout again"
+  },
+  {
+   "url": "https://maps.dls.gov.jo/dlsweb/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "official DLS map viewer (ArcGIS JS 4.20, captcha iframe)"
+  },
+  {
+   "url": "https://maps.dls.gov.jo/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "anonymous service listing: DLS_Cassini, DLS_JTM_Service_STG, DLS_Layers_Service_STG, ..."
+  },
+  {
+   "url": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "layer 3 = parcels"
+  },
+  {
+   "url": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3/query?f=json&where=1%3D1&geometry=35.9100,31.9500,35.9130,31.9530&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&outSR=4326&returnGeometry=true&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygon parcels, Amman"
+  },
+  {
+   "url": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3/query?f=json&where=1%3D1&geometry=35.8500,32.5500,35.8530,32.5530&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&outSR=4326&returnGeometry=true&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygon parcels, Irbid"
+  },
+  {
+   "url": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3/query?f=json&where=1%3D1&geometry=35.0000,29.5300,35.0030,29.5330&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&outSR=4326&returnGeometry=true&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 features (Aqaba test bbox; not necessarily uncovered)"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "New: DLS ArcGIS Server at maps.dls.gov.jo answers anonymously with parcel polygons. Two distinct regions (Amman, Irbid) from same layer/schema, so nationwideVerified true per protocol (Aqaba bbox empty, so full country coverage is not confirmed). Some DLS records carry ORGANIZATION=GAM/Irbid Municipality origin. Service name suggests parts are STG; DLS_Cassini is production-named. No licence terms read. Previous failures were DLS host redirects/timeouts; headers were not the cause.",
+ "nextStep": "Read DLS terms of use; sample south (Aqaba/Ma'an) and check whether layer is complete; check layer maxRecordCount and whether viewer captcha applies to REST use."
+}

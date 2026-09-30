@@ -1,0 +1,185 @@
+{
+ "objectIdFieldName": "OBJECTID",
+ "uniqueIdField": {
+  "name": "OBJECTID",
+  "isSystemMaintained": true
+ },
+ "globalIdFieldName": "",
+ "geometryProperties": {
+  "shapeAreaFieldName": "Shape__Area",
+  "shapeLengthFieldName": "Shape__Length",
+  "units": "esriMeters"
+ },
+ "geometryType": "esriGeometryPolygon",
+ "spatialReference": {
+  "wkid": 4326,
+  "latestWkid": 4326
+ },
+ "fields": [
+  {
+   "name": "prop_pfi",
+   "type": "esriFieldTypeString",
+   "alias": "prop_pfi",
+   "sqlType": "sqlTypeOther",
+   "length": 10,
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "prop_lga_code",
+   "type": "esriFieldTypeString",
+   "alias": "prop_lga_code",
+   "sqlType": "sqlTypeOther",
+   "length": 3,
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "prop_property_type",
+   "type": "esriFieldTypeString",
+   "alias": "prop_property_type",
+   "sqlType": "sqlTypeOther",
+   "length": 1,
+   "domain": null,
+   "defaultValue": null
+  },
+  {
+   "name": "prop_status",
+   "type": "esriFieldTypeString",
+   "alias": "prop_status",
+   "sqlType": "sqlTypeOther",
+   "length": 1,
+   "domain": null,
+   "defaultValue": null
+  }
+ ],
+ "exceededTransferLimit": true,
+ "features": [
+  {
+   "attributes": {
+    "prop_pfi": "152244564",
+    "prop_lga_code": "307",
+    "prop_property_type": "O",
+    "prop_status": "A"
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       145.058543988379,
+       -37.8311419967
+      ],
+      [
+       145.058483864137,
+       -37.8314680210231
+      ],
+      [
+       145.058409941772,
+       -37.8314594558683
+      ],
+      [
+       145.058470066912,
+       -37.8311334208646
+      ],
+      [
+       145.058543988379,
+       -37.8311419967
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "attributes": {
+    "prop_pfi": "218896217",
+    "prop_lga_code": "307",
+    "prop_property_type": "O",
+    "prop_status": "A"
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       145.058543988379,
+       -37.8311419967
+      ],
+      [
+       145.058483864137,
+       -37.8314680210231
+      ],
+      [
+       145.058409941772,
+       -37.8314594558683
+      ],
+      [
+       145.058470066912,
+       -37.8311334208646
+      ],
+      [
+       145.058543988379,
+       -37.8311419967
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "attributes": {
+    "prop_pfi": "212203731",
+    "prop_lga_code": "307",
+    "prop_property_type": "O",
+    "prop_status": "A"
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       145.059450053429,
+       -37.8306298351697
+      ],
+      [
+       145.059468980034,
+       -37.8305406676677
+      ],
+      [
+       145.059585060335,
+       -37.8305541796653
+      ],
+      [
+       145.059670896157,
+       -37.8305650387856
+      ],
+      [
+       145.059884419411,
+       -37.8305897809714
+      ],
+      [
+       145.059917791824,
+       -37.8305920159413
+      ],
+      [
+       145.059921801904,
+       -37.8305454001309
+      ],
+      [
+       145.059913838339,
+       -37.8305056169216
+      ],
+      [
+       145.059958559168,
+       -37.8305104458811
+      ],
+      [
+       145.059942122694,
+       -37.8306892711239
+      ],
+      [
+       145.059450053429,
+       -37.8306298351697
+      ]
+     ]
+    ]
+   }
+  }
+ ]
+}

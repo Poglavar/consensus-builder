@@ -1,0 +1,60 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "regionCode": "S",
+ "regionName": "Santa Fe",
+ "checkedAt": "2026-09-30",
+ "status": "viewer_only",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR,es;q=0.9; cookie jar; viewer-origin Referer",
+ "source": {
+  "sourceId": "ar-santafe-idesf-wms-scit",
+  "name": "scit_parcelas (Parcelas - WMS SCIT)",
+  "operator": "Gobierno de Santa Fe, IDESF / SCIT",
+  "scope": "province (WMS extent lon -63.4..-57.9, lat -34.8..-27.7)",
+  "endpoint": "https://aswe.santafe.gov.ar/idesf/wms",
+  "method": "WMS 1.1.1 (image only)",
+  "responseFormat": "image/png",
+  "crs": "EPSG:4326/5347",
+  "reuseStatus": "Restricciones de Uso page exists, not read"
+ },
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "WMS layer scit_parcelas advertised over the whole province, image only",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://www.santafe.gob.ar/idesf/geoportal/paginas/servicios-OGC",
+   "observation": "IDESF lists WMS only; WMS capabilities include scit_parcelas, scit_manz_pcia, catastroparcelascentro"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://aswe.santafe.gov.ar/idesf/wms?service=WMS&version=1.1.1&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "lists scit_parcelas (queryable=0)"
+  },
+  {
+   "url": "https://aswe.santafe.gov.ar/idesf/wms?service=WMS&version=1.1.1&request=GetFeatureInfo&layers=scit_parcelas&...",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "LayerNotQueryable"
+  },
+  {
+   "url": "https://aswe.santafe.gov.ar/idesf/wms?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "WFS request not enabled"
+  },
+  {
+   "url": "https://aswe.santafe.gob.ar/idesf/geoserver/Publico/wfs (GetCapabilities and GetFeature Publico:scit_parcelas)",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "GeoServer WFS works but feature type list empty and scit_parcelas not exposed (InvalidParameterValue)"
+  }
+ ],
+ "foundViaViewerInspection": true,
+ "reuseStatus": "not read",
+ "remainingUncertainty": "Vector parcels may be behind SCIT's own viewer/API not discovered; only raster WMS confirmed.",
+ "nextStep": "Inspect the SCIT/Catastro Santa Fe web viewer network calls; try other IDESF GeoServer workspaces."
+}

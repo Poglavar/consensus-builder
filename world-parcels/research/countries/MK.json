@@ -1,0 +1,67 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MK",
+ "country": "North Macedonia",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Agency for Real Estate Cadastre (AREC / Агенција за катастар на недвижности), katastar.gov.mk",
+ "portalsFound": [
+  {
+   "url": "https://data.gov.mk/",
+   "observation": "National open data portal reachable; AREC datasets found are non-spatial or index-style (cadastral plan sheet nomenclature XLSX, list of cadastral municipalities CSV); no parcel polygons."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.katastar.gov.mk/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://e-uslugi.katastar.gov.mk/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://geoportal.katastar.gov.mk/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://ns.katastar.gov.mk/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=katastar parceli Macedonia",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 hits"
+  },
+  {
+   "url": "https://data.gov.mk/api/3/action/package_search?q=katastar&rows=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "5 datasets, none parcel geometry"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "National real-estate cadastre (AREC), viewer/e-services reportedly available",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "katastar.gov.mk resets connections from this proxy (Recv failure), so the AREC viewer/services were not tested.",
+ "nextStep": "Retry AREC hosts later; look for AREC WMS/WFS and the 'ArcGIS' NSDI geoportal."
+}

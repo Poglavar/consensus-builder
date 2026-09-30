@@ -1,0 +1,31 @@
+{
+ "kind": "country",
+ "key": "LY",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: ar-LY,ar;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.lands.gov.ly/ , https://www.lrsd.gov.ly/",
+   "method": "GET",
+   "httpStatus": "0",
+   "contentType": "",
+   "assessment": "proxy CONNECT 502"
+  },
+  {
+   "url": "https://www.rer.gov.ly/, https://www.gov.ly/, https://gis.gov.ly/",
+   "method": "GET",
+   "httpStatus": "0",
+   "contentType": "",
+   "assessment": "connection failed via proxy"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "All Libyan hosts unreachable from this network; nothing new.",
+ "nextStep": "Test from another network; identify the official land registry portal."
+}

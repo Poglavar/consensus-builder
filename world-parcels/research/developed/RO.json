@@ -1,0 +1,84 @@
+{
+ "country": "Romania",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "cadastreAuthority": "ANCPI (Agentia Nationala de Cadastru si Publicitate Imobiliara): e-Terra, Geoportal, INSPIRE ArcGIS services",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: ro-RO,ro;q=0.9,en;q=0.8; cookie jar on; Referer = viewer/portal origin",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "geoBlockSuspected": false,
+ "inspireRecordUrl": "https://data.europa.eu/api/hub/search/datasets/-b4c66413-3e17-4e33-a4dd-10f49950eb88- (ATOM download) and -cce70e50-f66e-44af-8183-d01b8f1e0556- (WMS view), as recorded in research/europe/RO.json; not re-verified this pass",
+ "portalsFound": [
+  {
+   "url": "http://geoportal.ancpi.ro/inspiredownload/rest/directories/arcgisforinspire/CP/CP_Download_MapServer/Main_ATOM_CP.xml",
+   "observation": "INSPIRE ATOM URL from the record; no connection (HTTP 000) from this network"
+  },
+  {
+   "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/exts/InspireView/service?SERVICE=WMS&REQUEST=GetCapabilities",
+   "observation": "INSPIRE CP view WMS; no connection"
+  },
+  {
+   "url": "https://www.ancpi.ro/",
+   "observation": "200; latest notice 20 Aug 2026 says e-Terra 'Link de plata' reactivated after an outage, 329,476 requests 11-19 Aug 2026 backlog; no announcement that the Geoportal is back"
+  },
+  {
+   "url": "https://eterra.ancpi.ro/eterra/",
+   "observation": "403 'Acces restrictionat', body now 'Scheduled maintenance / Sistemul este in mentenanta' with Ray ID (Cloudflare-style); a maintenance page, not a login challenge to bypass"
+  },
+  {
+   "url": "https://inspire-geoportal.ec.europa.eu/",
+   "observation": "200, but the search API POST answered a 301 redirect and was not followed to a record; data.europa.eu hub search reachable (200)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "http://geoportal.ancpi.ro/inspiredownload/rest/directories/arcgisforinspire/CP/CP_Download_MapServer/Main_ATOM_CP.xml",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "no connection, retried"
+  },
+  {
+   "url": "https://geoportal.ancpi.ro/ , /portal/home/ , https://inspire.ancpi.ro/ , https://data.gov.ro/api/3/action/package_search?q=cadastru&rows=3",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "no connection"
+  },
+  {
+   "url": "https://eterra.ancpi.ro/eterra/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "maintenance page"
+  },
+  {
+   "url": "https://www.ancpi.ro/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "notice read"
+  },
+  {
+   "url": "https://data.europa.eu/api/hub/search/search?q=ancpi%20cadastral&limit=5&filter=dataset",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "catalogue reachable; result list not RO-specific in the part read"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "regionsSampled": [],
+ "coverageAssessment": {
+  "claimedScope": "INSPIRE CP view and ATOM download registered for all Romania (per catalogue records)",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "ANCPI Geoportal and INSPIRE hosts do not connect; ANCPI's own notice describes a phased restart of platforms including the Geoportal after an outage. The viewer code could not be inspected because the host is offline. e-Terra itself requires an account.",
+ "nextStep": "Retry Main_ATOM_CP.xml and CP_View WMS when ANCPI announces the Geoportal restart; sample Bucharest and Cluj county files from the ATOM feed.",
+ "schemaVersion": 1,
+ "countryCode": "RO",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable"
+}

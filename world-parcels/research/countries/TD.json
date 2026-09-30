@@ -1,0 +1,32 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "TD",
+ "country": "Chad",
+ "checkedAt": "2026-09-29",
+ "status": "no_online_cadastre_found",
+ "cadastreAuthority": "Direction des Domaines, du Cadastre et de la Propriété Foncière (Ministry of Finance / Lands)",
+ "portalsFound": [
+  {
+   "url": "https://www.foncier-developpement.fr/wp-content/uploads/fiche-pays-tchad.pdf",
+   "observation": "Country note: cadastre integrated into Domaines in 1996; functions barely operational outside N'Djamena/regional capitals."
+  }
+ ],
+ "requests": [
+  {
+   "url": "WebSearch: Tchad cadastre national numérique",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "no digital national cadastre found"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "none found",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Search-only; government sites not probed.",
+ "nextStep": "See research/ndjamena.json if present; probe ministry sites."
+}

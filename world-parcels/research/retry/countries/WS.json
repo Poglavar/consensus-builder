@@ -1,0 +1,59 @@
+{
+ "kind": "country",
+ "key": "WS",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "no_online_cadastre_found",
+ "newStatus": "no_online_cadastre_found",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-WS,en;q=0.9; cookie jar (curl -c/-b) enabled",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": "Query Pacific Data Hub from a browser; ask MNRE Land Registry whether an online cadastre exists.",
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.mnre.gov.ws/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "ministry site; no GIS/map/cadastre/survey links in page"
+  },
+  {
+   "url": "https://pacificdata.org/data/api/3/action/package_search?q=Samoa+cadastre&rows=5",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare challenge; not bypassed"
+  },
+  {
+   "url": "https://gis.mnre.gov.ws/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed 502 (curl 56)"
+  },
+  {
+   "url": "https://samoa.gis.gov.ws/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed 502 (curl 56)"
+  },
+  {
+   "url": "https://geodata.pacificdata.org/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed 502 (curl 56)"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Samoa%20cadastre%20OR%20parcels%20OR%20lots&f=json&num=8",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "4890 generic hits, first ones are unrelated (e.g. Land_Ownership by a non-Samoan owner); no Samoan parcel layer verified"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "No geo-block sign except the Cloudflare challenge on pacificdata.org.",
+ "nextStep": "Nothing new; still no online parcel source found. Pacific Data Hub not readable from here."
+}

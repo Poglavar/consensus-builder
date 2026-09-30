@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:136",
+  "queueRank": 136,
+  "name": "Indore",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    22.6991756014844,
+    75.8556700061169
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://mpbhulekh.gov.in/",
+      "observation": "Madhya Pradesh Bhulekh (state land records); per search results includes a parcel-map module; host reset the connection from this environment."
+    },
+    {
+      "url": "https://bhunaksha.nic.in/bhunaksha/userguide.jsp",
+      "observation": "NIC Bhu-Naksha national cadastral map software guide (HTTP 200): viewer software, not an open data API."
+    },
+    {
+      "url": "https://www.imcindore.mp.gov.in/",
+      "observation": "Indore Municipal Corporation site (HTTP 200 Next.js shell); no parcel GIS layer identified."
+    },
+    {
+      "url": "https://geoportal.mp.gov.in/districtgeoportal/home.aspx?d=444",
+      "observation": "MP state geoportal district page for Indore (from search); connection reset."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://mpbhulekh.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset by peer; unreachable"
+    },
+    {
+      "url": "https://bhunaksha.mp.gov.in/ and https://mpbhunaksha.mp.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy 502; unreachable"
+    },
+    {
+      "url": "https://landrecords.mp.gov.in/ and https://geoportal.mp.gov.in/...",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset; unreachable"
+    },
+    {
+      "url": "https://gis.imcindore.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy 502; unreachable"
+    },
+    {
+      "url": "https://www.imcindore.mp.gov.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "municipal site shell only"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "MP Bhulekh parcel maps claimed statewide for villages (per search results, unverified); urban Indore coverage unknown",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The key MP state hosts were unreachable, so absence of an open service is not shown. Indian cadastral viewers (Bhu-Naksha) are typically session/captcha-based rather than open APIs.",
+  "nextStep": "Retry mpbhulekh.gov.in and geoportal.mp.gov.in later; inspect viewer network calls and terms; check Indore Smart City/IMC property GIS."
+}

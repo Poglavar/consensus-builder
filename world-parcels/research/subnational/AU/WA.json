@@ -1,0 +1,72 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AU",
+ "regionCode": "WA",
+ "regionName": "Western Australia",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 | Accept: application/json, text/plain, */* | Accept-Language: en-AU,en;q=0.9 | cookie jar kept",
+ "source": {
+  "sourceId": "au-wa-slip-cadastre-simplified",
+  "name": "Cadastre (No Attributes) (LGATE-001), SLIP Property_and_Planning MapServer layer 2",
+  "operator": "Landgate (WA), served via SLIP public services",
+  "scope": "Western Australia (state/territory-wide layer)",
+  "endpoint": "https://services.slip.wa.gov.au/public/rest/services/SLIP_Public_Services/Property_and_Planning/MapServer/2",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "Esri JSON",
+  "crs": "outSR=4326 honoured; native GDA2020 (7844)",
+  "reuseStatus": "Layer description says informational purposes; licence text not fully read."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "au-wa-slip-cadastre-simplified",
+  "requestUrl": "https://services.slip.wa.gov.au/public/rest/services/SLIP_Public_Services/Property_and_Planning/MapServer/2/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3&f=json&returnGeometry=true&outFields=objectid&geometry=115.86,-31.953,115.861,-31.952",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   115.86,
+   -31.953,
+   115.861,
+   -31.952
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "objectid only (simplified layer carries no parcel identifier; the full Cadastre Polygons LGATE-217 was not located as a public layer)",
+  "responseFile": "WA-parcel-response.json",
+  "pagination": "maxRecordCount 10000",
+  "regionSampled": "Perth and Geraldton"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Layer description: simplified representation of all land parcel boundaries within Western Australia (plus Cocos and Christmas Islands). Extent spans WA. Sampled Perth and Geraldton; Broome bbox returned 0 features.",
+ "subregionsVerified": [
+  "Perth",
+  "Geraldton"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://services.slip.wa.gov.au/public/rest/services/SLIP_Public_Services/Property_and_Planning/MapServer/2",
+   "observation": "Public ArcGIS REST endpoint; none"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services.slip.wa.gov.au/public/rest/services/SLIP_Public_Services/Property_and_Planning/MapServer/2/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3&f=json&returnGeometry=true&outFields=objectid&geometry=115.86,-31.953,115.861,-31.952",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygon features, closed rings (Perth)"
+  },
+  {
+   "url": "https://services.slip.wa.gov.au/public/rest/services/SLIP_Public_Services/Property_and_Planning/MapServer/2/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3&f=json&returnGeometry=true&outFields=objectid&geometry=114.607,-28.775,114.608,-28.774",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "polygon features returned, closed rings (Geraldton)"
+  }
+ ],
+ "reuseStatus": "Layer description says informational purposes; licence text not fully read.",
+ "remainingUncertainty": "Two bounded samples only; full-state completeness and currency not verified.",
+ "nextStep": "Read the publisher licence before any bulk use."
+}

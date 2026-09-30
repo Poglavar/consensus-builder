@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:139",
+  "queueRank": 139,
+  "name": "Medellín",
+  "country": "Colombia",
+  "countryCode": "CO",
+  "centerLatLon": [
+    6.24850335443391,
+    -75.5793509793547
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_city_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "co-medellin-catastro-lote",
+    "requestUrl": "https://www.medellin.gov.co/servidormapas/rest/services/ServiciosCatastro/ConsultaOperadorCatastral/MapServer/7/query?geometry=%7B%22xmin%22%3A-75.5710%2C%22ymin%22%3A6.2470%2C%22xmax%22%3A-75.5695%2C%22ymax%22%3A6.2485%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outSR=4326&outFields=*&returnGeometry=true&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      -75.571,
+      6.247,
+      -75.5695,
+      6.2485
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "cbml (numero_predial_nacional also present, null in sample)",
+    "responseFile": "medellin-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true; maxRecordCount=2000; the 'fields' array was trimmed from the saved reply"
+  },
+  "source": {
+    "sourceId": "co-medellin-catastro-lote",
+    "name": "Medellin Catastro - ConsultaOperadorCatastral MapServer, layer 7 'Lote'",
+    "operator": "Alcaldia de Medellin, Secretaria de Gestion y Control Territorial, Subsecretaria de Catastro",
+    "scope": "Municipality of Medellin (native extent about the municipal area; layer also covers rural lots per description)",
+    "endpoint": "https://www.medellin.gov.co/servidormapas/rest/services/ServiciosCatastro/ConsultaOperadorCatastral/MapServer/7/query",
+    "method": "GET (ArcGIS REST query)",
+    "responseFormat": "Esri JSON (also geoJSON/PBF per ArcGIS)",
+    "crs": "native EPSG:9377 (MAGNA-SIRGAS Origen Nacional); outSR=4326 honoured",
+    "reuseStatus": "not reviewed; layer copyright text credits Subsecretaria de Catastro; the open-data hub (geomedellin-m-medellin.opendata.arcgis.com) lists 'lote del predio' but its licence was not read"
+  },
+  "portalsFound": [
+    {
+      "url": "https://www.medellin.gov.co/servidormapas/rest/services/ServiciosCatastro/ConsultaOperadorCatastral/MapServer?f=json",
+      "observation": "Official Medellin ArcGIS Server service 'ConsultaOperadorCatastral' (v11.5), 14 layers incl. 7 Lote, 5 Manzana, 8 Lote Detalle, 12 Construccion; maxRecordCount 2000."
+    },
+    {
+      "url": "https://geomedellin-m-medellin.opendata.arcgis.com/",
+      "observation": "GeoMedellin ArcGIS Hub open-data portal (HTTP 200 shell page); search results indicate a 'lote del predio' dataset with CSV/KML/GeoJSON/WMS/WFS links, not fetched individually."
+    },
+    {
+      "url": "https://www.medellin.gov.co/",
+      "observation": "Returns 403 to plain curl; requests with a browser-style User-Agent succeed on /servidormapas/rest paths."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.medellin.gov.co/mapas/rest/services/ServiciosCatastro/Base_Catastral/MapServer?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "service not found (path from search results is stale)"
+    },
+    {
+      "url": "https://www.medellin.gov.co/servidormapas/rest/services/ServiciosCatastro/ConsultaOperadorCatastral/MapServer?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "service description only; layer list; not counted as verification"
+    },
+    {
+      "url": "https://www.medellin.gov.co/servidormapas/rest/services/ServiciosCatastro/ConsultaOperadorCatastral/MapServer/7/query?geometry=%7B%22xmin%22%3A-75.5710%2C%22ymin%22%3A6.2470%2C%22xmax%22%3A-75.5695%2C%22ymax%22%3A6.2485%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outSR=4326&outFields=*&returnGeometry=true&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "3 closed-ring lot polygons in central Medellin; fields cbml, tipo_lote, area_lote, mz_igac etc.",
+      "parcelRecordCount": 3
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Municipality of Medellin (urban and rural lots); the wider Valle de Aburra agglomeration (Bello, Itagui, Envigado, etc.) is outside this source",
+    "verifiedOpenScope": "three lots in a bounded central Medellin sample",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Licence/attribution not read. Default curl User-Agent gets 403 from www.medellin.gov.co, so a runtime adapter may need a browser-like UA or the open-data hub route. Bounded sample does not prove completeness; neighbouring municipalities are separate authorities (Antioquia departmental cadastre).",
+  "nextStep": "Read the hub dataset licence, test paging and CORS, and find sources for the other Aburra valley municipalities."
+}

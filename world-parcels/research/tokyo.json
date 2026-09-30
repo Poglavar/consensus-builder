@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:1850147",
+  "checkedAt": "2026-09-28",
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "jp-moj-esri-touki-2023",
+    "request": {
+      "url": "https://services.arcgis.com/wlVTGRSYTzAbjjiC/ArcGIS/rest/services/touki/FeatureServer/5/query",
+      "method": "GET",
+      "query": {
+        "where": "CityCode='13104'",
+        "outFields": "OBJECTID,BoundaryId,LotNumber,CityCode,CityName",
+        "resultRecordCount": "5",
+        "returnGeometry": "true",
+        "outSR": "4326",
+        "f": "json"
+      }
+    },
+    "httpStatus": 200,
+    "responseContentType": "application/json; charset=utf-8",
+    "responseFile": "tokyo-shinjuku-response.json",
+    "recordListPath": "features",
+    "parcelRecordCount": 5,
+    "geometryType": "esriGeometryPolygon",
+    "allSampleRingsClosed": true,
+    "responseCrs": "EPSG:4326",
+    "responseBboxLonLat": [139.687555532885, 35.7034887770672, 139.687740592883, 35.703997665126],
+    "sampleCityCode": "13104",
+    "sampleCityName": "新宿区",
+    "sampleIdFields": ["OBJECTID", "BoundaryId", "LotNumber"],
+    "spatialNote": "Five adjacent parcels in Shinjuku ward, near the Tokyo city center. The service description says the Tokyo source covers the 23 wards, not all of greater Tokyo."
+  },
+  "sourceProvenance": {
+    "serviceDescription": "https://services.arcgis.com/wlVTGRSYTzAbjjiC/ArcGIS/rest/services/touki/FeatureServer",
+    "underlyingData": "https://www.moj.go.jp/MINJI/minji05_00494.html",
+    "tokyoSourceDataDate": "2023-02-09",
+    "observation": "The hosted layer was converted from Ministry of Justice registry-map XML by Esri Japan. The MOJ says the underlying data may be used subject to its terms; the hosted ArcGIS derivative's own reuse conditions need checking."
+  },
+  "otherRequests": [
+    {
+      "request": "Spatial envelope query around 139.688–139.696 E, 35.687–35.693 N with f=geojson and 5 results",
+      "result": "Timed out after 30 seconds; a simpler indexed ward-code query succeeded."
+    }
+  ],
+  "nextStep": "Check current-year MOJ releases and hosted-layer reuse terms; measure coverage of each Tokyo ward and choose a stable ID composite before runtime integration."
+}

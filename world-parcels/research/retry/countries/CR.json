@@ -1,0 +1,80 @@
+{
+ "previousStatus": "national_cadastre_viewer_only",
+ "newStatus": "national_cadastre_viewer_only",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: es-CR,es;q=0.9,en;q=0.8",
+ "changedByHeaders": true,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.rnpdigital.com/shopping/consultaRegistral/mapas.jspx",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "With browser headers the WAF no longer rejects; page is the 'Ingreso para Usuarios Registrados' login form of the Registro Nacional certificates system (email/password). No map or parcel service in HTML/JS."
+  },
+  {
+   "url": "https://www.snitcr.go.cr/ico_servicios_ogc_info?k=bm9kbzo6NDA=&nombre=Catastro%20Nacional",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "SNIT OGC service info page; no parcel endpoint exposed"
+  },
+  {
+   "url": "https://geos.snitcr.go.cr/be/IGN_5/wfs?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "Only 1:5000 topographic layers (forestal, cultivos, curvas, edificaciones, hidrografia, pastos, urbano, vias); no cadastre"
+  },
+  {
+   "url": "https://geos.snitcr.go.cr/be/IGN_200/wfs?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "1:200k topographic; no cadastre layer names matching catastro/predio/parcel/finca/plano"
+  },
+  {
+   "url": "https://geos.snitcr.go.cr/be/wfs?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "Global endpoint returns ServiceException 'Service WMS/WFS is disabled'"
+  },
+  {
+   "url": "https://geos.snitcr.go.cr/be/catastro/wfs?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html",
+   "assessment": "no catastro workspace"
+  },
+  {
+   "url": "https://mapas.registronacional.go.cr/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection failed at the agent proxy (no HTTP status): unreachable"
+  },
+  {
+   "url": "https://www.registronacional.go.cr/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection failed at the agent proxy (no HTTP status): unreachable"
+  },
+  {
+   "url": "https://catastro.go.cr/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection failed at the agent proxy (no HTTP status): unreachable"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "Headers changed the RNP result (previously 'Request Rejected' WAF, now HTTP 200) but it is a registered-user login page, not a viewer. No public parcel service found on SNIT. Registration-gated at best.",
+ "nextStep": "Registro Nacional cadastral map appears behind rnpdigital.com registered login; would need an account (not attempted). Ask Registro Nacional / SNIT about an open catastro WMS/WFS.",
+ "kind": "country",
+ "key": "CR",
+ "checkedAt": "2026-09-30"
+}

@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "CI",
+  "country": "Côte d'Ivoire",
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "cadastreAuthority": "Direction Generale des Impots (DGI) e-cadastre; cadastre under Ministry of Construction/Urbanism",
+  "portalsFound": [
+    {
+      "url": "https://cadastrenational.dgi.gouv.ci/",
+      "observation": "Official e-cadastre portal; TLS certificate expired so request failed verification (not bypassed) - same as city evidence (abidjan.json)."
+    },
+    {
+      "url": "https://www.dgi.gouv.ci/",
+      "observation": "DGI main site reachable (HTTP 200); no parcel service."
+    },
+    {
+      "url": "https://geoportail.anstat.ci/",
+      "observation": "ANSTAT geoportal behind Cloudflare challenge; statistical layers (from abidjan.json)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://cadastrenational.dgi.gouv.ci/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS certificate verification failed"
+    },
+    {
+      "url": "https://www.dgi.gouv.ci/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "reachable; not a parcel service"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "National e-cadastre (unverified)",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "unknown",
+  "remainingUncertainty": "Whether the portal exposes anonymous parcel geometry is unknown; expired cert may be temporary.",
+  "nextStep": "Retry cadastrenational.dgi.gouv.ci later; inspect its backend API."
+}

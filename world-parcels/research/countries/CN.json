@@ -1,0 +1,36 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CN",
+ "country": "China",
+ "checkedAt": "2026-09-29",
+ "status": "national_cadastre_credentialed_or_paid",
+ "cadastreAuthority": "Ministry of Natural Resources (national real-estate/land registration and cadastre system, operated by municipal/county natural-resources bureaus)",
+ "portalsFound": [
+  {
+   "url": "https://ghzyj.sh.gov.cn/bdcgl/index.html",
+   "observation": "Shanghai cadastral map query redirects to account login (city evidence)."
+  },
+  {
+   "url": "https://data.cq.gov.cn/",
+   "observation": "Chongqing open data unreachable (city evidence)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "research/shanghai.json, chongqing.json, beijing.json reused",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "city probes: no open parcel geometry endpoint; several .gov.cn hosts unreachable"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "no national open parcel service found; cadastral data held locally, login/viewer only",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "registration",
+ "remainingUncertainty": "Country level not separately probed beyond city evidence; many .gov.cn hosts unreachable so absence unconfirmed.",
+ "nextStep": "Probe MNR national platform and provincial land-use data portals."
+}

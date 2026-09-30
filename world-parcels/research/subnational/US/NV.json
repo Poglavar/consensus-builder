@@ -1,0 +1,80 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "NV",
+ "regionName": "Nevada",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/plain,*/*; Accept-Language: en-US,en;q=0.9; cookie jar on; via pre-configured proxy",
+ "source": {
+  "sourceId": "us-nv-ndot-statewide-parcels-2018",
+  "name": "Statewide Parcels - 2018 (All Parcels -2018-12-31)",
+  "operator": "Nevada DOT GIS, data from State Lands / each county",
+  "scope": "statewide county parcel compilation, dated 2018-12-31",
+  "endpoint": "https://gis.dot.nv.gov/agsphs/rest/services/Reference/Statewide_Parcels/MapServer/0",
+  "method": "GET",
+  "responseFormat": "ArcGIS REST JSON",
+  "crs": "native SR from service; requested outSR=4326",
+  "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-nv-ndot-statewide-parcels-2018",
+  "requestUrl": "https://gis.dot.nv.gov/agsphs/rest/services/Reference/Statewide_Parcels/MapServer/0/query?geometry=<bbox ~150m>&outFields=APN,County&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   "[-115.1406,36.1691,-115.1390,36.1707]",
+   "[-119.8146,39.5288,-119.8130,39.5304]"
+  ],
+  "parcelRecordCount": 6,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "APN (with County)",
+  "responseFile": "research/subnational/US/NV-parcel-response.json",
+  "pagination": "resultRecordCount / resultOffset (per-sample 3 records)",
+  "regionSampled": [
+   "Clark County (Las Vegas)",
+   "Washoe County (Reno)"
+  ]
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Service description: \"Statewide Parcels - 2018 from State Lands\"; layer description \"Statewide County Parcel Data provided by each county\". The layer name says 2018-12-31, so it is stale.",
+ "subregionsVerified": [
+  "Clark County",
+  "Washoe County"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://gis.dot.nv.gov/agsphs/rest/services/Reference/Statewide_Parcels/MapServer",
+   "observation": "public, one layer"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gis.dot.nv.gov/agsphs/rest/services/Reference/Statewide_Parcels/MapServer/0?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "service/layer description read"
+  },
+  {
+   "url": "https://gis.dot.nv.gov/agsphs/rest/services/Reference/Statewide_Parcels/MapServer/0/query?geometry=<bbox ~150m near Clark County (Las Vegas)>&outFields=APN,County...",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons returned with ID and geometry only"
+  },
+  {
+   "url": "https://gis.dot.nv.gov/agsphs/rest/services/Reference/Statewide_Parcels/MapServer/0/query?geometry=<bbox ~150m near Washoe County (Reno)>&outFields=APN,County...",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons returned with ID and geometry only"
+  }
+ ],
+ "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution. Layer has OwnerName and SiteAddress; not requested.",
+ "remainingUncertainty": "Data is from 2018; county portals (Clark, Washoe) have current parcels but were not tested. Rural county completeness not checked.",
+ "nextStep": "Test Clark County Assessor open data for current parcels."
+}

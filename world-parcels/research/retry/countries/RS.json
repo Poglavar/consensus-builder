@@ -1,0 +1,52 @@
+{
+  "kind": "country",
+  "key": "RS",
+  "checkedAt": "2026-09-30",
+  "previousStatus": "temporarily_unavailable",
+  "newStatus": "temporarily_unavailable",
+  "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: sr-RS,sr;q=0.9,en;q=0.8",
+  "changedByHeaders": false,
+  "foundViaViewerInspection": false,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "requests": [
+    {
+      "url": "https://www.rgz.gov.rs/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "home page inspected; links to https://katastar.rgz.gov.rs/eKatastarPublic/PublicAccess.aspx and https://mojaadresa.geosrbija.rs/"
+    },
+    {
+      "url": "https://katastar.rgz.gov.rs/eKatastarPublic/PublicAccess.aspx",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "",
+      "assessment": "connection reset by peer"
+    },
+    {
+      "url": "https://mojaadresa.geosrbija.rs/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "",
+      "assessment": "connection reset by peer"
+    },
+    {
+      "url": "https://geosrbija.rs/, www.geosrbija.rs, a3.geosrbija.rs (incl. /geoserver/wms), dkp/geoportal/inspire.rgz.gov.rs",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "",
+      "assessment": "connection reset by peer / failed"
+    },
+    {
+      "url": "https://data.gov.rs/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "open-data portal reachable; earlier API search found no cadastre dataset"
+    }
+  ],
+  "geoBlockSuspected": true,
+  "notes": "geoBlockSuspected: rgz.gov.rs and data.gov.rs answer 200 but every geoportal/eKatastar host resets the TLS connection identically with browser headers, consistent with foreign-IP filtering. Nothing new beyond the exact eKatastar public-access URL found on the RGZ site.",
+  "nextStep": "Retry eKatastarPublic and a3.geosrbija.rs from a Serbian/regional network; inspect viewer JS there."
+}

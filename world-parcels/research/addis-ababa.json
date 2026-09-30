@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:59",
+  "queueRank": 59,
+  "name": "Addis Ababa",
+  "country": "Ethiopia",
+  "countryCode": "ET",
+  "centerLatLon": [
+    9.00714292574818,
+    38.7489828471342
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "http://www.ethionsdi.gov.et/",
+      "observation": "Ethiopian NSDI GeoNode returned 503 from its upstream; its Addis layers seen in search are land use, not parcels."
+    },
+    {
+      "url": "https://www.geoportal.gov.et/",
+      "observation": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=parcels%20Addis%20Ababa",
+      "observation": "Only third-party project layers (La Gare urban-development plan scenarios by Esri/other users); not an official cadastre and not tested."
+    }
+  ],
+  "requests": [
+    {
+      "url": "http://www.ethionsdi.gov.et/",
+      "method": "GET",
+      "httpStatus": 503,
+      "contentType": "text/plain",
+      "assessment": "upstream unavailable"
+    },
+    {
+      "url": "https://www.geoportal.gov.et/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    },
+    {
+      "url": "https://www.mtpf.gov.et/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    },
+    {
+      "url": "https://data.gov.et/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Addis Ababa cadastre (about 360,000 parcels per a vendor case study) held by the city land administration; no public service found",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The one national SDI portal was returning 503 and other hosts were unreachable, so this is not a permanent negative. No evidence of an anonymous parcel service was found.",
+  "nextStep": "Retry ethionsdi.gov.et; look for the Addis Ababa Land Development and Management Bureau's public map and test a bounded query."
+}

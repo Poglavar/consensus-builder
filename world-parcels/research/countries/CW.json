@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "CW",
+  "country": "Curaçao",
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "cadastreAuthority": "Kadaster Curacao (Land Registry and Cadastre, Kadaster & Hypotheekkantoor)",
+  "portalsFound": [
+    {
+      "url": "https://www.kadaster.cw/",
+      "observation": "Official site returned a Cloudflare 'Just a moment' challenge (HTTP 403) even with browser-style User-Agent."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://kadaster.cw/",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "Cloudflare challenge"
+    },
+    {
+      "url": "https://www.kadaster.cw/en",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "Cloudflare challenge"
+    },
+    {
+      "url": "https://cadastre.gov.cw/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy tunnel 502"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Island of Curacao cadastre (not verified)",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "unknown",
+  "remainingUncertainty": "Could not reach any content; existence of an open parcel service is unknown.",
+  "nextStep": "Retry later; check Curacao geoportal (e.g. geo.cw / Kadaster map viewer) for an ArcGIS/WMS backend."
+}

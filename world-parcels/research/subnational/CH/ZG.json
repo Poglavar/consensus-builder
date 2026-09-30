@@ -1,0 +1,63 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CH",
+ "regionCode": "ZG",
+ "regionName": "ZG",
+ "checkedAt": "2026-09-30",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: application/json,text/xml,application/xml,text/html;q=0.9,*/*;q=0.8; Accept-Language: de-CH,de;q=0.9; Referer https://geodienste.ch/; cookie jar used",
+ "status": "verified_region_wide",
+ "source": {
+  "sourceId": "ch-geodienste-av0",
+  "name": "geodienste.ch Amtliche Vermessung (av_0) WFS 2.0, feature type ms:RESF",
+  "operator": "Cantons and Confederation via geodienste.ch",
+  "scope": "canton ZG as one filter of a multi-canton national aggregate",
+  "endpoint": "https://geodienste.ch/db/av_0/deu",
+  "method": "GET",
+  "responseFormat": "WFS 2.0 GML 3.2 (text/xml)",
+  "crs": "EPSG:2056",
+  "reuseStatus": "Freie Nutzung. Quellenangabe ist Pflicht. (per services.json); canton terms https://zg.ch/de/planen-bauen/geoinformation/geoinformationen-nutzen/nutzungsbedingungen"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "ch-geodienste-av0",
+  "requestUrl": "https://geodienste.ch/db/av_0/deu?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:RESF&COUNT=3&SRSNAME=urn:ogc:def:crs:EPSG::2056&BBOX=2681900,1224900,2682050,1225050,urn:ogc:def:crs:EPSG::2056",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "text/xml",
+  "spatialTestAreaLonLat": "LV95 150 m box at E2681900 N1224900 (Zug)",
+  "parcelRecordCount": 3,
+  "recordListPath": "wfs:member/ms:RESF",
+  "geometryType": "gml:Polygon",
+  "closedRings": true,
+  "idField": "ms:EGRIS_EGRID / ms:Nummer + ms:NBIdent",
+  "responseFile": "research/subnational/CH/ZG-parcel-response.json",
+  "pagination": "WFS 2.0 STARTINDEX/COUNT",
+  "regionSampled": "Zug"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "geodienste.ch services.json: cantonal_coverage=true, publication_data 'Frei erhältlich', open terms 'Freie Nutzung. Quellenangabe ist Pflicht.'",
+ "subregionsVerified": [
+  "Zug"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://geodienste.ch/info/services.json",
+   "observation": "ZG av entry: publication_data=Frei erhältlich, cantonal_coverage=True, contract_required_data=False, opendata_terms_data=Freie Nutzung. Quellenangabe ist Pflicht., terms_of_use_data=https://zg.ch/de/planen-bauen/geoinformation/geoinformationen-nutzen/nutzungsbedingungen"
+  },
+  {
+   "url": "https://geodienste.ch/services/av",
+   "observation": "geodienste.ch AV topic page (terms https://geodienste.ch/terms-of-use)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geodienste.ch/db/av_0/deu?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:RESF&COUNT=3&SRSNAME=urn:ogc:def:crs:EPSG::2056&BBOX=2681900,1224900,2682050,1225050,urn:ogc:def:crs:EPSG::2056",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "3 RESF features"
+  }
+ ],
+ "reuseStatus": "Freie Nutzung. Quellenangabe ist Pflicht. Licence text taken from services.json, canton terms page not independently read.",
+ "remainingUncertainty": "One 3-feature sample; full-canton completeness not measured.",
+ "nextStep": "None needed."
+}

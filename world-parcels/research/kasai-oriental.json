@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:130",
+  "queueRank": 130,
+  "name": "Kasaï-Oriental",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "centerLatLon": [
+    -6.12279658565417,
+    23.5984690595655
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/",
+      "observation": "Ministry of Land Affairs site (reachable, HTTP 200); reviewed earlier for Kinshasa: no geodata service, only digitisation pilot references."
+    },
+    {
+      "url": "https://cio-mag.com/rdc-vers-la-numerisation-du-secteur-cadastral/",
+      "observation": "e-Foncier digitisation project started in Kinshasa (Gombe); nothing for Kasai-Oriental / Mbuji-Mayi."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "HTML portal, no parcel list"
+    },
+    {
+      "url": "https://cadastre.gouv.cd",
+      "method": "GET",
+      "httpStatus": null,
+      "assessment": "unreachable via proxy; not proof of absence"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Kasai+parcelles+OR+cadastre+OR+Mbuji-Mayi",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "only basin, soils and land-cover layers; no parcel layers"
+    },
+    {
+      "url": "https://data.humdata.org/api/3/action/package_search?q=kananga",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "unrelated datasets"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "DRC national cadastre (Ministry of Land Affairs); nothing online for the Kasai-Oriental / Mbuji-Mayi area",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Queue entry is a province-named urban area (Mbuji-Mayi). No parcel service found; cadastre.gouv.cd was unreachable.",
+  "nextStep": "Retry cadastre.gouv.cd; check whether e-Foncier extends beyond Kinshasa."
+}

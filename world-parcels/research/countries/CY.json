@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "CY",
+  "country": "Cyprus",
+  "checkedAt": "2026-09-29",
+  "status": "national_cadastre_viewer_only",
+  "cadastreAuthority": "Department of Lands and Surveys (DLS), Ministry of Interior",
+  "portalsFound": [
+    {
+      "url": "https://eservices.dls.moi.gov.cy/",
+      "observation": "DLS e-services (Angular SPA) loads HTTP 200; includes geoportal/cadastral map viewer per routes."
+    },
+    {
+      "url": "https://portal.dls.moi.gov.cy/en/",
+      "observation": "DLS public portal reachable."
+    },
+    {
+      "url": "https://eservices.dls.moi.gov.cy/arcgis/rest/services?f=json",
+      "observation": "ArcGIS endpoint answers but with error 'Could not access any server machines' (backend down or restricted)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://eservices.dls.moi.gov.cy/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "ArcGIS server error, backend unavailable"
+    },
+    {
+      "url": "https://geoserver.dls.moi.gov.cy/geoserver/ows?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "guessed host unreachable"
+    },
+    {
+      "url": "https://www.dls.moi.gov.cy/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection failure"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Government-controlled Cyprus cadastre (DLS)",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "viewer-only",
+  "remainingUncertainty": "Viewer-only is inferred; the ArcGIS backend error could be temporary and could hide an open parcel service. Licence not read.",
+  "nextStep": "Retry the DLS ArcGIS REST/WMS later; inspect the geoportal viewer's network calls."
+}

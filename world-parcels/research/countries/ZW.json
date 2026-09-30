@@ -1,0 +1,49 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "ZW",
+ "country": "Zimbabwe",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Surveyor-General's Office and Deeds Registry (Ministry of Lands, Agriculture, Fisheries, Water and Rural Development)",
+ "portalsFound": [
+  {
+   "url": "https://zimgeoportal.org.zw/",
+   "observation": "Zimbabwe Geoportal (HTTP 200) landing page; no parcel service located."
+  },
+  {
+   "url": "https://services7.arcgis.com/uIx4DcYtJ6IrYNdp/arcgis/rest/services/Gweru_Land_Parcels/FeatureServer",
+   "observation": "Gweru land parcels (owner account africansurveyorsconnect); subnational, token required."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services7.arcgis.com/uIx4DcYtJ6IrYNdp/arcgis/rest/services/Gweru_Land_Parcels/FeatureServer/0/query?where=1%3D1&resultRecordCount=2&outFields=*&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "body is JSON error 499 Token Required; not open"
+  },
+  {
+   "url": "https://www.deeds.gov.zw/, https://www.lands.gov.zw, https://www.surveyorgeneral.gov.zw/, https://www.mlgpwnh.gov.zw/",
+   "method": "GET",
+   "httpStatus": null,
+   "assessment": "connection failed; temporarily unreachable"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=parcel%20zimbabwe&f=json&num=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "only Gweru (tokened) and unrelated layers"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "No national open parcel service identified",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Government hosts unreachable; Geoportal not explored beyond landing page.",
+ "nextStep": "Explore zimgeoportal.org.zw data catalogue; retry Surveyor-General hosts."
+}

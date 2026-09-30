@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:1261481",
+  "checkedAt": "2026-09-28T18:55:05Z",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {
+      "url": "https://dlrc.delhi.gov.in/Index.aspx",
+      "observation": "Official Delhi land-record portal links its GIS Map to http://gsdl.org.in/revenue/. The landing page itself does not return a parcel list."
+    },
+    {
+      "url": "http://gsdl.org.in/revenue/",
+      "observation": "Delhi Revenue Geo Portal is the most promising map source, but both HTTP and HTTPS timed out during this pass. Its parcel service and reuse terms remain unknown."
+    },
+    {
+      "url": "https://revenue.delhi.gov.in/revenue/revenue-maps",
+      "observation": "Official downloadable revenue district maps are PDF documents, not a parcel-list API."
+    },
+    {
+      "url": "https://geo.nic.in/server/rest/services/Delhi",
+      "observation": "NIC public ArcGIS directory lists a Delhi folder, but its metadata request timed out. No cadastral layer was verified."
+    },
+    {
+      "url": "https://ldo.mohua.gov.in/edharti/map",
+      "observation": "L&DO e-Dharti map presents selected government lease/property layers; it is not evidence of complete Delhi cadastral parcel coverage."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://dlrc.delhi.gov.in/Index.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "parcelRecordCount": null,
+      "observation": "Official HTML landing page; GIS link points to http://gsdl.org.in/revenue/."
+    },
+    {
+      "url": "https://gsdl.org.in/revenue/",
+      "method": "GET",
+      "httpStatus": null,
+      "error": "Connection timed out after 15 seconds",
+      "parcelRecordCount": null
+    },
+    {
+      "url": "http://gsdl.org.in/revenue/",
+      "method": "GET",
+      "httpStatus": null,
+      "error": "Connection timed out after 15 seconds",
+      "parcelRecordCount": null
+    },
+    {
+      "url": "https://geo.nic.in/server/rest/services/Delhi?f=pjson",
+      "method": "GET",
+      "httpStatus": null,
+      "error": "Connection timed out after 20 seconds",
+      "parcelRecordCount": null
+    }
+  ],
+  "spatialNote": "UN ranking uses the New Delhi urban area, whereas GeoNames 1261481 marks the New Delhi locality. A point or service limited to that locality must not be assumed to cover the wider urban area.",
+  "remainingUncertainty": "The linked Delhi revenue GIS map may expose parcel geometries when available. No HTTP 200 nonempty parcel response was obtained, so this is an availability/research gap rather than a finding that Delhi lacks an open source.",
+  "nextStep": "Retry the revenue GIS map and NIC Delhi service directory; inspect any actual cadastral layer and its terms before assigning a source ID."
+}

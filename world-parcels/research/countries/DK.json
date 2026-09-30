@@ -1,0 +1,66 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "DK",
+ "country": "Denmark",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Danish Land Registry / Geodatastyrelsen (Matriklen), served by Dataforsyningen DAWA and Datafordeler",
+ "portalsFound": [
+  {
+   "url": "https://api.dataforsyningen.dk/jordstykker",
+   "observation": "DAWA 'jordstykker' (land parcels) API: anonymous GeoJSON, point/polygon/bbox queries."
+  },
+  {
+   "url": "https://www.datafordeler.dk/",
+   "observation": "Official data distributor; Matriklen WFS/REST there uses service credentials (not tested)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://api.dataforsyningen.dk/jordstykker?polygon=[[[12.568,55.676],[12.570,55.676],[12.570,55.678],[12.568,55.678],[12.568,55.676]]]&format=geojson&per_side=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "3 Polygon parcels, Copenhagen; fields ejerlavkode, matrikelnr, kommunekode, regionskode"
+  },
+  {
+   "url": "https://api.dataforsyningen.dk/jordstykker?x=9.9217&y=57.0488&struktur=mini&format=geojson",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "1 Polygon parcel, Aalborg (ejerlavkode 2005051, matrikelnr 7000bu)"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "dk-dawa-jordstykker",
+  "requestUrl": "https://api.dataforsyningen.dk/jordstykker?polygon=[[[12.568,55.676],[12.570,55.676],[12.570,55.678],[12.568,55.678],[12.568,55.676]]]&format=geojson&per_side=3",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   12.568,
+   55.676,
+   12.57,
+   55.678
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "ejerlavkode + matrikelnr (featureid)",
+  "responseFile": null,
+  "pagination": "per_side / side parameters",
+  "regionSampled": "Copenhagen (Hovedstaden); second sample Aalborg (Nordjylland)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "national (all Danish cadastral land parcels)",
+  "regionsVerified": [
+   "Copenhagen",
+   "Aalborg"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Licence terms not read (Danish open-data terms expected; confirm). Two-region check only; no full-coverage audit.",
+ "nextStep": "Confirm licence and rate limits; consider pagination/format=geojson bulk approach via Datafordeler."
+}

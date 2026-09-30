@@ -1,0 +1,41 @@
+{
+ "country": "Turkmenistan",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "State Service for Registration of Immovable Property / land cadastre agency (unverified)",
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://www.turkmenistan.gov.tm/",
+   "method": "GET",
+   "httpStatus": 302,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "redirect only"
+  },
+  {
+   "url": "https://cadastre.gov.tm/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed (502) / no response; host unreachable from this environment"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Turkmenistan+cadastre&f=json&num=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "zero results"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "unknown",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "No online cadastre located; hosts unreachable or uninformative.",
+ "nextStep": "Low priority; retry later.",
+ "schemaVersion": 1,
+ "countryCode": "TM",
+ "checkedAt": "2026-09-29"
+}

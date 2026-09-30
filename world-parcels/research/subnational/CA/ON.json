@@ -1,0 +1,80 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CA",
+ "regionCode": "ON",
+ "regionName": "Ontario",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-CA,en;q=0.9,fr-CA;q=0.8; cookie jar on",
+ "source": {
+  "sourceId": "ca-on-toronto-property-boundary",
+  "name": "City of Toronto Property Boundary (Municipal Parcel Fabric)",
+  "operator": "City of Toronto GIS / Open Data",
+  "scope": "City of Toronto",
+  "endpoint": "https://gis.toronto.ca/arcgis/rest/services/cot_geospatial27/FeatureServer/36",
+  "method": "ArcGIS REST query",
+  "responseFormat": "Esri JSON",
+  "crs": "EPSG:4326 via outSR",
+  "reuseStatus": "Open Data catalogue; licence unspecified in CKAN metadata."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "ca-on-toronto-property-boundary",
+  "requestUrl": "see research/toronto.json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   -79.3835,
+   43.6525,
+   -79.3815,
+   43.654
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PARCELID",
+  "responseFile": "../../toronto-parcel-response.json (reused; requested outFields=* there, so not copied here)",
+  "pagination": "ArcGIS resultRecordCount; maxRecordCount 2000",
+  "regionSampled": "Toronto"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "No open province-wide parcel query service found. 'Ontario Parcel' is published on Land Information Ontario GeoHub only as a document page (supporting info + about links, MNRF/MPAC/Teranet sourced), not a public query layer. LIO Open06 'Lot Fabric Improved' is a concession/lot fabric, not property parcels.",
+ "subregionsVerified": [
+  "City of Toronto"
+ ],
+ "reuse": "Toronto evidence reused from research/toronto.json (2026-09-29); no new request.",
+ "portalsFound": [
+  {
+   "url": "https://geohub.lio.gov.on.ca/documents/lio::ontario-parcel/about",
+   "observation": "Ontario Parcel: document page, no service URL in GeoHub search API."
+  },
+  {
+   "url": "https://ws.lioservices.lrc.gov.on.ca/arcgis2/rest/services/LIO_OPEN_DATA/LIO_Open06/MapServer/2",
+   "observation": "Lot Fabric Improved (OGL-Ontario); geographic-township lot/concession, not tested for parcel-likeness."
+  },
+  {
+   "url": "https://ws.lioservices.lrc.gov.on.ca/arcgis1071/rest/services/LIO_OPEN_DATA",
+   "observation": "403 from this network (Azure gateway)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geohub.lio.gov.on.ca/api/search/v1/collections/all/items?q=parcel&limit=12",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "Ontario Parcel appears only as Document Link items"
+  },
+  {
+   "url": "https://ws.lioservices.lrc.gov.on.ca/arcgis1071/rest/services/LIO_OPEN_DATA?f=json",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "forbidden"
+  }
+ ],
+ "reuseStatus": "Toronto: unspecified. Ontario Parcel: licensed/restricted (not read).",
+ "remainingUncertainty": "Other Ontario municipal layers (Ottawa, Barrie 'Tax Parcels' gispublic.barrie.ca ParcelPublishing/2 seen but not queried) not tested.",
+ "nextStep": "Test Ottawa/Barrie/Hamilton open parcels; read Ontario Parcel licence."
+}

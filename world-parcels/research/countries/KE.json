@@ -1,0 +1,50 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "KE",
+ "country": "Kenya",
+ "checkedAt": "2026-09-29",
+ "status": "national_cadastre_credentialed_or_paid",
+ "cadastreAuthority": "Ministry of Lands - Ardhisasa digital land registry; Survey of Kenya (RIM/deed plans)",
+ "portalsFound": [
+  {
+   "url": "https://ardhisasa.lands.go.ke/",
+   "observation": "Angular app shell (HTTP 200); account-based national land information platform; no open parcel feed found."
+  },
+  {
+   "url": "https://ardhisasa.lands.go.ke/api/",
+   "observation": "Returns the same SPA HTML, no API documentation."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://ardhisasa.lands.go.ke/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "app shell"
+  },
+  {
+   "url": "https://ardhisasa.lands.go.ke/api/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "SPA fallback, no API"
+  },
+  {
+   "url": "(earlier) research/nairobi.json: CBD_Parcel_Data FeatureServer",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "Token Required; unofficial"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "National land registry; searches need registered account and fees",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "registration",
+ "remainingUncertainty": "Login/fee terms not read; county GIS and Survey of Kenya hosts unreachable earlier; an open county layer cannot be ruled out.",
+ "nextStep": "Check Survey of Kenya and Nairobi/Kiambu county GIS portals."
+}

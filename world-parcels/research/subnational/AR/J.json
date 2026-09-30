@@ -1,0 +1,76 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "regionCode": "J",
+ "regionName": "San Juan",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR,es;q=0.9; cookie jar; viewer-origin Referer",
+ "source": {
+  "sourceId": "ar-sanjuan-unide-parcelas-geoportal",
+  "name": "unide_catastro:Parcelas_Catastro_Geoportal",
+  "operator": "Gobierno de San Juan (UNIDE / Direccion de Geodesia y Catastro geoportal)",
+  "scope": "province-wide layer extent (bbox lon -70.59..-66.70, lat -32.63..-28.38)",
+  "endpoint": "https://unide.sanjuan.gob.ar/geoserver/unide_catastro/wms",
+  "method": "WMS 1.1.1 GetFeatureInfo info_format=application/json (WFS on same GeoServer returns HTTP 500)",
+  "responseFormat": "GeoJSON",
+  "crs": "EPSG:5344 in reply",
+  "reuseStatus": "Terms not read"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "ar-sanjuan-unide-parcelas-geoportal",
+  "requestUrl": "https://unide.sanjuan.gob.ar/geoserver/unide_catastro/wms?service=WMS&version=1.1.1&request=GetFeatureInfo&layers=unide_catastro:Parcelas_Catastro_Geoportal&query_layers=unide_catastro:Parcelas_Catastro_Geoportal&styles=&srs=EPSG:4326&bbox=-68.5375,-31.5385,-68.5355,-31.5365&width=101&height=101&x=50&y=50&info_format=application/json&feature_count=1",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   -68.5375,
+   -31.5385,
+   -68.5355,
+   -31.5365
+  ],
+  "parcelRecordCount": 1,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "ParNomenclatura",
+  "responseFile": "research/subnational/AR/J-parcel-response.json",
+  "pagination": "none (GetFeatureInfo, feature_count)",
+  "regionSampled": "San Juan capital; also Caucete (bbox -68.285,-31.661,-68.279,-31.655) and Jachal (bbox -68.749,-30.243,-68.743,-30.237), 1 polygon each"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "Publisher states nothing; layer advertised extent spans the whole province and three distant departments returned polygons",
+ "subregionsVerified": [
+  "San Juan capital",
+  "Caucete",
+  "Jachal"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://servicioscatastro.sanjuan.gob.ar/dgcconsultasweb",
+   "observation": "DGC web consult; 'Consulta Parcelaria - Acceso Libre' (MapApp/DgcPublico) is an OpenLayers viewer whose config lists the UNIDE GeoServer"
+  },
+  {
+   "url": "https://unide.sanjuan.gob.ar/geoserver/ows?service=WMS&request=GetCapabilities",
+   "observation": "200, lists unide_catastro:Parcelas_Catastro_Geoportal, stl_sjuanparcelasdgc, stl_catastro_parcelas_geoportal"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://unide.sanjuan.gob.ar/geoserver/unide_catastro/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=unide_catastro:Parcelas_Catastro_Geoportal&maxFeatures=1&outputFormat=application/json",
+   "method": "GET",
+   "httpStatus": 500,
+   "assessment": "WFS errors (Tomcat 500), same for GetCapabilities"
+  },
+  {
+   "url": "(GetFeatureInfo above, x3 locations)",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "1 closed Polygon each, ID ParNomenclatura only"
+  }
+ ],
+ "foundViaViewerInspection": true,
+ "reuseStatus": "Terms not read",
+ "remainingUncertainty": "Only GetFeatureInfo (point-in-tile, 1 parcel) works, so no bbox listing or paging; WFS 500 may be transient; not checked for completeness in rural areas.",
+ "nextStep": "Retry WFS later for bbox/count queries; read data terms on geoportal."
+}

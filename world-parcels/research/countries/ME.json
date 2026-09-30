@@ -1,0 +1,60 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "ME",
+ "country": "Montenegro",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Uprava za katastar i drzavnu imovinu (Real Estate Administration)",
+ "portalsFound": [
+  {
+   "url": "https://www.ekatastar.me/ekatastar-web/action/login",
+   "observation": "eKatastar web app loads a login page (HTTP 200)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.katastar.gov.me/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://ekatastar.me/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "redirects to eKatastar login page (public access to parcel map not established)"
+  },
+  {
+   "url": "https://geoportal.katastar.me/",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/plain",
+   "assessment": "503 (parked host ww38.geoportal.katastar.me)"
+  },
+  {
+   "url": "https://geoportal.katastar.me/geoserver/ows?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/plain",
+   "assessment": "503"
+  },
+  {
+   "url": "https://katastar.gov.me/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection failed"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "not established from this client",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Official cadastre host unreachable and geoportal returned 503; eKatastar may be credentialed but public map/search parts untested.",
+ "nextStep": "Retry katastar.gov.me; check eKatastar public search and the Montenegro geoportal (geoportal.co.me)."
+}

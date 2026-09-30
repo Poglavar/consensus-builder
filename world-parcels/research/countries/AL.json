@@ -1,0 +1,61 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AL",
+ "country": "Albania",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "State Authority for Geospatial Information (ASIG); land registry data via State Cadastre Agency (ASHK/ALBSCAD)",
+ "portalsFound": [
+  {
+   "url": "https://geoportal.asig.gov.al/en/services",
+   "observation": "ASIG geoportal lists Cadastral Parcels theme (ALBSCAD) with WMS/WMTS/WFS services; ASIG announced update of cadastral parcels (node/2917)."
+  },
+  {
+   "url": "https://geoportal.asig.gov.al/service/akp/wfs",
+   "observation": "Real GeoServer WFS 1.0/1.1/2.0 answered GetCapabilities but FeatureTypeList was empty (agency akp workspace); parcel layer name not identified."
+  },
+  {
+   "url": "https://geoportal.asig.gov.al/service/akzm/wms?request=getcapabilities",
+   "observation": "Advertised cadastral-zone WMS; returned WAF error page."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geoportal.asig.gov.al/service/akp/wfs?service=WFS&version=1.1.0&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "valid WFS capabilities, no feature types listed",
+   "contentType": "text/xml"
+  },
+  {
+   "url": "https://geoportal.asig.gov.al/service/akp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=akp:Parcels&count=1",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "OWS exception: feature type unknown (guessed name)",
+   "contentType": "text/xml"
+  },
+  {
+   "url": "https://geoportal.asig.gov.al/service/zrpp/wfs?request=getcapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "WAF page: 'IP ... blacklist'; intermittent, other requests to same host succeeded, some connections reset",
+   "contentType": "text/html"
+  },
+  {
+   "url": "https://geoportal.asig.gov.al/service/akzm/wms?request=getcapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "WAF blacklist page",
+   "contentType": "text/html"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Advertised national cadastral parcel WMS/WFS from ASIG",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Host WAF intermittently blocks the proxy IP, so the parcel WFS typeName could not be discovered and no polygons were fetched. Likely an open OGC service; not verified.",
+ "nextStep": "Retry later or from another IP; fetch full GetCapabilities of zrpp/akzm/akpt services for the cadastral parcel typeName, then GetFeature count=3 in a small BBOX."
+}

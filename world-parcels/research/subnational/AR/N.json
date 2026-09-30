@@ -1,0 +1,54 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "regionCode": "N",
+ "regionName": "Misiones",
+ "checkedAt": "2026-09-30",
+ "status": "viewer_only",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR,es;q=0.9; cookie jar used; Referer = viewer origin where noted",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "Catastro Misiones viewer shows province-wide base catastral (Departamento, Municipio, Manzana, Parcelario) as raster WMTS tiles.",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://catastro.misiones.gov.ar/",
+   "observation": "Catastro portal"
+  },
+  {
+   "url": "https://www.mapa.catastro.misiones.gov.ar/mapaCatastro/",
+   "observation": "Angular/OpenLayers viewer; layer list from /layer/categories; parcel layer mapa:parcelas served as WMTS tiles through ./proxyMap; login endpoints exist"
+  },
+  {
+   "url": "https://servicios.catastro.misiones.gov.ar/mapa/wms/kml?layers=mapa:parcelas",
+   "observation": "GeoServer host from search result; TLS certificate name mismatch, not bypassed"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.mapa.catastro.misiones.gov.ar/mapaCatastro/layer/categories",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "layer catalogue, WMTS via proxyMap"
+  },
+  {
+   "url": "https://www.mapa.catastro.misiones.gov.ar/mapaCatastro/proxyMap?service=WFS&request=GetFeature&typeName=mapa:parcelas&maxFeatures=3",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Forbidden"
+  },
+  {
+   "url": "https://servicios.catastro.misiones.gov.ar/mapa/wms?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl error 60, certificate subject mismatch; not bypassed"
+  }
+ ],
+ "reuseStatus": "Unknown",
+ "remainingUncertainty": "Vector access may exist behind login or after the TLS certificate is fixed; findNomencla lookup not tried (needs known CCA, may return owner data).",
+ "nextStep": "Retry servicios.catastro.misiones.gov.ar later; check IDE Misiones."
+}

@@ -1,0 +1,46 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "VU",
+ "country": "Vanuatu",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Department of Lands / Ministry of Lands and Natural Resources (land records; Lands Records Office)",
+ "portalsFound": [
+  {
+   "url": "https://www.pacificdata.org/",
+   "observation": "Pacific Data Hub CKAN search returned 403 to this client for a Vanuatu cadastre query."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geohazards.gov.vu/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://lands.gov.vu/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://www.pacificdata.org/data/api/3/action/package_search?q=cadastre+Vanuatu&rows=5",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "blocked"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Unknown; no online cadastre identified",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Few sources reachable; Vanuatu leasehold survey plans may exist in Pacific Data Hub or VNSO/Geohazards GIS, unchecked.",
+ "nextStep": "Retry Pacific Data Hub via browser-style access; check Vanuatu Lands portal."
+}

@@ -1,0 +1,74 @@
+{
+ "kind": "city",
+ "key": "islamabad",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-PK,en;q=0.9,ur;q=0.7; cookie jar (curl -b/-c) used",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://gismaps.pulse.gop.pk/arcgis/rest/services/Islamabad/CDA_GIS/MapServer?f=json",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (CONNECT 502 or reset by peer); no HTTP response"
+  },
+  {
+   "url": "https://cda.gov.pk/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "CDA site loads; only link of interest is a transit map, no GIS/cadastre viewer link"
+  },
+  {
+   "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "20 folders (Islamabad, Rawalpindi, Lahore, Stateland, PULSE_LMKR ...) but root lists only ArcGIS_Shell, SampleWorldCities"
+  },
+  {
+   "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/Islamabad?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "Islamabad folder empty: {\"folders\":[],\"services\":[]}"
+  },
+  {
+   "url": "https://www.punjab-zameen.gov.pk/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "PLRA portal loads (Punjab only; Islamabad Capital Territory is federal)"
+  },
+  {
+   "url": "https://pulse.gop.pk/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "loads; no parcel service link seen"
+  },
+  {
+   "url": "https://gis.cda.gov.pk/, https://cdagis.cda.gov.pk/, https://ict.gov.pk/, https://www.geoportal.gov.pk/, https://slrmc.gov.pk/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (CONNECT 502 or reset by peer); no HTTP response"
+  },
+  {
+   "url": "https://data.gov.pk/",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html",
+   "assessment": "not found"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "Only the CDA_GIS host (gismaps.pulse.gop.pk) and other .gov.pk GIS hosts fail at CONNECT while other .gov.pk sites load; consistent with host-level block or dead host, not proven.",
+ "notes": "Headers changed nothing. The CDA_GIS MapServer named in the earlier record is still unreachable; the sibling Punjab server exposes an empty Islamabad folder. No IN/PK country retry file exists.",
+ "nextStep": "Test gismaps.pulse.gop.pk from a Pakistan network; look for CDA e-services/viewer."
+}
