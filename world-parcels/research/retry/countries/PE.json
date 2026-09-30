@@ -1,0 +1,88 @@
+{
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: es-PE,es;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://geo.vivienda.gob.pe/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "GeoVivienda landing page inspected: static page with logout link and partner logos, no service URLs in HTML"
+  },
+  {
+   "url": "https://www.geoidep.gob.pe",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "national IDE portal; links to visor.geoperu.gob.pe"
+  },
+  {
+   "url": "https://visor.geoperu.gob.pe/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "GeoPeru viewer (Leaflet); /js/configuracion.js inspected: layer catalogue at /api/pro/layer-nacional/, spatial server espacialg.geoperu.gob.pe, IDEP API www.geoidep.gob.pe/geoapify; no token or parcel layer name found"
+  },
+  {
+   "url": "https://visor.geoperu.gob.pe/api/pro/layer-nacional/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare challenge page; not bypassed"
+  },
+  {
+   "url": "https://espacialg.geoperu.gob.pe/geoserver/ows?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare challenge page; not bypassed"
+  },
+  {
+   "url": "https://www.gob.pe/cofopri, /midagri, /sunarp (sunarp.gob.pe redirects here)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "institutional pages only"
+  },
+  {
+   "url": "https://geo.midagri.gob.pe/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://www.cofopri.gob.pe/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://geoportal.midagri.gob.pe, sigda.midagri.gob.pe, geo.sunarp.gob.pe, geoportal.sunarp.gob.pe, sigcofopri/catastro.cofopri.gob.pe, ide.vivienda.gob.pe, visor.geoidep.gob.pe",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Peru catastro predios",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 hits"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "Cloudflare challenge on API/WFS hosts (bot check), not a geographic block; midagri/cofopri hosts reset",
+ "notes": "New: found the GeoPeru/GeoIDEP national viewer and its config (layer catalogue and WFS host), but both are behind a Cloudflare challenge (403) from this client, so parcel-layer existence is untested. No cadastre-specific service found; cadastre remains fragmented (COFOPRI, MIDAGRI, SUNARP, municipalities).",
+ "nextStep": "Retry GeoPeru layer-nacional and espacialg WFS from a real browser session to see whether a catastro/predios layer is public; retry MIDAGRI/COFOPRI hosts.",
+ "kind": "country",
+ "key": "PE",
+ "checkedAt": "2026-09-30"
+}

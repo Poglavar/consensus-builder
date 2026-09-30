@@ -1,0 +1,109 @@
+{
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: es-NI,es;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.ineter.gob.ni/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://ineter.gob.ni",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://www.dgcatastro.gob.ni/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://catastro.ineter.gob.ni",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://sig.ineter.gob.ni",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://sicat.ineter.gob.ni",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://sinia.ineter.gob.ni",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://www.catastro.gob.ni",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://www.gob.ni",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://www.pgr.gob.ni",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://www.poderjudicial.gob.ni",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://www.mific.gob.ni",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "MIFIC (commerce ministry) loads; irrelevant"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Nicaragua catastro / Nicaragua parcelas",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "only unrelated hits (private mining company web map, Cox's Bazar service)"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "INETER and most .gob.ni hosts reset while mific.gob.ni answers; possible network/geo filtering, unconfirmed",
+ "notes": "No change. All INETER hosts reset; only an unrelated ministry host answers.",
+ "nextStep": "Retry INETER hosts from another network; look for the INETER SICAT/IDE viewer URL via a third-party page.",
+ "kind": "country",
+ "key": "NI",
+ "checkedAt": "2026-09-30"
+}
