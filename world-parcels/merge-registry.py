@@ -130,6 +130,120 @@ for f in sorted(glob.glob('research/countries/*.json')):
         p['mergeNote'] = note
     probes.append(p)
 
+
+# ---- Retry pass (2026-09-30): apply research/retry results ------------------
+VERIFIED_OK = (200, 206)
+def usable_sample(d):
+    import re
+    v = d.get('verifiedParcelResponse') or {}
+    n = v.get('parcelRecordCount')
+    if isinstance(n, str):
+        m = re.search(r'\d+', n.replace(',', ''))
+        n = int(m.group()) if m else 0
+    elif isinstance(n, (list, dict)):
+        n = len(n)
+    hs = v.get('httpStatus')
+    if isinstance(hs, str):
+        m = re.match(r'\d+', hs.strip())
+        hs = int(m.group()) if m else None
+    return hs in VERIFIED_OK and (n or 0) > 0
+
+CITY_RETRY_OVERRIDES = {
+    'quito': ('temporarily_unavailable', 'Only unofficial third-party layers returned nothing at the centre and expose owner data; official hosts blocked.'),
+}
+# Retry files rarely recorded nationwideVerified, so this list is curated from the agent reports:
+# each was queried in two or more distinct regions from one official, anonymous service.
+REVIEWED_MULTI_REGION = {'BJ', 'BY', 'CY', 'JM', 'JO', 'NC', 'SE', 'XK', 'LT'}
+COUNTRY_RETRY_OVERRIDES = {
+    'TT': ('partial_or_unofficial_sample', 'Public ArcGIS Online layer; link to the Surveys and Mapping Division is inferred, layer has an owner field (not saved).'),
+    'GB': ('partial_or_unofficial_sample', 'England and Wales only, bulk per-authority download of title-extent index polygons; no query API; one authority sampled.'),
+    'SE': (None, 'Undocumented viewer-internal lookup by designation, not a bbox service; terms unread; may change without notice.'),
+    'TR': (None, 'Undocumented viewer backend, point lookups only; terms unread.'),
+}
+retry_cities = {}
+for f in sorted(glob.glob('research/retry/cities/*.json')):
+    if any(x in f for x in SKIP):
+        continue
+    d = load(f)
+    if isinstance(d, dict) and 'newStatus' in d:
+        retry_cities[d['key']] = (f, d)
+changed_cities = 0
+for c in cities.values():
+    key = c['researchFile'].split('/')[-1][:-5]
+    if key.endswith('.json'):
+        key = key[:-5]
+    hit = retry_cities.get(key) or retry_cities.get(os.path.basename(c['researchFile'])[:-5])
+    if not hit:
+        continue
+    f, d = hit
+    status, note = d['newStatus'], None
+    if key in CITY_RETRY_OVERRIDES:
+        status, note = CITY_RETRY_OVERRIDES[key]
+    if status.startswith('verified') and not usable_sample(d):
+        status, note = 'no_verified_sample_candidate_citywide', 'Retry claimed a sample without a usable HTTP 200/206 nonempty response.'
+    if status != c['parcelStatus']:
+        changed_cities += 1
+    c.setdefault('previousResearchFile', c['researchFile'])
+    c['retryFile'] = f
+    c['parcelStatus'] = status
+    if note:
+        c['mergeNote'] = note
+    if status.startswith('verified'):
+        v = d['verifiedParcelResponse']; s_ = d.get('source') or {}
+        sid = v.get('sourceId') or s_.get('sourceId')
+        c['sourceIds'] = [sid]
+        c['researchFile'] = f
+        if sid not in sources:
+            sources[sid] = {
+                'sourceId': sid, 'name': s_.get('name', sid), 'operator': s_.get('operator', 'unconfirmed'),
+                'countryCode': c['countryCode'], 'scope': s_.get('scope', 'see evidence file'),
+                'endpoint': s_.get('endpoint') or v.get('requestUrl', '').split('?')[0],
+                'method': s_.get('method') or v.get('method', 'GET'),
+                'responseFormat': s_.get('responseFormat') or v.get('geometryType', 'unknown'),
+                'crs': s_.get('crs', 'see evidence file'), 'verificationStatus': status,
+                'reuseStatus': s_.get('reuseStatus', 'terms_unconfirmed'), 'verifiedCityIds': [], 'evidenceFile': f,
+            }
+        if c['cityId'] not in sources[sid]['verifiedCityIds']:
+            sources[sid]['verifiedCityIds'].append(c['cityId'])
+    else:
+        c['sourceIds'] = []
+
+changed_countries = 0
+by_code = {p['countryCode']: p for p in probes}
+for f in sorted(glob.glob('research/retry/countries/*.json')):
+    if any(x in f for x in SKIP):
+        continue
+    d = load(f)
+    if not isinstance(d, dict) or 'newStatus' not in d:
+        continue
+    code = d['key']
+    p = by_code.get(code)
+    if not p:
+        continue
+    status, note = d['newStatus'], None
+    if status == 'national_online_cadastre_verified_sample':
+        nat = (d.get('coverageAssessment') or {}).get('nationwideVerified')
+        if code in REVIEWED_MULTI_REGION:
+            nat = True  # reviewed against the agent report: 2+ distinct regions, one official service
+        if not usable_sample(d) or nat is not True:
+            status, note = 'partial_or_unofficial_sample', 'Retry sample did not establish nationwide coverage (single region, pilot, or partial layer).'
+    if code in COUNTRY_RETRY_OVERRIDES:
+        st_, note = COUNTRY_RETRY_OVERRIDES[code]
+        status = st_ or status
+    if status != p['status']:
+        changed_countries += 1
+    if status.startswith('verified_sample'):
+        status, note = 'partial_or_unofficial_sample', (note or 'City-scope verified sample (government sites or partial layer), not a national service.')
+    p['previousStatus'] = p['status']
+    p['status'] = status
+    p['accessModel'] = d.get('accessModel') or p.get('accessModel', 'unknown')
+    p['retryFile'] = f
+    p['foundViaViewerInspection'] = bool(d.get('foundViaViewerInspection'))
+    p['geoBlockSuspected'] = bool(d.get('geoBlockSuspected'))
+    if note:
+        p['mergeNote'] = note
+print('retry applied:', changed_cities, 'city status changes,', changed_countries, 'country status changes')
+
 REG['sources'] = list(sources.values())
 REG['cities'] = [cities[k] for k in sorted(cities)]
 REG['countryProbes'] = probes

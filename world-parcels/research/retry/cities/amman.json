@@ -1,0 +1,53 @@
+{
+ "kind": "city",
+ "key": "amman",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "verified_sample_city_scope",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: ar-JO,ar;q=0.9,en;q=0.8; cookie jar (curl -b/-c) used",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": {
+  "sourceId": "jo-dls-cassini-mapserver",
+  "requestUrl": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3/query?f=json&where=1%3D1&geometry=35.9590,31.9830,35.9620,31.9860&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PARCEL_ID,DLS_KEY,VILL_CODE,HOD_CODE&outSR=4326&returnGeometry=true&resultRecordCount=3",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   35.959,
+   31.983,
+   35.962,
+   31.986
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PARCEL_ID (with DLS_KEY, VILL_CODE, HOD_CODE)",
+  "responseFile": "research/retry/cities/amman-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount"
+ },
+ "source": {
+  "sourceId": "jo-dls-cassini-mapserver",
+  "name": "DLS_Cassini MapServer layer 3 (Parcels)",
+  "operator": "Department of Lands and Survey (DLS), Jordan",
+  "scope": "Country-level DLS service found in retry (research/retry/countries/JO.json); this run confirms it returns parcels at central Amman (31.9836N, 35.9602E)",
+  "endpoint": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "ArcGIS JSON (esriGeometryPolygon)",
+  "crs": "native Palestine Grid (Cassini); outSR=4326 accepted",
+  "reuseStatus": "terms not read; official viewer maps.dls.gov.jo/dlsweb uses a captcha iframe"
+ },
+ "requests": [
+  {
+   "url": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3/query?f=json&where=1%3D1&geometry=35.9590,31.9830,35.9620,31.9860&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PARCEL_ID,DLS_KEY,VILL_CODE,HOD_CODE&outSR=4326&returnGeometry=true&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "3 parcel polygons, closed rings, attributes PARCEL_ID/DLS_KEY/VILL_CODE/HOD_CODE (saved trimmed to those fields and 6-decimal coords)"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "New versus previous record: the previously unreachable Amman municipal GIS is irrelevant; the national DLS_Cassini parcel layer found in the JO country retry covers the city centre. Bounded query (~300 m box) at Amman center returned 3 polygons.",
+ "nextStep": "Read DLS terms of use; check completeness of coverage across greater Amman (Aqaba bbox returned 0 in the country retry)."
+}

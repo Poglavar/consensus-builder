@@ -838,6 +838,109 @@
       "reuseStatus": "public_access_token_in_app;_terms_unread",
       "verifiedCityIds": [],
       "evidenceFile": "research/countries/HR.json"
+    },
+    {
+      "sourceId": "in-ldo-edharti-geojson",
+      "name": "e-Dharti Geo Portal 2.0 static layers (Property, Lease, VacantLand, ps_I-III)",
+      "operator": "Land & Development Office, Ministry of Housing and Urban Affairs",
+      "countryCode": "IN",
+      "scope": "Only L&DO-managed government/leasehold properties in Delhi (about 26k property polygons); NOT the full Delhi cadastre and not India",
+      "endpoint": "https://ldo.mohua.gov.in/assets/MIS_V5.1/Geojson_s/",
+      "method": "static file GET, no key",
+      "responseFormat": "JS var wrapping GeoJSON",
+      "crs": "WGS84",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "Not assessed; files contain lessee personal names (redacted in saved copy)",
+      "verifiedCityIds": [
+        "geonames:1261481"
+      ],
+      "evidenceFile": "research/retry/cities/new-delhi.json"
+    },
+    {
+      "sourceId": "tr-tkgm-parselsorgu-api",
+      "name": "TKGM Parsel Sorgu backing API (megsiswebapi.v3)",
+      "operator": "Tapu ve Kadastro Genel Mudurlugu (General Directorate of Land Registry and Cadastre)",
+      "countryCode": "TR",
+      "scope": "Point lookup of a single parcel; tested only in Istanbul (Fatih). Ankara test point returned 404 (point likely not a parcel), so no second-region proof",
+      "endpoint": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/{lat}/{lon}/",
+      "method": "GET, no key seen",
+      "responseFormat": "GeoJSON Feature",
+      "crs": "WGS84 lon/lat",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "Undocumented endpoint used by the public viewer; terms not read, bulk/reuse rights unknown",
+      "verifiedCityIds": [
+        "geonames:745044"
+      ],
+      "evidenceFile": "research/retry/cities/istanbul.json"
+    },
+    {
+      "sourceId": "ar-caba-idecaba-wfs-parcelas",
+      "name": "Parcelas catastrales (catalogo_og_130:parcelas)",
+      "operator": "Gobierno de la Ciudad de Buenos Aires (IDECABA)",
+      "countryCode": "AR",
+      "scope": "Ciudad Autonoma de Buenos Aires only; not Greater Buenos Aires, not Argentina",
+      "endpoint": "https://geoserver.buenosaires.gob.ar/geoserver/catalogo_og_130/wfs",
+      "method": "WFS 2.0.0 GetFeature, GeoJSON output, no key",
+      "responseFormat": "GeoJSON",
+      "crs": "EPSG:4326 (srsName requested)",
+      "verificationStatus": "verified_sample_city_scope",
+      "reuseStatus": "Terms not read on the WFS; the catalog dataset page previously stated CC-BY-2.5-AR (not re-verified this pass)",
+      "verifiedCityIds": [
+        "geonames:3435910"
+      ],
+      "evidenceFile": "research/retry/cities/buenos-aires.json"
+    },
+    {
+      "sourceId": "gb-hmlr-inspire-index-polygons",
+      "name": "HM Land Registry INSPIRE Index Polygons",
+      "operator": "HM Land Registry",
+      "countryCode": "GB",
+      "scope": "England and Wales registered freehold/leasehold title extents, per local authority; London covered by City of London + 32 borough files",
+      "endpoint": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "method": "anonymous bulk GML zip download",
+      "responseFormat": "GML (WFS 2.0 FeatureCollection)",
+      "crs": "EPSG:27700",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "page states OGL conditions of use; zip licence PDF not read",
+      "verifiedCityIds": [
+        "geonames:2643743",
+        "wup2025:3388"
+      ],
+      "evidenceFile": "research/retry/cities/london.json"
+    },
+    {
+      "sourceId": "in-mh-bhunaksha",
+      "name": "Maharashtra Bhu-Naksha (Mahabhunakasha)",
+      "operator": "Maharashtra Land Records (Mahabhumi) / NIC",
+      "countryCode": "IN",
+      "scope": "Maharashtra village and city survey maps; Pune only Bhamburda sampled",
+      "endpoint": "https://mahabhunakasha.mahabhumi.gov.in/rest/MapInfo/getPlotInfo",
+      "method": "anonymous POST",
+      "responseFormat": "JSON with WKT",
+      "crs": "projected metres (UTM 43N presumed)",
+      "verificationStatus": "verified_sample_partial_coverage",
+      "reuseStatus": "not read",
+      "verifiedCityIds": [
+        "wup2025:8616"
+      ],
+      "evidenceFile": "research/retry/cities/pune.json"
+    },
+    {
+      "sourceId": "jo-dls-cassini-mapserver",
+      "name": "DLS_Cassini MapServer layer 3 (Parcels)",
+      "operator": "Department of Lands and Survey (DLS), Jordan",
+      "countryCode": "JO",
+      "scope": "Country-level DLS service found in retry (research/retry/countries/JO.json); this run confirms it returns parcels at central Amman (31.9836N, 35.9602E)",
+      "endpoint": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3",
+      "method": "GET ArcGIS REST query",
+      "responseFormat": "ArcGIS JSON (esriGeometryPolygon)",
+      "crs": "native Palestine Grid (Cassini); outSR=4326 accepted",
+      "verificationStatus": "verified_sample_city_scope",
+      "reuseStatus": "terms not read; official viewer maps.dls.gov.jo/dlsweb uses a captcha iframe",
+      "verifiedCityIds": [
+        "wup2025:850"
+      ],
+      "evidenceFile": "research/retry/cities/amman.json"
     }
   ],
   "countryCoverage": [],
@@ -902,9 +1005,13 @@
       ],
       "citySource": "https://www.geonames.org/1261481/new-delhi.html",
       "researchOrder": 4,
-      "parcelStatus": "temporarily_unavailable",
-      "sourceIds": [],
-      "researchFile": "research/new-delhi.json"
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-ldo-edharti-geojson"
+      ],
+      "researchFile": "research/retry/cities/new-delhi.json",
+      "previousResearchFile": "research/new-delhi.json",
+      "retryFile": "research/retry/cities/new-delhi.json"
     },
     {
       "cityId": "geonames:1796236",
@@ -992,9 +1099,11 @@
       ],
       "citySource": "https://www.geonames.org/1835848/seoul.html",
       "researchOrder": 10,
-      "parcelStatus": "no_verified_sample_candidate_countrywide",
+      "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/seoul.json"
+      "researchFile": "research/seoul.json",
+      "previousResearchFile": "research/seoul.json",
+      "retryFile": "research/retry/cities/seoul.json"
     },
     {
       "cityId": "geonames:1174872",
@@ -1069,9 +1178,11 @@
       ],
       "citySource": "https://www.geonames.org/3530597/mexico-city.html",
       "researchOrder": 15,
-      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/mexico-city.json"
+      "researchFile": "research/mexico-city.json",
+      "previousResearchFile": "research/mexico-city.json",
+      "retryFile": "research/retry/cities/mexico-city.json"
     },
     {
       "cityId": "geonames:1816670",
@@ -1114,9 +1225,13 @@
       ],
       "citySource": "https://www.geonames.org/745044/istanbul.html",
       "researchOrder": 18,
-      "parcelStatus": "no_verified_sample_candidate_countrywide",
-      "sourceIds": [],
-      "researchFile": "research/istanbul.json"
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "tr-tkgm-parselsorgu-api"
+      ],
+      "researchFile": "research/retry/cities/istanbul.json",
+      "previousResearchFile": "research/istanbul.json",
+      "retryFile": "research/retry/cities/istanbul.json"
     },
     {
       "cityId": "geonames:524901",
@@ -1129,9 +1244,11 @@
       ],
       "citySource": "https://www.geonames.org/524901/moscow.html",
       "researchOrder": 19,
-      "parcelStatus": "no_verified_sample_candidate_countrywide",
+      "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/moscow.json"
+      "researchFile": "research/moscow.json",
+      "previousResearchFile": "research/moscow.json",
+      "retryFile": "research/retry/cities/moscow.json"
     },
     {
       "cityId": "geonames:1566083",
@@ -1159,9 +1276,13 @@
       ],
       "citySource": "https://www.geonames.org/3435910/buenos-aires.html",
       "researchOrder": 21,
-      "parcelStatus": "no_verified_sample_candidate_citywide",
-      "sourceIds": [],
-      "researchFile": "research/buenos-aires.json"
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "ar-caba-idecaba-wfs-parcelas"
+      ],
+      "researchFile": "research/retry/cities/buenos-aires.json",
+      "previousResearchFile": "research/buenos-aires.json",
+      "retryFile": "research/retry/cities/buenos-aires.json"
     },
     {
       "cityId": "geonames:5128581",
@@ -1191,9 +1312,11 @@
       ],
       "citySource": "https://www.geonames.org/1795565/shenzhen.html",
       "researchOrder": 23,
-      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/shenzhen.json"
+      "researchFile": "research/shenzhen.json",
+      "previousResearchFile": "research/shenzhen.json",
+      "retryFile": "research/retry/cities/shenzhen.json"
     },
     {
       "cityId": "geonames:1277333",
@@ -1289,7 +1412,9 @@
       "researchOrder": 29,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/chennai.json"
+      "researchFile": "research/chennai.json",
+      "previousResearchFile": "research/chennai.json",
+      "retryFile": "research/retry/cities/chennai.json"
     },
     {
       "cityId": "geonames:2314302",
@@ -1351,9 +1476,13 @@
       ],
       "citySource": "https://www.geonames.org/2643743/london.html",
       "researchOrder": 33,
-      "parcelStatus": "no_verified_sample_candidate_countrywide",
-      "sourceIds": [],
-      "researchFile": "research/london.json"
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "gb-hmlr-inspire-index-polygons"
+      ],
+      "researchFile": "research/retry/cities/london.json",
+      "previousResearchFile": "research/london.json",
+      "retryFile": "research/retry/cities/london.json"
     },
     {
       "cityId": "wup2025:11027",
@@ -1421,7 +1550,9 @@
       "researchOrder": 37,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/hyderabad.json"
+      "researchFile": "research/hyderabad.json",
+      "previousResearchFile": "research/hyderabad.json",
+      "retryFile": "research/retry/cities/hyderabad.json"
     },
     {
       "cityId": "wup2025:5264",
@@ -1505,7 +1636,9 @@
       "researchOrder": 42,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/dar-es-salaam.json"
+      "researchFile": "research/dar-es-salaam.json",
+      "previousResearchFile": "research/dar-es-salaam.json",
+      "retryFile": "research/retry/cities/dar-es-salaam.json"
     },
     {
       "cityId": "wup2025:11632",
@@ -1717,9 +1850,13 @@
       ],
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 55,
-      "parcelStatus": "temporarily_unavailable",
-      "sourceIds": [],
-      "researchFile": "research/pune.json"
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "in-mh-bhunaksha"
+      ],
+      "researchFile": "research/retry/cities/pune.json",
+      "previousResearchFile": "research/pune.json",
+      "retryFile": "research/retry/cities/pune.json"
     },
     {
       "cityId": "wup2025:4325",
@@ -1751,7 +1888,9 @@
       "researchOrder": 57,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/nanjing.json"
+      "researchFile": "research/nanjing.json",
+      "previousResearchFile": "research/nanjing.json",
+      "retryFile": "research/retry/cities/nanjing.json"
     },
     {
       "cityId": "wup2025:2380",
@@ -1785,7 +1924,9 @@
       "researchOrder": 59,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/addis-ababa.json"
+      "researchFile": "research/addis-ababa.json",
+      "previousResearchFile": "research/addis-ababa.json",
+      "retryFile": "research/retry/cities/addis-ababa.json"
     },
     {
       "cityId": "wup2025:3439",
@@ -1801,7 +1942,9 @@
       "researchOrder": 60,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/abidjan.json"
+      "researchFile": "research/abidjan.json",
+      "previousResearchFile": "research/abidjan.json",
+      "retryFile": "research/retry/cities/abidjan.json"
     },
     {
       "cityId": "wup2025:11800",
@@ -1815,9 +1958,11 @@
       ],
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 61,
-      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/chaozhou.json"
+      "researchFile": "research/chaozhou.json",
+      "previousResearchFile": "research/chaozhou.json",
+      "retryFile": "research/retry/cities/chaozhou.json"
     },
     {
       "cityId": "wup2025:850",
@@ -1831,9 +1976,13 @@
       ],
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 62,
-      "parcelStatus": "temporarily_unavailable",
-      "sourceIds": [],
-      "researchFile": "research/amman.json"
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "jo-dls-cassini-mapserver"
+      ],
+      "researchFile": "research/retry/cities/amman.json",
+      "previousResearchFile": "research/amman.json",
+      "retryFile": "research/retry/cities/amman.json"
     },
     {
       "cityId": "wup2025:3303",
@@ -2045,7 +2194,9 @@
       "researchOrder": 75,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/mashhad.json"
+      "researchFile": "research/mashhad.json",
+      "previousResearchFile": "research/mashhad.json",
+      "retryFile": "research/retry/cities/mashhad.json"
     },
     {
       "cityId": "wup2025:865",
@@ -2125,9 +2276,11 @@
       ],
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 80,
-      "parcelStatus": "temporarily_unavailable",
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
       "sourceIds": [],
-      "researchFile": "research/kochi.json"
+      "researchFile": "research/kochi.json",
+      "previousResearchFile": "research/kochi.json",
+      "retryFile": "research/retry/cities/kochi.json"
     },
     {
       "cityId": "wup2025:1975",
@@ -2259,7 +2412,9 @@
       "researchOrder": 88,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/islamabad.json"
+      "researchFile": "research/islamabad.json",
+      "previousResearchFile": "research/islamabad.json",
+      "retryFile": "research/retry/cities/islamabad.json"
     },
     {
       "cityId": "wup2025:8435",
@@ -2309,7 +2464,9 @@
       "researchOrder": 91,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/saint-petersburg.json"
+      "researchFile": "research/saint-petersburg.json",
+      "previousResearchFile": "research/saint-petersburg.json",
+      "retryFile": "research/retry/cities/saint-petersburg.json"
     },
     {
       "cityId": "wup2025:1455",
@@ -2361,7 +2518,9 @@
       "researchOrder": 94,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/casablanca.json"
+      "researchFile": "research/casablanca.json",
+      "previousResearchFile": "research/casablanca.json",
+      "retryFile": "research/retry/cities/casablanca.json"
     },
     {
       "cityId": "wup2025:3197",
@@ -2457,7 +2616,9 @@
       "researchOrder": 100,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/jeddah.json"
+      "researchFile": "research/jeddah.json",
+      "previousResearchFile": "research/jeddah.json",
+      "retryFile": "research/retry/cities/jeddah.json"
     },
     {
       "cityId": "wup2025:305",
@@ -2473,7 +2634,9 @@
       "researchOrder": 101,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/kuwait-city.json"
+      "researchFile": "research/kuwait-city.json",
+      "previousResearchFile": "research/kuwait-city.json",
+      "retryFile": "research/retry/cities/kuwait-city.json"
     },
     {
       "cityId": "wup2025:1806",
@@ -2539,7 +2702,9 @@
       "researchOrder": 105,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/belo-horizonte.json"
+      "researchFile": "research/belo-horizonte.json",
+      "previousResearchFile": "research/belo-horizonte.json",
+      "retryFile": "research/retry/cities/belo-horizonte.json"
     },
     {
       "cityId": "wup2025:12032",
@@ -2735,7 +2900,9 @@
       "researchOrder": 117,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/toshkent.json"
+      "researchFile": "research/toshkent.json",
+      "previousResearchFile": "research/toshkent.json",
+      "retryFile": "research/retry/cities/toshkent.json"
     },
     {
       "cityId": "wup2025:1961",
@@ -2749,9 +2916,11 @@
       ],
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 118,
-      "parcelStatus": "temporarily_unavailable",
+      "parcelStatus": "no_verified_sample_candidate_citywide",
       "sourceIds": [],
-      "researchFile": "research/antananarivo.json"
+      "researchFile": "research/antananarivo.json",
+      "previousResearchFile": "research/antananarivo.json",
+      "retryFile": "research/retry/cities/antananarivo.json"
     },
     {
       "cityId": "wup2025:10447",
@@ -2783,7 +2952,9 @@
       "researchOrder": 120,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/dakar.json"
+      "researchFile": "research/dakar.json",
+      "previousResearchFile": "research/dakar.json",
+      "retryFile": "research/retry/cities/dakar.json"
     },
     {
       "cityId": "wup2025:7369",
@@ -2917,7 +3088,9 @@
       "researchOrder": 128,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/qingdao.json"
+      "researchFile": "research/qingdao.json",
+      "previousResearchFile": "research/qingdao.json",
+      "retryFile": "research/retry/cities/qingdao.json"
     },
     {
       "cityId": "wup2025:4941",
@@ -2967,7 +3140,9 @@
       "researchOrder": 131,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/karaj.json"
+      "researchFile": "research/karaj.json",
+      "previousResearchFile": "research/karaj.json",
+      "retryFile": "research/retry/cities/karaj.json"
     },
     {
       "cityId": "wup2025:5576",
@@ -2981,10 +3156,12 @@
       ],
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 132,
-      "parcelStatus": "no_verified_sample_candidate_citywide",
+      "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
       "researchFile": "research/berlin.json",
-      "mergeNote": "Evidence was relayed through a summarising tool, not a raw HTTP reply, and only 2 of 3 features were kept; re-fetch directly before counting it."
+      "mergeNote": "Evidence was relayed through a summarising tool, not a raw HTTP reply, and only 2 of 3 features were kept; re-fetch directly before counting it.",
+      "previousResearchFile": "research/berlin.json",
+      "retryFile": "research/retry/cities/berlin.json"
     },
     {
       "cityId": "wup2025:6158",
@@ -3052,7 +3229,9 @@
       "researchOrder": 136,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/indore.json"
+      "researchFile": "research/indore.json",
+      "previousResearchFile": "research/indore.json",
+      "retryFile": "research/retry/cities/indore.json"
     },
     {
       "cityId": "wup2025:9912",
@@ -3068,7 +3247,9 @@
       "researchOrder": 137,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/jinan.json"
+      "researchFile": "research/jinan.json",
+      "previousResearchFile": "research/jinan.json",
+      "retryFile": "research/retry/cities/jinan.json"
     },
     {
       "cityId": "wup2025:10588",
@@ -3084,7 +3265,9 @@
       "researchOrder": 138,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/changsha.json"
+      "researchFile": "research/changsha.json",
+      "previousResearchFile": "research/changsha.json",
+      "retryFile": "research/retry/cities/changsha.json"
     },
     {
       "cityId": "wup2025:2525",
@@ -3118,7 +3301,9 @@
       "researchOrder": 140,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/changchun.json"
+      "researchFile": "research/changchun.json",
+      "previousResearchFile": "research/changchun.json",
+      "retryFile": "research/retry/cities/changchun.json"
     },
     {
       "cityId": "wup2025:11039",
@@ -3150,7 +3335,9 @@
       "researchOrder": 142,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/nanchang.json"
+      "researchFile": "research/nanchang.json",
+      "previousResearchFile": "research/nanchang.json",
+      "retryFile": "research/retry/cities/nanchang.json"
     },
     {
       "cityId": "wup2025:10166",
@@ -3166,7 +3353,9 @@
       "researchOrder": 143,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/nanning.json"
+      "researchFile": "research/nanning.json",
+      "previousResearchFile": "research/nanning.json",
+      "retryFile": "research/retry/cities/nanning.json"
     },
     {
       "cityId": "wup2025:12024",
@@ -3182,7 +3371,9 @@
       "researchOrder": 144,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/quanzhou.json"
+      "researchFile": "research/quanzhou.json",
+      "previousResearchFile": "research/quanzhou.json",
+      "retryFile": "research/retry/cities/quanzhou.json"
     },
     {
       "cityId": "wup2025:8123",
@@ -3216,7 +3407,9 @@
       "researchOrder": 146,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/busan.json"
+      "researchFile": "research/busan.json",
+      "previousResearchFile": "research/busan.json",
+      "retryFile": "research/retry/cities/busan.json"
     },
     {
       "cityId": "wup2025:9793",
@@ -3248,7 +3441,9 @@
       "researchOrder": 148,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/el-djazair-algiers.json"
+      "researchFile": "research/el-djazair-algiers.json",
+      "previousResearchFile": "research/el-djazair-algiers.json",
+      "retryFile": "research/retry/cities/el-djazair-algiers.json"
     },
     {
       "cityId": "wup2025:8285",
@@ -3298,7 +3493,9 @@
       "researchOrder": 151,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/kunming.json"
+      "researchFile": "research/kunming.json",
+      "previousResearchFile": "research/kunming.json",
+      "retryFile": "research/retry/cities/kunming.json"
     },
     {
       "cityId": "wup2025:1748",
@@ -3348,7 +3545,9 @@
       "researchOrder": 154,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/maputo.json"
+      "researchFile": "research/maputo.json",
+      "previousResearchFile": "research/maputo.json",
+      "retryFile": "research/retry/cities/maputo.json"
     },
     {
       "cityId": "wup2025:1233",
@@ -3464,7 +3663,9 @@
       "researchOrder": 161,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/ningbo.json"
+      "researchFile": "research/ningbo.json",
+      "previousResearchFile": "research/ningbo.json",
+      "retryFile": "research/retry/cities/ningbo.json"
     },
     {
       "cityId": "wup2025:9847",
@@ -3480,7 +3681,9 @@
       "researchOrder": 162,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/kollam.json"
+      "researchFile": "research/kollam.json",
+      "previousResearchFile": "research/kollam.json",
+      "retryFile": "research/retry/cities/kollam.json"
     },
     {
       "cityId": "wup2025:5062",
@@ -3544,7 +3747,9 @@
       "researchOrder": 166,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/thiruvananthapuram.json"
+      "researchFile": "research/thiruvananthapuram.json",
+      "previousResearchFile": "research/thiruvananthapuram.json",
+      "retryFile": "research/retry/cities/thiruvananthapuram.json"
     },
     {
       "cityId": "wup2025:11531",
@@ -3560,7 +3765,9 @@
       "researchOrder": 167,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/asansol.json"
+      "researchFile": "research/asansol.json",
+      "previousResearchFile": "research/asansol.json",
+      "retryFile": "research/retry/cities/asansol.json"
     },
     {
       "cityId": "wup2025:1601",
@@ -3642,7 +3849,9 @@
       "researchOrder": 172,
       "parcelStatus": "no_verified_sample_candidate_countrywide",
       "sourceIds": [],
-      "researchFile": "research/pyongyang.json"
+      "researchFile": "research/pyongyang.json",
+      "previousResearchFile": "research/pyongyang.json",
+      "retryFile": "research/retry/cities/pyongyang.json"
     },
     {
       "cityId": "wup2025:11755",
@@ -3658,7 +3867,9 @@
       "researchOrder": 173,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/tamluk.json"
+      "researchFile": "research/tamluk.json",
+      "previousResearchFile": "research/tamluk.json",
+      "retryFile": "research/retry/cities/tamluk.json"
     },
     {
       "cityId": "wup2025:5822",
@@ -3674,7 +3885,9 @@
       "researchOrder": 174,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/hyderabad-pakistan.json"
+      "researchFile": "research/hyderabad-pakistan.json",
+      "previousResearchFile": "research/hyderabad-pakistan.json",
+      "retryFile": "research/retry/cities/hyderabad-pakistan.json"
     },
     {
       "cityId": "wup2025:2063",
@@ -3690,7 +3903,9 @@
       "researchOrder": 175,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/guatemala-city.json"
+      "researchFile": "research/guatemala-city.json",
+      "previousResearchFile": "research/guatemala-city.json",
+      "retryFile": "research/retry/cities/guatemala-city.json"
     },
     {
       "cityId": "wup2025:6577",
@@ -3738,7 +3953,9 @@
       "researchOrder": 178,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/dalian.json"
+      "researchFile": "research/dalian.json",
+      "previousResearchFile": "research/dalian.json",
+      "retryFile": "research/retry/cities/dalian.json"
     },
     {
       "cityId": "wup2025:7035",
@@ -3806,7 +4023,9 @@
       "researchOrder": 182,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/coyah-conakry.json"
+      "researchFile": "research/coyah-conakry.json",
+      "previousResearchFile": "research/coyah-conakry.json",
+      "retryFile": "research/retry/cities/coyah-conakry.json"
     },
     {
       "cityId": "wup2025:675",
@@ -3858,7 +4077,9 @@
       "researchOrder": 185,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/guiyang.json"
+      "researchFile": "research/guiyang.json",
+      "previousResearchFile": "research/guiyang.json",
+      "retryFile": "research/retry/cities/guiyang.json"
     },
     {
       "cityId": "wup2025:7063",
@@ -3926,7 +4147,9 @@
       "researchOrder": 189,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/changzhou.json"
+      "researchFile": "research/changzhou.json",
+      "previousResearchFile": "research/changzhou.json",
+      "retryFile": "research/retry/cities/changzhou.json"
     },
     {
       "cityId": "wup2025:439",
@@ -3978,7 +4201,9 @@
       "researchOrder": 192,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/kyiv.json"
+      "researchFile": "research/kyiv.json",
+      "previousResearchFile": "research/kyiv.json",
+      "retryFile": "research/retry/cities/kyiv.json"
     },
     {
       "cityId": "wup2025:11580",
@@ -4028,7 +4253,9 @@
       "researchOrder": 195,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/caracas.json"
+      "researchFile": "research/caracas.json",
+      "previousResearchFile": "research/caracas.json",
+      "retryFile": "research/retry/cities/caracas.json"
     },
     {
       "cityId": "wup2025:3388",
@@ -4042,9 +4269,13 @@
       ],
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 196,
-      "parcelStatus": "no_verified_sample_candidate_countrywide",
-      "sourceIds": [],
-      "researchFile": "research/manchester.json"
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "gb-hmlr-inspire-index-polygons"
+      ],
+      "researchFile": "research/retry/cities/manchester.json",
+      "previousResearchFile": "research/manchester.json",
+      "retryFile": "research/retry/cities/manchester.json"
     },
     {
       "cityId": "wup2025:2524",
@@ -4060,7 +4291,10 @@
       "researchOrder": 197,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/quito.json"
+      "researchFile": "research/quito.json",
+      "previousResearchFile": "research/quito.json",
+      "retryFile": "research/retry/cities/quito.json",
+      "mergeNote": "Only unofficial third-party layers returned nothing at the centre and expose owner data; official hosts blocked."
     },
     {
       "cityId": "wup2025:1752",
@@ -4094,7 +4328,9 @@
       "researchOrder": 199,
       "parcelStatus": "temporarily_unavailable",
       "sourceIds": [],
-      "researchFile": "research/bhopal.json"
+      "researchFile": "research/bhopal.json",
+      "previousResearchFile": "research/bhopal.json",
+      "retryFile": "research/retry/cities/bhopal.json"
     },
     {
       "cityId": "wup2025:6446",
@@ -4120,10 +4356,14 @@
       "countryCode": "AE",
       "country": "United Arab Emirates",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
+      "status": "subnational_only",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/AE.json"
+      "evidenceFile": "research/countries/AE.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/AE.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "AF",
@@ -4132,25 +4372,38 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/AF.json"
+      "evidenceFile": "research/countries/AF.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/AF.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "AL",
       "country": "Albania",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
+      "status": "partial_or_unofficial_sample",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/AL.json"
+      "evidenceFile": "research/countries/AL.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/AL.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": true,
+      "mergeNote": "Retry sample did not establish nationwide coverage (single region, pilot, or partial layer)."
     },
     {
       "countryCode": "AM",
       "country": "Armenia",
       "reportedStatus": "national_cadastre_credentialed_or_paid",
-      "status": "national_cadastre_credentialed_or_paid",
+      "status": "national_cadastre_viewer_only",
       "accessModel": "registration",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/AM.json"
+      "evidenceFile": "research/countries/AM.json",
+      "previousStatus": "national_cadastre_credentialed_or_paid",
+      "retryFile": "research/retry/countries/AM.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "AO",
@@ -4159,7 +4412,11 @@
       "status": "no_online_cadastre_found",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/AO.json"
+      "evidenceFile": "research/countries/AO.json",
+      "previousStatus": "no_online_cadastre_found",
+      "retryFile": "research/retry/countries/AO.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "AR",
@@ -4192,10 +4449,14 @@
       "countryCode": "AZ",
       "country": "Azerbaijan",
       "reportedStatus": "no_online_cadastre_found",
-      "status": "no_online_cadastre_found",
+      "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/AZ.json"
+      "evidenceFile": "research/countries/AZ.json",
+      "previousStatus": "no_online_cadastre_found",
+      "retryFile": "research/retry/countries/AZ.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "BA",
@@ -4241,7 +4502,11 @@
       "status": "national_cadastre_credentialed_or_paid",
       "accessModel": "registration",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/BF.json"
+      "evidenceFile": "research/countries/BF.json",
+      "previousStatus": "national_cadastre_credentialed_or_paid",
+      "retryFile": "research/retry/countries/BF.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "BG",
@@ -4259,7 +4524,11 @@
       "status": "national_cadastre_credentialed_or_paid",
       "accessModel": "paid",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/BH.json"
+      "evidenceFile": "research/countries/BH.json",
+      "previousStatus": "national_cadastre_credentialed_or_paid",
+      "retryFile": "research/retry/countries/BH.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "BI",
@@ -4268,34 +4537,51 @@
       "status": "no_online_cadastre_found",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/BI.json"
+      "evidenceFile": "research/countries/BI.json",
+      "previousStatus": "no_online_cadastre_found",
+      "retryFile": "research/retry/countries/BI.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "BJ",
       "country": "Benin",
       "reportedStatus": "national_cadastre_viewer_only",
-      "status": "national_cadastre_viewer_only",
+      "status": "national_online_cadastre_verified_sample",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/BJ.json"
+      "evidenceFile": "research/countries/BJ.json",
+      "previousStatus": "national_cadastre_viewer_only",
+      "retryFile": "research/retry/countries/BJ.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "BN",
       "country": "Brunei Darussalam",
       "reportedStatus": "national_cadastre_viewer_only",
-      "status": "national_cadastre_viewer_only",
+      "status": "temporarily_unavailable",
       "accessModel": "viewer-only",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/BN.json"
+      "evidenceFile": "research/countries/BN.json",
+      "previousStatus": "national_cadastre_viewer_only",
+      "retryFile": "research/retry/countries/BN.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "BO",
       "country": "Bolivia (Plurinational State of)",
       "reportedStatus": "national_cadastre_viewer_only",
-      "status": "national_cadastre_viewer_only",
+      "status": "partial_or_unofficial_sample",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/BO.json"
+      "evidenceFile": "research/countries/BO.json",
+      "previousStatus": "national_cadastre_viewer_only",
+      "retryFile": "research/retry/countries/BO.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false,
+      "mergeNote": "Retry sample did not establish nationwide coverage (single region, pilot, or partial layer)."
     },
     {
       "countryCode": "BR",
@@ -4311,19 +4597,27 @@
       "countryCode": "BS",
       "country": "Bahamas",
       "reportedStatus": "no_online_cadastre_found",
-      "status": "no_online_cadastre_found",
+      "status": "subnational_only",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/BS.json"
+      "evidenceFile": "research/countries/BS.json",
+      "previousStatus": "no_online_cadastre_found",
+      "retryFile": "research/retry/countries/BS.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "BT",
       "country": "Bhutan",
       "reportedStatus": "national_cadastre_credentialed_or_paid",
-      "status": "national_cadastre_credentialed_or_paid",
+      "status": "temporarily_unavailable",
       "accessModel": "registration",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/BT.json"
+      "evidenceFile": "research/countries/BT.json",
+      "previousStatus": "national_cadastre_credentialed_or_paid",
+      "retryFile": "research/retry/countries/BT.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "BW",
@@ -4332,25 +4626,37 @@
       "status": "no_online_cadastre_found",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/BW.json"
+      "evidenceFile": "research/countries/BW.json",
+      "previousStatus": "no_online_cadastre_found",
+      "retryFile": "research/retry/countries/BW.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "BY",
       "country": "Belarus",
       "reportedStatus": "national_cadastre_viewer_only",
-      "status": "national_cadastre_viewer_only",
+      "status": "national_online_cadastre_verified_sample",
       "accessModel": "viewer-only",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/BY.json"
+      "evidenceFile": "research/countries/BY.json",
+      "previousStatus": "national_cadastre_viewer_only",
+      "retryFile": "research/retry/countries/BY.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "BZ",
       "country": "Belize",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
+      "status": "subnational_only",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/BZ.json"
+      "evidenceFile": "research/countries/BZ.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/BZ.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "CA",
@@ -4368,7 +4674,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/CD.json"
+      "evidenceFile": "research/countries/CD.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/CD.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "CF",
@@ -4377,7 +4687,11 @@
       "status": "no_online_cadastre_found",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/CF.json"
+      "evidenceFile": "research/countries/CF.json",
+      "previousStatus": "no_online_cadastre_found",
+      "retryFile": "research/retry/countries/CF.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "CG",
@@ -4386,7 +4700,11 @@
       "status": "no_online_cadastre_found",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/CG.json"
+      "evidenceFile": "research/countries/CG.json",
+      "previousStatus": "no_online_cadastre_found",
+      "retryFile": "research/retry/countries/CG.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "CH",
@@ -4405,16 +4723,24 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/CI.json"
+      "evidenceFile": "research/countries/CI.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/CI.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "CL",
       "country": "Chile",
       "reportedStatus": "national_cadastre_viewer_only",
-      "status": "national_cadastre_viewer_only",
+      "status": "subnational_only",
       "accessModel": "viewer-only",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/CL.json"
+      "evidenceFile": "research/countries/CL.json",
+      "previousStatus": "national_cadastre_viewer_only",
+      "retryFile": "research/retry/countries/CL.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "CM",
@@ -4423,7 +4749,11 @@
       "status": "no_online_cadastre_found",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/CM.json"
+      "evidenceFile": "research/countries/CM.json",
+      "previousStatus": "no_online_cadastre_found",
+      "retryFile": "research/retry/countries/CM.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "CN",
@@ -4432,7 +4762,11 @@
       "status": "national_cadastre_credentialed_or_paid",
       "accessModel": "registration",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/CN.json"
+      "evidenceFile": "research/countries/CN.json",
+      "previousStatus": "national_cadastre_credentialed_or_paid",
+      "retryFile": "research/retry/countries/CN.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "CO",
@@ -4450,25 +4784,38 @@
       "status": "national_cadastre_viewer_only",
       "accessModel": "viewer-only",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/CR.json"
+      "evidenceFile": "research/countries/CR.json",
+      "previousStatus": "national_cadastre_viewer_only",
+      "retryFile": "research/retry/countries/CR.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "CU",
       "country": "Cuba",
       "reportedStatus": "no_online_cadastre_found",
-      "status": "no_online_cadastre_found",
+      "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/CU.json"
+      "evidenceFile": "research/countries/CU.json",
+      "previousStatus": "no_online_cadastre_found",
+      "retryFile": "research/retry/countries/CU.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "CV",
       "country": "Cabo Verde",
       "reportedStatus": "national_cadastre_viewer_only",
-      "status": "national_cadastre_viewer_only",
+      "status": "partial_or_unofficial_sample",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/CV.json"
+      "evidenceFile": "research/countries/CV.json",
+      "previousStatus": "national_cadastre_viewer_only",
+      "retryFile": "research/retry/countries/CV.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false,
+      "mergeNote": "Retry sample did not establish nationwide coverage (single region, pilot, or partial layer)."
     },
     {
       "countryCode": "CW",
@@ -4477,16 +4824,24 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/CW.json"
+      "evidenceFile": "research/countries/CW.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/CW.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "CY",
       "country": "Cyprus",
       "reportedStatus": "national_cadastre_viewer_only",
-      "status": "national_cadastre_viewer_only",
+      "status": "national_online_cadastre_verified_sample",
       "accessModel": "viewer-only",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/CY.json"
+      "evidenceFile": "research/countries/CY.json",
+      "previousStatus": "national_cadastre_viewer_only",
+      "retryFile": "research/retry/countries/CY.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "CZ",
@@ -4513,7 +4868,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/DJ.json"
+      "evidenceFile": "research/countries/DJ.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/DJ.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "DK",
@@ -4541,7 +4900,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/DZ.json"
+      "evidenceFile": "research/countries/DZ.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/DZ.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "EC",
@@ -4550,7 +4913,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/EC.json"
+      "evidenceFile": "research/countries/EC.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/EC.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "EE",
@@ -4568,7 +4935,11 @@
       "status": "no_online_cadastre_found",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/EG.json"
+      "evidenceFile": "research/countries/EG.json",
+      "previousStatus": "no_online_cadastre_found",
+      "retryFile": "research/retry/countries/EG.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "EH",
@@ -4577,7 +4948,11 @@
       "status": "no_online_cadastre_found",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/EH.json"
+      "evidenceFile": "research/countries/EH.json",
+      "previousStatus": "no_online_cadastre_found",
+      "retryFile": "research/retry/countries/EH.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "ER",
@@ -4586,7 +4961,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/ER.json"
+      "evidenceFile": "research/countries/ER.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/ER.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "ES",
@@ -4604,7 +4983,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/ET.json"
+      "evidenceFile": "research/countries/ET.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/ET.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "FI",
@@ -4622,7 +5005,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/FJ.json"
+      "evidenceFile": "research/countries/FJ.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/FJ.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "FR",
@@ -4640,16 +5027,25 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/GA.json"
+      "evidenceFile": "research/countries/GA.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/GA.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "GB",
       "country": "United Kingdom",
       "reportedStatus": "national_cadastre_credentialed_or_paid",
-      "status": "national_cadastre_credentialed_or_paid",
+      "status": "partial_or_unofficial_sample",
       "accessModel": "registration",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/GB.json"
+      "evidenceFile": "research/countries/GB.json",
+      "previousStatus": "national_cadastre_credentialed_or_paid",
+      "retryFile": "research/retry/countries/GB.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false,
+      "mergeNote": "England and Wales only, bulk per-authority download of title-extent index polygons; no query API; one authority sampled."
     },
     {
       "countryCode": "GE",
@@ -4658,7 +5054,11 @@
       "status": "national_cadastre_viewer_only",
       "accessModel": "viewer-only",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/GE.json"
+      "evidenceFile": "research/countries/GE.json",
+      "previousStatus": "national_cadastre_viewer_only",
+      "retryFile": "research/retry/countries/GE.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "GF",
@@ -4677,7 +5077,11 @@
       "status": "national_cadastre_credentialed_or_paid",
       "accessModel": "registration",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/GH.json"
+      "evidenceFile": "research/countries/GH.json",
+      "previousStatus": "national_cadastre_credentialed_or_paid",
+      "retryFile": "research/retry/countries/GH.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "GI",
@@ -4686,7 +5090,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/GI.json"
+      "evidenceFile": "research/countries/GI.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/GI.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "GM",
@@ -4695,7 +5103,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/GM.json"
+      "evidenceFile": "research/countries/GM.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/GM.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "GN",
@@ -4704,7 +5116,11 @@
       "status": "no_online_cadastre_found",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/GN.json"
+      "evidenceFile": "research/countries/GN.json",
+      "previousStatus": "no_online_cadastre_found",
+      "retryFile": "research/retry/countries/GN.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "GP",
@@ -4723,7 +5139,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/GQ.json"
+      "evidenceFile": "research/countries/GQ.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/GQ.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "GR",
@@ -4732,7 +5152,11 @@
       "status": "national_cadastre_viewer_only",
       "accessModel": "viewer-only",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/GR.json"
+      "evidenceFile": "research/countries/GR.json",
+      "previousStatus": "national_cadastre_viewer_only",
+      "retryFile": "research/retry/countries/GR.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "GT",
@@ -4741,7 +5165,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/GT.json"
+      "evidenceFile": "research/countries/GT.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/GT.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "GW",
@@ -4750,16 +5178,24 @@
       "status": "no_online_cadastre_found",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/GW.json"
+      "evidenceFile": "research/countries/GW.json",
+      "previousStatus": "no_online_cadastre_found",
+      "retryFile": "research/retry/countries/GW.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "GY",
       "country": "Guyana",
       "reportedStatus": "national_cadastre_viewer_only",
-      "status": "national_cadastre_viewer_only",
+      "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/GY.json"
+      "evidenceFile": "research/countries/GY.json",
+      "previousStatus": "national_cadastre_viewer_only",
+      "retryFile": "research/retry/countries/GY.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "HK",
@@ -4777,7 +5213,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/HN.json"
+      "evidenceFile": "research/countries/HN.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/HN.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "HR",
@@ -4795,7 +5235,11 @@
       "status": "no_online_cadastre_found",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/HT.json"
+      "evidenceFile": "research/countries/HT.json",
+      "previousStatus": "no_online_cadastre_found",
+      "retryFile": "research/retry/countries/HT.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "HU",
@@ -4851,7 +5295,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/IQ.json"
+      "evidenceFile": "research/countries/IQ.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/IQ.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "IR",
@@ -4860,7 +5308,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/IR.json"
+      "evidenceFile": "research/countries/IR.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/IR.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "IS",
@@ -4869,7 +5321,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/IS.json"
+      "evidenceFile": "research/countries/IS.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/IS.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "IT",
@@ -4884,28 +5340,41 @@
       "countryCode": "JE",
       "country": "Jersey",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
+      "status": "partial_or_unofficial_sample",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/JE.json"
+      "evidenceFile": "research/countries/JE.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/JE.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false,
+      "mergeNote": "City-scope verified sample (government sites or partial layer), not a national service."
     },
     {
       "countryCode": "JM",
       "country": "Jamaica",
       "reportedStatus": "national_cadastre_viewer_only",
-      "status": "national_cadastre_viewer_only",
+      "status": "national_online_cadastre_verified_sample",
       "accessModel": "viewer-only",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/JM.json"
+      "evidenceFile": "research/countries/JM.json",
+      "previousStatus": "national_cadastre_viewer_only",
+      "retryFile": "research/retry/countries/JM.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "JO",
       "country": "Jordan",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
+      "status": "national_online_cadastre_verified_sample",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/JO.json"
+      "evidenceFile": "research/countries/JO.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/JO.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "JP",
@@ -4924,7 +5393,11 @@
       "status": "national_cadastre_credentialed_or_paid",
       "accessModel": "registration",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/KE.json"
+      "evidenceFile": "research/countries/KE.json",
+      "previousStatus": "national_cadastre_credentialed_or_paid",
+      "retryFile": "research/retry/countries/KE.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "KG",
@@ -4933,7 +5406,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/KG.json"
+      "evidenceFile": "research/countries/KG.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/KG.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "KH",
@@ -4942,7 +5419,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/KH.json"
+      "evidenceFile": "research/countries/KH.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/KH.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "KI",
@@ -4951,7 +5432,11 @@
       "status": "no_online_cadastre_found",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/KI.json"
+      "evidenceFile": "research/countries/KI.json",
+      "previousStatus": "no_online_cadastre_found",
+      "retryFile": "research/retry/countries/KI.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "KM",
@@ -4960,7 +5445,11 @@
       "status": "no_online_cadastre_found",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/KM.json"
+      "evidenceFile": "research/countries/KM.json",
+      "previousStatus": "no_online_cadastre_found",
+      "retryFile": "research/retry/countries/KM.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "KP",
@@ -4969,7 +5458,11 @@
       "status": "no_online_cadastre_found",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/KP.json"
+      "evidenceFile": "research/countries/KP.json",
+      "previousStatus": "no_online_cadastre_found",
+      "retryFile": "research/retry/countries/KP.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "KR",
@@ -4978,7 +5471,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "registration",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/KR.json"
+      "evidenceFile": "research/countries/KR.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/KR.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "KW",
@@ -4987,7 +5484,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/KW.json"
+      "evidenceFile": "research/countries/KW.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/KW.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "KZ",
@@ -4996,7 +5497,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/KZ.json"
+      "evidenceFile": "research/countries/KZ.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/KZ.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "LA",
@@ -5005,7 +5510,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/LA.json"
+      "evidenceFile": "research/countries/LA.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/LA.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "LB",
@@ -5014,7 +5523,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/LB.json"
+      "evidenceFile": "research/countries/LB.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/LB.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "LK",
@@ -5030,28 +5543,40 @@
       "countryCode": "LR",
       "country": "Liberia",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
+      "status": "no_online_cadastre_found",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/LR.json"
+      "evidenceFile": "research/countries/LR.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/LR.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "LS",
       "country": "Lesotho",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
+      "status": "national_cadastre_credentialed_or_paid",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/LS.json"
+      "evidenceFile": "research/countries/LS.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/LS.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "LT",
       "country": "Lithuania",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
-      "accessModel": "unknown",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open (non-commercial use per metadata)",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/LT.json"
+      "evidenceFile": "research/countries/LT.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/LT.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "LU",
@@ -5079,7 +5604,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/LY.json"
+      "evidenceFile": "research/countries/LY.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/LY.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "MA",
@@ -5088,16 +5617,24 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/MA.json"
+      "evidenceFile": "research/countries/MA.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/MA.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "MC",
       "country": "Monaco",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
+      "status": "national_cadastre_viewer_only",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/MC.json"
+      "evidenceFile": "research/countries/MC.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/MC.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "MD",
@@ -5106,25 +5643,37 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/MD.json"
+      "evidenceFile": "research/countries/MD.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/MD.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "ME",
       "country": "Montenegro",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
+      "status": "national_cadastre_credentialed_or_paid",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/ME.json"
+      "evidenceFile": "research/countries/ME.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/ME.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "MG",
       "country": "Madagascar",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
+      "status": "subnational_only",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/MG.json"
+      "evidenceFile": "research/countries/MG.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/MG.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "MK",
@@ -5133,7 +5682,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/MK.json"
+      "evidenceFile": "research/countries/MK.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/MK.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "ML",
@@ -5152,7 +5705,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/MM.json"
+      "evidenceFile": "research/countries/MM.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/MM.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "MN",
@@ -5167,10 +5724,15 @@
       "countryCode": "MO",
       "country": "China, Macao SAR",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
+      "status": "partial_or_unofficial_sample",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/MO.json"
+      "evidenceFile": "research/countries/MO.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/MO.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false,
+      "mergeNote": "Retry sample did not establish nationwide coverage (single region, pilot, or partial layer)."
     },
     {
       "countryCode": "MQ",
@@ -5189,7 +5751,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/MR.json"
+      "evidenceFile": "research/countries/MR.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/MR.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "MT",
@@ -5198,7 +5764,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/MT.json"
+      "evidenceFile": "research/countries/MT.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/MT.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "MU",
@@ -5207,7 +5777,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/MU.json"
+      "evidenceFile": "research/countries/MU.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/MU.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "MV",
@@ -5216,7 +5790,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/MV.json"
+      "evidenceFile": "research/countries/MV.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/MV.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "MW",
@@ -5225,7 +5803,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/MW.json"
+      "evidenceFile": "research/countries/MW.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/MW.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "MX",
@@ -5234,7 +5816,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/MX.json"
+      "evidenceFile": "research/countries/MX.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/MX.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "MY",
@@ -5243,7 +5829,11 @@
       "status": "national_cadastre_credentialed_or_paid",
       "accessModel": "registration",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/MY.json"
+      "evidenceFile": "research/countries/MY.json",
+      "previousStatus": "national_cadastre_credentialed_or_paid",
+      "retryFile": "research/retry/countries/MY.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "MZ",
@@ -5252,7 +5842,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/MZ.json"
+      "evidenceFile": "research/countries/MZ.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/MZ.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "NA",
@@ -5261,16 +5855,24 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/NA.json"
+      "evidenceFile": "research/countries/NA.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/NA.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "NC",
       "country": "New Caledonia",
       "reportedStatus": "national_cadastre_viewer_only",
-      "status": "national_cadastre_viewer_only",
+      "status": "national_online_cadastre_verified_sample",
       "accessModel": "viewer-only",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/NC.json"
+      "evidenceFile": "research/countries/NC.json",
+      "previousStatus": "national_cadastre_viewer_only",
+      "retryFile": "research/retry/countries/NC.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "NE",
@@ -5279,7 +5881,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/NE.json"
+      "evidenceFile": "research/countries/NE.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/NE.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "NG",
@@ -5297,7 +5903,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/NI.json"
+      "evidenceFile": "research/countries/NI.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/NI.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "NL",
@@ -5324,7 +5934,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/NP.json"
+      "evidenceFile": "research/countries/NP.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/NP.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "NZ",
@@ -5342,7 +5956,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/OM.json"
+      "evidenceFile": "research/countries/OM.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/OM.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "PA",
@@ -5351,7 +5969,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/PA.json"
+      "evidenceFile": "research/countries/PA.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/PA.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "PE",
@@ -5360,34 +5982,51 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/PE.json"
+      "evidenceFile": "research/countries/PE.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/PE.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "PF",
       "country": "French Polynesia",
       "reportedStatus": "no_online_cadastre_found",
-      "status": "no_online_cadastre_found",
+      "status": "partial_or_unofficial_sample",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/PF.json"
+      "evidenceFile": "research/countries/PF.json",
+      "previousStatus": "no_online_cadastre_found",
+      "retryFile": "research/retry/countries/PF.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false,
+      "mergeNote": "Retry sample did not establish nationwide coverage (single region, pilot, or partial layer)."
     },
     {
       "countryCode": "PG",
       "country": "Papua New Guinea",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
+      "status": "no_online_cadastre_found",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/PG.json"
+      "evidenceFile": "research/countries/PG.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/PG.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "PH",
       "country": "Philippines",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
+      "status": "subnational_only",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/PH.json"
+      "evidenceFile": "research/countries/PH.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/PH.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "PK",
@@ -5420,10 +6059,15 @@
       "countryCode": "PS",
       "country": "State of Palestine",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
+      "status": "partial_or_unofficial_sample",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/PS.json"
+      "evidenceFile": "research/countries/PS.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/PS.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false,
+      "mergeNote": "Retry sample did not establish nationwide coverage (single region, pilot, or partial layer)."
     },
     {
       "countryCode": "PT",
@@ -5451,7 +6095,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/QA.json"
+      "evidenceFile": "research/countries/QA.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/QA.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "RE",
@@ -5467,10 +6115,14 @@
       "countryCode": "RO",
       "country": "Romania",
       "reportedStatus": "national_cadastre_viewer_only",
-      "status": "national_cadastre_viewer_only",
+      "status": "temporarily_unavailable",
       "accessModel": "viewer-only",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/RO.json"
+      "evidenceFile": "research/countries/RO.json",
+      "previousStatus": "national_cadastre_viewer_only",
+      "retryFile": "research/retry/countries/RO.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "RS",
@@ -5479,7 +6131,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/RS.json"
+      "evidenceFile": "research/countries/RS.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/RS.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "RU",
@@ -5488,7 +6144,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/RU.json"
+      "evidenceFile": "research/countries/RU.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/RU.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "RW",
@@ -5506,7 +6166,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/SA.json"
+      "evidenceFile": "research/countries/SA.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/SA.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "SB",
@@ -5515,7 +6179,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/SB.json"
+      "evidenceFile": "research/countries/SB.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/SB.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "SD",
@@ -5524,16 +6192,25 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/SD.json"
+      "evidenceFile": "research/countries/SD.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/SD.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "SE",
       "country": "Sweden",
       "reportedStatus": "national_cadastre_credentialed_or_paid",
-      "status": "national_cadastre_credentialed_or_paid",
+      "status": "national_online_cadastre_verified_sample",
       "accessModel": "registration",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/SE.json"
+      "evidenceFile": "research/countries/SE.json",
+      "previousStatus": "national_cadastre_credentialed_or_paid",
+      "retryFile": "research/retry/countries/SE.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false,
+      "mergeNote": "Undocumented viewer-internal lookup by designation, not a bbox service; terms unread; may change without notice."
     },
     {
       "countryCode": "SG",
@@ -5561,7 +6238,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/SK.json"
+      "evidenceFile": "research/countries/SK.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/SK.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "SL",
@@ -5570,7 +6251,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/SL.json"
+      "evidenceFile": "research/countries/SL.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/SL.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "SN",
@@ -5579,7 +6264,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/SN.json"
+      "evidenceFile": "research/countries/SN.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/SN.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "SO",
@@ -5588,16 +6277,24 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/SO.json"
+      "evidenceFile": "research/countries/SO.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/SO.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "SR",
       "country": "Suriname",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
+      "status": "no_online_cadastre_found",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/SR.json"
+      "evidenceFile": "research/countries/SR.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/SR.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "SS",
@@ -5606,7 +6303,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/SS.json"
+      "evidenceFile": "research/countries/SS.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/SS.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "ST",
@@ -5615,16 +6316,24 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/ST.json"
+      "evidenceFile": "research/countries/ST.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/ST.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "SV",
       "country": "El Salvador",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
+      "status": "subnational_only",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/SV.json"
+      "evidenceFile": "research/countries/SV.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/SV.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "SY",
@@ -5633,7 +6342,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/SY.json"
+      "evidenceFile": "research/countries/SY.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/SY.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "SZ",
@@ -5642,16 +6355,24 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/SZ.json"
+      "evidenceFile": "research/countries/SZ.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/SZ.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "TD",
       "country": "Chad",
       "reportedStatus": "no_online_cadastre_found",
-      "status": "no_online_cadastre_found",
+      "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/TD.json"
+      "evidenceFile": "research/countries/TD.json",
+      "previousStatus": "no_online_cadastre_found",
+      "retryFile": "research/retry/countries/TD.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "TG",
@@ -5660,7 +6381,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/TG.json"
+      "evidenceFile": "research/countries/TG.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/TG.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "TH",
@@ -5669,7 +6394,11 @@
       "status": "national_cadastre_credentialed_or_paid",
       "accessModel": "registration",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/TH.json"
+      "evidenceFile": "research/countries/TH.json",
+      "previousStatus": "national_cadastre_credentialed_or_paid",
+      "retryFile": "research/retry/countries/TH.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "TJ",
@@ -5678,7 +6407,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/TJ.json"
+      "evidenceFile": "research/countries/TJ.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/TJ.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "TL",
@@ -5687,7 +6420,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/TL.json"
+      "evidenceFile": "research/countries/TL.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/TL.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "TM",
@@ -5696,16 +6433,24 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/TM.json"
+      "evidenceFile": "research/countries/TM.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/TM.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "TN",
       "country": "Tunisia",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
+      "status": "national_cadastre_credentialed_or_paid",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/TN.json"
+      "evidenceFile": "research/countries/TN.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/TN.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "TR",
@@ -5720,10 +6465,15 @@
       "countryCode": "TT",
       "country": "Trinidad and Tobago",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
+      "status": "partial_or_unofficial_sample",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/TT.json"
+      "evidenceFile": "research/countries/TT.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/TT.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false,
+      "mergeNote": "Public ArcGIS Online layer; link to the Surveys and Mapping Division is inferred, layer has an owner field (not saved)."
     },
     {
       "countryCode": "TW",
@@ -5732,7 +6482,11 @@
       "status": "national_cadastre_credentialed_or_paid",
       "accessModel": "registration",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/TW.json"
+      "evidenceFile": "research/countries/TW.json",
+      "previousStatus": "national_cadastre_credentialed_or_paid",
+      "retryFile": "research/retry/countries/TW.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "TZ",
@@ -5741,7 +6495,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/TZ.json"
+      "evidenceFile": "research/countries/TZ.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/TZ.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "UA",
@@ -5750,7 +6508,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/UA.json"
+      "evidenceFile": "research/countries/UA.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/UA.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "UG",
@@ -5759,7 +6521,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/UG.json"
+      "evidenceFile": "research/countries/UG.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/UG.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "US",
@@ -5787,7 +6553,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/UZ.json"
+      "evidenceFile": "research/countries/UZ.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/UZ.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "VE",
@@ -5796,7 +6566,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/VE.json"
+      "evidenceFile": "research/countries/VE.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/VE.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "VN",
@@ -5805,7 +6579,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/VN.json"
+      "evidenceFile": "research/countries/VN.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/VN.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "VU",
@@ -5814,7 +6592,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/VU.json"
+      "evidenceFile": "research/countries/VU.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/VU.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "WS",
@@ -5823,16 +6605,24 @@
       "status": "no_online_cadastre_found",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/WS.json"
+      "evidenceFile": "research/countries/WS.json",
+      "previousStatus": "no_online_cadastre_found",
+      "retryFile": "research/retry/countries/WS.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "XK",
       "country": "Kosovo (under UNSC res. 1244)",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
-      "accessModel": "unknown",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open (anonymous; viewer's own proxy)",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/XK.json"
+      "evidenceFile": "research/countries/XK.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/XK.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": false
     },
     {
       "countryCode": "YE",
@@ -5841,7 +6631,11 @@
       "status": "temporarily_unavailable",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/YE.json"
+      "evidenceFile": "research/countries/YE.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/YE.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "YT",
@@ -5867,19 +6661,27 @@
       "countryCode": "ZM",
       "country": "Zambia",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
+      "status": "subnational_only",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/ZM.json"
+      "evidenceFile": "research/countries/ZM.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/ZM.json",
+      "foundViaViewerInspection": false,
+      "geoBlockSuspected": true
     },
     {
       "countryCode": "ZW",
       "country": "Zimbabwe",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
+      "status": "subnational_only",
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/ZW.json"
+      "evidenceFile": "research/countries/ZW.json",
+      "previousStatus": "temporarily_unavailable",
+      "retryFile": "research/retry/countries/ZW.json",
+      "foundViaViewerInspection": true,
+      "geoBlockSuspected": true
     }
   ]
 }

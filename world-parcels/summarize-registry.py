@@ -25,5 +25,11 @@ for p in r['countryProbes']:
 for k, v in sorted(by.items(), key=lambda kv: -len(kv[1])):
     out += [f'- **`{k}`** ({len(v)}): ' + ', '.join(sorted(v))]
 out += ['']
+viewer = sorted(p['countryCode'] for p in r['countryProbes'] if p.get('foundViaViewerInspection'))
+geo = sorted(p['countryCode'] for p in r['countryProbes'] if p.get('geoBlockSuspected') and p['status'] == 'temporarily_unavailable')
+out += ['## Retry pass (2026-09-30)', '',
+        'Every non-verified country and every unavailable or candidate city was retried with browser-like headers, a cookie jar and inspection of the official viewer\'s JavaScript (`research/retry/`).',
+        f"- Countries where the official viewer's scripts or config were inspected (some yielded a source, most did not): {', '.join(viewer) or 'none'}.",
+        f"- Still unavailable with a suspected geo-block or bot challenge (unconfirmed): {', '.join(geo) or 'none'}. Retry these from an in-country network.", '']
 open('SUMMARY.md', 'w').write('\n'.join(out))
 print(cnt.total(), 'cities summarized')
