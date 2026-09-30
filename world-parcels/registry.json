@@ -5845,7 +5845,17 @@
       "accessModel": "open",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/ID.json",
-      "mergeNote": "Patchy provincial land-ownership layers; central Bandung box returned empty."
+      "mergeNote": "Patchy provincial land-ownership layers; central Bandung box returned empty.",
+      "regionSummary": {
+        "regionsTotal": 38,
+        "regionWide": 0,
+        "partial": 15,
+        "credentialed": 0,
+        "viewerOnly": 0,
+        "unavailable": 3,
+        "none": 20,
+        "ruralRegistryOnly": 0
+      }
     },
     {
       "countryCode": "IE",
@@ -6460,7 +6470,17 @@
       "previousStatus": "national_cadastre_credentialed_or_paid",
       "retryFile": "research/retry/countries/MY.json",
       "foundViaViewerInspection": false,
-      "geoBlockSuspected": true
+      "geoBlockSuspected": true,
+      "regionSummary": {
+        "regionsTotal": 16,
+        "regionWide": 4,
+        "partial": 0,
+        "credentialed": 1,
+        "viewerOnly": 0,
+        "unavailable": 6,
+        "none": 5,
+        "ruralRegistryOnly": 0
+      }
     },
     {
       "countryCode": "MZ",
@@ -9661,6 +9681,729 @@
         }
       ],
       "note": "Cadastre is state and municipal; no state-wide open service was reached from this network, most state hosts reset or block, and the partial samples are municipal or third-party layers."
+    },
+    {
+      "countryCode": "MY",
+      "country": "Malaysia",
+      "regionsTotal": 16,
+      "regionWide": 4,
+      "partial": 0,
+      "credentialed": 1,
+      "viewerOnly": 0,
+      "unavailable": 6,
+      "none": 5,
+      "ruralRegistryOnly": 0,
+      "regions": [
+        {
+          "code": "JHR",
+          "name": "Johor",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not read; no licence text seen",
+          "evidenceFile": "research/subnational/MY/JHR.json"
+        },
+        {
+          "code": "KDH",
+          "name": "Kedah",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not read; no licence text seen",
+          "evidenceFile": "research/subnational/MY/KDH.json"
+        },
+        {
+          "code": "KTN",
+          "name": "Kelantan",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not read; no licence text seen",
+          "evidenceFile": "research/subnational/MY/KTN.json"
+        },
+        {
+          "code": "KUL",
+          "name": "Kuala Lumpur",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "unknown; no licence text read",
+          "evidenceFile": "research/subnational/MY/KUL.json"
+        },
+        {
+          "code": "LBN",
+          "name": "Labuan",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "unknown; no licence text read",
+          "evidenceFile": "research/subnational/MY/LBN.json"
+        },
+        {
+          "code": "MLK",
+          "name": "Melaka",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not read; no licence text seen",
+          "evidenceFile": "research/subnational/MY/MLK.json"
+        },
+        {
+          "code": "NSN",
+          "name": "Negeri Sembilan",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not read; no licence text seen",
+          "evidenceFile": "research/subnational/MY/NSN.json"
+        },
+        {
+          "code": "PHG",
+          "name": "Pahang",
+          "status": "credentialed_or_paid",
+          "bucket": "credentialed",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "not read; no licence text seen",
+          "evidenceFile": "research/subnational/MY/PHG.json"
+        },
+        {
+          "code": "PJY",
+          "name": "Putrajaya",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "unknown; no licence text read",
+          "evidenceFile": "research/subnational/MY/PJY.json"
+        },
+        {
+          "code": "PLS",
+          "name": "Perlis",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "unknown; no licence text read",
+          "evidenceFile": "research/subnational/MY/PLS.json"
+        },
+        {
+          "code": "PNG",
+          "name": "Pulau Pinang",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Hosted/Lot_Kadaster layer 0 'Sempadan Lot'",
+          "endpoint": "https://pegis.penang.gov.my/arcgis/rest/services/Hosted/Lot_Kadaster/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Daerah 04 (Timur Laut, George Town)",
+            "Daerah 01"
+          ],
+          "reuseStatus": "not read; no licence text seen",
+          "evidenceFile": "research/subnational/MY/PNG.json"
+        },
+        {
+          "code": "PRK",
+          "name": "Perak",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Interaktif/Asas FeatureServer, 13 district layers (Lot Kadaster)",
+          "endpoint": "https://mygdispatial.perak.gov.my/server/rest/services/Interaktif/Asas/FeatureServer/{1..13}",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Kinta",
+            "Hulu Perak"
+          ],
+          "reuseStatus": "not read; no licence text seen",
+          "evidenceFile": "research/subnational/MY/PRK.json"
+        },
+        {
+          "code": "SBH",
+          "name": "Sabah",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "unknown; no licence text read",
+          "evidenceFile": "research/subnational/MY/SBH.json"
+        },
+        {
+          "code": "SGR",
+          "name": "Selangor",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Lot_Kadaster_MIL1 FeatureServer, 9 district lot layers (LOT_DAERAH_*)",
+          "endpoint": "https://jpsselgis.selangor.gov.my/gis/rest/services/Lot_Kadaster_MIL1/FeatureServer",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Sabak Bernam",
+            "Klang",
+            "Petaling"
+          ],
+          "reuseStatus": "unknown; no licence text read",
+          "evidenceFile": "research/subnational/MY/SGR.json"
+        },
+        {
+          "code": "SWK",
+          "name": "Sarawak",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "unknown; no licence text read",
+          "evidenceFile": "research/subnational/MY/SWK.json"
+        },
+        {
+          "code": "TRG",
+          "name": "Terengganu",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "DC0040_Land_Parcel_or_Lot_2023 (dataset, REGION type), SuperMap iServer data service data-UGIST",
+          "endpoint": "https://gis.terengganu.gov.my/iserver/services/data-UGIST/rest/data",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Kemaman",
+            "Besut"
+          ],
+          "reuseStatus": "unknown; no licence text read",
+          "evidenceFile": "research/subnational/MY/TRG.json"
+        }
+      ],
+      "note": "Land is a state matter and the national eKadaster is login-gated. Four states publish a state-wide lot layer (Selangor, Terengganu, Penang, Perak); several state GIS hosts were unreachable from this network."
+    },
+    {
+      "countryCode": "ID",
+      "country": "Indonesia",
+      "regionsTotal": 38,
+      "regionWide": 0,
+      "partial": 15,
+      "credentialed": 0,
+      "viewerOnly": 0,
+      "unavailable": 3,
+      "none": 20,
+      "ruralRegistryOnly": 0,
+      "regions": [
+        {
+          "code": "AC",
+          "name": "Aceh",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "BIG Satu Peta - Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000, sublayer 17 Aceh",
+          "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/17",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Banda Aceh"
+          ],
+          "reuseStatus": "not read; BIG Satu Peta terms unverified",
+          "evidenceFile": "research/subnational/ID/AC.json"
+        },
+        {
+          "code": "BA",
+          "name": "Bali",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000 - Bali",
+          "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/22",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Kota Denpasar (Denpasar Selatan/Serangan)"
+          ],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/ID/BA.json"
+        },
+        {
+          "code": "BB",
+          "name": "Kepulauan Bangka Belitung",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/ID/BB.json"
+        },
+        {
+          "code": "BE",
+          "name": "Bengkulu",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/ID/BE.json"
+        },
+        {
+          "code": "BT",
+          "name": "Banten",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000 - Banten",
+          "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/23",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Kab. Pandeglang (Menes/Ramaya)"
+          ],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/ID/BT.json"
+        },
+        {
+          "code": "GO",
+          "name": "Gorontalo",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/ID/GO.json"
+        },
+        {
+          "code": "JA",
+          "name": "Jambi",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/ID/JA.json"
+        },
+        {
+          "code": "JB",
+          "name": "Jawa Barat",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000 - Jawa Barat",
+          "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/21",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Kota Bandung (Kec. area 107.6145,-6.916,107.617,-6.9135)",
+            "Kota Bogor (Bogor Barat/Margajaya)"
+          ],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/ID/JB.json"
+        },
+        {
+          "code": "JI",
+          "name": "Jawa Timur",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000 - Jawa Timur",
+          "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/12",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Kota Surabaya (Tegalsari/Wonorejo)"
+          ],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/ID/JI.json"
+        },
+        {
+          "code": "JK",
+          "name": "DKI Jakarta",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/ID/JK.json"
+        },
+        {
+          "code": "JT",
+          "name": "Jawa Tengah",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000 - Jawa Tengah",
+          "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/25",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Kota Semarang",
+            "Kab. Magelang (Grabag)"
+          ],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/ID/JT.json"
+        },
+        {
+          "code": "KB",
+          "name": "Kalimantan Barat",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000 - Kalimantan Barat",
+          "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/14",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Kota Pontianak (Pontianak Timur/Parit Mayor)"
+          ],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/ID/KB.json"
+        },
+        {
+          "code": "KI",
+          "name": "Kalimantan Timur",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "BIG Satu Peta - Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000, sublayer 20 Kalimantan Timur",
+          "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/20",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "interior west Kalimantan Timur (near 116.01E,0.57N)"
+          ],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/ID/KI.json"
+        },
+        {
+          "code": "KR",
+          "name": "Kepulauan Riau",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "BIG Satu Peta - Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000, sublayer 24 Kepulauan Riau",
+          "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/24",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Batam"
+          ],
+          "reuseStatus": "not read; BIG Satu Peta terms unverified",
+          "evidenceFile": "research/subnational/ID/KR.json"
+        },
+        {
+          "code": "KS",
+          "name": "Kalimantan Selatan",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/ID/KS.json"
+        },
+        {
+          "code": "KT",
+          "name": "Kalimantan Tengah",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/ID/KT.json"
+        },
+        {
+          "code": "KU",
+          "name": "Kalimantan Utara",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "BIG Satu Peta - Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000, sublayer 16 Kalimantan Utara",
+          "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/16",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Malinau/Bulungan-region interior (Kalimantan Utara, near 116.61E,3.54N)"
+          ],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/ID/KU.json"
+        },
+        {
+          "code": "LA",
+          "name": "Lampung",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/ID/LA.json"
+        },
+        {
+          "code": "MA",
+          "name": "Maluku",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "BIG Satu Peta - Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000",
+          "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/10",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "southeast Maluku, around 131.64E -4.48S (not Ambon)"
+          ],
+          "reuseStatus": "licence/terms not read",
+          "evidenceFile": "research/subnational/ID/MA.json"
+        },
+        {
+          "code": "MU",
+          "name": "Maluku Utara",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/ID/MU.json"
+        },
+        {
+          "code": "NB",
+          "name": "Nusa Tenggara Barat",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000 - Nusa Tenggara Barat",
+          "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/11",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Kab. Lombok Tengah (Pujut/Rembitan)"
+          ],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/ID/NB.json"
+        },
+        {
+          "code": "NT",
+          "name": "Nusa Tenggara Timur",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/ID/NT.json"
+        },
+        {
+          "code": "PA",
+          "name": "Papua",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/ID/PA.json"
+        },
+        {
+          "code": "PB",
+          "name": "Papua Barat",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/ID/PB.json"
+        },
+        {
+          "code": "PD",
+          "name": "Papua Barat Daya",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/ID/PD.json"
+        },
+        {
+          "code": "PP",
+          "name": "Papua Pegunungan",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/ID/PP.json"
+        },
+        {
+          "code": "PS",
+          "name": "Papua Selatan",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/ID/PS.json"
+        },
+        {
+          "code": "PT",
+          "name": "Papua Tengah",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/ID/PT.json"
+        },
+        {
+          "code": "RI",
+          "name": "Riau",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/ID/RI.json"
+        },
+        {
+          "code": "SA",
+          "name": "Sulawesi Utara",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/ID/SA.json"
+        },
+        {
+          "code": "SB",
+          "name": "Sumatera Barat",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/ID/SB.json"
+        },
+        {
+          "code": "SG",
+          "name": "Sulawesi Tenggara",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "BIG Satu Peta - Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000, sublayer 18 Sulawesi Tenggara",
+          "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/18",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Kolaka-Konawe area, tiny extent (near 121.886E,-4.278N)"
+          ],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/ID/SG.json"
+        },
+        {
+          "code": "SN",
+          "name": "Sulawesi Selatan",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/ID/SN.json"
+        },
+        {
+          "code": "SR",
+          "name": "Sulawesi Barat",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "BIG Satu Peta - Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000, sublayer 15 Sulawesi Barat",
+          "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/15",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Mamuju Tengah/Mamuju-region (near 119.19E,-3.33N)"
+          ],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/ID/SR.json"
+        },
+        {
+          "code": "SS",
+          "name": "Sumatera Selatan",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/ID/SS.json"
+        },
+        {
+          "code": "ST",
+          "name": "Sulawesi Tengah",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/ID/ST.json"
+        },
+        {
+          "code": "SU",
+          "name": "Sumatera Utara",
+          "status": "temporarily_unavailable",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/ID/SU.json"
+        },
+        {
+          "code": "YO",
+          "name": "DI Yogyakarta",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000 - DI Yogyakarta",
+          "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/13",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Kota Yogyakarta (Wirobrajan)"
+          ],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/subnational/ID/YO.json"
+        }
+      ],
+      "note": "The national BIG Satu Peta land-ownership service has sublayers for 15 of 38 provinces, each a set of small survey packages: every sampled province returned parcels only in patches and capital-city boxes were empty. Provincial geoportal hostnames were mostly guessed, so \"none\" is not conclusive."
     },
     {
       "countryCode": "DE",

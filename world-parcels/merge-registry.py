@@ -327,8 +327,10 @@ SUBNATIONAL_NOTES = {
     'BR': 'No state publishes urban lots except the Federal District; SICAR is the self-declared rural environmental registry, not the legal cadastre, and is counted separately. Municipal urban layers exist for four capitals.',
     'AR': 'Cadastre is provincial (Ley 26.209); several provinces publish only point-query or raster viewers.',
     'MX': 'Cadastre is state and municipal; no state-wide open service was reached from this network, most state hosts reset or block, and the partial samples are municipal or third-party layers.',
+    'MY': 'Land is a state matter and the national eKadaster is login-gated. Four states publish a state-wide lot layer (Selangor, Terengganu, Penang, Perak); several state GIS hosts were unreachable from this network.',
+    'ID': 'The national BIG Satu Peta land-ownership service has sublayers for 15 of 38 provinces, each a set of small survey packages: every sampled province returned parcels only in patches and capital-city boxes were empty. Provincial geoportal hostnames were mostly guessed, so "none" is not conclusive.',
 }
-for code, name in (('US', 'United States'), ('CA', 'Canada'), ('AU', 'Australia'), ('BR', 'Brazil'), ('AR', 'Argentina'), ('MX', 'Mexico')):
+for code, name in (('US', 'United States'), ('CA', 'Canada'), ('AU', 'Australia'), ('BR', 'Brazil'), ('AR', 'Argentina'), ('MX', 'Mexico'), ('MY', 'Malaysia'), ('ID', 'Indonesia')):
     regions = []
     for f in sorted(glob.glob(f'research/subnational/{code}/*.json')):
         if 'response' in f:

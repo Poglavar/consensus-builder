@@ -117,6 +117,8 @@ For federations the unit of coverage is the state, province, canton or Land. `re
 | Brazil | 27 | 1 | 4 | 0 | 0 | 22 |
 | Argentina | 24 | 10 | 2 | 3 | 9 | 0 |
 | Mexico | 32 | 0 | 7 | 5 | 20 | 0 |
+| Malaysia | 16 | 4 | 0 | 1 | 11 | 0 |
+| Indonesia | 38 | 0 | 15 | 0 | 23 | 0 |
 | Germany | 16 | 14 | 0 | 1 | 1 | 0 |
 | Switzerland | 26 | 18 | 2 | 6 | 0 | 0 |
 | Belgium | 3 | 3 | 0 | 0 | 0 | 0 |
@@ -127,6 +129,8 @@ For federations the unit of coverage is the state, province, canton or Land. `re
 - **Brazil**: region-wide DF; partial PE, PR, RJ, SP; other AC (ruralRegistryOnly), AL (ruralRegistryOnly), AM (ruralRegistryOnly), AP (ruralRegistryOnly), BA (ruralRegistryOnly), CE (ruralRegistryOnly), ES (ruralRegistryOnly), GO (ruralRegistryOnly), MA (ruralRegistryOnly), MG (ruralRegistryOnly), MS (ruralRegistryOnly), MT (ruralRegistryOnly), PA (ruralRegistryOnly), PB (ruralRegistryOnly), PI (ruralRegistryOnly), RN (ruralRegistryOnly), RO (ruralRegistryOnly), RR (ruralRegistryOnly), RS (ruralRegistryOnly), SC (ruralRegistryOnly), SE (ruralRegistryOnly), TO (ruralRegistryOnly).
 - **Argentina**: region-wide A, B, C, E, H, J, Q, R, V, X; partial M, P; other D (unavailable), F (unavailable), G (none), K (unavailable), L (unavailable), N (viewerOnly), S (viewerOnly), T (unavailable), U (unavailable), W (unavailable), Y (none), Z (viewerOnly).
 - **Mexico**: region-wide none; partial AGU, COA, GUA, MOR, NLE, QUE, TAB; other BCN (unavailable), BCS (credentialed), CAM (unavailable), CHH (unavailable), CHP (unavailable), CMX (unavailable), COL (unavailable), DUR (credentialed), GRO (none), HID (credentialed), JAL (viewerOnly), MEX (unavailable), MIC (unavailable), NAY (unavailable), OAX (unavailable), PUE (unavailable), ROO (unavailable), SIN (viewerOnly), SLP (unavailable), SON (unavailable), TAM (unavailable), TLA (unavailable), VER (unavailable), YUC (unavailable), ZAC (unavailable).
+- **Malaysia**: region-wide PNG, PRK, SGR, TRG; partial none; other JHR (none), KDH (none), KTN (none), KUL (none), LBN (unavailable), MLK (unavailable), NSN (none), PHG (credentialed), PJY (unavailable), PLS (unavailable), SBH (unavailable), SWK (unavailable).
+- **Indonesia**: region-wide none; partial AC, BA, BT, JB, JI, JT, KB, KI, KR, KU, MA, NB, SG, SR, YO; other BB (none), BE (unavailable), GO (none), JA (unavailable), JK (none), KS (none), KT (none), LA (none), MU (none), NT (none), PA (none), PB (none), PD (none), PP (none), PS (none), PT (none), RI (none), SA (none), SB (none), SN (none), SS (none), ST (none), SU (unavailable).
 - **Germany**: region-wide BB, BW, HB, HE, HH, MV, NI, NW, RP, SH, SL, SN, ST, TH; partial none; other BE (unavailable), BY (credentialed).
 - **Switzerland**: region-wide AG, AI, AR, BE, BL, BS, FR, GE, GL, GR, SG, SH, SO, SZ, TG, UR, ZG, ZH; partial TI, VS; other JU (credentialed), LU (credentialed), NE (credentialed), NW (credentialed), OW (credentialed), VD (credentialed).
 - **Belgium**: region-wide BRU, VLG, WAL; partial none.

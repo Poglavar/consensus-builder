@@ -1,0 +1,27 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MY",
+ "regionCode": "NSN",
+ "regionName": "Negeri Sembilan",
+ "checkedAt": "2026-09-30",
+ "status": "no_open_service_found",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: ms-MY,ms;q=0.9,en;q=0.8; cookie jar; Referer = viewer origin",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "",
+ "subregionsVerified": [],
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "guessed hosts gis.ns.gov.my, geoportal.negerisembilan.gov.my, mygdispatial.ns.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "no connection"
+  }
+ ],
+ "reuseStatus": "not read; no licence text seen",
+ "remainingUncertainty": "No state GIS portal URL located by search; a state GIS is mentioned in blogs but not found.",
+ "nextStep": "Locate the Negeri Sembilan GIS portal via JUPEM NS / SUK NS."
+}

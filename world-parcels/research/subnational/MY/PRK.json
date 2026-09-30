@@ -1,0 +1,111 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MY",
+ "regionCode": "PRK",
+ "regionName": "Perak",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: ms-MY,ms;q=0.9,en;q=0.8; cookie jar; Referer = viewer origin",
+ "source": {
+  "sourceId": "my-perak-perakgis-asas-lot",
+  "name": "Interaktif/Asas FeatureServer, 13 district layers (Lot Kadaster)",
+  "operator": "PerakGIS / State Geospatial Data Centre (SGDC) Perak; data shared from JUPEM Perak",
+  "scope": "All 13 Perak districts (layers 1-13); Kinta layer alone has 353,266 lots",
+  "endpoint": "https://mygdispatial.perak.gov.my/server/rest/services/Interaktif/Asas/FeatureServer/{1..13}",
+  "method": "ArcGIS REST query",
+  "responseFormat": "esri JSON",
+  "crs": "native GDM2000 Cassini Perak; EPSG:4326 via outSR",
+  "reuseStatus": "Item description: suitable for planning only, not for legal use; licenseInfo empty"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "my-perak-perakgis-asas-lot",
+  "requestUrl": "https://mygdispatial.perak.gov.my/server/rest/services/Interaktif/Asas/FeatureServer/3/query",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   101.08,
+   4.59,
+   101.09,
+   4.6
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "UPI (also LOT, OBJECTID)",
+  "responseFile": "research/subnational/MY/PRK-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount; maxRecordCount 1000",
+  "regionSampled": "Kinta (layer 3) and Hulu Perak (layer 8)"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Public portal item 'Asas': 'Lot Kadaster ... lots under Perak state administration', one layer per district (13); no per-district gaps checked.",
+ "subregionsVerified": [
+  "Kinta",
+  "Hulu Perak"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://mygdispatial.perak.gov.my/portal/",
+   "observation": "ArcGIS Enterprise portal; public search API listed item 'Asas' (public) and the PerakLOT web app"
+  },
+  {
+   "url": "https://www.perakgis.my/",
+   "observation": "official PerakGIS site"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://mygdispatial.perak.gov.my/portal/sharing/rest/search?q=lot kadaster&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "public Asas feature service item found (found via portal inspection)"
+  },
+  {
+   "url": "https://mygdispatial.perak.gov.my/server/rest/services/Interaktif/Asas/FeatureServer?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "13 district layers"
+  },
+  {
+   "url": "https://mygdispatial.perak.gov.my/server/rest/services/Interaktif/Asas/FeatureServer/3?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "polygon, fields incl. UPI/LOT/MUKIM; requested only ID fields"
+  },
+  {
+   "url": "https://mygdispatial.perak.gov.my/server/rest/services/Interaktif/Asas/FeatureServer/3/query bbox Kinta count 3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons"
+  },
+  {
+   "url": "https://mygdispatial.perak.gov.my/server/rest/services/Interaktif/Asas/FeatureServer/8/query bbox Hulu Perak count 3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons"
+  },
+  {
+   "url": "https://mygdispatial.perak.gov.my/server/rest/services/Interaktif/Asas/FeatureServer/3/query?returnCountOnly=true",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "count 353266"
+  },
+  {
+   "url": "https://mygdispatial.perak.gov.my/arcgis/rest/services",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "folder listing of a different server; connection resets intermittent, retries succeeded"
+  }
+ ],
+ "reuseStatus": "not read; no licence text seen",
+ "remainingUncertainty": "Connection resets from this network were intermittent (retry worked). Per-district completeness not tested; data intended for planning only. Attributes such as FNM/PA not fetched.",
+ "nextStep": "Confirm reuse terms with PerakGIS/JUPEM Perak; sample the other 11 districts."
+}
