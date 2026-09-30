@@ -1,0 +1,66 @@
+{
+ "kind": "city",
+ "key": "belo-horizonte",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: pt-BR,pt;q=0.9 (cookie jar used)",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://dados.pbh.gov.br/api/3/action/package_search?q=lote&rows=3",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "GoCache WAF 'Acesso Bloqueado' page; text says request classified as improper, shows requester IP; unchanged with browser headers, Referer and cookie jar"
+  },
+  {
+   "url": "https://dados.pbh.gov.br/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "same block page"
+  },
+  {
+   "url": "https://bhmap.pbh.gov.br/v2/api/idebhgeo/lote?f=json",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "same block page"
+  },
+  {
+   "url": "https://prefeitura.pbh.gov.br/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "municipal homepage only; no viewer/service links found by grep"
+  },
+  {
+   "url": "https://ide.pbh.gov.br/ ; https://bhmapogc.pbh.gov.br/ ; https://geoserver.pbh.gov.br/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "CONNECT tunnel 502, no origin reply"
+  },
+  {
+   "url": "https://idesisema.meioambiente.mg.gov.br/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Minas Gerais state IDE-Sisema geoportal landing page only (environmental data; no parcel service tested)"
+  },
+  {
+   "url": "https://www.sigef.incra.gov.br/ ; https://certificacao.incra.gov.br/csv_shp/export_shp.py",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "tunnel 502 / connection reset"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "IP-based WAF block of pbh.gov.br (page names the client IP; other Brazilian hosts reachable), not bypassed. Viewer inspection impossible because bhmap is blocked.",
+ "nextStep": "Retry from a Brazilian or allow-listed network; dados.pbh.gov.br CKAN then BHMap lote layer with tiny bbox."
+}

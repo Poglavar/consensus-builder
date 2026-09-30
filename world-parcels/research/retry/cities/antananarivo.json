@@ -1,0 +1,77 @@
+{
+ "kind": "city",
+ "key": "antananarivo",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "no_verified_sample_candidate_citywide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: fr-MG,fr;q=0.9 (cookie jar used)",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": {
+  "sourceId": "mg-oat-plof-wfs",
+  "name": "Observatoire du Territoire MapServer WFS, PLOF layers (candidate)",
+  "operator": "Observatoire du Territoire (official-partner viewer)",
+  "scope": "PLOF zones in Antananarivo Avaradrano, Atsimondrano, Laniera only",
+  "endpoint": "https://observatoire-territoire.mg/cgi-bin/mapserv",
+  "method": "GET OGC WFS 1.1.0",
+  "responseFormat": "GML 3.1.1",
+  "crs": "EPSG:3857",
+  "reuseStatus": "not read"
+ },
+ "requests": [
+  {
+   "url": "https://observatoire-territoire.mg/carte/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Angular viewer; main JS has _urlPhpRoot and _urlMapServ"
+  },
+  {
+   "url": "https://observatoire-territoire.mg/carte/p/oatmap/web/ajax.php (POST ajax_entity=DMap\\LoadConf\\Choix&action=path_map_siloat, the viewer's own call)",
+   "method": "POST",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "JSON config: MAP path for wms_home.map and list of per-city .map files incl. PUDI_antananarivo.map"
+  },
+  {
+   "url": "https://observatoire-territoire.mg/cgi-bin/mapserv?MAP=<viewer-config path>/PUDI_antananarivo.map&SERVICE=WFS&VERSION=1.1.0&REQUEST=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "WFS caps for PUDI_antananarivo.map; FeatureTypes plof_atsimondrano_1/2, plof_avaradrano_1/2, __plof_*_plof, tana_os_*, EPSG:3857"
+  },
+  {
+   "url": "https://observatoire-territoire.mg/cgi-bin/mapserv?MAP=<viewer-config path>/PUDI_antananarivo.map&SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=plof_avaradrano_1&MAXFEATURES=3&OUTPUTFORMAT=GML3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml; subtype=gml/3.1.1",
+   "assessment": "3 closed Polygon features (~630-3100 m2), geometry only, no attributes/IDs; located ~9 km S/SE of the city centre point"
+  },
+  {
+   "url": "https://observatoire-territoire.mg/cgi-bin/mapserv?MAP=<viewer-config path>/PUDI_antananarivo.map&SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=__plof_laniera_plof&MAXFEATURES=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "3 polygons of kilometre scale (zone perimeters, not parcels)"
+  },
+  {
+   "url": "https://observatoire-territoire.mg/cgi-bin/mapserv?MAP=<viewer-config path>/PUDI_antananarivo.map&SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=plof_avaradrano_1&MAXFEATURES=3&BBOX=5291580,-2139361,5292180,-2138761,EPSG:3857",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "bounded query at the city centre point returned no parcel polygon there (PLOF layers cover only zones outside the centre)"
+  },
+  {
+   "url": "https://foncier.gov.mg ; https://guichetfoncier.mg/ ; https://www.observatoire-foncier.mg/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "CONNECT tunnel 502"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "Found via viewer inspection: a public MapServer WFS (Observatoire du Territoire) serves PLOF (Plan Local d'Occupation Fonciere) polygons for parts of Antananarivo Avaradrano/Atsimondrano/Laniera. Polygon sizes are parcel-like but layers carry no attributes or IDs and their cadastral meaning is unconfirmed, so not counted as verified parcels; nothing at the city centre point. Terms not read. The MAP value is a server-side path handed out by the viewer's own public ajax call (not saved here). Other .mg hosts fail at tunnel level, cause unproven.",
+ "nextStep": "Confirm PLOF layer semantics with the operator; check tana_os_* layers for attributes; read terms.",
+ "candidateResponseFile": "antananarivo-parcel-response.json"
+}
