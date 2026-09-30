@@ -1,0 +1,52 @@
+{
+ "kind": "city",
+ "key": "hyderabad-pakistan",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-PK,en;q=0.9; cookie jar used",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://sindhzameen.gos.pk/maps.aspx",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "TLS connect failed (SSL_ERROR_SYSCALL); map page still cannot be inspected"
+  },
+  {
+   "url": "https://sindhzameen.gos.pk/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "TLS connect failed (SSL_ERROR_SYSCALL) (previously 200; now failing)"
+  },
+  {
+   "url": "https://larmis.sindh.gov.pk/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed, 502"
+  },
+  {
+   "url": "https://gis.sindh.gov.pk/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed, 502"
+  },
+  {
+   "url": "https://lis.pulse.gop.pk/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Punjab PULSE LIS viewer reachable; Punjab system, not Sindh; not queried"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "No country-level PK retry file existed. Sindh land-records hosts still unreachable; nothing new.",
+ "nextStep": "Retry sindhzameen maps.aspx / LARMIS GIS from another network and inspect its map requests."
+}
