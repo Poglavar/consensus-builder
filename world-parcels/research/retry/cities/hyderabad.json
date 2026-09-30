@@ -1,0 +1,60 @@
+{
+ "kind": "city",
+ "key": "hyderabad",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: en-IN,en;q=0.9,hi;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://dharani.telangana.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl 000 connection reset; http:// variant returned proxy 503 text 'upstream connect error ... connection timeout'"
+  },
+  {
+   "url": "https://data.telangana.gov.in/ ; https://tsgis.telangana.gov.in/ ; https://bhunaksha.telangana.gov.in/ ; https://gis.ghmc.gov.in/ ; https://hmda.gov.in/ ; https://landrecords.gov.in/ ; https://bhoomi.telangana.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response (curl 000: connection reset/tunnel failure through the agent proxy)"
+  },
+  {
+   "url": "https://www.ghmc.gov.in/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "WAF rejection still present with full browser headers"
+  },
+  {
+   "url": "https://tgrac.telangana.gov.in/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "landing page (200 on some attempts, reset on others); links to webgis.php (404), tracgis.telangana.gov.in (DNS fail); page lists only jpg cadastral map samples"
+  },
+  {
+   "url": "https://bhunaksha.nic.in/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "NIC Bhu-Naksha product page for authorised officials; no Telangana public instance link found"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Hyderabad cadastral parcels type:Feature Service",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "no relevant results"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "Dharani/data.telangana reset, GHMC 403 WAF; a geo/WAF filter is plausible but unproven",
+ "notes": "Unchanged: Telangana hosts still reset or 403. No polygon service found or tested.",
+ "nextStep": "Retry Dharani/Telangana GIS hosts later or from an India-region network."
+}

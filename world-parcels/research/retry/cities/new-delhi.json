@@ -1,0 +1,104 @@
+{
+ "kind": "city",
+ "key": "new-delhi",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "verified_sample_partial_coverage",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: en-IN (cookie jar used)",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": {
+  "sourceId": "in-ldo-edharti-geojson",
+  "requestUrl": "https://ldo.mohua.gov.in/assets/MIS_V5.1/Geojson_s/Property_25999.js",
+  "method": "GET (Range: bytes=0-8000; Referer: https://ldo.mohua.gov.in/edharti/map)",
+  "httpStatus": 206,
+  "contentType": "application/javascript",
+  "spatialTestAreaLonLat": "Malviya Nagar ~77.2075,28.5336; also VacantLand_37.js feature at 77.216,28.618 (5 Raisina Marg) near city centre",
+  "parcelRecordCount": 3,
+  "recordListPath": "var pro = {FeatureCollection}.features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "propertyid / unique_propert_id",
+  "responseFile": "research/retry/cities/new-delhi-parcel-response.json (lessee names, addresses removed)",
+  "pagination": "static file, 22,117,499 bytes total (Last-Modified 2025-12-26)"
+ },
+ "source": {
+  "sourceId": "in-ldo-edharti-geojson",
+  "name": "e-Dharti Geo Portal 2.0 static layers (Property, Lease, VacantLand, ps_I-III)",
+  "operator": "Land & Development Office, Ministry of Housing and Urban Affairs",
+  "scope": "Only L&DO-managed government/leasehold properties in Delhi (about 26k property polygons); NOT the full Delhi cadastre and not India",
+  "endpoint": "https://ldo.mohua.gov.in/assets/MIS_V5.1/Geojson_s/",
+  "method": "static file GET, no key",
+  "responseFormat": "JS var wrapping GeoJSON",
+  "crs": "WGS84",
+  "reuseStatus": "Not assessed; files contain lessee personal names (redacted in saved copy)"
+ },
+ "requests": [
+  {
+   "url": "http://gsdl.org.in/revenue/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "503 text/plain 114 bytes from proxy; https: CONNECT 502"
+  },
+  {
+   "url": "https://geo.nic.in/server/rest/services/Delhi?f=pjson",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://dlrc.delhi.gov.in/Index.aspx",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Loads; GIS link still http://gsdl.org.in/revenue/"
+  },
+  {
+   "url": "https://revenue.delhi.gov.in/revenue/revenue-maps",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://ldo.mohua.gov.in/edharti/map",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Viewer HTML inspected: loads ./Geojson_s and /assets/MIS_V5.1/Geojson_s/*.js as static GeoJSON"
+  },
+  {
+   "url": "https://ldo.mohua.gov.in/assets/MIS_V5.1/Geojson_s/Property_25999.js",
+   "method": "GET",
+   "httpStatus": 206,
+   "contentType": "application/javascript",
+   "assessment": "Closed polygons with property ids, land use, area; verified"
+  },
+  {
+   "url": "https://ldo.mohua.gov.in/assets/MIS_V5.1/Geojson_s/VacantLand_37.js",
+   "method": "GET",
+   "httpStatus": 206,
+   "contentType": "application/javascript",
+   "assessment": "Polygons incl. one at 5 Raisina Marg"
+  },
+  {
+   "url": "https://ldo.mohua.gov.in/assets/MIS_V5.1/Geojson_s/Lease_.js",
+   "method": "GET",
+   "httpStatus": 206,
+   "contentType": "application/javascript",
+   "assessment": "Polygons near Connaught/Central Delhi"
+  },
+  {
+   "url": "https://bhunaksha.nic.in/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Generic NIC bhunaksha landing; no Delhi service found"
+  }
+ ],
+ "geoBlockSuspected": "true for gsdl.org.in/geo.nic.in/revenue.delhi.gov.in (resets/502 from this network only; unproven)",
+ "notes": "New via viewer inspection: the e-Dharti map ships parcel-like polygons as static GeoJSON. Coverage is government-leased plots only, so it is a partial sample, not a Delhi cadastre. The Delhi Revenue GIS (gsdl.org.in) remains unreachable.",
+ "nextStep": "Retry gsdl.org.in from an India-reachable network; read L&DO terms; treat lessee names as personal data."
+}

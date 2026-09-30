@@ -1,0 +1,90 @@
+{
+ "kind": "city",
+ "key": "istanbul",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "no_verified_sample_candidate_countrywide",
+ "newStatus": "verified_sample_partial_coverage",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: tr-TR (cookie jar used)",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": {
+  "sourceId": "tr-tkgm-parselsorgu-api",
+  "requestUrl": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/41.01384/28.94966/",
+  "method": "GET (Referer/Origin: https://parselsorgu.tkgm.gov.tr)",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": "point 28.94966,41.01384 plus points 28.9550,41.0110 and 28.9400,41.0200",
+  "parcelRecordCount": 3,
+  "recordListPath": "one GeoJSON Feature per request (point-in-parcel, not a bbox list)",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "ilAd/ilceAd/mahalleAd/adaNo/parselNo (ozet)",
+  "responseFile": "research/retry/cities/istanbul-parcel-response.json",
+  "pagination": "none; one parcel per point query"
+ },
+ "source": {
+  "sourceId": "tr-tkgm-parselsorgu-api",
+  "name": "TKGM Parsel Sorgu backing API (megsiswebapi.v3)",
+  "operator": "Tapu ve Kadastro Genel Mudurlugu (General Directorate of Land Registry and Cadastre)",
+  "scope": "Point lookup of a single parcel; tested only in Istanbul (Fatih). Ankara test point returned 404 (point likely not a parcel), so no second-region proof",
+  "endpoint": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/{lat}/{lon}/",
+  "method": "GET, no key seen",
+  "responseFormat": "GeoJSON Feature",
+  "crs": "WGS84 lon/lat",
+  "reuseStatus": "Undocumented endpoint used by the public viewer; terms not read, bulk/reuse rights unknown"
+ },
+ "requests": [
+  {
+   "url": "https://parselsorgu.tkgm.gov.tr/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "4498-byte viewer shell, same as before"
+  },
+  {
+   "url": "https://parselsorgu.tkgm.gov.tr/main.js?v=76.3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/javascript",
+   "assessment": "3.7 KB loader, no service URL in it; endpoint was not read from viewer JS but tried from prior knowledge of the viewer's API"
+  },
+  {
+   "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/1/1/1",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "application/json",
+   "assessment": "Host reachable; JSON 'Parsel Bulunamadi' for a fake id"
+  },
+  {
+   "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/41.01384/28.94966/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "Closed polygon, Fatih/Sofular ada 1065 parsel 16 (Cami)"
+  },
+  {
+   "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/41.0110/28.9550/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "Fatih/Kemalpasa 669/35 polygon"
+  },
+  {
+   "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/41.0200/28.9400/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "Mimar Sinan 2088/23 polygon"
+  },
+  {
+   "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/39.9208/32.8541/",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "application/json",
+   "assessment": "Ankara test point: no parcel found"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "New: anonymous point-in-parcel JSON endpoint returns real parcel polygons for Istanbul. Only single-parcel lookups; no bbox list, so partial coverage. Owner data not present in replies. Country-wide claim not verified (only Istanbul and a 404 in Ankara).",
+ "nextStep": "Test points in a second province (a known Ankara/Izmir parcel) and read TKGM terms before relying on the endpoint."
+}

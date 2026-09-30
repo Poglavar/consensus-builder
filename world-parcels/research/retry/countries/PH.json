@@ -1,0 +1,119 @@
+{
+  "kind": "country",
+  "key": "PH",
+  "checkedAt": "2026-09-30",
+  "previousStatus": "temporarily_unavailable",
+  "newStatus": "subnational_only",
+  "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-PH,en;q=0.9",
+  "changedByHeaders": false,
+  "foundViaViewerInspection": true,
+  "verifiedParcelResponse": {
+    "sourceId": "ph-geoportal-denr-parcel-data",
+    "requestUrl": "https://geoserver.geoportal.gov.ph/geoserver/wms?service=WMS&version=1.1.1&request=GetFeatureInfo&layers=geoportal:denr_parcel_data&query_layers=geoportal:denr_parcel_data&srs=EPSG:4326&bbox=121.0130,14.5540,121.0180,14.5590&width=256&height=256&x=128&y=128&info_format=application/json&feature_count=3",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "spatialTestAreaLonLat": "bbox 121.0130,14.5540,121.0180,14.5590 (Metro Manila, Makati/Taguig area)",
+    "parcelRecordCount": 2,
+    "recordListPath": "features",
+    "geometryType": "MultiPolygon",
+    "closedRings": true,
+    "idField": "properties.lotnumber",
+    "responseFile": "research/retry/countries/PH-parcel-response.json",
+    "pagination": "none (WMS GetFeatureInfo at a pixel)",
+    "regionSampled": "Metro Manila (layer extent lon 120.935-121.101, lat 14.524-14.687)"
+  },
+  "source": {
+    "sourceId": "ph-geoportal-denr-parcel-data",
+    "name": "Philippine Geoportal WMS layer geoportal:denr_parcel_data ('Parcel data')",
+    "operator": "NAMRIA Philippine Geoportal (data labelled DENR); reported via GeoServer at geoserver.geoportal.gov.ph",
+    "scope": "Metro Manila extent only (layer bbox); lot numbers and area, no titles/owners",
+    "endpoint": "https://geoserver.geoportal.gov.ph/geoserver/wms",
+    "method": "WMS GetFeatureInfo application/json (anonymous); WFS /ows returns 401",
+    "responseFormat": "GeoJSON",
+    "crs": "EPSG:4326",
+    "reuseStatus": "not read"
+  },
+  "requests": [
+    {
+      "url": "https://www.geoportal.gov.ph/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "",
+      "assessment": "failed once with browser headers (connection error), later 200 with bare curl: intermittent host issue, not headers"
+    },
+    {
+      "url": "https://geoportal.gov.ph/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "viewer; script.js references geoserver.geoportal.gov.ph WMS; app links incl. /gpapps/lotplotter"
+    },
+    {
+      "url": "https://geoportal.gov.ph/js/script.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/javascript",
+      "assessment": "inspected: WMS endpoints https://geoserver.geoportal.gov.ph/geoserver/wms; no token needed"
+    },
+    {
+      "url": "https://geoserver.geoportal.gov.ph/geoserver/wms?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "assessment": "8 MB capabilities, ~3,400 layers; parcel-like: geoportal:denr_parcel_data, cadtmap_20220124 (CADT map, not parcels)"
+    },
+    {
+      "url": "https://geoserver.geoportal.gov.ph/geoserver/ows?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 401,
+      "contentType": "text/html",
+      "assessment": "WFS needs credentials"
+    },
+    {
+      "url": "https://geoserver.geoportal.gov.ph/geoserver/wms?service=WMS&version=1.1.1&request=GetFeatureInfo&layers=geoportal:denr_parcel_data&query_layers=geoportal:denr_parcel_data&srs=EPSG:4326&bbox=121.0130,14.5540,121.0180,14.5590&width=256&height=256&x=128&y=128&info_format=application/json&feature_count=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "2 parcel polygons (lotnumber 11660, 11661); other bboxes elsewhere in the layer extent also returned polygons, some empty"
+    },
+    {
+      "url": "https://gdis.denr.gov.ph/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "",
+      "assessment": "connection failed"
+    },
+    {
+      "url": "https://lis.denr.gov.ph/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "",
+      "assessment": "connection failed"
+    },
+    {
+      "url": "https://gisserver.namria.gov.ph/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "",
+      "assessment": "connection failed"
+    },
+    {
+      "url": "https://www.lra.gov.ph/",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "application/json",
+      "assessment": "403 from this network"
+    },
+    {
+      "url": "https://www.dhsud.gov.ph/",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html",
+      "assessment": "403"
+    }
+  ],
+  "geoBlockSuspected": false,
+  "notes": "New: real working parcel polygons found via viewer JS inspection (previous status was only 'unreachable'). Coverage is a single Metro Manila layer, so a national cadastre is not verified; the LRA/DENR/NAMRIA land-administration services (gdis/lis.denr) still unreachable, LRA and DHSUD return 403.",
+  "nextStep": "Check other geoserver layers for provincial parcels; retry gdis/lis.denr.gov.ph; read Geoportal data terms."
+}

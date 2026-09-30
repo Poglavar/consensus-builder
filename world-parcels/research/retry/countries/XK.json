@@ -1,0 +1,112 @@
+{
+ "kind": "country",
+ "key": "XK",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: sq-XK; cookie jar (curl -c/-b) enabled",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": {
+  "sourceId": "xk-kca-geoportal-geoserverproxy-wms",
+  "requestUrl": "https://geoportal.rks-gov.net/kgp/api/GeoServerProxy/wms?service=WMS&version=1.1.1&request=GetFeatureInfo&layers=KCM_DEV_WS:ParcelGeomView&query_layers=KCM_DEV_WS:ParcelGeomView&info_format=application/json&feature_count=3&srs=EPSG:4326&bbox=21.1640,42.6620,21.1660,42.6635&width=256&height=256&x=128&y=128",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   21.164,
+   42.662,
+   21.166,
+   42.6635
+  ],
+  "regionSampled": "Pristina; second region Prizren bbox 20.7405,42.2145,20.7425,42.2160",
+  "parcelRecordCount": 1,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "properties.CadastreUnitId (also ParcelDetailId, ParcelId)",
+  "responseFile": "research/retry/countries/XK-parcel-response.json",
+  "pagination": "none; point query (GetFeatureInfo) returns parcels under the clicked pixel, feature_count caps results. No bulk WFS route seen."
+ },
+ "source": {
+  "sourceId": "xk-kca-geoportal-geoserverproxy-wms",
+  "name": "Kosovo Geoportal parcels layer (ParcelGeomView)",
+  "operator": "Kosovo Cadastral Agency (AKK/KCA) state geoportal",
+  "scope": "Kosovo; layer catalogue is national, parcels sampled in Pristina and Prizren",
+  "endpoint": "https://geoportal.rks-gov.net/kgp/api/GeoServerProxy/wms",
+  "method": "WMS 1.1.1 GetMap/GetFeatureInfo (info_format=application/json) with layers=KCM_DEV_WS:ParcelGeomView; layer list from /kgp/api/Layer/GetAll",
+  "responseFormat": "GeoJSON (MultiPolygon)",
+  "crs": "EPSG:4326",
+  "reuseStatus": "not read; anonymous access observed, no licence text checked"
+ },
+ "requests": [
+  {
+   "url": "https://geoportal.rks-gov.net/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Angular SPA; main-*.js and lazy chunks inspected"
+  },
+  {
+   "url": "https://geoportal.rks-gov.net/assets/config/config.json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "apiUrl '/kgp'; no token (cesiumIonAccessToken empty)"
+  },
+  {
+   "url": "https://geoportal.rks-gov.net/kgp/api/Layer/GetAll",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "anonymous layer catalogue, 98 layers; parcel layer KCM_DEV_WS:ParcelGeomView ('Parcels'), also CadastreZone"
+  },
+  {
+   "url": "https://geoportal.rks-gov.net/kgp/api/GeoServerProxy/wms?service=WMS&version=1.1.1&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 204,
+   "contentType": null,
+   "assessment": "empty (proxy does not serve capabilities)"
+  },
+  {
+   "url": "https://geoportal.rks-gov.net/kgp/api/GeoServerProxy/wfs?service=WFS&version=2.0.0&request=GetFeature&...",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "application/problem+json",
+   "assessment": "proxy has no WFS route"
+  },
+  {
+   "url": "https://geoportal.rks-gov.net/kgp/api/GeoServerProxy/wms?service=WMS&version=1.1.1&request=GetFeatureInfo&layers=KCM_DEV_WS:ParcelGeomView&query_layers=KCM_DEV_WS:ParcelGeomView&info_format=application/json&feature_count=3&srs=EPSG:4326&bbox=21.1640,42.6620,21.1660,42.6635&width=256&height=256&x=128&y=128",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "1 MultiPolygon parcel, GeoJSON, EPSG:4326, closed ring (Pristina)"
+  },
+  {
+   "url": "https://geoportal.rks-gov.net/kgp/api/GeoServerProxy/wms?service=WMS&version=1.1.1&request=GetFeatureInfo&layers=KCM_DEV_WS:ParcelGeomView&query_layers=KCM_DEV_WS:ParcelGeomView&info_format=application/json&feature_count=3&srs=EPSG:4326&bbox=20.7405,42.2145,20.7425,42.2160&width=256&height=256&x=128&y=128",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "1 MultiPolygon parcel, same schema (Prizren)"
+  },
+  {
+   "url": "https://geoportal.rks-gov.net/kgp/api/Authentication",
+   "method": "GET",
+   "httpStatus": 401,
+   "contentType": null,
+   "assessment": "login endpoint; only needed for editing/admin functions, not used"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "New versus the previous record: the earlier /arcgis and /geoserver guesses returned the SPA fallback. Reading the SPA config and lazy JS chunks gave the API base /kgp, an anonymous layer catalogue and a WMS proxy (/kgp/api/GeoServerProxy/wms). GetFeatureInfo as JSON returns real parcel polygons with no token or login. Two regions (Pristina, Prizren) from the same source and schema, so nationwideVerified is asserted only on that two-region sample; it is a point-query service, so full coverage and bulk access are unconfirmed. Attributes are IDs, zone and area only, no owner data.",
+ "nextStep": "Read the AKK/geoportal terms of use; test whether GetMap tiles or bulk WFS are permitted; sample a third region.",
+ "coverageAssessment": {
+  "claimedScope": "Kosovo national cadastre (AKK)",
+  "regionsVerified": [
+   "Pristina",
+   "Prizren"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open (anonymous; viewer's own proxy)"
+}

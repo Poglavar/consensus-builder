@@ -1,0 +1,46 @@
+{
+ "kind": "city",
+ "key": "chaozhou",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "no_verified_sample_candidate_citywide",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: zh-CN,zh;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.chaozhou.gov.cn/ ; https://www.gdcz.gov.cn/ ; https://zrzyj.gd.gov.cn/ ; https://zrzyt.gd.gov.cn/ ; https://gd.tianditu.gov.cn/ ; https://www.gdmap.gov.cn/ ; https://map.gd.gov.cn/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response (curl 000: connection reset/tunnel failure through the agent proxy)"
+  },
+  {
+   "url": "https://guangdong.tianditu.gov.cn/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html;charset=UTF-8",
+   "assessment": "provincial platform; statics/js/map.js (3.7 KB) inspected, contains no service URLs or Chaozhou/cadastre strings"
+  },
+  {
+   "url": "https://guangdong.tianditu.gov.cn/gdmap/",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html",
+   "assessment": "no such path"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Chaozhou parcel type:Feature Service",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 results"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "Chaozhou/Guangdong municipal hosts reset while the provincial Tianditu answers; geo/bot filtering plausible, unproven",
+ "notes": "Changed from 'no candidate' to unavailable: the previous negative rested on only a provincial landing page and unreachable municipal hosts, which is an access failure and not evidence of absence. No parcel service found.",
+ "nextStep": "Retry Chaozhou natural resources bureau and Guangdong real-estate registration hosts from a China-region network."
+}

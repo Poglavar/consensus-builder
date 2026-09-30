@@ -1,0 +1,46 @@
+{
+ "kind": "city",
+ "key": "addis-ababa",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: am-ET,am;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "http://www.ethionsdi.gov.et/",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/plain",
+   "assessment": "upstream unavailable (unchanged)"
+  },
+  {
+   "url": "https://www.ethionsdi.gov.et/ ; https://www.geoportal.gov.et/ ; https://data.gov.et/ ; https://www.addisababa.gov.et/ ; https://www.mtpf.gov.et/ ; https://ethiogis.gov.et/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response (curl 000: connection reset/tunnel failure through the agent proxy)"
+  },
+  {
+   "url": "https://nrlais.gov.et/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "React 'NRLAIS Aggregator' shell; per retry/countries/ET.json it is a login-gated admin/replication console; not probed further, no credentials tried"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Addis Ababa parcels cadastre type:Feature Service",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 results"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "most .gov.et hosts fail at connection/DNS while nrlais.gov.et answers; network-level issue plausible, unproven",
+ "notes": "Unchanged; only new context is the credentialed NRLAIS console noted in the ET country retry. No public parcel service found.",
+ "nextStep": "Retry ethionsdi.gov.et; look for a public Addis land bureau viewer."
+}

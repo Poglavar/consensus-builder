@@ -1,0 +1,39 @@
+{
+ "kind": "city",
+ "key": "nanjing",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: zh-CN,zh;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://zrzyj.nanjing.gov.cn/ ; https://www.nanjing.gov.cn/ ; https://jiangsu.tianditu.gov.cn/ ; https://data.jiangsu.gov.cn/ ; https://zrzy.jiangsu.gov.cn/ ; https://bdc.nanjing.gov.cn/ ; https://jsmap.jiangsu.gov.cn/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response (curl 000: connection reset/tunnel failure through the agent proxy)"
+  },
+  {
+   "url": "https://www.jszwfw.gov.cn/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=utf-8",
+   "assessment": "Jiangsu government service portal loads; service portal, no parcel endpoint inspected"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Nanjing parcel type:Feature Service",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 results"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "most .gov.cn hosts reset from this network while a few answer; likely geo/bot filtering, unproven",
+ "notes": "Unchanged: Nanjing and Jiangsu land/map hosts unreachable. See retry/countries/CN.json (national result also has no open endpoint, login-gated real-estate flows).",
+ "nextStep": "Retry from a China-region network."
+}

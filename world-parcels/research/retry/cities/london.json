@@ -1,0 +1,63 @@
+{
+ "kind": "city",
+ "key": "london",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "no_verified_sample_candidate_countrywide",
+ "newStatus": "verified_sample_partial_coverage",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: en-GB,en;q=0.9",
+ "changedByHeaders": true,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": {
+  "sourceId": "gb-hmlr-inspire-index-polygons",
+  "requestUrl": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/City_of_Westminster.zip",
+  "method": "GET (cookie jar; 302 to presigned S3 URL, then GET)",
+  "httpStatus": 200,
+  "contentType": "application/force-download (zip containing GML)",
+  "spatialTestAreaLonLat": "300 m box around -0.12574,51.50853 (Charing Cross), Westminster",
+  "parcelRecordCount": 140,
+  "recordListPath": "wfs:FeatureCollection/wfs:member/LR:PREDEFINED (28,260 in file; 140 in test box)",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "INSPIREID / NATIONALCADASTRALREFERENCE",
+  "responseFile": "research/retry/cities/london-parcel-response.json",
+  "pagination": "none; one zip per local authority"
+ },
+ "source": {
+  "sourceId": "gb-hmlr-inspire-index-polygons",
+  "name": "HM Land Registry INSPIRE Index Polygons",
+  "operator": "HM Land Registry",
+  "scope": "England and Wales registered freehold/leasehold title extents, per local authority; London covered by City of London + 32 borough files",
+  "endpoint": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+  "method": "anonymous bulk GML zip download",
+  "responseFormat": "GML (WFS 2.0 FeatureCollection)",
+  "crs": "EPSG:27700",
+  "reuseStatus": "page states OGL conditions of use; zip licence PDF not read"
+ },
+ "requests": [
+  {
+   "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "with cookie jar: list of per-authority zip links incl. City_of_Westminster, City_of_London_Corporation and 31 London boroughs; anonymous"
+  },
+  {
+   "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/City_of_Westminster.zip",
+   "method": "GET",
+   "httpStatus": 302,
+   "contentType": "text/html",
+   "assessment": "redirect to a presigned S3 URL"
+  },
+  {
+   "url": "<presigned S3 URL for City_of_Westminster.zip>",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/force-download",
+   "assessment": "3,915,179-byte zip; GML with 28,260 closed polygons; 140 intersect a 300 m box around Charing Cross (BNG ~530168,180509)"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "none; anonymous cookie session redirect only",
+ "notes": "Previous pass hit a cookie-dependent redirect loop on the INSPIRE download page. With browser headers plus a cookie jar the anonymous per-authority download works (same finding as retry/countries/GB.json). Sampled City of Westminster (one London authority); the other 32 London authorities are listed at the same path but not downloaded. Index polygons (title extents), England and Wales only, bulk GML not a query API; WFS on inspire.landregistry.gov.uk was already known disabled. Licence: page says OGL conditions of use; the zip's licence PDF was not read.",
+ "nextStep": "Optionally sample City of London/another borough; consider whether bulk-download counts as an online cadastre."
+}
