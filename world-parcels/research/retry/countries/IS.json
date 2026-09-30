@@ -1,0 +1,95 @@
+{
+ "kind": "country",
+ "key": "IS",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: is-IS,is;q=0.9,en;q=0.5",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.hms.is/fasteignaskra",
+   "method": "GET",
+   "httpStatus": 429,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "Vercel Security Checkpoint challenge (429); same on hms.is and www.fasteignaskra.is; not bypassed"
+  },
+  {
+   "url": "https://hms.is/",
+   "method": "GET",
+   "httpStatus": 429,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "Vercel challenge"
+  },
+  {
+   "url": "https://gis.lmi.is/geoserver/ows?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "LMI WFS capabilities (~50 workspaces); INSPIRE workspace has only AU, EL, GN, HY, LCV, PS, TN themes; no cadastral parcel layer found"
+  },
+  {
+   "url": "https://opingogn.is/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "page now hosted on island.is; CKAN-style API paths redirect to 404"
+  },
+  {
+   "url": "https://opingogn.is/api/3/action/package_search?q=landeign&rows=3",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "no CKAN API"
+  },
+  {
+   "url": "https://geo.lmi.is/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "GeoNetwork catalogue; API POST search returns 403 'Expected CSRF token not found' (session flow not pursued)"
+  },
+  {
+   "url": "https://www.landupplysingar.is/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "links to a list of map viewers; no parcel service URL"
+  },
+  {
+   "url": "https://fasteignaskra.is/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://kort.hms.is/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://gis.hms.is/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://landeignaskra.is/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "Not geo-block evidence; HMS domain sits behind a bot challenge that browser-like headers alone do not pass.",
+ "notes": "New: LMI GeoServer confirmed to have no parcel layers, narrowing the search to HMS (Landeignaskra), which is behind a Vercel checkpoint.",
+ "nextStep": "Try HMS Landeignaskra via a real browser session (inspect network calls), or GeoNetwork records via its CSRF-cookie flow."
+}

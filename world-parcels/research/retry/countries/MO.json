@@ -1,0 +1,105 @@
+{
+ "kind": "country",
+ "key": "MO",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: zh-MO,zh;q=0.9,pt-PT;q=0.7,en;q=0.5",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": {
+  "sourceId": "mo-gis-cad-lote",
+  "requestUrl": "https://webmap.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0/query?where=1%3D1&geometry=20000,19000,20300,19300&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID,LOTE,ZONA,DISTRICT,NCAD,AREAS&returnGeometry=true&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": "300 m x 300 m bbox in MacauProj grid (x 20000-20300, y 19000-19300), Macau peninsula (Bacia Sul do Patane); also single-record hits in Coloane (23000,11000) and Cotai (22000,12000)",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "OBJECTID (cadastral no. in NCAD)",
+  "responseFile": "research/retry/countries/MO-parcel-response.json",
+  "pagination": "resultRecordCount / resultOffset (ArcGIS MapServer query)",
+  "regionSampled": "Macau peninsula, Cotai, Coloane"
+ },
+ "source": {
+  "sourceId": "mo-gis-cad-lote",
+  "name": "Cadastre_Project/Cad_lote MapServer layer 0 (lote = lot/parcel), ArcGIS Server 10.6.1",
+  "operator": "DSCC/DSSCU (Land, Public Works and Transport / Cartography and Cadastre) via GIS portal gis.gov.mo",
+  "scope": "Macao SAR (three areas sampled)",
+  "endpoint": "https://webmap.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0",
+  "method": "GET (ArcGIS REST query)",
+  "responseFormat": "ESRI JSON (f=json)",
+  "crs": "MacauProj (custom Transverse Mercator, International 1924; no WKID); pass outSR for WGS84",
+  "reuseStatus": "not read; no licence terms checked. data.gov.mo is the open-data platform"
+ },
+ "requests": [
+  {
+   "url": "https://www.dscc.gov.mo/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "notice page: old domain will stop service, use www.dsscu.gov.mo (5 s redirect)"
+  },
+  {
+   "url": "https://www.dsscu.gov.mo/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed via proxy"
+  },
+  {
+   "url": "https://www.gis.gov.mo/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "meta-refresh to /geoportal/"
+  },
+  {
+   "url": "https://www.gis.gov.mo/geoportal/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "links to cadastre.gis.gov.mo and webmap.gis.gov.mo"
+  },
+  {
+   "url": "https://cadastre.gis.gov.mo/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "JS redirect to /MGSP_Cad/index.html (Macao Cadastral viewer)"
+  },
+  {
+   "url": "https://webmap.gis.gov.mo/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "anonymous directory listing incl. folder Cadastre_Project"
+  },
+  {
+   "url": "https://webmap.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "polygon layer, fields LOTE, ZONA, DISTRICT, NCAD, AREAS; capabilities Map,Query,Data"
+  },
+  {
+   "url": "https://webmap.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0/query (bbox 20000,15000,20300,15300 etc.)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 features in several bboxes (layer is sparse); bbox 20000,19000,20300,19300 returned 3 closed polygons"
+  },
+  {
+   "url": "https://data.gov.mo/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "open-data platform page; referenced webmap.gis.gov.mo"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "Previous record only saw the old dscc.gov.mo redirect page. Found via the redirect notice and the gis.gov.mo geoportal. Anonymous ArcGIS MapServer returns polygon lots with no token. Coverage of the layer looks partial (many empty bboxes), so it is a sample of cadastral lots, not confirmed full coverage; owner data not present in the fields sampled. Macao SAR is a special administrative region; treated as its own country entry per batch. Three areas (peninsula, Cotai, Coloane) sampled from one schema.",
+ "nextStep": "Page through Cad_lote to measure coverage; confirm reuse terms on data.gov.mo / DSSCU; check Macau_P/Macau_T and other Cadastre_Project layers."
+}

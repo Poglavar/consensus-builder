@@ -1,0 +1,66 @@
+{
+ "kind": "country",
+ "key": "MD",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: ro-MD,ro;q=0.9,ru;q=0.7,en;q=0.5",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.cadastru.md/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "body: 'content not available in your region/country' in RO/RU/EN; geo-block page, no data"
+  },
+  {
+   "url": "https://www.asp.gov.md/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "ASP portal loads (redirect to /ro); no geoportal link found"
+  },
+  {
+   "url": "https://map.md/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "map.md loads; only OSM-style vector basemap tiles (api/tiles), no parcel layer seen"
+  },
+  {
+   "url": "https://geoportal.md/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://geoportal.gov.md/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://gis.asp.gov.md/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://data.gov.md/",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html",
+   "assessment": "404"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "cadastru.md returns an explicit region/country block message (it echoes the requester IP); this is a geo-block, not an absence of service.",
+ "nextStep": "Retry from a Moldova-based network; inspect the cadastru.md geoportal JS there."
+}

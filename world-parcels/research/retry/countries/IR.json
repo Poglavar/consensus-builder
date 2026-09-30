@@ -1,0 +1,102 @@
+{
+ "kind": "country",
+ "key": "IR",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: fa-IR,fa;q=0.9,en;q=0.5",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.ssaa.ir/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://ssaa.ir/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://www.sabteahval.ir/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://geo.gov.ir",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://www.ncc.gov.ir/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://ncc.gov.ir/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://map.ir/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://api.map.ir/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://www.ilenc.ir/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://data.gov.ir/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://www.ncc.ir/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://cadastre.ssaa.ir/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "Every .ir host tried (12) fails at connection level through the proxy; consistent with egress/geo blocking of Iran domains, not a service outage.",
+ "notes": "No change: nothing reachable, so no viewer inspection or query was possible.",
+ "nextStep": "Retry from a network with .ir access; SSAA e-services likely credentialed."
+}
