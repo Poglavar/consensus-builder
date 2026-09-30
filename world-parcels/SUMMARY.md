@@ -6,9 +6,9 @@ Generated from `registry.json` (updated 2026-09-29). A city sample proves only a
 
 | Status | Cities |
 | --- | ---: |
-| `no_verified_open_endpoint_after_attempts` | 90 |
+| `no_verified_open_endpoint_after_attempts` | 89 |
 | `temporarily_unavailable` | 49 |
-| `verified_sample_partial_coverage` | 30 |
+| `verified_sample_partial_coverage` | 31 |
 | `verified_sample_city_scope` | 26 |
 | `verified_sample_county_scope` | 4 |
 | `no_verified_sample_candidate_citywide` | 1 |
@@ -70,6 +70,7 @@ Generated from `registry.json` (updated 2026-09-29). A city sample proves only a
 | 183 | Essen, DE | `verified_sample_city_scope` | WFS NW ALKIS Vereinfacht (Flurstücke, simplified ALKIS) | Cadastral parcels (ave:Flurstueck) of North Rhine-Westphalia (feature types also include buildings, land use, cadastral districts); sample is Essen only |
 | 184 | Cali, CO | `verified_sample_city_scope` | IDESC Cali GeoServer, layer catastro:cat_bas_terrenos (cadastral land parcels) | Santiago de Cali municipality |
 | 186 | Semarang, ID | `verified_sample_partial_coverage` | Satu Peta (BIG) PERIZINAN_DAN_PERTANAHAN, layer 25 Jawa Tengah of 'Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000' | Central Java province, titled Hak Milik parcels only, patchy |
+| 187 | Montreal, CA | `verified_sample_partial_coverage` | cadastre_bd_allegee: GO01_Polygones_Lots (lots du cadastre renove, Registre public Cadastre Quebec, version 9 August 2026) | Quebec (layer extent lon -79.6..-57.1, lat 45.0..62.4) |
 | 188 | Izmir, TR | `verified_sample_city_scope` | TKGM (Tapu ve Kadastro Genel Mudurlugu) cadastre parcel lookup API used by the Parsel Sorgu viewer | Turkey nationwide viewer service; only Izmir (Konak) sampled here |
 | 190 | Tel Aviv, IL | `verified_sample_city_scope` | Tel Aviv-Yafo Municipality GIS (IView2 MapServer), layer 524 'Chalkot' (parcels) | Tel Aviv-Yafo municipal area; layer extent about 12 x 14 km in ITM |
 | 191 | Birmingham, GB | `verified_sample_partial_coverage` | 'Land Registry Inspire Sites 20211022' public ArcGIS Online FeatureServer layer 0 (third-party copy of HM Land Registry INSPIRE index polygons) | 22,075 polygons in one Midlands extract around Birmingham; not a complete national or city dataset |
@@ -83,17 +84,43 @@ Generated from `registry.json` (updated 2026-09-29). A city sample proves only a
 
 Question: does each country have a country-wide online cadastre? Statuses come from `research/countries/<ISO2>.json`; the registry normalises labels the evidence did not support (see each entry's `mergeNote`). `countryCoverage` stays empty until a source has an explicit nationwide claim, two distinct verified regions, one schema, and recorded exclusions.
 
-- **`temporarily_unavailable`** (78): AF, AZ, BN, BT, CD, CI, CU, CW, DJ, DZ, EC, ER, ET, FJ, GA, GI, GM, GQ, GT, GY, HN, IQ, IR, IS, KG, KH, KR, KW, KZ, LA, LB, LY, MA, MD, MK, MM, MR, MT, MU, MV, MW, MX, MZ, NA, NE, NI, NP, OM, PA, PE, QA, RO, RS, RU, SA, SB, SD, SK, SL, SN, SO, SS, ST, SY, SZ, TD, TG, TJ, TL, TM, TZ, UA, UG, UZ, VE, VN, VU, YE
-- **`national_online_cadastre_verified_sample`** (32): AT, BD, BG, BJ, BY, CY, CZ, DK, EE, ES, FI, FR, HK, HR, IE, IL, IT, JM, JO, LT, LU, MN, NC, NL, NO, NZ, PL, PY, SE, SI, TR, XK
-- **`partial_or_unofficial_sample`** (23): AL, BB, BO, BR, CH, CV, DO, GB, HU, ID, JE, JP, LK, LV, ML, MO, PF, PS, PT, SG, TT, UY, ZA
-- **`subnational_only`** (22): AE, AR, AU, BA, BE, BS, BZ, CA, CL, CO, DE, IN, MG, NG, PH, PK, PR, RW, SV, US, ZM, ZW
-- **`no_online_cadastre_found`** (18): AO, BI, BW, CF, CG, CM, EG, EH, GN, GW, HT, KI, KM, KP, LR, PG, SR, WS
+- **`temporarily_unavailable`** (75): AF, AZ, BN, BT, CD, CI, CU, CW, DJ, DZ, EC, ER, ET, FJ, GA, GI, GM, GQ, GT, GY, HN, IQ, IR, KG, KH, KR, KW, KZ, LA, LB, LY, MA, MD, MK, MM, MR, MU, MV, MW, MX, MZ, NA, NE, NI, NP, OM, PA, PE, QA, RO, RS, RU, SA, SB, SD, SL, SN, SO, SS, ST, SY, SZ, TD, TG, TJ, TL, TM, TZ, UA, UG, UZ, VE, VN, VU, YE
+- **`national_online_cadastre_verified_sample`** (45): AL, AT, BD, BE, BG, BJ, BY, CH, CY, CZ, DK, EE, ES, FI, FO, FR, GG, GR, HK, HR, IE, IL, IM, IS, IT, JM, JO, LI, LT, LU, LV, MN, MT, NC, NL, NO, NZ, PL, PT, PY, SE, SI, SK, TR, XK
+- **`subnational_only`** (21): AE, AR, AU, BA, BS, BZ, CA, CL, CO, DE, IN, MG, NG, PH, PK, PR, RW, SV, US, ZM, ZW
+- **`no_online_cadastre_found`** (21): AD, AO, BI, BW, CF, CG, CM, EG, EH, GN, GW, HT, KI, KM, KP, LR, PG, SM, SR, VA, WS
+- **`partial_or_unofficial_sample`** (19): BB, BO, BR, CV, DO, GB, HU, ID, JE, JP, LK, ML, MO, PF, PS, SG, TT, UY, ZA
 - **`national_cadastre_credentialed_or_paid`** (11): BF, BH, CN, GH, KE, LS, ME, MY, TH, TN, TW
-- **`national_cadastre_viewer_only`** (5): AM, CR, GE, GR, MC
 - **`covered_by_parent_source`** (5): GF, GP, MQ, RE, YT
+- **`national_cadastre_viewer_only`** (4): AM, CR, GE, MC
 
 ## Retry pass (2026-09-30)
 
 Every non-verified country and every unavailable or candidate city was retried with browser-like headers, a cookie jar and inspection of the official viewer's JavaScript (`research/retry/`).
 - Countries where the official viewer's scripts or config were inspected (some yielded a source, most did not): AE, AL, AM, BJ, BN, BO, BS, BY, CD, CL, CM, CN, CR, CV, CY, EG, EH, ET, GE, GI, GN, GR, HN, HT, JM, JO, KE, KG, KH, LR, LS, LT, MC, ME, MG, MO, MU, NP, PA, PE, PF, PH, PS, SE, SV, TT, UA, UG, UZ, VE, VN, VU, WS, XK, ZW.
-- Still unavailable with a suspected geo-block or bot challenge (unconfirmed): AF, AZ, BT, CD, CU, DJ, DZ, EC, ER, ET, FJ, GA, GI, GQ, GT, HN, IQ, IR, KG, KH, KR, KW, LA, LB, LY, MA, MD, MK, MR, MT, MU, MV, MW, MX, MZ, NA, NI, OM, QA, RS, RU, SA, SK, SN, SS, SY, TD, TG, TJ, TL, TM, TZ, UA, UZ, VE, VN, YE. Retry these from an in-country network.
+- Still unavailable with a suspected geo-block or bot challenge (unconfirmed): AF, AZ, BT, CD, CU, DJ, DZ, EC, ER, ET, FJ, GA, GI, GQ, GT, HN, IQ, IR, KG, KH, KR, KW, LA, LB, LY, MA, MD, MK, MR, MU, MV, MW, MX, MZ, NA, NI, OM, QA, RS, RU, SA, SN, SS, SY, TD, TG, TJ, TL, TM, TZ, UA, UZ, VE, VN, YE. Retry these from an in-country network.
+
+## Europe focus pass (2026-09-30)
+
+Every European country not yet green was re-probed from the INSPIRE/national catalogues and the official viewer's code, two regions each (`research/europe/`).
+- Now passing the two-region test: AL, BE, CH, FO, GG, GR, IM, IS, LI, LV, MT, PT, SK.
+- Still not: AD (no_online_cadastre_found), AM (national_cadastre_viewer_only), AZ (temporarily_unavailable), BA (subnational_only), DE (subnational_only), GB (partial_or_unofficial_sample), GE (national_cadastre_viewer_only), GI (temporarily_unavailable), HU (partial_or_unofficial_sample), JE (partial_or_unofficial_sample), MC (national_cadastre_viewer_only), MD (temporarily_unavailable), ME (national_cadastre_credentialed_or_paid), MK (temporarily_unavailable), RO (temporarily_unavailable), RS (temporarily_unavailable), RU (temporarily_unavailable), SM (no_online_cadastre_found), UA (temporarily_unavailable), VA (no_online_cadastre_found).
+
+## Federal countries by region (subnational tier)
+
+For federations the unit of coverage is the state, province, canton or Land. `regionWide` = an open layer for the whole region verified by a bounded query; `partial` = only a county/city layer found (or, for Switzerland, an open canton not yet sampled); `gated` = credentialed or viewer-only.
+
+| Country | Regions | Region-wide open | Partial | Gated | None / unavailable |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| United States | 51 | 32 | 19 | 0 | 0 |
+| Canada | 13 | 7 | 5 | 0 | 1 |
+| Australia | 8 | 7 | 0 | 0 | 1 |
+| Germany | 16 | 14 | 0 | 1 | 1 |
+| Switzerland | 26 | 5 | 15 | 6 | 0 |
+| Belgium | 3 | 3 | 0 | 0 | 0 |
+
+- **United States**: region-wide AK, AR, CA, CO, CT, DC, DE, FL, HI, IA, IN, MA, MD, MN, MT, NC, ND, NE, NH, NJ, NM, NV, OH, RI, TN, TX, UT, VA, VT, WA, WI, WV; partial AL, AZ, GA, ID, IL, KS, KY, LA, ME, MI, MO, MS, NY, OK, OR, PA, SC, SD, WY.
+- **Canada**: region-wide BC, NB, NS, NT, NU, QC, YT; partial AB, MB, ON, PE, SK; other NL (none).
+- **Australia**: region-wide ACT, NSW, QLD, SA, TAS, VIC, WA; partial none; other NT (none).
+- **Germany**: region-wide BB, BW, HB, HE, HH, MV, NI, NW, RP, SH, SL, SN, ST, TH; partial none; other BE (unavailable), BY (credentialed).
+- **Switzerland**: region-wide BE, GE, SG, TG, ZH; partial AG, AI, AR, BL, BS, FR, GL, GR, SH, SO, SZ, TI, UR, VS, ZG; other JU (credentialed), LU (credentialed), NE (credentialed), NW (credentialed), OW (credentialed), VD (credentialed).
+- **Belgium**: region-wide BRU, VLG, WAL; partial none.

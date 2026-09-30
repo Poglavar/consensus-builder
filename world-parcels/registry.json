@@ -943,9 +943,35 @@
         "wup2025:850"
       ],
       "evidenceFile": "research/retry/cities/amman.json"
+    },
+    {
+      "sourceId": "ca-qc-cadastre-bd-allegee",
+      "name": "cadastre_bd_allegee: GO01_Polygones_Lots (lots du cadastre renove, Registre public Cadastre Quebec, version 9 August 2026)",
+      "operator": "Gouvernement du Quebec (ArcGIS Online org 'dgti_geo')",
+      "countryCode": "CA",
+      "scope": "Quebec (layer extent lon -79.6..-57.1, lat 45.0..62.4)",
+      "endpoint": "https://services3.arcgis.com/0lL78GhXbg1Po7WO/arcgis/rest/services/cadastre_bd_allegee/FeatureServer/0",
+      "method": "ArcGIS REST query",
+      "responseFormat": "Esri JSON",
+      "crs": "EPSG:4326 via outSR (native NAD83 4269)",
+      "verificationStatus": "verified_nonempty_sample",
+      "reuseStatus": "Indicative-only warning; check Quebec open licence before reuse.",
+      "verifiedCityIds": [
+        "wup2025:3645"
+      ],
+      "evidenceFile": "research/subnational/CA/QC.json"
     }
   ],
   "countryCoverage": [
+    {
+      "countryCode": "AL",
+      "country": "Albania",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/retry/countries/AL.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed. WAF flaps; Tirana sample comes from the retry pass, Shkoder from the Europe pass."
+    },
     {
       "countryCode": "AT",
       "country": "Austria",
@@ -962,6 +988,15 @@
       "basis": "two_region_test",
       "reviewed": false,
       "evidenceFile": "research/countries/BD.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "BE",
+      "country": "Belgium",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/BE.json",
       "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
     },
     {
@@ -989,6 +1024,15 @@
       "basis": "two_region_test",
       "reviewed": false,
       "evidenceFile": "research/retry/countries/BY.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "CH",
+      "country": "Switzerland",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/CH.json",
       "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
     },
     {
@@ -1055,6 +1099,15 @@
       "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
     },
     {
+      "countryCode": "GR",
+      "country": "Greece",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/retry/countries/GR.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed. Bulk regional shapefile download read by HTTP Range, no bbox query; Operating Cadastre areas only."
+    },
+    {
       "countryCode": "HK",
       "country": "China, Hong Kong SAR",
       "status": "verified_countrywide",
@@ -1088,6 +1141,15 @@
       "basis": "two_region_test",
       "reviewed": false,
       "evidenceFile": "research/countries/IL.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "IS",
+      "country": "Iceland",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/retry/countries/IS.json",
       "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
     },
     {
@@ -1136,12 +1198,30 @@
       "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
     },
     {
+      "countryCode": "LV",
+      "country": "Latvia",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/LV.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
       "countryCode": "MN",
       "country": "Mongolia",
       "status": "verified_countrywide",
       "basis": "two_region_test",
       "reviewed": false,
       "evidenceFile": "research/countries/MN.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "MT",
+      "country": "Malta",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/retry/countries/MT.json",
       "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
     },
     {
@@ -1190,6 +1270,15 @@
       "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
     },
     {
+      "countryCode": "PT",
+      "country": "Portugal",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/PT.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed. Mainland OGC API only: Porto, Coimbra and Braganca boxes returned 0; Azores and Madeira are separate, unreached services."
+    },
+    {
       "countryCode": "PY",
       "country": "Paraguay",
       "status": "verified_countrywide",
@@ -1217,6 +1306,15 @@
       "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
     },
     {
+      "countryCode": "SK",
+      "country": "Slovakia",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/retry/countries/SK.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed. Bulk INSPIRE GML zips read by HTTP Range; the WFS/ATOM endpoints reset from here."
+    },
+    {
       "countryCode": "TR",
       "country": "Turkiye",
       "status": "verified_countrywide",
@@ -1232,6 +1330,42 @@
       "basis": "two_region_test",
       "reviewed": false,
       "evidenceFile": "research/retry/countries/XK.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "FO",
+      "country": "Faroe Islands",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/europe/FO.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "GG",
+      "country": "Guernsey",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/europe/GG.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "IM",
+      "country": "Isle of Man",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/europe/IM.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "LI",
+      "country": "Liechtenstein",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/europe/LI.json",
       "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
     }
   ],
@@ -4402,9 +4536,13 @@
       ],
       "citySource": "https://population.un.org/wup/",
       "researchOrder": 187,
-      "parcelStatus": "no_verified_open_endpoint_after_attempts",
-      "sourceIds": [],
-      "researchFile": "research/montreal.json"
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "ca-qc-cadastre-bd-allegee"
+      ],
+      "researchFile": "research/subnational/CA/QC.json",
+      "previousResearchFile": "research/montreal.json",
+      "mergeNote": "Verified through the Quebec province-wide lots layer (subnational pass); the city itself publishes only a bulk assessment file."
     },
     {
       "cityId": "wup2025:1069",
@@ -4691,28 +4829,35 @@
       "countryCode": "AL",
       "country": "Albania",
       "reportedStatus": "temporarily_unavailable",
-      "status": "partial_or_unofficial_sample",
-      "accessModel": "unknown",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/AL.json",
-      "previousStatus": "temporarily_unavailable",
+      "previousStatus": "partial_or_unofficial_sample",
       "retryFile": "research/retry/countries/AL.json",
       "foundViaViewerInspection": true,
       "geoBlockSuspected": true,
-      "mergeNote": "Retry sample did not establish nationwide coverage (single region, pilot, or partial layer)."
+      "mergeNote": "WAF flaps; Tirana sample comes from the retry pass, Shkoder from the Europe pass.",
+      "europeFile": "research/europe/AL.json",
+      "regionsSampled": [
+        "Shkoder (this pass)",
+        "Tirana (research/retry/countries/AL.json, same layer zrpp:p_kadas_albscad_072026, 2026-09-30; not re-sampled in this pass because the WAF blocked my retries)"
+      ]
     },
     {
       "countryCode": "AM",
       "country": "Armenia",
       "reportedStatus": "national_cadastre_credentialed_or_paid",
       "status": "national_cadastre_viewer_only",
-      "accessModel": "registration",
+      "accessModel": "viewer-only",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/AM.json",
-      "previousStatus": "national_cadastre_credentialed_or_paid",
+      "previousStatus": "national_cadastre_viewer_only",
       "retryFile": "research/retry/countries/AM.json",
       "foundViaViewerInspection": true,
-      "geoBlockSuspected": false
+      "geoBlockSuspected": false,
+      "europeFile": "research/europe/AM.json",
+      "regionsSampled": []
     },
     {
       "countryCode": "AO",
@@ -4752,7 +4897,16 @@
       "status": "subnational_only",
       "accessModel": "open",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/AU.json"
+      "evidenceFile": "research/countries/AU.json",
+      "regionSummary": {
+        "regionsTotal": 8,
+        "regionWide": 7,
+        "partial": 0,
+        "credentialed": 0,
+        "viewerOnly": 0,
+        "unavailable": 0,
+        "none": 1
+      }
     },
     {
       "countryCode": "AZ",
@@ -4762,19 +4916,24 @@
       "accessModel": "unknown",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/AZ.json",
-      "previousStatus": "no_online_cadastre_found",
+      "previousStatus": "temporarily_unavailable",
       "retryFile": "research/retry/countries/AZ.json",
       "foundViaViewerInspection": false,
-      "geoBlockSuspected": true
+      "geoBlockSuspected": true,
+      "europeFile": "research/europe/AZ.json",
+      "regionsSampled": []
     },
     {
       "countryCode": "BA",
       "country": "Bosnia and Herzegovina",
       "reportedStatus": "subnational_only",
       "status": "subnational_only",
-      "accessModel": "viewer-only",
+      "accessModel": "registration",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/BA.json"
+      "evidenceFile": "research/countries/BA.json",
+      "previousStatus": "subnational_only",
+      "europeFile": "research/europe/BA.json",
+      "regionsSampled": []
     },
     {
       "countryCode": "BB",
@@ -4799,10 +4958,26 @@
       "countryCode": "BE",
       "country": "Belgium",
       "reportedStatus": "subnational_only",
-      "status": "subnational_only",
+      "status": "national_online_cadastre_verified_sample",
       "accessModel": "open",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/BE.json"
+      "evidenceFile": "research/countries/BE.json",
+      "previousStatus": "subnational_only",
+      "europeFile": "research/europe/BE.json",
+      "regionsSampled": [
+        "Brussels",
+        "Wallonia (Liege)",
+        "Flanders (Antwerp)"
+      ],
+      "regionSummary": {
+        "regionsTotal": 3,
+        "regionWide": 3,
+        "partial": 0,
+        "credentialed": 0,
+        "viewerOnly": 0,
+        "unavailable": 0,
+        "none": 0
+      }
     },
     {
       "countryCode": "BF",
@@ -4974,7 +5149,16 @@
       "status": "subnational_only",
       "accessModel": "open",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/CA.json"
+      "evidenceFile": "research/countries/CA.json",
+      "regionSummary": {
+        "regionsTotal": 13,
+        "regionWide": 7,
+        "partial": 5,
+        "credentialed": 0,
+        "viewerOnly": 0,
+        "unavailable": 0,
+        "none": 1
+      }
     },
     {
       "countryCode": "CD",
@@ -5019,11 +5203,28 @@
       "countryCode": "CH",
       "country": "Switzerland",
       "reportedStatus": "national_online_cadastre_verified_sample",
-      "status": "partial_or_unofficial_sample",
-      "accessModel": "open",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open (per canton; JU, LU, NE, NW, OW, VD gated)",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/CH.json",
-      "mergeNote": "Coverage is by canton; a Lausanne point returned nothing."
+      "previousStatus": "partial_or_unofficial_sample",
+      "europeFile": "research/europe/CH.json",
+      "regionsSampled": [
+        "ZH",
+        "BE",
+        "GE",
+        "SG",
+        "TG"
+      ],
+      "regionSummary": {
+        "regionsTotal": 26,
+        "regionWide": 5,
+        "partial": 15,
+        "credentialed": 6,
+        "viewerOnly": 0,
+        "unavailable": 0,
+        "none": 0
+      }
     },
     {
       "countryCode": "CI",
@@ -5166,9 +5367,36 @@
       "country": "Germany",
       "reportedStatus": "subnational_only",
       "status": "subnational_only",
-      "accessModel": "open",
+      "accessModel": "open (13 Laender, mostly dl-de/by-2.0 or CC BY 4.0); Bayern credentialed",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/DE.json"
+      "evidenceFile": "research/countries/DE.json",
+      "previousStatus": "subnational_only",
+      "europeFile": "research/europe/DE.json",
+      "regionsSampled": [
+        "Brandenburg",
+        "Hessen",
+        "Niedersachsen",
+        "Thueringen",
+        "Sachsen-Anhalt",
+        "Mecklenburg-Vorpommern",
+        "Sachsen",
+        "Bremen",
+        "Hamburg",
+        "Schleswig-Holstein",
+        "Baden-Wuerttemberg",
+        "Rheinland-Pfalz",
+        "Saarland"
+      ],
+      "inspireRecordUrl": "https://gdk.gdi-de.org/gdi-de/srv/eng/csw (GDI-DE national catalogue; per-Land records, e.g. \"INSPIRE-WFS MV Flurstuecke/Grundstuecke ALKIS\", \"INSPIRE-WFS BY Flurstuecke/Grundstuecke ALKIS\")",
+      "regionSummary": {
+        "regionsTotal": 16,
+        "regionWide": 14,
+        "partial": 0,
+        "credentialed": 1,
+        "viewerOnly": 0,
+        "unavailable": 1,
+        "none": 0
+      }
     },
     {
       "countryCode": "DJ",
@@ -5347,14 +5575,21 @@
       "country": "United Kingdom",
       "reportedStatus": "national_cadastre_credentialed_or_paid",
       "status": "partial_or_unofficial_sample",
-      "accessModel": "registration",
+      "accessModel": "open (OGL v3 stated on both download pages; not a full cadastre, title/index polygons)",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/GB.json",
-      "previousStatus": "national_cadastre_credentialed_or_paid",
+      "previousStatus": "partial_or_unofficial_sample",
       "retryFile": "research/retry/countries/GB.json",
       "foundViaViewerInspection": false,
       "geoBlockSuspected": false,
-      "mergeNote": "England and Wales only, bulk per-authority download of title-extent index polygons; no query API; one authority sampled."
+      "mergeNote": "Scotland and England verified from two different sources and schemas; no single national service; NI refused.",
+      "europeFile": "research/europe/GB.json",
+      "regionsSampled": [
+        "Scotland: Edinburgh",
+        "Scotland: Inverness",
+        "England: City of London (plus Isles of Scilly in retry/countries/GB.json)"
+      ],
+      "inspireRecordUrl": "https://data.gov.uk/dataset/29a78bcd-2ab3-4f15-92fc-7fd9cb3d470a (ros-cadastral-parcels-dataset; resource https://ros-inspire.themapcloud.com/)"
     },
     {
       "countryCode": "GE",
@@ -5367,7 +5602,9 @@
       "previousStatus": "national_cadastre_viewer_only",
       "retryFile": "research/retry/countries/GE.json",
       "foundViaViewerInspection": true,
-      "geoBlockSuspected": false
+      "geoBlockSuspected": false,
+      "europeFile": "research/europe/GE.json",
+      "regionsSampled": []
     },
     {
       "countryCode": "GF",
@@ -5403,7 +5640,9 @@
       "previousStatus": "temporarily_unavailable",
       "retryFile": "research/retry/countries/GI.json",
       "foundViaViewerInspection": true,
-      "geoBlockSuspected": true
+      "geoBlockSuspected": true,
+      "europeFile": "research/europe/GI.json",
+      "regionsSampled": []
     },
     {
       "countryCode": "GM",
@@ -5458,14 +5697,21 @@
       "countryCode": "GR",
       "country": "Greece",
       "reportedStatus": "national_cadastre_viewer_only",
-      "status": "national_cadastre_viewer_only",
-      "accessModel": "viewer-only",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open (bulk file download, no query endpoint)",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/GR.json",
       "previousStatus": "national_cadastre_viewer_only",
       "retryFile": "research/retry/countries/GR.json",
       "foundViaViewerInspection": true,
-      "geoBlockSuspected": true
+      "geoBlockSuspected": true,
+      "europeFile": "research/europe/GR.json",
+      "regionsSampled": [
+        "Ionian Islands",
+        "Attica"
+      ],
+      "inspireRecordUrl": "https://data.europa.eu/api/hub/search/datasets/17226281-9e0f-431f-b1a3-c9e807cdd3cd (data.europa.eu; the old inspire-geoportal.ec.europa.eu/srv API now 301-redirects to data.europa.eu). No INSPIRE CP WFS/ATOM record for Greece was found; the bulk vector open dataset is on data.gov.gr.",
+      "mergeNote": "Bulk regional shapefile download read by HTTP Range, no bbox query; Operating Cadastre areas only."
     },
     {
       "countryCode": "GT",
@@ -5555,10 +5801,16 @@
       "country": "Hungary",
       "reportedStatus": "national_online_cadastre_verified_sample",
       "status": "partial_or_unofficial_sample",
-      "accessModel": "open",
+      "accessModel": "open (sample); national parcel data not open online from what was reachable",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/HU.json",
-      "mergeNote": "Layer holds only 1,774 features; Budapest and Debrecen returned nothing."
+      "mergeNote": "The Lechner INSPIRE WFS is a Mesterszallas sampling area (about 7x10 km), not a national layer.",
+      "previousStatus": "partial_or_unofficial_sample",
+      "europeFile": "research/europe/HU.json",
+      "regionsSampled": [
+        "Mesterszallas (only)"
+      ],
+      "inspireRecordUrl": "http://inspire.lechnerkozpont.hu/geonetwork/srv/api/records/adc31900-5237-4ee3-ba73-f40b169266fa/formatters/xml (ATOM), also records 2d1c17e0-4e0a-4884-9e1f-f31ee44913f0 (view) and 278bb777-aaac-4678-bd91-d4032c7e8a8c (dataset), all titled 'Mesterszallas sampling area'"
     },
     {
       "countryCode": "ID",
@@ -5627,14 +5879,19 @@
       "countryCode": "IS",
       "country": "Iceland",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
-      "accessModel": "unknown",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/IS.json",
       "previousStatus": "temporarily_unavailable",
       "retryFile": "research/retry/countries/IS.json",
       "foundViaViewerInspection": false,
-      "geoBlockSuspected": false
+      "geoBlockSuspected": false,
+      "europeFile": "research/europe/IS.json",
+      "regionsSampled": [
+        "Reykjavik",
+        "Akureyri"
+      ]
     },
     {
       "countryCode": "IT",
@@ -5650,14 +5907,19 @@
       "country": "Jersey",
       "reportedStatus": "temporarily_unavailable",
       "status": "partial_or_unofficial_sample",
-      "accessModel": "unknown",
+      "accessModel": "open for the public-estate layer; no general parcel/title polygon service found",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/JE.json",
-      "previousStatus": "temporarily_unavailable",
+      "previousStatus": "partial_or_unofficial_sample",
       "retryFile": "research/retry/countries/JE.json",
       "foundViaViewerInspection": false,
       "geoBlockSuspected": false,
-      "mergeNote": "City-scope verified sample (government sites or partial layer), not a national service."
+      "mergeNote": "City-scope verified sample (government sites or partial layer), not a national service.",
+      "europeFile": "research/europe/JE.json",
+      "regionsSampled": [
+        "St Brelade",
+        "St Helier"
+      ]
     },
     {
       "countryCode": "JM",
@@ -5900,11 +6162,17 @@
       "countryCode": "LV",
       "country": "Latvia",
       "reportedStatus": "national_online_cadastre_verified_sample",
-      "status": "partial_or_unofficial_sample",
+      "status": "national_online_cadastre_verified_sample",
       "accessModel": "open",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/LV.json",
-      "mergeNote": "One municipality shapefile converted by script; not a raw server reply."
+      "previousStatus": "partial_or_unofficial_sample",
+      "europeFile": "research/europe/LV.json",
+      "regionsSampled": [
+        "Riga",
+        "Daugavpils"
+      ],
+      "inspireRecordUrl": "https://data.gov.lv/dati/lv/dataset/kadastrlie-zemes-gabali-inspire (points to https://grafws.kadastrs.lv/atom/cp/atom.xml; that host is unreachable from this network)"
     },
     {
       "countryCode": "LY",
@@ -5937,13 +6205,15 @@
       "country": "Monaco",
       "reportedStatus": "temporarily_unavailable",
       "status": "national_cadastre_viewer_only",
-      "accessModel": "unknown",
+      "accessModel": "viewer-only",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/MC.json",
-      "previousStatus": "temporarily_unavailable",
+      "previousStatus": "national_cadastre_viewer_only",
       "retryFile": "research/retry/countries/MC.json",
       "foundViaViewerInspection": true,
-      "geoBlockSuspected": false
+      "geoBlockSuspected": false,
+      "europeFile": "research/europe/MC.json",
+      "regionsSampled": []
     },
     {
       "countryCode": "MD",
@@ -5956,20 +6226,24 @@
       "previousStatus": "temporarily_unavailable",
       "retryFile": "research/retry/countries/MD.json",
       "foundViaViewerInspection": false,
-      "geoBlockSuspected": true
+      "geoBlockSuspected": true,
+      "europeFile": "research/europe/MD.json",
+      "regionsSampled": []
     },
     {
       "countryCode": "ME",
       "country": "Montenegro",
       "reportedStatus": "temporarily_unavailable",
       "status": "national_cadastre_credentialed_or_paid",
-      "accessModel": "unknown",
+      "accessModel": "viewer-only",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/ME.json",
-      "previousStatus": "temporarily_unavailable",
+      "previousStatus": "national_cadastre_credentialed_or_paid",
       "retryFile": "research/retry/countries/ME.json",
       "foundViaViewerInspection": true,
-      "geoBlockSuspected": false
+      "geoBlockSuspected": false,
+      "europeFile": "research/europe/ME.json",
+      "regionsSampled": []
     },
     {
       "countryCode": "MG",
@@ -5995,7 +6269,9 @@
       "previousStatus": "temporarily_unavailable",
       "retryFile": "research/retry/countries/MK.json",
       "foundViaViewerInspection": false,
-      "geoBlockSuspected": true
+      "geoBlockSuspected": true,
+      "europeFile": "research/europe/MK.json",
+      "regionsSampled": []
     },
     {
       "countryCode": "ML",
@@ -6070,14 +6346,21 @@
       "countryCode": "MT",
       "country": "Malta",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
-      "accessModel": "unknown",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/MT.json",
       "previousStatus": "temporarily_unavailable",
       "retryFile": "research/retry/countries/MT.json",
       "foundViaViewerInspection": false,
-      "geoBlockSuspected": true
+      "geoBlockSuspected": true,
+      "europeFile": "research/europe/MT.json",
+      "regionsSampled": [
+        "Malta island (Valletta area)",
+        "Malta island (north)",
+        "Gozo (Victoria)"
+      ],
+      "inspireRecordUrl": "https://data.europa.eu/api/hub/search/datasets/80b0bb83-1fc2-4955-9b59-86e0290f5e37 (WMS) and .../ffde9f0c-5a4c-47ef-9091-2c93f60ff7ac (WFS), catalogue 'Malta Inspire Geoportal'"
     },
     {
       "countryCode": "MU",
@@ -6382,11 +6665,19 @@
       "countryCode": "PT",
       "country": "Portugal",
       "reportedStatus": "national_online_cadastre_verified_sample",
-      "status": "partial_or_unofficial_sample",
+      "status": "national_online_cadastre_verified_sample",
       "accessModel": "open",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/PT.json",
-      "mergeNote": "Mainland only; a Porto bbox returned 0."
+      "mergeNote": "Mainland OGC API only: Porto, Coimbra and Braganca boxes returned 0; Azores and Madeira are separate, unreached services.",
+      "previousStatus": "partial_or_unofficial_sample",
+      "europeFile": "research/europe/PT.json",
+      "regionsSampled": [
+        "Lisboa district (Mafra 110808)",
+        "Leiria district (140208)",
+        "Faro district (080507)",
+        "Evora district (070522/070523)"
+      ]
     },
     {
       "countryCode": "PY",
@@ -6425,13 +6716,16 @@
       "country": "Romania",
       "reportedStatus": "national_cadastre_viewer_only",
       "status": "temporarily_unavailable",
-      "accessModel": "viewer-only",
+      "accessModel": "unknown",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/RO.json",
-      "previousStatus": "national_cadastre_viewer_only",
+      "previousStatus": "temporarily_unavailable",
       "retryFile": "research/retry/countries/RO.json",
       "foundViaViewerInspection": false,
-      "geoBlockSuspected": false
+      "geoBlockSuspected": false,
+      "europeFile": "research/europe/RO.json",
+      "regionsSampled": [],
+      "inspireRecordUrl": "https://data.europa.eu/api/hub/search/datasets/-b4c66413-3e17-4e33-a4dd-10f49950eb88- (download, ATOM) and -cce70e50-f66e-44af-8183-d01b8f1e0556- (view WMS); ids as listed on data.europa.eu, catalogue title 'INSPIRE Download Service - Cadastral Parcels Theme - Annex I'"
     },
     {
       "countryCode": "RS",
@@ -6444,7 +6738,9 @@
       "previousStatus": "temporarily_unavailable",
       "retryFile": "research/retry/countries/RS.json",
       "foundViaViewerInspection": false,
-      "geoBlockSuspected": true
+      "geoBlockSuspected": true,
+      "europeFile": "research/europe/RS.json",
+      "regionsSampled": []
     },
     {
       "countryCode": "RU",
@@ -6457,7 +6753,9 @@
       "previousStatus": "temporarily_unavailable",
       "retryFile": "research/retry/countries/RU.json",
       "foundViaViewerInspection": false,
-      "geoBlockSuspected": true
+      "geoBlockSuspected": true,
+      "europeFile": "research/europe/RU.json",
+      "regionsSampled": []
     },
     {
       "countryCode": "RW",
@@ -6544,14 +6842,21 @@
       "countryCode": "SK",
       "country": "Slovakia",
       "reportedStatus": "temporarily_unavailable",
-      "status": "temporarily_unavailable",
-      "accessModel": "unknown",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open (bulk download); WFS not reachable",
       "checkedAt": "2026-09-29",
       "evidenceFile": "research/countries/SK.json",
       "previousStatus": "temporarily_unavailable",
       "retryFile": "research/retry/countries/SK.json",
       "foundViaViewerInspection": false,
-      "geoBlockSuspected": true
+      "geoBlockSuspected": true,
+      "europeFile": "research/europe/SK.json",
+      "regionsSampled": [
+        "Nitra",
+        "Trnava"
+      ],
+      "inspireRecordUrl": "https://data.europa.eu/api/hub/search/datasets/https-data-gov-sk-set-data-gmd-1d9ceaef-b3c6-4441-... ('INSPIRE HVD - Cadastral parcels (CN register) - Slovakia'); WFS record https-data-gov-sk-set-data-gmd-699fee2f-e705-4bc4-...; via data.gov.sk",
+      "mergeNote": "Bulk INSPIRE GML zips read by HTTP Range; the WFS/ATOM endpoints reset from here."
     },
     {
       "countryCode": "SL",
@@ -6821,7 +7126,9 @@
       "previousStatus": "temporarily_unavailable",
       "retryFile": "research/retry/countries/UA.json",
       "foundViaViewerInspection": true,
-      "geoBlockSuspected": true
+      "geoBlockSuspected": true,
+      "europeFile": "research/europe/UA.json",
+      "regionsSampled": []
     },
     {
       "countryCode": "UG",
@@ -6843,7 +7150,16 @@
       "status": "subnational_only",
       "accessModel": "open",
       "checkedAt": "2026-09-29",
-      "evidenceFile": "research/countries/US.json"
+      "evidenceFile": "research/countries/US.json",
+      "regionSummary": {
+        "regionsTotal": 51,
+        "regionWide": 32,
+        "partial": 19,
+        "credentialed": 0,
+        "viewerOnly": 0,
+        "unavailable": 0,
+        "none": 0
+      }
     },
     {
       "countryCode": "UY",
@@ -6991,6 +7307,1783 @@
       "retryFile": "research/retry/countries/ZW.json",
       "foundViaViewerInspection": true,
       "geoBlockSuspected": true
+    },
+    {
+      "countryCode": "AD",
+      "country": "Andorra",
+      "reportedStatus": "not_probed",
+      "status": "no_online_cadastre_found",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-30",
+      "evidenceFile": "research/europe/AD.json",
+      "previousStatus": "not_probed",
+      "europeFile": "research/europe/AD.json",
+      "regionsSampled": []
+    },
+    {
+      "countryCode": "FO",
+      "country": "Faroe Islands",
+      "reportedStatus": "not_probed",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-30",
+      "evidenceFile": "research/europe/FO.json",
+      "previousStatus": "not_probed",
+      "europeFile": "research/europe/FO.json",
+      "regionsSampled": [
+        "Torshavn",
+        "Klaksvik"
+      ]
+    },
+    {
+      "countryCode": "GG",
+      "country": "Guernsey",
+      "reportedStatus": "not_probed",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open (unauthenticated REST; Digimap is a commercial data provider, licence status unknown)",
+      "checkedAt": "2026-09-30",
+      "evidenceFile": "research/europe/GG.json",
+      "previousStatus": "not_probed",
+      "europeFile": "research/europe/GG.json",
+      "regionsSampled": [
+        "Guernsey: St Peter Port",
+        "Guernsey: St Sampson"
+      ]
+    },
+    {
+      "countryCode": "IM",
+      "country": "Isle of Man",
+      "reportedStatus": "not_probed",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open (anonymous ArcGIS service via the public Title Locator app)",
+      "checkedAt": "2026-09-30",
+      "evidenceFile": "research/europe/IM.json",
+      "previousStatus": "not_probed",
+      "europeFile": "research/europe/IM.json",
+      "regionsSampled": [
+        "Douglas",
+        "Ramsey"
+      ]
+    },
+    {
+      "countryCode": "LI",
+      "country": "Liechtenstein",
+      "reportedStatus": "not_probed",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open",
+      "checkedAt": "2026-09-30",
+      "evidenceFile": "research/europe/LI.json",
+      "previousStatus": "not_probed",
+      "europeFile": "research/europe/LI.json",
+      "regionsSampled": [
+        "BFS 7003",
+        "BFS 7007",
+        "BFS 7001"
+      ]
+    },
+    {
+      "countryCode": "SM",
+      "country": "San Marino",
+      "reportedStatus": "not_probed",
+      "status": "no_online_cadastre_found",
+      "accessModel": "paid",
+      "checkedAt": "2026-09-30",
+      "evidenceFile": "research/europe/SM.json",
+      "previousStatus": "not_probed",
+      "europeFile": "research/europe/SM.json",
+      "regionsSampled": []
+    },
+    {
+      "countryCode": "VA",
+      "country": "Vatican City",
+      "reportedStatus": "not_probed",
+      "status": "no_online_cadastre_found",
+      "accessModel": "unknown",
+      "checkedAt": "2026-09-30",
+      "evidenceFile": "research/europe/VA.json",
+      "previousStatus": "not_probed",
+      "europeFile": "research/europe/VA.json",
+      "regionsSampled": []
+    }
+  ],
+  "subnationalCoverage": [
+    {
+      "countryCode": "US",
+      "country": "United States",
+      "regionsTotal": 51,
+      "regionWide": 32,
+      "partial": 19,
+      "credentialed": 0,
+      "viewerOnly": 0,
+      "unavailable": 0,
+      "none": 0,
+      "regions": [
+        {
+          "code": "AK",
+          "name": "Alaska",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Alaska Statewide Parcels (AK_Parcels, ArcGIS Online)",
+          "endpoint": "https://services1.arcgis.com/7HDiw78fcUiM2BWn/arcgis/rest/services/AK_Parcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Anchorage Municipality",
+            "Fairbanks North Star Borough"
+          ],
+          "reuseStatus": "Publisher unknown; not verified that every borough is included.",
+          "evidenceFile": "research/subnational/US/AK.json"
+        },
+        {
+          "code": "AL",
+          "name": "Alabama",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Jefferson County (Birmingham) Parcels",
+          "endpoint": "https://jccgis.jccal.org/server/rest/services/Basemap/Parcels/MapServer/0",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Jefferson County, AL"
+          ],
+          "reuseStatus": "Owner and address fields exist in the source; only OBJECTID and PARCELID were requested. Licence not read.",
+          "evidenceFile": "research/subnational/US/AL.json"
+        },
+        {
+          "code": "AR",
+          "name": "Arkansas",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Arkansas Planning_Cadastre PARCEL_POLYGON_CAMP",
+          "endpoint": "https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Planning_Cadastre/FeatureServer/6",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Pulaski County",
+            "Benton County"
+          ],
+          "reuseStatus": "Owner name and address fields present; only objectid, parcelid, county requested.",
+          "evidenceFile": "research/subnational/US/AR.json"
+        },
+        {
+          "code": "AZ",
+          "name": "Arizona",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Maricopa County Assessor Parcels",
+          "endpoint": "https://gis.mcassessor.maricopa.gov/arcgis/rest/services/Parcels/MapServer/0",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Maricopa County, AZ (Phoenix; Mesa/Tempe area)"
+          ],
+          "reuseStatus": "Owner and mailing fields exist; only OBJECTID and APN requested.",
+          "evidenceFile": "research/subnational/US/AZ.json"
+        },
+        {
+          "code": "CA",
+          "name": "California",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "California Statewide Parcels Public View",
+          "endpoint": "https://bz1uwWPKUInZBK94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Los Angeles County",
+            "Sacramento County"
+          ],
+          "reuseStatus": "Terms not visible in service metadata; layer looks derived from a commercial-aggregator statewide compilation, so redistribution terms should be read before reuse. Existing LA County evidence (research/los-angeles.json) is county-specific.",
+          "evidenceFile": "research/subnational/US/CA.json"
+        },
+        {
+          "code": "CO",
+          "name": "Colorado",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Colorado Public Parcels (Colorado_Public_Parcel_Composite)",
+          "endpoint": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Denver County",
+            "Mesa County"
+          ],
+          "reuseStatus": "Owner and mailing fields exist; only ID/county requested. Some counties may be withheld (a \"sharing\" field exists).",
+          "evidenceFile": "research/subnational/US/CO.json"
+        },
+        {
+          "code": "CT",
+          "name": "Connecticut",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Connecticut CAMA and Parcel Layer 2025",
+          "endpoint": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Hartford",
+            "New Haven"
+          ],
+          "reuseStatus": "Layer carries owner, mailing address and sale fields; not requested.",
+          "evidenceFile": "research/subnational/US/CT.json"
+        },
+        {
+          "code": "DC",
+          "name": "District of Columbia",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "DC GIS Property and Land, Tax Lots (layer 39)",
+          "endpoint": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Property_and_Land_WebMercator/MapServer/39",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "District of Columbia (Dupont Circle area)"
+          ],
+          "reuseStatus": "Reuse terms not read.",
+          "evidenceFile": "research/subnational/US/DC.json"
+        },
+        {
+          "code": "DE",
+          "name": "Delaware",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "DE State Parcels",
+          "endpoint": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Kent County",
+            "New Castle County"
+          ],
+          "reuseStatus": "Sussex County not sampled.",
+          "evidenceFile": "research/subnational/US/DE.json"
+        },
+        {
+          "code": "FL",
+          "name": "Florida",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Florida Statewide Cadastral (CADASTRAL_DOR)",
+          "endpoint": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "County code 48 (Levy area, lon -82.94 lat 29.58)",
+            "County code 13 (Bay area, lon -85.48 lat 30.57)"
+          ],
+          "reuseStatus": "Layer is a huge table; envelope queries were too slow from this network. Miami-Dade/Orlando not sampled. Existing Miami-Dade city evidence: research/miami.json.",
+          "evidenceFile": "research/subnational/US/FL.json"
+        },
+        {
+          "code": "GA",
+          "name": "Georgia",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "DeKalb County Tax Parcels 2025",
+          "endpoint": "https://services2.arcgis.com/IxVN2oUE9EYLSnPE/arcgis/rest/services/Tax_Parcels_2025/FeatureServer/0",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "DeKalb County, GA"
+          ],
+          "reuseStatus": "DeKalb schema has no owner fields; only ID requested.",
+          "evidenceFile": "research/subnational/US/GA.json"
+        },
+        {
+          "code": "HI",
+          "name": "Hawaii",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Statewide TMKs (ParcelsZoning layer 25)",
+          "endpoint": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "City and County of Honolulu (Oahu)",
+            "Hawaii County (Hilo area)"
+          ],
+          "reuseStatus": "Terms/licence text not read on the service; see publisher page.",
+          "evidenceFile": "research/subnational/US/HI.json"
+        },
+        {
+          "code": "IA",
+          "name": "Iowa",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Iowa Statewide Parcel Data, 2017",
+          "endpoint": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Polk County (Des Moines)",
+            "Johnson County (Iowa City)"
+          ],
+          "reuseStatus": "Terms/licence text not read on the service.",
+          "evidenceFile": "research/subnational/US/IA.json"
+        },
+        {
+          "code": "ID",
+          "name": "Idaho",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Public Idaho Parcels (Parcels Public, layer 7)",
+          "endpoint": "https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Ada County (Boise)"
+          ],
+          "reuseStatus": "Terms/licence text not read on the service. Another IDWR layer (gis.idwr.idaho.gov Reference/Parcels) states it \"cannot be shared outside IDWR\" and was NOT used.",
+          "evidenceFile": "research/subnational/US/ID.json"
+        },
+        {
+          "code": "IL",
+          "name": "Illinois",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "ccgisdata - Parcel 2021 (Cook County Open Data, dataset 77tz-riq7)",
+          "endpoint": "https://datacatalog.cookcountyil.gov/resource/77tz-riq7.json",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Cook County (Chicago)"
+          ],
+          "reuseStatus": "Terms not read.",
+          "evidenceFile": "research/subnational/US/IL.json"
+        },
+        {
+          "code": "IN",
+          "name": "Indiana",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Parcel Boundaries of Indiana Current (IndianaMap)",
+          "endpoint": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Marion County (Indianapolis)",
+            "Allen County (Fort Wayne)"
+          ],
+          "reuseStatus": "Terms/licence text not read on the service; see publisher page.",
+          "evidenceFile": "research/subnational/US/IN.json"
+        },
+        {
+          "code": "KS",
+          "name": "Kansas",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Tax Parcel (Douglas County, KS)",
+          "endpoint": "https://gis.dgcoks.gov/server/rest/services/Tax_Parcel/MapServer/0",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Douglas County (Lawrence)"
+          ],
+          "reuseStatus": "Terms/licence text not read on the service.",
+          "evidenceFile": "research/subnational/US/KS.json"
+        },
+        {
+          "code": "KY",
+          "name": "Kentucky",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Jefferson County KY Parcels (LOJIC Open Data PVA)",
+          "endpoint": "https://gis.lojic.org/maps/rest/services/LojicSolutions/OpenDataPVA/MapServer/1",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Jefferson County (Louisville)"
+          ],
+          "reuseStatus": "Terms/licence text not read on the service.",
+          "evidenceFile": "research/subnational/US/KY.json"
+        },
+        {
+          "code": "LA",
+          "name": "Louisiana",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Tax Parcel (East Baton Rouge Parish)",
+          "endpoint": "https://maps.brla.gov/gis/rest/services/Cadastral/Tax_Parcel/MapServer/0",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "East Baton Rouge Parish"
+          ],
+          "reuseStatus": "Terms/licence text not read on the service.",
+          "evidenceFile": "research/subnational/US/LA.json"
+        },
+        {
+          "code": "MA",
+          "name": "Massachusetts",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Massachusetts Property Tax Parcels (MassGIS Level 3)",
+          "endpoint": "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Suffolk County (Boston)",
+            "Hampden County (Springfield)"
+          ],
+          "reuseStatus": "Terms/licence text not read on the service; see publisher page.",
+          "evidenceFile": "research/subnational/US/MA.json"
+        },
+        {
+          "code": "MD",
+          "name": "Maryland",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "MD Parcel Boundaries (MD iMAP)",
+          "endpoint": "https://mdgeodata.md.gov/imap/rest/services/PlanningCadastre/MD_ParcelBoundaries/MapServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Baltimore City",
+            "Anne Arundel County (Annapolis)"
+          ],
+          "reuseStatus": "Terms/licence text not read on the service; see publisher page.",
+          "evidenceFile": "research/subnational/US/MD.json"
+        },
+        {
+          "code": "ME",
+          "name": "Maine",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Maine Parcels Organized Towns (Maine GeoLibrary)",
+          "endpoint": "https://services1.arcgis.com/RbMX0mRVOFNTdLzd/arcgis/rest/services/Maine_Parcels_Organized_Towns/FeatureServer/10",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Cumberland County (Portland)",
+            "Penobscot County (Bangor)"
+          ],
+          "reuseStatus": "Terms/licence text not read on the service; see publisher page.",
+          "evidenceFile": "research/subnational/US/ME.json"
+        },
+        {
+          "code": "MI",
+          "name": "Michigan",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Parcels (Current), City of Detroit",
+          "endpoint": "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/parcel_file_current/FeatureServer/0",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "City of Detroit (Wayne County)"
+          ],
+          "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution.",
+          "evidenceFile": "research/subnational/US/MI.json"
+        },
+        {
+          "code": "MN",
+          "name": "Minnesota",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Parcels, Compiled from Opt-In Open Data Counties, Minnesota (Plan Parcels Open)",
+          "endpoint": "https://enterprise.gisdata.mn.gov/aghost/rest/services/us_mn_state_mngeo/plan_parcels_open/FeatureServer/1",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Hennepin County",
+            "St. Louis County"
+          ],
+          "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution. Layer has owner and tax-address fields; not requested.",
+          "evidenceFile": "research/subnational/US/MN.json"
+        },
+        {
+          "code": "MO",
+          "name": "Missouri",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Assessor Public Parcels (layer 11 Parcels), City of St. Louis",
+          "endpoint": "https://maps8.stlouis-mo.gov/arcgis/rest/services/ASSESSOR/Assessor_Public_Parcels/MapServer/11",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "City of St. Louis",
+            "Kansas City (Jackson County)"
+          ],
+          "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution.",
+          "evidenceFile": "research/subnational/US/MO.json"
+        },
+        {
+          "code": "MS",
+          "name": "Mississippi",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "HINDS_PARCELS",
+          "endpoint": "https://opcgis.deq.state.ms.us/opcgis/rest/services/Government/HINDS_PARCELS/MapServer/0",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Hinds County (Jackson)"
+          ],
+          "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution.",
+          "evidenceFile": "research/subnational/US/MS.json"
+        },
+        {
+          "code": "MT",
+          "name": "Montana",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Montana Cadastral (Parcels), DNRC mirror",
+          "endpoint": "https://gis.dnrc.mt.gov/arcgis/rest/services/DNRALL/Cadastral/MapServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "COUNTYCD 5 (Helena area)",
+            "COUNTYCD 3 (Billings area)"
+          ],
+          "reuseStatus": "Layer carries owner names and addresses; not requested or saved. Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution.",
+          "evidenceFile": "research/subnational/US/MT.json"
+        },
+        {
+          "code": "NC",
+          "name": "North Carolina",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "NC OneMap statewide parcels (NC1Map_Parcels)",
+          "endpoint": "https://services.nconemap.gov/secure/rest/services/NC1Map_Parcels/FeatureServer/1",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Wake County"
+          ],
+          "reuseStatus": "Not assessed in this pass; see NC OneMap terms.",
+          "evidenceFile": "research/subnational/US/NC.json"
+        },
+        {
+          "code": "ND",
+          "name": "North Dakota",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "NDGISHUB Parcels (State Parcel Program)",
+          "endpoint": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Burleigh County",
+            "Cass County"
+          ],
+          "reuseStatus": "Public service with disclaimer text (see source.reuseStatus).",
+          "evidenceFile": "research/subnational/US/ND.json"
+        },
+        {
+          "code": "NE",
+          "name": "Nebraska",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Statewide Parcels (external)",
+          "endpoint": "https://gis.ne.gov/Enterprise/rest/services/StatewideParcelsExternal/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Lancaster County (109)",
+            "Douglas County (055)",
+            "Keith County (101)"
+          ],
+          "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution. Layer has owner-adjacent and sales fields; not requested.",
+          "evidenceFile": "research/subnational/US/NE.json"
+        },
+        {
+          "code": "NH",
+          "name": "New Hampshire",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "NH Parcel Mosaic",
+          "endpoint": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Manchester (TownID 4134)",
+            "Town ID 4096 near Hanover/Lebanon area"
+          ],
+          "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution.",
+          "evidenceFile": "research/subnational/US/NH.json"
+        },
+        {
+          "code": "NJ",
+          "name": "New Jersey",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Parcels Composite of NJ (Web Mercator)",
+          "endpoint": "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Essex County area (PAMS_PIN prefix 07)",
+            "Mercer County area (PAMS_PIN prefix 11)"
+          ],
+          "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution.",
+          "evidenceFile": "research/subnational/US/NJ.json"
+        },
+        {
+          "code": "NM",
+          "name": "New Mexico",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "County Parcels 2025",
+          "endpoint": "https://gis.ose.nm.gov/server_s/rest/services/Parcels/County_Parcels_2025/MapServer/{countyLayerId}",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Bernalillo County (layer 0)",
+            "Santa Fe County (layer 26)"
+          ],
+          "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution. Layers include owner and mailing address fields; not requested.",
+          "evidenceFile": "research/subnational/US/NM.json"
+        },
+        {
+          "code": "NV",
+          "name": "Nevada",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Statewide Parcels - 2018 (All Parcels -2018-12-31)",
+          "endpoint": "https://gis.dot.nv.gov/agsphs/rest/services/Reference/Statewide_Parcels/MapServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Clark County",
+            "Washoe County"
+          ],
+          "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution. Layer has OwnerName and SiteAddress; not requested.",
+          "evidenceFile": "research/subnational/US/NV.json"
+        },
+        {
+          "code": "NY",
+          "name": "New York",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "NYS Tax Parcels Public",
+          "endpoint": "https://gisservices.its.ny.gov/arcgis/rest/services/NYS_Tax_Parcels_Public/MapServer/1",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Albany County (SWIS 010100)",
+            "Erie County (SWIS 140200)"
+          ],
+          "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution.",
+          "evidenceFile": "research/subnational/US/NY.json"
+        },
+        {
+          "code": "OH",
+          "name": "Ohio",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Ohio Statewide Parcels Public View",
+          "endpoint": "https://services2.arcgis.com/MlJ0G8iWUyC7jAmu/arcgis/rest/services/OhioStatewidePacels_full_view/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Franklin County",
+            "Cuyahoga County"
+          ],
+          "reuseStatus": "Public; licence not read.",
+          "evidenceFile": "research/subnational/US/OH.json"
+        },
+        {
+          "code": "OK",
+          "name": "Oklahoma",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "OK County Assessor Parcels (Oklahoma County)",
+          "endpoint": "https://services3.arcgis.com/MUsqg3LXXXYe8gDP/ArcGIS/rest/services/OK_County_Assessor_Parcels/FeatureServer/1",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Oklahoma County"
+          ],
+          "reuseStatus": "Statewide layer is view-only; county layer terms not read.",
+          "evidenceFile": "research/subnational/US/OK.json"
+        },
+        {
+          "code": "OR",
+          "name": "Oregon",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Lane County Parcels (AddressParcel MapServer layer 2)",
+          "endpoint": "https://lcmaps.lanecounty.org/arcgis/rest/services/LaneCountyMaps/AddressParcel/MapServer/2",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Lane County"
+          ],
+          "reuseStatus": "Not read.",
+          "evidenceFile": "research/subnational/US/OR.json"
+        },
+        {
+          "code": "PA",
+          "name": "Pennsylvania",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "PA Parcels (PA DEP, 'partial dataset for WorldView and PracticeKeeper')",
+          "endpoint": "https://gis.dep.pa.gov/depgisprd/rest/services/Parcels/PA_Parcels/MapServer/0",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Philadelphia County",
+            "Allegheny County",
+            "Centre County"
+          ],
+          "reuseStatus": "Not read.",
+          "evidenceFile": "research/subnational/US/PA.json"
+        },
+        {
+          "code": "RI",
+          "name": "Rhode Island",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "RIDEM Tax Parcels (Assessors Tax Parcels)",
+          "endpoint": "https://risegis.ri.gov/hosting/rest/services/RIDEM/Tax_Parcels/MapServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Providence",
+            "Newport"
+          ],
+          "reuseStatus": "Not read.",
+          "evidenceFile": "research/subnational/US/RI.json"
+        },
+        {
+          "code": "SC",
+          "name": "South Carolina",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Charleston County ProVal/Parcels",
+          "endpoint": "https://gisccapps.charlestoncounty.org/arcgis/rest/services/ProVal/Parcels/MapServer/0",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Charleston County"
+          ],
+          "reuseStatus": "Not read.",
+          "evidenceFile": "research/subnational/US/SC.json"
+        },
+        {
+          "code": "SD",
+          "name": "South Dakota",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Minnehaha County Parcels (Sioux Falls); also Pennington County Parcels (Rapid City)",
+          "endpoint": "https://gis.minnehahacounty.gov/minnemap/rest/services/Parcels/MapServer/0",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Minnehaha County",
+            "Pennington County"
+          ],
+          "reuseStatus": "Not read.",
+          "evidenceFile": "research/subnational/US/SD.json"
+        },
+        {
+          "code": "TN",
+          "name": "Tennessee",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Parcels_OG (parcel boundary for use with oil and gas wells)",
+          "endpoint": "https://tdeconline.tn.gov/arcgis/rest/services/Parcels_OG/MapServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Davidson County",
+            "Shelby County"
+          ],
+          "reuseStatus": "Terms not read on page.",
+          "evidenceFile": "research/subnational/US/TN.json"
+        },
+        {
+          "code": "TX",
+          "name": "Texas",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "StratMap Land Parcels 48 Most Recent",
+          "endpoint": "https://feature.geographic.texas.gov/arcgis/rest/services/Parcels/stratmap_land_parcels_48_most_recent/MapServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Travis County",
+            "Dallas County"
+          ],
+          "reuseStatus": "Not read.",
+          "evidenceFile": "research/subnational/US/TX.json"
+        },
+        {
+          "code": "UT",
+          "name": "Utah",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Utah Geospatial Resource Center (AGRC) statewide parcels, ArcGIS Online feature service",
+          "endpoint": "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahStatewideParcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Salt Lake County",
+            "Washington County"
+          ],
+          "reuseStatus": "No licence text in layer metadata; not read elsewhere. Unconfirmed.",
+          "evidenceFile": "research/subnational/US/UT.json"
+        },
+        {
+          "code": "VA",
+          "name": "Virginia",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Virginia Geographic Information Network (VGIN), VA Emergency Management; statewide Virginia Parcels",
+          "endpoint": "https://vginmaps.vdem.virginia.gov/arcgis/rest/services/VA_Base_Layers/VA_Parcels/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Richmond City",
+            "Fairfax City"
+          ],
+          "reuseStatus": "Description disclaimer only (cartographic use); no licence text read. Copyright: VGIN.",
+          "evidenceFile": "research/subnational/US/VA.json"
+        },
+        {
+          "code": "VT",
+          "name": "Vermont",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Vermont Center for Geographic Information (VCGI) Statewide Property Parcel Mapping Program; ArcGIS Online feature service",
+          "endpoint": "https://services1.arcgis.com/BkFxaEFNwHqX3tAw/arcgis/rest/services/FS_VCGI_OPENDATA_Cadastral_VTPARCELS_poly_standardized_parcels_SP_v1/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Montpelier"
+          ],
+          "reuseStatus": "Copyright: Vermont municipalities. No licence text read; the layer also carries owner and address fields which were NOT requested.",
+          "evidenceFile": "research/subnational/US/VT.json"
+        },
+        {
+          "code": "WA",
+          "name": "Washington",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Washington Technology Solutions (WaTech) Washington State Parcels Project (Geospatial Portal); layer Parcels_2026",
+          "endpoint": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "King County",
+            "Spokane County"
+          ],
+          "reuseStatus": "Copyright text: WaTech, Washington State Counties. No licence text read; the layer includes owner/taxpayer attributes (not requested).",
+          "evidenceFile": "research/subnational/US/WA.json"
+        },
+        {
+          "code": "WI",
+          "name": "Wisconsin",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Wisconsin State Cartographer's Office / Wisconsin Land Information Program (WLIP, Dept of Administration) Statewide Parcel Map Database V12; layer V1200_WisconsinParcels_2026",
+          "endpoint": "https://services3.arcgis.com/n6uYoouQZW75n5WI/arcgis/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Dane County",
+            "Milwaukee County"
+          ],
+          "reuseStatus": "Item states data free for public consumption as of 2026-06-30; full terms not read. Layer carries owner/address fields (not requested).",
+          "evidenceFile": "research/subnational/US/WI.json"
+        },
+        {
+          "code": "WV",
+          "name": "West Virginia",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "WV GIS Technical Center (WVU) statewide parcels, ArcGIS Server MapServer",
+          "endpoint": "https://services.wvgis.wvu.edu/arcgis/rest/services/Planning_Cadastre/WV_Parcels/MapServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Kanawha County",
+            "Monongalia County"
+          ],
+          "reuseStatus": "As-is public service disclaimer; layer also carries owner and address fields (not requested). No further terms read.",
+          "evidenceFile": "research/subnational/US/WV.json"
+        },
+        {
+          "code": "WY",
+          "name": "Wyoming",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Laramie County GIS (Cheyenne), Assessor Parcels layer",
+          "endpoint": "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/MapServer/2",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Laramie County"
+          ],
+          "reuseStatus": "No licence text in service metadata. Layer carries owner and address fields (not requested).",
+          "evidenceFile": "research/subnational/US/WY.json"
+        }
+      ]
+    },
+    {
+      "countryCode": "CA",
+      "country": "Canada",
+      "regionsTotal": 13,
+      "regionWide": 7,
+      "partial": 5,
+      "credentialed": 0,
+      "viewerOnly": 0,
+      "unavailable": 0,
+      "none": 1,
+      "regions": [
+        {
+          "code": "AB",
+          "name": "Alberta",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "City of Calgary Parcel with Roll 2025",
+          "endpoint": "https://services1.arcgis.com/AVP60cs0Q9PEA8rH/arcgis/rest/services/Parcel_with_Roll_2025/FeatureServer/0",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "City of Calgary"
+          ],
+          "reuseStatus": "Not verified; check Open Calgary / City of Calgary Open Data licence before reuse.",
+          "evidenceFile": "research/subnational/CA/AB.json"
+        },
+        {
+          "code": "BC",
+          "name": "British Columbia",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "ParcelMap BC Parcel Fabric",
+          "endpoint": "https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Vancouver"
+          ],
+          "reuseStatus": "Open Government Licence - BC (not read here).",
+          "evidenceFile": "research/subnational/CA/BC.json"
+        },
+        {
+          "code": "MB",
+          "name": "Manitoba",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "City of Winnipeg Assessment Parcels",
+          "endpoint": "https://data.winnipeg.ca/resource/d4mq-wa44.geojson",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "City of Winnipeg"
+          ],
+          "reuseStatus": "Canada OGL per Socrata metadata; not read.",
+          "evidenceFile": "research/subnational/CA/MB.json"
+        },
+        {
+          "code": "NB",
+          "name": "New Brunswick",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "GeoNB SNB Parcels (Land Registry parcels)",
+          "endpoint": "https://geonb.snb.ca/arcgis/rest/services/GeoNB_SNB_Parcels/MapServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Fredericton",
+            "Moncton"
+          ],
+          "reuseStatus": "GeoNB open data; terms not read.",
+          "evidenceFile": "research/subnational/CA/NB.json"
+        },
+        {
+          "code": "NL",
+          "name": "Newfoundland and Labrador",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/CA/NL.json"
+        },
+        {
+          "code": "NS",
+          "name": "Nova Scotia",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "NSPRD.Property (Nova Scotia Property Records Database parcels)",
+          "endpoint": "https://nsgiwa2.novascotia.ca/arcgis/rest/services/PLAN/PLAN_NSPRD_WM84/MapServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Halifax",
+            "Sydney (CBRM)"
+          ],
+          "reuseStatus": "Not verified.",
+          "evidenceFile": "research/subnational/CA/NS.json"
+        },
+        {
+          "code": "NT",
+          "name": "Northwest Territories",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Canada Lands Parcel Mapping (Canada Lands Digital Cadastral Data, aggregated nightly)",
+          "endpoint": "https://services7.arcgis.com/hFo7GO2CrHDM1QVm/arcgis/rest/services/ParcelTime/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Yellowknife"
+          ],
+          "reuseStatus": "Not verified.",
+          "evidenceFile": "research/subnational/CA/NT.json"
+        },
+        {
+          "code": "NU",
+          "name": "Nunavut",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Canada Lands Parcel Mapping (Canada Lands Digital Cadastral Data, aggregated nightly)",
+          "endpoint": "https://services7.arcgis.com/hFo7GO2CrHDM1QVm/arcgis/rest/services/ParcelTime/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Iqaluit"
+          ],
+          "reuseStatus": "Not verified.",
+          "evidenceFile": "research/subnational/CA/NU.json"
+        },
+        {
+          "code": "ON",
+          "name": "Ontario",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "City of Toronto Property Boundary (Municipal Parcel Fabric)",
+          "endpoint": "https://gis.toronto.ca/arcgis/rest/services/cot_geospatial27/FeatureServer/36",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "City of Toronto"
+          ],
+          "reuseStatus": "Toronto: unspecified. Ontario Parcel: licensed/restricted (not read).",
+          "evidenceFile": "research/subnational/CA/ON.json"
+        },
+        {
+          "code": "PE",
+          "name": "Prince Edward Island",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "Summerside Property Data (Simple)",
+          "endpoint": "https://services.arcgis.com/saEl5YeiAcYEyKvA/arcgis/rest/services/Property_Data_Simple/FeatureServer/0",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Summerside"
+          ],
+          "reuseStatus": "Not verified.",
+          "evidenceFile": "research/subnational/CA/PE.json"
+        },
+        {
+          "code": "QC",
+          "name": "Quebec",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "cadastre_bd_allegee: GO01_Polygones_Lots (lots du cadastre renove, Registre public Cadastre Quebec, version 9 August 2026)",
+          "endpoint": "https://services3.arcgis.com/0lL78GhXbg1Po7WO/arcgis/rest/services/cadastre_bd_allegee/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Montreal",
+            "Quebec City",
+            "Sherbrooke"
+          ],
+          "reuseStatus": "Indicative-only warning; check Quebec open licence before reuse.",
+          "evidenceFile": "research/subnational/CA/QC.json"
+        },
+        {
+          "code": "SK",
+          "name": "Saskatchewan",
+          "status": "verified_partial_region",
+          "bucket": "partial",
+          "sourceName": "City of Saskatoon Parcel (Open Data)",
+          "endpoint": "https://gisext.saskatoon.ca/arcgisod/rest/services/OD/LandSurface/MapServer/1",
+          "regionWideClaimed": false,
+          "subregionsVerified": [
+            "Saskatoon"
+          ],
+          "reuseStatus": "Not verified.",
+          "evidenceFile": "research/subnational/CA/SK.json"
+        },
+        {
+          "code": "YT",
+          "name": "Yukon",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "GeoYukon Land Tenure: Land Parcels Polygon - Surveyed",
+          "endpoint": "https://mapservices.gov.yk.ca/arcgis/rest/services/GeoYukon/GY_LandTenure/MapServer/27",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Whitehorse"
+          ],
+          "reuseStatus": "Not verified.",
+          "evidenceFile": "research/subnational/CA/YT.json"
+        }
+      ]
+    },
+    {
+      "countryCode": "AU",
+      "country": "Australia",
+      "regionsTotal": 8,
+      "regionWide": 7,
+      "partial": 0,
+      "credentialed": 0,
+      "viewerOnly": 0,
+      "unavailable": 0,
+      "none": 1,
+      "regions": [
+        {
+          "code": "ACT",
+          "name": "Australian Capital Territory",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "ACTGOV_BLOCKS FeatureServer layer 0 (ACT Government blocks)",
+          "endpoint": "https://services1.arcgis.com/E5n4f1VY84i0xSjy/ArcGIS/rest/services/ACTGOV_BLOCKS/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Canberra Civic",
+            "Tuggeranong"
+          ],
+          "reuseStatus": "licenseInfo empty; copyrightText \"Australian Capital Territory\"; terms not reviewed. data.actmapi.act.gov.au host answered proxy 502 and was not used.",
+          "evidenceFile": "research/subnational/AU/ACT.json"
+        },
+        {
+          "code": "NSW",
+          "name": "New South Wales",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "NSW Cadastre (Lot layer 9), SIX Maps public MapServer",
+          "endpoint": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Sydney (Lidcombe area)",
+            "Dubbo"
+          ],
+          "reuseStatus": "NSW Spatial Services terms not read; unreviewed.",
+          "evidenceFile": "research/subnational/AU/NSW.json"
+        },
+        {
+          "code": "NT",
+          "name": "Northern Territory",
+          "status": "no_open_service_found",
+          "bucket": "none",
+          "sourceName": null,
+          "endpoint": null,
+          "regionWideClaimed": false,
+          "subregionsVerified": [],
+          "reuseStatus": "n/a",
+          "evidenceFile": "research/subnational/AU/NT.json"
+        },
+        {
+          "code": "QLD",
+          "name": "Queensland",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Queensland DCDB cadastral parcels, LandParcelPropertyFramework MapServer layer 4",
+          "endpoint": "https://spatial-gis.information.qld.gov.au/arcgis/rest/services/PlanningCadastre/LandParcelPropertyFramework/MapServer/4",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Brisbane",
+            "Cairns"
+          ],
+          "reuseStatus": "Terms not read; unreviewed.",
+          "evidenceFile": "research/subnational/AU/QLD.json"
+        },
+        {
+          "code": "SA",
+          "name": "South Australia",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Parcel Cadastre (layer 124), Location SA Viewer MapServer LocationSAViewerV34",
+          "endpoint": "https://lsa4.geohub.sa.gov.au/server/rest/services/LSA/LocationSAViewerV34/MapServer/124",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Adelaide",
+            "Mount Gambier"
+          ],
+          "reuseStatus": "Land Services SA states SA cadastral data is not classified open data (request-based, minimum fee for non-government users); this viewer service is publicly reachable but bulk reuse terms unreviewed and likely restricted.",
+          "evidenceFile": "research/subnational/AU/SA.json"
+        },
+        {
+          "code": "TAS",
+          "name": "Tasmania",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "LIST Cadastral Parcels, Public/CadastreParcels MapServer layer 0",
+          "endpoint": "https://services.thelist.tas.gov.au/arcgis/rest/services/Public/CadastreParcels/MapServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Hobart",
+            "Launceston"
+          ],
+          "reuseStatus": "Service description points to LIST Web Services Terms and Conditions (listdata.thelist.tas.gov.au/public/LISTWebServicesTermsConditions.pdf); PDF not read.",
+          "evidenceFile": "research/subnational/AU/TAS.json"
+        },
+        {
+          "code": "VIC",
+          "name": "Victoria",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Vicmap Property - Property Map Polygons, FeatureServer layer 0",
+          "endpoint": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/arcgis/rest/services/Vicmap_Property/FeatureServer/0",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Melbourne",
+            "Mildura"
+          ],
+          "reuseStatus": "Item licenseInfo (per research/melbourne.json) says Vicmap data is provided under a licence; terms not independently reviewed here.",
+          "evidenceFile": "research/subnational/AU/VIC.json"
+        },
+        {
+          "code": "WA",
+          "name": "Western Australia",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Cadastre (No Attributes) (LGATE-001), SLIP Property_and_Planning MapServer layer 2",
+          "endpoint": "https://services.slip.wa.gov.au/public/rest/services/SLIP_Public_Services/Property_and_Planning/MapServer/2",
+          "regionWideClaimed": true,
+          "subregionsVerified": [
+            "Perth",
+            "Geraldton"
+          ],
+          "reuseStatus": "Layer description says informational purposes; licence text not fully read.",
+          "evidenceFile": "research/subnational/AU/WA.json"
+        }
+      ]
+    },
+    {
+      "countryCode": "DE",
+      "country": "Germany",
+      "regionsTotal": 16,
+      "regionWide": 14,
+      "partial": 0,
+      "credentialed": 1,
+      "viewerOnly": 0,
+      "unavailable": 1,
+      "none": 0,
+      "regions": [
+        {
+          "code": "BB",
+          "name": "Brandenburg",
+          "status": "verified",
+          "bucket": "regionWide",
+          "sourceName": "cp:CadastralParcel",
+          "endpoint": "https://inspire.brandenburg.de/services/cp_alkis_wfs",
+          "subregionsVerified": [
+            "Potsdam",
+            "Cottbus"
+          ],
+          "reuseStatus": "dl-de/by-2.0 (read in capabilities)",
+          "evidenceFile": "research/europe/DE.json"
+        },
+        {
+          "code": "BE",
+          "name": "Berlin",
+          "status": "verified per research/berlin.json (previous pass); not re-tested: TLS handshake failed from this network (HTTP 000) on https://gdi.berlin.de/services/wfs/alkis_flurstuecke, not bypassed",
+          "bucket": "unavailable",
+          "sourceName": null,
+          "endpoint": "https://gdi.berlin.de/services/wfs/alkis_flurstuecke",
+          "subregionsVerified": [],
+          "reuseStatus": null,
+          "evidenceFile": "research/europe/DE.json"
+        },
+        {
+          "code": "BW",
+          "name": "Baden-Wuerttemberg",
+          "status": "verified",
+          "bucket": "regionWide",
+          "sourceName": "nora:v_al_flurstueck",
+          "endpoint": "https://owsproxy.lgl-bw.de/owsproxy/wfs/WFS_LGL-BW_ALKIS",
+          "subregionsVerified": [
+            "Stuttgart",
+            "Freiburg"
+          ],
+          "reuseStatus": "free under Open Data licence dl-de/by-2.0 (capabilities)",
+          "evidenceFile": "research/europe/DE.json"
+        },
+        {
+          "code": "BY",
+          "name": "Bayern",
+          "status": "credentialed",
+          "bucket": "credentialed",
+          "sourceName": null,
+          "endpoint": "https://geoservices.bayern.de/inspire-ows/v1/alkis/cp/dls/wfs and https://geoservices.bayern.de/wfs/v1/ogc_alkis_ave.cgi",
+          "subregionsVerified": [],
+          "reuseStatus": null,
+          "evidenceFile": "research/europe/DE.json"
+        },
+        {
+          "code": "HB",
+          "name": "Bremen",
+          "status": "verified",
+          "bucket": "regionWide",
+          "sourceName": "app:flurstuecke",
+          "endpoint": "https://geodienste.bremen.de/wfs_hduk2958loah3976niun",
+          "subregionsVerified": [
+            "Bremen",
+            "Bremerhaven"
+          ],
+          "reuseStatus": "CC BY 4.0 (capabilities)",
+          "evidenceFile": "research/europe/DE.json"
+        },
+        {
+          "code": "HE",
+          "name": "Hessen",
+          "status": "verified",
+          "bucket": "regionWide",
+          "sourceName": "ave:Flurstueck",
+          "endpoint": "https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/vereinf/wfs",
+          "subregionsVerified": [
+            "Frankfurt",
+            "Kassel"
+          ],
+          "reuseStatus": "free of charge, unrestricted use incl. commercial (capabilities text, HVGG s.24)",
+          "evidenceFile": "research/europe/DE.json"
+        },
+        {
+          "code": "HH",
+          "name": "Hamburg",
+          "status": "verified",
+          "bucket": "regionWide",
+          "sourceName": "cp:CadastralParcel",
+          "endpoint": "https://geodienste.hamburg.de/HH_WFS_INSPIRE_Flurstuecke",
+          "subregionsVerified": [
+            "Hamburg-Mitte",
+            "Hamburg-Harburg"
+          ],
+          "reuseStatus": "dl-de/by-2.0 (capabilities)",
+          "evidenceFile": "research/europe/DE.json"
+        },
+        {
+          "code": "MV",
+          "name": "Mecklenburg-Vorpommern",
+          "status": "verified",
+          "bucket": "regionWide",
+          "sourceName": "ave:Flurstueck",
+          "endpoint": "https://www.geodaten-mv.de/dienste/alkis_wfs_einfach",
+          "subregionsVerified": [
+            "Rostock",
+            "Schwerin"
+          ],
+          "reuseStatus": "no conditions in Fees; attribution required (capabilities, full text not read)",
+          "evidenceFile": "research/europe/DE.json"
+        },
+        {
+          "code": "NI",
+          "name": "Niedersachsen",
+          "status": "verified",
+          "bucket": "regionWide",
+          "sourceName": "ave:Flurstueck",
+          "endpoint": "https://opendata.lgln.niedersachsen.de/doorman/noauth/alkis_wfs_einfach",
+          "subregionsVerified": [
+            "Hannover",
+            "Oldenburg"
+          ],
+          "reuseStatus": "CC BY 4.0 (capabilities)",
+          "evidenceFile": "research/europe/DE.json"
+        },
+        {
+          "code": "NW",
+          "name": "Nordrhein-Westfalen",
+          "status": "verified (previous pass, not re-tested)",
+          "bucket": "regionWide",
+          "sourceName": null,
+          "endpoint": "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht",
+          "subregionsVerified": [
+            "Cologne"
+          ],
+          "reuseStatus": null,
+          "evidenceFile": "research/europe/DE.json"
+        },
+        {
+          "code": "RP",
+          "name": "Rheinland-Pfalz",
+          "status": "verified",
+          "bucket": "regionWide",
+          "sourceName": "ave:Flurstueck (OGC API Features, f=json)",
+          "endpoint": "https://www.geoportal.rlp.de/spatial-objects/519/collections/ave:Flurstueck/items",
+          "subregionsVerified": [
+            "Mainz",
+            "Trier"
+          ],
+          "reuseStatus": "dl-de/by-2.0 (collection metadata)",
+          "evidenceFile": "research/europe/DE.json"
+        },
+        {
+          "code": "SH",
+          "name": "Schleswig-Holstein",
+          "status": "verified",
+          "bucket": "regionWide",
+          "sourceName": "cp:CadastralParcel",
+          "endpoint": "https://service.gdi-sh.de/SH_INSPIREDOWNLOAD_AI_CP_ALKIS",
+          "subregionsVerified": [
+            "Kiel",
+            "Luebeck"
+          ],
+          "reuseStatus": "INSPIRE download service; sibling OpenGBD ALKIS-vereinfacht service declares CC BY 4.0 (capabilities of that sibling)",
+          "evidenceFile": "research/europe/DE.json"
+        },
+        {
+          "code": "SL",
+          "name": "Saarland",
+          "status": "verified",
+          "bucket": "regionWide",
+          "sourceName": "ALKIS_ALKIS_WFS_ohne_Eig:Flurstueck (OGC API Features, f=json)",
+          "endpoint": "https://geoportal.saarland.de/spatial-objects/414/collections/ALKIS_ALKIS_WFS_ohne_Eig:Flurstueck/items",
+          "subregionsVerified": [
+            "Saarbruecken",
+            "Merzig"
+          ],
+          "reuseStatus": "not read",
+          "evidenceFile": "research/europe/DE.json"
+        },
+        {
+          "code": "SN",
+          "name": "Sachsen",
+          "status": "verified",
+          "bucket": "regionWide",
+          "sourceName": "ave:Flurstueck",
+          "endpoint": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs",
+          "subregionsVerified": [
+            "Dresden",
+            "Leipzig"
+          ],
+          "reuseStatus": "free of charge with source GeoSN (capabilities)",
+          "evidenceFile": "research/europe/DE.json"
+        },
+        {
+          "code": "ST",
+          "name": "Sachsen-Anhalt",
+          "status": "verified",
+          "bucket": "regionWide",
+          "sourceName": "ave:Flurstueck",
+          "endpoint": "https://www.geodatenportal.sachsen-anhalt.de/wss/service/ST_LVermGeo_ALKIS_WFS_OpenData/guest",
+          "subregionsVerified": [
+            "Magdeburg",
+            "Halle"
+          ],
+          "reuseStatus": "not determined (capabilities cite Kostenverordnung; OpenData guest endpoint answered without credentials)",
+          "evidenceFile": "research/europe/DE.json"
+        },
+        {
+          "code": "TH",
+          "name": "Thueringen",
+          "status": "verified",
+          "bucket": "regionWide",
+          "sourceName": "ave:Flurstueck",
+          "endpoint": "https://www.geoproxy.geoportal-th.de/geoproxy/services/adv_alkis_wfs",
+          "subregionsVerified": [
+            "Erfurt",
+            "Jena"
+          ],
+          "reuseStatus": "CC BY 4.0, (c) GDI-Th (capabilities)",
+          "evidenceFile": "research/europe/DE.json"
+        }
+      ],
+      "note": "No national service; ALKIS is run by each Land. Berlin needs a fetch from a network that trusts its certificate chain."
+    },
+    {
+      "countryCode": "CH",
+      "country": "Switzerland",
+      "regionsTotal": 26,
+      "regionWide": 5,
+      "partial": 15,
+      "credentialed": 6,
+      "viewerOnly": 0,
+      "unavailable": 0,
+      "none": 0,
+      "regions": [
+        {
+          "code": "AG",
+          "name": "AG",
+          "status": "open_per_service_list_not_sampled",
+          "bucket": "partial",
+          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [],
+          "reuseStatus": "open per geodienste.ch services.json",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "AI",
+          "name": "AI",
+          "status": "open_per_service_list_not_sampled",
+          "bucket": "partial",
+          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [],
+          "reuseStatus": "open per geodienste.ch services.json",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "AR",
+          "name": "AR",
+          "status": "open_per_service_list_not_sampled",
+          "bucket": "partial",
+          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [],
+          "reuseStatus": "open per geodienste.ch services.json",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "BE",
+          "name": "BE",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [
+            "BE"
+          ],
+          "reuseStatus": "open per geodienste.ch services.json",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "BL",
+          "name": "BL",
+          "status": "open_per_service_list_not_sampled",
+          "bucket": "partial",
+          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [],
+          "reuseStatus": "open per geodienste.ch services.json",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "BS",
+          "name": "BS",
+          "status": "open_per_service_list_not_sampled",
+          "bucket": "partial",
+          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [],
+          "reuseStatus": "open per geodienste.ch services.json",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "FR",
+          "name": "FR",
+          "status": "open_per_service_list_not_sampled",
+          "bucket": "partial",
+          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [],
+          "reuseStatus": "open per geodienste.ch services.json",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "GE",
+          "name": "GE",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [
+            "GE"
+          ],
+          "reuseStatus": "open per geodienste.ch services.json",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "GL",
+          "name": "GL",
+          "status": "open_per_service_list_not_sampled",
+          "bucket": "partial",
+          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [],
+          "reuseStatus": "open per geodienste.ch services.json",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "GR",
+          "name": "GR",
+          "status": "open_per_service_list_not_sampled",
+          "bucket": "partial",
+          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [],
+          "reuseStatus": "open per geodienste.ch services.json",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "JU",
+          "name": "JU",
+          "status": "credentialed: free up to 10 ha, contract and fee above",
+          "bucket": "credentialed",
+          "sourceName": "geodienste.ch av_0 WFS",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [],
+          "reuseStatus": "free up to 10 ha, contract and fee above",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "LU",
+          "name": "LU",
+          "status": "credentialed: area-based fees, contract",
+          "bucket": "credentialed",
+          "sourceName": "geodienste.ch av_0 WFS",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [],
+          "reuseStatus": "area-based fees, contract",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "NE",
+          "name": "NE",
+          "status": "credentialed: contract; cantonal coverage flag false",
+          "bucket": "credentialed",
+          "sourceName": "geodienste.ch av_0 WFS",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [],
+          "reuseStatus": "contract; cantonal coverage flag false",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "NW",
+          "name": "NW",
+          "status": "credentialed: contract",
+          "bucket": "credentialed",
+          "sourceName": "geodienste.ch av_0 WFS",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [],
+          "reuseStatus": "contract",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "OW",
+          "name": "OW",
+          "status": "credentialed: release required",
+          "bucket": "credentialed",
+          "sourceName": "geodienste.ch av_0 WFS",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [],
+          "reuseStatus": "release required",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "SG",
+          "name": "SG",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [
+            "SG"
+          ],
+          "reuseStatus": "open per geodienste.ch services.json",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "SH",
+          "name": "SH",
+          "status": "open_per_service_list_not_sampled",
+          "bucket": "partial",
+          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [],
+          "reuseStatus": "open per geodienste.ch services.json",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "SO",
+          "name": "SO",
+          "status": "open_per_service_list_not_sampled",
+          "bucket": "partial",
+          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [],
+          "reuseStatus": "open per geodienste.ch services.json",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "SZ",
+          "name": "SZ",
+          "status": "open_per_service_list_not_sampled",
+          "bucket": "partial",
+          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [],
+          "reuseStatus": "open per geodienste.ch services.json",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "TG",
+          "name": "TG",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [
+            "TG"
+          ],
+          "reuseStatus": "open per geodienste.ch services.json",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "TI",
+          "name": "TI",
+          "status": "open_per_service_list_not_sampled",
+          "bucket": "partial",
+          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [],
+          "reuseStatus": "open per geodienste.ch services.json",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "UR",
+          "name": "UR",
+          "status": "open_per_service_list_not_sampled",
+          "bucket": "partial",
+          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [],
+          "reuseStatus": "open per geodienste.ch services.json",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "VD",
+          "name": "VD",
+          "status": "credentialed: release required",
+          "bucket": "credentialed",
+          "sourceName": "geodienste.ch av_0 WFS",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [],
+          "reuseStatus": "release required",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "VS",
+          "name": "VS",
+          "status": "open_per_service_list_not_sampled",
+          "bucket": "partial",
+          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [],
+          "reuseStatus": "open per geodienste.ch services.json",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "ZG",
+          "name": "ZG",
+          "status": "open_per_service_list_not_sampled",
+          "bucket": "partial",
+          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [],
+          "reuseStatus": "open per geodienste.ch services.json",
+          "evidenceFile": "research/europe/CH.json"
+        },
+        {
+          "code": "ZH",
+          "name": "ZH",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "geodienste.ch av_0 WFS (ms:RESF)",
+          "endpoint": "https://geodienste.ch/db/av_0/deu",
+          "subregionsVerified": [
+            "ZH"
+          ],
+          "reuseStatus": "open per geodienste.ch services.json",
+          "evidenceFile": "research/europe/CH.json"
+        }
+      ],
+      "note": "One national WFS (geodienste.ch) aggregates cantonal surveys; 20 cantons open, 6 gated. Unsampled open cantons are listed as partial until queried."
+    },
+    {
+      "countryCode": "BE",
+      "country": "Belgium",
+      "regionsTotal": 3,
+      "regionWide": 3,
+      "partial": 0,
+      "credentialed": 0,
+      "viewerOnly": 0,
+      "unavailable": 0,
+      "none": 0,
+      "regions": [
+        {
+          "code": "BRU",
+          "name": "Brussels",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "FPS Finance INSPIRE CP MapServer",
+          "subregionsVerified": [
+            "Brussels"
+          ],
+          "evidenceFile": "research/europe/BE.json"
+        },
+        {
+          "code": "VLG",
+          "name": "Flanders",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "Flanders GRB WFS (GRB:ADP) and FPS Finance INSPIRE CP",
+          "subregionsVerified": [
+            "Antwerp"
+          ],
+          "evidenceFile": "research/countries/BE.json"
+        },
+        {
+          "code": "WAL",
+          "name": "Wallonia",
+          "status": "verified_region_wide",
+          "bucket": "regionWide",
+          "sourceName": "FPS Finance INSPIRE CP MapServer",
+          "subregionsVerified": [
+            "Liege"
+          ],
+          "evidenceFile": "research/europe/BE.json"
+        }
+      ],
+      "note": "Federal INSPIRE service covers all three regions; Flanders also has its own GRB WFS."
     }
   ]
 }

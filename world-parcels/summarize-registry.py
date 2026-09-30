@@ -31,5 +31,23 @@ out += ['## Retry pass (2026-09-30)', '',
         'Every non-verified country and every unavailable or candidate city was retried with browser-like headers, a cookie jar and inspection of the official viewer\'s JavaScript (`research/retry/`).',
         f"- Countries where the official viewer's scripts or config were inspected (some yielded a source, most did not): {', '.join(viewer) or 'none'}.",
         f"- Still unavailable with a suspected geo-block or bot challenge (unconfirmed): {', '.join(geo) or 'none'}. Retry these from an in-country network.", '']
+eu = sorted(p['countryCode'] for p in r['countryProbes'] if p.get('europeFile') and p['status'] == 'national_online_cadastre_verified_sample')
+eu_no = sorted(f"{p['countryCode']} ({p['status']})" for p in r['countryProbes'] if p.get('europeFile') and p['status'] != 'national_online_cadastre_verified_sample')
+out += ['## Europe focus pass (2026-09-30)', '',
+        'Every European country not yet green was re-probed from the INSPIRE/national catalogues and the official viewer\'s code, two regions each (`research/europe/`).',
+        f"- Now passing the two-region test: {', '.join(eu)}.",
+        f"- Still not: {', '.join(eu_no)}.", '']
+out += ['## Federal countries by region (subnational tier)', '',
+        'For federations the unit of coverage is the state, province, canton or Land. `regionWide` = an open layer for the whole region verified by a bounded query; `partial` = only a county/city layer found (or, for Switzerland, an open canton not yet sampled); `gated` = credentialed or viewer-only.', '',
+        '| Country | Regions | Region-wide open | Partial | Gated | None / unavailable |', '| --- | ---: | ---: | ---: | ---: | ---: |']
+for e in r.get('subnationalCoverage', []):
+    out.append(f"| {e['country']} | {e['regionsTotal']} | {e['regionWide']} | {e['partial']} | {e['credentialed'] + e['viewerOnly']} | {e['none'] + e['unavailable']} |")
+out += ['']
+for e in r.get('subnationalCoverage', []):
+    rw = [x['code'] for x in e['regions'] if x['bucket'] == 'regionWide']
+    pa = [x['code'] for x in e['regions'] if x['bucket'] == 'partial']
+    rest = [f"{x['code']} ({x['bucket']})" for x in e['regions'] if x['bucket'] not in ('regionWide', 'partial')]
+    out += [f"- **{e['country']}**: region-wide {', '.join(rw) or 'none'}; partial {', '.join(pa) or 'none'}" + (f"; other {', '.join(rest)}" if rest else '') + '.']
+out += ['']
 open('SUMMARY.md', 'w').write('\n'.join(out))
 print(cnt.total(), 'cities summarized')

@@ -244,6 +244,153 @@ for f in sorted(glob.glob('research/retry/countries/*.json')):
         p['mergeNote'] = note
 print('retry applied:', changed_cities, 'city status changes,', changed_countries, 'country status changes')
 
+
+# ---- Europe focus pass (2026-09-30): research/europe --------------------------
+EUROPE_OVERRIDES = {
+    # GB: Scotland (RoS view service) and England (HMLR bulk zips) are two different sources/schemas,
+    # so the single-service two-region test is not met; nationwideVerified stays false.
+    'GB': ('partial_or_unofficial_sample', 'Scotland and England verified from two different sources and schemas; no single national service; NI refused.'),
+    # PT: four regions from one mainland service pass the two-region test; islands absent.
+    'PT': ('national_online_cadastre_verified_sample', 'Mainland OGC API only: Porto, Coimbra and Braganca boxes returned 0; Azores and Madeira are separate, unreached services.'),
+    'GR': (None, 'Bulk regional shapefile download read by HTTP Range, no bbox query; Operating Cadastre areas only.'),
+    'SK': (None, 'Bulk INSPIRE GML zips read by HTTP Range; the WFS/ATOM endpoints reset from here.'),
+    'HU': ('partial_or_unofficial_sample', 'The Lechner INSPIRE WFS is a Mesterszallas sampling area (about 7x10 km), not a national layer.'),
+    'AL': (None, 'WAF flaps; Tirana sample comes from the retry pass, Shkoder from the Europe pass.'),
+}
+NAMES = {'AD': 'Andorra', 'FO': 'Faroe Islands', 'GG': 'Guernsey', 'IM': 'Isle of Man', 'LI': 'Liechtenstein', 'SM': 'San Marino', 'VA': 'Vatican City'}
+for f in sorted(glob.glob('research/europe/*.json')):
+    if any(x in f for x in SKIP):
+        continue
+    d = load(f)
+    if not isinstance(d, dict) or 'newStatus' not in d:
+        continue
+    code = d['countryCode']
+    p = by_code.get(code)
+    if not p:
+        p = {'countryCode': code, 'country': d.get('country') or NAMES.get(code, code), 'reportedStatus': 'not_probed',
+             'status': 'not_probed', 'accessModel': 'unknown', 'checkedAt': d.get('checkedAt'), 'evidenceFile': f}
+        probes.append(p); by_code[code] = p
+    status, note = d['newStatus'], None
+    if status == 'national_online_cadastre_verified_sample':
+        nat = (d.get('coverageAssessment') or {}).get('nationwideVerified')
+        if not usable_sample(d) or nat is not True:
+            status, note = 'partial_or_unofficial_sample', 'Europe-pass sample did not establish two regions from one service.'
+    if code in EUROPE_OVERRIDES:
+        st_, note = EUROPE_OVERRIDES[code]
+        status = st_ or status
+    p['previousStatus'] = p['status']
+    p['status'] = status
+    p['accessModel'] = d.get('accessModel') or p.get('accessModel', 'unknown')
+    p['europeFile'] = f
+    p['regionsSampled'] = d.get('regionsSampled') or []
+    if d.get('inspireRecordUrl'):
+        p['inspireRecordUrl'] = d['inspireRecordUrl']
+    if note:
+        p['mergeNote'] = note
+    elif 'mergeNote' in p and p['previousStatus'] != status:
+        del p['mergeNote']
+
+# ---- Subnational tier: federal countries by region ---------------------------------
+def region_bucket(status):
+    s = status.lower()
+    if s.startswith('verified_region_wide') or s.startswith('verified') and 'partial' not in s and 'previous' not in s or s == 'verified':
+        return 'regionWide'
+    if 'verified' in s:
+        return 'regionWide' if 'previous pass' in s or 'per research' in s else 'partial'
+    if 'credential' in s or 'paid' in s or 'contract' in s or 'release' in s:
+        return 'credentialed'
+    if 'viewer' in s:
+        return 'viewerOnly'
+    if 'unavailable' in s:
+        return 'unavailable'
+    return 'none'
+
+subnational = []
+def add_country(code, name, regions, note=None):
+    counts = collections.Counter(r['bucket'] for r in regions)
+    entry = {'countryCode': code, 'country': name, 'regionsTotal': len(regions),
+             'regionWide': counts['regionWide'], 'partial': counts['partial'], 'credentialed': counts['credentialed'],
+             'viewerOnly': counts['viewerOnly'], 'unavailable': counts['unavailable'], 'none': counts['none'],
+             'regions': sorted(regions, key=lambda r: r['code'])}
+    if note:
+        entry['note'] = note
+    subnational.append(entry)
+    p = by_code.get(code)
+    if p:
+        p['regionSummary'] = {k: entry[k] for k in ('regionsTotal', 'regionWide', 'partial', 'credentialed', 'viewerOnly', 'unavailable', 'none')}
+
+import collections
+for code, name in (('US', 'United States'), ('CA', 'Canada'), ('AU', 'Australia')):
+    regions = []
+    for f in sorted(glob.glob(f'research/subnational/{code}/*.json')):
+        if 'response' in f:
+            continue
+        d = load(f)
+        if not isinstance(d, dict) or 'regionCode' not in d:
+            continue
+        src = d.get('source') or {}
+        regions.append({'code': d['regionCode'], 'name': d['regionName'], 'status': d['status'], 'bucket': region_bucket(d['status']),
+                        'sourceName': src.get('name'), 'endpoint': src.get('endpoint'), 'regionWideClaimed': d.get('regionWideClaimed'),
+                        'subregionsVerified': d.get('subregionsVerified') or [], 'reuseStatus': d.get('reuseStatus'), 'evidenceFile': f})
+    add_country(code, name, regions)
+
+de = load('research/europe/DE.json')
+if de and de.get('laender'):
+    regions = []
+    for l in de['laender']:
+        st = l['status']
+        bucket = 'regionWide' if st.startswith('verified') else region_bucket(st)
+        if 'not re-tested' in st and 'TLS' in st:
+            bucket = 'unavailable'
+        regions.append({'code': l['code'], 'name': l['land'], 'status': st, 'bucket': bucket, 'sourceName': l.get('featureType'),
+                        'endpoint': l.get('endpoint'), 'subregionsVerified': l.get('regionsSampled') or [], 'reuseStatus': l.get('licenceNote'), 'evidenceFile': 'research/europe/DE.json'})
+    add_country('DE', 'Germany', regions, 'No national service; ALKIS is run by each Land. Berlin needs a fetch from a network that trusts its certificate chain.')
+
+ch = load('research/europe/CH.json')
+if ch and ch.get('cantonStatus'):
+    cs = ch['cantonStatus']
+    opened = [c.split(' ')[0] for c in cs.get('open_free_data_per_services.json', []) if not c.startswith('FL')]
+    sampled = set(cs.get('verified_open_by_wfs_sample', []))
+    gated = cs.get('release_or_contract_required', {})
+    regions = []
+    for c in opened:
+        regions.append({'code': c, 'name': c, 'status': 'verified_region_wide' if c in sampled else 'open_per_service_list_not_sampled',
+                        'bucket': 'regionWide' if c in sampled else 'partial', 'sourceName': 'geodienste.ch av_0 WFS (ms:RESF)',
+                        'endpoint': 'https://geodienste.ch/db/av_0/deu', 'subregionsVerified': [c] if c in sampled else [], 'reuseStatus': 'open per geodienste.ch services.json', 'evidenceFile': 'research/europe/CH.json'})
+    for c, why in gated.items():
+        regions.append({'code': c, 'name': c, 'status': 'credentialed: ' + why, 'bucket': 'credentialed', 'sourceName': 'geodienste.ch av_0 WFS', 'endpoint': 'https://geodienste.ch/db/av_0/deu', 'subregionsVerified': [], 'reuseStatus': why, 'evidenceFile': 'research/europe/CH.json'})
+    add_country('CH', 'Switzerland', regions, 'One national WFS (geodienste.ch) aggregates cantonal surveys; 20 cantons open, 6 gated. Unsampled open cantons are listed as partial until queried.')
+
+be = load('research/europe/BE.json')
+if be:
+    regions = [
+        {'code': 'BRU', 'name': 'Brussels', 'status': 'verified_region_wide', 'bucket': 'regionWide', 'sourceName': 'FPS Finance INSPIRE CP MapServer', 'subregionsVerified': ['Brussels'], 'evidenceFile': 'research/europe/BE.json'},
+        {'code': 'WAL', 'name': 'Wallonia', 'status': 'verified_region_wide', 'bucket': 'regionWide', 'sourceName': 'FPS Finance INSPIRE CP MapServer', 'subregionsVerified': ['Liege'], 'evidenceFile': 'research/europe/BE.json'},
+        {'code': 'VLG', 'name': 'Flanders', 'status': 'verified_region_wide', 'bucket': 'regionWide', 'sourceName': 'Flanders GRB WFS (GRB:ADP) and FPS Finance INSPIRE CP', 'subregionsVerified': ['Antwerp'], 'evidenceFile': 'research/countries/BE.json'},
+    ]
+    add_country('BE', 'Belgium', regions, 'Federal INSPIRE service covers all three regions; Flanders also has its own GRB WFS.')
+REG['subnationalCoverage'] = subnational
+
+# ---- Cities upgraded from subnational evidence ------------------------------------
+CITY_FROM_SUBNATIONAL = {'research/montreal.json': 'research/subnational/CA/QC.json'}
+for c in cities.values():
+    orig = c.get('previousResearchFile') or c['researchFile']
+    if orig in CITY_FROM_SUBNATIONAL and not c['sourceIds']:
+        f = CITY_FROM_SUBNATIONAL[orig]
+        d = load(f)
+        if d and usable_sample(d):
+            s_ = d['source']; sid = s_['sourceId']
+            c.setdefault('previousResearchFile', c['researchFile'])
+            c.update({'researchFile': f, 'parcelStatus': 'verified_sample_partial_coverage', 'sourceIds': [sid],
+                      'mergeNote': 'Verified through the Quebec province-wide lots layer (subnational pass); the city itself publishes only a bulk assessment file.'})
+            if sid not in sources:
+                sources[sid] = {'sourceId': sid, 'name': s_['name'], 'operator': s_.get('operator', 'unconfirmed'), 'countryCode': c['countryCode'],
+                                'scope': s_.get('scope', ''), 'endpoint': s_.get('endpoint', ''), 'method': s_.get('method', 'GET'),
+                                'responseFormat': s_.get('responseFormat', 'ArcGIS JSON'), 'crs': s_.get('crs', ''), 'verificationStatus': 'verified_nonempty_sample',
+                                'reuseStatus': d.get('reuseStatus', 'terms_unconfirmed'), 'verifiedCityIds': [], 'evidenceFile': f}
+            if c['cityId'] not in sources[sid]['verifiedCityIds']:
+                sources[sid]['verifiedCityIds'].append(c['cityId'])
+
 # Country coverage (green countries on the map): every probe that passed the two-region test.
 # Reviewed=False: nationwide claim, exclusions and licence are NOT reviewed (user chose this display rule on 2026-09-30).
 REG['countryCoverage'] = [

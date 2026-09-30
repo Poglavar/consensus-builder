@@ -1,0 +1,82 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "RO",
+ "country": "Romania",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "ANCPI (Agentia Nationala de Cadastru si Publicitate Imobiliara)",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: <per country, e.g. el-GR,el;q=0.9,en;q=0.8>; cookie jar on; Referer = viewer/portal origin",
+ "inspireRecordUrl": "https://data.europa.eu/api/hub/search/datasets/-b4c66413-3e17-4e33-a4dd-10f49950eb88- (download, ATOM) and -cce70e50-f66e-44af-8183-d01b8f1e0556- (view WMS); ids as listed on data.europa.eu, catalogue title 'INSPIRE Download Service - Cadastral Parcels Theme - Annex I'",
+ "portalsFound": [
+  {
+   "url": "http://geoportal.ancpi.ro/inspiredownload/rest/directories/arcgisforinspire/CP/CP_Download_MapServer/Main_ATOM_CP.xml",
+   "observation": "ATOM download service URL from the INSPIRE record; host geoportal.ancpi.ro does not resolve (DNS) from this network"
+  },
+  {
+   "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/exts/InspireView/service?SERVICE=WMS&REQUEST=GetCapabilities",
+   "observation": "WMS view service URL from the INSPIRE record; CONNECT 502"
+  },
+  {
+   "url": "https://www.ancpi.ro/",
+   "observation": "200; notice dated 20 Aug 2026: e-Terra reactivated; Geoportal, RTI, MyEterra and other platforms to be restarted in phases"
+  }
+ ],
+ "requests": [
+  {
+   "url": "http://geoportal.ancpi.ro/inspiredownload/.../Main_ATOM_CP.xml",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "could not resolve host"
+  },
+  {
+   "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/exts/InspireView/service?SERVICE=WMS&REQUEST=GetCapabilities",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "CONNECT tunnel 502"
+  },
+  {
+   "url": "https://geoportal.ancpi.ro/ , /inspireview/rest/services , /arcgis/rest/services , https://inspire.ancpi.ro/ , https://harta.ancpi.ro/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "CONNECT 502"
+  },
+  {
+   "url": "https://eterra.ancpi.ro/eterra/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "ANCPI restricted/maintenance page"
+  },
+  {
+   "url": "https://www.ancpi.ro/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "phased-restart notice"
+  },
+  {
+   "url": "https://data.gov.ro/api/3/action/package_search?q=cadastr",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "INSPIRE CP view (WMS) and ATOM download registered for Romania",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "regionsSampled": [],
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "remainingUncertainty": "Real service URLs now known from the INSPIRE records (ArcGIS-for-INSPIRE ATOM and view WMS on geoportal.ancpi.ro) but the host is offline/unresolvable, consistent with ANCPI's phased restart. Not a permanent negative.",
+ "nextStep": "Retry Main_ATOM_CP.xml and the CP_View WMS after ANCPI announces the Geoportal restart; the ATOM feed should give per-county download files."
+}

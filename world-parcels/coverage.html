@@ -24,6 +24,7 @@
     svg { display: block; width: 100%; height: auto; aspect-ratio: 1200 / 505; }
     .country { fill: #e7e9e6; stroke: #a7ada8; stroke-width: .8; vector-effect: non-scaling-stroke; }
     .country.nationwide { fill: #b8dec9; stroke: #609c77; }
+    .country.regional { fill: #d9ead0; stroke: #7fa88a; }
     .city { cursor: pointer; stroke: #fff; stroke-width: 2; vector-effect: non-scaling-stroke; }
     .city.verified { fill: #23895c; }
     .city.unverified { fill: #cf504c; }
@@ -61,10 +62,11 @@
           <span><i class="key"></i> Verified city sample</span>
           <span><i class="key red"></i> Tried, no verified sample</span>
           <span><i class="key country"></i> Two-region test passed</span>
+          <span><i class="key country" style="background:#d9ead0;border-color:#7fa88a"></i> Federal: coverage by state/province</span>
         </div>
       </div>
       <div class="map-wrap"><svg id="map" viewBox="0 0 1200 505" role="img" aria-label="World map with researched cities marked"></svg></div>
-      <p class="map-note">A city marker proves only a sample, not full city coverage. A country is shaded green when one service returned parcel polygons in two or more distinct regions. That is a sampling test: the explicit nationwide claim, known exclusions and licence terms have not been reviewed, and small territories such as Hong Kong are too small for this map to shade.</p>
+      <p class="map-note">A city marker proves only a sample, not full city coverage. A country is shaded green when one service returned parcel polygons in two or more distinct regions. That is a sampling test: the explicit nationwide claim, known exclusions and licence terms have not been reviewed, and small territories such as Hong Kong are too small for this map to shade. Federal countries whose cadastre is a state or province matter are shaded lighter; hover for the count of regions with an open region-wide layer.</p>
     </section>
     <aside class="panel" aria-label="Researched cities">
       <div class="sidebar-head"><h2>Researched cities</h2><div class="counts" id="counts">Loading registry…</div></div>
@@ -124,13 +126,16 @@
       const researched = [...registry.cities].sort((a, b) => a.researchOrder - b.researchOrder);
       const research = await Promise.all(researched.map(city => fetch(`./${city.researchFile}`).then(response => response.ok ? response.json() : null).catch(() => null)));
       const nationwide = new Set((registry.countryCoverage || []).filter(item => item.status === 'verified_countrywide' && item.evidenceFile).map(item => item.countryCode));
+      const regional = new Map((registry.subnationalCoverage || []).map(item => [item.countryCode, item]));
       const borders = el('g');
       for (const feature of countries.features) {
         if (feature.properties.ISO_A2 === 'AQ') continue;
         const iso = feature.properties.ISO_A2; const code = iso && iso !== '-99' ? iso : feature.properties.ISO_A2_EH;
-        const path = el('path', {d: geometryPath(feature.geometry), class: `country${nationwide.has(code) ? ' nationwide' : ''}`});
+        const sub = regional.get(code);
+        const cls = nationwide.has(code) ? ' nationwide' : (sub && (sub.regionWide + sub.partial) > 0 ? ' regional' : '');
+        const path = el('path', {d: geometryPath(feature.geometry), class: `country${cls}`});
         path.append(el('title'));
-        path.lastChild.textContent = (feature.properties.NAME || 'Country') + (nationwide.has(code) ? ': parcels returned in two or more regions (nationwide claim unreviewed)' : '');
+        path.lastChild.textContent = (feature.properties.NAME || 'Country') + (sub ? `: ${sub.regionWide} of ${sub.regionsTotal} regions have an open region-wide parcel layer, ${sub.partial} partial (county/city or unsampled), ${sub.credentialed + sub.viewerOnly} gated, ${sub.unavailable + sub.none} none found` : (nationwide.has(code) ? ': parcels returned in two or more regions (nationwide claim unreviewed)' : ''));
         borders.append(path);
       }
       svg.append(borders);
@@ -174,7 +179,7 @@
         selection.push({dot, row});
       });
       svg.append(dots);
-      document.getElementById('counts').textContent = `${researched.length} researched · ${verifiedCount} verified samples · ${researched.length - verifiedCount} without a verified sample · ${nationwide.size} passed the two-region test`;
+      document.getElementById('counts').textContent = `${researched.length} researched · ${verifiedCount} verified samples · ${researched.length - verifiedCount} without a verified sample · ${nationwide.size} countries passed the two-region test · ${[...regional.values()].reduce((n, r) => n + r.regionWide, 0)} states/provinces with a region-wide layer across ${regional.size} federal countries`;
     }
     main().catch(error => {
       document.querySelector('.map-wrap').innerHTML = `<p class="error">Could not load the local map data. Serve the repository with <code>python3 -m http.server</code>, then open <code>/world-parcels/coverage.html</code>.</p>`;
