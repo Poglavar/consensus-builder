@@ -1,0 +1,123 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "FO",
+ "country": "Faroe Islands",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "not_probed",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Umhvorvisstovan (Environment Agency, us.fo), national land cadastre (matriklar); viewer https://kortal.fo/",
+ "inspireRecordUrl": null,
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: fo-FO,fo;q=0.9,da;q=0.6,en;q=0.5; Referer: https://kortal.fo/; cookie jar",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "portalsFound": [
+  {
+   "url": "https://kortal.fo/",
+   "observation": "ArcGIS Experience Builder viewer (Kortal); service host not in static HTML"
+  },
+  {
+   "url": "https://gis.us.fo/arcgis/rest/services",
+   "observation": "public ArcGIS Server 11.4 REST directory, no token; folders incl. matriklar (us_matr, us_hagar, us_metkort), adressur, bygningar, lendiskort"
+  },
+  {
+   "url": "https://gis.us.fo/arcgis/rest/services/matriklar/us_matr/MapServer",
+   "observation": "layers 0 Matriklar (polygon), 1 Servitut (polyline), 2 Markatalsbygdir (polygon); native CRS wkid 5316 (FVRF2000?); outSR=4326 works; extent covers the whole archipelago"
+  },
+  {
+   "url": "https://www.foroyakort.fo/",
+   "observation": "Foroyakort (Kortal info page)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gis.us.fo/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "folder list"
+  },
+  {
+   "url": "https://gis.us.fo/arcgis/rest/services/matriklar?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 MapServices"
+  },
+  {
+   "url": "https://gis.us.fo/arcgis/rest/services/matriklar/us_matr/MapServer?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "layer list and extent"
+  },
+  {
+   "url": "MapServer/0/query Torshavn bbox -6.7710,62.0100,-6.7690,62.0115",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygon parcels, district 55 Torshavn"
+  },
+  {
+   "url": "MapServer/0/query Klaksvik bbox -6.5880,62.2255,-6.5860,62.2270",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygon parcels, district 84 Klaksvik"
+  },
+  {
+   "url": "https://www.matrikul.fo/ ; https://geo.us.fo/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "TLS reset / proxy 502 (not needed)"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "fo-us-matriklar-mapserver",
+  "requestUrl": "https://gis.us.fo/arcgis/rest/services/matriklar/us_matr/MapServer/0/query?f=json&where=1%3D1&geometry=-6.7710,62.0100,-6.7690,62.0115&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&resultRecordCount=3",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=UTF-8",
+  "spatialTestAreaLonLat": "-6.7710,62.0100,-6.7690,62.0115 (xmin,ymin,xmax,ymax)",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "mslink / district_no__cadaster_no",
+  "responseFile": "FO-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount (MapServer 11.4)",
+  "regionSampled": "Torshavn (Streymoy)"
+ },
+ "additionalVerifiedRegion": {
+  "sourceId": "fo-us-matriklar-mapserver",
+  "requestUrl": "https://gis.us.fo/arcgis/rest/services/matriklar/us_matr/MapServer/0/query?f=json&where=1%3D1&geometry=-6.5880,62.2255,-6.5860,62.2270&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&resultRecordCount=3",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=UTF-8",
+  "spatialTestAreaLonLat": "-6.5880,62.2255,-6.5860,62.2270 (xmin,ymin,xmax,ymax)",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "mslink / district_no__cadaster_no",
+  "responseFile": "FO-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount (MapServer 11.4)",
+  "regionSampled": "Klaksvik (Nordoyar)"
+ },
+ "regionsSampled": [
+  "Torshavn",
+  "Klaksvik"
+ ],
+ "coverageAssessment": {
+  "claimedScope": "Faroese land cadastre (matrikul) for the archipelago",
+  "regionsVerified": [
+   "Torshavn (Streymoy)",
+   "Klaksvik (Nordoyar)"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Faroe Islands is not an EU/EFTA INSPIRE member. Records include address and an ownership-category field (stripped from saved reply). Licence/terms not read.",
+ "nextStep": "Read us.fo terms of use; page through layer 0 to confirm full island coverage (count query)."
+}

@@ -1,0 +1,72 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AU",
+ "regionCode": "QLD",
+ "regionName": "Queensland",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 | Accept: application/json, text/plain, */* | Accept-Language: en-AU,en;q=0.9 | cookie jar kept",
+ "source": {
+  "sourceId": "au-qld-dcdb",
+  "name": "Queensland DCDB cadastral parcels, LandParcelPropertyFramework MapServer layer 4",
+  "operator": "Queensland Government (Dept of Resources)",
+  "scope": "Queensland (state/territory-wide layer)",
+  "endpoint": "https://spatial-gis.information.qld.gov.au/arcgis/rest/services/PlanningCadastre/LandParcelPropertyFramework/MapServer/4",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "Esri JSON",
+  "crs": "outSR=4326 honoured",
+  "reuseStatus": "Terms not read; unreviewed."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "au-qld-dcdb",
+  "requestUrl": "https://spatial-gis.information.qld.gov.au/arcgis/rest/services/PlanningCadastre/LandParcelPropertyFramework/MapServer/4/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3&f=json&returnGeometry=true&outFields=lotplan&geometry=153.025,-27.47,153.026,-27.469",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   153.025,
+   -27.47,
+   153.026,
+   -27.469
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "lotplan (null for some features e.g. road/unlotted parcels in Cairns sample)",
+  "responseFile": "QLD-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount; exceededTransferLimit true",
+  "regionSampled": "Brisbane and Cairns"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Queensland-wide DCDB service per publisher; sampled Brisbane and Cairns.",
+ "subregionsVerified": [
+  "Brisbane",
+  "Cairns"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://spatial-gis.information.qld.gov.au/arcgis/rest/services/PlanningCadastre/LandParcelPropertyFramework/MapServer/4",
+   "observation": "Public ArcGIS REST endpoint; none"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://spatial-gis.information.qld.gov.au/arcgis/rest/services/PlanningCadastre/LandParcelPropertyFramework/MapServer/4/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3&f=json&returnGeometry=true&outFields=lotplan&geometry=153.025,-27.47,153.026,-27.469",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygon features, closed rings (Brisbane)"
+  },
+  {
+   "url": "https://spatial-gis.information.qld.gov.au/arcgis/rest/services/PlanningCadastre/LandParcelPropertyFramework/MapServer/4/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3&f=json&returnGeometry=true&outFields=lotplan&geometry=145.77,-16.92,145.771,-16.919",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "polygon features returned, closed rings (Cairns)"
+  }
+ ],
+ "reuseStatus": "Terms not read; unreviewed.",
+ "remainingUncertainty": "Two bounded samples only; full-state completeness and currency not verified.",
+ "nextStep": "Read the publisher licence before any bulk use."
+}

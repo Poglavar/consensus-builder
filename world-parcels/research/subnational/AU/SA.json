@@ -1,0 +1,72 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AU",
+ "regionCode": "SA",
+ "regionName": "South Australia",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 | Accept: application/json, text/plain, */* | Accept-Language: en-AU,en;q=0.9 | cookie jar kept",
+ "source": {
+  "sourceId": "au-sa-locationsa-parcel-cadastre",
+  "name": "Parcel Cadastre (layer 124), Location SA Viewer MapServer LocationSAViewerV34",
+  "operator": "Land Services SA / Dept for Trade and Investment (Location SA viewer, lsa4.geohub.sa.gov.au)",
+  "scope": "South Australia (state/territory-wide layer)",
+  "endpoint": "https://lsa4.geohub.sa.gov.au/server/rest/services/LSA/LocationSAViewerV34/MapServer/124",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "Esri JSON",
+  "crs": "outSR=4326 honoured",
+  "reuseStatus": "Land Services SA states SA cadastral data is not classified open data (request-based, minimum fee for non-government users); this viewer service is publicly reachable but bulk reuse terms unreviewed and likely restricted."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "au-sa-locationsa-parcel-cadastre",
+  "requestUrl": "https://lsa4.geohub.sa.gov.au/server/rest/services/LSA/LocationSAViewerV34/MapServer/124/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3&f=json&returnGeometry=true&outFields=objectid,parcel_id,planparcel&geometry=138.599,-34.929,138.6,-34.928",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   138.599,
+   -34.929,
+   138.6,
+   -34.928
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "parcel_id / planparcel (objectid)",
+  "responseFile": "SA-parcel-response.json",
+  "pagination": "maxRecordCount 2000",
+  "regionSampled": "Adelaide (Hindmarsh area) and Mount Gambier"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Service found by reading the Location SA viewer config (apps.geohub.sa.gov.au/viewer/prod/config/config.js). Layer is the Parcel Cadastre for South Australia; sampled Adelaide and Mount Gambier. Public sibling hosts lsa/lsa2 answer token required / 403; lsa4 answered without token, with or without Referer.",
+ "subregionsVerified": [
+  "Adelaide",
+  "Mount Gambier"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://lsa4.geohub.sa.gov.au/server/rest/services/LSA/LocationSAViewerV34/MapServer/124",
+   "observation": "Public ArcGIS REST endpoint; Referer https://location.sa.gov.au/ sent on most calls; also worked without"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://lsa4.geohub.sa.gov.au/server/rest/services/LSA/LocationSAViewerV34/MapServer/124/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3&f=json&returnGeometry=true&outFields=objectid,parcel_id,planparcel&geometry=138.599,-34.929,138.6,-34.928",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygon features, closed rings (Adelaide (Hindmarsh area))"
+  },
+  {
+   "url": "https://lsa4.geohub.sa.gov.au/server/rest/services/LSA/LocationSAViewerV34/MapServer/124/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3&f=json&returnGeometry=true&outFields=objectid,parcel_id,planparcel&geometry=140.78,-37.83,140.781,-37.829",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "polygon features returned, closed rings (Mount Gambier)"
+  }
+ ],
+ "reuseStatus": "Land Services SA states SA cadastral data is not classified open data (request-based, minimum fee for non-government users); this viewer service is publicly reachable but bulk reuse terms unreviewed and likely restricted.",
+ "remainingUncertainty": "Two bounded samples only; full-state completeness and currency not verified. Reuse may be restricted (SA cadastre is not classified open data).",
+ "nextStep": "Read the publisher licence before any bulk use."
+}

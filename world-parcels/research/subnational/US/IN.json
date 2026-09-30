@@ -1,0 +1,71 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "IN",
+ "regionName": "Indiana",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "source": {
+  "sourceId": "us-in-parcel-boundaries",
+  "name": "Parcel Boundaries of Indiana Current (IndianaMap)",
+  "operator": "State of Indiana / IndianaMap (Indiana Geographic Information Office)",
+  "scope": "Statewide parcel boundaries, county-sourced",
+  "endpoint": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0",
+  "method": "GET ArcGIS REST /query",
+  "responseFormat": "Esri JSON polygons (rings)",
+  "crs": "requested outSR=4326",
+  "reuseStatus": "Terms/licence text not read on the service; see publisher page."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-in-parcel-boundaries",
+  "requestUrl": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=1%3D1&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-86.1585%2C39.7680%2C-86.1570%2C39.7690&outFields=parcel_id%2Cstate_parcel_id",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   -86.1585,
+   39.768,
+   -86.157,
+   39.769
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "$.features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "state_parcel_id",
+  "responseFile": "IN-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount (ArcGIS)"
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-US,en;q=0.9; cookie jar kept; no headers-dependent change observed",
+ "regionWideClaimed": true,
+ "regionWideBasis": "Service title \"Parcel Boundaries of Indiana Current\"; layer has county_fips and source_originator fields.",
+ "subregionsVerified": [
+  "Marion County (Indianapolis)",
+  "Allen County (Fort Wayne)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0?f=json",
+   "observation": "IndianaMap hosted layer metadata, anonymous"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=1%3D1&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-86.1585%2C39.7680%2C-86.1570%2C39.7690&outFields=parcel_id%2Cstate_parcel_id",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "3 parcel polygons with state_parcel_id"
+  },
+  {
+   "url": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0/query?where=1%3D1&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-85.1400%2C41.0790%2C-85.1385%2C41.0800&outFields=parcel_id%2Cstate_parcel_id",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "Fort Wayne, Allen County: 3 polygons"
+  }
+ ],
+ "reuseStatus": "Terms/licence text not read on the service; see publisher page.",
+ "remainingUncertainty": "Completeness per county not measured; layer also carries address fields that were not requested.",
+ "nextStep": "Read IndianaMap terms; count counties via county_fips statistics."
+}

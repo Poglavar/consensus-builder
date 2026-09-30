@@ -1,0 +1,80 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "NH",
+ "regionName": "New Hampshire",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/plain,*/*; Accept-Language: en-US,en;q=0.9; cookie jar on; via pre-configured proxy",
+ "source": {
+  "sourceId": "us-nh-granit-parcel-mosaic",
+  "name": "NH Parcel Mosaic",
+  "operator": "NH GRANIT / UNH (data from NHDRA and Axiomatic)",
+  "scope": "statewide parcel mosaic (parcel polygons plus linework where polygons are absent)",
+  "endpoint": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1",
+  "method": "GET",
+  "responseFormat": "ArcGIS REST JSON",
+  "crs": "native SR from service; requested outSR=4326",
+  "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-nh-granit-parcel-mosaic",
+  "requestUrl": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1/query?geometry=<bbox ~150m>&outFields=NH_GIS_ID,PID,TownID&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   "[-71.4556,42.9948,-71.4540,42.9964]",
+   "[-72.2903,43.6967,-72.2887,43.6983]"
+  ],
+  "parcelRecordCount": 6,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "NH_GIS_ID (with PID, TownID)",
+  "responseFile": "research/subnational/US/NH-parcel-response.json",
+  "pagination": "resultRecordCount / resultOffset (per-sample 3 records)",
+  "regionSampled": [
+   "Manchester (Hillsborough Co.)",
+   "Grafton-area town"
+  ]
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Service description: \"New Hampshire Parcel Mosaic data. This service includes parcel polygons, attributes and linework for areas where parcel polygons are not present.\" Mosaic, so some towns are lines only.",
+ "subregionsVerified": [
+  "Manchester (TownID 4134)",
+  "Town ID 4096 near Hanover/Lebanon area"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer",
+   "observation": "public, no token; layers 0 points, 1 parcels, 2 lines"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "service/layer description read"
+  },
+  {
+   "url": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1/query?geometry=<bbox ~150m near Manchester (Hillsborough Co.)>&outFields=NH_GIS_ID,PID,TownID...",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons returned with ID and geometry only"
+  },
+  {
+   "url": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1/query?geometry=<bbox ~150m near Grafton-area town>&outFields=NH_GIS_ID,PID,TownID...",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons returned with ID and geometry only"
+  }
+ ],
+ "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution.",
+ "remainingUncertainty": "Fields include street addresses; not requested or saved. Town coverage gaps not enumerated.",
+ "nextStep": "Read GRANIT terms; check which towns lack polygons."
+}

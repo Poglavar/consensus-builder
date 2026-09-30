@@ -1,0 +1,84 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "MN",
+ "regionName": "Minnesota",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/plain,*/*; Accept-Language: en-US,en;q=0.9; cookie jar on; via pre-configured proxy",
+ "source": {
+  "sourceId": "us-mn-mngeo-plan-parcels-open",
+  "name": "Parcels, Compiled from Opt-In Open Data Counties, Minnesota (Plan Parcels Open)",
+  "operator": "MnGeo (Minnesota Geospatial Commons)",
+  "scope": "statewide compilation of counties that opted in to open data",
+  "endpoint": "https://enterprise.gisdata.mn.gov/aghost/rest/services/us_mn_state_mngeo/plan_parcels_open/FeatureServer/1",
+  "method": "GET",
+  "responseFormat": "ArcGIS REST JSON",
+  "crs": "EPSG:3857 native; requested outSR=4326",
+  "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-mn-mngeo-plan-parcels-open",
+  "requestUrl": "https://enterprise.gisdata.mn.gov/aghost/rest/services/us_mn_state_mngeo/plan_parcels_open/FeatureServer/1/query?geometry=<bbox ~150m>&outFields=state_pin,county_pin,co_name&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   "[-93.2658,44.9770,-93.2642,44.9786]",
+   "[-92.1013,46.7779,-92.0997,46.7795]"
+  ],
+  "parcelRecordCount": 6,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "state_pin (with county_pin, co_name)",
+  "responseFile": "research/subnational/US/MN-parcel-response.json",
+  "pagination": "resultRecordCount / resultOffset (per-sample 3 records)",
+  "regionSampled": [
+   "Hennepin County (Minneapolis)",
+   "St. Louis County (Duluth)"
+  ]
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "MnGeo: county parcel records assembled into one dataset with common schema, only counties that opted in to open data (\"55 counties participating\" at publication per catalog; a distinct-value query of co_name returned 59 values on layer 1); updated quarterly; completeness and consistency vary by county.",
+ "subregionsVerified": [
+  "Hennepin County",
+  "St. Louis County"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://gisdata.mn.gov/dataset/plan-parcels-open",
+   "observation": "Minnesota Geospatial Commons dataset page"
+  },
+  {
+   "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels/FeatureServer",
+   "observation": "Metro Council 7-county layers, not used"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://enterprise.gisdata.mn.gov/aghost/rest/services/us_mn_state_mngeo/plan_parcels_open/FeatureServer/1?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "service/layer description read"
+  },
+  {
+   "url": "https://enterprise.gisdata.mn.gov/aghost/rest/services/us_mn_state_mngeo/plan_parcels_open/FeatureServer/1/query?geometry=<bbox ~150m near Hennepin County (Minneapolis)>&outFields=state_pin,county_pin,co_name...",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons returned with ID and geometry only"
+  },
+  {
+   "url": "https://enterprise.gisdata.mn.gov/aghost/rest/services/us_mn_state_mngeo/plan_parcels_open/FeatureServer/1/query?geometry=<bbox ~150m near St. Louis County (Duluth)>&outFields=state_pin,county_pin,co_name...",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons returned with ID and geometry only"
+  }
+ ],
+ "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution. Layer has owner and tax-address fields; not requested.",
+ "remainingUncertainty": "Only opt-in counties, so not all 87 counties; layer 0 is a metadata polygon layer listing which counties are included.",
+ "nextStep": "Query layer 0 (county footprints/metadata) to list included counties."
+}

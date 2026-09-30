@@ -1,0 +1,72 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AU",
+ "regionCode": "TAS",
+ "regionName": "Tasmania",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 | Accept: application/json, text/plain, */* | Accept-Language: en-AU,en;q=0.9 | cookie jar kept",
+ "source": {
+  "sourceId": "au-tas-list-cadastral-parcels",
+  "name": "LIST Cadastral Parcels, Public/CadastreParcels MapServer layer 0",
+  "operator": "Tasmanian Government, Land Information System Tasmania (the LIST)",
+  "scope": "Tasmania (state/territory-wide layer)",
+  "endpoint": "https://services.thelist.tas.gov.au/arcgis/rest/services/Public/CadastreParcels/MapServer/0",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "Esri JSON",
+  "crs": "outSR=4326 honoured",
+  "reuseStatus": "Service description points to LIST Web Services Terms and Conditions (listdata.thelist.tas.gov.au/public/LISTWebServicesTermsConditions.pdf); PDF not read."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "au-tas-list-cadastral-parcels",
+  "requestUrl": "https://services.thelist.tas.gov.au/arcgis/rest/services/Public/CadastreParcels/MapServer/0/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3&f=json&returnGeometry=true&outFields=OBJECTID,PID,CID&geometry=147.327,-42.8825,147.328,-42.8815",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   147.327,
+   -42.8825,
+   147.328,
+   -42.8815
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PID / CID (layer also has address fields PROP_ADD*, not requested or saved)",
+  "responseFile": "TAS-parcel-response.json",
+  "pagination": "maxRecordCount 2000",
+  "regionSampled": "Hobart and Launceston"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Statewide LIST cadastre per service; sampled Hobart and Launceston.",
+ "subregionsVerified": [
+  "Hobart",
+  "Launceston"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://services.thelist.tas.gov.au/arcgis/rest/services/Public/CadastreParcels/MapServer/0",
+   "observation": "Public ArcGIS REST endpoint; none"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services.thelist.tas.gov.au/arcgis/rest/services/Public/CadastreParcels/MapServer/0/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3&f=json&returnGeometry=true&outFields=OBJECTID,PID,CID&geometry=147.327,-42.8825,147.328,-42.8815",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygon features, closed rings (Hobart)"
+  },
+  {
+   "url": "https://services.thelist.tas.gov.au/arcgis/rest/services/Public/CadastreParcels/MapServer/0/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3&f=json&returnGeometry=true&outFields=OBJECTID,PID,CID&geometry=147.144,-41.4335,147.145,-41.4325",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "polygon features returned, closed rings (Launceston)"
+  }
+ ],
+ "reuseStatus": "Service description points to LIST Web Services Terms and Conditions (listdata.thelist.tas.gov.au/public/LISTWebServicesTermsConditions.pdf); PDF not read.",
+ "remainingUncertainty": "Two bounded samples only; full-state completeness and currency not verified.",
+ "nextStep": "Read the publisher licence before any bulk use."
+}

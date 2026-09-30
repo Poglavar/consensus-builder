@@ -1,0 +1,72 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AU",
+ "regionCode": "ACT",
+ "regionName": "Australian Capital Territory",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 | Accept: application/json, text/plain, */* | Accept-Language: en-AU,en;q=0.9 | cookie jar kept",
+ "source": {
+  "sourceId": "au-act-actgov-blocks",
+  "name": "ACTGOV_BLOCKS FeatureServer layer 0 (ACT Government blocks)",
+  "operator": "ACT Government (ArcGIS Online org E5n4f1VY84i0xSjy)",
+  "scope": "Australian Capital Territory (state/territory-wide layer)",
+  "endpoint": "https://services1.arcgis.com/E5n4f1VY84i0xSjy/ArcGIS/rest/services/ACTGOV_BLOCKS/FeatureServer/0",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "Esri JSON",
+  "crs": "outSR=4326 honoured",
+  "reuseStatus": "licenseInfo empty; copyrightText \"Australian Capital Territory\"; terms not reviewed. data.actmapi.act.gov.au host answered proxy 502 and was not used."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "au-act-actgov-blocks",
+  "requestUrl": "https://services1.arcgis.com/E5n4f1VY84i0xSjy/ArcGIS/rest/services/ACTGOV_BLOCKS/FeatureServer/0/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3&f=json&returnGeometry=true&outFields=OBJECTID,BLOCK_KEY&geometry=149.1295,-35.2812,149.1305,-35.2802",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   149.1295,
+   -35.2812,
+   149.1305,
+   -35.2802
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "BLOCK_KEY (layer also has ADDRESSES and other attributes, not requested or saved)",
+  "responseFile": "ACT-parcel-response.json",
+  "pagination": "maxRecordCount 1000",
+  "regionSampled": "Canberra Civic and Tuggeranong"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Territory-wide block layer; ACT is a single jurisdiction, sampled two districts.",
+ "subregionsVerified": [
+  "Canberra Civic",
+  "Tuggeranong"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://services1.arcgis.com/E5n4f1VY84i0xSjy/ArcGIS/rest/services/ACTGOV_BLOCKS/FeatureServer/0",
+   "observation": "Public ArcGIS REST endpoint; none"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services1.arcgis.com/E5n4f1VY84i0xSjy/ArcGIS/rest/services/ACTGOV_BLOCKS/FeatureServer/0/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3&f=json&returnGeometry=true&outFields=OBJECTID,BLOCK_KEY&geometry=149.1295,-35.2812,149.1305,-35.2802",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygon features, closed rings (Canberra Civic)"
+  },
+  {
+   "url": "https://services1.arcgis.com/E5n4f1VY84i0xSjy/ArcGIS/rest/services/ACTGOV_BLOCKS/FeatureServer/0/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3&f=json&returnGeometry=true&outFields=OBJECTID,BLOCK_KEY&geometry=149.07,-35.42,149.071,-35.419",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "polygon features returned, closed rings (Tuggeranong)"
+  }
+ ],
+ "reuseStatus": "licenseInfo empty; copyrightText \"Australian Capital Territory\"; terms not reviewed. data.actmapi.act.gov.au host answered proxy 502 and was not used.",
+ "remainingUncertainty": "Two bounded samples only; full-state completeness and currency not verified.",
+ "nextStep": "Read the publisher licence before any bulk use."
+}
