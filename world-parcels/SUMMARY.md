@@ -9,7 +9,7 @@ Generated from `registry.json` (updated 2026-09-29). A city sample proves only a
 | `no_verified_open_endpoint_after_attempts` | 90 |
 | `temporarily_unavailable` | 49 |
 | `verified_sample_partial_coverage` | 30 |
-| `verified_sample_city_scope` | 25 |
+| `verified_sample_city_scope` | 26 |
 | `verified_sample_county_scope` | 4 |
 | `no_verified_sample_candidate_citywide` | 1 |
 | `no_verified_sample_candidate_countrywide` | 1 |
@@ -77,6 +77,7 @@ Generated from `registry.json` (updated 2026-09-29). A city sample proves only a
 | 196 | Manchester, GB | `verified_sample_city_scope` | HM Land Registry INSPIRE Index Polygons | England and Wales registered freehold/leasehold title extents, per local authority; London covered by City of London + 32 borough files |
 | 198 | Cotonou, BJ | `verified_sample_partial_coverage` | e-Foncier GeoServer, workspace efb, layer efb_parcel (Cadastre National du Benin) | digital cadastre parcels; sampled in Cotonou (Littoral) and, with 1 feature, near Seme-Podji (Oueme); extent of national coverage unverified |
 | 200 | Curitiba, BR | `verified_sample_city_scope` | GeoCuritiba Mapa Cadastral, layer 15 Lote Cadastral | Municipality of Curitiba (layer native extent spans the city and part of the metropolitan region); one small area sampled |
+| 201 | Zagreb, HR | `verified_sample_city_scope` | Croatian cadastre (DKP) OSS WFS | Croatia; sampled in Zagreb, Split, Osijek and Rijeka; already used by the app for Zagreb, Split and Šibenik |
 
 ## Country probes
 

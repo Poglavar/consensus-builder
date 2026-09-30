@@ -244,6 +244,16 @@ for f in sorted(glob.glob('research/retry/countries/*.json')):
         p['mergeNote'] = note
 print('retry applied:', changed_cities, 'city status changes,', changed_countries, 'country status changes')
 
+# Country coverage (green countries on the map): every probe that passed the two-region test.
+# Reviewed=False: nationwide claim, exclusions and licence are NOT reviewed (user chose this display rule on 2026-09-30).
+REG['countryCoverage'] = [
+    {'countryCode': p['countryCode'], 'country': p['country'], 'status': 'verified_countrywide',
+     'basis': 'two_region_test', 'reviewed': False,
+     'evidenceFile': p.get('retryFile') or p['evidenceFile'],
+     'caveats': 'Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed.'
+                + (' ' + p['mergeNote'] if p.get('mergeNote') else '')}
+    for p in probes if p['status'] == 'national_online_cadastre_verified_sample'
+]
 REG['sources'] = list(sources.values())
 REG['cities'] = [cities[k] for k in sorted(cities)]
 REG['countryProbes'] = probes

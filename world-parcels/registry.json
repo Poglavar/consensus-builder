@@ -836,7 +836,9 @@
       "crs": "EPSG:3765",
       "verificationStatus": "verified_nonempty_sample",
       "reuseStatus": "public_access_token_in_app;_terms_unread",
-      "verifiedCityIds": [],
+      "verifiedCityIds": [
+        "geonames:3186886"
+      ],
       "evidenceFile": "research/countries/HR.json"
     },
     {
@@ -943,7 +945,296 @@
       "evidenceFile": "research/retry/cities/amman.json"
     }
   ],
-  "countryCoverage": [],
+  "countryCoverage": [
+    {
+      "countryCode": "AT",
+      "country": "Austria",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/AT.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "BD",
+      "country": "Bangladesh",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/BD.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "BG",
+      "country": "Bulgaria",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/BG.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "BJ",
+      "country": "Benin",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/retry/countries/BJ.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "BY",
+      "country": "Belarus",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/retry/countries/BY.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "CY",
+      "country": "Cyprus",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/retry/countries/CY.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "CZ",
+      "country": "Czechia",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/CZ.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "DK",
+      "country": "Denmark",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/DK.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "EE",
+      "country": "Estonia",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/EE.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "ES",
+      "country": "Spain",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/ES.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "FI",
+      "country": "Finland",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/FI.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "FR",
+      "country": "France",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/FR.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "HK",
+      "country": "China, Hong Kong SAR",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/HK.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "HR",
+      "country": "Croatia",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/HR.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "IE",
+      "country": "Ireland",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/IE.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "IL",
+      "country": "Israel",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/IL.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "IT",
+      "country": "Italy",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/IT.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "JM",
+      "country": "Jamaica",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/retry/countries/JM.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "JO",
+      "country": "Jordan",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/retry/countries/JO.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "LT",
+      "country": "Lithuania",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/retry/countries/LT.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "LU",
+      "country": "Luxembourg",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/LU.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "MN",
+      "country": "Mongolia",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/MN.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "NC",
+      "country": "New Caledonia",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/retry/countries/NC.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "NL",
+      "country": "Netherlands",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/NL.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "NO",
+      "country": "Norway",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/NO.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "NZ",
+      "country": "New Zealand",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/NZ.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "PL",
+      "country": "Poland",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/PL.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "PY",
+      "country": "Paraguay",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/PY.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "SE",
+      "country": "Sweden",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/retry/countries/SE.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed. Undocumented viewer-internal lookup by designation, not a bbox service; terms unread; may change without notice."
+    },
+    {
+      "countryCode": "SI",
+      "country": "Slovenia",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/SI.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "TR",
+      "country": "Turkiye",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/countries/TR.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    },
+    {
+      "countryCode": "XK",
+      "country": "Kosovo (under UNSC res. 1244)",
+      "status": "verified_countrywide",
+      "basis": "two_region_test",
+      "reviewed": false,
+      "evidenceFile": "research/retry/countries/XK.json",
+      "caveats": "Polygons returned in two or more distinct regions from one service. Explicit nationwide claim, exclusions and licence terms are unreviewed."
+    }
+  ],
   "cities": [
     {
       "cityId": "geonames:1642911",
@@ -4349,6 +4640,24 @@
         "br-curitiba-ippuc-lote-cadastral"
       ],
       "researchFile": "research/curitiba.json"
+    },
+    {
+      "cityId": "geonames:3186886",
+      "name": "Zagreb",
+      "country": "Croatia",
+      "countryCode": "HR",
+      "centerLatLon": [
+        45.81444,
+        15.97798
+      ],
+      "citySource": "https://www.geonames.org/3186886/zagreb.html",
+      "researchOrder": 201,
+      "outsideUnQueue": true,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "hr-dgu-oss-dkp-cestice"
+      ],
+      "researchFile": "research/zagreb.json"
     }
   ],
   "countryProbes": [

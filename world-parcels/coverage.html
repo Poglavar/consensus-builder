@@ -51,7 +51,7 @@
 <body>
   <header>
     <h1>World parcel source coverage</h1>
-    <p>Research progress for the largest urban areas in the UN World Urbanization Prospects 2025 queue. Green cities have a real HTTP 200 response with parcel polygons. Red cities have been attempted without a verified parcel sample, including promising sources that still need testing.</p>
+    <p>Research progress for the largest urban areas in the UN World Urbanization Prospects 2025 queue, plus Zagreb, added because the app already uses Croatia's cadastre. Green cities have a real HTTP 200 response with parcel polygons. Red cities have been attempted without a verified parcel sample, including promising sources that still need testing.</p>
   </header>
   <main>
     <section class="panel" aria-label="World coverage map">
@@ -60,11 +60,11 @@
         <div class="legend" aria-label="Map legend">
           <span><i class="key"></i> Verified city sample</span>
           <span><i class="key red"></i> Tried, no verified sample</span>
-          <span><i class="key country"></i> Verified nationwide source</span>
+          <span><i class="key country"></i> Two-region test passed</span>
         </div>
       </div>
       <div class="map-wrap"><svg id="map" viewBox="0 0 1200 505" role="img" aria-label="World map with researched cities marked"></svg></div>
-      <p class="map-note">A city marker proves only a sample, not full city coverage. A country turns green only after a national source has been independently verified and entered in the registry.</p>
+      <p class="map-note">A city marker proves only a sample, not full city coverage. A country is shaded green when one service returned parcel polygons in two or more distinct regions. That is a sampling test: the explicit nationwide claim, known exclusions and licence terms have not been reviewed, and small territories such as Hong Kong are too small for this map to shade.</p>
     </section>
     <aside class="panel" aria-label="Researched cities">
       <div class="sidebar-head"><h2>Researched cities</h2><div class="counts" id="counts">Loading registry…</div></div>
@@ -127,10 +127,10 @@
       const borders = el('g');
       for (const feature of countries.features) {
         if (feature.properties.ISO_A2 === 'AQ') continue;
-        const code = feature.properties.ISO_A2;
+        const iso = feature.properties.ISO_A2; const code = iso && iso !== '-99' ? iso : feature.properties.ISO_A2_EH;
         const path = el('path', {d: geometryPath(feature.geometry), class: `country${nationwide.has(code) ? ' nationwide' : ''}`});
         path.append(el('title'));
-        path.lastChild.textContent = feature.properties.NAME || 'Country';
+        path.lastChild.textContent = (feature.properties.NAME || 'Country') + (nationwide.has(code) ? ': parcels returned in two or more regions (nationwide claim unreviewed)' : '');
         borders.append(path);
       }
       svg.append(borders);
@@ -174,7 +174,7 @@
         selection.push({dot, row});
       });
       svg.append(dots);
-      document.getElementById('counts').textContent = `${researched.length} researched · ${verifiedCount} verified samples · ${researched.length - verifiedCount} without a verified sample · ${nationwide.size} verified nationwide`;
+      document.getElementById('counts').textContent = `${researched.length} researched · ${verifiedCount} verified samples · ${researched.length - verifiedCount} without a verified sample · ${nationwide.size} passed the two-region test`;
     }
     main().catch(error => {
       document.querySelector('.map-wrap').innerHTML = `<p class="error">Could not load the local map data. Serve the repository with <code>python3 -m http.server</code>, then open <code>/world-parcels/coverage.html</code>.</p>`;
