@@ -1,0 +1,97 @@
+{
+ "kind": "city",
+ "key": "quito",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "verified_sample_partial_coverage",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36 | Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8 | Accept-Language: es-EC,es;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": {
+  "sourceId": "ec-quito-unofficial-arcgis-predios-cue-urban",
+  "requestUrl": "https://services1.arcgis.com/UOl0yzPDLol8nS3m/arcgis/rest/services/Predios_Quito_CUE_Urban/FeatureServer/4/query?geometry=-78.4899,-0.1750,-78.4879,-0.1730&geometryType=esriGeometryEnvelope&inSR=4326&outFields=*&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": "-78.4899,-0.1750,-78.4879,-0.1730 (north Quito, Rumipamba)",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "OBJECTID / ClavCatastral / Predio",
+  "responseFile": "research/retry/cities/quito-parcel-response.json (owner names, ID numbers and valuations redacted)",
+  "pagination": "resultOffset/resultRecordCount, maxRecordCount 2000"
+ },
+ "source": {
+  "sourceId": "ec-quito-unofficial-arcgis-predios-cue-urban",
+  "name": "Predios_Quito_CUE_Urban (ArcGIS Online hosted feature layer)",
+  "operator": "UNOFFICIAL: ArcGIS Online user kmeza_glxclientes (not the Quito municipality; provenance unverified)",
+  "scope": "partial: extent roughly lat -0.197..-0.146 (north Quito) only; 0 features at the city-centre point -0.20343,-78.4989",
+  "endpoint": "https://services1.arcgis.com/UOl0yzPDLol8nS3m/arcgis/rest/services/Predios_Quito_CUE_Urban/FeatureServer/4",
+  "method": "ArcGIS REST query",
+  "responseFormat": "Esri JSON",
+  "crs": "EPSG:3857 native, 4326 requested",
+  "reuseStatus": "unknown; layer attributes include owner names and national ID numbers (personal data) - do not adopt as a registry source"
+ },
+ "requests": [
+  {
+   "url": "https://geoportal.quito.gob.ec/ , /arcgis/rest/services?f=json , /arcgis/rest/services/Catastro",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "403 Forbidden with transaction id (WAF), unchanged with browser headers"
+  },
+  {
+   "url": "https://sitios.quito.gob.ec/ , https://ide.quito.gob.ec/ , https://datosabiertos.quito.gob.ec/ , https://sigtierras.gob.ec/ , https://ide.sigtierras.gob.ec/geoserver/ows",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed at agent proxy, unreachable"
+  },
+  {
+   "url": "https://servicios.quito.gob.ec/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Angular SPA shell only"
+  },
+  {
+   "url": "https://www.geoportaligm.gob.ec/portal/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "reachable; no parcel service (per EC country retry)"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=predios quito Feature Service",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "found third-party hosted layers Predios_Quito_CUE_Urban and predio_mun_centro_histórico (lvelasquez_gnxclientes)"
+  },
+  {
+   "url": "https://services1.arcgis.com/UOl0yzPDLol8nS3m/.../Predios_Quito_CUE_Urban/FeatureServer/4/query (city-centre bbox -78.4999,-0.2044,-78.4979,-0.2024)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 features at the centre point"
+  },
+  {
+   "url": "same layer, bbox -78.4899,-0.1750,-78.4879,-0.1730",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 closed polygons; also bboxes -78.48,-0.17 and -78.496,-0.19 gave 3 each"
+  },
+  {
+   "url": "https://services5.arcgis.com/7Rnt0OlY77eBTvP2/.../predio_mun_centro_histórico/FeatureServer/11/query (historic centre bbox -78.514,-0.22)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons (historic-centre only, unofficial, owner-free attributes); centre-point bbox 0 features"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "Official Quito geoportal still 403 (WAF with transaction id, likely geo/bot filter; other hosts unreachable from this network), so no official service verified. New: two third-party ArcGIS Online layers return real parcel polygons in parts of Quito. Neither covers the city-centre point. The CUE_Urban layer exposes personal data (owner names, ID numbers), so it is not a suitable registry source; status 'partial coverage' reflects only that polygons exist, from an unofficial source.",
+ "nextStep": "Retry official geoportal.quito.gob.ec / SIGTIERRAS from an Ecuadorian network; keep the third-party layers as leads only."
+}
