@@ -33,7 +33,8 @@ function app() {
     return createApp({ env: { ...process.env, NODE_ENV: 'test' }, pool: stubPool }).app;
 }
 
-// An origin check sits IN FRONT of the limiter and 403s any POST without one, so a request that
+// An origin check sits IN FRONT of the limiter and 403s any write POST without one (the read-only
+// POSTs below are exempt from it, the genuine write at the end is not), so a request that
 // forgets the header never reaches the thing under test — and an assertion of "no 429" would then
 // pass on a wall of 403s. Every request here carries an allowed origin, and every test asserts the
 // requests were actually served.

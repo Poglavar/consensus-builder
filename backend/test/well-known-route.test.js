@@ -1,6 +1,7 @@
 // Route tests for the root discovery documents: x402 manifest, security.txt, llms.txt, OpenAPI,
 // the /agents.json alias of /docs/agents.json, and robots.txt.
 
+import fs from 'node:fs';
 import express from 'express';
 import request from 'supertest';
 import { describe, expect, it } from 'vitest';
@@ -97,6 +98,28 @@ describe('GET /agents.json', () => {
         expect(alias.status).toBe(200);
         expect(alias.body.schema.required).toContain('cadastreParcelIds');
         expect(alias.body).toEqual(canonical.body);
+    });
+
+    it('names the program an agent mints its proposal with, and the body field that links to it', async () => {
+        const programs = JSON.parse(fs.readFileSync(new URL('../../frontend/contracts/addresses.json', import.meta.url), 'utf8'))['solana-devnet'];
+        const res = await request(appFor()).get('/agents.json');
+        expect(res.body.proposalAccount).toMatchObject({
+            programId: programs.ProposalNFT,
+            mint: { instruction: 'mint_and_fund' },
+            recordLink: { field: 'onchain', contractAddress: programs.ProposalNFT, chainId: 'solana-devnet' }
+        });
+        expect(res.body.parcelAccount.programId).toBe(programs.ParcelNFT);
+    });
+});
+
+describe('documents with live payment terms', () => {
+    it('are never cached, so a stale copy cannot advertise an old price', async () => {
+        const app = appFor();
+        for (const path of ['/.well-known/x402', '/openapi.json', '/agents.json', '/llms.txt']) {
+            const res = await request(app).get(path);
+            expect(res.status, path).toBe(200);
+            expect(res.headers['cache-control'], path).toBe('no-store');
+        }
     });
 });
 

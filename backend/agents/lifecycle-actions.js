@@ -325,4 +325,48 @@ export async function claimExternalMarket({
     return { replayed: false, signature, claimed: true };
 }
 
+export function buildMintParcelIx({ parcelId, owner, metadataUri, parcelProgramId = PARCEL_PROGRAM_ID } = {}) {
+    const parcelProgram = new web3.PublicKey(parcelProgramId);
+    const [parcel] = web3.PublicKey.findProgramAddressSync(
+        [Buffer.from('parcel'), Buffer.from(String(parcelId))], parcelProgram
+    );
+    return new web3.TransactionInstruction({
+        programId: parcelProgram,
+        keys: [
+            { pubkey: parcel, isSigner: false, isWritable: true },
+            { pubkey: new web3.PublicKey(owner), isSigner: true, isWritable: true },
+            { pubkey: web3.SystemProgram.programId, isSigner: false, isWritable: false }
+        ],
+        data: Buffer.concat([
+            Buffer.from(instructionDiscriminator('mint_parcel')), borshString(parcelId), borshString(metadataUri)
+        ])
+    });
+}
+
+// Devnet parcel certificates are first-come: this mints one to the signer when none exists, returns
+// the existing one when the signer already holds it, and refuses to touch a certificate held by anyone else.
+export async function ensureParcelCertificate({
+    connection, ownerKeypair, parcelId, metadataUri,
+    parcelProgramId = PARCEL_PROGRAM_ID, sendAndConfirm = web3.sendAndConfirmTransaction
+} = {}) {
+    if (!connection?.getAccountInfo) throw new Error('a solana connection is required');
+    if (!ownerKeypair?.publicKey) throw new Error('ownerKeypair is required');
+    if (!parcelId) throw new Error('parcelId is required');
+    if (!metadataUri) throw new Error('metadataUri is required');
+    const parcelProgram = new web3.PublicKey(parcelProgramId);
+    const [parcel] = web3.PublicKey.findProgramAddressSync([Buffer.from('parcel'), Buffer.from(String(parcelId))], parcelProgram);
+    const existing = await connection.getAccountInfo(parcel, 'confirmed');
+    if (existing?.data) {
+        const owner = decodeParcelOwner(existing.data);
+        if (!owner.equals(ownerKeypair.publicKey)) {
+            throw new Error(`parcel ${parcelId} certificate is held by ${owner.toBase58()}, not the signer`);
+        }
+        return { replayed: true, signature: null, parcelAccount: parcel.toBase58(), owner: owner.toBase58() };
+    }
+    const signature = await sendInstruction(connection, buildMintParcelIx({
+        parcelId, owner: ownerKeypair.publicKey, metadataUri, parcelProgramId
+    }), ownerKeypair, sendAndConfirm);
+    return { replayed: false, signature, parcelAccount: parcel.toBase58(), owner: ownerKeypair.publicKey.toBase58() };
+}
+
 export { PARCEL_PROGRAM_ID, PROPOSAL_PROGRAM_ID };

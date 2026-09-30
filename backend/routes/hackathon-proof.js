@@ -16,6 +16,8 @@ export function buildHackathonProofManifest({ apiBase, env = process.env } = {})
     const base = String(apiBase || '').replace(/\/$/, '');
     const repository = 'https://github.com/Poglavar/consensus-builder';
     const canonicalCaseId = env.HACKATHON_CASE_ID || 'hackathon-golden-borovje-2026';
+    // The executed case is the YES counterpart of the cancelled golden case; the public audit requires it.
+    const executedCaseId = env.HACKATHON_EXECUTED_CASE_ID || 'hackathon-executed-borovje-2026';
     return {
         version: 1,
         title: 'Hyperstition: Markets for Possible Cities',
@@ -63,8 +65,33 @@ export function buildHackathonProofManifest({ apiBase, env = process.env } = {})
                 idlAddress: '66R6QbYprREJcxd2saTTEWmMUPpyx6ixx2KtBCDYGMJZ',
                 idlSha256: '38a6d44d2d1bdcbffcd9aeb72e8152bb674521582ee58c3be6a5162f3c4262e8',
                 upgradeAuthority: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ'
+            }, {
+                // Pre-hackathon programs, pinned the same way (2026-09-30: `solana program show`, then
+                // `solana program dump` + SHA-256; the two above re-read unchanged that day).
+                name: 'ProposalNFT',
+                network: 'solana:devnet',
+                address: ADDRESSES.ProposalNFT,
+                programDataAddress: 'GS6Tjof9kJCSUPLGJU2qDQH7VA1rTmJi6TdF1Fnn9RMP',
+                lastDeployedSlot: 501070500,
+                binarySha256: '977590f5a6255ff62b77eecaea065f2016304272ea0f1e18d0e0e2987ee9e1b3',
+                // On-chain Anchor IDL account, but stale: no checked-in file equals it, so no idlSha256.
+                idlAddress: 'EXYuUatUDNoa2TMXYGmnEWWJMxrhDxbetT3AR33Xw3zq',
+                idlSha256: null,
+                upgradeAuthority: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ',
+                note: 'The on-chain IDL predates cancel_and_refund and distribute_funds, both of which the deployed binary implements; blockchain/solana/idl/proposal_nft.json lists the same seven instructions as the binary. mint_and_fund is identical in both.'
+            }, {
+                name: 'ParcelNFT',
+                network: 'solana:devnet',
+                address: ADDRESSES.ParcelNFT,
+                programDataAddress: '6FghjCzxbcwxeAFfDTQcUzk8RzJCQXS6d5fZMLxfJbTn',
+                lastDeployedSlot: 450670421,
+                binarySha256: '34a0d0bbb74383599144a3d87478873c97ab03f23e1145a00baff6344d824959',
+                // On-chain Anchor IDL account; its decoded JSON equals blockchain/solana/idl/parcel_nft.json.
+                idlAddress: 'EjG4tuNWepkUJZmpFkLT4jdPn7S6n4NZkqduF2RJRRSL',
+                idlSha256: 'dabfa95a1f2d1a627864924f1514570b74c257c27bc9e51105ada5e9f26ed7eb',
+                upgradeAuthority: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ'
             }],
-            verifiedAt: '2026-09-23'
+            verifiedAt: '2026-09-30'
         },
         surfaces: {
             pitch: 'https://urbangametheory.xyz/deck.html',
@@ -91,6 +118,7 @@ export function buildHackathonProofManifest({ apiBase, env = process.env } = {})
             courtOracle: `${base}/oracle/public-records/summary`,
             prospectiveMarket: `${base}/oracle/markets/prospective/status`,
             canonicalCase: `${base}/hackathon/cases/${encodeURIComponent(canonicalCaseId)}`,
+            executedCase: `${base}/hackathon/cases/${encodeURIComponent(executedCaseId)}`,
             operations: `${base}/hackathon/operations.json`,
             activity: `${base}/agent/activity?limit=200`,
             runs: `${base}/agent/runs?limit=50`

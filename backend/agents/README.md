@@ -51,6 +51,14 @@ agent runtime. Preview it with `npm run demo:case`; execute only on devnet with
 After the setup is publicly inspected, add `-- --terminal` to cancel the case, resolve its NO
 market outcome, refund the donation, void the unfunded pledge and claim the winning position.
 
+The executed path is a second case on a second parcel set (`npm run demo:case:executed` to preview,
+`npm run demo:case:executed:live` to run). It sets up the same way, then the supporter persona, which
+holds the devnet ownership certificate of every listed parcel, accepts each parcel; the last acceptance
+puts the proposal in `Executed` on-chain, the market resolves YES, the donation escrow is released, the
+pledge is fulfilled from the supporter's wallet and the proposer claims the winning YES position. The
+land-event materializer (daily 02:30 UTC) publishes the `executed` event that completes the public case
+page and the `executed_case_yes` audit check.
+
 Both this runner and the browser simulation use `frontend/js/agent-action-engine.js`. A controller
 (`human`, `algorithm`, or `llm`) chooses an action, the registered deterministic handler executes
 it, and the engine emits the same actor/action/entity/activity envelope. The browser Activity view

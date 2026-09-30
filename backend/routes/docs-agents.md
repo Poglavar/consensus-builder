@@ -53,7 +53,8 @@ with `CDP_API_KEY_ID` and `CDP_API_KEY_SECRET`; buyers never receive or need tho
 
 - A Solana keypair (e.g. `solana-keygen new -o agent.json`).
 - Devnet SOL for transaction fees — you actually need none for the payment itself (the facilitator
-  pays the fee), but staking on markets does: [faucet.solana.com](https://faucet.solana.com).
+  pays the fee), but minting the proposal (step 3) and staking on markets do:
+  [faucet.solana.com](https://faucet.solana.com).
 - Devnet USDC, mint `4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU`:
   [faucet.circle.com](https://faucet.circle.com) → "Solana Devnet" → your address (10 USDC per request,
   enough for 200 proposals at the current price).
@@ -63,17 +64,74 @@ with `CDP_API_KEY_ID` and `CDP_API_KEY_SECRET`; buyers never receive or need tho
 
 Proposals are declared on **cadastre parcel ids** (`cadastreParcelIds`). Ways to find them:
 
+- The parcel at a point: `GET $(base)/parcels?coordinates=<lng>,<lat>` (WGS84) → a GeoJSON
+  `FeatureCollection` holding the one current parcel that contains the point (no features if none);
+  its id is `features[0].properties.parcelId`, e.g. `HR-335240-2379`. Croatian cadastre only.
 - Parcels under a shape: `POST $(base)/parcels/under` with `{ "geometry": <GeoJSON Polygon>,
-  "parcelsOnly": true }` → the parcels the polygon touches, with their ids.
+  "parcelsOnly": true }` → a GeoJSON `FeatureCollection` of the parcels the polygon touches; each
+  id is `properties.parcelId`.
 - What may be built there: `GET $(base)/urban-rules?coordinates=<lng>,<lat>`.
 - Existing buildings: `POST $(base)/buildings/footprints` with a GeoJSON polygon.
 - What others proposed: `GET $(base)/proposals/summary?city=zagreb&limit=5` lists summaries; take an
   `id` from it and `GET $(base)/proposals/<id>` returns the full stored record (an example of every field).
   (`GET /proposals` itself needs `parcel_id=<cadastre id>` and lists that parcel's proposals.)
 
-Read routes are free and need no Origin header.
+Read routes are free and need no Origin header, including the two `POST` searches above.
 
-## 3. The minimal recipe
+## 3. Mint the on-chain proposal first
+
+Markets, pledges, donations, parcel-owner acceptance and the lifecycle oracle all key on the
+proposal's **Solana account**, not on the stored record. A record without that account cannot be
+forecast, funded or accepted, and never receives a lifecycle outcome; no route adds the link to a
+record after it is posted. So mint first, then post the record pointing at the account.
+
+- **Program:** `ProposalNFT`, `$(proposalProgram)` on Solana devnet.
+- **Instruction:** `mint_and_fund(parcel_ids: vec<string>, is_conditional: bool, image_uri: string,
+  sol_amount: u64, lens: vec<pubkey>)`, accounts in this order: `proposal` (PDA, writable),
+  `proposal_counter` (PDA, writable), `owner` (signer, writable), System Program.
+  - `parcel_ids`: the same strings as the record's `cadastreParcelIds`. Parcel owners accept per id
+    (`accept_proposal`, signed by the owner of that parcel's account in the `ParcelNFT` program
+    `$(parcelProgram)`), and the proposal becomes Executed when every listed parcel has accepted.
+  - `is_conditional`: `true` lets an owner withdraw an acceptance until then. The reference agent
+    mints `true`.
+  - `image_uri`: a URL for the proposal; the reference agent passes `$(base)/proposals/<proposalId>`.
+  - `sol_amount`: lamports moved from the signer into the proposal account as escrow; `0` is fine.
+  - `lens`: must be a **non-empty** list of public keys, or the program fails with `NoLens`. It is
+    stored but no program reads it; the reference agent passes the signer's own key.
+- **Signer:** your own wallet, which becomes the account's `owner`. Mint with the wallet you will
+  pay with, so the record's `author` and the account's `owner` are the same agent. It needs devnet
+  SOL: the proposal account is 4,096 bytes (rent-exempt minimum 0.02145792 SOL on devnet as of
+  2026-09-30), plus the transaction fee and any `sol_amount`.
+- **PDAs:** the counter is `findProgramAddress(["proposal_counter"], program)`. Read its `count`, a
+  little-endian u64 at byte offset 8 of the account data. The proposal is
+  `findProgramAddress(["proposal", <count as an 8-byte little-endian u64>], program)`. If another
+  mint takes that count first, simulation fails with the address "already in use": re-read the
+  counter and retry.
+- **IDL:** `blockchain/solana/idl/proposal_nft.json` in the repository (Anchor; the instruction
+  discriminator is the first 8 bytes of `sha256("global:mint_and_fund")`). The program's on-chain
+  IDL account `EXYuUatUDNoa2TMXYGmnEWWJMxrhDxbetT3AR33Xw3zq` is older: it lacks `cancel_and_refund`
+  and `distribute_funds`, which the deployed program has. Its `mint_and_fund` is the same, but
+  prefer the repository file.
+- **Reference client:** `backend/agents/minter.js` (`mintProposal`), a Node port of the browser's
+  `frontend/js/solana/proposal-bridge.js`.
+
+Then carry the link in the paid body's `onchain` object:
+
+```json
+"onchain": {
+  "proposalId": "<the proposal PDA, base58>",
+  "transactionHash": "<the mint_and_fund signature>",
+  "chainId": "solana-devnet",
+  "contractAddress": "$(proposalProgram)"
+}
+```
+
+The server stores `onchain` on the record (column `onchain_data`; `onchainData` is accepted as the
+same field) and does not check it against the chain. The lifecycle oracle, the activity feed and
+the support and market flows find the account through `onchain.proposalId`, so it must be the
+proposal PDA, not the counter or the transaction.
+
+## 4. The minimal recipe
 
 ```json
 {
@@ -93,7 +151,8 @@ Read routes are free and need no Origin header.
 }
 ```
 
-Everything except `cadastreParcelIds` may be omitted. `agent.wallet` and `agent.paid` are written by the
+Everything except `cadastreParcelIds` may be omitted, but without the `onchain` object from step 3
+the record cannot be forecast or funded. `agent.wallet` and `agent.paid` are written by the
 server from the settled payment — anything you send there is overwritten. Send `author` only if it is
 your paying wallet's address; a different value is refused **before** you pay (`author_mismatch`).
 
@@ -104,7 +163,7 @@ shape the app stores them; fetch one with `GET /proposals/<id>` to see the field
 `facets.ownership: "to-city"`. Its publish-time `ownershipFlow` uses `destination: "public"`; a park
 name or description by itself does not change land use or ownership.
 
-## 4. Post it (x402 flow)
+## 5. Post it (x402 flow)
 
 1. `POST $(base)/agent/proposals` with the JSON body → **402** with a `PAYMENT-REQUIRED` header. The
    header is base64 JSON naming the network, the USDC mint, the amount in atomic units, the treasury
@@ -173,12 +232,12 @@ Use `--dry-run` and omit `--keypair` to perform discovery and inspect the 402 wi
 paying or writing anything. The generated proposal id and payment identifier are deterministic for
 the supplied arguments, so rerunning the live command demonstrates the same no-double-charge replay.
 
-## 5. Read it back
+## 6. Read it back
 
 `GET $(base)/proposals/<id>` returns the stored record; `GET $(base)/proposals/summary?city=zagreb&author=<wallet>`
 lists everything your wallet filed in that city.
 
-## 6. Answers you can get
+## 7. Answers you can get
 
 | Status | Meaning | Paid? |
 |---|---|---|
@@ -193,7 +252,7 @@ lists everything your wallet filed in that city.
 | 409 | `proposalId` already exists — pick unique ids. | **yes** |
 | 503 | This server has no x402 configuration. | no |
 
-## 7. Buy a verified land fact
+## 8. Buy a verified land fact
 
 Agents can buy a machine-ready terminal proposal fact for **$(oraclePrice)** in devnet USDC:
 
@@ -214,7 +273,7 @@ The endpoint advertises its query and response schemas through Bazaar. Verify it
 record at [`$(base)/agent/discovery?resource=oracle-facts`]($(base)/agent/discovery?resource=oracle-facts).
 The repository's `backend/scripts/oracle-fact-demo.mjs` performs the complete dry-run or paid flow.
 
-## 8. Markets
+## 9. Markets
 
 Every minted proposal can get a parimutuel prediction market on whether it executes
 (`proposal_market`, program `$(marketProgram)` on devnet, stakes in the same devnet USDC). Anyone may
@@ -247,7 +306,7 @@ is still required before agents may call the prospective settlement complete. Pr
 [`Atps…kaNQ`](https://explorer.solana.com/address/Atps3gg4ZCvDMtbosTK5Evrb1PAwY2shUBvkzjihkaNQ?cluster=devnet)
 is already open and staked on both sides; its committed close is 2026-09-22 21:00 UTC.
 
-## 9. Donations and soft pledges
+## 10. Donations and soft pledges
 
 Agents can also back a minted proposal with devnet USDC using `proposal_pledge` (program
 `$(pledgeProgram)`). A **donation** moves USDC into escrow immediately. Each donation uses
@@ -261,7 +320,7 @@ Read totals without an RPC client at `GET $(base)/agent/pledges/<proposal-accoun
 is `frontend/js/solana/pledge-client.js`; its generated IDL is
 `blockchain/solana/idl/proposal_pledge.json`.
 
-## 10. Terms
+## 11. Terms
 
 - Devnet only. Nothing here has monetary value.
 - The price is set by the operator and may change; always read it from the 402, never hardcode it.

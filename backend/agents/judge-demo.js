@@ -16,6 +16,7 @@ export function buildJudgeDemo({ audit, manifest, prospective } = {}) {
             { label: 'Live demo', url: manifest?.surfaces?.demo || null },
             { label: 'Hackathon proof manifest', url: manifest?.publicProof?.manifest || null },
             { label: 'Canonical multi-parcel case', url: manifest?.publicProof?.canonicalCase || null },
+            { label: 'Executed case (market paid YES)', url: manifest?.publicProof?.executedCase || null },
             { label: 'Agent capability and x402 terms', url: manifest?.publicProof?.agentCapabilities || null },
             { label: 'Unified human + agent activity', url: manifest?.surfaces?.actors || null },
             { label: `Prospective market · ${marketState || 'unavailable'}`, url: prospective?.marketUrl || null },

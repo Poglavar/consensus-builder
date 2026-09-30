@@ -17,6 +17,8 @@
     "demo:judge": "node scripts/judge-demo.mjs",
         "demo:case": "node agents/canonical-case-run.mjs --dry-run",
         "demo:case:live": "node agents/canonical-case-run.mjs --live",
+        "demo:case:executed": "node agents/canonical-case-run.mjs --dry-run --outcome executed --terminal",
+        "demo:case:executed:live": "node agents/canonical-case-run.mjs --live --outcome executed --terminal",
         "demo:cold-start": "node examples/independent-x402-client.mjs",
         "sync:land-events": "node scripts/sync-land-events.mjs",
         "smoke:prod:parcels": "node scripts/smoke-production-bbox.mjs",

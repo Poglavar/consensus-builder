@@ -18,14 +18,17 @@ mirrored in [`blockchain/solana/Anchor.toml`](../blockchain/solana/Anchor.toml),
 `declare_id!`, and the generated IDLs. Contract tests fail when these representations diverge.
 
 The public hackathon manifest also pins the exact mutable devnet deployments inspected on
-2026-09-23, rather than treating a stable program address as a version:
+2026-09-23 (the two hackathon programs) and 2026-09-30 (the two older ones, with the first two re-read
+unchanged), rather than treating a stable program address as a version:
 
 | Program | ProgramData | Last deployed slot | Deployed binary SHA-256 |
 |---|---|---:|---|
 | ProposalPledge | `EtV7…SyZQ` | `503098918` | `649c6fda…9d053c` |
 | ProposalMarket | `AGmZ…qhx7` | `503099080` | `3039d28d…ba91c0e` |
+| ProposalNFT | `GS6T…9RMP` | `501070500` | `977590f5…e9e1b3` |
+| ParcelNFT | `6Fgh…JbTn` | `450670421` | `34a0d0bb…824959` |
 
-Both remain upgradeable by `AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ`. These hashes identify
+All four remain upgradeable by `AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ`. These hashes identify
 what devnet executed; they do not claim a reproducible source-to-binary build or an audited program.
 The 2026-09-23 upgrades (commit `361cf41`) made every market and donation vault `init_if_needed`, so
 pre-creating a vault's predictable token account can no longer block a proposal's donations or market.
@@ -34,9 +37,12 @@ Live proof (`blockchain/solana/scripts/vault-precreate-proof.mjs --live`): a sec
 of a fresh proposal, then its owner still opened the
 [donation escrow](https://explorer.solana.com/tx/3zVdTx1PBAobY9YhpMLuQwAVNuyr37EcjJGDFFp6opx9xo1iBUVr4q95rMMwqCisvKhpLSDQTeamKYjfBmbdxKBX?cluster=devnet)
 and the [market](https://explorer.solana.com/tx/398Z39Qmps26Z9iV4rn3K9RGHaD2ysZadLu5KeAgywAuga6ScpEPGNVT8DCcnDYrFemXy2ANb9tPqWSZfnAvm89j?cluster=devnet).
-Both programs also publish their current Anchor IDL on-chain (ProposalPledge `4PJB…Zb7X`,
-ProposalMarket `66R6…MJZ`); `anchor idl fetch <program> --provider.cluster devnet` returns JSON equal
-to `blockchain/solana/idl/*.json`, whose SHA-256s the manifest pins as `idlSha256`.
+ProposalPledge, ProposalMarket and ParcelNFT also publish their current Anchor IDL on-chain
+(`4PJB…Zb7X`, `66R6…MJZ`, `EjG4…RRSL`); `anchor idl fetch <program> --provider.cluster devnet`
+returns JSON equal to `blockchain/solana/idl/*.json`, whose SHA-256s the manifest pins as `idlSha256`.
+ProposalNFT's on-chain IDL (`EXYu…w3zq`) is stale: it predates `cancel_and_refund` and
+`distribute_funds`, which the deployed binary implements, so the manifest pins no `idlSha256` for it
+and `blockchain/solana/idl/proposal_nft.json` is the one to use.
 
 The devnet USDC mint used by the demo is
 [`4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU`](https://explorer.solana.com/address/4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU?cluster=devnet).

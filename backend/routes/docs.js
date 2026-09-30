@@ -181,6 +181,8 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
     };
     const marketProgramId = () => solanaProgramId('ProposalMarket');
     const pledgeProgramId = () => solanaProgramId('ProposalPledge');
+    const proposalProgramId = () => solanaProgramId('ProposalNFT');
+    const parcelProgramId = () => solanaProgramId('ParcelNFT');
 
     // GET /docs/agents - the agent quickstart: how to pay for and post a proposal over x402.
     app.get('/docs/agents', (req, res) => {
@@ -194,6 +196,8 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                 .replace(/\$\(network\)/g, x402.network || 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1')
                 .replace(/\$\(marketProgram\)/g, marketProgramId())
                 .replace(/\$\(pledgeProgram\)/g, pledgeProgramId())
+                .replace(/\$\(proposalProgram\)/g, proposalProgramId())
+                .replace(/\$\(parcelProgram\)/g, parcelProgramId())
                 .replace(/\$\(date\)/g, new Date().toLocaleDateString());
             res.setHeader('Content-Type', 'text/html');
             res.send(renderDocPage(marked(markdown), 'Agent quickstart — Urban Game Theory'));
@@ -210,6 +214,9 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
             const x402 = readX402Config(env);
             const oracleX402 = readX402OracleConfig(env);
             const base = docsBaseUrl(req);
+            // Live payment terms: never served from a cache (also reached as /agents.json, and through
+            // the main site's nginx proxy, which passes this header on).
+            res.set('Cache-Control', 'no-store');
             res.json({
                 docs: `${base}/docs/agents`,
                 schema,
@@ -345,6 +352,38 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                         oracleRecipe: COURT_RECIPE_ID,
                         proofMarket: '5wyJ7XjbnoPUaDgaHAttdhdS38VmHf1p3jGwwVUeN8QM'
                     }
+                },
+                // Mint first: markets, pledges, acceptance and the lifecycle oracle all key on the
+                // proposal account, and the paid record names it in `onchain` (docs-agents.md, step 3).
+                proposalAccount: {
+                    programId: proposalProgramId(),
+                    cluster: 'devnet',
+                    mint: {
+                        instruction: 'mint_and_fund',
+                        args: ['parcel_ids: vec<string>', 'is_conditional: bool', 'image_uri: string', 'sol_amount: u64', 'lens: vec<pubkey>'],
+                        accounts: ['proposal', 'proposal_counter', 'owner', 'system_program'],
+                        signer: 'owner: your own wallet; it pays rent for the 4096-byte proposal account',
+                        parcelIds: 'the same strings as the record\'s cadastreParcelIds',
+                        lens: 'must be non-empty; stored, not read by any program',
+                        counterPda: 'seeds ["proposal_counter"]',
+                        proposalPda: 'seeds ["proposal", count as 8-byte little-endian u64], count read at byte offset 8 of the counter account'
+                    },
+                    recordLink: {
+                        field: 'onchain',
+                        proposalId: 'the proposal PDA, base58',
+                        transactionHash: 'the mint_and_fund signature',
+                        chainId: 'solana-devnet',
+                        contractAddress: proposalProgramId()
+                    },
+                    idl: 'blockchain/solana/idl/proposal_nft.json',
+                    client: 'backend/agents/minter.js'
+                },
+                parcelAccount: {
+                    programId: parcelProgramId(),
+                    cluster: 'devnet',
+                    role: 'parcel ownership: accept_proposal is signed by the owner of the parcel account',
+                    pda: 'seeds ["parcel", parcel id as UTF-8 bytes]',
+                    idl: 'blockchain/solana/idl/parcel_nft.json'
                 },
                 proposalSupport: {
                     programId: pledgeProgramId(),

@@ -303,6 +303,8 @@ describe('GET /docs/database', () => {
 });
 
 describe('agent quickstart docs', () => {
+    const repoFile = (relative) => new URL(`../../${relative}`, import.meta.url);
+    const PROGRAMS = JSON.parse(fs.readFileSync(repoFile('frontend/contracts/addresses.json'), 'utf8'))['solana-devnet'];
     const X402_ENV = {
         PUBLIC_API_BASE_URL: 'https://api.example.test',
         X402_NETWORK: 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
@@ -325,6 +327,18 @@ describe('agent quickstart docs', () => {
         expect(res.text).toContain('4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU');
         expect(res.text).not.toContain('$(base)');
         expect(res.text).not.toContain('$(price)');
+    });
+
+    it('GET /docs/agents documents minting before posting, with the program ids filled in', async () => {
+        const app = createRouteApp(setupDocsRoute, createDocsPool(), { env: X402_ENV });
+        const res = await request(app).get('/docs/agents');
+        expect(res.text).toContain('Mint the on-chain proposal first');
+        expect(res.text).toContain('mint_and_fund');
+        expect(res.text).toContain(PROGRAMS.ProposalNFT);
+        expect(res.text).toContain(PROGRAMS.ParcelNFT);
+        expect(res.text).toContain('https://api.example.test/parcels?coordinates=');
+        expect(res.text).not.toContain('$(proposalProgram)');
+        expect(res.text).not.toContain('$(parcelProgram)');
     });
 
     it('GET /docs/agents says when the price is not configured instead of printing a placeholder', async () => {
@@ -363,6 +377,24 @@ describe('agent quickstart docs', () => {
             'ugt_submit_proposal', 'ugt_pledge', 'ugt_donate', 'ugt_forecast', 'ugt_buy_verified_fact'
         ]));
         expect(res.body.market.programId).toMatch(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/);
+        expect(res.headers['cache-control']).toBe('no-store');
+        expect(res.body.proposalAccount).toMatchObject({
+            programId: PROGRAMS.ProposalNFT,
+            cluster: 'devnet',
+            mint: { instruction: 'mint_and_fund', accounts: ['proposal', 'proposal_counter', 'owner', 'system_program'] },
+            recordLink: { field: 'onchain', chainId: 'solana-devnet', contractAddress: PROGRAMS.ProposalNFT },
+            idl: 'blockchain/solana/idl/proposal_nft.json',
+            client: 'backend/agents/minter.js'
+        });
+        // The documented signature is the checked-in IDL's, not a hand-kept copy that can drift.
+        const typeName = type => (typeof type === 'string' ? type : `vec<${typeName(type.vec)}>`);
+        const idl = JSON.parse(fs.readFileSync(repoFile(res.body.proposalAccount.idl), 'utf8'));
+        const mintAndFund = idl.instructions.find(instruction => instruction.name === 'mint_and_fund');
+        expect(res.body.proposalAccount.mint.args).toEqual(mintAndFund.args.map(arg => `${arg.name}: ${typeName(arg.type)}`));
+        expect(res.body.proposalAccount.mint.accounts).toEqual(mintAndFund.accounts.map(account => account.name));
+        expect(res.body.parcelAccount).toMatchObject({ programId: PROGRAMS.ParcelNFT, cluster: 'devnet', idl: 'blockchain/solana/idl/parcel_nft.json' });
+        expect(fs.existsSync(repoFile(res.body.parcelAccount.idl))).toBe(true);
+        expect(fs.existsSync(repoFile(res.body.proposalAccount.client))).toBe(true);
         expect(res.body.proposalSupport).toMatchObject({
             programId: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/),
             cluster: 'devnet',

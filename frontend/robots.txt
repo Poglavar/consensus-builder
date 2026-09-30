@@ -1,0 +1,4 @@
+# robots.txt for the Urban Game Theory web app, served as a static file by nginx. Agents: see
+# /llms.txt. The JSON API at https://api.urbangametheory.xyz serves its own robots.txt and llms.txt.
+User-agent: *
+Allow: /

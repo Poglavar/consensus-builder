@@ -162,6 +162,14 @@ npm run demo:case
 supporter keypairs, database checkpoint ledger, x402 client, donation/pledge adapters and market
 adapter; retries do not mint, pay, donate, pledge or target-stake twice after a recorded checkpoint.
 
+The executed case is the YES side of the same loop on a second real parcel set. `npm run
+demo:case:executed` prints its plan; `npm run demo:case:executed:live` sets it up the same way, then
+the supporter persona, which holds the devnet ownership certificate of every listed parcel, accepts
+each parcel, the proposal becomes `Executed` on-chain, the market resolves YES, the donation escrow is
+released, the pledge is fulfilled and the proposer claims the winning position. The land-event
+materializer publishes the `executed` event that completes `/hackathon/cases/:proposalId` and the
+`executed_case_yes` audit check.
+
 For a bounded, read-only command-line walkthrough of the same public evidence:
 
 ```bash

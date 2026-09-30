@@ -126,6 +126,16 @@ export async function auditHackathonProof({
     } else {
         errors.canonicalCase = 'proof manifest does not declare publicProof.canonicalCase';
     }
+    const executedCaseUrl = values.proofManifest?.publicProof?.executedCase;
+    if (executedCaseUrl) {
+        try {
+            values.executedCase = await readJson(fetchImpl, executedCaseUrl);
+        } catch (error) {
+            errors.executedCase = error instanceof Error ? error.message : String(error);
+        }
+    } else {
+        errors.executedCase = 'proof manifest does not declare publicProof.executedCase';
+    }
 
     const expectedProposal = `${base}/agent/proposals`;
     const expectedFact = `${base}/agent/oracle/facts`;
@@ -133,9 +143,12 @@ export async function auditHackathonProof({
     const events = values.activity?.events || [];
     const proposer = newest(runs, run => run.controller === 'algorithm'
         && (run.role || 'proposer') === 'proposer' && run.status === 'done');
+    // A supporter day that finds its support already on-chain is a recorded no-op; the proof needs the
+    // newest run that actually signed, and it must be recent.
     const supporter = newest(runs, run => run.controller === 'algorithm'
-        && run.role === 'supporter' && run.status === 'done');
+        && run.role === 'supporter' && run.status === 'done' && Boolean(run.support?.signature));
     const proposerAge = proposer ? Math.max(0, (Number(now) - time(proposer.updatedAt || proposer.finishedAt)) / 3_600_000) : Infinity;
+    const supporterAge = supporter ? Math.max(0, (Number(now) - time(supporter.updatedAt || supporter.finishedAt)) / 3_600_000) : Infinity;
     const proposerAction = proposer && newest(events, event => event.runId === proposer.id && Boolean(event.transaction));
     const supporterSignature = supporter?.support?.signature || null;
     const supporterAction = supporter && newest(events, event => event.runId === supporter.id
@@ -178,6 +191,25 @@ export async function auditHackathonProof({
     );
     const canonicalTerminal = ['decision', 'evidence', 'resolution', 'settlement']
         .every(id => canonical?.stages?.find(item => item.id === id)?.state === 'complete');
+    // The executed case is the YES side of the same loop: every listed parcel accepted on-chain, the
+    // proposal Executed, the market resolved YES, escrow released, pledge fulfilled and the YES claimed.
+    const executed = values.executedCase;
+    const executedActivities = executed?.activity || [];
+    const executedAction = (type, side = null) => executedActivities.some(event => event.action?.type === type
+        && (side === null || String(event.action?.side || '').toLowerCase() === side) && Boolean(event.transaction));
+    const executedAccepts = executedActivities.filter(event => event.action?.type === 'accept' && Boolean(event.transaction)).length;
+    const executedParcels = Number(executed?.parcelSet?.parcelCount || 0);
+    const executedYes = Boolean(
+        executed && executedParcels >= 2
+        && String(executed.proposal?.lifecycleStatus || '').toLowerCase() === 'executed'
+        && executedAccepts >= executedParcels
+        && executed.branches?.forecast?.resolved === true
+        && String(executed.branches?.forecast?.outcome || '').toUpperCase() === 'YES'
+        && executedAction('resolve') && executedAction('releaseDonations') && executedAction('fulfillPledge')
+        && executedAction('claim', 'yes')
+        && ['decision', 'evidence', 'resolution', 'settlement']
+            .every(id => executed.stages?.find(item => item.id === id)?.state === 'complete')
+    );
 
     const checks = [
         check('proposal_bazaar', exactResource(values.proposalDiscovery, expectedProposal),
@@ -189,9 +221,12 @@ export async function auditHackathonProof({
         check('deterministic_proposer', Boolean(proposer && proposerAge <= maxRunAgeHours && proposerAction),
             `A deterministic proposer completed within ${maxRunAgeHours} hours and produced an on-chain action`,
             proposer ? { runId: proposer.id, ageHours: Number(proposerAge.toFixed(2)), transaction: proposerAction?.transaction || null } : errors.runs || null),
-        check('deterministic_supporter', Boolean(supporter && supporterSignature && supporterAction?.transaction === supporterSignature),
+        check('deterministic_supporter', Boolean(supporter && supporterAge <= maxRunAgeHours && supporterSignature && supporterAction?.transaction === supporterSignature),
             'A separate deterministic supporter backed another proposal on-chain',
-            supporter ? { runId: supporter.id, type: supporter.support?.type || null, proposalId: supporter.support?.proposalId || null, transaction: supporterSignature } : errors.runs || null),
+            supporter ? {
+                runId: supporter.id, type: supporter.support?.type || null, proposalId: supporter.support?.proposalId || null,
+                transaction: supporterSignature, ageHours: Math.round(supporterAge * 10) / 10, maxAgeHours: maxRunAgeHours
+            } : errors.runs || 'no completed supporter run carries a transaction'),
         check('proposal_lifecycle_oracle', Boolean(lifecycle),
             'A source-hashed terminal proposal event is publicly auditable',
             lifecycle ? { eventId: lifecycle.id, outcome: lifecycle.outcome, transaction: lifecycle.source.transaction } : errors.oracleEvents || null),
@@ -243,6 +278,13 @@ export async function auditHackathonProof({
         check('canonical_case_terminal', canonicalTerminal,
             'The canonical case also proves decision, evidence, resolution and settlement',
             canonical ? { id: canonical.id, state: canonical.state, stages: canonical.stages } : errors.canonicalCase || null),
+        check('executed_case_yes', executedYes,
+            'A second real-parcel case executed on-chain and its market resolved YES and paid the winner',
+            executed ? {
+                id: executed.id, lifecycleStatus: executed.proposal?.lifecycleStatus || null,
+                outcome: executed.branches?.forecast?.outcome || null, acceptances: executedAccepts,
+                parcelCount: executedParcels, stages: executed.stages
+            } : errors.executedCase || null),
         check('human_agent_activity_matrix', Object.values(activityMatrix).every(Boolean),
             'Humans, deterministic and LLM agents, and a resolver share one transaction-backed activity stream',
             activityMatrix, 'advisory'),

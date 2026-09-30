@@ -23,7 +23,8 @@ function publicAgentRun(row, { role, schedule, maxAgeHours, now }) {
         || Object.values(summary.mints || {}).find(item => item?.signature)?.signature
         || null;
     const outcome = summary.outcome || null;
-    const successful = row.status === 'done' && ['completed', 'no-picks', 'no-eligible-proposal'].includes(outcome);
+    // 'already-supported' is a deliberate no-op day for the supporter, not a failure.
+    const successful = row.status === 'done' && ['completed', 'no-picks', 'no-eligible-proposal', 'already-supported'].includes(outcome);
     return {
         role,
         schedule,

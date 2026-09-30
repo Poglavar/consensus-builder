@@ -10,8 +10,10 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
-import { Connection, Keypair } from '@solana/web3.js';
-import { selectSupportAction } from './supporter-picker.js';
+import { Connection, Keypair, PublicKey } from '@solana/web3.js';
+import {
+    classifySupportExecution, eligibleSupportProposals, proposalAccount, selectSupportAction
+} from './supporter-picker.js';
 import { ensurePledgeBookAndSet } from './pledger.js';
 import { ensureDonationEscrowAndDonate } from './donor.js';
 import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
@@ -22,6 +24,11 @@ import { sendTelegram } from './telegram.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const actionEngineApi = require('../../frontend/js/agent-action-engine.js');
+const web3 = require('@solana/web3.js');
+const supportClient = require('../../frontend/js/solana/pledge-client.js');
+const marketClient = require('../../frontend/js/solana/market-client.js');
+supportClient.configure({ web3 });
+marketClient.configure({ web3 });
 const USDC_DEVNET = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 const SIDE_YES = 1;
 
@@ -89,6 +96,28 @@ async function discoverProposals(apiBase, persona) {
     return Array.from(byId.values());
 }
 
+// Reads this wallet's existing on-chain support so the picker never re-selects a proposal it already
+// backs: a replayed pledge signs nothing, and reporting it as a new action was a false success.
+async function alreadySupportedProposalIds({ connection, wallet, persona, proposals }) {
+    if (!wallet) return [];
+    const actions = (persona.support?.actions?.length ? persona.support.actions : ['pledge']).map(action => String(action).toLowerCase());
+    const owner = new PublicKey(wallet);
+    const candidates = eligibleSupportProposals(proposals, { wallet, personaName: persona.name });
+    const supported = await Promise.all(candidates.map(async proposal => {
+        const proposalPda = proposalAccount(proposal);
+        const checks = [];
+        if (actions.includes('pledge')) {
+            checks.push(supportClient.readPledgeCommitment(connection, proposalPda, owner).then(commitment => Boolean(commitment)
+                && [supportClient.constants.PLEDGE_ACTIVE, supportClient.constants.PLEDGE_FULFILLED].includes(commitment.status)));
+        }
+        if (actions.includes('stake')) {
+            checks.push(marketClient.readPosition(connection, proposalPda, owner, SIDE_YES).then(Boolean));
+        }
+        return (await Promise.all(checks)).some(Boolean) ? String(proposal.proposalId || proposal.id) : null;
+    }));
+    return supported.filter(Boolean);
+}
+
 async function executeSupport({ decision, connection, keypair, runId }) {
     const amountAtomic = usdcToAtomic(decision.amount);
     const capAtomic = usdcToAtomic(String(process.env.AGENT_SUPPORT_USDC_CAP || '0.25'));
@@ -126,7 +155,8 @@ async function main() {
         host: process.env.PGHOST, port: process.env.PGPORT, user: process.env.PGUSER,
         password: process.env.PGPASSWORD, database: process.env.PGDATABASE
     }) : null;
-    const connection = args.live ? new Connection(rpcUrl, 'confirmed') : null;
+    // Reads (existing support) happen in dry-run too; only --live signs anything.
+    const connection = new Connection(rpcUrl, 'confirmed');
     const report = [];
     try {
         for (const persona of personas) {
@@ -139,7 +169,8 @@ async function main() {
             const keypair = args.live ? loadKeypair(persona) : null;
             const wallet = keypair?.publicKey.toBase58() || persona.wallet || null;
             const proposals = await discoverProposals(apiBase, persona);
-            const choice = selectSupportAction({ day, persona, proposals, wallet });
+            const excludeProposalIds = await alreadySupportedProposalIds({ connection, wallet, persona, proposals });
+            const choice = selectSupportAction({ day, persona, proposals, wallet, excludeProposalIds });
             console.log(`[${new Date().toISOString()}] ${persona.name}: ${choice.reason}`);
             if (args.dryRun) {
                 if (choice.selected) console.log(JSON.stringify(choice.selected, null, 2));
@@ -175,11 +206,15 @@ async function main() {
                     },
                     execute: () => executeSupport({ decision: choice.selected, connection, keypair, runId })
                 });
-                await updateRun(pool, runId, { stage: 'supported', status: 'done', summaryPatch: {
+                // A replayed adapter result found the support already on-chain: record a no-op, not an action.
+                const verdict = classifySupportExecution(execution.outcome);
+                await updateRun(pool, runId, { stage: verdict.acted ? 'supported' : 'selected', status: 'done', summaryPatch: {
                     support: { type: choice.selected.type, proposalId: choice.selected.proposalId, proposalAccount: choice.selected.proposalAccount, ...execution.outcome },
-                    activities, outcome: 'completed'
+                    activities: verdict.acted ? activities : [], outcome: verdict.runOutcome
                 } });
-                report.push(`${persona.name}: ${choice.selected.type} ${choice.selected.amount} USDC on ${choice.selected.proposalId}`);
+                report.push(verdict.acted
+                    ? `${persona.name}: ${choice.selected.type} ${choice.selected.amount} USDC on ${choice.selected.proposalId}`
+                    : `${persona.name}: ${choice.selected.proposalId} was already supported; no new transaction`);
             } catch (error) {
                 await updateRun(pool, runId, { stage: 'selected', status: 'failed', summaryPatch: {
                     activities, outcome: 'failed', error: error.message

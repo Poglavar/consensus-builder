@@ -184,9 +184,15 @@ export function buildOpenApi(base, env) {
     };
 }
 
+// The x402 manifest, llms.txt and openapi.json embed the live payment terms (price, payTo), so no
+// cache may keep them: a stale copy would advertise a price the 402 no longer asks. The main site's
+// nginx proxies x402 and openapi.json here and passes this header through; /agents.json gets the
+// same header from its /docs/agents.json handler.
+const LIVE_TERMS_CACHE_CONTROL = 'no-store';
+
 export function setupWellKnownRoutes(app, { env = process.env, now = () => new Date() } = {}) {
     app.get('/.well-known/x402', (req, res) => {
-        res.json(buildX402Manifest(publicBase(req, env), env));
+        res.set('Cache-Control', LIVE_TERMS_CACHE_CONTROL).json(buildX402Manifest(publicBase(req, env), env));
     });
 
     app.get('/.well-known/security.txt', (req, res) => {
@@ -194,11 +200,11 @@ export function setupWellKnownRoutes(app, { env = process.env, now = () => new D
     });
 
     app.get('/llms.txt', (req, res) => {
-        res.type('text/markdown; charset=utf-8').send(buildLlmsTxt(publicBase(req, env), env));
+        res.set('Cache-Control', LIVE_TERMS_CACHE_CONTROL).type('text/markdown; charset=utf-8').send(buildLlmsTxt(publicBase(req, env), env));
     });
 
     app.get('/openapi.json', (req, res) => {
-        res.json(buildOpenApi(publicBase(req, env), env));
+        res.set('Cache-Control', LIVE_TERMS_CACHE_CONTROL).json(buildOpenApi(publicBase(req, env), env));
     });
 
     // Alias, not a copy: re-dispatch to the /docs/agents.json handler so the two can never differ.

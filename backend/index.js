@@ -205,9 +205,22 @@ function attachSqlLogging(pool, runQueryWithLogging) {
 export const WRITE_RATE_LIMIT = 600;
 
 // /parcels/under is exempt from the WRITE budget (it is a read; a fabric replay asks once per applied
-// formation — see RATE_LIMIT_EXEMPT_POST_PATHS below), but it is an expensive PostGIS read over a
+// formation — see READ_ONLY_POST_PATHS below), but it is an expensive PostGIS read over a
 // body of up to 15 MB, so it gets its own, much larger, budget instead of none at all.
 export const PARCELS_UNDER_RATE_LIMIT = 3000;
+
+// POST routes that are READS: they take a POST only because their input (a GeoJSON geometry, a list
+// of ids) is too big for a query string, and they change nothing. So neither the Origin gate nor the
+// write limiter in createApp applies to them — one list, so the two can never disagree about what is
+// a read. Exported so the tests exercise the real list. Add a route here only after checking its
+// handler writes nothing.
+export const READ_ONLY_POST_PATHS = new Set([
+    '/buildings/near',
+    '/buildings/footprints',
+    '/buildings/under',
+    '/parcels/under',
+    '/proposals/batch'
+]);
 
 // Canton is off unless explicitly enabled: its OAuth client is currently rejected (invalid_grant)
 // and every /canton/* request failed. Disabled means the routes are not registered at all, so
@@ -315,6 +328,9 @@ export function createApp({
         if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) return next();
         // /agent/* is for headless agents: payment (x402) is their authentication, they send no Origin.
         if (isAgentPath(req.path)) return next();
+        // A read-only POST changes nothing, so there is nothing to forge. The agent docs send headless
+        // callers to POST /parcels/under and /buildings/footprints, and without this they got a 403.
+        if (req.method === 'POST' && READ_ONLY_POST_PATHS.has(req.path)) return next();
 
         const origin = req.get('origin') || req.get('referer');
         if (!origin) {
@@ -344,6 +360,7 @@ export function createApp({
         message: { error: 'Too many requests, please try again later.' }
     });
     // Routes that use POST for body-size reasons but are read-only — skip the write limiter.
+    // The list is READ_ONLY_POST_PATHS (module scope, above createApp), shared with the Origin gate above.
     //
     // /parcels/under is one of these and being counted as a write had a nasty shape: a fabric replay
     // asks it once per applied formation, so a plan of twenty roads spends twenty of the fifty-per-
@@ -357,13 +374,6 @@ export function createApp({
     // batch that applies a hundred block rules spends a hundred of the budget, 429s partway through,
     // and the scan then finds NOTHING to demolish. Not an error the user sees: a block recorded as
     // demolishing nothing, which is a wrong answer wearing the shape of a right one.
-    const RATE_LIMIT_EXEMPT_POST_PATHS = new Set([
-        '/buildings/near',
-        '/buildings/footprints',
-        '/buildings/under',
-        '/parcels/under',
-        '/proposals/batch'
-    ]);
     const parcelsUnderRateLimiter = rateLimit({
         windowMs: 15 * 60 * 1000,
         max: parcelsUnderRateLimit,
@@ -377,7 +387,7 @@ export function createApp({
                 return parcelsUnderRateLimiter(req, res, next);
             }
             // /agent/* pays per request, so the payment is the limiter (design decision, not an oversight).
-            if (req.method === 'POST' && (RATE_LIMIT_EXEMPT_POST_PATHS.has(req.path) || isAgentPath(req.path))) {
+            if (req.method === 'POST' && (READ_ONLY_POST_PATHS.has(req.path) || isAgentPath(req.path))) {
                 return next();
             }
             return writeRateLimiter(req, res, next);

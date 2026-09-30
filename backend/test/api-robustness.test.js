@@ -9,7 +9,7 @@ import { EventEmitter } from 'node:events';
 import express from 'express';
 import request from 'supertest';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createApp, installUnhandledRejectionLogger, isCantonEnabled } from '../index.js';
+import { createApp, installUnhandledRejectionLogger, isCantonEnabled, READ_ONLY_POST_PATHS } from '../index.js';
 import { forwardAsyncErrors } from '../utils/async-routes.js';
 import { MAX_UNDER_VERTICES } from '../routes/parcels.js';
 import { setupParcelBgRoute } from '../routes/parcel-bg.js';
@@ -200,6 +200,43 @@ describe('POST /parcels/under validates its input before any SQL', () => {
         expect(full.sql).toContain('ST_Intersection(ST_MakeValid(p.geom), i.g)');
         // The index predicate keeps the raw column so the GIST index still applies.
         expect(full.sql).toContain('p.geom && parts.part');
+    });
+});
+
+// The agent docs send headless callers to POST /parcels/under and /buildings/footprints. They send no
+// Origin, and the gate used to 403 every POST without one — a read included. Writes keep the gate.
+describe('the Origin gate lets read-only POSTs through and still stops writes', () => {
+    const square = { type: 'Polygon', coordinates: [[[15.9, 45.8], [15.901, 45.8], [15.901, 45.801], [15.9, 45.8]]] };
+
+    it('answers the documented parcel search to a caller with no Origin or Referer', async () => {
+        const pool = recordingPool(async sql => (sql.includes('count(*)')
+            ? { rows: [{ parcels: 1 }] }
+            : { rows: [{ cestica_id: 7, broj_cestice: '2379', maticni_broj_ko: '335240', parcelid: 'HR-335240-2379', geometry: square, calculated_area: 120 }] }));
+        const res = await request(app(pool)).post('/parcels/under').send({ geometry: square, parcelsOnly: true });
+
+        expect(res.status).toBe(200);
+        expect(res.body.features.map(feature => feature.properties.parcelId)).toEqual(['HR-335240-2379']);
+    });
+
+    it('reaches the handler of every read-only POST without an Origin', async () => {
+        // An empty body is invalid on each of them, so each handler answers its own 400: proof the
+        // request got past the gate, whose refusal is 403 { error: 'Forbidden' }.
+        const server = app();
+        expect(READ_ONLY_POST_PATHS).toContain('/buildings/footprints');
+        for (const path of READ_ONLY_POST_PATHS) {
+            const res = await request(server).post(path).send({});
+            expect(res.status, path).toBe(400);
+            expect(res.body.error, path).not.toBe('Forbidden');
+        }
+    });
+
+    it('still refuses a write without an Origin, before any SQL', async () => {
+        const pool = recordingPool();
+        const res = await request(app(pool)).post('/proposals').send({ cadastreParcelIds: ['HR-335240-2379'] });
+
+        expect(res.status).toBe(403);
+        expect(res.body).toEqual({ error: 'Forbidden' });
+        expect(pool.calls).toHaveLength(0);
     });
 });
 

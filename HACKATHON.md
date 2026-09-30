@@ -211,8 +211,11 @@ below rejects that ordering.
 
 ## Before vs. built here
 
-Measured against baseline `3ee1855`: 57 commits, 283 files, +45,718 / −3,889 lines
-(`git diff --shortstat 3ee1855...colosseum-worlds-fair`).
+Measured against baseline `3ee1855`: 68 commits, 446 files, +56,486 / −5,090 lines
+(`git diff --shortstat 3ee1855...colosseum-worlds-fair`). The diff also contains platform maintenance
+commits that landed on this branch (security hardening, mobile fixes, thumbnail rendering, a
+legacy-data migration, merges from main); they are listed in the commit log rather than in the
+numbered feature list.
 
 | Area | Before `3ee1855` | Built on this branch |
 |---|---|---|
@@ -255,6 +258,13 @@ and staked both YES and NO. Its owner then cancelled it, the lifecycle materiali
 source-hashed event, another actor resolved the market NO, the donation was refunded, the pledge
 was voided and the winning NO position was claimed. The aggregate therefore derives all seven
 stages from public data rather than presenting a scripted success state.
+
+`/hackathon/cases/hackathon-executed-borovje-2026` is the executed counterpart on a second
+two-parcel set: the wallet holding the devnet ownership certificate of every listed parcel accepts,
+the proposal reaches `Executed` on-chain, the market resolves YES, the donation escrow is released,
+the pledge is fulfilled and the YES position is claimed. The public audit's `executed_case_yes`
+check requires all of that to be complete, so the page states the truth until the run has happened
+rather than presenting a scripted YES.
 
 1. Discover the paid proposal capability through the x402/Bazaar metadata.
 2. Run an agent proposal through payment, persistence, and its on-chain transaction link.

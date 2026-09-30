@@ -62,3 +62,25 @@ describe('public hackathon operations status', () => {
         expect(operationsReader).toHaveBeenCalledWith(expect.objectContaining({ now: NOW }));
     });
 });
+
+describe('supporter no-op days in the public operations status', () => {
+    it('reports a run that found its support already on-chain as completed without a transaction', () => {
+        const runs = rows().map(row => row.persona === 'supporter-01'
+            ? { ...row, stage: 'selected', summary: { role: 'supporter', outcome: 'already-supported', support: { replayed: true, signature: null } } }
+            : row);
+        const landOracle = buildLandOracleRunStats({
+            startedAt: '2026-09-22T02:30:00Z', endedAt: '2026-09-22T02:30:02Z',
+            result: { scanned: 4, terminal: 0, events: [], inserted: 0, reconciled: 0, missingEvidence: [], invalidAccounts: [] }
+        });
+        const status = buildPublicOperationsStatus({
+            runs, landOracle, now: NOW,
+            prospective: { resolver: { cadence: 'hourly at minute 45', lastRun: {
+                status: 'completed', phase: 'awaiting_evidence', endedAt: '2026-09-22T11:45:03Z'
+            } } }
+        });
+        expect(status.jobs.find(job => job.role === 'supporter')).toMatchObject({
+            status: 'completed', lastRun: { outcome: 'already-supported', transaction: null }
+        });
+        expect(status.status).toBe('healthy');
+    });
+});

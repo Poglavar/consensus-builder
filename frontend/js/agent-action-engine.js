@@ -51,6 +51,17 @@
         if (action.type === 'stake') return `${actor.name} staked${amount}${proposal ? ` on${proposal}` : ''}.`;
         if (action.type === 'donate') return `${actor.name} donated${amount}${proposal ? ` to${proposal}` : ''}.`;
         if (action.type === 'pledge') return `${actor.name} pledged${amount}${proposal ? ` to${proposal}` : ''}.`;
+        const parcel = action.parcelId ? ` parcel ${action.parcelId}` : '';
+        const side = action.side ? ` ${String(action.side).toUpperCase()}` : '';
+        if (action.type === 'certifyParcel') return `${actor.name} holds the ownership certificate for${parcel}.`;
+        if (action.type === 'accept') return `${actor.name} accepted${proposal} for${parcel}.`;
+        if (action.type === 'cancel') return `${actor.name} cancelled${proposal}.`;
+        if (action.type === 'resolve') return `${actor.name} resolved the market of${proposal}.`;
+        if (action.type === 'claim') return `${actor.name} claimed the${side} payout of${proposal}.`;
+        if (action.type === 'refundMyDonations') return `${actor.name} refunded their donation to${proposal}.`;
+        if (action.type === 'releaseDonations') return `${actor.name} released the donation escrow of${proposal}.`;
+        if (action.type === 'fulfillPledge') return `${actor.name} fulfilled their pledge to${proposal}.`;
+        if (action.type === 'voidPledge') return `${actor.name} voided their pledge to${proposal}.`;
         return `${actor.name} ${action.type}.`;
     }
 
