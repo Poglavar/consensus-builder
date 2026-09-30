@@ -1,0 +1,75 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "BR",
+ "regionCode": "AL",
+ "regionName": "Alagoas",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "source": {
+  "sourceId": "br-sicar-car-imoveis",
+  "name": "SICAR/CAR rural properties, layer sicar:sicar_imoveis_al",
+  "operator": "Serviço Florestal Brasileiro (SICAR)",
+  "scope": "State of Alagoas, rural properties only (self-declared CAR perimeters); no urban lots",
+  "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+  "method": "WFS 2.0.0 GetFeature, outputFormat application/json",
+  "responseFormat": "GeoJSON MultiPolygon",
+  "crs": "EPSG:4326",
+  "layerKind": "rural_car_self_declared",
+  "reuseStatus": "licence not read"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "br-sicar-car-imoveis",
+  "requestUrl": "https://geoserver.car.gov.br/geoserver/sicar/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_al&count=2&outputFormat=application/json&propertyName=cod_imovel,geo_area_imovel",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=utf-8",
+  "spatialTestAreaLonLat": null,
+  "parcelRecordCount": 1,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "cod_imovel",
+  "responseFile": "research/subnational/BR/AL-parcel-response.json",
+  "pagination": "WFS startIndex/count",
+  "headersUsed": "Chrome/129 desktop UA 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36'; Accept: application/json,*/*;q=0.8; Accept-Language: pt-BR,pt;q=0.9; cookie jar; Referer = viewer origin"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "SICAR publishes one WFS layer per state (sicar_imoveis_al); rural CAR data only, not urban lots or legal cadastre. No publisher statement of completeness was read.",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+   "observation": "public SICAR WFS, no token needed"
+  },
+  {
+   "url": "https://consultapublica.car.gov.br/publico/imoveis/index",
+   "observation": "CAR public viewer (used as Referer; see countries/BR.json)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geoserver.car.gov.br/geoserver/sicar/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_al&count=2&outputFormat=application/json&propertyName=cod_imovel,geo_area_imovel",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=utf-8",
+   "assessment": "1 MultiPolygon rural property polygons, id cod_imovel"
+  },
+  {
+   "url": "https://geoserver.car.gov.br/geoserver/sicar/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_al&count=2&outputFormat=application/json&propertyName=cod_imovel,geom",
+   "method": "GET",
+   "httpStatus": 400,
+   "contentType": "text/xml",
+   "assessment": "geometry attribute is named geo_area_imovel, not geom"
+  },
+  {
+   "url": "same layer with bbox ~1km around the state capital core (EPSG:4326)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "1 rural polygon at Maceio edge"
+  }
+ ],
+ "reuseStatus": "licence/terms not read",
+ "remainingUncertainty": "Brazil has no state urban-lot cadastre found open; urban lots are municipal (IPTU). The only region-wide open polygon layer found is SICAR/CAR (rural properties, self-declared environmental registrations, not the legal cadastre). Time-boxed probes of state IDE/capital hosts (SIEG GO, GEOBASES ES, Geoweb Vitoria hub search, Maceio, Manaus, CE SEFAZ/IPECE, BA SEI) mostly failed DNS/connection, returned 403, or showed no lot layer; not proof of absence.",
+ "nextStep": "Look for capital-city lot layers (Goiania, Vitoria, Manaus, Maceio, Macapa, Rio Branco) and INCRA SIGEF certified parcels."
+}

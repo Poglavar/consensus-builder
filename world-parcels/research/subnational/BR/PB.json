@@ -1,0 +1,74 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "BR",
+ "regionCode": "PB",
+ "regionName": "Paraíba",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "layerKind": "rural_car_self_declared_not_urban_lots",
+ "source": {
+  "sourceId": "br-sicar-car-imoveis",
+  "name": "SICAR/CAR rural property perimeters, layer sicar:sicar_imoveis_pb",
+  "operator": "Serviço Florestal Brasileiro (SICAR / Cadastro Ambiental Rural)",
+  "scope": "Paraíba, rural properties self-declared in the CAR (not the legal cadastre, not urban lots)",
+  "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+  "method": "GET WFS 2.0.0 GetFeature",
+  "responseFormat": "GeoJSON",
+  "crs": "EPSG:4326",
+  "reuseStatus": "licence text not read"
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: application/json,text/html,application/xhtml+xml,*/*;q=0.8; Accept-Language: pt-BR,pt;q=0.9; Referer: https://consultapublica.car.gov.br/; cookie jar used; no token required",
+ "verifiedParcelResponse": {
+  "sourceId": "br-sicar-car-imoveis",
+  "requestUrl": "https://geoserver.car.gov.br/geoserver/sicar/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_pb&count=3&outputFormat=application/json&propertyName=cod_imovel,geo_area_imovel&bbox=-35.10,-7.20,-35.08,-7.18,EPSG:4326",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=utf-8",
+  "spatialTestAreaLonLat": [
+   -35.1,
+   -7.2,
+   -35.08,
+   -7.18
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "cod_imovel",
+  "responseFile": "PB-parcel-response.json",
+  "pagination": "WFS startIndex/count"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "SICAR publishes one WFS layer per UF (sicar_imoveis_pb); CAR is mandatory nationwide for rural properties, but polygons are owner-declared. Statewide completeness not measured.",
+ "subregionsVerified": [],
+ "additionalSources": [],
+ "portalsFound": [
+  {
+   "url": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+   "observation": "SICAR GeoServer, per-state layers; WFS attribute 'geom' is not valid, geometry property is geo_area_imovel"
+  },
+  {
+   "url": "https://filipeia.joaopessoa.pb.gov.br/",
+   "observation": "João Pessoa municipal geoportal (lots + IPTU cadastre per third-party project); Incapsula challenge from this network"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geoserver.car.gov.br/geoserver/sicar/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_pb&count=3&outputFormat=application/json&propertyName=cod_imovel,geo_area_imovel&bbox=-35.10,-7.20,-35.08,-7.18,EPSG:4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=utf-8",
+   "assessment": "3 MultiPolygon rural properties, closed rings; only cod_imovel + geometry requested"
+  },
+  {
+   "url": "https://filipeia.joaopessoa.pb.gov.br/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Incapsula challenge page for João Pessoa's Filipeia geoportal; not bypassed"
+  }
+ ],
+ "reuseStatus": "licence not read",
+ "remainingUncertainty": "Rural CAR polygons are self-declared environmental registrations and can overlap; no state urban-lot layer was found. Capital/municipal urban cadastre not verified.",
+ "nextStep": "Retry Filipeia from an unchallenged network."
+}
