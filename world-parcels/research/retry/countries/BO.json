@@ -1,0 +1,98 @@
+{
+ "kind": "country",
+ "checkedAt": "2026-09-30",
+ "key": "BO",
+ "previousStatus": "national_cadastre_viewer_only",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: es-BO,es;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": {
+  "sourceId": "mpd-infocapa-predios-titulados",
+  "requestUrl": "https://geoserver.planificacion.gob.bo/geoserver/infocapa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=infocapa:layer_predios_titulados_clasificacion_tioc_6kiwy&count=3&outputFormat=application/json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": "unfiltered first 3 (Beni, Tarija); CQL dep='Santa Cruz' returned Yapacani and Cuevo",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon (EPSG:4326)",
+  "closedRings": true,
+  "idField": "nro_docume (title number)",
+  "responseFile": "research/retry/countries/BO-parcel-response.json",
+  "pagination": "WFS 2.0 count; 1454 features matched",
+  "regionSampled": "Beni, Tarija, Santa Cruz"
+ },
+ "source": {
+  "sourceId": "mpd-infocapa-predios-titulados",
+  "name": "layer_predios_titulados_clasificacion_tioc (titled rural properties)",
+  "operator": "Ministerio de Planificacion del Desarrollo (InfoCapa/InfoSPIE), republishing INRA title data",
+  "scope": "titled rural properties in a TCO-classified layer (1454 features); NOT urban and NOT the full national cadastre",
+  "endpoint": "https://geoserver.planificacion.gob.bo/geoserver/infocapa/wfs",
+  "method": "WFS GetFeature",
+  "responseFormat": "GeoJSON",
+  "crs": "EPSG:4326",
+  "reuseStatus": "not read"
+ },
+ "requests": [
+  {
+   "url": "https://sinacar.inra.gob.bo/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Angular SINACAR; main.js: urlGeoserver=https://geoserver.inra.gob.bo/geoserver, host=https://sinacar.inra.gob.bo/api"
+  },
+  {
+   "url": "https://sinacar.inra.gob.bo/api/geovisor/wmslayers",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "public WMS layer list incl. geoserver.planificacion.gob.bo references"
+  },
+  {
+   "url": "https://sinacar.inra.gob.bo/api/geovisor/info-layers/1/-66.42/-18.26?zoom=15",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "application/json",
+   "assessment": "Forbidden (auth); not pursued"
+  },
+  {
+   "url": "https://geoserver.inra.gob.bo/geoserver/externo/wfs?...typeNames=externo:proceso_saneamiento_2022&count=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "339 municipality-level saneamiento aggregates, not parcels"
+  },
+  {
+   "url": "https://geoserver.inra.gob.bo/geoserver/wms GetFeatureInfo layers=externo:titulado2022",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "LayerNotDefined: titulado2022 is a style on satellite layers"
+  },
+  {
+   "url": "https://geoserver.planificacion.gob.bo/geoserver/ows?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "lists infocapa/infospie predios_titulados_* layers"
+  },
+  {
+   "url": "infocapa/wfs typeNames=infocapa:layer_predios_titulados_clasificacion_tioc_6kiwy&count=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 closed MultiPolygon titled properties (nro_docume, parcela, sup_ha, dep/prov/mun)"
+  },
+  {
+   "url": "infospie/wfs typeNames=infospie:layer_predios_titulados_calificacion_l676k",
+   "method": "GET",
+   "httpStatus": 500,
+   "contentType": "application/xml",
+   "assessment": "schema does not exist; sibling layers not available"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "Previous record: INRA GeoServer WFS listed no usable feature types. New: INRA only exposes aggregates, but the ministry GeoServer (found via the SINACAR viewer's wmslayers list) serves titled-property polygons. Only that one layer works, so this is a partial rural sample; nationwideVerified stays false.",
+ "nextStep": "Find the remaining predios_titulados layers; confirm terms; urban cadastre remains municipal."
+}

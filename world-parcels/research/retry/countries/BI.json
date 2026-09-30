@@ -1,0 +1,45 @@
+{
+ "kind": "country",
+ "checkedAt": "2026-09-30",
+ "key": "BI",
+ "previousStatus": "no_online_cadastre_found",
+ "newStatus": "no_online_cadastre_found",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: fr-BI,fr;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://pms.gov.bi/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "application/json",
+   "assessment": "Imunify360 bot-protection denial (automation IPs must be whitelisted) despite browser headers; earlier run saw the SPA shell. Not bypassed."
+  },
+  {
+   "url": "https://pms.gov.bi/api",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "application/json",
+   "assessment": "same bot-protection block"
+  },
+  {
+   "url": "https://isoko.gov.bi/ , https://www.pms.gov.bi/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "timeouts/unreachable"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Burundi cadastre OR parcelles&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "only boundaries/topographic/GRID3 items; no parcel data"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "Nothing new. PMS is behind a bot-protection wall from this network (403 with full browser headers), so the viewer JS could not be inspected. No ArcGIS Online parcel item found.",
+ "nextStep": "Retry PMS from another network or ask the ministry."
+}

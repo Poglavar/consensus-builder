@@ -1,0 +1,69 @@
+{
+ "kind": "country",
+ "checkedAt": "2026-09-30",
+ "key": "BN",
+ "previousStatus": "national_cadastre_viewer_only",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: ms-BN,ms;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": {
+  "sourceId": "survey-bn-g11-rso",
+  "name": "G11_RSO WFS layers MV_LOTS3 (surveyed lots), MV_GAZETTE1, MV_JKKN3",
+  "operator": "Survey Department (Jabatan Ukur), Brunei",
+  "scope": "lot layer used by the geoportal search; coverage unknown",
+  "endpoint": "https://survey.gov.bn/server/services/G11_RSO/MapServer/WFSServer",
+  "method": "OGC WFS 2.0 GetFeature",
+  "responseFormat": "GML 3.2",
+  "crs": "unknown",
+  "reuseStatus": "not read; geoportal sells certified plans"
+ },
+ "requests": [
+  {
+   "url": "https://geoportal.survey.gov.bn/map",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Ember app; web-map JS names WFS endpoints"
+  },
+  {
+   "url": "https://survey.gov.bn/server/services/G11_RSO/MapServer/WFSServer?service=WFS&version=2.0.0&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "lists G11_RSO:MV_LOTS3, MV_GAZETTE1, MV_JKKN3 (no token)"
+  },
+  {
+   "url": "...request=GetFeature&typeNames=G11_RSO:MV_LOTS3&count=3 (also with bbox; also MV_GAZETTE1, MV_JKKN3)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "valid FeatureCollection with numberReturned=0"
+  },
+  {
+   "url": "...request=DescribeFeatureType&typeNames=G11_RSO:MV_LOTS3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "SHAPE MultiSurface, LOTNUM, VC_LOTNUM, DISTCODE, SHAPE.AREA"
+  },
+  {
+   "url": "https://survey.gov.bn/server/rest/services/G11_RSO/MapServer?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "error 500 GISService not instantiated (backend stopped); other tries returned web adaptor HTTP 500"
+  },
+  {
+   "url": "...WFSServer GetFeature later retry",
+   "method": "GET",
+   "httpStatus": 400,
+   "contentType": "text/html",
+   "assessment": "400 from web adaptor"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "Previous record: viewer only. New: viewer JS exposes an open ArcGIS WFS with a lot layer and a REST catalogue. GetCapabilities works but GetFeature returns zero features and the REST MapServer says the GIS service is not instantiated, so the lot service looks down at test time; not verified.",
+ "nextStep": "Retry later; try G12_GDBD_RSO, G1_GDBD and REST query once G11_RSO is up."
+}

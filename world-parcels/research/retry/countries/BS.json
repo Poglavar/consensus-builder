@@ -1,0 +1,77 @@
+{
+ "kind": "country",
+ "checkedAt": "2026-09-30",
+ "key": "BS",
+ "previousStatus": "no_online_cadastre_found",
+ "newStatus": "subnational_only",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-BS,en;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": {
+  "sourceId": "gbpa-parcels-public",
+  "requestUrl": "https://services5.arcgis.com/2A67EqGJx1Goyk7B/arcgis/rest/services/Parcels_Public/FeatureServer/0/query?where=1%3D1&outFields=*&resultRecordCount=3&outSR=4326&f=geojson",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": "Freeport, Grand Bahama (~-78.657,26.502)",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "FID / Label (block-lot)",
+  "responseFile": "research/retry/countries/BS-parcel-response.json",
+  "pagination": "ArcGIS resultOffset/resultRecordCount",
+  "regionSampled": "Grand Bahama Port Authority area only"
+ },
+ "source": {
+  "sourceId": "gbpa-parcels-public",
+  "name": "Parcels_Public (Lots and Tracts)",
+  "operator": "Grand Bahama Port Authority GIS Section",
+  "scope": "Port Area of Freeport, Grand Bahama only; not national",
+  "endpoint": "https://services5.arcgis.com/2A67EqGJx1Goyk7B/arcgis/rest/services/Parcels_Public/FeatureServer/0",
+  "method": "ArcGIS FeatureServer query",
+  "responseFormat": "GeoJSON",
+  "crs": "EPSG:32617 native",
+  "reuseStatus": "not read"
+ },
+ "requests": [
+  {
+   "url": "https://www.bahamas.gov.bs/bahamas-national-geographic-information-systems",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "info page only"
+  },
+  {
+   "url": "https://www.bngis.gov.bs/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "BNGIS site, no parcel service link"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Bahamas parcels OR cadastre&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "found public web map 'Grand Bahama Port Authority Public Parcel Viewer' (item 234b92a3...)"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/content/items/234b92a3b1dc4ba9b35d2e807e71d487/data?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "operational layers incl. Parcels_Public FeatureServer"
+  },
+  {
+   "url": "Parcels_Public FeatureServer/0/query resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 lot polygons (lot, block, unit, subdivision); no owner fields"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "Previous record listed the GBPA viewer as untested. It is now tested: an open ArcGIS Online feature service with parcel polygons for the Freeport port area only. No national parcel service found (BNGIS / Lands and Surveys).",
+ "nextStep": "Check Department of Lands and Surveys for New Providence/Family Islands parcels; read GBPA terms."
+}
