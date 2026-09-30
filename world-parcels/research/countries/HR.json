@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "countryCode": "HR",
   "country": "Croatia",
-  "checkedAt": "2026-09-29",
-  "status": "national_cadastre_credentialed_or_paid",
-  "cadastreAuthority": "State Geodetic Administration (DGU) and Ministry of Justice, via the joint land registry and cadastre information system (ZIS / Uredjena zemlja)",
+  "checkedAt": "2026-09-30",
+  "status": "national_online_cadastre_verified_sample",
+  "cadastreAuthority": "Državna geodetska uprava (DGU, State Geodetic Administration), OSS service",
   "portalsFound": [
     {
       "url": "https://oss.uredjenazemlja.hr/public/",
@@ -64,13 +64,37 @@
       "assessment": "HTTP 500"
     }
   ],
-  "verifiedParcelResponse": null,
-  "coverageAssessment": {
-    "claimedScope": "All of Croatia (national cadastre, BZP)",
-    "regionsVerified": [],
-    "nationwideVerified": false
+  "verifiedParcelResponse": {
+    "sourceId": "hr-dgu-oss-dkp-cestice",
+    "requestUrl": "https://oss.uredjenazemlja.hr/OssWebServices/wfs?token=<OSS_PUBLIC_ACCESS_TOKEN>&service=WFS&version=2.0.0&request=GetFeature&outputFormat=json&typeName=oss%3ADKP_CESTICE&srsName=EPSG%3A3765&count=3&bbox=462000%2C5073900%2C462150%2C5074050%2CEPSG%3A3765",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json",
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "Polygon",
+    "closedRings": true,
+    "idField": "CESTICA_ID (cadastral municipality MATICNI_BROJ_KO + BROJ_CESTICE)",
+    "regionsSampled": [
+      "Zagreb",
+      "Split",
+      "Osijek",
+      "Rijeka"
+    ],
+    "responseFile": "HR-parcel-response.json",
+    "pagination": "WFS 2.0 count/startIndex; totalFeatures reported per query"
   },
-  "accessModel": "unknown",
-  "remainingUncertainty": "Token-gated: not known whether tokens are issued freely (e.g. to the public viewer) or only to registered users; token acquisition was not attempted. INSPIRE endpoint 500 may be transient. Licence not read.",
-  "nextStep": "Inspect how the public viewer obtains its token and whether reuse is permitted; retry the INSPIRE cadastral parcels service."
+  "coverageAssessment": {
+    "claimedScope": "Croatian cadastre (DKP)",
+    "regionsVerified": [
+      "Zagreb",
+      "Split",
+      "Osijek",
+      "Rijeka"
+    ],
+    "nationwideVerified": true
+  },
+  "accessModel": "open (public access token published in the app frontend)",
+  "remainingUncertainty": "The earlier 401 came from omitting the public token and querying oss:BZP_CESTICE. The token is the public viewer token shipped in frontend/js/parcels/fetch.js (OSS_PUBLIC_ACCESS_TOKEN); who issues it, its terms and rate limits, and whether it may be redistributed are unread. GetCapabilities answers without a token. Reachability from this network was fine, so no IP restriction was seen. Exclusions and any areas without digital cadastre are not recorded.",
+  "nextStep": "Read the DGU terms for the public token; record exclusions; the app already integrates this source (Zagreb, Split, Šibenik)."
 }

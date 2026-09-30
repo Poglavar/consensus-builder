@@ -76,10 +76,10 @@ Generated from `registry.json` (updated 2026-09-29). A city sample proves only a
 Question: does each country have a country-wide online cadastre? Statuses come from `research/countries/<ISO2>.json`; the registry normalises labels the evidence did not support (see each entry's `mergeNote`). `countryCoverage` stays empty until a source has an explicit nationwide claim, two distinct verified regions, one schema, and recorded exclusions.
 
 - **`temporarily_unavailable`** (93): AE, AF, AL, BZ, CD, CI, CW, DJ, DZ, EC, ER, ET, FJ, GA, GI, GM, GQ, GT, HN, IQ, IR, IS, JE, JO, KG, KH, KR, KW, KZ, LA, LB, LR, LS, LT, LY, MA, MC, MD, ME, MG, MK, MM, MO, MR, MT, MU, MV, MW, MX, MZ, NA, NE, NI, NP, OM, PA, PE, PG, PH, PS, QA, RS, RU, SA, SB, SD, SK, SL, SN, SO, SR, SS, ST, SV, SY, SZ, TG, TJ, TL, TM, TN, TT, TZ, UA, UG, UZ, VE, VN, VU, XK, YE, ZM, ZW
-- **`national_online_cadastre_verified_sample`** (22): AT, BD, BG, CZ, DK, EE, ES, FI, FR, HK, IE, IL, IT, LU, MN, NL, NO, NZ, PL, PY, SI, TR
+- **`national_online_cadastre_verified_sample`** (23): AT, BD, BG, CZ, DK, EE, ES, FI, FR, HK, HR, IE, IL, IT, LU, MN, NL, NO, NZ, PL, PY, SI, TR
 - **`no_online_cadastre_found`** (20): AO, AZ, BI, BS, BW, CF, CG, CM, CU, EG, EH, GN, GW, HT, KI, KM, KP, PF, TD, WS
 - **`partial_or_unofficial_sample`** (14): BB, BR, CH, DO, HU, ID, JP, LK, LV, ML, PT, SG, UY, ZA
 - **`national_cadastre_viewer_only`** (14): BJ, BN, BO, BY, CL, CR, CV, CY, GE, GR, GY, JM, NC, RO
-- **`national_cadastre_credentialed_or_paid`** (13): AM, BF, BH, BT, CN, GB, GH, HR, KE, MY, SE, TH, TW
 - **`subnational_only`** (13): AR, AU, BA, BE, CA, CO, DE, IN, NG, PK, PR, RW, US
+- **`national_cadastre_credentialed_or_paid`** (12): AM, BF, BH, BT, CN, GB, GH, KE, MY, SE, TH, TW
 - **`covered_by_parent_source`** (5): GF, GP, MQ, RE, YT

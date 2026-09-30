@@ -823,6 +823,21 @@
         "wup2025:7035"
       ],
       "evidenceFile": "research/yogyakarta.json"
+    },
+    {
+      "sourceId": "hr-dgu-oss-dkp-cestice",
+      "name": "Croatian cadastre (DKP) OSS WFS",
+      "operator": "Državna geodetska uprava (DGU)",
+      "countryCode": "HR",
+      "scope": "Croatia; sampled in Zagreb, Split, Osijek and Rijeka; already used by the app for Zagreb, Split and Šibenik",
+      "endpoint": "https://oss.uredjenazemlja.hr/OssWebServices/wfs",
+      "method": "GET",
+      "responseFormat": "GeoJSON (WFS 2.0, typeName oss:DKP_CESTICE)",
+      "crs": "EPSG:3765",
+      "verificationStatus": "verified_nonempty_sample",
+      "reuseStatus": "public_access_token_in_app;_terms_unread",
+      "verifiedCityIds": [],
+      "evidenceFile": "research/countries/HR.json"
     }
   ],
   "countryCoverage": [],
@@ -4767,10 +4782,10 @@
     {
       "countryCode": "HR",
       "country": "Croatia",
-      "reportedStatus": "national_cadastre_credentialed_or_paid",
-      "status": "national_cadastre_credentialed_or_paid",
-      "accessModel": "unknown",
-      "checkedAt": "2026-09-29",
+      "reportedStatus": "national_online_cadastre_verified_sample",
+      "status": "national_online_cadastre_verified_sample",
+      "accessModel": "open (public access token published in the app frontend)",
+      "checkedAt": "2026-09-30",
       "evidenceFile": "research/countries/HR.json"
     },
     {
