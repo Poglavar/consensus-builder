@@ -1,0 +1,50 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "ID",
+ "regionCode": "BE",
+ "regionName": "Bengkulu",
+ "checkedAt": "2026-09-30",
+ "headersUsed": "Chrome/126 desktop UA (Mozilla/5.0 (X11; Linux x86_64) ... Chrome/126.0.0.0 Safari/537.36), Accept application/json, Accept-Language id-ID, cookie jar, Referer https://satupeta.big.go.id/",
+ "status": "temporarily_unavailable",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "none: BIG Satu Peta layer 10 has no sublayer for this province",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/10",
+   "observation": "no sublayer for Bengkulu (15 provinces listed, this is not one)"
+  },
+  {
+   "url": "https://bhumi.atrbpn.go.id/peta",
+   "observation": "ATR/BPN BHUMI viewer, token-gated, no open endpoint"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/10?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "group layer 10 lists 15 province sublayers: NTB 11, Jatim 12, DIY 13, Kalbar 14, Sulbar 15, Kaltara 16, Aceh 17, Sultra 18, Maluku 19, Kaltim 20, Jabar 21, Bali 22, Banten 23, Kepri 24, Jateng 25"
+  },
+  {
+   "url": "https://bhumi.atrbpn.go.id/peta",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Next.js app shell only; no open parcel endpoint identified (see research/jakarta.json); token-gated internal API not used"
+  },
+  {
+   "url": "https://geoportal.bengkuluprov.go.id/",
+   "method": "GET",
+   "httpStatus": 502,
+   "contentType": null,
+   "assessment": "tunnel failed"
+  }
+ ],
+ "reuseStatus": "n/a",
+ "remainingUncertainty": "Guessed host geoportal.bengkuluprov.go.id: proxy CONNECT 502; unreachable. Provincial geoportal host names were guessed, not taken from an official index, so absence is not conclusive.",
+ "nextStep": "Find the official provincial Simpul Jaringan URL via satupeta.big.go.id; check kabupaten/kota geoportals for the largest city; watch for a new BIG sublayer."
+}

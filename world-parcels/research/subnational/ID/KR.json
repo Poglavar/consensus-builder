@@ -1,0 +1,96 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "ID",
+ "regionCode": "KR",
+ "regionName": "Kepulauan Riau",
+ "checkedAt": "2026-09-30",
+ "headersUsed": "Chrome/126 desktop UA (Mozilla/5.0 (X11; Linux x86_64) ... Chrome/126.0.0.0 Safari/537.36), Accept application/json, Accept-Language id-ID, cookie jar, Referer https://satupeta.big.go.id/",
+ "status": "verified_partial_region",
+ "source": {
+  "sourceId": "id-big-satupeta-hak-milik",
+  "name": "BIG Satu Peta - Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000, sublayer 24 Kepulauan Riau",
+  "operator": "Badan Informasi Geospasial (BIG) Satu Peta, data from Kementerian ATR/BPN",
+  "scope": "titled (hak milik) parcels, sparse, part of the province only",
+  "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/24",
+  "method": "ArcGIS REST query",
+  "responseFormat": "esri JSON",
+  "crs": "EPSG:4326",
+  "reuseStatus": "licence/terms not read"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "id-big-satupeta-hak-milik",
+  "requestUrl": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/24/query?where=1%3D1&geometry=104.026,1.146,104.03,1.15&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid,nib&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   104.026,
+   1.146,
+   104.03,
+   1.15
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "nib (not unique alone; pair with kelurahan; objectid is OID)",
+  "responseFile": "KR-parcel-response.json",
+  "pagination": "resultRecordCount / resultOffset",
+  "regionSampled": "Batam"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "Layer extent spans most of the province but count-only probes show data only in patches. Other Kepri area with data: box 106.0-107.1E,-0.5-1.0N (399 features count-only, Natuna/Anambas side). Tanjungpinang box 104.44-104.46,0.91-0.93 and 104.4-104.6,0.85-1.0 empty. Fields on layer: objectid, kecamatan, kelurahan, tipehak, nib, shape; only objectid and nib requested.",
+ "subregionsVerified": [
+  "Batam"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer",
+   "observation": "BIG Satu Peta ArcGIS MapServer"
+  },
+  {
+   "url": "https://bhumi.atrbpn.go.id/peta",
+   "observation": "ATR/BPN BHUMI viewer, token-gated, not used"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/10?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "group layer 10 lists 15 province sublayers: NTB 11, Jatim 12, DIY 13, Kalbar 14, Sulbar 15, Kaltara 16, Aceh 17, Sultra 18, Maluku 19, Kaltim 20, Jabar 21, Bali 22, Banten 23, Kepri 24, Jateng 25"
+  },
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/24?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "Feature Layer with fields objectid,kecamatan,kelurahan,tipehak,nib,shape"
+  },
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/24/query (returnCountOnly, several boxes)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "counts: {\"104.02,1.12,104.04,1.14\": 0, \"104.0,1.0,104.2,1.2\": 8136}; Other Kepri area with data: box 106.0-107.1E,-0.5-1.0N (399 features count-only, Natuna/Anambas side). Tanjungpinang box 104.44-104.46,0.91-0.93 and 104.4-104.6,0.85-1.0 empty."
+  },
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/24/query?where=1%3D1&geometry=104.026,1.146,104.03,1.15&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid,nib&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 closed polygons, ID+geometry only"
+  },
+  {
+   "url": "https://bhumi.atrbpn.go.id/peta",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Next.js app shell only; no open parcel endpoint identified (see research/jakarta.json); token-gated internal API not used"
+  }
+ ],
+ "reuseStatus": "not read; BIG Satu Peta terms unverified",
+ "remainingUncertainty": "Coverage patchy; only titled hak-milik parcels; currency and licence unknown; provincial geoportal not checked for a fuller layer.",
+ "nextStep": "Read BIG/ATR-BPN terms; map coverage extent; look for kabupaten/kota-level parcel services."
+}
