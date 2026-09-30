@@ -1,0 +1,67 @@
+{
+ "kind": "country",
+ "key": "SZ",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8; Accept-Language: en-SZ,en;q=0.9 (cookie jar kept via curl -b/-c)",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.gov.sz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (HTTP status 0 / CONNECT 502)"
+  },
+  {
+   "url": "https://gov.sz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (HTTP status 0 / CONNECT 502)"
+  },
+  {
+   "url": "http://www.gov.sz/",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/plain",
+   "assessment": "503 plain text (114 B): upstream unavailable"
+  },
+  {
+   "url": "https://www.deeds.gov.sz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (HTTP status 0 / CONNECT 502)"
+  },
+  {
+   "url": "https://www.sntc.org.sz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (HTTP status 0 / CONNECT 502)"
+  },
+  {
+   "url": "https://www.swazilandcadastre.gov.sz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (HTTP status 0 / CONNECT 502)"
+  },
+  {
+   "url": "https://www.esccom.org.sz/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "electricity regulator site, irrelevant"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "Not suspected: plain-HTTP gov.sz answers 503 (service down).",
+ "notes": "No change in outcome; gov.sz is up but returns 503. No cadastre portal found.",
+ "nextStep": "Retry later; identify Surveyor-General / Deeds Registry portal."
+}

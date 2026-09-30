@@ -1,0 +1,60 @@
+{
+ "kind": "country",
+ "key": "SR",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "no_online_cadastre_found",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8; Accept-Language: nl-SR,nl;q=0.9,en;q=0.8 (cookie jar kept via curl -b/-c)",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.kadaster.sr/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (HTTP status 0 / CONNECT 502)"
+  },
+  {
+   "url": "https://kadaster.gov.sr/, https://www.lbb.sr/, https://geoportal.gov.sr/, https://gis.gov.sr/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "candidate hosts, none reachable (connection failed via proxy (HTTP status 0 / CONNECT 502))"
+  },
+  {
+   "url": "https://www.gov.sr/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "portal; no cadastre viewer link found"
+  },
+  {
+   "url": "https://gov.sr/ministeries/ministerie-van-grond-en-bosbeheer/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "ministry page, no map/viewer link"
+  },
+  {
+   "url": "https://e-services.gov.sr/grondzaken/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Grondzaken e-services (Kabinet van de President): ground-lease application/transfer forms behind Digitale-ID (SAML) login; no parcel map, no service URLs in HTML"
+  },
+  {
+   "url": "https://e-services.gov.sr/grondzaken/services/index?type=1..8",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "eight form pages (grondhuur, erfpacht, bestemmingswijziging etc.); login-only forms, no map"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "gov.sr and e-services.gov.sr answered 200 from this network; kadaster hosts simply do not connect.",
+ "notes": "New versus previous: e-services grondzaken page opened and inspected; it is a lease/transfer application portal behind Digitale-ID login, not a parcel service. Still no public parcel map found; absence not proven (kadaster.sr unreachable). Downgraded from temporarily_unavailable because the only portal reachable was inspected and has no parcel service, but treat as weak negative.",
+ "nextStep": "Look for a Suriname Kadaster/LBB GIS viewer via World Bank/IDB land projects; retry kadaster.sr from a Suriname network."
+}
